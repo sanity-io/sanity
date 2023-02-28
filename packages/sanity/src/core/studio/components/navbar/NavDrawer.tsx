@@ -169,12 +169,12 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
           {/* Theme picker and Manage */}
           <Flex direction="column">
             <Card borderTop flex="none" padding={3} overflow="auto">
-              <Stack as="ul" space={1}>
-                <Box padding={2}>
-                  <Label size={1} muted>
-                    Appearance
-                  </Label>
-                </Box>
+              <Box padding={2}>
+                <Label size={1} muted>
+                  Appearance
+                </Label>
+              </Box>
+              <Stack as="ul" marginTop={1} space={1}>
                 {!theme.__legacy &&
                   colorSchemeOptions.map((option) => (
                     <Stack as="li" key={option.name}>
@@ -186,7 +186,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                         key={option.name}
                         mode="bleed"
                         justify="flex-start"
-                        tabIndex={0}
+                        tabIndex={tabIndex}
                         onClick={() => option.onSelect()}
                         selected={option.selected}
                         text={option.title}
