@@ -1,0 +1,13 @@
+{
+  "include": ["./"],
+  "compilerOptions": {
+    "strict": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "target": "es2015",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist"
+  }
+}

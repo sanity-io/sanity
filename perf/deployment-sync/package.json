@@ -1,0 +1,23 @@
+{
+  "name": "deployment-sync",
+  "version": "3.5.0",
+  "private": true,
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "Sanity.io",
+  "main": "index.js",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "@sanity/client": "^5.2.2",
+    "@vercel/node": "^2.9.9",
+    "micro": "^10.0.1",
+    "zod": "^3.20.6"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.4",
+    "vercel": "^28.16.7"
+  }
+}

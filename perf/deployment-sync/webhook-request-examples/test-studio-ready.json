@@ -1,0 +1,40 @@
+{
+  "id": "kccGhq6tavN06fqc",
+  "type": "deployment-ready",
+  "clientId": "oac_LwKmuGQsyFtoLcQi5M6dgbqC",
+  "createdAt": 1620386340376,
+  "payload": {
+    "deployment": {
+      "id": "dpl_AgRr8sA5QSDB7UVEmK3uypGCpmU9",
+      "meta": {
+        "githubCommitAuthorName": "Bjørge Næss",
+        "githubCommitMessage": "trigger build",
+        "githubCommitOrg": "sanity-io",
+        "githubCommitRef": "bjoerge/rebuild",
+        "githubCommitRepo": "sanity",
+        "githubCommitRepoId": "79375056",
+        "githubCommitSha": "821d7a04ea3ededee91bdfcfda1490806411eb55",
+        "githubDeployment": "1",
+        "githubOrg": "sanity-io",
+        "githubRepo": "sanity",
+        "githubRepoId": "79375056",
+        "githubCommitAuthorLogin": "bjoerge"
+      },
+      "name": "test-studio",
+      "url": "test-studio-ii8iqigrt.sanity.build",
+      "inspectorUrl": "https://vercel.com/sanity-io/test-studio/AgRr8sA5QSDB7UVEmK3uypGCpmU9"
+    },
+    "deploymentId": "dpl_AgRr8sA5QSDB7UVEmK3uypGCpmU9",
+    "name": "test-studio",
+    "plan": "enterprise",
+    "project": "QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i",
+    "projectId": "QmeDcdj9ZnrZmMNpvfextJTfz37x7DWHgdLb6HNdcyVT2i",
+    "regions": ["sfo1"],
+    "type": "LAMBDAS",
+    "url": "test-studio-ii8iqigrt.sanity.build"
+  },
+  "ownerId": "team_oqU06TUi6OGH315dQZ2wFh08",
+  "teamId": "team_oqU06TUi6OGH315dQZ2wFh08",
+  "userId": "Ggtx0MfDKNBFIaMd9GHjGw0A",
+  "webhookId": "hook_36922e4d346b11dbe52431334b86e5b71eaac858"
+}
