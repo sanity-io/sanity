@@ -1,0 +1,21 @@
+{
+  "include": ["./"],
+  "compilerOptions": {
+    "lib": ["es2020"],
+    "target": "ES2017",
+
+    // Settings
+    "preserveConstEnums": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // Strict type-checking
+    "strict": true,
+    "skipLibCheck": true,
+
+    // Module settings
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  }
+}
