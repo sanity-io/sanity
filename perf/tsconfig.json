@@ -4,6 +4,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "module": "CommonJS",
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true
   }
 }

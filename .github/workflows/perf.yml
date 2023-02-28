@@ -1,34 +1,41 @@
 name: Performance Tests
 on:
-  deployment_status:
+  #deployment_status:
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
     steps:
-      - name: Dump GitHub context
-        run: echo '${{ toJSON(github) }}'
-      - name: Echo target URL
-        run: echo "Target URL is ${{github.event.deployment_status.target_url}}"
-      - name: Test?
-        run: echo "Run the performance studio against ${{github.event.deployment_status.target_url}}"
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Checkout commit
-        # this is required in order for the perf script to find what branches/tags the current commit is on
-        run: git reset --hard
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: Install dependencies
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@58c146cc91c5b9e778e71775dfe9bf1442ad9a12 # v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
+
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        working-directory: ./perf
         run: yarn install --immutable --immutable-cache --check-cache
-      - name: Git debug
-        run: npx ts-node --files --project perf/tsconfig.json perf/git-debug.ts
+
       - name: Install Playwright Browsers
+        working-directory: ./perf
         run: npx playwright install chrome
       - name: Run Playwright tests
+        using: 'node16'
+        working-directory: ./perf
         env:
           BRANCH_DEPLOYMENT_URL: ${{ github.event.deployment_status.target_url }}
           PERF_TEST_SANITY_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
