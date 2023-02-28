@@ -1,9 +1,9 @@
-import {SanityClient} from '@sanity/client'
+import type {SanityClient} from '@sanity/client'
 import {Observable} from 'rxjs'
 import {publishReplay, refCount} from 'rxjs/operators'
-import {IdPair} from '../types'
+import type {IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {checkoutPair, Pair} from './checkoutPair'
+import {checkoutPair, type Pair} from './checkoutPair'
 
 export const memoizedPair: (
   client: SanityClient,
@@ -15,5 +15,11 @@ export const memoizedPair: (
       subscriber.next(checkoutPair(client, idPair))
     }).pipe(publishReplay(1), refCount())
   },
-  (_client, idPair) => idPair.publishedId
+  (client: SanityClient, idPair: IdPair, typeName?: string) => {
+    const config = client.config()
+
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${
+      typeName ?? ''
+    }`
+  }
 )
