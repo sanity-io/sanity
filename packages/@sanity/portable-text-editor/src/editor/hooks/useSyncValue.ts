@@ -73,35 +73,37 @@ export function useSyncValue(
           KEY_TO_SLATE_ELEMENT.get(slateEditor)
         )
         withoutSaving(slateEditor, () => {
-          withPreserveKeys(slateEditor, () => {
-            withoutPatching(slateEditor, () => {
-              Editor.withoutNormalizing(slateEditor, () => {
-                if (slateValueFromProps.length < slateEditor.children.length) {
-                  Array.from(
-                    Array(slateEditor.children.length - slateValueFromProps.length)
-                  ).forEach((_, index) => {
+          withoutPatching(slateEditor, () => {
+            Editor.withoutNormalizing(slateEditor, () => {
+              if (slateValueFromProps.length < slateEditor.children.length) {
+                Array.from(Array(slateEditor.children.length - slateValueFromProps.length)).forEach(
+                  (_, index) => {
                     Transforms.removeNodes(slateEditor, {
                       at: [slateEditor.children.length - 1 - index],
                     })
+                  }
+                )
+              }
+              slateValueFromProps.forEach((c, i) => {
+                const oldBlock = slateEditor.children[i]
+                if (oldBlock && !isEqual(c, oldBlock)) {
+                  debug('Replacing changed block', oldBlock)
+                  const currentSel = slateEditor.selection
+                  Transforms.deselect(slateEditor)
+                  Transforms.removeNodes(slateEditor, {at: [i]})
+                  withPreserveKeys(slateEditor, () => {
+                    Transforms.insertNodes(slateEditor, c, {at: [i]})
+                  })
+                  if (currentSel) {
+                    Transforms.select(slateEditor, currentSel)
+                  }
+                }
+                if (!oldBlock) {
+                  debug('Adding new block', c)
+                  withPreserveKeys(slateEditor, () => {
+                    Transforms.insertNodes(slateEditor, c, {at: [i]})
                   })
                 }
-                slateValueFromProps.forEach((c, i) => {
-                  const oldBlock = slateEditor.children[i]
-                  if (oldBlock && !isEqual(c, oldBlock)) {
-                    debug('Replacing changed block', oldBlock)
-                    const currentSel = slateEditor.selection
-                    Transforms.deselect(slateEditor)
-                    Transforms.removeNodes(slateEditor, {at: [i]})
-                    Transforms.insertNodes(slateEditor, c, {at: [i]})
-                    if (currentSel) {
-                      Transforms.select(slateEditor, currentSel)
-                    }
-                  }
-                  if (!oldBlock) {
-                    debug('Adding new block', c)
-                    Transforms.insertNodes(slateEditor, c, {at: [i]})
-                  }
-                })
               })
             })
           })
