@@ -1,10 +1,10 @@
-import {camelCase} from 'lodash'
 import {SerializeOptions, StructureNode, Serializable, Child} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
 import {validateId} from './util/validateId'
 import {UserComponent} from './types'
+import {getStructureNodeId} from './util/getStructureNodeId'
 
 /** @beta */
 // TODO: rename to `StructureComponent` since it clashes with React?
@@ -51,7 +51,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   title(title: string): ComponentBuilder {
-    return this.clone({title, id: this.spec.id || camelCase(title)})
+    return this.clone({title, id: getStructureNodeId(title, this.spec.id)})
   }
 
   getTitle(): BuildableComponent['title'] {
