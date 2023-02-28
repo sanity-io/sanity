@@ -72,10 +72,6 @@ const InnerCard = styled(Card)`
   }
 `
 
-const StyledCard = styled(Card)`
-  flex-shrink: 0;
-`
-
 interface NavDrawerProps {
   activeToolName?: string
   isOpen: boolean
@@ -160,7 +156,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
 
         <Flex direction="column" flex={1} justify="space-between" overflow="auto">
           {/* Tools */}
-          <StyledCard padding={3}>
+          <Card flex="none" padding={3}>
             <ToolMenu
               activeToolName={activeToolName}
               closeSidebar={onClose}
@@ -168,11 +164,11 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               isSidebarOpen={isOpen}
               tools={tools}
             />
-          </StyledCard>
+          </Card>
 
           {/* Theme picker and Manage */}
           <Flex direction="column">
-            <StyledCard borderTop padding={3} overflow="auto">
+            <Card borderTop flex="none" padding={3} overflow="auto">
               <Stack as="ul" space={1}>
                 <Box padding={2}>
                   <Label size={1} muted>
@@ -198,8 +194,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                     </Stack>
                   ))}
               </Stack>
-            </StyledCard>
-            <StyledCard borderTop padding={3}>
+            </Card>
+            <Card borderTop flex="none" padding={3}>
               <Stack as="ul" space={1}>
                 <Stack as="li">
                   <Button
@@ -258,7 +254,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   </Stack>
                 )}
               </Stack>
-            </StyledCard>
+            </Card>
           </Flex>
         </Flex>
 
