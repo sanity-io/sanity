@@ -179,11 +179,9 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   colorSchemeOptions.map((option) => (
                     <Stack as="li" key={option.name}>
                       <Button
-                        as="a"
                         aria-label={`Use ${option} appearance`}
                         icon={option.icon}
                         iconRight={option.selected && <CheckmarkIcon />}
-                        key={option.name}
                         mode="bleed"
                         justify="flex-start"
                         tabIndex={tabIndex}
