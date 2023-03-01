@@ -27,10 +27,6 @@ const FilterBox = styled(Box)`
   position: relative;
 `
 
-const SearchHeaderCard = styled(Card)`
-  flex-shrink: 0;
-`
-
 const NotificationBadge = styled.div`
   background: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.enabled.fg};
   border-radius: 100%;
@@ -86,7 +82,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
   const notificationBadgeVisible = filters.length > 0 || types.length > 0
 
   return (
-    <SearchHeaderCard>
+    <Card flex="none">
       <Flex align="center" flex={1} gap={fullscreen ? 2 : 1} padding={fullscreen ? 2 : 1}>
         {/* (Fullscreen) Close button */}
         {fullscreen && (
@@ -133,6 +129,6 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
           </FilterBox>
         )}
       </Flex>
-    </SearchHeaderCard>
+    </Card>
   )
 }
