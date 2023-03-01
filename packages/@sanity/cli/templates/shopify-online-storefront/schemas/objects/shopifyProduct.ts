@@ -1,6 +1,6 @@
-import {defineField} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
-export default defineField({
+export default defineType({
   name: 'shopifyProduct',
   title: 'Shopify',
   type: 'object',
@@ -122,23 +122,8 @@ export default defineField({
     // Price range
     defineField({
       name: 'priceRange',
+      type: 'priceRange',
       title: 'Price range',
-      type: 'object',
-      options: {
-        columns: 2,
-      },
-      fields: [
-        {
-          name: 'minVariantPrice',
-          title: 'Min variant price',
-          type: 'number',
-        },
-        {
-          name: 'maxVariantPrice',
-          title: 'Max variant price',
-          type: 'number',
-        },
-      ],
     }),
     // Preview Image URL
     defineField({
@@ -152,13 +137,7 @@ export default defineField({
       name: 'options',
       title: 'Options',
       type: 'array',
-      of: [
-        {
-          name: 'option',
-          title: 'Option',
-          type: 'productOption',
-        },
-      ],
+      of: [{type: 'productOption'}],
     }),
     // Variants
     defineField({

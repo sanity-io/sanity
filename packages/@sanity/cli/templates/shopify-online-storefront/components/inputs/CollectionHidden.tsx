@@ -1,5 +1,6 @@
-import {WarningOutlineIcon} from '@sanity/icons';
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui';
+import React from 'react'
+import {WarningOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 
 export default function CollectionHiddenInput() {
   return (
@@ -18,5 +19,5 @@ export default function CollectionHiddenInput() {
         </Box>
       </Flex>
     </Card>
-  );
+  )
 }

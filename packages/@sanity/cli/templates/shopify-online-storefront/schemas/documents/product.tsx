@@ -1,9 +1,10 @@
+import React from 'react'
 import {TagIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
+import pluralize from 'pluralize-esm'
 import ShopifyIcon from '../../components/icons/Shopify'
 import ProductHiddenInput from '../../components/inputs/ProductHidden'
 import ShopifyDocumentStatus from '../../components/media/ShopifyDocumentStatus'
-import pluralize from 'pluralize-esm'
 import {getPriceRange} from '../../utils/getPriceRange'
 
 const GROUPS = [

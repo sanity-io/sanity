@@ -1,7 +1,7 @@
 import {BulbOutlineIcon} from '@sanity/icons'
-import {defineField} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
-export default defineField({
+export default defineType({
   name: 'callout',
   title: 'Callout',
   type: 'object',
@@ -28,10 +28,8 @@ export default defineField({
   preview: {
     select: {
       text: 'text',
-      url: 'url',
     },
-    prepare(selection) {
-      const {text, url} = selection
+    prepare({text}) {
       return {
         subtitle: 'Callout',
         title: text,

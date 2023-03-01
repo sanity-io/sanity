@@ -1,7 +1,7 @@
 import {FilterIcon} from '@sanity/icons'
-import {defineField} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
-export default defineField({
+export default defineType({
   title: 'Collection rule',
   name: 'collectionRule',
   type: 'object',
