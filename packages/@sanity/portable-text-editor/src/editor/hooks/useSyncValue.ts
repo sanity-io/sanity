@@ -60,6 +60,20 @@ export function useSyncValue(
       // If empty value, create a placeholder block
       if (!value || value.length === 0) {
         debug('Value is empty')
+        withoutSaving(slateEditor, () => {
+          withoutPatching(slateEditor, () => {
+            Editor.withoutNormalizing(slateEditor, () => {
+              const len = slateEditor.children.length
+              slateEditor.children.forEach((_, index) => {
+                Transforms.removeNodes(slateEditor, {
+                  at: [len - 1 - index],
+                })
+              })
+              Transforms.insertNodes(slateEditor, slateEditor.createPlaceholderBlock(), {at: [0]})
+            })
+            Editor.normalize(slateEditor)
+          })
+        })
         callbackFn()
         return
       }
@@ -75,12 +89,16 @@ export function useSyncValue(
         withoutSaving(slateEditor, () => {
           withoutPatching(slateEditor, () => {
             Editor.withoutNormalizing(slateEditor, () => {
-              if (slateValueFromProps.length < slateEditor.children.length) {
-                Array.from(Array(slateEditor.children.length - slateValueFromProps.length)).forEach(
+              const childrenLength = slateEditor.children.length
+              if (slateValueFromProps.length < childrenLength) {
+                Array.from(Array(childrenLength - slateValueFromProps.length)).forEach(
                   (_, index) => {
-                    Transforms.removeNodes(slateEditor, {
-                      at: [slateEditor.children.length - 1 - index],
-                    })
+                    const bIndex = childrenLength - 1 - index
+                    if (bIndex > 0) {
+                      Transforms.removeNodes(slateEditor, {
+                        at: [bIndex],
+                      })
+                    }
                   }
                 )
               }
