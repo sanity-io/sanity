@@ -1,4 +1,4 @@
-import {uniq, camelCase} from 'lodash'
+import {uniq} from 'lodash'
 import {SchemaType} from '@sanity/types'
 import {ChildResolver} from './ChildResolver'
 import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
@@ -7,6 +7,7 @@ import {validateId} from './util/validateId'
 import {ViewBuilder, maybeSerializeView} from './views/View'
 import {form} from './views'
 import type {StructureContext, View} from './types'
+import {getStructureNodeId} from './util/getStructureNodeId'
 
 const createDocumentChildResolver =
   ({resolveDocumentNode}: StructureContext): ChildResolver =>
@@ -61,7 +62,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   title(title: string): DocumentBuilder {
-    return this.clone({title, id: this.spec.id || camelCase(title)})
+    return this.clone({title, id: getStructureNodeId(title, this.spec.id)})
   }
 
   getTitle(): PartialDocumentNode['title'] {

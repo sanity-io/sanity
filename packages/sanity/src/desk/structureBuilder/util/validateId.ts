@@ -1,7 +1,7 @@
 import {SerializeError} from '../SerializeError'
 import {SerializePath} from '../StructureNodes'
 
-const disallowedPattern = /([^A-Za-z0-9-_.])/
+export const disallowedPattern = /([^A-Za-z0-9-_.])/
 
 export function validateId(
   id: string,

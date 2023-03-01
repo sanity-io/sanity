@@ -1,4 +1,3 @@
-import {camelCase} from 'lodash'
 import {SchemaType} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
@@ -10,6 +9,7 @@ import {DocumentBuilder} from './Document'
 import {ComponentBuilder} from './Component'
 import {validateId} from './util/validateId'
 import {StructureContext} from './types'
+import {getStructureNodeId} from './util/getStructureNodeId'
 
 /** @beta */
 export type UnserializedListItemChild =
@@ -82,7 +82,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
   }
 
   title(title: string): ListItemBuilder {
-    return this.clone({title, id: this.spec.id || camelCase(title)})
+    return this.clone({title, id: getStructureNodeId(title, this.spec.id)})
   }
 
   getTitle(): PartialListItem['title'] {

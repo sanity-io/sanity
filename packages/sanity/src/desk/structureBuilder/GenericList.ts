@@ -1,4 +1,3 @@
-import {camelCase} from 'lodash'
 import {Child, Serializable, SerializeOptions, StructureNode} from './StructureNodes'
 import {layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
@@ -10,6 +9,7 @@ import {
   maybeSerializeInitialValueTemplateItem,
 } from './InitialValueTemplateItem'
 import {validateId} from './util/validateId'
+import {getStructureNodeId} from './util/getStructureNodeId'
 import {PreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
 
 function noChildResolver() {
@@ -79,7 +79,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   title(title: string): ConcreteImpl {
-    return this.clone({title, id: this.spec.id || camelCase(title)})
+    return this.clone({title, id: getStructureNodeId(title, this.spec.id)})
   }
 
   getTitle(): TList['title'] {
