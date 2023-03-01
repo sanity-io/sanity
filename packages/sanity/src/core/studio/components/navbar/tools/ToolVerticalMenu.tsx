@@ -1,9 +1,9 @@
-import React, {forwardRef, useMemo} from 'react'
-import {Button, Stack} from '@sanity/ui'
 import {PlugIcon} from '@sanity/icons'
+import {Button, Stack} from '@sanity/ui'
 import {startCase} from 'lodash'
+import React, {forwardRef, useMemo} from 'react'
 import {Tool} from '../../../../config'
-import {ToolLinkProps, ToolLink} from './ToolLink'
+import {ToolLink, ToolLinkProps} from './ToolLink'
 
 interface ToolVerticalMenuProps {
   activeToolName?: string
@@ -16,7 +16,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
 
   return useMemo(
     () => (
-      <Stack as="ul" space={[1, 2]}>
+      <Stack as="ul" space={1}>
         {tools.map((tool) => {
           const title = tool?.title || startCase(tool.name) || undefined
 

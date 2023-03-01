@@ -1,5 +1,24 @@
-import {Layer, Card, Flex, Text, Box, Button, Stack, useGlobalKeyDown} from '@sanity/ui'
-import {CloseIcon, LeaveIcon} from '@sanity/icons'
+import {
+  Layer,
+  Card,
+  Flex,
+  Text,
+  Box,
+  Button,
+  Stack,
+  useGlobalKeyDown,
+  Label,
+  useRootTheme,
+} from '@sanity/ui'
+import {
+  CheckmarkIcon,
+  CloseIcon,
+  CogIcon,
+  LeaveIcon,
+  UsersIcon,
+  HelpCircleIcon,
+  CommentIcon,
+} from '@sanity/icons'
 import React, {memo, useEffect, useState} from 'react'
 import styled from 'styled-components'
 import {useWorkspace} from '../../workspace'
@@ -7,6 +26,9 @@ import {Tool} from '../../../config'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {UserAvatar, useRovingFocus} from '../../../components'
 import {useWorkspaces} from '../../workspaces'
+import {useColorScheme} from '../../colorScheme'
+import {StudioTheme} from '../../../theme'
+import {userHasRole} from '../../../util/userHasRole'
 import {WorkspaceMenuButton} from './workspace'
 
 const Root = styled(Layer)`
@@ -43,6 +65,7 @@ const InnerCard = styled(Card)`
   max-width: 280px;
   transition: 200ms transform ease-in-out;
   transform: translate3d(calc(-100% - 1px), 0, 0);
+  overflow: auto;
 
   &[data-open='true'] {
     transform: translate3d(0, 0, 0);
@@ -57,12 +80,16 @@ interface NavDrawerProps {
 }
 
 export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
+  const {colorSchemeOptions} = useColorScheme()
   const {activeToolName, isOpen, onClose, tools} = props
   const [closeButtonElement, setCloseButtonElement] = useState<HTMLButtonElement | null>(null)
   const [innerCardElement, setInnerCardElement] = useState<HTMLDivElement | null>(null)
   const tabIndex = isOpen ? 0 : -1
-  const {auth, currentUser} = useWorkspace()
+  const {auth, currentUser, projectId} = useWorkspace()
   const workspaces = useWorkspaces()
+  const theme = useRootTheme().theme as StudioTheme
+
+  const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
 
   useRovingFocus({
     rootElement: innerCardElement,
@@ -95,7 +122,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
         ref={setInnerCardElement}
       >
         <Card borderBottom>
-          <Stack space={3} padding={[3, 3, 4]}>
+          <Stack space={3} padding={3}>
             <Flex align="center">
               <Flex flex={1} align="center" paddingRight={2}>
                 <Flex flex={1} align="center">
@@ -127,18 +154,110 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
           </Stack>
         </Card>
 
-        <Box flex="auto" overflow="auto" padding={[3, 3, 4]}>
-          <ToolMenu
-            activeToolName={activeToolName}
-            closeSidebar={onClose}
-            context="sidebar"
-            isSidebarOpen={isOpen}
-            tools={tools}
-          />
-        </Box>
+        <Flex direction="column" flex={1} justify="space-between" overflow="auto">
+          {/* Tools */}
+          <Card flex="none" padding={3}>
+            <ToolMenu
+              activeToolName={activeToolName}
+              closeSidebar={onClose}
+              context="sidebar"
+              isSidebarOpen={isOpen}
+              tools={tools}
+            />
+          </Card>
+
+          {/* Theme picker and Manage */}
+          <Flex direction="column">
+            <Card borderTop flex="none" padding={3} overflow="auto">
+              <Box padding={2}>
+                <Label size={1} muted>
+                  Appearance
+                </Label>
+              </Box>
+              <Stack as="ul" marginTop={1} space={1}>
+                {!theme.__legacy &&
+                  colorSchemeOptions.map((option) => (
+                    <Stack as="li" key={option.name}>
+                      <Button
+                        aria-label={`Use ${option} appearance`}
+                        icon={option.icon}
+                        iconRight={option.selected && <CheckmarkIcon />}
+                        mode="bleed"
+                        justify="flex-start"
+                        tabIndex={tabIndex}
+                        onClick={() => option.onSelect()}
+                        selected={option.selected}
+                        text={option.title}
+                      />
+                    </Stack>
+                  ))}
+              </Stack>
+            </Card>
+            <Card borderTop flex="none" padding={3}>
+              <Stack as="ul" space={1}>
+                <Stack as="li">
+                  <Button
+                    as="a"
+                    aria-label="Manage project"
+                    justify="flex-start"
+                    mode="bleed"
+                    tabIndex={tabIndex}
+                    href={`https://sanity.io/manage/project/${projectId}`}
+                    target="_blank"
+                    text="Manage project"
+                    icon={CogIcon}
+                  />
+                </Stack>
+                {isAdmin && (
+                  <Stack as="li">
+                    <Button
+                      as="a"
+                      aria-label="Invite members"
+                      justify="flex-start"
+                      mode="bleed"
+                      tabIndex={tabIndex}
+                      href={`https://sanity.io/manage/project/${projectId}/members`}
+                      target="_blank"
+                      text="Invite members"
+                      icon={UsersIcon}
+                    />
+                  </Stack>
+                )}
+                <Stack as="li">
+                  <Button
+                    as="a"
+                    aria-label="Help and support"
+                    justify="flex-start"
+                    mode="bleed"
+                    tabIndex={tabIndex}
+                    href={`https://www.sanity.io/contact/support`}
+                    target="_blank"
+                    text="Help & support"
+                    icon={HelpCircleIcon}
+                  />
+                </Stack>
+                {isAdmin && (
+                  <Stack as="li">
+                    <Button
+                      as="a"
+                      aria-label="Contact sales"
+                      justify="flex-start"
+                      mode="bleed"
+                      tabIndex={tabIndex}
+                      href={`https://www.sanity.io/contact/sales?ref=studio`}
+                      target="_blank"
+                      text="Contact sales"
+                      icon={CommentIcon}
+                    />
+                  </Stack>
+                )}
+              </Stack>
+            </Card>
+          </Flex>
+        </Flex>
 
         {auth.logout && (
-          <Card flex="none" padding={[3, 3, 4]} borderTop>
+          <Card flex="none" padding={3} borderTop>
             <Stack>
               <Button
                 iconRight={LeaveIcon}

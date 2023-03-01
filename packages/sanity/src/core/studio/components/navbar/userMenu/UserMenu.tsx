@@ -1,11 +1,11 @@
 import {
-  SunIcon,
-  MoonIcon,
   LeaveIcon,
   ChevronDownIcon,
   CogIcon,
-  DesktopIcon,
   CheckmarkIcon,
+  UsersIcon,
+  HelpCircleIcon,
+  CommentIcon,
 } from '@sanity/icons'
 import {
   Box,
@@ -28,6 +28,7 @@ import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
 import {StudioTheme} from '../../../../theme'
+import {userHasRole} from '../../../../util/userHasRole'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {LoginProviderLogo} from './LoginProviderLogo'
@@ -46,10 +47,12 @@ const AvatarBox = styled(Box)`
 `
 
 export function UserMenu() {
+  const {colorSchemeOptions} = useColorScheme()
   const {currentUser, projectId, auth} = useWorkspace()
+  const {scheme} = useColorScheme()
   const theme = useRootTheme().theme as StudioTheme
-  const {scheme, setScheme, clearStoredScheme, usingSystemScheme} = useColorScheme()
 
+  const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
   const providerTitle = getProviderTitle(currentUser?.provider)
 
   const popoverProps: MenuButtonProps['popover'] = useMemo(
@@ -58,6 +61,7 @@ export function UserMenu() {
       portal: true,
       preventOverflow: true,
       scheme: scheme,
+      constrainSize: true,
     }),
     [scheme]
   )
@@ -113,55 +117,57 @@ export function UserMenu() {
               </Stack>
             </Flex>
           </Card>
-
-          {!theme?.__legacy && (
-            <>
-              <MenuDivider />
-
-              <Box padding={2}>
-                <Label size={1} muted>
-                  Appearance
-                </Label>
-              </Box>
-
+          {!theme.__legacy &&
+            colorSchemeOptions.map((option) => (
               <MenuItem
-                aria-label="Use system appearance"
-                icon={DesktopIcon}
-                onClick={clearStoredScheme}
-                pressed={usingSystemScheme}
-                text="System"
-                iconRight={usingSystemScheme && <CheckmarkIcon />}
+                aria-label={`Use ${option} appearance`}
+                icon={option.icon}
+                iconRight={option.selected && <CheckmarkIcon />}
+                key={option.name}
+                onClick={() => option.onSelect()}
+                pressed={option.selected}
+                text={option.title}
               />
-
-              <MenuItem
-                aria-label="Use dark appearance"
-                icon={MoonIcon}
-                onClick={() => setScheme('dark')}
-                pressed={scheme === 'dark' && !usingSystemScheme}
-                iconRight={scheme === 'dark' && !usingSystemScheme && <CheckmarkIcon />}
-                text="Dark"
-              />
-
-              <MenuItem
-                aria-label="Use light appearance"
-                icon={SunIcon}
-                onClick={() => setScheme('light')}
-                pressed={scheme === 'light' && !usingSystemScheme}
-                iconRight={scheme === 'light' && !usingSystemScheme && <CheckmarkIcon />}
-                text="Light"
-              />
-            </>
-          )}
+            ))}
 
           <MenuDivider />
 
           <MenuItem
             as="a"
+            aria-label="Manage project"
             href={`https://sanity.io/manage/project/${projectId}`}
             target="_blank"
             text="Manage project"
             icon={CogIcon}
           />
+          {isAdmin && (
+            <MenuItem
+              as="a"
+              aria-label="Invite members"
+              href={`https://sanity.io/manage/project/${projectId}/members`}
+              target="_blank"
+              text="Invite members"
+              icon={UsersIcon}
+            />
+          )}
+          <MenuItem
+            as="a"
+            aria-label="Help & support"
+            href={`https://www.sanity.io/contact/support`}
+            target="_blank"
+            text="Help & support"
+            icon={HelpCircleIcon}
+          />
+          {isAdmin && (
+            <MenuItem
+              as="a"
+              aria-label="Contact sales"
+              href={`https://www.sanity.io/contact/sales?ref=studio`}
+              target="_blank"
+              text="Contact sales"
+              icon={CommentIcon}
+            />
+          )}
 
           {auth.logout && (
             <>
