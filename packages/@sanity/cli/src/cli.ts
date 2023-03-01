@@ -1,4 +1,5 @@
 /* eslint-disable no-console, no-process-exit, no-sync */
+import os from 'os'
 import path from 'path'
 import {existsSync} from 'fs'
 import chalk from 'chalk'
@@ -36,6 +37,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   }
 
   loadAndSetEnvFromDotEnvFiles({workDir, cmd: args.groupOrCommand})
+  maybeFixMissingWindowsEnvVar()
 
   // Check if there are updates available for the CLI, and notify if there is
   await runUpdateCheck({pkg, cwd, workDir}).notify()
@@ -239,4 +241,22 @@ function loadAndSetEnvFromDotEnvFiles({workDir, cmd}: {workDir: string; cmd: str
   const studioEnv = loadEnv(mode, workDir, ['SANITY_STUDIO_'])
   process.env = {...process.env, ...studioEnv}
   /* eslint-disable no-process-env */
+}
+
+/**
+ * Apparently, Windows environment variables are supposed to be case-insensitive,
+ * (https://nodejs.org/api/process.html#processenv). However, it seems they are not?
+ * `process.env.SYSTEMROOT` is sometimes `undefined`, whereas `process.env.SystemRoot` is _NOT_.
+ *
+ * The `open` npm module uses the former to open a browser on Powershell, and Sindre seems
+ * unwilling to fix it (https://github.com/sindresorhus/open/pull/299#issuecomment-1447587598),
+ * so this is a (temporary?) workaround in order to make opening browsers on windows work,
+ * which several commands does (`sanity login`, `sanity docs` etc)
+ */
+function maybeFixMissingWindowsEnvVar() {
+  /* eslint-disable no-process-env */
+  if (os.platform() === 'win32' && !('SYSTEMROOT' in process.env) && 'SystemRoot' in process.env) {
+    process.env.SYSTEMROOT = process.env.SystemRoot
+  }
+  /* eslint-enable no-process-env */
 }
