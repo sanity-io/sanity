@@ -6,7 +6,6 @@ import {
   StringDefinition,
 } from '@sanity/types'
 import startCase from 'lodash/startCase'
-import {Md5} from 'ts-md5'
 import {sanitizeFieldValue} from '../utils/sanitizeField'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 import {getSupportedFieldTypes, SearchFilterDefinition} from './filters'
@@ -85,9 +84,7 @@ export function createFieldDefinitionDictionary(
 }
 
 export function generateFieldId(field: SearchFieldDefinition): string {
-  return Md5.hashStr(
-    JSON.stringify([field.documentTypes, field.fieldPath, field.filterName, field.type])
-  )
+  return [field.type, field.fieldPath, field.filterName, field.documentTypes.join(',')].join('-')
 }
 
 function getDocumentFieldDefinitions(
