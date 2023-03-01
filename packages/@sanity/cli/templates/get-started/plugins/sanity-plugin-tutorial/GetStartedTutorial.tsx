@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useRef, useState} from 'react'
 import {
   Card,
   Container,
@@ -8,7 +8,7 @@ import {
   Heading,
   Text,
   Stack,
-  useElementRect,
+  useElementSize,
   useTheme,
 } from '@sanity/ui'
 import {CloseIcon} from '@sanity/icons'
@@ -32,9 +32,10 @@ export const GetStartedTutorial = () => {
   )
 
   const {sanity} = useTheme()
-  const [rootElement, setRootElement] = useState()
-  const rect = useElementRect(rootElement)
-  const isSmallScreen = rect?.width < sanity.media[1]
+  const rootElement = useRef(null)
+  const rect = useElementSize(rootElement.current)
+  const width = rect?.content?.width
+  const isSmallScreen = width ? width < sanity.media[1] : false
   const isProdEnv = process.env.NODE_ENV !== 'development'
 
   const onClose = () => {
@@ -47,7 +48,7 @@ export const GetStartedTutorial = () => {
   }
 
   return (
-    <div ref={setRootElement}>
+    <div ref={rootElement}>
       <Card tone="primary" padding={isSmallScreen ? 3 : 5} paddingBottom={isSmallScreen ? 4 : 6}>
         <Flex justify={isSmallScreen ? 'space-between' : 'flex-end'} align="center">
           {isSmallScreen && (
@@ -79,14 +80,14 @@ export const GetStartedTutorial = () => {
             <TextContainer
               forwardedAs="p"
               size={isSmallScreen ? 1 : undefined}
-              align={isSmallScreen ? 'start' : 'center'}
+              align={isSmallScreen ? 'left' : 'center'}
             >
               Next, our docs will guide you through building schemas, adding content, and connecting
               a frontend. You’ll see updates reflected in your Studio below.
             </TextContainer>
           </Container>
 
-          <Flex justify={isSmallScreen ? 'start' : 'center'}>
+          <Flex justify={isSmallScreen ? 'flex-start' : 'center'}>
             <Button
               as="a"
               href="https://www.sanity.io/docs/create-a-schema-and-configure-sanity-studio"
@@ -101,5 +102,3 @@ export const GetStartedTutorial = () => {
     </div>
   )
 }
-
-export default GetStartedTutorial
