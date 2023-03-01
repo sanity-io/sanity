@@ -157,7 +157,12 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
     const readOnly = Boolean(this.props.readOnly)
     const keyGenerator = this.props.keyGenerator || defaultKeyGenerator
     return (
-      <Validator portableTextEditor={this} keyGenerator={keyGenerator} value={value}>
+      <Validator
+        portableTextEditor={this}
+        keyGenerator={keyGenerator}
+        value={value}
+        onChange={onChange}
+      >
         <SlateContainer
           keyGenerator={keyGenerator}
           maxBlocks={maxBlocks}

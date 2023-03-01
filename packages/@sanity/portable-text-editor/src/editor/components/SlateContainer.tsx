@@ -8,6 +8,7 @@ import {PatchObservable} from '../../types/editor'
 import {toSlateValue} from '../../utils/values'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {withPlugins} from '../plugins'
+import {usePortableTextEditorValidation} from '../hooks/useValidation'
 
 const debug = debugWithName('component:PortableTextEditor:SlateContainer')
 
@@ -68,11 +69,14 @@ export function SlateContainer(props: SlateContainerProps) {
     })
   }, [keyGenerator, portableTextEditor, maxBlocks, readOnly, patches$, slateEditor, isPending])
 
+  const validation = usePortableTextEditorValidation()
+
   const initialValue = useMemo(
-    () =>
-      value
+    () => {
+      return value && validation?.valid
         ? toSlateValue(value, {schemaTypes: portableTextEditor.schemaTypes}, KEY_TO_SLATE_ELEMENT)
-        : [slateEditor.createPlaceholderBlock()],
+        : [slateEditor.createPlaceholderBlock()]
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [] // Only initial
   )
