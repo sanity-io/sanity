@@ -12,6 +12,7 @@ import {
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
+import {useSelect} from '@sanity/ui-workshop'
 import React, {ComponentProps, useCallback, useMemo, useRef, useState} from 'react'
 import {CommandListItems} from '../CommandListItems'
 import {CommandListProvider} from '../CommandListProvider'
@@ -19,7 +20,19 @@ import {useCommandList} from '../useCommandList'
 
 const ITEMS = [...Array(50000).keys()]
 
+const SCROLL_ALIGN_OPTIONS = {
+  start: 'start',
+  center: 'center',
+  end: 'end',
+} as const
+
 export default function PopoverStory() {
+  const initialSelectedScrollAlign = useSelect(
+    'Initial scroll align',
+    SCROLL_ALIGN_OPTIONS,
+    'center'
+  )
+
   const [selectedIndex, setSelectedIndex] = useState(100)
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLElement | null>(null)
@@ -65,7 +78,8 @@ export default function PopoverStory() {
       ariaInputLabel="Header"
       autoFocus
       itemIndices={[...ITEMS.keys()]}
-      initialSelectedIndex={selectedIndex}
+      initialScrollAlign={initialSelectedScrollAlign}
+      initialIndex={selectedIndex}
     >
       <Card padding={4}>
         <Stack space={3}>

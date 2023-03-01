@@ -161,7 +161,7 @@ export function SearchPopover({
           ariaInputLabel="Search results"
           autoFocus
           data-testid="search-results-popover"
-          initialSelectedIndex={hasValidTerms ? lastActiveIndex : 0}
+          initialIndex={hasValidTerms ? lastActiveIndex : 0}
           itemIndices={itemIndices}
         >
           <SearchPopoverContent

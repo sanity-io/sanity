@@ -1,4 +1,4 @@
-import type {Virtualizer} from '@tanstack/react-virtual'
+import type {ScrollToOptions, Virtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash/throttle'
 import React, {
   MouseEvent,
@@ -30,7 +30,9 @@ interface CommandListProviderProps {
   /** Automatically focus the input (if applicable) or virtual list */
   autoFocus?: boolean
   children?: ReactNode
-  initialSelectedIndex?: number
+  /** Scroll alignment of the initial selected index */
+  initialScrollAlign?: ScrollToOptions['align']
+  initialIndex?: number
   /**
    * An array of (number | null) indicating active indices only.
    * e.g. `[0, null, 1, 2]` indicates a list of 4 items, where the second item is non-interactive (such as a heading or divider)
@@ -55,7 +57,8 @@ export function CommandListProvider({
   ariaMultiselectable = false,
   autoFocus,
   children,
-  initialSelectedIndex,
+  initialScrollAlign = 'start',
+  initialIndex,
   itemIndices,
   itemIndicesSelected,
 }: CommandListProviderProps) {
@@ -168,7 +171,7 @@ export function CommandListProvider({
   const setActiveIndex = useCallback(
     ({
       index,
-      scrollAlign = false,
+      scrollAlign,
       scrollIntoView = true,
     }: {
       index: number
@@ -182,11 +185,11 @@ export function CommandListProvider({
         const virtualListIndex = itemIndices.indexOf(index)
         virtualizerRef?.current?.scrollToIndex(
           virtualListIndex,
-          scrollAlign ? {align: 'start'} : {}
+          scrollAlign ? {align: initialScrollAlign} : {}
         )
       }
     },
-    [handleAssignSelectedState, itemIndices]
+    [handleAssignSelectedState, initialScrollAlign, itemIndices]
   )
 
   /**
@@ -288,13 +291,13 @@ export function CommandListProvider({
   }, [])
 
   /**
-   * Set active index whenever initial index changes
+   * Set active index (and align) on mount, and whenever initial index changes
    */
   useEffect(() => {
-    if (typeof initialSelectedIndex !== 'undefined') {
-      setActiveIndex({index: initialSelectedIndex, scrollAlign: true, scrollIntoView: true})
+    if (typeof initialIndex !== 'undefined') {
+      setActiveIndex({index: initialIndex, scrollAlign: true, scrollIntoView: true})
     }
-  }, [initialSelectedIndex, setActiveIndex])
+  }, [initialIndex, setActiveIndex])
 
   /**
    * Re-enable child pointer events on any mouse move event

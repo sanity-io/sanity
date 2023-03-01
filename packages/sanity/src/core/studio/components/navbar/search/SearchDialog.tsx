@@ -129,7 +129,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
           autoFocus
           data-testid="search-results-dialog"
           itemIndices={itemIndices}
-          initialSelectedIndex={hasValidTerms ? lastActiveIndex : 0}
+          initialIndex={hasValidTerms ? lastActiveIndex : 0}
         >
           <SearchDialogContent
             filtersVisible={filtersVisible}
