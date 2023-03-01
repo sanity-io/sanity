@@ -2,9 +2,15 @@ import intersection from 'lodash/intersection'
 import isEmpty from 'lodash/isEmpty'
 import type {SearchableType} from '../../../../../search'
 import {isNonNullable} from '../../../../../util'
-import {getFilterDefinition, OperatorItem, SearchFilterDefinition} from '../definitions/filters'
-import {getOperatorDefinition, SearchOperatorDefinition} from '../definitions/operators'
-import type {SearchFieldDefinition, SearchFilter} from '../types'
+import type {SearchFieldDefinition, SearchFieldDefinitionDictionary} from '../definitions/fields'
+import {
+  getFilterDefinition,
+  type OperatorItem,
+  type SearchFilterDefinition,
+  type SearchFilterDefinitionDictionary,
+} from '../definitions/filters'
+import {getOperatorDefinition, SearchOperatorDefinitionDictionary} from '../definitions/operators'
+import type {SearchFilter} from '../types'
 
 export function buildSearchFilter(
   filterDefinition: SearchFilterDefinition,
@@ -26,10 +32,10 @@ export function generateFilterQuery({
   filters,
   operatorDefinitions,
 }: {
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  filterDefinitions: SearchFilterDefinitionDictionary
   filters: SearchFilter[]
-  operatorDefinitions: SearchOperatorDefinition[]
+  operatorDefinitions: SearchOperatorDefinitionDictionary
 }): string {
   return filters
     .filter((filter) =>
@@ -52,10 +58,10 @@ export function generateFilterQuery({
 }
 
 export function getFieldFromFilter(
-  fields: SearchFieldDefinition[],
+  fields: SearchFieldDefinitionDictionary,
   filter: SearchFilter
 ): SearchFieldDefinition | undefined {
-  return fields.find((field) => field.id === filter?.fieldId)
+  return filter?.fieldId ? fields[filter.fieldId] : undefined
 }
 
 export function getFilterKey(filter: SearchFilter): string {
@@ -67,14 +73,14 @@ export function narrowDocumentTypes({
   filters,
   types,
 }: {
-  fieldDefinitions: SearchFieldDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
   filters: SearchFilter[]
   types: SearchableType[]
 }): string[] {
   // Get all 'manually' selected document types
   const selectedDocumentTypes = types.map((type) => type.name)
 
-  const filteredDocumentTypes = fieldDefinitions
+  const filteredDocumentTypes = Object.values(fieldDefinitions)
     .filter((field) => filters.map((filter) => filter?.fieldId).includes(field.id))
     .filter((field) => field.documentTypes.length > 0)
     .map((field) => field.documentTypes)
@@ -100,10 +106,10 @@ function resolveFieldPath({
   filterDefinitions,
 }: {
   filter: SearchFilter
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  filterDefinitions: SearchFilterDefinitionDictionary
 }): string | undefined {
-  const fieldDefinition = fieldDefinitions.find((f) => f.id === filter?.fieldId)
+  const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
   const filterDefinition = getFilterDefinition(filterDefinitions, filter.filterName)
 
   if (!filterDefinition) {
@@ -133,9 +139,9 @@ export function validateFilter({
   operatorDefinitions,
 }: {
   filter: SearchFilter
-  filterDefinitions: SearchFilterDefinition[]
-  fieldDefinitions: SearchFieldDefinition[]
-  operatorDefinitions: SearchOperatorDefinition[]
+  filterDefinitions: SearchFilterDefinitionDictionary
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  operatorDefinitions: SearchOperatorDefinitionDictionary
 }): boolean {
   const filterDef = getFilterDefinition(filterDefinitions, filter.filterName)
   const operatorDef = getOperatorDefinition(operatorDefinitions, filter.operatorType)

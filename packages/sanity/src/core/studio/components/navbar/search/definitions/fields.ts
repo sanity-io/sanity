@@ -6,13 +6,33 @@ import {
   StringDefinition,
 } from '@sanity/types'
 import startCase from 'lodash/startCase'
-import {getSupportedFieldTypes, SearchFilterDefinition} from '../definitions/filters'
-import type {SearchFieldDefinition} from '../types'
-import {generateFieldId} from './generateFieldId'
-import {sanitizeFieldValue} from './sanitizeField'
-import {getSearchableOmnisearchTypes} from './selectors'
+import {sanitizeFieldValue} from '../utils/sanitizeField'
+import {getSearchableOmnisearchTypes} from '../utils/selectors'
+import {getSupportedFieldTypes, SearchFilterDefinition} from './filters'
 
 export const MAX_OBJECT_TRAVERSAL_DEPTH = 3
+
+/**
+ * @internal
+ */
+export interface SearchFieldDefinition {
+  documentTypes: string[]
+  fieldPath: string
+  filterName: string
+  id: string
+  name: string
+  title: string
+  titlePath: string[]
+  type: string
+}
+
+/**
+ * @internal
+ */
+export type SearchFieldDefinitionDictionary = Record<
+  SearchFieldDefinition['id'],
+  SearchFieldDefinition
+>
 
 export function createFieldDefinitions(
   schema: Schema,
@@ -51,8 +71,20 @@ export function createFieldDefinitions(
   // Get supported filter field types that have corresponding filters defined
   const supportedFieldTypes = getSupportedFieldTypes(filterDefinitions)
 
-  // Recursively iterate through all documents and resolve objects
   return getDocumentFieldDefinitions(supportedFieldTypes, documentTypes, objectTypes)
+}
+
+export function createFieldDefinitionDictionary(
+  fieldDefinitions: SearchFieldDefinition[]
+): SearchFieldDefinitionDictionary {
+  return fieldDefinitions.reduce<SearchFieldDefinitionDictionary>((acc, val) => {
+    acc[val.id] = val
+    return acc
+  }, {})
+}
+
+export function generateFieldId(field: SearchFieldDefinition): string {
+  return [field.type, field.fieldPath, field.filterName, field.documentTypes.join(',')].join('-')
 }
 
 function getDocumentFieldDefinitions(
@@ -60,6 +92,7 @@ function getDocumentFieldDefinitions(
   documentTypes: Record<string, ObjectDefinition>,
   objectTypes: Record<string, ObjectDefinition>
 ) {
+  // Recursively iterate through all documents and resolve objects
   function addFieldDefinitionRecursive({
     acc,
     defType,

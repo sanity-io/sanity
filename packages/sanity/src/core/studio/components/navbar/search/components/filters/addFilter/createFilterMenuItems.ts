@@ -3,16 +3,20 @@ import {ButtonTone} from '@sanity/ui'
 import {difference, startCase} from 'lodash'
 import {SearchableType} from '../../../../../../../search'
 import {isNonNullable} from '../../../../../../../util'
+import type {
+  SearchFieldDefinition,
+  SearchFieldDefinitionDictionary,
+} from '../../../definitions/fields'
 import {
   getFilterDefinition,
-  SearchFilterDefinition,
-  SearchFilterPinnedDefinition,
+  type SearchFilterDefinition,
+  type SearchFilterDefinitionDictionary,
+  type SearchFilterPinnedDefinition,
 } from '../../../definitions/filters'
-import {
+import type {
   FilterMenuItem,
   FilterMenuItemFilter,
   FilterMenuItemHeader,
-  SearchFieldDefinition,
   SearchFilter,
 } from '../../../types'
 import {buildSearchFilter, getFieldFromFilter} from '../../../utils/filterUtils'
@@ -29,14 +33,14 @@ export function createFilterMenuItems({
   types,
 }: {
   documentTypesNarrowed: string[]
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  filterDefinitions: SearchFilterDefinitionDictionary
   schema: Schema
   titleFilter: string
   types: SearchableType[]
 }): FilterMenuItem[] {
   // Construct field filters based on available definitions and current title fitler
-  const fieldFilters = fieldDefinitions
+  const fieldFilters = Object.values(fieldDefinitions)
     .filter((fieldDef) => includesTitleInFieldDefinition(fieldDef, titleFilter))
     .map((fieldDef) => {
       const filterDef = getFilterDefinition(filterDefinitions, fieldDef.filterName)
@@ -89,8 +93,8 @@ function filterGroup({
   headerTitle,
   tone,
 }: {
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  filterDefinitions: SearchFilterDefinitionDictionary
   filters: SearchFilter[]
   id: string
   headerTitle?: string
@@ -134,8 +138,8 @@ function buildFieldMenuItemsNarrowed({
   types,
 }: {
   documentTypesNarrowed: string[]
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  filterDefinitions: SearchFilterDefinitionDictionary
   filters: SearchFilter[]
   schema: Schema
   types: SearchableType[]
@@ -194,18 +198,18 @@ function buildPinnedMenuItems({
   filterDefinitions,
   titleFilter,
 }: {
-  fieldDefinitions: SearchFieldDefinition[]
-  filterDefinitions: SearchFilterDefinition[]
+  fieldDefinitions: SearchFieldDefinitionDictionary
+  filterDefinitions: SearchFilterDefinitionDictionary
   titleFilter: string
 }) {
   // Extract all ungrouped pinned filters, these sit above all other items.
-  const ungroupedPinnedFilters = filterDefinitions
+  const ungroupedPinnedFilters = Object.values(filterDefinitions)
     .filter(isPinnedFilterDefWithoutGroup)
     .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
     .map((filterDef) => buildSearchFilter(filterDef))
 
   // Extract grouped pinned filters
-  const groupedPinnedFilters = filterDefinitions
+  const groupedPinnedFilters = Object.values(filterDefinitions)
     .filter(isPinnedFilterDefWithGroup)
     .filter((filterDef) => includesTitleInPinnedFilterDefinition(filterDef, titleFilter))
     .reduce<Record<string, SearchFilter[]>>((acc, val) => {

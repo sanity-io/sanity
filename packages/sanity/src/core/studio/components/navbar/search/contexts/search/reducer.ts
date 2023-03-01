@@ -1,14 +1,15 @@
 import type {CurrentUser} from '@sanity/types'
 import type {SearchableType, SearchTerms, WeightedHit} from '../../../../../../search'
 import type {RecentSearch} from '../../datastores/recentSearches'
-import {SearchFilterDefinition} from '../../definitions/filters'
+import type {SearchFieldDefinitionDictionary} from '../../definitions/fields'
+import type {SearchFilterDefinitionDictionary} from '../../definitions/filters'
 import {
   getOperatorDefinition,
   getOperatorInitialValue,
-  SearchOperatorDefinition,
+  type SearchOperatorDefinitionDictionary,
 } from '../../definitions/operators'
 import {ORDERINGS} from '../../definitions/orderings'
-import type {SearchFieldDefinition, SearchFilter, SearchOrdering} from '../../types'
+import type {SearchFilter, SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
 import {
   generateFilterQuery,
@@ -36,9 +37,9 @@ export interface SearchReducerState {
 }
 
 export interface SearchDefinitions {
-  fields: SearchFieldDefinition[]
-  filters: SearchFilterDefinition[]
-  operators: SearchOperatorDefinition[]
+  fields: SearchFieldDefinitionDictionary
+  filters: SearchFilterDefinitionDictionary
+  operators: SearchOperatorDefinitionDictionary
 }
 
 export interface SearchResult {

@@ -42,6 +42,18 @@ export type SearchFilterDefinition<TOperators = string> =
   | SearchFilterPinnedDefinition<TOperators>
 
 /**
+ * @internal
+ */
+export function createFilterDefinitionDictionary(
+  filterDefinitions: SearchFilterDefinition[]
+): SearchFilterDefinitionDictionary {
+  return filterDefinitions.reduce<SearchFilterDefinitionDictionary>((acc, val) => {
+    acc[val.name] = val
+    return acc
+  }, {})
+}
+
+/**
  * @alpha
  */
 export function defineSearchFilter<TOperators = SearchOperatorType>(
@@ -60,10 +72,10 @@ export function defineSearchFilterOperators<TOperators = SearchOperatorType>(
 }
 
 export function getFilterDefinition(
-  definitions: SearchFilterDefinition[],
+  definitions: SearchFilterDefinitionDictionary,
   filterName: string
 ): SearchFilterDefinition | undefined {
-  return definitions.find((filter) => filter.name === filterName)
+  return definitions[filterName]
 }
 
 // TODO: we'll need to add field type to pinned filters, in order to properly infer
@@ -76,3 +88,11 @@ export function getSupportedFieldTypes(filterDefs: SearchFilterDefinition[]): st
     return acc
   }, [])
 }
+
+/**
+ * @internal
+ */
+export type SearchFilterDefinitionDictionary = Record<
+  SearchFilterDefinition['name'],
+  SearchFilterDefinition
+>

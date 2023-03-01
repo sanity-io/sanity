@@ -2,9 +2,11 @@ import {Schema} from '@sanity/schema'
 import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
 import type {SearchTerms} from '../../../../../search'
 import {filterDefinitions} from '../definitions/defaultFilters'
+import {createFieldDefinitionDictionary, createFieldDefinitions} from '../definitions/fields'
+import {createFilterDefinitionDictionary} from '../definitions/filters'
+import {createOperatorDefinitionDictionary} from '../definitions/operators'
 import {operatorDefinitions} from '../definitions/operators/defaultOperators'
 import {SearchFilter} from '../types'
-import {createFieldDefinitions} from '../utils/createFieldDefinitions'
 import {
   createRecentSearchesStore,
   MAX_RECENT_SEARCHES,
@@ -56,12 +58,17 @@ const mockUser: CurrentUser = {
 }
 
 const mockFieldDefinitions = createFieldDefinitions(mockSchema, filterDefinitions)
+
+const fieldDefinitionDictionary = createFieldDefinitionDictionary(mockFieldDefinitions)
+const filterDefinitionDictionary = createFilterDefinitionDictionary(filterDefinitions)
+const operatorDefinitionDictionary = createOperatorDefinitionDictionary(operatorDefinitions)
+
 const recentSearchesStoreDefinition = {
   dataset: 'dataset',
-  fieldDefinitions: mockFieldDefinitions,
-  filterDefinitions,
-  operatorDefinitions,
-  projectId: ' projectId',
+  fieldDefinitions: fieldDefinitionDictionary,
+  filterDefinitions: filterDefinitionDictionary,
+  operatorDefinitions: operatorDefinitionDictionary,
+  projectId: 'projectId',
   schema: mockSchema,
   user: mockUser,
   version: RECENT_SEARCH_VERSION,
