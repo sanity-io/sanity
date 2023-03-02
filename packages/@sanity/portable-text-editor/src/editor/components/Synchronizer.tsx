@@ -9,7 +9,6 @@ import React, {
 } from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {debounce} from 'lodash'
-import {useSlate} from '@sanity/slate-react'
 import {EditorChange, EditorChanges, EditorSelection} from '../../types/editor'
 import {Patch} from '../../types/patch'
 import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../constants'
@@ -29,7 +28,7 @@ const debug = debugWithName('component:PortableTextEditor:Synchronizer')
  */
 export interface SynchronizerProps extends PropsWithChildren {
   change$: EditorChanges
-  editor: PortableTextEditor
+  portableTextEditor: PortableTextEditor
   isPending: React.MutableRefObject<boolean | null>
   keyGenerator: () => string
   onChange: (change: EditorChange) => void
@@ -38,21 +37,20 @@ export interface SynchronizerProps extends PropsWithChildren {
 }
 
 /**
- * Synchronizes the server value and provides contexts with the editor state.
+ * Synchronizes the server value with the editor, and provides various contexts for the editor state.
  * @internal
  */
 export function Synchronizer(props: SynchronizerProps) {
-  const {change$, editor, isPending, onChange, keyGenerator, readOnly, value} = props
+  const {change$, portableTextEditor, isPending, onChange, keyGenerator, readOnly, value} = props
   const [selection, setSelection] = useState<EditorSelection>(null)
   const pendingPatches = useRef<Patch[]>([])
-  const slateEditor = useSlate()
 
   const syncValue = useSyncValue({
-    editor,
-    keyGenerator,
     isPending,
+    keyGenerator,
+    onChange,
+    portableTextEditor,
     readOnly,
-    slateEditor,
   })
 
   const onFlushPendingPatches = useCallback(() => {
@@ -125,7 +123,7 @@ export function Synchronizer(props: SynchronizerProps) {
 
   return (
     <PortableTextEditorKeyGeneratorContext.Provider value={keyGenerator}>
-      <PortableTextEditorContext.Provider value={editor}>
+      <PortableTextEditorContext.Provider value={portableTextEditor}>
         <PortableTextEditorValueContext.Provider value={value}>
           <PortableTextEditorReadOnlyContext.Provider value={readOnly}>
             <PortableTextEditorSelectionContext.Provider value={selection}>
