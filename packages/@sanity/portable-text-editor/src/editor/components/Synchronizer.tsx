@@ -55,14 +55,6 @@ export function Synchronizer(props: SynchronizerProps) {
     slateEditor,
   })
 
-  useEffect(() => {
-    startTransition(() => {
-      debug('Value from props changed, syncing new value')
-      syncValue(value)
-    })
-    change$.next({type: 'value', value})
-  }, [syncValue, change$, value])
-
   const onFlushPendingPatches = useCallback(() => {
     const finalPatches = [...pendingPatches.current]
     debug('Flushing pending patches', finalPatches)
@@ -120,6 +112,17 @@ export function Synchronizer(props: SynchronizerProps) {
       sub.unsubscribe()
     }
   }, [change$, onFlushPendingPatchesDebounced, onChange, syncValue, isPending])
+
+  // This hook must be set up after setting up the subscription above, or it will not pick up validation errors from the useSyncValue hook.
+  // This will cause the editor to not be able to recover from *initial* validation errors.
+  // TODO: add test for this!
+  useEffect(() => {
+    startTransition(() => {
+      debug('Value from props changed, syncing new value')
+      syncValue(value)
+    })
+  }, [syncValue, value])
+
   return (
     <PortableTextEditorKeyGeneratorContext.Provider value={keyGenerator}>
       <PortableTextEditorContext.Provider value={editor}>
