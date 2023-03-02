@@ -8,8 +8,8 @@ import accordion from './objects/accordion'
 import accordionGroup from './objects/accordionGroup'
 import callout from './objects/callout'
 import inventory from './objects/inventory'
+import option from './objects/option'
 import priceRange from './objects/priceRange'
-import productOption from './objects/productOption'
 import proxyString from './objects/proxyString'
 import shopifyCollection from './objects/shopifyCollection'
 import shopifyCollectionRule from './objects/shopifyCollectionRule'
@@ -30,8 +30,8 @@ export const schemaTypes = [
   accordionGroup,
   callout,
   inventory,
+  option,
   priceRange,
-  productOption,
   proxyString,
   shopifyCollection,
   shopifyCollectionRule,

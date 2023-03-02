@@ -137,7 +137,7 @@ export default defineType({
       name: 'options',
       title: 'Options',
       type: 'array',
-      of: [{type: 'productOption', name: 'option'}],
+      of: [{type: 'option'}],
     }),
     // Variants
     defineField({
