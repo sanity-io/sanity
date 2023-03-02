@@ -26,7 +26,6 @@ import {debugWithName} from '../utils/debug'
 import {defaultKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
 import {SlateContainer} from './components/SlateContainer'
 import {Synchronizer} from './components/Synchronizer'
-import {Validator} from './components/Validator'
 
 const debug = debugWithName('component:PortableTextEditor')
 
@@ -100,8 +99,8 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
    */
   private editable?: EditableAPI
   /**
-   * This reference tracks if we are in a pending local edit state. If local changes are unsettled (patches yet not submitted),
-   * we use it to make sure we don't handle any new props.value or remote patches that can interfere with the user's typing.
+   * This reference tracks if we are in a pending local edit state. If local changes are unsettled (patches yet not submitted and result returned),
+   * we use it to make sure we don't handle any new props.value or remote patches that can interfere with the user's typing until the local changes are solved.
    */
   private isPending: React.MutableRefObject<boolean | null>
 
@@ -141,7 +140,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
     this.editable = {...this.editable, ...editable}
     this.change$.next({type: 'loading', isLoading: false})
     this.change$.next({type: 'ready'})
-    this.change$.next({type: 'value', value: this.props.value})
   }
 
   render() {
@@ -157,29 +155,26 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
     const readOnly = Boolean(this.props.readOnly)
     const keyGenerator = this.props.keyGenerator || defaultKeyGenerator
     return (
-      <Validator portableTextEditor={this} keyGenerator={keyGenerator} value={value}>
-        <SlateContainer
+      <SlateContainer
+        isPending={isPending}
+        keyGenerator={keyGenerator}
+        maxBlocks={maxBlocks}
+        patches$={_patches$}
+        portableTextEditor={this}
+        readOnly={readOnly}
+      >
+        <Synchronizer
+          change$={change$}
+          isPending={isPending}
           keyGenerator={keyGenerator}
-          maxBlocks={maxBlocks}
-          patches$={_patches$}
+          onChange={onChange}
           portableTextEditor={this}
           readOnly={readOnly}
           value={value}
-          isPending={isPending}
         >
-          <Synchronizer
-            change$={change$}
-            editor={this}
-            isPending={isPending}
-            keyGenerator={keyGenerator}
-            onChange={onChange}
-            readOnly={readOnly}
-            value={value}
-          >
-            {children}
-          </Synchronizer>
-        </SlateContainer>
-      </Validator>
+          {children}
+        </Synchronizer>
+      </SlateContainer>
     )
   }
 
