@@ -1,12 +1,13 @@
 import {uuid} from '@sanity/uuid'
+import {Page} from '@playwright/test'
 import {PerformanceTestContext, PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
 
 export default {
-  id: KNOWN_TEST_IDS['simple-typing-speed-test'],
-  name: 'Simple typing speed test',
+  id: KNOWN_TEST_IDS['deeply-nested-objects-test'],
+  name: 'Typing speed test in a deeply nested field',
   description: `
-  This test measures the typing speed of a simple text field. It's collecting results as a regression in percentage between the base branch and the current branch. A negative value means that the current branch is faster than the base branch.
+  This test measures the typing speed of a deeply nested text field.
   `,
   metrics: {
     lagPerKeystroke: {
@@ -24,9 +25,22 @@ export default {
   async run({page, client, url}: PerformanceTestContext) {
     const documentId = uuid()
 
-    await page.goto(`${url}/desk/simple;${documentId}`)
+    await page.goto(`${url}/desk/deepObject;${documentId}`)
 
-    const input = page.locator('[data-testid="field-simple"] [data-testid="string-input"]')
+    // Wait for the form to render
+    await page.waitForSelector('[data-testid="string-input"]')
+
+    const inputTestId =
+      'field-deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.deep.title'
+
+    if ((await page.getByTestId(inputTestId).count()) === 0) {
+      // The fieldsets are collapsed, so we need to open them
+      await openFieldsets(page, 17)
+    }
+
+    const input = await page.getByTestId(inputTestId).getByTestId('string-input')
+
+    await input.click()
 
     const samples = await input.evaluate((el: HTMLInputElement) =>
       window.perf.typingTest(el, {samples: 2})
@@ -35,9 +49,22 @@ export default {
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     await Promise.all([client.delete(`drafts.${documentId}`), client.delete(documentId)])
+
     return {
       lagPerKeystroke: Math.min(...samples.map((sample) => sample.lagPerKeystroke)),
       timePerKeyStroke: Math.min(...samples.map((sample) => sample.timePerKeyStroke)),
     }
   },
 } satisfies PerformanceTestProps<{lagPerKeystroke: number; timePerKeyStroke: number}>
+
+async function openFieldsets(page: Page, depth: number) {
+  const currentPath = []
+  while (currentPath.length < depth) {
+    currentPath.push('deep')
+    await page
+      .getByTestId(`field-deep.deep.${currentPath.join('.')}`)
+      .getByRole('button', {name: 'Deep'})
+      .last()
+      .click()
+  }
+}
