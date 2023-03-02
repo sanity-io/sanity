@@ -10,9 +10,9 @@ import {memoizedPair} from './memoizedPair'
 export function documentEvents(
   client: SanityClient,
   idPair: IdPair,
-  typeName?: string
+  typeName: string
 ): Observable<DocumentVersionEvent> {
-  return memoizedPair(client, idPair).pipe(
+  return memoizedPair(client, idPair, typeName).pipe(
     switchMap(({draft, published}) => merge(draft.events, published.events))
   )
 }

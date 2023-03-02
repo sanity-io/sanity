@@ -8,18 +8,16 @@ import {checkoutPair, type Pair} from './checkoutPair'
 export const memoizedPair: (
   client: SanityClient,
   idPair: IdPair,
-  _typeName?: string
+  typeName: string
 ) => Observable<Pair> = memoize(
-  (client: SanityClient, idPair: IdPair, _typeName?: string): Observable<Pair> => {
+  (client: SanityClient, idPair: IdPair, _typeName: string): Observable<Pair> => {
     return new Observable<Pair>((subscriber) => {
       subscriber.next(checkoutPair(client, idPair))
     }).pipe(publishReplay(1), refCount())
   },
-  (client: SanityClient, idPair: IdPair, typeName?: string) => {
+  (client, idPair, typeName) => {
     const config = client.config()
 
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${
-      typeName ?? ''
-    }`
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
   }
 )
