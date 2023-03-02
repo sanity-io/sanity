@@ -9,7 +9,7 @@ import {isEqual, memoize} from 'lodash'
 import {CorsOriginError} from '../cors'
 import {AuthState, AuthStore} from './types'
 import {createBroadcastChannel} from './createBroadcastChannel'
-import {sessionId} from './sessionId'
+import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {createLoginComponent} from './createLoginComponent'
 
@@ -212,6 +212,7 @@ export function _createAuthStore({
   )
 
   async function handleCallbackUrl() {
+    const sessionId = getSessionId()
     if (sessionId && loginMethod === 'dual') {
       const requestClient = clientFactory({
         projectId,
@@ -220,6 +221,7 @@ export function _createAuthStore({
         withCredentials: true,
         apiVersion: '2021-06-07',
         requestTagPrefix: 'sanity.studio',
+        ...hostOptions,
       })
 
       // try to get the current user by using the cookie credentials
@@ -253,6 +255,7 @@ export function _createAuthStore({
       withCredentials: true,
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
+      ...hostOptions,
     })
 
     clearToken(projectId)
