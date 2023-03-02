@@ -13,6 +13,9 @@ export const deepObject = {
     {
       name: 'deep',
       type: 'deepObject',
+      options: {
+        collapsed: false,
+      },
     },
   ],
 }

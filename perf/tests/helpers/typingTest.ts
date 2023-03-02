@@ -7,11 +7,15 @@ interface Sample {
 }
 export async function typingTest(
   inputElement: HTMLElement,
-  options: {iterations?: number; gracePeriod?: number; chars?: string} = {}
+  options: {samples?: number; gracePeriod?: number; chars?: string} = {}
 ): Promise<Sample[]> {
-  const {iterations = 10, gracePeriod = 100, chars = 'abcdefghijklmnopqrstuvwxyz'} = options
+  const {
+    samples: sampleCount = 10,
+    gracePeriod = 100,
+    chars = 'abcdefghijklmnopqrstuvwxyz',
+  } = options
   const samples = []
-  for (let i = 0; i < iterations; i++) {
+  for (let i = 0; i < sampleCount; i++) {
     samples.push(await sample(inputElement, gracePeriod, chars))
   }
   return samples
