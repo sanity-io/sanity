@@ -27,5 +27,13 @@ function consumeSessionId(): string | null {
 
 // this module consumes the session ID as a side-effect as soon as its loaded
 // to remove the session ID from the history (vs waiting to remove the sid hash
-// until react mounts)
-export const sessionId = consumeSessionId()
+// until react mounts). Once it is consumed and loaded once, we don't want to
+// keep it in-memory here, so we clear it out.
+let sessionId = consumeSessionId()
+export const getSessionId = (): string | null => {
+  const id = sessionId
+  if (id) {
+    sessionId = null
+  }
+  return id
+}
