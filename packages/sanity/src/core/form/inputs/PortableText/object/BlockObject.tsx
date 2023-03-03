@@ -141,7 +141,7 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const DefaultComponent = useCallback(
-    (defaultProps: BlockProps) => (
+    (defaultComponentProps: Omit<BlockProps, 'actions'>) => (
       <Flex paddingBottom={1} marginY={3} contentEditable={false} style={debugRender()}>
         <InnerFlex flex={1}>
           <PreviewContainer flex={1} {...innerPaddingProps}>
@@ -166,17 +166,7 @@ export function BlockObject(props: BlockObjectProps) {
                 ref={memberItem?.elementRef as React.RefObject<HTMLDivElement> | undefined}
                 tone={tone}
               >
-                <BlockObjectActionsMenu
-                  focused={focused}
-                  isActive={isActive}
-                  isOpen={isOpen}
-                  onOpen={openItem}
-                  onRemove={onRemove}
-                  readOnly={readOnly}
-                  value={block}
-                >
-                  {defaultProps.children}
-                </BlockObjectActionsMenu>
+                {defaultComponentProps.children}
               </Root>
             </Tooltip>
           </PreviewContainer>
@@ -222,14 +212,10 @@ export function BlockObject(props: BlockObjectProps) {
       hasMarkers,
       hasWarning,
       innerPaddingProps,
-      isActive,
       isFullscreen,
       isImagePreview,
-      isOpen,
       memberItem,
       onChange,
-      onRemove,
-      openItem,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
@@ -255,10 +241,21 @@ export function BlockObject(props: BlockObjectProps) {
       selected,
       value: block,
     }
+    const actions = (
+      <BlockObjectActionsMenu
+        focused={focused}
+        isActive={isActive}
+        isOpen={isOpen}
+        onOpen={openItem}
+        onRemove={onRemove}
+        readOnly={readOnly}
+        value={block}
+      />
+    )
     const preview = (
       <>
         {renderPreview({
-          actions: undefined,
+          actions,
           layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,
           value: block,
@@ -266,7 +263,9 @@ export function BlockObject(props: BlockObjectProps) {
       </>
     )
     return CustomComponent ? (
-      <CustomComponent {...componentProps}>{preview}</CustomComponent>
+      <CustomComponent {...componentProps} actions={actions}>
+        {preview}
+      </CustomComponent>
     ) : (
       <DefaultComponent {...componentProps}>{preview}</DefaultComponent>
     )
@@ -274,13 +273,16 @@ export function BlockObject(props: BlockObjectProps) {
     DefaultComponent,
     block,
     focused,
+    isActive,
     isImagePreview,
+    isOpen,
     memberItem?.member.open,
     memberItem?.node.path,
     onItemClose,
     onRemove,
     openItem,
     path,
+    readOnly,
     renderPreview,
     schemaType,
     selected,

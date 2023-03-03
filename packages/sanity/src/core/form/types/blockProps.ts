@@ -62,6 +62,7 @@ export interface BlockAnnotationProps {
 
 /** @beta */
 export interface BlockProps {
+  actions?: React.ReactElement
   children: React.ReactElement
   focused: boolean
   onClose: () => void
