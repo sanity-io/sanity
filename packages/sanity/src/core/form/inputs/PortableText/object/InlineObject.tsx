@@ -304,5 +304,9 @@ export const InlineObject = (props: InlineObjectProps) => {
     value,
   ])
   // Ensure that the memberItem?.elementRef is not set through useMemo or hooks. It needs to be the current.
-  return <span ref={memberItem?.elementRef}>{content}</span>
+  return (
+    <span ref={memberItem?.elementRef} contentEditable={false}>
+      {content}
+    </span>
+  )
 }
