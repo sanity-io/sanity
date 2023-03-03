@@ -217,7 +217,7 @@ export const InlineObject = (props: InlineObjectProps) => {
     }
   }, [editor, focused, memberItem?.member.open, selected])
   const DefaultComponent = useCallback(
-    (dProps: BlockProps) => {
+    (defaultComponentProps: BlockProps) => {
       const popoverTitle = schemaType?.title || schemaType.name
       return (
         <>
@@ -234,7 +234,7 @@ export const InlineObject = (props: InlineObjectProps) => {
             onDoubleClick={openItem}
             tone={tone}
           >
-            {dProps.children}
+            {defaultComponentProps.children}
           </Root>
           {focused && !readOnly && (
             <InlineObjectToolbarPopover
