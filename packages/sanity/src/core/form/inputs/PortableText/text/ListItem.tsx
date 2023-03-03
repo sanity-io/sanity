@@ -1,15 +1,16 @@
 import {BlockListItemRenderProps} from '@sanity/portable-text-editor'
-import React, {useCallback, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import {BlockListItemProps} from '../../../types'
+
+const DefaultComponent = (dProps: BlockListItemProps) => {
+  return <>{dProps.children}</>
+}
 
 export const ListItem = (props: BlockListItemRenderProps) => {
   const {block, children, schemaType, selected, focused, level, value} = props
   const {title, component: CustomComponent} = schemaType
-  const DefaultComponent = useCallback((dProps: BlockListItemProps) => {
-    return <>{dProps.children}</>
-  }, [])
   return useMemo(() => {
-    const _props = {
+    const componentProps = {
       block,
       focused,
       level,
@@ -20,20 +21,9 @@ export const ListItem = (props: BlockListItemRenderProps) => {
       value,
     }
     return CustomComponent ? (
-      <CustomComponent {..._props}>{children}</CustomComponent>
+      <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      <DefaultComponent {..._props}>{children}</DefaultComponent>
+      <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
-  }, [
-    CustomComponent,
-    DefaultComponent,
-    block,
-    children,
-    focused,
-    level,
-    selected,
-    schemaType,
-    title,
-    value,
-  ])
+  }, [CustomComponent, block, children, focused, level, schemaType, selected, title, value])
 }

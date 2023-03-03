@@ -227,7 +227,7 @@ export function TextBlock(props: TextBlockProps) {
     setTimeout(() => PortableTextEditor.focus(editor))
   }, [editor, path])
 
-  const CustomComponent = schemaType.components?.block as ComponentType<BlockProps>
+  const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
 
   const renderDefault = useCallback(() => defaultRendered, [defaultRendered])
   const notImplementedWarning = useCallback(() => {
