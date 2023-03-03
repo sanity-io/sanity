@@ -141,7 +141,7 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const DefaultComponent = useCallback(
-    (defaultComponentProps: Omit<BlockProps, 'actions'>) => (
+    (defaultComponentProps: BlockProps) => (
       <Flex paddingBottom={1} marginY={3} contentEditable={false} style={debugRender()}>
         <InnerFlex flex={1}>
           <PreviewContainer flex={1} {...innerPaddingProps}>

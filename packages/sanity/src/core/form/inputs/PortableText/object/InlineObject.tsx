@@ -217,7 +217,7 @@ export const InlineObject = (props: InlineObjectProps) => {
     }
   }, [editor, focused, memberItem?.member.open, selected])
   const DefaultComponent = useCallback(
-    (defaultComponentProps: Omit<BlockProps, 'actions'>) => {
+    (defaultComponentProps: BlockProps) => {
       return (
         <>
           <Root
@@ -235,36 +235,11 @@ export const InlineObject = (props: InlineObjectProps) => {
           >
             {defaultComponentProps.children}
           </Root>
-          {focused && !readOnly && memberItem?.elementRef?.current && (
-            <InlineObjectToolbarPopover
-              onClose={handlePopoverClose}
-              onDelete={handleRemoveClick}
-              onEdit={openItem}
-              open={popoverOpen}
-              referenceElement={memberItem?.elementRef?.current || null}
-              scrollElement={scrollElement}
-              title={popoverTitle}
-            />
-          )}
+          {defaultComponentProps.actions}
         </>
       )
     },
-    [
-      focused,
-      handlePopoverClose,
-      handleRemoveClick,
-      hasError,
-      hasValidationMarkers,
-      hasWarning,
-      memberItem?.elementRef,
-      openItem,
-      popoverOpen,
-      popoverTitle,
-      readOnly,
-      scrollElement,
-      selected,
-      tone,
-    ]
+    [focused, hasError, hasValidationMarkers, hasWarning, openItem, readOnly, selected, tone]
   )
   const onRemove = useCallback(() => {
     const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
@@ -276,6 +251,19 @@ export const InlineObject = (props: InlineObjectProps) => {
   const content = useMemo(() => {
     const CustomComponent = schemaType.components?.inlineBlock
     const componentProps = {
+      actions:
+        (!readOnly && memberItem?.elementRef?.current && (
+          <InlineObjectToolbarPopover
+            onClose={handlePopoverClose}
+            onDelete={handleRemoveClick}
+            onEdit={openItem}
+            open={popoverOpen}
+            referenceElement={memberItem?.elementRef?.current || null}
+            scrollElement={scrollElement}
+            title={popoverTitle}
+          />
+        )) ||
+        undefined,
       focused,
       onClose: onItemClose,
       onOpen: openItem,
@@ -288,23 +276,8 @@ export const InlineObject = (props: InlineObjectProps) => {
       value: value as PortableTextBlock,
     }
     const children = markersToolTip || preview
-    const actions =
-      (CustomComponent && focused && !readOnly && (
-        <InlineObjectToolbarPopover
-          onClose={handlePopoverClose}
-          onDelete={handleRemoveClick}
-          onEdit={openItem}
-          open={popoverOpen}
-          referenceElement={memberItem?.elementRef?.current || null}
-          scrollElement={scrollElement}
-          title={popoverTitle}
-        />
-      )) ||
-      undefined
     return CustomComponent ? (
-      <CustomComponent {...componentProps} actions={actions}>
-        {children}
-      </CustomComponent>
+      <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
