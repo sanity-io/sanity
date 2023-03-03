@@ -152,7 +152,7 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   }, [isLink, hasError, hasWarning])
 
   const DefaultComponent = useCallback(
-    (dProps: BlockAnnotationProps) => (
+    (defaultComponentProps: BlockAnnotationProps) => (
       <Root
         $toneKey={toneKey}
         ref={annotationRef}
@@ -162,8 +162,21 @@ export const Annotation = function Annotation(props: AnnotationProps) {
         data-custom-markers={hasCustomMarkers ? '' : undefined}
         onClick={readOnly ? openItem : undefined}
       >
-        <span ref={memberItem?.elementRef}>{dProps.children}</span>
-        {!readOnly && (
+        {defaultComponentProps.children}
+        {defaultComponentProps.actions}
+      </Root>
+    ),
+    [hasCustomMarkers, hasError, hasWarning, isLink, openItem, readOnly, toneKey]
+  )
+  const onRemove = useCallback(() => {
+    PortableTextEditor.removeAnnotation(editor, schemaType)
+    PortableTextEditor.focus(editor)
+  }, [editor, schemaType])
+
+  const content = useMemo(() => {
+    const componentProps = {
+      actions:
+        (!readOnly && annotationRef.current && (
           <AnnotationToolbarPopover
             textElement={textElement.current || undefined}
             annotationElement={annotationRef.current || undefined}
@@ -172,32 +185,8 @@ export const Annotation = function Annotation(props: AnnotationProps) {
             onDelete={handleRemoveClick}
             title={schemaType.title || schemaType.name}
           />
-        )}
-      </Root>
-    ),
-    [
-      handleEditClick,
-      handleRemoveClick,
-      hasCustomMarkers,
-      hasError,
-      hasWarning,
-      isLink,
-      memberItem?.elementRef,
-      openItem,
-      readOnly,
-      schemaType.title,
-      schemaType.name,
-      scrollElement,
-      toneKey,
-    ]
-  )
-  const onRemove = useCallback(() => {
-    PortableTextEditor.removeAnnotation(editor, schemaType)
-    PortableTextEditor.focus(editor)
-  }, [editor, schemaType])
-
-  return useMemo(() => {
-    const _props = {
+        )) ||
+        undefined,
       focused,
       onClose: onItemClose,
       onOpen: openItem,
@@ -209,27 +198,38 @@ export const Annotation = function Annotation(props: AnnotationProps) {
       selected,
       value,
     }
-    const CustomComponent = schemaType.components?.annotation as ComponentType<BlockAnnotationProps>
-    const content = <span ref={memberItem?.elementRef}>{markersToolTip || text}</span>
+    const CustomComponent = schemaType.components?.annotation as
+      | ComponentType<BlockAnnotationProps>
+      | undefined
+
     return CustomComponent ? (
-      <CustomComponent {..._props}>{content}</CustomComponent>
+      <CustomComponent {...componentProps}>{markersToolTip || text}</CustomComponent>
     ) : (
-      <DefaultComponent {..._props}>{content}</DefaultComponent>
+      <DefaultComponent {...componentProps}>{markersToolTip || text}</DefaultComponent>
     )
   }, [
     DefaultComponent,
     focused,
+    handleEditClick,
+    handleRemoveClick,
     markersToolTip,
-    memberItem?.elementRef,
     memberItem?.member.open,
     memberItem?.node.path,
     onItemClose,
     onRemove,
     openItem,
     path,
+    readOnly,
     schemaType,
+    scrollElement,
     selected,
     text,
     value,
   ])
+  // Ensure that the refs here is not set through useMemo or hooks. They need to be current always.
+  return (
+    <span ref={memberItem?.elementRef}>
+      <span ref={annotationRef}>{content}</span>
+    </span>
+  )
 }
