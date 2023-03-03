@@ -5,8 +5,11 @@ import productVariant from './documents/productVariant'
 
 // objects
 import accordion from './objects/accordion'
+import accordionGroup from './objects/accordionGroup'
 import callout from './objects/callout'
-import productOption from './objects/productOption'
+import inventory from './objects/inventory'
+import option from './objects/option'
+import priceRange from './objects/priceRange'
 import proxyString from './objects/proxyString'
 import shopifyCollection from './objects/shopifyCollection'
 import shopifyCollectionRule from './objects/shopifyCollectionRule'
@@ -17,16 +20,24 @@ import shopifyProductVariant from './objects/shopifyProductVariant'
 import blockContent from './blocks/blockContent'
 
 export const schemaTypes = [
+  // document types
   collection,
   product,
   productVariant,
-  blockContent,
+
+  // objects
   accordion,
+  accordionGroup,
   callout,
-  productOption,
+  inventory,
+  option,
+  priceRange,
   proxyString,
   shopifyCollection,
   shopifyCollectionRule,
   shopifyProduct,
   shopifyProductVariant,
+
+  // block content
+  blockContent,
 ]

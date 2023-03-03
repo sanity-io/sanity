@@ -2,6 +2,7 @@
   "ignore": [
     "@babel/parser",
     "@optimize-lodash/rollup-plugin",
+    "@portabletext/toolkit",
     "@sanity/asset-utils",
     "@sanity/base",
     "@sanity/color",

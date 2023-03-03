@@ -1,6 +1,6 @@
 import {EarthGlobeIcon} from '@sanity/icons'
-import {collectionUrl, productUrl, productVariantUrl} from '../../utils/shopifyUrls'
 import {type DocumentActionDescription} from 'sanity'
+import {collectionUrl, productUrl, productVariantUrl} from '../../utils/shopifyUrls'
 import type {ShopifyDocument, ShopifyDocumentActionProps} from './types'
 
 export default (props: ShopifyDocumentActionProps): DocumentActionDescription | undefined => {

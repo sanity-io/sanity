@@ -1,6 +1,6 @@
-import {defineField} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
-export default defineField({
+export default defineType({
   name: 'shopifyCollection',
   title: 'Shopify',
   type: 'object',
@@ -38,11 +38,11 @@ export default defineField({
       type: 'boolean',
     }),
     // Title
-    {
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
-    },
+    }),
     // Collection ID
     defineField({
       name: 'id',
@@ -83,13 +83,7 @@ export default defineField({
       title: 'Rules',
       type: 'array',
       description: 'Include Shopify products that satisfy these conditions',
-      of: [
-        {
-          name: 'rule',
-          title: 'Rule',
-          type: 'collectionRule',
-        },
-      ],
+      of: [{type: 'collectionRule'}],
     }),
     // Disjunctive rules
     defineField({
