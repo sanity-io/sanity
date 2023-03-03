@@ -47,6 +47,7 @@ export interface BlockListItemProps {
 
 /** @beta */
 export interface BlockAnnotationProps {
+  actions?: React.ReactElement
   children: React.ReactElement
   focused: boolean
   onClose: () => void
