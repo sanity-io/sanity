@@ -17,17 +17,17 @@ export function Decorator(props: BlockDecoratorRenderProps) {
   const tag = TEXT_DECORATOR_TAGS[value]
   const CustomComponent = schemaType.component
   const DefaultComponent = useCallback(
-    (dProps: BlockDecoratorProps) => {
+    (defaultComponentProps: BlockDecoratorProps) => {
       return (
         <Root as={tag} data-mark={value}>
-          {dProps.children}
+          {defaultComponentProps.children}
         </Root>
       )
     },
     [tag, value]
   )
   return useMemo(() => {
-    const _props = {
+    const componentProps = {
       focused,
       renderDefault: DefaultComponent,
       schemaType,
@@ -36,9 +36,9 @@ export function Decorator(props: BlockDecoratorRenderProps) {
       value,
     }
     return CustomComponent ? (
-      <CustomComponent {..._props}>{children}</CustomComponent>
+      <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      <DefaultComponent {..._props}>{children}</DefaultComponent>
+      <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [CustomComponent, DefaultComponent, children, focused, schemaType, selected, value])
 }

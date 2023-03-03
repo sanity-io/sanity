@@ -141,7 +141,7 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const DefaultComponent = useCallback(
-    (dProps: BlockProps) => (
+    (defaultProps: BlockProps) => (
       <Flex paddingBottom={1} marginY={3} contentEditable={false} style={debugRender()}>
         <InnerFlex flex={1}>
           <PreviewContainer flex={1} {...innerPaddingProps}>
@@ -163,7 +163,7 @@ export function BlockObject(props: BlockObjectProps) {
                 flex={1}
                 onDoubleClick={handleDoubleClickToOpen}
                 padding={isImagePreview ? 0 : 1}
-                ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}
+                ref={memberItem?.elementRef as React.RefObject<HTMLDivElement> | undefined}
                 tone={tone}
               >
                 <BlockObjectActionsMenu
@@ -175,7 +175,7 @@ export function BlockObject(props: BlockObjectProps) {
                   readOnly={readOnly}
                   value={block}
                 >
-                  {dProps.children}
+                  {defaultProps.children}
                 </BlockObjectActionsMenu>
               </Root>
             </Tooltip>
@@ -242,8 +242,8 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   return useMemo(() => {
-    const CustomComponent = schemaType.components?.block as ComponentType<BlockProps>
-    const _props = {
+    const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
+    const componentProps = {
       focused,
       onClose: onItemClose,
       onOpen: openItem,
@@ -266,9 +266,9 @@ export function BlockObject(props: BlockObjectProps) {
       </>
     )
     return CustomComponent ? (
-      <CustomComponent {..._props}>{preview}</CustomComponent>
+      <CustomComponent {...componentProps}>{preview}</CustomComponent>
     ) : (
-      <DefaultComponent {..._props}>{preview}</DefaultComponent>
+      <DefaultComponent {...componentProps}>{preview}</DefaultComponent>
     )
   }, [
     DefaultComponent,

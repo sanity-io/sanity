@@ -13,11 +13,11 @@ export const Style = (props: BlockStyleRenderProps) => {
   )
 
   const DefaultComponent = useCallback(
-    (dProps: BlockStyleProps) => {
+    (defaultComponentProps: BlockStyleProps) => {
       return (
         <DefaultComponentWithFallback>
           <TextContainer data-testid={`text-style--${block.style}`}>
-            {dProps.children}
+            {defaultComponentProps.children}
           </TextContainer>
         </DefaultComponentWithFallback>
       )
@@ -28,7 +28,7 @@ export const Style = (props: BlockStyleRenderProps) => {
   return useMemo(() => {
     const CustomComponent = schemaType.component
     const {title, value} = schemaType
-    const _props = {
+    const componentProps = {
       block,
       focused,
       renderDefault: DefaultComponent,
@@ -38,9 +38,9 @@ export const Style = (props: BlockStyleRenderProps) => {
       value,
     }
     return CustomComponent ? (
-      <CustomComponent {..._props}>{children}</CustomComponent>
+      <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
-      <DefaultComponent {..._props}>{children}</DefaultComponent>
+      <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [DefaultComponent, block, children, focused, schemaType, selected])
 }
