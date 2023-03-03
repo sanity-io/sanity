@@ -243,7 +243,7 @@ export const InlineObject = (props: InlineObjectProps) => {
   )
   const onRemove = useCallback(() => {
     const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
-    PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
+    PortableTextEditor.delete(editor, sel, {mode: 'children'})
     // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
     setTimeout(() => PortableTextEditor.focus(editor))
   }, [editor, path])
