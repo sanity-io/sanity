@@ -1,4 +1,4 @@
-name: Test
+name: Unit tests
 
 on:
   # Build on pushes branches that have a PR (including drafts)
@@ -26,16 +26,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+        uses: actions/checkout@v3
 
       - name: Setup node
-        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@58c146cc91c5b9e778e71775dfe9bf1442ad9a12 # v3
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -50,32 +50,17 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install
 
-      - name: Check formatting
-        run: yarn check:format
-
       - name: Install Playwright
         run: npx playwright install --with-deps
 
-      - name: Check type system
-        # If TypeScript project references is set up properly, `tsc --build` should work right after dependencies
-        # has been installed, no extra build/compile step required
-        id: typeCheckModules
-        run: yarn type-check
-        env:
-          NODE_OPTIONS: --max_old_space_size=8192
-
-      - name: Check for unused/missing dependencies
-        id: depcheck
-        run: yarn depcheck
-        env:
-          NODE_OPTIONS: --max_old_space_size=8192
+      - name: Build CLI
+        run: yarn build:cli # Needed for CLI tests
 
       - name: Test
         id: test
         run: |
           node -v
           npm -v
-          yarn build:cli # Needed for CLI tests
           yarn test
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
