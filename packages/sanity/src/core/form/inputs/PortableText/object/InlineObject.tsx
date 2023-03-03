@@ -128,7 +128,8 @@ export const InlineObject = (props: InlineObjectProps) => {
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
   const hasValidationMarkers = validation.length > 0
-  const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
+  const [popoverOpen, setPopoverOpen] = useState<boolean>(true)
+  const popoverTitle = schemaType?.title || schemaType.name
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -216,8 +217,7 @@ export const InlineObject = (props: InlineObjectProps) => {
     }
   }, [editor, focused, memberItem?.member.open, selected])
   const DefaultComponent = useCallback(
-    (defaultComponentProps: BlockProps) => {
-      const popoverTitle = schemaType?.title || schemaType.name
+    (defaultComponentProps: Omit<BlockProps, 'actions'>) => {
       return (
         <>
           <Root
@@ -259,9 +259,8 @@ export const InlineObject = (props: InlineObjectProps) => {
       memberItem?.elementRef,
       openItem,
       popoverOpen,
+      popoverTitle,
       readOnly,
-      schemaType.name,
-      schemaType?.title,
       scrollElement,
       selected,
       tone,
@@ -276,7 +275,7 @@ export const InlineObject = (props: InlineObjectProps) => {
 
   const content = useMemo(() => {
     const CustomComponent = schemaType.components?.inlineBlock
-    const _props = {
+    const componentProps = {
       focused,
       onClose: onItemClose,
       onOpen: openItem,
@@ -289,23 +288,45 @@ export const InlineObject = (props: InlineObjectProps) => {
       value: value as PortableTextBlock,
     }
     const children = markersToolTip || preview
+    const actions =
+      (CustomComponent && focused && !readOnly && (
+        <InlineObjectToolbarPopover
+          onClose={handlePopoverClose}
+          onDelete={handleRemoveClick}
+          onEdit={openItem}
+          open={popoverOpen}
+          referenceElement={memberItem?.elementRef?.current || null}
+          scrollElement={scrollElement}
+          title={popoverTitle}
+        />
+      )) ||
+      undefined
     return CustomComponent ? (
-      <CustomComponent {..._props}>{children}</CustomComponent>
+      <CustomComponent {...componentProps} actions={actions}>
+        {children}
+      </CustomComponent>
     ) : (
-      <DefaultComponent {..._props}>{children}</DefaultComponent>
+      <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [
     DefaultComponent,
     focused,
+    handlePopoverClose,
+    handleRemoveClick,
     markersToolTip,
+    memberItem?.elementRef,
     memberItem?.member.open,
     memberItem?.node.path,
     onItemClose,
     onRemove,
     openItem,
     path,
+    popoverOpen,
+    popoverTitle,
     preview,
+    readOnly,
     schemaType,
+    scrollElement,
     selected,
     value,
   ])
