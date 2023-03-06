@@ -13,11 +13,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+        uses: actions/checkout@v3
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@58c146cc91c5b9e778e71775dfe9bf1442ad9a12 # v3
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -30,7 +30,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install
+        run: yarn install --immutable --immutable-cache --check-cache
 
       - name: Lint changed files
         id: listChangedFiles

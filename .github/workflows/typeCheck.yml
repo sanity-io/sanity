@@ -1,19 +1,15 @@
-name: Extract, Transform & Load
-
+name: Type check
 on:
-  # Build on pushes branches that have a PR (including drafts)
-  pull_request:
-  # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [next]
-
 jobs:
-  etl:
+  typeCheck:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
       - name: Cache node modules
         id: cache-node-modules
@@ -32,12 +28,10 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --immutable --immutable-cache --check-cache
 
-      - name: Build packages
-        run: yarn build
+      - name: Check type system
+        # If TypeScript project references is set up properly, `tsc --build` should work right after dependencies
+        # has been installed, no extra build/compile step required
+        id: typeCheckModules
+        run: yarn type-check
         env:
           NODE_OPTIONS: --max_old_space_size=8192
-
-      - name: Extract API docs
-        env:
-          EXTRACT_SANITY_API_TOKEN: ${{ secrets.EXTRACT_SANITY_API_TOKEN }}
-        run: yarn etl --quiet
