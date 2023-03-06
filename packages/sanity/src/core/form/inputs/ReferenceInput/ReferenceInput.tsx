@@ -149,7 +149,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
     (inputValue$: Observable<string | null>) => {
       return inputValue$.pipe(
         filter(nonNullable),
-        distinctUntilChanged(),
         switchMap((searchString) =>
           concat(
             of({isLoading: true}),
