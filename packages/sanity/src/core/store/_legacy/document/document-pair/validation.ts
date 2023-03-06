@@ -180,5 +180,9 @@ export const validation = memoize(
       refCount()
     )
   },
-  (_ctx, idPair) => idPair.publishedId
+  (ctx, idPair, typeName) => {
+    const config = ctx.client.config()
+
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
+  }
 )

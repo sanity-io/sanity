@@ -39,5 +39,9 @@ export const operationArgs = memoize(
       refCount()
     )
   },
-  (_ctx, idPair, typeName) => idPair.publishedId + typeName
+  (ctx, idPair, typeName) => {
+    const config = ctx.client.config()
+
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
+  }
 )

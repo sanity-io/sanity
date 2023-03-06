@@ -25,5 +25,9 @@ export const consistencyStatus: (
       refCount()
     )
   },
-  (_client, idPair, typeName) => idPair.publishedId + typeName
+  (client, idPair, typeName) => {
+    const config = client.config()
+
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
+  }
 )
