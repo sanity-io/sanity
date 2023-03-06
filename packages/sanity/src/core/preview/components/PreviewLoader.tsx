@@ -10,7 +10,7 @@ import {RenderPreviewCallbackProps} from '../../form'
 import {useVisibility} from '../useVisibility'
 
 import {unstable_useValuePreview as useValuePreview} from '../useValuePreview'
-import {PreviewProps} from '../../components'
+import type {PreviewProps} from '../../components'
 import {_extractUploadState} from './_extractUploadState'
 import {_HIDE_DELAY} from './_constants'
 
@@ -57,16 +57,25 @@ export function PreviewLoader(
 
   const uploadState = useMemo(() => _extractUploadState(value), [value])
 
+  const media: PreviewProps['media'] = useMemo(() => {
+    if (uploadState?.previewImage) {
+      return <img alt="The image currently being uploaded" src={uploadState.previewImage} />
+    }
+
+    if (!preview?.value?.media) {
+      return schemaType.icon
+    }
+
+    // @todo: fix `TS2769: No overload matches this call.`
+    return preview?.value?.media as any
+  }, [preview, schemaType, uploadState])
+
   return (
     <div ref={setElement} style={style}>
       {createElement(component, {
         ...restProps,
         ...(preview?.value || {}),
-        media: uploadState?.previewImage ? (
-          <img alt="The image currently being uploaded" src={uploadState.previewImage} />
-        ) : (
-          preview?.value?.media
-        ),
+        media,
         error: preview?.error,
         isPlaceholder: preview?.isLoading,
         layout,
