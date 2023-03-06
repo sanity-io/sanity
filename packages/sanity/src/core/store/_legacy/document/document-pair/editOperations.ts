@@ -1,47 +1,36 @@
 import {SanityClient} from '@sanity/client'
 import {Schema} from '@sanity/types'
-import {concat, merge, Observable, of, EMPTY} from 'rxjs'
-import {map, publishReplay, refCount, mergeMapTo} from 'rxjs/operators'
+import {concat, EMPTY, merge, Observable, of} from 'rxjs'
+import {map, mergeMap, shareReplay} from 'rxjs/operators'
 import {HistoryStore} from '../../history'
 import {IdPair} from '../types'
+import {memoize} from '../utils/createMemoizer'
 import {operationArgs} from './operationArgs'
 import {OperationsAPI} from './operations'
 import {createOperationsAPI, GUARDED} from './operations/helpers'
-import {getOperationEvents} from './operationEvents'
+import {operationEvents} from './operationEvents'
+import {memoizeKeyGen} from './memoizeKeyGen'
 
-const cache = new Map<string, Observable<OperationsAPI>>()
-
-export const editOperations = (
-  ctx: {
-    client: SanityClient
-    historyStore: HistoryStore
-    schema: Schema
-  },
-  idPair: IdPair,
-  typeName: string
-): Observable<OperationsAPI> => {
-  const key = `${idPair.publishedId}:${typeName}`
-  let ret = cache.get(key)
-
-  if (!ret) {
-    const operationEvents = getOperationEvents(ctx)
-
-    // To makes sure we connect the stream that actually performs the operations
-    const operationResults$: Observable<never> = operationEvents(idPair, typeName).pipe(
-      mergeMapTo(EMPTY)
-    )
+export const editOperations = memoize(
+  (
+    ctx: {
+      client: SanityClient
+      historyStore: HistoryStore
+      schema: Schema
+    },
+    idPair: IdPair,
+    typeName: string
+  ): Observable<OperationsAPI> => {
+    const operationEvents$ = operationEvents(ctx)
 
     const operationArgs$ = operationArgs(ctx, idPair, typeName)
-
     const operations$ = operationArgs$.pipe(map(createOperationsAPI))
 
-    ret = concat(of(GUARDED), merge(operationResults$, operations$)).pipe(
-      publishReplay(1),
-      refCount()
-    )
-
-    cache.set(key, ret)
-  }
-
-  return ret
-}
+    // To makes sure we connect the stream that actually performs the operations
+    return concat(
+      of(GUARDED),
+      merge(operationEvents$.pipe(mergeMap(() => EMPTY)), operations$)
+    ).pipe(shareReplay({refCount: true, bufferSize: 1}))
+  },
+  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName)
+)
