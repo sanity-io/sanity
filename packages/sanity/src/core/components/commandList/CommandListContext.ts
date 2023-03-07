@@ -15,7 +15,6 @@ export interface CommandListContextValue<T> {
   setVirtualListElement: Dispatch<SetStateAction<HTMLDivElement | null>>
   values: CommandListVirtualItemValue<T>[]
   virtualizer?: Virtualizer<HTMLDivElement, Element> | null
-  virtualItemDataAttributes: Record<string, ''>
   virtualListElement: HTMLDivElement | null
 }
 

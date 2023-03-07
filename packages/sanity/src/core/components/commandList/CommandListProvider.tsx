@@ -55,10 +55,10 @@ interface CommandListProviderProps<T> {
   values: CommandListVirtualItemValue<T>[]
 }
 
-// Default data attribute set on interactive elements within virtual list items
-const LIST_ITEM_DATA_ATTR = 'data-command-list-item'
 // Data attribute to assign to the current active virtual list element
 const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
+// Selector to find the first interactive element in the virtual list element
+const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 
 /**
  * @internal
@@ -134,7 +134,7 @@ export function CommandListProvider<T>({
         const virtualIndex = Number(child.dataset?.index)
         const childIndex = itemIndices[virtualIndex]
         child
-          .querySelector(`[${LIST_ITEM_DATA_ATTR}]`)
+          .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
           ?.toggleAttribute(activeItemDataAttr, childIndex === selectedIndex)
       })
     },
@@ -248,7 +248,7 @@ export function CommandListProvider<T>({
   /**
    * Focus input / virtual list element (non-touch only)
    */
-  const handleFocusElement = useCallback(() => {
+  const focusElement = useCallback(() => {
     if (!supportsTouch) {
       if (inputElement) {
         inputElement?.focus()
@@ -263,10 +263,10 @@ export function CommandListProvider<T>({
    */
   const handleChildMouseDown = useCallback(
     (event: MouseEvent) => {
-      handleFocusElement()
+      focusElement()
       event.preventDefault()
     },
-    [handleFocusElement]
+    [focusElement]
   )
 
   /**
@@ -307,7 +307,7 @@ export function CommandListProvider<T>({
 
         if (currentElement) {
           const clickableElement = currentElement?.querySelector<HTMLElement>(
-            `[${LIST_ITEM_DATA_ATTR}]`
+            LIST_ITEM_INTERACTIVE_SELECTOR
           )
           clickableElement?.click()
         }
@@ -352,27 +352,27 @@ export function CommandListProvider<T>({
    * or when users focus via dragging the overflow scroll handle.
    */
   useEffect(() => {
-    function handleHideChildrenActiveState() {
+    function handleBlur() {
       showChildrenActiveState(null)
     }
-    function handleShowChildrenActiveState() {
+    function handleFocus() {
       showChildrenActiveState(selectedIndexRef.current)
     }
 
     const elements = [inputElement, virtualListElement]
     elements.forEach((el) => {
-      el?.addEventListener('blur', handleHideChildrenActiveState)
-      el?.addEventListener('focus', handleShowChildrenActiveState)
+      el?.addEventListener('blur', handleBlur)
+      el?.addEventListener('focus', handleFocus)
       el?.addEventListener('keydown', handleKeyDown)
     })
     return () => {
       elements.forEach((el) => {
-        el?.removeEventListener('blur', handleHideChildrenActiveState)
-        el?.removeEventListener('focus', handleShowChildrenActiveState)
+        el?.removeEventListener('blur', handleBlur)
+        el?.removeEventListener('focus', handleFocus)
         el?.removeEventListener('keydown', handleKeyDown)
       })
     }
-  }, [handleKeyDown, inputElement, showChildrenActiveState, virtualListElement])
+  }, [focusElement, handleKeyDown, inputElement, showChildrenActiveState, virtualListElement])
 
   /**
    * Temporarily disable pointer events (or 'flush' existing hover states) on child count changes.
@@ -445,14 +445,14 @@ export function CommandListProvider<T>({
    */
   useEffect(() => {
     if (autoFocus) {
-      handleFocusElement()
+      focusElement()
     }
-  }, [autoFocus, handleFocusElement])
+  }, [autoFocus, focusElement])
 
   return (
     <CommandListContext.Provider
       value={{
-        focusElement: handleFocusElement,
+        focusElement,
         getTopIndex: handleGetTopIndex,
         itemIndices,
         onChildMouseDown: handleChildMouseDown,
@@ -464,7 +464,6 @@ export function CommandListProvider<T>({
         setVirtualListElement,
         values,
         virtualizer: virtualizerRef.current,
-        virtualItemDataAttributes: {[LIST_ITEM_DATA_ATTR]: ''},
         virtualListElement,
       }}
     >

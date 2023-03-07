@@ -1,7 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, Button, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {useCommandList} from '../../../../../../../../components'
 import type {SearchableType} from '../../../../../../../../search'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 
@@ -16,8 +15,6 @@ export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
   ...rest
 }: DocumentTypeFilterItemProps) {
   const {dispatch} = useSearchState()
-
-  const {virtualItemDataAttributes} = useCommandList()
 
   const handleTypeAdd = useCallback(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType: type})
@@ -38,7 +35,6 @@ export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
   return (
     <Box {...rest}>
       <Button
-        {...virtualItemDataAttributes}
         fontSize={1}
         iconRight={selected && CheckmarkIcon}
         justify="flex-start"

@@ -1,11 +1,11 @@
 import {Box, Card, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
+import {useIntentLink} from 'sanity/router'
 import styled from 'styled-components'
-import {PreviewCard, useCommandList} from '../../../../../../../components'
+import {PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
 import SearchResultItemPreview from './SearchResultItemPreview'
-import {useIntentLink} from 'sanity/router'
 
 interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   compact?: boolean
@@ -30,7 +30,6 @@ export function SearchResultItem({
   const schema = useSchema()
   const type = schema.get(documentType)
   const documentPresence = useDocumentPresence(documentId)
-  const {virtualItemDataAttributes} = useCommandList()
 
   const {onClick: onIntentClick, href} = useIntentLink({
     intent: 'edit',
@@ -55,7 +54,6 @@ export function SearchResultItem({
   return (
     <Box {...rest}>
       <PreviewCard
-        {...virtualItemDataAttributes}
         as={PreviewCardLink}
         data-as="a"
         flex={1}

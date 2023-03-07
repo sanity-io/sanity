@@ -83,7 +83,7 @@ const CommandListContent = ({
   onClear,
   showInput,
 }: CommandListContentProps) => {
-  const {setInputElement, values, virtualizer, virtualItemDataAttributes} = useCommandList<string>()
+  const {setInputElement, values, virtualizer} = useCommandList<string>()
 
   const handleChange = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -117,7 +117,6 @@ const CommandListContent = ({
       const handleClick = useCallback(() => onChildClick(`${value} clicked`), [value])
       return (
         <Button
-          {...virtualItemDataAttributes}
           mode="bleed"
           onClick={handleClick}
           style={{borderRadius: 0, width: '100%'}}
@@ -126,7 +125,7 @@ const CommandListContent = ({
         />
       )
     }
-  }, [onChildClick, virtualItemDataAttributes])
+  }, [onChildClick])
 
   return (
     <Flex direction="column" style={{height: '400px'}}>

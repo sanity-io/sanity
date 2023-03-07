@@ -21,8 +21,10 @@ const CardContainer = styled(Card)`
   width: 100%;
 `
 
-const StyledBox = styled(Box)<{$index: number}>`
+const StyledLink = styled.a<{$index: number}>`
   background: ${({$index}) => ($index % 2 === 0 ? '#1a1a1a' : '#1f1f1f')};
+  display: block;
+  padding: 5px;
   &[data-active] {
     background: blue;
     color: white;
@@ -96,7 +98,7 @@ const CommandListContent = ({
   onClear,
   showInput,
 }: CommandListContentProps) => {
-  const {setInputElement, values, virtualizer, virtualItemDataAttributes} = useCommandList<number>()
+  const {setInputElement, values, virtualizer} = useCommandList<number>()
 
   const handleChange = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -132,12 +134,12 @@ const CommandListContent = ({
         [value]
       )
       return (
-        <StyledBox {...virtualItemDataAttributes} $index={value} onClick={handleClick} padding={2}>
+        <StyledLink $index={value} onClick={handleClick}>
           <Text>{value}</Text>
-        </StyledBox>
+        </StyledLink>
       )
     }
-  }, [onChildClick, virtualItemDataAttributes])
+  }, [onChildClick])
 
   return (
     <Flex direction="column" style={{height: '400px'}}>
@@ -160,7 +162,8 @@ const CommandListContent = ({
             fixedHeight
             item={VirtualListItem}
             virtualizerOptions={{
-              estimateSize: () => 25,
+              estimateSize: () => 20,
+              overscan: 10,
             }}
           />
         </Flex>

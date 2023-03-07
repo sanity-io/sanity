@@ -16,7 +16,6 @@ import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {ComponentProps, useCallback, useMemo, useRef, useState} from 'react'
 import {CommandListItems} from '../CommandListItems'
 import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
-import {useCommandList} from '../useCommandList'
 
 const ITEMS = [...Array(50000).keys()]
 
@@ -140,14 +139,11 @@ interface CommandListContentProps
 }
 
 const CommandListContent = ({onChildClick}: CommandListContentProps) => {
-  const {virtualItemDataAttributes} = useCommandList()
-
   const VirtualListItem = useMemo(() => {
     return function VirtualListItemComponent({value}: CommandListVirtualItemProps<number>) {
       const handleClick = useCallback(() => onChildClick(value), [value])
       return (
         <Button
-          {...virtualItemDataAttributes}
           fontSize={1}
           mode="bleed"
           onClick={handleClick}
@@ -156,7 +152,7 @@ const CommandListContent = ({onChildClick}: CommandListContentProps) => {
         />
       )
     }
-  }, [onChildClick, virtualItemDataAttributes])
+  }, [onChildClick])
 
   return (
     <Flex direction="column" style={{height: '400px'}}>
