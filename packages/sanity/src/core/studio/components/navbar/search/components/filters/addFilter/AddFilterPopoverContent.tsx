@@ -43,30 +43,21 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     [documentTypesNarrowed, definitions.fields, definitions.filters, schema, titleFilter, types]
   )
 
-  /**
-   * Create a map of indices for our virtual list, ignoring non-filter items.
-   * This is to ensure navigating via keyboard skips over these non-interactive items.
-   */
-  const itemIndices = useMemo(() => {
-    let i = -1
-    return filteredMenuItems.reduce<(number | null)[]>((acc, val, index) => {
-      const isInteractive = val.type === 'filter'
-      if (isInteractive) {
-        i += 1
-      }
-      acc[index] = isInteractive ? i : null
-      return acc
-    }, [])
+  const values = useMemo(() => {
+    return filteredMenuItems.map((i) => ({
+      enabled: i.type === 'filter',
+      value: i,
+    }))
   }, [filteredMenuItems])
 
   return (
     <CommandListProvider
       activeItemDataAttr="data-hovered"
-      ariaActiveDescendant={filteredMenuItems.length > 0}
+      ariaActiveDescendant={values.length > 0}
       ariaChildrenLabel="Filters"
       ariaInputLabel="Filter by title"
       autoFocus
-      itemIndices={itemIndices}
+      values={values}
     >
       <Flex direction="column" style={{width: '300px'}}>
         {/* Filter header */}
@@ -77,12 +68,12 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         />
 
         <Flex>
-          {filteredMenuItems.length > 0 && (
+          {values.length > 0 && (
             <AddFilterVirtualList menuItems={filteredMenuItems} onClose={onClose} />
           )}
 
           {/* No results */}
-          {filteredMenuItems.length == 0 && (
+          {values.length == 0 && (
             <Box padding={3}>
               <Text muted size={1} textOverflow="ellipsis">
                 No matches for '{titleFilter}'

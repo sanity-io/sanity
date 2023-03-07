@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react'
-import {CommandListItems} from '../../../../../../../components'
+import {CommandListItems, CommandListVirtualItemProps} from '../../../../../../../components'
 import type {FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
 import {MenuItemFilter} from './items/MenuItemFilter'
@@ -12,17 +12,16 @@ interface AddFilterVirtualListProps {
 
 export function AddFilterVirtualList({menuItems, onClose}: AddFilterVirtualListProps) {
   const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({index}: {index: number}) {
-      const menuItem = menuItems[index]
-      if (menuItem.type === 'filter') {
-        return <MenuItemFilter item={menuItem} onClose={onClose} paddingTop={1} paddingX={1} />
+    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<FilterMenuItem>) {
+      if (value.type === 'filter') {
+        return <MenuItemFilter item={value} onClose={onClose} paddingTop={1} paddingX={1} />
       }
-      if (menuItem.type === 'header') {
-        return <MenuItemHeader item={menuItem} />
+      if (value.type === 'header') {
+        return <MenuItemHeader item={value} />
       }
       return null
     }
-  }, [menuItems, onClose])
+  }, [onClose])
 
   return (
     <CommandListItems

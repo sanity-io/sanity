@@ -2,7 +2,12 @@ import {Card, Flex, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
-import {CommandListProvider, useCommandList} from '../../../../../components'
+import {
+  CommandListProvider,
+  type CommandListVirtualItemValue,
+  useCommandList,
+} from '../../../../../components'
+import type {WeightedHit} from '../../../../../search'
 import {useColorScheme} from '../../../../colorScheme'
 import {
   POPOVER_INPUT_PADDING,
@@ -11,6 +16,7 @@ import {
   POPOVER_RADIUS,
 } from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
+import type {RecentSearch} from '../datastores/recentSearches'
 import {useSearchHotkeys} from '../hooks/useSearchHotkeys'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {Filters} from './filters/Filters'
@@ -129,17 +135,13 @@ export function SearchPopover({
     }
   }, [])
 
-  /**
-   * Create a map of indices for our virtual list, ignoring non-filter items.
-   * This is to ensure navigating via keyboard skips over these non-interactive items.
-   */
-  const itemIndices = useMemo(() => {
+  const values: CommandListVirtualItemValue<RecentSearch | WeightedHit>[] = useMemo(() => {
     if (hasValidTerms) {
-      return Array.from(Array(result.hits.length).keys())
+      return result.hits.map((i) => ({value: i}))
     }
 
-    return Array.from(Array(recentSearches.length).keys())
-  }, [hasValidTerms, recentSearches.length, result.hits.length])
+    return recentSearches.map((i) => ({value: i}))
+  }, [hasValidTerms, recentSearches, result.hits])
 
   if (!open) {
     return null
@@ -152,13 +154,13 @@ export function SearchPopover({
 
         <CommandListProvider
           activeItemDataAttr="data-hovered"
-          ariaActiveDescendant={itemIndices.length > 0}
+          ariaActiveDescendant={values.length > 0}
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
           ariaInputLabel="Search results"
           autoFocus
           data-testid="search-results-popover"
           initialIndex={hasValidTerms ? lastActiveIndex : 0}
-          itemIndices={itemIndices}
+          values={values}
         >
           <SearchPopoverContent
             filtersVisible={filtersVisible}

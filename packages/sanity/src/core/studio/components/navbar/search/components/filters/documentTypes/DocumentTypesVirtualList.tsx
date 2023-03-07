@@ -1,7 +1,10 @@
 import {Box, Label, MenuDivider} from '@sanity/ui'
 import React, {useEffect, useMemo} from 'react'
-import {CommandListItems, useCommandList} from '../../../../../../../components'
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {
+  CommandListItems,
+  CommandListVirtualItemProps,
+  useCommandList,
+} from '../../../../../../../components'
 import type {DocumentTypeMenuItem} from '../../../types'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
@@ -10,52 +13,47 @@ interface DocumentTypesVirtualListProps {
 }
 
 export function DocumentTypesVirtualList({filteredItems}: DocumentTypesVirtualListProps) {
-  const {
-    state: {
-      terms: {types},
-    },
-  } = useSearchState()
-
-  const {virtualizer} = useCommandList()
+  const {values, virtualizer} = useCommandList()
 
   useEffect(() => {
-    if (types.length === 0) {
+    if (values.length === 0) {
       virtualizer?.scrollToIndex(0)
     }
-  }, [types.length, virtualizer])
+  }, [values.length, virtualizer])
 
   const VirtualListItem = useMemo(() => {
-    return function VirtualListItemFn({index}: {index: number}) {
-      const virtualItem = filteredItems[index]
-      if (virtualItem.type === 'divider') {
+    return function VirtualListItemComponent({
+      value,
+    }: CommandListVirtualItemProps<DocumentTypeMenuItem>) {
+      if (value.type === 'divider') {
         return (
           <Box padding={1}>
             <MenuDivider />
           </Box>
         )
       }
-      if (virtualItem.type === 'header') {
+      if (value.type === 'header') {
         return (
           <Box margin={1} paddingBottom={2} paddingTop={3} paddingX={3}>
             <Label muted size={0}>
-              {virtualItem.title}
+              {value.title}
             </Label>
           </Box>
         )
       }
-      if (virtualItem.type === 'item') {
+      if (value.type === 'item') {
         return (
           <DocumentTypeFilterItem
             paddingX={1}
             paddingTop={1}
-            selected={virtualItem.selected}
-            type={virtualItem.item}
+            selected={value.selected}
+            type={value.item}
           />
         )
       }
       return null
     }
-  }, [filteredItems])
+  }, [])
 
   return (
     <CommandListItems

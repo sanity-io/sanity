@@ -10,10 +10,10 @@ import React, {
 } from 'react'
 import styled from 'styled-components'
 import {CommandListItems} from '../CommandListItems'
-import {CommandListProvider} from '../CommandListProvider'
+import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
 import {useCommandList} from '../useCommandList'
 
-const ITEMS = [...Array(50000).keys()]
+const ITEMS = [...Array(50000).keys()].map((i) => `Button ${i}`)
 
 const CardContainer = styled(Card)`
   height: 400px;
@@ -26,11 +26,12 @@ export default function ButtonStory() {
   const [message, setMessage] = useState('')
   const showInput = useBoolean('Show input', false, 'Props')
 
-  const filteredItems = useMemo(() => {
+  const filteredValues = useMemo(() => {
+    const values = ITEMS.map((i) => ({value: i}))
     if (!filter) {
-      return ITEMS
+      return values
     }
-    return ITEMS.filter((i) => i.toString().includes(filter))
+    return values.filter((i) => i.value.toLowerCase().includes(filter.toLowerCase()))
   }, [filter])
 
   const handleChange = useCallback(
@@ -45,15 +46,14 @@ export default function ButtonStory() {
       <Stack space={3}>
         <CommandListProvider
           activeItemDataAttr="data-selected"
-          ariaActiveDescendant={filteredItems.length > 0}
+          ariaActiveDescendant={filteredValues.length > 0}
           ariaChildrenLabel="Children"
           ariaInputLabel="Header"
           autoFocus
-          itemIndices={[...filteredItems.keys()]}
+          values={filteredValues}
         >
           <CommandListContent
             filter={filter}
-            items={filteredItems}
             onChildClick={handleChildClick}
             onClear={handleClear}
             onChange={handleChange}
@@ -73,41 +73,39 @@ export default function ButtonStory() {
 interface CommandListContentProps
   extends Pick<ComponentProps<typeof TextInput>, 'onChange' | 'onClear'> {
   filter?: string
-  items: number[]
   onChildClick: (message: string) => void
   showInput?: boolean
 }
 
 const CommandListContent = ({
   filter,
-  items,
   onChange,
   onChildClick,
   onClear,
   showInput,
 }: CommandListContentProps) => {
-  const {setInputElement, virtualizer, virtualItemDataAttr} = useCommandList()
+  const {setInputElement, values, virtualizer, virtualItemDataAttr} = useCommandList<string>()
 
   const handleChange = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (onChange) {
         onChange(e)
-        if (items.length > 0) {
+        if (values.length > 0) {
           virtualizer?.scrollToIndex(0)
         }
       }
     },
-    [items, onChange, virtualizer]
+    [onChange, values.length, virtualizer]
   )
 
   const handleClear = useCallback(() => {
     if (onClear) {
       onClear()
-      if (items.length > 0) {
+      if (values.length > 0) {
         virtualizer?.scrollToIndex(0)
       }
     }
-  }, [items, onClear, virtualizer])
+  }, [onClear, values.length, virtualizer])
 
   useEffect(() => {
     if (!showInput) {
@@ -116,20 +114,19 @@ const CommandListContent = ({
   }, [setInputElement, showInput])
 
   const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({index}: {index: number}) {
-      const item = items[index]
+    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<string>) {
       return (
         <Button
           {...virtualItemDataAttr}
           mode="bleed"
-          onClick={() => onChildClick(`Button ${item.toString()} clicked`)}
+          onClick={() => onChildClick(`${value} clicked`)}
           style={{borderRadius: 0, width: '100%'}}
-          text={`Button ${item.toString()}`}
+          text={value}
           tone="primary"
         />
       )
     }
-  }, [items, onChildClick, virtualItemDataAttr])
+  }, [onChildClick, virtualItemDataAttr])
 
   return (
     <Flex direction="column" style={{height: '400px'}}>

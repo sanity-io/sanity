@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo} from 'react'
-import {CommandListItems} from '../../../../../../components'
+import {CommandListItems, type CommandListVirtualItemProps} from '../../../../../../components'
+import {WeightedHit} from '../../../../../../search'
 import {getPublishedId} from '../../../../../../util/draftUtils'
 import {VIRTUAL_LIST_SEARCH_ITEM_HEIGHT, VIRTUAL_LIST_SEARCH_OVERSCAN} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
@@ -14,7 +15,7 @@ export function SearchResultsVirtualList({onClose}: SearchResultsVirtualListProp
   const {
     dispatch,
     recentSearchesStore,
-    state: {debug, filters, terms, result},
+    state: {debug, filters, terms},
   } = useSearchState()
 
   /**
@@ -32,22 +33,21 @@ export function SearchResultsVirtualList({onClose}: SearchResultsVirtualListProp
   }, [dispatch, filters, onClose, recentSearchesStore, terms])
 
   const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({index}: {index: number}) {
-      const hit = result.hits[index]
+    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<WeightedHit>) {
       return (
         <>
           <SearchResultItem
-            documentId={getPublishedId(hit.hit._id) || ''}
-            documentType={hit.hit._type}
+            documentId={getPublishedId(value.hit._id) || ''}
+            documentType={value.hit._type}
             onClick={handleResultClick}
             paddingTop={2}
             paddingX={2}
           />
-          {debug && <DebugOverlay data={hit} />}
+          {debug && <DebugOverlay data={value} />}
         </>
       )
     }
-  }, [debug, handleResultClick, result.hits])
+  }, [debug, handleResultClick])
 
   return (
     <CommandListItems

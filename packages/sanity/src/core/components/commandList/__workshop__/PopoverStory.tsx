@@ -15,7 +15,7 @@ import {
 import {useSelect} from '@sanity/ui-workshop'
 import React, {ComponentProps, useCallback, useMemo, useRef, useState} from 'react'
 import {CommandListItems} from '../CommandListItems'
-import {CommandListProvider} from '../CommandListProvider'
+import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
 import {useCommandList} from '../useCommandList'
 
 const ITEMS = [...Array(50000).keys()]
@@ -70,16 +70,18 @@ export default function PopoverStory() {
   useClickOutside(handleClose, [button, popover])
   useGlobalKeyDown(handleGlobalKeyDown)
 
+  const values = ITEMS.map((i) => ({value: i}))
+
   return (
     <CommandListProvider
       activeItemDataAttr="data-selected"
-      ariaActiveDescendant={ITEMS.length > 0}
+      ariaActiveDescendant={values.length > 0}
       ariaChildrenLabel="Children"
       ariaInputLabel="Header"
       autoFocus
-      itemIndices={[...ITEMS.keys()]}
       initialScrollAlign={initialSelectedScrollAlign}
       initialIndex={selectedIndex}
+      values={values}
     >
       <Card padding={4}>
         <Stack space={3}>
@@ -134,9 +136,8 @@ const CommandListContent = ({items, onChildClick}: CommandListContentProps) => {
   const {virtualItemDataAttr} = useCommandList()
 
   const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({index}: {index: number}) {
-      const item = items[index]
-      const handleClick = useCallback(() => onChildClick(index), [index])
+    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<number>) {
+      const handleClick = useCallback(() => onChildClick(value), [value])
       return (
         <Button
           {...virtualItemDataAttr}
@@ -144,11 +145,11 @@ const CommandListContent = ({items, onChildClick}: CommandListContentProps) => {
           mode="bleed"
           onClick={handleClick}
           style={{borderRadius: 0, width: '100%'}}
-          text={`Button ${item.toString()}`}
+          text={`Button ${value.toString()}`}
         />
       )
     }
-  }, [items, onChildClick, virtualItemDataAttr])
+  }, [onChildClick, virtualItemDataAttr])
 
   return (
     <Flex direction="column" style={{height: '400px'}}>

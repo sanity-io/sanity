@@ -10,8 +10,24 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isNonNullable, supportsTouch} from '../../util'
+import {supportsTouch} from '../../util'
 import {CommandListContext} from './CommandListContext'
+
+/**
+ * @internal
+ */
+export interface CommandListVirtualItemValue<T> {
+  enabled?: boolean
+  selected?: boolean
+  value: T
+}
+
+/**
+ * @internal
+ */
+export interface CommandListVirtualItemProps<T> extends CommandListVirtualItemValue<T> {
+  index: number
+}
 
 /**
  * This provider adds the following:
@@ -20,25 +36,23 @@ import {CommandListContext} from './CommandListContext'
  * - Pointer blocking when navigating with arrow keys (to ensure that only one active state is visible at any given time)
  * - ARIA attributes to define a `combobox` input that controls a separate `listbox`
  */
-interface CommandListProviderProps {
+interface CommandListProviderProps<T> {
   /** The data attribute to apply to any active virtual list items */
   activeItemDataAttr?: string
-  ariaActiveDescendant?: boolean
+  /** `aria-label` to apply to the virtual list container element */
   ariaChildrenLabel?: string
+  /** `aria-label` to apply to the virtual list input element */
   ariaInputLabel?: string
+  /** Whether `aria-multiselectable` is enabled on the virtual list container element */
   ariaMultiselectable?: boolean
   /** Automatically focus the input (if applicable) or virtual list */
   autoFocus?: boolean
   children?: ReactNode
   /** Scroll alignment of the initial selected index */
   initialScrollAlign?: ScrollToOptions['align']
+  /** Initial active index on mount */
   initialIndex?: number
-  /**
-   * An array of (number | null) indicating active indices only.
-   * e.g. `[0, null, 1, 2]` indicates a list of 4 items, where the second item is non-interactive (such as a heading or divider)
-   */
-  itemIndices: (number | null)[]
-  itemIndicesSelected?: boolean[]
+  values: CommandListVirtualItemValue<T>[]
 }
 
 // Default data attribute set on interactive elements within virtual list items
@@ -49,7 +63,7 @@ const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
 /**
  * @internal
  */
-export function CommandListProvider({
+export function CommandListProvider<T>({
   activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
   ariaActiveDescendant = true,
   ariaChildrenLabel,
@@ -59,16 +73,39 @@ export function CommandListProvider({
   children,
   initialScrollAlign = 'start',
   initialIndex,
-  itemIndices,
-  itemIndicesSelected,
-}: CommandListProviderProps) {
+  values,
+}: CommandListProviderProps<T>) {
   const selectedIndexRef = useRef<number>(-1)
   const [childContainerElement, setChildContainerElement] = useState<HTMLDivElement | null>(null)
   const [inputElement, setInputElement] = useState<HTMLDivElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
   const [virtualListElement, setVirtualListElement] = useState<HTMLDivElement | null>(null)
 
-  const activeItemCount = itemIndices.filter(isNonNullable).length
+  const activeItemCount = values.filter((v) => v.enabled || typeof v.enabled === 'undefined').length
+
+  /**
+   * An array of (number | null) indicating active indices.
+   * e.g. `[0, null, 1, 2]` indicates a list of 4 items, where the second item is non-interactive (such as a heading or divider)
+   */
+  const itemIndices = useMemo(() => {
+    let i = -1
+    return values.reduce<(number | null)[]>((acc, val, index) => {
+      const isEnabled = val.enabled || typeof val.enabled === 'undefined'
+      if (isEnabled) {
+        i += 1
+      }
+      acc[index] = isEnabled ? i : null
+      return acc
+    }, [])
+  }, [values])
+
+  /**
+   * An array of (boolean) indicating selected indices.
+   * e.g. `[true, false, false, true]` indicates a list of 4 items, where the first and last items are selected.
+   */
+  const itemIndicesSelected = useMemo(() => {
+    return values.map((v) => v.selected || typeof v.selected === 'undefined')
+  }, [values])
 
   const commandListId = useId()
 
@@ -122,9 +159,7 @@ export function CommandListProvider({
       const childIndex = itemIndices[virtualIndex]
       if (typeof childIndex === 'number') {
         child.setAttribute('aria-posinset', (childIndex + 1).toString())
-        if (itemIndicesSelected) {
-          child.setAttribute('aria-selected', itemIndicesSelected[virtualIndex].toString())
-        }
+        child.setAttribute('aria-selected', itemIndicesSelected[virtualIndex].toString())
         child.setAttribute('aria-setsize', activeItemCount.toString())
         child.setAttribute('id', getChildDescendantId(childIndex))
         child.setAttribute('role', 'option')
@@ -349,12 +384,12 @@ export function CommandListProvider({
   }, [activeItemCount, enableChildContainerPointerEvents])
 
   /**
-   * Refresh selected state when item indices change (as a result of filtering).
+   * Refresh selected state when item values change (as a result of filtering).
    * This is to ensure that we correctly clear aria-activedescendant attrs if the filtered array is empty.
    */
   useEffect(() => {
     handleAssignSelectedState()
-  }, [handleAssignSelectedState, itemIndices])
+  }, [handleAssignSelectedState, values])
 
   /**
    * Re-assign aria-selected state on all child elements on any DOM mutations.
@@ -429,6 +464,7 @@ export function CommandListProvider({
         setPointerOverlayElement,
         setVirtualizer: handleSetVirtualizer,
         setVirtualListElement,
+        values,
         virtualizer: virtualizerRef.current,
         virtualItemDataAttr: {[LIST_ITEM_DATA_ATTR]: ''},
         virtualListElement,

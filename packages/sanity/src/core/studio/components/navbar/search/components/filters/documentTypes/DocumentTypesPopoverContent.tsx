@@ -45,36 +45,23 @@ export function DocumentTypesPopoverContent() {
     dispatch({type: 'TERMS_TYPES_CLEAR'})
   }, [dispatch])
 
-  /**
-   * Create a map of indices for our virtual list, ignoring non-filter items.
-   * This is to ensure navigating via keyboard skips over these non-interactive items.
-   */
-  const itemIndices = useMemo(() => {
-    let i = -1
-    return filteredItems.reduce<(number | null)[]>((acc, val, index) => {
-      const isInteractive = val.type === 'item'
-      if (isInteractive) {
-        i += 1
-      }
-      acc[index] = isInteractive ? i : null
-      return acc
-    }, [])
-  }, [filteredItems])
-
-  const itemIndicesSelected = useMemo(() => {
-    return filteredItems.map((f) => f.type === 'item' && f.selected)
+  const values = useMemo(() => {
+    return filteredItems.map((i) => ({
+      enabled: i.type === 'item',
+      selected: i.type === 'item' && i.selected,
+      value: i,
+    }))
   }, [filteredItems])
 
   return (
     <CommandListProvider
       activeItemDataAttr="data-hovered"
-      ariaActiveDescendant={filteredItems.length > 0}
+      ariaActiveDescendant={values.length > 0}
       ariaChildrenLabel="Document types"
       ariaInputLabel="Filter by document type"
       ariaMultiselectable
       autoFocus
-      itemIndices={itemIndices}
-      itemIndicesSelected={itemIndicesSelected}
+      values={values}
     >
       <Flex direction="column" style={{width: '250px'}}>
         {/* Search header */}

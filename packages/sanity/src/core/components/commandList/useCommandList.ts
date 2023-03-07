@@ -4,7 +4,7 @@ import {CommandListContext, CommandListContextValue} from './CommandListContext'
 /**
  * @internal
  */
-export function useCommandList(): CommandListContextValue {
+export function useCommandList<T>(): CommandListContextValue<T | unknown> {
   const context = useContext(CommandListContext)
   if (context === undefined) {
     throw new Error('useCommandList must be used within a CommandListProvider')

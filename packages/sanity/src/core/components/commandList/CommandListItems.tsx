@@ -3,11 +3,12 @@ import {useVirtualizer, VirtualizerOptions} from '@tanstack/react-virtual'
 import React, {ReactElement, useEffect} from 'react'
 import styled from 'styled-components'
 import {CommandListItem} from './CommandListItem'
+import type {CommandListVirtualItemProps} from './CommandListProvider'
 import {useCommandList} from './useCommandList'
 
 interface CommandListItemsProps extends ResponsivePaddingProps {
   fixedHeight?: boolean
-  item: (props: {index: number}) => ReactElement | null
+  item: (props: CommandListVirtualItemProps<any>) => ReactElement | null
   virtualizerOptions: Pick<
     VirtualizerOptions<HTMLDivElement, Element>,
     'estimateSize' | 'getItemKey' | 'overscan'
@@ -69,12 +70,13 @@ export function CommandListItems({
     setPointerOverlayElement,
     setVirtualizer,
     setVirtualListElement,
+    values,
     virtualListElement,
   } = useCommandList()
 
   const virtualizer = useVirtualizer({
     ...virtualizerOptions,
-    count: itemIndices.length,
+    count: values.length,
     getScrollElement: () => virtualListElement,
   })
 
@@ -105,7 +107,7 @@ export function CommandListItems({
               measure={fixedHeight ? undefined : virtualizer.measureElement}
               virtualRow={virtualRow}
             >
-              {Item && <Item index={virtualRow.index} />}
+              {Item && <Item {...values[virtualRow.index]} index={virtualRow.index} />}
             </CommandListItem>
           )
         })}

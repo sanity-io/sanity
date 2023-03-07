@@ -2,13 +2,19 @@ import {Box, Card, Flex, Portal} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
-import {CommandListProvider, useCommandList} from '../../../../components'
+import {
+  CommandListProvider,
+  type CommandListVirtualItemValue,
+  useCommandList,
+} from '../../../../components'
+import {WeightedHit} from '../../../../search'
 import {useColorScheme} from '../../../colorScheme'
 import {Filters} from './components/filters/Filters'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
 import {useSearchState} from './contexts/search/useSearchState'
+import type {RecentSearch} from './datastores/recentSearches'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
 
@@ -102,17 +108,13 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
     }
   }, [])
 
-  /**
-   * Create a map of indices for our virtual list, ignoring non-filter items.
-   * This is to ensure navigating via keyboard skips over these non-interactive items.
-   */
-  const itemIndices = useMemo(() => {
+  const values: CommandListVirtualItemValue<RecentSearch | WeightedHit>[] = useMemo(() => {
     if (hasValidTerms) {
-      return Array.from(Array(result.hits.length).keys())
+      return result.hits.map((i) => ({value: i}))
     }
 
-    return Array.from(Array(recentSearches.length).keys())
-  }, [hasValidTerms, recentSearches.length, result.hits.length])
+    return recentSearches.map((i) => ({value: i}))
+  }, [hasValidTerms, recentSearches, result.hits])
 
   if (!open) {
     return null
@@ -123,13 +125,13 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       <FocusLock autoFocus={false} returnFocus>
         <CommandListProvider
           activeItemDataAttr="data-hovered"
-          ariaActiveDescendant={itemIndices.length > 0}
+          ariaActiveDescendant={values.length > 0}
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
           ariaInputLabel="Search"
           autoFocus
           data-testid="search-results-dialog"
-          itemIndices={itemIndices}
           initialIndex={hasValidTerms ? lastActiveIndex : 0}
+          values={values}
         >
           <SearchDialogContent
             filtersVisible={filtersVisible}

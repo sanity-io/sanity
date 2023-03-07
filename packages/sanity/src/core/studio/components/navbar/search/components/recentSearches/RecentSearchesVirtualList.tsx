@@ -1,7 +1,7 @@
 import {useMediaIndex} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {CommandListItems} from '../../../../../../components'
-import {useSearchState} from '../../contexts/search/useSearchState'
+import {CommandListItems, type CommandListVirtualItemProps} from '../../../../../../components'
+import type {RecentSearch} from '../../datastores/recentSearches'
 import {RecentSearchItem} from './item/RecentSearchItem'
 
 interface RecentSearchesVirtualListProps {
@@ -13,10 +13,6 @@ const MAX_COMBINED_TYPE_COUNT_SMALL = 20
 const MAX_COMBINED_TYPE_COUNT_LARGE = 40
 
 export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVirtualListProps) {
-  const {
-    state: {recentSearches},
-  } = useSearchState()
-
   const mediaIndex = useMediaIndex()
 
   const maxVisibleTypePillChars = useMemo(() => {
@@ -24,8 +20,10 @@ export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVi
   }, [mediaIndex])
 
   const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({index}: {index: number}) {
-      const recentSearch = recentSearches[index]
+    return function VirtualListItemComponent({
+      index,
+      value,
+    }: CommandListVirtualItemProps<RecentSearch>) {
       return (
         <RecentSearchItem
           index={index}
@@ -33,11 +31,11 @@ export function RecentSearchesVirtualList({showFiltersOnClick}: RecentSearchesVi
           paddingTop={1}
           paddingX={2}
           showFiltersOnClick={showFiltersOnClick}
-          value={recentSearch}
+          value={value}
         />
       )
     }
-  }, [maxVisibleTypePillChars, recentSearches, showFiltersOnClick])
+  }, [maxVisibleTypePillChars, showFiltersOnClick])
 
   return (
     <CommandListItems
