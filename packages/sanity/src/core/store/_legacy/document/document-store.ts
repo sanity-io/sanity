@@ -1,6 +1,7 @@
 import {SanityClient} from '@sanity/client'
 import {InitialValueResolverContext, Schema} from '@sanity/types'
 import {Observable} from 'rxjs'
+import {filter, map} from 'rxjs/operators'
 import {HistoryStore} from '../history'
 import {DocumentPreviewStore} from '../../../preview'
 import {getDraftId, isDraftId} from '../../../util'
@@ -12,7 +13,7 @@ import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
 import {editState, EditStateFor} from './document-pair/editState'
-import {getOperationEvents, OperationError, OperationSuccess} from './document-pair/operationEvents'
+import {operationEvents, OperationError, OperationSuccess} from './document-pair/operationEvents'
 import {OperationsAPI} from './document-pair/operations'
 import {validation, ValidationStatus} from './document-pair/validation'
 import {listenQuery, ListenQueryOptions} from './listenQuery'
@@ -87,15 +88,6 @@ export function createDocumentStore({
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const ctx = {client, getClient, observeDocumentPairAvailability, historyStore, schema}
 
-  const caches = {
-    pair: {
-      editOperations: new Map<string, Observable<OperationsAPI>>(),
-      editState: new Map<string, Observable<EditStateFor>>(),
-    },
-  }
-
-  const operationEvents = getOperationEvents(ctx)
-
   return {
     // Public API
     checkoutPair(idPair) {
@@ -124,31 +116,24 @@ export function createDocumentStore({
         return documentEvents(ctx.client, getIdPairFromPublished(publishedId), type)
       },
       editOperations(publishedId, type) {
-        const cache = caches.pair.editOperations
-        const key = `${publishedId}:${type}`
-        const cached = cache.get(key)
-        if (cached) {
-          return cached
-        }
-
-        const ops = editOperations(ctx, getIdPairFromPublished(publishedId), type)
-        cache.set(key, ops)
-        return ops
+        return editOperations(ctx, getIdPairFromPublished(publishedId), type)
       },
       editState(publishedId, type) {
-        const cache = caches.pair.editState
-        const key = `${publishedId}:${type}`
-        const cached = cache.get(key)
-        if (cached) {
-          return cached
-        }
-
-        const state = editState(ctx, getIdPairFromPublished(publishedId), type)
-        cache.set(key, state)
-        return state
+        return editState(ctx, getIdPairFromPublished(publishedId), type)
       },
       operationEvents(publishedId, type) {
-        return operationEvents(getIdPairFromPublished(publishedId), type)
+        return operationEvents({client, historyStore, schema}).pipe(
+          filter(
+            (result) =>
+              result.args.idPair.publishedId === publishedId && result.args.typeName === type
+          ),
+          map((result): OperationSuccess | OperationError => {
+            const {operationName, idPair: documentIds} = result.args
+            return result.type === 'success'
+              ? {type: 'success', op: operationName, id: documentIds.publishedId}
+              : {type: 'error', op: operationName, id: documentIds.publishedId, error: result.error}
+          })
+        )
       },
       validation(publishedId, type) {
         return validation(ctx, getIdPairFromPublished(publishedId), type)

@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import {SanityClient} from '@sanity/client'
 import {asyncScheduler, defer, EMPTY, merge, Observable, of, Subject} from 'rxjs'
 import {
@@ -17,6 +18,7 @@ import {
 import {Schema} from '@sanity/types'
 import {IdPair} from '../types'
 import {HistoryStore} from '../../history'
+import {memoize} from '../utils/createMemoizer'
 import {OperationArgs, OperationsAPI} from './operations'
 import {operationArgs} from './operationArgs'
 import {del} from './operations/delete'
@@ -107,99 +109,60 @@ interface IntermediaryError {
 }
 
 /** @internal */
-export type OperationEventsListener = (
-  idPair: IdPair,
-  typeName?: string
-) => Observable<OperationSuccess | OperationError>
-
-const listenerCache = new Map<string, OperationEventsListener>()
-
-/** @internal */
-export function getOperationEvents(ctx: {
-  client: SanityClient
-  historyStore: HistoryStore
-  schema: Schema
-}): OperationEventsListener {
-  const {dataset, projectId} = ctx.client.config()
-  const cacheKey = `${projectId}-${dataset}`
-  if (listenerCache.has(cacheKey)) {
-    return listenerCache.get(cacheKey)!
-  }
-
-  const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
-    groupBy((op) => op.idPair.publishedId),
-    mergeMap((groups$) =>
-      groups$.pipe(
-        // although it might look like a bug, dropping pending async operations here is actually a feature
-        // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
-        // should be cancelled
-        switchMap((args) =>
-          operationArgs(ctx, args.idPair, args.typeName).pipe(
-            take(1),
-            switchMap((operationArguments) => {
-              const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
-              if (requiresConsistency) {
-                operationArguments.published.commit()
-                operationArguments.draft.commit()
-              }
-              const isConsistent$ = consistencyStatus(ctx.client, args.idPair, args.typeName).pipe(
-                filter(Boolean)
+export const operationEvents = memoize(
+  (ctx: {client: SanityClient; historyStore: HistoryStore; schema: Schema}) => {
+    const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
+      groupBy((op) => op.idPair.publishedId),
+      mergeMap((groups$) =>
+        groups$.pipe(
+          // although it might look like a bug, dropping pending async operations here is actually a feature
+          // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
+          // should be cancelled
+          switchMap((args) =>
+            operationArgs(ctx, args.idPair, args.typeName).pipe(
+              take(1),
+              switchMap((operationArguments) => {
+                const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
+                if (requiresConsistency) {
+                  operationArguments.published.commit()
+                  operationArguments.draft.commit()
+                }
+                const isConsistent$ = consistencyStatus(
+                  ctx.client,
+                  args.idPair,
+                  args.typeName
+                ).pipe(filter(Boolean))
+                const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
+                return ready$.pipe(
+                  switchMap(() => execute(args.operationName, operationArguments, args.extraArgs))
+                )
+              }),
+              map((): IntermediarySuccess => ({type: 'success', args})),
+              catchError(
+                (err): Observable<IntermediaryError> => of({type: 'error', args, error: err})
               )
-              const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
-              return ready$.pipe(
-                // eslint-disable-next-line max-nested-callbacks
-                switchMap(() => execute(args.operationName, operationArguments, args.extraArgs))
-              )
-            }),
-            map((): IntermediarySuccess => ({type: 'success', args})),
-            catchError(
-              (err): Observable<IntermediaryError> => of({type: 'error', args, error: err})
             )
           )
         )
-      )
-    ),
-    share()
-  )
+      ),
+      share()
+    )
 
-  // this enables autocommit after patch operations
-  const AUTOCOMMIT_INTERVAL = 1000
-  const autoCommit$ = result$.pipe(
-    filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
-    throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
-    tap((result) => {
-      emitOperation('commit', result.args.idPair, result.args.typeName, [])
-    })
-  )
+    // this enables autocommit after patch operations
+    const AUTOCOMMIT_INTERVAL = 1000
+    const autoCommit$ = result$.pipe(
+      filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
+      throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
+      tap((result) => {
+        emitOperation('commit', result.args.idPair, result.args.typeName, [])
+      })
+    )
 
-  const cache = new Map<string, Observable<OperationSuccess | OperationError>>()
-
-  function listener(
-    idPair: IdPair,
-    typeName?: string
-  ): Observable<OperationSuccess | OperationError> {
-    const key = `${idPair.publishedId}:${typeName}`
-
-    let ret = cache.get(key)
-
-    if (!ret) {
-      ret = merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY))).pipe(
-        filter((result) => result.args.idPair.publishedId === idPair.publishedId),
-        map((result): OperationSuccess | OperationError => {
-          const {operationName, idPair: documentIds} = result.args
-          return result.type === 'success'
-            ? {type: 'success', op: operationName, id: documentIds.publishedId}
-            : {type: 'error', op: operationName, id: documentIds.publishedId, error: result.error}
-        })
-      )
-
-      cache.set(key, ret)
-    }
-
-    return ret
+    return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY)))
+  },
+  (ctx) => {
+    const config = ctx.client.config()
+    // we only want one of these per dataset+projectid
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}`
   }
-
-  listenerCache.set(cacheKey, listener)
-
-  return listener
-}
+)
