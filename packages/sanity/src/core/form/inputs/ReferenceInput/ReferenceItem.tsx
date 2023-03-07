@@ -13,7 +13,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import {
   CloseIcon,
@@ -40,6 +40,7 @@ import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {useReferenceInput} from './useReferenceInput'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
+import {IntentLink} from 'sanity/router'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 
@@ -88,7 +89,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     value,
     open,
     onInsert,
-    onFocus,
     presence,
     validation,
     inputId,
@@ -162,6 +162,27 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   const tone = getTone({readOnly, hasErrors, hasWarnings})
   const isEditing = !hasRef || focusPath[0] === '_ref'
 
+  const OpenLink = useMemo(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      forwardRef(function OpenLink(
+        restProps: ComponentProps<typeof IntentLink>,
+        _ref: ForwardedRef<HTMLAnchorElement>
+      ) {
+        return (
+          <IntentLink
+            {...restProps}
+            intent="edit"
+            params={{id: value?._ref, type: refType?.name}}
+            target="_blank"
+            rel="noopener noreferrer"
+            ref={_ref}
+          />
+        )
+      }),
+    [refType?.name, value?._ref]
+  )
+
   const menu = useMemo(
     () =>
       readOnly ? null : (
@@ -189,7 +210,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                 {!readOnly && !isEditing && hasRef && <MenuDivider />}
                 {!isEditing && hasRef && (
                   <MenuItem
-                    as={EditReferenceLink}
+                    as={OpenLink}
                     data-as="a"
                     text="Open in new tab"
                     icon={OpenInNewTabIcon}
@@ -210,7 +231,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       handleDuplicate,
       handleInsert,
       insertableTypes,
-      EditReferenceLink,
+      OpenLink,
       onPathFocus,
     ]
   )
