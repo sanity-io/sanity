@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@sanity/client": "^3.3.3",
-    "nock": "^9.0.5",
+    "nock": "^13.3.0",
     "rimraf": "^2.7.1"
   },
   "repository": {
