@@ -17,7 +17,7 @@ export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
 }: DocumentTypeFilterItemProps) {
   const {dispatch} = useSearchState()
 
-  const {virtualItemDataAttr} = useCommandList()
+  const {virtualItemDataAttributes} = useCommandList()
 
   const handleTypeAdd = useCallback(() => {
     dispatch({type: 'TERMS_TYPE_ADD', schemaType: type})
@@ -38,7 +38,7 @@ export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
   return (
     <Box {...rest}>
       <Button
-        {...virtualItemDataAttr}
+        {...virtualItemDataAttributes}
         fontSize={1}
         iconRight={selected && CheckmarkIcon}
         justify="flex-start"

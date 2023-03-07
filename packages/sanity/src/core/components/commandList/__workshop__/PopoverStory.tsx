@@ -140,14 +140,14 @@ interface CommandListContentProps
 }
 
 const CommandListContent = ({onChildClick}: CommandListContentProps) => {
-  const {virtualItemDataAttr} = useCommandList()
+  const {virtualItemDataAttributes} = useCommandList()
 
   const VirtualListItem = useMemo(() => {
     return function VirtualListItemComponent({value}: CommandListVirtualItemProps<number>) {
       const handleClick = useCallback(() => onChildClick(value), [value])
       return (
         <Button
-          {...virtualItemDataAttr}
+          {...virtualItemDataAttributes}
           fontSize={1}
           mode="bleed"
           onClick={handleClick}
@@ -156,7 +156,7 @@ const CommandListContent = ({onChildClick}: CommandListContentProps) => {
         />
       )
     }
-  }, [onChildClick, virtualItemDataAttr])
+  }, [onChildClick, virtualItemDataAttributes])
 
   return (
     <Flex direction="column" style={{height: '400px'}}>

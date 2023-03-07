@@ -24,7 +24,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
     state: {filters},
   } = useSearchState()
 
-  const {virtualItemDataAttr} = useCommandList()
+  const {virtualItemDataAttributes} = useCommandList()
 
   const handleClick = useCallback(() => {
     dispatch({filter: item.filter, type: 'TERMS_FILTERS_ADD'})
@@ -53,7 +53,7 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   return (
     <Box {...rest}>
       <Button
-        {...virtualItemDataAttr}
+        {...virtualItemDataAttributes}
         disabled={isAlreadyActive}
         fontSize={1}
         justify="flex-start"

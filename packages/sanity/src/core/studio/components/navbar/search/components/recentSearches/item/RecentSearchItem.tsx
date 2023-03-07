@@ -63,7 +63,7 @@ export function RecentSearchItem({
 }: RecentSearchesProps) {
   const {dispatch, recentSearchesStore} = useSearchState()
 
-  const {virtualItemDataAttr} = useCommandList()
+  const {virtualItemDataAttributes} = useCommandList()
 
   // Determine how many characters are left to render type pills
   const availableCharacters = maxVisibleTypePillChars - value.query.length
@@ -100,7 +100,7 @@ export function RecentSearchItem({
   return (
     <Box {...rest}>
       <RecentSearchItemButton
-        {...virtualItemDataAttr}
+        {...virtualItemDataAttributes}
         mode="bleed"
         onClick={handleClick}
         paddingLeft={3}

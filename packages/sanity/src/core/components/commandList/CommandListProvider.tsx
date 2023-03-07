@@ -464,7 +464,7 @@ export function CommandListProvider<T>({
         setVirtualListElement,
         values,
         virtualizer: virtualizerRef.current,
-        virtualItemDataAttr: {[LIST_ITEM_DATA_ATTR]: ''},
+        virtualItemDataAttributes: {[LIST_ITEM_DATA_ATTR]: ''},
         virtualListElement,
       }}
     >

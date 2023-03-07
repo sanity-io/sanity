@@ -30,7 +30,7 @@ export function SearchResultItem({
   const schema = useSchema()
   const type = schema.get(documentType)
   const documentPresence = useDocumentPresence(documentId)
-  const {virtualItemDataAttr} = useCommandList()
+  const {virtualItemDataAttributes} = useCommandList()
 
   const {onClick: onIntentClick, href} = useIntentLink({
     intent: 'edit',
@@ -55,7 +55,7 @@ export function SearchResultItem({
   return (
     <Box {...rest}>
       <PreviewCard
-        {...virtualItemDataAttr}
+        {...virtualItemDataAttributes}
         as={PreviewCardLink}
         data-as="a"
         flex={1}

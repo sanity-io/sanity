@@ -96,7 +96,7 @@ const CommandListContent = ({
   onClear,
   showInput,
 }: CommandListContentProps) => {
-  const {setInputElement, values, virtualizer, virtualItemDataAttr} = useCommandList<number>()
+  const {setInputElement, values, virtualizer, virtualItemDataAttributes} = useCommandList<number>()
 
   const handleChange = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -132,12 +132,12 @@ const CommandListContent = ({
         [value]
       )
       return (
-        <StyledBox {...virtualItemDataAttr} $index={value} onClick={handleClick} padding={2}>
+        <StyledBox {...virtualItemDataAttributes} $index={value} onClick={handleClick} padding={2}>
           <Text>{value}</Text>
         </StyledBox>
       )
     }
-  }, [onChildClick, virtualItemDataAttr])
+  }, [onChildClick, virtualItemDataAttributes])
 
   return (
     <Flex direction="column" style={{height: '400px'}}>
