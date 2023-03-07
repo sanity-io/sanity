@@ -1,0 +1,13 @@
+diff --git a/node_modules/webpack/lib/util/createHash.js b/node_modules/webpack/lib/util/createHash.js
+index 64de510..52c9ca6 100644
+--- a/node_modules/webpack/lib/util/createHash.js
++++ b/node_modules/webpack/lib/util/createHash.js
+@@ -132,6 +132,7 @@ module.exports = algorithm => {
+ 		case "debug":
+ 			return new DebugHash();
+ 		default:
+-			return new BulkUpdateDecorator(require("crypto").createHash(algorithm));
++			const algo = algorithm === 'md4' ? 'md5' : algorithm;
++			return new BulkUpdateDecorator(require("crypto").createHash(algo));
+ 	}
+ };
