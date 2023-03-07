@@ -125,7 +125,6 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
       <FocusLock autoFocus={false} returnFocus>
         <CommandListProvider
           activeItemDataAttr="data-hovered"
-          ariaActiveDescendant={values.length > 0}
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
           ariaInputLabel="Search"
           autoFocus

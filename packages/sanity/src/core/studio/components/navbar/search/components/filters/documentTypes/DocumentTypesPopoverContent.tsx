@@ -56,7 +56,6 @@ export function DocumentTypesPopoverContent() {
   return (
     <CommandListProvider
       activeItemDataAttr="data-hovered"
-      ariaActiveDescendant={values.length > 0}
       ariaChildrenLabel="Document types"
       ariaInputLabel="Filter by document type"
       ariaMultiselectable

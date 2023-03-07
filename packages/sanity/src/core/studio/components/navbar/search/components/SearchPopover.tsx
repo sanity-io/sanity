@@ -154,7 +154,6 @@ export function SearchPopover({
 
         <CommandListProvider
           activeItemDataAttr="data-hovered"
-          ariaActiveDescendant={values.length > 0}
           ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
           ariaInputLabel="Search results"
           autoFocus

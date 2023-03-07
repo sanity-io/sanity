@@ -65,7 +65,6 @@ const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
  */
 export function CommandListProvider<T>({
   activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
-  ariaActiveDescendant = true,
   ariaChildrenLabel,
   ariaInputLabel,
   ariaMultiselectable = false,
@@ -147,12 +146,11 @@ export function CommandListProvider<T>({
    */
   const handleAssignSelectedState = useCallback(() => {
     const selectedIndex = selectedIndexRef?.current
-    if (ariaActiveDescendant) {
+    if (values.length > 0) {
       inputElement?.setAttribute('aria-activedescendant', getChildDescendantId(selectedIndex))
     } else {
       inputElement?.removeAttribute('aria-activedescendant')
     }
-
     const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
     childElements?.forEach((child) => {
       const virtualIndex = Number(child.dataset?.index)
@@ -169,13 +167,13 @@ export function CommandListProvider<T>({
     showChildrenActiveState(selectedIndex)
   }, [
     activeItemCount,
-    ariaActiveDescendant,
     childContainerElement,
     getChildDescendantId,
     inputElement,
     itemIndices,
     itemIndicesSelected,
     showChildrenActiveState,
+    values.length,
   ])
 
   /**

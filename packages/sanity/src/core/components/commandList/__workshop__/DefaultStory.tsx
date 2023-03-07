@@ -59,7 +59,6 @@ export default function DefaultStory() {
       <Stack space={3}>
         <CommandListProvider
           activeItemDataAttr="data-active"
-          ariaActiveDescendant={filteredValues.length > 0}
           ariaChildrenLabel="Children"
           ariaInputLabel="Header"
           autoFocus

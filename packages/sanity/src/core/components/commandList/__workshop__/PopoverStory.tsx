@@ -84,7 +84,6 @@ export default function PopoverStory() {
   return (
     <CommandListProvider
       activeItemDataAttr="data-selected"
-      ariaActiveDescendant={values.length > 0}
       ariaChildrenLabel="Children"
       ariaInputLabel="Header"
       autoFocus

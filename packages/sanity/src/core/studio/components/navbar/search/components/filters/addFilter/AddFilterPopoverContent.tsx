@@ -53,7 +53,6 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   return (
     <CommandListProvider
       activeItemDataAttr="data-hovered"
-      ariaActiveDescendant={values.length > 0}
       ariaChildrenLabel="Filters"
       ariaInputLabel="Filter by title"
       autoFocus

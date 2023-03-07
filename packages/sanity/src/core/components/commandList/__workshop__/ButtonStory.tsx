@@ -46,7 +46,6 @@ export default function ButtonStory() {
       <Stack space={3}>
         <CommandListProvider
           activeItemDataAttr="data-selected"
-          ariaActiveDescendant={filteredValues.length > 0}
           ariaChildrenLabel="Children"
           ariaInputLabel="Header"
           autoFocus
