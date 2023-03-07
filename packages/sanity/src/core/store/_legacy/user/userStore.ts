@@ -10,6 +10,14 @@ export interface UserStoreOptions {
   currentUser: CurrentUser | null
 }
 
+const INTERNAL_USER_IDS: User[] = [
+  {
+    id: '<system>',
+    displayName: 'Sanity',
+    imageUrl: 'https://public.sanity.io/logos/favicon-192.png',
+  },
+]
+
 /** @beta */
 export interface UserStore {
   getUser(userId: string): Promise<User | null>
@@ -55,6 +63,8 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
   if (userFromCurrentUser?.id) {
     userLoader.prime(userFromCurrentUser.id, userFromCurrentUser)
   }
+
+  INTERNAL_USER_IDS.forEach((user) => userLoader.prime(user.id, user))
 
   return {
     getUser: (userId) => userLoader.load(userId),
