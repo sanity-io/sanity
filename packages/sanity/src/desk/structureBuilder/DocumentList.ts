@@ -1,6 +1,6 @@
 import {SchemaType, SortOrderingItem} from '@sanity/types'
-import {SanityClient} from '@sanity/client'
 import {ComposeIcon} from '@sanity/icons'
+import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
 import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
@@ -12,24 +12,7 @@ import {
 } from './GenericList'
 import {DocumentBuilder} from './Document'
 import {StructureContext} from './types'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, InitialValueTemplateItem, SourceClientOptions} from 'sanity'
-
-const resolveTypeForDocument = async (
-  getClient: (options: SourceClientOptions) => SanityClient,
-  id: string
-): Promise<string | undefined> => {
-  const query = '*[_id in [$documentId, $draftId]]._type'
-  const documentId = id.replace(/^drafts\./, '')
-  const draftId = `drafts.${documentId}`
-
-  const types = await getClient(DEFAULT_STUDIO_CLIENT_OPTIONS).fetch(
-    query,
-    {documentId, draftId},
-    {tag: 'structure.resolve-type'}
-  )
-
-  return types[0]
-}
+import {InitialValueTemplateItem} from 'sanity'
 
 const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) => {
   const filter = spec.options?.filter.trim() || ''
