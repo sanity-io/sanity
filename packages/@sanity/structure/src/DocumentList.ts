@@ -4,7 +4,7 @@ import {
 } from '@sanity/initial-value-templates'
 import {SchemaType, getDefaultSchema} from './parts/Schema'
 import {isActionEnabled} from './parts/documentActionUtils'
-import {structureClient} from './parts/Client'
+import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {SortItem} from './Sort'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
@@ -17,15 +17,6 @@ import {
   GenericListInput,
 } from './GenericList'
 import {DocumentBuilder, getDefaultDocumentNode} from './Document'
-
-const resolveTypeForDocument = (id: string): Promise<string | undefined> => {
-  const query = '*[_id in [$documentId, $draftId]]._type'
-  const documentId = id.replace(/^drafts\./, '')
-  const draftId = `drafts.${documentId}`
-  return structureClient
-    .fetch(query, {documentId, draftId}, {tag: 'structure.resolve-type'})
-    .then((types) => types[0])
-}
 
 const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) => {
   const filter = spec.options!.filter.trim()

@@ -4,6 +4,7 @@ import {ChildResolver} from './ChildResolver'
 import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
+import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {validateId} from './util/validateId'
 import {View, ViewBuilder, maybeSerializeView} from './views/View'
 import {form} from './views'
@@ -12,15 +13,19 @@ import {
   DocumentFragmentResolveOptions,
 } from './userDefinedStructure'
 
-const resolveDocumentChild: ChildResolver = (itemId, {params, path}) => {
-  const {type} = params
+const resolveDocumentChild: ChildResolver = async (itemId, {params, path}) => {
+  let type = params.type
 
   const parentPath = path.slice(0, path.length - 1)
   const currentSegment = path[path.length - 1]
 
   if (!type) {
+    type = await resolveTypeForDocument(itemId)
+  }
+
+  if (!type) {
     throw new SerializeError(
-      `Invalid link. Your link must contain a \`type\`.`,
+      `Failed to resolve document, and no type provided in parameters.`,
       parentPath,
       currentSegment
     )
