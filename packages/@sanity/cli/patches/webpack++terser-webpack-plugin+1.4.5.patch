@@ -1,0 +1,13 @@
+diff --git a/node_modules/webpack/node_modules/terser-webpack-plugin/dist/index.js b/node_modules/webpack/node_modules/terser-webpack-plugin/dist/index.js
+index 6268f6b..f4aa0e8 100644
+--- a/node_modules/webpack/node_modules/terser-webpack-plugin/dist/index.js
++++ b/node_modules/webpack/node_modules/terser-webpack-plugin/dist/index.js
+@@ -214,7 +214,7 @@ class TerserPlugin {
+               // eslint-disable-next-line global-require
+               'terser-webpack-plugin': require('../package.json').version,
+               'terser-webpack-plugin-options': this.options,
+-              hash: _crypto.default.createHash('md4').update(input).digest('hex')
++              hash: _crypto.default.createHash('md5').update(input).digest('hex')
+             };
+             task.cacheKeys = this.options.cacheKeys(defaultCacheKeys, file);
+           }
