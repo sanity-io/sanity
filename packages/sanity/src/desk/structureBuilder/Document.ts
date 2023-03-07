@@ -1,5 +1,6 @@
 import {uniq} from 'lodash'
 import {SchemaType} from '@sanity/types'
+import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {ChildResolver} from './ChildResolver'
 import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
@@ -10,16 +11,20 @@ import type {StructureContext, View} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
 
 const createDocumentChildResolver =
-  ({resolveDocumentNode}: StructureContext): ChildResolver =>
-  (itemId, {params, path}) => {
-    const {type} = params
+  ({resolveDocumentNode, getClient}: StructureContext): ChildResolver =>
+  async (itemId, {params, path}) => {
+    let type = params.type
 
     const parentPath = path.slice(0, path.length - 1)
     const currentSegment = path[path.length - 1]
 
     if (!type) {
+      type = await resolveTypeForDocument(getClient, itemId)
+    }
+
+    if (!type) {
       throw new SerializeError(
-        `Invalid link. Your link must contain a \`type\`.`,
+        `Failed to resolve document, and no type provided in parameters.`,
         parentPath,
         currentSegment
       )
