@@ -128,13 +128,12 @@ const CommandListContent = ({
 
   const VirtualListItem = useMemo(() => {
     return function VirtualListItemComponent({value}: CommandListVirtualItemProps<number>) {
+      const handleClick = useCallback(
+        () => onChildClick(`Button ${value.toString()} clicked`),
+        [value]
+      )
       return (
-        <StyledBox
-          {...virtualItemDataAttr}
-          $index={value} //
-          onClick={() => onChildClick(`Button ${value.toString()} clicked`)}
-          padding={2}
-        >
+        <StyledBox {...virtualItemDataAttr} $index={value} onClick={handleClick} padding={2}>
           <Text>{value}</Text>
         </StyledBox>
       )

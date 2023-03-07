@@ -115,11 +115,12 @@ const CommandListContent = ({
 
   const VirtualListItem = useMemo(() => {
     return function VirtualListItemComponent({value}: CommandListVirtualItemProps<string>) {
+      const handleClick = useCallback(() => onChildClick(`${value} clicked`), [value])
       return (
         <Button
           {...virtualItemDataAttr}
           mode="bleed"
-          onClick={() => onChildClick(`${value} clicked`)}
+          onClick={handleClick}
           style={{borderRadius: 0, width: '100%'}}
           text={value}
           tone="primary"

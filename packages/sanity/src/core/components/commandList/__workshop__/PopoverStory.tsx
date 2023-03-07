@@ -12,7 +12,7 @@ import {
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import {useSelect} from '@sanity/ui-workshop'
+import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {ComponentProps, useCallback, useMemo, useRef, useState} from 'react'
 import {CommandListItems} from '../CommandListItems'
 import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
@@ -27,6 +27,7 @@ const SCROLL_ALIGN_OPTIONS = {
 } as const
 
 export default function PopoverStory() {
+  const closePopoverOnSelect = useBoolean('Close popover on select', true)
   const initialSelectedScrollAlign = useSelect(
     'Initial scroll align',
     SCROLL_ALIGN_OPTIONS,
@@ -40,15 +41,23 @@ export default function PopoverStory() {
 
   const lastSelectedIndex = useRef<number | null>(null)
 
-  const handleChildClick = useCallback((index: number) => {
-    lastSelectedIndex.current = index
-  }, [])
+  const handleChildClick = useCallback(
+    (index: number) => {
+      if (closePopoverOnSelect) {
+        setSelectedIndex(index)
+        setOpen(false)
+      } else {
+        lastSelectedIndex.current = index
+      }
+    },
+    [closePopoverOnSelect]
+  )
   const handleClose = useCallback(() => {
-    if (typeof lastSelectedIndex.current === 'number') {
+    if (typeof lastSelectedIndex.current === 'number' && !closePopoverOnSelect) {
       setSelectedIndex(lastSelectedIndex.current)
     }
     setOpen(false)
-  }, [])
+  }, [closePopoverOnSelect])
   const handleGlobalKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (open && (event.key === 'Escape' || event.key === 'Tab')) {
@@ -121,18 +130,17 @@ interface PopoverContentProps {
 const PopoverContent = ({onChildClick}: PopoverContentProps) => {
   return (
     <Card radius={2} style={{overflow: 'hidden', width: '175px'}}>
-      <CommandListContent items={ITEMS} onChildClick={onChildClick} />
+      <CommandListContent onChildClick={onChildClick} />
     </Card>
   )
 }
 
 interface CommandListContentProps
   extends Pick<ComponentProps<typeof TextInput>, 'onChange' | 'onClear'> {
-  items: number[]
   onChildClick: (index: number) => void
 }
 
-const CommandListContent = ({items, onChildClick}: CommandListContentProps) => {
+const CommandListContent = ({onChildClick}: CommandListContentProps) => {
   const {virtualItemDataAttr} = useCommandList()
 
   const VirtualListItem = useMemo(() => {
