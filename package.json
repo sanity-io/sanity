@@ -52,7 +52,8 @@
     "vercel-build": "npm run build:js && cd dev/test-studio && npm run build -- -y",
     "type-check": "tsc -b",
     "cypress:open": "cypress open --config-file cypress/cypress.json",
-    "cypress:run": "cypress run --config-file cypress/cypress.json"
+    "cypress:run": "cypress run --config-file cypress/cypress.json",
+    "build:performance-studio": "echo 'Perf studio not enabled for v2'"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",
