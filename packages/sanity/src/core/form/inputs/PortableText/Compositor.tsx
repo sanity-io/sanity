@@ -116,13 +116,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const _renderCustomMarkers = !!value && renderCustomMarkers ? renderCustomMarkers : undefined
 
   const initialSelection = useMemo(
-    (): EditorSelection =>
-      focusPath.length > 0
+    (): EditorSelection => {
+      return focusPath.length > 0
         ? {
             anchor: {path: focusPath, offset: 0},
             focus: {path: focusPath, offset: 0},
           }
-        : null,
+        : null
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [] // Only initial
   )
