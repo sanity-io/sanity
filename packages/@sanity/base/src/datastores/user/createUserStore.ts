@@ -39,6 +39,14 @@ import {consumeSessionId} from './sessionId'
 const debug = debugIt('sanity:userstore')
 const client = sanityClient.withConfig({apiVersion: '2021-06-07'})
 
+const INTERNAL_USERS: User[] = [
+  {
+    id: '<system>',
+    displayName: 'Sanity',
+    imageUrl: 'https://public.sanity.io/logos/favicon-192.png',
+  },
+]
+
 // Consume any session ID as early as possible (before mount) so we can remove it from the URL
 let sid: string | null = consumeSessionId()
 const projectId = config.api.projectId
@@ -55,6 +63,8 @@ const userLoader = new DataLoader(
     batchScheduleFn: (cb) => raf(cb),
   }
 )
+
+INTERNAL_USERS.forEach((user) => userLoader.prime(user.id, user))
 
 const debugRoles$ = debugRolesParam$.pipe(map(getDebugRolesByNames))
 
