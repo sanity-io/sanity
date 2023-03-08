@@ -42,6 +42,7 @@ interface BlockObjectProps {
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
+  scrollElement: HTMLElement | null
   schemaType: ObjectSchemaType
   selected: boolean
 }
@@ -60,6 +61,7 @@ export function BlockObject(props: BlockObjectProps) {
     renderBlockActions,
     renderCustomMarkers,
     renderPreview,
+    scrollElement,
     selected,
     schemaType,
   } = props
@@ -142,7 +144,7 @@ export function BlockObject(props: BlockObjectProps) {
 
   const DefaultComponent = useCallback(
     (defaultComponentProps: BlockProps) => (
-      <Flex paddingBottom={1} marginY={3} contentEditable={false} style={debugRender()}>
+      <Flex paddingBottom={1} marginY={3} style={debugRender()}>
         <InnerFlex flex={1}>
           <PreviewContainer flex={1} {...innerPaddingProps}>
             <Tooltip
@@ -163,7 +165,6 @@ export function BlockObject(props: BlockObjectProps) {
                 flex={1}
                 onDoubleClick={handleDoubleClickToOpen}
                 padding={isImagePreview ? 0 : 1}
-                ref={memberItem?.elementRef as React.RefObject<HTMLDivElement> | undefined}
                 tone={tone}
               >
                 {defaultComponentProps.children}
@@ -227,9 +228,11 @@ export function BlockObject(props: BlockObjectProps) {
     ]
   )
 
-  return useMemo(() => {
+  const content = useMemo(() => {
     const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
     const componentProps = {
+      __unstable_boundaryElement: scrollElement || undefined,
+      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
       focused,
       onClose: onItemClose,
       onOpen: openItem,
@@ -241,21 +244,20 @@ export function BlockObject(props: BlockObjectProps) {
       selected,
       value: block,
     }
-    const actions = (
-      <BlockObjectActionsMenu
-        focused={focused}
-        isActive={isActive}
-        isOpen={isOpen}
-        onOpen={openItem}
-        onRemove={onRemove}
-        readOnly={readOnly}
-        value={block}
-      />
-    )
     const preview = (
       <>
         {renderPreview({
-          actions,
+          actions: (
+            <BlockObjectActionsMenu
+              focused={focused}
+              isActive={isActive}
+              isOpen={isOpen}
+              onOpen={openItem}
+              onRemove={onRemove}
+              readOnly={readOnly}
+              value={block}
+            />
+          ),
           layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,
           value: block,
@@ -263,28 +265,36 @@ export function BlockObject(props: BlockObjectProps) {
       </>
     )
     return CustomComponent ? (
-      <CustomComponent {...componentProps} actions={actions}>
-        {preview}
-      </CustomComponent>
+      <CustomComponent {...componentProps}>{preview}</CustomComponent>
     ) : (
       <DefaultComponent {...componentProps}>{preview}</DefaultComponent>
     )
   }, [
-    DefaultComponent,
-    block,
+    schemaType,
+    scrollElement,
     focused,
-    isActive,
-    isImagePreview,
-    isOpen,
+    onItemClose,
+    openItem,
+    onRemove,
     memberItem?.member.open,
     memberItem?.node.path,
-    onItemClose,
-    onRemove,
-    openItem,
+    memberItem?.elementRef,
     path,
+    DefaultComponent,
+    selected,
+    block,
+    isActive,
+    isOpen,
     readOnly,
     renderPreview,
-    schemaType,
-    selected,
+    isImagePreview,
   ])
+  return (
+    <div
+      ref={memberItem?.elementRef as React.RefObject<HTMLDivElement> | undefined}
+      contentEditable={false}
+    >
+      {content}
+    </div>
+  )
 }

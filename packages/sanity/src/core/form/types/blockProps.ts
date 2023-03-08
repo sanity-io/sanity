@@ -47,7 +47,8 @@ export interface BlockListItemProps {
 
 /** @beta */
 export interface BlockAnnotationProps {
-  actions?: React.ReactElement
+  __unstable_boundaryElement?: HTMLElement // Boundary element for the annotation, typically a scroll container
+  __unstable_referenceElement?: HTMLElement // Reference element representing the annotation in the DOM
   children: React.ReactElement
   focused: boolean
   onClose: () => void
@@ -63,7 +64,8 @@ export interface BlockAnnotationProps {
 
 /** @beta */
 export interface BlockProps {
-  actions?: React.ReactElement
+  __unstable_boundaryElement?: HTMLElement // Boundary element for the annotation, typically a scroll container
+  __unstable_referenceElement?: HTMLElement // Reference element representing the block in the DOM
   children: React.ReactElement
   focused: boolean
   onClose: () => void
