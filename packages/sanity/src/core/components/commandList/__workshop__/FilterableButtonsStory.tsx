@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Box, Button, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import React, {ComponentProps, KeyboardEvent, useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
@@ -7,7 +7,7 @@ import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandL
 import {CommandListTextInput} from '../CommandListTextInput'
 import {useCommandList} from '../useCommandList'
 
-const ITEMS = [...Array(50000).keys()]
+const ITEMS = [...Array(50000).keys()].map((i) => `Button ${i}`)
 
 const CardContainer = styled(Card)`
   height: 400px;
@@ -15,17 +15,7 @@ const CardContainer = styled(Card)`
   width: 100%;
 `
 
-const StyledLink = styled.a<{$index: number}>`
-  background: ${({$index}) => ($index % 2 === 0 ? '#1a1a1a' : '#1f1f1f')};
-  display: block;
-  padding: 5px;
-  &[data-active] {
-    background: blue;
-    color: white;
-  }
-`
-
-export default function DefaultStory() {
+export default function FilterableButtonsStory() {
   const [filter, setFilter] = useState<string>('')
   const [message, setMessage] = useState('')
   const showInput = useBoolean('Show input', true, 'Props')
@@ -35,31 +25,27 @@ export default function DefaultStory() {
     if (!filter) {
       return values
     }
-    return values.filter((i) => i.value.toString().includes(filter))
+    return values.filter((i) => i.value.toLowerCase().includes(filter.toLowerCase()))
   }, [filter])
 
-  const handleChange = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
-    setFilter(e.currentTarget.value)
-  }, [])
-
-  const handleChildClick = useCallback((msg: string) => {
-    setMessage(msg)
-  }, [])
-
-  const handleClear = useCallback(() => {
-    setFilter('')
-  }, [])
+  const handleChange = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => setFilter(e.currentTarget.value),
+    []
+  )
+  const handleChildClick = useCallback((msg: string) => setMessage(msg), [])
+  const handleClear = useCallback(() => setFilter(''), [])
 
   const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({index, value}: CommandListVirtualItemProps<number>) {
-      const handleClick = useCallback(
-        () => handleChildClick(`Button ${value.toString()} clicked`),
-        [value]
-      )
+    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<string>) {
+      const handleClick = useCallback(() => handleChildClick(`${value} clicked`), [value])
       return (
-        <StyledLink $index={index} onClick={handleClick}>
-          <Text>{value}</Text>
-        </StyledLink>
+        <Button
+          mode="bleed"
+          onClick={handleClick}
+          style={{borderRadius: 0, width: '100%'}}
+          text={value}
+          tone="primary"
+        />
       )
     }
   }, [handleChildClick])
@@ -68,21 +54,21 @@ export default function DefaultStory() {
     <CardContainer padding={4}>
       <Stack space={3}>
         <CommandListProvider
-          activeItemDataAttr="data-active"
+          activeItemDataAttr="data-selected"
           ariaChildrenLabel="Children"
           ariaInputLabel="Header"
           autoFocus
-          fixedHeight
           itemComponent={VirtualListItem}
+          fixedHeight
           values={filteredValues}
           virtualizerOptions={{
-            estimateSize: () => 20,
+            estimateSize: () => 35,
           }}
         >
           <CommandListContent
             filter={filter}
-            onChange={handleChange}
             onClear={handleClear}
+            onChange={handleChange}
             showInput={showInput}
           />
         </CommandListProvider>
@@ -103,7 +89,7 @@ interface CommandListContentProps
 }
 
 const CommandListContent = ({filter, onChange, onClear, showInput}: CommandListContentProps) => {
-  const {values, virtualizer} = useCommandList<number>()
+  const {values, virtualizer} = useCommandList<string>()
 
   /**
    * Scroll command list to the top on filter query change
@@ -117,7 +103,7 @@ const CommandListContent = ({filter, onChange, onClear, showInput}: CommandListC
         }
       }
     },
-    [onChange, virtualizer, values.length]
+    [onChange, values.length, virtualizer]
   )
 
   /**
@@ -135,7 +121,7 @@ const CommandListContent = ({filter, onChange, onClear, showInput}: CommandListC
   return (
     <Flex direction="column" style={{height: '400px'}}>
       {showInput && (
-        <Box flex="none" marginBottom={2}>
+        <Box marginBottom={2} style={{flexShrink: 0}}>
           <CommandListTextInput
             clearButton={filter ? filter.length > 0 : false}
             onClear={handleClear}

@@ -6,14 +6,19 @@ export default defineScope({
   title: 'CommandList',
   stories: [
     {
-      name: 'default',
-      title: 'Default',
-      component: lazy(() => import('./DefaultStory')),
+      name: 'minimal',
+      title: 'Minimal',
+      component: lazy(() => import('./MinimalStory')),
     },
     {
-      name: 'button',
-      title: 'Button',
-      component: lazy(() => import('./ButtonStory')),
+      name: 'filterable',
+      title: 'Filterable',
+      component: lazy(() => import('./FilterableStory')),
+    },
+    {
+      name: 'filterableButtons',
+      title: 'Filterable Buttons',
+      component: lazy(() => import('./FilterableButtonsStory')),
     },
     {
       name: 'popover',
