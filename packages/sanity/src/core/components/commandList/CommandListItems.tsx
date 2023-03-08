@@ -45,6 +45,8 @@ const VirtualListChildBox = styled(Box) //
 `
 
 /**
+ * Renders a virtualized list from values captured within a wrapping `<CommandListProvider>`
+ *
  * @internal
  */
 export function CommandListItems(props: ResponsivePaddingProps) {

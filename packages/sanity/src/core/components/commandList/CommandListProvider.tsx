@@ -129,7 +129,7 @@ export function CommandListProvider<T>({
    * e.g. `[true, false, false, true]` indicates a list of 4 items, where the first and last items are selected.
    */
   const itemIndicesSelected = useMemo(() => {
-    return values.map((v) => v.selected || typeof v.selected === 'undefined')
+    return values.map((v) => !!v.selected)
   }, [values])
 
   const commandListId = useId()

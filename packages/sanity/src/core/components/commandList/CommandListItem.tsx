@@ -37,7 +37,7 @@ export function CommandListItem({
         transform: `translateY(${virtualRow.start}px)`,
         width: '100%',
       }}
-      // Required to ensure propagation of data attrs set by `CommandListProvider`
+      // Ensure propagation of aria / data attrs
       {...rest}
     >
       {children}
