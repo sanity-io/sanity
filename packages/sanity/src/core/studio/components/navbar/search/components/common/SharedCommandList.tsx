@@ -124,7 +124,8 @@ export function SharedCommandList({
       ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
       ariaInputLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
       autoFocus
-      fixedHeight={hasValidTerms}
+      // @todo: understand why setting `fixedHeight=true` on search results incorrectly renders the height of the first item
+      // fixedHeight={hasValidTerms}
       initialIndex={hasValidTerms ? initialIndex : 0}
       itemComponent={hasValidTerms ? SearchResultVirtualItem : RecentSearchVirtualItem}
       values={values}
