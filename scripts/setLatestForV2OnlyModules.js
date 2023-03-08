@@ -12,6 +12,7 @@ async function main() {
     .readdirSync(pkgsPath)
     .filter((pkg) => fs.statSync(path.join(pkgsPath, pkg)).isDirectory())
 
+  let setDistTagCommands = []
   for (const pkg of pkgs) {
     const pkgName = `@sanity/${pkg}`
     const latestVersion = (await execa('npm', ['show', pkgName, 'version'])).stdout.trim()
@@ -41,8 +42,19 @@ async function main() {
       latestVersion
     )
 
-    console.log(
-      (await execa('npm', ['dist-tag', 'add', `${pkgName}@${localVersion}`, 'latest'])).stdout
+    // Executing this with execa will ignore the OTP prompt and fail, so just print the commands, so they can be run manually
+    setDistTagCommands.push(
+      ['npm', 'dist-tag', 'add', `${pkgName}@${localVersion}`, 'latest'].join(' ')
     )
+  }
+  console.log('')
+  if (setDistTagCommands.length > 0) {
+    console.log('** ONE MORE THING **')
+    console.log(
+      'Please run the following commands to tag the newly released packages with the "latest" tag:'
+    )
+    console.log(setDistTagCommands.join('\n'))
+  } else {
+    console.log('** ALL IS GOOD. NOTHING TO DO **')
   }
 }
