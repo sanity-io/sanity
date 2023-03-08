@@ -36,6 +36,7 @@ import {
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
+import {customInspector} from './inspectors/custom'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -55,6 +56,13 @@ const sharedSettings = definePlugin({
   },
   document: {
     actions: documentActions,
+    inspectors: (prev, ctx) => {
+      if (ctx.documentType === 'inspectorsTest') {
+        return [customInspector, ...prev]
+      }
+
+      return prev
+    },
     newDocumentOptions,
   },
   plugins: [
