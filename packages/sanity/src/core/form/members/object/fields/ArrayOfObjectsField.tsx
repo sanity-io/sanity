@@ -235,9 +235,9 @@ export function ArrayOfObjectsField(props: {
         uploadSubscriptions.current[itemKey].unsubscribe()
         delete uploadSubscriptions.current[itemKey]
       }
-      handleChange([unset(member.field.path.concat({_key: itemKey}))])
+      handleChange([unset([{_key: itemKey}])])
     },
-    [handleChange, member.field.path]
+    [handleChange]
   )
 
   const handleFocusChildPath = useCallback(
