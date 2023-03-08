@@ -50,6 +50,7 @@ import focus from './debug/focus'
 import gallery from './debug/gallery'
 import {hoistedPt, hoistedPtDocument, customBlock} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
+import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
 import {languageFilterDebugType} from './debug/languageFilter'
 import liveEdit from './debug/liveEdit'
@@ -234,6 +235,7 @@ export const schemaTypes = [
   spotifyEmbed,
   strings,
   superlatives,
+  inspectorsTestType,
   texts,
   topLevelArrayType,
   topLevelPrimitiveArrayType,
