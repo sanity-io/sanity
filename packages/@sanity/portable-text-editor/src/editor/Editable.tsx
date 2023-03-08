@@ -200,14 +200,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [slateEditor, propsSelection, blockTypeName, change$])
 
-  // Set initial selection from props
-  useEffect(() => {
-    if (propsSelection) {
-      PortableTextEditor.select(portableTextEditor, propsSelection)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only initial
-
   // Handle from props onCopy function
   const handleCopy = useCallback(
     (event: React.ClipboardEvent<HTMLDivElement>): void | ReactEditor => {
