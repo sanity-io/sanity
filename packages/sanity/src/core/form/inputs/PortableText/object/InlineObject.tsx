@@ -128,7 +128,7 @@ export const InlineObject = (props: InlineObjectProps) => {
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
   const hasValidationMarkers = validation.length > 0
-  const [popoverOpen, setPopoverOpen] = useState<boolean>(true)
+  const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const popoverTitle = schemaType?.title || schemaType.name
 
   const tone = useMemo(() => {
@@ -203,9 +203,12 @@ export const InlineObject = (props: InlineObjectProps) => {
   const handlePopoverClose = useCallback(() => {
     if (memberItem?.member.open) {
       setPopoverOpen(true)
+      return
     }
     setPopoverOpen(false)
   }, [memberItem?.member.open])
+
+  const elmRef = memberItem?.elementRef?.current
 
   useEffect(() => {
     if (memberItem?.member.open) {
@@ -235,11 +238,34 @@ export const InlineObject = (props: InlineObjectProps) => {
           >
             {defaultComponentProps.children}
           </Root>
-          {defaultComponentProps.actions}
+          <InlineObjectToolbarPopover
+            onClose={handlePopoverClose}
+            onDelete={handleRemoveClick}
+            onEdit={openItem}
+            open={popoverOpen}
+            referenceElement={memberItem?.elementRef?.current || null}
+            scrollElement={scrollElement}
+            title={popoverTitle}
+          />
         </>
       )
     },
-    [focused, hasError, hasValidationMarkers, hasWarning, openItem, readOnly, selected, tone]
+    [
+      focused,
+      handlePopoverClose,
+      handleRemoveClick,
+      hasError,
+      hasValidationMarkers,
+      hasWarning,
+      memberItem?.elementRef,
+      openItem,
+      popoverOpen,
+      popoverTitle,
+      readOnly,
+      scrollElement,
+      selected,
+      tone,
+    ]
   )
   const onRemove = useCallback(() => {
     const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
@@ -251,19 +277,8 @@ export const InlineObject = (props: InlineObjectProps) => {
   const content = useMemo(() => {
     const CustomComponent = schemaType.components?.inlineBlock
     const componentProps = {
-      actions:
-        (!readOnly && memberItem?.elementRef?.current && (
-          <InlineObjectToolbarPopover
-            onClose={handlePopoverClose}
-            onDelete={handleRemoveClick}
-            onEdit={openItem}
-            open={popoverOpen}
-            referenceElement={memberItem?.elementRef?.current || null}
-            scrollElement={scrollElement}
-            title={popoverTitle}
-          />
-        )) ||
-        undefined,
+      __unstable_boundaryElement: scrollElement || undefined,
+      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
       focused,
       onClose: onItemClose,
       onOpen: openItem,
@@ -284,8 +299,6 @@ export const InlineObject = (props: InlineObjectProps) => {
   }, [
     DefaultComponent,
     focused,
-    handlePopoverClose,
-    handleRemoveClick,
     markersToolTip,
     memberItem?.elementRef,
     memberItem?.member.open,
@@ -294,19 +307,19 @@ export const InlineObject = (props: InlineObjectProps) => {
     onRemove,
     openItem,
     path,
-    popoverOpen,
-    popoverTitle,
     preview,
-    readOnly,
     schemaType,
     scrollElement,
     selected,
     value,
   ])
   // Ensure that the memberItem?.elementRef is not set through useMemo or hooks. It needs to be the current.
-  return (
-    <span ref={memberItem?.elementRef} contentEditable={false}>
-      {content}
-    </span>
+  return useMemo(
+    () => (
+      <span ref={memberItem?.elementRef} contentEditable={false}>
+        {content}
+      </span>
+    ),
+    [content, memberItem?.elementRef]
   )
 }

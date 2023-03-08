@@ -108,31 +108,30 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     )
   )
 
+  const handleSelectionChange = useCallback(() => {
+    if (!textElement) return
+    const winSelection = window.getSelection()
+    if (!winSelection) {
+      return
+    }
+    const {anchorNode, anchorOffset, focusNode, focusOffset} = winSelection
+    startTransition(() =>
+      setSelection({
+        anchorNode,
+        anchorOffset,
+        focusNode,
+        focusOffset,
+      })
+    )
+  }, [textElement])
+
   // Detect selection changes
   useEffect(() => {
-    function handleSelectionChange() {
-      if (!textElement) return
-      const winSelection = window.getSelection()
-      if (!winSelection) {
-        return
-      }
-      const {anchorNode, anchorOffset, focusNode, focusOffset} = winSelection
-      startTransition(() =>
-        setSelection({
-          anchorNode,
-          anchorOffset,
-          focusNode,
-          focusOffset,
-        })
-      )
-    }
-
     document.addEventListener('selectionchange', handleSelectionChange, {passive: true})
-
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange)
     }
-  }, [textElement])
+  }, [handleSelectionChange])
 
   // Open popover when selection is within annotations
   useEffect(() => {

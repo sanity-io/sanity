@@ -15,6 +15,7 @@ import {useFormBuilder} from '../../../useFormBuilder'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
+import {debugRender} from '../debugRender'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
@@ -62,7 +63,7 @@ const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`
 
 export const Annotation = function Annotation(props: AnnotationProps) {
   const {onItemOpen, onItemClose, renderCustomMarkers, scrollElement, renderProps, readOnly} = props
-  const {children, schemaType, value, path, selected, focused} = renderProps
+  const {children, schemaType, value, path, focused, selected} = renderProps
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
   const annotationRef = useRef<HTMLElement>(null)
   const editor = usePortableTextEditor()
@@ -163,10 +164,30 @@ export const Annotation = function Annotation(props: AnnotationProps) {
         onClick={readOnly ? openItem : undefined}
       >
         {defaultComponentProps.children}
-        {defaultComponentProps.actions}
+        <AnnotationToolbarPopover
+          textElement={textElement.current || undefined}
+          annotationElement={annotationRef.current || undefined}
+          scrollElement={scrollElement || undefined}
+          onEdit={handleEditClick}
+          onDelete={handleRemoveClick}
+          title={schemaType.title || schemaType.name}
+        />
       </Root>
     ),
-    [hasCustomMarkers, hasError, hasWarning, isLink, openItem, readOnly, toneKey]
+    [
+      handleEditClick,
+      handleRemoveClick,
+      hasCustomMarkers,
+      hasError,
+      hasWarning,
+      isLink,
+      openItem,
+      readOnly,
+      schemaType.name,
+      schemaType.title,
+      scrollElement,
+      toneKey,
+    ]
   )
   const onRemove = useCallback(() => {
     PortableTextEditor.removeAnnotation(editor, schemaType)
@@ -174,19 +195,9 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   }, [editor, schemaType])
 
   const content = useMemo(() => {
-    const componentProps = {
-      actions:
-        (!readOnly && annotationRef.current && (
-          <AnnotationToolbarPopover
-            textElement={textElement.current || undefined}
-            annotationElement={annotationRef.current || undefined}
-            scrollElement={scrollElement || undefined}
-            onEdit={handleEditClick}
-            onDelete={handleRemoveClick}
-            title={schemaType.title || schemaType.name}
-          />
-        )) ||
-        undefined,
+    const componentProps: Omit<BlockAnnotationProps, 'children'> = {
+      __unstable_boundaryElement: scrollElement || undefined,
+      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
       focused,
       onClose: onItemClose,
       onOpen: openItem,
@@ -210,26 +221,26 @@ export const Annotation = function Annotation(props: AnnotationProps) {
   }, [
     DefaultComponent,
     focused,
-    handleEditClick,
-    handleRemoveClick,
     markersToolTip,
+    memberItem?.elementRef,
     memberItem?.member.open,
     memberItem?.node.path,
     onItemClose,
     onRemove,
     openItem,
     path,
-    readOnly,
     schemaType,
     scrollElement,
     selected,
     text,
     value,
   ])
-  // Ensure that the refs here is not set through useMemo or hooks. They need to be current always.
-  return (
-    <span ref={memberItem?.elementRef}>
-      <span ref={annotationRef}>{content}</span>
-    </span>
+  return useMemo(
+    () => (
+      <span ref={memberItem?.elementRef} style={debugRender()}>
+        <span ref={annotationRef}>{content}</span>
+      </span>
+    ),
+    [content, memberItem?.elementRef]
   )
 }
