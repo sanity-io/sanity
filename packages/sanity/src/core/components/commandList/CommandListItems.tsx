@@ -1,19 +1,8 @@
 import {Box, ResponsivePaddingProps} from '@sanity/ui'
-import {useVirtualizer, VirtualizerOptions} from '@tanstack/react-virtual'
-import React, {ReactElement, useEffect} from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import {CommandListItem} from './CommandListItem'
-import type {CommandListVirtualItemProps} from './CommandListProvider'
 import {useCommandList} from './useCommandList'
-
-interface CommandListItemsProps extends ResponsivePaddingProps {
-  fixedHeight?: boolean
-  item: (props: CommandListVirtualItemProps<any>) => ReactElement | null
-  virtualizerOptions: Pick<
-    VirtualizerOptions<HTMLDivElement, Element>,
-    'estimateSize' | 'getItemKey' | 'overscan'
-  >
-}
 
 /*
  * Conditionally appears over command list items to cancel existing :hover states for all child elements.
@@ -58,60 +47,54 @@ const VirtualListChildBox = styled(Box) //
 /**
  * @internal
  */
-export function CommandListItems({
-  fixedHeight,
-  item: Item,
-  virtualizerOptions,
-  ...rest
-}: CommandListItemsProps) {
+export function CommandListItems(props: ResponsivePaddingProps) {
   const {
+    fixedHeight,
+    itemComponent: Item,
     itemIndices,
     setChildContainerElement,
     setPointerOverlayElement,
-    setVirtualizer,
     setVirtualListElement,
     values,
-    virtualListElement,
+    virtualizer,
   } = useCommandList()
-
-  const virtualizer = useVirtualizer({
-    ...virtualizerOptions,
-    count: values.length,
-    getScrollElement: () => virtualListElement,
-  })
-
-  /**
-   * Store react-virtual's `virtualizer` instance to shared CommandList context
-   */
-  useEffect(() => {
-    setVirtualizer(virtualizer)
-  }, [setVirtualizer, virtualizer])
 
   return (
     <VirtualListBox ref={setVirtualListElement} tabIndex={-1}>
       <PointerOverlayDiv aria-hidden="true" ref={setPointerOverlayElement} />
 
-      <VirtualListChildBox
-        $height={virtualizer.getTotalSize()}
-        flex={1}
-        ref={setChildContainerElement}
-        {...rest}
-      >
-        {virtualizer.getVirtualItems().map((virtualRow) => {
-          return (
-            <CommandListItem
-              activeIndex={itemIndices[virtualRow.index] ?? -1}
-              data-index={virtualRow.index}
-              fixedHeight={fixedHeight}
-              key={virtualRow.key}
-              measure={fixedHeight ? undefined : virtualizer.measureElement}
-              virtualRow={virtualRow}
-            >
-              {Item && <Item {...values[virtualRow.index]} index={virtualRow.index} />}
-            </CommandListItem>
-          )
-        })}
-      </VirtualListChildBox>
+      {virtualizer && (
+        <VirtualListChildBox
+          $height={virtualizer.getTotalSize()}
+          flex={1}
+          ref={setChildContainerElement}
+          {...props}
+        >
+          {virtualizer.getVirtualItems().map((virtualRow, index) => {
+            const value = values[virtualRow.index]
+            return (
+              <CommandListItem
+                activeIndex={itemIndices[virtualRow.index] ?? -1}
+                data-index={virtualRow.index}
+                fixedHeight={fixedHeight}
+                key={virtualRow.key}
+                measure={fixedHeight ? undefined : virtualizer.measureElement}
+                virtualRow={virtualRow}
+              >
+                {Item && (
+                  <Item
+                    disabled={value.disabled}
+                    index={index}
+                    selected={value.selected}
+                    value={value.value}
+                    virtualIndex={virtualRow.index}
+                  />
+                )}
+              </CommandListItem>
+            )
+          })}
+        </VirtualListChildBox>
+      )}
     </VirtualListBox>
   )
 }

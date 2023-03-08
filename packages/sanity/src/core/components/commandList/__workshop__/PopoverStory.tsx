@@ -8,12 +8,11 @@ import {
   Popover,
   Stack,
   Text,
-  TextInput,
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import React, {ComponentProps, useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {CommandListItems} from '../CommandListItems'
 import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
 
@@ -67,7 +66,7 @@ export default function PopoverStory() {
     [button, handleClose, open]
   )
   const handleOpen = useCallback(() => setOpen(true), [])
-  const handleClick = useCallback(() => {
+  const handlePopoverButtonClick = useCallback(() => {
     if (open) {
       handleClose()
     } else {
@@ -80,28 +79,58 @@ export default function PopoverStory() {
 
   const values = ITEMS.map((i) => ({value: i}))
 
+  const VirtualListItem = useMemo(() => {
+    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<number>) {
+      const handleClick = useCallback(() => handleChildClick(value), [value])
+      return (
+        <Button
+          fontSize={1}
+          mode="bleed"
+          onClick={handleClick}
+          style={{borderRadius: 0, width: '100%'}}
+          text={`Button ${value.toString()}`}
+        />
+      )
+    }
+  }, [handleChildClick])
+
   return (
     <CommandListProvider
       activeItemDataAttr="data-selected"
       ariaChildrenLabel="Children"
       ariaInputLabel="Header"
       autoFocus
+      fixedHeight
       initialScrollAlign={initialSelectedScrollAlign}
       initialIndex={selectedIndex}
+      itemComponent={VirtualListItem}
       values={values}
+      virtualizerOptions={{
+        estimateSize: () => 35,
+      }}
     >
       <Card padding={4}>
         <Stack space={3}>
           <Inline space={2}>
             <Popover
-              content={<PopoverContent onChildClick={handleChildClick} />}
+              content={
+                <Card radius={2} style={{overflow: 'hidden', width: '175px'}}>
+                  <Flex direction="column" style={{height: '400px'}}>
+                    <Card flex={1} shadow={1}>
+                      <Flex height="fill">
+                        <CommandListItems />
+                      </Flex>
+                    </Card>
+                  </Flex>
+                </Card>
+              }
               open={open}
               portal
               ref={setPopover}
             >
               <Button
                 iconRight={SelectIcon}
-                onClick={handleClick}
+                onClick={handlePopoverButtonClick}
                 ref={setButton}
                 text="Popover button (open at last selected index)"
                 tone="primary"
@@ -118,55 +147,5 @@ export default function PopoverStory() {
         </Stack>
       </Card>
     </CommandListProvider>
-  )
-}
-
-interface PopoverContentProps {
-  onChildClick: (index: number) => void
-}
-
-const PopoverContent = ({onChildClick}: PopoverContentProps) => {
-  return (
-    <Card radius={2} style={{overflow: 'hidden', width: '175px'}}>
-      <CommandListContent onChildClick={onChildClick} />
-    </Card>
-  )
-}
-
-interface CommandListContentProps
-  extends Pick<ComponentProps<typeof TextInput>, 'onChange' | 'onClear'> {
-  onChildClick: (index: number) => void
-}
-
-const CommandListContent = ({onChildClick}: CommandListContentProps) => {
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<number>) {
-      const handleClick = useCallback(() => onChildClick(value), [value])
-      return (
-        <Button
-          fontSize={1}
-          mode="bleed"
-          onClick={handleClick}
-          style={{borderRadius: 0, width: '100%'}}
-          text={`Button ${value.toString()}`}
-        />
-      )
-    }
-  }, [onChildClick])
-
-  return (
-    <Flex direction="column" style={{height: '400px'}}>
-      <Card flex={1} shadow={1}>
-        <Flex height="fill">
-          <CommandListItems
-            fixedHeight
-            item={VirtualListItem}
-            virtualizerOptions={{
-              estimateSize: () => 35,
-            }}
-          />
-        </Flex>
-      </Card>
-    </Flex>
   )
 }

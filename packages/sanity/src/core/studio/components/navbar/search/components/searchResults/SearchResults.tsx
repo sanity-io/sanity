@@ -1,15 +1,11 @@
 import {Card, Flex} from '@sanity/ui'
-import React, {Dispatch, SetStateAction} from 'react'
+import React from 'react'
 import styled from 'styled-components'
+import {CommandListItems} from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
-import {SearchResultsVirtualList} from './SearchResultsVirtualList'
-
-interface SearchResultsProps {
-  onClose: () => void
-}
 
 const SearchResultsCard = styled(Card)`
   overflow-x: hidden;
@@ -29,7 +25,7 @@ const SearchResultsInnerFlex = styled(Flex)<{$loading: boolean}>`
   width: 100%;
 `
 
-export function SearchResults({onClose}: SearchResultsProps) {
+export function SearchResults() {
   const {
     state: {fullscreen, result},
   } = useSearchState()
@@ -53,7 +49,7 @@ export function SearchResults({onClose}: SearchResultsProps) {
             <SearchError />
           ) : (
             <>
-              {hasSearchResults && <SearchResultsVirtualList onClose={onClose} />}
+              {hasSearchResults && <CommandListItems />}
               {hasNoSearchResults && <NoResults />}
             </>
           )}

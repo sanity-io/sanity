@@ -19,7 +19,6 @@ import {FilterPill} from '../../common/FilterPill'
 export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   index: number
   maxVisibleTypePillChars?: number
-  showFiltersOnClick?: boolean
   value: RecentSearch
 }
 
@@ -56,7 +55,6 @@ const CloseButtonDiv = styled.div`
 export function RecentSearchItem({
   index,
   maxVisibleTypePillChars = DEFAULT_COMBINED_TYPE_COUNT,
-  showFiltersOnClick,
   value,
   ...rest
 }: RecentSearchesProps) {
@@ -66,13 +64,6 @@ export function RecentSearchItem({
   const availableCharacters = maxVisibleTypePillChars - value.query.length
 
   const handleClick = useCallback(() => {
-    const hasFilters = value.filters && value.filters.length
-    const hasTypes = value.types.length
-
-    // Optionally show filters panel if search terms or filters are present
-    if (showFiltersOnClick && (hasFilters || hasTypes)) {
-      dispatch({type: 'FILTERS_VISIBLE_SET', visible: true})
-    }
     dispatch({type: 'TERMS_SET', filters: value?.filters, terms: value})
 
     // Add to Local Storage
@@ -80,7 +71,7 @@ export function RecentSearchItem({
       const updatedRecentSearches = recentSearchesStore?.addSearch(value, value?.filters)
       dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
     }
-  }, [dispatch, recentSearchesStore, showFiltersOnClick, value])
+  }, [dispatch, recentSearchesStore, value])
 
   const handleDelete = useCallback(
     (event: MouseEvent) => {

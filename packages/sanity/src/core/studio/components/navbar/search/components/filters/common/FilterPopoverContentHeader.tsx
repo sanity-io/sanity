@@ -2,9 +2,8 @@ import {SearchIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import {useCommandList} from '../../../../../../../components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {CustomTextInput} from '../../common/CustomTextInput'
+import {CustomCommandListTextInput} from '../../common/CustomCommandListTextInput'
 
 interface FilterPopoverContentHeaderProps {
   onChange: (e: React.KeyboardEvent<HTMLInputElement>) => void
@@ -30,12 +29,10 @@ export function FilterPopoverContentHeader({
     state: {fullscreen},
   } = useSearchState()
 
-  const {setInputElement} = useCommandList()
-
   return (
     <SearchHeaderBox>
       <SearchHeaderContentFlex align="center" flex={1} padding={1}>
-        <CustomTextInput
+        <CustomCommandListTextInput
           autoComplete="off"
           border={false}
           clearButton={!!typeFilter}
@@ -45,7 +42,6 @@ export function FilterPopoverContentHeader({
           onChange={onChange}
           onClear={onClear}
           placeholder="Filter"
-          ref={setInputElement}
           smallClearButton
           spellCheck={false}
           radius={2}

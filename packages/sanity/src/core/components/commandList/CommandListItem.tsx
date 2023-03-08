@@ -1,4 +1,3 @@
-import {Box} from '@sanity/ui'
 import {VirtualItem} from '@tanstack/react-virtual'
 import React, {ReactNode} from 'react'
 import {useCommandList} from './useCommandList'
@@ -25,7 +24,7 @@ export function CommandListItem({
   const {onChildMouseDown, onChildMouseEnter} = useCommandList()
 
   return (
-    <Box
+    <div
       onMouseDown={onChildMouseDown}
       onMouseEnter={onChildMouseEnter(activeIndex)}
       ref={measure}
@@ -42,6 +41,6 @@ export function CommandListItem({
       {...rest}
     >
       {children}
-    </Box>
+    </div>
   )
 }

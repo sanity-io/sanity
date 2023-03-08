@@ -1,17 +1,18 @@
 import {Virtualizer} from '@tanstack/react-virtual'
 import {createContext, Dispatch, MouseEvent, SetStateAction} from 'react'
-import type {CommandListVirtualItemValue} from './CommandListProvider'
+import type {CommandListProviderProps, CommandListVirtualItemValue} from './CommandListProvider'
 
 export interface CommandListContextValue<T> {
+  fixedHeight?: CommandListProviderProps<T>['fixedHeight']
   focusElement: () => void
   getTopIndex: () => number
+  itemComponent: CommandListProviderProps<T>['itemComponent']
   itemIndices: (number | null)[]
   onChildMouseDown: (event: MouseEvent) => void
   onChildMouseEnter: (index: number) => () => void
   setChildContainerElement: Dispatch<SetStateAction<HTMLDivElement | null>>
   setInputElement: Dispatch<SetStateAction<HTMLDivElement | null>>
   setPointerOverlayElement: Dispatch<SetStateAction<HTMLDivElement | null>>
-  setVirtualizer: (virtualizer: Virtualizer<HTMLDivElement, Element>) => void
   setVirtualListElement: Dispatch<SetStateAction<HTMLDivElement | null>>
   values: CommandListVirtualItemValue<T>[]
   virtualizer?: Virtualizer<HTMLDivElement, Element> | null

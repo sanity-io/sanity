@@ -1,14 +1,9 @@
 import {Box, Button, Card, Label, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
-import {useCommandList} from '../../../../../../components'
+import {CommandListItems, useCommandList} from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {Instructions} from '../Instructions'
-import {RecentSearchesVirtualList} from './RecentSearchesVirtualList'
-
-interface RecentSearchesProps {
-  showFiltersOnClick?: boolean
-}
 
 const RecentSearchesBox = styled(Card)`
   overflow-x: hidden;
@@ -16,7 +11,7 @@ const RecentSearchesBox = styled(Card)`
   position: relative;
 `
 
-export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
+export function RecentSearches() {
   const {
     dispatch,
     recentSearchesStore,
@@ -52,7 +47,7 @@ export function RecentSearches({showFiltersOnClick}: RecentSearchesProps) {
             </Label>
           </Box>
           <Box>
-            <RecentSearchesVirtualList showFiltersOnClick={showFiltersOnClick} />
+            <CommandListItems paddingBottom={1} />
           </Box>
           <Box paddingBottom={2} paddingTop={1} paddingX={2}>
             <Button

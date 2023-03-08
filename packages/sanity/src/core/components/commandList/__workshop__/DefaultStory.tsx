@@ -1,16 +1,10 @@
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-import React, {
-  ComponentProps,
-  KeyboardEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, {ComponentProps, KeyboardEvent, useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {CommandListItems} from '../CommandListItems'
 import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
+import {CommandListTextInput} from '../CommandListTextInput'
 import {useCommandList} from '../useCommandList'
 
 const ITEMS = [...Array(50000).keys()]
@@ -56,6 +50,20 @@ export default function DefaultStory() {
     setFilter('')
   }, [])
 
+  const VirtualListItem = useMemo(() => {
+    return function VirtualListItemComponent({index, value}: CommandListVirtualItemProps<number>) {
+      const handleClick = useCallback(
+        () => handleChildClick(`Button ${value.toString()} clicked`),
+        [value]
+      )
+      return (
+        <StyledLink $index={index} onClick={handleClick}>
+          <Text>{value}</Text>
+        </StyledLink>
+      )
+    }
+  }, [handleChildClick])
+
   return (
     <CardContainer padding={4}>
       <Stack space={3}>
@@ -64,12 +72,16 @@ export default function DefaultStory() {
           ariaChildrenLabel="Children"
           ariaInputLabel="Header"
           autoFocus
+          fixedHeight
+          itemComponent={VirtualListItem}
           values={filteredValues}
+          virtualizerOptions={{
+            estimateSize: () => 20,
+          }}
         >
           <CommandListContent
             filter={filter}
             onChange={handleChange}
-            onChildClick={handleChildClick}
             onClear={handleClear}
             showInput={showInput}
           />
@@ -87,19 +99,15 @@ export default function DefaultStory() {
 interface CommandListContentProps
   extends Pick<ComponentProps<typeof TextInput>, 'onChange' | 'onClear'> {
   filter?: string
-  onChildClick: (message: string) => void
   showInput?: boolean
 }
 
-const CommandListContent = ({
-  filter,
-  onChange,
-  onChildClick,
-  onClear,
-  showInput,
-}: CommandListContentProps) => {
-  const {setInputElement, values, virtualizer} = useCommandList<number>()
+const CommandListContent = ({filter, onChange, onClear, showInput}: CommandListContentProps) => {
+  const {values, virtualizer} = useCommandList<number>()
 
+  /**
+   * Scroll command list to the top on filter query change
+   */
   const handleChange = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (onChange) {
@@ -112,6 +120,9 @@ const CommandListContent = ({
     [onChange, virtualizer, values.length]
   )
 
+  /**
+   * Scroll command list to the top when manually cleared
+   */
   const handleClear = useCallback(() => {
     if (onClear) {
       onClear()
@@ -121,36 +132,15 @@ const CommandListContent = ({
     }
   }, [onClear, values.length, virtualizer])
 
-  useEffect(() => {
-    if (!showInput) {
-      setInputElement(null)
-    }
-  }, [setInputElement, showInput])
-
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<number>) {
-      const handleClick = useCallback(
-        () => onChildClick(`Button ${value.toString()} clicked`),
-        [value]
-      )
-      return (
-        <StyledLink $index={value} onClick={handleClick}>
-          <Text>{value}</Text>
-        </StyledLink>
-      )
-    }
-  }, [onChildClick])
-
   return (
     <Flex direction="column" style={{height: '400px'}}>
       {showInput && (
-        <Box marginBottom={2} style={{flexShrink: 0}}>
-          <TextInput
+        <Box flex="none" marginBottom={2}>
+          <CommandListTextInput
             clearButton={filter ? filter.length > 0 : false}
             onClear={handleClear}
             onChange={handleChange}
             placeholder="Filter"
-            ref={setInputElement}
             value={filter}
           />
         </Box>
@@ -158,14 +148,7 @@ const CommandListContent = ({
 
       <Card flex={1} shadow={1}>
         <Flex height="fill">
-          <CommandListItems
-            fixedHeight
-            item={VirtualListItem}
-            virtualizerOptions={{
-              estimateSize: () => 20,
-              overscan: 10,
-            }}
-          />
+          <CommandListItems />
         </Flex>
       </Card>
     </Flex>

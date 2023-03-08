@@ -1,20 +1,15 @@
 import {Box, Card, Flex, Portal} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
-import {
-  CommandListProvider,
-  type CommandListVirtualItemValue,
-  useCommandList,
-} from '../../../../components'
-import {WeightedHit} from '../../../../search'
+import {useCommandList} from '../../../../components'
 import {useColorScheme} from '../../../colorScheme'
 import {Filters} from './components/filters/Filters'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
+import {SharedCommandList} from './components/common/SharedCommandList'
 import {useSearchState} from './contexts/search/useSearchState'
-import type {RecentSearch} from './datastores/recentSearches'
 import {useSearchHotkeys} from './hooks/useSearchHotkeys'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
 
@@ -52,26 +47,28 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const {
     dispatch,
     setOnClose,
-    state: {filtersVisible, recentSearches, result, terms},
+    state: {filtersVisible, result, terms},
   } = useSearchState()
 
   const hasValidTerms = hasSearchableTerms({terms})
 
   /**
+   * Bind hotkeys to open action
+   */
+  useSearchHotkeys({onOpen, open})
+
+  /**
    * Store top-most search result scroll index on close
    */
   const handleClose = useCallback(
-    (index: number) => {
-      setLastActiveIndex(index)
+    (index?: number) => {
+      if (index) {
+        setLastActiveIndex(index)
+      }
       onClose()
     },
     [onClose]
   )
-
-  /**
-   * Bind hotkeys to open action
-   */
-  useSearchHotkeys({onOpen, open})
 
   /**
    * Reset last search index when new results are loaded, or visiting recent searches
@@ -108,14 +105,6 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
     }
   }, [])
 
-  const values: CommandListVirtualItemValue<RecentSearch | WeightedHit>[] = useMemo(() => {
-    if (hasValidTerms) {
-      return result.hits.map((i) => ({value: i}))
-    }
-
-    return recentSearches.map((i) => ({value: i}))
-  }, [hasValidTerms, recentSearches, result.hits])
-
   if (!open) {
     return null
   }
@@ -123,36 +112,29 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   return (
     <Portal>
       <FocusLock autoFocus={false} returnFocus>
-        <CommandListProvider
-          activeItemDataAttr="data-hovered"
-          ariaChildrenLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
-          ariaInputLabel="Search"
-          autoFocus
-          data-testid="search-results-dialog"
-          initialIndex={hasValidTerms ? lastActiveIndex : 0}
-          values={values}
+        <SharedCommandList
+          hasValidTerms={hasValidTerms}
+          initialIndex={lastActiveIndex}
+          onClose={handleClose}
         >
-          <SearchDialogContent
-            filtersVisible={filtersVisible}
-            hasValidTerms={hasValidTerms}
-            onClose={handleClose}
-            open={open}
-          />
-        </CommandListProvider>
+          <SearchDialogContent filtersVisible={filtersVisible} onClose={handleClose} open={open}>
+            {hasValidTerms ? <SearchResults /> : <RecentSearches />}
+          </SearchDialogContent>
+        </SharedCommandList>
       </FocusLock>
     </Portal>
   )
 }
 
 function SearchDialogContent({
+  children,
   filtersVisible,
-  hasValidTerms,
   onClose,
   open,
 }: {
+  children?: ReactNode
   filtersVisible: boolean
-  hasValidTerms: boolean
-  onClose: (lastActiveIndex: number) => void
+  onClose: (lastActiveIndex?: number) => void
   open: boolean
 }) {
   const {scheme} = useColorScheme()
@@ -180,7 +162,7 @@ function SearchDialogContent({
           </Card>
         )}
 
-        <Flex>{hasValidTerms ? <SearchResults onClose={handleClose} /> : <RecentSearches />}</Flex>
+        <Flex>{children}</Flex>
       </InnerCard>
     </SearchDialogBox>
   )

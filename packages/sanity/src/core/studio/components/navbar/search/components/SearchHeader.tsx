@@ -2,9 +2,8 @@ import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icon
 import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
-import {useCommandList} from '../../../../../components'
 import {useSearchState} from '../contexts/search/useSearchState'
-import {CustomTextInput} from './common/CustomTextInput'
+import {CustomCommandListTextInput} from './common/CustomCommandListTextInput'
 
 interface SearchHeaderProps {
   onClose: () => void
@@ -51,8 +50,6 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
     },
   } = useSearchState()
 
-  const {setInputElement} = useCommandList()
-
   const handleFiltersToggle = useCallback(
     () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
     [dispatch, filtersVisible]
@@ -93,7 +90,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
 
         {/* Search field */}
         <Box flex={1}>
-          <CustomTextInput
+          <CustomCommandListTextInput
             autoComplete="off"
             background={fullscreen}
             border={false}
@@ -104,7 +101,6 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
             onClear={handleQueryClear}
             placeholder="Search"
             radius={fullscreen ? 2 : 1}
-            ref={setInputElement}
             smallClearButton={fullscreen}
             spellCheck={false}
             value={query}
