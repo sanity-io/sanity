@@ -50,6 +50,7 @@ export const DEBUG_INPUT_TYPES = [
   'focusTest',
   'documentWithHoistedPt',
   'initialValuesTest',
+  'inspectorsTest',
   'invalidPreviews',
   'thesis',
   'manyFieldsTest',
