@@ -49,7 +49,7 @@ export function SearchResults() {
             <SearchError />
           ) : (
             <>
-              {hasSearchResults && <CommandListItems />}
+              {hasSearchResults && <CommandListItems paddingBottom={2} />}
               {hasNoSearchResults && <NoResults />}
             </>
           )}

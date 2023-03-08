@@ -67,14 +67,13 @@ export function SearchPopover({
   position,
 }: SearchPopoverProps) {
   const isMountedRef = useRef(false)
-  const [lastActiveIndex, setLastActiveIndex] = useState(-1)
 
   const {zIndex} = useLayer()
 
   const {
     dispatch,
     setOnClose,
-    state: {filtersVisible, result, terms},
+    state: {filtersVisible, lastActiveIndex, result, terms},
   } = useSearchState()
 
   const hasValidTerms = hasSearchableTerms({terms})
@@ -85,17 +84,11 @@ export function SearchPopover({
   useSearchHotkeys({onOpen, open})
 
   /**
-   * Store top-most search result scroll index on close
+   * Set shared `onClose` in search context
    */
-  const handleClose = useCallback(
-    (index?: number) => {
-      if (index) {
-        setLastActiveIndex(index)
-      }
-      onClose()
-    },
-    [onClose]
-  )
+  useEffect(() => {
+    setOnClose(onClose)
+  }, [onClose, setOnClose])
 
   /**
    * Reset last search index when new results are loaded, or visiting recent searches
@@ -103,9 +96,9 @@ export function SearchPopover({
   // @todo Revise if/when we introduce pagination
   useEffect(() => {
     if ((!hasValidTerms || result.loaded) && isMountedRef.current) {
-      setLastActiveIndex(0)
+      dispatch({index: 0, type: 'LAST_ACTIVE_INDEX_SET'})
     }
-  }, [hasValidTerms, result.loaded])
+  }, [dispatch, hasValidTerms, result.loaded])
 
   /**
    * Reset ordering when popover is closed (without valid search terms)
@@ -115,13 +108,6 @@ export function SearchPopover({
       dispatch({type: 'ORDERING_RESET'})
     }
   }, [dispatch, hasValidTerms, open])
-
-  /**
-   * Set shared `onClose` in search context
-   */
-  useEffect(() => {
-    setOnClose(onClose)
-  }, [onClose, setOnClose])
 
   /**
    * Store mounted state (must be last)
@@ -141,14 +127,10 @@ export function SearchPopover({
       <FocusLock autoFocus={false} disabled={disableFocusLock} returnFocus>
         <Overlay style={{zIndex}} />
 
-        <SharedCommandList
-          hasValidTerms={hasValidTerms}
-          initialIndex={lastActiveIndex}
-          onClose={handleClose}
-        >
+        <SharedCommandList hasValidTerms={hasValidTerms} initialIndex={lastActiveIndex}>
           <SearchPopoverContent
             filtersVisible={filtersVisible}
-            onClose={handleClose}
+            onClose={onClose}
             position={position}
           >
             {hasValidTerms ? <SearchResults /> : <RecentSearches />}
@@ -167,20 +149,19 @@ function SearchPopoverContent({
 }: {
   children?: ReactNode
   filtersVisible: boolean
-  onClose: (topIndex?: number) => void
+  onClose: () => void
   position: PopoverPosition
 }) {
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const {isTopLayer, zIndex} = useLayer()
   const {scheme} = useColorScheme()
   const {getTopIndex} = useCommandList()
+  const {dispatch} = useSearchState()
 
-  /**
-   * Store top-most search result scroll index on close
-   */
   const handleClose = useCallback(() => {
-    onClose(getTopIndex())
-  }, [getTopIndex, onClose])
+    dispatch({index: getTopIndex(), type: 'LAST_ACTIVE_INDEX_SET'})
+    onClose()
+  }, [dispatch, getTopIndex, onClose])
 
   /**
    * Check for top-most layer to prevent closing if a portalled element (i.e. menu button) is active

@@ -29,6 +29,7 @@ export interface SearchReducerState {
   filtersVisible: boolean
   fullscreen?: boolean
   lastAddedFilter?: SearchFilter | null
+  lastActiveIndex: number
   ordering: SearchOrdering
   pageIndex: number
   recentSearches: RecentSearch[]
@@ -70,6 +71,7 @@ export function initialSearchState({
     filters: [],
     filtersVisible: true,
     fullscreen,
+    lastActiveIndex: -1,
     ordering: ORDERINGS.relevance,
     pageIndex: 0,
     recentSearches,
@@ -89,6 +91,7 @@ export function initialSearchState({
 }
 
 export type FiltersVisibleSet = {type: 'FILTERS_VISIBLE_SET'; visible: boolean}
+export type LastActiveIndexSet = {type: 'LAST_ACTIVE_INDEX_SET'; index: number}
 export type PageIncrement = {type: 'PAGE_INCREMENT'}
 export type RecentSearchesSet = {
   recentSearches: RecentSearch[]
@@ -124,6 +127,7 @@ export type TermsTypesClear = {type: 'TERMS_TYPES_CLEAR'}
 
 export type SearchAction =
   | FiltersVisibleSet
+  | LastActiveIndexSet
   | OrderingReset
   | OrderingSet
   | PageIncrement
@@ -160,6 +164,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       return {
         ...state,
         filtersVisible: action.visible,
+      }
+    case 'LAST_ACTIVE_INDEX_SET':
+      return {
+        ...state,
+        lastActiveIndex: action.index,
       }
     case 'ORDERING_RESET':
       return {

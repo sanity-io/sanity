@@ -6,7 +6,7 @@ import {useSearchState} from '../contexts/search/useSearchState'
 import {CustomCommandListTextInput} from './common/CustomCommandListTextInput'
 
 interface SearchHeaderProps {
-  onClose: () => void
+  onClose?: () => void
 }
 
 const rotate = keyframes`
