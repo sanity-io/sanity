@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "2.35.5",
+  "version": "2.35.7",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "./lib/_exports/index.js",
   "types": "index.d.ts",
@@ -55,7 +55,7 @@
     "@sanity/mutator": "2.33.2",
     "@sanity/schema": "2.35.0",
     "@sanity/state-router": "2.35.3",
-    "@sanity/structure": "2.35.3",
+    "@sanity/structure": "2.35.7",
     "@sanity/transaction-collator": "2.35.3",
     "@sanity/types": "2.35.0",
     "@sanity/ui": "^0.37.22",
