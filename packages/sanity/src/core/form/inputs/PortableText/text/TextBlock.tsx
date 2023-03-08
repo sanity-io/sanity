@@ -122,7 +122,7 @@ export function TextBlock(props: TextBlockProps) {
 
   const defaultRendered = useMemo(
     () => (
-      <Box data-testid="text-block" {...outerPaddingProps}>
+      <Box data-testid="text-block" {...outerPaddingProps} style={debugRender()}>
         <TextBlockFlexWrapper data-testid="text-block__wrapper">
           <Flex
             flex={1}

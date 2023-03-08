@@ -171,14 +171,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderBlockActions={_renderBlockActions}
           renderCustomMarkers={_renderCustomMarkers}
           renderPreview={renderPreview}
+          scrollElement={scrollElement}
           selected={selected}
           schemaType={blockSchemaType}
         />
       )
     },
     [
-      _renderBlockActions,
-      _renderCustomMarkers,
       editor.schemaTypes.block.name,
       isFullscreen,
       onChange,
@@ -186,7 +185,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       onItemClose,
       onItemRemove,
       readOnly,
+      _renderBlockActions,
+      _renderCustomMarkers,
       renderPreview,
+      scrollElement,
     ]
   )
 
