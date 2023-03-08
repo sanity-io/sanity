@@ -20,5 +20,10 @@ export default defineScope({
       title: 'Popover',
       component: lazy(() => import('./PopoverStory')),
     },
+    {
+      name: 'selectable',
+      title: 'Selectable',
+      component: lazy(() => import('./SelectableStory')),
+    },
   ],
 })

@@ -27,7 +27,9 @@ export interface CommandListVirtualItemValue<T> {
  * @internal
  */
 export interface CommandListVirtualItemProps<T> extends CommandListVirtualItemValue<T> {
+  /** DOM element index (what's visible in the browser) */
   index: number
+  /** Virtualized element index */
   virtualIndex: number
 }
 

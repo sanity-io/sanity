@@ -7,7 +7,15 @@ import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandL
 import {CommandListTextInput} from '../CommandListTextInput'
 import {useCommandList} from '../useCommandList'
 
-const ITEMS = [...Array(50000).keys()].map((i) => `Button ${i}`)
+type Item = {
+  index: number
+  label: string
+}
+
+const ITEMS: Item[] = [...Array(50000).keys()].map((i) => ({
+  index: i,
+  label: `Button ${i}`,
+}))
 
 const CardContainer = styled(Card)`
   height: 400px;
@@ -15,40 +23,84 @@ const CardContainer = styled(Card)`
   width: 100%;
 `
 
-export default function ButtonStory() {
+export default function SelectableStory() {
+  const [selected, setSelected] = useState<Record<number, boolean>>({})
   const [filter, setFilter] = useState<string>('')
   const [message, setMessage] = useState('')
-  const showInput = useBoolean('Show input', false, 'Props')
+  const showInput = useBoolean('Show input', true, 'Props')
+  const withDisabledItems = useBoolean('With disabled items', true, 'Props')
 
   const filteredValues = useMemo(() => {
-    const values = ITEMS.map((i) => ({value: i}))
+    let values = ITEMS.map((i) => ({value: i}))
+
+    if (withDisabledItems) {
+      values = values.map((v, index) => {
+        const isDisabled = index % 5 === 0
+        return {
+          ...v,
+          disabled: isDisabled,
+          value: {
+            ...v.value,
+            label: isDisabled ? `${v.value.label} (disabled)` : v.value.label,
+          },
+        }
+      })
+    }
+
     if (!filter) {
       return values
     }
-    return values.filter((i) => i.value.toLowerCase().includes(filter.toLowerCase()))
-  }, [filter])
+    return values.filter((i) => i.value.label.toLowerCase().includes(filter.toLowerCase()))
+  }, [filter, withDisabledItems])
+
+  const toggleSelect = useCallback((index: number) => {
+    setSelected((prevSelected) => ({
+      ...prevSelected,
+      [index]: !prevSelected?.[index] ?? true,
+    }))
+  }, [])
 
   const handleChange = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => setFilter(e.currentTarget.value),
     []
   )
-  const handleChildClick = useCallback((msg: string) => setMessage(msg), [])
+  const handleChildClick = useCallback(
+    ({index, msg}: {msg: string; index: number}) => {
+      setMessage(msg)
+      toggleSelect(index)
+    },
+    [toggleSelect]
+  )
   const handleClear = useCallback(() => setFilter(''), [])
 
   const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<string>) {
-      const handleClick = useCallback(() => handleChildClick(`${value} clicked`), [value])
+    return function VirtualListItemComponent({disabled, value}: CommandListVirtualItemProps<Item>) {
+      const handleClick = useCallback(
+        () =>
+          handleChildClick({
+            index: value.index,
+            msg: `${value.label} clicked`,
+          }),
+        [value]
+      )
+      const isSelected = selected[value.index]
       return (
         <Button
+          disabled={disabled}
           mode="bleed"
           onClick={handleClick}
           style={{borderRadius: 0, width: '100%'}}
-          text={value}
-          tone="primary"
+          text={isSelected ? '👻' : value.label}
+          tone={isSelected ? 'critical' : 'primary'}
         />
       )
     }
-  }, [handleChildClick])
+  }, [handleChildClick, selected])
+
+  const selectedIndices = Object.entries(selected)
+    .filter(([_k, v]) => v)
+    .map(([k, _v]) => k)
+    .join(',')
 
   return (
     <CardContainer padding={4}>
@@ -72,11 +124,14 @@ export default function ButtonStory() {
             showInput={showInput}
           />
         </CommandListProvider>
-        <Box>
+        <Stack space={2}>
+          <Text muted size={1} textOverflow="ellipsis">
+            {selectedIndices ? `Selected indices: ${selectedIndices}` : 'No items selected'}
+          </Text>
           <Text muted size={1}>
             {message}
           </Text>
-        </Box>
+        </Stack>
       </Stack>
     </CardContainer>
   )
