@@ -35,5 +35,10 @@ export default defineScope({
       title: 'Image',
       component: lazy(() => import('./ImageStory')),
     },
+    {
+      name: 'command-list',
+      title: 'CommandList',
+      component: lazy(() => import('./CommandListStory')),
+    },
   ],
 })
