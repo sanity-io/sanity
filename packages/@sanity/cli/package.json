@@ -52,7 +52,6 @@
     "deep-sort-object": "^1.0.1",
     "dotenv": "^8.2.0",
     "es6-promisify": "^6.0.0",
-    "eventsource": "^1.0.6",
     "execa": "^2.0.0",
     "fs-extra": "^7.0.0",
     "gauge": "^2.7.4",
