@@ -5,6 +5,7 @@ import {useLayoutEffect, useMemo, useRef} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {FormNodePresence} from '../../presence'
 import {useCurrentUser} from '../../store'
+import {useWorkspace} from '../../studio'
 import {StateTree, ObjectFormNode} from './types'
 import {prepareFormState, FIXME_SanityDocument} from './formState'
 import {immutableReconcile} from './utils/immutableReconcile'
@@ -50,6 +51,7 @@ export function useFormState<
 ): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
+  const workspace = useWorkspace()
 
   const prev = useRef<DocumentFormNode | null>(null)
 
@@ -73,6 +75,7 @@ export function useFormState<
       path: pathFor([]),
       level: 0,
       currentUser,
+      workspace,
       presence,
       validation,
       changesOpen,
@@ -96,5 +99,6 @@ export function useFormState<
     presence,
     validation,
     changesOpen,
+    workspace,
   ])
 }

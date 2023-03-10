@@ -1,5 +1,5 @@
 import {UserIcon as icon} from '@sanity/icons'
-import {Rule} from 'sanity'
+import {defineField, Rule} from 'sanity'
 
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},
@@ -41,6 +41,16 @@ export default {
       title: 'Name',
       type: 'string',
       validation: (rule: Rule) => rule.required(),
+    },
+    defineField({
+      name: 'workspaceConditionalHidden',
+      type: 'string',
+      hidden: (context) => context.workspace.dataset === 'hideMe',
+    }),
+    {
+      name: 'workspaceConditionalReadOnly',
+      type: 'string',
+      readOnly: (context) => context.workspace.dataset === 'hideMe',
     },
     {
       name: 'bestFriend',
