@@ -1,11 +1,15 @@
 import {FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import React, {memo} from 'react'
+import React, {ReactNode, memo} from 'react'
 import {FormNodePresence} from '../../../presence'
 import {FormFieldHeader} from './FormFieldHeader'
 
 /** @internal */
 export interface FormFieldProps {
+  /**
+   * @beta
+   */
+  __unstable_headerActions?: ReactNode
   /**
    * @beta
    */
@@ -33,6 +37,7 @@ export const FormField = memo(function FormField(
 ) {
   const {
     validation,
+    __unstable_headerActions: headerActions,
     __unstable_presence: presence,
     children,
     description,
@@ -41,14 +46,16 @@ export const FormField = memo(function FormField(
     title,
     ...restProps
   } = props
+
   return (
-    <Stack {...restProps} data-level={level} space={1}>
+    <Stack data-level={level} data-ui="FormField" {...restProps} space={1}>
       {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.
         So we might want to separate the concerns of input vs formfield components later on.
       */}
       {title && (
         <FormFieldHeader
+          __unstable_actions={headerActions}
           validation={validation}
           __unstable_presence={presence}
           description={description}

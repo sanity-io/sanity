@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
-import React, {forwardRef, useCallback, useMemo} from 'react'
+import React, {forwardRef, ReactNode, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {FormNodeValidation} from '@sanity/types'
 import {FieldPresence, FormNodePresence} from '../../../presence'
@@ -11,6 +11,10 @@ import {focusRingStyle} from './styles'
 
 /** @internal */
 export interface FormFieldSetProps {
+  /**
+   * @beta
+   */
+  __unstable_headerActions?: ReactNode
   /**
    * @beta
    */
@@ -82,6 +86,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {
+    __unstable_headerActions: headerActions,
     validation = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
     children,
@@ -129,7 +134,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   }, [children, collapsed, columns])
 
   return (
-    <Root data-level={level} {...restProps}>
+    <Root data-level={level} data-ui="FormFieldSet" {...restProps}>
       {title && (
         <Flex align="flex-end">
           <Box flex={1} paddingY={2}>
@@ -162,6 +167,8 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
               <FieldPresence maxAvatars={4} presence={presence} />
             </Box>
           )}
+
+          {headerActions && <Box marginLeft={1}>{headerActions}</Box>}
         </Flex>
       )}
 

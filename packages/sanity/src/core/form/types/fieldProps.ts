@@ -27,6 +27,8 @@ import {
 
 /** @beta */
 export interface BaseFieldProps {
+  /** @beta */
+  actions?: ReactNode
   schemaType: SchemaType
   title: string | undefined
   description: string | undefined
