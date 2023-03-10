@@ -1,5 +1,5 @@
 import {SyncIcon} from '@sanity/icons'
-import {defineField, defineType} from 'sanity'
+import {defineField, defineType, type ReferenceFilterResolverContext} from 'sanity'
 
 export const referenceAlias = defineType({
   type: 'reference',
@@ -177,10 +177,18 @@ export default defineType({
       name: 'asyncFilter',
       title: 'Async filter',
       type: 'reference',
-      to: {type: 'book'},
+      to: [{type: 'book'}],
       options: {
-        filter: () =>
-          Promise.resolve({filter: '$param == "something"', params: {param: 'something'}}),
+        filter: async ({getClient}: ReferenceFilterResolverContext) => {
+          const latestAuthorId = await getClient({apiVersion: '2023-01-01'}).fetch<string>(
+            '*[_type == "author" && _id in path("*")] | order(_createdAt desc) [0]._id'
+          )
+
+          return Promise.resolve({
+            filter: 'author._ref == $latestAuthorId',
+            params: {latestAuthorId},
+          })
+        },
       },
     },
     {

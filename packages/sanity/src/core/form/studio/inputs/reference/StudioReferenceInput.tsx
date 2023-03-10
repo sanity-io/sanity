@@ -16,18 +16,20 @@ import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {CreateReferenceOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
 import {useReferenceInputOptions} from '../../contexts'
 import {ObjectInputProps} from '../../../types'
+import {Source} from '../../../../config'
+import {useSource} from '../../../../studio'
 import {useFormValue} from '../../../useFormValue'
-import {useClient, useSchema} from '../../../../hooks'
+import {useSchema} from '../../../../hooks'
 import {useDocumentPreviewStore} from '../../../../store'
 import {FIXME} from '../../../../FIXME'
 import {isNonNullable} from '../../../../util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 
-// eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
   options: ReferenceOptions | undefined,
   document: SanityDocument,
-  valuePath: Path
+  valuePath: Path,
+  getClient: Source['getClient']
 ): Promise<ReferenceFilterSearchOptions> {
   if (!options) {
     return {}
@@ -36,7 +38,8 @@ async function resolveUserDefinedFilter(
   if (typeof options.filter === 'function') {
     const parentPath = valuePath.slice(0, -1)
     const parent = get(document, parentPath) as Record<string, unknown>
-    return options.filter({document, parentPath, parent})
+    const resolvedFilter = await options.filter({document, parentPath, parent, getClient})
+    return resolvedFilter
   }
 
   return {
@@ -68,7 +71,8 @@ type SearchError = {
  * @beta
  */
 export function StudioReferenceInput(props: StudioReferenceInputProps) {
-  const searchClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const source = useSource()
+  const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const {path, schemaType} = props
@@ -83,10 +87,11 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const isDocumentLiveEdit = useMemo(() => refType?.liveEdit, [refType])
 
   const disableNew = schemaType.options?.disableNew === true
+  const getClient = source.getClient
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path)).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path, getClient)).pipe(
         mergeMap(({filter, params}) =>
           adapter.referenceSearch(searchClient, searchString, schemaType, {
             ...schemaType.options,
@@ -105,7 +110,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         })
       ),
 
-    [documentRef, path, searchClient, schemaType]
+    [documentRef, path, searchClient, schemaType, getClient]
   )
 
   const template = props.value?._strengthenOnPublish?.template
@@ -177,7 +182,8 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   }, [disableNew, initialValueTemplateItems, schemaType.to])
 
   const getReferenceInfo = useCallback(
-    (id: any, _type: any) => adapter.getReferenceInfo(documentPreviewStore, id, _type),
+    (id: string, _type: ReferenceSchemaType) =>
+      adapter.getReferenceInfo(documentPreviewStore, id, _type),
     [documentPreviewStore]
   )
 

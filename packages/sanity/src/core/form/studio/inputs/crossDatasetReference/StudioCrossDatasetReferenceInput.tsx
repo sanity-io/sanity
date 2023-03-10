@@ -12,19 +12,20 @@ import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
-import {useClient} from '../../../../hooks'
 import {ObjectInputProps} from '../../../types'
+import {Source} from '../../../../config'
+import {useSource} from '../../../../studio'
 import {useFormValue} from '../../../useFormValue'
 import {useDocumentPreviewStore} from '../../../../store'
 import {FIXME} from '../../../../FIXME'
 import {search} from './datastores/search'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 
-// eslint-disable-next-line require-await
 async function resolveUserDefinedFilter(
   options: ReferenceFilterOptions | undefined,
   document: SanityDocument,
-  valuePath: Path
+  valuePath: Path,
+  getClient: Source['getClient']
 ): Promise<ReferenceFilterSearchOptions> {
   if (!options) {
     return {}
@@ -33,7 +34,8 @@ async function resolveUserDefinedFilter(
   if (typeof options.filter === 'function') {
     const parentPath = valuePath.slice(0, -1)
     const parent = get(document, parentPath) as Record<string, unknown>
-    return options.filter({document, parentPath, parent})
+    const resolvedFilter = await options.filter({document, parentPath, parent, getClient})
+    return resolvedFilter
   }
 
   return {
@@ -69,8 +71,10 @@ type SearchError = {
  */
 export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
   const {path, schemaType} = props
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const source = useSource()
+  const client = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
+  const getClient = source.getClient
 
   const crossDatasetClient = useMemo(() => {
     return (
@@ -91,7 +95,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path)).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path, getClient)).pipe(
         mergeMap(({filter, params}) =>
           search(crossDatasetClient, searchString, schemaType, {
             ...schemaType.options,
@@ -110,7 +114,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         })
       ),
 
-    [crossDatasetClient, documentRef, path, schemaType]
+    [crossDatasetClient, documentRef, path, schemaType, getClient]
   )
 
   const getReferenceInfo = useMemo(
