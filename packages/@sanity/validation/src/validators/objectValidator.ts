@@ -26,7 +26,7 @@ const objectValidators: Validators = {
     }
 
     if (!isReference(value)) {
-      return message || true
+      return message || 'Must be a reference to a document'
     }
 
     const {type, getDocumentExists} = context
