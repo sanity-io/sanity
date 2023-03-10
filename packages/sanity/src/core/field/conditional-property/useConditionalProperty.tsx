@@ -1,5 +1,4 @@
 import {SanityDocument, ConditionalProperty} from '@sanity/types'
-import {Workspace} from '../../config'
 import {useCurrentUser} from '../../store'
 import {useWorkspace} from '../../studio'
 import {useUnique} from '../../util'
