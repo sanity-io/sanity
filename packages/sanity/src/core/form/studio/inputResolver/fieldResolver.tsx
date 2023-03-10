@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
+
 import {isBooleanSchemaType, isReferenceSchemaType, SchemaType} from '@sanity/types'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {ArrayFieldProps, FieldProps, ObjectFieldProps} from '../../types'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
 import {FieldMember} from '../../store'
@@ -23,6 +24,7 @@ function BooleanField(field: FieldProps) {
 function PrimitiveField(field: FieldProps) {
   return (
     <FormField
+      __unstable_headerActions={field.actions}
       data-testid={`field-${field.inputId}`}
       inputId={field.inputId}
       level={field.level}
@@ -45,6 +47,7 @@ function PrimitiveField(field: FieldProps) {
 function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   return (
     <FormFieldSet
+      __unstable_headerActions={field.actions}
       data-testid={`field-${field.inputId}`}
       level={field.level}
       title={field.title}
@@ -66,12 +69,18 @@ function ImageOrFileField(field: ObjectFieldProps) {
   const hotspotField = field.inputProps.members.find(
     (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot'
   )
-  const presence = hotspotField?.open
-    ? field.presence
-    : field.presence.concat(hotspotField?.field.presence || [])
+
+  const presence = useMemo(
+    () =>
+      hotspotField?.open
+        ? field.presence
+        : field.presence.concat(hotspotField?.field.presence || []),
+    [field.presence, hotspotField]
+  )
 
   return (
     <FormFieldSet
+      __unstable_headerActions={field.actions}
       level={field.level}
       title={field.title}
       description={field.description}
@@ -101,8 +110,13 @@ export function defaultResolveFieldComponent(
   if (typeChain.some((t) => t.name === 'image' || t.name === 'file')) {
     return ImageOrFileField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
+
   if (typeChain.some((t) => isReferenceSchemaType(t))) {
     return ReferenceField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+  }
+
+  if (isDescendentOfType(schemaType, 'slug')) {
+    return PrimitiveField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (schemaType.jsonType !== 'object' && schemaType.jsonType !== 'array') {
@@ -110,4 +124,16 @@ export function defaultResolveFieldComponent(
   }
 
   return ObjectOrArrayField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+}
+
+function isDescendentOfType(schemaType: SchemaType, typeName: string): boolean {
+  if (!schemaType.type) {
+    return false
+  }
+
+  if (schemaType.type.name === typeName) {
+    return true
+  }
+
+  return isDescendentOfType(schemaType.type, typeName)
 }
