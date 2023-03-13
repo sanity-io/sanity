@@ -86,6 +86,15 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
     return <NoDocumentTypesScreen />
   }
 
+  const breadcrumbItems = paneDataItems
+
+  // If document pane is open, only show the document pane and the previous pane
+  const filteredPaneDataItems = paneDataItems.some(
+    (item) => item.pane.type && item.pane.type === 'document'
+  )
+    ? paneDataItems.slice(-2)
+    : paneDataItems
+
   return (
     <PortalProvider element={portalElement || null}>
       <StyledPaneLayout
@@ -95,7 +104,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
         onCollapse={handleRootCollapse}
         onExpand={handleRootExpand}
       >
-        {paneDataItems.map(
+        {filteredPaneDataItems.map(
           ({
             active,
             childItemId,
@@ -126,6 +135,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
                   payload={payload}
                   selected={selected}
                   siblingIndex={siblingIndex}
+                  breadcrumbItems={breadcrumbItems}
                 />
               )}
             </Fragment>

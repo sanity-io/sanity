@@ -63,9 +63,11 @@ export const PaneHeader = forwardRef(function PaneHeader(
               >
                 {loading && <TitleTextSkeleton animated radius={1} />}
                 {!loading && (
-                  <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
-                    {title}
-                  </TitleText>
+                  <>
+                    <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
+                      Content / Book / {title}
+                    </TitleText>
+                  </>
                 )}
               </TitleBox>
 
