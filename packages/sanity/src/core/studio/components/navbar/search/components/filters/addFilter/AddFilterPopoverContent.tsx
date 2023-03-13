@@ -30,6 +30,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     state: {
       documentTypesNarrowed,
       definitions,
+      filters,
       terms: {types},
     },
   } = useSearchState()
@@ -49,10 +50,10 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
 
   const values = useMemo(() => {
     return filteredMenuItems.map((i) => ({
-      disabled: i.type !== 'filter',
+      disabled: i.type !== 'filter' || !filters.findIndex((f) => f.fieldId === i.filter.fieldId),
       value: i,
     }))
-  }, [filteredMenuItems])
+  }, [filteredMenuItems, filters])
 
   const renderItem = useCallback(
     (item: CommandListVirtualItemProps<FilterMenuItem>) => {
