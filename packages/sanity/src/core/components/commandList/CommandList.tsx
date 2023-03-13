@@ -1,5 +1,6 @@
 import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
+import throttle from 'lodash/throttle'
 import React, {
   forwardRef,
   MouseEvent,
@@ -150,32 +151,47 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
     /**
      * Iterate through all virtual list children and apply the active data-attribute on the selected index.
      */
-    const showChildrenActiveState = useCallback(
-      (activeIndex: number | null) => {
-        const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
-        childElements?.forEach((child) => {
-          const virtualIndex = Number(child.dataset?.index)
-          const childIndex = itemIndices[virtualIndex]
-          child
-            .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
-            ?.toggleAttribute(activeItemDataAttr, childIndex === activeIndex)
-        })
-      },
-      [activeItemDataAttr, childContainerElement, itemIndices]
-    )
+    const showChildrenActiveState = useCallback(() => {
+      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
+      childElements?.forEach((child) => {
+        const virtualIndex = Number(child.dataset?.index)
+        const childIndex = itemIndices[virtualIndex]
+        child
+          .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
+          ?.toggleAttribute(activeItemDataAttr, childIndex === activeIndexRef.current)
+      })
+    }, [activeItemDataAttr, childContainerElement?.children, itemIndices])
 
     /**
-     * Assign active descendant on input element, if present.
+     * Iterate through all virtual list children and clear the active data-attribute.
      */
-    const handleAssignActiveDescendant = useCallback(() => {
+    const hideChildrenActiveState = useCallback(() => {
+      const childElements = Array.from(childContainerElement?.children || [])
+      childElements?.forEach((child) => {
+        child
+          .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
+          ?.toggleAttribute(activeItemDataAttr, false)
+      })
+    }, [activeItemDataAttr, childContainerElement?.children])
+
+    /**
+     * Throttled version of the above, used when DOM mutations are detected in virtual lists
+     */
+    const refreshChildrenActiveStateThrottled = useMemo(() => {
+      return throttle(showChildrenActiveState, 200)
+    }, [showChildrenActiveState])
+
+    /**
+     * Assign active descendant on input element (if present)
+     */
+    const handleUpdateActiveDescendant = useCallback(() => {
       const activeIndex = activeIndexRef?.current
       if (values.length > 0) {
         inputElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
       } else {
         inputElement?.removeAttribute('aria-activedescendant')
       }
-      showChildrenActiveState(activeIndex)
-    }, [getChildDescendantId, inputElement, showChildrenActiveState, values.length])
+    }, [getChildDescendantId, inputElement, values.length])
 
     /**
      * Obtain index of the top most visible element
@@ -205,7 +221,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
         scrollIntoView?: boolean
       }) => {
         activeIndexRef.current = index
-        handleAssignActiveDescendant()
+        handleUpdateActiveDescendant()
+        showChildrenActiveState()
 
         if (scrollIntoView) {
           const virtualListIndex = itemIndices.indexOf(index)
@@ -217,7 +234,13 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
           }
         }
       },
-      [handleAssignActiveDescendant, initialScrollAlign, itemIndices, virtualizer]
+      [
+        handleUpdateActiveDescendant,
+        initialScrollAlign,
+        itemIndices,
+        showChildrenActiveState,
+        virtualizer,
+      ]
     )
 
     /**
@@ -361,10 +384,10 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
      */
     useEffect(() => {
       function handleBlur() {
-        showChildrenActiveState(null)
+        hideChildrenActiveState()
       }
       function handleFocus() {
-        showChildrenActiveState(activeIndexRef.current)
+        showChildrenActiveState()
       }
 
       const elements = [inputElement, virtualListElement]
@@ -380,7 +403,14 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
           el?.removeEventListener('keydown', handleKeyDown)
         })
       }
-    }, [focusElement, handleKeyDown, inputElement, showChildrenActiveState, virtualListElement])
+    }, [
+      focusElement,
+      handleKeyDown,
+      hideChildrenActiveState,
+      inputElement,
+      showChildrenActiveState,
+      virtualListElement,
+    ])
 
     /**
      * Temporarily disable pointer events (or 'flush' existing hover states) on child count changes.
@@ -394,8 +424,32 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
      * This is to ensure that we correctly clear aria-activedescendant attrs if the filtered array is empty.
      */
     useEffect(() => {
-      handleAssignActiveDescendant()
-    }, [handleAssignActiveDescendant, values])
+      handleUpdateActiveDescendant()
+    }, [handleUpdateActiveDescendant, values])
+
+    /**
+     * On DOM mutations, re-assign active descendant on input element (if present) and update active state on all children.
+     *
+     * Useful since virtual lists will constantly mutate the DOM on scroll, and we want to ensure that
+     * new elements coming into view are rendered with the correct selected state.
+     *
+     * An alternative to using MutationObserver is hooking into the `onChange` callback that `react-virtual` provides, though
+     * this changes on _every_ internal state change.
+     */
+    useEffect(() => {
+      const mutationObserver = new MutationObserver(refreshChildrenActiveStateThrottled)
+
+      if (childContainerElement) {
+        mutationObserver.observe(childContainerElement, {
+          childList: true,
+          subtree: true,
+        })
+      }
+
+      return () => {
+        mutationObserver.disconnect()
+      }
+    }, [childContainerElement, refreshChildrenActiveStateThrottled])
 
     /**
      * Apply input aria attributes
