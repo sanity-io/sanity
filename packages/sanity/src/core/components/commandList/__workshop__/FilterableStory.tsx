@@ -3,7 +3,7 @@ import {useBoolean} from '@sanity/ui-workshop'
 import React, {KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {CommandList} from '../CommandList'
-import {CommandListHandle, CommandListVirtualItemProps} from '../types'
+import {CommandListHandle, CommandListRenderItemCallback} from '../types'
 
 const ITEMS = [...Array(50000).keys()]
 
@@ -23,18 +23,17 @@ const StyledLink = styled.a<{$index: number}>`
 `
 
 export default function FilterableStory() {
-  const [inputElement, setInputElement] = useState<HTMLElement | null>(null)
+  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [filter, setFilter] = useState<string>('')
   const [message, setMessage] = useState('')
   const showInput = useBoolean('Show input', true, 'Props')
   const commandListRef = useRef<CommandListHandle | null>(null)
 
   const filteredValues = useMemo(() => {
-    const values = ITEMS.map((i) => ({value: i}))
     if (!filter) {
-      return values
+      return ITEMS
     }
-    return values.filter((i) => i.value.toString().includes(filter))
+    return ITEMS.filter((i) => i.toString().includes(filter))
   }, [filter])
 
   /**
@@ -62,15 +61,15 @@ export default function FilterableStory() {
     }
   }, [filteredValues.length])
 
-  const renderItem = useCallback(
-    (item: CommandListVirtualItemProps<number>) => {
+  const renderItem = useCallback<CommandListRenderItemCallback<number>>(
+    (item) => {
       return (
         <StyledLink
-          $index={item.index}
+          $index={item}
           // eslint-disable-next-line react/jsx-no-bind
-          onClick={() => handleChildClick(`Button ${item.value.toString()} clicked`)}
+          onClick={() => handleChildClick(`Button ${item.toString()} clicked`)}
         >
-          <Text>{item.value}</Text>
+          <Text>{item}</Text>
         </StyledLink>
       )
     },

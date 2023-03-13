@@ -16,11 +16,6 @@ export default defineScope({
       component: lazy(() => import('./FilterableStory')),
     },
     {
-      name: 'filterableButtons',
-      title: 'Filterable Buttons',
-      component: lazy(() => import('./FilterableButtonsStory')),
-    },
-    {
       name: 'popover',
       title: 'Popover',
       component: lazy(() => import('./PopoverStory')),

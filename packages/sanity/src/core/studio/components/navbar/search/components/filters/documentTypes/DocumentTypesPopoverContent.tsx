@@ -5,8 +5,9 @@ import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {
   CommandList,
+  CommandListGetItemSelectedCallback,
   CommandListHandle,
-  CommandListVirtualItemProps,
+  CommandListRenderItemCallback,
 } from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import type {SearchableType} from '../../../../../../../search'
@@ -22,7 +23,7 @@ const ClearButtonBox = styled(Box)`
 `
 
 export function DocumentTypesPopoverContent() {
-  const [inputElement, setInputElement] = useState<HTMLElement | null>(null)
+  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
   const commandListRef = useRef<CommandListHandle | null>(null)
 
@@ -38,7 +39,12 @@ export function DocumentTypesPopoverContent() {
   // Get a snapshot of initial selected types
   const [selectedTypesSnapshot, setSelectedTypesSnapshot] = useState(selectedTypes)
 
-  const values = useGetDocumentTypeItems(schema, selectedTypes, selectedTypesSnapshot, typeFilter)
+  const documentTypeItems = useGetDocumentTypeItems(
+    schema,
+    selectedTypes,
+    selectedTypesSnapshot,
+    typeFilter
+  )
 
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
@@ -57,7 +63,7 @@ export function DocumentTypesPopoverContent() {
 
   const getItemKey = useCallback(
     (index: number) => {
-      const virtualItem = values[index].value
+      const virtualItem = documentTypeItems[index]
       switch (virtualItem.type) {
         case 'divider':
           return `${virtualItem.type}-${index}`
@@ -69,38 +75,54 @@ export function DocumentTypesPopoverContent() {
           return index
       }
     },
-    [values]
+    [documentTypeItems]
   )
 
-  const renderItem = useCallback(({value}: CommandListVirtualItemProps<DocumentTypeMenuItem>) => {
-    if (value.type === 'divider') {
+  const renderItem = useCallback<CommandListRenderItemCallback<DocumentTypeMenuItem>>((item) => {
+    if (item.type === 'divider') {
       return (
         <Box padding={1}>
           <MenuDivider />
         </Box>
       )
     }
-    if (value.type === 'header') {
+    if (item.type === 'header') {
       return (
         <Box margin={1} paddingBottom={2} paddingTop={3} paddingX={3}>
           <Label muted size={0}>
-            {value.title}
+            {item.title}
           </Label>
         </Box>
       )
     }
-    if (value.type === 'item') {
+    if (item.type === 'item') {
       return (
         <DocumentTypeFilterItem
           paddingX={1}
           paddingTop={1}
-          selected={value.selected}
-          type={value.item}
+          selected={item.selected}
+          type={item.item}
         />
       )
     }
     return null
   }, [])
+
+  const getItemDisabled = useCallback<CommandListGetItemSelectedCallback>(
+    (index) => {
+      const item = documentTypeItems[index]
+      return item.type !== 'item'
+    },
+    [documentTypeItems]
+  )
+
+  const getItemSelected = useCallback<CommandListGetItemSelectedCallback>(
+    (index) => {
+      const item = documentTypeItems[index]
+      return item.type === 'item' && item.selected
+    },
+    [documentTypeItems]
+  )
 
   return (
     <Flex direction="column" style={{width: '250px'}}>
@@ -114,12 +136,14 @@ export function DocumentTypesPopoverContent() {
       />
 
       <Flex>
-        {values.length > 0 && (
+        {documentTypeItems.length > 0 && (
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel="Document types"
             ariaMultiselectable
             autoFocus
+            getItemDisabled={getItemDisabled}
+            getItemSelected={getItemSelected}
             getItemKey={getItemKey}
             inputElement={inputElement}
             itemHeight={37}
@@ -127,12 +151,12 @@ export function DocumentTypesPopoverContent() {
             paddingBottom={1}
             ref={commandListRef}
             renderItem={renderItem}
-            values={values}
+            values={documentTypeItems}
           />
         )}
 
         {/* No results */}
-        {!values.length && (
+        {!documentTypeItems.length && (
           <Box padding={3}>
             <Text muted size={1} textOverflow="ellipsis">
               No matches for '{typeFilter}'
@@ -204,10 +228,6 @@ function useGetDocumentTypeItems(
       items.push({item, selected: selectedTypes.includes(item), type: 'item'})
     )
 
-    return items.map((i) => ({
-      disabled: i.type !== 'item',
-      selected: i.type === 'item' && i.selected,
-      value: i,
-    }))
+    return items
   }, [schema, selectedTypes, selectedTypesSnapshot, typeFilter])
 }

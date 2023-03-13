@@ -1,11 +1,7 @@
 import {Card, Flex} from '@sanity/ui'
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback} from 'react'
 import styled from 'styled-components'
-import {
-  CommandList,
-  CommandListVirtualItemProps,
-  CommandListVirtualItemValue,
-} from '../../../../../../components'
+import {CommandList, CommandListRenderItemCallback} from '../../../../../../components'
 import {WeightedHit} from '../../../../../../search'
 import {getPublishedId} from '../../../../../../util/draftUtils'
 import {useSearchState} from '../../contexts/search/useSearchState'
@@ -44,10 +40,6 @@ export function SearchResults({inputElement}: SearchResultsProps) {
   const hasNoSearchResults = !result.hits.length && result.loaded
   const hasError = result.error
 
-  const values: CommandListVirtualItemValue<WeightedHit>[] = useMemo(() => {
-    return result.hits.map((i) => ({value: i}))
-  }, [result.hits])
-
   /**
    * Add current search to recent searches, trigger child item click and close search
    */
@@ -59,18 +51,18 @@ export function SearchResults({inputElement}: SearchResultsProps) {
     onClose?.()
   }, [dispatch, filters, onClose, recentSearchesStore, terms])
 
-  const renderItem = useCallback(
-    ({value}: CommandListVirtualItemProps<WeightedHit>) => {
+  const renderItem = useCallback<CommandListRenderItemCallback<WeightedHit>>(
+    (item) => {
       return (
         <>
           <SearchResultItem
-            documentId={getPublishedId(value.hit._id) || ''}
-            documentType={value.hit._type}
+            documentId={getPublishedId(item.hit._id) || ''}
+            documentType={item.hit._type}
             onClick={handleSearchResultClick}
             paddingTop={2}
             paddingX={2}
           />
-          {debug && <DebugOverlay data={value} />}
+          {debug && <DebugOverlay data={item} />}
         </>
       )
     },
@@ -106,7 +98,7 @@ export function SearchResults({inputElement}: SearchResultsProps) {
                     paddingBottom={2}
                     renderItem={renderItem}
                     ref={setSearchCommandList}
-                    values={values}
+                    values={result.hits}
                   />
                 )}
                 {hasNoSearchResults && <NoResults />}

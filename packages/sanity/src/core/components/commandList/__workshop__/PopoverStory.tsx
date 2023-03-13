@@ -14,7 +14,7 @@ import {
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useCallback, useRef, useState} from 'react'
 import {CommandList} from '../CommandList'
-import {CommandListVirtualItemProps} from '../types'
+import {CommandListRenderItemCallback} from '../types'
 
 const ITEMS = [...Array(50000).keys()]
 
@@ -77,18 +77,16 @@ export default function PopoverStory() {
   useClickOutside(handleClose, [button, popover])
   useGlobalKeyDown(handleGlobalKeyDown)
 
-  const values = ITEMS.map((i) => ({value: i}))
-
-  const renderItem = useCallback(
-    (item: CommandListVirtualItemProps<number>) => {
+  const renderItem = useCallback<CommandListRenderItemCallback<number>>(
+    (item) => {
       return (
         <Button
           fontSize={1}
           mode="bleed"
           // eslint-disable-next-line react/jsx-no-bind
-          onClick={() => handleChildClick(item.value)}
+          onClick={() => handleChildClick(item)}
           style={{borderRadius: 0, width: '100%'}}
-          text={`Button ${item.value.toString()}`}
+          text={`Button ${item.toString()}`}
         />
       )
     },
@@ -114,7 +112,7 @@ export default function PopoverStory() {
                         initialIndex={selectedIndex}
                         itemHeight={35}
                         renderItem={renderItem}
-                        values={values}
+                        values={ITEMS}
                       />
                     </Flex>
                   </Card>
@@ -133,8 +131,6 @@ export default function PopoverStory() {
               tone="primary"
             />
           </Popover>
-          <Button text="Button 1" />
-          <Button text="Button 2" />
         </Inline>
         <Box>
           <Text muted size={1}>

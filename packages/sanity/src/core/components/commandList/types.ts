@@ -2,38 +2,38 @@ import {ResponsivePaddingProps} from '@sanity/ui'
 import {ScrollToOptions} from '@tanstack/react-virtual'
 import {ReactNode} from 'react'
 
-/**
- * @internal
- */
-export interface CommandListVirtualItemValue<T> {
+/** @internal */
+export type CommandListGetItemDisabledCallback = (virtualIndex: number) => boolean
+
+/** @internal */
+export type CommandListGetItemKeyCallback = (virtualIndex: number) => number | string
+
+/** @internal */
+export type CommandListGetItemSelectedCallback = (virtualIndex: number) => boolean
+
+/** @internal */
+export type CommandListItemContext = {
+  activeIndex: number | null
   disabled?: boolean
   selected?: boolean
-  value: T
-}
-
-/**
- * @internal
- */
-export interface CommandListVirtualItemProps<T> extends CommandListVirtualItemValue<T> {
-  /** DOM element index (what's visible in the browser) */
-  index: number
-  /** Virtualized element index */
   virtualIndex: number
 }
 
-/**
- * @internal
- */
+/** @internal */
+export type CommandListRenderItemCallback<T> = (
+  item: T,
+  context: CommandListItemContext
+) => ReactNode
+
+/** @internal */
 export interface CommandListHandle {
   focusElement: () => void
   getTopIndex: () => number
   scrollToIndex: (index: number) => void
 }
 
-/**
- * @internal
- */
-export interface CommandListProps<T> extends ResponsivePaddingProps {
+/** @internal */
+export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   /** The data attribute to apply to any active virtual list items */
   activeItemDataAttr?: string
   /** `aria-label` to apply to the virtual list container element */
@@ -42,18 +42,26 @@ export interface CommandListProps<T> extends ResponsivePaddingProps {
   ariaMultiselectable?: boolean
   /** Automatically focus the input (if applicable) or virtual list */
   autoFocus?: boolean
-  getItemKey?: (index: number) => number | string
+  /** Custom function to map disabled items */
+  getItemDisabled?: CommandListGetItemDisabledCallback
+  /** Custom function to map virtual list items to custom keys */
+  getItemKey?: CommandListGetItemKeyCallback
+  /** Custom function to map selected items */
+  getItemSelected?: CommandListGetItemSelectedCallback
   /** Force a fixed height for all virtual list children and skip measurement (faster). */
   fixedHeight?: boolean
   /** Scroll alignment of the initial active index */
   initialScrollAlign?: ScrollToOptions['align']
   /** Initial active index on mount */
   initialIndex?: number
-  inputElement?: HTMLElement | null
+  /** Input element to associate with this virtual list. Associated inputs will receive focus and handle key events */
+  inputElement?: HTMLInputElement | null
+  /** Estimated height for each list item */
   itemHeight: number
+  /** Number of items to render above and below the visible area*/
   overscan?: number
   /** Rendered component in virtual lists */
-  renderItem: (props: CommandListVirtualItemProps<any>) => ReactNode
+  renderItem: CommandListRenderItemCallback<T>
   /** Virtual list item values, accessible to all rendered item components */
-  values: CommandListVirtualItemValue<T>[]
+  values: T[]
 }

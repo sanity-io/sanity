@@ -1,9 +1,9 @@
-import React, {useCallback, useRef, useState} from 'react'
+import React, {useCallback, useRef} from 'react'
 import styled from 'styled-components'
 import {CommandList} from '../CommandList'
-import {CommandListHandle, CommandListVirtualItemProps} from '../types'
+import {CommandListHandle, CommandListRenderItemCallback} from '../types'
 
-const ITEMS = [...Array(5000).keys()]
+const ITEMS = [...Array(5000).keys()].map((i) => `Item ${i}`)
 
 const StyledLink = styled.a`
   background: #1a1a1a;
@@ -16,16 +16,14 @@ const StyledLink = styled.a`
 `
 
 export default function MinimalStory() {
-  const values = ITEMS.map((i) => ({value: `Item ${i}`}))
-
   const commandListRef = useRef<CommandListHandle | null>(null)
 
   const handleScrollToTop = useCallback(() => {
     commandListRef?.current?.scrollToIndex(0)
   }, [])
 
-  const renderItem = useCallback((item: CommandListVirtualItemProps<number>) => {
-    return <StyledLink>{item.value}</StyledLink>
+  const renderItem = useCallback<CommandListRenderItemCallback<string>>((item) => {
+    return <StyledLink>{item}</StyledLink>
   }, [])
 
   return (
@@ -45,7 +43,7 @@ export default function MinimalStory() {
           overscan={20}
           ref={commandListRef}
           renderItem={renderItem}
-          values={values}
+          values={ITEMS}
         />
       </div>
 

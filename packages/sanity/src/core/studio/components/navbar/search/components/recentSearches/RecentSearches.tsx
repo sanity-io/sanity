@@ -4,8 +4,7 @@ import styled from 'styled-components'
 import {
   CommandList,
   CommandListHandle,
-  CommandListVirtualItemProps,
-  CommandListVirtualItemValue,
+  CommandListRenderItemCallback,
 } from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {RecentSearch} from '../../datastores/recentSearches'
@@ -48,25 +47,21 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
     commandListRef?.current?.focusElement()
   }, [dispatch, recentSearchesStore])
 
-  const values: CommandListVirtualItemValue<RecentSearch>[] = useMemo(() => {
-    return recentSearches.map((i) => ({value: i}))
-  }, [recentSearches])
-
   const mediaIndex = useMediaIndex()
 
   const maxVisibleTypePillChars = useMemo(() => {
     return mediaIndex < 2 ? MAX_COMBINED_TYPE_COUNT_SMALL : MAX_COMBINED_TYPE_COUNT_LARGE
   }, [mediaIndex])
 
-  const renderItem = useCallback(
-    ({value, virtualIndex}: CommandListVirtualItemProps<RecentSearch>) => {
+  const renderItem = useCallback<CommandListRenderItemCallback<RecentSearch>>(
+    (item, {virtualIndex}) => {
       return (
         <RecentSearchItem
           index={virtualIndex}
           maxVisibleTypePillChars={maxVisibleTypePillChars}
           paddingTop={1}
           paddingX={2}
-          value={value}
+          value={item}
         />
       )
     },
@@ -97,7 +92,7 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
               itemHeight={VIRTUAL_LIST_RECENT_SEARCH_ITEM_HEIGHT}
               paddingBottom={2}
               renderItem={renderItem}
-              values={values}
+              values={recentSearches}
             />
           </Box>
           <Box paddingBottom={2} paddingTop={1} paddingX={2}>

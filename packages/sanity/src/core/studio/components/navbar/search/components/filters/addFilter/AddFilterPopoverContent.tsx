@@ -1,6 +1,10 @@
 import {Box, Flex, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {CommandList, CommandListVirtualItemProps} from '../../../../../../../components'
+import {
+  CommandList,
+  CommandListGetItemDisabledCallback,
+  CommandListRenderItemCallback,
+} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterMenuItem} from '../../../types'
@@ -15,7 +19,7 @@ interface AddFilterPopoverContentProps {
 }
 
 export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
-  const [inputElement, setInputElement] = useState<HTMLElement | null>(null)
+  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
   const handleFilterChange = useCallback(
@@ -48,24 +52,28 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     [documentTypesNarrowed, definitions.fields, definitions.filters, schema, titleFilter, types]
   )
 
-  const values = useMemo(() => {
-    return filteredMenuItems.map((i) => ({
-      disabled: i.type !== 'filter' || !filters.findIndex((f) => f.fieldId === i.filter.fieldId),
-      value: i,
-    }))
-  }, [filteredMenuItems, filters])
-
-  const renderItem = useCallback(
-    (item: CommandListVirtualItemProps<FilterMenuItem>) => {
-      if (item.value.type === 'filter') {
-        return <MenuItemFilter item={item.value} onClose={onClose} paddingTop={1} paddingX={1} />
+  const renderItem = useCallback<CommandListRenderItemCallback<FilterMenuItem>>(
+    (item) => {
+      if (item.type === 'filter') {
+        return <MenuItemFilter item={item} onClose={onClose} paddingTop={1} paddingX={1} />
       }
-      if (item.value.type === 'header') {
-        return <MenuItemHeader item={item.value} />
+      if (item.type === 'header') {
+        return <MenuItemHeader item={item} />
       }
       return null
     },
     [onClose]
+  )
+
+  const getItemDisabled = useCallback<CommandListGetItemDisabledCallback>(
+    (index) => {
+      const filterItem = filteredMenuItems[index]
+      return (
+        filterItem.type !== 'filter' ||
+        !!filters.find((f) => getFilterKey(f) === getFilterKey(filterItem.filter))
+      )
+    },
+    [filteredMenuItems, filters]
   )
 
   const getItemKey = useCallback(
@@ -98,23 +106,24 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
       />
 
       <Flex>
-        {values.length > 0 && (
+        {filteredMenuItems.length > 0 && (
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel="Filters"
             autoFocus
+            getItemDisabled={getItemDisabled}
             getItemKey={getItemKey}
             inputElement={inputElement}
             itemHeight={45}
             overscan={20}
             paddingBottom={1}
             renderItem={renderItem}
-            values={values}
+            values={filteredMenuItems}
           />
         )}
 
         {/* No results */}
-        {values.length == 0 && (
+        {filteredMenuItems.length == 0 && (
           <Box padding={3}>
             <Text muted size={1} textOverflow="ellipsis">
               No matches for '{titleFilter}'

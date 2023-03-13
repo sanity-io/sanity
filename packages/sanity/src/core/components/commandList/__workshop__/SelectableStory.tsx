@@ -1,19 +1,21 @@
+import {CheckmarkIcon, DotIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import React, {KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {CommandList} from '../CommandList'
-import {CommandListHandle, CommandListVirtualItemProps} from '../types'
+import {
+  CommandListGetItemDisabledCallback,
+  CommandListGetItemSelectedCallback,
+  CommandListHandle,
+  CommandListRenderItemCallback,
+} from '../types'
 
 type Item = {
+  disabled?: boolean
   index: number
   label: string
 }
-
-const ITEMS: Item[] = [...Array(50000).keys()].map((i) => ({
-  index: i,
-  label: `Button ${i}`,
-}))
 
 const CardContainer = styled(Card)`
   height: 400px;
@@ -22,7 +24,7 @@ const CardContainer = styled(Card)`
 `
 
 export default function SelectableStory() {
-  const [inputElement, setInputElement] = useState<HTMLElement | null>(null)
+  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [selected, setSelected] = useState<Record<number, boolean>>({})
   const [filter, setFilter] = useState<string>('')
   const [message, setMessage] = useState('')
@@ -30,28 +32,20 @@ export default function SelectableStory() {
   const withDisabledItems = useBoolean('With disabled items', true, 'Props')
   const commandListRef = useRef<CommandListHandle | null>(null)
 
+  const items: Item[] = useMemo(() => {
+    return [...Array(50000).keys()].map((i) => ({
+      disabled: withDisabledItems && i % 5 === 0,
+      index: i,
+      label: `Button ${i}`,
+    }))
+  }, [withDisabledItems])
+
   const filteredValues = useMemo(() => {
-    let values = ITEMS.map((i) => ({value: i}))
-
-    if (withDisabledItems) {
-      values = values.map((v, index) => {
-        const isDisabled = index % 5 === 0
-        return {
-          ...v,
-          disabled: isDisabled,
-          value: {
-            ...v.value,
-            label: isDisabled ? `${v.value.label} (disabled)` : v.value.label,
-          },
-        }
-      })
-    }
-
     if (!filter) {
-      return values
+      return items
     }
-    return values.filter((i) => i.value.label.toLowerCase().includes(filter.toLowerCase()))
-  }, [filter, withDisabledItems])
+    return items.filter((i) => i.label.toLowerCase().includes(filter.toLowerCase()))
+  }, [filter, items])
 
   const toggleSelect = useCallback((index: number) => {
     setSelected((prevSelected) => ({
@@ -91,27 +85,55 @@ export default function SelectableStory() {
     }
   }, [filteredValues.length])
 
-  const renderItem = useCallback(
-    (item: CommandListVirtualItemProps<Item>) => {
-      const isSelected = selected[item.value.index]
+  /**
+   * Clear filter, selected values then scroll to top and re-focus command list
+   */
+  const handleReset = useCallback(() => {
+    setFilter('')
+    setSelected({})
+    commandListRef?.current?.scrollToIndex(0)
+    commandListRef?.current?.focusElement()
+  }, [])
+
+  const getItemDisabled = useCallback<CommandListGetItemDisabledCallback>(
+    (virtualIndex) => {
+      return !!items[filteredValues[virtualIndex].index].disabled
+    },
+    [filteredValues, items]
+  )
+
+  const getItemSelected = useCallback<CommandListGetItemSelectedCallback>(
+    (virtualIndex) => {
+      const canonicalIndex = filteredValues[virtualIndex].index
+      return !!selected[canonicalIndex]
+    },
+    [filteredValues, selected]
+  )
+
+  const renderItem = useCallback<CommandListRenderItemCallback<Item>>(
+    (item, context) => {
+      const isDisabled = context.disabled
+      const isSelected = context.selected
       return (
         <Button
-          disabled={item.disabled}
+          disabled={isDisabled}
+          icon={isSelected ? CheckmarkIcon : DotIcon}
+          justify="flex-start"
           mode="bleed"
           // eslint-disable-next-line react/jsx-no-bind
           onClick={() =>
             handleChildClick({
-              index: item.value.index,
-              msg: `${item.value.label} clicked`,
+              index: item.index,
+              msg: `${item.label} clicked`,
             })
           }
           style={{borderRadius: 0, width: '100%'}}
-          text={isSelected ? '👻' : item.value.label}
-          tone={isSelected ? 'critical' : 'primary'}
+          text={isSelected ? `${item.label} (selected)` : item.label}
+          tone={isSelected ? 'positive' : 'primary'}
         />
       )
     },
-    [handleChildClick, selected]
+    [handleChildClick]
   )
 
   const selectedIndices = Object.entries(selected)
@@ -141,8 +163,11 @@ export default function SelectableStory() {
               <CommandList
                 activeItemDataAttr="data-hovered"
                 ariaLabel="Children"
+                ariaMultiselectable
                 autoFocus
                 fixedHeight
+                getItemDisabled={getItemDisabled}
+                getItemSelected={getItemSelected}
                 inputElement={inputElement}
                 itemHeight={35}
                 ref={commandListRef}
@@ -152,6 +177,7 @@ export default function SelectableStory() {
             </Flex>
           </Card>
         </Flex>
+        <Button disabled={selectedIndices.length === 0} onClick={handleReset} text="Reset" />
         <Stack space={2}>
           <Text muted size={1} textOverflow="ellipsis">
             {selectedIndices ? `Selected indices: ${selectedIndices}` : 'No items selected'}
