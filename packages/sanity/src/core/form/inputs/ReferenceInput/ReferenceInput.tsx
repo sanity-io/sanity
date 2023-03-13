@@ -4,7 +4,7 @@
 import React, {KeyboardEvent, FocusEvent, useCallback, useRef, useState, useMemo} from 'react'
 import {concat, Observable, of} from 'rxjs'
 
-import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Box, Button, Stack, Text, useToast} from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
@@ -14,6 +14,7 @@ import {Alert} from '../../components/Alert'
 import {PreviewCard} from '../../../components'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {useReferenceInput} from './useReferenceInput'
 import {
   CreateReferenceOption,
@@ -130,13 +131,20 @@ export function ReferenceInput(props: ReferenceInputProps) {
     onChange(unset())
   }, [onChange])
 
+  const handleCancelEdit = useCallback(() => {
+    if (!value?._ref) {
+      handleClear()
+    }
+  }, [handleClear, value?._ref])
+
   const handleAutocompleteKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onPathFocus([])
+        handleCancelEdit()
       }
     },
-    [onPathFocus]
+    [onPathFocus, handleCancelEdit]
   )
 
   const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfo)
@@ -252,9 +260,21 @@ export function ReferenceInput(props: ReferenceInputProps) {
       })),
     [searchState.hits]
   )
+
+  // --- click outside handling
+  const clickOutsideBoundaryRef = useRef<HTMLDivElement>(null)
+  const autoCompletePortalRef = useRef<HTMLDivElement>(null)
+  const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
+  useOnClickOutside(
+    [clickOutsideBoundaryRef, autoCompletePortalRef, createButtonMenuPortalRef],
+    () => {
+      handleCancelEdit()
+    }
+  )
+
   return (
     <Stack space={1} data-testid="reference-input">
-      <Stack space={2}>
+      <Stack space={2} ref={clickOutsideBoundaryRef}>
         {isWeakRefToNonexistent ? (
           <Alert
             data-testid="alert-nonexistent-document"
@@ -292,6 +312,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             renderOption={renderOption as any}
             renderValue={renderValue}
             openButton={{onClick: handleAutocompleteOpenButtonClick}}
+            portalRef={autoCompletePortalRef}
           />
 
           {createOptions.length > 0 && (
@@ -301,6 +322,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               createOptions={createOptions}
               onCreate={handleCreateNew}
               onKeyDown={handleCreateButtonKeyDown}
+              menuRef={createButtonMenuPortalRef}
             />
           )}
         </AutocompleteContainer>
