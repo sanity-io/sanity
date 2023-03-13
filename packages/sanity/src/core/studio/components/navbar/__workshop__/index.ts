@@ -20,5 +20,10 @@ export default defineScope({
       title: 'WorkspacePreview',
       component: lazy(() => import('./WorkspacePreviewStory')),
     },
+    {
+      name: 'new-document-button',
+      title: 'NewDocumentButton',
+      component: lazy(() => import('./NewDocumentButtonStory')),
+    },
   ],
 })
