@@ -1,11 +1,9 @@
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-import React, {ComponentProps, KeyboardEvent, useCallback, useMemo, useState} from 'react'
+import React, {KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {CommandListItems} from '../CommandListItems'
-import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
-import {CommandListTextInput} from '../CommandListTextInput'
-import {useCommandList} from '../useCommandList'
+import {CommandList} from '../CommandList'
+import {CommandListHandle, CommandListVirtualItemProps} from '../types'
 
 const ITEMS = [...Array(50000).keys()]
 
@@ -25,9 +23,11 @@ const StyledLink = styled.a<{$index: number}>`
 `
 
 export default function FilterableStory() {
+  const [inputElement, setInputElement] = useState<HTMLElement | null>(null)
   const [filter, setFilter] = useState<string>('')
   const [message, setMessage] = useState('')
   const showInput = useBoolean('Show input', true, 'Props')
+  const commandListRef = useRef<CommandListHandle | null>(null)
 
   const filteredValues = useMemo(() => {
     const values = ITEMS.map((i) => ({value: i}))
@@ -37,54 +37,79 @@ export default function FilterableStory() {
     return values.filter((i) => i.value.toString().includes(filter))
   }, [filter])
 
-  const handleChange = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
-    setFilter(e.currentTarget.value)
-  }, [])
+  /**
+   * Scroll command list to the top on filter query change
+   */
+  const handleChange = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      setFilter(e.currentTarget.value)
+      if (filteredValues.length > 0) {
+        commandListRef?.current?.scrollToIndex(0)
+      }
+    },
+    [filteredValues]
+  )
 
-  const handleChildClick = useCallback((msg: string) => {
-    setMessage(msg)
-  }, [])
+  const handleChildClick = useCallback((msg: string) => setMessage(msg), [])
 
+  /**
+   * Scroll command list to the top when manually cleared
+   */
   const handleClear = useCallback(() => {
     setFilter('')
-  }, [])
+    if (filteredValues.length > 0) {
+      commandListRef?.current?.scrollToIndex(0)
+    }
+  }, [filteredValues.length])
 
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({index, value}: CommandListVirtualItemProps<number>) {
-      const handleClick = useCallback(
-        () => handleChildClick(`Button ${value.toString()} clicked`),
-        [value]
-      )
+  const renderItem = useCallback(
+    (item: CommandListVirtualItemProps<number>) => {
       return (
-        <StyledLink $index={index} onClick={handleClick}>
-          <Text>{value}</Text>
+        <StyledLink
+          $index={item.index}
+          // eslint-disable-next-line react/jsx-no-bind
+          onClick={() => handleChildClick(`Button ${item.value.toString()} clicked`)}
+        >
+          <Text>{item.value}</Text>
         </StyledLink>
       )
-    }
-  }, [handleChildClick])
+    },
+    [handleChildClick]
+  )
 
   return (
     <CardContainer padding={4}>
       <Stack space={3}>
-        <CommandListProvider
-          activeItemDataAttr="data-active"
-          ariaChildrenLabel="Children"
-          ariaInputLabel="Header"
-          autoFocus
-          fixedHeight
-          itemComponent={VirtualListItem}
-          values={filteredValues}
-          virtualizerOptions={{
-            estimateSize: () => 30,
-          }}
-        >
-          <CommandListContent
-            filter={filter}
-            onChange={handleChange}
-            onClear={handleClear}
-            showInput={showInput}
-          />
-        </CommandListProvider>
+        {showInput && (
+          <Box flex="none" marginBottom={2}>
+            <TextInput
+              aria-label="Header"
+              clearButton={filter ? filter.length > 0 : false}
+              onClear={handleClear}
+              onChange={handleChange}
+              placeholder="Filter"
+              ref={setInputElement}
+              value={filter}
+            />
+          </Box>
+        )}
+        <Flex direction="column" style={{height: '400px'}}>
+          <Card flex={1} shadow={1}>
+            <Flex height="fill" style={{position: 'relative'}}>
+              <CommandList
+                activeItemDataAttr="data-active"
+                ariaLabel="Children"
+                autoFocus
+                inputElement={inputElement}
+                itemHeight={30}
+                fixedHeight
+                ref={commandListRef}
+                renderItem={renderItem}
+                values={filteredValues}
+              />
+            </Flex>
+          </Card>
+        </Flex>
         <Box>
           <Text muted size={1}>
             {message}
@@ -92,64 +117,5 @@ export default function FilterableStory() {
         </Box>
       </Stack>
     </CardContainer>
-  )
-}
-
-interface CommandListContentProps
-  extends Pick<ComponentProps<typeof TextInput>, 'onChange' | 'onClear'> {
-  filter?: string
-  showInput?: boolean
-}
-
-const CommandListContent = ({filter, onChange, onClear, showInput}: CommandListContentProps) => {
-  const {values, virtualizer} = useCommandList<number>()
-
-  /**
-   * Scroll command list to the top on filter query change
-   */
-  const handleChange = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (onChange) {
-        onChange(e)
-        if (values.length > 0) {
-          virtualizer?.scrollToIndex(0)
-        }
-      }
-    },
-    [onChange, virtualizer, values.length]
-  )
-
-  /**
-   * Scroll command list to the top when manually cleared
-   */
-  const handleClear = useCallback(() => {
-    if (onClear) {
-      onClear()
-      if (values.length > 0) {
-        virtualizer?.scrollToIndex(0)
-      }
-    }
-  }, [onClear, values.length, virtualizer])
-
-  return (
-    <Flex direction="column" style={{height: '400px'}}>
-      {showInput && (
-        <Box flex="none" marginBottom={2}>
-          <CommandListTextInput
-            clearButton={filter ? filter.length > 0 : false}
-            onClear={handleClear}
-            onChange={handleChange}
-            placeholder="Filter"
-            value={filter}
-          />
-        </Box>
-      )}
-
-      <Card flex={1} shadow={1}>
-        <Flex height="fill">
-          <CommandListItems />
-        </Flex>
-      </Card>
-    </Flex>
   )
 }

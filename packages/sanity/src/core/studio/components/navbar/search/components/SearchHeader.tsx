@@ -1,13 +1,9 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
-import React, {useCallback, useEffect, useRef} from 'react'
+import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
 import {useSearchState} from '../contexts/search/useSearchState'
-import {CustomCommandListTextInput} from './common/CustomCommandListTextInput'
-
-interface SearchHeaderProps {
-  onClose?: () => void
-}
+import {CustomTextInput} from './common/CustomTextInput'
 
 const rotate = keyframes`
   from {
@@ -36,7 +32,15 @@ const NotificationBadge = styled.div`
   width: 6px;
 `
 
-export function SearchHeader({onClose}: SearchHeaderProps) {
+interface SearchHeaderProps {
+  ariaInputLabel: string
+  onClose?: () => void
+}
+
+export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(function SearchHeader(
+  {ariaInputLabel, onClose},
+  ref
+) {
   const isMountedRef = useRef(false)
 
   const {
@@ -90,7 +94,8 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
 
         {/* Search field */}
         <Box flex={1}>
-          <CustomCommandListTextInput
+          <CustomTextInput
+            aria-label={ariaInputLabel}
             autoComplete="off"
             background={fullscreen}
             border={false}
@@ -101,6 +106,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
             onClear={handleQueryClear}
             placeholder="Search"
             radius={fullscreen ? 2 : 1}
+            ref={ref}
             smallClearButton={fullscreen}
             spellCheck={false}
             value={query}
@@ -127,4 +133,4 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
       </Flex>
     </Card>
   )
-}
+})

@@ -1,9 +1,22 @@
-import {Box, Button, Card, Label, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {Box, Button, Card, Label, Text, useMediaIndex} from '@sanity/ui'
+import React, {useCallback, useMemo, useRef} from 'react'
 import styled from 'styled-components'
-import {CommandListItems, useCommandList} from '../../../../../../components'
+import {
+  CommandList,
+  CommandListHandle,
+  CommandListVirtualItemProps,
+  CommandListVirtualItemValue,
+} from '../../../../../../components'
 import {useSearchState} from '../../contexts/search/useSearchState'
+import {RecentSearch} from '../../datastores/recentSearches'
 import {Instructions} from '../Instructions'
+import {RecentSearchItem} from './item/RecentSearchItem'
+
+const VIRTUAL_LIST_RECENT_SEARCH_ITEM_HEIGHT = 36 // px
+
+// Max character count of selected document types (combined) by breakpoint
+const MAX_COMBINED_TYPE_COUNT_SMALL = 20
+const MAX_COMBINED_TYPE_COUNT_LARGE = 40
 
 const RecentSearchesBox = styled(Card)`
   overflow-x: hidden;
@@ -11,14 +24,17 @@ const RecentSearchesBox = styled(Card)`
   position: relative;
 `
 
-export function RecentSearches() {
+interface RecentSearchesProps {
+  inputElement?: HTMLInputElement | null
+}
+
+export function RecentSearches({inputElement}: RecentSearchesProps) {
   const {
     dispatch,
     recentSearchesStore,
     state: {filtersVisible, fullscreen, recentSearches},
   } = useSearchState()
-
-  const {focusElement} = useCommandList()
+  const commandListRef = useRef<CommandListHandle | null>(null)
 
   /**
    * Remove terms from local storage.
@@ -29,8 +45,33 @@ export function RecentSearches() {
       const updatedRecentSearches = recentSearchesStore.removeSearch()
       dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
     }
-    focusElement()
-  }, [dispatch, focusElement, recentSearchesStore])
+    commandListRef?.current?.focusElement()
+  }, [dispatch, recentSearchesStore])
+
+  const values: CommandListVirtualItemValue<RecentSearch>[] = useMemo(() => {
+    return recentSearches.map((i) => ({value: i}))
+  }, [recentSearches])
+
+  const mediaIndex = useMediaIndex()
+
+  const maxVisibleTypePillChars = useMemo(() => {
+    return mediaIndex < 2 ? MAX_COMBINED_TYPE_COUNT_SMALL : MAX_COMBINED_TYPE_COUNT_LARGE
+  }, [mediaIndex])
+
+  const renderItem = useCallback(
+    ({value, virtualIndex}: CommandListVirtualItemProps<RecentSearch>) => {
+      return (
+        <RecentSearchItem
+          index={virtualIndex}
+          maxVisibleTypePillChars={maxVisibleTypePillChars}
+          paddingTop={1}
+          paddingX={2}
+          value={value}
+        />
+      )
+    },
+    [maxVisibleTypePillChars]
+  )
 
   const hasRecentSearches = !!recentSearches.length
 
@@ -47,7 +88,17 @@ export function RecentSearches() {
             </Label>
           </Box>
           <Box>
-            <CommandListItems paddingBottom={1} />
+            <CommandList
+              activeItemDataAttr="data-hovered"
+              ariaLabel="Recent searches"
+              autoFocus
+              inputElement={inputElement}
+              initialIndex={0}
+              itemHeight={VIRTUAL_LIST_RECENT_SEARCH_ITEM_HEIGHT}
+              paddingBottom={2}
+              renderItem={renderItem}
+              values={values}
+            />
           </Box>
           <Box paddingBottom={2} paddingTop={1} paddingX={2}>
             <Button

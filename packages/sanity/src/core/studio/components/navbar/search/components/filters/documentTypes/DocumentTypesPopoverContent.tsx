@@ -1,13 +1,12 @@
 import {Schema} from '@sanity/types'
 import {Box, Button, Flex, Label, MenuDivider, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {
-  CommandListItems,
-  CommandListProvider,
-  type CommandListVirtualItemProps,
-  useCommandList,
+  CommandList,
+  CommandListHandle,
+  CommandListVirtualItemProps,
 } from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import type {SearchableType} from '../../../../../../../search'
@@ -23,7 +22,9 @@ const ClearButtonBox = styled(Box)`
 `
 
 export function DocumentTypesPopoverContent() {
+  const [inputElement, setInputElement] = useState<HTMLElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
+  const commandListRef = useRef<CommandListHandle | null>(null)
 
   const schema = useSchema()
 
@@ -48,96 +49,104 @@ export function DocumentTypesPopoverContent() {
   const handleTypesClear = useCallback(() => {
     setSelectedTypesSnapshot([])
     dispatch({type: 'TERMS_TYPES_CLEAR'})
+
+    // Re-focus the command list element (input if available, otherwise virtual list container)
+    commandListRef?.current?.focusElement()
+    commandListRef?.current?.scrollToIndex(0)
   }, [dispatch])
 
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({
-      value,
-    }: CommandListVirtualItemProps<DocumentTypeMenuItem>) {
-      if (value.type === 'divider') {
-        return (
-          <Box padding={1}>
-            <MenuDivider />
-          </Box>
-        )
+  const getItemKey = useCallback(
+    (index: number) => {
+      const virtualItem = values[index].value
+      switch (virtualItem.type) {
+        case 'divider':
+          return `${virtualItem.type}-${index}`
+        case 'header':
+          return `${virtualItem.type}-${virtualItem.title}`
+        case 'item':
+          return `${virtualItem.type}-${virtualItem.item.name}`
+        default:
+          return index
       }
-      if (value.type === 'header') {
-        return (
-          <Box margin={1} paddingBottom={2} paddingTop={3} paddingX={3}>
-            <Label muted size={0}>
-              {value.title}
-            </Label>
-          </Box>
-        )
-      }
-      if (value.type === 'item') {
-        return (
-          <DocumentTypeFilterItem
-            paddingX={1}
-            paddingTop={1}
-            selected={value.selected}
-            type={value.item}
-          />
-        )
-      }
-      return null
+    },
+    [values]
+  )
+
+  const renderItem = useCallback(({value}: CommandListVirtualItemProps<DocumentTypeMenuItem>) => {
+    if (value.type === 'divider') {
+      return (
+        <Box padding={1}>
+          <MenuDivider />
+        </Box>
+      )
     }
+    if (value.type === 'header') {
+      return (
+        <Box margin={1} paddingBottom={2} paddingTop={3} paddingX={3}>
+          <Label muted size={0}>
+            {value.title}
+          </Label>
+        </Box>
+      )
+    }
+    if (value.type === 'item') {
+      return (
+        <DocumentTypeFilterItem
+          paddingX={1}
+          paddingTop={1}
+          selected={value.selected}
+          type={value.item}
+        />
+      )
+    }
+    return null
   }, [])
 
   return (
-    <CommandListProvider
-      activeItemDataAttr="data-hovered"
-      ariaChildrenLabel="Document types"
-      ariaInputLabel="Filter by document type"
-      ariaMultiselectable
-      autoFocus
-      itemComponent={VirtualListItem}
-      values={values}
-      virtualizerOptions={{
-        estimateSize: () => 37,
-        getItemKey: (index) => {
-          const virtualItem = values[index].value
-          switch (virtualItem.type) {
-            case 'divider':
-              return `${virtualItem.type}-${index}`
-            case 'header':
-              return `${virtualItem.type}-${virtualItem.title}`
-            case 'item':
-              return `${virtualItem.type}-${virtualItem.item.name}`
-            default:
-              return index
-          }
-        },
-        overscan: 20,
-      }}
-    >
-      <Flex direction="column" style={{width: '250px'}}>
-        {/* Search header */}
-        <FilterPopoverContentHeader
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
-          typeFilter={typeFilter}
-        />
+    <Flex direction="column" style={{width: '250px'}}>
+      {/* Search header */}
+      <FilterPopoverContentHeader
+        ariaInputLabel="Filter by document type"
+        onChange={handleFilterChange}
+        onClear={handleFilterClear}
+        ref={setInputElement}
+        typeFilter={typeFilter}
+      />
 
-        <Flex>
-          {values.length > 0 && <CommandListItems paddingBottom={1} />}
+      <Flex>
+        {values.length > 0 && (
+          <CommandList
+            activeItemDataAttr="data-hovered"
+            ariaLabel="Document types"
+            ariaMultiselectable
+            autoFocus
+            fixedHeight
+            getItemKey={getItemKey}
+            inputElement={inputElement}
+            itemHeight={37}
+            overscan={20}
+            paddingBottom={1}
+            ref={commandListRef}
+            renderItem={renderItem}
+            values={values}
+          />
+        )}
 
-          {/* No results */}
-          {!values.length && (
-            <Box padding={3}>
-              <Text muted size={1} textOverflow="ellipsis">
-                No matches for '{typeFilter}'
-              </Text>
-            </Box>
-          )}
-        </Flex>
-
-        {/* Clear button */}
-        {!typeFilter && selectedTypes.length > 0 && (
-          <ClearButton onClick={handleTypesClear} selectedTypes={selectedTypes} />
+        {/* No results */}
+        {!values.length && (
+          <Box padding={3}>
+            <Text muted size={1} textOverflow="ellipsis">
+              No matches for '{typeFilter}'
+            </Text>
+          </Box>
         )}
       </Flex>
-    </CommandListProvider>
+
+      {/* Clear button */}
+      {!typeFilter && selectedTypes.length > 0 && (
+        <ClearButton onClick={handleTypesClear} selectedTypes={selectedTypes} />
+      )}
+    </Flex>
   )
 }
 
@@ -148,16 +157,6 @@ function ClearButton({
   onClick: () => void
   selectedTypes: SearchableType[]
 }) {
-  const {focusElement} = useCommandList()
-
-  /**
-   * Re-focus the current command list element (input if available, otherwise virtual list container)
-   */
-  const handleClear = useCallback(() => {
-    focusElement()
-    onClick?.()
-  }, [focusElement, onClick])
-
   return (
     <ClearButtonBox padding={1}>
       <Stack>
@@ -167,7 +166,7 @@ function ClearButton({
           disabled={selectedTypes.length === 0}
           fontSize={1}
           mode="bleed"
-          onClick={handleClear}
+          onClick={onClick}
           padding={3}
           text="Clear"
           tone="primary"

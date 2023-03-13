@@ -1,10 +1,6 @@
 import {Box, Flex, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {
-  CommandListItems,
-  CommandListProvider,
-  CommandListVirtualItemProps,
-} from '../../../../../../../components'
+import {CommandList, CommandListVirtualItemProps} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterMenuItem} from '../../../types'
@@ -19,6 +15,7 @@ interface AddFilterPopoverContentProps {
 }
 
 export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
+  const [inputElement, setInputElement] = useState<HTMLElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
   const handleFilterChange = useCallback(
@@ -57,66 +54,73 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     }))
   }, [filteredMenuItems])
 
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<FilterMenuItem>) {
-      if (value.type === 'filter') {
-        return <MenuItemFilter item={value} onClose={onClose} paddingTop={1} paddingX={1} />
+  const renderItem = useCallback(
+    (item: CommandListVirtualItemProps<FilterMenuItem>) => {
+      if (item.value.type === 'filter') {
+        return <MenuItemFilter item={item.value} onClose={onClose} paddingTop={1} paddingX={1} />
       }
-      if (value.type === 'header') {
-        return <MenuItemHeader item={value} />
+      if (item.value.type === 'header') {
+        return <MenuItemHeader item={item.value} />
       }
       return null
-    }
-  }, [onClose])
+    },
+    [onClose]
+  )
+
+  const getItemKey = useCallback(
+    (index: number) => {
+      const menuItem = filteredMenuItems[index]
+      switch (menuItem.type) {
+        case 'filter':
+          return [
+            ...(menuItem.group ? [menuItem.group] : []), //
+            getFilterKey(menuItem.filter),
+          ].join('-')
+        case 'header':
+          return `${menuItem.type}-${menuItem.title}`
+        default:
+          return index
+      }
+    },
+    [filteredMenuItems]
+  )
 
   return (
-    <CommandListProvider
-      activeItemDataAttr="data-hovered"
-      ariaChildrenLabel="Filters"
-      ariaInputLabel="Filter by title"
-      autoFocus
-      itemComponent={VirtualListItem}
-      values={values}
-      virtualizerOptions={{
-        estimateSize: () => 45,
-        getItemKey: (index) => {
-          const menuItem = filteredMenuItems[index]
-          switch (menuItem.type) {
-            case 'filter':
-              return [
-                ...(menuItem.group ? [menuItem.group] : []), //
-                getFilterKey(menuItem.filter),
-              ].join('-')
-            case 'header':
-              return `${menuItem.type}-${menuItem.title}`
-            default:
-              return index
-          }
-        },
-        overscan: 20,
-      }}
-    >
-      <Flex direction="column" style={{width: '300px'}}>
-        {/* Filter header */}
-        <FilterPopoverContentHeader
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
-          typeFilter={titleFilter}
-        />
+    <Flex direction="column" style={{width: '300px'}}>
+      {/* Filter header */}
+      <FilterPopoverContentHeader
+        ariaInputLabel="Filter by title"
+        onChange={handleFilterChange}
+        onClear={handleFilterClear}
+        ref={setInputElement}
+        typeFilter={titleFilter}
+      />
 
-        <Flex>
-          {values.length > 0 && <CommandListItems paddingBottom={1} />}
+      <Flex>
+        {values.length > 0 && (
+          <CommandList
+            activeItemDataAttr="data-hovered"
+            ariaLabel="Filters"
+            autoFocus
+            getItemKey={getItemKey}
+            inputElement={inputElement}
+            itemHeight={45}
+            overscan={20}
+            paddingBottom={1}
+            renderItem={renderItem}
+            values={values}
+          />
+        )}
 
-          {/* No results */}
-          {values.length == 0 && (
-            <Box padding={3}>
-              <Text muted size={1} textOverflow="ellipsis">
-                No matches for '{titleFilter}'
-              </Text>
-            </Box>
-          )}
-        </Flex>
+        {/* No results */}
+        {values.length == 0 && (
+          <Box padding={3}>
+            <Text muted size={1} textOverflow="ellipsis">
+              No matches for '{titleFilter}'
+            </Text>
+          </Box>
+        )}
       </Flex>
-    </CommandListProvider>
+    </Flex>
   )
 }

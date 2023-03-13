@@ -12,9 +12,9 @@ import {
   useGlobalKeyDown,
 } from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {CommandListItems} from '../CommandListItems'
-import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
+import React, {useCallback, useRef, useState} from 'react'
+import {CommandList} from '../CommandList'
+import {CommandListVirtualItemProps} from '../types'
 
 const ITEMS = [...Array(50000).keys()]
 
@@ -79,73 +79,69 @@ export default function PopoverStory() {
 
   const values = ITEMS.map((i) => ({value: i}))
 
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<number>) {
-      const handleClick = useCallback(() => handleChildClick(value), [value])
+  const renderItem = useCallback(
+    (item: CommandListVirtualItemProps<number>) => {
       return (
         <Button
           fontSize={1}
           mode="bleed"
-          onClick={handleClick}
+          // eslint-disable-next-line react/jsx-no-bind
+          onClick={() => handleChildClick(item.value)}
           style={{borderRadius: 0, width: '100%'}}
-          text={`Button ${value.toString()}`}
+          text={`Button ${item.value.toString()}`}
         />
       )
-    }
-  }, [handleChildClick])
+    },
+    [handleChildClick]
+  )
 
   return (
-    <CommandListProvider
-      activeItemDataAttr="data-selected"
-      ariaChildrenLabel="Children"
-      ariaInputLabel="Header"
-      autoFocus
-      fixedHeight
-      initialScrollAlign={initialSelectedScrollAlign}
-      initialIndex={selectedIndex}
-      itemComponent={VirtualListItem}
-      values={values}
-      virtualizerOptions={{
-        estimateSize: () => 35,
-      }}
-    >
-      <Card padding={4}>
-        <Stack space={3}>
-          <Inline space={2}>
-            <Popover
-              content={
-                <Card radius={2} style={{overflow: 'hidden', width: '175px'}}>
-                  <Flex direction="column" style={{height: '400px'}}>
-                    <Card flex={1} shadow={1}>
-                      <Flex height="fill">
-                        <CommandListItems />
-                      </Flex>
-                    </Card>
-                  </Flex>
-                </Card>
-              }
-              open={open}
-              portal
-              ref={setPopover}
-            >
-              <Button
-                iconRight={SelectIcon}
-                onClick={handlePopoverButtonClick}
-                ref={setButton}
-                text="Popover button (open at last selected index)"
-                tone="primary"
-              />
-            </Popover>
-            <Button text="Button 1" />
-            <Button text="Button 2" />
-          </Inline>
-          <Box>
-            <Text muted size={1}>
-              Last selected index: {selectedIndex}
-            </Text>
-          </Box>
-        </Stack>
-      </Card>
-    </CommandListProvider>
+    <Card padding={4}>
+      <Stack space={3}>
+        <Inline space={2}>
+          <Popover
+            content={
+              <Card radius={2} style={{overflow: 'hidden', width: '175px'}}>
+                <Flex direction="column" style={{height: '400px'}}>
+                  <Card flex={1} shadow={1}>
+                    <Flex height="fill">
+                      <CommandList
+                        activeItemDataAttr="data-selected"
+                        ariaLabel="Children"
+                        autoFocus
+                        fixedHeight
+                        initialScrollAlign={initialSelectedScrollAlign}
+                        initialIndex={selectedIndex}
+                        itemHeight={35}
+                        renderItem={renderItem}
+                        values={values}
+                      />
+                    </Flex>
+                  </Card>
+                </Flex>
+              </Card>
+            }
+            open={open}
+            portal
+            ref={setPopover}
+          >
+            <Button
+              iconRight={SelectIcon}
+              onClick={handlePopoverButtonClick}
+              ref={setButton}
+              text="Popover button (open at last selected index)"
+              tone="primary"
+            />
+          </Popover>
+          <Button text="Button 1" />
+          <Button text="Button 2" />
+        </Inline>
+        <Box>
+          <Text muted size={1}>
+            Last selected index: {selectedIndex}
+          </Text>
+        </Box>
+      </Stack>
+    </Card>
   )
 }

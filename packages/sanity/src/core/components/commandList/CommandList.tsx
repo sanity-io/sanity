@@ -1,74 +1,66 @@
-import {ScrollToOptions, useVirtualizer, VirtualizerOptions} from '@tanstack/react-virtual'
+import {Box} from '@sanity/ui'
+import {useVirtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash/throttle'
 import React, {
+  forwardRef,
   MouseEvent,
-  ReactElement,
-  ReactNode,
   useCallback,
   useEffect,
   useId,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
 } from 'react'
+import styled from 'styled-components'
 import {supportsTouch} from '../../util'
-import {CommandListContext} from './CommandListContext'
-
-/**
- * @internal
- */
-export interface CommandListVirtualItemValue<T> {
-  disabled?: boolean
-  selected?: boolean
-  value: T
-}
-
-/**
- * @internal
- */
-export interface CommandListVirtualItemProps<T> extends CommandListVirtualItemValue<T> {
-  /** DOM element index (what's visible in the browser) */
-  index: number
-  /** Virtualized element index */
-  virtualIndex: number
-}
-
-/**
- * @internal
- */
-export interface CommandListProviderProps<T> {
-  /** The data attribute to apply to any active virtual list items */
-  activeItemDataAttr?: string
-  /** `aria-label` to apply to the virtual list container element */
-  ariaChildrenLabel?: string
-  /** `aria-label` to apply to the virtual list input element */
-  ariaInputLabel?: string
-  /** Whether `aria-multiselectable` is enabled on the virtual list container element */
-  ariaMultiselectable?: boolean
-  /** Automatically focus the input (if applicable) or virtual list */
-  autoFocus?: boolean
-  children?: ReactNode
-  /** Force a fixed height for all virtual list children and skip measurement (faster). */
-  fixedHeight?: boolean
-  /** Scroll alignment of the initial active index */
-  initialScrollAlign?: ScrollToOptions['align']
-  /** Rendered component in virtual lists */
-  itemComponent: (props: CommandListVirtualItemProps<any>) => ReactElement | null
-  /** Initial active index on mount */
-  initialIndex?: number
-  /** Virtual list item values, accessible to all rendered item components */
-  values: CommandListVirtualItemValue<T>[]
-  /** Options to pass to the `react-virtual` virtualizer instance */
-  virtualizerOptions: Pick<
-    VirtualizerOptions<HTMLDivElement, Element>,
-    'estimateSize' | 'getItemKey' | 'overscan'
-  >
-}
+import {CommandListItem} from './CommandListItem'
+import {CommandListHandle, CommandListProps} from './types'
 
 // Data attribute to assign to the current active virtual list element
 const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
 // Selector to find the first interactive element in the virtual list element
 const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
+
+/*
+ * Conditionally appears over command list items to cancel existing :hover states for all child elements.
+ * It should only appear if hover capabilities are available (not on touch devices)
+ */
+const PointerOverlayDiv = styled.div`
+  bottom: 0;
+  display: none;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+
+  @media (hover: hover) {
+    &[data-enabled='true'] {
+      display: block;
+    }
+  }
+`
+
+const VirtualListBox = styled(Box)`
+  height: 100%;
+  outline: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  width: 100%;
+`
+
+type VirtualListChildBoxProps = {
+  $height: number
+}
+const VirtualListChildBox = styled(Box) //
+  .attrs<VirtualListChildBoxProps>(({$height}) => ({
+    style: {height: `${$height}px`},
+  }))<VirtualListChildBoxProps>`
+  position: relative;
+  width: 100%;
+`
 
 /**
  * This provider adds the following:
@@ -79,23 +71,28 @@ const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
  *
  * @internal
  */
-export function CommandListProvider<T>({
-  activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
-  ariaChildrenLabel,
-  ariaInputLabel,
-  ariaMultiselectable = false,
-  autoFocus,
-  children,
-  fixedHeight,
-  initialScrollAlign = 'start',
-  initialIndex,
-  itemComponent,
-  values,
-  virtualizerOptions,
-}: CommandListProviderProps<T>) {
+export const CommandList = forwardRef<CommandListHandle, CommandListProps<T>>(function CommandList(
+  {
+    activeItemDataAttr = LIST_ITEM_DATA_ATTR_ACTIVE,
+    ariaLabel,
+    ariaMultiselectable = false,
+    autoFocus,
+    fixedHeight,
+    getItemKey,
+    initialScrollAlign = 'start',
+    initialIndex,
+    inputElement,
+    itemHeight,
+    overscan,
+    renderItem,
+    values,
+    ...responsivePaddingProps
+  },
+  ref
+) {
   const activeIndexRef = useRef(initialIndex ?? 0)
+
   const [childContainerElement, setChildContainerElement] = useState<HTMLDivElement | null>(null)
-  const [inputElement, setInputElement] = useState<HTMLDivElement | null>(null)
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
   const [virtualListElement, setVirtualListElement] = useState<HTMLDivElement | null>(null)
 
@@ -103,9 +100,11 @@ export function CommandListProvider<T>({
 
   // This will trigger a re-render whenever its internal state changes
   const virtualizer = useVirtualizer({
-    ...virtualizerOptions,
     count: values.length,
+    getItemKey,
     getScrollElement: () => virtualListElement,
+    estimateSize: () => itemHeight,
+    overscan,
   })
 
   /**
@@ -315,6 +314,9 @@ export function CommandListProvider<T>({
         return
       }
 
+      // Re-focus current element (input / virtual list element)
+      focusElement()
+
       if (event.key === 'ArrowDown') {
         event.preventDefault()
         selectAdjacentItemIndex('next')
@@ -337,7 +339,26 @@ export function CommandListProvider<T>({
         }
       }
     },
-    [childContainerElement?.children, itemIndices, selectAdjacentItemIndex]
+    [childContainerElement?.children, focusElement, itemIndices, selectAdjacentItemIndex]
+  )
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        focusElement() {
+          focusElement()
+        },
+        getTopIndex() {
+          return handleGetTopIndex()
+        },
+        scrollToIndex(index: number) {
+          setActiveIndex({index})
+          enableChildContainerPointerEvents(true)
+        },
+      }
+    },
+    [enableChildContainerPointerEvents, focusElement, handleGetTopIndex, setActiveIndex]
   )
 
   /**
@@ -431,15 +452,10 @@ export function CommandListProvider<T>({
    * Apply initial attributes
    */
   useEffect(() => {
-    if (ariaChildrenLabel) {
-      childContainerElement?.setAttribute('aria-label', ariaChildrenLabel)
-    }
+    childContainerElement?.setAttribute('aria-label', ariaLabel)
     childContainerElement?.setAttribute('aria-multiselectable', ariaMultiselectable.toString())
     childContainerElement?.setAttribute('role', 'listbox')
 
-    if (ariaInputLabel) {
-      inputElement?.setAttribute('aria-label', ariaInputLabel)
-    }
     inputElement?.setAttribute('aria-autocomplete', 'list')
     inputElement?.setAttribute('aria-expanded', 'true')
     inputElement?.setAttribute('aria-controls', `${commandListId}-children`)
@@ -447,8 +463,7 @@ export function CommandListProvider<T>({
     pointerOverlayElement?.setAttribute('data-enabled', 'true')
     virtualListElement?.setAttribute('id', `${commandListId}-children`)
   }, [
-    ariaChildrenLabel,
-    ariaInputLabel,
+    ariaLabel,
     ariaMultiselectable,
     childContainerElement,
     commandListId,
@@ -467,25 +482,41 @@ export function CommandListProvider<T>({
   }, [autoFocus, focusElement])
 
   return (
-    <CommandListContext.Provider
-      value={{
-        fixedHeight,
-        focusElement,
-        getTopIndex: handleGetTopIndex,
-        itemComponent,
-        itemIndices,
-        onChildMouseDown: handleChildMouseDown,
-        onChildMouseEnter: handleChildMouseEnter,
-        setChildContainerElement,
-        setInputElement: setInputElement,
-        setPointerOverlayElement,
-        setVirtualListElement,
-        values,
-        virtualizer,
-        virtualListElement,
-      }}
-    >
-      {children}
-    </CommandListContext.Provider>
+    <VirtualListBox ref={setVirtualListElement} tabIndex={-1}>
+      <PointerOverlayDiv aria-hidden="true" ref={setPointerOverlayElement} />
+
+      {virtualizer && (
+        <VirtualListChildBox
+          $height={virtualizer.getTotalSize()}
+          flex={1}
+          ref={setChildContainerElement}
+          {...responsivePaddingProps}
+        >
+          {virtualizer.getVirtualItems().map((virtualRow, index) => {
+            const value = values[virtualRow.index]
+
+            const itemToRender = renderItem({
+              index,
+              virtualIndex: virtualRow.index,
+              ...value,
+            }) as React.ReactElement
+            return (
+              <CommandListItem
+                activeIndex={itemIndices[virtualRow.index] ?? -1}
+                data-index={virtualRow.index}
+                fixedHeight={fixedHeight}
+                key={virtualRow.key}
+                measure={fixedHeight ? undefined : virtualizer.measureElement}
+                onChildMouseDown={handleChildMouseDown}
+                onChildMouseEnter={handleChildMouseEnter}
+                virtualRow={virtualRow}
+              >
+                {itemToRender}
+              </CommandListItem>
+            )
+          })}
+        </VirtualListChildBox>
+      )}
+    </VirtualListBox>
   )
-}
+})

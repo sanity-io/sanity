@@ -1,14 +1,5 @@
-import {VirtualItem} from '@tanstack/react-virtual'
-import React, {ReactNode} from 'react'
-import {useCommandList} from './useCommandList'
-
-interface CommandListItemProps {
-  activeIndex: number
-  children: ReactNode
-  fixedHeight?: boolean
-  measure?: (node: Element | null) => void
-  virtualRow: VirtualItem
-}
+import React from 'react'
+import type {CommandListItemProps} from './types'
 
 /**
  * @internal
@@ -18,11 +9,11 @@ export function CommandListItem({
   children,
   fixedHeight,
   measure,
+  onChildMouseDown,
+  onChildMouseEnter,
   virtualRow,
   ...rest
 }: CommandListItemProps) {
-  const {onChildMouseDown, onChildMouseEnter} = useCommandList()
-
   return (
     <div
       onMouseDown={onChildMouseDown}

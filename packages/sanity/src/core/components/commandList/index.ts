@@ -1,4 +1,2 @@
-export * from './CommandListItems'
-export * from './CommandListProvider'
-export * from './CommandListTextInput'
-export * from './useCommandList'
+export * from './CommandList'
+export * from './types'

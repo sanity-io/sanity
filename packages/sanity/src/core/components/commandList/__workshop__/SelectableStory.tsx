@@ -1,11 +1,9 @@
 import {Box, Button, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-import React, {ComponentProps, KeyboardEvent, useCallback, useMemo, useState} from 'react'
+import React, {KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {CommandListItems} from '../CommandListItems'
-import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
-import {CommandListTextInput} from '../CommandListTextInput'
-import {useCommandList} from '../useCommandList'
+import {CommandList} from '../CommandList'
+import {CommandListHandle, CommandListVirtualItemProps} from '../types'
 
 type Item = {
   index: number
@@ -24,11 +22,13 @@ const CardContainer = styled(Card)`
 `
 
 export default function SelectableStory() {
+  const [inputElement, setInputElement] = useState<HTMLElement | null>(null)
   const [selected, setSelected] = useState<Record<number, boolean>>({})
   const [filter, setFilter] = useState<string>('')
   const [message, setMessage] = useState('')
   const showInput = useBoolean('Show input', true, 'Props')
   const withDisabledItems = useBoolean('With disabled items', true, 'Props')
+  const commandListRef = useRef<CommandListHandle | null>(null)
 
   const filteredValues = useMemo(() => {
     let values = ITEMS.map((i) => ({value: i}))
@@ -60,10 +60,19 @@ export default function SelectableStory() {
     }))
   }, [])
 
+  /**
+   * Scroll command list to the top on filter query change
+   */
   const handleChange = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => setFilter(e.currentTarget.value),
-    []
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      setFilter(e.currentTarget.value)
+      if (filteredValues.length > 0) {
+        commandListRef?.current?.scrollToIndex(0)
+      }
+    },
+    [filteredValues]
   )
+
   const handleChildClick = useCallback(
     ({index, msg}: {msg: string; index: number}) => {
       setMessage(msg)
@@ -71,31 +80,39 @@ export default function SelectableStory() {
     },
     [toggleSelect]
   )
-  const handleClear = useCallback(() => setFilter(''), [])
 
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({disabled, value}: CommandListVirtualItemProps<Item>) {
-      const handleClick = useCallback(
-        () =>
-          handleChildClick({
-            index: value.index,
-            msg: `${value.label} clicked`,
-          }),
-        [value]
-      )
-      const isSelected = selected[value.index]
+  /**
+   * Scroll command list to the top when manually cleared
+   */
+  const handleClear = useCallback(() => {
+    setFilter('')
+    if (filteredValues.length > 0) {
+      commandListRef?.current?.scrollToIndex(0)
+    }
+  }, [filteredValues.length])
+
+  const renderItem = useCallback(
+    (item: CommandListVirtualItemProps<Item>) => {
+      const isSelected = selected[item.value.index]
       return (
         <Button
-          disabled={disabled}
+          disabled={item.disabled}
           mode="bleed"
-          onClick={handleClick}
+          // eslint-disable-next-line react/jsx-no-bind
+          onClick={() =>
+            handleChildClick({
+              index: item.value.index,
+              msg: `${item.value.label} clicked`,
+            })
+          }
           style={{borderRadius: 0, width: '100%'}}
-          text={isSelected ? '👻' : value.label}
+          text={isSelected ? '👻' : item.value.label}
           tone={isSelected ? 'critical' : 'primary'}
         />
       )
-    }
-  }, [handleChildClick, selected])
+    },
+    [handleChildClick, selected]
+  )
 
   const selectedIndices = Object.entries(selected)
     .filter(([_k, v]) => v)
@@ -105,25 +122,36 @@ export default function SelectableStory() {
   return (
     <CardContainer padding={4}>
       <Stack space={3}>
-        <CommandListProvider
-          activeItemDataAttr="data-selected"
-          ariaChildrenLabel="Children"
-          ariaInputLabel="Header"
-          autoFocus
-          itemComponent={VirtualListItem}
-          fixedHeight
-          values={filteredValues}
-          virtualizerOptions={{
-            estimateSize: () => 35,
-          }}
-        >
-          <CommandListContent
-            filter={filter}
-            onClear={handleClear}
-            onChange={handleChange}
-            showInput={showInput}
-          />
-        </CommandListProvider>
+        {showInput && (
+          <Box flex="none" marginBottom={2}>
+            <TextInput
+              aria-label="Header"
+              clearButton={filter ? filter.length > 0 : false}
+              onClear={handleClear}
+              onChange={handleChange}
+              placeholder="Filter"
+              ref={setInputElement}
+              value={filter}
+            />
+          </Box>
+        )}
+        <Flex direction="column" style={{height: '400px'}}>
+          <Card flex={1} shadow={1}>
+            <Flex height="fill" style={{position: 'relative'}}>
+              <CommandList
+                activeItemDataAttr="data-hovered"
+                ariaLabel="Children"
+                autoFocus
+                fixedHeight
+                inputElement={inputElement}
+                itemHeight={35}
+                ref={commandListRef}
+                renderItem={renderItem}
+                values={filteredValues}
+              />
+            </Flex>
+          </Card>
+        </Flex>
         <Stack space={2}>
           <Text muted size={1} textOverflow="ellipsis">
             {selectedIndices ? `Selected indices: ${selectedIndices}` : 'No items selected'}
@@ -134,64 +162,5 @@ export default function SelectableStory() {
         </Stack>
       </Stack>
     </CardContainer>
-  )
-}
-
-interface CommandListContentProps
-  extends Pick<ComponentProps<typeof TextInput>, 'onChange' | 'onClear'> {
-  filter?: string
-  showInput?: boolean
-}
-
-const CommandListContent = ({filter, onChange, onClear, showInput}: CommandListContentProps) => {
-  const {values, virtualizer} = useCommandList<string>()
-
-  /**
-   * Scroll command list to the top on filter query change
-   */
-  const handleChange = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (onChange) {
-        onChange(e)
-        if (values.length > 0) {
-          virtualizer?.scrollToIndex(0)
-        }
-      }
-    },
-    [onChange, values.length, virtualizer]
-  )
-
-  /**
-   * Scroll command list to the top when manually cleared
-   */
-  const handleClear = useCallback(() => {
-    if (onClear) {
-      onClear()
-      if (values.length > 0) {
-        virtualizer?.scrollToIndex(0)
-      }
-    }
-  }, [onClear, values.length, virtualizer])
-
-  return (
-    <Flex direction="column" style={{height: '400px'}}>
-      {showInput && (
-        <Box marginBottom={2} style={{flexShrink: 0}}>
-          <CommandListTextInput
-            clearButton={filter ? filter.length > 0 : false}
-            onClear={handleClear}
-            onChange={handleChange}
-            placeholder="Filter"
-            value={filter}
-          />
-        </Box>
-      )}
-
-      <Card flex={1} shadow={1}>
-        <Flex height="fill">
-          <CommandListItems />
-        </Flex>
-      </Card>
-    </Flex>
   )
 }

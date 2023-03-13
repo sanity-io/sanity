@@ -1,9 +1,9 @@
-import React, {useMemo} from 'react'
+import React, {useCallback, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {CommandListItems} from '../CommandListItems'
-import {CommandListProvider, type CommandListVirtualItemProps} from '../CommandListProvider'
+import {CommandList} from '../CommandList'
+import {CommandListHandle, CommandListVirtualItemProps} from '../types'
 
-const ITEMS = [...Array(50000).keys()]
+const ITEMS = [...Array(5000).keys()]
 
 const StyledLink = styled.a`
   background: #1a1a1a;
@@ -16,12 +16,16 @@ const StyledLink = styled.a`
 `
 
 export default function MinimalStory() {
-  const values = ITEMS.map((i) => ({value: i}))
+  const values = ITEMS.map((i) => ({value: `Item ${i}`}))
 
-  const VirtualListItem = useMemo(() => {
-    return function VirtualListItemComponent({value}: CommandListVirtualItemProps<number>) {
-      return <StyledLink>{value}</StyledLink>
-    }
+  const commandListRef = useRef<CommandListHandle | null>(null)
+
+  const handleScrollToTop = useCallback(() => {
+    commandListRef?.current?.scrollToIndex(0)
+  }, [])
+
+  const renderItem = useCallback((item: CommandListVirtualItemProps<number>) => {
+    return <StyledLink>{item.value}</StyledLink>
   }, [])
 
   return (
@@ -33,19 +37,21 @@ export default function MinimalStory() {
         width: '100%',
       }}
     >
-      <CommandListProvider
-        activeItemDataAttr="data-active"
-        fixedHeight
-        itemComponent={VirtualListItem}
-        values={values}
-        virtualizerOptions={{
-          estimateSize: () => 28,
-        }}
-      >
-        <div style={{height: '400px'}}>
-          <CommandListItems />
-        </div>
-      </CommandListProvider>
+      <div style={{height: '400px', position: 'relative'}}>
+        <CommandList
+          ariaLabel="Children"
+          fixedHeight
+          itemHeight={28}
+          overscan={20}
+          ref={commandListRef}
+          renderItem={renderItem}
+          values={values}
+        />
+      </div>
+
+      <button type="button" onClick={handleScrollToTop}>
+        Scroll to top
+      </button>
     </div>
   )
 }
