@@ -216,6 +216,27 @@ describe('schema validation inference', () => {
       client.fetch.mockReset()
     })
 
+    test('reference is invalid if no _ref is present', async () => {
+      await expect(
+        validateDocument(
+          getClient,
+          {
+            ...mockDocument,
+            referenceField: {
+              _type: 'not-a-reference',
+            },
+          },
+          schema
+        )
+      ).resolves.toMatchObject([
+        {
+          item: {message: 'Must be a reference to a document'},
+          level: 'error',
+          path: ['referenceField'],
+        },
+      ])
+    })
+
     test('referenced document must exist (unless weak)', async () => {
       const mockGetDocumentExists = jest.fn(() => Promise.resolve(false))
       await expect(
