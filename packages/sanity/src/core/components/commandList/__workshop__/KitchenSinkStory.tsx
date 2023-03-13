@@ -23,7 +23,7 @@ const CardContainer = styled(Card)`
   width: 100%;
 `
 
-export default function SelectableStory() {
+export default function KitchenSinkStory() {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [selected, setSelected] = useState<Record<number, boolean>>({})
   const [filter, setFilter] = useState<string>('')

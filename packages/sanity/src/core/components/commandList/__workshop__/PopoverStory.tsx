@@ -1,18 +1,16 @@
 import {SelectIcon} from '@sanity/icons'
 import {
-  Box,
   Button,
   Card,
   Flex,
   Inline,
   Popover,
   Stack,
-  Text,
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import React, {useCallback, useRef, useState} from 'react'
+import {useSelect} from '@sanity/ui-workshop'
+import React, {useCallback, useState} from 'react'
 import {CommandList} from '../CommandList'
 import {CommandListRenderItemCallback} from '../types'
 
@@ -25,7 +23,6 @@ const SCROLL_ALIGN_OPTIONS = {
 } as const
 
 export default function PopoverStory() {
-  const closePopoverOnSelect = useBoolean('Close popover on select', true)
   const initialSelectedScrollAlign = useSelect(
     'Initial scroll align',
     SCROLL_ALIGN_OPTIONS,
@@ -37,25 +34,13 @@ export default function PopoverStory() {
   const [button, setButton] = useState<HTMLElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)
 
-  const lastSelectedIndex = useRef<number | null>(null)
-
-  const handleChildClick = useCallback(
-    (index: number) => {
-      if (closePopoverOnSelect) {
-        setSelectedIndex(index)
-        setOpen(false)
-      } else {
-        lastSelectedIndex.current = index
-      }
-    },
-    [closePopoverOnSelect]
-  )
-  const handleClose = useCallback(() => {
-    if (typeof lastSelectedIndex.current === 'number' && !closePopoverOnSelect) {
-      setSelectedIndex(lastSelectedIndex.current)
-    }
+  const handleChildClick = useCallback((index: number) => {
+    setSelectedIndex(index)
     setOpen(false)
-  }, [closePopoverOnSelect])
+  }, [])
+  const handleClose = useCallback(() => {
+    setOpen(false)
+  }, [])
   const handleGlobalKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (open && (event.key === 'Escape' || event.key === 'Tab')) {
@@ -127,16 +112,11 @@ export default function PopoverStory() {
               iconRight={SelectIcon}
               onClick={handlePopoverButtonClick}
               ref={setButton}
-              text="Popover button (open at last selected index)"
+              text={`Popover (open at index ${selectedIndex})`}
               tone="primary"
             />
           </Popover>
         </Inline>
-        <Box>
-          <Text muted size={1}>
-            Last selected index: {selectedIndex}
-          </Text>
-        </Box>
       </Stack>
     </Card>
   )

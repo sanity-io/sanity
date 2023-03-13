@@ -87,9 +87,12 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     initialIndex,
     inputElement,
     itemHeight,
+    onEndReached,
+    onEndReachedIndexOffset: onEndReachedIndexThreshold = 0,
     overscan,
     renderItem,
     values,
+    wrapAround = true,
     ...responsivePaddingProps
   },
   ref
@@ -107,6 +110,18 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     getItemKey,
     getScrollElement: () => virtualListElement,
     estimateSize: () => itemHeight,
+    onChange: onEndReached
+      ? (v) => {
+          // Check if last item is visible
+          const [lastItem] = [...v.getVirtualItems()].reverse()
+          if (!lastItem) {
+            return
+          }
+          if (lastItem.index >= values.length - onEndReachedIndexThreshold - 1) {
+            onEndReached()
+          }
+        }
+      : undefined,
     overscan,
   })
 
@@ -175,7 +190,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
     childElements?.forEach((child) => {
       const virtualIndex = Number(child.dataset?.index)
-      const targetIndex = itemIndices[virtualIndex].activeIndex
+      const targetIndex = itemIndices[virtualIndex]?.activeIndex
       child
         .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
         ?.toggleAttribute(activeItemDataAttr, targetIndex === activeIndexRef.current)
@@ -269,16 +284,23 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   const selectAdjacentItemIndex = useCallback(
     (direction: 'previous' | 'next') => {
       let nextIndex = -1
+      const lastIndex = activeItemCount - 1
+
       if (direction === 'next') {
-        nextIndex = activeIndexRef.current < activeItemCount - 1 ? activeIndexRef.current + 1 : 0
+        const wrapAroundIndex = wrapAround ? 0 : lastIndex
+        nextIndex =
+          activeIndexRef.current < activeItemCount - 1
+            ? activeIndexRef.current + 1
+            : wrapAroundIndex
       }
       if (direction === 'previous') {
-        nextIndex = activeIndexRef.current > 0 ? activeIndexRef.current - 1 : activeItemCount - 1
+        const wrapAroundIndex = wrapAround ? lastIndex : 0
+        nextIndex = activeIndexRef.current > 0 ? activeIndexRef.current - 1 : wrapAroundIndex
       }
       setActiveIndex({index: nextIndex, scrollIntoView: true})
       enableChildContainerPointerEvents(false)
     },
-    [activeItemCount, enableChildContainerPointerEvents, setActiveIndex]
+    [activeItemCount, enableChildContainerPointerEvents, setActiveIndex, wrapAround]
   )
 
   /**
@@ -435,11 +457,19 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   ])
 
   /**
-   * Temporarily disable pointer events (or 'flush' existing hover states) on child count changes.
+   * Show the pointer overlay until the next call stack to temporarily disable pointer events (or 'flush' existing hover states)
+   * whenever virtual list values change.
+   *
+   * This is done to prevent the 'double active state' issue that can occur when changing values within the virtual list, where the
+   * `initialIndex` as well as the item directly under your pointer will be marked as active.
+   *
+   * We only show it for a moment to ensure that scrolling isn't impeded if this virtual list utilises lazy loading / infinite scroll.
+   * This workaround is a little hacky and should be refactored in future.
    */
   useEffect(() => {
     enableChildContainerPointerEvents(false)
-  }, [activeItemCount, enableChildContainerPointerEvents])
+    setTimeout(() => enableChildContainerPointerEvents(true), 0)
+  }, [activeItemCount, enableChildContainerPointerEvents, hideChildrenActiveState])
 
   /**
    * Refresh selected state when item values change (as a result of filtering).

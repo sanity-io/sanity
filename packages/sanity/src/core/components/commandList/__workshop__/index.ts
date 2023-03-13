@@ -21,9 +21,14 @@ export default defineScope({
       component: lazy(() => import('./PopoverStory')),
     },
     {
-      name: 'selectable',
-      title: 'Selectable',
-      component: lazy(() => import('./SelectableStory')),
+      name: 'infinite-scroll',
+      title: 'Infinite Scroll',
+      component: lazy(() => import('./InfiniteScrollStory')),
+    },
+    {
+      name: 'kitchen-sink',
+      title: 'Filterable, Selectable with disabled items',
+      component: lazy(() => import('./KitchenSinkStory')),
     },
   ],
 })
