@@ -1,6 +1,5 @@
 import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
-import throttle from 'lodash/throttle'
 import React, {
   forwardRef,
   MouseEvent,
@@ -166,47 +165,17 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
     )
 
     /**
-     * Assign active state on all child elements.
+     * Assign active descendant on input element, if present.
      */
-    const handleAssignActiveState = useCallback(() => {
+    const handleAssignActiveDescendant = useCallback(() => {
       const activeIndex = activeIndexRef?.current
       if (values.length > 0) {
         inputElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
       } else {
         inputElement?.removeAttribute('aria-activedescendant')
       }
-      const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
-      childElements?.forEach((child) => {
-        const virtualIndex = Number(child.dataset?.index)
-        const childIndex = itemIndices[virtualIndex]
-        if (typeof childIndex === 'number') {
-          child.setAttribute('aria-posinset', (childIndex + 1).toString())
-          child.setAttribute('aria-selected', itemIndicesSelected[virtualIndex].toString())
-          child.setAttribute('aria-setsize', activeItemCount.toString())
-          child.setAttribute('id', getChildDescendantId(childIndex))
-          child.setAttribute('role', 'option')
-          child.setAttribute('tabIndex', '-1')
-        }
-      })
       showChildrenActiveState(activeIndex)
-    }, [
-      activeItemCount,
-      childContainerElement,
-      getChildDescendantId,
-      inputElement,
-      itemIndices,
-      itemIndicesSelected,
-      showChildrenActiveState,
-      values.length,
-    ])
-
-    /**
-     * Throttled version of the above, used when DOM mutations are detected in virtual lists
-     */
-    const handleAssignActiveStateThrottled = useMemo(
-      () => throttle(handleAssignActiveState, 200),
-      [handleAssignActiveState]
-    )
+    }, [getChildDescendantId, inputElement, showChildrenActiveState, values.length])
 
     /**
      * Obtain index of the top most visible element
@@ -236,7 +205,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
         scrollIntoView?: boolean
       }) => {
         activeIndexRef.current = index
-        handleAssignActiveState()
+        handleAssignActiveDescendant()
 
         if (scrollIntoView) {
           const virtualListIndex = itemIndices.indexOf(index)
@@ -248,7 +217,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
           }
         }
       },
-      [handleAssignActiveState, initialScrollAlign, itemIndices, virtualizer]
+      [handleAssignActiveDescendant, initialScrollAlign, itemIndices, virtualizer]
     )
 
     /**
@@ -425,29 +394,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
      * This is to ensure that we correctly clear aria-activedescendant attrs if the filtered array is empty.
      */
     useEffect(() => {
-      handleAssignActiveState()
-    }, [handleAssignActiveState, values])
-
-    /**
-     * Re-assign aria-selected state on all child elements on any DOM mutations.
-     *
-     * Useful since virtual lists will constantly mutate the DOM on scroll, and we want to ensure that
-     * new elements coming into view are rendered with the correct selected state.
-     */
-    useEffect(() => {
-      const mutationObserver = new MutationObserver(handleAssignActiveStateThrottled)
-
-      if (childContainerElement) {
-        mutationObserver.observe(childContainerElement, {
-          childList: true,
-          subtree: true,
-        })
-      }
-
-      return () => {
-        mutationObserver.disconnect()
-      }
-    }, [childContainerElement, handleAssignActiveStateThrottled])
+      handleAssignActiveDescendant()
+    }, [handleAssignActiveDescendant, values])
 
     /**
      * Apply input aria attributes
@@ -485,7 +433,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
             {virtualizer.getVirtualItems().map((virtualRow, index) => {
               const value = values[virtualRow.index]
               const virtualIndex = virtualRow.index // visible index in the DOM
-              const activeIndex = itemIndices[virtualIndex] ?? -1
+              const itemIndex = itemIndices[virtualIndex]
 
               const itemToRender = renderItem({
                 index,
@@ -493,12 +441,25 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
                 ...value,
               }) as React.ReactElement
 
+              const activeAriaAttributes =
+                typeof itemIndex === 'number'
+                  ? {
+                      'aria-posinset': itemIndex + 1,
+                      ...(ariaMultiselectable
+                        ? {'aria-selected': itemIndicesSelected[virtualIndex]}
+                        : {}),
+                      'aria-setsize': activeItemCount,
+                      id: getChildDescendantId(itemIndex),
+                      role: 'option',
+                      onMouseDown: handleChildMouseDown,
+                      onMouseEnter: handleChildMouseEnter(itemIndex),
+                    }
+                  : {}
+
               return (
                 <div
                   data-index={virtualIndex}
                   key={virtualRow.key}
-                  onMouseDown={handleChildMouseDown}
-                  onMouseEnter={handleChildMouseEnter(activeIndex)}
                   ref={fixedHeight ? undefined : virtualizer.measureElement}
                   style={{
                     flex: 1,
@@ -509,6 +470,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps<any>>(
                     transform: `translateY(${virtualRow.start}px)`,
                     width: '100%',
                   }}
+                  tabIndex={-1}
+                  {...activeAriaAttributes}
                 >
                   {itemToRender}
                 </div>

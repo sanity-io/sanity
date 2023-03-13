@@ -120,7 +120,6 @@ export function DocumentTypesPopoverContent() {
             ariaLabel="Document types"
             ariaMultiselectable
             autoFocus
-            fixedHeight
             getItemKey={getItemKey}
             inputElement={inputElement}
             itemHeight={37}
