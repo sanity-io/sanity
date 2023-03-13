@@ -1,6 +1,6 @@
-import {MouseEvent, ReactNode} from 'react'
-import {ScrollToOptions, VirtualItem} from '@tanstack/react-virtual'
 import {ResponsivePaddingProps} from '@sanity/ui'
+import {ScrollToOptions} from '@tanstack/react-virtual'
+import {ReactNode} from 'react'
 
 /**
  * @internal
@@ -28,19 +28,6 @@ export interface CommandListHandle {
   focusElement: () => void
   getTopIndex: () => number
   scrollToIndex: (index: number) => void
-}
-
-/**
- * @internal
- */
-export interface CommandListItemProps {
-  activeIndex: number
-  children: ReactNode
-  fixedHeight?: boolean
-  measure?: (node: Element | null) => void
-  onChildMouseDown: (event: MouseEvent) => void
-  onChildMouseEnter: (index: number) => () => void
-  virtualRow: VirtualItem
 }
 
 /**
