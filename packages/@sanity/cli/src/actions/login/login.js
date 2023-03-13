@@ -1,13 +1,28 @@
 import os from 'os'
-import urlParser from 'url'
-import crypto from 'crypto'
+import http from 'http'
 import open from 'opn'
 import chalk from 'chalk'
-import EventSource from 'eventsource'
-import {parseJson} from '@sanity/util/lib/safeJson'
 import getUserConfig from '../../util/getUserConfig'
 import canLaunchBrowser from '../../util/canLaunchBrowser'
 import {getCliToken} from '../../util/clientWrapper'
+
+const debugIt = require('../../debug')
+
+const callbackEndpoint = '/callback'
+
+const debug = debugIt.extend('auth')
+const callbackPorts = [4321, 4000, 3003, 1234, 8080, 13333]
+
+const platformNames = {
+  aix: 'AIX',
+  android: 'Android',
+  darwin: 'MacOS',
+  freebsd: 'FreeBSD',
+  linux: 'Linux',
+  openbsd: 'OpenBSD',
+  sunos: 'SunOS',
+  win32: 'Windows',
+}
 
 export default async function login(args, context) {
   const {prompt, output, apiClient} = context
@@ -23,46 +38,56 @@ export default async function login(args, context) {
   // Get the desired authentication provider
   const provider = await getProvider({client, sso, experimental, output, prompt, specifiedProvider})
   if (provider === undefined) {
-    output.print(chalk.red('No authentication providers found'))
-    return
+    throw new Error('No authentication providers found')
   }
 
-  // Open an authentication listener channel and wait for secret
-  const iv = crypto.randomBytes(8).toString('hex')
-  const es = getAuthChannel(client.config().apiHost, provider, iv)
-  const encryptedToken = getAuthToken(es) // This is a promise, will resolve later
-  const {secret, url} = await getAuthInfo(es)
+  // Initiate local listen server for OAuth callback
+  const apiHost = client.config().apiHost || 'https://api.sanity.io'
+  const {server, token: tokenPromise} = await startServerForTokenCallback({apiHost, apiClient})
+
+  const serverUrl = server.address()
+  if (!serverUrl || typeof serverUrl === 'string') {
+    // Note: `serverUrl` is string only when binding to unix sockets.
+    // thus we can safely assume Something is Wrong™ if it's a string
+    throw new Error('Failed to start auth callback server')
+  }
+
+  // Build a login URL that redirects back to OAuth flow on success
+  const loginUrl = new URL(provider.url)
+  const platformName = os.platform()
+  const platform = platformName in platformNames ? platformNames[platformName] : platformName
+  const hostname = os.hostname().replace(/\.(local|lan)$/g, '')
+
+  loginUrl.searchParams.set('type', 'token')
+  loginUrl.searchParams.set('label', `${hostname} / ${platform}`)
+  loginUrl.searchParams.set('origin', `http://localhost:${serverUrl.port}${callbackEndpoint}`)
 
   // Open a browser on the login page (or tell the user to)
-  const providerUrl = urlParser.parse(url, true)
-  providerUrl.query.label = `${os.hostname()} / ${os.platform()}`
-  const loginUrl = urlParser.format(providerUrl)
-
   const shouldLaunchBrowser = canLaunchBrowser() && openFlag !== false
   const actionText = shouldLaunchBrowser ? 'Opening browser at' : 'Please open a browser at'
 
-  output.print(`\n${actionText} ${loginUrl}\n`)
+  output.print(`\n${actionText} ${loginUrl.href}\n`)
   const spin = output
     .spinner('Waiting for browser login to complete... Press Ctrl + C to cancel')
     .start()
 
   if (shouldLaunchBrowser) {
-    open(loginUrl, {wait: false})
+    open(loginUrl.href, {wait: false})
   }
 
-  // Wait for a success/error on the listener channel
-  let token
+  // Wait for a success/error on the HTTP callback server
+  let authToken
   try {
-    token = await encryptedToken
+    authToken = (await tokenPromise).token
     spin.stop()
   } catch (err) {
     spin.stop()
     err.message = `Login failed: ${err.message}`
     throw err
+  } finally {
+    server.close()
+    server.unref()
   }
-
-  // Decrypt the token with the secret we received earlier
-  const authToken = decryptToken(token, secret, iv)
 
   // Store the token
   getUserConfig().set({
@@ -87,65 +112,91 @@ export default async function login(args, context) {
   output.print(chalk.green('Login successful'))
 }
 
-function getAuthChannel(baseUrl, provider, iv) {
-  const uuid = crypto.randomBytes(16).toString('hex')
-  let listenUrl
-  if (provider.type === 'saml') {
-    listenUrl = `${baseUrl}/v2021-10-01/auth/saml/listen/${provider.id}/${uuid}?iv=${iv}`
-  } else {
-    listenUrl = `${baseUrl}/v1/auth/listen/${provider.name}/${uuid}?iv=${iv}`
-  }
-  return new EventSource(listenUrl)
-}
+function startServerForTokenCallback(options) {
+  const {apiHost, apiClient} = options
+  const domain = apiHost.includes('.sanity.work') ? 'www.sanity.work' : 'www.sanity.io'
 
-function getAuthInfo(es) {
-  const wantedProps = ['secret', 'url']
-  const values = {}
+  const attemptPorts = callbackPorts.slice()
+  let callbackPort = attemptPorts.shift()
+
+  let resolveToken
+  let rejectToken
+  const tokenPromise = new Promise((resolve, reject) => {
+    resolveToken = resolve
+    rejectToken = reject
+  })
+
   return new Promise((resolve, reject) => {
-    let numProps = 0
-    es.addEventListener('error', (err) => {
-      es.close()
-      reject(new Error(`Unable to get authorization info: ${err.message}`))
-    })
+    const server = http.createServer(async function onCallbackServerRequest(req, res) {
+      function failLoginRequest(code = '') {
+        res.writeHead(303, 'See Other', {
+          Location: `https://${domain}/login/error${code ? `?error=${code}` : ''}`,
+        })
+        res.end()
+        server.close()
+      }
 
-    es.addEventListener('message', (msg) => {
-      const data = parseJson(msg.data, {})
-      if (!wantedProps.includes(data.type)) {
+      const url = new URL(req.url || '/', `http://localhost:${callbackPort}`)
+      if (url.pathname !== callbackEndpoint) {
+        res.writeHead(404, 'Not Found', {'Content-Type': 'text/plain'})
+        res.write('404 Not Found')
+        res.end()
         return
       }
 
-      values[data.type] = data[data.type]
-      if (++numProps === wantedProps.length) {
-        resolve(values)
+      const absoluteTokenUrl = url.searchParams.get('url')
+      if (!absoluteTokenUrl) {
+        failLoginRequest()
+        return
+      }
+
+      const tokenUrl = new URL(absoluteTokenUrl)
+      if (!tokenUrl.searchParams.get('sid')) {
+        failLoginRequest('NO_SESSION_ID')
+        return
+      }
+
+      let token
+      try {
+        token = await apiClient({requireUser: false, requireProject: false})
+          .clone()
+          .request({url: `/auth/fetch${tokenUrl.search}`})
+      } catch (err) {
+        failLoginRequest('UNRESOLVED_SESSION')
+        rejectToken(err)
+        return
+      }
+
+      res.writeHead(303, 'See Other', {Location: `https://${domain}/login/success`})
+      res.end()
+      server.close()
+      resolveToken(token)
+    })
+
+    server.on('listening', function onCallbackListen() {
+      // Once the server is successfully listening on a port, we can return the promise.
+      // We'll then await the _token promise_, while the server is running in the background.
+      resolve({token: tokenPromise, server})
+    })
+
+    server.on('error', function onCallbackServerError(err) {
+      if ('code' in err && err.code === 'EADDRINUSE') {
+        callbackPort = attemptPorts.shift()
+        if (!callbackPort) {
+          reject(new Error('Failed to find port number to bind auth callback server to'))
+          return
+        }
+
+        debug('Port busy, trying %d', callbackPort)
+        server.listen(callbackPort)
+      } else {
+        reject(err)
       }
     })
+
+    debug('Starting callback server on port %d', callbackPort)
+    server.listen(callbackPort)
   })
-}
-
-function getAuthToken(es) {
-  return new Promise((resolve, reject) => {
-    es.addEventListener('success', (msg) => {
-      es.close()
-      const data = parseJson(msg.data, {})
-      resolve(data.token)
-    })
-
-    es.addEventListener('failure', (msg) => {
-      es.close()
-      const data = parseJson(msg.data, {})
-      const error = new Error(data.message)
-      Object.keys(data).forEach((key) => {
-        error[key] = data[key]
-      })
-      reject(error)
-    })
-  })
-}
-
-function decryptToken(token, secret, iv) {
-  const decipher = crypto.createDecipheriv('aes-256-cbc', secret, iv)
-  const dec = decipher.update(token, 'hex', 'utf8')
-  return `${dec}${decipher.final('utf8')}`
 }
 
 async function getProvider({output, client, sso, experimental, prompt, specifiedProvider}) {
@@ -157,7 +208,7 @@ async function getProvider({output, client, sso, experimental, prompt, specified
   const spin = output.spinner('Fetching providers...').start()
   let {providers} = await client.request({uri: '/auth/providers'})
   if (experimental) {
-    providers = [...providers, {name: 'sso', title: 'SSO'}]
+    providers = [...providers, {name: 'sso', title: 'SSO', url: '_not_used_'}]
   }
   spin.stop()
 
@@ -194,7 +245,7 @@ async function getSSOProvider({client, prompt, slug}) {
   if (enabledProviders.length === 0) {
     return undefined
   } else if (enabledProviders.length === 1) {
-    return enabledProviders[0]
+    return samlProviderToLoginProvider(enabledProviders[0])
   }
 
   const choice = await prompt.single({
@@ -203,7 +254,8 @@ async function getSSOProvider({client, prompt, slug}) {
     choices: enabledProviders.map((provider) => provider.name),
   })
 
-  return enabledProviders.find((provider) => provider.name === choice)
+  const foundProvider = enabledProviders.find((provider) => provider.name === choice)
+  return foundProvider ? samlProviderToLoginProvider(foundProvider) : undefined
 }
 
 function promptProviders(prompt, providers) {
@@ -218,4 +270,12 @@ function promptProviders(prompt, providers) {
       choices: providers.map((provider) => provider.title),
     })
     .then((provider) => providers.find((prov) => prov.title === provider))
+}
+
+function samlProviderToLoginProvider(saml) {
+  return {
+    name: saml.name,
+    title: saml.name,
+    url: saml.loginUrl,
+  }
 }
