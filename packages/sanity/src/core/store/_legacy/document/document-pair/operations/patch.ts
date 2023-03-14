@@ -2,7 +2,7 @@ import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {OperationImpl} from './types'
 
 // todo: we could also consider exposing 'mutate' directly
-export const patch: OperationImpl<[patches: any[], initialDocument: Record<string, any>]> = {
+export const patch: OperationImpl<[patches: any[], initialDocument?: Record<string, any>]> = {
   disabled: (): false => false,
   execute: (
     {schema, snapshots, idPair, draft, published, typeName},

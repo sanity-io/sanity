@@ -31,7 +31,7 @@ export interface OperationsAPI {
   publish:
     | Operation<[], 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES'>
     | GuardedOperation
-  patch: Operation<[patches: Patch[], initialDocument: Record<string, any>]> | GuardedOperation
+  patch: Operation<[patches: Patch[], initialDocument?: Record<string, any>]> | GuardedOperation
   discardChanges: Operation<[], 'NO_CHANGES' | 'NOT_PUBLISHED'> | GuardedOperation
   unpublish: Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'> | GuardedOperation
   duplicate: Operation<[documentId: string], 'NOTHING_TO_DUPLICATE'> | GuardedOperation
