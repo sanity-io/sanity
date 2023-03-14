@@ -167,6 +167,18 @@ export default async function initSanity(
 
   debug(`Dataset with name ${datasetName} selected`)
 
+  // If user doesn't want to output any template code
+  const bareOutput = args.argv.find((el) => el === '--bare')
+  if (bareOutput) {
+    print(`\n${chalk.green('Success!')} Below are your project details:\n`)
+    print(`Project ID: ${chalk.cyan(projectId)}`)
+    print(`Dataset: ${chalk.cyan(datasetName)}`)
+    print(
+      `\nYou can find your project on Sanity Manage — https://www.sanity.io/manage/personal/project/${projectId}\n`
+    )
+    return
+  }
+
   let outputPath = workDir
 
   // Gather project defaults based on environment

@@ -11,6 +11,7 @@ Options
   --dataset-default Set up a project with a public dataset named "production"
   --output-path <path> Path to write studio project to
   --template <template> Project template to use [default: "clean"]
+  --bare Output only the project id and dataset to stdout
   --provider <provider> Login provider to use
   --visibility <mode> Visibility mode for dataset (public/private)
   --create-project <name> Create a new project with the given name
