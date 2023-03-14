@@ -50,10 +50,8 @@ jspm_packages
 /package-lock.json
 
 # Environment files
-# @todo: this should be allowed
-/.env
 # ignore all local .env files
-.env.local
+*.local
 
 # TypeScript
 tsconfig.tsbuildinfo
@@ -70,6 +68,6 @@ tsconfig.tsbuildinfo
 etc
 
 # Automated testing files
-playwright-report
-playwright/results
-storageState.json
+/test/e2e/report
+/test/e2e/results
+/test/e2e/state

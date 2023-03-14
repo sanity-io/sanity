@@ -1,6 +1,8 @@
 # E2E Testing in the Studio
 
-Before you get started with writing and running tests, you need to add a session token called `PLAYWRIGHT_SANITY_SESSION_TOKEN` to the `.env` file. See `.env.example` at the root of this repo for more info on where to find your session token.
+Before you get started with writing and running tests, you need to get hold of a token - either using your own Sanity user token (`sanity debug --secrets` will give you the CLI token), or by creating a project API token using https://sanity.io/manage.
+
+The tests expects to find the token in an environment variable named `SANITY_E2E_SESSION_TOKEN`. Either define it in your shell, or add it to the `.env.local` file in the repository root.
 
 ## Running tests
 
