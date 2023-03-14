@@ -1,4 +1,4 @@
-import {PortalProvider, useToast, useMediaIndex} from '@sanity/ui'
+import {PortalProvider, useToast} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
@@ -9,7 +9,6 @@ import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
 import {useDeskTool} from '../../useDeskTool'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
-import {useRouter} from 'sanity/router'
 import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
 
 interface DeskToolProps {
@@ -27,12 +26,10 @@ const isSaveHotkey = isHotkey('mod+s')
  * @internal
  */
 export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
-  const {navigate} = useRouter()
   const {push: pushToast} = useToast()
   const schema = useSchema()
-  const mediaIndex = useMediaIndex()
   const {layoutCollapsed, setLayoutCollapsed} = useDeskTool()
-  const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes()
+  const {paneDataItems, resolvedPanes} = useResolvedPanes()
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
@@ -47,18 +44,6 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
       onPaneChange(resolvedPanes)
     }
   }, [onPaneChange, resolvedPanes])
-
-  // The pane layout is "collapsed" on small screens, and only shows 1 pane at a time.
-  // Remove pane siblings (i.e. split panes) as the pane layout collapses.
-  useEffect(() => {
-    if (mediaIndex > 1 || !layoutCollapsed) return
-    const hasSiblings = routerPanes.some((group) => group.length > 1)
-
-    if (!hasSiblings) return
-    const withoutSiblings = routerPanes.map((group) => [group[0]])
-
-    navigate({panes: withoutSiblings}, {replace: true})
-  }, [mediaIndex, navigate, layoutCollapsed, routerPanes])
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
