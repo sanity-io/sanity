@@ -147,11 +147,11 @@ export function DocumentTypesPopoverContent() {
             getItemKey={getItemKey}
             inputElement={inputElement}
             itemHeight={37}
+            items={documentTypeItems}
             overscan={20}
             paddingBottom={1}
             ref={commandListRef}
             renderItem={renderItem}
-            values={documentTypeItems}
           />
         )}
 

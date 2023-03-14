@@ -90,9 +90,9 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
               inputElement={inputElement}
               initialIndex={0}
               itemHeight={VIRTUAL_LIST_RECENT_SEARCH_ITEM_HEIGHT}
+              items={recentSearches}
               paddingBottom={2}
               renderItem={renderItem}
-              values={recentSearches}
             />
           </Box>
           <Box paddingBottom={2} paddingTop={1} paddingX={2}>

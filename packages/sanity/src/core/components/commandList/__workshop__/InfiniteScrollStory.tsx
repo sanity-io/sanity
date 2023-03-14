@@ -126,7 +126,7 @@ export default function InfiniteScrollStory() {
                 onEndReachedIndexOffset={10}
                 ref={commandListRef}
                 renderItem={renderItem}
-                values={filteredValues}
+                items={filteredValues}
                 wrapAround={wrapAround}
               />
             </Flex>

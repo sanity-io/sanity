@@ -58,6 +58,8 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   inputElement?: HTMLInputElement | null
   /** Estimated height for each list item */
   itemHeight: number
+  /** Virtual list item values, accessible to all rendered item components */
+  items: T[]
   /** Callback fired when the virtual list is within `onEndReachedIndexThreshold` of rendered content */
   onEndReached?: () => void
   /** Number of items from the end of the virtual list before which `onEndReached` is triggered */
@@ -66,8 +68,6 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   overscan?: number
   /** Rendered component in virtual lists */
   renderItem: CommandListRenderItemCallback<T>
-  /** Virtual list item values, accessible to all rendered item components */
-  values: T[]
   /** Allow wraparound keyboard navigation between first and last items */
   wrapAround?: boolean
 }

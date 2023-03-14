@@ -115,10 +115,10 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
             getItemKey={getItemKey}
             inputElement={inputElement}
             itemHeight={45}
+            items={filteredMenuItems}
             overscan={20}
             paddingBottom={1}
             renderItem={renderItem}
-            values={filteredMenuItems}
           />
         )}
 

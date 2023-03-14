@@ -40,10 +40,10 @@ export default function MinimalStory() {
           ariaLabel="Children"
           fixedHeight
           itemHeight={28}
+          items={ITEMS}
           overscan={20}
           ref={commandListRef}
           renderItem={renderItem}
-          values={ITEMS}
         />
       </div>
 

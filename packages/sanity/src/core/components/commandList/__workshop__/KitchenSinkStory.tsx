@@ -172,7 +172,7 @@ export default function KitchenSinkStory() {
                 itemHeight={35}
                 ref={commandListRef}
                 renderItem={renderItem}
-                values={filteredValues}
+                items={filteredValues}
               />
             </Flex>
           </Card>

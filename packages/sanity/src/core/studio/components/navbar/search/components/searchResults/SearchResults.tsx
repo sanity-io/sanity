@@ -94,11 +94,11 @@ export function SearchResults({inputElement}: SearchResultsProps) {
                     inputElement={inputElement}
                     initialIndex={lastActiveIndex}
                     itemHeight={VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT}
+                    items={result.hits}
                     overscan={VIRTUAL_LIST_OVERSCAN}
                     paddingBottom={2}
                     renderItem={renderItem}
                     ref={setSearchCommandList}
-                    values={result.hits}
                   />
                 )}
                 {hasNoSearchResults && <NoResults />}

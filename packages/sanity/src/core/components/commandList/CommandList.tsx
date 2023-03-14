@@ -91,7 +91,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     onEndReachedIndexOffset: onEndReachedIndexThreshold = 0,
     overscan,
     renderItem,
-    values,
+    items,
     wrapAround = true,
     ...responsivePaddingProps
   },
@@ -106,7 +106,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
 
   // This will trigger a re-render whenever its internal state changes
   const virtualizer = useVirtualizer({
-    count: values.length,
+    count: items.length,
     getItemKey,
     getScrollElement: () => virtualListElement,
     estimateSize: () => itemHeight,
@@ -117,7 +117,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
           if (!lastItem) {
             return
           }
-          if (lastItem.index >= values.length - onEndReachedIndexThreshold - 1) {
+          if (lastItem.index >= items.length - onEndReachedIndexThreshold - 1) {
             onEndReached()
           }
         }
@@ -141,7 +141,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    */
   const itemIndices = useMemo(() => {
     let i = -1
-    return values.reduce<
+    return items.reduce<
       {
         activeIndex: number | null
         selected: boolean
@@ -160,7 +160,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       }
       return acc
     }, [])
-  }, [getItemDisabled, getItemSelected, values])
+  }, [getItemDisabled, getItemSelected, items])
 
   const activeItemCount = useMemo(
     () => itemIndices.filter((v) => !v.disabled).length,
@@ -221,12 +221,12 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    */
   const handleUpdateActiveDescendant = useCallback(() => {
     const activeIndex = activeIndexRef?.current
-    if (values.length > 0) {
+    if (items.length > 0) {
       inputElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
     } else {
       inputElement?.removeAttribute('aria-activedescendant')
     }
-  }, [getChildDescendantId, inputElement, values.length])
+  }, [getChildDescendantId, inputElement, items.length])
 
   /**
    * Obtain index of the top most visible element
@@ -477,7 +477,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    */
   useEffect(() => {
     handleUpdateActiveDescendant()
-  }, [handleUpdateActiveDescendant, values])
+  }, [handleUpdateActiveDescendant, items])
 
   /**
    * On DOM mutations, re-assign active descendant on input element (if present) and update active state on all children.
@@ -540,7 +540,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
             const virtualIndex = virtualRow.index // visible index in the DOM
             const {activeIndex, disabled, selected} = itemIndices[virtualIndex]
 
-            const itemToRender = renderItem(values[virtualIndex], {
+            const itemToRender = renderItem(items[virtualIndex], {
               activeIndex,
               disabled,
               selected,

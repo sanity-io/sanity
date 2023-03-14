@@ -101,10 +101,10 @@ export default function FilterableStory() {
                 autoFocus
                 inputElement={inputElement}
                 itemHeight={30}
+                items={filteredValues}
                 fixedHeight
                 ref={commandListRef}
                 renderItem={renderItem}
-                values={filteredValues}
               />
             </Flex>
           </Card>

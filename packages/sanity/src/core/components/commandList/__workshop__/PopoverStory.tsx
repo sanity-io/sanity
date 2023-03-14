@@ -96,8 +96,8 @@ export default function PopoverStory() {
                         initialScrollAlign={initialSelectedScrollAlign}
                         initialIndex={selectedIndex}
                         itemHeight={35}
+                        items={ITEMS}
                         renderItem={renderItem}
-                        values={ITEMS}
                       />
                     </Flex>
                   </Card>
