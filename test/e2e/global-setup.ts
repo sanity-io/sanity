@@ -22,7 +22,8 @@ async function globalSetup(config: FullConfig): Promise<void> {
   }
 
   const [response] = await Promise.all([
-    page.waitForResponse('*/**/users/me*'),
+    // CI is slow to start, make sure we wait long enough
+    page.waitForResponse('*/**/users/me*', {timeout: 120000}),
     // This action triggers the request
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     page.goto(baseURL!),

@@ -1,12 +1,17 @@
+/* eslint-disable no-process-env */
+import os from 'os'
 import fs from 'fs/promises'
 import path from 'path'
 import {defineConfig, devices} from '@playwright/test'
 import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
 
+const CI = Boolean(process.env.CI)
 const TESTS_PATH = path.join(__dirname, 'test', 'e2e', 'tests')
 const HTML_REPORT_PATH = path.join(__dirname, 'test', 'e2e', 'report')
 const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'test', 'e2e', 'results')
 const STORAGE_STATE_PATH = path.join(__dirname, 'test', 'e2e', 'state', 'storageState.json')
+const OS_BROWSERS =
+  os.platform() === 'darwin' ? [{name: 'webkit', use: {...devices['Desktop Safari']}}] : []
 
 loadEnvFiles()
 ensureStorageState()
@@ -29,7 +34,7 @@ export default defineConfig({
   },
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? 'github' : [['list'], ['html', {outputFolder: HTML_REPORT_PATH}]],
+  reporter: CI ? 'github' : [['list'], ['html', {outputFolder: HTML_REPORT_PATH}]],
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -38,7 +43,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     baseURL: 'http://localhost:3333/',
-    headless: readBoolEnv('SANITY_E2E_HEADLESS', false),
+    headless: readBoolEnv('SANITY_E2E_HEADLESS', true),
     storageState: STORAGE_STATE_PATH,
     viewport: {width: 1728, height: 1000},
   },
@@ -47,25 +52,15 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      /* Project-specific settings. */
-      use: {
-        ...devices['Desktop Chrome'],
-      },
+      use: {...devices['Desktop Chrome']},
     },
 
     {
       name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
+      use: {...devices['Desktop Firefox']},
     },
 
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-      },
-    },
+    ...OS_BROWSERS,
   ],
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
