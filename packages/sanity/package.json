@@ -120,6 +120,7 @@
     "coverage": "jest --coverage",
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
+    "tsdoc:publish": "sanity-tsdoc etl",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
     "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
     "write:version": "node -r esbuild-register scripts/writeVersion.ts"
