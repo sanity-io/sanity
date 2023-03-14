@@ -70,9 +70,11 @@ export const Root = styled(Card)((props: {theme: Theme}) => {
   `
 })
 
-export const PreviewContainer = styled(Flex)`
-  user-select: none;
-  pointer-events: none;
+export const PreviewContainer = styled(Box)`
+  display: block;
+  width: 100%;
+  user-select: all;
+  pointer-events: all;
 `
 
 export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(

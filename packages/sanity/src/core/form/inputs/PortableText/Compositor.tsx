@@ -10,18 +10,10 @@ import {
   BlockAnnotationRenderProps,
 } from '@sanity/portable-text-editor'
 import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
-import {
-  BoundaryElementProvider,
-  Portal,
-  PortalProvider,
-  useBoundaryElement,
-  usePortal,
-} from '@sanity/ui'
+import {Portal, PortalProvider, usePortal} from '@sanity/ui'
 import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
-import {FormInput} from '../../components'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../../util'
-import {FIXME} from '../../../FIXME'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
@@ -30,10 +22,7 @@ import {RenderBlockActionsCallback} from './types'
 import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {useHotkeys} from './hooks/useHotKeys'
-import {ObjectEditModal} from './object/renderers/ObjectEditModal'
 import {useScrollToOpenedMember} from './hooks/useScrollToOpenedMember'
-import {usePortableTextMemberItems} from './hooks/usePortableTextMembers'
-import {_isBlockType} from './_helpers'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   hasFocus: boolean
@@ -56,41 +45,39 @@ export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
 export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
   const {
     changed,
-    focusPath = EMPTY_ARRAY,
     focused,
+    focusPath = EMPTY_ARRAY,
     hasFocus,
     hotkeys,
     isActive,
     isFullscreen,
+    onActivate,
     onChange,
     onCopy,
-    onActivate,
     onItemClose,
     onItemOpen,
     onItemRemove,
     onPaste,
+    onPathFocus,
     onToggleFullscreen,
     path,
+    readOnly,
     renderBlockActions,
     renderCustomMarkers,
-    value,
-    readOnly,
     renderPreview,
+    value,
   } = props
 
   const editor = usePortableTextEditor()
 
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
-  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
-  const portableTextMemberItems = usePortableTextMemberItems()
-
-  const {element: boundaryElement} = useBoundaryElement()
+  const [boundaryElement, setBoundaryElement] = useState<HTMLElement | null>(null)
 
   // Scroll to the DOM element of the "opened" portable text member when relevant.
   useScrollToOpenedMember({
     hasFormFocus: focusPath.length > 0,
     editorRootPath: path,
-    scrollElement,
+    boundaryElement: undefined,
     onItemClose,
   })
 
@@ -128,7 +115,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [] // Only initial
   )
 
-  const renderBlock = useCallback(
+  const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
+  // const boundaryElm = isFullscreen ? scrollElement : boundaryElement
+
+  const renderTextBlock = useCallback(
     (blockProps: BlockRenderProps) => {
       const {
         children,
@@ -138,58 +128,81 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: blockSchemaType,
         value: block,
       } = blockProps
-      const isTextBlock = block._type === editor.schemaTypes.block.name
-      if (isTextBlock) {
-        return (
-          <TextBlock
-            block={block as PortableTextTextBlock}
-            focused={blockFocused}
-            isFullscreen={isFullscreen}
-            onChange={onChange}
-            path={blockPath}
-            readOnly={readOnly}
-            renderBlockActions={_renderBlockActions}
-            renderCustomMarkers={_renderCustomMarkers}
-            selected={selected}
-            schemaType={blockSchemaType}
-          >
-            {children}
-          </TextBlock>
-        )
-      }
+      return (
+        <TextBlock
+          block={block as PortableTextTextBlock}
+          focused={blockFocused}
+          isFullscreen={isFullscreen}
+          onChange={onChange}
+          path={blockPath}
+          readOnly={readOnly}
+          renderBlockActions={_renderBlockActions}
+          renderCustomMarkers={_renderCustomMarkers}
+          selected={selected}
+          schemaType={blockSchemaType}
+        >
+          {children}
+        </TextBlock>
+      )
+    },
+    [_renderBlockActions, _renderCustomMarkers, isFullscreen, onChange, readOnly]
+  )
+
+  const renderObjectBlock = useCallback(
+    (blockProps: BlockRenderProps) => {
+      const {
+        focused: blockFocused,
+        path: blockPath,
+        selected: blockSelected,
+        schemaType: blockSchemaType,
+        value: blockValue,
+      } = blockProps
       return (
         <BlockObject
-          block={block}
           focused={blockFocused}
           isFullscreen={isFullscreen}
           onChange={onChange}
           onItemOpen={onItemOpen}
           onItemClose={onItemClose}
           onItemRemove={onItemRemove}
+          onPathFocus={onPathFocus}
           path={blockPath}
           readOnly={readOnly}
+          renderPreview={renderPreview}
           renderBlockActions={_renderBlockActions}
           renderCustomMarkers={_renderCustomMarkers}
-          renderPreview={renderPreview}
-          scrollElement={scrollElement}
-          selected={selected}
+          boundaryElement={boundaryElement || undefined}
+          selected={blockSelected}
           schemaType={blockSchemaType}
+          value={blockValue}
         />
       )
     },
     [
-      editor.schemaTypes.block.name,
-      isFullscreen,
-      onChange,
-      onItemOpen,
-      onItemClose,
-      onItemRemove,
-      readOnly,
       _renderBlockActions,
       _renderCustomMarkers,
+      boundaryElement,
+      isFullscreen,
+      onChange,
+      onItemClose,
+      onItemOpen,
+      onItemRemove,
+      onPathFocus,
       renderPreview,
-      scrollElement,
+      readOnly,
     ]
+  )
+
+  const renderBlock = useCallback(
+    (blockProps: BlockRenderProps) => {
+      const {value: block} = blockProps
+      const isTextBlock = block._type === editor.schemaTypes.block.name
+      if (isTextBlock) {
+        return renderTextBlock(blockProps)
+      }
+      return renderObjectBlock(blockProps)
+    },
+    [editor.schemaTypes.block.name, renderObjectBlock, renderTextBlock]
   )
 
   const renderChild = useCallback(
@@ -209,13 +222,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       return (
         <InlineObject
           focused={childFocused}
-          onItemClose={onItemClose}
-          onItemOpen={onItemOpen}
+          onPathFocus={props.onPathFocus}
+          onItemClose={props.onItemClose}
+          onItemOpen={props.onItemOpen}
           path={childPath}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
-          renderPreview={renderPreview}
-          scrollElement={scrollElement}
+          renderPreview={props.renderPreview}
+          boundaryElement={boundaryElement || undefined}
           selected={selected}
           schemaType={childSchemaType}
           value={child}
@@ -224,12 +238,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     },
     [
       editor.schemaTypes.span.name,
-      onItemClose,
-      onItemOpen,
+      props.onPathFocus,
+      props.onItemClose,
+      props.onItemOpen,
+      props.renderPreview,
       readOnly,
       renderCustomMarkers,
-      renderPreview,
-      scrollElement,
+      boundaryElement,
     ]
   )
 
@@ -242,18 +257,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           onItemClose={onItemClose}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
-          scrollElement={scrollElement}
+          scrollElement={boundaryElement}
         />
       )
     },
-    [onItemOpen, onItemClose, readOnly, renderCustomMarkers, scrollElement]
-  )
-
-  const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
-
-  const openMemberItems = useMemo(
-    () => portableTextMemberItems.filter((m) => m.member.open && !_isBlockType(m.node.schemaType)),
-    [portableTextMemberItems]
+    [onItemOpen, onItemClose, readOnly, renderCustomMarkers, boundaryElement]
   )
 
   const editorNode = useMemo(
@@ -273,8 +281,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         renderBlock={renderBlock}
         renderChild={renderChild}
         setPortalElement={setPortalElement}
-        scrollElement={scrollElement}
-        setScrollElement={setScrollElement}
+        scrollElement={boundaryElement}
+        setScrollElement={setBoundaryElement}
       />
     ),
 
@@ -293,35 +301,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderAnnotation,
       renderBlock,
       renderChild,
-      scrollElement,
+      boundaryElement,
     ]
-  )
-
-  const boundaryElm = isFullscreen ? scrollElement : boundaryElement
-
-  const children = useMemo(
-    () =>
-      boundaryElm && (
-        <>
-          {editorNode}
-          <BoundaryElementProvider element={boundaryElm}>
-            {openMemberItems.map((dMemberItem) => {
-              return (
-                <ObjectEditModal
-                  kind={dMemberItem.kind}
-                  key={dMemberItem.member.key}
-                  memberItem={dMemberItem}
-                  onClose={onItemClose}
-                  scrollElement={boundaryElm}
-                >
-                  <FormInput absolutePath={dMemberItem.node.path} {...(props as FIXME)} />
-                </ObjectEditModal>
-              )
-            })}
-          </BoundaryElementProvider>
-        </>
-      ),
-    [boundaryElm, editorNode, openMemberItems, props, onItemClose]
   )
 
   const portal = usePortal()
@@ -337,24 +318,29 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   )
 
   return (
-    <PortalProvider __unstable_elements={portalElements}>
-      <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-        <ChangeIndicator
-          disabled={isFullscreen}
-          hasFocus={Boolean(focused)}
-          isChanged={changed}
-          path={path}
-        >
-          <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
-            <div data-wrapper="" ref={setWrapperElement}>
-              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                {isFullscreen ? <ExpandedLayer>{children}</ExpandedLayer> : children}
-              </Portal>
-            </div>
-            <div data-border="" />
-          </Root>
-        </ChangeIndicator>
-      </ActivateOnFocus>
-    </PortalProvider>
+    <>
+      <PortalProvider __unstable_elements={portalElements}>
+        <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+          <ChangeIndicator
+            disabled={isFullscreen}
+            hasFocus={Boolean(focused)}
+            isChanged={changed}
+            path={path}
+          >
+            <Root
+              data-focused={hasFocus ? '' : undefined}
+              data-read-only={readOnly ? '' : undefined}
+            >
+              <div data-wrapper="" ref={setWrapperElement}>
+                <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                  {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                </Portal>
+              </div>
+              <div data-border="" />
+            </Root>
+          </ChangeIndicator>
+        </ActivateOnFocus>
+      </PortalProvider>
+    </>
   )
 }

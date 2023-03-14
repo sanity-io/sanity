@@ -16,6 +16,8 @@ import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {debugRender} from '../debugRender'
+import {useChildPresence} from '../../../studio/contexts/Presence'
+import {EMPTY_ARRAY} from '../../../../util'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
@@ -194,7 +196,12 @@ export const Annotation = function Annotation(props: AnnotationProps) {
     PortableTextEditor.focus(editor)
   }, [editor, schemaType])
 
+  const presence = useChildPresence(memberItem?.node.path || EMPTY_ARRAY, !!memberItem)
+
   const content = useMemo(() => {
+    if (!memberItem) {
+      return null
+    }
     const componentProps: Omit<BlockAnnotationProps, 'children'> = {
       __unstable_boundaryElement: scrollElement || undefined,
       __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
@@ -204,9 +211,11 @@ export const Annotation = function Annotation(props: AnnotationProps) {
       onRemove,
       open: memberItem?.member.open || false,
       path: memberItem?.node.path || path,
+      presence,
       renderDefault: DefaultComponent,
       schemaType,
       selected,
+      validation,
       value,
     }
     const CustomComponent = schemaType.components?.annotation as
@@ -222,17 +231,17 @@ export const Annotation = function Annotation(props: AnnotationProps) {
     DefaultComponent,
     focused,
     markersToolTip,
-    memberItem?.elementRef,
-    memberItem?.member.open,
-    memberItem?.node.path,
+    memberItem,
     onItemClose,
     onRemove,
     openItem,
     path,
+    presence,
     schemaType,
     scrollElement,
     selected,
     text,
+    validation,
     value,
   ])
   return useMemo(

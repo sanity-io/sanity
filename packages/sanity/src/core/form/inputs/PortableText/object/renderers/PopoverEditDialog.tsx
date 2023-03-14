@@ -8,26 +8,21 @@ import {
   Flex,
   Popover,
   PopoverProps,
-  PortalProvider,
   Text,
-  useBoundaryElement,
   useClickOutside,
   useGlobalKeyDown,
-  usePortal,
 } from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import styled from 'styled-components'
-import {FIXME} from '../../../../../FIXME'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
-import {debugElement} from './debug'
 import {ModalWidth} from './types'
 
 interface PopoverEditDialogProps {
   children: React.ReactNode
-  elementRef?: React.MutableRefObject<PortableTextEditorElement>
   onClose: () => void
-  scrollElement: HTMLElement
+  referenceElement?: PortableTextEditorElement
+  boundaryElement?: PortableTextEditorElement
   title: string | React.ReactNode
   width?: ModalWidth
 }
@@ -66,7 +61,33 @@ const ContentHeaderBox = styled(Box)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverEditDialog(props: PopoverEditDialogProps) {
-  const {width, elementRef, onClose, scrollElement} = props
+  const {referenceElement, boundaryElement} = props
+  const [open, setOpen] = useState(false)
+
+  // This hook is here to set open after the initial render.
+  // If rendered immediately, the popover will for a split second be
+  // visible in the top left of the boundaryElement before correctly
+  // placed pointing at the reference element.
+  useEffect(() => {
+    setOpen(true)
+  }, [])
+
+  return (
+    <RootPopover
+      boundaryElement={boundaryElement}
+      constrainSize
+      content={<Content {...props} />}
+      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      open={open}
+      placement="bottom"
+      portal="default"
+      referenceElement={referenceElement}
+    />
+  )
+}
+
+function Content(props: PopoverEditDialogProps) {
+  const {onClose, referenceElement, width = 0, title, boundaryElement} = props
 
   useGlobalKeyDown(
     useCallback(
@@ -79,62 +100,7 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
     )
   )
 
-  const [forceUpdate, setForceUpdate] = useState(0)
-  const virtualElement = useMemo(() => {
-    if (!elementRef?.current?.getBoundingClientRect()) {
-      return null
-    }
-
-    return {
-      contextElement: elementRef.current || undefined,
-      getBoundingClientRect: () => {
-        return elementRef.current?.getBoundingClientRect() || null
-      },
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elementRef?.current, forceUpdate])
-
-  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-
-  const handleScrollOrResize = useCallback(() => {
-    setForceUpdate(forceUpdate + 1)
-  }, [forceUpdate])
-
-  useEffect(() => {
-    if (scrollElement) {
-      scrollElement.addEventListener('scroll', handleScrollOrResize, true)
-    }
-    return () => {
-      if (scrollElement) {
-        scrollElement.removeEventListener('scroll', handleScrollOrResize, true)
-      }
-    }
-  }, [handleScrollOrResize, scrollElement])
-
-  return (
-    <RootPopover
-      constrainSize
-      content={<Content {...props} rootElement={rootElement} width={width} />}
-      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-      placement="bottom"
-      open
-      portal="default"
-      ref={setRootElement}
-      referenceElement={virtualElement || (debugElement as FIXME)}
-    />
-  )
-}
-
-function Content(
-  props: PopoverEditDialogProps & {
-    rootElement: HTMLDivElement | null
-  }
-) {
-  const {onClose, rootElement, width = 0, title} = props
-  const {element: boundaryElement} = useBoundaryElement()
-  const portal = usePortal()
-
-  useClickOutside(onClose, [rootElement], boundaryElement)
+  useClickOutside(onClose, referenceElement ? [referenceElement] : [], boundaryElement)
 
   return (
     <ContentContainer width={width}>
@@ -150,9 +116,7 @@ function Content(
         </ContentHeaderBox>
         <ContentScrollerBox flex={1}>
           <PresenceOverlay margins={[0, 0, 1, 0]}>
-            <Box padding={3}>
-              <PortalProvider element={portal.elements?.default}>{props.children}</PortalProvider>
-            </Box>
+            <Box padding={3}>{props.children}</Box>
           </PresenceOverlay>
         </ContentScrollerBox>
       </Flex>

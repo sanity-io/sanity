@@ -4,76 +4,70 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {ObjectSchemaType} from '@sanity/types'
 import {_getModalOption} from '../helpers'
-import {PortableTextMemberItem} from '../../PortableTextInput'
+import {ArrayOfObjectsItemMember, ObjectArrayFormNode, ObjectItem} from '../../../..'
 import {DefaultEditDialog} from './DefaultEditDialog'
 import {PopoverEditDialog} from './PopoverEditDialog'
 
 export function ObjectEditModal(props: {
+  boundaryElement: HTMLElement | undefined
   children: React.ReactNode
-  kind: PortableTextMemberItem['kind']
-  memberItem: PortableTextMemberItem
+  referenceElement: HTMLElement | undefined
+  member: ArrayOfObjectsItemMember<ObjectArrayFormNode<ObjectItem, ObjectSchemaType>>
+  modalType: 'popover' | 'modal'
   onClose: () => void
-  scrollElement: HTMLElement
 }) {
-  const {memberItem, onClose, scrollElement, kind} = props
-  const {schemaType} = memberItem.node
-  const modalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
-
-  const modalType = useMemo(() => {
-    if (modalOption?.type) return modalOption.type
-
-    // If the object is inline or an annotation, then default to "popover"
-    return kind === 'inlineObject' || kind === 'annotation' ? 'popover' : 'dialog'
-  }, [kind, modalOption])
-
+  const {member, onClose, modalType: modalTypeFromProps, referenceElement, boundaryElement} = props
+  const schemaType = member.item.schemaType
+  const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
+  const modalType = schemaModalOption?.type || modalTypeFromProps
+  const title = <>Edit {schemaType.title}</>
   const [firstField, setFirstField] = useState<HTMLElement | null>(null)
   const editor = usePortableTextEditor()
+
+  // The initial editor selection when opening the object
   const initialSelection = useRef<EditorSelection | null>(PortableTextEditor.getSelection(editor))
 
   const handleClose = useCallback(() => {
-    // Force a new selection here as the selection is a callback dep. for showing the popup
-    PortableTextEditor.focus(editor)
     PortableTextEditor.select(editor, initialSelection.current)
+    PortableTextEditor.focus(editor)
     onClose()
   }, [editor, onClose])
 
-  const title = <>Edit {memberItem.node.schemaType.title}</>
+  // // Set focus on the first field
+  // useEffect(() => {
+  //   if (firstField) {
+  //     return
+  //   }
+  //   const firstFieldMember = member.item.members.find((m) => m.kind === 'field')
+  //   if (firstFieldMember && firstFieldMember.kind === 'field') {
+  //     const firstFieldElm = document.getElementById(firstFieldMember.field.id) as HTMLElement | null
+  //     if (firstFieldElm) {
+  //       setFirstField(firstFieldElm)
+  //       firstFieldElm.focus()
+  //     }
+  //   }
+  // }, [firstField, member])
 
-  // Set focus on the first field
-  useEffect(() => {
-    if (firstField) {
-      return
-    }
-    const firstFieldMember = memberItem.node.members.find((m) => m.kind === 'field')
-    if (firstFieldMember && firstFieldMember.kind === 'field') {
-      const firstFieldElm = document.getElementById(firstFieldMember.field.id) as HTMLElement | null
-      if (firstFieldElm) {
-        setFirstField(firstFieldElm)
-        firstFieldElm.focus()
-      }
-    }
-  }, [firstField, memberItem])
+  const width = schemaModalOption?.width
 
   if (modalType === 'popover') {
-    // 2022/11/18: Test if the elementRef is set before opening. On newly created annotations,
-    // this might not be true, and currently the @sanity/ui Popover code will not
-    // properly show the Popover if it's given at a later point.
-    return memberItem.elementRef?.current ? (
+    return (
       <PopoverEditDialog
-        elementRef={memberItem.elementRef}
         onClose={handleClose}
-        width={modalOption?.width}
-        scrollElement={scrollElement}
+        referenceElement={referenceElement}
+        boundaryElement={boundaryElement}
         title={title}
+        width={width}
       >
         {props.children}
       </PopoverEditDialog>
-    ) : null
+    )
   }
 
   return (
-    <DefaultEditDialog title={title} onClose={handleClose} width={modalOption?.width}>
+    <DefaultEditDialog title={title} onClose={handleClose} width={width}>
       {props.children}
     </DefaultEditDialog>
   )

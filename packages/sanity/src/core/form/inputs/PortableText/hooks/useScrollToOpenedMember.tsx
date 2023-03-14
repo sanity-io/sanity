@@ -7,14 +7,14 @@ import {usePortableTextMemberItems} from './usePortableTextMembers'
 interface Props {
   editorRootPath: Path
   hasFormFocus: boolean // Wether we have focus on something in the editor's form state
-  scrollElement: HTMLElement | null
+  boundaryElement?: HTMLElement
   onItemClose: () => void
 }
 
 // This hook will scroll to the "opened" portable text object's editor dom node.
 // If the opened item is a regular text block, place the cursor there as well.
 export function useScrollToOpenedMember(props: Props): void {
-  const {editorRootPath, scrollElement, hasFormFocus, onItemClose} = props
+  const {editorRootPath, boundaryElement, hasFormFocus, onItemClose} = props
   const portableTextMemberItems = usePortableTextMemberItems()
   const editor = usePortableTextEditor()
 
@@ -32,7 +32,7 @@ export function useScrollToOpenedMember(props: Props): void {
     }
     if (memberItem?.elementRef?.current) {
       scrollIntoView(memberItem.elementRef?.current, {
-        boundary: scrollElement,
+        boundary: boundaryElement,
         scrollMode: 'if-needed',
       })
       // If this is a text block, place the cursor in the beginning of it.
@@ -48,5 +48,5 @@ export function useScrollToOpenedMember(props: Props): void {
         onItemClose()
       }
     }
-  }, [editor, hasFormFocus, editorRootPath.length, memberItem, scrollElement, onItemClose])
+  }, [boundaryElement, editor, hasFormFocus, editorRootPath.length, memberItem, onItemClose])
 }

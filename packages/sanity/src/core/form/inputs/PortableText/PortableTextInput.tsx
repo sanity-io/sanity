@@ -1,3 +1,4 @@
+import {exit} from 'process'
 import {ArraySchemaType, PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
@@ -18,6 +19,7 @@ import React, {
   useRef,
   useImperativeHandle,
   createRef,
+  ReactNode,
 } from 'react'
 import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
@@ -29,6 +31,8 @@ import type {ArrayOfObjectsInputProps, PortableTextMarker, RenderCustomMarkers} 
 import {EMPTY_ARRAY} from '../../../util'
 import {pathToString} from '../../../field'
 import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
+import {FormInput} from '../../components'
+import {FIXME} from '../../../FIXME'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
@@ -44,6 +48,7 @@ export interface PortableTextMemberItem {
   member: ArrayOfObjectsItemMember
   node: ObjectFormNode
   elementRef?: React.MutableRefObject<PortableTextEditorElement> | undefined
+  input?: ReactNode
 }
 
 /**
@@ -209,29 +214,36 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
     }
 
-    const items: PortableTextMemberItem[] = result.map((r) => {
-      const key = pathToString(r.node.path.slice(path.length))
+    const items: PortableTextMemberItem[] = result.map((item) => {
+      const key = pathToString(item.node.path.slice(path.length))
       const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
+      let input: ReactNode
+
+      if (item.kind !== 'textBlock') {
+        input = <FormInput absolutePath={item.node.path} {...(props as FIXME)} />
+      }
 
       if (existingItem) {
-        existingItem.member = r.member
-        existingItem.node = r.node
+        existingItem.member = item.member
+        existingItem.node = item.node
+        existingItem.input = input
         return existingItem
       }
 
       return {
-        kind: r.kind,
+        kind: item.kind,
         key,
-        member: r.member,
-        node: r.node,
+        member: item.member,
+        node: item.node,
         elementRef: createRef<PortableTextEditorElement>(),
+        input,
       }
     })
 
     portableTextMemberItemsRef.current = items
 
     return items
-  }, [members, path])
+  }, [members, path.length, props])
 
   const hasOpenItem = useMemo(() => {
     return portableTextMemberItems.some((item) => item.member.open)

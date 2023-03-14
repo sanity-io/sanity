@@ -2,7 +2,7 @@
 import React, {useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {Editor, Transforms} from 'slate'
+import {Descendant, Editor, Transforms} from 'slate'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
@@ -105,15 +105,55 @@ export function useSyncValue(
               slateValueFromProps.forEach((c, i) => {
                 const oldBlock = slateEditor.children[i]
                 if (oldBlock && !isEqual(c, oldBlock)) {
-                  debug('Replacing changed block', oldBlock)
-                  const currentSel = slateEditor.selection
-                  Transforms.deselect(slateEditor)
-                  Transforms.removeNodes(slateEditor, {at: [i]})
-                  withPreserveKeys(slateEditor, () => {
-                    Transforms.insertNodes(slateEditor, c, {at: [i]})
-                  })
-                  if (currentSel) {
-                    Transforms.select(slateEditor, currentSel)
+                  // If the blocks have the same _key, update it.
+                  if (oldBlock._key === c._key) {
+                    debug('Updating changed block', oldBlock, c)
+                    Transforms.setNodes(slateEditor, c, {at: [i]})
+                    // Text block must have their children updated as well (setNode does not target a node's children)
+                    if (slateEditor.isTextBlock(c) && slateEditor.isTextBlock(oldBlock)) {
+                      const bChildrenLength = oldBlock.children.length
+                      if (c.children.length < bChildrenLength) {
+                        Array.from(Array(bChildrenLength - c.children.length)).forEach(
+                          (_, index) => {
+                            const cIndex = bChildrenLength - 1 - index
+                            if (cIndex > 0) {
+                              Transforms.removeNodes(slateEditor, {
+                                at: [i, cIndex],
+                              })
+                            }
+                          }
+                        )
+                      }
+                      c.children.forEach((bc, bi) => {
+                        const oldChild = oldBlock.children[bi]
+                        if (!isEqual(bc, oldChild)) {
+                          if (bc._key === oldChild?._key) {
+                            Transforms.setNodes(slateEditor, bc as Descendant, {at: [i, bi]})
+                          } else if (oldChild) {
+                            Transforms.removeNodes(slateEditor, {at: [i, bi]})
+                            withPreserveKeys(slateEditor, () => {
+                              Transforms.insertNodes(slateEditor, bc as Descendant, {at: [i, bi]})
+                            })
+                          } else if (!oldChild) {
+                            withPreserveKeys(slateEditor, () => {
+                              Transforms.insertNodes(slateEditor, bc as Descendant, {at: [i, bi]})
+                            })
+                          }
+                        }
+                      })
+                    }
+                  } else {
+                    debug('Replacing changed block', oldBlock, c)
+                    const currentSel = slateEditor.selection
+                    Transforms.deselect(slateEditor)
+                    Transforms.setNodes(slateEditor, c, {at: [i]})
+                    Transforms.removeNodes(slateEditor, {at: [i]})
+                    withPreserveKeys(slateEditor, () => {
+                      Transforms.insertNodes(slateEditor, c, {at: [i]})
+                    })
+                    if (currentSel) {
+                      Transforms.select(slateEditor, currentSel)
+                    }
                   }
                 }
                 if (!oldBlock) {
