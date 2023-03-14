@@ -1,10 +1,10 @@
-import sanityClient from '@sanity/client'
-import {STALE_TEST_THRESHOLD_MS} from './constants'
+import {createClient} from '@sanity/client'
+import {STALE_TEST_THRESHOLD_MS, STUDIO_DATASET_NAME, STUDIO_PROJECT_ID} from './constants'
 
-export const testSanityClient = sanityClient({
-  projectId: 'ppsg7ml5',
-  dataset: 'test',
-  token: process.env.PLAYWRIGHT_SANITY_SESSION_TOKEN,
+export const testSanityClient = createClient({
+  projectId: STUDIO_PROJECT_ID,
+  dataset: STUDIO_DATASET_NAME,
+  token: process.env.SANITY_E2E_SESSION_TOKEN,
   useCdn: false,
   apiVersion: '2021-08-31',
 })

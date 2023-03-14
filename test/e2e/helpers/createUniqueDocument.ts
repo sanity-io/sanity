@@ -1,6 +1,6 @@
 import {SanityDocument, SanityDocumentStub} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
-import {testSanityClient} from '.'
+import {testSanityClient} from './sanityClient'
 
 export async function createUniqueDocument({
   _type,
@@ -13,6 +13,6 @@ export async function createUniqueDocument({
     ...restProps,
   }
 
-  await testSanityClient.create(doc)
+  await testSanityClient.create(doc, {visibility: 'async'})
   return doc
 }
