@@ -1,7 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import assert from 'assert'
-import {matchWorkspace} from '../matchWorkspace'
+import {WorkspaceLike} from '../../workspaces'
+import {createCommonBasePathRegex} from '../createCommonBasePathRegex'
+import {matchWorkspace as actualMatchWorkspace} from '../matchWorkspace'
+import {normalizedWorkspaces} from '../useNormalizedWorkspaces'
 
 describe('matchWorkspace', () => {
+  const matchWorkspace = ({
+    pathname,
+    workspaces,
+  }: {
+    pathname: string
+    workspaces: WorkspaceLike[]
+  }) => {
+    const normalized = normalizedWorkspaces(workspaces as any)
+    const basePathRegex = createCommonBasePathRegex(normalized)
+    return actualMatchWorkspace({basePathRegex, pathname, workspaces: normalized})
+  }
   it('returns a match if the incoming `pathname` matches a workspace `basePath`', () => {
     const foo = {name: 'foo', basePath: '/common/foo'}
     const bar = {name: 'bar', basePath: '/common/bar'}

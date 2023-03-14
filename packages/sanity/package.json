@@ -161,6 +161,7 @@
     "@types/react-is": "^17.0.3",
     "@types/shallow-equals": "^1.0.0",
     "@types/speakingurl": "^13.0.3",
+    "@types/use-sync-external-store": "^0.0.3",
     "@vitejs/plugin-react": "^3.0.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
@@ -225,6 +226,7 @@
     "tar-fs": "^2.1.1",
     "use-device-pixel-ratio": "^1.1.0",
     "use-hot-module-reload": "^1.0.1",
+    "use-sync-external-store": "^1.2.0",
     "vite": "^4.0.1",
     "yargs": "^17.3.0"
   },

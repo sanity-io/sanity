@@ -1,19 +1,14 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {History, createBrowserHistory, createMemoryHistory} from 'history'
-import {Observable} from 'rxjs'
-import {map} from 'rxjs/operators'
+import React, {useCallback, useEffect, useMemo} from 'react'
+import {createBrowserHistory, createMemoryHistory} from 'history'
 import {useWorkspaces} from '../workspaces'
-import {WorkspaceSummary} from '../../config'
-import {
-  ActiveWorkspaceMatcherContext,
-  ActiveWorkspaceMatcherContextValue,
-} from './ActiveWorkspaceMatcherContext'
-import {matchWorkspace} from './matchWorkspace'
+import type {RouterHistory} from '../router'
+import {useSyncPathnameWithWorkspace} from './useSyncPathnameWithWorkspace'
+import {ActiveWorkspaceMatcherProvider} from './ActiveWorkspaceMatcherProvider'
 
 /** @internal */
 export interface ActiveWorkspaceMatcherProps {
-  children?: React.ReactChild
-  unstable_history?: History
+  children: React.ReactNode
+  unstable_history?: RouterHistory
   NotFoundComponent: React.ComponentType<{onNavigateToDefaultWorkspace: () => void}>
   LoadingComponent: React.ComponentType
 }
@@ -28,50 +23,8 @@ export function ActiveWorkspaceMatcher({
   NotFoundComponent,
   unstable_history: historyProp,
 }: ActiveWorkspaceMatcherProps) {
-  const [error, setError] = useState<unknown>(null)
-
-  // Throw error to closest error boundary
-  if (error) throw error
-
   const workspaces = useWorkspaces()
-
-  const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceSummary | null>(null)
-  const [notFound, setNotFound] = useState(false)
-
   const history = useMemo(() => historyProp || createHistory(), [historyProp])
-
-  useEffect(() => {
-    const pathname$ = new Observable<string>((observer) => {
-      const unlisten = history.listen(({location}) => observer.next(location.pathname))
-
-      // Emit initial pathname
-      observer.next(history.location.pathname || '/')
-
-      return unlisten
-    })
-
-    const subscription = pathname$
-      .pipe(map((pathname) => matchWorkspace({pathname, workspaces})))
-      .subscribe({
-        error: setError,
-        next: (result) => {
-          if (result.type === 'match') {
-            setNotFound(false)
-            setActiveWorkspace(result.workspace)
-          }
-
-          if (result.type === 'redirect') {
-            history.replace(result.pathname)
-          }
-
-          if (result.type === 'not-found') {
-            setNotFound(true)
-          }
-        },
-      })
-
-    return () => subscription.unsubscribe()
-  }, [history, workspaces])
 
   const setActiveWorkspaceName = useCallback(
     (workspaceName: string) => {
@@ -82,32 +35,35 @@ export function ActiveWorkspaceMatcher({
     },
     [history, workspaces]
   )
-
-  const defaultWorkspaceName = workspaces[0].name
   const handleNavigateToDefaultWorkspace = useCallback(() => {
-    setActiveWorkspaceName(defaultWorkspaceName)
-  }, [setActiveWorkspaceName, defaultWorkspaceName])
+    setActiveWorkspaceName(workspaces[0].name)
+  }, [setActiveWorkspaceName, workspaces])
 
-  const value = useMemo(
-    () => ({
-      __internal: {history},
-      activeWorkspace,
-      setActiveWorkspace: setActiveWorkspaceName,
-    }),
-    [history, activeWorkspace, setActiveWorkspaceName]
-  )
+  const result = useSyncPathnameWithWorkspace(history, workspaces)
 
-  if (notFound) {
-    return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />
+  useEffect(() => {
+    if (result.type === 'redirect') {
+      history.replace(result.pathname)
+    }
+  }, [history, result])
+
+  switch (result.type) {
+    case 'match':
+      return (
+        <ActiveWorkspaceMatcherProvider
+          activeWorkspace={result.workspace}
+          history={history}
+          setActiveWorkspace={setActiveWorkspaceName}
+        >
+          {children}
+        </ActiveWorkspaceMatcherProvider>
+      )
+    case 'redirect':
+      return <LoadingComponent />
+    case 'not-found':
+      return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />
+    default:
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TS thinks this will never happen, but the point of the error is if it somehow did
+      throw new Error(`Unknown type: ${(result as any).type}`)
   }
-
-  if (!value.activeWorkspace) {
-    return <LoadingComponent />
-  }
-
-  return (
-    <ActiveWorkspaceMatcherContext.Provider value={value as ActiveWorkspaceMatcherContextValue}>
-      {children}
-    </ActiveWorkspaceMatcherContext.Provider>
-  )
 }

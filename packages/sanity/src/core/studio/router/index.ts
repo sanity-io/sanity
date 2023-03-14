@@ -1,2 +1,2 @@
 export * from './router'
-export * from './routerEvent'
+export * from './types'
