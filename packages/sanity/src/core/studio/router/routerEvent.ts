@@ -59,7 +59,7 @@ export function createRouterEventStream({
   const routerBasePath = router.getBasePath()
 
   const state$: Observable<RouterEvent> = new Observable<Location>((observer) => {
-    const unlisten = history.listen((location) => observer.next(location))
+    const unlisten = history.listen(({location}) => observer.next(location))
 
     // emit on mount
     observer.next(history.location)

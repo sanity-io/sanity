@@ -42,7 +42,7 @@ export function ActiveWorkspaceMatcher({
 
   useEffect(() => {
     const pathname$ = new Observable<string>((observer) => {
-      const unlisten = history.listen((location) => observer.next(location.pathname))
+      const unlisten = history.listen(({location}) => observer.next(location.pathname))
 
       // Emit initial pathname
       observer.next(history.location.pathname || '/')
