@@ -2,6 +2,7 @@ import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icon
 import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
+import {supportsTouch} from '../../../../../util'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {CustomTextInput} from './common/CustomTextInput'
 
@@ -97,6 +98,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
           <CustomTextInput
             aria-label={ariaInputLabel}
             autoComplete="off"
+            autoFocus={!supportsTouch}
             background={fullscreen}
             border={false}
             clearButton={!!query}

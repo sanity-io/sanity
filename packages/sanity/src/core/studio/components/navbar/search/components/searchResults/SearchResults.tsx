@@ -89,7 +89,6 @@ export function SearchResults({inputElement}: SearchResultsProps) {
                   <CommandList
                     activeItemDataAttr="data-hovered"
                     ariaLabel="Search results"
-                    autoFocus
                     fixedHeight
                     inputElement={inputElement}
                     initialIndex={lastActiveIndex}

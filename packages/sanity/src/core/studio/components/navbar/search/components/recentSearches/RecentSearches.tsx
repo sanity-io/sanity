@@ -86,7 +86,6 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
             <CommandList
               activeItemDataAttr="data-hovered"
               ariaLabel="Recent searches"
-              autoFocus
               inputElement={inputElement}
               initialIndex={0}
               itemHeight={VIRTUAL_LIST_RECENT_SEARCH_ITEM_HEIGHT}

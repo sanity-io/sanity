@@ -72,7 +72,7 @@ export function SearchPopover({
 
   const {
     onClose: onSearchClose,
-    state: {filtersVisible, result, terms},
+    state: {filtersVisible, terms},
   } = useSearchState()
 
   const hasValidTerms = hasSearchableTerms({terms})

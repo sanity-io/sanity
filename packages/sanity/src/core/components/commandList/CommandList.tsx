@@ -15,7 +15,6 @@ import React, {
   useState,
 } from 'react'
 import styled from 'styled-components'
-import {supportsTouch} from '../../util'
 import {CommandListHandle, CommandListProps} from './types'
 
 // Data attribute to assign to the current active virtual list element
@@ -304,15 +303,13 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   )
 
   /**
-   * Focus input / virtual list element (non-touch only)
+   * Focus input / virtual list element
    */
   const focusElement = useCallback(() => {
-    if (!supportsTouch) {
-      if (inputElement) {
-        inputElement?.focus()
-      } else if (virtualListElement) {
-        virtualListElement?.focus()
-      }
+    if (inputElement) {
+      inputElement?.focus()
+    } else if (virtualListElement) {
+      virtualListElement?.focus()
     }
   }, [inputElement, virtualListElement])
 
@@ -514,7 +511,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   }, [getCommandListChildrenId, inputElement])
 
   /**
-   * Focus input / virtual list element on mount (non-touch only)
+   * Focus input / virtual list element on mount
    */
   useEffect(() => {
     if (autoFocus) {
