@@ -1,12 +1,12 @@
 import {Box, Flex, ResponsivePaddingProps, Tooltip, Text} from '@sanity/ui'
 import React, {ComponentType, RefObject, useCallback, useMemo, useState} from 'react'
-import {Path, PortableTextTextBlock, SchemaType} from '@sanity/types'
+import {ObjectSchemaType, Path, PortableTextTextBlock} from '@sanity/types'
 import {
   EditorSelection,
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {BlockProps, RenderCustomMarkers} from '../../../types'
+import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {PatchArg} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
@@ -17,6 +17,7 @@ import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field'
 import {debugRender} from '../debugRender'
+import {EMPTY_ARRAY} from '../../../../util'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -32,34 +33,45 @@ import {
 import {TextContainer} from './textStyles'
 
 export interface TextBlockProps {
-  block: PortableTextTextBlock
+  boundaryElement?: HTMLElement
   children: React.ReactNode
   focused: boolean
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
+  onItemClose: () => void
+  onItemOpen: (path: Path) => void
+  onItemRemove: (itemKey: string) => void
+  onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
+  renderPreview: RenderPreviewCallback
+  schemaType: ObjectSchemaType
   selected: boolean
   spellCheck?: boolean
-  schemaType: SchemaType
+  value: PortableTextTextBlock
 }
 
 export function TextBlock(props: TextBlockProps) {
   const {
-    block,
+    boundaryElement,
     children,
     focused,
     isFullscreen,
     onChange,
+    onItemClose,
+    onItemOpen,
+    onPathFocus,
     path,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
+    renderPreview,
+    schemaType,
     selected,
     spellCheck,
-    schemaType,
+    value,
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
@@ -76,10 +88,23 @@ export function TextBlock(props: TextBlockProps) {
 
   const tooltipEnabled = hasError || hasWarning || hasMarkers || hasInfo
 
+  const onOpen = useCallback(() => {
+    if (memberItem) {
+      onItemOpen(memberItem.node.path)
+    }
+  }, [onItemOpen, memberItem])
+
+  const onRemove = useCallback(() => {
+    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+    PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
+    // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
+    setTimeout(() => PortableTextEditor.focus(editor))
+  }, [editor, path])
+
   const text = useMemo(() => {
     return (
-      <TextFlex align="flex-start" $level={block?.level}>
-        {block.listItem && (
+      <TextFlex align="flex-start" $level={value?.level}>
+        {value.listItem && (
           <ListPrefixWrapper contentEditable={false}>
             <Text data-list-prefix="">
               <TextContainer />
@@ -91,7 +116,7 @@ export function TextBlock(props: TextBlockProps) {
         </div>
       </TextFlex>
     )
-  }, [block.listItem, block.level, children])
+  }, [value.listItem, value.level, children])
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
@@ -113,50 +138,110 @@ export function TextBlock(props: TextBlockProps) {
   }, [isFullscreen, renderBlockActions])
 
   const outerPaddingProps: ResponsivePaddingProps = useMemo(() => {
-    if (block.listItem) {
+    if (value.listItem) {
       return {paddingY: 2}
     }
 
-    return TEXT_STYLE_PADDING[block.style || 'normal'] || {paddingY: 2}
-  }, [block])
+    return TEXT_STYLE_PADDING[value.style || 'normal'] || {paddingY: 2}
+  }, [value])
 
-  const defaultRendered = useMemo(
+  const isOpen = Boolean(memberItem?.member.open)
+  const parentSchemaType = editor.schemaTypes.portableText
+  const presence = memberItem?.node.presence || EMPTY_ARRAY
+
+  const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
+  const componentProps: BlockProps = useMemo(
+    () => ({
+      __unstable_boundaryElement: boundaryElement || undefined,
+      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
+      children: text,
+      focused,
+      markers,
+      onClose: onItemClose,
+      onOpen,
+      onPathFocus,
+      onRemove,
+      open: isOpen,
+      parentSchemaType,
+      path: memberItem?.node.path || EMPTY_ARRAY,
+      presence,
+      readOnly: Boolean(readOnly),
+      renderDefault: DefaultComponent,
+      renderPreview,
+      schemaType,
+      selected,
+      validation,
+      value,
+    }),
+    [
+      boundaryElement,
+      focused,
+      isOpen,
+      markers,
+      memberItem,
+      onItemClose,
+      onOpen,
+      onPathFocus,
+      onRemove,
+      parentSchemaType,
+      presence,
+      readOnly,
+      renderPreview,
+      schemaType,
+      selected,
+      text,
+      validation,
+      value,
+    ]
+  )
+
+  const toolTipContent = useMemo(
+    () =>
+      (tooltipEnabled && (
+        <TooltipBox padding={2}>
+          <Markers
+            markers={markers}
+            renderCustomMarkers={renderCustomMarkers}
+            validation={validation}
+          />
+        </TooltipBox>
+      )) ||
+      null,
+    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
+  )
+
+  return useMemo(
     () => (
-      <Box data-testid="text-block" {...outerPaddingProps} style={debugRender()}>
+      <Box
+        data-testid="text-block"
+        {...outerPaddingProps}
+        style={debugRender()}
+        ref={memberItem?.elementRef as RefObject<HTMLDivElement>}
+      >
         <TextBlockFlexWrapper data-testid="text-block__wrapper">
-          <Flex
-            flex={1}
-            {...innerPaddingProps}
-            ref={memberItem?.elementRef as RefObject<HTMLDivElement>}
-          >
+          <Flex flex={1} {...innerPaddingProps}>
             <Box flex={1}>
               <Tooltip
+                content={toolTipContent}
+                disabled={!tooltipEnabled}
                 placement="top"
                 portal="editor"
-                disabled={!tooltipEnabled}
-                content={
-                  tooltipEnabled && (
-                    <TooltipBox padding={2}>
-                      <Markers
-                        markers={markers}
-                        validation={validation}
-                        renderCustomMarkers={renderCustomMarkers}
-                      />
-                    </TooltipBox>
-                  )
-                }
               >
                 <TextRoot
+                  $level={value.level || 1}
                   data-error={hasError ? '' : undefined}
-                  data-list-item={block.listItem}
+                  data-list-item={value.listItem}
                   data-markers={hasMarkers ? '' : undefined}
                   data-read-only={readOnly}
                   data-testid="text-block__text"
                   data-warning={hasWarning ? '' : undefined}
-                  $level={block.level || 1}
                   spellCheck={spellCheck}
                 >
-                  {text}
+                  {CustomComponent ? (
+                    <CustomComponent {...componentProps} />
+                  ) : (
+                    <DefaultComponent {...componentProps} />
+                  )}
                 </TextRoot>
               </Tooltip>
             </Box>
@@ -167,7 +252,7 @@ export function TextBlock(props: TextBlockProps) {
                   {renderBlockActions && focused && !readOnly && (
                     <BlockActions
                       onChange={onChange}
-                      block={block}
+                      block={value}
                       renderBlockActions={renderBlockActions}
                     />
                   )}
@@ -195,8 +280,8 @@ export function TextBlock(props: TextBlockProps) {
       </Box>
     ),
     [
-      Markers,
-      block,
+      componentProps,
+      CustomComponent,
       focused,
       handleChangeIndicatorMouseEnter,
       handleChangeIndicatorMouseLeave,
@@ -205,62 +290,20 @@ export function TextBlock(props: TextBlockProps) {
       hasWarning,
       innerPaddingProps,
       isFullscreen,
-      markers,
       memberItem,
       onChange,
       outerPaddingProps,
       readOnly,
       renderBlockActions,
-      renderCustomMarkers,
       reviewChangesHovered,
       spellCheck,
-      text,
+      toolTipContent,
       tooltipEnabled,
-      validation,
+      value,
     ]
   )
+}
 
-  const onRemove = useCallback(() => {
-    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
-    PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
-    // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
-    setTimeout(() => PortableTextEditor.focus(editor))
-  }, [editor, path])
-
-  const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
-
-  const renderDefault = useCallback(() => defaultRendered, [defaultRendered])
-  const notImplementedWarning = useCallback(() => {
-    console.warn("Regular text blocks don't open or close, but are edited inline.")
-  }, [])
-
-  return CustomComponent ? (
-    <CustomComponent
-      focused={focused}
-      onClose={notImplementedWarning}
-      onOpen={notImplementedWarning}
-      onRemove={onRemove}
-      open={memberItem?.member.open || false}
-      path={memberItem?.node.path || path}
-      renderDefault={renderDefault}
-      schemaType={schemaType}
-      selected={selected}
-      value={block}
-    >
-      <TextRoot
-        data-error={hasError ? '' : undefined}
-        data-list-item={block.listItem}
-        data-markers={hasMarkers ? '' : undefined}
-        data-read-only={readOnly}
-        data-testid="text-block__text"
-        data-warning={hasWarning ? '' : undefined}
-        $level={block.level || 1}
-        spellCheck={spellCheck}
-      >
-        {text}
-      </TextRoot>
-    </CustomComponent>
-  ) : (
-    defaultRendered
-  )
+export const DefaultComponent = (props: BlockProps) => {
+  return <>{props.children}</>
 }

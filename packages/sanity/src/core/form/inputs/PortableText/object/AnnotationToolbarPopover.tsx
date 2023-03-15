@@ -21,20 +21,17 @@ const ToolbarPopover = styled(Popover)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface AnnotationToolbarPopoverProps {
-  /**
-   * Needed to update the popover position on scroll
-   */
-  scrollElement?: HTMLElement
-  annotationElement?: HTMLElement
-  textElement?: HTMLElement
-  onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
-  onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
+  boundaryElement?: HTMLElement
+  isEditing: boolean
+  onDelete: () => void
+  onEdit: () => void
+  referenceElement?: HTMLElement
   title: string
 }
 
 export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
-  const {scrollElement, annotationElement, textElement, title, onEdit, onDelete} = props
-  const [open, setOpen] = useState<boolean>(false)
+  const {boundaryElement, isEditing, onDelete, onEdit, referenceElement, title} = props
+  const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [selection, setSelection] = useState<{
     anchorNode: Node | null
@@ -63,36 +60,17 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     }
   }, [cursorRect]) as HTMLElement
 
-  useEffect(() => {
-    if (!open || !scrollElement) {
-      return undefined
-    }
-
-    const handleScroll = () => {
-      startTransition(() => {
-        if (rangeRef.current) {
-          setCursorRect(rangeRef.current.getBoundingClientRect())
-        }
-      })
-    }
-    scrollElement.addEventListener('scroll', handleScroll, {passive: true})
-
-    return () => {
-      scrollElement.removeEventListener('scroll', handleScroll)
-    }
-  }, [open, scrollElement])
-
   // Close floating toolbar on Escape
   useGlobalKeyDown(
     useCallback(
       (event) => {
-        if (!open) {
+        if (!popoverOpen) {
           return
         }
         if (event.key === 'Escape') {
           event.preventDefault()
           event.stopPropagation()
-          startTransition(() => setOpen(false))
+          setPopoverOpen(false)
           isTabbing.current = false
         }
         if (event.key === 'Tab') {
@@ -104,12 +82,11 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
           }
         }
       },
-      [open]
+      [popoverOpen]
     )
   )
 
   const handleSelectionChange = useCallback(() => {
-    if (!textElement) return
     const winSelection = window.getSelection()
     if (!winSelection) {
       return
@@ -123,7 +100,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         focusOffset,
       })
     )
-  }, [textElement])
+  }, [])
 
   // Detect selection changes
   useEffect(() => {
@@ -143,68 +120,101 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     if (isTabbing.current) {
       return
     }
-    if (annotationElement && annotationElement.contains(anchorNode) && anchorNode === focusNode) {
+    if (referenceElement?.contains(anchorNode) && anchorNode === focusNode) {
       const range = window.getSelection()?.getRangeAt(0)
       const rect = range?.getBoundingClientRect()
 
       rangeRef.current = range || null
 
       if (rect) {
-        setCursorRect(rect)
+        startTransition(() => setCursorRect(rect))
       }
-      startTransition(() => setOpen(true))
+      startTransition(() => setPopoverOpen(true))
     } else {
       startTransition(() => {
-        setOpen(false)
+        setPopoverOpen(false)
         setCursorRect(null)
       })
       rangeRef.current = null
     }
-  }, [selection, annotationElement])
+  }, [isEditing, selection, referenceElement])
 
-  if (!open) {
+  useEffect(() => {
+    if (isEditing) {
+      setPopoverOpen(false)
+      isTabbing.current = false
+    }
+  }, [isEditing, referenceElement, selection])
+
+  const handleEditButtonClicked = useCallback(() => {
+    setPopoverOpen(false)
+    onEdit()
+  }, [onEdit])
+
+  const handleRemoveButtonClicked = useCallback(() => {
+    setPopoverOpen(false)
+    onDelete()
+  }, [onDelete])
+
+  useEffect(() => {
+    if (!popoverOpen) {
+      return undefined
+    }
+
+    const handleScroll = () => {
+      if (rangeRef.current) {
+        setCursorRect(rangeRef.current.getBoundingClientRect())
+      }
+    }
+
+    boundaryElement?.addEventListener('scroll', handleScroll, {passive: true})
+
+    return () => {
+      boundaryElement?.removeEventListener('scroll', handleScroll)
+    }
+  }, [popoverOpen, boundaryElement])
+
+  if (!popoverOpen) {
     return null
   }
 
   return (
-    <span contentEditable={false}>
-      <ToolbarPopover
-        boundaryElement={scrollElement}
-        constrainSize
-        content={
-          <Box padding={1}>
-            <Inline space={1}>
-              <Box padding={2}>
-                <Text weight="semibold" size={1}>
-                  {title}
-                </Text>
-              </Box>
-              <Button
-                ref={editButtonRef}
-                icon={EditIcon}
-                mode="bleed"
-                onClick={onEdit}
-                padding={2}
-                alt="Edit annotation"
-              />
-              <Button
-                icon={TrashIcon}
-                mode="bleed"
-                padding={2}
-                onClick={onDelete}
-                tone="critical"
-                alt="Remove annotation"
-              />
-            </Inline>
-          </Box>
-        }
-        fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-        open={open}
-        placement="top"
-        portal="default"
-        referenceElement={cursorElement}
-        scheme={popoverScheme}
-      />
-    </span>
+    <ToolbarPopover
+      boundaryElement={boundaryElement}
+      constrainSize
+      content={
+        <Box padding={1}>
+          <Inline space={1}>
+            <Box padding={2}>
+              <Text weight="semibold" size={1}>
+                {title}
+              </Text>
+            </Box>
+            <Button
+              ref={editButtonRef}
+              icon={EditIcon}
+              mode="bleed"
+              onClick={handleEditButtonClicked}
+              padding={2}
+              alt="Edit annotation"
+            />
+            <Button
+              icon={TrashIcon}
+              mode="bleed"
+              padding={2}
+              onClick={handleRemoveButtonClicked}
+              tone="critical"
+              alt="Remove annotation"
+            />
+          </Inline>
+        </Box>
+      }
+      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      open={popoverOpen}
+      placement="top"
+      portal="editor"
+      referenceElement={cursorElement}
+      scheme={popoverScheme}
+    />
   )
 }

@@ -1,35 +1,32 @@
-import React, {useId} from 'react'
-import {Box, Dialog, PortalProvider, usePortal} from '@sanity/ui'
+import React, {useId, useRef} from 'react'
+import {Box, Dialog} from '@sanity/ui'
 import {PresenceOverlay} from '../../../../../presence'
 import {ModalWidth} from './types'
 
 interface DefaultEditDialogProps {
-  title: string | React.ReactNode
-  onClose: () => void
   children: React.ReactNode
+  onClose: () => void
+  title: string | React.ReactNode
   width?: ModalWidth
 }
 
 export function DefaultEditDialog(props: DefaultEditDialogProps) {
   const {onClose, children, title, width = 1} = props
-
+  const dialogRef = useRef<HTMLDivElement | null>(null)
   const dialogId = useId()
-  const portal = usePortal()
 
   return (
     <Dialog
-      __unstable_autoFocus
       header={title}
-      id={dialogId || ''}
+      id={dialogId}
       onClickOutside={onClose}
       onClose={onClose}
       portal="default"
       width={width}
+      ref={dialogRef}
     >
       <PresenceOverlay margins={[0, 0, 1, 0]}>
-        <Box padding={4}>
-          <PortalProvider element={portal.elements?.default}>{children}</PortalProvider>
-        </Box>
+        <Box padding={4}>{children}</Box>
       </PresenceOverlay>
     </Dialog>
   )

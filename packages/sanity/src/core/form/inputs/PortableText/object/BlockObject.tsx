@@ -1,11 +1,12 @@
+/* eslint-disable complexity */
 import {
   PortableTextEditor,
   EditorSelection,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock} from '@sanity/types'
-import {Tooltip, Flex, ResponsivePaddingProps} from '@sanity/ui'
-import React, {ComponentType, useCallback, useMemo, useState} from 'react'
+import {Tooltip, Flex, ResponsivePaddingProps, Box} from '@sanity/ui'
+import React, {ComponentType, PropsWithChildren, useCallback, useMemo, useState} from 'react'
 import {PatchArg} from '../../../patch'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
@@ -17,19 +18,21 @@ import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field'
 import {debugRender} from '../debugRender'
-import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
+import {EMPTY_ARRAY} from '../../../../util'
 import {
   Root,
-  PreviewContainer,
   ChangeIndicatorWrapper,
   InnerFlex,
   BlockActionsOuter,
   BlockActionsInner,
   TooltipBox,
+  PreviewContainer,
 } from './BlockObject.styles'
+import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
+import {ObjectEditModal} from './modals/ObjectEditModal'
 
-interface BlockObjectProps {
-  block: PortableTextBlock
+interface BlockObjectProps extends PropsWithChildren {
+  boundaryElement?: HTMLElement
   focused: boolean
   isActive?: boolean
   isFullscreen?: boolean
@@ -37,33 +40,34 @@ interface BlockObjectProps {
   onItemOpen: (path: Path) => void
   onItemClose: () => void
   onItemRemove: (itemKey: string) => void
+  onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
-  scrollElement: HTMLElement | null
   schemaType: ObjectSchemaType
   selected: boolean
+  value: PortableTextBlock
 }
 
 export function BlockObject(props: BlockObjectProps) {
   const {
-    block,
     focused,
-    isActive,
     isFullscreen,
     onChange,
     onItemOpen,
     onItemClose,
+    onPathFocus,
     path,
     readOnly,
+    renderPreview,
     renderBlockActions,
     renderCustomMarkers,
-    renderPreview,
-    scrollElement,
+    boundaryElement,
     selected,
     schemaType,
+    value,
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
@@ -74,21 +78,17 @@ export function BlockObject(props: BlockObjectProps) {
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
 
-  const openItem = useCallback(() => {
+  const onOpen = useCallback(() => {
     if (memberItem) {
+      PortableTextEditor.blur(editor)
       onItemOpen(memberItem.node.path)
     }
-  }, [onItemOpen, memberItem])
+  }, [editor, onItemOpen, memberItem])
 
-  const handleDoubleClickToOpen = useCallback(
-    (e: React.MouseEvent<Element, MouseEvent>) => {
-      e.preventDefault()
-      e.stopPropagation()
-      PortableTextEditor.blur(editor)
-      openItem()
-    },
-    [editor, openItem]
-  )
+  const onClose = useCallback(() => {
+    onItemClose()
+    PortableTextEditor.focus(editor)
+  }, [editor, onItemClose])
 
   const onRemove = useCallback(() => {
     const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
@@ -96,10 +96,6 @@ export function BlockObject(props: BlockObjectProps) {
     // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
     setTimeout(() => PortableTextEditor.focus(editor))
   }, [editor, path])
-
-  const isOpen = !!memberItem?.member.open
-
-  const tone = selected || focused ? 'primary' : 'default'
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
@@ -121,15 +117,16 @@ export function BlockObject(props: BlockObjectProps) {
   }, [isFullscreen, renderBlockActions])
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
-
+  const parentSchemaType = editor.schemaTypes.portableText
   const hasMarkers = Boolean(markers.length > 0)
 
-  const isImagePreview = memberItem?.node.schemaType.name === 'image'
+  const presence = memberItem?.node.presence || EMPTY_ARRAY
 
+  // Tooltip indicating validation errors, warnings, info and markers
   const tooltipEnabled = hasError || hasWarning || hasInfo || hasMarkers
   const toolTipContent = useMemo(
     () =>
-      (tooltipEnabled && (validation.length > 0 || markers.length > 0) && (
+      (tooltipEnabled && (
         <TooltipBox padding={2}>
           <Markers
             markers={markers}
@@ -142,159 +139,209 @@ export function BlockObject(props: BlockObjectProps) {
     [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
   )
 
-  const DefaultComponent = useCallback(
-    (defaultComponentProps: BlockProps) => (
-      <Flex paddingBottom={1} marginY={3} style={debugRender()}>
-        <InnerFlex flex={1}>
-          <PreviewContainer flex={1} {...innerPaddingProps}>
+  const isOpen = Boolean(memberItem?.member.open)
+  const input = memberItem?.input
+
+  const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
+  const componentProps: BlockProps = useMemo(
+    () => ({
+      __unstable_boundaryElement: boundaryElement || undefined,
+      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
+      children: input,
+      focused,
+      markers,
+      onClose,
+      onOpen,
+      onPathFocus,
+      onRemove,
+      open: isOpen,
+      parentSchemaType,
+      path: memberItem?.node.path || EMPTY_ARRAY,
+      presence,
+      readOnly: Boolean(readOnly),
+      renderDefault: DefaultBlockObjectComponent,
+      renderPreview,
+      schemaType,
+      selected,
+      validation,
+      value,
+    }),
+    [
+      boundaryElement,
+      focused,
+      input,
+      isOpen,
+      markers,
+      memberItem?.elementRef,
+      memberItem?.node.path,
+      onClose,
+      onOpen,
+      onPathFocus,
+      onRemove,
+      parentSchemaType,
+      presence,
+      readOnly,
+      renderPreview,
+      schemaType,
+      selected,
+      validation,
+      value,
+    ]
+  )
+
+  return useMemo(
+    () => (
+      <Box
+        ref={memberItem?.elementRef as React.RefObject<HTMLDivElement> | undefined}
+        contentEditable={false}
+      >
+        <Flex paddingBottom={1} marginY={3} style={debugRender()}>
+          <InnerFlex flex={1}>
             <Tooltip
               placement="top"
               portal="editor"
               disabled={!tooltipEnabled}
               content={toolTipContent}
             >
-              <Root
-                data-focused={focused ? '' : undefined}
-                data-image-preview={isImagePreview ? '' : undefined}
-                data-invalid={hasError ? '' : undefined}
-                data-markers={hasMarkers && renderCustomMarkers ? '' : undefined}
-                data-read-only={readOnly ? '' : undefined}
-                data-selected={selected ? '' : undefined}
-                data-testid="pte-block-object"
-                data-warning={hasWarning ? '' : undefined}
-                flex={1}
-                onDoubleClick={handleDoubleClickToOpen}
-                padding={isImagePreview ? 0 : 1}
-                tone={tone}
-              >
-                {defaultComponentProps.children}
-              </Root>
+              <PreviewContainer {...innerPaddingProps}>
+                {CustomComponent ? (
+                  <CustomComponent {...componentProps} />
+                ) : (
+                  <DefaultBlockObjectComponent {...componentProps} />
+                )}
+              </PreviewContainer>
             </Tooltip>
-          </PreviewContainer>
+            <BlockActionsOuter marginRight={1}>
+              <BlockActionsInner>
+                {renderBlockActions && value && focused && !readOnly && (
+                  <BlockActions
+                    block={value}
+                    onChange={onChange}
+                    renderBlockActions={renderBlockActions}
+                  />
+                )}
+              </BlockActionsInner>
+            </BlockActionsOuter>
 
-          <BlockActionsOuter marginRight={1}>
-            <BlockActionsInner>
-              {renderBlockActions && block && focused && !readOnly && (
-                <BlockActions
-                  onChange={onChange}
-                  block={block}
-                  renderBlockActions={renderBlockActions}
+            {isFullscreen && memberItem && (
+              <ChangeIndicatorWrapper
+                $hasChanges={memberItem.member.item.changed}
+                onMouseOut={handleMouseOut}
+                onMouseOver={handleMouseOver}
+              >
+                <StyledChangeIndicatorWithProvidedFullPath
+                  hasFocus={focused}
+                  isChanged={memberItem.member.item.changed}
+                  path={memberItem.member.item.path}
+                  withHoverEffect={false}
                 />
-              )}
-            </BlockActionsInner>
-          </BlockActionsOuter>
+              </ChangeIndicatorWrapper>
+            )}
 
-          {isFullscreen && memberItem && (
-            <ChangeIndicatorWrapper
-              $hasChanges={memberItem.member.item.changed}
-              onMouseOut={handleMouseOut}
-              onMouseOver={handleMouseOver}
-            >
-              <StyledChangeIndicatorWithProvidedFullPath
-                hasFocus={focused}
-                isChanged={memberItem.member.item.changed}
-                path={memberItem.member.item.path}
-                withHoverEffect={false}
-              />
-            </ChangeIndicatorWrapper>
-          )}
-
-          {reviewChangesHovered && <ReviewChangesHighlightBlock />}
-        </InnerFlex>
-      </Flex>
+            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
+          </InnerFlex>
+        </Flex>
+      </Box>
     ),
     [
-      block,
+      CustomComponent,
+      componentProps,
       focused,
-      handleDoubleClickToOpen,
       handleMouseOut,
       handleMouseOver,
-      hasError,
-      hasMarkers,
-      hasWarning,
       innerPaddingProps,
       isFullscreen,
-      isImagePreview,
       memberItem,
       onChange,
       readOnly,
       renderBlockActions,
-      renderCustomMarkers,
       reviewChangesHovered,
-      selected,
-      tone,
       toolTipContent,
       tooltipEnabled,
+      value,
     ]
   )
+}
 
-  const content = useMemo(() => {
-    const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
-    const componentProps = {
-      __unstable_boundaryElement: scrollElement || undefined,
-      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
-      focused,
-      onClose: onItemClose,
-      onOpen: openItem,
-      onRemove,
-      open: memberItem?.member.open || false,
-      path: memberItem?.node.path || path,
-      renderDefault: DefaultComponent,
-      schemaType,
-      selected,
-      value: block,
-    }
-    const preview = (
-      <>
+export const DefaultBlockObjectComponent = (props: BlockProps) => {
+  const {
+    __unstable_boundaryElement,
+    __unstable_referenceElement,
+    children,
+    focused,
+    markers,
+    onClose,
+    onOpen,
+    onRemove,
+    open,
+    path,
+    readOnly,
+    renderPreview,
+    selected,
+    schemaType,
+    value,
+    validation,
+  } = props
+  const isImagePreview = schemaType.name === 'image'
+  const hasError = validation.filter((v) => v.level === 'error').length > 0
+  const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
+  const hasMarkers = Boolean(markers.length > 0)
+  const tone = selected || focused ? 'primary' : 'default'
+
+  const handleDoubleClickToOpen = useCallback(
+    (e: React.MouseEvent<Element, MouseEvent>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onOpen()
+    },
+    [onOpen]
+  )
+
+  return (
+    <>
+      <Root
+        data-focused={focused ? '' : undefined}
+        data-image-preview={isImagePreview ? '' : undefined}
+        data-invalid={hasError ? '' : undefined}
+        data-markers={hasMarkers ? '' : undefined}
+        data-read-only={readOnly ? '' : undefined}
+        data-selected={selected ? '' : undefined}
+        data-testid="pte-block-object"
+        data-warning={hasWarning ? '' : undefined}
+        flex={1}
+        onDoubleClick={handleDoubleClickToOpen}
+        padding={isImagePreview ? 0 : 1}
+        tone={tone}
+      >
         {renderPreview({
           actions: (
             <BlockObjectActionsMenu
               focused={focused}
-              isActive={isActive}
-              isOpen={isOpen}
-              onOpen={openItem}
+              isActive
+              isOpen={open}
+              onOpen={onOpen}
               onRemove={onRemove}
               readOnly={readOnly}
-              value={block}
+              value={value}
             />
           ),
           layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,
-          value: block,
+          value,
         })}
-      </>
-    )
-    return CustomComponent ? (
-      <CustomComponent {...componentProps}>{preview}</CustomComponent>
-    ) : (
-      <DefaultComponent {...componentProps}>{preview}</DefaultComponent>
-    )
-  }, [
-    schemaType,
-    scrollElement,
-    focused,
-    onItemClose,
-    openItem,
-    onRemove,
-    memberItem?.member.open,
-    memberItem?.node.path,
-    memberItem?.elementRef,
-    path,
-    DefaultComponent,
-    selected,
-    block,
-    isActive,
-    isOpen,
-    readOnly,
-    renderPreview,
-    isImagePreview,
-  ])
-  return (
-    <div
-      ref={memberItem?.elementRef as React.RefObject<HTMLDivElement> | undefined}
-      contentEditable={false}
-    >
-      {content}
-    </div>
+      </Root>
+      {open && (
+        <ObjectEditModal
+          boundaryElement={__unstable_boundaryElement}
+          defaultType="dialog"
+          onClose={onClose}
+          path={path}
+          schemaType={schemaType}
+          referenceElement={__unstable_referenceElement}
+        >
+          {children}
+        </ObjectEditModal>
+      )}
+    </>
   )
 }
