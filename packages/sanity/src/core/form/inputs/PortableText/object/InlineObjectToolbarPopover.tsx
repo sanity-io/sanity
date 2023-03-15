@@ -1,4 +1,4 @@
-import React, {useRef, useCallback, useEffect} from 'react'
+import React, {useRef, useCallback, useEffect, useMemo} from 'react'
 import {
   Box,
   Button,
@@ -22,16 +22,16 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 
 
 interface InlineObjectToolbarPopoverProps {
   open: boolean
-  onClose: () => void
+  onClosePopover: () => void
   onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
-  referenceElement: HTMLElement | null
-  scrollElement: HTMLElement | null
+  referenceElement?: HTMLElement
+  boundaryElement?: HTMLElement
   title: string
 }
 
 export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProps) {
-  const {onClose, onEdit, onDelete, referenceElement, scrollElement, title, open} = props
+  const {onClosePopover, onEdit, onDelete, referenceElement, boundaryElement, title, open} = props
   const {sanity} = useTheme()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
@@ -46,7 +46,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
           event.preventDefault()
           event.stopPropagation()
           isTabbing.current = false
-          onClose()
+          onClosePopover()
         }
         if (event.key === 'Tab') {
           if (!isTabbing.current) {
@@ -57,7 +57,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
           }
         }
       },
-      [onClose]
+      [onClosePopover]
     )
   )
 
@@ -67,37 +67,42 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
     }
   }, [])
 
+  const popoverContent = useMemo(
+    () => (
+      <Box padding={1}>
+        <Inline space={1}>
+          <Box padding={2}>
+            <Text weight="semibold" size={1}>
+              {title}
+            </Text>
+          </Box>
+          <Button
+            icon={EditIcon}
+            mode="bleed"
+            onClick={onEdit}
+            padding={2}
+            ref={editButtonRef}
+            alt="Edit object"
+          />
+          <Button
+            icon={TrashIcon}
+            mode="bleed"
+            padding={2}
+            onClick={onDelete}
+            tone="critical"
+            alt="Remove object"
+          />
+        </Inline>
+      </Box>
+    ),
+    [onDelete, onEdit, title]
+  )
+
   return (
     <ToolbarPopover
-      boundaryElement={scrollElement}
+      boundaryElement={boundaryElement}
       constrainSize
-      content={
-        <Box padding={1}>
-          <Inline space={1}>
-            <Box padding={2}>
-              <Text weight="semibold" size={1}>
-                {title}
-              </Text>
-            </Box>
-            <Button
-              icon={EditIcon}
-              mode="bleed"
-              onClick={onEdit}
-              padding={2}
-              ref={editButtonRef}
-              alt="Edit object"
-            />
-            <Button
-              icon={TrashIcon}
-              mode="bleed"
-              padding={2}
-              onClick={onDelete}
-              tone="critical"
-              alt="Remove object"
-            />
-          </Inline>
-        </Box>
-      }
+      content={popoverContent}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       open={open}
       placement="top"
