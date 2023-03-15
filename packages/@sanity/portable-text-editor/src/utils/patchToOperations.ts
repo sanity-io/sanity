@@ -10,7 +10,7 @@ import {toSlateValue} from './values'
 import {debugWithName} from './debug'
 import {KEY_TO_SLATE_ELEMENT} from './weakMaps'
 
-const debug = debugWithName('operationToPatches')
+const debug = debugWithName('patchToOperations')
 
 // eslint-disable-next-line new-cap
 const dmp = new DMP.diff_match_patch()
@@ -28,50 +28,59 @@ export function createPatchToOperations(
     const blockIndex = editor.children.findIndex((node, indx) => {
       return blockKey ? node._key === blockKey : indx === patch.path[0]
     })
-    const block = editor.children[blockIndex] as Element
+    const block = editor.children[blockIndex] as Element | undefined
     const parsed = dmp.patch_fromText(patch.value)[0]
-    if (parsed && editor.isTextBlock(block)) {
-      const childKey = findLastKey([patch.path[2]])
-      const childIndex = block.children.findIndex((node, indx) => {
-        return childKey ? node._key === childKey : indx === patch.path[0]
-      })
-      const slatePath = [blockIndex, childIndex]
+    const isSpanTextDiffMatchPatch =
+      editor.isTextBlock(block) &&
+      patch.path[1] === 'children' &&
+      patch.path.length === 4 &&
+      patch.path[3] === 'text'
+    if (parsed && isSpanTextDiffMatchPatch) {
       const distance = parsed.length2 - parsed.length1
-      const point = {
-        path: slatePath,
-        offset:
-          distance >= 0
-            ? (parsed.start1 || 0) + parsed.diffs[0][1].length
-            : (parsed.start2 || 0) + parsed.length2 - distance,
-      }
-      // debug(
-      //   `DiffMatchPatch (${distance < 0 ? 'remove' : 'insert'}) at ${JSON.stringify(slatePath)}}: `,
-      //   JSON.stringify(point, null, 2),
-      //   JSON.stringify(parsed, null, 2)
-      // )
-      debugState(editor, 'before')
-
       let text
       if (parsed.diffs[1]) {
         text = parsed.diffs[1][1]
       } else {
         text = parsed.diffs[0][1]
       }
-      debug(`Text: '${text}'`)
-      if (distance >= 0) {
-        editor.apply({
-          type: 'insert_text',
-          path: point.path,
-          offset: point.offset,
-          text,
+      if (patch.path[1] === 'children') {
+        const childKey = findLastKey([patch.path[2]])
+        const childIndex = block.children.findIndex((node, indx) => {
+          return childKey ? node._key === childKey : indx === patch.path[0]
         })
-      } else {
-        editor.apply({
-          type: 'remove_text',
-          path: point.path,
-          offset: point.offset - text.length,
-          text,
-        })
+        const slatePath = [blockIndex]
+        if (childIndex > -1) {
+          slatePath.push(childIndex)
+        }
+        const point = {
+          path: slatePath,
+          offset:
+            distance >= 0
+              ? (parsed.start1 || 0) + parsed.diffs[0][1].length
+              : (parsed.start2 || 0) + parsed.length2 - distance,
+        }
+        // debug(
+        //   `DiffMatchPatch (${distance < 0 ? 'remove' : 'insert'}) at ${JSON.stringify(slatePath)}}: `,
+        //   JSON.stringify(point, null, 2),
+        //   JSON.stringify(parsed, null, 2)
+        // )
+        debugState(editor, 'before')
+
+        if (distance >= 0) {
+          editor.apply({
+            type: 'insert_text',
+            path: point.path,
+            offset: point.offset,
+            text,
+          })
+        } else {
+          editor.apply({
+            type: 'remove_text',
+            path: point.path,
+            offset: point.offset - text.length,
+            text,
+          })
+        }
       }
       debugState(editor, 'after')
       return true
