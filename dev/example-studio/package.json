@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": true,
-  "version": "2.35.7",
+  "version": "2.36.0",
   "description": "A sanity studio with instructional examples and useful patterns",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -20,7 +20,7 @@
   "dependencies": {
     "@sanity/base": "2.35.7",
     "@sanity/block-tools": "2.35.0",
-    "@sanity/cli": "2.35.7",
+    "@sanity/cli": "2.36.0",
     "@sanity/code-input": "2.35.2",
     "@sanity/core": "2.35.7",
     "@sanity/default-layout": "2.35.7",
