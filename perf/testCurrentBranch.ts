@@ -10,18 +10,18 @@ const headless = findEnv('PERF_TEST_HEADLESS') !== 'false'
 
 async function main() {
   const testFiles = await globby(`${__dirname}/tests/**/*.test.ts`)
-  const currentBranch = readEnv('PERF_TEST_BRANCH') || getCurrentBranchSync()
+  const currentBranch = findEnv('PERF_TEST_BRANCH') || getCurrentBranchSync()
   const deployments = await studioMetricsClient.fetch(queries.currentBranch, {
     branch: currentBranch,
   })
-
-  // eslint-disable-next-line no-console
-  console.log(`Running tests on the ${deployments.length} most recent deployments`)
 
   if (deployments.length === 0) {
     console.error('No deployments found for branch %s', currentBranch)
     process.exit(0)
   }
+  // eslint-disable-next-line no-console
+  console.log(`Running tests on the ${deployments.length} most recent deployments`)
+
   if (deployments.length === 1) {
     console.error(
       'Only a single deployment found for current branch (%s). Two or more deployments are required in order to run the performance tests',
