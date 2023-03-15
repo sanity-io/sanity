@@ -1,4 +1,9 @@
 export * from './deskTool'
+
+// Export `DocumentPaneProvider`
+export {type DocumentPaneProviderProps} from './panes/document/types'
+export * from './panes/document/DocumentPaneProvider'
+
 export * from './panes/document/useDocumentPane'
 
 export * from './types'
