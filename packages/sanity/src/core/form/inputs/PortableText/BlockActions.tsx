@@ -14,7 +14,7 @@ interface BlockActionsProps {
 
 const Root = styled.div`
   display: flex;
-  pointer-events: 'all';
+  pointer-events: all;
 `
 
 export function BlockActions(props: BlockActionsProps) {
