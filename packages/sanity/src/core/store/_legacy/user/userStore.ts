@@ -67,10 +67,28 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
   INTERNAL_USER_IDS.forEach((user) => userLoader.prime(user.id, user))
 
   return {
-    getUser: (userId) => userLoader.load(userId),
+    getUser: async (userId) => {
+      try {
+        return await userLoader.load(userId)
+      } catch (err) {
+        /**
+         * 403 Forbidden responses indicate that the current user doesn't have read access to project members.
+         * In these instances, we don't throw and resolve `null` instead.
+         * Components consuming this (such as `<UserAvatar>`) shouldn't render anything in these cases.
+         */
+        if (err.statusCode === 403) {
+          return Promise.resolve(null)
+        }
+        // Throw all other errors
+        throw err
+      }
+    },
     getUsers: async (userIds) => {
       const results = await userLoader.loadMany(userIds)
-      // remove `Error`s from the the results
+      /**
+       * Unlike `load()`, DataLoader's `loadMany()` will always resolve even if it contains `Error` instances.
+       * Here, we remove all Errors (or more specifically, only include records with valid IDs).
+       */
       return results.filter(
         (result): result is User => isRecord(result) && typeof result.id === 'string'
       )
