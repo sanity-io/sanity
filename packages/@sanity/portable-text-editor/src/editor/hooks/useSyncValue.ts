@@ -2,7 +2,7 @@
 import React, {useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {Descendant, Editor, Transforms, Node} from 'slate'
+import {Editor, Transforms, Node} from 'slate'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
@@ -117,6 +117,7 @@ export function useSyncValue(
                           (_, index) => {
                             const cIndex = bChildrenLength - 1 - index
                             if (cIndex > 0) {
+                              debug('Removing child')
                               Transforms.removeNodes(slateEditor, {
                                 at: [i, cIndex],
                               })
@@ -128,13 +129,28 @@ export function useSyncValue(
                         const oldChild = oldBlock.children[bi]
                         if (!isEqual(bc, oldChild)) {
                           if (bc._key === oldChild?._key) {
+                            debug('Updating changed child', bc)
                             Transforms.setNodes(slateEditor, bc as Partial<Node>, {at: [i, bi]})
+                            // If it's a inline block, also update the void text node key
+                            if (bc._type !== 'span') {
+                              debug('Updating changed inline object child', bc)
+                              Transforms.setNodes(
+                                slateEditor,
+                                {_key: `${c._key}-void-child`},
+                                {
+                                  at: [i, bi, 0],
+                                  voids: true,
+                                }
+                              )
+                            }
                           } else if (oldChild) {
+                            debug('Replacing child', bc)
                             Transforms.removeNodes(slateEditor, {at: [i, bi]})
                             withPreserveKeys(slateEditor, () => {
                               Transforms.insertNodes(slateEditor, bc as Node, {at: [i, bi]})
                             })
                           } else if (!oldChild) {
+                            debug('Inserting new child', bc)
                             withPreserveKeys(slateEditor, () => {
                               Transforms.insertNodes(slateEditor, bc as Node, {at: [i, bi]})
                             })
