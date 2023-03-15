@@ -9,6 +9,7 @@
     "build": "yarn build:cli && (cd studio && yarn build)",
     "perf:test": "ts-node --files -r dotenv/config testCurrentBranch",
     "perf:test:ci": "ts-node --files -r dotenv/config testCurrentBranch",
+    "perf:codegen": "ts-node --files -r dotenv/config codegen",
     "studio": "yarn --cwd studio build && yarn --cwd studio start",
     "studio:dev": "yarn --cwd studio dev"
   },

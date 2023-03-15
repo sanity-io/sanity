@@ -1,12 +1,11 @@
 import {chromium, Page} from 'playwright'
-import {concatMap, from, lastValueFrom, map, range} from 'rxjs'
+import {concatMap, from, lastValueFrom, range} from 'rxjs'
 import {tap, toArray} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
 import {PerformanceTestProps} from './types'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {bundle} from './utils/bundlePerfHelpers'
-import {ALL_FIELDS, getGitInfo, parseDecoratedRefs} from './utils/gitUtils'
 import {getDeviceInfo} from './utils/getDeviceInfo'
 
 interface Deployment {
