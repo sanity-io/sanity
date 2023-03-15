@@ -37,6 +37,7 @@ export function AddFilterButton() {
         onClick={handleOpen}
         padding={fullscreen ? 3 : 2}
         ref={setButtonElement}
+        selected={open}
         space={2}
         text="Add filter"
       />
