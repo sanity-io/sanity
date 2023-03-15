@@ -2,6 +2,7 @@ import {Card, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled, {css} from 'styled-components'
+import {supportsTouch} from '../../../../../util'
 import {useColorScheme} from '../../../../colorScheme'
 import {
   POPOVER_INPUT_PADDING,
@@ -91,7 +92,7 @@ export function SearchPopover({
   return (
     <SearchWrapper hasValidTerms={hasValidTerms} onClose={onClose} onOpen={onOpen} open={open}>
       <Portal>
-        <FocusLock autoFocus={false} disabled={disableFocusLock} returnFocus>
+        <FocusLock autoFocus={!supportsTouch} disabled={disableFocusLock} returnFocus>
           <Overlay style={{zIndex}} />
 
           <SearchPopoverCard

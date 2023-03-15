@@ -2,6 +2,7 @@ import {Box, Card, Portal} from '@sanity/ui'
 import React, {useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
+import {supportsTouch} from '../../../../util'
 import {useColorScheme} from '../../../colorScheme'
 import {SearchWrapper} from './components/common/SearchWrapper'
 import {Filters} from './components/filters/Filters'
@@ -51,7 +52,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   return (
     <SearchWrapper hasValidTerms={hasValidTerms} onClose={onClose} onOpen={onOpen} open={open}>
       <Portal>
-        <FocusLock autoFocus={false} returnFocus>
+        <FocusLock autoFocus={!supportsTouch} returnFocus>
           <SearchDialogBox>
             <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
               <SearchHeader
