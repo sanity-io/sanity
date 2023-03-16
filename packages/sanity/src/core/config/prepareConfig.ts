@@ -409,6 +409,10 @@ function resolveSource({
           // then keep everything
           if (!schemaTypeName) return true
 
+          // If the creationContext.type is 'document' – keep everything
+          // and let the `document.newDocumentOptions` take care of the filtering.
+          if (creationContext.type === 'document') return true
+
           // else only keep the `schemaType`s that match the creationContext
           return schemaTypeName === templateMap.get(item.templateId)?.schemaType
         })
