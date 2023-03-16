@@ -2,9 +2,9 @@ import {EditIcon, PublishIcon} from '@sanity/icons'
 import {Container, Flex} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import React from 'react'
-import {DocumentPreviewPresence} from '../../presence'
+import {DocumentPreviewPresence} from '../../../presence'
+import {TextWithTone} from '../../textWithTone'
 import {PreviewCard} from '../PreviewCard'
-import {TextWithTone} from '../TextWithTone'
 
 export default function PreviewCardStory() {
   const selected = useBoolean('Selected', true)

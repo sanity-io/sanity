@@ -2,7 +2,7 @@ import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
 export default defineScope({
-  name: 'sanity/form/files',
+  name: 'core/form/inputs/files',
   title: 'Files',
   stories: [
     {

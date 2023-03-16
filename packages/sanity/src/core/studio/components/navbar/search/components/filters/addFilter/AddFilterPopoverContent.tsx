@@ -1,18 +1,25 @@
 import {Box, Flex, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
+import {
+  CommandList,
+  CommandListGetItemDisabledCallback,
+  CommandListRenderItemCallback,
+} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
-import {CommandListProvider} from '../../commandList/CommandListProvider'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {CommandListContainer} from '../../commandList/CommandListContainer'
+import {FilterMenuItem} from '../../../types'
+import {getFilterKey} from '../../../utils/filterUtils'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
-import {AddFilterVirtualList} from './AddFilterVirtualList'
 import {createFilterMenuItems} from './createFilterMenuItems'
+import {MenuItemFilter} from './items/MenuItemFilter'
+import {MenuItemHeader} from './items/MenuItemHeader'
 
 interface AddFilterPopoverContentProps {
   onClose: () => void
 }
 
 export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
+  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
 
   const handleFilterChange = useCallback(
@@ -27,6 +34,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     state: {
       documentTypesNarrowed,
       definitions,
+      filters,
       terms: {types},
     },
   } = useSearchState()
@@ -44,53 +52,85 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     [documentTypesNarrowed, definitions.fields, definitions.filters, schema, titleFilter, types]
   )
 
-  /**
-   * Create a map of indices for our virtual list, ignoring non-filter items.
-   * This is to ensure navigating via keyboard skips over these non-interactive items.
-   */
-  const itemIndices = useMemo(() => {
-    let i = -1
-    return filteredMenuItems.reduce<(number | null)[]>((acc, val, index) => {
-      const isInteractive = val.type === 'filter'
-      if (isInteractive) {
-        i += 1
+  const renderItem = useCallback<CommandListRenderItemCallback<FilterMenuItem>>(
+    (item) => {
+      if (item.type === 'filter') {
+        return <MenuItemFilter item={item} onClose={onClose} paddingTop={1} paddingX={1} />
       }
-      acc[index] = isInteractive ? i : null
-      return acc
-    }, [])
-  }, [filteredMenuItems])
+      if (item.type === 'header') {
+        return <MenuItemHeader item={item} />
+      }
+      return null
+    },
+    [onClose]
+  )
+
+  const getItemDisabled = useCallback<CommandListGetItemDisabledCallback>(
+    (index) => {
+      const filterItem = filteredMenuItems[index]
+      return (
+        filterItem.type !== 'filter' ||
+        !!filters.find((f) => getFilterKey(f) === getFilterKey(filterItem.filter))
+      )
+    },
+    [filteredMenuItems, filters]
+  )
+
+  const getItemKey = useCallback(
+    (index: number) => {
+      const menuItem = filteredMenuItems[index]
+      switch (menuItem.type) {
+        case 'filter':
+          return [
+            ...(menuItem.group ? [menuItem.group] : []), //
+            getFilterKey(menuItem.filter),
+          ].join('-')
+        case 'header':
+          return `${menuItem.type}-${menuItem.title}`
+        default:
+          return index
+      }
+    },
+    [filteredMenuItems]
+  )
 
   return (
-    <CommandListProvider
-      ariaActiveDescendant={filteredMenuItems.length > 0}
-      ariaChildrenLabel="Filters"
-      ariaHeaderLabel="Filter by title"
-      autoFocus
-      itemIndices={itemIndices}
-    >
-      <Flex direction="column" style={{width: '300px'}}>
-        {/* Filter header */}
-        <FilterPopoverContentHeader
-          onChange={handleFilterChange}
-          onClear={handleFilterClear}
-          typeFilter={titleFilter}
-        />
+    <Flex direction="column" style={{width: '300px'}}>
+      {/* Filter header */}
+      <FilterPopoverContentHeader
+        ariaInputLabel="Filter by title"
+        onChange={handleFilterChange}
+        onClear={handleFilterClear}
+        ref={setInputElement}
+        typeFilter={titleFilter}
+      />
 
-        <CommandListContainer>
-          {filteredMenuItems.length > 0 && (
-            <AddFilterVirtualList menuItems={filteredMenuItems} onClose={onClose} />
-          )}
+      <Flex>
+        {filteredMenuItems.length > 0 && (
+          <CommandList
+            activeItemDataAttr="data-hovered"
+            ariaLabel="Filters"
+            autoFocus
+            getItemDisabled={getItemDisabled}
+            getItemKey={getItemKey}
+            inputElement={inputElement}
+            itemHeight={45}
+            items={filteredMenuItems}
+            overscan={20}
+            paddingBottom={1}
+            renderItem={renderItem}
+          />
+        )}
 
-          {/* No results */}
-          {filteredMenuItems.length == 0 && (
-            <Box padding={3}>
-              <Text muted size={1} textOverflow="ellipsis">
-                No matches for '{titleFilter}'
-              </Text>
-            </Box>
-          )}
-        </CommandListContainer>
+        {/* No results */}
+        {filteredMenuItems.length == 0 && (
+          <Box padding={3}>
+            <Text muted size={1} textOverflow="ellipsis">
+              No matches for '{titleFilter}'
+            </Text>
+          </Box>
+        )}
       </Flex>
-    </CommandListProvider>
+    </Flex>
   )
 }

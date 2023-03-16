@@ -35,14 +35,12 @@ export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
   return (
     <Box {...rest}>
       <Button
-        data-command-list-item
         fontSize={1}
         iconRight={selected && CheckmarkIcon}
         justify="flex-start"
         key={type.title ?? type.name}
         mode="bleed"
         onClick={handleClick}
-        selected={selected}
         style={{width: '100%'}}
         tabIndex={-1}
         text={type.title ?? type.name}
