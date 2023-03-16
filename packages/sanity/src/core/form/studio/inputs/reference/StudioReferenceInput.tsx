@@ -25,6 +25,8 @@ import {FIXME} from '../../../../FIXME'
 import {isNonNullable} from '../../../../util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 
+const EMPTY_ARRAY: [] = []
+
 async function resolveUserDefinedFilter(
   options: ReferenceOptions | undefined,
   document: SanityDocument,
@@ -79,14 +81,14 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
 
-  const documentValue = useFormValue([]) as FIXME
+  const documentValue = useFormValue(EMPTY_ARRAY) as FIXME
   const documentRef = useValueRef(documentValue)
   const documentTypeName = documentRef.current?._type
   const refType = schema.get(documentTypeName)
 
   const isDocumentLiveEdit = useMemo(() => refType?.liveEdit, [refType])
 
-  const disableNew = schemaType.options?.disableNew === true
+  const disableNewSchemaOption = schemaType.options?.disableNew === true
   const getClient = source.getClient
 
   const handleSearch = useCallback(
@@ -144,42 +146,40 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
     [onEditReference, path]
   )
 
-  const selectedState = PathUtils.startsWith(path, activePath?.path || [])
+  const selectedState = PathUtils.startsWith(path, activePath?.path || EMPTY_ARRAY)
     ? activePath?.state
     : 'none'
 
   const createOptions = useMemo(() => {
-    if (disableNew) {
-      return []
+    // Return an empty array if the create new feature is disabled with `options.disableNew`
+    if (disableNewSchemaOption) {
+      return EMPTY_ARRAY
     }
-    return (
-      (initialValueTemplateItems || [])
-        // eslint-disable-next-line max-nested-callbacks
-        .filter((i) => {
-          return schemaType.to.some((_refType) => {
-            return _refType.name === i.template?.schemaType
-          })
-        })
-        .map((item): CreateReferenceOption | undefined =>
-          item.template?.schemaType
-            ? {
-                id: item.id,
-                title:
-                  item.title || `${item.template.schemaType} from template ${item.template?.id}`,
-                type: item.template.schemaType,
-                icon: item.icon,
-                template: {
-                  id: item.template?.id,
-                  params: item.parameters,
-                },
 
-                permission: {granted: item.granted, reason: item.reason},
-              }
-            : undefined
-        )
-        .filter(isNonNullable)
-    )
-  }, [disableNew, initialValueTemplateItems, schemaType.to])
+    // The reference options templates available in reference input
+    const currentSchemaTypeOptions = (initialValueTemplateItems || EMPTY_ARRAY)
+      .filter((i) => {
+        return schemaType.to.some((_refType) => {
+          return _refType.name === i.template?.schemaType
+        })
+      })
+      .filter((o) => o.template?.schemaType)
+      .filter(isNonNullable)
+
+    const createNewOptions: CreateReferenceOption[] = currentSchemaTypeOptions.map((item) => ({
+      id: item.id,
+      title: item.title || `${item.template.schemaType} from template ${item.template?.id}`,
+      type: item.template.schemaType,
+      icon: item.icon,
+      template: {
+        id: item.template?.id,
+        params: item.parameters,
+      },
+      permission: {granted: item.granted, reason: item.reason},
+    }))
+
+    return createNewOptions
+  }, [disableNewSchemaOption, initialValueTemplateItems, schemaType.to])
 
   const getReferenceInfo = useCallback(
     (id: string, _type: ReferenceSchemaType) =>
@@ -190,13 +190,13 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   return (
     <ReferenceInput
       {...props}
-      onSearch={handleSearch}
-      liveEdit={isDocumentLiveEdit}
-      getReferenceInfo={getReferenceInfo}
-      selectedState={selectedState}
-      editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
+      editReferenceLinkComponent={EditReferenceLink}
+      getReferenceInfo={getReferenceInfo}
+      liveEdit={isDocumentLiveEdit}
       onEditReference={handleEditReference}
+      onSearch={handleSearch}
+      selectedState={selectedState}
     />
   )
 }
