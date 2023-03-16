@@ -1,9 +1,12 @@
 import {NewDocumentOptionsResolver} from 'sanity'
 
-export const newDocumentOptions: NewDocumentOptionsResolver = (prev, {creationContext}) => {
+export const newDocumentOptions: NewDocumentOptionsResolver = (previousTemplates, context) => {
+  const {creationContext} = context
+
+  // Structure context
   if (creationContext.type === 'structure' && creationContext.schemaType === 'book') {
     return [
-      ...prev,
+      ...previousTemplates,
       {
         templateId: 'book-by-author',
         title: 'Book by Espen',
@@ -12,5 +15,20 @@ export const newDocumentOptions: NewDocumentOptionsResolver = (prev, {creationCo
     ]
   }
 
-  return prev
+  // Global context
+  if (creationContext.type === 'global') {
+    return previousTemplates
+  }
+
+  // Document context
+  if (creationContext.type === 'document') {
+    if (
+      creationContext.schemaType === 'referenceTest' &&
+      creationContext.documentId === 'circular'
+    ) {
+      return previousTemplates
+    }
+  }
+
+  return previousTemplates
 }
