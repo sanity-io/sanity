@@ -38,7 +38,7 @@ async function runAgainstUrl(
     ? test.setup(testContext)
     : {data: undefined, teardown: false})
 
-  const result = test.run({...testContext, setupData: data})
+  const result = await test.run({...testContext, setupData: data})
   if (typeof teardown === 'function') {
     await teardown()
   }
