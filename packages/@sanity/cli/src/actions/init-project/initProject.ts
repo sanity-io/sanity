@@ -792,7 +792,7 @@ export default async function initSanity(
         frameworkList: frameworks as readonly Framework[],
       })
 
-      if (framework) {
+      if (framework && framework.slug !== 'sanity') {
         print(
           `\nDetected framework ${chalk.blue(framework?.name)}, using prefix '${
             framework.envPrefix
@@ -816,8 +816,9 @@ export default async function initSanity(
       framework?: Framework | null
     }
   ) {
+    const prefix = options.framework?.slug === 'sanity' ? '' : options.framework?.envPrefix ?? ''
     const envVariables = Object.keys(object)
-      .map((key) => `${options.framework?.envPrefix ?? ''}${key}="${object[key]}"`)
+      .map((key) => `${prefix}${key}="${object[key]}"`)
       .join('\n')
 
     try {
