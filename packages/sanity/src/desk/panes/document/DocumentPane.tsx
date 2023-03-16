@@ -73,16 +73,20 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
-  const {resolveNewDocumentOptions} = useSource().document
+  const {
+    document: {resolveNewDocumentOptions},
+  } = useSource()
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
 
-  const templateItems = useMemo(() => {
-    return resolveNewDocumentOptions({
-      type: 'global',
-    })
-  }, [resolveNewDocumentOptions])
+  // The template items returned from the `document.newDocumentOptions`
+  // API in the 'document' creationContext
+  const templateItems = resolveNewDocumentOptions({
+    type: 'document',
+    schemaType: options.type,
+    documentId: options.id,
+  })
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
