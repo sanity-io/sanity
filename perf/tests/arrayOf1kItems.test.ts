@@ -23,12 +23,12 @@ export default {
   async setup({client}) {
     const arrayOf1kItems = {
       _type: 'deepArray',
+      text: 'Array with many items',
       deep: range(1000).map((i) => ({
         _key: `item-${i}`,
         _type: 'deepArray',
         text: `Item ${i}`,
       })),
-      text: 'Array with many items',
     }
     const doc = await client.create(arrayOf1kItems)
     return {
@@ -40,7 +40,7 @@ export default {
   async run({page, url, setupData}) {
     const documentId = setupData.documentId
 
-    await page.goto(`${url}/desk/deepObject;${documentId}`)
+    await page.goto(`${url}/desk/deepArray;${documentId}`)
 
     // Wait for the form to render
     await page.waitForSelector('[data-testid="string-input"]')
