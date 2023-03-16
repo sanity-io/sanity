@@ -12,6 +12,7 @@ Options
   --output-path <path> Path to write studio project to
   --template <template> Project template to use [default: "clean"]
   --bare Output only the project id and dataset to stdout
+  --env <filename> Write environment variables to file [default: ".env"]
   --provider <provider> Login provider to use
   --visibility <mode> Visibility mode for dataset (public/private)
   --create-project <name> Create a new project with the given name
@@ -51,6 +52,8 @@ export interface InitFlags {
   template?: string
   visibility?: string
   typescript?: boolean
+  bare?: boolean
+  env?: boolean | string
   git?: boolean | string
 
   'output-path'?: string
@@ -72,6 +75,7 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
   action: async (args, context) => {
     const {output, chalk, prompt} = context
     const [type] = args.argsWithoutOptions
+
     const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
 
     // `sanity init plugin`

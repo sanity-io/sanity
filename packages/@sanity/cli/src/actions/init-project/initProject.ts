@@ -1,20 +1,18 @@
 import fs from 'fs/promises'
 import path from 'path'
-import pFilter from 'p-filter'
+import type {DatasetAclMode} from '@sanity/client'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
-import type {DatasetAclMode} from '@sanity/client'
+import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import which from 'which'
 
-import {debug} from '../../debug'
-import {dynamicRequire} from '../../util/dynamicRequire'
-import {getClientWrapper} from '../../util/clientWrapper'
-import {getUserConfig} from '../../util/getUserConfig'
-import {isCommandGroup} from '../../util/isCommandGroup'
-import {isInteractive} from '../../util/isInteractive'
-import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
+import {frameworks, Framework} from '@vercel/frameworks'
+import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
 import type {InitFlags} from '../../commands/init/initCommand'
+import {debug} from '../../debug'
+import {getPackageManagerChoice, installDeclaredPackages} from '../../packageManager'
+import type {PackageManager} from '../../packageManager/packageManagerChoice'
 import {
   CliApiClient,
   CliCommandArguments,
@@ -23,18 +21,22 @@ import {
   SanityCore,
   SanityModuleInternal,
 } from '../../types'
-import type {PackageManager} from '../../packageManager/packageManagerChoice'
-import {installDeclaredPackages, getPackageManagerChoice} from '../../packageManager'
-import {createProject} from '../project/createProject'
+import {getClientWrapper} from '../../util/clientWrapper'
+import {dynamicRequire} from '../../util/dynamicRequire'
+import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
+import {getUserConfig} from '../../util/getUserConfig'
+import {isCommandGroup} from '../../util/isCommandGroup'
+import {isInteractive} from '../../util/isInteractive'
 import {login, LoginFlags} from '../login/login'
-import {promptForDatasetName} from './promptForDatasetName'
+import {createProject} from '../project/createProject'
 import {BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
-import templates from './templates'
-import {reconfigureV2Project} from './reconfigureV2Project'
-import {validateEmptyPath, absolutify} from './fsUtils'
-import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
 import {GenerateConfigOptions} from './createStudioConfig'
+import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
+import {promptForDatasetName} from './promptForDatasetName'
+import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
+import {reconfigureV2Project} from './reconfigureV2Project'
+import templates from './templates'
 
 // eslint-disable-next-line no-process-env
 const isCI = process.env.CI
@@ -83,6 +85,7 @@ export default async function initSanity(
   const intendedCoupon = cliFlags.coupon
   const reconfigure = cliFlags.reconfigure
   const commitMessage = cliFlags.git
+  const env = cliFlags.env
   const useGit = typeof commitMessage === 'undefined' ? true : Boolean(commitMessage)
 
   let defaultConfig = cliFlags['dataset-default']
@@ -91,6 +94,11 @@ export default async function initSanity(
   if (sanityMajorVersion === 2) {
     await reconfigureV2Project(args, context)
     return
+  }
+
+  const envFilename = typeof env === 'string' ? env : '.env'
+  if (env && !envFilename.startsWith('.env')) {
+    throw new Error(`Env filename must start with .env`)
   }
 
   // Only allow either --project-plan or --coupon
@@ -176,6 +184,12 @@ export default async function initSanity(
     print(
       `\nYou can find your project on Sanity Manage — https://www.sanity.io/manage/personal/project/${projectId}\n`
     )
+    return
+  }
+
+  // user wants to write environment variables to file
+  if (env) {
+    await createOrAppendEnvVars(envFilename)
     return
   }
 
@@ -763,6 +777,58 @@ export default async function initSanity(
 
   function getOrganizationsWithAttachGrant(organizations: ProjectOrganization[]) {
     return pFilter(organizations, (org) => hasProjectAttachGrant(org.id), {concurrency: 3})
+  }
+
+  async function createOrAppendEnvVars(filename: string) {
+    const variables = {
+      SANITY_PROJECT_ID: projectId,
+      SANITY_DATASET: datasetName,
+    }
+
+    try {
+      // use vercel's framework detector
+      const framework: Framework | null = await detectFrameworkRecord({
+        fs: new LocalFileSystemDetector(workDir),
+        frameworkList: frameworks as readonly Framework[],
+      })
+
+      if (framework) {
+        print(
+          `\nDetected framework ${chalk.blue(framework?.name)}, using prefix '${
+            framework.envPrefix
+          }'`
+        )
+      }
+
+      await writeToEnv(filename, variables, {
+        framework,
+      })
+    } catch (err) {
+      print(err)
+      throw new Error('An error occurred while creating .env')
+    }
+  }
+
+  async function writeToEnv(
+    filename: string,
+    object: Record<string, string>,
+    options = {} as {
+      framework?: Framework | null
+    }
+  ) {
+    const envVariables = Object.keys(object)
+      .map((key) => `${options.framework?.envPrefix ?? ''}${key}="${object[key]}"`)
+      .join('\n')
+
+    try {
+      // TO-DO: instead of appending if file exists, let's check whether variables are already set so we can just update them
+
+      // flag 'a' appends if exists
+      await fs.writeFile(filename, envVariables.concat('\n'), {flag: 'a', encoding: 'utf-8'})
+      print(`\n${chalk.green('Success!')} Appended environment variables to ${filename}`)
+    } catch (err) {
+      throw new Error(`Something went wrong while writing environment variables`)
+    }
   }
 }
 
