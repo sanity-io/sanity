@@ -147,11 +147,38 @@ export interface NewDocumentOptionsContext extends ConfigContext {
   creationContext: NewDocumentCreationContext
 }
 
+/**
+ * The create new document options available globally (in e.g. Navbar)
+ */
+interface GlobalNewDocumentCreationContext {
+  type: 'global'
+  documentId?: undefined
+  schemaType?: undefined
+}
+
+/**
+ * The create new document options available in structure
+ */
+interface StructureNewDocumentCreationContext {
+  type: 'structure'
+  documentId?: undefined
+  schemaType: string
+}
+
+/**
+ * The create new document options available in a document (e.g. the reference input)
+ */
+interface DocumentNewDocumentCreationContext {
+  type: 'document'
+  documentId: string
+  schemaType: string
+}
+
 /** @beta */
 export type NewDocumentCreationContext =
-  | {type: 'global'; documentId?: undefined; schemaType?: undefined}
-  | {type: 'document'; documentId: string; schemaType: string}
-  | {type: 'structure'; documentId?: undefined; schemaType: string}
+  | GlobalNewDocumentCreationContext
+  | StructureNewDocumentCreationContext
+  | DocumentNewDocumentCreationContext
 
 /** @beta */
 export interface DocumentPluginOptions {
