@@ -3,16 +3,10 @@ import {concatMap, from, lastValueFrom, range} from 'rxjs'
 import {tap, toArray} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
-import {PerformanceTestProps} from './types'
+import {Deployment, PerformanceTestProps} from './types'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {bundle} from './utils/bundlePerfHelpers'
 import {getDeviceInfo} from './utils/getDeviceInfo'
-
-interface Deployment {
-  id: string
-  url: string
-  label: string
-}
 
 interface RunCompareOptions {
   deployments: Deployment[]
