@@ -10,6 +10,7 @@ import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {Deployment} from './runner/types'
 
 config({path: `${__dirname}/.env`})
+const LOCAL_DEPLOYMENT = {url: 'http://localhost:3300', id: 'local', label: 'local'}
 
 async function main(args: {branch?: string; headless?: boolean; local?: boolean; count?: string}) {
   const testFiles = await globby(`${__dirname}/tests/**/*.test.ts`)
@@ -34,18 +35,24 @@ async function main(args: {branch?: string; headless?: boolean; local?: boolean;
     console.error('No deployments found for branch %s', branch)
     process.exit(0)
   }
-  // eslint-disable-next-line no-console
-  console.log(
-    `Running tests on the ${remoteDeployments.length} most recent deployments including local`
-  )
+  const deployments: Deployment[] = args.local
+    ? [...remoteDeployments, LOCAL_DEPLOYMENT]
+    : remoteDeployments
 
-  if (remoteDeployments.length === 1) {
+  if (deployments.length === 1) {
     console.error(
-      'Only a single deployment found for current branch (%s). Two or more deployments are required in order to run the performance tests',
+      'Two or more deployments are required in order to run the performance tests',
       branch
     )
     process.exit(0)
   }
+
+  // eslint-disable-next-line no-console
+  console.log(
+    `Running tests on the ${remoteDeployments.length} most recent deployments${
+      args.local ? ` (including local deployment at ${LOCAL_DEPLOYMENT.url})` : ''
+    }`
+  )
 
   const perfStudioClient = createClient({
     projectId: STUDIO_PROJECT_ID,
@@ -55,9 +62,6 @@ async function main(args: {branch?: string; headless?: boolean; local?: boolean;
     useCdn: false,
   })
 
-  const deployments: Deployment[] = args.local
-    ? [...remoteDeployments, {url: 'http://localhost:3300'}]
-    : remoteDeployments
   return run({
     testFiles,
     deployments,
