@@ -11,6 +11,7 @@ import {Deployment} from './runner/types'
 import {sanityIdify} from './deployment-sync/utils/sanityIdSafe'
 
 config({path: `${__dirname}/.env`})
+const LOCAL_DEPLOYMENT = {url: 'http://localhost:3300', id: 'local', label: 'local'}
 
 async function main(args: {
   branch?: string
