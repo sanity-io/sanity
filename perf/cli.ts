@@ -7,10 +7,12 @@ import {findEnv, readEnv} from './config/envVars'
 import * as queries from './queries'
 import {getCurrentBranchSync} from './runner/utils/gitUtils'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
+import {Deployment} from './runner/types'
 
 config({path: `${__dirname}/.env`})
+const LOCAL_DEPLOYMENT = {url: 'http://localhost:3300', id: 'local', label: 'local'}
 
-async function main(args: {branch?: string; headless?: boolean}) {
+async function main(args: {branch?: string; headless?: boolean; local?: boolean; count?: string}) {
   const testFiles = await globby(`${__dirname}/tests/**/*.test.ts`)
   const branch = args.branch || findEnv('PERF_TEST_BRANCH') || getCurrentBranchSync()
   const headless = args.headless ?? findEnv('PERF_TEST_HEADLESS') !== 'false'
@@ -23,25 +25,34 @@ async function main(args: {branch?: string; headless?: boolean}) {
     useCdn: false,
   })
 
-  const deployments = await studioMetricsClient.fetch(queries.currentBranch, {
+  const remoteDeployments = await studioMetricsClient.fetch(queries.currentBranch, {
     branch,
     headless,
+    count: Number(args.count),
   })
 
-  if (deployments.length === 0) {
+  if (remoteDeployments.length === 0) {
     console.error('No deployments found for branch %s', branch)
     process.exit(0)
   }
-  // eslint-disable-next-line no-console
-  console.log(`Running tests on the ${deployments.length} most recent deployments`)
+  const deployments: Deployment[] = args.local
+    ? [...remoteDeployments, LOCAL_DEPLOYMENT]
+    : remoteDeployments
 
   if (deployments.length === 1) {
     console.error(
-      'Only a single deployment found for current branch (%s). Two or more deployments are required in order to run the performance tests',
+      'Two or more deployments are required in order to run the performance tests',
       branch
     )
     process.exit(0)
   }
+
+  // eslint-disable-next-line no-console
+  console.log(
+    `Running tests on the ${remoteDeployments.length} most recent deployments${
+      args.local ? ` (including local deployment at ${LOCAL_DEPLOYMENT.url})` : ''
+    }`
+  )
 
   const perfStudioClient = createClient({
     projectId: STUDIO_PROJECT_ID,
@@ -73,6 +84,15 @@ const {values: args} = parseArgs({
     headless: {
       type: 'boolean',
       short: 'h',
+    },
+    local: {
+      type: 'boolean',
+      short: 'l',
+    },
+    count: {
+      type: 'string',
+      short: 'c',
+      default: '4',
     },
   },
 })

@@ -2,6 +2,11 @@ import {Page} from '@playwright/test'
 import {SanityClient} from '@sanity/client'
 import {ValidTestId} from './utils/testIds'
 
+export interface Deployment {
+  id: string
+  url: string
+  label: string
+}
 export interface PerformanceTestContext {
   page: Page
   url: string
