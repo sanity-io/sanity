@@ -1,6 +1,7 @@
 import {defineConfig, PluginOptions} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from '../config/constants'
+import {findEnv} from '../config/envVars'
 import {simple} from './schema/simple'
 import {deepObject} from './schema/deepObject'
 import {deepArray} from './schema/deepArray'
@@ -14,6 +15,6 @@ export default defineConfig({
   title: 'Perf test Studio',
   name: 'default',
   projectId: STUDIO_PROJECT_ID,
-  dataset: STUDIO_DATASET,
+  dataset: findEnv('SANITY_STUDIO_DATASET') || STUDIO_DATASET,
   schema: {types: [simple, deepObject, deepArray]},
 })
