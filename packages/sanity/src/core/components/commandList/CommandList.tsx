@@ -520,7 +520,13 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   }, [autoFocus, focusElement])
 
   return (
-    <VirtualListBox id={getCommandListChildrenId()} ref={setVirtualListElement} tabIndex={-1}>
+    <VirtualListBox
+      id={getCommandListChildrenId()}
+      ref={setVirtualListElement}
+      tabIndex={-1}
+      sizing="border"
+      {...responsivePaddingProps}
+    >
       <PointerOverlayDiv aria-hidden="true" data-enabled ref={setPointerOverlayElement} />
 
       {virtualizer && (
@@ -531,7 +537,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
           flex={1}
           ref={setChildContainerElement}
           role="listbox"
-          {...responsivePaddingProps}
         >
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const virtualIndex = virtualRow.index // visible index in the DOM
