@@ -3,7 +3,8 @@ import {SanityClient} from '@sanity/client'
 import {ValidTestId} from './utils/testIds'
 
 export interface Deployment {
-  id: string
+  _id: string
+  deploymentId: string
   url: string
   label: string
 }
