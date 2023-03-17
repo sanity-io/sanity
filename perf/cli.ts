@@ -5,16 +5,23 @@ import {createClient} from '@sanity/client'
 import {run} from './runner/runner'
 import {findEnv, readEnv} from './config/envVars'
 import * as queries from './queries'
-import {getCurrentBranchSync} from './runner/utils/gitUtils'
+import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {Deployment} from './runner/types'
+import {sanityIdify} from './deployment-sync/utils/sanityIdSafe'
 
 config({path: `${__dirname}/.env`})
-const LOCAL_DEPLOYMENT = {url: 'http://localhost:3300', id: 'local', label: 'local'}
 
-async function main(args: {branch?: string; headless?: boolean; local?: boolean; count?: string}) {
+async function main(args: {
+  branch?: string
+  headless?: boolean
+  local?: boolean
+  count?: string
+  label?: string
+}) {
+  const currentBranch = getCurrentBranchSync()
   const testFiles = await globby(`${__dirname}/tests/**/*.test.ts`)
-  const branch = args.branch || findEnv('PERF_TEST_BRANCH') || getCurrentBranchSync()
+  const branch = args.branch || findEnv('PERF_TEST_BRANCH') || currentBranch
   const headless = args.headless ?? findEnv('PERF_TEST_HEADLESS') !== 'false'
 
   const studioMetricsClient = createClient({
@@ -25,18 +32,39 @@ async function main(args: {branch?: string; headless?: boolean; local?: boolean;
     useCdn: false,
   })
 
-  const remoteDeployments = await studioMetricsClient.fetch(queries.currentBranch, {
+  const remoteDeployments = await studioMetricsClient.fetch(queries.branchDeploymentsQuery, {
     branch,
     headless,
     count: Number(args.count),
   })
+  let localDeployment
 
   if (remoteDeployments.length === 0) {
     console.error('No deployments found for branch %s', branch)
     process.exit(0)
   }
-  const deployments: Deployment[] = args.local
-    ? [...remoteDeployments, LOCAL_DEPLOYMENT]
+
+  if (args.local) {
+    const branchDocId = `branch-${sanityIdify(currentBranch)}`
+    const head = getGitInfoSync(['commit']).commit
+    localDeployment = await studioMetricsClient.createOrReplace({
+      _id: `local-${sanityIdify(currentBranch)}-${head}`,
+      _type: 'deployment',
+      url: 'http://localhost:3300',
+      deploymentId: 'local',
+      branch: {
+        _type: 'reference',
+        _ref: branchDocId,
+        _weak: true,
+      },
+      name: 'performance-studio',
+      status: 'succeeded',
+      label:
+        args.label ?? `Local Perf Studio in ${currentBranch}@${getGitInfoSync(['commit']).commit}`,
+    })
+  }
+  const deployments: Deployment[] = localDeployment
+    ? [...remoteDeployments, localDeployment]
     : remoteDeployments
 
   if (deployments.length === 1) {
@@ -50,7 +78,7 @@ async function main(args: {branch?: string; headless?: boolean; local?: boolean;
   // eslint-disable-next-line no-console
   console.log(
     `Running tests on the ${remoteDeployments.length} most recent deployments${
-      args.local ? ` (including local deployment at ${LOCAL_DEPLOYMENT.url})` : ''
+      localDeployment ? ` (including local deployment at ${localDeployment.url})` : ''
     }`
   )
 
@@ -88,6 +116,9 @@ const {values: args} = parseArgs({
     local: {
       type: 'boolean',
       short: 'l',
+    },
+    label: {
+      type: 'string',
     },
     count: {
       type: 'string',
