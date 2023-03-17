@@ -11,7 +11,7 @@
     "perf:test:ci": "ts-node --files cli",
     "perf:codegen": "ts-node --files -r dotenv/config codegen",
     "studio": "yarn --cwd studio build && yarn --cwd studio start",
-    "studio:dev": "yarn --cwd studio dev"
+    "studio:dev": "SANITY_STUDIO_DATASET=dev yarn --cwd studio dev"
   },
   "dependencies": {
     "@playwright/test": "^1.31.2",
