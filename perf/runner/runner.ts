@@ -63,8 +63,8 @@ function runCompare(options: RunCompareOptions) {
           concatMap(async (deployment, i) => {
             const results = await runAgainstUrl(deployment.url, rest)
             return {
-              _key: `${deployment.id}_${iteration}_${i}`,
-              deployment: {_ref: deployment.id},
+              _key: `${deployment._id}_${iteration}_${i}`,
+              deployment: {_ref: deployment._id},
               measurements: Object.entries(results).map(([metricName, result]) => ({
                 _key: metricName,
                 metric: metricName,
@@ -157,7 +157,11 @@ export async function run({
     _type: 'performanceTestRun',
     ci: Boolean(process.env.CI),
     device: getDeviceInfo(),
-    deployments: deployments.map((d) => ({_key: d.id, _type: 'reference', _ref: d.id})),
+    deployments: deployments.map((deployment) => ({
+      _key: deployment.deploymentId,
+      _type: 'reference',
+      _ref: deployment._id,
+    })),
     testResults,
   })
 
