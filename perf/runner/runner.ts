@@ -24,6 +24,14 @@ interface RunCompareOptions {
   iterations: number
 }
 
+async function tryCatch<T>(fn: () => Promise<T>): Promise<[Error, undefined] | [undefined, T]> {
+  try {
+    return [undefined, await fn()]
+  } catch (err) {
+    return [err, undefined]
+  }
+}
+
 async function runAgainstUrl(
   url: string,
   options: Omit<RunCompareOptions, 'deployments' | 'iterations'>
@@ -38,9 +46,12 @@ async function runAgainstUrl(
     ? test.setup(testContext)
     : {data: undefined, teardown: false})
 
-  const result = await test.run({...testContext, setupData: data})
+  const [err, result] = await tryCatch(() => test.run({...testContext, setupData: data}))
   if (typeof teardown === 'function') {
     await teardown()
+  }
+  if (err) {
+    throw err
   }
   return result
 }
