@@ -55,7 +55,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   const renderItem = useCallback<CommandListRenderItemCallback<FilterMenuItem>>(
     (item) => {
       if (item.type === 'filter') {
-        return <MenuItemFilter item={item} onClose={onClose} paddingTop={1} paddingX={1} />
+        return <MenuItemFilter item={item} onClose={onClose} paddingBottom={1} />
       }
       if (item.type === 'header') {
         return <MenuItemHeader item={item} />
@@ -117,7 +117,8 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
             itemHeight={45}
             items={filteredMenuItems}
             overscan={20}
-            paddingBottom={1}
+            padding={1}
+            paddingBottom={0}
             renderItem={renderItem}
           />
         )}

@@ -81,14 +81,14 @@ export function DocumentTypesPopoverContent() {
   const renderItem = useCallback<CommandListRenderItemCallback<DocumentTypeMenuItem>>((item) => {
     if (item.type === 'divider') {
       return (
-        <Box padding={1}>
+        <Box paddingY={1}>
           <MenuDivider />
         </Box>
       )
     }
     if (item.type === 'header') {
       return (
-        <Box margin={1} paddingBottom={2} paddingTop={3} paddingX={3}>
+        <Box margin={1} paddingBottom={2} paddingTop={3}>
           <Label muted size={0}>
             {item.title}
           </Label>
@@ -96,14 +96,7 @@ export function DocumentTypesPopoverContent() {
       )
     }
     if (item.type === 'item') {
-      return (
-        <DocumentTypeFilterItem
-          paddingX={1}
-          paddingTop={1}
-          selected={item.selected}
-          type={item.item}
-        />
-      )
+      return <DocumentTypeFilterItem paddingBottom={1} selected={item.selected} type={item.item} />
     }
     return null
   }, [])
@@ -149,7 +142,8 @@ export function DocumentTypesPopoverContent() {
             itemHeight={37}
             items={documentTypeItems}
             overscan={20}
-            paddingBottom={1}
+            padding={1}
+            paddingBottom={0}
             ref={commandListRef}
             renderItem={renderItem}
           />

@@ -59,8 +59,7 @@ export function SearchResults({inputElement}: SearchResultsProps) {
             documentId={getPublishedId(item.hit._id) || ''}
             documentType={item.hit._type}
             onClick={handleSearchResultClick}
-            paddingTop={2}
-            paddingX={2}
+            paddingBottom={2}
           />
           {debug && <DebugOverlay data={item} />}
         </>
@@ -90,14 +89,15 @@ export function SearchResults({inputElement}: SearchResultsProps) {
                     activeItemDataAttr="data-hovered"
                     ariaLabel="Search results"
                     fixedHeight
-                    inputElement={inputElement}
                     initialIndex={lastActiveIndex}
+                    inputElement={inputElement}
                     itemHeight={VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT}
                     items={result.hits}
                     overscan={VIRTUAL_LIST_OVERSCAN}
-                    paddingBottom={2}
-                    renderItem={renderItem}
+                    padding={2}
+                    paddingBottom={0}
                     ref={setSearchCommandList}
+                    renderItem={renderItem}
                   />
                 )}
                 {hasNoSearchResults && <NoResults />}
