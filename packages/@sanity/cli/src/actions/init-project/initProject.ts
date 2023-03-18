@@ -792,7 +792,7 @@ export default async function initSanity(
         frameworkList: frameworks as readonly Framework[],
       })
 
-      if (framework && framework.slug !== 'sanity') {
+      if (framework && framework.slug !== 'sanity' && framework.envPrefix) {
         print(
           `\nDetected framework ${chalk.blue(framework?.name)}, using prefix '${
             framework.envPrefix
