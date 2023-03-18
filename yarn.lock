@@ -5085,7 +5085,7 @@
   resolved "https://registry.yarnpkg.com/@vercel/error-utils/-/error-utils-1.0.8.tgz#5cefc4142820846d011cf048ddfb0afda81d484b"
   integrity sha512-s+f7jP2oH1koICbQ8e3K9hOpOeUct7rbCnF9qsNwXemq850wAh2e90tp9R6oYBM0BNpiLRRm+oG5zD2sCIm3HQ==
 
-"@vercel/frameworks@1.3.3":
+"@vercel/frameworks@1.3.3", "@vercel/frameworks@^1.3.2":
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/@vercel/frameworks/-/frameworks-1.3.3.tgz#7617680602e679a3c2e8c2ea66ed7499e880e44f"
   integrity sha512-0O2ykpUSfx3cXu4EX1HolL4J4f8gntJZF84KovZfR9DfFG60h6QsbzXSSz8r/Gt6AZJkM0hQetYevhY2vlNoaA==
