@@ -805,7 +805,7 @@ export default async function initSanity(
       })
     } catch (err) {
       print(err)
-      throw new Error('An error occurred while creating .env')
+      throw new Error('An error occurred while creating .env', {cause: err})
     }
   }
 
