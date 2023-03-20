@@ -16,6 +16,7 @@ export type FieldsetDefinition = {
 export type FieldGroupDefinition = {
   name: string
   title?: string
+  hidden?: ConditionalProperty
   icon?: ComponentType | ReactNode
   default?: boolean
 }
