@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {memo, useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {tap} from 'rxjs/operators'
 import {useToast} from '@sanity/ui'
@@ -21,6 +21,7 @@ import {createProtoValue} from '../../../utils/createProtoValue'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useResolveInitialValueForType} from '../../../../store'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
+import {useClient} from '../../../../hooks'
 
 /**
  * @beta
@@ -36,7 +37,7 @@ export interface MemberItemProps {
 /**
  * @beta
  */
-export function ArrayOfObjectsItem(props: MemberItemProps) {
+export const ArrayOfObjectsItem = memo(function ArrayOfObjectsItem(props: MemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
   const {member, renderItem, renderInput, renderField, renderPreview} = props
 
@@ -50,7 +51,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onFieldGroupSelect,
   } = useFormCallbacks()
   const resolveInitialValue = useResolveInitialValueForType()
-
+  const client = useClient()
+  ;(window as any).client = client
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
       focusRef.current?.focus()
@@ -360,4 +362,4 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       {useMemo(() => renderItem(itemProps), [itemProps, renderItem])}
     </FormCallbacksProvider>
   )
-}
+})

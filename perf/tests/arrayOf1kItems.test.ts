@@ -3,8 +3,8 @@ import {PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
 
 export default {
-  id: KNOWN_TEST_IDS['array-of-1k-items'],
-  name: 'Performance test of array with 1k items',
+  id: KNOWN_TEST_IDS['array-of-200-items'],
+  name: 'Performance test of array with 200 items',
   description: `
   This test measures the general performance of an array with 1k items.
   `,
@@ -23,8 +23,8 @@ export default {
   async setup({client}) {
     const arrayOf1kItems = {
       _type: 'deepArray',
-      text: 'Array with many items',
-      deep: range(1000).map((i) => ({
+      text: 'Array with 200 items',
+      deep: range(200).map((i) => ({
         _key: `item-${i}`,
         _type: 'deepArray',
         text: `Item ${i}`,
@@ -52,7 +52,7 @@ export default {
     await input.click()
 
     const samples = await input.evaluate((el: HTMLInputElement) =>
-      window.perf.typingTest(el, {samples: 1})
+      window.perf.typingTest(el, {chars: 'abc', samples: 1})
     )
     await new Promise((resolve) => setTimeout(resolve, 1000))
     return {

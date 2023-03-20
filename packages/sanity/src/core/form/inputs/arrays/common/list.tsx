@@ -1,5 +1,5 @@
 import {Box, Card, Grid} from '@sanity/ui'
-import React, {ComponentProps, useCallback, useMemo} from 'react'
+import React, {ComponentProps, memo, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {
   AutoScrollOptions,
@@ -174,11 +174,11 @@ interface ItemProps {
   children?: React.ReactNode
 }
 
-export function Item(props: ItemProps & ComponentProps<typeof Card>) {
+export const Item = memo(function Item(props: ItemProps & ComponentProps<typeof Card>) {
   const {sortable, ...rest} = props
   return (
     <SortableItemIdContext.Provider value={props.id}>
       {sortable ? <SortableListItem {...rest} /> : <ListItem {...rest} />}
     </SortableItemIdContext.Provider>
   )
-}
+})

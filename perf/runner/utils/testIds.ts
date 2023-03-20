@@ -16,12 +16,17 @@ function defineId<T extends string>(testId: T) {
   return testId as TestId<T>
 }
 
-type KnownTestId = 'simple-typing-speed-test' | 'deeply-nested-objects-test' | 'array-of-1k-items'
+type KnownTestId =
+  | 'simple-typing-speed-test'
+  | 'deeply-nested-objects-test'
+  | 'array-of-1k-items'
+  | 'array-of-200-items'
 
 export const KNOWN_TEST_IDS: {[P in KnownTestId]: TestId<P>} = {
   'simple-typing-speed-test': defineId('simple-typing-speed-test'),
   'deeply-nested-objects-test': defineId('deeply-nested-objects-test'),
   'array-of-1k-items': defineId('array-of-1k-items'),
+  'array-of-200-items': defineId('array-of-200-items'),
 }
 
 export type ValidTestId = (typeof KNOWN_TEST_IDS)[keyof typeof KNOWN_TEST_IDS]

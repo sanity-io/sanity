@@ -15,12 +15,13 @@ config({path: `${__dirname}/.env`})
 async function main(args: {
   branch?: string
   headless?: boolean
+  pattern?: string
   local?: boolean
   count?: string
   label?: string
 }) {
   const currentBranch = getCurrentBranchSync()
-  const testFiles = await globby(`${__dirname}/tests/**/*.test.ts`)
+  const testFiles = await globby(`${__dirname}/tests/**/${args.pattern || '*'}.test.ts`)
   const branch = args.branch || findEnv('PERF_TEST_BRANCH') || currentBranch
   const headless = args.headless ?? findEnv('PERF_TEST_HEADLESS') !== 'false'
 
@@ -38,11 +39,6 @@ async function main(args: {
     count: Number(args.count),
   })
   let localDeployment
-
-  if (remoteDeployments.length === 0) {
-    console.error('No deployments found for branch %s', branch)
-    process.exit(0)
-  }
 
   if (args.local) {
     const branchDocId = `branch-${sanityIdify(currentBranch)}`
@@ -66,14 +62,6 @@ async function main(args: {
   const deployments: Deployment[] = localDeployment
     ? [...remoteDeployments, localDeployment]
     : remoteDeployments
-
-  if (deployments.length === 1) {
-    console.error(
-      'Two or more deployments are required in order to run the performance tests',
-      branch
-    )
-    process.exit(0)
-  }
 
   // eslint-disable-next-line no-console
   console.log(
@@ -119,6 +107,10 @@ const {values: args} = parseArgs({
     },
     label: {
       type: 'string',
+    },
+    pattern: {
+      type: 'string',
+      short: 'p',
     },
     count: {
       type: 'string',
