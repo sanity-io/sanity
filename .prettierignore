@@ -22,6 +22,7 @@
 /packages/@sanity/*/coverage
 /packages/@sanity/*/lib
 /packages/@sanity/*/node_modules
+/packages/@sanity/block-tools/test/**/input.html
 /packages/@sanity/client/umd
 /packages/@sanity/cli/bin/sanity-cli.js
 /packages/@sanity/cli/templates
