@@ -1,5 +1,5 @@
 import {ToastProvider} from '@sanity/ui'
-import React, {Fragment, useMemo} from 'react'
+import React from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash'
 import javascript from 'refractor/lang/javascript'
@@ -47,9 +47,10 @@ export function StudioProvider({
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
 }: StudioProviderProps) {
-  const ConditionalAuthBoundary = useMemo(
-    () => (noAuthBoundary ? Fragment : AuthBoundary),
-    [noAuthBoundary]
+  const _children = (
+    <WorkspaceLoader LoadingComponent={LoadingScreen} ConfigErrorsComponent={ConfigErrorsScreen}>
+      <ResourceCacheProvider>{children}</ResourceCacheProvider>
+    </WorkspaceLoader>
   )
 
   return (
@@ -65,18 +66,17 @@ export function StudioProvider({
             >
               <StudioThemeProvider>
                 <UserColorManagerProvider>
-                  <ConditionalAuthBoundary
-                    LoadingComponent={LoadingScreen}
-                    AuthenticateComponent={AuthenticateScreen}
-                    NotAuthenticatedComponent={NotAuthenticatedScreen}
-                  >
-                    <WorkspaceLoader
+                  {noAuthBoundary ? (
+                    _children
+                  ) : (
+                    <AuthBoundary
                       LoadingComponent={LoadingScreen}
-                      ConfigErrorsComponent={ConfigErrorsScreen}
+                      AuthenticateComponent={AuthenticateScreen}
+                      NotAuthenticatedComponent={NotAuthenticatedScreen}
                     >
-                      <ResourceCacheProvider>{children}</ResourceCacheProvider>
-                    </WorkspaceLoader>
-                  </ConditionalAuthBoundary>
+                      {_children}
+                    </AuthBoundary>
+                  )}
                 </UserColorManagerProvider>
               </StudioThemeProvider>
             </ActiveWorkspaceMatcher>

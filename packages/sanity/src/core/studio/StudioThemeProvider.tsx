@@ -3,23 +3,32 @@
 import React from 'react'
 import {ThemeProvider, LayerProvider} from '@sanity/ui'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
-import {ColorSchemeContext, useColorScheme} from './colorScheme'
+import {ColorSchemeSetValueContext, ColorSchemeValueContext} from './colorScheme'
 
 interface StudioThemeProviderProps {
-  children: React.ReactChild
+  children: React.ReactNode
 }
 
 /** @internal */
 export function StudioThemeProvider({children}: StudioThemeProviderProps) {
   const theme = useActiveWorkspace().activeWorkspace.theme
-  const colorScheme = useColorScheme()
-  const scheme = theme.__legacy ? (theme.__dark ? 'dark' : 'light') : colorScheme.scheme
+
+  if (theme.__legacy) {
+    const scheme = theme.__dark ? 'dark' : 'light'
+    return (
+      <ColorSchemeSetValueContext.Provider value={false}>
+        <ColorSchemeValueContext.Provider value={scheme}>
+          <ThemeProvider scheme={scheme} theme={theme} tone="transparent">
+            <LayerProvider>{children}</LayerProvider>
+          </ThemeProvider>
+        </ColorSchemeValueContext.Provider>
+      </ColorSchemeSetValueContext.Provider>
+    )
+  }
 
   return (
-    <ColorSchemeContext.Provider value={{...colorScheme, scheme}}>
-      <ThemeProvider scheme={scheme} theme={theme} tone="transparent">
-        <LayerProvider>{children}</LayerProvider>
-      </ThemeProvider>
-    </ColorSchemeContext.Provider>
+    <ThemeProvider theme={theme} tone="transparent">
+      <LayerProvider>{children}</LayerProvider>
+    </ThemeProvider>
   )
 }

@@ -1,4 +1,4 @@
-import {Layer, Card, Flex, Text, Box, Button, Stack, Label, useRootTheme} from '@sanity/ui'
+import {Layer, Card, Flex, Text, Box, Button, Stack, Label} from '@sanity/ui'
 import {
   CheckmarkIcon,
   CloseIcon,
@@ -17,8 +17,8 @@ import {Tool} from '../../../config'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {UserAvatar} from '../../../components'
 import {useWorkspaces} from '../../workspaces'
-import {useColorScheme} from '../../colorScheme'
-import {StudioTheme} from '../../../theme'
+import {useColorSchemeOptions, useColorSchemeSetValue} from '../../colorScheme'
+import {StudioThemeColorSchemeKey} from '../../../theme'
 import {userHasRole} from '../../../util/userHasRole'
 import {WorkspaceMenuButton} from './workspace'
 
@@ -71,6 +71,40 @@ const InnerCard = styled(motion(Card))`
   overflow: auto;
 `
 
+function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSchemeKey) => void}) {
+  // Subscribe to just what we need, if the menu isn't shown then we're not subscribed to these contexts
+  const options = useColorSchemeOptions(setScheme)
+
+  return (
+    <>
+      <Card borderTop flex="none" padding={3} overflow="auto">
+        <Box padding={2}>
+          <Label size={1} muted>
+            Appearance
+          </Label>
+        </Box>
+
+        <Stack as="ul" marginTop={1} space={1}>
+          {options.map(({icon, label, name, onSelect, selected, title}) => (
+            <Stack as="li" key={name}>
+              <Button
+                aria-label={label}
+                icon={icon}
+                iconRight={selected && <CheckmarkIcon />}
+                justify="flex-start"
+                mode="bleed"
+                onClick={onSelect}
+                selected={selected}
+                text={title}
+              />
+            </Stack>
+          ))}
+        </Stack>
+      </Card>
+    </>
+  )
+}
+
 interface NavDrawerProps {
   activeToolName?: string
   isOpen: boolean
@@ -81,10 +115,9 @@ interface NavDrawerProps {
 export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const {activeToolName, isOpen, onClose, tools} = props
 
-  const {colorSchemeOptions} = useColorScheme()
+  const setScheme = useColorSchemeSetValue()
   const {auth, currentUser, projectId} = useWorkspace()
   const workspaces = useWorkspaces()
-  const theme = useRootTheme().theme as StudioTheme
   const ToolMenu = useToolMenuComponent()
 
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
@@ -169,31 +202,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
 
                 {/* Theme picker and Manage */}
                 <Flex direction="column">
-                  <Card borderTop flex="none" padding={3} overflow="auto">
-                    <Box padding={2}>
-                      <Label size={1} muted>
-                        Appearance
-                      </Label>
-                    </Box>
-
-                    <Stack as="ul" marginTop={1} space={1}>
-                      {!theme.__legacy &&
-                        colorSchemeOptions.map((option) => (
-                          <Stack as="li" key={option.name}>
-                            <Button
-                              aria-label={`Use ${option} appearance`}
-                              icon={option.icon}
-                              iconRight={option.selected && <CheckmarkIcon />}
-                              justify="flex-start"
-                              mode="bleed"
-                              onClick={() => option.onSelect()}
-                              selected={option.selected}
-                              text={option.title}
-                            />
-                          </Stack>
-                        ))}
-                    </Stack>
-                  </Card>
+                  {setScheme && <AppearanceMenu setScheme={setScheme} />}
                   <Card borderTop flex="none" padding={3}>
                     <Stack as="ul" space={1}>
                       <Stack as="li">
