@@ -1,7 +1,7 @@
 import {StudioProvider} from 'sanity'
 import {ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
-import React, {useMemo, useState} from 'react'
+import React, {useState} from 'react'
 import {createRoot} from 'react-dom/client'
 import Refractor from 'react-refractor'
 import javascript from 'refractor/lang/javascript'
@@ -17,10 +17,11 @@ Refractor.registerLanguage(json)
 Refractor.registerLanguage(jsx)
 Refractor.registerLanguage(typescript)
 
+const history = createMemoryHistory({initialEntries: [{pathname: '/test'}]})
+
 function Main() {
   const prefersDark = usePrefersDark()
   const [scheme, setScheme] = useState<ThemeColorSchemeKey>(prefersDark ? 'dark' : 'light')
-  const history = useMemo(() => createMemoryHistory({initialEntries: [{pathname: '/test'}]}), [])
 
   return (
     <StudioProvider

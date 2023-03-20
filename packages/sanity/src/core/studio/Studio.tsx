@@ -1,8 +1,8 @@
 import {ThemeColorSchemeKey} from '@sanity/ui'
-import {History} from 'history'
 import React, {ReactElement} from 'react'
 import {Config} from '../config'
 import {GlobalStyle} from './GlobalStyle'
+import {RouterHistory} from './router'
 import {useLayoutComponent} from './studio-components-hooks'
 import {StudioProvider} from './StudioProvider'
 
@@ -13,7 +13,7 @@ export interface StudioProps {
   onSchemeChange?: (nextScheme: ThemeColorSchemeKey) => void
   scheme?: ThemeColorSchemeKey
   /** @beta */
-  unstable_history?: History
+  unstable_history?: RouterHistory
   /** @beta */
   unstable_globalStyles?: boolean
   /** @beta */
