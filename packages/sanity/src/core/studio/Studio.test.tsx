@@ -34,7 +34,7 @@ const config = {
   auth: createMockAuthStore({client, currentUser: null}),
 }
 
-jest.mock('./components/navbar/NewDocumentButton')
+jest.mock('./components/navbar/new-document')
 jest.mock('./components/navbar/presence/PresenceMenu')
 
 describe('Studio', () => {
