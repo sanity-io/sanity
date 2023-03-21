@@ -29,13 +29,6 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   const branchDoc = {
     _id: `branch-${sanityIdify(payload.deployment.meta.githubCommitRef)}`,
     _type: 'branch',
-    name: payload.deployment.meta.githubCommitRef,
-    lastCommit: {
-      author: payload.deployment.meta.githubCommitAuthorName,
-      message: payload.deployment.meta.githubCommitMessage,
-      sha: payload.deployment.meta.githubCommitSha,
-      user: payload.deployment.meta.githubCommitAuthorLogin,
-    },
   }
 
   const deployment = {
@@ -54,7 +47,18 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   studioMetricsClient
     .transaction()
-    .createOrReplace(branchDoc)
+    .createIfNotExists(branchDoc)
+    .patch(branchDoc._id, (p) =>
+      p.setIfMissing({
+        name: payload.deployment.meta.githubCommitRef,
+        lastCommit: {
+          author: payload.deployment.meta.githubCommitAuthorName,
+          message: payload.deployment.meta.githubCommitMessage,
+          sha: payload.deployment.meta.githubCommitSha,
+          user: payload.deployment.meta.githubCommitAuthorLogin,
+        },
+      })
+    )
     .createOrReplace(deployment)
     .patch(deployment._id, (p) =>
       p.set({
