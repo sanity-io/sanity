@@ -32,7 +32,17 @@ async function runAgainstUrl(
 
   // Add the cookie to our context
   await context.addCookies([createSanitySessionCookie(client.config().projectId!, token)])
-  return test.run({url: url, page, client})
+
+  const testContext = {url: url, page, client}
+  const {data, teardown} = await (test.setup
+    ? test.setup(testContext)
+    : {data: undefined, teardown: false})
+
+  const result = await test.run({...testContext, setupData: data})
+  if (typeof teardown === 'function') {
+    await teardown()
+  }
+  return result
 }
 
 function runCompare(options: RunCompareOptions) {
