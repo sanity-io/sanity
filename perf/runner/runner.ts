@@ -1,19 +1,13 @@
+/* eslint-disable no-console */
 import {chromium, Page} from 'playwright'
-import {concatMap, from, lastValueFrom, map, range} from 'rxjs'
+import {concatMap, from, lastValueFrom, range} from 'rxjs'
 import {tap, toArray} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
-import {PerformanceTestProps} from './types'
+import {Deployment, PerformanceTestProps} from './types'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {bundle} from './utils/bundlePerfHelpers'
-import {ALL_FIELDS, getGitInfo, parseDecoratedRefs} from './utils/gitUtils'
 import {getDeviceInfo} from './utils/getDeviceInfo'
-
-interface Deployment {
-  id: string
-  url: string
-  label: string
-}
 
 interface RunCompareOptions {
   deployments: Deployment[]
@@ -25,15 +19,39 @@ interface RunCompareOptions {
   iterations: number
 }
 
+async function tryCatch<T>(fn: () => Promise<T>): Promise<[Error, undefined] | [undefined, T]> {
+  try {
+    return [undefined, await fn()]
+  } catch (err) {
+    return [err, undefined]
+  }
+}
+
 async function runAgainstUrl(
   url: string,
   options: Omit<RunCompareOptions, 'deployments' | 'iterations'>
 ) {
+  console.info(`Running "${options.test.name}" against ${url}`)
   const {context, test, client, page, token} = options
 
   // Add the cookie to our context
   await context.addCookies([createSanitySessionCookie(client.config().projectId!, token)])
-  return test.run({url: url, page, client})
+
+  const testContext = {url: url, page, client}
+  const {data, teardown} = await (test.setup
+    ? test.setup(testContext)
+    : {data: undefined, teardown: false})
+
+  const [err, result] = await tryCatch(() => test.run({...testContext, setupData: data}))
+  if (typeof teardown === 'function') {
+    await teardown()
+  }
+  if (err) {
+    throw err
+  }
+  console.info(`Done`)
+  console.info()
+  return result
 }
 
 function runCompare(options: RunCompareOptions) {
@@ -45,8 +63,8 @@ function runCompare(options: RunCompareOptions) {
           concatMap(async (deployment, i) => {
             const results = await runAgainstUrl(deployment.url, rest)
             return {
-              _key: `${deployment.id}_${iteration}_${i}`,
-              deployment: {_ref: deployment.id},
+              _key: `${deployment._id}_${iteration}_${i}`,
+              deployment: {_ref: deployment._id},
               measurements: Object.entries(results).map(([metricName, result]) => ({
                 _key: metricName,
                 metric: metricName,
@@ -130,7 +148,6 @@ export async function run({
         }
       }),
       toArray(),
-      // eslint-disable-next-line no-console
       tap(console.log)
     )
   )
@@ -140,7 +157,11 @@ export async function run({
     _type: 'performanceTestRun',
     ci: Boolean(process.env.CI),
     device: getDeviceInfo(),
-    deployments: deployments.map((d) => ({_key: d.id, _type: 'reference', _ref: d.id})),
+    deployments: deployments.map((deployment) => ({
+      _key: deployment.deploymentId,
+      _type: 'reference',
+      _ref: deployment._id,
+    })),
     testResults,
   })
 
