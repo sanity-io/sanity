@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import {ObjectMember} from '../../store'
 import {
   RenderArrayOfObjectsItemCallback,
@@ -23,14 +23,24 @@ export interface ObjectMembersProps {
  * @internal
  */
 export function ObjectInputMembers(props: ObjectMembersProps) {
-  const {members, ...rest} = props
-  return (
-    <>
-      {members.map((member) => (
-        <ObjectInputMember key={member.key} member={member} {...rest} />
-      ))}
-    </>
+  const {members, renderField, renderInput, renderItem, renderPreview} = props
+
+  const renderMembers = useMemo(
+    () =>
+      members.map((member) => (
+        <ObjectInputMember
+          key={member.key}
+          member={member}
+          renderField={renderField}
+          renderInput={renderInput}
+          renderItem={renderItem}
+          renderPreview={renderPreview}
+        />
+      )),
+    [members, renderField, renderInput, renderItem, renderPreview]
   )
+
+  return <>{renderMembers}</>
 }
 
 /**
