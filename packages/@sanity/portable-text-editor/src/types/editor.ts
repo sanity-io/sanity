@@ -339,6 +339,8 @@ export interface BlockRenderProps {
   selected: boolean
   style?: string
   schemaType: ObjectSchemaType
+  /** @deprecated Use `schemaType` instead */
+  type: ObjectSchemaType
   value: PortableTextBlock
 }
 
@@ -351,6 +353,8 @@ export interface BlockChildRenderProps {
   path: Path
   selected: boolean
   schemaType: ObjectSchemaType
+  /** @deprecated Use `schemaType` instead */
+  type: ObjectSchemaType
   value: PortableTextChild
 }
 
@@ -363,6 +367,8 @@ export interface BlockAnnotationRenderProps {
   path: Path
   schemaType: ObjectSchemaType
   selected: boolean
+  /** @deprecated Use `schemaType` instead */
+  type: ObjectSchemaType
   value: PortableTextObject
 }
 /** @beta */
@@ -373,6 +379,8 @@ export interface BlockDecoratorRenderProps {
   path: Path
   schemaType: BlockDecoratorDefinition
   selected: boolean
+  /** @deprecated Use `schemaType` instead */
+  type: BlockDecoratorDefinition
   value: string
 }
 /** @beta */
