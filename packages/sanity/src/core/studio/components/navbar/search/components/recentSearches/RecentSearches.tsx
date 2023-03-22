@@ -59,8 +59,7 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
         <RecentSearchItem
           index={virtualIndex}
           maxVisibleTypePillChars={maxVisibleTypePillChars}
-          paddingTop={1}
-          paddingX={2}
+          paddingBottom={1}
           value={item}
         />
       )
@@ -90,7 +89,8 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
               initialIndex={0}
               itemHeight={VIRTUAL_LIST_RECENT_SEARCH_ITEM_HEIGHT}
               items={recentSearches}
-              paddingBottom={2}
+              paddingX={2}
+              paddingY={1}
               renderItem={renderItem}
             />
           </Box>

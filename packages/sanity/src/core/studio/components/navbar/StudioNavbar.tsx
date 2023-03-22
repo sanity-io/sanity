@@ -24,7 +24,7 @@ import {NavbarContext} from '../../StudioLayout'
 import {useLogoComponent, useToolMenuComponent} from '../../studio-components-hooks'
 import {StudioTheme} from '../../../theme'
 import {UserMenu} from './userMenu'
-import {NewDocumentButton} from './NewDocumentButton'
+import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
 import {NavDrawer} from './NavDrawer'
 import {ChangelogButton} from './changelog'
@@ -63,6 +63,8 @@ export function StudioNavbar() {
   const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
+
+  const newDocumentOptions = useNewDocumentOptions()
 
   const {onSearchFullscreenOpenChange, searchFullscreenOpen, searchFullscreenPortalEl} =
     useContext(NavbarContext)
@@ -184,7 +186,10 @@ export function StudioNavbar() {
             )}
 
             <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
-              <NewDocumentButton />
+              <NewDocumentButton
+                {...newDocumentOptions}
+                modal={shouldRender.brandingCenter ? 'dialog' : 'popover'}
+              />
             </Box>
 
             {/* Search */}
