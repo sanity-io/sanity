@@ -140,7 +140,7 @@
     "@sanity/client": "^5.2.0",
     "@sanity/color": "^2.1.20",
     "@sanity/diff": "3.7.1",
-    "@sanity/eventsource": "^3.0.1",
+    "@sanity/eventsource": "^5.0.0",
     "@sanity/export": "3.7.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/icons": "^2.1.0",
