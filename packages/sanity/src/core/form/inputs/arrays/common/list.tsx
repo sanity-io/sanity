@@ -142,7 +142,7 @@ interface ListProps extends ComponentProps<typeof Grid> {
 }
 
 export function List(props: ListProps) {
-  const {onItemMove, onItemMoveEnd, onItemMoveStart, sortable, ...rest} = props
+  const {onItemMove, onItemMoveEnd, onItemMoveStart, sortable, style, ...rest} = props
 
   // Note: this is here to make SortableList API compatible with onItemMove
   const handleSortEnd = useCallback(
@@ -152,15 +152,19 @@ export function List(props: ListProps) {
     [onItemMove]
   )
 
-  return sortable ? (
-    <SortableList
-      onItemMove={handleSortEnd}
-      onItemMoveStart={onItemMoveStart}
-      onItemMoveEnd={onItemMoveEnd}
-      {...rest}
-    />
-  ) : (
-    <Grid {...rest} />
+  return (
+    <div style={style}>
+      {sortable ? (
+        <SortableList
+          onItemMove={handleSortEnd}
+          onItemMoveStart={onItemMoveStart}
+          onItemMoveEnd={onItemMoveEnd}
+          {...rest}
+        />
+      ) : (
+        <Grid {...rest} />
+      )}
+    </div>
   )
 }
 

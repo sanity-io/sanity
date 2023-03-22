@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
-import {Card, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useMemo} from 'react'
+import {Card, Stack, Text, useBoundaryElement} from '@sanity/ui'
+import {useVirtualizer} from '@tanstack/react-virtual'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {Item, List} from '../../common/list'
 import {ArrayOfObjectsInputProps, ObjectItem} from '../../../../types'
 import {ArrayOfObjectsItem} from '../../../../members'
@@ -45,10 +46,46 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     [onInsert]
   )
 
+  const parentRef = useBoundaryElement()
+  const ref = useRef<HTMLDivElement>(null)
+
+  const virtualizer = useVirtualizer({
+    count: members.length,
+    estimateSize: () => 53,
+    getScrollElement: () => parentRef.element,
+    paddingEnd: 20,
+    observeElementOffset: (instance, cb) => {
+      if (!instance.scrollElement) {
+        return
+      }
+
+      const scroll = instance.scrollElement
+
+      const onScroll = () => {
+        const itemOffset = ref.current?.offsetTop ?? 0
+        cb(scroll.scrollTop - itemOffset)
+      }
+
+      onScroll()
+
+      instance.scrollElement.addEventListener('scroll', onScroll, {
+        capture: false,
+        passive: true,
+      })
+
+      // eslint-disable-next-line consistent-return
+      return () => {
+        scroll.removeEventListener('scroll', onScroll)
+      }
+    },
+  })
+
+  const items = virtualizer.getVirtualItems()
+
   const sortable = schemaType.options?.sortable !== false
   const memberKeys = useMemo(() => members.map((member) => member.key), [members])
   return (
-    <Stack space={3}>
+    <Stack space={3} ref={ref}>
       <UploadTargetCard
         types={schemaType.of}
         resolveUploader={resolveUploader}
@@ -64,7 +101,15 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               </Text>
             </Card>
           ) : (
-            <Card border radius={1}>
+            <Card
+              border
+              radius={1}
+              style={{
+                height: virtualizer.getTotalSize(),
+                width: '100%',
+                position: 'relative',
+              }}
+            >
               <List
                 axis="y"
                 gap={1}
@@ -72,27 +117,37 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 items={memberKeys}
                 onItemMove={onItemMove}
                 sortable={sortable}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${items[0].start}px)`,
+                }}
               >
-                {members.map((member) => (
-                  <Item key={member.key} sortable={sortable} id={member.key}>
-                    {member.kind === 'item' && (
-                      <ArrayOfObjectsItem
-                        member={member}
-                        renderItem={renderItem}
-                        renderField={renderField}
-                        renderInput={renderInput}
-                        renderPreview={renderPreview}
-                      />
-                    )}
-                    {member.kind === 'error' && (
-                      <ErrorItem
-                        sortable={sortable}
-                        member={member}
-                        onRemove={() => props.onItemRemove(member.key)}
-                      />
-                    )}
-                  </Item>
-                ))}
+                {items.map((virtualRow) => {
+                  const member = members[virtualRow.index]
+                  return (
+                    <Item key={virtualRow.key} sortable={sortable} id={member.key}>
+                      {member.kind === 'item' && (
+                        <ArrayOfObjectsItem
+                          member={member}
+                          renderItem={renderItem}
+                          renderField={renderField}
+                          renderInput={renderInput}
+                          renderPreview={renderPreview}
+                        />
+                      )}
+                      {member.kind === 'error' && (
+                        <ErrorItem
+                          sortable={sortable}
+                          member={member}
+                          onRemove={() => props.onItemRemove(member.key)}
+                        />
+                      )}
+                    </Item>
+                  )
+                })}
               </List>
             </Card>
           )}
