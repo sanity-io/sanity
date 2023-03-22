@@ -112,6 +112,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
   }, [isInspectOpen, displayed, value])
 
+  const rootEl = useRef<HTMLDivElement>(null)
+
   return (
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
       <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
@@ -121,7 +123,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           element={portalElement}
           __unstable_elements={{documentScrollElement: documentScrollElement}}
         >
-          <BoundaryElementProvider element={documentScrollElement}>
+          <BoundaryElementProvider element={rootEl.current}>
             {activeView.type === 'form' && !isPermissionsLoading && ready && (
               <>
                 <PermissionCheckBanner
@@ -135,7 +137,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
             <Scroller
               $disabled={layoutCollapsed || false}
               data-testid="document-panel-scroller"
-              ref={setDocumentScrollElement}
+              ref={rootEl}
             >
               <FormView
                 hidden={formViewHidden}
