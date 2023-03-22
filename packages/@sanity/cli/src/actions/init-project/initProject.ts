@@ -182,7 +182,7 @@ export default async function initSanity(
     print(`Project ID: ${chalk.cyan(projectId)}`)
     print(`Dataset: ${chalk.cyan(datasetName)}`)
     print(
-      `\nYou can find your project on Sanity Manage — https://www.sanity.io/manage/personal/project/${projectId}\n`
+      `\nYou can find your project on Sanity Manage — https://www.sanity.io/manage/project/${projectId}\n`
     )
     return
   }
