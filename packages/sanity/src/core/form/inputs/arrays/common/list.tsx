@@ -1,5 +1,5 @@
 import {Box, Card, Grid} from '@sanity/ui'
-import React, {ComponentProps, useCallback, useMemo} from 'react'
+import React, {ComponentProps, ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {
   AutoScrollOptions,
@@ -19,7 +19,7 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import {CSS, Transition} from '@dnd-kit/utilities'
+import {CSS} from '@dnd-kit/utilities'
 import {restrictToHorizontalAxis, restrictToVerticalAxis} from '@dnd-kit/modifiers'
 import {SortableItemIdContext} from './DragHandle'
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
@@ -60,7 +60,7 @@ function sortingStrategy(axis: Axis) {
   return axis === 'x' ? horizontalListSortingStrategy : verticalListSortingStrategy
 }
 
-function SortableList(props: ListProps) {
+const SortableList = memo(function SortableList(props: ListProps) {
   const {items, axis, onItemMove, onItemMoveStart, onItemMoveEnd, children, ...rest} = props
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, SENSOR_OPTIONS))
@@ -71,14 +71,14 @@ function SortableList(props: ListProps) {
 
       if (active.id !== over?.id) {
         onItemMove?.({
-          fromIndex: items.indexOf(active.id as string),
-          toIndex: items.indexOf(over?.id as string),
+          fromIndex: active.data.current?.sortable?.index,
+          toIndex: over?.data.current?.sortable?.index,
         })
       }
 
       onItemMoveEnd?.()
     },
-    [items, onItemMove, onItemMoveEnd]
+    [onItemMove, onItemMoveEnd]
   )
   const modifiers = useMemo(
     () => [restrictToParentElementWithMargins({y: 4}), ...(axis ? [restrictToAxis(axis)] : [])],
@@ -99,9 +99,12 @@ function SortableList(props: ListProps) {
       </SortableContext>
     </DndContext>
   )
-}
+})
 
-function SortableListItem(props: ItemProps) {
+const SortableListItem = forwardRef(function SortableListItem(
+  props: ItemProps,
+  ref: ForwardedRef<HTMLDivElement>
+) {
   const {id, children, disableTransition} = props
   const {setNodeRef, transform, transition, active} = useSortable({
     id,
@@ -119,17 +122,20 @@ function SortableListItem(props: ItemProps) {
       } as const),
     [transform, transition, active]
   )
+
   return (
-    <ListItem
-      ref={setNodeRef}
-      style={style}
-      $moving={isActive}
-      className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
-    >
-      {children}
-    </ListItem>
+    <div ref={ref} data-index={props['data-index']}>
+      <ListItem
+        ref={setNodeRef}
+        style={style}
+        $moving={isActive}
+        className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
+      >
+        {children}
+      </ListItem>
+    </div>
   )
-}
+})
 
 interface ListProps extends ComponentProps<typeof Grid> {
   sortable?: boolean
@@ -142,7 +148,7 @@ interface ListProps extends ComponentProps<typeof Grid> {
 }
 
 export function List(props: ListProps) {
-  const {onItemMove, onItemMoveEnd, onItemMoveStart, sortable, style, ...rest} = props
+  const {onItemMove, onItemMoveEnd, onItemMoveStart, sortable, ...rest} = props
 
   // Note: this is here to make SortableList API compatible with onItemMove
   const handleSortEnd = useCallback(
@@ -152,19 +158,15 @@ export function List(props: ListProps) {
     [onItemMove]
   )
 
-  return (
-    <div style={style}>
-      {sortable ? (
-        <SortableList
-          onItemMove={handleSortEnd}
-          onItemMoveStart={onItemMoveStart}
-          onItemMoveEnd={onItemMoveEnd}
-          {...rest}
-        />
-      ) : (
-        <Grid {...rest} />
-      )}
-    </div>
+  return sortable ? (
+    <SortableList
+      onItemMove={handleSortEnd}
+      onItemMoveStart={onItemMoveStart}
+      onItemMoveEnd={onItemMoveEnd}
+      {...rest}
+    />
+  ) : (
+    <Grid {...rest} />
   )
 }
 
@@ -176,13 +178,17 @@ interface ItemProps {
   sortable?: boolean
   disableTransition?: boolean
   children?: React.ReactNode
+  'data-index'?: number
 }
 
-export function Item(props: ItemProps & ComponentProps<typeof Card>) {
+export const Item = forwardRef(function Item(
+  props: ItemProps & ComponentProps<typeof Card>,
+  ref: ForwardedRef<HTMLDivElement>
+) {
   const {sortable, ...rest} = props
   return (
     <SortableItemIdContext.Provider value={props.id}>
-      {sortable ? <SortableListItem {...rest} /> : <ListItem {...rest} />}
+      {sortable ? <SortableListItem ref={ref} {...rest} /> : <ListItem ref={ref} {...rest} />}
     </SortableItemIdContext.Provider>
   )
-}
+})
