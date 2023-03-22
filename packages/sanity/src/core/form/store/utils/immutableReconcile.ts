@@ -18,6 +18,10 @@ function _immutableReconcile<T>(
 ): T {
   if (previous === next) return previous as T
 
+  if (parents.has(next)) {
+    return next
+  }
+
   // eslint-disable-next-line no-eq-null
   if (previous == null || next == null) return next
 
@@ -36,10 +40,6 @@ function _immutableReconcile<T>(
     let allEqual = previous.length === next.length
     const result = []
     for (let index = 0; index < next.length; index++) {
-      if (parents.has(next[index])) {
-        return next
-      }
-
       const nextItem = _immutableReconcile(previous[index], next[index], parents)
 
       if (nextItem !== previous[index]) {
@@ -59,9 +59,6 @@ function _immutableReconcile<T>(
     let allEqual = Object.keys(previous).length === nextKeys.length
     const result: Record<string, unknown> = {}
     for (const key of nextKeys) {
-      if (parents.has(next[key])) {
-        return next
-      }
       const nextValue = _immutableReconcile(previous[key], next[key]!, parents)
       if (nextValue !== previous[key]) {
         allEqual = false
