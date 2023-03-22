@@ -812,9 +812,7 @@ export default async function initSanity(
   async function writeToEnv(
     filename: string,
     object: Record<string, string>,
-    options = {} as {
-      framework?: Framework | null
-    }
+options: {framework: Framework | null}
   ) {
     const prefix = options.framework?.slug === 'sanity' ? '' : options.framework?.envPrefix ?? ''
     const envVariables = Object.keys(object)
