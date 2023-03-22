@@ -828,26 +828,24 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   tone={error ? 'critical' : 'default'}
                   $isInvalid={Boolean(error)}
                 >
-                  <Result padding={3} paddingTop={5} overflow="auto">
+                  <Result overflow="auto">
                     <InputBackgroundContainer>
                       <Box marginLeft={3}>
                         <StyledLabel muted>Result</StyledLabel>
                       </Box>
                     </InputBackgroundContainer>
-                    {(queryInProgress || (listenInProgress && listenMutations.length === 0)) && (
-                      <Box marginTop={3}>
-                        <DelayedSpinner />
-                      </Box>
-                    )}
-                    {error && (
-                      <Box>
-                        <QueryErrorDialog error={error} />
-                      </Box>
-                    )}
-                    {hasResult && <ResultView data={queryResult} />}
-                    {listenInProgress && listenMutations.length > 0 && (
-                      <ResultView data={listenMutations} />
-                    )}
+                    <Box padding={3} paddingTop={5}>
+                      {(queryInProgress || (listenInProgress && listenMutations.length === 0)) && (
+                        <Box marginTop={3}>
+                          <DelayedSpinner />
+                        </Box>
+                      )}
+                      {error && <QueryErrorDialog error={error} />}
+                      {hasResult && <ResultView data={queryResult} />}
+                      {listenInProgress && listenMutations.length > 0 && (
+                        <ResultView data={listenMutations} />
+                      )}
+                    </Box>
                   </Result>
                 </ResultContainer>
               </ResultInnerContainer>
