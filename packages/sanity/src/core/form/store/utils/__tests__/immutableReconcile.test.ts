@@ -26,19 +26,49 @@ test('it keeps equal objects in arrays', () => {
   expect(immutableReconcile(prev, next).arr[2]).toBe(prev.arr[2])
 })
 
-test('it handles a cyclic structures', () => {
-  const cyclic1: Record<string, unknown> = {test: 'foo'}
-  cyclic1.self = cyclic1
+test('it handles changing cyclic structures', () => {
+  const cyclicPrev: Record<string, unknown> = {test: 'foo'}
+  cyclicPrev.self = cyclicPrev
 
-  const cyclic2: Record<string, unknown> = {test: 'foo'}
-  cyclic2.self = cyclic2
+  const cyclicNext: Record<string, unknown> = {test: 'foo'}
+  cyclicNext.self = cyclicNext
 
-  const prev = {arr: [{foo: 'bar'}], cyclic: cyclic1}
-  const next = {arr: [{foo: 'bar'}], cyclic: cyclic2}
+  const prev = {arr: [{foo: 'bar'}], cyclic: cyclicPrev}
+  const next = {arr: [{foo: 'bar'}], cyclic: cyclicNext}
   expect(immutableReconcile(prev, next).arr).toBe(prev.arr)
 
-  // Note: it picks from ´next´
-  expect(immutableReconcile(prev, next).cyclic).toBe(cyclic2)
+  // it picks from ´next´, so in this case even though the cyclicPrev and cyclicNext values are structurally equal it
+  // returns a different object identity for the `cyclic` key, since strictly speaking it has changed to *another* cyclic structure (which only incidentally is the same).
+  const reconciled = immutableReconcile(prev, next)
+  expect(reconciled.cyclic).not.toBe(prev.cyclic)
+  expect(reconciled.cyclic.self).toBe(cyclicNext)
+})
+
+test('it handles non-changing cyclic structures', () => {
+  const cyclic: Record<string, unknown> = {test: 'foo'}
+  cyclic.self = cyclic
+
+  const prev = {
+    cyclic,
+    arr: [
+      {cyclic, value: 'old'},
+      {cyclic, value: 'unchanged'},
+    ],
+    other: {cyclic, value: 'unchanged'},
+  }
+  const next = {
+    cyclic,
+    arr: [
+      {cyclic, value: 'new'},
+      {cyclic, value: 'unchanged'},
+    ],
+    other: {cyclic, value: 'unchanged'},
+  }
+
+  const reconciled = immutableReconcile(prev, next)
+  expect(reconciled.arr).not.toBe(prev.arr)
+  expect(reconciled.arr[1]).toBe(prev.arr[1])
+  expect(reconciled.other).toBe(prev.other)
 })
 
 test('keeps the previous values where they deep equal to the next', () => {
