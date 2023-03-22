@@ -42,7 +42,8 @@ export interface LeafProps extends RenderLeafProps {
  * @internal
  */
 export const Leaf = (props: LeafProps) => {
-  const {attributes, children, leaf, schemaTypes, renderChild} = props
+  const {attributes, children, leaf, schemaTypes, renderChild, renderDecorator, renderAnnotation} =
+    props
   const spanRef = React.useRef<HTMLElement>(null)
   const portableTextEditor = usePortableTextEditor()
   const blockSelected = useSelected()
@@ -163,8 +164,8 @@ export const Leaf = (props: LeafProps) => {
     if (Text.isText(leaf) && leaf._type === schemaTypes.span.name) {
       marks.forEach((mark) => {
         const schemaType = schemaTypes.decorators.find((dec) => dec.value === mark)
-        if (schemaType && props.renderDecorator) {
-          returnedChildren = props.renderDecorator({
+        if (schemaType && renderDecorator) {
+          returnedChildren = renderDecorator({
             children: returnedChildren,
             editorElementRef: spanRef,
             focused,
@@ -184,10 +185,10 @@ export const Leaf = (props: LeafProps) => {
         annotations.forEach((annotation) => {
           const schemaType = schemaTypes.annotations.find((t) => t.name === annotation._type)
           if (schemaType) {
-            if (props.renderAnnotation) {
+            if (renderAnnotation) {
               returnedChildren = (
                 <span ref={spanRef}>
-                  {props.renderAnnotation({
+                  {renderAnnotation({
                     block,
                     children: returnedChildren,
                     editorElementRef: spanRef,
@@ -243,8 +244,9 @@ export const Leaf = (props: LeafProps) => {
     leaf,
     marks,
     path,
-    props,
+    renderAnnotation,
     renderChild,
+    renderDecorator,
     schemaTypes.annotations,
     schemaTypes.decorators,
     schemaTypes.span,
