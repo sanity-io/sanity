@@ -12,7 +12,6 @@
     "packages/sanity"
   ],
   "scripts": {
-    "__wip_smoke-test:cli": "yarn build && yarn publish:tarball && node -r esbuild-register test/smoke-test/cli.ts",
     "bootstrap": "yarn install && yarn build:dts && yarn build:cli",
     "build": "lerna run --scope '{@sanity/*,groq,sanity}' build",
     "build:cli": "run-s build",
