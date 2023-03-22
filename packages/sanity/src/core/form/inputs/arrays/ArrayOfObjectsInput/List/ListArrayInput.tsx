@@ -53,9 +53,8 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   const virtualizer = useVirtualizer({
     count: members.length,
-    estimateSize: () => 53,
-    getScrollElement: () => parentRef.element,
-    paddingEnd: 20,
+    estimateSize: useCallback(() => 53, []),
+    getScrollElement: useCallback(() => parentRef.element, [parentRef.element]),
     observeElementOffset: (instance, cb) => {
       if (!instance.scrollElement) {
         return
@@ -112,7 +111,8 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               border
               radius={1}
               style={{
-                height: virtualizer.getTotalSize(),
+                // Account for grid gap
+                height: `${virtualizer.getTotalSize() + items.length * 4}px`,
                 width: '100%',
                 position: 'relative',
               }}
@@ -120,7 +120,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               <List
                 axis="y"
                 gap={1}
-                paddingY={1}
+                paddingBottom={1}
                 items={memberKeys}
                 onItemMove={onItemMove}
                 sortable={sortable}
@@ -135,7 +135,13 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 {items.map((virtualRow) => {
                   const member = members[virtualRow.index]
                   return (
-                    <Item key={virtualRow.key} sortable={sortable} id={member.key}>
+                    <Item
+                      ref={virtualizer.measureElement}
+                      key={virtualRow.key}
+                      sortable={sortable}
+                      data-index={virtualRow.index}
+                      id={member.key}
+                    >
                       {member.kind === 'item' && (
                         <ArrayOfObjectsItem
                           member={member}

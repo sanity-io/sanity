@@ -52,7 +52,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [headerElement, setHeaderElement] = useState<HTMLDivElement | null>(null)
   const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
-  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const documentScrollElement = useRef<HTMLDivElement>(null)
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
@@ -97,9 +97,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   // Scroll to top as `documentId` changes
   useEffect(() => {
-    if (!documentScrollElement?.scrollTo) return
-    documentScrollElement.scrollTo(0, 0)
-  }, [documentId, documentScrollElement])
+    if (!documentScrollElement?.current?.scrollTo) return
+    documentScrollElement.current.scrollTo(0, 0)
+  }, [documentId])
 
   // Pass portal element to `DocumentPane`
   useEffect(() => {
@@ -112,8 +112,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
   }, [isInspectOpen, displayed, value])
 
-  const rootEl = useRef<HTMLDivElement>(null)
-
   return (
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
       <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
@@ -121,9 +119,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       <PaneContent>
         <PortalProvider
           element={portalElement}
-          __unstable_elements={{documentScrollElement: documentScrollElement}}
+          __unstable_elements={{documentScrollElement: documentScrollElement.current}}
         >
-          <BoundaryElementProvider element={rootEl.current}>
+          <BoundaryElementProvider element={documentScrollElement.current}>
             {activeView.type === 'form' && !isPermissionsLoading && ready && (
               <>
                 <PermissionCheckBanner
@@ -137,7 +135,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
             <Scroller
               $disabled={layoutCollapsed || false}
               data-testid="document-panel-scroller"
-              ref={rootEl}
+              ref={documentScrollElement}
             >
               <FormView
                 hidden={formViewHidden}
