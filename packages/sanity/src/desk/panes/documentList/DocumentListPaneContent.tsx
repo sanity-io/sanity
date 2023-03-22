@@ -1,71 +1,69 @@
 import {SyncIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Container,
-  Flex,
-  Heading,
-  Spinner,
-  Stack,
-  Text,
-  VirtualList,
-  VirtualListChangeOpts,
-} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {Box, Button, Card, Container, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
+import {useInputType} from '../../input-type'
 import {DocumentListPaneItem} from './types'
-import {getDocumentKey} from './helpers'
-import {FULL_LIST_LIMIT} from './constants'
-import {GeneralPreviewLayoutKey, getPublishedId, useSchema} from 'sanity'
+import {
+  CommandList,
+  CommandListHandle,
+  GeneralPreviewLayoutKey,
+  getPublishedId,
+  useSchema,
+} from 'sanity'
 
 interface DocumentListPaneContentProps {
   childItemId?: string
   error: {message: string} | null
-  filterIsSimpleTypeContraint: boolean
-  fullList: boolean
+  // fullList: boolean // Do we need this?
   isActive?: boolean
   isLoading: boolean
-  items: DocumentListPaneItem[] | null
+  items: DocumentListPaneItem[]
   layout?: GeneralPreviewLayoutKey
-  onListChange: (opts: VirtualListChangeOpts) => void
+  onListChange: () => void
   onRetry?: (event: unknown) => void
   showIcons: boolean
+  searchInputElement: HTMLInputElement | null
+  noDocumentsMessage?: React.ReactNode
 }
 
 export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {
+    onListChange,
     childItemId,
     error,
-    filterIsSimpleTypeContraint,
-    fullList,
+    // fullList,
     isActive,
     isLoading,
     items,
     layout,
-    onListChange,
+    noDocumentsMessage,
     onRetry,
+    searchInputElement,
     showIcons,
   } = props
 
   const schema = useSchema()
+  const inputType = useInputType()
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
+  const commandListRef = useRef<CommandListHandle | null>(null)
 
   useEffect(() => {
     if (collapsed) return undefined
 
     const timer = setTimeout(() => {
       setShouldRender(true)
+      commandListRef.current?.focusElement()
     }, 0)
 
     return () => {
       clearTimeout(timer)
     }
-  }, [collapsed])
+  }, [collapsed, items])
 
   const renderItem = useCallback(
     (item: SanityDocument) => {
@@ -78,10 +76,11 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <PaneItem
           icon={showIcons === false ? false : undefined}
           id={publishedId}
-          pressed={pressed}
-          selected={selected}
           layout={layout}
+          marginBottom={2}
+          pressed={pressed}
           schemaType={schema.get(item._type)}
+          selected={selected}
           value={item}
         />
       )
@@ -103,6 +102,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
               <Text as="p">
                 Error: <code>{error.message}</code>
               </Text>
+
               {onRetry && (
                 <Box>
                   {/* eslint-disable-next-line react/jsx-handler-names */}
@@ -115,7 +115,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       )
     }
 
-    if (items === null) {
+    if (isLoading && items.length === 0) {
       return (
         <Flex align="center" direction="column" height="fill" justify="center">
           <Delay ms={300}>
@@ -137,10 +137,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <Flex align="center" direction="column" height="fill" justify="center">
           <Container width={1}>
             <Box paddingX={4} paddingY={5}>
-              <Text align="center" muted size={2}>
-                {filterIsSimpleTypeContraint
-                  ? 'No documents of this type'
-                  : 'No matching documents'}
+              <Text align="center" muted size={1}>
+                {noDocumentsMessage}
               </Text>
             </Box>
           </Container>
@@ -148,51 +146,87 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       )
     }
 
-    const hasMoreItems = fullList && items.length === FULL_LIST_LIMIT
+    // const hasMoreItems = fullList && items.length === FULL_LIST_LIMIT
+    // prevents bug when panes won't render if first rendered while collapsed
+    // TODO: DO WE NEED THIS?
+    const key = `${index}-${collapsed}`
 
+    // if (items.length > 0) {
     return (
-      <Box padding={2}>
-        {items.length > 0 && (
-          <VirtualList
-            gap={1}
-            getItemKey={getDocumentKey}
-            items={items}
-            renderItem={renderItem}
-            onChange={onListChange}
-            // prevents bug when panes won't render if first rendered while collapsed
-            key={`${index}-${collapsed}`}
-          />
-        )}
+      <Box style={{position: 'relative'}} overflow="hidden" height="fill">
+        <CommandList
+          activeItemDataAttr="data-hovered"
+          ariaLabel="Documents" // TODO: Add better aria-label
+          disableActivateOnHover
+          focusVisible={inputType === 'keyboard'}
+          initialScrollAlign="center"
+          inputElement={searchInputElement}
+          itemHeight={51}
+          items={items}
+          key={key}
+          onEndReached={onListChange}
+          overscan={10}
+          padding={2}
+          paddingBottom={0}
+          ref={commandListRef}
+          renderItem={renderItem}
+          tabIndex={0}
+          wrapAround={false}
+        />
 
-        {isLoading && (
-          <Card borderTop marginTop={1} paddingX={3} paddingY={4}>
-            <Text align="center" muted size={1}>
-              Loading…
-            </Text>
-          </Card>
-        )}
-
-        {hasMoreItems && (
-          <Card marginTop={1} paddingX={3} paddingY={4} radius={2} tone="transparent">
-            <Text align="center" muted size={1}>
-              Displaying a maximum of {FULL_LIST_LIMIT} documents
-            </Text>
-          </Card>
+        {/* TODO: Improve this */}
+        {items.length > 0 && isLoading && (
+          <Delay ms={300}>
+            <Card
+              padding={5}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+              }}
+            >
+              <Flex align="center" direction="column" height="fill" justify="center">
+                <Spinner muted />
+              </Flex>
+            </Card>
+          </Delay>
         )}
       </Box>
     )
+    // }
+
+    // return (
+    //   <Box padding={2}>
+    //     {isLoading && (
+    //       <Card borderTop marginTop={1} paddingX={3} paddingY={4}>
+    //         <Text align="center" muted size={1}>
+    //           Loading…
+    //         </Text>
+    //       </Card>
+    //     )}
+
+    //     {hasMoreItems && (
+    //       <Card marginTop={1} paddingX={3} paddingY={4} radius={2} tone="transparent">
+    //         <Text align="center" muted size={1}>
+    //           Displaying a maximum of {FULL_LIST_LIMIT} documents
+    //         </Text>
+    //       </Card>
+    //     )}
+    //   </Box>
+    // )
   }, [
+    collapsed,
     error,
-    filterIsSimpleTypeContraint,
-    fullList,
-    onListChange,
+    index,
     isLoading,
     items,
+    noDocumentsMessage,
+    onListChange,
     onRetry,
     renderItem,
+    searchInputElement,
     shouldRender,
-    collapsed,
-    index,
   ])
 
   return <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>{content}</PaneContent>

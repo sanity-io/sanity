@@ -1,14 +1,16 @@
 import {useElementRect, Box, Card, Flex, LayerProvider} from '@sanity/ui'
 import React, {useMemo, useCallback, forwardRef} from 'react'
 import {usePane} from './usePane'
-import {Layout, Root, TabsBox, TitleBox, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
+import {Layout, Root, TabsBox, TitleCard, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
 import {LegacyLayerProvider} from 'sanity'
 
 interface PaneHeaderProps {
   actions?: React.ReactNode
   backButton?: React.ReactNode
+  content?: React.ReactNode
   loading?: boolean
   subActions?: React.ReactNode
+  tabIndex?: number
   tabs?: React.ReactNode
   title: React.ReactNode
 }
@@ -20,7 +22,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {actions, backButton, loading, subActions, tabs, title} = props
+  const {actions, backButton, content, loading, subActions, tabs, tabIndex, title} = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
 
@@ -49,25 +51,28 @@ export const PaneHeader = forwardRef(function PaneHeader(
             <Layout
               onClick={handleLayoutClick}
               padding={2}
-              paddingBottom={tabs || subActions ? 0 : 2}
+              paddingBottom={tabs ? 0 : 2}
               sizing="border"
               style={layoutStyle}
             >
               {backButton}
 
-              <TitleBox
+              <TitleCard
+                __unstable_focusRing
                 flex={1}
+                forwardedAs="button"
                 onClick={handleTitleClick}
-                paddingY={3}
                 paddingLeft={backButton ? 1 : 3}
+                paddingY={3}
+                tabIndex={tabIndex}
               >
                 {loading && <TitleTextSkeleton animated radius={1} />}
                 {!loading && (
-                  <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
+                  <TitleText textOverflow="ellipsis" weight="semibold">
                     {title}
                   </TitleText>
                 )}
-              </TitleBox>
+              </TitleCard>
 
               {actions && (
                 <Box hidden={collapsed} paddingLeft={1}>
@@ -80,7 +85,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
               <Flex
                 align="center"
                 hidden={collapsed}
-                paddingTop={1}
+                paddingTop={content ? 0 : 2}
                 paddingRight={2}
                 paddingBottom={2}
                 paddingLeft={3}
@@ -93,6 +98,8 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 {subActions && <Box>{subActions}</Box>}
               </Flex>
             )}
+
+            {!collapsed && content && content}
           </Card>
         </LegacyLayerProvider>
       </Root>

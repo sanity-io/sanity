@@ -47,6 +47,7 @@ function DocumentHeaderTab(props: {
       selected={isActive}
       label={label as any}
       onClick={handleClick}
+      padding={3}
     />
   )
 }

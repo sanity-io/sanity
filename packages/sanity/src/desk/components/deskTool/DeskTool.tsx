@@ -10,6 +10,7 @@ import {PaneLayout} from '../pane'
 import {useDeskTool} from '../../useDeskTool'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
+import {InputTypeProvider} from '../../input-type'
 
 interface DeskToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
@@ -80,42 +81,44 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
         onCollapse={handleRootCollapse}
         onExpand={handleRootExpand}
       >
-        {paneDataItems.map(
-          ({
-            active,
-            childItemId,
-            groupIndex,
-            itemId,
-            key: paneKey,
-            pane,
-            index: paneIndex,
-            params: paneParams,
-            path,
-            payload,
-            siblingIndex,
-            selected,
-          }) => (
-            <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
-              {pane === LOADING_PANE ? (
-                <LoadingPane paneKey={paneKey} path={path} selected={selected} />
-              ) : (
-                <DeskToolPane
-                  active={active}
-                  groupIndex={groupIndex}
-                  index={paneIndex}
-                  pane={pane}
-                  childItemId={childItemId}
-                  itemId={itemId}
-                  paneKey={paneKey}
-                  params={paneParams}
-                  payload={payload}
-                  selected={selected}
-                  siblingIndex={siblingIndex}
-                />
-              )}
-            </Fragment>
-          )
-        )}
+        <InputTypeProvider>
+          {paneDataItems.map(
+            ({
+              active,
+              childItemId,
+              groupIndex,
+              itemId,
+              key: paneKey,
+              pane,
+              index: paneIndex,
+              params: paneParams,
+              path,
+              payload,
+              siblingIndex,
+              selected,
+            }) => (
+              <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
+                {pane === LOADING_PANE ? (
+                  <LoadingPane paneKey={paneKey} path={path} selected={selected} />
+                ) : (
+                  <DeskToolPane
+                    active={active}
+                    groupIndex={groupIndex}
+                    index={paneIndex}
+                    pane={pane}
+                    childItemId={childItemId}
+                    itemId={itemId}
+                    paneKey={paneKey}
+                    params={paneParams}
+                    payload={payload}
+                    selected={selected}
+                    siblingIndex={siblingIndex}
+                  />
+                )}
+              </Fragment>
+            )
+          )}
+        </InputTypeProvider>
       </StyledPaneLayout>
       <div data-portal="" ref={setPortalElement} />
     </PortalProvider>

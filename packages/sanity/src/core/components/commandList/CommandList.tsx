@@ -15,6 +15,7 @@ import React, {
   useState,
 } from 'react'
 import styled from 'styled-components'
+// import {useInputType} from '../../util'
 import {CommandListHandle, CommandListProps} from './types'
 
 // Data attribute to assign to the current active virtual list element
@@ -49,6 +50,16 @@ const VirtualListBox = styled(Box)`
   overflow-y: auto;
   overscroll-behavior: contain;
   width: 100%;
+
+  &[data-focus-visible='true'] {
+    &:focus {
+      box-shadow: inset 0 0 0 2px var(--card-focus-ring-color);
+    }
+
+    &:focus:not(:focus-visible) {
+      box-shadow: none;
+    }
+  }
 `
 
 type VirtualListChildBoxProps = {
@@ -78,19 +89,22 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     ariaLabel,
     ariaMultiselectable = false,
     autoFocus,
+    disableActivateOnHover = false,
     fixedHeight,
+    focusVisible,
     getItemDisabled,
     getItemKey,
     getItemSelected,
-    initialScrollAlign = 'start',
     initialIndex,
+    initialScrollAlign = 'start',
     inputElement,
     itemHeight,
+    items,
     onEndReached,
     onEndReachedIndexOffset: onEndReachedIndexThreshold = 0,
     overscan,
     renderItem,
-    items,
+    tabIndex = -1,
     wrapAround = true,
     ...responsivePaddingProps
   },
@@ -349,6 +363,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       // Re-focus current element (input / virtual list element)
       focusElement()
 
+      // setFocusOutlineVisible(false)
+
       if (event.key === 'ArrowDown') {
         event.preventDefault()
         selectAdjacentItemIndex('next')
@@ -357,6 +373,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         event.preventDefault()
         selectAdjacentItemIndex('previous')
       }
+
       if (event.key === 'Enter') {
         event.preventDefault()
         const currentElement = childElements.find(
@@ -519,12 +536,17 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     }
   }, [autoFocus, focusElement])
 
+  // If the input element is present, use the input element as the
+  // focusable element (and set tabIndex to -1).
+  const rootTabIndex = inputElement ? -1 : tabIndex
+
   return (
     <VirtualListBox
+      data-focus-visible={focusVisible}
       id={getCommandListChildrenId()}
       ref={setVirtualListElement}
-      tabIndex={-1}
       sizing="border"
+      tabIndex={rootTabIndex}
       {...responsivePaddingProps}
     >
       <PointerOverlayDiv aria-hidden="true" data-enabled ref={setPointerOverlayElement} />
@@ -562,7 +584,9 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
                     id: getChildDescendantId(activeIndex),
                     role: 'option',
                     onMouseDown: handleChildMouseDown,
-                    onMouseEnter: handleChildMouseEnter(activeIndex),
+                    onMouseEnter: disableActivateOnHover
+                      ? null
+                      : handleChildMouseEnter(activeIndex),
                   }
                 : {}
 

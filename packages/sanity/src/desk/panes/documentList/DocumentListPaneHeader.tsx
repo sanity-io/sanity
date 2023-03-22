@@ -2,7 +2,7 @@ import {ArrowLeftIcon} from '@sanity/icons'
 import {Button} from '@sanity/ui'
 import React, {memo, useMemo} from 'react'
 import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
-import {BackLink, PaneHeader, PaneHeaderActions} from '../../components'
+import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
 import {useDeskTool} from '../../useDeskTool'
 import {SortOrder} from './types'
 import {GeneralPreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
@@ -15,19 +15,24 @@ interface DocumentListPaneHeaderProps {
   setLayout: (layout: GeneralPreviewLayoutKey) => void
   setSortOrder: (sortOrder: SortOrder) => void
   title: string
+  content?: React.ReactNode
 }
 
 export const DocumentListPaneHeader = memo(
   ({
+    content,
     index,
     initialValueTemplates = [],
-    menuItems = [],
     menuItemGroups = [],
+    menuItems = [],
     setLayout,
     setSortOrder,
     title,
   }: DocumentListPaneHeaderProps) => {
     const {features} = useDeskTool()
+    const {isLast} = usePane()
+
+    const tabIndex = isLast ? -1 : 0
 
     const actionHandlers = useMemo((): Record<string, DeskToolPaneActionHandler> => {
       return {
@@ -47,6 +52,7 @@ export const DocumentListPaneHeader = memo(
           index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
         }
         title={title}
+        tabIndex={tabIndex}
         actions={
           <PaneHeaderActions
             initialValueTemplateItems={initialValueTemplates}
@@ -55,6 +61,7 @@ export const DocumentListPaneHeader = memo(
             menuItems={menuItems}
           />
         }
+        content={content}
       />
     )
   }

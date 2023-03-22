@@ -70,4 +70,9 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   renderItem: CommandListRenderItemCallback<T>
   /** Allow wraparound keyboard navigation between first and last items */
   wrapAround?: boolean
+
+  //TMP
+  disableActivateOnHover?: boolean
+  tabIndex?: number
+  focusVisible?: boolean
 }

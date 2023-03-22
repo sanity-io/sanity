@@ -1,4 +1,4 @@
-import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme} from '@sanity/ui'
+import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme, Card} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export const Root = styled(Layer)`
@@ -25,7 +25,18 @@ export const Layout = styled(Flex)`
   }
 `
 
-export const TitleBox = styled(Box)``
+export const TitleCard = styled(Card)(({theme}: {theme: Theme}) => {
+  const {fg, bg} = theme.sanity.color.card.enabled
+
+  // Disable color updates on hover
+  return css`
+    background-color: ${bg};
+
+    [data-ui='Text'] {
+      color: ${fg};
+    }
+  `
+})
 
 export const TitleTextSkeleton = styled(TextSkeleton)`
   width: 66%;

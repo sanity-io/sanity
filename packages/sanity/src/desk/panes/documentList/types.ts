@@ -13,8 +13,8 @@ export type SortOrder = {
 }
 
 export interface QueryResult {
-  error: {message: string} | false
+  error: {message: string} | null
   loading?: boolean
   onRetry?: (event: unknown) => void
-  result: {documents: SanityDocument[]} | null
+  result: {documents: SanityDocument[]}
 }

@@ -1,6 +1,6 @@
 import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
 import {isSanityDocument, PreviewValue, SanityDocument, SchemaType} from '@sanity/types'
-import {Text} from '@sanity/ui'
+import {CardProps, Text} from '@sanity/ui'
 import React, {ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter'
@@ -24,6 +24,9 @@ interface PaneItemProps {
   title?: string
   value?: PreviewValue | SanityDocument
   schemaType?: SchemaType
+  margin?: CardProps['margin']
+  marginBottom?: CardProps['marginBottom']
+  marginTop?: CardProps['marginTop']
 }
 
 /**
@@ -43,7 +46,19 @@ export function getIconWithFallback(
 }
 
 export function PaneItem(props: PaneItemProps) {
-  const {icon, id, layout = 'default', pressed, schemaType, selected, title, value} = props
+  const {
+    icon,
+    id,
+    layout = 'default',
+    pressed,
+    schemaType,
+    selected,
+    title,
+    value,
+    margin,
+    marginBottom,
+    marginTop,
+  } = props
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const {ChildLink} = usePaneRouter()
@@ -111,11 +126,16 @@ export function PaneItem(props: PaneItemProps) {
       as={Link as FIXME}
       data-as="a"
       data-ui="PaneItem"
-      padding={2}
-      radius={2}
+      margin={margin}
+      marginBottom={marginBottom}
+      marginTop={marginTop}
       onClick={handleClick}
+      padding={2}
       pressed={pressed}
+      radius={2}
       selected={selected || clicked}
+      sizing="border"
+      tabIndex={-1}
       tone="inherit"
     >
       {preview}
