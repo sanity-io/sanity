@@ -171,6 +171,10 @@ export const Leaf = (props: LeafProps) => {
             path,
             selected,
             schemaType,
+            get type() {
+              console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+              return schemaType
+            },
             value: mark,
           })
         }
@@ -191,6 +195,10 @@ export const Leaf = (props: LeafProps) => {
                     path,
                     selected,
                     schemaType,
+                    get type() {
+                      console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+                      return schemaType
+                    },
                     value: annotation,
                   })}
                 </span>
@@ -217,6 +225,10 @@ export const Leaf = (props: LeafProps) => {
             path,
             schemaType: schemaTypes.span,
             selected,
+            get type() {
+              console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+              return schemaTypes.span
+            },
             value: child,
           })
         }

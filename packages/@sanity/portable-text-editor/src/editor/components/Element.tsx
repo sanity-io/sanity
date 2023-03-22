@@ -111,12 +111,13 @@ export const Element: FunctionComponent<ElementProps> = ({
               renderChild({
                 annotations: EMPTY_ANNOTATIONS, // These inline objects currently doesn't support annotations. This is a limitation of the current PT spec/model.
                 children: <ObjectNode value={value} />,
-                value: value as PortableTextChild,
-                schemaType,
-                focused,
-                selected,
-                path: elmPath,
                 editorElementRef: inlineBlockObjectRef,
+                focused,
+                path: elmPath,
+                schemaType,
+                selected,
+                type: schemaType,
+                value: value as PortableTextChild,
               })}
             {!renderChild && <ObjectNode value={value} />}
           </span>
@@ -191,6 +192,10 @@ export const Element: FunctionComponent<ElementProps> = ({
       selected,
       style,
       schemaType: schemaTypes.block,
+      get type() {
+        console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+        return schemaTypes.block
+      },
       value,
     }
 
@@ -220,12 +225,16 @@ export const Element: FunctionComponent<ElementProps> = ({
     renderBlock &&
     renderBlock({
       children: <ObjectNode value={value} />,
-      value: block,
-      schemaType,
-      selected,
+      editorElementRef: blockRef,
       focused,
       path: blockPath,
-      editorElementRef: blockRef,
+      schemaType,
+      selected,
+      get type() {
+        console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+        return schemaType
+      },
+      value: block,
     })
   return (
     <div key={element._key} {...attributes} className={className}>
