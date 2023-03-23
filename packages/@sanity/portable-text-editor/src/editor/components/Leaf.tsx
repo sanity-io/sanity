@@ -15,6 +15,9 @@ import {
   PortableTextMemberSchemaTypes,
   RenderAnnotationFunction,
   RenderDecoratorFunction,
+  BlockDecoratorRenderProps,
+  BlockAnnotationRenderProps,
+  BlockChildRenderProps,
 } from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {DefaultAnnotation} from '../nodes/DefaultAnnotation'
@@ -165,19 +168,26 @@ export const Leaf = (props: LeafProps) => {
       marks.forEach((mark) => {
         const schemaType = schemaTypes.decorators.find((dec) => dec.value === mark)
         if (schemaType && renderDecorator) {
-          returnedChildren = renderDecorator({
-            children: returnedChildren,
-            editorElementRef: spanRef,
-            focused,
-            path,
-            selected,
-            schemaType,
-            get type() {
-              console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
-              return schemaType
+          const _props: Omit<BlockDecoratorRenderProps, 'type'> = Object.defineProperty(
+            {
+              children: returnedChildren,
+              editorElementRef: spanRef,
+              focused,
+              path,
+              selected,
+              schemaType,
+              value: mark,
             },
-            value: mark,
-          })
+            'type',
+            {
+              enumerable: false,
+              get() {
+                console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+                return schemaType
+              },
+            }
+          )
+          returnedChildren = renderDecorator(_props as BlockDecoratorRenderProps)
         }
       })
 
@@ -186,23 +196,29 @@ export const Leaf = (props: LeafProps) => {
           const schemaType = schemaTypes.annotations.find((t) => t.name === annotation._type)
           if (schemaType) {
             if (renderAnnotation) {
+              const _props: Omit<BlockAnnotationRenderProps, 'type'> = Object.defineProperty(
+                {
+                  block,
+                  children: returnedChildren,
+                  editorElementRef: spanRef,
+                  focused,
+                  path,
+                  selected,
+                  schemaType,
+                  value: annotation,
+                },
+                'type',
+                {
+                  enumerable: false,
+                  get() {
+                    console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+                    return schemaType
+                  },
+                }
+              )
+
               returnedChildren = (
-                <span ref={spanRef}>
-                  {renderAnnotation({
-                    block,
-                    children: returnedChildren,
-                    editorElementRef: spanRef,
-                    focused,
-                    path,
-                    selected,
-                    schemaType,
-                    get type() {
-                      console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
-                      return schemaType
-                    },
-                    value: annotation,
-                  })}
-                </span>
+                <span ref={spanRef}>{renderAnnotation(_props as BlockAnnotationRenderProps)}</span>
               )
             } else {
               returnedChildren = (
@@ -218,20 +234,27 @@ export const Leaf = (props: LeafProps) => {
         const child = block.children.find((_child) => _child._key === leaf._key) // Ensure object equality
         if (child) {
           const defaultRendered = <>{returnedChildren}</>
-          returnedChildren = renderChild({
-            annotations,
-            children: defaultRendered,
-            editorElementRef: spanRef,
-            focused,
-            path,
-            schemaType: schemaTypes.span,
-            selected,
-            get type() {
-              console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
-              return schemaTypes.span
+          const _props: Omit<BlockChildRenderProps, 'type'> = Object.defineProperty(
+            {
+              annotations,
+              children: defaultRendered,
+              editorElementRef: spanRef,
+              focused,
+              path,
+              schemaType: schemaTypes.span,
+              selected,
+              value: child,
             },
-            value: child,
-          })
+            'type',
+            {
+              enumerable: false,
+              get() {
+                console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+                return schemaTypes.span
+              },
+            }
+          )
+          returnedChildren = renderChild(_props as BlockChildRenderProps)
         }
       }
     }
