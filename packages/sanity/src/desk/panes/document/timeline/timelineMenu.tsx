@@ -16,23 +16,7 @@ interface TimelineMenuProps {
 }
 
 const Root = styled(Popover)`
-  & > div {
-    display: flex;
-    flex-direction: column;
-
-    & > [data-ui='Card'] {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-
-      /* This is the scrollable container rendered by <Timeline /> */
-      & > div {
-        flex: 1;
-        min-height: 0;
-      }
-    }
-  }
+  overflow: hidden;
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
@@ -95,24 +79,35 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     [historyController]
   )
 
-  const content = open && (
-    <div ref={setMenuContent}>
-      {mode === 'rev' ? (
-        <Timeline
-          onSelect={selectRev}
-          onLoadMore={loadMoreHistory}
-          timeline={timeline}
-          {...revTimelineProps(historyController.realRevChunk)}
-        />
-      ) : (
-        <Timeline
-          onSelect={selectSince}
-          onLoadMore={loadMoreHistory}
-          timeline={timeline}
-          {...sinceTimelineProps(historyController.sinceTime!, historyController.realRevChunk)}
-        />
-      )}
-    </div>
+  const content = useMemo(
+    () => (
+      <div ref={setMenuContent}>
+        {mode === 'rev' ? (
+          <Timeline
+            onSelect={selectRev}
+            onLoadMore={loadMoreHistory}
+            timeline={timeline}
+            {...revTimelineProps(historyController.realRevChunk)}
+          />
+        ) : (
+          <Timeline
+            onSelect={selectSince}
+            onLoadMore={loadMoreHistory}
+            timeline={timeline}
+            {...sinceTimelineProps(historyController.sinceTime!, historyController.realRevChunk)}
+          />
+        )}
+      </div>
+    ),
+    [
+      historyController.realRevChunk,
+      historyController.sinceTime,
+      loadMoreHistory,
+      mode,
+      selectRev,
+      selectSince,
+      timeline,
+    ]
   )
 
   const timeLabel = useFormattedTimestamp(chunk?.endTimestamp || '')
@@ -128,7 +123,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   return (
     <Root
       constrainSize
-      content={content}
+      content={open && content}
       data-ui="versionMenu"
       open={open}
       placement={placement}

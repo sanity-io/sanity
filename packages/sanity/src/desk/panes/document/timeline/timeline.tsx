@@ -1,9 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Text, Spinner, Flex} from '@sanity/ui'
+import {Box, Flex, Spinner, Text} from '@sanity/ui'
 import {TimelineItem} from './timelineItem'
-import {Root, StackWrapper, MenuWrapper} from './timeline.styled'
-import {TimelineItemState} from './types'
-import {Chunk, Timeline as TimelineModel} from 'sanity'
+import {ListWrapper, StackWrapper} from './timeline.styled'
+import {Chunk, CommandList, CommandListRenderItemCallback, Timeline as TimelineModel} from 'sanity'
 
 interface TimelineProps {
   timeline: TimelineModel
@@ -22,15 +21,14 @@ interface TimelineProps {
 const LOAD_MORE_OFFSET = 20
 
 export const Timeline = ({
-  timeline,
-  disabledBeforeSelection,
-  topSelection,
   bottomSelection,
-  onSelect,
+  disabledBeforeSelection,
   onLoadMore,
+  onSelect,
+  timeline,
+  topSelection,
 }: TimelineProps) => {
   const rootRef = useRef<HTMLDivElement | null>(null)
-  const listRef = useRef<HTMLDivElement | null>(null)
   const [loadingElement, setLoadingElement] = useState<HTMLDivElement | null>(null)
 
   const checkIfLoadIsNeeded = useCallback(() => {
@@ -63,8 +61,31 @@ export const Timeline = ({
       })
   }, [disabledBeforeSelection, timeline, topSelection])
 
+  const selectedIndex = useMemo(
+    () => filteredChunks.findIndex((c) => c.id === bottomSelection.id),
+    [bottomSelection.id, filteredChunks]
+  )
+
+  const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
+    (chunk, {activeIndex}) => {
+      return (
+        <TimelineItem
+          chunk={chunk}
+          isFirst={activeIndex === 0}
+          isLast={activeIndex === filteredChunks.length - 1}
+          isLatest={activeIndex === 0 && !disabledBeforeSelection}
+          isSelected={activeIndex === selectedIndex}
+          onSelect={onSelect}
+          timestamp={chunk.endTimestamp}
+          type={chunk.type}
+        />
+      )
+    },
+    [disabledBeforeSelection, filteredChunks.length, onSelect, selectedIndex]
+  )
+
   return (
-    <Root ref={rootRef as any} onScroll={checkIfLoadIsNeeded} data-ui="timeline">
+    <Box ref={rootRef as any} onScroll={checkIfLoadIsNeeded} data-ui="timeline">
       {timeline.chunkCount === 0 && (
         <StackWrapper padding={3} space={3}>
           <Text size={1} weight="semibold">
@@ -77,30 +98,30 @@ export const Timeline = ({
         </StackWrapper>
       )}
 
-      <MenuWrapper ref={listRef} padding={1} space={0}>
-        {filteredChunks.map((chunk, index) => {
-          const bottomIndex = filteredChunks.findIndex((c) => c.id === bottomSelection.id)
-          const state: TimelineItemState = index === bottomIndex ? 'selected' : 'enabled'
-          return (
-            <TimelineItem
-              chunk={chunk}
-              isLatest={index === 0 && !disabledBeforeSelection}
-              onSelect={onSelect}
-              key={chunk.id}
-              state={state}
-              timestamp={chunk.endTimestamp}
-              type={chunk.type}
-            />
-          )
-        })}
-      </MenuWrapper>
+      {timeline.chunkCount > 0 && (
+        <ListWrapper direction="column">
+          <CommandList
+            activeItemDataAttr="data-hovered"
+            ariaLabel="Children"
+            autoFocus
+            initialIndex={selectedIndex}
+            initialScrollAlign="center"
+            itemHeight={40}
+            items={filteredChunks}
+            // onEndReached={handleLoadMore}
+            // onEndReachedIndexOffset={10}
+            overscan={10}
+            renderItem={renderItem}
+          />
+        </ListWrapper>
+      )}
 
       {!timeline.reachedEarliestEntry && (
         <Flex align="center" justify="center" padding={4} ref={setLoadingElement}>
           <Spinner muted />
         </Flex>
       )}
-    </Root>
+    </Box>
   )
 }
 

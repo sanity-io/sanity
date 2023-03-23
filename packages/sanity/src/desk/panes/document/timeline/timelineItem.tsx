@@ -1,10 +1,8 @@
-import React, {useCallback, createElement, useMemo, useState} from 'react'
+import React, {useCallback, createElement, useMemo} from 'react'
 import {Box, ButtonTone, Card, Flex, Label, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
-import {TimelineItemState} from './types'
 import {UserAvatarStack} from './userAvatarStack'
-
 import {EventLabel, IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
 import {ChunkType, Chunk} from 'sanity'
 
@@ -22,18 +20,22 @@ const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone
 
 interface TimelineItemProps {
   chunk: Chunk
+  isFirst: boolean
+  isLast: boolean
   isLatest: boolean
+  isSelected: boolean
   onSelect: (chunk: Chunk) => void
-  state: TimelineItemState
   timestamp: string
   type: ChunkType
 }
 
 export function TimelineItem({
   chunk,
+  isFirst,
+  isLast,
   isLatest,
+  isSelected,
   onSelect,
-  state,
   timestamp,
   type,
 }: TimelineItemProps) {
@@ -46,13 +48,8 @@ export function TimelineItem({
     return formattedDate
   }, [timestamp])
 
-  const isSelected = state === 'selected'
-  const isWithinSelection = state === 'withinSelection'
-
-  const [isHovered, setHovered] = useState(false)
-
   const handleClick = useCallback(
-    (evt: React.MouseEvent<HTMLDivElement>) => {
+    (evt: React.MouseEvent<HTMLButtonElement>) => {
       evt.preventDefault()
       evt.stopPropagation()
       onSelect(chunk)
@@ -62,27 +59,18 @@ export function TimelineItem({
 
   return (
     <Root
-      data-ui="timelineItem"
-      radius={2}
+      $selected={isSelected}
       data-chunk-id={chunk.id}
-      padding={0}
-      tone={
-        isHovered || isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]
-      }
-      pressed={isWithinSelection}
-      state={state}
-      selected={isSelected}
-      isHovered={isHovered}
-      disabled={state === 'disabled'}
+      data-first={isFirst ? true : undefined}
+      data-last={isLast ? true : undefined}
+      data-ui="timelineItem"
+      mode={isSelected ? 'default' : 'bleed'}
       onClick={handleClick}
+      padding={0}
+      radius={2}
+      tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
     >
-      <Box
-        // eslint-disable-next-line react/jsx-no-bind
-        onMouseEnter={() => setHovered(true)}
-        // eslint-disable-next-line react/jsx-no-bind
-        onMouseLeave={() => setHovered(false)}
-        paddingX={2}
-      >
+      <Box paddingX={2}>
         <Flex align="stretch">
           <IconWrapper align="center">
             <IconBox padding={2}>
@@ -97,9 +85,6 @@ export function TimelineItem({
                   padding={1}
                   radius={2}
                   shadow={1}
-                  style={{
-                    opacity: state === 'disabled' ? 0.5 : 1,
-                  }}
                   tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
                 >
                   <Label muted size={0}>
