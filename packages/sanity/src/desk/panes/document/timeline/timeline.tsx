@@ -1,8 +1,8 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Text, Spinner, Flex} from '@sanity/ui'
 import {TimelineItem} from './timelineItem'
-import {TimelineItemState} from './types'
 import {Root, StackWrapper, MenuWrapper} from './timeline.styled'
+import {TimelineItemState} from './types'
 import {Chunk, Timeline as TimelineModel} from 'sanity'
 
 interface TimelineProps {
@@ -33,8 +33,6 @@ export const Timeline = ({
   const listRef = useRef<HTMLDivElement | null>(null)
   const [loadingElement, setLoadingElement] = useState<HTMLDivElement | null>(null)
 
-  let state: TimelineItemState = disabledBeforeSelection ? 'disabled' : 'enabled'
-
   const checkIfLoadIsNeeded = useCallback(() => {
     const rootEl = rootRef.current
 
@@ -53,6 +51,18 @@ export const Timeline = ({
   // Load whenever it's needed
   useEffect(checkIfLoadIsNeeded, [checkIfLoadIsNeeded])
 
+  // Filter out any disabled chunks
+  const filteredChunks = useMemo(() => {
+    return timeline
+      .mapChunks((c) => c)
+      .filter((c) => {
+        if (disabledBeforeSelection) {
+          return c.index < topSelection.index
+        }
+        return true
+      })
+  }, [disabledBeforeSelection, timeline, topSelection])
+
   return (
     <Root ref={rootRef as any} onScroll={checkIfLoadIsNeeded} data-ui="timeline">
       {timeline.chunkCount === 0 && (
@@ -67,42 +77,23 @@ export const Timeline = ({
         </StackWrapper>
       )}
 
-      {timeline.chunkCount > 0 && (
-        <MenuWrapper ref={listRef} padding={1} space={0}>
-          {timeline.mapChunks((chunk) => {
-            const isSelectionTop = topSelection === chunk
-            const isSelectionBottom = bottomSelection === chunk
-
-            if (isSelectionTop) {
-              state = 'withinSelection'
-            }
-
-            if (isSelectionBottom) {
-              state = 'selected'
-            }
-
-            const item = (
-              <TimelineItem
-                chunk={chunk}
-                isSelectionBottom={isSelectionBottom}
-                isSelectionTop={isSelectionTop}
-                onSelect={onSelect}
-                key={chunk.id}
-                state={state}
-                timestamp={chunk.endTimestamp}
-                type={chunk.type}
-              />
-            )
-
-            // Flip it back to normal after we've rendered the active one.
-            if (state === 'selected') {
-              state = 'enabled'
-            }
-
-            return item
-          })}
-        </MenuWrapper>
-      )}
+      <MenuWrapper ref={listRef} padding={1} space={0}>
+        {filteredChunks.map((chunk, index) => {
+          const bottomIndex = filteredChunks.findIndex((c) => c.id === bottomSelection.id)
+          const state: TimelineItemState = index === bottomIndex ? 'selected' : 'enabled'
+          return (
+            <TimelineItem
+              chunk={chunk}
+              isLatest={index === 0 && !disabledBeforeSelection}
+              onSelect={onSelect}
+              key={chunk.id}
+              state={state}
+              timestamp={chunk.endTimestamp}
+              type={chunk.type}
+            />
+          )
+        })}
+      </MenuWrapper>
 
       {!timeline.reachedEarliestEntry && (
         <Flex align="center" justify="center" padding={4} ref={setLoadingElement}>

@@ -20,23 +20,23 @@ const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone
   withinSelection: 'primary',
 }
 
-export function TimelineItem({
-  chunk,
-  isSelectionBottom,
-  isSelectionTop,
-  onSelect,
-  state,
-  timestamp,
-  type,
-}: {
+interface TimelineItemProps {
   chunk: Chunk
-  isSelectionBottom: boolean
-  isSelectionTop: boolean
+  isLatest: boolean
   onSelect: (chunk: Chunk) => void
   state: TimelineItemState
   timestamp: string
   type: ChunkType
-}) {
+}
+
+export function TimelineItem({
+  chunk,
+  isLatest,
+  onSelect,
+  state,
+  timestamp,
+  type,
+}: TimelineItemProps) {
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
   const formattedTimestamp = useMemo(() => {
@@ -75,8 +75,6 @@ export function TimelineItem({
       selected={isSelected}
       isHovered={isHovered}
       disabled={state === 'disabled'}
-      data-selection-bottom={isSelectionBottom}
-      data-selection-top={isSelectionTop}
       onClick={handleClick}
     >
       <Box
@@ -94,6 +92,23 @@ export function TimelineItem({
           </IconWrapper>
 
           <Stack space={2} margin={2}>
+            {isLatest && (
+              <Flex>
+                <Card
+                  padding={1}
+                  radius={2}
+                  shadow={1}
+                  style={{
+                    opacity: state === 'disabled' ? 0.5 : 1,
+                  }}
+                  tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
+                >
+                  <Label muted size={0}>
+                    Latest
+                  </Label>
+                </Card>
+              </Flex>
+            )}
             <Box>
               <EventLabel size={1} weight="medium">
                 {formatTimelineEventLabel(type) || <code>{type}</code>}
