@@ -1,12 +1,12 @@
 import React, {useCallback, createElement, useMemo, useState} from 'react'
-import {Box, ButtonTone, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Box, ButtonTone, Card, Flex, Label, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
 import {TimelineItemState} from './types'
 import {UserAvatarStack} from './userAvatarStack'
 
 import {EventLabel, IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
-import {ChunkType, Chunk, useTimeAgo} from 'sanity'
+import {ChunkType, Chunk} from 'sanity'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone> = {
   initial: 'primary',
@@ -20,19 +20,25 @@ const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone
   withinSelection: 'primary',
 }
 
-export function TimelineItem(props: {
+export function TimelineItem({
+  chunk,
+  isSelectionBottom,
+  isSelectionTop,
+  onSelect,
+  state,
+  timestamp,
+  type,
+}: {
+  chunk: Chunk
   isSelectionBottom: boolean
   isSelectionTop: boolean
-  state: TimelineItemState
   onSelect: (chunk: Chunk) => void
-  chunk: Chunk
+  state: TimelineItemState
   timestamp: string
   type: ChunkType
 }) {
-  const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, type} = props
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
-  const timeAgo = useTimeAgo(timestamp, {minimal: true})
   const formattedTimestamp = useMemo(() => {
     const parsedDate = new Date(timestamp)
     const formattedDate = format(parsedDate, 'MMM d, yyyy, hh:mm a')
@@ -73,48 +79,37 @@ export function TimelineItem(props: {
       data-selection-top={isSelectionTop}
       onClick={handleClick}
     >
-      <Tooltip
-        portal
-        placement="left"
-        fallbackPlacements={['bottom']}
-        content={
-          <Stack padding={3} space={3}>
-            <Text size={1}>{formattedTimestamp}</Text>
-          </Stack>
-        }
+      <Box
+        // eslint-disable-next-line react/jsx-no-bind
+        onMouseEnter={() => setHovered(true)}
+        // eslint-disable-next-line react/jsx-no-bind
+        onMouseLeave={() => setHovered(false)}
+        paddingX={2}
       >
-        <Box
-          // eslint-disable-next-line react/jsx-no-bind
-          onMouseEnter={() => setHovered(true)}
-          // eslint-disable-next-line react/jsx-no-bind
-          onMouseLeave={() => setHovered(false)}
-          paddingX={2}
-        >
-          <Flex align="stretch">
-            <IconWrapper align="center">
-              <IconBox padding={2}>
-                <Text size={2}>{iconComponent && createElement(iconComponent)}</Text>
-              </IconBox>
-            </IconWrapper>
+        <Flex align="stretch">
+          <IconWrapper align="center">
+            <IconBox padding={2}>
+              <Text size={2}>{iconComponent && createElement(iconComponent)}</Text>
+            </IconBox>
+          </IconWrapper>
 
-            <Stack space={2} margin={2}>
-              <Box>
-                <EventLabel size={1} weight="medium">
-                  {formatTimelineEventLabel(type) || <code>{type}</code>}
-                </EventLabel>
-              </Box>
-              <TimestampBox paddingX={1}>
-                <Text size={0} muted>
-                  {timeAgo}
-                </Text>
-              </TimestampBox>
-            </Stack>
-            <Flex flex={1} justify="flex-end" align="center">
-              <UserAvatarStack maxLength={3} userIds={authorUserIds} />
-            </Flex>
+          <Stack space={2} margin={2}>
+            <Box>
+              <EventLabel size={1} weight="medium">
+                {formatTimelineEventLabel(type) || <code>{type}</code>}
+              </EventLabel>
+            </Box>
+            <TimestampBox paddingX={1}>
+              <Text size={0} muted>
+                {formattedTimestamp}
+              </Text>
+            </TimestampBox>
+          </Stack>
+          <Flex flex={1} justify="flex-end" align="center">
+            <UserAvatarStack maxLength={3} userIds={authorUserIds} />
           </Flex>
-        </Box>
-      </Tooltip>
+        </Flex>
+      </Box>
     </Root>
   )
 }

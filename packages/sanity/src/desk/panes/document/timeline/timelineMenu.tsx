@@ -1,12 +1,13 @@
 import {SelectIcon} from '@sanity/icons'
 import {useClickOutside, Button, Popover, Placement, useGlobalKeyDown} from '@sanity/ui'
+import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {sinceTimelineProps, revTimelineProps, formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
-import {Chunk, useTimeAgo} from 'sanity'
+import {Chunk} from 'sanity'
 
 interface TimelineMenuProps {
   chunk: Chunk | null
@@ -114,17 +115,14 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     </div>
   )
 
-  const timeAgo = useTimeAgo(chunk?.endTimestamp || '', {agoSuffix: true})
+  const timeLabel = useFormattedTimestamp(chunk?.endTimestamp || '')
 
   const revLabel = chunk
-    ? `${upperFirst(formatTimelineEventLabel(chunk.type))} ${timeAgo}`
-    : 'Current version'
+    ? `${upperFirst(formatTimelineEventLabel(chunk.type))}: ${timeLabel}`
+    : 'Latest version'
 
-  const sinceLabel = chunk
-    ? `Since ${formatTimelineEventLabel(chunk.type)} ${timeAgo}`
-    : 'Since unknown version'
+  const sinceLabel = chunk ? `Since: ${timeLabel}` : 'Since unknown version'
 
-  const openLabel = mode === 'rev' ? 'Select version' : 'Review changes since'
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
 
   return (
@@ -145,8 +143,18 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         onClick={open ? handleClose : handleOpen}
         ref={setButton}
         selected={open}
-        text={open ? openLabel : buttonLabel}
+        text={buttonLabel}
       />
     </Root>
   )
+}
+
+export function useFormattedTimestamp(time: string): string {
+  const formatted = useMemo(() => {
+    const parsedDate = time ? new Date(time) : new Date()
+    const formattedDate = format(parsedDate, 'MMM d, yyyy, hh:mm a')
+    return formattedDate
+  }, [time])
+
+  return formatted
 }

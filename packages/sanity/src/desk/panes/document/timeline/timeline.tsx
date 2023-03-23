@@ -86,11 +86,11 @@ export const Timeline = ({
                 chunk={chunk}
                 isSelectionBottom={isSelectionBottom}
                 isSelectionTop={isSelectionTop}
+                onSelect={onSelect}
                 key={chunk.id}
                 state={state}
-                onSelect={onSelect}
-                type={chunk.type}
                 timestamp={chunk.endTimestamp}
+                type={chunk.type}
               />
             )
 
