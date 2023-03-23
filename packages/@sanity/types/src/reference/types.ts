@@ -1,3 +1,4 @@
+import type {SanityClient} from '@sanity/client'
 import type {Path} from '../paths'
 import type {SanityDocument} from '../documents'
 
@@ -27,11 +28,17 @@ export type ReferenceFilterSearchOptions = {
 }
 
 /** @public */
-export type ReferenceFilterResolver = (options: {
+export interface ReferenceFilterResolverContext {
   document: SanityDocument
   parent?: Record<string, unknown> | Record<string, unknown>[]
   parentPath: Path
-}) => ReferenceFilterSearchOptions | Promise<ReferenceFilterSearchOptions>
+  getClient: (options: {apiVersion: string}) => SanityClient
+}
+
+/** @public */
+export type ReferenceFilterResolver = (
+  context: ReferenceFilterResolverContext
+) => ReferenceFilterSearchOptions | Promise<ReferenceFilterSearchOptions>
 
 /** @public */
 export interface ReferenceFilterResolverOptions {

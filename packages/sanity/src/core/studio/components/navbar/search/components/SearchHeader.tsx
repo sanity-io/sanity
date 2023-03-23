@@ -1,14 +1,9 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
-import React, {useCallback, useEffect, useRef} from 'react'
+import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
 import {useSearchState} from '../contexts/search/useSearchState'
-import {useCommandList} from './commandList/useCommandList'
 import {CustomTextInput} from './common/CustomTextInput'
-
-interface SearchHeaderProps {
-  onClose: () => void
-}
 
 const rotate = keyframes`
   from {
@@ -27,10 +22,6 @@ const FilterBox = styled(Box)`
   position: relative;
 `
 
-const SearchHeaderCard = styled(Card)`
-  flex-shrink: 0;
-`
-
 const NotificationBadge = styled.div`
   background: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.enabled.fg};
   border-radius: 100%;
@@ -41,7 +32,15 @@ const NotificationBadge = styled.div`
   width: 6px;
 `
 
-export function SearchHeader({onClose}: SearchHeaderProps) {
+interface SearchHeaderProps {
+  ariaInputLabel: string
+  onClose?: () => void
+}
+
+export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(function SearchHeader(
+  {ariaInputLabel, onClose},
+  ref
+) {
   const isMountedRef = useRef(false)
 
   const {
@@ -54,8 +53,6 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
       terms: {types, query},
     },
   } = useSearchState()
-
-  const {setHeaderInputElement} = useCommandList()
 
   const handleFiltersToggle = useCallback(
     () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
@@ -86,7 +83,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
   const notificationBadgeVisible = filters.length > 0 || types.length > 0
 
   return (
-    <SearchHeaderCard>
+    <Card flex="none">
       <Flex align="center" flex={1} gap={fullscreen ? 2 : 1} padding={fullscreen ? 2 : 1}>
         {/* (Fullscreen) Close button */}
         {fullscreen && (
@@ -98,6 +95,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
         {/* Search field */}
         <Box flex={1}>
           <CustomTextInput
+            aria-label={ariaInputLabel}
             autoComplete="off"
             background={fullscreen}
             border={false}
@@ -108,7 +106,7 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
             onClear={handleQueryClear}
             placeholder="Search"
             radius={fullscreen ? 2 : 1}
-            ref={setHeaderInputElement}
+            ref={ref}
             smallClearButton={fullscreen}
             spellCheck={false}
             value={query}
@@ -133,6 +131,6 @@ export function SearchHeader({onClose}: SearchHeaderProps) {
           </FilterBox>
         )}
       </Flex>
-    </SearchHeaderCard>
+    </Card>
   )
-}
+})

@@ -33,6 +33,7 @@ import {useClient} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {readAsText} from '../../../studio/uploads/file/readAsText'
 import {accepts} from '../../../studio/uploads/accepts'
+import {applyAll} from '../../../patch/applyPatch'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -179,9 +180,27 @@ export function ArrayOfPrimitivesField(props: {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
+      const patches = PatchEvent.from(event).patches
+      // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
+      const isRemovingLastItem = patches.some(
+        (patch) => patch.type === 'unset' && patch.path.length === 1
+      )
+
+      if (isRemovingLastItem) {
+        // apply the patch to the current value
+        const result = applyAll(member.field.value || [], patches)
+
+        // if the result is an empty array
+        if (Array.isArray(result) && !result.length) {
+          // then unset the array field
+          onChange(PatchEvent.from(unset([member.name])))
+          return
+        }
+      }
+      // otherwise apply the patch
       onChange(PatchEvent.from(event).prepend(setIfMissing([])).prefixAll(member.name))
     },
-    [onChange, member.name]
+    [onChange, member.name, member.field.value]
   )
 
   const handleSetCollapsed = useCallback(

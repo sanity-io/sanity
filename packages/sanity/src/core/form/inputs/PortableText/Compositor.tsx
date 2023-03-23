@@ -9,19 +9,11 @@ import {
   BlockChildRenderProps,
   BlockAnnotationRenderProps,
 } from '@sanity/portable-text-editor'
-import {BlockSchemaType, Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
-import {
-  BoundaryElementProvider,
-  Portal,
-  PortalProvider,
-  useBoundaryElement,
-  usePortal,
-} from '@sanity/ui'
+import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
+import {Box, Portal, PortalProvider, usePortal} from '@sanity/ui'
 import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
-import {FormInput} from '../../components'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../../util'
-import {FIXME} from '../../../FIXME'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
@@ -30,10 +22,7 @@ import {RenderBlockActionsCallback} from './types'
 import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {useHotkeys} from './hooks/useHotKeys'
-import {ObjectEditModal} from './object/renderers/ObjectEditModal'
 import {useScrollToOpenedMember} from './hooks/useScrollToOpenedMember'
-import {usePortableTextMemberItems} from './hooks/usePortableTextMembers'
-import {_isBlockType} from './_helpers'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   hasFocus: boolean
@@ -56,41 +45,38 @@ export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
 export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
   const {
     changed,
-    focusPath = EMPTY_ARRAY,
     focused,
+    focusPath = EMPTY_ARRAY,
     hasFocus,
     hotkeys,
     isActive,
     isFullscreen,
+    onActivate,
     onChange,
     onCopy,
-    onActivate,
     onItemClose,
     onItemOpen,
     onItemRemove,
     onPaste,
+    onPathFocus,
     onToggleFullscreen,
     path,
+    readOnly,
     renderBlockActions,
     renderCustomMarkers,
-    value,
-    readOnly,
     renderPreview,
+    value,
   } = props
 
   const editor = usePortableTextEditor()
 
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
-  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
-  const portableTextMemberItems = usePortableTextMemberItems()
-
-  const {element: boundaryElement} = useBoundaryElement()
+  const [boundaryElement, setBoundaryElement] = useState<HTMLElement | null>(null)
 
   // Scroll to the DOM element of the "opened" portable text member when relevant.
   useScrollToOpenedMember({
-    hasFormFocus: focusPath.length > 0,
     editorRootPath: path,
-    scrollElement,
+    boundaryElement: undefined,
     onItemClose,
   })
 
@@ -116,77 +102,125 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const _renderCustomMarkers = !!value && renderCustomMarkers ? renderCustomMarkers : undefined
 
   const initialSelection = useMemo(
-    (): EditorSelection =>
-      focusPath.length > 0
+    (): EditorSelection => {
+      return focusPath.length > 0
         ? {
             anchor: {path: focusPath, offset: 0},
             focus: {path: focusPath, offset: 0},
           }
-        : null,
+        : null
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [] // Only initial
   )
 
-  const renderBlock = useCallback(
+  const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
+
+  const renderTextBlock = useCallback(
     (blockProps: BlockRenderProps) => {
       const {
         children,
         focused: blockFocused,
         path: blockPath,
         selected,
-        type: blockType,
+        schemaType: blockSchemaType,
         value: block,
       } = blockProps
-      const isTextBlock = block._type === editor.schemaTypes.block.name
-      if (isTextBlock) {
-        return (
-          <TextBlock
-            block={block as PortableTextTextBlock}
-            focused={blockFocused}
-            isFullscreen={isFullscreen}
-            onChange={onChange}
-            path={blockPath}
-            readOnly={readOnly}
-            renderBlockActions={_renderBlockActions}
-            renderCustomMarkers={_renderCustomMarkers}
-            selected={selected}
-            type={blockType as BlockSchemaType}
-          >
-            {children}
-          </TextBlock>
-        )
-      }
+      return (
+        <TextBlock
+          boundaryElement={boundaryElement || undefined}
+          focused={blockFocused}
+          isFullscreen={isFullscreen}
+          onChange={onChange}
+          onItemClose={onItemClose}
+          onItemOpen={onItemOpen}
+          onItemRemove={onItemRemove}
+          onPathFocus={onPathFocus}
+          path={path.concat(blockPath)}
+          readOnly={readOnly}
+          renderBlockActions={_renderBlockActions}
+          renderCustomMarkers={_renderCustomMarkers}
+          renderPreview={renderPreview}
+          schemaType={blockSchemaType}
+          selected={selected}
+          value={block as PortableTextTextBlock}
+        >
+          {children}
+        </TextBlock>
+      )
+    },
+    [
+      _renderBlockActions,
+      _renderCustomMarkers,
+      boundaryElement,
+      isFullscreen,
+      onChange,
+      onItemClose,
+      onItemOpen,
+      onItemRemove,
+      onPathFocus,
+      path,
+      readOnly,
+      renderPreview,
+    ]
+  )
+
+  const renderObjectBlock = useCallback(
+    (blockProps: BlockRenderProps) => {
+      const {
+        focused: blockFocused,
+        path: blockPath,
+        selected: blockSelected,
+        schemaType: blockSchemaType,
+        value: blockValue,
+      } = blockProps
       return (
         <BlockObject
-          block={block}
           focused={blockFocused}
           isFullscreen={isFullscreen}
           onChange={onChange}
           onItemOpen={onItemOpen}
           onItemClose={onItemClose}
           onItemRemove={onItemRemove}
-          path={blockPath}
+          onPathFocus={onPathFocus}
+          path={path.concat(blockPath)}
           readOnly={readOnly}
+          renderPreview={renderPreview}
           renderBlockActions={_renderBlockActions}
           renderCustomMarkers={_renderCustomMarkers}
-          renderPreview={renderPreview}
-          selected={selected}
-          type={blockType}
+          boundaryElement={boundaryElement || undefined}
+          selected={blockSelected}
+          schemaType={blockSchemaType}
+          value={blockValue}
         />
       )
     },
     [
       _renderBlockActions,
       _renderCustomMarkers,
-      editor.schemaTypes.block.name,
+      boundaryElement,
       isFullscreen,
       onChange,
-      onItemOpen,
       onItemClose,
+      onItemOpen,
       onItemRemove,
-      readOnly,
+      onPathFocus,
+      path,
       renderPreview,
+      readOnly,
     ]
+  )
+
+  const renderBlock = useCallback(
+    (blockProps: BlockRenderProps) => {
+      const {value: block} = blockProps
+      const isTextBlock = block._type === editor.schemaTypes.block.name
+      if (isTextBlock) {
+        return renderTextBlock(blockProps)
+      }
+      return renderObjectBlock(blockProps)
+    },
+    [editor.schemaTypes.block.name, renderObjectBlock, renderTextBlock]
   )
 
   const renderChild = useCallback(
@@ -196,7 +230,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         focused: childFocused,
         path: childPath,
         selected,
-        schemaType: childType,
+        schemaType: childSchemaType,
         value: child,
       } = childProps
       const isSpan = child._type === editor.schemaTypes.span.name
@@ -206,42 +240,63 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       return (
         <InlineObject
           focused={childFocused}
+          onPathFocus={onPathFocus}
+          onItemClose={onItemClose}
           onItemOpen={onItemOpen}
-          path={childPath}
+          path={path.concat(childPath)}
           readOnly={readOnly}
           renderCustomMarkers={renderCustomMarkers}
           renderPreview={renderPreview}
-          scrollElement={scrollElement}
+          boundaryElement={boundaryElement || undefined}
           selected={selected}
-          type={childType}
+          schemaType={childSchemaType}
           value={child}
         />
       )
     },
-    [editor, onItemOpen, readOnly, renderCustomMarkers, renderPreview, scrollElement]
+    [
+      boundaryElement,
+      editor.schemaTypes.span.name,
+      onItemClose,
+      onItemOpen,
+      onPathFocus,
+      path,
+      readOnly,
+      renderCustomMarkers,
+      renderPreview,
+    ]
   )
 
   const renderAnnotation = useCallback(
     (annotationProps: BlockAnnotationRenderProps) => {
+      const {
+        children,
+        focused: aFocused,
+        path: aPath,
+        selected,
+        schemaType: aSchemaType,
+        value: aValue,
+      } = annotationProps
       return (
         <Annotation
-          renderProps={annotationProps}
-          onItemOpen={onItemOpen}
+          boundaryElement={boundaryElement}
+          focused={aFocused}
           onItemClose={onItemClose}
+          onItemOpen={onItemOpen}
+          onPathFocus={onPathFocus}
+          path={path.concat(aPath)}
           readOnly={readOnly}
+          relativePath={aPath}
           renderCustomMarkers={renderCustomMarkers}
-          scrollElement={scrollElement}
-        />
+          schemaType={aSchemaType}
+          selected={selected}
+          value={aValue}
+        >
+          {children}
+        </Annotation>
       )
     },
-    [onItemOpen, onItemClose, readOnly, renderCustomMarkers, scrollElement]
-  )
-
-  const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
-
-  const openMemberItems = useMemo(
-    () => portableTextMemberItems.filter((m) => m.member.open && !_isBlockType(m.node.schemaType)),
-    [portableTextMemberItems]
+    [boundaryElement, onItemClose, onItemOpen, onPathFocus, path, readOnly, renderCustomMarkers]
   )
 
   const editorNode = useMemo(
@@ -261,8 +316,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         renderBlock={renderBlock}
         renderChild={renderChild}
         setPortalElement={setPortalElement}
-        scrollElement={scrollElement}
-        setScrollElement={setScrollElement}
+        scrollElement={boundaryElement}
+        setScrollElement={setBoundaryElement}
       />
     ),
 
@@ -281,35 +336,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderAnnotation,
       renderBlock,
       renderChild,
-      scrollElement,
+      boundaryElement,
     ]
-  )
-
-  const boundaryElm = isFullscreen ? scrollElement : boundaryElement
-
-  const children = useMemo(
-    () =>
-      boundaryElm && (
-        <>
-          {editorNode}
-          <BoundaryElementProvider element={boundaryElm}>
-            {openMemberItems.map((dMemberItem) => {
-              return (
-                <ObjectEditModal
-                  kind={dMemberItem.kind}
-                  key={dMemberItem.member.key}
-                  memberItem={dMemberItem}
-                  onClose={onItemClose}
-                  scrollElement={boundaryElm}
-                >
-                  <FormInput absolutePath={dMemberItem.node.path} {...(props as FIXME)} />
-                </ObjectEditModal>
-              )
-            })}
-          </BoundaryElementProvider>
-        </>
-      ),
-    [boundaryElm, editorNode, openMemberItems, props, onItemClose]
   )
 
   const portal = usePortal()
@@ -334,11 +362,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           path={path}
         >
           <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
-            <div data-wrapper="" ref={setWrapperElement}>
+            <Box data-wrapper="" ref={setWrapperElement}>
               <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                {isFullscreen ? <ExpandedLayer>{children}</ExpandedLayer> : children}
+                {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
               </Portal>
-            </div>
+            </Box>
             <div data-border="" />
           </Root>
         </ChangeIndicator>

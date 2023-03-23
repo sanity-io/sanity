@@ -1,55 +1,15 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {map, filter, scan, catchError} from 'rxjs/operators'
+import React, {useEffect, useState} from 'react'
+import {map, catchError} from 'rxjs/operators'
 import {combineLatest, of} from 'rxjs'
-import {History} from 'history'
 import {ErrorBoundary} from '@sanity/ui'
-import {createHookFromObservableFactory} from '../../util'
-import {ConfigResolutionError, Tool, Source, Workspace} from '../../config'
-import {createRouter, createRouterEventStream} from '../router'
+import {ConfigResolutionError, Source, Workspace} from '../../config'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 import {WorkspaceProvider} from '../workspace'
 import {SourceProvider} from '../source'
-import {Router, RouterProvider, RouterState} from 'sanity/router'
+import {WorkspaceRouterProvider} from './WorkspaceRouterProvider'
+
 // TODO: work on error handler
 // import {flattenErrors} from './flattenErrors'
-
-const isStateEvent = <T extends {type: string}>(e: T): e is Extract<T, {type: 'state'}> =>
-  e.type === 'state'
-
-const initialState: StudioRouterState = {isNotFound: true, state: {}}
-
-interface StudioRouterState {
-  isNotFound: boolean
-  state: RouterState
-}
-
-type UseRouterStateOptions = [
-  unstable_history: History,
-  router: Router | undefined,
-  tools: Tool[] | undefined
-]
-
-const useRouterState = createHookFromObservableFactory(
-  ([unstable_history, router, tools]: UseRouterStateOptions) => {
-    if (!router || !tools) return of(initialState)
-
-    return createRouterEventStream({
-      unstable_history,
-      router,
-      tools,
-    }).pipe(
-      filter(isStateEvent),
-      scan((prevState, event) => {
-        return {
-          ...prevState,
-          isNotFound: event.isNotFound,
-          state: event.state,
-        }
-      }, initialState)
-    )
-  },
-  initialState
-)
 
 interface WorkspaceLoaderProps {
   children: React.ReactNode
@@ -64,22 +24,8 @@ function WorkspaceLoader({
   const [error, handleError] = useState<unknown>(null)
   if (error) throw error
 
-  const {
-    activeWorkspace,
-    __internal: {history},
-  } = useActiveWorkspace()
+  const {activeWorkspace} = useActiveWorkspace()
   const [workspace, setWorkspace] = useState<Workspace | null>(null)
-
-  const handleNavigate = useCallback(
-    (opts: {path: string; replace?: boolean}) => {
-      if (opts.replace) {
-        history.replace(opts.path)
-      } else {
-        history.push(opts.path)
-      }
-    },
-    [history]
-  )
 
   useEffect(() => {
     const subscription = combineLatest(
@@ -122,16 +68,7 @@ function WorkspaceLoader({
     return () => subscription.unsubscribe()
   }, [activeWorkspace])
 
-  const tools = workspace?.tools
-  const router = useMemo(() => {
-    if (!workspace) return undefined
-    return createRouter(workspace)
-  }, [workspace])
-
-  const [routerState] = useRouterState(
-    useMemo(() => [history, router, tools], [history, router, tools])
-  )
-  if (!router || !workspace) return <LoadingComponent />
+  if (!workspace) return <LoadingComponent />
 
   // TODO: may need a screen if one of the sources is not logged in. e.g. it
   // is currently possible for the user to be logged into the current workspace
@@ -144,9 +81,9 @@ function WorkspaceLoader({
         // the first source is always the root source and is always present
         source={workspace.unstable_sources[0]}
       >
-        <RouterProvider onNavigate={handleNavigate} router={router} state={routerState.state}>
+        <WorkspaceRouterProvider LoadingComponent={LoadingComponent} workspace={workspace}>
           {children}
-        </RouterProvider>
+        </WorkspaceRouterProvider>
       </SourceProvider>
     </WorkspaceProvider>
   )

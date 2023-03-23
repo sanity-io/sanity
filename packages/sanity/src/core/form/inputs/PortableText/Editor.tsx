@@ -51,24 +51,7 @@ interface EditorProps {
 }
 
 const renderDecorator: RenderDecoratorFunction = (props) => {
-  const {children, value, type, focused, selected} = props
-  const CustomComponent = type.component
-  if (CustomComponent) {
-    // eslint-disable-next-line react/jsx-no-bind
-    return (
-      <CustomComponent
-        focused={focused}
-        selected={selected}
-        title={type.title}
-        value={value}
-        // eslint-disable-next-line react/jsx-no-bind
-        renderDefault={() => <Decorator mark={value}>{children}</Decorator>}
-      >
-        {children}
-      </CustomComponent>
-    )
-  }
-  return <Decorator mark={value}>{children}</Decorator>
+  return <Decorator {...props} />
 }
 
 const renderStyle: RenderStyleFunction = (props) => {
@@ -119,14 +102,6 @@ export function Editor(props: EditorProps) {
     )
   )
 
-  // Keep the editor focused even though we are clicking on the background or the toolbar of the editor.
-  const handleMouseDown = useCallback((event: React.SyntheticEvent) => {
-    if (event.target instanceof Node && !editableRef.current?.contains(event.target)) {
-      event.preventDefault()
-      event.stopPropagation()
-    }
-  }, [])
-
   const renderPlaceholder = useCallback(() => <>Empty</>, [])
   const spellcheck = useSpellcheck()
 
@@ -174,7 +149,7 @@ export function Editor(props: EditorProps) {
   )
 
   return (
-    <Root $fullscreen={isFullscreen} data-testid="pt-editor" onMouseDown={handleMouseDown}>
+    <Root $fullscreen={isFullscreen} data-testid="pt-editor">
       {isActive && (
         <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
           <Toolbar

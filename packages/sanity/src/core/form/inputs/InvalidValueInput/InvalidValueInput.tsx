@@ -6,6 +6,7 @@ import {Details} from '../../components/Details'
 import {isDev} from '../../../environment'
 import {converters as CONVERTERS, ValueConverter} from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
+import {isPlainObject} from 'lodash'
 
 interface Converter extends ValueConverter {
   from: string
@@ -59,7 +60,7 @@ export const InvalidValueInput = forwardRef(
       [value, actualType, validTypes]
     )
 
-    if (typeof value === 'object' && value !== null && !('_type' in value)) {
+    if (isPlainObject(value) && !('_type' in (value as object))) {
       return (
         <UntypedValueInput
           value={value as Record<string, unknown>}

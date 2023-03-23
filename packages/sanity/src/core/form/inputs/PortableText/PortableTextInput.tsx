@@ -18,6 +18,7 @@ import React, {
   useRef,
   useImperativeHandle,
   createRef,
+  ReactNode,
 } from 'react'
 import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
@@ -29,6 +30,8 @@ import type {ArrayOfObjectsInputProps, PortableTextMarker, RenderCustomMarkers} 
 import {EMPTY_ARRAY} from '../../../util'
 import {pathToString} from '../../../field'
 import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
+import {FormInput} from '../../components'
+import {FIXME} from '../../../FIXME'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
@@ -44,6 +47,7 @@ export interface PortableTextMemberItem {
   member: ArrayOfObjectsItemMember
   node: ObjectFormNode
   elementRef?: React.MutableRefObject<PortableTextEditorElement> | undefined
+  input?: ReactNode
 }
 
 /**
@@ -160,19 +164,22 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
     for (const member of members) {
       if (member.kind === 'item') {
-        if (!_isBlockType(member.item.schemaType)) {
+        const isObjectBlock = !_isBlockType(member.item.schemaType)
+        if (isObjectBlock) {
           result.push({kind: 'objectBlock', member, node: member.item})
-        } else if (member.item.validation.length > 0 || member.item.changed) {
-          // Only text blocks that have validation or changes
-          result.push({kind: 'textBlock', member, node: member.item})
-        }
-
-        if (_isBlockType(member.item.schemaType)) {
+        } else {
+          // Also include regular text blocks with validation, presence or changes.
+          if (
+            member.item.validation.length > 0 ||
+            member.item.changed ||
+            member.item.presence?.length
+          ) {
+            result.push({kind: 'textBlock', member, node: member.item})
+          }
           // Inline objects
           const childrenField = member.item.members.find(
             (f) => f.kind === 'field' && f.name === 'children'
           )
-
           if (
             childrenField &&
             childrenField.kind === 'field' &&
@@ -186,12 +193,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
               }
             }
           }
-
           // Markdefs
           const markDefArrayMember = member.item.members
             .filter(_isArrayOfObjectsFieldMember)
             .find((f) => f.name === 'markDefs')
-
           if (markDefArrayMember) {
             // eslint-disable-next-line max-depth
             for (const child of markDefArrayMember.field.members) {
@@ -209,29 +214,36 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
     }
 
-    const items: PortableTextMemberItem[] = result.map((r) => {
-      const key = pathToString(r.node.path.slice(path.length))
+    const items: PortableTextMemberItem[] = result.map((item) => {
+      const key = pathToString(item.node.path)
       const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
+      let input: ReactNode
+
+      if (item.kind !== 'textBlock') {
+        input = <FormInput absolutePath={item.node.path} {...(props as FIXME)} />
+      }
 
       if (existingItem) {
-        existingItem.member = r.member
-        existingItem.node = r.node
+        existingItem.member = item.member
+        existingItem.node = item.node
+        existingItem.input = input
         return existingItem
       }
 
       return {
-        kind: r.kind,
+        kind: item.kind,
         key,
-        member: r.member,
-        node: r.node,
+        member: item.member,
+        node: item.node,
         elementRef: createRef<PortableTextEditorElement>(),
+        input,
       }
     })
 
     portableTextMemberItemsRef.current = items
 
     return items
-  }, [members, path])
+  }, [members, props])
 
   const hasOpenItem = useMemo(() => {
     return portableTextMemberItems.some((item) => item.member.open)

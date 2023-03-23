@@ -1,25 +1,29 @@
 import {BlockListItemRenderProps} from '@sanity/portable-text-editor'
-import React, {useCallback} from 'react'
+import React, {useMemo} from 'react'
+import {BlockListItemProps} from '../../../types'
+
+const DefaultComponent = (dProps: BlockListItemProps) => {
+  return <>{dProps.children}</>
+}
 
 export const ListItem = (props: BlockListItemRenderProps) => {
-  const {block, children, type, selected, focused, level, value} = props
-  const renderDefault = useCallback(() => <>{children}</>, [children])
-
-  const CustomComponent = type.component
-  if (CustomComponent) {
-    return (
-      <CustomComponent
-        block={block}
-        focused={focused}
-        level={level}
-        renderDefault={renderDefault}
-        selected={selected}
-        title={type.title}
-        value={value}
-      >
-        {children}
-      </CustomComponent>
+  const {block, children, schemaType, selected, focused, level, value} = props
+  const {title, component: CustomComponent} = schemaType
+  return useMemo(() => {
+    const componentProps = {
+      block,
+      focused,
+      level,
+      renderDefault: DefaultComponent,
+      schemaType,
+      selected,
+      title,
+      value,
+    }
+    return CustomComponent ? (
+      <CustomComponent {...componentProps}>{children}</CustomComponent>
+    ) : (
+      <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
-  }
-  return children
+  }, [CustomComponent, block, children, focused, level, schemaType, selected, title, value])
 }

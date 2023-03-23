@@ -1,9 +1,9 @@
 import React from 'react'
 import Debug from 'debug'
+import {supportsTouch} from '../../../../../util'
 import type {Coordinate} from './types'
 
 const debug = Debug('sanity-imagetool')
-const supportsTouch = typeof window !== 'undefined' && 'ontouchstart' in window
 
 type PositionableEvent =
   | {touches: React.TouchEvent['touches'] | TouchEvent['touches']}

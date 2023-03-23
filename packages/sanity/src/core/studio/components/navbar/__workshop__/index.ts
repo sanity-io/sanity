@@ -2,8 +2,8 @@ import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
 export default defineScope({
-  name: 'sanity/studio/navbar/base',
-  title: 'Base',
+  name: 'core/studio/navbar/base',
+  title: 'Navbar',
   stories: [
     {
       name: 'navbar',
@@ -19,6 +19,11 @@ export default defineScope({
       name: 'workspacePreview',
       title: 'WorkspacePreview',
       component: lazy(() => import('./WorkspacePreviewStory')),
+    },
+    {
+      name: 'new-document-button',
+      title: 'NewDocumentButton',
+      component: lazy(() => import('./NewDocumentButtonStory')),
     },
   ],
 })

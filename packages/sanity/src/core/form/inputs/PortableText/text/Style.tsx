@@ -1,37 +1,46 @@
 import React, {useCallback, useMemo} from 'react'
 import {BlockStyleRenderProps} from '@sanity/portable-text-editor'
+import {BlockStyleProps} from '../../../types'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
 export const Style = (props: BlockStyleRenderProps) => {
-  const {block, focused, children, selected, type} = props
-  const DefaultComponent = useMemo(
+  const {block, focused, children, selected, schemaType} = props
+  const DefaultComponentWithFallback = useMemo(
     () =>
       (block.style && TEXT_STYLES[block.style] ? TEXT_STYLES[block.style] : TEXT_STYLES[0]) ||
       FallbackComponent,
     [block.style]
   )
 
-  const defaultRendered = useMemo(
-    () => <DefaultComponent>{children}</DefaultComponent>,
-    [DefaultComponent, children]
+  const DefaultComponent = useCallback(
+    (defaultComponentProps: BlockStyleProps) => {
+      return (
+        <DefaultComponentWithFallback>
+          <TextContainer data-testid={`text-style--${block.style}`}>
+            {defaultComponentProps.children}
+          </TextContainer>
+        </DefaultComponentWithFallback>
+      )
+    },
+    [DefaultComponentWithFallback, block.style]
   )
 
-  const renderDefault = useCallback(() => defaultRendered, [defaultRendered])
-
-  const CustomComponent = type.component
-  if (CustomComponent) {
-    return (
-      <CustomComponent
-        block={block}
-        title={type.title}
-        value={type.value}
-        selected={selected}
-        focused={focused}
-        renderDefault={renderDefault}
-      >
-        <TextContainer data-testid={`text-style--${block.style}`}>{children}</TextContainer>
-      </CustomComponent>
+  return useMemo(() => {
+    const CustomComponent = schemaType.component
+    const {title, value} = schemaType
+    const componentProps = {
+      block,
+      focused,
+      renderDefault: DefaultComponent,
+      schemaType,
+      selected,
+      title,
+      value,
+    }
+    return CustomComponent ? (
+      <CustomComponent {...componentProps}>{children}</CustomComponent>
+    ) : (
+      <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
-  }
-  return defaultRendered
+  }, [DefaultComponent, block, children, focused, schemaType, selected])
 }

@@ -52,6 +52,7 @@ export const DEBUG_INPUT_TYPES = [
   'initialValuesTest',
   'invalidPreviews',
   'thesis',
+  'manyFieldsTest',
   'noTitleField',
   'poppers',
   'presence',

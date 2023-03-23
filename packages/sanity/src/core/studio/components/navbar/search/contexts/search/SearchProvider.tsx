@@ -1,5 +1,14 @@
 import isEqual from 'lodash/isEqual'
-import React, {ReactNode, useCallback, useEffect, useMemo, useReducer, useRef} from 'react'
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
+import {CommandListHandle} from '../../../../../../components'
 import {useClient, useSchema} from '../../../../../../hooks'
 import type {SearchableType, SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
@@ -32,6 +41,7 @@ interface SearchProviderProps {
  */
 export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const onCloseRef = useRef<(() => void) | null>(null)
+  const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
@@ -218,6 +228,8 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
         dispatch,
         onClose: onCloseRef?.current,
         recentSearchesStore,
+        searchCommandList,
+        setSearchCommandList,
         setOnClose: handleSetOnClose,
         state: {
           ...state,

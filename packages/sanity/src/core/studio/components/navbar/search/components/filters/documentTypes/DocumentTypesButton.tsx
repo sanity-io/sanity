@@ -58,6 +58,7 @@ export function DocumentTypesButton() {
         onClick={handleOpen}
         padding={fullscreen ? 3 : 2}
         ref={setButtonElement}
+        selected={open}
         style={{maxWidth: '100%'}}
         text={title}
         tone="default"

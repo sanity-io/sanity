@@ -18,7 +18,6 @@ import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
 import ObjectNode from '../nodes/DefaultObject'
 import {DefaultBlockObject, DefaultListItem, DefaultListItemInner} from '../nodes/index'
 import {DraggableBlock} from './DraggableBlock'
-import {DraggableChild} from './DraggableChild'
 
 const debug = debugWithName('components:Element')
 const debugRenders = false
@@ -100,28 +99,28 @@ export const Element: FunctionComponent<ElementProps> = ({
         <span {...attributes}>
           {/* Note that children must follow immediately or cut and selections will not work properly in Chrome. */}
           {children}
-          <DraggableChild element={element} readOnly={readOnly}>
-            <span
-              className="pt-inline-object"
-              ref={inlineBlockObjectRef}
-              key={element._key}
-              style={inlineBlockStyle}
-              contentEditable={false}
-            >
-              {renderChild &&
-                renderChild({
-                  annotations: EMPTY_ANNOTATIONS, // These inline objects currently doesn't support annotations. This is a limitation of the current PT spec/model.
-                  children: <ObjectNode value={value} />,
-                  value: value as PortableTextChild,
-                  schemaType,
-                  focused,
-                  selected,
-                  path: elmPath,
-                  editorElementRef: inlineBlockObjectRef,
-                })}
-              {!renderChild && <ObjectNode value={value} />}
-            </span>
-          </DraggableChild>
+          <span
+            draggable={!readOnly}
+            className="pt-inline-object"
+            ref={inlineBlockObjectRef}
+            key={element._key}
+            style={inlineBlockStyle}
+            contentEditable={false}
+          >
+            {renderChild &&
+              renderChild({
+                annotations: EMPTY_ANNOTATIONS, // These inline objects currently doesn't support annotations. This is a limitation of the current PT spec/model.
+                children: <ObjectNode value={value} />,
+                editorElementRef: inlineBlockObjectRef,
+                focused,
+                path: elmPath,
+                schemaType,
+                selected,
+                type: schemaType,
+                value: value as PortableTextChild,
+              })}
+            {!renderChild && <ObjectNode value={value} />}
+          </span>
         </span>
       )
     }
@@ -147,7 +146,7 @@ export const Element: FunctionComponent<ElementProps> = ({
         selected,
         value: style,
         path: blockPath,
-        type: blockStyleType,
+        schemaType: blockStyleType,
         editorElementRef: blockRef,
       })
     }
@@ -168,7 +167,7 @@ export const Element: FunctionComponent<ElementProps> = ({
           selected,
           value: element.listItem,
           path: blockPath,
-          type: listType,
+          schemaType: listType,
           level: value.level || 1,
           editorElementRef: blockRef,
         })
@@ -192,7 +191,11 @@ export const Element: FunctionComponent<ElementProps> = ({
       path: blockPath,
       selected,
       style,
-      type: schemaTypes.block,
+      schemaType: schemaTypes.block,
+      get type() {
+        console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+        return schemaTypes.block
+      },
       value,
     }
 
@@ -205,8 +208,8 @@ export const Element: FunctionComponent<ElementProps> = ({
       </div>
     )
   }
-  const type = schemaTypes.blockObjects.find((_type) => _type.name === element._type)
-  if (!type) {
+  const schemaType = schemaTypes.blockObjects.find((_type) => _type.name === element._type)
+  if (!schemaType) {
     throw new Error(`Could not find schema type for block element of _type ${element._type}`)
   }
   if (debugRenders) {
@@ -222,12 +225,16 @@ export const Element: FunctionComponent<ElementProps> = ({
     renderBlock &&
     renderBlock({
       children: <ObjectNode value={value} />,
-      value: block,
-      type,
-      selected,
+      editorElementRef: blockRef,
       focused,
       path: blockPath,
-      editorElementRef: blockRef,
+      schemaType,
+      selected,
+      get type() {
+        console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+        return schemaType
+      },
+      value: block,
     })
   return (
     <div key={element._key} {...attributes} className={className}>

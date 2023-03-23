@@ -2,7 +2,7 @@ import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
 export default defineScope({
-  name: 'sanity/desk/status-bar',
+  name: 'desk/panes/status-bar',
   title: 'StatusBar',
   stories: [
     {

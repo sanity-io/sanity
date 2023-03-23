@@ -73,15 +73,11 @@ describe('initialization', () => {
                       data-slate-leaf="true"
                     >
                       <span
-                        draggable="false"
+                        data-slate-length="0"
+                        data-slate-zero-width="n"
                       >
-                        <span
-                          data-slate-length="0"
-                          data-slate-zero-width="n"
-                        >
-                          ﻿
-                          <br />
-                        </span>
+                        ﻿
+                        <br />
                       </span>
                     </span>
                   </span>

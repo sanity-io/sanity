@@ -1,7 +1,6 @@
-import {Box, Card, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
+import {Box, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
-import styled from 'styled-components'
-import {PreviewCard} from '../../../../../../../components/PreviewCard'
+import {PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
 import SearchResultItemPreview from './SearchResultItemPreview'
@@ -14,10 +13,6 @@ interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePadding
   documentType: string
   onClick?: () => void
 }
-
-const PreviewCardLink = styled(Card).attrs({as: 'a'})`
-  // Intentionally left empty – we just want to use the attrs() to set the as prop to "a"
-`
 
 export function SearchResultItem({
   compact,
@@ -54,9 +49,8 @@ export function SearchResultItem({
   return (
     <Box {...rest}>
       <PreviewCard
-        as={PreviewCardLink}
+        as="a"
         data-as="a"
-        data-command-list-item
         flex={1}
         href={disableIntentLink ? undefined : href}
         onClick={handleClick}

@@ -3,8 +3,8 @@ import {lazy} from 'react'
 import DefaultSchemaStory from './defaultSchema/Story'
 
 export default defineScope({
-  name: 'sanity/form/portable-text-input',
-  title: 'PortableTextInput',
+  name: 'core/form/inputs/portable-text',
+  title: 'PortableText',
   stories: [
     {
       name: 'default',

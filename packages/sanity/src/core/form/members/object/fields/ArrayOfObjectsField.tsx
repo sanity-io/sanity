@@ -29,6 +29,7 @@ import {useFormBuilder} from '../../../useFormBuilder'
 import * as is from '../../../utils/is'
 import {useResolveInitialValueForType} from '../../../../store'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
+import {applyAll} from '../../../patch/applyPatch'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -90,9 +91,27 @@ export function ArrayOfObjectsField(props: {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
+      const patches = PatchEvent.from(event).patches
+      // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
+      const isRemovingLastItem = patches.some(
+        (patch) => patch.type === 'unset' && patch.path.length === 1
+      )
+
+      if (isRemovingLastItem) {
+        // apply the patch to the current value
+        const result = applyAll(member.field.value || [], patches)
+
+        // if the result is an empty array
+        if (Array.isArray(result) && !result.length) {
+          // then unset the array field
+          onChange(PatchEvent.from(unset([member.name])))
+          return
+        }
+      }
+      // otherwise apply the patch
       onChange(PatchEvent.from(event).prepend(setIfMissing([])).prefixAll(member.name))
     },
-    [onChange, member.name]
+    [onChange, member.name, member.field.value]
   )
   const resolveInitialValue = useResolveInitialValueForType()
 
@@ -235,9 +254,9 @@ export function ArrayOfObjectsField(props: {
         uploadSubscriptions.current[itemKey].unsubscribe()
         delete uploadSubscriptions.current[itemKey]
       }
-      handleChange([unset(member.field.path.concat({_key: itemKey}))])
+      handleChange([unset([{_key: itemKey}])])
     },
-    [handleChange, member.field.path]
+    [handleChange]
   )
 
   const handleFocusChildPath = useCallback(

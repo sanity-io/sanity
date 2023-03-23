@@ -53,6 +53,7 @@ import invalidPreviews from './debug/invalidPreviews'
 import {languageFilterDebugType} from './debug/languageFilter'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
+import manyFieldsTest from './debug/manyFieldsTest'
 import notitle from './debug/notitle'
 import poppers from './debug/poppers'
 import presence, {objectWithNestedArray} from './debug/presence'
@@ -177,6 +178,7 @@ export const schemaTypes = [
   languageFilterDebugType,
   liveEdit,
   localeString,
+  manyFieldsTest,
   markdown,
   mux,
   myImage,

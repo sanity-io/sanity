@@ -145,7 +145,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       const rendered = (
         <Leaf
           {...lProps}
-          keyGenerator={keyGenerator}
           schemaTypes={schemaTypes}
           renderAnnotation={renderAnnotation}
           renderChild={renderChild}
@@ -165,15 +164,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
       return rendered
     },
-    [
-      keyGenerator,
-      readOnly,
-      renderAnnotation,
-      renderChild,
-      renderDecorator,
-      renderPlaceholder,
-      schemaTypes,
-    ]
+    [readOnly, renderAnnotation, renderChild, renderDecorator, renderPlaceholder, schemaTypes]
   )
 
   // Restore selection from props
@@ -199,14 +190,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
     }
   }, [slateEditor, propsSelection, blockTypeName, change$])
-
-  // Set initial selection from props
-  useEffect(() => {
-    if (propsSelection) {
-      PortableTextEditor.select(portableTextEditor, propsSelection)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only initial
 
   // Handle from props onCopy function
   const handleCopy = useCallback(

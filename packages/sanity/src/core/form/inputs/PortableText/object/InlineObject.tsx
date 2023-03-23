@@ -1,133 +1,210 @@
-import {hues} from '@sanity/color'
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path, PortableTextChild} from '@sanity/types'
+import {
+  EditorSelection,
+  PortableTextEditor,
+  usePortableTextEditor,
+} from '@sanity/portable-text-editor'
+import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import styled, {css} from 'styled-components'
-import {Box, Card, Theme, Tooltip} from '@sanity/ui'
-import {RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
+import {Tooltip} from '@sanity/ui'
+import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {PortableTextEditorElement} from '../Compositor'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
-import {FIXME} from '../../../../FIXME'
+import {EMPTY_ARRAY} from '../../../../util'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
+import {ObjectEditModal} from './modals/ObjectEditModal'
+import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
 
 interface InlineObjectProps {
+  boundaryElement?: HTMLElement
   focused: boolean
   selected: boolean
   path: Path
+  onItemClose: () => void
+  onPathFocus: (path: Path) => void
   onItemOpen: (path: Path) => void
   readOnly?: boolean
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
-  scrollElement: HTMLElement | null
-  type: ObjectSchemaType
+  schemaType: ObjectSchemaType
   value: PortableTextChild
 }
 
-function rootStyle({theme}: {theme: Theme}) {
-  const {color, radius} = theme.sanity
-
-  return css`
-    line-height: 0;
-    border-radius: ${radius[2]}px;
-    padding: 2px;
-    box-shadow: inset 0 0 0 1px var(--card-border-color);
-    height: calc(1em - 1px);
-    margin-top: 0.0625em;
-    cursor: default;
-
-    &:not([hidden]) {
-      display: inline-flex;
-      align-items: center;
-      vertical-align: top;
-    }
-
-    &[data-ready-only] {
-      cursor: default;
-    }
-
-    &[data-focused] {
-      box-shadow: inset 0 0 0 1px ${color.selectable?.primary.selected.border};
-      color: ${color.selectable?.primary.pressed.fg};
-    }
-
-    &[data-selected] {
-      background-color: ${color.selectable?.primary.pressed.bg};
-    }
-
-    &:not([data-focused]):not([data-selected]) {
-      @media (hover: hover) {
-        &:hover {
-          --card-border-color: ${color.input.default.hovered.border};
-        }
-      }
-    }
-
-    &[data-markers] {
-      --card-bg-color: ${color.dark ? hues.purple[950].hex : hues.purple[50].hex};
-    }
-
-    &[data-warning] {
-      --card-bg-color: ${color.muted.caution.hovered.bg};
-
-      @media (hover: hover) {
-        &:hover {
-          --card-border-color: ${color.muted.caution.hovered.border};
-        }
-      }
-    }
-
-    &[data-invalid] {
-      --card-bg-color: ${color.input.invalid.enabled.bg};
-      --card-border-color: ${color.input.invalid.enabled.border};
-
-      @media (hover: hover) {
-        &:hover {
-          --card-border-color: ${color.input.invalid.hovered.border};
-        }
-      }
-    }
-  `
-}
-
-const Root = styled(Card)(rootStyle)
-
-const PreviewSpan = styled.span`
-  display: block;
-  max-width: calc(5em + 80px);
-  position: relative;
-`
-
-const TooltipBox = styled(Box)`
-  max-width: 250px;
-`
-
-export const InlineObject = React.forwardRef(function InlineObject(
-  props: InlineObjectProps,
-  forwardedRef: React.ForwardedRef<PortableTextEditorElement>
-) {
+export const InlineObject = (props: InlineObjectProps) => {
   const {
+    boundaryElement,
     focused,
+    onItemClose,
     onItemOpen,
+    onPathFocus,
     path,
     readOnly,
     renderCustomMarkers,
     renderPreview,
-    scrollElement,
     selected,
-    type,
+    schemaType,
     value,
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const editor = usePortableTextEditor()
   const markers = usePortableTextMarkers(path)
   const memberItem = usePortableTextMemberItem(pathToString(path))
-  const {validation, hasError, hasWarning} = useMemberValidation(memberItem?.node)
-  const hasValidationMarkers = validation.length > 0
-  const [popoverOpen, setPopoverOpen] = useState<boolean>(true)
+  const {validation, hasError, hasInfo, hasWarning} = useMemberValidation(memberItem?.node)
+  const parentSchemaType = editor.schemaTypes.block
+  const CustomComponent = schemaType.components?.inlineBlock
+  const hasMarkers = markers.length > 0
+
+  const onRemove = useCallback(() => {
+    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+    PortableTextEditor.delete(editor, sel, {mode: 'children'})
+    // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
+    setTimeout(() => PortableTextEditor.focus(editor))
+  }, [editor, path])
+
+  const onOpen = useCallback(() => {
+    if (memberItem) {
+      onItemOpen(memberItem?.node.path)
+    }
+  }, [memberItem, onItemOpen])
+
+  const isOpen = Boolean(memberItem?.member.open)
+  const input = memberItem?.input
+  const presence = memberItem?.node.presence || EMPTY_ARRAY
+
+  const componentProps: BlockProps | undefined = useMemo(
+    () =>
+      memberItem
+        ? {
+            __unstable_boundaryElement: boundaryElement || undefined,
+            __unstable_referenceElement: memberItem.elementRef?.current || undefined,
+            children: input,
+            focused,
+            onClose: onItemClose,
+            onOpen,
+            onPathFocus,
+            onRemove,
+            open: isOpen,
+            markers,
+            member: memberItem.member,
+            parentSchemaType,
+            path: memberItem.member.item.path,
+            presence,
+            readOnly: Boolean(readOnly),
+            renderDefault: DefaultInlineObjectComponent,
+            renderPreview,
+            schemaType,
+            selected,
+            value: value as PortableTextBlock,
+            validation,
+          }
+        : undefined,
+    [
+      boundaryElement,
+      focused,
+      input,
+      isOpen,
+      markers,
+      memberItem,
+      onItemClose,
+      onOpen,
+      onPathFocus,
+      onRemove,
+      parentSchemaType,
+      presence,
+      readOnly,
+      renderPreview,
+      schemaType,
+      selected,
+      validation,
+      value,
+    ]
+  )
+
+  // Tooltip indicating validation errors, warnings, info and markers
+  const tooltipEnabled = hasError || hasWarning || hasInfo || hasMarkers
+  const toolTipContent = useMemo(
+    () =>
+      (tooltipEnabled && (
+        <TooltipBox padding={2}>
+          <Markers
+            markers={markers}
+            validation={validation}
+            renderCustomMarkers={renderCustomMarkers}
+          />
+        </TooltipBox>
+      )) ||
+      null,
+    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
+  )
+
+  return useMemo(
+    () => (
+      <span ref={memberItem?.elementRef} contentEditable={false}>
+        <Tooltip
+          placement="bottom"
+          portal="editor"
+          disabled={!tooltipEnabled}
+          content={toolTipContent}
+        >
+          {/* This relative span must be here for the ToolTip to properly show */}
+          <span style={{position: 'relative'}}>
+            {(componentProps &&
+              (CustomComponent ? (
+                <CustomComponent {...componentProps} />
+              ) : (
+                <DefaultInlineObjectComponent {...componentProps} />
+              ))) ||
+              null}
+          </span>
+        </Tooltip>
+      </span>
+    ),
+    [CustomComponent, componentProps, memberItem?.elementRef, toolTipContent, tooltipEnabled]
+  )
+}
+
+export const DefaultInlineObjectComponent = (props: BlockProps) => {
+  const {
+    __unstable_boundaryElement,
+    __unstable_referenceElement,
+    children,
+    focused,
+    markers,
+    onClose,
+    onOpen,
+    onRemove,
+    open,
+    path,
+    readOnly,
+    renderPreview,
+    schemaType,
+    selected,
+    validation,
+    value,
+  } = props
+  const editor = usePortableTextEditor()
+  const hasMarkers = markers.length > 0
+  const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
+  const popoverTitle = schemaType?.title || schemaType.name
+  const hasError = validation.filter((v) => v.level === 'error').length > 0
+  const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
+
+  const openItem = useCallback((): void => {
+    setPopoverOpen(false)
+    onOpen()
+  }, [onOpen])
+
+  useEffect(() => {
+    if (open) {
+      setPopoverOpen(false)
+    } else if (focused) {
+      setPopoverOpen(true)
+    } else {
+      setPopoverOpen(false)
+    }
+  }, [focused, open])
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -144,107 +221,57 @@ export const InlineObject = React.forwardRef(function InlineObject(
     return undefined
   }, [focused, hasError, hasWarning, selected])
 
-  const preview = useMemo(() => {
-    return (
-      <PreviewSpan>
-        {renderPreview({
-          fallbackTitle: 'Click to edit',
-          layout: 'inline',
-          schemaType: type as FIXME,
-          value,
-        })}
-      </PreviewSpan>
-    )
-  }, [renderPreview, type, value])
-
-  const markersToolTip = useMemo(
-    () =>
-      markers.length > 0 || validation.length > 0 ? (
-        <Tooltip
-          placement="bottom"
-          portal="editor"
-          content={
-            <TooltipBox padding={2}>
-              <Markers
-                markers={markers}
-                validation={validation}
-                renderCustomMarkers={renderCustomMarkers}
-              />
-            </TooltipBox>
-          }
-        >
-          {preview}
-        </Tooltip>
-      ) : undefined,
-    [Markers, markers, validation, preview, renderCustomMarkers]
-  )
-
-  const handleRemoveClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>): void => {
-      event.preventDefault()
-      event.stopPropagation()
-      const point = {path, offset: 0}
-      const selection = {anchor: point, focus: point}
-      PortableTextEditor.delete(editor, selection, {mode: 'children'})
-      PortableTextEditor.focus(editor)
-    },
-    [editor, path]
-  )
-
-  const openItem = useCallback((): void => {
-    PortableTextEditor.blur(editor)
-    if (memberItem) {
-      onItemOpen(memberItem.node.path)
-      setPopoverOpen(false)
-    }
-  }, [editor, memberItem, onItemOpen])
-
-  const handlePopoverClose = useCallback(() => {
-    if (memberItem?.member.open) {
-      setPopoverOpen(true)
-    }
+  const onClosePopover = useCallback(() => {
     setPopoverOpen(false)
-  }, [memberItem?.member.open])
-
-  useEffect(() => {
-    if (memberItem?.member.open) {
-      setPopoverOpen(false)
-    } else if (focused) {
-      setPopoverOpen(true)
-    } else {
-      setPopoverOpen(false)
-    }
-  }, [editor, focused, memberItem?.member.open, selected])
+    PortableTextEditor.focus(editor)
+  }, [editor])
 
   return (
     <>
       <Root
         data-focused={focused || undefined}
         data-invalid={hasError || undefined}
-        data-warning={hasWarning || undefined}
-        data-selected={selected || undefined}
+        data-markers={hasMarkers || undefined}
         data-read-only={readOnly || undefined}
-        data-markers={hasValidationMarkers || undefined}
-        tone={tone}
+        data-selected={selected || undefined}
+        data-warning={hasWarning || undefined}
         forwardedAs="span"
-        contentEditable={false}
-        ref={memberItem?.elementRef as React.RefObject<HTMLDivElement>}
         onClick={readOnly ? openItem : undefined}
         onDoubleClick={openItem}
+        tone={tone}
       >
-        <span ref={forwardedRef}>{markersToolTip || preview}</span>
+        <PreviewSpan>
+          {renderPreview({
+            layout: 'inline',
+            schemaType,
+            value,
+            fallbackTitle: 'Click to edit',
+          })}
+        </PreviewSpan>
       </Root>
-      {focused && !readOnly && (
+      {__unstable_referenceElement && (
         <InlineObjectToolbarPopover
-          open={popoverOpen}
-          onDelete={handleRemoveClick}
+          boundaryElement={__unstable_boundaryElement}
+          onClosePopover={onClosePopover}
+          onDelete={onRemove}
           onEdit={openItem}
-          onClose={handlePopoverClose}
-          referenceElement={memberItem?.elementRef?.current || null}
-          scrollElement={scrollElement}
-          title={type?.title || type.name}
+          open={popoverOpen}
+          referenceElement={__unstable_referenceElement}
+          title={popoverTitle}
         />
+      )}
+      {open && (
+        <ObjectEditModal
+          boundaryElement={__unstable_boundaryElement}
+          defaultType="popover"
+          onClose={onClose}
+          path={path}
+          referenceElement={__unstable_referenceElement}
+          schemaType={schemaType}
+        >
+          {children}
+        </ObjectEditModal>
       )}
     </>
   )
-})
+}

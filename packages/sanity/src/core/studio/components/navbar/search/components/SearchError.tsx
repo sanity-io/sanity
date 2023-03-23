@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import React from 'react'
-import {TextWithTone} from '../../../../../components/TextWithTone'
+import {TextWithTone} from '../../../../../components/textWithTone/TextWithTone'
 
 export function SearchError() {
   return (

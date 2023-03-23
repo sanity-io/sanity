@@ -338,6 +338,8 @@ export interface BlockRenderProps {
   path: Path
   selected: boolean
   style?: string
+  schemaType: ObjectSchemaType
+  /** @deprecated Use `schemaType` instead */
   type: ObjectSchemaType
   value: PortableTextBlock
 }
@@ -351,6 +353,8 @@ export interface BlockChildRenderProps {
   path: Path
   selected: boolean
   schemaType: ObjectSchemaType
+  /** @deprecated Use `schemaType` instead */
+  type: ObjectSchemaType
   value: PortableTextChild
 }
 
@@ -361,7 +365,9 @@ export interface BlockAnnotationRenderProps {
   editorElementRef: React.RefObject<HTMLElement>
   focused: boolean
   path: Path
+  schemaType: ObjectSchemaType
   selected: boolean
+  /** @deprecated Use `schemaType` instead */
   type: ObjectSchemaType
   value: PortableTextObject
 }
@@ -371,7 +377,9 @@ export interface BlockDecoratorRenderProps {
   editorElementRef: React.RefObject<HTMLElement>
   focused: boolean
   path: Path
+  schemaType: BlockDecoratorDefinition
   selected: boolean
+  /** @deprecated Use `schemaType` instead */
   type: BlockDecoratorDefinition
   value: string
 }
@@ -383,11 +391,9 @@ export interface BlockListItemRenderProps {
   editorElementRef: React.RefObject<HTMLElement>
   focused: boolean
   level: number
-  nextItem?: string
   path: Path
-  previousItem?: string
+  schemaType: BlockListDefinition
   selected: boolean
-  type: BlockListDefinition
   value: string
 }
 
@@ -412,7 +418,7 @@ export interface BlockStyleRenderProps {
   focused: boolean
   path: Path
   selected: boolean
-  type: BlockStyleDefinition
+  schemaType: BlockStyleDefinition
   value: string
 }
 

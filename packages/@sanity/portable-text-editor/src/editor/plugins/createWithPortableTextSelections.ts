@@ -6,9 +6,8 @@ import {
   PortableTextSlateEditor,
 } from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
-import {toPortableTextRange} from '../../utils/ranges'
-import {fromSlateValue} from '../../utils/values'
-import {KEY_TO_VALUE_ELEMENT, SLATE_TO_PORTABLE_TEXT_RANGE} from '../../utils/weakMaps'
+import {ObjectWithKeyAndType, toPortableTextRange} from '../../utils/ranges'
+import {SLATE_TO_PORTABLE_TEXT_RANGE} from '../../utils/weakMaps'
 
 const debug = debugWithName('plugin:withPortableTextSelections')
 
@@ -27,11 +26,8 @@ export function createWithPortableTextSelections(
         if (existing) {
           ptRange = existing
         } else {
-          ptRange = toPortableTextRange(
-            fromSlateValue(editor.children, types.block.name, KEY_TO_VALUE_ELEMENT.get(editor)),
-            editor.selection,
-            types
-          )
+          const value = editor.children satisfies ObjectWithKeyAndType[]
+          ptRange = toPortableTextRange(value, editor.selection, types)
           SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
         }
       }

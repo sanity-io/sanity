@@ -50,7 +50,6 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
   return (
     <Box {...rest}>
       <Button
-        data-command-list-item
         disabled={isAlreadyActive}
         fontSize={1}
         justify="flex-start"

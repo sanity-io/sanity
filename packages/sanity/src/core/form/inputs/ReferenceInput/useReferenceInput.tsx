@@ -10,10 +10,12 @@ import {
   ReferenceSchemaType,
   SanityDocument,
 } from '@sanity/types'
-import {useClient, useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {useDocumentPreviewStore} from '../../../store'
 import {useReferenceInputOptions} from '../../studio'
+import {useSource} from '../../../studio'
+import {Source} from '../../../config'
 import {useFormValue} from '../../useFormValue'
 import {FIXME} from '../../../FIXME'
 import * as adapter from '../../studio/inputs/client-adapters/reference'
@@ -38,7 +40,8 @@ interface SearchError {
 async function resolveUserDefinedFilter(
   options: ReferenceOptions | undefined,
   document: SanityDocument,
-  valuePath: Path
+  valuePath: Path,
+  getClient: Source['getClient']
 ): Promise<ReferenceFilterSearchOptions> {
   if (!options) {
     return {}
@@ -47,7 +50,7 @@ async function resolveUserDefinedFilter(
   if (typeof options.filter === 'function') {
     const parentPath = valuePath.slice(0, -1)
     const parent = PathUtils.get(document, parentPath) as Record<string, unknown>
-    return options.filter({document, parentPath, parent})
+    return options.filter({document, parentPath, parent, getClient})
   }
 
   return {
@@ -64,7 +67,8 @@ interface Options {
 
 export function useReferenceInput(options: Options) {
   const {path, schemaType} = options
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const source = useSource()
+  const client = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
@@ -81,10 +85,11 @@ export function useReferenceInput(options: Options) {
   }, [documentTypeName, schema])
 
   const disableNew = schemaType.options?.disableNew === true
+  const getClient = source.getClient
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path)).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path, getClient)).pipe(
         mergeMap(({filter, params}) =>
           adapter.referenceSearch(searchClient, searchString, schemaType, {
             ...schemaType.options,
@@ -103,7 +108,7 @@ export function useReferenceInput(options: Options) {
         })
       ),
 
-    [documentRef, path, searchClient, schemaType]
+    [documentRef, path, searchClient, schemaType, getClient]
   )
 
   const template = options.value?._strengthenOnPublish?.template

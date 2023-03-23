@@ -70,9 +70,11 @@ export const Root = styled(Card)((props: {theme: Theme}) => {
   `
 })
 
-export const PreviewContainer = styled(Flex)`
+export const PreviewContainer = styled(Box)`
+  display: block;
+  width: 100%;
   user-select: none;
-  pointer-events: none;
+  pointer-events: all;
 `
 
 export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
@@ -128,4 +130,3 @@ export const BlockActionsInner = styled(Flex)`
 export const TooltipBox = styled(Box)`
   max-width: 250px;
 `
-export const BlockPreview = styled(Box)``
