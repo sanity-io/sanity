@@ -9,7 +9,7 @@ import {reduce as jsonReduce} from 'json-reduce'
 import {from, Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
 import {getDraftId, getPublishedId, isRecord} from '../../../util'
-import {Timeline, TimelineController, createObservableController} from './history'
+import {Timeline} from './history'
 
 /** @beta */
 export interface HistoryStore {
@@ -29,14 +29,6 @@ export interface HistoryStore {
 
   /** @internal */
   getTimeline: (options: {publishedId: string; enableTrace?: boolean}) => Timeline
-
-  /** @internal */
-  getTimelineController: (options: {
-    client: SanityClient
-    documentId: string
-    documentType: string
-    timeline: Timeline
-  }) => Observable<{historyController: TimelineController}>
 }
 
 const documentRevisionCache: Record<string, Promise<SanityDocument | undefined> | undefined> =
@@ -200,12 +192,5 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
     restore: (id, targetId, rev) => restore(client, id, targetId, rev),
 
     getTimeline: (options: {publishedId: string; enableTrace?: boolean}) => new Timeline(options),
-
-    getTimelineController: (options: {
-      client: SanityClient
-      documentId: string
-      documentType: string
-      timeline: Timeline
-    }) => createObservableController(options),
   }
 }

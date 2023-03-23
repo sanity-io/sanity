@@ -4,7 +4,6 @@ import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
-import {useMemoObservable} from 'react-rx'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
 import {PaneMenuItem} from '../../types'
@@ -39,6 +38,7 @@ import {
   useValidationStatus,
   getDraftId,
   useDocumentValuePermissions,
+  useTimelineController,
 } from 'sanity'
 
 const emptyObject = {} as Record<string, string | undefined>
@@ -124,12 +124,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [documentId, historyStore]
   )
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
-  // NOTE: this emits sync so can never be null
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const {historyController} = useMemoObservable(
-    () => historyStore.getTimelineController({client, documentId, documentType, timeline}),
-    [client, documentId, documentType, timeline]
-  )!
+
+  const {historyController} = useTimelineController({
+    documentId,
+    documentType,
+    timeline,
+  })
 
   // @todo: this will now happen on each render, but should be refactored so it happens only when
   // the `rev`, `since` or `historyController` values change.

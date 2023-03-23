@@ -1,9 +1,7 @@
 import type {SanityClient} from '@sanity/client'
 import {Diff, ObjectDiff} from '@sanity/diff'
-import {Observable} from 'rxjs'
 import {Annotation, Chunk} from '../../../../field'
 import {RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
-import {remoteSnapshots} from '../../document/document-pair/remoteSnapshots'
 import {Timeline, ParsedTimeRef} from './Timeline'
 import {getJsonStream} from './getJsonStream'
 import {Aligner} from './Aligner'
@@ -19,6 +17,9 @@ export type TimelineControllerOptions = {
   documentType: string
   handler: (err: Error | null, controller: TimelineController) => void
 }
+
+/** @beta */
+export type SelectionState = 'inactive' | 'rev' | 'range' | 'loading' | 'invalid'
 
 /**
  * The controller is responsible for fetching information
@@ -41,7 +42,7 @@ export class TimelineController {
    * - loading: A selection is active, but we don't have the entries yet.
    * - invalid: The selection picked is invalid.
    */
-  selectionState: 'inactive' | 'rev' | 'range' | 'loading' | 'invalid' = 'inactive'
+  selectionState: SelectionState = 'inactive'
 
   constructor(options: TimelineControllerOptions) {
     this.timeline = options.timeline
@@ -57,6 +58,7 @@ export class TimelineController {
   private _fetchMore = false
   private _fetchAtLeast = 0
   private _isRunning = false
+  private _isSuspended = false
   private _didErr = false
 
   private _since: string | null = null
@@ -236,13 +238,22 @@ export class TimelineController {
     }
   }
 
+  resume(): void {
+    this._isSuspended = false
+  }
+
+  suspend(): void {
+    this._isSuspended = true
+  }
+
   private async tick() {
     const shouldFetchMore =
       this._aligner.acceptsHistory &&
       !this.timeline.reachedEarliestEntry &&
       (this.selectionState === 'loading' ||
         this._fetchMore ||
-        this.timeline.chunkCount <= this._fetchAtLeast)
+        this.timeline.chunkCount <= this._fetchAtLeast) &&
+      !this._isSuspended
 
     if (!shouldFetchMore) {
       return
@@ -326,33 +337,4 @@ export class TimelineController {
     this.version++
     this.handler(null, this)
   }
-}
-
-/** @internal */
-export function createObservableController(
-  options: Omit<TimelineControllerOptions, 'handler'>
-): Observable<{historyController: TimelineController}> {
-  return new Observable((observer) => {
-    const controller = new TimelineController({
-      ...options,
-      handler: (err, innerController) => {
-        if (err) {
-          observer.error(err)
-        } else {
-          observer.next({historyController: innerController})
-        }
-      },
-    })
-
-    return remoteSnapshots(
-      options.client,
-      {
-        publishedId: options.documentId,
-        draftId: `drafts.${options.documentId}`,
-      },
-      options.documentType
-    ).subscribe((ev) => {
-      controller.handleRemoteMutation(ev)
-    })
-  })
 }
