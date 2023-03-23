@@ -60,7 +60,6 @@ export function TimelineItem({
     [onSelect, chunk]
   )
 
-  // @todo: ensure that tooltips are correctly displayed when navigating the parent <Menu> component with the keyboard.
   return (
     <Root
       data-ui="timelineItem"
