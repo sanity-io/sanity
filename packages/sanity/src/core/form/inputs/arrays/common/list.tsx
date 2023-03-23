@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useState,
 } from 'react'
 import styled, {css} from 'styled-components'
 import {
@@ -14,6 +15,8 @@ import {
   closestCenter,
   DndContext,
   DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
   KeyboardSensor,
   PointerSensor,
   SensorOptions,
@@ -162,7 +165,7 @@ interface ListProps extends ComponentProps<typeof Grid> {
   axis?: Axis
   items: string[]
   onItemMove?: (event: {fromIndex: number; toIndex: number}) => void
-  onItemMoveStart?: () => void
+  onItemMoveStart?: (event: DragStartEvent) => void
   onItemMoveEnd?: () => void
   children?: React.ReactNode
 }
