@@ -1,7 +1,12 @@
-/* eslint-disable react/jsx-handler-names */
-import {Card, Stack, Text, useBoundaryElement} from '@sanity/ui'
-import {useVirtualizer} from '@tanstack/react-virtual'
-import React, {useCallback, useMemo, useRef} from 'react'
+import {Card, Stack, Text, useBoundaryElement, useTheme} from '@sanity/ui'
+import {
+  defaultRangeExtractor,
+  useVirtualizer,
+  VirtualizerOptions,
+  type Range,
+} from '@tanstack/react-virtual'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
+import type {DragStartEvent} from '@dnd-kit/core'
 import {Item, List} from '../../common/list'
 import {ArrayOfObjectsInputProps, ObjectItem} from '../../../../types'
 import {ArrayOfObjectsItem} from '../../../../members'
@@ -32,6 +37,10 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
   } = props
 
+  // Stores the index of the item being dragged
+  const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
+  const {space} = useTheme().sanity
+
   const handlePrepend = useCallback(
     (item: Item) => {
       onInsert({items: [item], position: 'before', referenceItem: 0})
@@ -46,45 +55,76 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     [onInsert]
   )
 
-  const parentRef = useBoundaryElement()
-  const ref = useRef<HTMLDivElement>(null)
+  const documentPanelRef = useBoundaryElement()
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  // This keeps the item being dragged in the list so it can be dragged past virtual list
+  const rangeExtractor = useCallback(
+    (range: Range) => {
+      if (activeDragItemIndex !== null) {
+        return [...new Set([activeDragItemIndex, ...defaultRangeExtractor(range)])].sort(
+          (a, b) => a - b
+        )
+      }
+
+      return defaultRangeExtractor(range)
+    },
+    [activeDragItemIndex]
+  )
+
+  const observeElementOffset = useCallback<
+    VirtualizerOptions<HTMLElement, Element>['observeElementOffset']
+  >((instance, cb) => {
+    if (!instance.scrollElement) {
+      return
+    }
+
+    const scroll = instance.scrollElement
+
+    const onScroll = () => {
+      const itemOffset = parentRef.current?.offsetTop ?? 0
+      cb(scroll.scrollTop - itemOffset)
+    }
+
+    onScroll()
+
+    instance.scrollElement.addEventListener('scroll', onScroll, {
+      capture: false,
+      passive: true,
+    })
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      scroll.removeEventListener('scroll', onScroll)
+    }
+  }, [])
 
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize: useCallback(() => 53, []),
-    getScrollElement: useCallback(() => parentRef.element, [parentRef.element]),
-    observeElementOffset: (instance, cb) => {
-      if (!instance.scrollElement) {
-        return
-      }
-
-      const scroll = instance.scrollElement
-
-      const onScroll = () => {
-        const itemOffset = ref.current?.offsetTop ?? 0
-        cb(scroll.scrollTop - itemOffset)
-      }
-
-      onScroll()
-
-      instance.scrollElement.addEventListener('scroll', onScroll, {
-        capture: false,
-        passive: true,
-      })
-
-      // eslint-disable-next-line consistent-return
-      return () => {
-        scroll.removeEventListener('scroll', onScroll)
-      }
-    },
+    getScrollElement: useCallback(() => documentPanelRef.element, [documentPanelRef.element]),
+    observeElementOffset,
+    rangeExtractor,
   })
 
   const items = virtualizer.getVirtualItems()
 
+  const handleItemMoveStart = useCallback((event: DragStartEvent) => {
+    const {active} = event
+    setActiveDragItemIndex(active.data.current?.sortable?.index)
+  }, [])
+
+  const handleItemMoveEnd = useCallback(() => {
+    setActiveDragItemIndex(null)
+  }, [])
+
   const sortable = schemaType.options?.sortable !== false
   const memberKeys = useMemo(() => members.map((member) => member.key), [members])
+
+  const listGridGap = 1
+
   return (
-    <Stack space={3} ref={ref}>
+    <Stack space={3} ref={parentRef}>
       <UploadTargetCard
         types={schemaType.of}
         resolveUploader={resolveUploader}
@@ -105,17 +145,19 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               radius={1}
               style={{
                 // Account for grid gap
-                height: `${virtualizer.getTotalSize() + items.length * 4}px`,
+                height: `${virtualizer.getTotalSize() + items.length * space[listGridGap]}px`,
                 width: '100%',
                 position: 'relative',
               }}
             >
               <List
                 axis="y"
-                gap={1}
-                paddingBottom={1}
+                gap={listGridGap}
+                paddingY={1}
                 items={memberKeys}
                 onItemMove={onItemMove}
+                onItemMoveStart={handleItemMoveStart}
+                onItemMoveEnd={handleItemMoveEnd}
                 sortable={sortable}
                 style={{
                   position: 'absolute',
