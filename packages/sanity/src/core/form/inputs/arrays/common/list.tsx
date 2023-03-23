@@ -1,5 +1,13 @@
 import {Box, Card, Grid} from '@sanity/ui'
-import React, {ComponentProps, ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
+import React, {
+  ComponentProps,
+  ForwardedRef,
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react'
 import styled, {css} from 'styled-components'
 import {
   AutoScrollOptions,
@@ -101,9 +109,9 @@ const SortableList = memo(function SortableList(props: ListProps) {
   )
 })
 
-const SortableListItem = forwardRef(function SortableListItem(
-  props: ItemProps,
-  ref: ForwardedRef<HTMLDivElement>
+const SortableListItem = forwardRef<HTMLDivElement, ItemProps>(function SortableListItem(
+  props,
+  ref
 ) {
   const {id, children, disableTransition} = props
   const {setNodeRef, transform, transition, active} = useSortable({
@@ -123,17 +131,29 @@ const SortableListItem = forwardRef(function SortableListItem(
     [transform, transition, active]
   )
 
+  // This sets the ref on the component for both sorting and for virtualizer
+  const setRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      setNodeRef(node)
+      if (typeof ref === 'function') {
+        ref(node)
+      } else if (ref) {
+        ref.current = node
+      }
+    },
+    [ref, setNodeRef]
+  )
+
   return (
-    <div ref={ref} data-index={props['data-index']}>
-      <ListItem
-        ref={setNodeRef}
-        style={style}
-        $moving={isActive}
-        className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
-      >
-        {children}
-      </ListItem>
-    </div>
+    <ListItem
+      ref={setRef}
+      style={style}
+      $moving={isActive}
+      className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
+      data-index={props['data-index']}
+    >
+      {children}
+    </ListItem>
   )
 })
 
