@@ -85,8 +85,9 @@ export default async function initSanity(
   const intendedCoupon = cliFlags.coupon
   const reconfigure = cliFlags.reconfigure
   const commitMessage = cliFlags.git
-  const env = cliFlags.env
   const useGit = typeof commitMessage === 'undefined' ? true : Boolean(commitMessage)
+  const bareOutput = cliFlags.bare
+  const env = cliFlags.env
 
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
@@ -131,10 +132,13 @@ export default async function initSanity(
     throw new Error('`--reconfigure` is deprecated - manual configuration is now required')
   }
 
+  const usingBareOrEnv = cliFlags.bare || cliFlags.env
   print(`You're setting up a new project!`)
-  print(`We'll make sure you have an account with Sanity.io. Then we'll`)
-  print('install an open-source JS content editor that connects to')
-  print('the real-time hosted API on Sanity.io. Hang on.\n')
+  print(`We'll make sure you have an account with Sanity.io. ${usingBareOrEnv ? '' : `Then we'll`}`)
+  if (!usingBareOrEnv) {
+    print('install an open-source JS content editor that connects to')
+    print('the real-time hosted API on Sanity.io. Hang on.\n')
+  }
   print('Press ctrl + C at any time to quit.\n')
   print('Prefer web interfaces to terminals?')
   print('You can also set up best practice Sanity projects with')
@@ -176,7 +180,6 @@ export default async function initSanity(
   debug(`Dataset with name ${datasetName} selected`)
 
   // If user doesn't want to output any template code
-  const bareOutput = args.argv.find((el) => el === '--bare')
   if (bareOutput) {
     print(`\n${chalk.green('Success!')} Below are your project details:\n`)
     print(`Project ID: ${chalk.cyan(projectId)}`)
@@ -184,12 +187,6 @@ export default async function initSanity(
     print(
       `\nYou can find your project on Sanity Manage — https://www.sanity.io/manage/project/${projectId}\n`
     )
-    return
-  }
-
-  // user wants to write environment variables to file
-  if (env) {
-    await createOrAppendEnvVars(envFilename)
     return
   }
 
@@ -203,6 +200,12 @@ export default async function initSanity(
 
   // Ensure we are using the output path provided by user
   outputPath = answers.outputPath
+
+  // user wants to write environment variables to file
+  if (env) {
+    await createOrAppendEnvVars(envFilename)
+    return
+  }
 
   // Prompt for template to use
   const templateName = await selectProjectTemplate()
@@ -620,7 +623,7 @@ export default async function initSanity(
   async function getProjectInfo(): Promise<ProjectDefaults & {outputPath: string}> {
     const specifiedPath = flags['output-path'] && path.resolve(flags['output-path'])
 
-    if (unattended || specifiedPath) {
+    if (unattended || specifiedPath || env) {
       return {
         ...defaults,
         outputPath: specifiedPath || workDir,
@@ -632,7 +635,7 @@ export default async function initSanity(
       type: 'input',
       message: 'Project output path:',
       default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
-      validate: validateEmptyPath,
+      validate: env ? undefined : validateEmptyPath,
       filter: absolutify,
     })
 
@@ -802,6 +805,7 @@ export default async function initSanity(
 
       await writeToEnv(filename, variables, {
         framework,
+        outputPath,
       })
     } catch (err) {
       print(err)
@@ -811,23 +815,65 @@ export default async function initSanity(
 
   async function writeToEnv(
     filename: string,
-    object: Record<string, string>,
-options: {framework: Framework | null}
+    envVars: Record<string, string>,
+    options: {framework: Framework | null; outputPath: string}
   ) {
+    const fileOutputPath = path.join(options.outputPath, filename)
     const prefix = options.framework?.slug === 'sanity' ? '' : options.framework?.envPrefix ?? ''
-    const envVariables = Object.keys(object)
-      .map((key) => `${prefix}${key}="${object[key]}"`)
-      .join('\n')
 
+    const keysToWrite = Object.keys(envVars)
+    const keysNotFound: string[] = []
+
+    // try to make folder if not exists
     try {
-      // TO-DO: instead of appending if file exists, let's check whether variables are already set so we can just update them
-
-      // flag 'a' appends if exists
-      await fs.writeFile(filename, envVariables.concat('\n'), {flag: 'a', encoding: 'utf-8'})
-      print(`\n${chalk.green('Success!')} Appended environment variables to ${filename}`)
+      await fs.mkdir(options.outputPath, {recursive: true})
     } catch (err) {
-      throw new Error(`Something went wrong while writing environment variables`)
+      debug('Error creating folder %s', options.outputPath)
     }
+
+    // read existing env file (error if not exists)
+    try {
+      let existingEnv = await fs.readFile(fileOutputPath, {encoding: 'utf8'})
+
+      // replace existing keys
+      for (const key of keysToWrite) {
+        if (!existingEnv.includes(key)) {
+          keysNotFound.push(key)
+          continue
+        }
+
+        print(`Found existing ${key}, replacing value.`)
+        existingEnv = existingEnv.replace(
+          new RegExp(`${key}="([^"]+)"`),
+          `${key}="${envVars[key]}"`
+        )
+      }
+
+      // append missing keys
+      if (keysNotFound) {
+        existingEnv = existingEnv
+          .trim()
+          .concat(keysNotFound.map((key) => `\n${prefix}${key}="${envVars[key]}"`).join(''))
+
+        keysNotFound.map((key) => print(`Appended ${prefix}${key}="${envVars[key]}"`))
+      }
+
+      await fs.writeFile(fileOutputPath, existingEnv.concat('\n'), {
+        encoding: 'utf8',
+      })
+      return
+    } catch (err) {
+      debug('Error reading existing env file, creating new one', err)
+    }
+
+    // if file does not exist
+    const envVarsToWrite = keysToWrite.map((key) => `${prefix}${key}="${envVars[key]}"\n`).join('')
+
+    await fs.writeFile(fileOutputPath, envVarsToWrite, {
+      encoding: 'utf8',
+    })
+
+    print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
   }
 }
 
