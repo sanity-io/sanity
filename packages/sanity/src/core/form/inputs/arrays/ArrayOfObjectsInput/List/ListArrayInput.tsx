@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
+import shallowEquals from 'shallow-equals'
 import {Item, List} from '../../common/list'
 import {ArrayOfObjectsInputProps, ObjectItem} from '../../../../types'
 import {ArrayOfObjectsItem} from '../../../../members'
@@ -9,6 +10,7 @@ import {createProtoArrayValue} from '../createProtoArrayValue'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {ErrorItem} from './ErrorItem'
+import {useMemoCompare} from './useMemoCompare'
 
 const EMPTY: [] = []
 
@@ -46,7 +48,12 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   )
 
   const sortable = schemaType.options?.sortable !== false
-  const memberKeys = useMemo(() => members.map((member) => member.key), [members])
+
+  const memberKeys = useMemoCompare(
+    useMemo(() => members.map((member) => member.key), [members]),
+    shallowEquals
+  )
+
   return (
     <Stack space={3}>
       <UploadTargetCard
