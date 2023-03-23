@@ -635,7 +635,7 @@ export default async function initSanity(
       type: 'input',
       message: 'Project output path:',
       default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
-      validate: env ? undefined : validateEmptyPath,
+      validate: validateEmptyPath,
       filter: absolutify,
     })
 
