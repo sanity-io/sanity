@@ -216,4 +216,69 @@ describe('initialization', () => {
       }
     })
   })
+  it('validates a non-initial value', async () => {
+    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    let value: PortableTextBlock[] = [helloBlock]
+    const initialSelection: EditorSelection = {
+      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
+      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
+    }
+    const onChange = jest.fn()
+    const {rerender} = render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={editorRef}
+        selection={initialSelection}
+        schemaType={schemaType}
+        value={value}
+      />
+    )
+    await waitFor(() => {
+      expect(onChange).not.toHaveBeenCalledWith({
+        type: 'invalidValue',
+        value,
+        resolution: {
+          action: 'Unset the value',
+          description: 'Editor value must be an array of Portable Text blocks, or undefined.',
+          item: value,
+          patches: [
+            {
+              path: [],
+              type: 'unset',
+            },
+          ],
+        },
+      })
+      expect(onChange).toHaveBeenCalledWith({type: 'value', value})
+    })
+    value = []
+    const newOnChange = jest.fn()
+    rerender(
+      <PortableTextEditorTester
+        onChange={newOnChange}
+        ref={editorRef}
+        selection={initialSelection}
+        schemaType={schemaType}
+        value={value}
+      />
+    )
+    await waitFor(() => {
+      expect(newOnChange).not.toHaveBeenCalledWith({type: 'ready'})
+      expect(newOnChange).toHaveBeenCalledWith({
+        type: 'invalidValue',
+        value,
+        resolution: {
+          action: 'Unset the value',
+          description: 'Editor value must be an array of Portable Text blocks, or undefined.',
+          item: value,
+          patches: [
+            {
+              path: [],
+              type: 'unset',
+            },
+          ],
+        },
+      })
+    })
+  })
 })
