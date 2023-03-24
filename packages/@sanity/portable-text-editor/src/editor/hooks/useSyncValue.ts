@@ -117,10 +117,10 @@ export function useSyncValue(
               }
               // Go through all of the blocks and see if they need to be updated
               slateValueFromProps.forEach((currentBlock, currentBlockIndex) => {
-                const validationValue = [value[currentBlockIndex]]
                 const oldBlock = slateEditor.children[currentBlockIndex]
                 const hasChanges = oldBlock && !isEqual(currentBlock, oldBlock)
                 if (hasChanges) {
+                  const validationValue = [value[currentBlockIndex]]
                   const validation = validateValue(validationValue, schemaTypes, keyGenerator)
                   if (validation.valid) {
                     if (oldBlock._key === currentBlock._key) {
@@ -141,6 +141,7 @@ export function useSyncValue(
                 }
                 // Insert new blocks exceeding the original value.
                 if (!oldBlock) {
+                  const validationValue = [value[currentBlockIndex]]
                   debug('Adding and validating new block', currentBlock)
                   const validation = validateValue(validationValue, schemaTypes, keyGenerator)
                   if (validation.valid) {
