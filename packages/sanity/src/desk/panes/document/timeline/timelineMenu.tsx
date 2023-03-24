@@ -1,14 +1,5 @@
 import {SelectIcon} from '@sanity/icons'
-import {
-  Button,
-  Flex,
-  Placement,
-  Popover,
-  Spinner,
-  Text,
-  useClickOutside,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
@@ -45,8 +36,10 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   }, [setTimelineMode])
 
   const handleClickOutside = useCallback(() => {
-    handleClose()
-  }, [handleClose])
+    if (open) {
+      handleClose()
+    }
+  }, [handleClose, open])
 
   const handleGlobalKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -65,7 +58,6 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     (revChunk: Chunk) => {
       const [sinceId, revId] = historyController.findRangeForNewRev(revChunk)
       setTimelineMode('closed')
-      setOpen(false)
       setTimelineRange(sinceId, revId)
     },
     [historyController, setTimelineMode, setTimelineRange]
@@ -75,7 +67,6 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     (sinceChunk: Chunk) => {
       const [sinceId, revId] = historyController.findRangeForNewSince(sinceChunk)
       setTimelineMode('closed')
-      setOpen(false)
       setTimelineRange(sinceId, revId)
     },
     [historyController, setTimelineMode, setTimelineRange]

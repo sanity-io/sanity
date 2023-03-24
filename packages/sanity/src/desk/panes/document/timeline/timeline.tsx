@@ -101,7 +101,7 @@ export const Timeline = ({
             items={filteredChunks}
             onEndReached={handleLoadMore}
             onEndReachedIndexOffset={20}
-            overscan={10}
+            overscan={5}
             renderItem={renderItem}
             wrapAround={false}
           />
