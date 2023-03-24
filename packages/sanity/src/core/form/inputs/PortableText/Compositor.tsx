@@ -176,21 +176,22 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       } = blockProps
       return (
         <BlockObject
+          boundaryElement={boundaryElement || undefined}
           focused={blockFocused}
           isFullscreen={isFullscreen}
           onChange={onChange}
-          onItemOpen={onItemOpen}
           onItemClose={onItemClose}
+          onItemOpen={onItemOpen}
           onItemRemove={onItemRemove}
           onPathFocus={onPathFocus}
           path={path.concat(blockPath)}
           readOnly={readOnly}
-          renderPreview={renderPreview}
+          relativePath={blockPath}
           renderBlockActions={_renderBlockActions}
           renderCustomMarkers={_renderCustomMarkers}
-          boundaryElement={boundaryElement || undefined}
-          selected={blockSelected}
+          renderPreview={renderPreview}
           schemaType={blockSchemaType}
+          selected={blockSelected}
           value={blockValue}
         />
       )
@@ -239,17 +240,18 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
       return (
         <InlineObject
+          boundaryElement={boundaryElement || undefined}
           focused={childFocused}
-          onPathFocus={onPathFocus}
           onItemClose={onItemClose}
           onItemOpen={onItemOpen}
+          onPathFocus={onPathFocus}
           path={path.concat(childPath)}
           readOnly={readOnly}
+          relativePath={childPath}
           renderCustomMarkers={renderCustomMarkers}
           renderPreview={renderPreview}
-          boundaryElement={boundaryElement || undefined}
-          selected={selected}
           schemaType={childSchemaType}
+          selected={selected}
           value={child}
         />
       )

@@ -24,7 +24,6 @@ import {IntentLink} from 'sanity/router'
 
 interface BlockObjectActionsMenuProps extends PropsWithChildren {
   focused: boolean
-  isActive?: boolean
   isOpen?: boolean
   onOpen: () => void
   onRemove: () => void
@@ -40,7 +39,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): ReactElement {
-  const {children, focused, isActive, isOpen, onOpen, onRemove, readOnly, value} = props
+  const {children, focused, isOpen, onOpen, onRemove, readOnly, value} = props
   const menuButtonId = useId()
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
@@ -105,7 +104,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
               iconRight={EllipsisVerticalIcon}
               mode="bleed"
               paddingX={2}
-              tabIndex={isActive ? 0 : 1}
+              tabIndex={focused ? 0 : 1}
             />
           }
           ref={menuButton}
