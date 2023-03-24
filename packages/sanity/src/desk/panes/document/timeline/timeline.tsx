@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {TimelineItem} from './timelineItem'
-import {ListWrapper, StackWrapper} from './timeline.styled'
+import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {Chunk, CommandList, CommandListRenderItemCallback, TimelineController} from 'sanity'
 
 interface TimelineProps {
@@ -27,6 +27,7 @@ export const Timeline = ({
 }: TimelineProps) => {
   const [chunks, setChunks] = useState<Chunk[]>(controller.timeline.mapChunks((c) => c))
   const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     controller.onUpdate = () => {
@@ -75,8 +76,21 @@ export const Timeline = ({
     [disabledBeforeSelection, filteredChunks, onSelect, selectedIndex]
   )
 
+  useEffect(() => setMounted(true), [])
+
   return (
-    <Box data-ui="timeline">
+    <Root
+      /**
+       * We delay initial rendering if `selectedIndex` is present.
+       * This is a _temporary_ workaround to allow the virtual <CommandList>
+       * to scroll to a specific index prior to being displayed.
+       *
+       * Without this, there'll be a noticeable 'flash' where the virtual list
+       * will render with its child items at the top and then scroll into position.
+       */
+      $visible={!selectedIndex || mounted}
+      data-ui="timeline"
+    >
       {filteredChunks.length === 0 && (
         <StackWrapper padding={3} space={3}>
           <Text size={1} weight="semibold">
@@ -93,7 +107,7 @@ export const Timeline = ({
         <ListWrapper direction="column">
           <CommandList
             activeItemDataAttr="data-hovered"
-            ariaLabel="Children"
+            ariaLabel="Document revisions"
             autoFocus
             initialIndex={selectedIndex}
             initialScrollAlign="center"
@@ -107,7 +121,7 @@ export const Timeline = ({
           />
         </ListWrapper>
       )}
-    </Box>
+    </Root>
   )
 }
 

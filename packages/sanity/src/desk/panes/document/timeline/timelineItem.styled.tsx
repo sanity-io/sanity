@@ -31,7 +31,6 @@ export const IconWrapper = styled(Flex)(({theme}: IconWrapperProps) => {
 export const Root = styled(Button)(({$selected}: {$selected: boolean}) => {
   return css`
     position: relative;
-    // min-width: 244px;
     width: 100%;
 
     /* Line styling */

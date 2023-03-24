@@ -23,7 +23,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const {historyController, setTimelineRange, setTimelineMode, ready} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
-  const [menuContent, setMenuContent] = useState<HTMLDivElement | null>(null)
+  const [popover, setPopover] = useState<HTMLElement | null>(null)
 
   const handleOpen = useCallback(() => {
     setTimelineMode(mode)
@@ -51,7 +51,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     [button, handleClose, open]
   )
 
-  useClickOutside(handleClickOutside, [menuContent, button])
+  useClickOutside(handleClickOutside, [button, popover])
   useGlobalKeyDown(handleGlobalKeyDown)
 
   const selectRev = useCallback(
@@ -80,7 +80,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   )
 
   const content = (
-    <div ref={setMenuContent}>
+    <>
       {mode === 'rev' && (
         <Timeline
           bottomSelection={historyController.realRevChunk}
@@ -100,7 +100,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
           topSelection={historyController.realRevChunk}
         />
       )}
-    </div>
+    </>
   )
 
   const timeLabel = useFormattedTimestamp(chunk?.endTimestamp || '')
@@ -121,6 +121,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
       open={open}
       placement={placement}
       portal
+      ref={setPopover}
     >
       <Button
         disabled={!ready}
