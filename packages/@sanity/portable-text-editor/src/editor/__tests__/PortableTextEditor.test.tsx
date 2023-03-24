@@ -101,6 +101,7 @@ describe('initialization', () => {
       expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
     })
   })
+
   it('takes initial selection from props', async () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const initialValue = [helloBlock]
@@ -149,6 +150,8 @@ describe('initialization', () => {
     )
     await waitFor(() => {
       if (editorRef.current) {
+        expect(onChange).toHaveBeenCalledWith({type: 'ready'})
+        expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
         const sel = PortableTextEditor.getSelection(editorRef.current)
         PortableTextEditor.focus(editorRef.current)
 
@@ -170,6 +173,46 @@ describe('initialization', () => {
     waitFor(() => {
       if (editorRef.current) {
         expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(newSelection)
+      }
+    })
+  })
+
+  it('validates initial value', async () => {
+    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const initialValue: PortableTextBlock[] = []
+    const initialSelection: EditorSelection = {
+      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
+      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
+    }
+    const onChange = jest.fn()
+    render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={editorRef}
+        selection={initialSelection}
+        schemaType={schemaType}
+        value={initialValue}
+      />
+    )
+    await waitFor(() => {
+      if (editorRef.current) {
+        expect(onChange).toHaveBeenCalledWith({
+          type: 'invalidValue',
+          value: initialValue,
+          resolution: {
+            action: 'Unset the value',
+            description: 'Editor value must be an array of Portable Text blocks, or undefined.',
+            item: initialValue,
+            patches: [
+              {
+                path: [],
+                type: 'unset',
+              },
+            ],
+          },
+        })
+        expect(onChange).not.toHaveBeenCalledWith({type: 'value', value: initialValue})
+        expect(onChange).toHaveBeenCalledWith({type: 'ready'})
       }
     })
   })
