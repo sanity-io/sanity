@@ -73,13 +73,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [boundaryElement, setBoundaryElement] = useState<HTMLElement | null>(null)
 
-  // Scroll to the DOM element of the "opened" portable text member when relevant.
-  useScrollToOpenedMember({
-    editorRootPath: path,
-    boundaryElement: undefined,
-    onItemClose,
-  })
-
   const handleToggleFullscreen = useCallback(() => {
     onToggleFullscreen()
   }, [onToggleFullscreen])
@@ -308,6 +301,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         initialSelection={initialSelection}
         isActive={isActive}
         isFullscreen={isFullscreen}
+        onItemClose={onItemClose}
         onItemOpen={onItemOpen}
         onCopy={onCopy}
         onPaste={onPaste}
@@ -331,6 +325,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       isActive,
       isFullscreen,
       onCopy,
+      onItemClose,
       onItemOpen,
       onPaste,
       path,
@@ -353,6 +348,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
     [portal.element, portalElement, wrapperElement]
   )
+
+  // Scroll to the DOM element of the "opened" portable text member when relevant.
+  useScrollToOpenedMember({
+    editorRootPath: path,
+    focusPath,
+    boundaryElement: boundaryElement || undefined,
+    onItemClose,
+  })
 
   return (
     <PortalProvider __unstable_elements={portalElements}>

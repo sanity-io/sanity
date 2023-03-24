@@ -37,6 +37,7 @@ interface EditorProps {
   isActive: boolean
   isFullscreen: boolean
   onCopy?: OnCopyFn
+  onItemClose: () => void
   onItemOpen: (path: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
@@ -69,6 +70,7 @@ export function Editor(props: EditorProps) {
     isActive,
     isFullscreen,
     onCopy,
+    onItemClose,
     onItemOpen,
     onPaste,
     onToggleFullscreen,
@@ -143,7 +145,8 @@ export function Editor(props: EditorProps) {
   const handleToolBarOnMemberOpen = useCallback(
     (relativePath: Path) => {
       PortableTextEditor.blur(editor)
-      onItemOpen(path.concat(relativePath))
+      const fullPath = path.concat(relativePath)
+      onItemOpen(fullPath)
     },
     [editor, onItemOpen, path]
   )
@@ -153,11 +156,11 @@ export function Editor(props: EditorProps) {
       {isActive && (
         <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
           <Toolbar
-            isFullscreen={isFullscreen}
             hotkeys={hotkeys}
+            isFullscreen={isFullscreen}
             onMemberOpen={handleToolBarOnMemberOpen}
-            readOnly={readOnly}
             onToggleFullscreen={onToggleFullscreen}
+            readOnly={readOnly}
           />
         </ToolbarCard>
       )}

@@ -21,9 +21,9 @@ import {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
 interface ToolbarProps {
   hotkeys: HotkeyOptions
   isFullscreen: boolean
-  readOnly?: boolean
   onMemberOpen: (relativePath: Path) => void
   onToggleFullscreen: () => void
+  readOnly?: boolean
 }
 
 const RootFlex = styled(Flex)`

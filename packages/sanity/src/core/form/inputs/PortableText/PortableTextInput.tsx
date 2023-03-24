@@ -255,12 +255,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
     () =>
       debounce(
         (sel: EditorSelection) => {
-          if (sel && hasFocus) onPathFocus(sel.focus.path)
+          if (sel && hasFocus) {
+            const fullPath = path.concat(sel.focus.path)
+            onPathFocus(fullPath)
+          }
         },
         500,
         {trailing: true, leading: false}
       ),
-    [hasFocus, onPathFocus]
+    [hasFocus, onPathFocus, path]
   )
 
   // Handle editor changes
