@@ -19,9 +19,9 @@ import {createProtoValue} from './createProtoValue'
  * @internal
  */
 export function getSetIfMissingPatches(schemaType: SchemaType, path: Path, value: unknown) {
-  return _getSetIfMissingPatches(schemaType, path, value, [])
+  return prepareNodePatches(schemaType, path, value, [])
 }
-function _getSetIfMissingPatches(
+function prepareNodePatches(
   schemaType: SchemaType,
   path: Path,
   value: unknown,
@@ -30,7 +30,7 @@ function _getSetIfMissingPatches(
   if (path.length === 0) {
     return []
   }
-  const [head, ...rest] = path
+  const [head, ...tail] = path
   const nodePatches = []
   if (
     (isObjectSchemaType(schemaType) && !isDocumentSchemaType(schemaType)) ||
@@ -44,7 +44,7 @@ function _getSetIfMissingPatches(
       throw new Error(`Expected to find an item at key ${JSON.stringify(head)}`)
     }
     const itemType = getItemType(schemaType, item)!
-    nodePatches.push(..._getSetIfMissingPatches(itemType, rest, item, _parentPath.concat(head)))
+    nodePatches.push(...prepareNodePatches(itemType, tail, item, _parentPath.concat(head)))
   } else if (isObjectSchemaType(schemaType)) {
     const field = schemaType.fields.find((f) => f.name === head)
     if (!field) {
@@ -53,9 +53,9 @@ function _getSetIfMissingPatches(
       )
     }
     nodePatches.push(
-      ..._getSetIfMissingPatches(
+      ...prepareNodePatches(
         field.type,
-        rest,
+        tail,
         (value as any)?.[field.name],
         _parentPath.concat(head)
       )
