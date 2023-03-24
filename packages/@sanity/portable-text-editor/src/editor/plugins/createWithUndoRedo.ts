@@ -400,10 +400,9 @@ const shouldClear = (op: Operation): boolean => {
 }
 
 export function withoutSaving(editor: Editor, fn: () => void): void {
-  const prev = isSaving(editor)
   SAVING.set(editor, false)
   fn()
-  SAVING.set(editor, prev)
+  SAVING.set(editor, true)
 }
 
 function createSelectOperation(editor: Editor): SelectionOperation {
