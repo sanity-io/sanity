@@ -112,14 +112,18 @@ export function Synchronizer(props: SynchronizerProps) {
   }, [change$, onFlushPendingPatchesDebounced, onChange, syncValue, isPending])
 
   // This hook must be set up after setting up the subscription above, or it will not pick up validation errors from the useSyncValue hook.
-  // This will cause the editor to not be able to recover from *initial* validation errors.
-  // TODO: add test for this!
+  // This will cause the editor to not be able to signal a validation error and offer invalid value resolution of the initial value.
+  const isInitialValueFromProps = useRef(true)
   useEffect(() => {
-    startTransition(() => {
-      debug('Value from props changed, syncing new value')
-      syncValue(value)
-    })
-  }, [syncValue, value])
+    debug('Value from props changed, syncing new value')
+    syncValue(value)
+    // Signal that we have our first value, and are ready to roll.
+    if (isInitialValueFromProps.current) {
+      change$.next({type: 'loading', isLoading: false})
+      change$.next({type: 'ready'})
+      isInitialValueFromProps.current = false
+    }
+  }, [change$, syncValue, value])
 
   return (
     <PortableTextEditorKeyGeneratorContext.Provider value={keyGenerator}>

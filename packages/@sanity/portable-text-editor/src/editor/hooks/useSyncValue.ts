@@ -57,8 +57,20 @@ export function useSyncValue(
 
       if (previousValue.current === value) {
         debug('Value is the same object')
+        change$.next({type: 'value', value})
         return
       }
+
+      if (value && value.length === 0) {
+        const validation = validateValue(value, schemaTypes, keyGenerator)
+        change$.next({
+          type: 'invalidValue',
+          resolution: validation.resolution,
+          value,
+        })
+        return
+      }
+
       let isChanged = false
       previousValue.current = value
 

@@ -138,8 +138,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
 
   public setEditable = (editable: EditableAPI) => {
     this.editable = {...this.editable, ...editable}
-    this.change$.next({type: 'loading', isLoading: false})
-    this.change$.next({type: 'ready'})
   }
 
   render() {
