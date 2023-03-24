@@ -157,13 +157,13 @@ export function useSyncValue(
                   }
                 }
               })
-              Editor.normalize(slateEditor)
             })
           })
         })
       }
       if (isChanged) {
         debug('Server value changed, syncing editor')
+        Editor.normalize(slateEditor)
         slateEditor.onChange()
         change$.next({type: 'value', value})
       } else {
