@@ -71,11 +71,15 @@ describe('initialization', () => {
                         Jot something down here
                       </div>
                       <span
-                        data-slate-length="0"
-                        data-slate-zero-width="n"
+                        data-slate-leaf="true"
                       >
-                        ﻿
-                        <br />
+                        <span
+                          data-slate-length="0"
+                          data-slate-zero-width="n"
+                        >
+                          ﻿
+                          <br />
+                        </span>
                       </span>
                     </span>
                   </div>
