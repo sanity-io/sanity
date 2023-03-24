@@ -3,7 +3,7 @@
  */
 export const deepArrayReferences = {
   type: 'document',
-  name: 'deepArrayReferences',
+  name: 'deepArrayReference',
   fields: [
     {
       name: 'text',
@@ -12,7 +12,7 @@ export const deepArrayReferences = {
     {
       name: 'deep',
       type: 'array',
-      of: [{type: 'reference', to: {type: 'deepArrayReferences'}}],
+      of: [{type: 'reference', to: {type: 'deepArrayReference'}}],
     },
   ],
 }
