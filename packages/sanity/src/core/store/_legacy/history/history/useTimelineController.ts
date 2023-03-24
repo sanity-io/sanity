@@ -5,7 +5,6 @@ import {Timeline, TimelineController} from '../../../..'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {remoteSnapshots, RemoteSnapshotVersionEvent} from '../../document'
-// import {Timeline} from './Timeline'
 
 interface UseTimelineControllerOpts {
   documentId: string
@@ -28,9 +27,6 @@ export function useTimelineController({
       client,
       documentId,
       documentType,
-      handler: (err) => {
-        if (err) throw err
-      },
       timeline,
     })
   }, [client, documentId, documentType, timeline])

@@ -1,11 +1,20 @@
 import {SelectIcon} from '@sanity/icons'
-import {useClickOutside, Button, Popover, Placement, useGlobalKeyDown} from '@sanity/ui'
+import {
+  Button,
+  Flex,
+  Placement,
+  Popover,
+  Spinner,
+  Text,
+  useClickOutside,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
-import {sinceTimelineProps, revTimelineProps, formatTimelineEventLabel} from './helpers'
+import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
 import {Chunk} from 'sanity'
 
@@ -20,7 +29,7 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {historyController, setTimelineRange, setTimelineMode, timeline, ready} = useDocumentPane()
+  const {historyController, setTimelineRange, setTimelineMode, ready} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [menuContent, setMenuContent] = useState<HTMLDivElement | null>(null)
@@ -79,35 +88,28 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     [historyController]
   )
 
-  const content = useMemo(
-    () => (
-      <div ref={setMenuContent}>
-        {mode === 'rev' ? (
-          <Timeline
-            onSelect={selectRev}
-            onLoadMore={loadMoreHistory}
-            timeline={timeline}
-            {...revTimelineProps(historyController.realRevChunk)}
-          />
-        ) : (
-          <Timeline
-            onSelect={selectSince}
-            onLoadMore={loadMoreHistory}
-            timeline={timeline}
-            {...sinceTimelineProps(historyController.sinceTime!, historyController.realRevChunk)}
-          />
-        )}
-      </div>
-    ),
-    [
-      historyController.realRevChunk,
-      historyController.sinceTime,
-      loadMoreHistory,
-      mode,
-      selectRev,
-      selectSince,
-      timeline,
-    ]
+  const content = (
+    <div ref={setMenuContent}>
+      {mode === 'rev' && (
+        <Timeline
+          bottomSelection={historyController.realRevChunk}
+          controller={historyController}
+          onSelect={selectRev}
+          onLoadMore={loadMoreHistory}
+          topSelection={historyController.realRevChunk}
+        />
+      )}
+      {mode === 'since' && (
+        <Timeline
+          bottomSelection={historyController.sinceTime!}
+          controller={historyController}
+          disabledBeforeSelection
+          onSelect={selectSince}
+          onLoadMore={loadMoreHistory}
+          topSelection={historyController.realRevChunk}
+        />
+      )}
+    </div>
   )
 
   const timeLabel = useFormattedTimestamp(chunk?.endTimestamp || '')

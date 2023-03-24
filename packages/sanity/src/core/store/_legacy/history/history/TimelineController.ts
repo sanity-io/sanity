@@ -15,7 +15,8 @@ export type TimelineControllerOptions = {
   client: SanityClient
   documentId: string
   documentType: string
-  handler: (err: Error | null, controller: TimelineController) => void
+  onError?: (err: Error, controller: TimelineController) => void
+  onUpdate?: (controller: TimelineController) => void
 }
 
 /** @beta */
@@ -30,7 +31,8 @@ export type SelectionState = 'inactive' | 'rev' | 'range' | 'loading' | 'invalid
 export class TimelineController {
   timeline: Timeline
   client: SanityClient
-  handler: TimelineControllerOptions['handler']
+  onError: TimelineControllerOptions['onError']
+  onUpdate: TimelineControllerOptions['onUpdate']
 
   version = 0
 
@@ -47,7 +49,8 @@ export class TimelineController {
   constructor(options: TimelineControllerOptions) {
     this.timeline = options.timeline
     this.client = options.client
-    this.handler = options.handler
+    this.onError = options.onError
+    this.onUpdate = options.onUpdate
     this._aligner = new Aligner(this.timeline)
 
     this.markChange()
@@ -263,7 +266,7 @@ export class TimelineController {
       await this.fetchMoreTransactions()
     } catch (err) {
       this._didErr = true
-      this.handler(err, this)
+      this.onError?.(err, this)
       return
     }
 
@@ -335,6 +338,6 @@ export class TimelineController {
     this.setSinceTime(this._rev)
 
     this.version++
-    this.handler(null, this)
+    this.onUpdate?.(this)
   }
 }

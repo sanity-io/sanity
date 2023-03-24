@@ -419,7 +419,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permissions,
     setTimelineMode,
     setTimelineRange,
-    timeline,
     timelineMode,
     title,
     value,

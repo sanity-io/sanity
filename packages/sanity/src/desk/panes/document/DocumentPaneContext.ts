@@ -19,7 +19,6 @@ import {
   PatchEvent,
   PermissionCheckResult,
   StateTree,
-  Timeline,
   TimelineController,
 } from 'sanity'
 
@@ -66,7 +65,6 @@ export interface DocumentPaneContextValue {
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
   source?: string
-  timeline: Timeline
   timelineMode: TimelineMode
   title: string | null
   validation: ValidationMarker[]
