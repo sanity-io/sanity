@@ -77,9 +77,11 @@ export function useSyncValue(
       // If empty value, remove everything in the editor and insert a placeholder block
       if (!value || value.length === 0) {
         debug('Value is empty')
+        const hadSelection = !!slateEditor.selection
         withoutSaving(slateEditor, () => {
           withoutPatching(slateEditor, () => {
             Editor.withoutNormalizing(slateEditor, () => {
+              Transforms.deselect(slateEditor)
               const childrenLength = slateEditor.children.length
               slateEditor.children.forEach((_, index) => {
                 Transforms.removeNodes(slateEditor, {
@@ -87,8 +89,10 @@ export function useSyncValue(
                 })
               })
               Transforms.insertNodes(slateEditor, slateEditor.createPlaceholderBlock(), {at: [0]})
+              if (hadSelection) {
+                Transforms.select(slateEditor, [0, 0])
+              }
             })
-            Editor.normalize(slateEditor)
           })
         })
         isChanged = true
