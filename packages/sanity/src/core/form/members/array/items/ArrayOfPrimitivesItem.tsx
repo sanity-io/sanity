@@ -56,9 +56,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
-      onChange(PatchEvent.from(event).prefixAll(member.index))
+      onChange(PatchEvent.from(event).withPath(member.item.path))
     },
-    [onChange, member.index]
+    [onChange, member.item.path]
   )
   const handleNativeChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,14 +152,18 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const onRemove = useCallback(() => {
-    onChange(PatchEvent.from([unset([member.index])]))
-  }, [member.index, onChange])
+    onChange(PatchEvent.from([unset(member.item.path)]))
+  }, [member.item.path, onChange])
 
   const onInsert = useCallback(
     (event: {items: unknown[]; position: 'before' | 'after'}) => {
-      onChange(PatchEvent.from([insert(event.items, event.position, [member.index])]))
+      onChange(
+        PatchEvent.from([insert(event.items, event.position, [member.index])]).withPath(
+          member.item.path.slice(0, -1)
+        )
+      )
     },
-    [member.index, onChange]
+    [member.index, member.item.path, onChange]
   )
 
   const itemProps = useMemo((): Omit<PrimitiveItemProps, 'renderDefault'> => {

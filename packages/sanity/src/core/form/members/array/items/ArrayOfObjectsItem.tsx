@@ -58,8 +58,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   })
 
   const onRemove = useCallback(() => {
-    onChange(PatchEvent.from([unset([{_key: member.key}])]))
-  }, [member.key, onChange])
+    onChange(PatchEvent.from([unset(member.item.path)]))
+  }, [member.item.path, onChange])
 
   const handleOpenItem = useCallback(
     (path: Path) => {
@@ -77,11 +77,15 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
         throw new Error('Insert event should include at least one item')
       }
       const itemsWithKeys = event.items.map((item) => ensureKey(item))
+      const parentPath = member.item.path.slice(0, -1)
 
-      onChange(PatchEvent.from([insert(itemsWithKeys, event.position, [{_key: member.key}])]))
+      onChange(
+        PatchEvent.from([
+          insert(itemsWithKeys, event.position, [...parentPath, {_key: member.key}]),
+        ])
+      )
 
       const focusItemKey = itemsWithKeys[0]._key
-      const parentPath = member.item.path.slice(0, -1)
       const itemPath = [...parentPath, {_key: focusItemKey}]
 
       // Set focus at the first item (todo: verify that this is the expected/better behavior when adding multiple items)
@@ -97,7 +101,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
           .pipe(
             tap((result) => {
               if (result.type === 'patch') {
-                onChange(PatchEvent.from(result.patches))
+                onChange(PatchEvent.from(result.patches).withPath(parentPath))
               } else {
                 toast.push({
                   title: `Could not resolve initial value`,

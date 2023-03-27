@@ -83,27 +83,9 @@ export function ArrayOfObjectsField(props: {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
-      const patches = PatchEvent.from(event).patches
-      // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
-      const isRemovingLastItem = patches.some(
-        (patch) => patch.type === 'unset' && patch.path.length === 1
-      )
-
-      if (isRemovingLastItem) {
-        // apply the patch to the current value
-        const result = applyAll(member.field.value || [], patches)
-
-        // if the result is an empty array
-        if (Array.isArray(result) && !result.length) {
-          // then unset the array field
-          onChange(PatchEvent.from(unset(member.field.path)))
-          return
-        }
-      }
-      // otherwise apply the patch
       onChange(PatchEvent.from(event).withPath(member.field.path))
     },
-    [onChange, member.field.path, member.field.value]
+    [onChange, member.field.path]
   )
   const resolveInitialValue = useResolveInitialValueForType()
 

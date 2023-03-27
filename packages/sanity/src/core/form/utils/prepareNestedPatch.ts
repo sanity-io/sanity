@@ -4,11 +4,19 @@ import {
   isDocumentSchemaType,
   isObjectSchemaType,
   Path,
+  PathSegment,
   SchemaType,
 } from '@sanity/types'
 import {FormPatch, setIfMissing} from '../patch'
 import {getItemType} from '../store/utils/getItemType'
 import {createProtoValue} from './createProtoValue'
+
+function selectItem(array: {_key: string}[], itemSelector: PathSegment) {
+  if (typeof itemSelector === 'number') {
+    return array[itemSelector]
+  }
+  return array.find((it) => it._key === (itemSelector as {_key: string})._key)
+}
 
 /**
  * Note: it doesn't make setIfMissingPatch for the value where the path terminates since it's
@@ -39,18 +47,19 @@ function prepareNodePatches(
     nodePatches.push(setIfMissing(createProtoValue(schemaType), _parentPath))
   }
   if (isArrayOfObjectsSchemaType(schemaType)) {
-    const item = (value as {_key: string}[]).find((it) => it._key === (head as {_key: string})._key)
+    if (!value) {
+      return nodePatches
+    }
+    const item = selectItem(value as {_key: string}[], head)
     if (!item) {
-      throw new Error(`Expected to find an item at key ${JSON.stringify(head)}`)
+      return nodePatches
     }
     const itemType = getItemType(schemaType, item)!
     nodePatches.push(...prepareNodePatches(itemType, tail, item, _parentPath.concat(head)))
   } else if (isObjectSchemaType(schemaType)) {
     const field = schemaType.fields.find((f) => f.name === head)
     if (!field) {
-      throw new Error(
-        `Expected to find a field named ${JSON.stringify(head)} in object type ${schemaType.name}`
-      )
+      return nodePatches
     }
     nodePatches.push(
       ...prepareNodePatches(
