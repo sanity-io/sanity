@@ -6,11 +6,12 @@ import {Alert} from '../../components/Alert'
 interface InvalidValueProps {
   onChange: (...args: any[]) => any
   onIgnore: () => void
+  readOnly?: boolean
   resolution: InvalidValueResolution
 }
 
 export function InvalidValue(props: InvalidValueProps) {
-  const {onChange, onIgnore, resolution} = props
+  const {onChange, onIgnore, resolution, readOnly} = props
 
   const handleAction = useCallback(() => {
     if (resolution) {
@@ -27,7 +28,9 @@ export function InvalidValue(props: InvalidValueProps) {
           {resolution.action && (
             <Grid columns={[1, 2]} gap={1}>
               <Button mode="ghost" onClick={onIgnore} text="Ignore" />
-              <Button onClick={handleAction} text={resolution.action} tone="caution" />
+              {!readOnly && (
+                <Button onClick={handleAction} text={resolution.action} tone="caution" />
+              )}
             </Grid>
           )}
 

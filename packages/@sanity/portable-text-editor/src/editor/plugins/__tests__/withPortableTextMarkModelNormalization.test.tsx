@@ -182,23 +182,27 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       },
     ]
     const onChange = jest.fn()
-    render(
-      <PortableTextEditorTester
-        onChange={onChange}
-        ref={editorRef}
-        schemaType={schemaType}
-        value={initialValue}
-      />
-    )
+    await waitFor(() => {
+      render(
+        <PortableTextEditorTester
+          onChange={onChange}
+          ref={editorRef}
+          schemaType={schemaType}
+          value={initialValue}
+        />
+      )
+    })
     await waitFor(() => {
       if (editorRef.current) {
-        PortableTextEditor.focus(editorRef.current)
-        PortableTextEditor.select(editorRef.current, {
+        const editor = editorRef.current
+        PortableTextEditor.focus(editor)
+        PortableTextEditor.select(editor, {
           focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
           anchor: {path: [{_key: 'b'}, 'children', {_key: 'b1'}], offset: 1},
         })
-        PortableTextEditor.toggleMark(editorRef.current, 'bold')
-        expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
+        PortableTextEditor.toggleMark(editor, 'bold')
+        const value = PortableTextEditor.getValue(editor)
+        expect(value).toMatchInlineSnapshot(`
         Array [
           Object {
             "_key": "a",
@@ -262,14 +266,16 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       },
     ]
     const onChange = jest.fn()
-    render(
-      <PortableTextEditorTester
-        onChange={onChange}
-        ref={editorRef}
-        schemaType={schemaType}
-        value={initialValue}
-      />
-    )
+    await waitFor(() => {
+      render(
+        <PortableTextEditorTester
+          onChange={onChange}
+          ref={editorRef}
+          schemaType={schemaType}
+          value={initialValue}
+        />
+      )
+    })
     if (!editorRef.current) {
       throw new Error('No editor')
     }
@@ -405,14 +411,16 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       },
     ]
     const onChange = jest.fn()
-    render(
-      <PortableTextEditorTester
-        onChange={onChange}
-        ref={editorRef}
-        schemaType={schemaType}
-        value={initialValue}
-      />
-    )
+    await waitFor(() => {
+      render(
+        <PortableTextEditorTester
+          onChange={onChange}
+          ref={editorRef}
+          schemaType={schemaType}
+          value={initialValue}
+        />
+      )
+    })
     await waitFor(() => {
       if (editorRef.current) {
         PortableTextEditor.focus(editorRef.current)
@@ -521,14 +529,16 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       anchor: {path: [{_key: '7cd53af36712'}, 'children', {_key: '576c748e0cd2'}], offset: 0},
     }
     const onChange = jest.fn()
-    render(
-      <PortableTextEditorTester
-        onChange={onChange}
-        ref={editorRef}
-        schemaType={schemaType}
-        value={initialValue}
-      />
-    )
+    await waitFor(() => {
+      render(
+        <PortableTextEditorTester
+          onChange={onChange}
+          ref={editorRef}
+          schemaType={schemaType}
+          value={initialValue}
+        />
+      )
+    })
     await waitFor(() => {
       if (editorRef.current) {
         PortableTextEditor.select(editorRef.current, sel)
@@ -631,14 +641,16 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
       anchor: {path: [{_key: '2f55670a03bb'}, 'children', {_key: '9f5ed7dee7ab'}], offset: 0},
     }
     const onChange = jest.fn()
-    render(
-      <PortableTextEditorTester
-        onChange={onChange}
-        ref={editorRef}
-        schemaType={schemaType}
-        value={initialValue}
-      />
-    )
+    await waitFor(() => {
+      render(
+        <PortableTextEditorTester
+          onChange={onChange}
+          ref={editorRef}
+          schemaType={schemaType}
+          value={initialValue}
+        />
+      )
+    })
     await waitFor(() => {
       if (editorRef.current) {
         PortableTextEditor.select(editorRef.current, sel)

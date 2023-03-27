@@ -292,6 +292,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
     [onChange, toast, setFocusPathDebounced]
   )
 
+  useEffect(() => {
+    setIgnoreValidationError(false)
+  }, [value])
+
   const handleIgnoreInvalidValue = useCallback((): void => {
     setIgnoreValidationError(true)
   }, [])
@@ -304,12 +308,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
             onChange={handleEditorChange}
             onIgnore={handleIgnoreInvalidValue}
             resolution={invalidValue.resolution}
+            readOnly={readOnly}
           />
         </Box>
       )
     }
     return null
-  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue])
+  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, readOnly])
 
   const handleActivate = useCallback((): void => {
     if (!isActive) {
