@@ -171,18 +171,11 @@ export function createWithPatches({
         return editor
       }
 
-      // If the editor was empty and now got a value, create the PT-array and insert the placeholder into it.
-      if (editorWasEmpty && !editorIsEmpty) {
-        patches.push(unset([])) // Clear the value first or we may risk dupes from the below insert.
-        patches.push(setIfMissing([], []))
-        previousChildren.forEach((c, index) => {
-          patches.push(insert(fromSlateValue([c], schemaTypes.block.name), 'before', [index]))
-        })
+      // If the editor was empty and now isn't, insert the placeholder into it.
+      if (editorWasEmpty && !editorIsEmpty && operation.type !== 'set_selection') {
+        patches.push(insert(previousChildren, 'before', [0]))
       }
-      // Unset the value if something was setting a node in a way that emptied the editor.
-      if (editorIsEmpty && ['set_node'].includes(operation.type)) {
-        patches.push(unset([]))
-      }
+
       switch (operation.type) {
         case 'insert_text':
           patches = [
@@ -237,8 +230,12 @@ export function createWithPatches({
         // Do nothing
       }
 
-      // Unset the value if the operation made the editor empty
-      if (editorIsEmpty && ['remove_text', 'remove_node'].includes(operation.type)) {
+      // Unset the value if a operation made the editor empty
+      if (
+        !editorWasEmpty &&
+        editorIsEmpty &&
+        ['set_node', 'remove_text', 'remove_node'].includes(operation.type)
+      ) {
         patches = [...patches, unset([])]
         change$.next({
           type: 'unset',
@@ -248,6 +245,11 @@ export function createWithPatches({
             KEY_TO_VALUE_ELEMENT.get(editor)
           ),
         })
+      }
+
+      // Prepend patches with setIfMissing if going from empty editor to something involving a patch.
+      if (editorWasEmpty && patches.length > 0) {
+        patches = [setIfMissing([], []), ...patches]
       }
 
       // Emit all patches
