@@ -145,13 +145,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
-      onChange(
-        PatchEvent.from(event)
-          .prepend(setIfMissing(createProtoValue(member.item.schemaType)))
-          .prefixAll({_key: member.key})
-      )
+      onChange(PatchEvent.from(event).withPath(member.item.path))
     },
-    [onChange, member.item.schemaType, member.key]
+    [member.item.path, onChange]
   )
   const handleCollapse = useCallback(() => {
     onSetPathCollapsed(member.item.path, true)
@@ -347,17 +343,5 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     inputProps,
   ])
 
-  return (
-    <FormCallbacksProvider
-      onFieldGroupSelect={onFieldGroupSelect}
-      onChange={handleChange}
-      onPathOpen={onPathOpen}
-      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
-      onSetPathCollapsed={onSetPathCollapsed}
-      onPathBlur={onPathBlur}
-      onPathFocus={onPathFocus}
-    >
-      {useMemo(() => renderItem(itemProps), [itemProps, renderItem])}
-    </FormCallbacksProvider>
-  )
+  return useMemo(() => renderItem(itemProps), [itemProps, renderItem])
 }

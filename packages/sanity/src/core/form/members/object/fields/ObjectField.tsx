@@ -63,13 +63,9 @@ export const ObjectField = function ObjectField(props: {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
-      onChange(
-        PatchEvent.from(event)
-          .prepend(setIfMissing(createProtoValue(member.field.schemaType)))
-          .prefixAll(member.name)
-      )
+      onChange(PatchEvent.from(event).withPath(member.field.path))
     },
-    [onChange, member.field.schemaType, member.name]
+    [onChange, member.field.path]
   )
 
   const handleCollapse = useCallback(() => {
@@ -251,17 +247,5 @@ export const ObjectField = function ObjectField(props: {
     inputProps,
   ])
 
-  return (
-    <FormCallbacksProvider
-      onFieldGroupSelect={onFieldGroupSelect}
-      onChange={handleChange}
-      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
-      onPathOpen={onPathOpen}
-      onSetPathCollapsed={onSetPathCollapsed}
-      onPathBlur={onPathBlur}
-      onPathFocus={onPathFocus}
-    >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
-    </FormCallbacksProvider>
-  )
+  return useMemo(() => renderField(fieldProps), [fieldProps, renderField])
 }

@@ -45,9 +45,9 @@ export function PrimitiveField(props: {
 
   const handleChange = useCallback(
     (event: FormPatch | FormPatch[] | PatchEvent) => {
-      onChange(PatchEvent.from(event).prefixAll(member.name))
+      onChange(PatchEvent.from(event).withPath(member.field.path))
     },
-    [onChange, member.name]
+    [onChange, member.field.path]
   )
 
   const handleNativeChange = useCallback(
@@ -71,9 +71,11 @@ export function PrimitiveField(props: {
         setLocalValue(hasEmptyValue ? undefined : event.currentTarget.value)
       }
 
-      onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.name))
+      onChange(
+        PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).withPath(member.field.path)
+      )
     },
-    [member.name, member.field.schemaType, onChange]
+    [member.field.schemaType, member.field.path, onChange]
   )
 
   const validationError =
