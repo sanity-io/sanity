@@ -1,28 +1,22 @@
 import {Box, Card, Grid} from '@sanity/ui'
 import React, {
-  ComponentProps,
-  ForwardedRef,
+  type ComponentProps,
+  type ForwardedRef,
   forwardRef,
   memo,
   useCallback,
-  useEffect,
   useMemo,
-  useState,
 } from 'react'
 import styled, {css} from 'styled-components'
 import {
-  AutoScrollOptions,
   closestCenter,
   DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent,
   KeyboardSensor,
   PointerSensor,
-  SensorOptions,
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
+import type {SensorOptions, AutoScrollOptions, DragStartEvent, DragEndEvent} from '@dnd-kit/core'
 import {
   horizontalListSortingStrategy,
   SortableContext,
