@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import React, {memo, useCallback, useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Text} from '@sanity/ui'
 import {SelectIcon} from '@sanity/icons'
@@ -70,7 +70,6 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
   const {disabled, items: itemsProp} = props
   const editor = usePortableTextEditor()
   const focusBlock = useFocusBlock()
-  const [changed, setChanged] = useState(false)
 
   const _disabled =
     disabled || (focusBlock ? editor.schemaTypes.block.name !== focusBlock._type : false)
@@ -100,9 +99,19 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
   const handleChange = useCallback(
     (item: BlockStyleItem): void => {
       if (focusBlock && item.style !== focusBlock.style) {
+        const sel = PortableTextEditor.getSelection(editor)
         PortableTextEditor.toggleBlockStyle(editor, item.style)
+        // Force a new selection here, so that the toolbar will be refreshed
+        // It memo'es on the selection for showing the active style.
+        PortableTextEditor.select(editor, null)
+        if (sel) {
+          PortableTextEditor.select(editor, {...sel})
+        }
       }
-      setChanged(true)
+      // Focus will not stick unless this is done through a timeout.
+      setTimeout(() => {
+        PortableTextEditor.focus(editor)
+      })
     },
     [editor, focusBlock]
   )
@@ -151,15 +160,6 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     ),
     [_disabled, activeItems, handleChange, items, renderOption]
   )
-
-  // Set focus back into the editor when the new value get's in
-  // This must be the last registered hook or it will not be able to focus properly.
-  useEffect(() => {
-    if (changed) {
-      PortableTextEditor.focus(editor)
-      setChanged(false)
-    }
-  }, [activeItems, changed, editor])
 
   return (
     <MenuButtonMemo
