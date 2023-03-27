@@ -1,4 +1,4 @@
-import React, {useRef, useCallback, useEffect, useMemo} from 'react'
+import React, {useRef, useCallback, useMemo} from 'react'
 import {
   Box,
   Button,
@@ -35,7 +35,6 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   const {sanity} = useTheme()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
-  const isTabbing = useRef<boolean>(false)
 
   // Close floating toolbar on Escape
   // Focus to edit button on Tab
@@ -45,27 +44,12 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
         if (event.key === 'Escape') {
           event.preventDefault()
           event.stopPropagation()
-          isTabbing.current = false
           onClosePopover()
-        }
-        if (event.key === 'Tab') {
-          if (!isTabbing.current) {
-            event.preventDefault()
-            event.stopPropagation()
-            editButtonRef.current?.focus()
-            isTabbing.current = true
-          }
         }
       },
       [onClosePopover]
     )
   )
-
-  useEffect(() => {
-    if (isTabbing.current) {
-      editButtonRef.current?.focus()
-    }
-  }, [])
 
   const popoverContent = useMemo(
     () => (

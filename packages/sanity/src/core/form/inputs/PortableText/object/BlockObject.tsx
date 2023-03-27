@@ -37,12 +37,13 @@ interface BlockObjectProps extends PropsWithChildren {
   isActive?: boolean
   isFullscreen?: boolean
   onChange: (...patches: PatchArg[]) => void
-  onItemOpen: (path: Path) => void
   onItemClose: () => void
+  onItemOpen: (path: Path) => void
   onItemRemove: (itemKey: string) => void
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
+  relativePath: Path
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
@@ -61,9 +62,10 @@ export function BlockObject(props: BlockObjectProps) {
     onPathFocus,
     path,
     readOnly,
-    renderPreview,
+    relativePath,
     renderBlockActions,
     renderCustomMarkers,
+    renderPreview,
     boundaryElement,
     selected,
     schemaType,
@@ -79,11 +81,9 @@ export function BlockObject(props: BlockObjectProps) {
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
 
   const onOpen = useCallback(() => {
-    if (memberItem) {
-      PortableTextEditor.blur(editor)
-      onItemOpen(memberItem.node.path)
-    }
-  }, [editor, onItemOpen, memberItem])
+    PortableTextEditor.blur(editor)
+    onItemOpen(path)
+  }, [editor, onItemOpen, path])
 
   const onClose = useCallback(() => {
     onItemClose()
@@ -91,11 +91,14 @@ export function BlockObject(props: BlockObjectProps) {
   }, [editor, onItemClose])
 
   const onRemove = useCallback(() => {
-    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+    const sel: EditorSelection = {
+      focus: {path: relativePath, offset: 0},
+      anchor: {path: relativePath, offset: 0},
+    }
     PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
     // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
     setTimeout(() => PortableTextEditor.focus(editor))
-  }, [editor, path])
+  }, [editor, relativePath])
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
@@ -317,7 +320,6 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           actions: (
             <BlockObjectActionsMenu
               focused={focused}
-              isActive
               isOpen={open}
               onOpen={onOpen}
               onRemove={onRemove}

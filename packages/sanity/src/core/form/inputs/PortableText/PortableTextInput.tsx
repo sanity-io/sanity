@@ -127,16 +127,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   const handleToggleFullscreen = useCallback(() => {
     if (editorRef.current) {
-      const prevSel = PortableTextEditor.getSelection(editorRef.current)
       setIsFullscreen((v) => !v)
-      setTimeout(() => {
-        if (editorRef.current) {
-          PortableTextEditor.focus(editorRef.current)
-          if (prevSel) {
-            PortableTextEditor.select(editorRef.current, {...prevSel})
-          }
-        }
-      })
     }
   }, [])
 
@@ -255,12 +246,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
     () =>
       debounce(
         (sel: EditorSelection) => {
-          if (sel && hasFocus) onPathFocus(sel.focus.path)
+          if (sel && hasFocus) {
+            const fullPath = path.concat(sel.focus.path)
+            onPathFocus(fullPath)
+          }
         },
         500,
         {trailing: true, leading: false}
       ),
-    [hasFocus, onPathFocus]
+    [hasFocus, onPathFocus, path]
   )
 
   // Handle editor changes

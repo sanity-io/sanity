@@ -20,15 +20,16 @@ import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
 interface InlineObjectProps {
   boundaryElement?: HTMLElement
   focused: boolean
-  selected: boolean
-  path: Path
   onItemClose: () => void
-  onPathFocus: (path: Path) => void
   onItemOpen: (path: Path) => void
+  onPathFocus: (path: Path) => void
+  path: Path
   readOnly?: boolean
+  relativePath: Path
   renderCustomMarkers?: RenderCustomMarkers
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
+  selected: boolean
   value: PortableTextChild
 }
 
@@ -41,10 +42,11 @@ export const InlineObject = (props: InlineObjectProps) => {
     onPathFocus,
     path,
     readOnly,
+    relativePath,
     renderCustomMarkers,
     renderPreview,
-    selected,
     schemaType,
+    selected,
     value,
   } = props
   const {Markers} = useFormBuilder().__internal.components
@@ -57,11 +59,14 @@ export const InlineObject = (props: InlineObjectProps) => {
   const hasMarkers = markers.length > 0
 
   const onRemove = useCallback(() => {
-    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+    const sel: EditorSelection = {
+      focus: {path: relativePath, offset: 0},
+      anchor: {path: relativePath, offset: 0},
+    }
     PortableTextEditor.delete(editor, sel, {mode: 'children'})
     // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
     setTimeout(() => PortableTextEditor.focus(editor))
-  }, [editor, path])
+  }, [editor, relativePath])
 
   const onOpen = useCallback(() => {
     if (memberItem) {
@@ -74,32 +79,29 @@ export const InlineObject = (props: InlineObjectProps) => {
   const presence = memberItem?.node.presence || EMPTY_ARRAY
 
   const componentProps: BlockProps | undefined = useMemo(
-    () =>
-      memberItem
-        ? {
-            __unstable_boundaryElement: boundaryElement || undefined,
-            __unstable_referenceElement: memberItem.elementRef?.current || undefined,
-            children: input,
-            focused,
-            onClose: onItemClose,
-            onOpen,
-            onPathFocus,
-            onRemove,
-            open: isOpen,
-            markers,
-            member: memberItem.member,
-            parentSchemaType,
-            path: memberItem.member.item.path,
-            presence,
-            readOnly: Boolean(readOnly),
-            renderDefault: DefaultInlineObjectComponent,
-            renderPreview,
-            schemaType,
-            selected,
-            value: value as PortableTextBlock,
-            validation,
-          }
-        : undefined,
+    () => ({
+      __unstable_boundaryElement: boundaryElement || undefined,
+      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
+      children: input,
+      focused,
+      onClose: onItemClose,
+      onOpen,
+      onPathFocus,
+      onRemove,
+      open: isOpen,
+      markers,
+      member: memberItem?.member,
+      parentSchemaType,
+      path: memberItem?.member.item.path || EMPTY_ARRAY,
+      presence,
+      readOnly: Boolean(readOnly),
+      renderDefault: DefaultInlineObjectComponent,
+      renderPreview,
+      schemaType,
+      selected,
+      value: value as PortableTextBlock,
+      validation,
+    }),
     [
       boundaryElement,
       focused,
