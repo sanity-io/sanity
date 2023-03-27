@@ -44,15 +44,6 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
 
-  const handleDelete = useCallback(
-    (e: {preventDefault: () => void; stopPropagation: () => void}) => {
-      e.preventDefault()
-      e.stopPropagation()
-      onRemove()
-    },
-    [onRemove]
-  )
-
   const referenceLink = useMemo(
     () =>
       '_ref' in value && value._ref
@@ -119,7 +110,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
                 {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onOpen} text="View" />}
                 {!readOnly && <MenuItem icon={EditIcon} onClick={onOpen} text="Edit" />}
                 {!readOnly && (
-                  <MenuItem icon={TrashIcon} onClick={handleDelete} text="Delete" tone="critical" />
+                  <MenuItem icon={TrashIcon} onClick={onRemove} text="Delete" tone="critical" />
                 )}
               </>
             </Menu>
