@@ -15,7 +15,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
 import {
@@ -32,12 +32,12 @@ import {Style} from './text/Style'
 import {ListItem} from './text/ListItem'
 
 interface EditorProps {
+  hasFocus: boolean
   hotkeys: HotkeyOptions
   initialSelection?: EditorSelection
   isActive: boolean
   isFullscreen: boolean
   onCopy?: OnCopyFn
-  onItemClose: () => void
   onItemOpen: (path: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
@@ -65,12 +65,12 @@ const renderListItem: RenderListItemFunction = (props) => {
 
 export function Editor(props: EditorProps) {
   const {
+    hasFocus,
     hotkeys,
     initialSelection,
     isActive,
     isFullscreen,
     onCopy,
-    onItemClose,
     onItemOpen,
     onPaste,
     onToggleFullscreen,
@@ -150,6 +150,13 @@ export function Editor(props: EditorProps) {
     },
     [editor, onItemOpen, path]
   )
+
+  // Focus the editor if we have focus and the editor is re-rendered (toggling fullscreen for instance)
+  useEffect(() => {
+    if (hasFocus) {
+      PortableTextEditor.focus(editor)
+    }
+  }, [editor, hasFocus])
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor">

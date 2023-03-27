@@ -297,11 +297,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorNode = useMemo(
     () => (
       <Editor
+        hasFocus={hasFocus}
         hotkeys={editorHotkeys}
         initialSelection={initialSelection}
         isActive={isActive}
         isFullscreen={isFullscreen}
-        onItemClose={onItemClose}
         onItemOpen={onItemOpen}
         onCopy={onCopy}
         onPaste={onPaste}
@@ -321,11 +321,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       editorHotkeys,
       handleToggleFullscreen,
+      hasFocus,
       initialSelection,
       isActive,
       isFullscreen,
       onCopy,
-      onItemClose,
       onItemOpen,
       onPaste,
       path,
