@@ -84,8 +84,13 @@ const InnerToolbar = memo(function InnerToolbar({
     rootElement: rootElement,
   })
 
+  const preventEditorBlurOnToolbarMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }, [])
+
   return (
-    <RootFlex align="center" ref={setRootElement}>
+    <RootFlex align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
       {showBlockStyleSelect && (
         <StyleSelectFlex flex={collapsed ? 1 : undefined}>
           <StyleSelectBox padding={isFullscreen ? 2 : 1}>
