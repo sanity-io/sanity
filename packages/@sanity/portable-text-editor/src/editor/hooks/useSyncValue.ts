@@ -77,11 +77,13 @@ export function useSyncValue(
       // If empty value, remove everything in the editor and insert a placeholder block
       if (!value || value.length === 0) {
         debug('Value is empty')
-        const hadSelection = !!slateEditor.selection
         withoutSaving(slateEditor, () => {
           withoutPatching(slateEditor, () => {
             Editor.withoutNormalizing(slateEditor, () => {
-              Transforms.deselect(slateEditor)
+              const hadSelection = !!slateEditor.selection
+              if (hadSelection) {
+                Transforms.deselect(slateEditor)
+              }
               const childrenLength = slateEditor.children.length
               slateEditor.children.forEach((_, index) => {
                 Transforms.removeNodes(slateEditor, {
@@ -89,6 +91,7 @@ export function useSyncValue(
                 })
               })
               Transforms.insertNodes(slateEditor, slateEditor.createPlaceholderBlock(), {at: [0]})
+              // Add a new selection in the top of the document
               if (hadSelection) {
                 Transforms.select(slateEditor, [0, 0])
               }
@@ -187,16 +190,20 @@ function _replaceBlock(
   currentBlock: Descendant,
   currentBlockIndex: number
 ) {
-  // While replacing the block, temporarily deselect the editor,
-  // then optimistically try to restore the selection afterwards.
-  const currentSel = slateEditor.selection
-  Transforms.deselect(slateEditor)
+  // While replacing the block and the current selection focus is on the replaced block,
+  // temporarily deselect the editor then optimistically try to restore the selection afterwards.
+  const currentSelection = slateEditor.selection
+  const selectionFocusOnBlock =
+    currentSelection && currentSelection.focus.path[0] === currentBlockIndex
+  if (selectionFocusOnBlock) {
+    Transforms.deselect(slateEditor)
+  }
   Transforms.removeNodes(slateEditor, {at: [currentBlockIndex]})
   withPreserveKeys(slateEditor, () => {
     Transforms.insertNodes(slateEditor, currentBlock, {at: [currentBlockIndex]})
   })
-  if (currentSel) {
-    Transforms.select(slateEditor, currentSel)
+  if (selectionFocusOnBlock) {
+    Transforms.select(slateEditor, currentSelection)
   }
 }
 
