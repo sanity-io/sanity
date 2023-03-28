@@ -213,9 +213,17 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               await page.keyboard.up(metaKey)
               await waitForRevision()
             },
-            paste: async (text: string) => {
+            paste: async (string: string, type = 'text/plain') => {
               // Write text to native clipboard
-              await page.evaluate((_text) => navigator.clipboard.writeText(_text), text)
+              await page.evaluate(
+                ({string: _string, type: _type}) => {
+                  navigator.clipboard.writeText('') // Clear first
+                  const blob = new Blob([_string], {type: _type})
+                  const data = [new ClipboardItem({[_type]: blob})]
+                  navigator.clipboard.write(data)
+                },
+                {string, type}
+              )
               // Simulate paste key command
               await page.keyboard.down(metaKey)
               await page.keyboard.press('v')
