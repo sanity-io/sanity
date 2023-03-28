@@ -40,9 +40,13 @@ export default class CollaborationEnvironment extends NodeEnvironment {
   public async setup(): Promise<void> {
     await super.setup()
     this._browserA = await chromium.launch()
+    const contextA = await this._browserA.newContext()
     this._browserB = await chromium.launch()
-    this._pageA = await this._browserA.newPage()
-    this._pageB = await this._browserB.newPage()
+    const contextB = await this._browserB.newContext()
+    await contextA.grantPermissions(['clipboard-read', 'clipboard-write'])
+    await contextB.grantPermissions(['clipboard-read', 'clipboard-write'])
+    this._pageA = await contextA.newPage()
+    this._pageB = await contextB.newPage()
 
     // Hook up page console and npm debug in the PTE
     if (DEBUG) {
@@ -207,6 +211,16 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               await page.keyboard.down(metaKey)
               await page.keyboard.press('y')
               await page.keyboard.up(metaKey)
+              await waitForRevision()
+            },
+            paste: async (text: string) => {
+              // Write text to native clipboard
+              await page.evaluate((_text) => navigator.clipboard.writeText(_text), text)
+              // Simulate paste key command
+              await page.keyboard.down(metaKey)
+              await page.keyboard.press('v')
+              await page.keyboard.up(metaKey)
+
               await waitForRevision()
             },
             pressKey: async (keyName: string, times?: number) => {
