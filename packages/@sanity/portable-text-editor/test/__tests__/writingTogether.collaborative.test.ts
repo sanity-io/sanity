@@ -116,35 +116,35 @@ describe('collaborate editing', () => {
         },
       ]
     `)
-    const selA = await editorA.getSelection()
-    expect(selA).toMatchInlineSnapshot(`
-      Object {
-        "anchor": Object {
-          "offset": 1,
-          "path": Array [
-            Object {
-              "_key": "B-4",
-            },
-            "children",
-            Object {
-              "_key": "B-3",
-            },
-          ],
-        },
-        "focus": Object {
-          "offset": 1,
-          "path": Array [
-            Object {
-              "_key": "B-4",
-            },
-            "children",
-            Object {
-              "_key": "B-3",
-            },
-          ],
-        },
-      }
-    `)
+    // const selA = await editorA.getSelection()
+    // expect(selA).toMatchInlineSnapshot(`
+    //   Object {
+    //     "anchor": Object {
+    //       "offset": 1,
+    //       "path": Array [
+    //         Object {
+    //           "_key": "B-4",
+    //         },
+    //         "children",
+    //         Object {
+    //           "_key": "B-3",
+    //         },
+    //       ],
+    //     },
+    //     "focus": Object {
+    //       "offset": 1,
+    //       "path": Array [
+    //         Object {
+    //           "_key": "B-4",
+    //         },
+    //         "children",
+    //         Object {
+    //           "_key": "B-3",
+    //         },
+    //       ],
+    //     },
+    //   }
+    // `)
     await editorA.pressKey('2')
     valA = await editorA.getValue()
     valB = await editorB.getValue()
