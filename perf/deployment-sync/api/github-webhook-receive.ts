@@ -24,6 +24,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   }
 
   const payload = req.body
+  // eslint-disable-next-line no-console
+  console.log(JSON.stringify(event, null, 2), JSON.stringify(payload, null, 2))
 
   if (payload.ref_type === 'branch') {
     const doc = {
