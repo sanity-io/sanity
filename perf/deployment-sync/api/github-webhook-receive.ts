@@ -88,16 +88,18 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       .transaction()
       .createIfNotExists(doc)
       .patch(doc._id, (p) =>
-        p.set({name: branchName}).setIfMissing({
-          base: payload.repository.master_branch,
-          createdBy: payload.sender.login,
-          lastCommit: {
-            sha: payload.head_commit.id,
-            message: payload.head_commit.message,
-            author: payload.head_commit.author.name,
-            user: payload.head_commit.author.username,
-          },
-        })
+        p
+          .set({
+            name: branchName,
+            'lastCommit.sha': payload.head_commit.id,
+            'lastCommit.message': payload.head_commit.message,
+            'lastCommit.author': payload.head_commit.author.name,
+            'lastCommit.user': payload.head_commit.author.username,
+          })
+          .setIfMissing({
+            base: payload.repository.master_branch,
+            createdBy: payload.sender.login,
+          })
       )
       .patch(doc._id, (p) => p.set({deleted: payload.deleted}))
       .commit({visibility: 'async', tag: 'perf.github.branch'})
