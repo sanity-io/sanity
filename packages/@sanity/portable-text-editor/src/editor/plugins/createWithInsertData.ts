@@ -2,12 +2,13 @@ import {Node, Transforms, Editor, Descendant, Range} from 'slate'
 import {htmlToBlocks, normalizeBlock} from '@sanity/block-tools'
 import {ReactEditor} from '@sanity/slate-react'
 import {PortableTextBlock, PortableTextChild} from '@sanity/types'
+import {isEqual, uniq} from 'lodash'
 import {
   EditorChanges,
   PortableTextMemberSchemaTypes,
   PortableTextSlateEditor,
 } from '../../types/editor'
-import {fromSlateValue, toSlateValue} from '../../utils/values'
+import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../../utils/values'
 import {validateValue} from '../../utils/validateValue'
 import {debugWithName} from '../../utils/debug'
 
@@ -151,8 +152,7 @@ export function createWithInsertData(
             debug('Invalid insert result', validation)
             return false
           }
-          mixMarkDefs(editor, slateValue)
-          editor.insertFragment(slateValue)
+          insertFragment(editor, slateValue, schemaTypes)
           editor.onChange()
           return true
         }
@@ -215,8 +215,7 @@ export function createWithInsertData(
           return false
         }
         debug(`Inserting ${insertedType} fragment at ${JSON.stringify(editor.selection)}`)
-        mixMarkDefs(editor, fragment)
-        editor.insertFragment(fragment)
+        insertFragment(editor, fragment, schemaTypes)
         editor.onChange()
         change$.next({type: 'loading', isLoading: false})
         return true
@@ -272,20 +271,18 @@ function regenerateKeys(
       newNode.markDefs = (newNode.markDefs || []).map((def) => {
         const oldKey = def._key
         const newKey = keyGenerator()
-        if (editor.isTextBlock(newNode)) {
-          newNode.children = newNode.children.map((child) =>
-            child._type === spanTypeName && editor.isTextSpan(child)
-              ? {
-                  ...child,
-                  marks:
-                    child.marks && child.marks.includes(oldKey)
-                      ? // eslint-disable-next-line max-nested-callbacks
-                        [...child.marks].filter((mark) => mark !== oldKey).concat(newKey)
-                      : child.marks,
-                }
-              : child
-          )
-        }
+        newNode.children = newNode.children.map((child) =>
+          child._type === spanTypeName && editor.isTextSpan(child)
+            ? {
+                ...child,
+                marks:
+                  child.marks && child.marks.includes(oldKey)
+                    ? // eslint-disable-next-line max-nested-callbacks
+                      [...child.marks].filter((mark) => mark !== oldKey).concat(newKey)
+                    : child.marks,
+              }
+            : child
+        )
         return {...def, _key: newKey}
       })
     }
@@ -309,14 +306,34 @@ function mixMarkDefs(editor: PortableTextSlateEditor, fragment: any) {
     const {markDefs} = focusBlock
     debug('Mixing markDefs of focusBlock and fragments[0] block', markDefs, fragment[0].markDefs)
     // As the first block will be inserted into another block (potentially), mix those markDefs
-    Transforms.setNodes(
-      editor,
-      {
-        markDefs: [...(fragment[0].markDefs || []), ...(markDefs || [])],
-      },
-      {at: focusPath, mode: 'lowest', voids: false}
-    )
-    return true
+    if (!isEqual(markDefs, fragment[0].markDefs)) {
+      Transforms.setNodes(
+        editor,
+        {
+          markDefs: uniq([...(fragment[0].markDefs || []), ...(markDefs || [])]),
+        },
+        {at: focusPath, mode: 'lowest', voids: false}
+      )
+      return true
+    }
   }
   return false
+}
+
+function insertFragment(
+  editor: PortableTextSlateEditor,
+  fragment: Descendant[],
+  schemaTypes: PortableTextMemberSchemaTypes
+) {
+  mixMarkDefs(editor, fragment)
+  const emptyEditor = isEqualToEmptyEditor(editor.children, schemaTypes)
+  if (emptyEditor) {
+    // When pasting blocks, it can potentially duplicate the keys of the placeholder block unless we split here before calling insertFragment.
+    Transforms.splitNodes(editor, {at: [0, 0]})
+  }
+  editor.insertFragment(fragment)
+  if (emptyEditor) {
+    // Remove the remains of the placeholder block
+    Transforms.removeNodes(editor, {at: [0]})
+  }
 }
