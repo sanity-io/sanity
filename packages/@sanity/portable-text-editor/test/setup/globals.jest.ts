@@ -11,6 +11,7 @@ type Editor = {
   getSelection: () => Promise<EditorSelection | null>
   getValue: () => Promise<Value>
   insertText: (text: string) => Promise<void>
+  paste: (text: string) => Promise<void>
   pressKey: (keyName: string, times?: number) => Promise<void>
   redo: () => Promise<void>
   setSelection: (selection: EditorSelection | null) => Promise<void>
