@@ -63,6 +63,12 @@ export function getExpandOperations(state: ObjectFormNode, path: Path): ExpandOp
     (member): member is FieldMember => member.kind === 'field' && member.name === fieldName
   )
 
+  const fieldMemberFieldSet = fieldMember?.field?.members?.find(
+    (member): member is FieldSetMember =>
+      member.kind === 'fieldSet' &&
+      member.fieldSet.members.some((field): field is FieldMember => field.kind === 'field')
+  )
+
   const schemaField = state.schemaType.fields.find((field) => field.name === fieldName)
   const selectedGroupName = state.groups.find((group) => group.selected)?.name
   const defaultGroupName = (state.schemaType.groups || []).find((group) => group.default)?.name
@@ -81,6 +87,14 @@ export function getExpandOperations(state: ObjectFormNode, path: Path): ExpandOp
 
   if (fieldMember) {
     ops.push({type: 'expandPath', path: fieldMember.field.path})
+    //If a fieldset exists within a field, this needs to expanded
+    if (fieldMemberFieldSet) {
+      ops.push({type: 'expandFieldSet', path: fieldMemberFieldSet.fieldSet.path})
+    }
+  }
+
+  if (fieldMember && fieldMember.field.members) {
+    ops.push({type: 'expandFieldSet', path: fieldMember.field.members})
   }
 
   if (rest.length === 0) {
