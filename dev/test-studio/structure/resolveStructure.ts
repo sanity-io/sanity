@@ -9,7 +9,7 @@ import {
   JoystickIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import {DocumentStore, SanityDocument} from 'sanity'
+import {DocumentStore, SanityDocument, Schema} from 'sanity'
 import {ItemChild, StructureBuilder, StructureResolver} from 'sanity/desk'
 import {map} from 'rxjs/operators'
 import {Observable, timer} from 'rxjs'
@@ -42,7 +42,7 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
               S.listItem()
                 .id('documentStore')
                 .title('Document store')
-                .child(documentStoreDrivenChild(S, documentStore)),
+                .child(documentStoreDrivenChild(S, schema, documentStore)),
               S.listItem()
                 .id('randomObservable')
                 .title('Random observable')
@@ -393,6 +393,7 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
 
 function documentStoreDrivenChild(
   S: StructureBuilder,
+  schema: Schema,
   documentStore: DocumentStore
 ): Observable<ItemChild> {
   return documentStore
@@ -403,9 +404,11 @@ function documentStoreDrivenChild(
     )
     .pipe(
       map((docs: SanityDocument[]) => {
+        // Only include document types that exist in the current schema
+        const filteredDocs = docs.filter((doc) => schema.has(doc._type))
         return S.list()
           .title('Some recently edited documents')
-          .items(docs.map((doc) => S.documentListItem().schemaType(doc._type).id(doc._id)))
+          .items(filteredDocs.map((doc) => S.documentListItem().schemaType(doc._type).id(doc._id)))
       })
     )
 }
