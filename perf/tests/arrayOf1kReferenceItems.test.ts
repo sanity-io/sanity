@@ -3,7 +3,7 @@ import {PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
 
 export default {
-  id: KNOWN_TEST_IDS['array-of-1k-string-items'],
+  id: KNOWN_TEST_IDS['array-of-1k-reference-items'],
   name: 'Performance test of array with 1k reference items',
   description: `
   This test measures the general performance of an array with 1k reference items.
