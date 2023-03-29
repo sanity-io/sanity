@@ -35,6 +35,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const [popover, setPopover] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
+    setChunks(timelineState.timeline.mapChunks((c) => c))
     const subscription = timelineChunks$.subscribe((newChunks) => {
       setChunks(newChunks)
       setLoading(false)
@@ -42,7 +43,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     })
 
     return () => subscription.unsubscribe()
-  }, [timelineController, timelineChunks$])
+  }, [timelineController, timelineChunks$, timelineState.timeline])
 
   const handleOpen = useCallback(() => {
     setTimelineMode(mode)
@@ -111,7 +112,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
       )}
       {mode === 'since' && (
         <Timeline
-          bottomSelection={timelineState.sinceTime!}
+          bottomSelection={timelineState.sinceTime}
           chunks={chunks}
           disabledBeforeSelection
           onSelect={selectSince}

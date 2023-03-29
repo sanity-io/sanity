@@ -12,9 +12,9 @@ interface TimelineProps {
   /** Are the chunks above the topSelection enabled? */
   disabledBeforeSelection?: boolean
   /** The first chunk of the selection. */
-  topSelection: Chunk
+  topSelection?: Chunk | null
   /** The final chunk of the selection. */
-  bottomSelection: Chunk
+  bottomSelection?: Chunk | null
 }
 
 export const Timeline = ({
@@ -29,16 +29,16 @@ export const Timeline = ({
 
   const filteredChunks = useMemo(() => {
     return chunks.filter((c) => {
-      if (disabledBeforeSelection) {
+      if (disabledBeforeSelection && topSelection) {
         return c.index < topSelection.index
       }
       return true
     })
-  }, [chunks, disabledBeforeSelection, topSelection.index])
+  }, [chunks, disabledBeforeSelection, topSelection])
 
   const selectedIndex = useMemo(
-    () => filteredChunks.findIndex((c) => c.id === bottomSelection.id),
-    [bottomSelection.id, filteredChunks]
+    () => filteredChunks.findIndex((c) => c.id === bottomSelection?.id),
+    [bottomSelection?.id, filteredChunks]
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(

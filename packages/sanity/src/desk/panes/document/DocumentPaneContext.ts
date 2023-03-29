@@ -68,7 +68,7 @@ export interface DocumentPaneContextValue {
   source?: string
   timelineController: Pick<
     TimelineController,
-    'findRangeForNewRev' | 'findRangeForNewSince' | 'setLoadMore'
+    'currentObjectDiff' | 'findRangeForNewRev' | 'findRangeForNewSince' | 'setLoadMore'
   >
   timelineChunks$: Subject<Chunk[]>
   timelineMode: TimelineMode

@@ -1,11 +1,10 @@
-import {ObjectDiff} from '@sanity/diff'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Subject, Subscription} from 'rxjs'
 import {
-  Annotation,
   Chunk,
   isDev,
   SelectionState,
+  Timeline,
   TimelineController,
   useHistoryStore,
 } from '../../../..'
@@ -23,7 +22,6 @@ interface UseTimelineControllerOpts {
 /** @internal */
 export interface TimelineState {
   changesOpen: boolean
-  currentObjectDiff: ObjectDiff<Annotation> | null
   displayed: Record<string, unknown> | null
   onOlderRevision: boolean
   ready: boolean
@@ -32,6 +30,7 @@ export interface TimelineState {
   selectionState: SelectionState
   sinceAttributes: Record<string, unknown> | null
   sinceTime: Chunk | null
+  timeline: Timeline
 }
 
 /** @internal */
@@ -53,7 +52,6 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
 
   const [timelineState, setTimelineState] = useState<TimelineState>({
     changesOpen: false,
-    currentObjectDiff: null,
     displayed: null,
     onOlderRevision: false,
     ready: false,
@@ -62,6 +60,7 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
     selectionState: 'inactive',
     sinceAttributes: null,
     sinceTime: null,
+    timeline,
   })
 
   const timelineController = useMemo(() => {
@@ -78,9 +77,6 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
       controller.setRange(since || null, rev || null)
       setTimelineState({
         changesOpen: !!since,
-        // Currently broken
-        // currentObjectDiff: controller.currentObjectDiff(),
-        currentObjectDiff: null,
         displayed: controller.displayed(),
         onOlderRevision: controller.onOlderRevision(),
         ready: !['invalid', 'loading'].includes(controller.selectionState),
@@ -89,9 +85,10 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
         selectionState: controller.selectionState,
         sinceAttributes: controller.sinceAttributes(),
         sinceTime: controller.sinceTime,
+        timeline,
       })
     },
-    [rev, since]
+    [rev, since, timeline]
   )
 
   /**
