@@ -8,7 +8,7 @@ import * as queries from './queries'
 import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {Deployment} from './runner/types'
-import {sanityIdify} from './deployment-sync/utils/sanityIdSafe'
+import {sanityIdify} from './runner/utils/sanityIdIfy'
 
 config({path: `${__dirname}/.env`})
 
