@@ -107,8 +107,8 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {connectionState, editState, historyController} = useDocumentPane()
-  const revision = historyController.revTime?.id || ''
+  const {connectionState, editState, timelineState} = useDocumentPane()
+  const revision = timelineState.revTime?.id || ''
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
   const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
   const historyActions = useMemo(() => [HistoryRestoreAction], [])

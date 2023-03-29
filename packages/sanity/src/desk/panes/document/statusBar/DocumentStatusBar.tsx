@@ -16,8 +16,8 @@ const DocumentActionsBox = styled(Box)`
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {badges, historyController} = useDocumentPane()
-  const showingRevision = historyController.onOlderRevision()
+  const {badges, timelineState} = useDocumentPane()
+  const showingRevision = timelineState.onOlderRevision
 
   return useMemo(
     () => (

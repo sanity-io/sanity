@@ -14,16 +14,13 @@ import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentPresence,
   PatchEvent,
   StateTree,
   toMutationPatches,
   getExpandOperations,
   getPublishedId,
-  isDev,
   setAtPath,
-  useClient,
   useConnectionState,
   useDocumentOperation,
   useEditState,
@@ -38,7 +35,7 @@ import {
   useValidationStatus,
   getDraftId,
   useDocumentValuePermissions,
-  useTimelineController,
+  useTimeline,
 } from 'sanity'
 
 const emptyObject = {} as Record<string, string | undefined>
@@ -49,7 +46,6 @@ const emptyObject = {} as Record<string, string | undefined>
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {children, index, pane, paneKey} = props
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const templates = useTemplates()
   const {
@@ -57,7 +53,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     badges: documentBadges,
     unstable_languageFilter: languageFilterResolver,
   } = useSource().document
-  const historyStore = useHistoryStore()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const {features} = useDeskTool()
@@ -119,22 +114,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     params.path ? pathFromString(params.path) : []
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
-  const timeline = useMemo(
-    () => historyStore.getTimeline({publishedId: documentId, enableTrace: isDev}),
-    [documentId, historyStore]
-  )
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
-  const {historyController} = useTimelineController({
+  const {timelineController, timelineChunks$, timelineState} = useTimeline({
     documentId,
     documentType,
-    timeline,
+    rev: params.rev,
+    since: params.since,
   })
-
-  // @todo: this will now happen on each render, but should be refactored so it happens only when
-  // the `rev`, `since` or `historyController` values change.
-  historyController.setRange(params.since || null, params.rev || null)
-  const changesOpen = historyController.changesPanelActive()
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -152,23 +139,21 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const hasValue = Boolean(value)
   const menuItems = useMemo(
-    () => getMenuItems({features, hasValue, changesOpen, previewUrl}),
-    [features, hasValue, changesOpen, previewUrl]
+    () => getMenuItems({features, hasValue, changesOpen: timelineState.changesOpen, previewUrl}),
+    [features, hasValue, previewUrl, timelineState.changesOpen]
   )
   const inspectOpen = params.inspect === 'on'
-  const compareValue: Partial<SanityDocument> | null = changesOpen
-    ? historyController.sinceAttributes()
+  const compareValue: Partial<SanityDocument> | null = timelineState.changesOpen
+    ? timelineState.sinceAttributes
     : editState?.published || null
   const ready = connectionState === 'connected' && editState.ready
-  const viewOlderVersion = historyController.onOlderRevision()
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
     () =>
-      viewOlderVersion
-        ? historyController.displayed() || {_id: value._id, _type: value._type}
+      timelineState.onOlderRevision
+        ? timelineState.displayed || {_id: value._id, _type: value._type}
         : value,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [historyController, params.rev, params.since, value, viewOlderVersion]
+    [timelineState.displayed, timelineState.onOlderRevision, value]
   )
 
   const setTimelineRange = useCallback(
@@ -312,7 +297,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     document: docPermissionsInput,
     permission: requiredPermission,
   })
-  const {revTime: rev} = historyController
 
   const isNonExistent = !value?._id
 
@@ -324,7 +308,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
     return (
       !ready ||
-      rev !== null ||
+      timelineState.revTime !== null ||
       hasNoPermission ||
       updateActionDisabled ||
       createActionDisabled ||
@@ -336,8 +320,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     isPermissionsLoading,
     permissions?.granted,
     ready,
-    rev,
     schemaType,
+    timelineState.revTime,
   ])
 
   const formState = useFormState(schemaType!, {
@@ -351,7 +335,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     validation,
     collapsedFieldSets,
     fieldGroupState,
-    changesOpen,
+    changesOpen: timelineState.changesOpen,
   })
 
   const formStateRef = useRef(formState)
@@ -380,7 +364,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     actions,
     activeViewId,
     badges,
-    changesOpen,
+    changesOpen: timelineState.changesOpen,
     collapsedFieldSets,
     collapsedPaths,
     compareValue,
@@ -406,7 +390,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onSetActiveFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
-    historyController,
+    timelineController: timelineController,
     index,
     inspectOpen,
     validation,
@@ -420,6 +404,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     setTimelineMode,
     setTimelineRange,
     timelineMode,
+    timelineState,
+    timelineChunks$: timelineChunks$,
     title,
     value,
     views,

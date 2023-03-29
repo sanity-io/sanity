@@ -2,12 +2,12 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Text} from '@sanity/ui'
 import {TimelineItem} from './timelineItem'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
-import {Chunk, CommandList, CommandListRenderItemCallback, TimelineController} from 'sanity'
+import {Chunk, CommandList, CommandListRenderItemCallback} from 'sanity'
 
 interface TimelineProps {
-  controller: TimelineController
+  chunks: Chunk[]
   onSelect: (chunk: Chunk) => void
-  onLoadMore: (state: boolean) => void
+  onLoadMore: () => void
 
   /** Are the chunks above the topSelection enabled? */
   disabledBeforeSelection?: boolean
@@ -19,23 +19,13 @@ interface TimelineProps {
 
 export const Timeline = ({
   bottomSelection,
-  controller,
+  chunks,
   disabledBeforeSelection,
   onLoadMore,
   onSelect,
   topSelection,
 }: TimelineProps) => {
-  const [chunks, setChunks] = useState<Chunk[]>(controller.timeline.mapChunks((c) => c))
-  const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    controller.onUpdate = () => {
-      setChunks(controller.timeline.mapChunks((c) => c))
-      setLoading(false)
-      onLoadMore(false)
-    }
-  }, [controller, disabledBeforeSelection, onLoadMore, topSelection.index])
 
   const filteredChunks = useMemo(() => {
     return chunks.filter((c) => {
@@ -50,13 +40,6 @@ export const Timeline = ({
     () => filteredChunks.findIndex((c) => c.id === bottomSelection.id),
     [bottomSelection.id, filteredChunks]
   )
-
-  const handleLoadMore = useCallback(() => {
-    if (!loading) {
-      setLoading(true)
-      onLoadMore(true)
-    }
-  }, [loading, onLoadMore])
 
   const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
     (chunk, {activeIndex}) => {
@@ -113,7 +96,7 @@ export const Timeline = ({
             initialScrollAlign="center"
             itemHeight={40}
             items={filteredChunks}
-            onEndReached={handleLoadMore}
+            onEndReached={onLoadMore}
             onEndReachedIndexOffset={20}
             overscan={5}
             renderItem={renderItem}

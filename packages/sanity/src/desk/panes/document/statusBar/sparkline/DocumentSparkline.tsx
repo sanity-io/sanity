@@ -17,14 +17,14 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     editState,
     onHistoryClose,
     onHistoryOpen,
-    historyController,
+    timelineState,
     value,
   } = useDocumentPane()
   const syncState = useSyncState(documentId, documentType)
 
   const lastUpdated = value?._updatedAt
   const lastPublished = editState?.published?._updatedAt
-  const showingRevision = historyController.onOlderRevision()
+  const showingRevision = timelineState.onOlderRevision
   const liveEdit = Boolean(editState?.liveEdit)
   const published = Boolean(editState?.published)
   const changed = Boolean(editState?.draft)

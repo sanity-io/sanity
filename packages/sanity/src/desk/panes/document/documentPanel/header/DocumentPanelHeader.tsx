@@ -26,7 +26,7 @@ export const DocumentPanelHeader = memo(
       onMenuAction,
       onPaneClose,
       onPaneSplit,
-      historyController,
+      timelineController,
       validation,
       menuItems,
       menuItemGroups,
@@ -35,7 +35,7 @@ export const DocumentPanelHeader = memo(
       views,
       unstable_languageFilter,
     } = useDocumentPane()
-    const {revTime: rev} = historyController
+    const {revTime: rev} = timelineController
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])

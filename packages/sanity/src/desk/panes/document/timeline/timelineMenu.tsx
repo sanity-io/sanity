@@ -2,7 +2,7 @@ import {SelectIcon} from '@sanity/icons'
 import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {formatTimelineEventLabel} from './helpers'
@@ -20,10 +20,29 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {historyController, setTimelineRange, setTimelineMode, ready} = useDocumentPane()
+  const {
+    setTimelineRange,
+    setTimelineMode,
+    timelineController,
+    timelineState,
+    timelineChunks$,
+    ready,
+  } = useDocumentPane()
+  const [chunks, setChunks] = useState<Chunk[]>([])
+  const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)
+
+  useEffect(() => {
+    const subscription = timelineChunks$.subscribe((newChunks) => {
+      setChunks(newChunks)
+      setLoading(false)
+      timelineController.setLoadMore(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [timelineController, timelineChunks$])
 
   const handleOpen = useCallback(() => {
     setTimelineMode(mode)
@@ -56,48 +75,48 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   const selectRev = useCallback(
     (revChunk: Chunk) => {
-      const [sinceId, revId] = historyController.findRangeForNewRev(revChunk)
+      const [sinceId, revId] = timelineController.findRangeForNewRev(revChunk)
       setTimelineMode('closed')
       setTimelineRange(sinceId, revId)
     },
-    [historyController, setTimelineMode, setTimelineRange]
+    [timelineController, setTimelineMode, setTimelineRange]
   )
 
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
-      const [sinceId, revId] = historyController.findRangeForNewSince(sinceChunk)
+      const [sinceId, revId] = timelineController.findRangeForNewSince(sinceChunk)
       setTimelineMode('closed')
       setTimelineRange(sinceId, revId)
     },
-    [historyController, setTimelineMode, setTimelineRange]
+    [timelineController, setTimelineMode, setTimelineRange]
   )
 
-  const loadMoreHistory = useCallback(
-    (state: boolean) => {
-      historyController.setLoadMore(state)
-    },
-    [historyController]
-  )
+  const handleLoadMore = useCallback(() => {
+    if (!loading) {
+      setLoading(true)
+      timelineController.setLoadMore(true)
+    }
+  }, [loading, timelineController])
 
   const content = (
     <>
       {mode === 'rev' && (
         <Timeline
-          bottomSelection={historyController.realRevChunk}
-          controller={historyController}
+          bottomSelection={timelineState.realRevChunk}
+          chunks={chunks}
           onSelect={selectRev}
-          onLoadMore={loadMoreHistory}
-          topSelection={historyController.realRevChunk}
+          onLoadMore={handleLoadMore}
+          topSelection={timelineState.realRevChunk}
         />
       )}
       {mode === 'since' && (
         <Timeline
-          bottomSelection={historyController.sinceTime!}
-          controller={historyController}
+          bottomSelection={timelineState.sinceTime!}
+          chunks={chunks}
           disabledBeforeSelection
           onSelect={selectSince}
-          onLoadMore={loadMoreHistory}
-          topSelection={historyController.realRevChunk}
+          onLoadMore={handleLoadMore}
+          topSelection={timelineState.realRevChunk}
         />
       )}
     </>
