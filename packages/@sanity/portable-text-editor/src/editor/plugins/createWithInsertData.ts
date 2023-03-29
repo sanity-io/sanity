@@ -131,7 +131,7 @@ export function createWithInsertData(
       if (pText) {
         const parsed = JSON.parse(pText) as PortableTextBlock[]
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const slateValue = regenerateKeys(
+          const slateValue = _regenerateKeys(
             editor,
             toSlateValue(parsed, {schemaTypes}),
             keyGenerator,
@@ -152,8 +152,7 @@ export function createWithInsertData(
             debug('Invalid insert result', validation)
             return false
           }
-          insertFragment(editor, slateValue, schemaTypes)
-          editor.onChange()
+          _insertFragment(editor, slateValue, schemaTypes)
           return true
         }
       }
@@ -215,8 +214,7 @@ export function createWithInsertData(
           return false
         }
         debug(`Inserting ${insertedType} fragment at ${JSON.stringify(editor.selection)}`)
-        insertFragment(editor, fragment, schemaTypes)
-        editor.onChange()
+        _insertFragment(editor, fragment, schemaTypes)
         change$.next({type: 'loading', isLoading: false})
         return true
       }
@@ -258,7 +256,12 @@ function escapeHtml(str: string) {
   return String(str).replace(/[&<>"'`=/]/g, (s: string) => entityMap[s])
 }
 
-function regenerateKeys(
+/**
+ * Shared helper function to regenerate the keys on a fragment.
+ *
+ * @internal
+ */
+function _regenerateKeys(
   editor: PortableTextSlateEditor,
   fragment: Descendant[],
   keyGenerator: () => string,
@@ -297,15 +300,25 @@ function regenerateKeys(
   })
 }
 
-function mixMarkDefs(editor: PortableTextSlateEditor, fragment: any) {
+/**
+ * Shared helper function to insert the final fragment into the editor
+ *
+ * @internal
+ */
+function _insertFragment(
+  editor: PortableTextSlateEditor,
+  fragment: Descendant[],
+  schemaTypes: PortableTextMemberSchemaTypes
+) {
   if (!editor.selection) {
-    return false
+    return
   }
+
+  // Ensure that markDefs for any annotations inside this fragment are copied over to the focused text block.
   const [focusBlock, focusPath] = Editor.node(editor, editor.selection, {depth: 1})
   if (editor.isTextBlock(focusBlock) && editor.isTextBlock(fragment[0])) {
     const {markDefs} = focusBlock
     debug('Mixing markDefs of focusBlock and fragments[0] block', markDefs, fragment[0].markDefs)
-    // As the first block will be inserted into another block (potentially), mix those markDefs
     if (!isEqual(markDefs, fragment[0].markDefs)) {
       Transforms.setNodes(
         editor,
@@ -314,26 +327,24 @@ function mixMarkDefs(editor: PortableTextSlateEditor, fragment: any) {
         },
         {at: focusPath, mode: 'lowest', voids: false}
       )
-      return true
     }
   }
-  return false
-}
 
-function insertFragment(
-  editor: PortableTextSlateEditor,
-  fragment: Descendant[],
-  schemaTypes: PortableTextMemberSchemaTypes
-) {
-  mixMarkDefs(editor, fragment)
-  const emptyEditor = isEqualToEmptyEditor(editor.children, schemaTypes)
-  if (emptyEditor) {
-    // When pasting blocks, it can potentially duplicate the keys of the placeholder block unless we split here before calling insertFragment.
+  const isPasteToEmptyEditor = isEqualToEmptyEditor(editor.children, schemaTypes)
+
+  if (isPasteToEmptyEditor) {
+    // Special case for pasting directly into an empty editor (a placeholder block).
+    // When pasting content starting with multiple empty blocks,
+    // `editor.insertFragment` can potentially duplicate the keys of
+    // the placeholder block because of operations that happen
+    // inside `editor.insertFragment` (involves an `insert_node` operation).
+    // However by splitting the placeholder block first in this situation we are good.
     Transforms.splitNodes(editor, {at: [0, 0]})
-  }
-  editor.insertFragment(fragment)
-  if (emptyEditor) {
-    // Remove the remains of the placeholder block
+    editor.insertFragment(fragment)
     Transforms.removeNodes(editor, {at: [0]})
+  } else {
+    // All other inserts
+    editor.insertFragment(fragment)
   }
+  editor.onChange()
 }
