@@ -7,7 +7,9 @@ import {
   ArrayOfObjectsInputProps,
   ObjectFieldProps,
   ObjectInputProps,
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -24,7 +26,10 @@ import {applyAll} from '../../../patch/applyPatch'
  */
 export const ObjectField = function ObjectField(props: {
   member: FieldMember<ObjectFormNode>
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
@@ -39,7 +44,16 @@ export const ObjectField = function ObjectField(props: {
     onFieldGroupSelect,
   } = useFormCallbacks()
 
-  const {member, renderField, renderInput, renderItem, renderPreview} = props
+  const {
+    member,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
+  } = props
   const focusRef = useRef<{focus: () => void}>()
   // Keep a local reference to the most recent value. See comment in `handleChange` below for more details
   const pendingValue = useRef(member.field.value)
@@ -192,7 +206,10 @@ export const ObjectField = function ObjectField(props: {
       focused: member.field.focused,
       groups: member.field.groups,
       onChange: handleChange,
+      renderAnnotation,
+      renderBlock,
       renderField,
+      renderInlineBlock,
       renderInput,
       renderItem,
       renderPreview,
@@ -221,7 +238,10 @@ export const ObjectField = function ObjectField(props: {
     handleCollapseFieldSet,
     handleFocusChildPath,
     handleChange,
+    renderAnnotation,
+    renderBlock,
     renderField,
+    renderInlineBlock,
     renderInput,
     renderItem,
     renderPreview,

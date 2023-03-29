@@ -606,7 +606,16 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
   }
 
   render() {
-    const {members, renderItem, renderInput, renderField, renderPreview} = this.props
+    const {
+      members,
+      renderAnnotation,
+      renderBlock,
+      renderInlineBlock,
+      renderItem,
+      renderInput,
+      renderField,
+      renderPreview,
+    } = this.props
     const {selectedAssetSource} = this.state
 
     return (
@@ -624,6 +633,9 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
               <MemberField
                 key={member.key}
                 member={member}
+                renderAnnotation={renderAnnotation}
+                renderInlineBlock={renderInlineBlock}
+                renderBlock={renderBlock}
                 renderInput={member.name === 'asset' ? this.renderAsset() : renderInput}
                 renderField={member.name === 'asset' ? passThrough : renderField}
                 renderItem={renderItem}
@@ -636,8 +648,11 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
               <MemberFieldSet
                 key={member.key}
                 member={member}
-                renderInput={renderInput}
+                renderAnnotation={renderAnnotation}
+                renderBlock={renderBlock}
                 renderField={renderField}
+                renderInlineBlock={renderInlineBlock}
+                renderInput={renderInput}
                 renderItem={renderItem}
                 renderPreview={renderPreview}
               />

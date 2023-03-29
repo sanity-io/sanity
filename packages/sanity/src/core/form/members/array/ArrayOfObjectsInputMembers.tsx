@@ -1,7 +1,9 @@
 import React from 'react'
 import {ArrayOfObjectsMember} from '../../store'
 import {
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -12,6 +14,9 @@ import {ArrayOfObjectsInputMember} from './ArrayOfObjectsInputMember'
 /** @internal */
 export interface ArrayOfObjectsInputMembersProps {
   members: ArrayOfObjectsMember[]
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
+  renderInlineBlock: RenderBlockCallback
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
   renderItem: RenderArrayOfObjectsItemCallback

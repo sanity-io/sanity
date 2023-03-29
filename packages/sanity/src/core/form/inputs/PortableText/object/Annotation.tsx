@@ -4,7 +4,16 @@ import {Tooltip} from '@sanity/ui'
 import React, {ComponentType, useCallback, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
 import {pathToString} from '../../../../field'
-import {BlockAnnotationProps, RenderCustomMarkers} from '../../../types'
+import {
+  BlockAnnotationProps,
+  RenderAnnotationCallback,
+  RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
+  RenderCustomMarkers,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderPreviewCallback,
+} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {useMemberValidation} from '../hooks/useMemberValidation'
@@ -27,7 +36,15 @@ interface AnnotationProps {
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
+  relativePath: Path
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
   renderCustomMarkers?: RenderCustomMarkers
+  renderField: RenderFieldCallback
+  renderInlineBlock: RenderBlockCallback
+  renderInput: RenderInputCallback
+  renderItem: RenderArrayOfObjectsItemCallback
+  renderPreview: RenderPreviewCallback
   selected: boolean
   schemaType: ObjectSchemaType
   value: PortableTextObject
@@ -44,7 +61,14 @@ export function Annotation(props: AnnotationProps) {
     onPathFocus,
     path,
     readOnly,
+    renderAnnotation,
+    renderBlock,
     renderCustomMarkers,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
     schemaType,
     selected,
     value,
@@ -140,6 +164,13 @@ export function Annotation(props: AnnotationProps) {
       path: nodePath,
       presence: rootPresence,
       readOnly: Boolean(readOnly),
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderPreview,
+      renderItem,
       renderDefault: DefaultAnnotationComponent,
       schemaType,
       selected,
@@ -163,6 +194,13 @@ export function Annotation(props: AnnotationProps) {
       onRemove,
       readOnly,
       referenceElement,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
       rootPresence,
       schemaType,
       selected,

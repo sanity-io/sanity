@@ -5,9 +5,19 @@ import {useSource} from '../../studio'
 import {PatchChannel, PatchEvent} from '../patch'
 import {FormBuilderProvider} from '../FormBuilderProvider'
 import {FormFieldGroup, ObjectMember, StateTree} from '../store'
-import {FieldProps, InputProps, ItemProps, RenderPreviewCallbackProps} from '../types'
 import {
+  BlockAnnotationProps,
+  BlockProps,
+  FieldProps,
+  InputProps,
+  ItemProps,
+  RenderPreviewCallbackProps,
+} from '../types'
+import {
+  useAnnotationComponent,
+  useBlockComponent,
   useFieldComponent,
+  useInlineBlockComponent,
   useInputComponent,
   useItemComponent,
   usePreviewComponent,
@@ -87,6 +97,9 @@ export function FormProvider(props: FormProviderProps) {
   const Field = useFieldComponent()
   const Preview = usePreviewComponent()
   const Item = useItemComponent()
+  const Block = useBlockComponent()
+  const InlineBlock = useInlineBlockComponent()
+  const Annotation = useAnnotationComponent()
 
   const renderInput = useCallback(
     (inputProps: Omit<InputProps, 'renderDefault'>) => <Input {...inputProps} />,
@@ -105,6 +118,20 @@ export function FormProvider(props: FormProviderProps) {
       <PreviewLoader component={Preview} {...previewProps} />
     ),
     [Preview]
+  )
+  const renderBlock = useCallback(
+    (blockProps: Omit<BlockProps, 'renderDefault'>) => <Block {...blockProps} />,
+    [Block]
+  )
+  const renderInlineBlock = useCallback(
+    (blockProps: Omit<BlockProps, 'renderDefault'>) => <InlineBlock {...blockProps} />,
+    [InlineBlock]
+  )
+  const renderAnnotation = useCallback(
+    (annotationProps: Omit<BlockAnnotationProps, 'renderDefault'>) => (
+      <Annotation {...annotationProps} />
+    ),
+    [Annotation]
   )
 
   return (
@@ -130,7 +157,10 @@ export function FormProvider(props: FormProviderProps) {
       onSetFieldSetCollapsed={onSetFieldSetCollapsed}
       presence={presence}
       readOnly={readOnly}
+      renderAnnotation={renderAnnotation}
+      renderBlock={renderBlock}
       renderField={renderField}
+      renderInlineBlock={renderInlineBlock}
       renderInput={renderInput}
       renderItem={renderItem}
       renderPreview={renderPreview}

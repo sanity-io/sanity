@@ -8,6 +8,8 @@ import {FIXME} from '../FIXME'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {
   FormBuilderFilterFieldFn,
+  RenderAnnotationCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderItemCallback,
@@ -49,7 +51,10 @@ export interface FormBuilderProviderProps {
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
   presence: FormNodePresence[]
   readOnly?: boolean
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderItemCallback
   renderPreview: RenderPreviewCallback
@@ -95,7 +100,10 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     onSetPathCollapsed,
     presence,
     readOnly,
+    renderAnnotation,
+    renderBlock,
     renderField,
+    renderInlineBlock,
     renderInput,
     renderItem,
     renderPreview,
@@ -147,7 +155,10 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       id,
       members,
       readOnly,
+      renderAnnotation,
+      renderBlock,
       renderField,
+      renderInlineBlock,
       renderInput,
       renderItem,
       renderPreview,
@@ -167,7 +178,10 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       id,
       members,
       readOnly,
+      renderAnnotation,
+      renderBlock,
       renderField,
+      renderInlineBlock,
       renderInput,
       renderItem,
       renderPreview,

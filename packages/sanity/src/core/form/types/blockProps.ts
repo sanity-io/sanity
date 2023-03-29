@@ -14,7 +14,14 @@ import {
 import {ReactElement, ReactNode} from 'react'
 import {FormNodePresence} from '../../presence'
 import {PortableTextMarker} from '../..'
-import {RenderPreviewCallback} from './renderCallback'
+import {
+  RenderAnnotationCallback,
+  RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderPreviewCallback,
+} from './renderCallback'
 
 /** @beta */
 export interface BlockDecoratorProps {
@@ -69,7 +76,14 @@ export interface BlockAnnotationProps {
   path: Path
   presence: FormNodePresence[]
   readOnly: boolean
-  renderDefault: (props: BlockAnnotationProps) => React.ReactElement
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
+  renderDefault: (props: BlockAnnotationProps) => ReactElement
+  renderField: RenderFieldCallback
+  renderInlineBlock: RenderBlockCallback
+  renderInput: RenderInputCallback
+  renderItem: RenderArrayOfObjectsItemCallback
+  renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
   selected: boolean // Whether the object is selected in the editor
   textElement: ReactElement
@@ -93,7 +107,13 @@ export interface BlockProps {
   path: Path
   presence: FormNodePresence[]
   readOnly: boolean
-  renderDefault: (props: BlockProps) => React.ReactElement
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
+  renderDefault: (props: BlockProps) => ReactElement
+  renderField: RenderFieldCallback
+  renderInlineBlock: RenderBlockCallback
+  renderInput: RenderInputCallback
+  renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
   selected: boolean // Whether the object is selected in the editor

@@ -13,6 +13,9 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     groups,
     members,
     onChange,
+    renderAnnotation,
+    renderBlock,
+    renderInlineBlock,
     renderInput,
     renderField,
     renderItem,
@@ -46,13 +49,25 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     () => (
       <ObjectInputMembers
         members={members}
-        renderInput={renderInput}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
         renderField={renderField}
+        renderInlineBlock={renderInlineBlock}
+        renderInput={renderInput}
         renderItem={renderItem}
         renderPreview={renderPreview}
       />
     ),
-    [members, renderField, renderInput, renderItem, renderPreview]
+    [
+      members,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
+    ]
   )
 
   if (members.length === 0) {

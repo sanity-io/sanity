@@ -10,7 +10,9 @@ import {
   ArrayInputMoveItemEvent,
   ArrayOfObjectsInputProps,
   ObjectItem,
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -38,7 +40,10 @@ import {applyAll} from '../../../patch/applyPatch'
  */
 export function ArrayOfObjectsField(props: {
   member: FieldMember<ArrayOfObjectsFormNode>
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
@@ -53,7 +58,16 @@ export function ArrayOfObjectsField(props: {
     onFieldGroupSelect,
   } = useFormCallbacks()
 
-  const {member, renderField, renderInput, renderItem, renderPreview} = props
+  const {
+    member,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
+  } = props
   const focusRef = useRef<Element & {focus: () => void}>()
   const uploadSubscriptions = useRef<Record<string, Subscription>>({})
 
@@ -359,6 +373,9 @@ export function ArrayOfObjectsField(props: {
       resolveUploader: resolveUploader,
       validation: member.field.validation,
       presence: member.field.presence,
+      renderAnnotation,
+      renderBlock,
+      renderInlineBlock,
       renderInput,
       renderField,
       renderItem,
@@ -392,6 +409,9 @@ export function ArrayOfObjectsField(props: {
     resolveInitialValue,
     handleUpload,
     resolveUploader,
+    renderAnnotation,
+    renderBlock,
+    renderInlineBlock,
     renderInput,
     renderField,
     renderItem,

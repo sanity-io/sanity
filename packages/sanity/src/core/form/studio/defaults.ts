@@ -1,5 +1,7 @@
 import {createElement} from 'react'
 import {
+  RenderAnnotationCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderItemCallback,
@@ -9,6 +11,26 @@ import {Preview} from '../../preview/components/Preview'
 import {defaultResolveInputComponent} from './inputResolver/inputResolver'
 import {defaultResolveItemComponent} from './inputResolver/itemResolver'
 import {defaultResolveFieldComponent} from './inputResolver/fieldResolver'
+import {
+  defaultResolveAnnotationComponent,
+  defaultResolveBlockComponent,
+  defaultResolveInlineBlockComponent,
+} from './inputResolver/blockResolver'
+
+/** @internal */
+export const defaultRenderAnnotation: RenderAnnotationCallback = (props) => {
+  return createElement(defaultResolveAnnotationComponent(props.schemaType), props)
+}
+
+/** @internal */
+export const defaultRenderBlock: RenderBlockCallback = (props) => {
+  return createElement(defaultResolveBlockComponent(props.schemaType), props)
+}
+
+/** @internal */
+export const defaultRenderInlineBlock: RenderBlockCallback = (props) => {
+  return createElement(defaultResolveInlineBlockComponent(props.schemaType), props)
+}
 
 /** @internal */
 export const defaultRenderField: RenderFieldCallback = (props) => {

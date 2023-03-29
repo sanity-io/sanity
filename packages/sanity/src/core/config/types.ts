@@ -12,6 +12,8 @@ import type {
 import React, {type ComponentType} from 'react'
 import type {Observable} from 'rxjs'
 import type {
+  BlockAnnotationProps,
+  BlockProps,
   FieldProps,
   FormBuilderCustomMarkersComponent,
   FormBuilderMarkersComponent,
@@ -64,6 +66,9 @@ export interface SanityFormConfig {
     field?: ComponentType<FieldProps>
     item?: ComponentType<ItemProps>
     preview?: ComponentType<PreviewProps>
+    block?: ComponentType<BlockProps>
+    inlineBlock?: ComponentType<BlockProps>
+    annotation?: ComponentType<BlockAnnotationProps>
   }
   file?: {
     /** @beta */

@@ -23,6 +23,8 @@ import {
   RenderInputCallback,
   RenderPreviewCallback,
   UploadEvent,
+  RenderBlockCallback,
+  RenderAnnotationCallback,
 } from '../../../types'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -126,7 +128,10 @@ function createPlainTextUploader(itemTypes: PrimitiveSchemaType[]): Uploader<Pri
  */
 export function ArrayOfPrimitivesField(props: {
   member: FieldMember<ArrayOfPrimitivesFormNode>
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfPrimitivesItemCallback
   renderPreview: RenderPreviewCallback
@@ -140,7 +145,16 @@ export function ArrayOfPrimitivesField(props: {
     onSetFieldSetCollapsed,
     onFieldGroupSelect,
   } = useFormCallbacks()
-  const {member, renderField, renderInput, renderItem, renderPreview} = props
+  const {
+    member,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
+  } = props
 
   const focusRef = useRef<Element & {focus: () => void}>()
   const uploadSubscriptions = useRef<Subscription>()
@@ -337,6 +351,9 @@ export function ArrayOfPrimitivesField(props: {
       presence: member.field.presence,
       resolveUploader,
       onUpload: handleUpload,
+      renderAnnotation,
+      renderBlock,
+      renderInlineBlock,
       renderInput,
       renderItem,
       onIndexFocus: handleFocusIndex,
@@ -365,6 +382,9 @@ export function ArrayOfPrimitivesField(props: {
     handlePrepend,
     resolveUploader,
     handleUpload,
+    renderAnnotation,
+    renderBlock,
+    renderInlineBlock,
     renderInput,
     renderItem,
     handleFocusIndex,
