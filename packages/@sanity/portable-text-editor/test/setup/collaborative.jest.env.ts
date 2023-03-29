@@ -216,11 +216,11 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             paste: async (string: string, type = 'text/plain') => {
               // Write text to native clipboard
               await page.evaluate(
-                ({string: _string, type: _type}) => {
-                  navigator.clipboard.writeText('') // Clear first
+                async ({string: _string, type: _type}) => {
+                  await navigator.clipboard.writeText('') // Clear first
                   const blob = new Blob([_string], {type: _type})
                   const data = [new ClipboardItem({[_type]: blob})]
-                  navigator.clipboard.write(data)
+                  await navigator.clipboard.write(data)
                 },
                 {string, type}
               )
