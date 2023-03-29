@@ -16,19 +16,17 @@ export function DocumentHeaderTitle(): ReactElement {
     return <></>
   }
 
+  if (title) {
+    return <>{title}</>
+  }
+
   if (!documentValue) {
     return <>New {schemaType?.title || schemaType?.name}</>
   }
 
-  if (subscribed) {
-    if (error) {
-      return <>Error: {error.message}</>
-    }
-
-    return (
-      <>{value?.title || <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}</>
-    )
+  if (error) {
+    return <>Error: {error.message}</>
   }
 
-  return <>{title}</>
+  return <>{value?.title || <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}</>
 }
