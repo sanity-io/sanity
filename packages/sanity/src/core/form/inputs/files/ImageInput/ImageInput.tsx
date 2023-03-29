@@ -782,7 +782,16 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   }
 
   render() {
-    const {members, renderInput, renderField, renderItem, renderPreview} = this.props
+    const {
+      members,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
+    } = this.props
 
     const {selectedAssetSource} = this.state
 
@@ -806,6 +815,9 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               <MemberField
                 key={member.key}
                 member={member}
+                renderAnnotation={renderAnnotation}
+                renderBlock={renderBlock}
+                renderInlineBlock={renderInlineBlock}
                 renderInput={member.name === 'asset' ? this.renderAsset() : renderInput}
                 renderField={member.name === 'asset' ? passThrough : renderField}
                 renderItem={renderItem}
@@ -819,8 +831,11 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               <MemberFieldSet
                 key={member.key}
                 member={member}
-                renderInput={renderInput}
+                renderAnnotation={renderAnnotation}
+                renderBlock={renderBlock}
                 renderField={renderField}
+                renderInlineBlock={renderInlineBlock}
+                renderInput={renderInput}
                 renderItem={renderItem}
                 renderPreview={renderPreview}
               />

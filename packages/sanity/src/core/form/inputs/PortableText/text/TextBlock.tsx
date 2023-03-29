@@ -1,5 +1,5 @@
 import {Box, Flex, ResponsivePaddingProps, Tooltip, Text} from '@sanity/ui'
-import React, {ComponentType, RefObject, useCallback, useMemo, useState} from 'react'
+import React, {RefObject, useCallback, useMemo, useState} from 'react'
 import {ObjectSchemaType, Path, PortableTextTextBlock} from '@sanity/types'
 import {
   EditorSelection,
@@ -7,7 +7,16 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {isEqual} from '@sanity/util/paths'
-import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
+import {
+  BlockProps,
+  RenderAnnotationCallback,
+  RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
+  RenderCustomMarkers,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderPreviewCallback,
+} from '../../../types'
 import {PatchArg} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
@@ -46,8 +55,14 @@ export interface TextBlockProps {
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
+  renderField: RenderFieldCallback
+  renderInlineBlock: RenderBlockCallback
+  renderInput: RenderInputCallback
+  renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
   selected: boolean
@@ -67,8 +82,14 @@ export function TextBlock(props: TextBlockProps) {
     onPathFocus,
     path,
     readOnly,
+    renderBlock,
+    renderAnnotation,
     renderBlockActions,
     renderCustomMarkers,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
     renderPreview,
     schemaType,
     selected,
@@ -161,7 +182,6 @@ export function TextBlock(props: TextBlockProps) {
   const isOpen = Boolean(memberItem?.member.open)
   const parentSchemaType = editor.schemaTypes.portableText
 
-  const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
   const componentProps: BlockProps = useMemo(
     () => ({
       __unstable_boundaryElement: boundaryElement || undefined,
@@ -178,7 +198,13 @@ export function TextBlock(props: TextBlockProps) {
       path: memberItem?.node.path || EMPTY_ARRAY,
       presence: textPresence,
       readOnly: Boolean(readOnly),
+      renderAnnotation,
+      renderBlock,
       renderDefault: DefaultComponent,
+      renderField,
+      renderInput,
+      renderInlineBlock,
+      renderItem,
       renderPreview,
       schemaType,
       selected,
@@ -190,13 +216,20 @@ export function TextBlock(props: TextBlockProps) {
       focused,
       isOpen,
       markers,
-      memberItem,
+      memberItem?.elementRef,
+      memberItem?.node.path,
       onItemClose,
       onOpen,
       onPathFocus,
       onRemove,
       parentSchemaType,
       readOnly,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
       renderPreview,
       schemaType,
       selected,
@@ -249,11 +282,7 @@ export function TextBlock(props: TextBlockProps) {
                   data-warning={hasWarning ? '' : undefined}
                   spellCheck={spellCheck}
                 >
-                  {CustomComponent ? (
-                    <CustomComponent {...componentProps} />
-                  ) : (
-                    <DefaultComponent {...componentProps} />
-                  )}
+                  {renderBlock(componentProps)}
                 </TextRoot>
               </Tooltip>
             </Box>
@@ -293,7 +322,6 @@ export function TextBlock(props: TextBlockProps) {
     ),
     [
       componentProps,
-      CustomComponent,
       focused,
       handleChangeIndicatorMouseEnter,
       handleChangeIndicatorMouseLeave,
@@ -306,6 +334,7 @@ export function TextBlock(props: TextBlockProps) {
       onChange,
       outerPaddingProps,
       readOnly,
+      renderBlock,
       renderBlockActions,
       reviewChangesHovered,
       spellCheck,

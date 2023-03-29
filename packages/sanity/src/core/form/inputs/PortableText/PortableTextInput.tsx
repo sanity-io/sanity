@@ -32,7 +32,7 @@ import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
-import {_isArrayOfObjectsFieldMember, _isBlockType} from './_helpers'
+import {isArrayOfObjectsFieldMember, isBlockType} from './_helpers'
 
 /** @internal */
 export interface PortableTextMemberItem {
@@ -57,7 +57,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
     hotkeys,
     markers = EMPTY_ARRAY,
     members,
-    onChange,
     onCopy,
     onInsert,
     onPaste,
@@ -81,7 +80,12 @@ export function PortableTextInput(props: PortableTextInputProps) {
     },
   }))
 
-  const {subscribe} = usePatches({path})
+  // TODO: why are these not stable???
+  const _path = useMemo(() => props.path, [])
+  const _onChange = useMemo(() => props.onChange, [])
+  const _onItemRemove = useMemo(() => props.onItemRemove, [])
+
+  const {subscribe} = usePatches({path: _path})
   const editorRef = useRef<PortableTextEditor | null>(null)
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
@@ -130,7 +134,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
     for (const member of members) {
       if (member.kind === 'item') {
-        const isObjectBlock = !_isBlockType(member.item.schemaType)
+        const isObjectBlock = !isBlockType(member.item.schemaType)
         if (isObjectBlock) {
           result.push({kind: 'objectBlock', member, node: member.item})
         } else {
@@ -161,7 +165,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           }
           // Markdefs
           const markDefArrayMember = member.item.members
-            .filter(_isArrayOfObjectsFieldMember)
+            .filter(isArrayOfObjectsFieldMember)
             .find((f) => f.name === 'markDefs')
           if (markDefArrayMember) {
             // eslint-disable-next-line max-depth
@@ -185,7 +189,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
       const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
       let input: ReactNode
 
-      if (item.kind !== 'textBlock') {
+      if (item.kind !== 'textBlock' && item.member.open) {
         input = <FormInput absolutePath={item.node.path} {...(props as FIXME)} />
       }
 
@@ -229,7 +233,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
-          onChange(toFormPatches(change.patches))
+          _onChange(toFormPatches(change.patches))
           break
         case 'selection':
           // This doesn't need to be immediate,
@@ -248,7 +252,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           break
         case 'undo':
         case 'redo':
-          onChange(toFormPatches(change.patches))
+          _onChange(toFormPatches(change.patches))
           break
         case 'invalidValue':
           setInvalidValue(change)
@@ -320,7 +324,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 isActive={isActive}
                 isFullscreen={isFullscreen}
                 onActivate={handleActivate}
-                onChange={onChange}
+                onChange={_onChange}
+                onItemRemove={_onItemRemove}
                 onCopy={onCopy}
                 onInsert={onInsert}
                 onPaste={onPaste}

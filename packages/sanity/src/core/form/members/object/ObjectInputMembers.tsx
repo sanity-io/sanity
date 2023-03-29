@@ -1,7 +1,9 @@
 import React, {useMemo} from 'react'
 import {ObjectMember} from '../../store'
 import {
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -12,6 +14,9 @@ import {ObjectInputMember} from './ObjectInputMember'
 /** @internal */
 export interface ObjectMembersProps {
   members: ObjectMember[]
+  renderAnnotation: RenderAnnotationCallback
+  renderBlock: RenderBlockCallback
+  renderInlineBlock: RenderBlockCallback
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
   renderItem: RenderArrayOfObjectsItemCallback

@@ -5,7 +5,9 @@ import {FieldMember} from '../store'
 import {
   ArrayOfObjectsInputProps,
   ObjectInputProps,
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -45,7 +47,10 @@ export const FormInput = memo(function FormInput(
     <FormInputInner
       {...props}
       absolutePath={absolutePath}
+      destinationRenderAnnotation={props.renderAnnotation}
+      destinationRenderBlock={props.renderBlock}
       destinationRenderField={props.renderField}
+      destinationRenderInlineBlock={props.renderInlineBlock}
       destinationRenderInput={props.renderInput}
       destinationRenderItem={props.renderItem}
       destinationRenderPreview={props.renderPreview}
@@ -61,17 +66,23 @@ const FormInputInner = memo(function FormInputInner(
     absolutePath: Path
     includeField?: boolean
     includeItem?: boolean
-    destinationRenderInput: RenderInputCallback
+    destinationRenderAnnotation: RenderAnnotationCallback
+    destinationRenderBlock: RenderBlockCallback
     destinationRenderField: RenderFieldCallback
+    destinationRenderInlineBlock: RenderBlockCallback
+    destinationRenderInput: RenderInputCallback
     destinationRenderItem: RenderArrayOfObjectsItemCallback
     destinationRenderPreview: RenderPreviewCallback
   }
 ) {
   const {
     absolutePath,
+    destinationRenderAnnotation,
+    destinationRenderBlock,
+    destinationRenderField,
+    destinationRenderInlineBlock,
     destinationRenderInput,
     destinationRenderItem,
-    destinationRenderField,
     destinationRenderPreview,
   } = props
 
@@ -95,16 +106,22 @@ const FormInputInner = memo(function FormInputInner(
         <FormInputInner
           {...inputProps}
           absolutePath={absolutePath}
+          destinationRenderAnnotation={destinationRenderAnnotation}
+          destinationRenderBlock={destinationRenderBlock}
           destinationRenderInput={destinationRenderInput}
           destinationRenderItem={destinationRenderItem}
           destinationRenderField={destinationRenderField}
+          destinationRenderInlineBlock={destinationRenderInlineBlock}
           destinationRenderPreview={destinationRenderPreview}
         />
       )
     },
     [
       absolutePath,
+      destinationRenderAnnotation,
+      destinationRenderBlock,
       destinationRenderField,
+      destinationRenderInlineBlock,
       destinationRenderInput,
       destinationRenderItem,
       destinationRenderPreview,
@@ -137,6 +154,38 @@ const FormInputInner = memo(function FormInputInner(
     [absolutePath, destinationRenderItem, props.includeItem]
   )
 
+  const renderBlock: RenderBlockCallback = useCallback(
+    (blockProps) => {
+      const shouldRenderBlock =
+        startsWith(absolutePath, blockProps.path) &&
+        (props.includeItem || !isEqual(absolutePath, blockProps.path))
+      return shouldRenderBlock ? destinationRenderBlock(blockProps) : pass(blockProps)
+    },
+    [absolutePath, destinationRenderBlock, props.includeItem]
+  )
+
+  const renderInlineBlock: RenderBlockCallback = useCallback(
+    (blockProps) => {
+      const shouldRenderInlineBlock =
+        startsWith(absolutePath, blockProps.path) &&
+        (props.includeItem || !isEqual(absolutePath, blockProps.path))
+      return shouldRenderInlineBlock ? destinationRenderInlineBlock(blockProps) : pass(blockProps)
+    },
+    [absolutePath, destinationRenderInlineBlock, props.includeItem]
+  )
+
+  const renderAnnotation: RenderAnnotationCallback = useCallback(
+    (annotationProps) => {
+      const shouldRenderAnnotation =
+        startsWith(absolutePath, annotationProps.path) &&
+        (props.includeItem || !isEqual(absolutePath, annotationProps.path))
+      return shouldRenderAnnotation
+        ? destinationRenderAnnotation(annotationProps)
+        : pass(annotationProps)
+    },
+    [absolutePath, destinationRenderAnnotation, props.includeItem]
+  )
+
   if (isArrayInputProps(props)) {
     const childPath = trimLeft(props.path, absolutePath)
 
@@ -160,8 +209,11 @@ const FormInputInner = memo(function FormInputInner(
     return (
       <ArrayOfObjectsItem
         member={itemMember}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
         renderInput={renderInput}
         renderField={renderField}
+        renderInlineBlock={renderInlineBlock}
         renderItem={renderItem}
         renderPreview={destinationRenderPreview}
       />
@@ -187,7 +239,10 @@ const FormInputInner = memo(function FormInputInner(
     return (
       <MemberField
         member={fieldMember}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
         renderInput={renderInput}
+        renderInlineBlock={renderInlineBlock}
         renderField={renderField}
         renderItem={renderItem}
         renderPreview={destinationRenderPreview}

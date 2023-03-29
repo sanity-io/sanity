@@ -1,7 +1,7 @@
 import {ComponentType} from 'react'
 import {PreviewProps} from '../../components/previews'
 import {PluginOptions} from '../../config'
-import {FieldProps, InputProps, ItemProps} from '../types'
+import {BlockAnnotationProps, BlockProps, FieldProps, InputProps, ItemProps} from '../types'
 
 export function pickInputComponent(
   plugin: PluginOptions
@@ -25,4 +25,24 @@ export function pickItemComponent(
   plugin: PluginOptions
 ): ComponentType<Omit<ItemProps, 'renderDefault'>> {
   return plugin.form?.components?.item as ComponentType<Omit<ItemProps, 'renderDefault'>>
+}
+
+export function pickBlockComponent(
+  plugin: PluginOptions
+): ComponentType<Omit<BlockProps, 'renderDefault'>> {
+  return plugin.form?.components?.block as ComponentType<Omit<BlockProps, 'renderDefault'>>
+}
+
+export function pickInlineBlockComponent(
+  plugin: PluginOptions
+): ComponentType<Omit<BlockProps, 'renderDefault'>> {
+  return plugin.form?.components?.inlineBlock as ComponentType<Omit<BlockProps, 'renderDefault'>>
+}
+
+export function pickAnnotationComponent(
+  plugin: PluginOptions
+): ComponentType<Omit<BlockAnnotationProps, 'renderDefault'>> {
+  return plugin.form?.components?.annotation as ComponentType<
+    Omit<BlockAnnotationProps, 'renderDefault'>
+  >
 }
