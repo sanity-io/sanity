@@ -17,7 +17,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   }
 
   const event = req.headers['x-github-event']
-  if (event !== 'create' && event !== 'delete') {
+  if (event !== 'create' && event !== 'delete' && event !== 'push') {
     res.status(200)
     res.send('Currently only "create" and "delete" events are handled')
     return
@@ -70,6 +70,39 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       )
       .patch(doc._id, (p) => p.set({deleted: event === 'delete'}))
       .commit({visibility: 'async', tag: 'perf.github.tag'})
+    res.status(200)
+    res.end('ok')
+
+    return
+  }
+
+  if (event === 'push' && payload.head_commit) {
+    // The full git ref that was pushed. Example: refs/heads/main or refs/tags/v3.14.1.
+    const branchName = payload.ref.replace('refs/heads/', '').replace('refs/tags/', '')
+
+    const doc = {
+      _id: `branch-${sanityIdify(branchName)}`,
+      _type: 'branch',
+    }
+    await studioMetricsClient
+      .transaction()
+      .createIfNotExists(doc)
+      .patch(doc._id, (p) =>
+        p
+          .set({
+            name: branchName,
+            'lastCommit.sha': payload.head_commit.id,
+            'lastCommit.message': payload.head_commit.message,
+            'lastCommit.author': payload.head_commit.author.name,
+            'lastCommit.user': payload.head_commit.author.username,
+          })
+          .setIfMissing({
+            base: payload.repository.master_branch,
+            createdBy: payload.sender.login,
+          })
+      )
+      .patch(doc._id, (p) => p.set({deleted: payload.deleted}))
+      .commit({visibility: 'async', tag: 'perf.github.branch'})
     res.status(200)
     res.end('ok')
   }
