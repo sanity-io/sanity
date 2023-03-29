@@ -151,7 +151,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         onClick={open ? handleClose : handleOpen}
         ref={setButton}
         selected={open}
-        text={buttonLabel}
+        text={ready ? buttonLabel : 'Loading history'}
       />
     </Root>
   )

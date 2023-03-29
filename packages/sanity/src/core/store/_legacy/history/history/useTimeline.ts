@@ -26,6 +26,7 @@ export interface TimelineState {
   currentObjectDiff: ObjectDiff<Annotation> | null
   displayed: Record<string, unknown> | null
   onOlderRevision: boolean
+  ready: boolean
   realRevChunk: Chunk
   revTime: Chunk | null
   selectionState: SelectionState
@@ -55,6 +56,7 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
     currentObjectDiff: null,
     displayed: null,
     onOlderRevision: false,
+    ready: false,
     realRevChunk: timeline.lastChunk(),
     revTime: null,
     selectionState: 'inactive',
@@ -81,6 +83,7 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
         currentObjectDiff: null,
         displayed: controller.displayed(),
         onOlderRevision: controller.onOlderRevision(),
+        ready: !['invalid', 'loading'].includes(controller.selectionState),
         realRevChunk: controller.realRevChunk,
         revTime: controller.revTime,
         selectionState: controller.selectionState,

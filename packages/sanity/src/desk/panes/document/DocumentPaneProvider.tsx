@@ -146,7 +146,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const compareValue: Partial<SanityDocument> | null = timelineState.changesOpen
     ? timelineState.sinceAttributes
     : editState?.published || null
-  const ready = connectionState === 'connected' && editState.ready
+
+  // Note that in addition to connection and edit state, we also wait for document timeline readiness.
+  // This means – if we're loading an older revision, the full transaction range must be loaded in full
+  // prior to the document being displayed.
+  // Previously, visiting studio URLs with timeline params would display the 'current' document and then
+  // pop in the older revision, which was disorienting and could happen mid-edit.
+  const ready = connectionState === 'connected' && editState.ready && timelineState.ready
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
     () =>

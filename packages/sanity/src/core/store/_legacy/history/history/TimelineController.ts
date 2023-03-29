@@ -131,11 +131,6 @@ export class TimelineController {
     return Boolean(this._rev) && (this.selectionState === 'range' || this.selectionState === 'rev')
   }
 
-  /** Returns true when the changes panel should be active. */
-  changesPanelActive(): boolean {
-    return Boolean(this._since) && this.selectionState === 'range'
-  }
-
   findRangeForNewRev(rev: Chunk): [string | null, string | null] {
     const revTimeId = this.timeline.isLatestChunk(rev) ? null : this.timeline.createTimeId(rev)
 
