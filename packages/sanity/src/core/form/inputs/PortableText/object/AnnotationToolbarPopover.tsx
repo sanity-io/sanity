@@ -22,7 +22,6 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 
 
 interface AnnotationToolbarPopoverProps {
   boundaryElement?: HTMLElement
-  isEditing: boolean
   onDelete: () => void
   onEdit: () => void
   referenceElement?: HTMLElement
@@ -30,7 +29,7 @@ interface AnnotationToolbarPopoverProps {
 }
 
 export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
-  const {boundaryElement, isEditing, onDelete, onEdit, referenceElement, title} = props
+  const {boundaryElement, onDelete, onEdit, referenceElement, title} = props
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [selection, setSelection] = useState<{
@@ -39,12 +38,9 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     focusNode: Node | null
     focusOffset: number
   } | null>(null)
-  const isClosingRef = useRef<boolean>(false)
   const rangeRef = useRef<Range | null>(null)
-  const editButtonRef = useRef<HTMLButtonElement>(null)
-  const isTabbing = useRef<boolean>(false)
   const {sanity} = useTheme()
-
+  const popoverRef = useRef<HTMLDivElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
 
   // This is a "virtual element" (supported by Popper.js)
@@ -52,7 +48,6 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     if (!cursorRect) {
       return null
     }
-
     return {
       getBoundingClientRect: () => {
         return cursorRect
@@ -68,18 +63,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
           return
         }
         if (event.key === 'Escape') {
-          event.preventDefault()
-          event.stopPropagation()
           setPopoverOpen(false)
-          isTabbing.current = false
-        }
-        if (event.key === 'Tab') {
-          if (!isTabbing.current) {
-            event.preventDefault()
-            event.stopPropagation()
-            editButtonRef.current?.focus()
-            isTabbing.current = true
-          }
         }
       },
       [popoverOpen]
@@ -113,13 +97,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   // Open popover when selection is within annotations
   useEffect(() => {
     if (!selection) return
-    if (isClosingRef.current) return
     const {anchorNode, focusNode} = selection
-    // Safari would close the popover by loosing range when button is focused.
-    // If we are focused and currently tabbing to the action buttons, just return here.
-    if (isTabbing.current) {
-      return
-    }
     if (referenceElement?.contains(anchorNode) && anchorNode === focusNode) {
       const range = window.getSelection()?.getRangeAt(0)
       const rect = range?.getBoundingClientRect()
@@ -130,21 +108,14 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         startTransition(() => setCursorRect(rect))
       }
       startTransition(() => setPopoverOpen(true))
-    } else {
+    } else if (focusNode) {
       startTransition(() => {
         setPopoverOpen(false)
         setCursorRect(null)
       })
       rangeRef.current = null
     }
-  }, [isEditing, selection, referenceElement])
-
-  useEffect(() => {
-    if (isEditing) {
-      setPopoverOpen(false)
-      isTabbing.current = false
-    }
-  }, [isEditing, referenceElement, selection])
+  }, [selection, referenceElement])
 
   const handleEditButtonClicked = useCallback(() => {
     setPopoverOpen(false)
@@ -182,6 +153,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     <ToolbarPopover
       boundaryElement={boundaryElement}
       constrainSize
+      ref={popoverRef}
       content={
         <Box padding={1}>
           <Inline space={1}>
@@ -191,12 +163,12 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               </Text>
             </Box>
             <Button
-              ref={editButtonRef}
               icon={EditIcon}
               mode="bleed"
               onClick={handleEditButtonClicked}
               padding={2}
               alt="Edit annotation"
+              tabIndex={0}
             />
             <Button
               icon={TrashIcon}
@@ -205,12 +177,13 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               onClick={handleRemoveButtonClicked}
               tone="critical"
               alt="Remove annotation"
+              tabIndex={0}
             />
           </Inline>
         </Box>
       }
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-      open={popoverOpen}
+      open
       placement="top"
       portal="editor"
       referenceElement={cursorElement}
