@@ -4,6 +4,7 @@ import {concatMap, from, lastValueFrom, range} from 'rxjs'
 import {tap, toArray} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
 import {BrowserContext} from '@playwright/test'
+import {capitalize} from 'lodash'
 import {Deployment, PerformanceTestProps} from './types'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
 import {bundle} from './utils/bundlePerfHelpers'
@@ -19,11 +20,13 @@ interface RunCompareOptions {
   iterations: number
 }
 
-async function tryCatch<T>(fn: () => Promise<T>): Promise<[Error, undefined] | [undefined, T]> {
+type Result<T> = {type: 'success'; value: T} | {type: 'error'; error: Error}
+
+async function tryCatch<T>(fn: () => Promise<T>): Promise<Result<T>> {
   try {
-    return [undefined, await fn()]
-  } catch (err) {
-    return [err, undefined]
+    return {type: 'success', value: await fn()}
+  } catch (err: unknown) {
+    return {type: 'error', error: err instanceof Error ? err : new Error(String(err))}
   }
 }
 
@@ -42,14 +45,16 @@ async function runAgainstUrl(
     ? test.setup(testContext)
     : {data: undefined, teardown: false})
 
-  const [err, result] = await tryCatch(() => test.run({...testContext, setupData: data}))
+  const result = await tryCatch(() => test.run({...testContext, setupData: data}))
   if (typeof teardown === 'function') {
-    await teardown()
+    try {
+      await teardown()
+      console.info(`Done`)
+    } catch (teardownError) {
+      console.error(`Teardown of test "${test.id}" failed: ${teardownError.stack}`)
+    }
   }
-  if (err) {
-    throw err
-  }
-  console.info(`Done`)
+  console.info(`${capitalize(result.type)}: ${test.id}`)
   console.info()
   return result
 }
@@ -61,14 +66,23 @@ function runCompare(options: RunCompareOptions) {
       concatMap((iteration) => {
         return from(deployments).pipe(
           concatMap(async (deployment, i) => {
-            const results = await runAgainstUrl(deployment.url, rest)
+            const testResult = await runAgainstUrl(deployment.url, rest)
+            if (testResult.type === 'error') {
+              return {
+                _key: `${deployment._id}_${iteration}_${i}`,
+                _type: 'error',
+                message: testResult.error.message,
+                stack: testResult.error.stack,
+              }
+            }
             return {
               _key: `${deployment._id}_${iteration}_${i}`,
+              _type: 'success',
               deployment: {_ref: deployment._id},
-              measurements: Object.entries(results).map(([metricName, result]) => ({
+              measurements: Object.entries(testResult.value).map(([metricName, value]) => ({
                 _key: metricName,
                 metric: metricName,
-                value: result,
+                value: value,
               })),
             }
           })
