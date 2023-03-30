@@ -128,6 +128,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   )
 
   const listGridGap = 1
+  const paddingY = 1
 
   return (
     <Stack space={3} ref={parentRef}>
@@ -151,7 +152,9 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               radius={1}
               style={{
                 // Account for grid gap
-                height: `${virtualizer.getTotalSize() + items.length * space[listGridGap]}px`,
+                height: `${
+                  virtualizer.getTotalSize() + items.length * space[listGridGap] + space[paddingY]
+                }px`,
                 width: '100%',
                 position: 'relative',
               }}
@@ -159,7 +162,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               <List
                 axis="y"
                 gap={listGridGap}
-                paddingY={1}
+                paddingY={paddingY}
                 items={memberKeys}
                 onItemMove={onItemMove}
                 onItemMoveStart={handleItemMoveStart}
