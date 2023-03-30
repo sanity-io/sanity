@@ -10,6 +10,7 @@ import {
 } from '@sanity/types'
 import {ObjectItem} from '../../types'
 import {FormNodePresence} from '../../../presence'
+import {InternalFormStateMember} from '../formState'
 import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
 import {FormFieldGroup} from './fieldGroup'
 
@@ -29,7 +30,6 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
   readOnly?: boolean
   focused?: boolean
   changed: boolean
-  members?: ObjectMember[]
 }
 
 /** @public */
@@ -42,6 +42,8 @@ export interface ObjectFormNode<
   groups: FormFieldGroup[]
   /** @beta */
   members: ObjectMember[]
+  /** @internal */
+  _allMembers: InternalFormStateMember[]
 }
 
 /** @public */
@@ -56,6 +58,9 @@ export interface ObjectArrayFormNode<
   groups: FormFieldGroup[]
   /** @beta */
   members: ObjectMember[]
+
+  /** @internal */
+  _allMembers: InternalFormStateMember[]
   changesOpen?: boolean
 }
 

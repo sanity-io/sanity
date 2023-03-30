@@ -457,9 +457,9 @@ interface RawState<SchemaType, T> {
 }
 
 /**
- * This exists merely to give the field members an intermediate state in order to render field groups correctly
+ * This allows us to give the field members an intermediate state in order to render field groups correctly in cases where all members in a field group is hidden
  */
-interface MemberWithHiddenState {
+export interface InternalFormStateMember {
   hidden: boolean
   // if it's hidden and in the currently selected group, it should still be excluded from its group
   inSelectedGroup: boolean
@@ -542,7 +542,7 @@ function prepareObjectInputState<T>(
     : props.schemaType.fields.map((field) => ({single: true, field}))
 
   // create a members array for the object
-  const members = normalizedSchemaMembers.flatMap((fieldSet, index): MemberWithHiddenState[] => {
+  const members = normalizedSchemaMembers.flatMap((fieldSet, index): InternalFormStateMember[] => {
     if (fieldSet.single) {
       // "single" means not part of a fieldset
       const fieldMember = prepareFieldMember({
@@ -572,10 +572,6 @@ function prepareObjectInputState<T>(
       value: pick(props.value, fieldsetFieldNames),
     })
 
-    if (fieldsetHidden) {
-      return []
-    }
-
     const fieldsetReadOnly = resolveConditionalProperty(fieldSet.readOnly, {
       currentUser: props.currentUser,
       document: props.document,
@@ -594,10 +590,8 @@ function prepareObjectInputState<T>(
       if (fieldState?.kind === 'error') {
         return [fieldState]
       }
-      if (
-        fieldState === null ||
-        (field.group && !isFieldEnabledByGroupFilter(groups, field.group, selectedGroup))
-      ) {
+
+      if (fieldState === null) {
         return []
       }
 
@@ -611,11 +605,6 @@ function prepareObjectInputState<T>(
 
       return [fieldStateWithReadOnly]
     })
-
-    // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
-    if (fieldsetMembers.length === 0) {
-      return []
-    }
     const defaultCollapsedState = getCollapsedWithDefaults(fieldSet.options, props.level)
 
     const collapsed =
@@ -624,7 +613,7 @@ function prepareObjectInputState<T>(
 
     return [
       {
-        hidden: false,
+        hidden: fieldsetHidden || fieldsetMembers.length === 0,
         inSelectedGroup: fieldSet.group
           ? isFieldEnabledByGroupFilter(groups, fieldSet.group, selectedGroup)
           : true,
@@ -697,6 +686,9 @@ function prepareObjectInputState<T>(
     focusPath: trimChildPath(props.path, props.focusPath),
     presence,
     validation,
+    // this is currently needed by getExpandOperations which needs to know about hidden members
+    // (e.g. members not matching current group filter) in order to determine what to expand
+    _allMembers: members,
     members: visibleMembers,
     groups: _groups,
   }

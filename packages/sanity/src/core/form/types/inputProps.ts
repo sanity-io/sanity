@@ -46,7 +46,7 @@ export interface ObjectInputProps<
   T = Record<string, any>,
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseInputProps,
-    ObjectFormNode<T, S> {
+    Omit<ObjectFormNode<T, S>, '_allMembers'> {
   /** @beta */
   groups: FormFieldGroup[]
 
