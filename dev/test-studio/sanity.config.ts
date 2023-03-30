@@ -21,7 +21,16 @@ import {
   CustomToolMenu,
   studioComponentsPlugin,
 } from './components/studioComponents'
-import {Field, formComponentsPlugin, Input, Item, Preview} from './components/formComponents'
+import {
+  Annotation,
+  Block,
+  Field,
+  formComponentsPlugin,
+  InlineBlock,
+  Input,
+  Item,
+  Preview,
+} from './components/formComponents'
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
@@ -133,6 +142,9 @@ export default defineConfig([
         field: Field,
         item: Item,
         preview: Preview,
+        block: Block,
+        inlineBlock: InlineBlock,
+        annotation: Annotation,
       },
     },
     studio: {
