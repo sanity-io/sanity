@@ -7,6 +7,6 @@ export const branchDeploymentsQuery = `*[_type=='branch' && name == $branch] {
 } {
   "deployments": [
     ...*[_type == 'deployment' && name=="performance-studio" && status=="succeeded" && (branch._ref in [^.branchId])],
-    *[_type == 'deployment' && name=="performance-studio" && status=="succeeded" && (branch._ref in [^.baseBranchId])][0]
+    *[_type == 'deployment' && name=="performance-studio" && status=="succeeded" && (branch._ref in [^.baseBranchId])] | order(_createdAt desc)[0]
     ]
-} [count(deployments) > 0].deployments[] | order(_createdAt asc) [0...$count] {_id, deploymentId, url, label}`
+} [count(deployments) > 0].deployments[] | order(_createdAt desc) [0...$count] {_id, deploymentId, url, label}`
