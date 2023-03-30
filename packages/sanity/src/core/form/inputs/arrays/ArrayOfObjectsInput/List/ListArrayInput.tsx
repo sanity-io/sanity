@@ -101,12 +101,18 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     }
   }, [])
 
+  const memberKeys = useMemoCompare(
+    useMemo(() => members.map((member) => member.key), [members]),
+    shallowEquals
+  )
+
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize: useCallback(() => 53, []),
     getScrollElement: useCallback(() => documentPanelRef.element, [documentPanelRef.element]),
     observeElementOffset,
     rangeExtractor,
+    getItemKey: useCallback((index: number) => memberKeys[index], [memberKeys]),
   })
 
   const items = virtualizer.getVirtualItems()
@@ -121,11 +127,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   }, [])
 
   const sortable = schemaType.options?.sortable !== false
-
-  const memberKeys = useMemoCompare(
-    useMemo(() => members.map((member) => member.key), [members]),
-    shallowEquals
-  )
 
   const listGridGap = 1
   const paddingY = 1
