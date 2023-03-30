@@ -53,6 +53,15 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
     if (extendedProjection) {
       const firstProjection = projectionFields.concat(extendedProjection).join(',')
+
+      if (order.includes('desc')) {
+        return [
+          `*[${filter}] {${firstProjection}}`,
+          `order(select( ${extendedProjection} == null => 1, 0) asc, ${extendedProjection} desc) [0...${limit}]`,
+          `{${finalProjection}}`,
+        ].join('|')
+      }
+
       return [
         `*[${filter}] {${firstProjection}}`,
         `order(${order}) [0...${limit}]`,
