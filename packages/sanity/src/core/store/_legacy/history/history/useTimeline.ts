@@ -23,6 +23,7 @@ interface UseTimelineControllerOpts {
 export interface TimelineState {
   changesOpen: boolean
   displayed: Record<string, unknown> | null
+  hasMoreChunks: boolean
   onOlderRevision: boolean
   ready: boolean
   realRevChunk: Chunk
@@ -53,6 +54,7 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
   const [timelineState, setTimelineState] = useState<TimelineState>({
     changesOpen: false,
     displayed: null,
+    hasMoreChunks: false,
     onOlderRevision: false,
     ready: false,
     realRevChunk: timeline.lastChunk(),
@@ -75,9 +77,11 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
   const updateState = useCallback(
     (controller: TimelineController) => {
       controller.setRange(since || null, rev || null)
+
       setTimelineState({
         changesOpen: !!since,
         displayed: controller.displayed(),
+        hasMoreChunks: !controller.timeline.reachedEarliestEntry,
         onOlderRevision: controller.onOlderRevision(),
         ready: !['invalid', 'loading'].includes(controller.selectionState),
         realRevChunk: controller.realRevChunk,

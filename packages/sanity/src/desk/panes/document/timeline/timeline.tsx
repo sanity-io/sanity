@@ -1,11 +1,12 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {Text} from '@sanity/ui'
+import {Flex, Spinner, Text} from '@sanity/ui'
 import {TimelineItem} from './timelineItem'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {Chunk, CommandList, CommandListRenderItemCallback} from 'sanity'
 
 interface TimelineProps {
   chunks: Chunk[]
+  hasMoreChunks: boolean
   onSelect: (chunk: Chunk) => void
   onLoadMore: () => void
 
@@ -21,6 +22,7 @@ export const Timeline = ({
   bottomSelection,
   chunks,
   disabledBeforeSelection,
+  hasMoreChunks,
   onLoadMore,
   onSelect,
   topSelection,
@@ -42,21 +44,28 @@ export const Timeline = ({
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
-    (chunk, {activeIndex}) => {
+    (chunk, {activeIndex, virtualIndex}) => {
       return (
-        <TimelineItem
-          chunk={chunk}
-          isFirst={activeIndex === 0}
-          isLast={(filteredChunks && activeIndex === filteredChunks.length - 1) || false}
-          isLatest={activeIndex === 0 && !disabledBeforeSelection}
-          isSelected={activeIndex === selectedIndex}
-          onSelect={onSelect}
-          timestamp={chunk.endTimestamp}
-          type={chunk.type}
-        />
+        <>
+          <TimelineItem
+            chunk={chunk}
+            isFirst={activeIndex === 0}
+            isLast={(filteredChunks && activeIndex === filteredChunks.length - 1) || false}
+            isLatest={activeIndex === 0 && !disabledBeforeSelection}
+            isSelected={activeIndex === selectedIndex}
+            onSelect={onSelect}
+            timestamp={chunk.endTimestamp}
+            type={chunk.type}
+          />
+          {virtualIndex === chunks.length - 1 && hasMoreChunks && (
+            <Flex align="center" justify="center" padding={4}>
+              <Spinner muted />
+            </Flex>
+          )}
+        </>
       )
     },
-    [disabledBeforeSelection, filteredChunks, onSelect, selectedIndex]
+    [chunks.length, disabledBeforeSelection, filteredChunks, hasMoreChunks, onSelect, selectedIndex]
   )
 
   useEffect(() => setMounted(true), [])

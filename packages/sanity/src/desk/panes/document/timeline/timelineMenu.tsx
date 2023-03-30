@@ -105,6 +105,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         <Timeline
           bottomSelection={timelineState.realRevChunk}
           chunks={chunks}
+          hasMoreChunks={timelineState.hasMoreChunks}
           onSelect={selectRev}
           onLoadMore={handleLoadMore}
           topSelection={timelineState.realRevChunk}
@@ -114,6 +115,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         <Timeline
           bottomSelection={timelineState.sinceTime}
           chunks={chunks}
+          hasMoreChunks={timelineState.hasMoreChunks}
           disabledBeforeSelection
           onSelect={selectSince}
           onLoadMore={handleLoadMore}
