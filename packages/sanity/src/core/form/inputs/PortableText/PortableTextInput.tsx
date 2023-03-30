@@ -189,7 +189,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
       const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
       let input: ReactNode
 
-      if (item.kind !== 'textBlock' && item.member.open) {
+      if (item.kind !== 'textBlock') {
         input = <FormInput absolutePath={item.node.path} {...(props as FIXME)} />
       }
 
