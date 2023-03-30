@@ -7,6 +7,7 @@ import {deepObject} from './schema/deepObject'
 import {deepArray} from './schema/deepArray'
 import {deepArrayString} from './schema/deepArrayString'
 import {deepArrayReferences} from './schema/deepArrayReferences'
+import {largeDocument} from './schema/largeDocument'
 
 export default defineConfig({
   plugins: [
@@ -18,5 +19,7 @@ export default defineConfig({
   name: 'default',
   projectId: STUDIO_PROJECT_ID,
   dataset: import.meta.env.SANITY_STUDIO_DATASET || STUDIO_DATASET,
-  schema: {types: [simple, deepObject, deepArray, deepArrayString, deepArrayReferences]},
+  schema: {
+    types: [simple, deepObject, deepArray, deepArrayString, deepArrayReferences, largeDocument],
+  },
 })

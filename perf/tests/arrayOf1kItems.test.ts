@@ -33,7 +33,10 @@ export default {
     const doc = await client.create(arrayOf1kItems)
     return {
       data: {documentId: doc._id},
-      teardown: () => client.delete(doc._id),
+      teardown: async () => {
+        await client.delete(doc._id)
+        return client.delete(`drafts.${doc._id}`)
+      },
     }
   },
   version: 1,
