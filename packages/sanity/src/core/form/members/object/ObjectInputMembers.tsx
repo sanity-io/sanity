@@ -28,7 +28,16 @@ export interface ObjectMembersProps {
  * @internal
  */
 export function ObjectInputMembers(props: ObjectMembersProps) {
-  const {members, renderField, renderInput, renderItem, renderPreview} = props
+  const {
+    members,
+    renderAnnotation,
+    renderBlock,
+    renderInput,
+    renderInlineBlock,
+    renderField,
+    renderItem,
+    renderPreview,
+  } = props
 
   const renderMembers = useMemo(
     () =>
@@ -36,13 +45,25 @@ export function ObjectInputMembers(props: ObjectMembersProps) {
         <ObjectInputMember
           key={member.key}
           member={member}
+          renderAnnotation={renderAnnotation}
+          renderBlock={renderBlock}
           renderField={renderField}
+          renderInlineBlock={renderInlineBlock}
           renderInput={renderInput}
           renderItem={renderItem}
           renderPreview={renderPreview}
         />
       )),
-    [members, renderField, renderInput, renderItem, renderPreview]
+    [
+      members,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
+    ]
   )
 
   return <>{renderMembers}</>
