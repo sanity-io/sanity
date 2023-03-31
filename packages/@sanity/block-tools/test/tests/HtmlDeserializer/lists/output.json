@@ -92,9 +92,7 @@
       {
         "_key": "randomKey61",
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "b"
       }
     ],
@@ -110,9 +108,7 @@
       {
         "_key": "randomKey70",
         "_type": "span",
-        "marks": [
-          "randomKey0"
-        ],
+        "marks": ["randomKey0"],
         "text": "Link"
       }
     ],

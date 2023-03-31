@@ -6,17 +6,13 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Hei",
         "_key": "randomKey10"
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "const foo = 'bar'",
         "_key": "randomKey11"
       }
@@ -36,9 +32,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "with emphasis",
         "_key": "randomKey21"
       },
@@ -50,9 +44,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Emphasis!",
         "_key": "randomKey23"
       }
@@ -78,9 +70,7 @@
       {
         "_type": "span",
         "text": "Image link",
-        "marks": [
-          "randomKey0"
-        ],
+        "marks": ["randomKey0"],
         "_key": "randomKey31"
       }
     ],

@@ -41,7 +41,7 @@ exportDataset({
   types: ['products', 'shops'],
 
   // Run 12 concurrent asset downloads
-  assetConcurrency: 12
+  assetConcurrency: 12,
 })
 ```
 
