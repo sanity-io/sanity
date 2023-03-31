@@ -24,7 +24,6 @@ interface AnnotationProps {
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
-  relativePath: Path
   renderCustomMarkers?: RenderCustomMarkers
   selected: boolean
   schemaType: ObjectSchemaType
@@ -41,7 +40,6 @@ export function Annotation(props: AnnotationProps) {
     onPathFocus,
     path,
     readOnly,
-    relativePath,
     renderCustomMarkers,
     schemaType,
     selected,
@@ -50,8 +48,8 @@ export function Annotation(props: AnnotationProps) {
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
   const editor = usePortableTextEditor()
   const markDefPath: Path = useMemo(
-    () => path.slice(0, relativePath.length - 1).concat(['markDefs', {_key: value._key}]),
-    [path, relativePath, value._key]
+    () => path.slice(0, path.length - 2).concat(['markDefs', {_key: value._key}]),
+    [path, value._key]
   )
   const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
   const {validation} = useMemberValidation(memberItem?.node)

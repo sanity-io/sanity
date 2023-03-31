@@ -281,7 +281,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           onPathFocus={onPathFocus}
           path={path.concat(aPath)}
           readOnly={readOnly}
-          relativePath={aPath}
           renderCustomMarkers={renderCustomMarkers}
           schemaType={aSchemaType}
           selected={selected}
