@@ -6,9 +6,7 @@
       {
         "_key": "randomKey80",
         "_type": "span",
-        "marks": [
-          "randomKey0"
-        ],
+        "marks": ["randomKey0"],
         "text": "The preview API seems broken"
       },
       {
@@ -20,9 +18,7 @@
       {
         "_key": "randomKey82",
         "_type": "span",
-        "marks": [
-          "randomKey1"
-        ],
+        "marks": ["randomKey1"],
         "text": "bug/major"
       },
       {
@@ -34,9 +30,7 @@
       {
         "_key": "randomKey84",
         "_type": "span",
-        "marks": [
-          "randomKey2"
-        ],
+        "marks": ["randomKey2"],
         "text": "kmelve"
       },
       {
@@ -48,9 +42,7 @@
       {
         "_key": "randomKey86",
         "_type": "span",
-        "marks": [
-          "randomKey3"
-        ],
+        "marks": ["randomKey3"],
         "text": "2"
       },
       {
@@ -62,9 +54,7 @@
       {
         "_key": "randomKey88",
         "_type": "span",
-        "marks": [
-          "randomKey4"
-        ],
+        "marks": ["randomKey4"],
         "text": "Elasticsearch broke"
       },
       {
@@ -76,9 +66,7 @@
       {
         "_key": "randomKey810",
         "_type": "span",
-        "marks": [
-          "randomKey5"
-        ],
+        "marks": ["randomKey5"],
         "text": "ops"
       },
       {
@@ -90,9 +78,7 @@
       {
         "_key": "randomKey812",
         "_type": "span",
-        "marks": [
-          "randomKey6"
-        ],
+        "marks": ["randomKey6"],
         "text": "nicholasklem"
       },
       {

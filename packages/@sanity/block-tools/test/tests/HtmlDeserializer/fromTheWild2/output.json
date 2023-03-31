@@ -52,9 +52,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "element",
         "_key": "randomKey131"
       },
@@ -86,9 +84,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "type",
         "_key": "randomKey151"
       },
@@ -100,9 +96,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "props",
         "_key": "randomKey153"
       },
@@ -114,9 +108,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "key",
         "_key": "randomKey155"
       },
@@ -128,9 +120,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "ref",
         "_key": "randomKey157"
       },
@@ -142,43 +132,31 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "But what is ",
         "_key": "randomKey159"
       },
       {
         "_type": "span",
-        "marks": [
-          "strong",
-          "code"
-        ],
+        "marks": ["strong", "code"],
         "text": "$$typeof",
         "_key": "randomKey1510"
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "? And why does it have a ",
         "_key": "randomKey1511"
       },
       {
         "_type": "span",
-        "marks": [
-          "strong",
-          "code"
-        ],
+        "marks": ["strong", "code"],
         "text": "Symbol()",
         "_key": "randomKey1512"
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": " as a value?",
         "_key": "randomKey1513"
       }
@@ -198,9 +176,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "need",
         "_key": "randomKey161"
       },
@@ -246,9 +222,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "message.text",
         "_key": "randomKey191"
       },
@@ -260,9 +234,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "'<img src onerror=\"stealYourPassword()\">'",
         "_key": "randomKey193"
       },
@@ -274,9 +246,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "You don’t want things written by strangers to appear verbatim in your app’s rendered HTML.",
         "_key": "randomKey195"
       }
@@ -302,9 +272,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "<script>",
         "_key": "randomKey201"
       },
@@ -316,9 +284,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey0"
-        ],
+        "marks": ["randomKey0"],
         "text": "don’t let this",
         "_key": "randomKey203"
       },
@@ -344,9 +310,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "document.createTextNode()",
         "_key": "randomKey211"
       },
@@ -358,9 +322,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "textContent",
         "_key": "randomKey213"
       },
@@ -372,9 +334,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "<",
         "_key": "randomKey215"
       },
@@ -386,9 +346,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": ">",
         "_key": "randomKey217"
       },
@@ -414,9 +372,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "This is why modern libraries like React escape text content for strings by default:",
         "_key": "randomKey221"
       }
@@ -442,9 +398,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "message.text",
         "_key": "randomKey241"
       },
@@ -456,9 +410,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "<img>",
         "_key": "randomKey243"
       },
@@ -470,9 +422,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "<img>",
         "_key": "randomKey245"
       },
@@ -484,9 +434,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "then",
         "_key": "randomKey247"
       },
@@ -498,9 +446,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "<img>",
         "_key": "randomKey249"
       },
@@ -526,9 +472,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "dangerouslySetInnerHTML={{ __html: message.text }}",
         "_key": "randomKey251"
       },
@@ -540,26 +484,19 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "The fact that it’s clumsy to write is a ",
         "_key": "randomKey253"
       },
       {
         "_type": "span",
-        "marks": [
-          "strong",
-          "em"
-        ],
+        "marks": ["strong", "em"],
         "text": "feature",
         "_key": "randomKey254"
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": ".",
         "_key": "randomKey255"
       },
@@ -585,9 +522,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Does it mean React is entirely safe from injection attacks? No.",
         "_key": "randomKey260"
       },
@@ -599,9 +534,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey1"
-        ],
+        "marks": ["randomKey1"],
         "text": "plenty of attack surface",
         "_key": "randomKey262"
       },
@@ -613,9 +546,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "<a href={user.website}>",
         "_key": "randomKey264"
       },
@@ -627,9 +558,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "'javascript: stealYourPassword()'",
         "_key": "randomKey266"
       },
@@ -641,9 +570,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "<div {...userData}>",
         "_key": "randomKey268"
       },
@@ -680,9 +607,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey2"
-        ],
+        "marks": ["randomKey2"],
         "text": "could",
         "_key": "randomKey271"
       },
@@ -694,9 +619,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey3"
-        ],
+        "marks": ["randomKey3"],
         "text": "should",
         "_key": "randomKey273"
       },
@@ -736,9 +659,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Well, that wasn’t always true either.",
         "_key": "randomKey300"
       },
@@ -750,9 +671,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "$$typeof",
         "_key": "randomKey302"
       },
@@ -804,9 +723,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "React.createElement()",
         "_key": "randomKey331"
       },
@@ -818,9 +735,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "want",
         "_key": "randomKey333"
       },
@@ -832,9 +747,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey4"
-        ],
+        "marks": ["randomKey4"],
         "text": "can be",
         "_key": "randomKey335"
       },
@@ -860,9 +773,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "if your server has a hole that lets the user store an arbitrary JSON object",
         "_key": "randomKey341"
       },
@@ -900,9 +811,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey5"
-        ],
+        "marks": ["randomKey5"],
         "text": "vulnerable",
         "_key": "randomKey361"
       },
@@ -914,9 +823,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "this attack depends on an existing server hole",
         "_key": "randomKey363"
       },
@@ -948,9 +855,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey6"
-        ],
+        "marks": ["randomKey6"],
         "text": "tag every React element with a Symbol",
         "_key": "randomKey371"
       },
@@ -982,9 +887,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "Symbol",
         "_key": "randomKey391"
       },
@@ -996,26 +899,19 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "So even if the server has a security hole and returns JSON instead of text, that JSON can’t include ",
         "_key": "randomKey393"
       },
       {
         "_type": "span",
-        "marks": [
-          "strong",
-          "code"
-        ],
+        "marks": ["strong", "code"],
         "text": "Symbol.for('react.element')",
         "_key": "randomKey394"
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": ".",
         "_key": "randomKey395"
       },
@@ -1027,9 +923,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "element.$$typeof",
         "_key": "randomKey397"
       },
@@ -1055,9 +949,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "Symbol.for()",
         "_key": "randomKey401"
       },
@@ -1069,9 +961,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Symbols are global between environments like iframes and workers.",
         "_key": "randomKey403"
       },
@@ -1083,9 +973,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "$$typeof",
         "_key": "randomKey405"
       },
@@ -1117,9 +1005,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey7"
-        ],
+        "marks": ["randomKey7"],
         "text": "don’t support",
         "_key": "randomKey411"
       },
@@ -1151,9 +1037,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "$$typeof",
         "_key": "randomKey421"
       },
@@ -1165,9 +1049,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey8"
-        ],
+        "marks": ["randomKey8"],
         "text": "set to a number",
         "_key": "randomKey423"
       },
@@ -1179,9 +1061,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "0xeac7",
         "_key": "randomKey425"
       },
@@ -1207,9 +1087,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "code"
-        ],
+        "marks": ["code"],
         "text": "0xeac7",
         "_key": "randomKey431"
       },

@@ -18,9 +18,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey0"
-        ],
+        "marks": ["randomKey0"],
         "text": "UDIs hjemmeside Ord og begreper",
         "_key": "randomKey111"
       },
@@ -52,9 +50,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey1"
-        ],
+        "marks": ["randomKey1"],
         "text": "Se forskrift om rett til helse- og omsorgstjenester til personer uten fast opphold i riket § 6",
         "_key": "randomKey121"
       }
@@ -186,9 +182,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "Foobar",
         "_key": "randomKey211"
       }
@@ -236,9 +230,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "randomKey2"
-        ],
+        "marks": ["randomKey2"],
         "text": "Se temasiden: Helsepersonells ansvar for god kommunikasjon via tolk",
         "_key": "randomKey240"
       }
@@ -258,9 +250,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "randomKey3"
-        ],
+        "marks": ["randomKey3"],
         "text": "Se veileder om kommunikasjon via tolk for ledere og personell i helse- og omsorgstjenestene",
         "_key": "randomKey250"
       }
@@ -280,9 +270,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "randomKey4"
-        ],
+        "marks": ["randomKey4"],
         "text": "Se Tolkeportalen/IMDI",
         "_key": "randomKey260"
       }
@@ -481,9 +469,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey5"
-        ],
+        "marks": ["randomKey5"],
         "text": "folkehelseloven",
         "_key": "randomKey391"
       },
@@ -495,9 +481,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey6"
-        ],
+        "marks": ["randomKey6"],
         "text": "forskrift om miljørettet helsevern (lovdata.no)",
         "_key": "randomKey393"
       },
@@ -529,9 +513,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey7"
-        ],
+        "marks": ["randomKey7"],
         "text": "jf. § 10 i forskrift om miljørettet helsevern)",
         "_key": "randomKey401"
       },
@@ -621,9 +603,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "randomKey8"
-        ],
+        "marks": ["randomKey8"],
         "text": "kravene til tilgjengelighet og universell utforming",
         "_key": "randomKey450"
       },
@@ -674,9 +654,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey9"
-        ],
+        "marks": ["randomKey9"],
         "text": "jf. § 14 i forskrift om miljørettet helsevern",
         "_key": "randomKey471"
       },
@@ -688,9 +666,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey10"
-        ],
+        "marks": ["randomKey10"],
         "text": "Se veileder i miljørettet helsevern",
         "_key": "randomKey473"
       },

@@ -6,28 +6,19 @@
       {
         "_key": "randomKey00",
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Strong text but "
       },
       {
         "_key": "randomKey01",
         "_type": "span",
-        "marks": [
-          "strong",
-          "em"
-        ],
+        "marks": ["strong", "em"],
         "text": "this is also emphasized and "
       },
       {
         "_key": "randomKey02",
         "_type": "span",
-        "marks": [
-          "strong",
-          "em",
-          "strike-through"
-        ],
+        "marks": ["strong", "em", "strike-through"],
         "text": "striked"
       },
       {
@@ -39,9 +30,7 @@
       {
         "_key": "randomKey04",
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "Just emphasized"
       }
     ],
