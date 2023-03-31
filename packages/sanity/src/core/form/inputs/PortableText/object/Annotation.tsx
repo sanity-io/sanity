@@ -36,7 +36,6 @@ interface AnnotationProps {
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
-  relativePath: Path
   renderAnnotation: RenderAnnotationCallback
   renderBlock: RenderBlockCallback
   renderCustomMarkers?: RenderCustomMarkers
