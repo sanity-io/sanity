@@ -35,7 +35,6 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const [popover, setPopover] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
-    setChunks(timelineState.timeline.mapChunks((c) => c))
     const subscription = timelineChunks$.subscribe((newChunks) => {
       setChunks(newChunks)
       setLoading(false)
@@ -43,7 +42,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     })
 
     return () => subscription.unsubscribe()
-  }, [timelineController, timelineChunks$, timelineState.timeline])
+  }, [timelineController, timelineChunks$])
 
   const handleOpen = useCallback(() => {
     setTimelineMode(mode)

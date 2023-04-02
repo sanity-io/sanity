@@ -1,13 +1,6 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Subject, Subscription} from 'rxjs'
-import {
-  Chunk,
-  isDev,
-  SelectionState,
-  Timeline,
-  TimelineController,
-  useHistoryStore,
-} from '../../../..'
+import {BehaviorSubject, Subscription} from 'rxjs'
+import {Chunk, isDev, SelectionState, TimelineController, useHistoryStore} from '../../../..'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {remoteSnapshots, RemoteSnapshotVersionEvent} from '../../document'
@@ -26,17 +19,29 @@ export interface TimelineState {
   hasMoreChunks: boolean
   onOlderRevision: boolean
   ready: boolean
-  realRevChunk: Chunk
+  realRevChunk: Chunk | null
   revTime: Chunk | null
   selectionState: SelectionState
   sinceAttributes: Record<string, unknown> | null
   sinceTime: Chunk | null
-  timeline: Timeline
+}
+
+const INITIAL_STATE: TimelineState = {
+  changesOpen: false,
+  displayed: null,
+  hasMoreChunks: false,
+  onOlderRevision: false,
+  ready: false,
+  realRevChunk: null,
+  revTime: null,
+  selectionState: 'inactive',
+  sinceAttributes: null,
+  sinceTime: null,
 }
 
 /** @internal */
 export function useTimeline({documentId, documentType, rev, since}: UseTimelineControllerOpts): {
-  timelineChunks$: Subject<Chunk[]>
+  timelineChunks$: BehaviorSubject<Chunk[]>
   timelineController: TimelineController
   timelineState: TimelineState
 } {
@@ -49,30 +54,17 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
     [documentId, historyStore]
   )
 
-  const timelineChunks$ = useMemo(() => new Subject<Chunk[]>(), [])
+  const [timelineState, setTimelineState] = useState<TimelineState>(INITIAL_STATE)
 
-  const [timelineState, setTimelineState] = useState<TimelineState>({
-    changesOpen: false,
-    displayed: null,
-    hasMoreChunks: false,
-    onOlderRevision: false,
-    ready: false,
-    realRevChunk: timeline.lastChunk(),
-    revTime: null,
-    selectionState: 'inactive',
-    sinceAttributes: null,
-    sinceTime: null,
-    timeline,
-  })
+  const timelineController = useMemo(
+    () => new TimelineController({client, documentId, documentType, timeline}),
+    [client, documentId, documentType, timeline]
+  )
 
-  const timelineController = useMemo(() => {
-    return new TimelineController({
-      client,
-      documentId,
-      documentType,
-      timeline,
-    })
-  }, [client, documentId, documentType, timeline])
+  const timelineChunks$ = useMemo(
+    () => new BehaviorSubject<Chunk[]>(timelineController.timeline.mapChunks((c) => c)),
+    [timelineController.timeline]
+  )
 
   const updateState = useCallback(
     (controller: TimelineController) => {
@@ -89,10 +81,9 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
         selectionState: controller.selectionState,
         sinceAttributes: controller.sinceAttributes(),
         sinceTime: controller.sinceTime,
-        timeline,
       })
     },
-    [rev, since, timeline]
+    [rev, since]
   )
 
   /**
@@ -100,7 +91,6 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
    */
   useEffect(() => {
     updateState(timelineController)
-
     timelineController.handler = (err, innerController) => {
       if (!err) {
         setTimeout(() => {
@@ -110,10 +100,8 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
       }
     }
     timelineController.resume()
-    return () => {
-      timelineController.suspend()
-    }
-  }, [timelineController, rev, since, timelineChunks$, updateState])
+    return () => timelineController.suspend()
+  }, [rev, since, timelineChunks$, timelineController, updateState])
 
   /**
    * Fetch document snapshots and update controller
@@ -122,10 +110,7 @@ export function useTimeline({documentId, documentType, rev, since}: UseTimelineC
     if (!snapshotsRef.current) {
       snapshotsRef.current = remoteSnapshots(
         client,
-        {
-          publishedId: documentId,
-          draftId: `drafts.${documentId}`,
-        },
+        {draftId: `drafts.${documentId}`, publishedId: documentId},
         documentType
       ).subscribe((ev: RemoteSnapshotVersionEvent) => {
         timelineController.handleRemoteMutation(ev)
