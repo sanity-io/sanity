@@ -8,8 +8,9 @@ import {
 import {reduce as jsonReduce} from 'json-reduce'
 import {from, Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
+import {isDev} from '../../../environment'
 import {getDraftId, getPublishedId, isRecord} from '../../../util'
-import {Timeline} from './history'
+import {Timeline, TimelineController} from './history'
 
 /** @beta */
 export interface HistoryStore {
@@ -28,7 +29,11 @@ export interface HistoryStore {
   restore: (id: string, targetId: string, rev: string) => Observable<SanityDocument>
 
   /** @internal */
-  getTimeline: (options: {publishedId: string; enableTrace?: boolean}) => Timeline
+  getTimelineController: (options: {
+    client: SanityClient
+    documentId: string
+    documentType: string
+  }) => TimelineController
 }
 
 const documentRevisionCache: Record<string, Promise<SanityDocument | undefined> | undefined> =
@@ -85,6 +90,27 @@ const getDocumentAtRevision = (
 
   documentRevisionCache[cacheKey] = entry
   return entry
+}
+
+const getTimelineController = ({
+  client,
+  documentId,
+  documentType,
+}: {
+  client: SanityClient
+  documentId: string
+  documentType: string
+}): TimelineController => {
+  const timeline = new Timeline({
+    enableTrace: isDev,
+    publishedId: documentId,
+  })
+  return new TimelineController({
+    client,
+    documentId,
+    documentType,
+    timeline,
+  })
 }
 
 const getTransactions = async (
@@ -191,6 +217,10 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
 
     restore: (id, targetId, rev) => restore(client, id, targetId, rev),
 
-    getTimeline: (options: {publishedId: string; enableTrace?: boolean}) => new Timeline(options),
+    getTimelineController: (options: {
+      client: SanityClient
+      documentId: string
+      documentType: string
+    }) => getTimelineController(options),
   }
 }

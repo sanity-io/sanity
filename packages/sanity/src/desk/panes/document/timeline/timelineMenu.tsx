@@ -2,12 +2,12 @@ import {SelectIcon} from '@sanity/icons'
 import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
-import {Chunk} from 'sanity'
+import {Chunk, TimelineController} from 'sanity'
 
 interface TimelineMenuProps {
   chunk: Chunk | null
@@ -20,29 +20,30 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {
-    setTimelineRange,
-    setTimelineMode,
-    timelineController,
-    timelineState,
-    timelineChunks$,
-    ready,
-  } = useDocumentPane()
-  const [chunks, setChunks] = useState<Chunk[]>([])
-  const [loading, setLoading] = useState(false)
+  const {setTimelineRange, setTimelineMode, timelineController$, ready} = useDocumentPane()
+  const controllerRef = useRef<TimelineController | null>(null)
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)
 
+  // Subscribe to TimelineController changes and store internal state.
+  const [chunks, setChunks] = useState<Chunk[]>([])
+  const [hasMoreChunks, setHasMoreChunks] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [realRevChunk, setRealRevChunk] = useState<Chunk | null>(null)
+  const [sinceTime, setSinceTime] = useState<Chunk | null>(null)
   useEffect(() => {
-    const subscription = timelineChunks$.subscribe((newChunks) => {
-      setChunks(newChunks)
+    const subscription = timelineController$.subscribe((controller) => {
+      controllerRef.current = controller
+      setChunks(controller.timeline.mapChunks((c) => c))
+      setHasMoreChunks(!controller.timeline.reachedEarliestEntry)
+      setRealRevChunk(controller.realRevChunk)
+      setSinceTime(controller.sinceTime)
       setLoading(false)
-      timelineController.setLoadMore(false)
+      controller.setLoadMore(false)
     })
-
     return () => subscription.unsubscribe()
-  }, [timelineController, timelineChunks$])
+  }, [timelineController$])
 
   const handleOpen = useCallback(() => {
     setTimelineMode(mode)
@@ -75,50 +76,54 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   const selectRev = useCallback(
     (revChunk: Chunk) => {
-      const [sinceId, revId] = timelineController.findRangeForNewRev(revChunk)
-      setTimelineMode('closed')
-      setTimelineRange(sinceId, revId)
+      if (controllerRef.current) {
+        const [sinceId, revId] = controllerRef.current.findRangeForNewRev(revChunk)
+        setTimelineMode('closed')
+        setTimelineRange(sinceId, revId)
+      }
     },
-    [timelineController, setTimelineMode, setTimelineRange]
+    [setTimelineMode, setTimelineRange]
   )
 
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
-      const [sinceId, revId] = timelineController.findRangeForNewSince(sinceChunk)
-      setTimelineMode('closed')
-      setTimelineRange(sinceId, revId)
+      if (controllerRef.current) {
+        const [sinceId, revId] = controllerRef.current?.findRangeForNewSince(sinceChunk)
+        setTimelineMode('closed')
+        setTimelineRange(sinceId, revId)
+      }
     },
-    [timelineController, setTimelineMode, setTimelineRange]
+    [setTimelineMode, setTimelineRange]
   )
 
   const handleLoadMore = useCallback(() => {
-    if (!loading) {
+    if (!loading && controllerRef.current) {
       setLoading(true)
-      timelineController.setLoadMore(true)
+      controllerRef.current.setLoadMore(true)
     }
-  }, [loading, timelineController])
+  }, [loading])
 
   const content = (
     <>
       {mode === 'rev' && (
         <Timeline
-          bottomSelection={timelineState.realRevChunk}
+          bottomSelection={realRevChunk}
           chunks={chunks}
-          hasMoreChunks={timelineState.hasMoreChunks}
+          hasMoreChunks={hasMoreChunks}
           onSelect={selectRev}
           onLoadMore={handleLoadMore}
-          topSelection={timelineState.realRevChunk}
+          topSelection={realRevChunk}
         />
       )}
       {mode === 'since' && (
         <Timeline
-          bottomSelection={timelineState.sinceTime}
+          bottomSelection={sinceTime}
           chunks={chunks}
-          hasMoreChunks={timelineState.hasMoreChunks}
+          hasMoreChunks={hasMoreChunks}
           disabledBeforeSelection
           onSelect={selectSince}
           onLoadMore={handleLoadMore}
-          topSelection={timelineState.realRevChunk}
+          topSelection={realRevChunk}
         />
       )}
     </>

@@ -34,7 +34,8 @@ import {
   useValidationStatus,
   getDraftId,
   useDocumentValuePermissions,
-  useTimeline,
+  useTimelineController,
+  Chunk,
 } from 'sanity'
 
 const emptyObject = {} as Record<string, string | undefined>
@@ -115,12 +116,33 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
-  const {timelineController, timelineChunks$, timelineState} = useTimeline({
+  // Create a TimelineController and receive a subscribable BehaviorSubject, made accessible
+  // to all child components via DocumentPaneContext.
+  const {timelineController$} = useTimelineController({
     documentId,
     documentType,
     rev: params.rev,
     since: params.since,
   })
+
+  // Subscribe to TimelineController changes and store internal state.
+  const [changesOpen, setChangesOpen] = useState(false)
+  const [onOlderRevision, setOnOlderRevision] = useState(false)
+  const [revTime, setRevTime] = useState<Chunk | null>(null)
+  const [timelineDisplayed, setTimelineDisplayed] = useState<Record<string, unknown> | null>(null)
+  const [timelineReady, setTimelineReady] = useState(false)
+  const [sinceAttributes, setSinceAttributes] = useState<Record<string, unknown> | null>(null)
+  useEffect(() => {
+    setChangesOpen(!!params.since)
+    const subscription = timelineController$.subscribe((controller) => {
+      setTimelineDisplayed(controller.displayed())
+      setOnOlderRevision(controller.onOlderRevision())
+      setRevTime(controller.revTime)
+      setSinceAttributes(controller.sinceAttributes())
+      setTimelineReady(!['invalid', 'loading'].includes(controller.selectionState))
+    })
+    return () => subscription.unsubscribe()
+  }, [params.since, timelineController$])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -138,12 +160,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const hasValue = Boolean(value)
   const menuItems = useMemo(
-    () => getMenuItems({features, hasValue, changesOpen: timelineState.changesOpen, previewUrl}),
-    [features, hasValue, previewUrl, timelineState.changesOpen]
+    () => getMenuItems({features, hasValue, changesOpen, previewUrl}),
+    [changesOpen, features, hasValue, previewUrl]
   )
   const inspectOpen = params.inspect === 'on'
-  const compareValue: Partial<SanityDocument> | null = timelineState.changesOpen
-    ? timelineState.sinceAttributes
+  const compareValue: Partial<SanityDocument> | null = changesOpen
+    ? sinceAttributes
     : editState?.published || null
 
   // Note that in addition to connection and edit state, we also wait for document timeline readiness.
@@ -151,14 +173,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   // prior to the document being displayed.
   // Previously, visiting studio URLs with timeline params would display the 'current' document and then
   // 'snap' in the older revision, which was disorienting and could happen mid-edit.
-  const ready = connectionState === 'connected' && editState.ready && timelineState.ready
+  const ready = connectionState === 'connected' && editState.ready && timelineReady
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
-    () =>
-      timelineState.onOlderRevision
-        ? timelineState.displayed || {_id: value._id, _type: value._type}
-        : value,
-    [timelineState.displayed, timelineState.onOlderRevision, value]
+    () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
+    [onOlderRevision, timelineDisplayed, value]
   )
 
   const setTimelineRange = useCallback(
@@ -313,7 +332,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
     return (
       !ready ||
-      timelineState.revTime !== null ||
+      revTime !== null ||
       hasNoPermission ||
       updateActionDisabled ||
       createActionDisabled ||
@@ -325,8 +344,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     isPermissionsLoading,
     permissions?.granted,
     ready,
+    revTime,
     schemaType,
-    timelineState.revTime,
   ])
 
   const formState = useFormState(schemaType!, {
@@ -340,7 +359,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     validation,
     collapsedFieldSets,
     fieldGroupState,
-    changesOpen: timelineState.changesOpen,
+    changesOpen,
   })
 
   const formStateRef = useRef(formState)
@@ -369,7 +388,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     actions,
     activeViewId,
     badges,
-    changesOpen: timelineState.changesOpen,
+    changesOpen,
     collapsedFieldSets,
     collapsedPaths,
     compareValue,
@@ -395,7 +414,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onSetActiveFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
-    timelineController: timelineController,
     index,
     inspectOpen,
     validation,
@@ -409,8 +427,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     setTimelineMode,
     setTimelineRange,
     timelineMode,
-    timelineState,
-    timelineChunks$: timelineChunks$,
+    timelineController$,
     title,
     value,
     views,

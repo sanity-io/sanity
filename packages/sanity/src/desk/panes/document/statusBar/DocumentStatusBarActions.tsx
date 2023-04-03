@@ -1,11 +1,11 @@
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
-import React, {memo, useMemo, useState} from 'react'
+import React, {memo, useEffect, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription} from 'sanity'
+import {Chunk, DocumentActionDescription} from 'sanity'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
@@ -107,8 +107,18 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {connectionState, editState, timelineState} = useDocumentPane()
-  const revision = timelineState.revTime?.id || ''
+  const {connectionState, editState, timelineController$} = useDocumentPane()
+
+  // Subscribe to TimelineController changes and store internal state.
+  const [revTime, setRevTime] = useState<Chunk | null>(null)
+  useEffect(() => {
+    const subscription = timelineController$.subscribe((controller) => {
+      setRevTime(controller.revTime)
+    })
+    return () => subscription.unsubscribe()
+  }, [timelineController$])
+
+  const revision = revTime?.id || ''
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
   const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
   const historyActions = useMemo(() => [HistoryRestoreAction], [])

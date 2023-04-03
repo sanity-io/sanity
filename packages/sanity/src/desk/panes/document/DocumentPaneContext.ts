@@ -11,7 +11,6 @@ import {View} from '../../structureBuilder'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {TimelineMode} from './types'
 import {
-  Chunk,
   DocumentActionComponent,
   DocumentBadgeComponent,
   DocumentFormNode,
@@ -22,7 +21,6 @@ import {
   PermissionCheckResult,
   StateTree,
   TimelineController,
-  TimelineState,
 } from 'sanity'
 
 /** @internal */
@@ -66,13 +64,8 @@ export interface DocumentPaneContextValue {
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
   source?: string
-  timelineController: Pick<
-    TimelineController,
-    'currentObjectDiff' | 'findRangeForNewRev' | 'findRangeForNewSince' | 'setLoadMore'
-  >
-  timelineChunks$: Subject<Chunk[]>
+  timelineController$: Subject<TimelineController>
   timelineMode: TimelineMode
-  timelineState: TimelineState
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike

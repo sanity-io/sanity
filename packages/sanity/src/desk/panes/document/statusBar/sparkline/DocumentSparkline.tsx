@@ -17,14 +17,13 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     editState,
     onHistoryClose,
     onHistoryOpen,
-    timelineState,
+    timelineController$,
     value,
   } = useDocumentPane()
   const syncState = useSyncState(documentId, documentType)
 
   const lastUpdated = value?._updatedAt
   const lastPublished = editState?.published?._updatedAt
-  const showingRevision = timelineState.onOlderRevision
   const liveEdit = Boolean(editState?.liveEdit)
   const published = Boolean(editState?.published)
   const changed = Boolean(editState?.draft)
@@ -34,6 +33,15 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
   const collapsed = !rootFlexRect || rootFlexRect?.width < 300
 
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
+
+  // Subscribe to TimelineController changes and store internal state.
+  const [showingRevision, setShowingRevision] = useState(false)
+  useEffect(() => {
+    const subscription = timelineController$.subscribe((controller) => {
+      setShowingRevision(controller.onOlderRevision())
+    })
+    return () => subscription.unsubscribe()
+  }, [timelineController$])
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
