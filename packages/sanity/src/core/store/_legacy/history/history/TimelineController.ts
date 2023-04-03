@@ -66,9 +66,6 @@ export class TimelineController {
   private _rev: string | null = null
   private _revTime: ParsedTimeRef | null = null
 
-  private _sinceInitial: string | null = null
-  private _revInitial: string | null = null
-
   private _reconstruction?: Reconstruction
 
   clearRange(): void {
@@ -334,7 +331,5 @@ export class TimelineController {
 
     this.version++
     this.handler?.(null, this)
-
-    this.setRange(this._sinceInitial, this._revInitial)
   }
 }

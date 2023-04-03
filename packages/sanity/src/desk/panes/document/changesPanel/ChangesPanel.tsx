@@ -27,14 +27,13 @@ const Scroller = styled(ScrollContainer)`
 `
 
 export function ChangesPanel(): React.ReactElement | null {
-  const {documentId, onHistoryClose, schemaType, timelineController, timelineState, value} =
-    useDocumentPane()
+  const {documentId, onHistoryClose, schemaType, timelineState, value} = useDocumentPane()
   const {collapsed} = usePane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const historyState = timelineState.selectionState
   const loading = historyState === 'loading'
   const since = timelineState.sinceTime
-  const diff = timelineController.currentObjectDiff()
+  const diff = timelineState.currentObjectDiff
   const isComparingCurrent = !timelineState.onOlderRevision
 
   const documentContext: DocumentChangeContextInstance = React.useMemo(
