@@ -52,15 +52,7 @@ export interface RouterProviderProps {
  * @public
  */
 export function RouterProvider(props: RouterProviderProps): React.ReactElement {
-  // TODO: can we do nested routes?
   const {onNavigate, router: routerProp, state} = props
-
-  const navigateUrl = useCallback(
-    (opts: {path: string; replace?: boolean}) => {
-      onNavigate(opts)
-    },
-    [onNavigate]
-  )
 
   const resolveIntentLink = useCallback(
     (intentName: string, parameters?: IntentParameters): string => {
@@ -79,28 +71,28 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
 
   const navigate = useCallback(
     (nextState: Record<string, unknown>, options: NavigateOptions = {}) => {
-      navigateUrl({path: resolvePathFromState(nextState), replace: options.replace})
+      onNavigate({path: resolvePathFromState(nextState), replace: options.replace})
     },
-    [navigateUrl, resolvePathFromState]
+    [onNavigate, resolvePathFromState]
   )
 
   const navigateIntent = useCallback(
     (intentName: string, params?: IntentParameters, options: NavigateOptions = {}) => {
-      navigateUrl({path: resolveIntentLink(intentName, params), replace: options.replace})
+      onNavigate({path: resolveIntentLink(intentName, params), replace: options.replace})
     },
-    [navigateUrl, resolveIntentLink]
+    [onNavigate, resolveIntentLink]
   )
 
   const router: RouterContextValue = useMemo(
     () => ({
       navigate,
       navigateIntent,
-      navigateUrl,
+      navigateUrl: onNavigate,
       resolveIntentLink,
       resolvePathFromState,
       state,
     }),
-    [navigate, navigateIntent, navigateUrl, resolveIntentLink, resolvePathFromState, state]
+    [navigate, navigateIntent, onNavigate, resolveIntentLink, resolvePathFromState, state]
   )
 
   return <RouterContext.Provider value={router}>{props.children}</RouterContext.Provider>
