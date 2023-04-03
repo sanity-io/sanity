@@ -1,4 +1,5 @@
 import {Card, Stack, Text, useBoundaryElement, useTheme} from '@sanity/ui'
+import {isKeySegment} from '@sanity/types'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 import {
@@ -32,6 +33,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     onInsert,
     onItemMove,
     onUpload,
+    focusPath,
     renderPreview,
     renderField,
     renderItem,
@@ -57,21 +59,41 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     [onInsert]
   )
 
+  const memberKeys = useMemoCompare(
+    useMemo(() => members.map((member) => member.key), [members]),
+    shallowEquals
+  )
+
   const documentPanelRef = useBoundaryElement()
   const parentRef = useRef<HTMLDivElement>(null)
 
-  // This keeps the item being dragged in the list so it can be dragged past virtual list
+  const focusPathKey = useMemo(() => {
+    return isKeySegment(focusPath[0]) ? focusPath[0]._key : focusPath[0]
+  }, [focusPath])
+
+  /**
+   * This is a custom range extractor that adds the activeDragItemIndex to the range
+   * so that the item being dragged is always rendered.
+   * It also adds the focusPathKey to the range so that the item being focused is always rendered so it can be scrolled to
+   */
   const rangeExtractor = useCallback(
     (range: Range) => {
+      const ranges = new Set(defaultRangeExtractor(range))
       if (activeDragItemIndex !== null) {
-        return [...new Set([activeDragItemIndex, ...defaultRangeExtractor(range)])].sort(
-          (a, b) => a - b
-        )
+        ranges.add(activeDragItemIndex)
       }
 
-      return defaultRangeExtractor(range)
+      // If the focusPath is set to a key that is not in the list, we need to add it to the range
+      if (focusPathKey) {
+        const index = memberKeys.findIndex((key) => key === focusPathKey)
+        if (index !== -1) {
+          ranges.add(index)
+        }
+      }
+
+      return [...ranges].sort((a, b) => a - b)
     },
-    [activeDragItemIndex]
+    [activeDragItemIndex, focusPathKey, memberKeys]
   )
 
   const observeElementOffset = useCallback<
@@ -100,11 +122,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
       scroll.removeEventListener('scroll', onScroll)
     }
   }, [])
-
-  const memberKeys = useMemoCompare(
-    useMemo(() => members.map((member) => member.key), [members]),
-    shallowEquals
-  )
 
   const virtualizer = useVirtualizer({
     count: members.length,
