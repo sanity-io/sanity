@@ -44,7 +44,7 @@ export const Timeline = ({
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
-    (chunk, {activeIndex, virtualIndex}) => {
+    (chunk, {activeIndex}) => {
       return (
         <>
           <TimelineItem
@@ -57,7 +57,7 @@ export const Timeline = ({
             timestamp={chunk.endTimestamp}
             type={chunk.type}
           />
-          {virtualIndex === chunks.length - 1 && hasMoreChunks && (
+          {activeIndex === filteredChunks.length - 1 && hasMoreChunks && (
             <Flex align="center" justify="center" padding={4}>
               <Spinner muted />
             </Flex>
@@ -65,7 +65,7 @@ export const Timeline = ({
         </>
       )
     },
-    [chunks.length, disabledBeforeSelection, filteredChunks, hasMoreChunks, onSelect, selectedIndex]
+    [disabledBeforeSelection, filteredChunks, hasMoreChunks, onSelect, selectedIndex]
   )
 
   useEffect(() => setMounted(true), [])
