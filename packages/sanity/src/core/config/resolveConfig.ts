@@ -1,5 +1,5 @@
 import {combineLatest, firstValueFrom, Observable} from 'rxjs'
-import {first, map} from 'rxjs/operators'
+import {map} from 'rxjs/operators'
 import {CurrentUser} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
 import {createMockAuthStore} from '../store'

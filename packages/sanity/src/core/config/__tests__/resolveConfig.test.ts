@@ -1,6 +1,6 @@
 import {createClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom, of} from 'rxjs'
-import {bufferTime, first} from 'rxjs/operators'
+import {bufferTime} from 'rxjs/operators'
 import {createMockAuthStore} from '../../store'
 import {resolveConfig, createWorkspaceFromConfig, createSourceFromConfig} from '../resolveConfig'
 
@@ -17,7 +17,9 @@ describe('resolveConfig', () => {
         })
       )
     } catch (err) {
-      expect(err.message).toMatch('Expected `tools` to an array or a function but found object')
+      expect(err.message).toMatch(
+        'Expected `tools` to be an array or a function, but received object'
+      )
     }
   })
 

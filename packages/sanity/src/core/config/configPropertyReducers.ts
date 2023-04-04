@@ -14,8 +14,6 @@ import type {
   ResolveProductionUrlContext,
   Tool,
 } from './types'
-import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
-import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
@@ -34,7 +32,7 @@ export const schemaTypesReducer: ConfigPropertyReducer<
   if (Array.isArray(schemaTypes)) return [...prev, ...schemaTypes]
 
   throw new Error(
-    `Expected \`schema.types\` to an array or a function but found ${typeof schemaTypes} instead.`
+    `Expected \`schema.types\` to be an array or a function, but received ${typeof schemaTypes}`
   )
 }
 
@@ -59,7 +57,7 @@ export const toolsReducer: ConfigPropertyReducer<Tool[], ConfigContext> = (
   if (typeof tools === 'function') return tools(prev, context)
   if (Array.isArray(tools)) return [...prev, ...tools]
 
-  throw new Error(`Expected \`tools\` to an array or a function but found ${typeof tools} instead.`)
+  throw new Error(`Expected \`tools\` to be an array or a function, but received ${typeof tools}`)
 }
 
 // we will need this when we ressurect user config for search
@@ -73,7 +71,7 @@ export const toolsReducer: ConfigPropertyReducer<Tool[], ConfigContext> = (
   if (Array.isArray(filters)) return [...prev, ...filters]
 
   throw new Error(
-    `Expected \`filters\` to be an array or a function but found ${typeof filters} instead.`
+    `Expected \`search.filters\` to be an array or a function, but received ${typeof filters}`
   )
 }
 
@@ -87,7 +85,7 @@ export const searchOperatorsReducer: ConfigPropertyReducer<
   if (Array.isArray(operators)) return [...prev, ...operators]
 
   throw new Error(
-    `Expected \`operators\` to be an array or a function but found ${typeof operators} instead.`
+    `Expected \`operators\` to be be an array or a function, but received ${typeof operators}`
   )
 }*/
 
@@ -102,7 +100,7 @@ export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigCon
   if (Array.isArray(schemaTemplates)) return [...prev, ...schemaTemplates]
 
   throw new Error(
-    `Expected \`schema.templates\` to an array or a function but found ${typeof schemaTemplates} instead.`
+    `Expected \`schema.templates\` to be an array or a function, but received ${typeof schemaTemplates}`
   )
 }
 
@@ -117,7 +115,7 @@ export const documentBadgesReducer: ConfigPropertyReducer<
   if (Array.isArray(documentBadges)) return [...prev, ...documentBadges]
 
   throw new Error(
-    `Expected \`document.actions\` to an array or a function but found ${typeof documentBadges} instead.`
+    `Expected \`document.badges\` to be an array or a function, but received ${typeof documentBadges}`
   )
 }
 
@@ -132,7 +130,7 @@ export const documentActionsReducer: ConfigPropertyReducer<
   if (Array.isArray(documentActions)) return [...prev, ...documentActions]
 
   throw new Error(
-    `Expected \`document.actions\` to an array or a function but found ${typeof documentActions} instead.`
+    `Expected \`document.actions\` to be an array or a function, but received ${typeof documentActions}`
   )
 }
 
@@ -145,7 +143,7 @@ export const newDocumentOptionsResolver: ConfigPropertyReducer<
 
   if (typeof resolveNewDocumentOptions !== 'function') {
     throw new Error(
-      `Expected \`document.resolveNewDocumentOptions\` a function but found ${typeof resolveNewDocumentOptions} instead.`
+      `Expected \`document.resolveNewDocumentOptions\` to be a function, but received ${typeof resolveNewDocumentOptions}`
     )
   }
 
@@ -164,7 +162,7 @@ export const fileAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Confi
   if (Array.isArray(assetSources)) return [...prev, ...assetSources]
 
   throw new Error(
-    `Expected \`file.assetSources\` to an array or a function but found ${typeof assetSources} instead.`
+    `Expected \`form.file.assetSources\` to be an array or a function, but received ${typeof assetSources}`
   )
 }
 
@@ -180,7 +178,7 @@ export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Conf
   if (Array.isArray(assetSources)) return [...prev, ...assetSources]
 
   throw new Error(
-    `Expected \`image.assetSources\` to an array or a function but found ${typeof assetSources} instead.`
+    `Expected \`form.image.assetSources\` to be an array or a function, but received ${typeof assetSources}`
   )
 }
 
@@ -201,6 +199,6 @@ export const documentLanguageFilterReducer: ConfigPropertyReducer<
     return [...prev, ...resolveDocumentLanguageFilter]
 
   throw new Error(
-    `Expected \`document.actions\` to an array or a function but found ${typeof resolveDocumentLanguageFilter} instead.`
+    `Expected \`document.unstable_languageFilter\` to be an array or a function, but received ${typeof resolveDocumentLanguageFilter}`
   )
 }
