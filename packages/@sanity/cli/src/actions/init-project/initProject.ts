@@ -6,6 +6,7 @@ import noop from 'lodash/noop'
 import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import which from 'which'
+import dotenv from 'dotenv'
 
 import {frameworks, Framework} from '@vercel/frameworks'
 import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
@@ -97,11 +98,6 @@ export default async function initSanity(
     return
   }
 
-  const envFilename = typeof env === 'string' ? env : '.env'
-  if (env && !envFilename.startsWith('.env')) {
-    throw new Error(`Env filename must start with .env`)
-  }
-
   // Only allow either --project-plan or --coupon
   if (intendedCoupon && intendedPlan) {
     throw new Error(
@@ -130,6 +126,11 @@ export default async function initSanity(
 
   if (reconfigure) {
     throw new Error('`--reconfigure` is deprecated - manual configuration is now required')
+  }
+
+  const envFilename = typeof env === 'string' ? env : '.env'
+  if (!envFilename.startsWith('.env')) {
+    throw new Error(`Env filename must start with .env`)
   }
 
   const usingBareOrEnv = cliFlags.bare || cliFlags.env
@@ -783,9 +784,10 @@ export default async function initSanity(
   }
 
   async function createOrAppendEnvVars(filename: string) {
-    const variables = {
-      SANITY_PROJECT_ID: projectId,
-      SANITY_DATASET: datasetName,
+    // we will prepend SANITY_ to these variables later, together with the prefix
+    const envVars = {
+      PROJECT_ID: projectId,
+      DATASET: datasetName,
     }
 
     try {
@@ -795,7 +797,7 @@ export default async function initSanity(
         frameworkList: frameworks as readonly Framework[],
       })
 
-      if (framework && framework.slug !== 'sanity' && framework.envPrefix) {
+      if (framework && framework.envPrefix) {
         print(
           `\nDetected framework ${chalk.blue(framework?.name)}, using prefix '${
             framework.envPrefix
@@ -803,7 +805,7 @@ export default async function initSanity(
         )
       }
 
-      await writeToEnv(filename, variables, {
+      await writeEnvVarsToFile(filename, envVars, {
         framework,
         outputPath,
       })
@@ -813,67 +815,91 @@ export default async function initSanity(
     }
   }
 
-  async function writeToEnv(
+  async function writeEnvVarsToFile(
     filename: string,
     envVars: Record<string, string>,
     options: {framework: Framework | null; outputPath: string}
   ) {
+    const envPrefix = options.framework?.envPrefix || ''
+    const keyPrefix = envPrefix.includes('SANITY') ? envPrefix : `${envPrefix}SANITY_`
     const fileOutputPath = path.join(options.outputPath, filename)
-    const prefix = options.framework?.slug === 'sanity' ? '' : options.framework?.envPrefix ?? ''
 
-    const keysToWrite = Object.keys(envVars)
-    const keysNotFound: string[] = []
+    // prepend framework and sanity prefix to envVars
+    for (const key of Object.keys(envVars)) {
+      envVars[`${keyPrefix}${key}`] = envVars[key]
+      delete envVars[key]
+    }
 
-    // try to make folder if not exists
+    // make folder if not exists (if output path is specified)
     try {
       await fs.mkdir(options.outputPath, {recursive: true})
     } catch (err) {
       debug('Error creating folder %s', options.outputPath)
     }
 
-    // read existing env file (error if not exists)
+    // time to update or create the file
     try {
-      let existingEnv = await fs.readFile(fileOutputPath, {encoding: 'utf8'})
-
-      // replace existing keys
-      for (const key of keysToWrite) {
-        if (!existingEnv.includes(key)) {
-          keysNotFound.push(key)
-          continue
-        }
-
-        print(`Found existing ${key}, replacing value.`)
-        existingEnv = existingEnv.replace(
-          new RegExp(`${key}="([^"]+)"`),
-          `${key}="${envVars[key]}"`
-        )
-      }
-
-      // append missing keys
-      if (keysNotFound) {
-        existingEnv = existingEnv
-          .trim()
-          .concat(keysNotFound.map((key) => `\n${prefix}${key}="${envVars[key]}"`).join(''))
-
-        keysNotFound.map((key) => print(`Appended ${prefix}${key}="${envVars[key]}"`))
-      }
-
-      await fs.writeFile(fileOutputPath, existingEnv.concat('\n'), {
+      const existingEnv = await fs.readFile(fileOutputPath, {encoding: 'utf8'})
+      const updatedEnv = parseAndUpdateEnvVars(existingEnv, envVars)
+      await fs.writeFile(fileOutputPath, updatedEnv, {
         encoding: 'utf8',
       })
-      return
     } catch (err) {
-      debug('Error reading existing env file, creating new one', err)
+      await fs.writeFile(
+        fileOutputPath,
+        Object.keys(envVars)
+          .map((key) => `${key}="${envVars[key]}"`)
+          .join('\n')
+          .concat('\n'),
+        {
+          encoding: 'utf8',
+        }
+      )
     }
 
-    // if file does not exist
-    const envVarsToWrite = keysToWrite.map((key) => `${prefix}${key}="${envVars[key]}"\n`).join('')
-
-    await fs.writeFile(fileOutputPath, envVarsToWrite, {
-      encoding: 'utf8',
-    })
-
     print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
+  }
+
+  function parseAndUpdateEnvVars(fileContents: string, envVars: Record<string, string>): string {
+    const existingKeys = dotenv.parse(fileContents) // this will contain all vars
+    const updatedKeys: Record<string, string> = {} // this will only contain our vars
+
+    // find and update keys
+    for (const [key, value] of Object.entries(envVars)) {
+      if (!existingKeys[key]) {
+        updatedKeys[key] = value
+        print(`Appended ${key}="${envVars[key]}"`)
+        continue
+      }
+
+      print(`Found existing ${key}, replacing value.`)
+      updatedKeys[key] = value
+    }
+
+    // clone fileContents and replace existing keys by string matching
+    let updatedEnv = fileContents.repeat(1)
+    for (const [key, value] of Object.entries(updatedKeys)) {
+      if (existingKeys[key]) {
+        const existingValue = existingKeys[key]
+
+        updatedEnv = updatedEnv
+          .split('\n')
+          .map((line) => {
+            if (
+              !line.trim().startsWith('#') && // ignore comments
+              new RegExp(`(${key})[= :]`).test(line) // match key
+            ) {
+              return line.replace(existingValue, value)
+            }
+            return line
+          })
+          .join('\n')
+      } else {
+        updatedEnv = updatedEnv.trim().concat(`\n${key}="${value}"`)
+      }
+    }
+
+    return updatedEnv
   }
 }
 
