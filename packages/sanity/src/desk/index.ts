@@ -19,3 +19,5 @@ export type {
 } from './components'
 
 export * from './structureBuilder'
+
+export * from './useDeskTool'
