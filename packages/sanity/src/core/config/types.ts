@@ -25,7 +25,7 @@ import {StudioTheme} from '../theme'
 import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {StudioComponents, StudioComponentsPluginOptions} from './studio'
-import {DocumentActionComponent, DocumentBadgeComponent} from './document'
+import {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import {Router, RouterState} from 'sanity/router'
 
 /**
@@ -158,6 +158,8 @@ export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
   /** @beta */
+  inspectors?: DocumentInspector[] | DocumentInspectorsResolver
+  /** @beta */
   productionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
   /** @beta */
   unstable_languageFilter?: DocumentLanguageFilterResolver
@@ -196,6 +198,12 @@ export type DocumentActionsResolver = ComposableOption<
 export type DocumentBadgesResolver = ComposableOption<
   DocumentBadgeComponent[],
   DocumentBadgesContext
+>
+
+/** @beta */
+export type DocumentInspectorsResolver = ComposableOption<
+  DocumentInspector[],
+  DocumentInspectorContext
 >
 
 /** @beta */
@@ -293,6 +301,12 @@ export interface DocumentBadgesContext extends ConfigContext {
 }
 
 /** @beta */
+export interface DocumentInspectorContext extends ConfigContext {
+  documentId?: string
+  documentType: string
+}
+
+/** @beta */
 export type PartialContext<TContext extends ConfigContext> = Pick<
   TContext,
   Exclude<keyof TContext, keyof ConfigContext>
@@ -340,6 +354,12 @@ export interface Source {
     unstable_languageFilter: (
       props: PartialContext<DocumentLanguageFilterContext>
     ) => DocumentLanguageFilterComponent[]
+
+    /** @beta */
+    inspectors: (
+      props: PartialContext<DocumentInspectorContext>,
+      defaultInspectors: DocumentInspector[]
+    ) => DocumentInspector[]
   }
   form: {
     /** @beta */
