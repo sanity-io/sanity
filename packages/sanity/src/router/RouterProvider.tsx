@@ -64,11 +64,18 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
 
   const resolvePathFromState = useCallback(
     (nextState: Record<string, unknown>): string => {
-      return routerProp.encode(nextState)
+      try {
+        // console.count('resolvePathFromState')
+        // console.time('resolvePathFromState')
+        return routerProp.encode(nextState)
+      } finally {
+        // console.timeEnd('resolvePathFromState')
+      }
     },
     [routerProp]
   )
 
+  // `navigate` is so similar to `navigateUrl`, can they be combined?
   const navigate = useCallback(
     (nextState: Record<string, unknown>, options: NavigateOptions = {}) => {
       onNavigate({path: resolvePathFromState(nextState), replace: options.replace})
@@ -76,6 +83,7 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
     [onNavigate, resolvePathFromState]
   )
 
+  // `navigateIntent` is so similar to `navigate`, can they be combined?
   const navigateIntent = useCallback(
     (intentName: string, params?: IntentParameters, options: NavigateOptions = {}) => {
       onNavigate({path: resolveIntentLink(intentName, params), replace: options.replace})
@@ -83,6 +91,7 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
     [onNavigate, resolveIntentLink]
   )
 
+  // @TODO can nav events, resolvers and state be decoupled?
   const router: RouterContextValue = useMemo(
     () => ({
       navigate,

@@ -1,19 +1,11 @@
 import {PortalProvider, useToast} from '@sanity/ui'
-import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
+import React, {memo, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
-import {LOADING_PANE} from '../../constants'
-import {LoadingPane, DeskToolPane} from '../../panes'
-import {useResolvedPanes} from '../../structureResolvers'
-import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
 import {useDeskTool} from '../../useDeskTool'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
-
-interface DeskToolProps {
-  onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
-}
 
 const StyledPaneLayout = styled(PaneLayout)`
   min-height: 100%;
@@ -25,25 +17,15 @@ const isSaveHotkey = isHotkey('mod+s')
 /**
  * @internal
  */
-export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
+export const DeskTool = memo(function DeskTool() {
   const {push: pushToast} = useToast()
   const schema = useSchema()
   const {layoutCollapsed, setLayoutCollapsed} = useDeskTool()
-  const {paneDataItems, resolvedPanes} = useResolvedPanes()
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
   const handleRootCollapse = useCallback(() => setLayoutCollapsed(true), [setLayoutCollapsed])
   const handleRootExpand = useCallback(() => setLayoutCollapsed(false), [setLayoutCollapsed])
-
-  useEffect(() => {
-    // we check for length before emitting here to skip the initial empty array
-    // state from the `useResolvedPanes` hook. there should always be a root
-    // pane emitted on subsequent emissions
-    if (resolvedPanes.length) {
-      onPaneChange(resolvedPanes)
-    }
-  }, [onPaneChange, resolvedPanes])
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
@@ -80,42 +62,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
         onCollapse={handleRootCollapse}
         onExpand={handleRootExpand}
       >
-        {paneDataItems.map(
-          ({
-            active,
-            childItemId,
-            groupIndex,
-            itemId,
-            key: paneKey,
-            pane,
-            index: paneIndex,
-            params: paneParams,
-            path,
-            payload,
-            siblingIndex,
-            selected,
-          }) => (
-            <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
-              {pane === LOADING_PANE ? (
-                <LoadingPane paneKey={paneKey} path={path} selected={selected} />
-              ) : (
-                <DeskToolPane
-                  active={active}
-                  groupIndex={groupIndex}
-                  index={paneIndex}
-                  pane={pane}
-                  childItemId={childItemId}
-                  itemId={itemId}
-                  paneKey={paneKey}
-                  params={paneParams}
-                  payload={payload}
-                  selected={selected}
-                  siblingIndex={siblingIndex}
-                />
-              )}
-            </Fragment>
-          )
-        )}
+        DeskToolPanes
       </StyledPaneLayout>
       <div data-portal="" ref={setPortalElement} />
     </PortalProvider>

@@ -4,6 +4,7 @@ import {useRouter} from './useRouter'
 
 /**
  * @public
+ * @deprecated Use the `useRouter()` hook instead
  */
 export function withRouter<Props extends {router: RouterContextValue}>(
   Component: ComponentType<Props>
@@ -29,5 +30,6 @@ export interface WithRouterProps {
 
 /**
  * @public
+ * @deprecated Use the `useRouter()` hook instead
  */
 export const WithRouter = withRouter((props: WithRouterProps) => props.children(props.router))

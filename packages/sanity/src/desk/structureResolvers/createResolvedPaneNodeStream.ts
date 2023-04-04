@@ -92,7 +92,7 @@ const hashResolvedPaneMeta = (meta: ResolvedPaneMeta): string => {
  *
  * @see RouterPanes
  */
-interface FlattenedRouterPane {
+export interface FlattenedRouterPane {
   routerPaneSibling: RouterPaneSibling
   flatIndex: number
   groupIndex: number
@@ -125,7 +125,7 @@ interface CacheState {
   flattenedRouterPanes: FlattenedRouterPane[]
 }
 
-export interface CreateResolvedPaneNodeStreamOptions {
+interface CreateResolvedPaneNodeStreamOptions {
   /**
    * an input stream of `RouterPanes`
    * @see RouterPanes

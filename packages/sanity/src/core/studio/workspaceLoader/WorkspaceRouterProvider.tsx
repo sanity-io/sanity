@@ -52,6 +52,7 @@ function useRouterFromWorkspaceHistory(
     // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
     // matches where the pathname is a false subset of the current pathname.
     const routerBasePathRegex = new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i')
+    console.log('routerBasePathRegex', routerBasePathRegex)
     const shouldHandle = (pathname: string) =>
       // this is necessary to prevent emissions intended for other workspaces.
       routerBasePath === '/' ? true : routerBasePathRegex.test(pathname)
@@ -67,6 +68,7 @@ function useRouterFromWorkspaceHistory(
     }
   }, [history, router])
 
+  // Hook 5, why did you update???
   const event = useSyncExternalStoreWithSelector(
     store.subscribe,
     store.getSnapshot,
@@ -99,6 +101,7 @@ function useRouterFromWorkspaceHistory(
     const resolvedIntent = maybeResolveIntent(event, router, tools, prevEvent)
     // If resolvedIntent is truthy then we have a redirect to perform. Most of the time it'll be `null`
     if (resolvedIntent) {
+      debugger
       // console.debug('useEffect about to resolve intent URL to %o', resolvedIntent)
       history.replace(resolvedIntent)
     } else {
@@ -117,9 +120,12 @@ function useRouterFromWorkspaceHistory(
     // console.debug('handleNavigate useMemo called (should optimally only happen once)')
     // console.count('handleNavigate')
     return ({path, replace}) => {
+      // debugger
       // Handle intent resolving early, so we avoid rendering intermediate states in the workspace root, as it otherwise resolves intents in useEffect handlers
       const predictedEvent = store.selector(path)
+      console.log({path, predictedEvent})
       const resolvedIntent = maybeResolveIntent(predictedEvent, router, tools, prevEvent)
+      console.log('resolved intent', resolvedIntent)
       const resolvedPath = typeof resolvedIntent === 'string' ? resolvedIntent : path
 
       if (replace) {
@@ -141,13 +147,16 @@ function maybeResolveIntent(
   prevEvent: React.MutableRefObject<RouterStateEvent | null>
 ): string | null {
   if (event?.type === 'state' && event.state?.intent) {
+    console.log('shouldResolveIntent', event.state)
     const redirectState = resolveIntentState(
       tools,
       prevEvent.current?.type === 'state' ? prevEvent.current.state : {},
       event.state
     )
+    console.log('redirectState', redirectState)
 
     if (redirectState?.type === 'state') {
+      console.log('should encode with router', redirectState.state)
       return router.encode(redirectState.state)
     }
   }

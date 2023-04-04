@@ -2,10 +2,10 @@
 
 import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
-import {LOADING_PANE} from '../constants'
 import {DeskToolProvider} from '../DeskToolProvider'
 import {useResolvedPanes} from '../structureResolvers'
 import {RouterPanes} from '../types'
+import {useRouterState} from 'sanity/router'
 
 const testPaths: RouterPanes[] = [
   [],
@@ -27,7 +27,10 @@ export default function ResolvePanesStoryWrapper() {
 }
 
 function ResolvePanesStory() {
-  const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes()
+  const routerPanes = useRouterState(
+    useCallback((routerState) => (routerState?.panes || []) as RouterPanes, [])
+  )
+  const {paneDataItems, resolvedPanes} = useResolvedPanes()
   const [testKey, setTestKey] = useState('0')
 
   const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,14 +66,6 @@ function ResolvePanesStory() {
       <Stack marginTop={5} space={1}>
         {resolvedPanes.map((resolvedPane, idx) => {
           const paneData = paneDataItems[idx]
-
-          if (resolvedPane === LOADING_PANE) {
-            return (
-              <Card border key={idx} padding={4} tone={paneData.active ? 'primary' : undefined}>
-                <Text>[Loading…]</Text>
-              </Card>
-            )
-          }
 
           if (resolvedPane.type === 'list') {
             return (

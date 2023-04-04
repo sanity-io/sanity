@@ -1,6 +1,7 @@
 import {Tool} from '../../config'
 import {route, Router} from 'sanity/router'
 
+// Who uses createRouter?
 export function createRouter(opts: {basePath?: string; tools: Tool[]}): Router {
   const {basePath = '/', tools} = opts
 

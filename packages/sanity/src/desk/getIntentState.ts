@@ -1,12 +1,11 @@
 import {uuid} from '@sanity/uuid'
 import {PaneNode, RouterPanes} from './types'
-import {EMPTY_PARAMS, LOADING_PANE} from './constants'
+import {EMPTY_PARAMS} from './constants'
 
 const state: {
-  activePanes: Array<PaneNode | typeof LOADING_PANE>
+  activePanes: Array<PaneNode>
 } = {activePanes: []}
-
-export function setActivePanes(panes: Array<PaneNode | typeof LOADING_PANE>): void {
+export function setActivePanes(panes: Array<PaneNode>): void {
   state.activePanes = panes
 }
 
@@ -23,6 +22,7 @@ export function getIntentState(
   payload: unknown
 ): {panes: RouterPanes} | {intent: string; params: Record<string, string>; payload: unknown} {
   const panes = routerState?.panes || []
+  // @TODO refactor to scoped context
   const activePanes = state.activePanes || []
   const editDocumentId = params.id || uuid()
   const isTemplate = intent === 'create' && params.template

@@ -58,6 +58,7 @@ export function WorkspaceMenuButton(props: ButtonProps) {
                 ? 'logged-out'
                 : 'no-access'
 
+              // @TODO refactor this to the `MenuItem` level
               const handleSelectWorkspace = () => {
                 if (state === 'logged-in' && workspace.name !== activeWorkspace.name) {
                   setActiveWorkspace(workspace.name)
