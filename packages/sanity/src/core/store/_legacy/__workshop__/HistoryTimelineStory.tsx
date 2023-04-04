@@ -1,24 +1,23 @@
+import {ObjectDiff} from '@sanity/diff'
 import {RestoreIcon} from '@sanity/icons'
 import {SanityDocument} from '@sanity/types'
 import {Box, Button, Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {omit} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {useMemoObservable} from 'react-rx'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {ChangeFieldWrapper} from '../../../changeIndicators'
 import {
+  Annotation,
   ChangeList,
+  Chunk,
   DocumentChangeContext,
   DocumentChangeContextInstance,
-  ObjectDiff,
 } from '../../../field'
-import {useClient, useConnectionState, useEditState, useSchema} from '../../../hooks'
-import {useHistoryStore} from '../datastores'
+import {useConnectionState, useEditState, useSchema} from '../../../hooks'
 import {useInitialValue} from '../document'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {TimelineController, useTimelineController} from '../history'
 
 export default function HistoryTimelineStory() {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const documentId = useMemo(() => 'test', [])
   const documentType = useMemo(() => 'author', [])
@@ -26,8 +25,6 @@ export default function HistoryTimelineStory() {
   const templateName = useMemo(() => undefined, [])
   const templateParams = useMemo(() => undefined, [])
   const [params, setParams] = useState<{rev?: string; since?: string}>({})
-
-  const historyStore = useHistoryStore()
 
   const connectionState = useConnectionState(documentId, documentType)
   const editState = useEditState(documentId, documentType)
@@ -42,41 +39,48 @@ export default function HistoryTimelineStory() {
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
 
-  const timeline = useMemo(
-    () => historyStore.getTimeline({publishedId: documentId, enableTrace: true}),
-    [documentId, historyStore]
-  )
+  const {timelineController$} = useTimelineController({
+    documentId,
+    documentType,
+    rev: params.rev,
+    since: params.since,
+  })
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const {historyController} = useMemoObservable(
-    () => historyStore.getTimelineController({client, documentId, documentType, timeline}),
-    [client, documentId, documentType, timeline]
-  )!
+  const timelineControllerRef = useRef<TimelineController | null>(null)
 
-  const [, _forceUpdate] = useState(0)
-  const forceUpdate = useCallback(() => _forceUpdate((p) => p + 1), [])
-
+  // Subscribe to TimelineController changes and store internal state.
+  const [changesOpen, setChangesOpen] = useState(false)
+  const [chunks, setChunks] = useState<Chunk[]>([])
+  const [diff, setDiff] = useState<ObjectDiff<Annotation, Record<string, any>> | null>(null)
+  const [onOlderRevision, setOnOlderRevision] = useState(false)
+  const [realRevChunk, setRealRevChunk] = useState<Chunk | null>(null)
+  const [sinceAttributes, setSinceAttributes] = useState<Record<string, unknown> | null>(null)
+  const [sinceTime, setSinceTime] = useState<Chunk | null>(null)
+  const [timelineDisplayed, setTimelineDisplayed] = useState<Record<string, unknown> | null>(null)
   useEffect(() => {
-    historyController.setRange(params.since || null, params.rev || null)
-    forceUpdate()
-  }, [forceUpdate, historyController, params.rev, params.since])
+    setChangesOpen(!!params.since)
+    const subscription = timelineController$.subscribe((controller) => {
+      timelineControllerRef.current = controller
+      setChunks(controller.timeline.mapChunks((c) => c))
+      setDiff(controller.sinceTime ? controller.currentObjectDiff() : null)
+      setOnOlderRevision(controller.onOlderRevision())
+      setRealRevChunk(controller.realRevChunk)
+      setSinceAttributes(controller.sinceAttributes())
+      setSinceTime(controller.sinceTime)
+      setTimelineDisplayed(controller.displayed())
+    })
+    return () => subscription.unsubscribe()
+  }, [params.since, timelineController$])
 
-  const changesOpen = historyController.changesPanelActive()
-
-  const compareValue: Partial<SanityDocument> | null = changesOpen
-    ? historyController.sinceAttributes()
-    : null
+  const compareValue: Partial<SanityDocument> | null = changesOpen ? sinceAttributes : null
 
   const ready = connectionState === 'connected' && editState.ready
-  const isPreviousVersion = historyController.onOlderRevision()
+  const isPreviousVersion = onOlderRevision
 
   const displayed: Partial<SanityDocument> | null = useMemo(
-    () => (isPreviousVersion ? historyController.displayed() : value),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [historyController, params.rev, params.since, value, isPreviousVersion]
+    () => (isPreviousVersion ? timelineDisplayed : value),
+    [isPreviousVersion, timelineDisplayed, value]
   )
-
-  const diff: ObjectDiff | null = changesOpen ? historyController.currentObjectDiff() : null
 
   const handleHistoryOpen = useCallback(() => {
     setParams((prevParams) => ({...prevParams, since: '@lastPublished'}))
@@ -94,7 +98,7 @@ export default function HistoryTimelineStory() {
     }))
   }, [])
 
-  const isComparingCurrent = !historyController.onOlderRevision()
+  const isComparingCurrent = !onOlderRevision
 
   const documentContext: DocumentChangeContextInstance = useMemo(
     () => ({
@@ -131,18 +135,21 @@ export default function HistoryTimelineStory() {
                   Revision
                 </Text>
               </Box>
-              {timeline.mapChunks((chunk) => {
+              {chunks.map((chunk) => {
                 return (
                   <Card
                     as="button"
                     key={chunk.id}
+                    // eslint-disable-next-line react/jsx-no-bind
                     onClick={() => {
-                      const [sinceId, revId] = historyController.findRangeForNewRev(chunk)
-
-                      setTimelineRange(sinceId, revId)
+                      if (timelineControllerRef.current) {
+                        const [sinceId, revId] =
+                          timelineControllerRef.current.findRangeForNewRev(chunk)
+                        setTimelineRange(sinceId, revId)
+                      }
                     }}
                     padding={3}
-                    selected={historyController.realRevChunk === chunk}
+                    selected={realRevChunk === chunk}
                   >
                     <Stack space={2}>
                       <Text>{chunk.type}</Text>
@@ -161,18 +168,21 @@ export default function HistoryTimelineStory() {
                     Changes since
                   </Text>
                 </Box>
-                {timeline.mapChunks((chunk) => {
+                {chunks.map((chunk) => {
                   return (
                     <Card
                       as="button"
                       key={chunk.id}
+                      // eslint-disable-next-line react/jsx-no-bind
                       onClick={() => {
-                        const [sinceId, revId] = historyController.findRangeForNewSince(chunk)
-
-                        setTimelineRange(sinceId, revId)
+                        if (timelineControllerRef.current) {
+                          const [sinceId, revId] =
+                            timelineControllerRef.current.findRangeForNewSince(chunk)
+                          setTimelineRange(sinceId, revId)
+                        }
                       }}
                       padding={3}
-                      selected={historyController.sinceTime === chunk}
+                      selected={sinceTime === chunk}
                     >
                       <Stack space={2}>
                         <Text>{chunk.type}</Text>

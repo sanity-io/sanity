@@ -129,9 +129,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const [changesOpen, setChangesOpen] = useState(false)
   const [onOlderRevision, setOnOlderRevision] = useState(false)
   const [revTime, setRevTime] = useState<Chunk | null>(null)
+  const [sinceAttributes, setSinceAttributes] = useState<Record<string, unknown> | null>(null)
   const [timelineDisplayed, setTimelineDisplayed] = useState<Record<string, unknown> | null>(null)
   const [timelineReady, setTimelineReady] = useState(false)
-  const [sinceAttributes, setSinceAttributes] = useState<Record<string, unknown> | null>(null)
   useEffect(() => {
     setChangesOpen(!!params.since)
     const subscription = timelineController$.subscribe((controller) => {

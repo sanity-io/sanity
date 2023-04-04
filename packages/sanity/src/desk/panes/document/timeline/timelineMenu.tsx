@@ -21,7 +21,7 @@ const Root = styled(Popover)`
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const {setTimelineRange, setTimelineMode, timelineController$, ready} = useDocumentPane()
-  const controllerRef = useRef<TimelineController | null>(null)
+  const timelineControllerRef = useRef<TimelineController | null>(null)
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)
@@ -34,7 +34,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const [sinceTime, setSinceTime] = useState<Chunk | null>(null)
   useEffect(() => {
     const subscription = timelineController$.subscribe((controller) => {
-      controllerRef.current = controller
+      timelineControllerRef.current = controller
       setChunks(controller.timeline.mapChunks((c) => c))
       setHasMoreChunks(!controller.timeline.reachedEarliestEntry)
       setRealRevChunk(controller.realRevChunk)
@@ -76,8 +76,8 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   const selectRev = useCallback(
     (revChunk: Chunk) => {
-      if (controllerRef.current) {
-        const [sinceId, revId] = controllerRef.current.findRangeForNewRev(revChunk)
+      if (timelineControllerRef.current) {
+        const [sinceId, revId] = timelineControllerRef.current.findRangeForNewRev(revChunk)
         setTimelineMode('closed')
         setTimelineRange(sinceId, revId)
       }
@@ -87,8 +87,8 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
-      if (controllerRef.current) {
-        const [sinceId, revId] = controllerRef.current?.findRangeForNewSince(sinceChunk)
+      if (timelineControllerRef.current) {
+        const [sinceId, revId] = timelineControllerRef.current?.findRangeForNewSince(sinceChunk)
         setTimelineMode('closed')
         setTimelineRange(sinceId, revId)
       }
@@ -97,9 +97,9 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   )
 
   const handleLoadMore = useCallback(() => {
-    if (!loading && controllerRef.current) {
+    if (!loading && timelineControllerRef.current) {
       setLoading(true)
-      controllerRef.current.setLoadMore(true)
+      timelineControllerRef.current.setLoadMore(true)
     }
   }, [loading])
 
