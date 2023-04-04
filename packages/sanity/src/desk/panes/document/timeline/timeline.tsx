@@ -6,41 +6,37 @@ import {Chunk, CommandList, CommandListRenderItemCallback} from 'sanity'
 
 interface TimelineProps {
   chunks: Chunk[]
+  disabledBeforeFirstChunk?: boolean
+  firstChunk?: Chunk | null
   hasMoreChunks: boolean
-  onSelect: (chunk: Chunk) => void
+  lastChunk?: Chunk | null
   onLoadMore: () => void
-
-  /** Are the chunks above the topSelection enabled? */
-  disabledBeforeSelection?: boolean
-  /** The first chunk of the selection. */
-  topSelection?: Chunk | null
-  /** The final chunk of the selection. */
-  bottomSelection?: Chunk | null
+  onSelect: (chunk: Chunk) => void
 }
 
 export const Timeline = ({
-  bottomSelection,
   chunks,
-  disabledBeforeSelection,
+  disabledBeforeFirstChunk,
   hasMoreChunks,
+  lastChunk,
   onLoadMore,
   onSelect,
-  topSelection,
+  firstChunk: topSelection,
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
 
   const filteredChunks = useMemo(() => {
     return chunks.filter((c) => {
-      if (disabledBeforeSelection && topSelection) {
+      if (disabledBeforeFirstChunk && topSelection) {
         return c.index < topSelection.index
       }
       return true
     })
-  }, [chunks, disabledBeforeSelection, topSelection])
+  }, [chunks, disabledBeforeFirstChunk, topSelection])
 
   const selectedIndex = useMemo(
-    () => filteredChunks.findIndex((c) => c.id === bottomSelection?.id),
-    [bottomSelection?.id, filteredChunks]
+    () => filteredChunks.findIndex((c) => c.id === lastChunk?.id),
+    [lastChunk?.id, filteredChunks]
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
@@ -51,7 +47,7 @@ export const Timeline = ({
             chunk={chunk}
             isFirst={activeIndex === 0}
             isLast={(filteredChunks && activeIndex === filteredChunks.length - 1) || false}
-            isLatest={activeIndex === 0 && !disabledBeforeSelection}
+            isLatest={activeIndex === 0 && !disabledBeforeFirstChunk}
             isSelected={activeIndex === selectedIndex}
             onSelect={onSelect}
             timestamp={chunk.endTimestamp}
@@ -65,7 +61,7 @@ export const Timeline = ({
         </>
       )
     },
-    [disabledBeforeSelection, filteredChunks, hasMoreChunks, onSelect, selectedIndex]
+    [disabledBeforeFirstChunk, filteredChunks, hasMoreChunks, onSelect, selectedIndex]
   )
 
   useEffect(() => setMounted(true), [])

@@ -107,23 +107,23 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     <>
       {mode === 'rev' && (
         <Timeline
-          bottomSelection={realRevChunk}
           chunks={chunks}
+          firstChunk={realRevChunk}
           hasMoreChunks={hasMoreChunks}
-          onSelect={selectRev}
+          lastChunk={realRevChunk}
           onLoadMore={handleLoadMore}
-          topSelection={realRevChunk}
+          onSelect={selectRev}
         />
       )}
       {mode === 'since' && (
         <Timeline
-          bottomSelection={sinceTime}
           chunks={chunks}
+          disabledBeforeFirstChunk
+          firstChunk={realRevChunk}
           hasMoreChunks={hasMoreChunks}
-          disabledBeforeSelection
-          onSelect={selectSince}
+          lastChunk={sinceTime}
           onLoadMore={handleLoadMore}
-          topSelection={realRevChunk}
+          onSelect={selectSince}
         />
       )}
     </>
