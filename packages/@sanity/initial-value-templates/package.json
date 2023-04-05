@@ -29,7 +29,7 @@
   "dependencies": {
     "@sanity/icons": "^1.3.4",
     "@sanity/util": "2.35.0",
-    "@types/lodash": "^4.14.149",
+    "@types/lodash": "4.14.149",
     "lodash": "^4.17.15",
     "oneline": "^1.0.3"
   },
