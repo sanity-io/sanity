@@ -21,18 +21,18 @@ export const Timeline = ({
   lastChunk,
   onLoadMore,
   onSelect,
-  firstChunk: topSelection,
+  firstChunk,
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
 
   const filteredChunks = useMemo(() => {
     return chunks.filter((c) => {
-      if (disabledBeforeFirstChunk && topSelection) {
-        return c.index < topSelection.index
+      if (disabledBeforeFirstChunk && firstChunk) {
+        return c.index < firstChunk.index
       }
       return true
     })
-  }, [chunks, disabledBeforeFirstChunk, topSelection])
+  }, [chunks, disabledBeforeFirstChunk, firstChunk])
 
   const selectedIndex = useMemo(
     () => filteredChunks.findIndex((c) => c.id === lastChunk?.id),
