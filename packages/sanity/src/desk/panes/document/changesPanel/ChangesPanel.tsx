@@ -39,14 +39,18 @@ export function ChangesPanel(): React.ReactElement | null {
   const [selectionState, setSelectionState] = useState<SelectionState>('inactive')
   const [sinceTime, setSinceTime] = useState<Chunk | null>(null)
   const [onOlderRevision, setOnOlderRevision] = useState(false)
+  const [timelineError, setTimelineError] = useState<Error | null>(null)
   const loading = selectionState === 'loading'
   const isComparingCurrent = !onOlderRevision
   useEffect(() => {
-    const subscription = timelineController$.subscribe((controller) => {
-      setDiff(controller.sinceTime ? controller.currentObjectDiff() : null)
-      setOnOlderRevision(controller.onOlderRevision())
-      setSelectionState(controller.selectionState)
-      setSinceTime(controller.sinceTime)
+    const subscription = timelineController$.subscribe({
+      error: (err) => setTimelineError(err),
+      next: (controller) => {
+        setDiff(controller.sinceTime ? controller.currentObjectDiff() : null)
+        setOnOlderRevision(controller.onOlderRevision())
+        setSelectionState(controller.selectionState)
+        setSinceTime(controller.sinceTime)
+      },
     })
     return () => subscription.unsubscribe()
   }, [timelineController$])
@@ -118,7 +122,12 @@ export function ChangesPanel(): React.ReactElement | null {
         <BoundaryElementProvider element={scrollRef.current}>
           <Scroller data-ui="Scroller" ref={scrollRef}>
             <Box flex={1} padding={4}>
-              <Content diff={diff} documentContext={documentContext} loading={loading} />
+              <Content
+                diff={diff}
+                documentContext={documentContext}
+                error={timelineError}
+                loading={loading}
+              />
             </Box>
           </Scroller>
         </BoundaryElementProvider>
@@ -128,15 +137,21 @@ export function ChangesPanel(): React.ReactElement | null {
 }
 
 function Content({
+  error,
   diff,
   documentContext,
   loading,
 }: {
+  error?: Error | null
   diff: ObjectDiff<any> | null
   documentContext: DocumentChangeContextInstance
   loading: boolean
 }) {
   const {schemaType} = useDocumentPane()
+
+  if (error) {
+    return <NoChanges />
+  }
 
   if (loading) {
     return <LoadingContent />

@@ -69,7 +69,9 @@ export function useTimelineController({
     timelineController$.next(controller)
 
     controller.handler = (err, innerController) => {
-      if (!err) {
+      if (err) {
+        timelineController$.error(err)
+      } else {
         /**
          * NOTE: TimelineController requires that you call `setRange` manually whenever its internal
          * timeline has changed (e.g. has a result of fetched transactions).

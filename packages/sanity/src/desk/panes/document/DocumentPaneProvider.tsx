@@ -115,6 +115,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
+  const changesOpen = !!params.since
 
   // Create a TimelineController and receive a subscribable BehaviorSubject, made accessible
   // to all child components via DocumentPaneContext.
@@ -126,23 +127,25 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   // Subscribe to TimelineController changes and store internal state.
-  const [changesOpen, setChangesOpen] = useState(false)
   const [onOlderRevision, setOnOlderRevision] = useState(false)
   const [revTime, setRevTime] = useState<Chunk | null>(null)
   const [sinceAttributes, setSinceAttributes] = useState<Record<string, unknown> | null>(null)
   const [timelineDisplayed, setTimelineDisplayed] = useState<Record<string, unknown> | null>(null)
   const [timelineReady, setTimelineReady] = useState(false)
+  const [timelineError, setTimelineError] = useState<Error | null>(null)
   useEffect(() => {
-    setChangesOpen(!!params.since)
-    const subscription = timelineController$.subscribe((controller) => {
-      setTimelineDisplayed(controller.displayed())
-      setOnOlderRevision(controller.onOlderRevision())
-      setRevTime(controller.revTime)
-      setSinceAttributes(controller.sinceAttributes())
-      setTimelineReady(!['invalid', 'loading'].includes(controller.selectionState))
+    const subscription = timelineController$.subscribe({
+      error: (err) => setTimelineError(err),
+      next: (controller) => {
+        setOnOlderRevision(controller.onOlderRevision())
+        setRevTime(controller.revTime)
+        setSinceAttributes(controller.sinceAttributes())
+        setTimelineDisplayed(controller.displayed())
+        setTimelineReady(!['invalid', 'loading'].includes(controller.selectionState))
+      },
     })
     return () => subscription.unsubscribe()
-  }, [params.since, timelineController$])
+  }, [timelineController$])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -168,12 +171,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     ? sinceAttributes
     : editState?.published || null
 
-  // Note that in addition to connection and edit state, we also wait for document timeline readiness.
-  // This means if we're loading an older revision, the full transaction range must be loaded in full
-  // prior to the document being displayed.
-  // Previously, visiting studio URLs with timeline params would display the 'current' document and then
-  // 'snap' in the older revision, which was disorienting and could happen mid-edit.
-  const ready = connectionState === 'connected' && editState.ready && timelineReady
+  /**
+   * Note that in addition to connection and edit state, we also wait for a valid document timeline
+   * range to be loaded. This means if we're loading an older revision, the full transaction range must
+   * be loaded in full prior to the document being displayed.
+   *
+   * Previously, visiting studio URLs with timeline params would display the 'current' document and then
+   * 'snap' in the older revision, which was disorienting and could happen mid-edit.
+   *
+   * In the event that the timeline cannot be loaded due to TimelineController errors or blocked requests,
+   * we skip this readiness check to ensure that users aren't locked out of editing.
+   */
+  const ready =
+    connectionState === 'connected' && editState.ready && (timelineReady || !!timelineError)
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
     () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),

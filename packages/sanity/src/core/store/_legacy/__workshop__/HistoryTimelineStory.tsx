@@ -46,10 +46,11 @@ export default function HistoryTimelineStory() {
     since: params.since,
   })
 
+  const changesOpen = !!params.since
+
   const timelineControllerRef = useRef<TimelineController | null>(null)
 
   // Subscribe to TimelineController changes and store internal state.
-  const [changesOpen, setChangesOpen] = useState(false)
   const [chunks, setChunks] = useState<Chunk[]>([])
   const [diff, setDiff] = useState<ObjectDiff<Annotation, Record<string, any>> | null>(null)
   const [onOlderRevision, setOnOlderRevision] = useState(false)
@@ -58,7 +59,6 @@ export default function HistoryTimelineStory() {
   const [sinceTime, setSinceTime] = useState<Chunk | null>(null)
   const [timelineDisplayed, setTimelineDisplayed] = useState<Record<string, unknown> | null>(null)
   useEffect(() => {
-    setChangesOpen(!!params.since)
     const subscription = timelineController$.subscribe((controller) => {
       timelineControllerRef.current = controller
       setChunks(controller.timeline.mapChunks((c) => c))

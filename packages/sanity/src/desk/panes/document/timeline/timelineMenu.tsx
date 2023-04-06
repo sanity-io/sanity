@@ -1,9 +1,10 @@
 import {SelectIcon} from '@sanity/icons'
-import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
+import {TimelineError} from '../changesPanel/content/TimelineError'
 import {useDocumentPane} from '../useDocumentPane'
 import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
@@ -25,6 +26,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)
+  const toast = useToast()
 
   // Subscribe to TimelineController changes and store internal state.
   const [chunks, setChunks] = useState<Chunk[]>([])
@@ -32,15 +34,19 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const [loading, setLoading] = useState(false)
   const [realRevChunk, setRealRevChunk] = useState<Chunk | null>(null)
   const [sinceTime, setSinceTime] = useState<Chunk | null>(null)
+  const [timelineError, setTimelineError] = useState<Error | null>(null)
   useEffect(() => {
-    const subscription = timelineController$.subscribe((controller) => {
-      timelineControllerRef.current = controller
-      setChunks(controller.timeline.mapChunks((c) => c))
-      setHasMoreChunks(!controller.timeline.reachedEarliestEntry)
-      setRealRevChunk(controller.realRevChunk)
-      setSinceTime(controller.sinceTime)
-      setLoading(false)
-      controller.setLoadMore(false)
+    const subscription = timelineController$.subscribe({
+      error: (err) => setTimelineError(err),
+      next: (controller) => {
+        timelineControllerRef.current = controller
+        setChunks(controller.timeline.mapChunks((c) => c))
+        setHasMoreChunks(!controller.timeline.reachedEarliestEntry)
+        setRealRevChunk(controller.realRevChunk)
+        setSinceTime(controller.sinceTime)
+        setLoading(false)
+        controller.setLoadMore(false)
+      },
     })
     return () => subscription.unsubscribe()
   }, [timelineController$])
@@ -77,23 +83,41 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const selectRev = useCallback(
     (revChunk: Chunk) => {
       if (timelineControllerRef.current) {
-        const [sinceId, revId] = timelineControllerRef.current.findRangeForNewRev(revChunk)
-        setTimelineMode('closed')
-        setTimelineRange(sinceId, revId)
+        try {
+          const [sinceId, revId] = timelineControllerRef.current.findRangeForNewRev(revChunk)
+          setTimelineMode('closed')
+          setTimelineRange(sinceId, revId)
+        } catch (err) {
+          toast.push({
+            closable: true,
+            description: err.message,
+            status: 'error',
+            title: 'Unable to load revision',
+          })
+        }
       }
     },
-    [setTimelineMode, setTimelineRange]
+    [setTimelineMode, setTimelineRange, toast]
   )
 
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
       if (timelineControllerRef.current) {
-        const [sinceId, revId] = timelineControllerRef.current?.findRangeForNewSince(sinceChunk)
-        setTimelineMode('closed')
-        setTimelineRange(sinceId, revId)
+        try {
+          const [sinceId, revId] = timelineControllerRef.current?.findRangeForNewSince(sinceChunk)
+          setTimelineMode('closed')
+          setTimelineRange(sinceId, revId)
+        } catch (err) {
+          toast.push({
+            closable: true,
+            description: err.message,
+            status: 'error',
+            title: 'Unable to load revision',
+          })
+        }
       }
     },
-    [setTimelineMode, setTimelineRange]
+    [setTimelineMode, setTimelineRange, toast]
   )
 
   const handleLoadMore = useCallback(() => {
@@ -103,7 +127,9 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     }
   }, [loading])
 
-  const content = (
+  const content = timelineError ? (
+    <TimelineError />
+  ) : (
     <>
       {mode === 'rev' && (
         <Timeline
@@ -135,7 +161,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     ? `${upperFirst(formatTimelineEventLabel(chunk.type))}: ${timeLabel}`
     : 'Latest version'
 
-  const sinceLabel = chunk ? `Since: ${timeLabel}` : 'Since unknown version'
+  const sinceLabel = chunk ? `Since: ${timeLabel}` : 'Since: unknown version'
 
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
 
