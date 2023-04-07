@@ -1,5 +1,5 @@
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {cliUserEmail, runSanityCmdCommand, studioVersions} from './shared/environment'
+import {getCliUserEmail, runSanityCmdCommand, studioVersions} from './shared/environment'
 
 describeCliTest('CLI: basic commands', () => {
   describe.each(studioVersions)('%s', (version) => {
@@ -11,7 +11,7 @@ describeCliTest('CLI: basic commands', () => {
 
     testConcurrent('debug', async () => {
       const result = await runSanityCmdCommand(version, ['debug'])
-      expect(result.stdout).toContain(cliUserEmail)
+      expect(result.stdout).toContain(await getCliUserEmail())
       expect(result.code).toBe(0)
     })
 

@@ -1,5 +1,5 @@
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {cliUserEmail, runSanityCmdCommand, studioVersions} from './shared/environment'
+import {getCliUserEmail, runSanityCmdCommand, studioVersions} from './shared/environment'
 
 describeCliTest('CLI: `sanity exec`', () => {
   describe.each(studioVersions)('%s', (version) => {
@@ -17,7 +17,7 @@ describeCliTest('CLI: `sanity exec`', () => {
     testConcurrent('sanity exec --with-user-token', async () => {
       const result = await runSanityCmdCommand(version, ['exec', script, '--with-user-token'])
       const data = JSON.parse(result.stdout.trim())
-      expect(data.user.email).toBe(cliUserEmail)
+      expect(data.user.email).toBe(await getCliUserEmail())
       // Check that we load from .env.development
       expect(data.env.SANITY_STUDIO_MODE).toBe('development')
       expect(result.code).toBe(0)
