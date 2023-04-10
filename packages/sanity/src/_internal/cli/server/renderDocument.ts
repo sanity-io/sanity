@@ -185,7 +185,7 @@ function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string 
       // If the URL is absolute, we don't need to prefix it
       return new URL(url).toString()
     } catch {
-      return url.startsWith('/') ? url : `/${url}`
+      return `${props.basePath}${url.startsWith('/') ? '/' : ''}${url}`
     }
   })
 
