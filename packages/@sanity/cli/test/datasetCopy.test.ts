@@ -15,6 +15,7 @@ describeCliTest('CLI: `sanity dataset copy`', () => {
         'production',
         testRunArgs.datasetCopy,
         '--skip-history',
+        '--detach',
       ])
       expect(result.stdout).toMatch(/job .*? started/i)
       expect(result.code).toBe(0)
