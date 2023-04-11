@@ -72,26 +72,30 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   }, [focusPath])
 
   /**
-   * This is a custom range extractor that adds the activeDragItemIndex to the range
-   * so that the item being dragged is always rendered.
-   * It also adds the focusPathKey to the range so that the item being focused is always rendered so it can be scrolled to
+   * This is a custom range extractor that adds the activeDragItemIndex and focusedItem to the range
+   * so that the item is always rendered and it can perform it's own actions
+   * Note: When adding an index make sure the range includes all index or the scroll will jump
    */
   const rangeExtractor = useCallback(
     (range: Range) => {
-      const ranges = new Set(defaultRangeExtractor(range))
+      const newRange = {...range}
+
+      // Update start and end indexes based on activeDragItemIndex
       if (activeDragItemIndex !== null) {
-        ranges.add(activeDragItemIndex)
+        newRange.startIndex = Math.min(range.startIndex, activeDragItemIndex)
+        newRange.endIndex = Math.max(range.endIndex, activeDragItemIndex)
       }
 
-      // If the focusPath is set to a key that is not in the list, we need to add it to the range
+      // Update start and end indexes based on focusPathKey
       if (focusPathKey) {
         const index = memberKeys.findIndex((key) => key === focusPathKey)
         if (index !== -1) {
-          ranges.add(index)
+          newRange.startIndex = Math.min(newRange.startIndex, index)
+          newRange.endIndex = Math.max(newRange.endIndex, index)
         }
       }
 
-      return [...ranges].sort((a, b) => a - b)
+      return defaultRangeExtractor(newRange)
     },
     [activeDragItemIndex, focusPathKey, memberKeys]
   )
