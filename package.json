@@ -46,7 +46,7 @@
     "normalize-pkgfields": "node scripts/normalizePackageFields.js",
     "postinstall": "husky install",
     "prettier": "prettier --cache .",
-    "prettify": "lerna run clean && prettier --write",
+    "prettify": "lerna run clean && prettier --write .",
     "prettify:dts": "prettier --loglevel warn --write packages/@sanity/*/lib/dts && prettier --loglevel warn --write packages/*/lib/dts",
     "release": "yarn build && lerna publish --exact --force-publish",
     "release-canary": "RELEASE_TAG=canary yarn release-tag",
