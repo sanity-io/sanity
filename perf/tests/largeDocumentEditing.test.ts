@@ -57,7 +57,12 @@ export default {
     const doc = await client.create(largeDocument)
     return {
       data: {documentId: doc._id},
-      teardown: () => client.transaction().delete(doc._id).delete(`drafts.${doc._id}`).commit(),
+      teardown: () =>
+        client
+          .transaction()
+          .delete(doc._id)
+          .delete(`drafts.${doc._id}`)
+          .commit({visibility: 'async'}),
     }
   },
   version: 1,
