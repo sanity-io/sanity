@@ -41,6 +41,7 @@ import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {useReferenceInput} from './useReferenceInput'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
 import {IntentLink} from 'sanity/router'
+import {ReferenceItemRefProvider} from './ReferenceItemRefProvider'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 
@@ -102,6 +103,8 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   const insertableTypes = parentSchemaType.of
 
   const elementRef = useRef<HTMLDivElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   const {EditReferenceLink, getReferenceInfo, selectedState, isCurrentDocumentLiveEdit} =
     useReferenceInput({
@@ -191,7 +194,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             button={<Button paddingY={3} paddingX={2} mode="bleed" icon={EllipsisVerticalIcon} />}
             id={`${inputId}-menuButton`}
             menu={
-              <Menu>
+              <Menu ref={menuRef}>
                 {!readOnly && (
                   <>
                     <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
@@ -331,73 +334,76 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   )
 
   const item = (
-    <RowLayout
-      dragHandle={sortable}
-      presence={
-        !isEditing && presence.length > 0 && <FieldPresence presence={presence} maxAvatars={1} />
-      }
-      validation={
-        !isEditing && validation.length > 0 && <FormFieldValidationStatus validation={validation} />
-      }
-      menu={menu}
-      footer={isEditing ? undefined : issues}
-      tone={isEditing ? undefined : tone}
-      focused={focused}
-    >
-      {isEditing ? (
-        <Box padding={1}>
-          <FormFieldSet
-            title={schemaType.title}
-            description={schemaType.description}
-            __unstable_presence={presence}
-            validation={validation}
-          >
-            {children}
-          </FormFieldSet>
-        </Box>
-      ) : (
-        <ReferenceLinkCard
-          as={EditReferenceLink}
-          tone="inherit"
-          radius={2}
-          documentId={value?._ref}
-          documentType={refType?.name}
-          disabled={resolvingInitialValue}
-          paddingX={2}
-          paddingY={1}
-          __unstable_focusRing
-          selected={selected}
-          pressed={pressed}
-          data-selected={selected ? true : undefined}
-          data-pressed={pressed ? true : undefined}
-          {...elementProps}
-        >
-          <PreviewReferenceValue
-            value={value}
-            referenceInfo={loadableReferenceInfo}
-            renderPreview={renderPreview}
-            type={schemaType}
-          />
-          {resolvingInitialValue && (
-            <Card
-              style={INITIAL_VALUE_CARD_STYLE}
-              tone="transparent"
-              radius={2}
-              as={Flex}
-              // @ts-expect-error composed from as={Flex}
-              justify="center"
+    <ReferenceItemRefProvider menuRef={menuRef} containerRef={containerRef}>
+      <RowLayout
+        dragHandle={sortable}
+        presence={
+          !isEditing && presence.length > 0 && <FieldPresence presence={presence} maxAvatars={1} />
+        }
+        validation={
+          !isEditing &&
+          validation.length > 0 && <FormFieldValidationStatus validation={validation} />
+        }
+        menu={menu}
+        footer={isEditing ? undefined : issues}
+        tone={isEditing ? undefined : tone}
+        focused={focused}
+      >
+        {isEditing ? (
+          <Box padding={1} ref={containerRef}>
+            <FormFieldSet
+              title={schemaType.title}
+              description={schemaType.description}
+              __unstable_presence={presence}
+              validation={validation}
             >
-              <Flex align="center" justify="center" padding={3}>
-                <Box marginX={3}>
-                  <Spinner muted />
-                </Box>
-                <Text>Resolving initial value…</Text>
-              </Flex>
-            </Card>
-          )}
-        </ReferenceLinkCard>
-      )}
-    </RowLayout>
+              {children}
+            </FormFieldSet>
+          </Box>
+        ) : (
+          <ReferenceLinkCard
+            as={EditReferenceLink}
+            tone="inherit"
+            radius={2}
+            documentId={value?._ref}
+            documentType={refType?.name}
+            disabled={resolvingInitialValue}
+            paddingX={2}
+            paddingY={1}
+            __unstable_focusRing
+            selected={selected}
+            pressed={pressed}
+            data-selected={selected ? true : undefined}
+            data-pressed={pressed ? true : undefined}
+            {...elementProps}
+          >
+            <PreviewReferenceValue
+              value={value}
+              referenceInfo={loadableReferenceInfo}
+              renderPreview={renderPreview}
+              type={schemaType}
+            />
+            {resolvingInitialValue && (
+              <Card
+                style={INITIAL_VALUE_CARD_STYLE}
+                tone="transparent"
+                radius={2}
+                as={Flex}
+                // @ts-expect-error composed from as={Flex}
+                justify="center"
+              >
+                <Flex align="center" justify="center" padding={3}>
+                  <Box marginX={3}>
+                    <Spinner muted />
+                  </Box>
+                  <Text>Resolving initial value…</Text>
+                </Flex>
+              </Card>
+            )}
+          </ReferenceLinkCard>
+        )}
+      </RowLayout>
+    </ReferenceItemRefProvider>
   )
   return (
     <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
