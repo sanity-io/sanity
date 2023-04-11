@@ -217,10 +217,6 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
 
     restore: (id, targetId, rev) => restore(client, id, targetId, rev),
 
-    getTimelineController: (options: {
-      client: SanityClient
-      documentId: string
-      documentType: string
-    }) => getTimelineController(options),
+    getTimelineController,
   }
 }

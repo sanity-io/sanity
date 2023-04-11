@@ -35,7 +35,7 @@ export const Timeline = ({
   }, [chunks, disabledBeforeFirstChunk, firstChunk])
 
   const selectedIndex = useMemo(
-    () => filteredChunks.findIndex((c) => c.id === lastChunk?.id),
+    () => (lastChunk?.id ? filteredChunks.findIndex((c) => c.id === lastChunk.id) : -1),
     [lastChunk?.id, filteredChunks]
   )
 

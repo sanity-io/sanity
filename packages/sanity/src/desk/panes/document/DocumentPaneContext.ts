@@ -6,7 +6,7 @@ import {
   SanityDocumentLike,
 } from '@sanity/types'
 import {createContext} from 'react'
-import {Subject} from 'rxjs'
+import {Observable} from 'rxjs'
 import {View} from '../../structureBuilder'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {TimelineMode} from './types'
@@ -64,7 +64,7 @@ export interface DocumentPaneContextValue {
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
   source?: string
-  timelineController$: Subject<TimelineController>
+  timelineController$: Observable<TimelineController>
   timelineMode: TimelineMode
   title: string | null
   validation: ValidationMarker[]

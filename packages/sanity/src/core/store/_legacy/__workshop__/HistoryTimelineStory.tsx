@@ -112,6 +112,26 @@ export default function HistoryTimelineStory() {
     [diff, documentId, isComparingCurrent, schemaType, value]
   )
 
+  const handleRevClick = useCallback(
+    (chunk: Chunk) => () => {
+      if (timelineControllerRef.current) {
+        const [sinceId, revId] = timelineControllerRef.current.findRangeForNewRev(chunk)
+        setTimelineRange(sinceId, revId)
+      }
+    },
+    [setTimelineRange]
+  )
+
+  const handleSinceClick = useCallback(
+    (chunk: Chunk) => () => {
+      if (timelineControllerRef.current) {
+        const [sinceId, revId] = timelineControllerRef.current.findRangeForNewSince(chunk)
+        setTimelineRange(sinceId, revId)
+      }
+    },
+    [setTimelineRange]
+  )
+
   return (
     <Flex direction="column" height="fill">
       <Card borderBottom padding={2}>
@@ -140,14 +160,7 @@ export default function HistoryTimelineStory() {
                   <Card
                     as="button"
                     key={chunk.id}
-                    // eslint-disable-next-line react/jsx-no-bind
-                    onClick={() => {
-                      if (timelineControllerRef.current) {
-                        const [sinceId, revId] =
-                          timelineControllerRef.current.findRangeForNewRev(chunk)
-                        setTimelineRange(sinceId, revId)
-                      }
-                    }}
+                    onClick={handleRevClick(chunk)}
                     padding={3}
                     selected={realRevChunk === chunk}
                   >
@@ -173,14 +186,7 @@ export default function HistoryTimelineStory() {
                     <Card
                       as="button"
                       key={chunk.id}
-                      // eslint-disable-next-line react/jsx-no-bind
-                      onClick={() => {
-                        if (timelineControllerRef.current) {
-                          const [sinceId, revId] =
-                            timelineControllerRef.current.findRangeForNewSince(chunk)
-                          setTimelineRange(sinceId, revId)
-                        }
-                      }}
+                      onClick={handleSinceClick(chunk)}
                       padding={3}
                       selected={sinceTime === chunk}
                     >
