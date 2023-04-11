@@ -33,8 +33,13 @@ export async function resolveInitialValue(
     )
   }
 
+  // Ensure _type is set on empty objects
+  if (isRecord(resolvedValue) && !Object.keys(resolvedValue).length) {
+    resolvedValue = {_type: schemaType}
+  }
+
   // validate default document initial values
-  resolvedValue = validateInitialObjectValue(resolvedValue, template)
+  resolvedValue = validateInitialObjectValue(resolvedValue as Record<string, unknown>, template)
 
   // Get deep initial values from schema types (note: the initial value from template overrides the types)
   const newValue = deepAssign(
