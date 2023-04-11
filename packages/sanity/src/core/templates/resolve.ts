@@ -63,6 +63,11 @@ export async function resolveInitialValue(
     )
   }
 
+  // Ensure _type is set on empty objects
+  if (isRecord(resolvedValue) && !Object.keys(resolvedValue).length) {
+    resolvedValue = {_type: schemaTypeName}
+  }
+
   // validate default document initial values
   resolvedValue = validateInitialObjectValue(resolvedValue, template)
 
