@@ -112,6 +112,32 @@ export function getPossibleDocumentComponentLocations(studioRootPath: string): s
   return [path.join(studioRootPath, '_document.js'), path.join(studioRootPath, '_document.tsx')]
 }
 
+/**
+ * Adds a base path to a URL if necessary, and returns the resulting URL.
+ * @param url - The URL to prefix with a base path.
+ * @param basePath - The base path to prefix the URL with. Default value is `/`.
+ * @returns The resulting URL with the base path.
+ * @internal
+ */
+export function _prefixUrlWithBasePath(url: string, basePath: string): string {
+  // Normalize basePath by adding a leading slash if it's missing.
+  const normalizedBasePath = basePath.startsWith('/') ? basePath : `/${basePath}`
+
+  // If the URL starts with a slash, append it to the basePath, removing any trailing slash if present.
+  if (url.startsWith('/')) {
+    if (normalizedBasePath.endsWith('/')) {
+      return `${normalizedBasePath.slice(0, -1)}${url}`
+    }
+    return `${normalizedBasePath}${url}`
+  }
+
+  // If the URL doesn't start with a slash, append it to the basePath with a slash in between.
+  if (normalizedBasePath.endsWith('/')) {
+    return `${normalizedBasePath}${url}`
+  }
+  return `${normalizedBasePath}/${url}`
+}
+
 if (!isMainThread && parentPort) {
   renderDocumentFromWorkerData()
 }
@@ -185,7 +211,7 @@ function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string 
       // If the URL is absolute, we don't need to prefix it
       return new URL(url).toString()
     } catch {
-      return `${props.basePath}${url.startsWith('/') ? '/' : ''}${url}`
+      return _prefixUrlWithBasePath(url, props.basePath)
     }
   })
 
