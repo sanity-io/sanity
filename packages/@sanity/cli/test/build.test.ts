@@ -99,7 +99,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         })
         expect(result.code).toBe(0)
 
-        const files = await readdir(path.join(studioPath, 'out', 'static'))
+        const files = await readdir(path.join(studioPath, 'out-basepath', 'static'))
         const builtHtml = await readFile(
           path.join(studioPath, 'out-basepath', 'index.html'),
           'utf8'
