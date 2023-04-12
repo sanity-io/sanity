@@ -261,7 +261,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     [searchState.hits]
   )
 
-  const isEditing = focusPath.length === 1 && (focusPath[0] === '_ref' || focusPath[0] === '$')
+  const isEditing = focusPath.length === 1 && focusPath[0] === '_ref'
 
   // --- click outside handling
   const {menuRef, containerRef} = useReferenceItemRef()
