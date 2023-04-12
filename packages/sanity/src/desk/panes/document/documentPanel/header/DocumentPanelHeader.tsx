@@ -1,7 +1,7 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Button, Inline} from '@sanity/ui'
 import {negate} from 'lodash'
-import React, {createElement, memo, forwardRef, useMemo, useEffect, useState} from 'react'
+import React, {createElement, memo, forwardRef, useMemo} from 'react'
 import {PaneMenuItem} from '../../../../types'
 import {PaneHeader, PaneContextMenuButton, usePaneRouter} from '../../../../components'
 import {TimelineMenu} from '../../timeline'
@@ -10,7 +10,6 @@ import {useDeskTool} from '../../../../useDeskTool'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {ValidationMenu} from './ValidationMenu'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {Chunk} from 'sanity'
 
 export interface DocumentPanelHeaderProps {
   // TODO:
@@ -27,7 +26,6 @@ export const DocumentPanelHeader = memo(
       onMenuAction,
       onPaneClose,
       onPaneSplit,
-      timelineController$,
       validation,
       menuItems,
       menuItemGroups,
@@ -35,6 +33,7 @@ export const DocumentPanelHeader = memo(
       ready,
       views,
       unstable_languageFilter,
+      useTimelineSelector,
     } = useDocumentPane()
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
@@ -43,14 +42,8 @@ export const DocumentPanelHeader = memo(
     const showTabs = views.length > 1
     const showVersionMenu = features.reviewChanges
 
-    // Subscribe to TimelineController changes and store internal state.
-    const [rev, setRev] = useState<Chunk | null>(null)
-    useEffect(() => {
-      const subscription = timelineController$.subscribe((controller) => {
-        setRev(controller.revTime)
-      })
-      return () => subscription.unsubscribe()
-    }, [timelineController$])
+    // Subscribe to external timeline state changes
+    const rev = useTimelineSelector((state) => state.revTime)
 
     // there are three kinds of buttons possible:
     //

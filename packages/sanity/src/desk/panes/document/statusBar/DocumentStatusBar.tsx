@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {Box, Flex} from '@sanity/ui'
 import {useDocumentPane} from '../useDocumentPane'
@@ -16,16 +16,10 @@ const DocumentActionsBox = styled(Box)`
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {badges, timelineController$} = useDocumentPane()
+  const {badges, useTimelineSelector} = useDocumentPane()
 
-  // Subscribe to TimelineController changes and store internal state.
-  const [showingRevision, setShowingRevision] = useState(false)
-  useEffect(() => {
-    const subscription = timelineController$.subscribe((controller) => {
-      setShowingRevision(controller.onOlderRevision())
-    })
-    return () => subscription.unsubscribe()
-  }, [timelineController$])
+  // Subscribe to external timeline state changes
+  const showingRevision = useTimelineSelector((state) => state.onOlderRevision)
 
   return useMemo(
     () => (

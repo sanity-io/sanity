@@ -6,7 +6,6 @@ import {
   SanityDocumentLike,
 } from '@sanity/types'
 import {createContext} from 'react'
-import {Observable} from 'rxjs'
 import {View} from '../../structureBuilder'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {TimelineMode} from './types'
@@ -21,6 +20,7 @@ import {
   PermissionCheckResult,
   StateTree,
   TimelineController,
+  TimelineState,
 } from 'sanity'
 
 /** @internal */
@@ -64,7 +64,10 @@ export interface DocumentPaneContextValue {
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
   source?: string
-  timelineController$: Observable<TimelineController>
+  timelineError: Error | null
+  timelineFindRangeForRev: TimelineController['findRangeForNewRev']
+  timelineFindRangeForSince: TimelineController['findRangeForNewSince']
+  timelineLoadMore: () => void
   timelineMode: TimelineMode
   title: string | null
   validation: ValidationMarker[]
@@ -74,6 +77,9 @@ export interface DocumentPaneContextValue {
   permissions?: PermissionCheckResult | null
   isPermissionsLoading: boolean
   unstable_languageFilter: DocumentLanguageFilterComponent[]
+  useTimelineSelector: <ReturnValue>(
+    selector: (timelineState: TimelineState) => ReturnValue
+  ) => ReturnValue
 }
 
 /** @internal */

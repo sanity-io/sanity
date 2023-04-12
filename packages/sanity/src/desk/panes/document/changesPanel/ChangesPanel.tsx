@@ -1,7 +1,7 @@
 import {ObjectDiff} from '@sanity/diff'
 import {CloseIcon} from '@sanity/icons'
 import {AvatarStack, BoundaryElementProvider, Box, Button, Flex} from '@sanity/ui'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useRef} from 'react'
 import styled from 'styled-components'
 import {PaneContent, PaneHeader, usePane} from '../../../components'
 import {TimelineMenu} from '../timeline'
@@ -9,16 +9,13 @@ import {useDocumentPane} from '../useDocumentPane'
 import {LoadingContent} from './content/LoadingContent'
 import {collectLatestAuthorAnnotations} from './helpers'
 import {
-  Annotation,
   ChangeFieldWrapper,
   ChangeList,
-  Chunk,
   DiffTooltip,
   DocumentChangeContext,
   DocumentChangeContextInstance,
   NoChanges,
   ScrollContainer,
-  SelectionState,
   UserAvatar,
 } from 'sanity'
 
@@ -30,30 +27,18 @@ const Scroller = styled(ScrollContainer)`
 `
 
 export function ChangesPanel(): React.ReactElement | null {
-  const {documentId, onHistoryClose, schemaType, timelineController$, value} = useDocumentPane()
+  const {documentId, onHistoryClose, schemaType, timelineError, useTimelineSelector, value} =
+    useDocumentPane()
   const {collapsed} = usePane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
-  // Subscribe to TimelineController changes and store internal state.
-  const [diff, setDiff] = useState<ObjectDiff<Annotation, Record<string, any>> | null>(null)
-  const [selectionState, setSelectionState] = useState<SelectionState>('inactive')
-  const [sinceTime, setSinceTime] = useState<Chunk | null>(null)
-  const [onOlderRevision, setOnOlderRevision] = useState(false)
-  const [timelineError, setTimelineError] = useState<Error | null>(null)
+  // Subscribe to external timeline state changes
+  const diff = useTimelineSelector((state) => state.diff)
+  const onOlderRevision = useTimelineSelector((state) => state.onOlderRevision)
+  const selectionState = useTimelineSelector((state) => state.selectionState)
+  const sinceTime = useTimelineSelector((state) => state.sinceTime)
   const loading = selectionState === 'loading'
   const isComparingCurrent = !onOlderRevision
-  useEffect(() => {
-    const subscription = timelineController$.subscribe({
-      error: (err) => setTimelineError(err),
-      next: (controller) => {
-        setDiff(controller.sinceTime ? controller.currentObjectDiff() : null)
-        setOnOlderRevision(controller.onOlderRevision())
-        setSelectionState(controller.selectionState)
-        setSinceTime(controller.sinceTime)
-      },
-    })
-    return () => subscription.unsubscribe()
-  }, [timelineController$])
 
   const documentContext: DocumentChangeContextInstance = React.useMemo(
     () => ({

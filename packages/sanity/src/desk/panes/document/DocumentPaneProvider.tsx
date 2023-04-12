@@ -35,7 +35,6 @@ import {
   getDraftId,
   useDocumentValuePermissions,
   useTimelineController,
-  Chunk,
 } from 'sanity'
 
 const emptyObject = {} as Record<string, string | undefined>
@@ -117,35 +116,31 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
   const changesOpen = !!params.since
 
-  // Create a TimelineController and receive a subscribable BehaviorSubject, made accessible
-  // to all child components via DocumentPaneContext.
-  const {timelineController$} = useTimelineController({
+  /**
+   * Create a TimelineController and receive a selector function we can use to subscribe to
+   * specific changes in timeline state.
+   * Also obtain the current timeline error state and specific functions to obtain timeline ranges.
+   * These are made available to all child components via DocumentPaneContext.
+   */
+  const {
+    timelineError,
+    timelineFindRangeForRev,
+    timelineFindRangeForSince,
+    timelineLoadMore,
+    useTimelineSelector,
+  } = useTimelineController({
     documentId,
     documentType,
     rev: params.rev,
     since: params.since,
   })
 
-  // Subscribe to TimelineController changes and store internal state.
-  const [onOlderRevision, setOnOlderRevision] = useState(false)
-  const [revTime, setRevTime] = useState<Chunk | null>(null)
-  const [sinceAttributes, setSinceAttributes] = useState<Record<string, unknown> | null>(null)
-  const [timelineDisplayed, setTimelineDisplayed] = useState<Record<string, unknown> | null>(null)
-  const [timelineReady, setTimelineReady] = useState(false)
-  const [timelineError, setTimelineError] = useState<Error | null>(null)
-  useEffect(() => {
-    const subscription = timelineController$.subscribe({
-      error: (err) => setTimelineError(err),
-      next: (controller) => {
-        setOnOlderRevision(controller.onOlderRevision())
-        setRevTime(controller.revTime)
-        setSinceAttributes(controller.sinceAttributes())
-        setTimelineDisplayed(controller.displayed())
-        setTimelineReady(!['invalid', 'loading'].includes(controller.selectionState))
-      },
-    })
-    return () => subscription.unsubscribe()
-  }, [timelineController$])
+  // Subscribe to external timeline state changes
+  const onOlderRevision = useTimelineSelector((state) => state.onOlderRevision)
+  const revTime = useTimelineSelector((state) => state.revTime)
+  const sinceAttributes = useTimelineSelector((state) => state.sinceAttributes)
+  const timelineDisplayed = useTimelineSelector((state) => state.timelineDisplayed)
+  const timelineReady = useTimelineSelector((state) => state.timelineReady)
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -180,7 +175,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    * 'snap' in the older revision, which was disorienting and could happen mid-edit.
    *
    * In the event that the timeline cannot be loaded due to TimelineController errors or blocked requests,
-   * we skip this readiness check to ensure that users aren't locked out of editing.
+   * we skip this readiness check to ensure that users aren't locked out of editing. Trying to select
+   * a timeline revision in this instance will display an error localized to the popover itself.
    */
   const ready =
     connectionState === 'connected' && editState.ready && (timelineReady || !!timelineError)
@@ -436,13 +432,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permissions,
     setTimelineMode,
     setTimelineRange,
+    timelineError,
+    timelineFindRangeForRev,
+    timelineFindRangeForSince,
+    timelineLoadMore,
     timelineMode,
-    timelineController$,
     title,
     value,
     views,
     formState,
     unstable_languageFilter: languageFilter,
+    useTimelineSelector,
   }
 
   useEffect(() => {

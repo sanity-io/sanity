@@ -1,13 +1,11 @@
-import {ObjectDiff} from '@sanity/diff'
 import {RestoreIcon} from '@sanity/icons'
 import {SanityDocument} from '@sanity/types'
 import {Box, Button, Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {omit} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {ChangeFieldWrapper} from '../../../changeIndicators'
 import {
-  Annotation,
   ChangeList,
   Chunk,
   DocumentChangeContext,
@@ -15,7 +13,7 @@ import {
 } from '../../../field'
 import {useConnectionState, useEditState, useSchema} from '../../../hooks'
 import {useInitialValue} from '../document'
-import {TimelineController, useTimelineController} from '../history'
+import {useTimelineController} from '../history'
 
 export default function HistoryTimelineStory() {
   const schema = useSchema()
@@ -39,38 +37,24 @@ export default function HistoryTimelineStory() {
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
 
-  const {timelineController$} = useTimelineController({
-    documentId,
-    documentType,
-    rev: params.rev,
-    since: params.since,
-  })
+  const {timelineFindRangeForRev, timelineFindRangeForSince, useTimelineSelector} =
+    useTimelineController({
+      documentId,
+      documentType,
+      rev: params.rev,
+      since: params.since,
+    })
 
   const changesOpen = !!params.since
 
-  const timelineControllerRef = useRef<TimelineController | null>(null)
-
-  // Subscribe to TimelineController changes and store internal state.
-  const [chunks, setChunks] = useState<Chunk[]>([])
-  const [diff, setDiff] = useState<ObjectDiff<Annotation, Record<string, any>> | null>(null)
-  const [onOlderRevision, setOnOlderRevision] = useState(false)
-  const [realRevChunk, setRealRevChunk] = useState<Chunk | null>(null)
-  const [sinceAttributes, setSinceAttributes] = useState<Record<string, unknown> | null>(null)
-  const [sinceTime, setSinceTime] = useState<Chunk | null>(null)
-  const [timelineDisplayed, setTimelineDisplayed] = useState<Record<string, unknown> | null>(null)
-  useEffect(() => {
-    const subscription = timelineController$.subscribe((controller) => {
-      timelineControllerRef.current = controller
-      setChunks(controller.timeline.mapChunks((c) => c))
-      setDiff(controller.sinceTime ? controller.currentObjectDiff() : null)
-      setOnOlderRevision(controller.onOlderRevision())
-      setRealRevChunk(controller.realRevChunk)
-      setSinceAttributes(controller.sinceAttributes())
-      setSinceTime(controller.sinceTime)
-      setTimelineDisplayed(controller.displayed())
-    })
-    return () => subscription.unsubscribe()
-  }, [params.since, timelineController$])
+  // Subscribe to external timeline state changes
+  const chunks = useTimelineSelector((state) => state.chunks)
+  const diff = useTimelineSelector((state) => state.diff)
+  const onOlderRevision = useTimelineSelector((state) => state.onOlderRevision)
+  const realRevChunk = useTimelineSelector((state) => state.realRevChunk)
+  const sinceAttributes = useTimelineSelector((state) => state.sinceAttributes)
+  const sinceTime = useTimelineSelector((state) => state.sinceTime)
+  const timelineDisplayed = useTimelineSelector((state) => state.timelineDisplayed)
 
   const compareValue: Partial<SanityDocument> | null = changesOpen ? sinceAttributes : null
 
@@ -114,22 +98,18 @@ export default function HistoryTimelineStory() {
 
   const handleRevClick = useCallback(
     (chunk: Chunk) => () => {
-      if (timelineControllerRef.current) {
-        const [sinceId, revId] = timelineControllerRef.current.findRangeForNewRev(chunk)
-        setTimelineRange(sinceId, revId)
-      }
+      const [sinceId, revId] = timelineFindRangeForRev(chunk)
+      setTimelineRange(sinceId, revId)
     },
-    [setTimelineRange]
+    [setTimelineRange, timelineFindRangeForRev]
   )
 
   const handleSinceClick = useCallback(
     (chunk: Chunk) => () => {
-      if (timelineControllerRef.current) {
-        const [sinceId, revId] = timelineControllerRef.current.findRangeForNewSince(chunk)
-        setTimelineRange(sinceId, revId)
-      }
+      const [sinceId, revId] = timelineFindRangeForSince(chunk)
+      setTimelineRange(sinceId, revId)
     },
-    [setTimelineRange]
+    [setTimelineRange, timelineFindRangeForSince]
   )
 
   return (
