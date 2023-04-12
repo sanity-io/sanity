@@ -1,82 +1,96 @@
-import {Box, Card, Flex, Spinner, Text} from '@sanity/ui'
-import React, {useEffect, useState} from 'react'
+import {memo, useCallback, useEffect, useState} from 'react'
+import {ToastParams, useToast} from '@sanity/ui'
 import {resolveIntent} from '../../../structureResolvers'
-import {RouterPanes} from '../../../types'
 import {useDeskTool} from '../../../useDeskTool'
-import {Delay} from '../../Delay'
-import {Redirect} from './Redirect'
 import {ensureDocumentIdAndType} from './utils'
-import {useDocumentStore, useUnique} from 'sanity'
+import {useRouter, useRouterState} from 'sanity/router'
+import {isRecord, useDocumentStore} from 'sanity'
 
-export interface IntentResolverProps {
-  intent: string
-  params: Record<string, unknown> // {type: string; id: string; [key: string]: string | undefined}
-  payload: unknown
-}
+const EMPTY_RECORD: Record<string, unknown> = {}
+// How long to wait before showing the toast with the "Redirecting..." message
+const TOAST_DELAY = 600
 
 /**
  * A component that receives an intent from props and redirects to the resolved
  * intent location (while showing a loading spinner during the process)
  */
-export function IntentResolver({
-  intent,
-  params: paramsProp = {},
-  payload: payloadProp,
-}: IntentResolverProps) {
+export const IntentResolver = memo(function IntentResolver() {
+  const {navigate} = useRouter()
+  const maybeIntent = useRouterState(
+    useCallback((routerState) => {
+      const intentName = typeof routerState.intent === 'string' ? routerState.intent : undefined
+      return intentName
+        ? {
+            intent: intentName,
+            params: isRecord(routerState.params) ? routerState.params : EMPTY_RECORD,
+            payload: routerState.payload,
+          }
+        : undefined
+    }, [])
+  )
   const {rootPaneNode, structureContext} = useDeskTool()
   const documentStore = useDocumentStore()
-  const params = useUnique(paramsProp)
-  const payload = useUnique(payloadProp)
-  const [nextRouterPanes, setNextRouterPanes] = useState<RouterPanes | null>(null)
   const [error, setError] = useState<unknown>(null)
-  const idParam = typeof params.id === 'string' ? params.id : undefined
-  const typeParam = typeof params.type === 'string' ? params.type : undefined
+  const {push: pushToast} = useToast()
 
-  useEffect(() => {
-    const cancelledRef = {current: false}
-
-    async function getNextRouterPanes() {
-      const {id, type} = await ensureDocumentIdAndType(documentStore, idParam, typeParam)
-
-      return resolveIntent({
-        intent,
-        params: {...params, id, type},
-        payload,
-        rootPaneNode,
-        structureContext,
-      })
-    }
-
-    getNextRouterPanes()
-      .then((result) => {
-        if (!cancelledRef.current) {
-          setNextRouterPanes(result)
-        }
-      })
-      .catch(setError)
-
-    return () => {
-      cancelledRef.current = true
-    }
-  }, [documentStore, idParam, intent, params, payload, rootPaneNode, structureContext, typeParam])
-
-  // throwing here bubbles the error up to the error boundary inside of the
-  // `DeskToolRoot` component
+  // this re-throws errors so that parent ErrorBoundary's can handle them properly
   if (error) throw error
-  if (nextRouterPanes) return <Redirect panes={nextRouterPanes} />
 
-  return (
-    <Card height="fill">
-      <Delay ms={300}>
-        <Flex align="center" direction="column" height="fill" justify="center">
-          <Spinner muted />
-          <Box marginTop={3}>
-            <Text align="center" muted size={1}>
-              Loading…
-            </Text>
-          </Box>
-        </Flex>
-      </Delay>
-    </Card>
-  )
-}
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    if (maybeIntent) {
+      const {intent, params, payload} = maybeIntent
+      const toastParams = {
+        id: 'intent-resolver-redirecting',
+        title: 'Redirecting…',
+      } satisfies ToastParams
+      let toasted = false
+      const pendingToast = setTimeout(() => {
+        if (toasted) return
+        // Don't show the toast instantly, most of the transitions are fast and fluid, we don't want to create noise
+        pushToast(toastParams)
+        toasted = true
+      }, TOAST_DELAY)
+
+      let cancelled = false
+      // eslint-disable-next-line no-inner-declarations
+      async function effect() {
+        const {id, type} = await ensureDocumentIdAndType(
+          documentStore,
+          typeof params.id === 'string' ? params.id : undefined,
+          typeof params.type === 'string' ? params.type : undefined
+        )
+
+        if (cancelled) return
+
+        const panes = await resolveIntent({
+          intent,
+          params: {...params, id, type},
+          payload,
+          rootPaneNode,
+          structureContext,
+        })
+
+        if (cancelled) return
+
+        navigate({panes}, {replace: true})
+      }
+
+      effect()
+        .catch(setError)
+        .finally(() => {
+          clearTimeout(pendingToast)
+
+          if (toasted) {
+            // Close it again by setting duration to `1ms`
+            pushToast({...toastParams, duration: 1})
+          }
+        })
+      return () => {
+        cancelled = true
+      }
+    }
+  }, [documentStore, maybeIntent, navigate, pushToast, rootPaneNode, structureContext])
+
+  return null
+})
