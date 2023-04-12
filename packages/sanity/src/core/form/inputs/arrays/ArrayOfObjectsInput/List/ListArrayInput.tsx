@@ -64,7 +64,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     shallowEquals
   )
 
-  const documentPanelRef = useBoundaryElement()
+  const boundaryElement = useBoundaryElement()
   const parentRef = useRef<HTMLDivElement>(null)
 
   const focusPathKey = useMemo(() => {
@@ -100,37 +100,45 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     [activeDragItemIndex, focusPathKey, memberKeys]
   )
 
+  /**
+   * It observes the scroll element and calls the callback function with the difference between the
+   * scroll's scrollTop and the offsetTop of the parent element of the observed element.
+   * it return an unsubscribe function that removes the event listener when called.
+   */
   const observeElementOffset = useCallback<
     VirtualizerOptions<HTMLElement, Element>['observeElementOffset']
   >((instance, cb) => {
     if (!instance.scrollElement) {
-      return
+      return undefined
     }
 
     const scroll = instance.scrollElement
 
-    const onScroll = () => {
+    const handleScroll = () => {
       const itemOffset = parentRef.current?.offsetTop ?? 0
       cb(scroll.scrollTop - itemOffset)
     }
 
-    onScroll()
+    handleScroll()
 
-    instance.scrollElement.addEventListener('scroll', onScroll, {
+    instance.scrollElement.addEventListener('scroll', handleScroll, {
       capture: false,
       passive: true,
     })
 
-    // eslint-disable-next-line consistent-return
     return () => {
-      scroll.removeEventListener('scroll', onScroll)
+      scroll.removeEventListener('scroll', handleScroll)
     }
   }, [])
 
+  // This is the estimated size of an item in the list. The reason this is an estimate is because
+  // custom components can have different dimensions and the library recalculate the size of the element
+  const estimateSize = useCallback(() => 53, [])
+
   const virtualizer = useVirtualizer({
     count: members.length,
-    estimateSize: useCallback(() => 53, []),
-    getScrollElement: useCallback(() => documentPanelRef.element, [documentPanelRef.element]),
+    estimateSize,
+    getScrollElement: useCallback(() => boundaryElement.element, [boundaryElement.element]),
     observeElementOffset,
     rangeExtractor,
     getItemKey: useCallback((index: number) => memberKeys[index], [memberKeys]),
@@ -173,6 +181,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               border
               radius={1}
               style={{
+                // This is not memoized since it changes on scroll so it will change anyways making memo useless
                 // Account for grid gap
                 height: `${
                   virtualizer.getTotalSize() + items.length * space[listGridGap] + space[paddingY]
@@ -191,6 +200,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 onItemMoveEnd={handleItemMoveEnd}
                 sortable={sortable}
                 style={{
+                  // This is not memoized since it changes on scroll so it will change anyways making memo useless
                   position: 'absolute',
                   top: 0,
                   left: 0,

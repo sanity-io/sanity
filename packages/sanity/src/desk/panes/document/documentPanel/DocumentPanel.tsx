@@ -52,7 +52,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [headerElement, setHeaderElement] = useState<HTMLDivElement | null>(null)
   const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
-  const documentScrollElement = useRef<HTMLDivElement>(null)
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
@@ -97,9 +97,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   // Scroll to top as `documentId` changes
   useEffect(() => {
-    if (!documentScrollElement?.current?.scrollTo) return
-    documentScrollElement.current.scrollTo(0, 0)
-  }, [documentId])
+    if (!documentScrollElement?.scrollTo) return
+    documentScrollElement.scrollTo(0, 0)
+  }, [documentId, documentScrollElement])
 
   // Pass portal element to `DocumentPane`
   useEffect(() => {
@@ -119,9 +119,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       <PaneContent>
         <PortalProvider
           element={portalElement}
-          __unstable_elements={{documentScrollElement: documentScrollElement.current}}
+          __unstable_elements={{documentScrollElement: documentScrollElement}}
         >
-          <BoundaryElementProvider element={documentScrollElement.current}>
+          <BoundaryElementProvider element={documentScrollElement}>
             {activeView.type === 'form' && !isPermissionsLoading && ready && (
               <>
                 <PermissionCheckBanner
@@ -135,7 +135,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
             <Scroller
               $disabled={layoutCollapsed || false}
               data-testid="document-panel-scroller"
-              ref={documentScrollElement}
+              ref={setDocumentScrollElement}
             >
               <FormView
                 hidden={formViewHidden}
