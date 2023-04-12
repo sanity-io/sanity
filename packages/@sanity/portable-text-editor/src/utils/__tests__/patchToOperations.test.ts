@@ -46,11 +46,11 @@ const createDefaultValue = (): Descendant[] => [
 
 describe('operationToPatches', () => {
   beforeEach(() => {
-    editor.children = createDefaultValue()
     editor.onChange()
   })
 
   it('makes the correct operations for block objects', () => {
+    editor.children = createDefaultValue()
     const patches = [
       {type: 'unset', path: [{_key: 'c01739b0d03b'}, 'hotspot'], origin: 'remote'},
       {type: 'unset', path: [{_key: 'c01739b0d03b'}, 'crop'], origin: 'remote'},
@@ -87,6 +87,126 @@ describe('operationToPatches', () => {
               "_ref": "image-f52f71bc1df46e080dabe43a8effe8ccfb5f21de-4032x3024-png",
               "_type": "reference",
             },
+          },
+        },
+      ]
+    `)
+  })
+  it('will not create patches for insertion inside object blocks', () => {
+    editor.children = [
+      {
+        _type: 'someType',
+        _key: 'c01739b0d03b',
+        children: [
+          {
+            _key: 'c01739b0d03b-void-child',
+            _type: 'span',
+            text: '',
+            marks: [],
+          },
+        ],
+        __inline: false,
+        value: {
+          asset: {
+            _ref: 'image-f52f71bc1df46e080dabe43a8effe8ccfb5f21de-4032x3024-png',
+            _type: 'reference',
+          },
+          nestedArray: [],
+        },
+      },
+    ]
+    const patches = [
+      {type: 'insert', path: [{_key: 'c01739b0d03b'}, 'nestedArray', -1], origin: 'remote'},
+    ] as Patch[]
+    const snapShot = fromSlateValue(editor.children, schemaTypes.block.name)
+    patches.forEach((p) => {
+      patchToOperations(editor, p, patches, snapShot)
+    })
+    expect(editor.children).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "__inline": false,
+          "_key": "c01739b0d03b",
+          "_type": "someType",
+          "children": Array [
+            Object {
+              "_key": "c01739b0d03b-void-child",
+              "_type": "span",
+              "marks": Array [],
+              "text": "",
+            },
+          ],
+          "value": Object {
+            "asset": Object {
+              "_ref": "image-f52f71bc1df46e080dabe43a8effe8ccfb5f21de-4032x3024-png",
+              "_type": "reference",
+            },
+            "nestedArray": Array [],
+          },
+        },
+      ]
+    `)
+  })
+  it('will not create patches for removal inside object blocks', () => {
+    editor.children = [
+      {
+        _type: 'someType',
+        _key: 'c01739b0d03b',
+        children: [
+          {
+            _key: 'c01739b0d03b-void-child',
+            _type: 'span',
+            text: '',
+            marks: [],
+          },
+        ],
+        __inline: false,
+        value: {
+          asset: {
+            _ref: 'image-f52f71bc1df46e080dabe43a8effe8ccfb5f21de-4032x3024-png',
+            _type: 'reference',
+          },
+          nestedArray: [
+            {
+              _key: 'foo',
+              _type: 'nestedValue',
+            },
+          ],
+        },
+      },
+    ]
+    const patches = [
+      {type: 'unset', path: [{_key: 'c01739b0d03b'}, 'nestedArray', 0], origin: 'remote'},
+    ] as Patch[]
+    const snapShot = fromSlateValue(editor.children, schemaTypes.block.name)
+    patches.forEach((p) => {
+      patchToOperations(editor, p, patches, snapShot)
+    })
+    expect(editor.children).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "__inline": false,
+          "_key": "c01739b0d03b",
+          "_type": "someType",
+          "children": Array [
+            Object {
+              "_key": "c01739b0d03b-void-child",
+              "_type": "span",
+              "marks": Array [],
+              "text": "",
+            },
+          ],
+          "value": Object {
+            "asset": Object {
+              "_ref": "image-f52f71bc1df46e080dabe43a8effe8ccfb5f21de-4032x3024-png",
+              "_type": "reference",
+            },
+            "nestedArray": Array [
+              Object {
+                "_key": "foo",
+                "_type": "nestedValue",
+              },
+            ],
           },
         },
       ]

@@ -347,12 +347,6 @@ export function createPatchToOperations(
       debugState(editor, 'after')
       return true
     }
-    // Inside block objects - patch block and set it again
-    if (!editor.isTextBlock(block)) {
-      const newBlock = applyAll([block], [patch])[0]
-      Transforms.setNodes(editor, newBlock, {at: [blockIndex]})
-      return true
-    }
     return false
   }
 
