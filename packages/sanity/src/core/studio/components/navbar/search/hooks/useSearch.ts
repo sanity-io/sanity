@@ -140,7 +140,7 @@ export function useSearch({
         tap(setSearchState)
       )
     },
-    // @todo: add onComplete, onError and onStart to the deps list when it's verified that it's safe to do so
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- @todo: add onComplete, onError and onStart to the deps list when it's verified that it's safe to do so
     [allowEmptyQueries, searchWeighted]
   )
 

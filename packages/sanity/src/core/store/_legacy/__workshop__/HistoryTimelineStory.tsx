@@ -50,7 +50,7 @@ export default function HistoryTimelineStory() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {historyController} = useMemoObservable(
     () => historyStore.getTimelineController({client, documentId, documentType, timeline}),
-    [client, documentId, documentType, timeline]
+    [client, documentId, documentType, historyStore, timeline]
   )!
 
   const [, _forceUpdate] = useState(0)
