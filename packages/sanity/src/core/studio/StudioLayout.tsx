@@ -15,7 +15,7 @@ import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useNavbarComponent} from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
-import {RouteScope, useRouter} from 'sanity/router'
+import {RouteScope, useRouterState} from 'sanity/router'
 
 const SearchFullscreenPortalCard = styled(Card)`
   height: 100%;
@@ -43,10 +43,14 @@ export const NavbarContext = createContext<NavbarContextValue>({
 
 /** @public */
 export function StudioLayout() {
-  const {state: routerState} = useRouter()
   const {name, title, tools} = useWorkspace()
-  const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
-  const activeTool = tools.find((tool) => tool.name === activeToolName)
+  const activeToolName = useRouterState(
+    useCallback(
+      (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
+      []
+    )
+  )
+  const activeTool = useMemo(() => tools.find((tool) => tool.name === activeToolName), [])
   const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null
