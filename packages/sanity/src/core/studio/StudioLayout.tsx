@@ -1,4 +1,4 @@
-import {Card, Flex, Spinner} from '@sanity/ui'
+import {Card, Flex, Spinner, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {
   createContext,
@@ -50,7 +50,10 @@ export function StudioLayout() {
       []
     )
   )
-  const activeTool = useMemo(() => tools.find((tool) => tool.name === activeToolName), [])
+  const activeTool = useMemo(
+    () => tools.find((tool) => tool.name === activeToolName),
+    [activeToolName, tools]
+  )
   const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null
@@ -114,9 +117,11 @@ export function StudioLayout() {
   )
 }
 
+// @TODO re-use `LoadingComponent`, which is `LoadingScreen` by default, to reduce "popping" during initial load
 function LoadingTool() {
   return (
-    <Flex align="center" height="fill" justify="center">
+    <Flex justify="center" align="center" height="fill" direction="column" gap={4}>
+      <Text muted>Loading…</Text>
       <Spinner muted />
     </Flex>
   )

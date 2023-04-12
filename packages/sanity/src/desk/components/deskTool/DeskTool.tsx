@@ -109,6 +109,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
                   paneKey={paneKey}
                   params={paneParams}
                   payload={payload}
+                  path={path}
                   selected={selected}
                   siblingIndex={siblingIndex}
                 />
