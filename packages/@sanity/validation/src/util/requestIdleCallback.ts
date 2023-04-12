@@ -1,8 +1,8 @@
 /**
  * Simple requestIdleCallback polyfill
  * Can be removed when all browsers support requestIdleCallback: https://caniuse.com/requestidlecallback
- * @param callback
- * @param options
+ * @param callback -
+ * @param options -
  */
 const requestIdleCallbackShim: typeof window.requestIdleCallback = function requestIdleCallbackShim(
   callback,
