@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Flex, Spinner, Text} from '@sanity/ui'
 import {TimelineItem} from './timelineItem'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {Chunk, CommandList, CommandListRenderItemCallback} from 'sanity'
@@ -41,12 +41,14 @@ export const Timeline = ({
 
   const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
     (chunk, {activeIndex}) => {
+      const isFirst = activeIndex === 0
+      const isLast = (filteredChunks && activeIndex === filteredChunks.length - 1) || false
       return (
-        <>
+        <Box paddingBottom={isLast ? 1 : 0} paddingTop={isFirst ? 1 : 0} paddingX={1}>
           <TimelineItem
             chunk={chunk}
-            isFirst={activeIndex === 0}
-            isLast={(filteredChunks && activeIndex === filteredChunks.length - 1) || false}
+            isFirst={isFirst}
+            isLast={isLast}
             isLatest={activeIndex === 0 && !disabledBeforeFirstChunk}
             isSelected={activeIndex === selectedIndex}
             onSelect={onSelect}
@@ -58,7 +60,7 @@ export const Timeline = ({
               <Spinner muted />
             </Flex>
           )}
-        </>
+        </Box>
       )
     },
     [disabledBeforeFirstChunk, filteredChunks, hasMoreChunks, onSelect, selectedIndex]
