@@ -12,6 +12,7 @@ function useShallowCompareMemoize<T>(value: T): Array<T | undefined> {
 }
 
 function useShallowCompareEffect(callback: React.EffectCallback, dependencies: any) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- the linter isn't able to see that deps are properly handled here
   useEffect(callback, useShallowCompareMemoize(dependencies))
 }
 

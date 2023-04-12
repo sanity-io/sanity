@@ -103,7 +103,7 @@ function InlineObjectWithDiff({
       setOpen(true)
       onSetFocus(focusPath)
     }
-  }, [isEditing])
+  }, [focusPath, isEditing, onSetFocus])
 
   const handleOpenPopup = useCallback(
     (event: any) => {
@@ -115,7 +115,7 @@ function InlineObjectWithDiff({
       }
       event.preventDefault()
     },
-    [focusPath]
+    [focusPath, isRemoved, onSetFocus]
   )
 
   const handleClose = useCallback(() => {

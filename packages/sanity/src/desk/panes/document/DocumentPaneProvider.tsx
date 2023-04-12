@@ -128,7 +128,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {historyController} = useMemoObservable(
     () => historyStore.getTimelineController({client, documentId, documentType, timeline}),
-    [client, documentId, documentType, timeline]
+    [client, documentId, documentType, historyStore, timeline]
   )!
 
   // @todo: this will now happen on each render, but should be refactored so it happens only when
@@ -299,7 +299,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const liveEdit = useMemo(() => Boolean(schemaType?.liveEdit), [documentType, schema])
+  const liveEdit = useMemo(() => Boolean(schemaType?.liveEdit), [schemaType?.liveEdit])
   const docId = value._id ? value._id : 'dummy-id'
   const docPermissionsInput = useMemo(() => {
     return {

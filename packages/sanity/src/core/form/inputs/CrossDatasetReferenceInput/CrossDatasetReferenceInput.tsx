@@ -230,7 +230,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         tap(setSearchState)
       )
     },
-    // @todo: add onSearch to the deps list when it's verified that it's safe to do so
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- @todo: add onSearch to the deps list when it's verified that it's safe to do so
     [inputId, push]
   )
 

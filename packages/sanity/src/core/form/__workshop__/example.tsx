@@ -128,7 +128,7 @@ export default function ExampleStory() {
     if (includeUnknownField && !documentValue?.isPublished) {
       setPropValue('Unknown Field in Value', false)
     }
-  }, [documentValue])
+  }, [documentValue, includeUnknownField, setPropValue])
 
   return (
     <PresenceOverlay>
