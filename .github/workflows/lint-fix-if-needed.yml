@@ -46,11 +46,15 @@ jobs:
           key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
       - run: yarn lint:fix
       - uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1
+        # Run even if `yarn lint:fix` fails
+        if: always()
         id: generate-token
         with:
           app_id: ${{ secrets.ECOSPARK_APP_ID }}
           private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
       - uses: peter-evans/create-pull-request@38e0b6e68b4c852a5500a94740f0e535e0d7ba54 # v4
+        # Run even if `yarn lint:fix` fails
+        if: always()
         with:
           author: github-actions <41898282+github-actions[bot]@users.noreply.github.com>
           body: I ran `yarn lint:fix` 🧑‍💻
