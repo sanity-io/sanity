@@ -49,6 +49,7 @@ export function useAsync<T, U>(
           }
         )
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- this is under control, and enforced by our linter setup
     [fn, ...dependencies]
   )
 
