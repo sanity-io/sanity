@@ -5,7 +5,7 @@ import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useRef} from 'react'
 import {FormPatch, PatchChannel, PatchEvent} from '../patch'
 import {ObjectFormNode} from '../store/types/nodes'
-import {ObjectInputProps} from '../types'
+import {ObjectFieldProps, ObjectInputProps} from '../types'
 import {useFormBuilder} from '../useFormBuilder'
 import {StateTree} from '../store'
 import {EMPTY_ARRAY} from '../../util'
@@ -169,10 +169,12 @@ function RootInput() {
     [onSetFieldSetCollapsed]
   )
 
-  const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = {
-    focusPath,
+  const changed = members.some((m) => m.kind === 'field' && m.field.changed)
+
+  const rootInputProps: ObjectInputProps = {
+    changed,
     elementProps: {ref: focusRef, id, onBlur: handleBlur, onFocus: handleFocus},
-    changed: members.some((m) => m.kind === 'field' && m.field.changed),
+    focusPath,
     focused,
     groups,
     id,
@@ -181,15 +183,16 @@ function RootInput() {
     onChange: handleChange,
     onFieldClose: handleCloseField,
     onFieldCollapse: handleCollapseField,
-    onFieldSetCollapse: handleCollapseFieldSet,
     onFieldExpand: handleExpandField,
+    onFieldGroupSelect: handleSelectFieldGroup,
+    onFieldOpen: handleOpenField,
+    onFieldSetCollapse: handleCollapseFieldSet,
     onFieldSetExpand: handleExpandFieldSet,
     onPathFocus: onPathFocus,
-    onFieldOpen: handleOpenField,
-    onFieldGroupSelect: handleSelectFieldGroup,
     path: EMPTY_ARRAY,
     presence: EMPTY_ARRAY,
     readOnly,
+    renderDefault: () => <></>,
     renderField,
     renderInput,
     renderItem,
@@ -199,5 +202,29 @@ function RootInput() {
     value,
   }
 
-  return <>{renderInput(rootInputProps)}</>
+  const rootFieldProps: Omit<ObjectFieldProps, 'renderDefault'> = {
+    changed,
+    children: renderInput(rootInputProps),
+    description: schemaType.description,
+    groups,
+    index: 0,
+    inputId: id,
+    inputProps: rootInputProps,
+    level: 0,
+    name: schemaType.name,
+    onClose: () => undefined,
+    onCollapse: () => undefined,
+    onExpand: () => undefined,
+    onFieldGroupSelect: handleSelectFieldGroup,
+    onOpen: () => undefined,
+    open: true,
+    path: EMPTY_ARRAY,
+    presence: EMPTY_ARRAY,
+    schemaType,
+    title: schemaType.title ?? schemaType.name,
+    validation: EMPTY_ARRAY,
+    value,
+  }
+
+  return <>{renderField(rootFieldProps)}</>
 }
