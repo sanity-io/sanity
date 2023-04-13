@@ -887,7 +887,8 @@ export default async function initSanity(
       }
     }
 
-    return updatedEnv
+    // if file is empty, add a newline
+    return updatedEnv.concat(fileContents === '' ? '\n' : '')
   }
 }
 
