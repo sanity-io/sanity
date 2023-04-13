@@ -9,5 +9,6 @@
       "extends": [":semanticCommitTypeAll(chore)"],
       "groupSlug": "dev"
     }
-  ]
+  ],
+  "ignorePaths": ["packages/@sanity/cli/test/__fixtures__/v2/package.json"]
 }
