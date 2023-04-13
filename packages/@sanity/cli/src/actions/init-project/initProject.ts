@@ -887,7 +887,7 @@ export default async function initSanity(
           .map((line) => {
             if (
               !line.trim().startsWith('#') && // ignore comments
-              new RegExp(`(^\s?${key})[= :]`).test(line) // match key
+              new RegExp(`(^\\s*${key})((: )|( *=))`).test(line) // match key
             ) {
               return line.replace(existingValue, value)
             }
