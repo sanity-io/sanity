@@ -17,6 +17,7 @@ import {
   NoChanges,
   ScrollContainer,
   UserAvatar,
+  useTimelineSelector,
 } from 'sanity'
 
 const Scroller = styled(ScrollContainer)`
@@ -27,16 +28,16 @@ const Scroller = styled(ScrollContainer)`
 `
 
 export function ChangesPanel(): React.ReactElement | null {
-  const {documentId, onHistoryClose, schemaType, timelineError, useTimelineSelector, value} =
+  const {documentId, onHistoryClose, schemaType, timelineError, timelineStore, value} =
     useDocumentPane()
   const {collapsed} = usePane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
   // Subscribe to external timeline state changes
-  const diff = useTimelineSelector((state) => state.diff)
-  const onOlderRevision = useTimelineSelector((state) => state.onOlderRevision)
-  const selectionState = useTimelineSelector((state) => state.selectionState)
-  const sinceTime = useTimelineSelector((state) => state.sinceTime)
+  const diff = useTimelineSelector(timelineStore, (state) => state.diff)
+  const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
+  const selectionState = useTimelineSelector(timelineStore, (state) => state.selectionState)
+  const sinceTime = useTimelineSelector(timelineStore, (state) => state.sinceTime)
   const loading = selectionState === 'loading'
   const isComparingCurrent = !onOlderRevision
 

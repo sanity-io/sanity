@@ -8,7 +8,7 @@ import {TimelineError} from '../changesPanel/content/TimelineError'
 import {useDocumentPane} from '../useDocumentPane'
 import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
-import {Chunk} from 'sanity'
+import {Chunk, useTimelineSelector} from 'sanity'
 
 interface TimelineMenuProps {
   chunk: Chunk | null
@@ -21,26 +21,17 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {
-    setTimelineRange,
-    setTimelineMode,
-    timelineError,
-    timelineFindRangeForRev,
-    timelineFindRangeForSince,
-    timelineLoadMore,
-    ready,
-    useTimelineSelector: useTimelineState,
-  } = useDocumentPane()
+  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)
   const toast = useToast()
 
-  const chunks = useTimelineState((state) => state.chunks)
-  const loading = useTimelineState((state) => state.isLoading)
-  const hasMoreChunks = useTimelineState((state) => state.hasMoreChunks)
-  const realRevChunk = useTimelineState((state) => state.realRevChunk)
-  const sinceTime = useTimelineState((state) => state.sinceTime)
+  const chunks = useTimelineSelector(timelineStore, (state) => state.chunks)
+  const loading = useTimelineSelector(timelineStore, (state) => state.isLoading)
+  const hasMoreChunks = useTimelineSelector(timelineStore, (state) => state.hasMoreChunks)
+  const realRevChunk = useTimelineSelector(timelineStore, (state) => state.realRevChunk)
+  const sinceTime = useTimelineSelector(timelineStore, (state) => state.sinceTime)
 
   const handleOpen = useCallback(() => {
     setTimelineMode(mode)
@@ -74,7 +65,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const selectRev = useCallback(
     (revChunk: Chunk) => {
       try {
-        const [sinceId, revId] = timelineFindRangeForRev(revChunk)
+        const [sinceId, revId] = timelineStore.findRangeForRev(revChunk)
         setTimelineMode('closed')
         setTimelineRange(sinceId, revId)
       } catch (err) {
@@ -86,13 +77,13 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         })
       }
     },
-    [setTimelineMode, setTimelineRange, timelineFindRangeForRev, toast]
+    [setTimelineMode, setTimelineRange, timelineStore, toast]
   )
 
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
       try {
-        const [sinceId, revId] = timelineFindRangeForSince(sinceChunk)
+        const [sinceId, revId] = timelineStore.findRangeForSince(sinceChunk)
         setTimelineMode('closed')
         setTimelineRange(sinceId, revId)
       } catch (err) {
@@ -104,14 +95,14 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         })
       }
     },
-    [setTimelineMode, setTimelineRange, timelineFindRangeForSince, toast]
+    [setTimelineMode, setTimelineRange, timelineStore, toast]
   )
 
   const handleLoadMore = useCallback(() => {
     if (!loading) {
-      timelineLoadMore()
+      timelineStore.loadMore()
     }
-  }, [loading, timelineLoadMore])
+  }, [loading, timelineStore])
 
   const content = timelineError ? (
     <TimelineError />

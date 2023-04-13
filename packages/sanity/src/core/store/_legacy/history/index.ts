@@ -1,3 +1,4 @@
 export * from './createHistoryStore'
 export * from './history'
-export * from './useTimelineController'
+export * from './useTimelineStore'
+export * from './useTimelineSelector'

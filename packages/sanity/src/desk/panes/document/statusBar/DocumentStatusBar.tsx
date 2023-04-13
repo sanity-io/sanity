@@ -4,6 +4,7 @@ import {Box, Flex} from '@sanity/ui'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentSparkline} from './sparkline/DocumentSparkline'
+import {useTimelineSelector} from 'sanity'
 
 export interface DocumentStatusBarProps {
   actionsBoxRef?: React.Ref<HTMLDivElement>
@@ -16,10 +17,10 @@ const DocumentActionsBox = styled(Box)`
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {badges, useTimelineSelector} = useDocumentPane()
+  const {badges, timelineStore} = useDocumentPane()
 
   // Subscribe to external timeline state changes
-  const showingRevision = useTimelineSelector((state) => state.onOlderRevision)
+  const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
 
   return useMemo(
     () => (

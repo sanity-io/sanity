@@ -13,7 +13,7 @@ import {
 } from '../../../field'
 import {useConnectionState, useEditState, useSchema} from '../../../hooks'
 import {useInitialValue} from '../document'
-import {useTimelineController} from '../history'
+import {useTimelineStore, useTimelineSelector} from '../history'
 
 export default function HistoryTimelineStory() {
   const schema = useSchema()
@@ -37,24 +37,23 @@ export default function HistoryTimelineStory() {
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
 
-  const {timelineFindRangeForRev, timelineFindRangeForSince, useTimelineSelector} =
-    useTimelineController({
-      documentId,
-      documentType,
-      rev: params.rev,
-      since: params.since,
-    })
+  const timelineStore = useTimelineStore({
+    documentId,
+    documentType,
+    rev: params.rev,
+    since: params.since,
+  })
 
   const changesOpen = !!params.since
 
   // Subscribe to external timeline state changes
-  const chunks = useTimelineSelector((state) => state.chunks)
-  const diff = useTimelineSelector((state) => state.diff)
-  const onOlderRevision = useTimelineSelector((state) => state.onOlderRevision)
-  const realRevChunk = useTimelineSelector((state) => state.realRevChunk)
-  const sinceAttributes = useTimelineSelector((state) => state.sinceAttributes)
-  const sinceTime = useTimelineSelector((state) => state.sinceTime)
-  const timelineDisplayed = useTimelineSelector((state) => state.timelineDisplayed)
+  const chunks = useTimelineSelector(timelineStore, (state) => state.chunks)
+  const diff = useTimelineSelector(timelineStore, (state) => state.diff)
+  const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
+  const realRevChunk = useTimelineSelector(timelineStore, (state) => state.realRevChunk)
+  const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
+  const sinceTime = useTimelineSelector(timelineStore, (state) => state.sinceTime)
+  const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
 
   const compareValue: Partial<SanityDocument> | null = changesOpen ? sinceAttributes : null
 
@@ -98,18 +97,18 @@ export default function HistoryTimelineStory() {
 
   const handleRevClick = useCallback(
     (chunk: Chunk) => () => {
-      const [sinceId, revId] = timelineFindRangeForRev(chunk)
+      const [sinceId, revId] = timelineStore.findRangeForRev(chunk)
       setTimelineRange(sinceId, revId)
     },
-    [setTimelineRange, timelineFindRangeForRev]
+    [setTimelineRange, timelineStore]
   )
 
   const handleSinceClick = useCallback(
     (chunk: Chunk) => () => {
-      const [sinceId, revId] = timelineFindRangeForSince(chunk)
+      const [sinceId, revId] = timelineStore.findRangeForSince(chunk)
       setTimelineRange(sinceId, revId)
     },
-    [setTimelineRange, timelineFindRangeForSince]
+    [setTimelineRange, timelineStore]
   )
 
   return (

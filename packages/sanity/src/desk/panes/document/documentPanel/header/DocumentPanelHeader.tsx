@@ -10,6 +10,7 @@ import {useDeskTool} from '../../../../useDeskTool'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {ValidationMenu} from './ValidationMenu'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
+import {useTimelineSelector} from 'sanity'
 
 export interface DocumentPanelHeaderProps {
   // TODO:
@@ -30,10 +31,10 @@ export const DocumentPanelHeader = memo(
       menuItems,
       menuItemGroups,
       schemaType,
+      timelineStore,
       ready,
       views,
       unstable_languageFilter,
-      useTimelineSelector,
     } = useDocumentPane()
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
@@ -43,7 +44,7 @@ export const DocumentPanelHeader = memo(
     const showVersionMenu = features.reviewChanges
 
     // Subscribe to external timeline state changes
-    const rev = useTimelineSelector((state) => state.revTime)
+    const rev = useTimelineSelector(timelineStore, (state) => state.revTime)
 
     // there are three kinds of buttons possible:
     //

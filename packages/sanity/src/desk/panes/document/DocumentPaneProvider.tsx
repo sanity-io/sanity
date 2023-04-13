@@ -34,7 +34,8 @@ import {
   useValidationStatus,
   getDraftId,
   useDocumentValuePermissions,
-  useTimelineController,
+  useTimelineStore,
+  useTimelineSelector,
 } from 'sanity'
 
 const emptyObject = {} as Record<string, string | undefined>
@@ -116,31 +117,26 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
   const changesOpen = !!params.since
 
+  const [timelineError, setTimelineError] = useState<Error | null>(null)
   /**
-   * Create a TimelineController and receive a selector function we can use to subscribe to
-   * specific changes in timeline state.
-   * Also obtain the current timeline error state and specific functions to obtain timeline ranges.
-   * These are made available to all child components via DocumentPaneContext.
+   * Create an intermediate store which handles document Timeline + TimelineController
+   * creation, and also fetches pre-requsite document snapshots. Compatible with `useSyncExternalStore`
+   * and made available to child components via DocumentPaneContext.
    */
-  const {
-    timelineError,
-    timelineFindRangeForRev,
-    timelineFindRangeForSince,
-    timelineLoadMore,
-    useTimelineSelector,
-  } = useTimelineController({
+  const timelineStore = useTimelineStore({
     documentId,
     documentType,
+    onError: setTimelineError,
     rev: params.rev,
     since: params.since,
   })
 
   // Subscribe to external timeline state changes
-  const onOlderRevision = useTimelineSelector((state) => state.onOlderRevision)
-  const revTime = useTimelineSelector((state) => state.revTime)
-  const sinceAttributes = useTimelineSelector((state) => state.sinceAttributes)
-  const timelineDisplayed = useTimelineSelector((state) => state.timelineDisplayed)
-  const timelineReady = useTimelineSelector((state) => state.timelineReady)
+  const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
+  const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
+  const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
+  const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
+  const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -433,16 +429,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     setTimelineMode,
     setTimelineRange,
     timelineError,
-    timelineFindRangeForRev,
-    timelineFindRangeForSince,
-    timelineLoadMore,
     timelineMode,
+    timelineStore,
     title,
     value,
     views,
     formState,
     unstable_languageFilter: languageFilter,
-    useTimelineSelector,
   }
 
   useEffect(() => {

@@ -19,8 +19,7 @@ import {
   PatchEvent,
   PermissionCheckResult,
   StateTree,
-  TimelineController,
-  TimelineState,
+  TimelineStore,
 } from 'sanity'
 
 /** @internal */
@@ -65,10 +64,8 @@ export interface DocumentPaneContextValue {
   setTimelineRange(since: string | null, rev: string | null): void
   source?: string
   timelineError: Error | null
-  timelineFindRangeForRev: TimelineController['findRangeForNewRev']
-  timelineFindRangeForSince: TimelineController['findRangeForNewSince']
-  timelineLoadMore: () => void
   timelineMode: TimelineMode
+  timelineStore: TimelineStore
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike
@@ -77,9 +74,6 @@ export interface DocumentPaneContextValue {
   permissions?: PermissionCheckResult | null
   isPermissionsLoading: boolean
   unstable_languageFilter: DocumentLanguageFilterComponent[]
-  useTimelineSelector: <ReturnValue>(
-    selector: (timelineState: TimelineState) => ReturnValue
-  ) => ReturnValue
 }
 
 /** @internal */

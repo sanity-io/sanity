@@ -1,5 +1,5 @@
 import {ObjectDiff} from '@sanity/diff'
-import {useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore} from 'react'
+import {useEffect, useMemo, useRef} from 'react'
 import deepEquals from 'react-fast-compare'
 import {BehaviorSubject, catchError, distinctUntilChanged, map, of, Subscription, tap} from 'rxjs'
 import {Annotation, Chunk, SelectionState, TimelineController, useHistoryStore} from '../../..'
@@ -10,6 +10,7 @@ import {remoteSnapshots, RemoteSnapshotVersionEvent} from '../document'
 interface UseTimelineControllerOpts {
   documentId: string
   documentType: string
+  onError?: (err: Error) => void
   rev?: string
   since?: string
 }
@@ -45,31 +46,36 @@ const INITIAL_TIMELINE_STATE: TimelineState = {
   timelineReady: false,
 }
 
+/** @internal */
+export interface TimelineStore {
+  findRangeForRev: TimelineController['findRangeForNewRev']
+  findRangeForSince: TimelineController['findRangeForNewSince']
+  loadMore: () => void
+  getSnapshot: () => TimelineState
+  subscribe: (callback: () => void) => () => void
+}
+
 /**
- * Handles the creation of a document Timeline and TimelineController, returning a custom hook
- * which can be used to subscribe to selected state changes (via `useSyncExternalStore`)
+ * Creates a store which handles the creation of a document Timeline,
+ * TimelineController and also fetches pre-requisite document snapshots.
+ *
+ * `TimelineStore` exposes select TimelineController methods used to query
+ * ranges and fetch more transactions. It can also be used with
+ * `useSyncExternalStore` to subscribe to selected state changes.
  *
  * @internal
  * */
-export function useTimelineController({
+export function useTimelineStore({
   documentId,
   documentType,
+  onError,
   rev,
   since,
-}: UseTimelineControllerOpts): {
-  timelineError: Error | null
-  timelineFindRangeForRev: TimelineController['findRangeForNewRev']
-  timelineFindRangeForSince: TimelineController['findRangeForNewSince']
-  timelineLoadMore: () => void
-  useTimelineSelector: <ReturnValue>(
-    selector: (timelineState: TimelineState) => ReturnValue
-  ) => ReturnValue
-} {
+}: UseTimelineControllerOpts): TimelineStore {
   const historyStore = useHistoryStore()
   const snapshotsSubscriptionRef = useRef<Subscription | null>(null)
   const timelineStateRef = useRef<TimelineState>(INITIAL_TIMELINE_STATE)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const [timelineError, setTimelineError] = useState<Error | null>(null)
 
   /**
    * The mutable TimelineController, used internally
@@ -148,78 +154,56 @@ export function useTimelineController({
     }
   }, [client, controller, documentId, documentType])
 
-  /**
-   * Custom hook which wraps around `useSyncExternalStore`. Accepts a selector function which can be used
-   * to opt-in to specific state updates.
-   */
-  const useTimelineSelector = <ReturnValue>(
-    selector: (timelineState: TimelineState) => ReturnValue
-  ) => {
-    const subscribe = useCallback((callback: () => void) => {
-      const subscription = timelineController$
-        .pipe(
-          // Manually stop loading transactions in TimelineController, otherwise transaction history
-          // will continue to be fetched – even if unwanted.
-          tap((innerController) => innerController.setLoadMore(false)),
-          map((innerController) => ({
-            chunks: innerController.timeline.mapChunks((c) => c),
-            diff: innerController.sinceTime ? innerController.currentObjectDiff() : null,
-            isLoading: false,
-            hasMoreChunks: !innerController.timeline.reachedEarliestEntry,
-            onOlderRevision: innerController.onOlderRevision(),
-            realRevChunk: innerController.realRevChunk,
-            revTime: innerController.revTime,
-            selectionState: innerController.selectionState,
-            sinceAttributes: innerController.sinceAttributes(),
-            sinceTime: innerController.sinceTime,
-            timelineDisplayed: innerController.displayed(),
-            timelineReady: !['invalid', 'loading'].includes(innerController.selectionState),
-          })),
-          // Only emit (and in turn, re-render) when values have changed
-          distinctUntilChanged(deepEquals),
-          tap((timelineState) => {
-            timelineStateRef.current = timelineState
-          }),
-          // Emit initial timeline state whenever we encounter an error in TimelineController's `handler` callback.
-          // A little ham-fisted, but also reflects how we handle timeline errors in the UI
-          // (i.e. no timeline state or diffs are rendered and we revert to the current editable document)
-          catchError((err) => {
-            setTimelineError(err)
-            return of(INITIAL_TIMELINE_STATE)
-          }),
-          // Trigger callback function required by `useSyncExternalStore` to denote when to re-render
-          tap(callback)
-        )
-        .subscribe()
+  const timelineStore = useMemo(() => {
+    return {
+      findRangeForRev: (chunk: Chunk) => controller.findRangeForNewRev(chunk),
+      findRangeForSince: (chunk: Chunk) => controller.findRangeForNewSince(chunk),
+      loadMore: () => {
+        controller.setLoadMore(true)
+        timelineStateRef.current.isLoading = true
+      },
+      getSnapshot: () => timelineStateRef.current,
+      subscribe: (callback: () => void) => {
+        const subscription = timelineController$
+          .pipe(
+            // Manually stop loading transactions in TimelineController, otherwise transaction history
+            // will continue to be fetched – even if unwanted.
+            tap((innerController) => innerController.setLoadMore(false)),
+            map((innerController) => ({
+              chunks: innerController.timeline.mapChunks((c) => c),
+              diff: innerController.sinceTime ? innerController.currentObjectDiff() : null,
+              isLoading: false,
+              hasMoreChunks: !innerController.timeline.reachedEarliestEntry,
+              onOlderRevision: innerController.onOlderRevision(),
+              realRevChunk: innerController.realRevChunk,
+              revTime: innerController.revTime,
+              selectionState: innerController.selectionState,
+              sinceAttributes: innerController.sinceAttributes(),
+              sinceTime: innerController.sinceTime,
+              timelineDisplayed: innerController.displayed(),
+              timelineReady: !['invalid', 'loading'].includes(innerController.selectionState),
+            })),
+            // Only emit (and in turn, re-render) when values have changed
+            distinctUntilChanged(deepEquals),
+            tap((timelineState) => {
+              timelineStateRef.current = timelineState
+            }),
+            // Emit initial timeline state whenever we encounter an error in TimelineController's `handler` callback.
+            // A little ham-fisted, but also reflects how we handle timeline errors in the UI
+            // (i.e. no timeline state or diffs are rendered and we revert to the current editable document)
+            catchError((err) => {
+              onError?.(err)
+              return of(INITIAL_TIMELINE_STATE)
+            }),
+            // Trigger callback function required by `useSyncExternalStore` to denote when to re-render
+            tap(callback)
+          )
+          .subscribe()
 
-      return () => subscription.unsubscribe()
-    }, [])
+        return () => subscription.unsubscribe()
+      },
+    }
+  }, [controller, onError, timelineController$])
 
-    const getSnapshot = useCallback(() => selector(timelineStateRef.current), [selector])
-
-    return useSyncExternalStore(subscribe, getSnapshot)
-  }
-
-  const handleFindRangeForRev = useCallback(
-    (chunk: Chunk) => controller.findRangeForNewRev(chunk),
-    [controller]
-  )
-
-  const handleFindRangeForSince = useCallback(
-    (chunk: Chunk) => controller.findRangeForNewSince(chunk),
-    [controller]
-  )
-
-  const handleLoadMore = useCallback(() => {
-    controller.setLoadMore(true)
-    timelineStateRef.current.isLoading = true
-  }, [controller])
-
-  return {
-    timelineError,
-    timelineFindRangeForRev: handleFindRangeForRev,
-    timelineFindRangeForSince: handleFindRangeForSince,
-    timelineLoadMore: handleLoadMore,
-    useTimelineSelector,
-  }
+  return timelineStore
 }
