@@ -1542,9 +1542,9 @@
     tslib "^2.0.0"
 
 "@dnd-kit/core@^6.0.5":
-  version "6.0.7"
-  resolved "https://registry.npmjs.org/@dnd-kit/core/-/core-6.0.7.tgz"
-  integrity sha512-qcLBTVTjmLuLqC0RHQ+dFKN5neWmAI56H9xZ+he9WEJEkAvR76YAcz7DSWDJfjErepfG2H3Fkb9lYiX7cPR62g==
+  version "6.0.8"
+  resolved "https://registry.yarnpkg.com/@dnd-kit/core/-/core-6.0.8.tgz#040ae13fea9787ee078e5f0361f3b49b07f3f005"
+  integrity sha512-lYaoP8yHTQSLlZe6Rr9qogouGUz9oRUj4AHhDQGQzq/hqaJRpFo65X+JKsdHf8oUFBzx5A+SJPUvxAwTF2OabA==
   dependencies:
     "@dnd-kit/accessibility" "^3.0.0"
     "@dnd-kit/utilities" "^3.2.1"
