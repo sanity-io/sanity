@@ -4,8 +4,8 @@ import {DialogProps} from '@sanity/ui'
 import {isDev} from '../../../../environment'
 import {useClient} from '../../../../hooks'
 import {useColorScheme} from '../../../colorScheme'
-import {StatusButton} from '../../StatusButton'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {StatusButton} from '../../../../components'
 import {useModuleStatus} from './module-status'
 import {ChangelogDialog} from './ChangelogDialog'
 import {ChangelogAccordion} from './ChangelogAccordion'
@@ -61,13 +61,14 @@ export function ChangelogButton() {
   return (
     <>
       <StatusButton
-        active
         icon={PackageIcon}
+        label="Upgrade the Sanity Studio"
         mode="bleed"
         onClick={handleOpen}
         ref={setButtonElement}
         selected={open}
-        statusTone="primary"
+        tooltip={{scheme}}
+        tone="primary"
       />
 
       {open && (
