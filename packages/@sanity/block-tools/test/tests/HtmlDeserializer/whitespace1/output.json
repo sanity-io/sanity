@@ -12,9 +12,7 @@
       {
         "_key": "randomKey01",
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "strong"
       },
       {
@@ -26,9 +24,7 @@
       {
         "_key": "randomKey03",
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "bold"
       },
       {
@@ -40,9 +36,7 @@
       {
         "_key": "randomKey05",
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "italic"
       },
       {
@@ -54,9 +48,7 @@
       {
         "_key": "randomKey07",
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "emphasis"
       },
       {

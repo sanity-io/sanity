@@ -3,14 +3,16 @@ import React, {useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
 import {Editor, Transforms, Node, Descendant} from 'slate'
+import {useSlate} from '@sanity/slate-react'
 import {PortableTextEditor} from '../PortableTextEditor'
-import {PortableTextSlateEditor} from '../../types/editor'
+import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {toSlateValue} from '../../utils/values'
 import {KEY_TO_SLATE_ELEMENT} from '../../utils/weakMaps'
 import {withoutSaving} from '../plugins/createWithUndoRedo'
 import {withPreserveKeys} from '../../utils/withPreserveKeys'
 import {withoutPatching} from '../../utils/withoutPatching'
+import {validateValue} from '../../utils/validateValue'
 
 const debug = debugWithName('hook:useSyncValue')
 
@@ -18,31 +20,34 @@ const debug = debugWithName('hook:useSyncValue')
  * @internal
  */
 export interface UseSyncValueProps {
-  editor: PortableTextEditor
   isPending: React.MutableRefObject<boolean | null>
   keyGenerator: () => string
+  onChange: (change: EditorChange) => void
+  portableTextEditor: PortableTextEditor
   readOnly: boolean
-  slateEditor: PortableTextSlateEditor
 }
 
 /**
- * Syncs a value with the editor state.
+ * Sync value with the editor state
+ *
+ * Normally nothing here should apply, and the editor and the real world are perfectly aligned.
+ *
+ * Inconsistencies could happen though, so we need to check the editor state when the value changes.
+ *
+ * For performance reasons, it makes sense to also do the content validation here, as we already
+ * iterate over the value and can validate only the new content that is actually changed.
+ *
  * @internal
  */
 export function useSyncValue(
   props: UseSyncValueProps
 ): (value: PortableTextBlock[] | undefined, userCallbackFn?: () => void) => void {
-  const {editor, slateEditor, isPending, readOnly} = props
+  const {portableTextEditor, isPending, readOnly, keyGenerator} = props
+  const {change$, schemaTypes} = portableTextEditor
   const previousValue = useRef<PortableTextBlock[] | undefined>()
+  const slateEditor = useSlate()
   return useMemo(
-    () => (value: PortableTextBlock[] | undefined, userCallbackFn?: () => void) => {
-      const callbackFn = () => {
-        slateEditor.onChange()
-        if (userCallbackFn) {
-          userCallbackFn()
-        }
-      }
-
+    () => (value: PortableTextBlock[] | undefined) => {
       // Don't sync the value if there are pending local changes.
       // The value will be synced again after the local changes are submitted.
       if (isPending.current && !readOnly) {
@@ -52,37 +57,55 @@ export function useSyncValue(
 
       if (previousValue.current === value) {
         debug('Value is the same object')
+        change$.next({type: 'value', value})
         return
       }
 
+      if (value && value.length === 0) {
+        const validation = validateValue(value, schemaTypes, keyGenerator)
+        change$.next({
+          type: 'invalidValue',
+          resolution: validation.resolution,
+          value,
+        })
+        return
+      }
+
+      let isChanged = false
       previousValue.current = value
 
-      // If empty value, create a placeholder block
+      // If empty value, remove everything in the editor and insert a placeholder block
       if (!value || value.length === 0) {
         debug('Value is empty')
         withoutSaving(slateEditor, () => {
           withoutPatching(slateEditor, () => {
             Editor.withoutNormalizing(slateEditor, () => {
-              const len = slateEditor.children.length
+              const hadSelection = !!slateEditor.selection
+              if (hadSelection) {
+                Transforms.deselect(slateEditor)
+              }
+              const childrenLength = slateEditor.children.length
               slateEditor.children.forEach((_, index) => {
                 Transforms.removeNodes(slateEditor, {
-                  at: [len - 1 - index],
+                  at: [childrenLength - 1 - index],
                 })
               })
               Transforms.insertNodes(slateEditor, slateEditor.createPlaceholderBlock(), {at: [0]})
+              // Add a new selection in the top of the document
+              if (hadSelection) {
+                Transforms.select(slateEditor, [0, 0])
+              }
             })
-            Editor.normalize(slateEditor)
           })
         })
-        callbackFn()
-        return
+        isChanged = true
       }
       // Remove, replace or add nodes according to what is changed.
       if (value && value.length > 0) {
         const slateValueFromProps = toSlateValue(
           value,
           {
-            schemaTypes: editor.schemaTypes,
+            schemaTypes,
           },
           KEY_TO_SLATE_ELEMENT.get(slateEditor)
         )
@@ -92,45 +115,69 @@ export function useSyncValue(
               const childrenLength = slateEditor.children.length
               // Remove blocks that have become superfluous
               if (slateValueFromProps.length < childrenLength) {
-                Array.from(Array(childrenLength - slateValueFromProps.length)).forEach(
-                  (_, index) => {
-                    const blockIndex = childrenLength - 1 - index
-                    if (blockIndex > 0) {
-                      Transforms.removeNodes(slateEditor, {
-                        at: [blockIndex],
-                      })
-                    }
-                  }
-                )
+                for (let i = childrenLength - 1; i > slateValueFromProps.length - 1; i--) {
+                  Transforms.removeNodes(slateEditor, {
+                    at: [i],
+                  })
+                }
+                isChanged = true
               }
               // Go through all of the blocks and see if they need to be updated
               slateValueFromProps.forEach((currentBlock, currentBlockIndex) => {
                 const oldBlock = slateEditor.children[currentBlockIndex]
                 const hasChanges = oldBlock && !isEqual(currentBlock, oldBlock)
                 if (hasChanges) {
-                  if (oldBlock._key === currentBlock._key) {
-                    debug('Updating block', oldBlock, currentBlock)
-                    _updateBlock(slateEditor, currentBlock, oldBlock, currentBlockIndex)
+                  const validationValue = [value[currentBlockIndex]]
+                  const validation = validateValue(validationValue, schemaTypes, keyGenerator)
+                  if (validation.valid) {
+                    if (oldBlock._key === currentBlock._key) {
+                      debug('Updating block', oldBlock, currentBlock)
+                      _updateBlock(slateEditor, currentBlock, oldBlock, currentBlockIndex)
+                    } else {
+                      debug('Replacing block', oldBlock, currentBlock)
+                      _replaceBlock(slateEditor, currentBlock, currentBlockIndex)
+                    }
+                    isChanged = true
                   } else {
-                    debug('Replacing block', oldBlock, currentBlock)
-                    _replaceBlock(slateEditor, currentBlock, currentBlockIndex)
+                    change$.next({
+                      type: 'invalidValue',
+                      resolution: validation.resolution,
+                      value,
+                    })
                   }
                 }
                 // Insert new blocks exceeding the original value.
                 if (!oldBlock) {
-                  debug('Adding new block', currentBlock)
-                  withPreserveKeys(slateEditor, () => {
-                    Transforms.insertNodes(slateEditor, currentBlock, {at: [currentBlockIndex]})
-                  })
+                  const validationValue = [value[currentBlockIndex]]
+                  debug('Adding and validating new block', currentBlock)
+                  const validation = validateValue(validationValue, schemaTypes, keyGenerator)
+                  if (validation.valid) {
+                    withPreserveKeys(slateEditor, () => {
+                      Transforms.insertNodes(slateEditor, currentBlock, {at: [currentBlockIndex]})
+                    })
+                  } else {
+                    change$.next({
+                      type: 'invalidValue',
+                      resolution: validation.resolution,
+                      value,
+                    })
+                  }
                 }
               })
             })
           })
         })
       }
-      callbackFn()
+      if (isChanged) {
+        debug('Server value changed, syncing editor')
+        Editor.normalize(slateEditor)
+        slateEditor.onChange()
+        change$.next({type: 'value', value})
+      } else {
+        debug('Server value and editor value is the same, no need to sync.')
+      }
     },
-    [editor, isPending, readOnly, slateEditor]
+    [change$, isPending, keyGenerator, readOnly, schemaTypes, slateEditor]
   )
 }
 
@@ -143,16 +190,20 @@ function _replaceBlock(
   currentBlock: Descendant,
   currentBlockIndex: number
 ) {
-  // While replacing the block, temporarily deselect the editor,
-  // then optimistically try to restore the selection afterwards.
-  const currentSel = slateEditor.selection
-  Transforms.deselect(slateEditor)
+  // While replacing the block and the current selection focus is on the replaced block,
+  // temporarily deselect the editor then optimistically try to restore the selection afterwards.
+  const currentSelection = slateEditor.selection
+  const selectionFocusOnBlock =
+    currentSelection && currentSelection.focus.path[0] === currentBlockIndex
+  if (selectionFocusOnBlock) {
+    Transforms.deselect(slateEditor)
+  }
   Transforms.removeNodes(slateEditor, {at: [currentBlockIndex]})
   withPreserveKeys(slateEditor, () => {
     Transforms.insertNodes(slateEditor, currentBlock, {at: [currentBlockIndex]})
   })
-  if (currentSel) {
-    Transforms.select(slateEditor, currentSel)
+  if (selectionFocusOnBlock) {
+    Transforms.select(slateEditor, currentSelection)
   }
 }
 

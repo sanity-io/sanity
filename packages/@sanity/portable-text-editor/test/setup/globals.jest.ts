@@ -11,12 +11,13 @@ type Editor = {
   getSelection: () => Promise<EditorSelection | null>
   getValue: () => Promise<Value>
   insertText: (text: string) => Promise<void>
+  paste: (text: string, type?: string) => Promise<void>
   pressKey: (keyName: string, times?: number) => Promise<void>
-  redo: () => void
+  redo: () => Promise<void>
   setSelection: (selection: EditorSelection | null) => Promise<void>
   testId: string
   toggleMark: () => Promise<void>
-  undo: () => void
+  undo: () => Promise<void>
 }
 
 declare global {

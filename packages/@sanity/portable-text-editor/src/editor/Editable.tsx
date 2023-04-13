@@ -1,5 +1,5 @@
 import {BaseRange, Transforms, Text} from 'slate'
-import React, {useCallback, useMemo, useEffect, forwardRef} from 'react'
+import React, {useCallback, useMemo, useEffect, forwardRef, useState} from 'react'
 import {
   Editable as SlateEditable,
   ReactEditor,
@@ -9,6 +9,7 @@ import {
 } from '@sanity/slate-react'
 import {noop} from 'lodash'
 import {
+  EditorChange,
   EditorSelection,
   OnBeforeInputFn,
   OnCopyFn,
@@ -96,6 +97,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const readOnly = usePortableTextEditorReadOnlyStatus()
   const keyGenerator = usePortableTextEditorKeyGenerator()
   const ref = useForwardedRef(forwardedRef)
+  const [hasInvalidValue, setHasInvalidValue] = useState(false)
 
   const {change$, schemaTypes} = portableTextEditor
   const slateEditor = useSlate()
@@ -167,8 +169,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [readOnly, renderAnnotation, renderChild, renderDecorator, renderPlaceholder, schemaTypes]
   )
 
-  // Restore selection from props
-  useEffect(() => {
+  const restoreSelectionFromProps = useCallback(() => {
     if (propsSelection) {
       debug(`Selection from props ${JSON.stringify(propsSelection)}`)
       const normalizedSelection = normalizeSelection(
@@ -180,8 +181,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         const slateRange = toSlateRange(normalizedSelection, slateEditor)
         if (slateRange) {
           Transforms.select(slateEditor, slateRange)
-          // Output selection here in those cases where the editor selection was the same, and there are no set selection operations in the
-          // editor (this is usually automatically outputted by the withPortableTextSelections plugin)
+          // Output selection here in those cases where the editor selection was the same, and there are no set_selection operations made.
+          // The selection is usually automatically emitted to change$ by the withPortableTextSelections plugin whenever there is a set_selection operation applied.
           if (!slateEditor.operations.some((o) => o.type === 'set_selection')) {
             change$.next({type: 'selection', selection: normalizedSelection})
           }
@@ -189,7 +190,37 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         }
       }
     }
-  }, [slateEditor, propsSelection, blockTypeName, change$])
+  }, [propsSelection, slateEditor, blockTypeName, change$])
+
+  // Subscribe to change$ and restore selection from props when the editor has been initialized properly with it's value
+  useEffect(() => {
+    debug('Subscribing to editor changes$')
+    const sub = change$.subscribe((next: EditorChange): void => {
+      switch (next.type) {
+        case 'ready':
+          restoreSelectionFromProps()
+          break
+        case 'invalidValue':
+          setHasInvalidValue(true)
+          break
+        case 'value':
+          setHasInvalidValue(false)
+          break
+        default:
+      }
+    })
+    return () => {
+      debug('Unsubscribing to changes$')
+      sub.unsubscribe()
+    }
+  }, [change$, restoreSelectionFromProps])
+
+  // Restore selection from props when it changes
+  useEffect(() => {
+    if (propsSelection && !hasInvalidValue) {
+      restoreSelectionFromProps()
+    }
+  }, [hasInvalidValue, propsSelection, restoreSelectionFromProps])
 
   // Handle from props onCopy function
   const handleCopy = useCallback(
@@ -344,7 +375,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }
   return (
     <div ref={ref} {...restProps}>
-      {slateEditable}
+      {hasInvalidValue ? null : slateEditable}
     </div>
   )
 })

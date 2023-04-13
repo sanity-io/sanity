@@ -74,9 +74,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey0"
-        ],
+        "marks": ["randomKey0"],
         "text": "link",
         "_key": "randomKey51"
       }

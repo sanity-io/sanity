@@ -123,7 +123,7 @@ export function fromSlateValue(
 
 export function isEqualToEmptyEditor(
   children: Descendant[] | PortableTextBlock[],
-  types: PortableTextMemberSchemaTypes
+  schemaTypes: PortableTextMemberSchemaTypes
 ): boolean {
   return (
     children === undefined ||
@@ -132,9 +132,9 @@ export function isEqualToEmptyEditor(
       Array.isArray(children) &&
       children.length === 1 &&
       Element.isElement(children[0]) &&
-      children[0]._type === types.block.name &&
+      children[0]._type === schemaTypes.block.name &&
       'style' in children[0] &&
-      children[0].style === types.styles[0].value &&
+      children[0].style === schemaTypes.styles[0].value &&
       !('listItem' in children[0]) &&
       Array.isArray(children[0].children) &&
       children[0].children.length === 1 &&

@@ -6,9 +6,7 @@
       {
         "_key": "randomKey00",
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Keywords"
       }
     ],
@@ -50,9 +48,7 @@
       {
         "_key": "randomKey30",
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "About the authors"
       }
     ],
@@ -94,9 +90,7 @@
       {
         "_key": "randomKey60",
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "About Public Eye"
       }
     ],
@@ -138,9 +132,7 @@
       {
         "_key": "randomKey90",
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Acknowledgements"
       }
     ],

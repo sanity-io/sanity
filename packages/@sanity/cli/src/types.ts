@@ -3,6 +3,7 @@ import type chalk from 'chalk'
 import type {Ora} from 'ora'
 import type {SanityClient} from '@sanity/client'
 import type {Separator, DistinctQuestion, Answers, ChoiceCollection} from 'inquirer'
+import type {InlineConfig, ConfigEnv} from 'vite'
 import type {ClientRequirements} from './util/clientWrapper'
 import type {CliConfigResult} from './util/getCliConfig'
 import type {CliPackageManager} from './packageManager'
@@ -284,6 +285,9 @@ export interface CliConfig {
 
   graphql?: GraphQLAPIConfig[]
 
-  // @todo
-  vite?: (config: any) => any
+  vite?: UserViteConfig
 }
+
+export type UserViteConfig =
+  | InlineConfig
+  | ((config: InlineConfig, env: ConfigEnv) => InlineConfig | Promise<InlineConfig>)

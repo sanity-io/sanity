@@ -21,9 +21,9 @@ import {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
 interface ToolbarProps {
   hotkeys: HotkeyOptions
   isFullscreen: boolean
-  readOnly?: boolean
   onMemberOpen: (relativePath: Path) => void
   onToggleFullscreen: () => void
+  readOnly?: boolean
 }
 
 const RootFlex = styled(Flex)`
@@ -84,8 +84,13 @@ const InnerToolbar = memo(function InnerToolbar({
     rootElement: rootElement,
   })
 
+  const preventEditorBlurOnToolbarMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }, [])
+
   return (
-    <RootFlex align="center" ref={setRootElement}>
+    <RootFlex align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
       {showBlockStyleSelect && (
         <StyleSelectFlex flex={collapsed ? 1 : undefined}>
           <StyleSelectBox padding={isFullscreen ? 2 : 1}>

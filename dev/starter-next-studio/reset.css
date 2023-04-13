@@ -1,4 +1,6 @@
-html, body, #__next {
+html,
+body,
+#__next {
   margin: 0;
   padding: 0;
   height: 100%;

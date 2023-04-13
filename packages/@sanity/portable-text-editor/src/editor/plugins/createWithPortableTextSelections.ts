@@ -1,4 +1,5 @@
 import {Subject} from 'rxjs'
+import {BaseRange} from 'slate'
 import {
   EditorChange,
   EditorSelection,
@@ -15,28 +16,32 @@ const debug = debugWithName('plugin:withPortableTextSelections')
 export function createWithPortableTextSelections(
   change$: Subject<EditorChange>,
   types: PortableTextMemberSchemaTypes
-) {
+): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
+  let prevSelection: BaseRange | null = null
   return function withPortableTextSelections(
     editor: PortableTextSlateEditor
   ): PortableTextSlateEditor {
     const emitPortableTextSelection = () => {
-      let ptRange: EditorSelection = null
-      if (editor.selection) {
-        const existing = SLATE_TO_PORTABLE_TEXT_RANGE.get(editor.selection)
-        if (existing) {
-          ptRange = existing
+      if (prevSelection !== editor.selection) {
+        let ptRange: EditorSelection = null
+        if (editor.selection) {
+          const existing = SLATE_TO_PORTABLE_TEXT_RANGE.get(editor.selection)
+          if (existing) {
+            ptRange = existing
+          } else {
+            const value = editor.children satisfies ObjectWithKeyAndType[]
+            ptRange = toPortableTextRange(value, editor.selection, types)
+            SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
+          }
+        }
+        debug(`Emitting selection ${JSON.stringify(ptRange || null)}`)
+        if (ptRange) {
+          change$.next({type: 'selection', selection: ptRange})
         } else {
-          const value = editor.children satisfies ObjectWithKeyAndType[]
-          ptRange = toPortableTextRange(value, editor.selection, types)
-          SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
+          change$.next({type: 'selection', selection: null})
         }
       }
-      debug(`Emitting selection ${JSON.stringify(ptRange || null)}`)
-      if (ptRange) {
-        change$.next({type: 'selection', selection: ptRange})
-      } else {
-        change$.next({type: 'selection', selection: null})
-      }
+      prevSelection = editor.selection
     }
 
     const {onChange} = editor

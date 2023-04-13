@@ -6,9 +6,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Cornerstone's Adam Miller Recognized as a 2019 Best CEO for Women",
         "_key": "randomKey00"
       }
@@ -28,9 +26,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "Global talent management and talent experience leader earns spot on Comparably's 2019 Best CEOs for Women list as ranked by female employees at the company",
         "_key": "randomKey11"
       },
@@ -42,9 +38,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "SANTA MONICA, Calif. – June 26, 2019 – ",
         "_key": "randomKey13"
       },
@@ -56,9 +50,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Additional Details",
         "_key": "randomKey15"
       },
@@ -126,9 +118,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "About Cornerstone",
         "_key": "randomKey50"
       },
@@ -140,9 +130,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "About Comparably",
         "_key": "randomKey52"
       },
@@ -154,9 +142,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Media Contact:",
         "_key": "randomKey54"
       },

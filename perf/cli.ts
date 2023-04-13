@@ -8,19 +8,20 @@ import * as queries from './queries'
 import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {Deployment} from './runner/types'
-import {sanityIdify} from './deployment-sync/utils/sanityIdSafe'
+import {sanityIdify} from './runner/utils/sanityIdIfy'
 
 config({path: `${__dirname}/.env`})
 
 async function main(args: {
   branch?: string
   headless?: boolean
+  pattern?: string
   local?: boolean
   count?: string
   label?: string
 }) {
   const currentBranch = getCurrentBranchSync()
-  const testFiles = await globby(`${__dirname}/tests/**/*.test.ts`)
+  const testFiles = await globby(`${__dirname}/tests/**/${args.pattern || '*'}.test.ts`)
   const branch = args.branch || findEnv('PERF_TEST_BRANCH') || currentBranch
   const headless = args.headless ?? findEnv('PERF_TEST_HEADLESS') !== 'false'
 
@@ -119,6 +120,10 @@ const {values: args} = parseArgs({
     },
     label: {
       type: 'string',
+    },
+    pattern: {
+      type: 'string',
+      short: 'p',
     },
     count: {
       type: 'string',

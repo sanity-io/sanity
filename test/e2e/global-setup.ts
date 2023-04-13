@@ -26,7 +26,7 @@ async function globalSetup(config: FullConfig): Promise<void> {
     page.waitForResponse('*/**/users/me*', {timeout: 120000}),
     // This action triggers the request
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    page.goto(baseURL!),
+    page.goto(baseURL!, {timeout: 120000}),
   ])
 
   const domain = new URL(response.url()).hostname

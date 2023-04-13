@@ -28,6 +28,7 @@ export const HELP_IDS = {
   ASSET_METADATA_FIELD_INVALID: 'asset-metadata-field-invalid',
   CROSS_DATASET_REFERENCE_INVALID: 'cross-dataset-reference-invalid',
   DEPRECATED_BLOCKEDITOR_KEY: 'schema-deprecated-blockeditor-key',
+  STANDALONE_BLOCK_TYPE: 'schema-standalone-block-type',
 }
 
 function createValidationResult(

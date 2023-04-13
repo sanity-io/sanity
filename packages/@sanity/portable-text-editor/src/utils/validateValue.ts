@@ -3,11 +3,17 @@ import {flatten, isObject, uniq} from 'lodash'
 import {set, unset, insert} from '../patch/PatchEvent'
 import {InvalidValueResolution, PortableTextMemberSchemaTypes} from '../types/editor'
 
+export interface Validation {
+  valid: boolean
+  resolution: InvalidValueResolution | null
+  value: PortableTextBlock[] | undefined
+}
+
 export function validateValue(
   value: PortableTextBlock[] | undefined,
   types: PortableTextMemberSchemaTypes,
   keyGenerator: () => string
-): {valid: boolean; resolution: InvalidValueResolution | null} {
+): Validation {
   let resolution: InvalidValueResolution | null = null
   let valid = true
   const validChildTypes = [types.span.name, ...types.inlineObjects.map((t) => t.name)]
@@ -15,7 +21,7 @@ export function validateValue(
 
   // Undefined is allowed
   if (value === undefined) {
-    return {valid: true, resolution: null}
+    return {valid: true, resolution: null, value}
   }
   // Only lengthy arrays are allowed in the editor.
   if (!Array.isArray(value) || value.length === 0) {
@@ -27,6 +33,7 @@ export function validateValue(
         action: 'Unset the value',
         item: value,
       },
+      value,
     }
   }
   if (
@@ -233,5 +240,5 @@ export function validateValue(
   ) {
     valid = false
   }
-  return {valid, resolution}
+  return {valid, resolution, value}
 }

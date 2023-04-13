@@ -1,5 +1,6 @@
 import {omit} from 'lodash'
 import {InitialValueResolverContext} from '@sanity/types'
+import {Schema as SchemaBuilder} from '@sanity/schema'
 import {resolveInitialValue, Template} from '../'
 import {schema} from './schema'
 
@@ -172,5 +173,78 @@ describe('resolveInitialValue', () => {
     expect(result.meta[0].categories[1]).toHaveProperty('_key')
     expect(result.meta[0].categories[0]._key).toMatch(/^[a-z0-9][a-z0-9-_]{8,30}/i)
     expect(result.meta[0].categories[1]._key).toMatch(/^[a-z0-9][a-z0-9-_]{8,30}/i)
+  })
+
+  describe('with empty initial values', () => {
+    const getTestSchema = (initialValue: unknown) =>
+      SchemaBuilder.compile({
+        name: 'empty',
+        types: [
+          {
+            name: 'author',
+            title: 'Author',
+            type: 'document',
+            initialValue,
+            fields: [
+              {
+                name: 'name',
+                type: 'string',
+              },
+              {
+                name: 'role',
+                type: 'string',
+              },
+            ],
+          },
+        ],
+      })
+
+    test('adds _type on empty objects', async () => {
+      const result = await resolveInitialValue(
+        getTestSchema({}),
+        {
+          ...example,
+          value: {},
+        },
+        {},
+        mockConfigContext
+      )
+
+      expect(result).toMatchObject({
+        _type: 'author',
+      })
+    })
+
+    test('adds _type on functions returning empty objects', async () => {
+      const result = await resolveInitialValue(
+        getTestSchema(() => ({})),
+        {
+          ...example,
+          value: {},
+        },
+        {},
+        mockConfigContext
+      )
+
+      expect(result).toMatchObject({
+        _type: 'author',
+      })
+    })
+
+    test('adds _type on functions returning Promise of empty objects', async () => {
+      const result = await resolveInitialValue(
+        getTestSchema(() => Promise.resolve({})),
+        {
+          ...example,
+          value: {},
+        },
+        {},
+        mockConfigContext
+      )
+
+      expect(result).toMatchObject({
+        _type: 'author',
+      })
+    })
   })
 })

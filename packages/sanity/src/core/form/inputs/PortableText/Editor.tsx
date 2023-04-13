@@ -15,7 +15,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
 import {
@@ -32,6 +32,7 @@ import {Style} from './text/Style'
 import {ListItem} from './text/ListItem'
 
 interface EditorProps {
+  hasFocus: boolean
   hotkeys: HotkeyOptions
   initialSelection?: EditorSelection
   isActive: boolean
@@ -64,6 +65,7 @@ const renderListItem: RenderListItemFunction = (props) => {
 
 export function Editor(props: EditorProps) {
   const {
+    hasFocus,
     hotkeys,
     initialSelection,
     isActive,
@@ -143,21 +145,29 @@ export function Editor(props: EditorProps) {
   const handleToolBarOnMemberOpen = useCallback(
     (relativePath: Path) => {
       PortableTextEditor.blur(editor)
-      onItemOpen(path.concat(relativePath))
+      const fullPath = path.concat(relativePath)
+      onItemOpen(fullPath)
     },
     [editor, onItemOpen, path]
   )
+
+  // Focus the editor if we have focus and the editor is re-rendered (toggling fullscreen for instance)
+  useEffect(() => {
+    if (hasFocus) {
+      PortableTextEditor.focus(editor)
+    }
+  }, [editor, hasFocus])
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor">
       {isActive && (
         <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
           <Toolbar
-            isFullscreen={isFullscreen}
             hotkeys={hotkeys}
+            isFullscreen={isFullscreen}
             onMemberOpen={handleToolBarOnMemberOpen}
-            readOnly={readOnly}
             onToggleFullscreen={onToggleFullscreen}
+            readOnly={readOnly}
           />
         </ToolbarCard>
       )}

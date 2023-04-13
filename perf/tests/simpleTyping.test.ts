@@ -34,7 +34,11 @@ export default {
 
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    await Promise.all([client.delete(`drafts.${documentId}`), client.delete(documentId)])
+    await client
+      .transaction()
+      .delete(documentId)
+      .delete(`drafts.${documentId}`)
+      .commit({visibility: 'async'})
     return {
       lagPerKeystroke: Math.min(...samples.map((sample) => sample.lagPerKeystroke)),
       timePerKeyStroke: Math.min(...samples.map((sample) => sample.timePerKeyStroke)),

@@ -3,8 +3,7 @@
 
 import React, {KeyboardEvent, FocusEvent, useCallback, useRef, useState, useMemo} from 'react'
 import {concat, Observable, of} from 'rxjs'
-
-import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Box, Button, Stack, Text, useToast} from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
@@ -14,6 +13,7 @@ import {Alert} from '../../components/Alert'
 import {PreviewCard} from '../../../components'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {useReferenceInput} from './useReferenceInput'
 import {
   CreateReferenceOption,
@@ -26,6 +26,7 @@ import {useReferenceInfo} from './useReferenceInfo'
 import {CreateButton} from './CreateButton'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {AutocompleteContainer} from './AutocompleteContainer'
+import {useReferenceItemRef} from './useReferenceItemRef'
 
 const StyledPreviewCard = styled(PreviewCard)`
   /* this is a hack to avoid layout jumps while previews are loading
@@ -62,6 +63,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     renderPreview,
     path,
     elementProps,
+    focusPath,
   } = props
 
   const {getReferenceInfo} = useReferenceInput({
@@ -129,6 +131,12 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleClear = useCallback(() => {
     onChange(unset())
   }, [onChange])
+
+  const handleCancelEdit = useCallback(() => {
+    if (!value?._ref) {
+      handleClear()
+    }
+  }, [handleClear, value?._ref])
 
   const handleAutocompleteKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -239,7 +247,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
     !value?._strengthenOnPublish &&
     value?._weak
 
-  useDidUpdate(props.focusPath?.[0] === '_ref', (hadFocusAtRef, hasFocusAtRef) => {
+  useDidUpdate(focusPath?.[0] === '_ref', (hadFocusAtRef, hasFocusAtRef) => {
     if (!hadFocusAtRef && hasFocusAtRef) {
       elementProps.ref.current?.focus()
     }
@@ -252,8 +260,31 @@ export function ReferenceInput(props: ReferenceInputProps) {
       })),
     [searchState.hits]
   )
+
+  const isEditing = focusPath.length === 1 && focusPath[0] === '_ref'
+
+  // --- click outside handling
+  const {menuRef, containerRef} = useReferenceItemRef()
+  const clickOutsideBoundaryRef = useRef<HTMLDivElement>(null)
+  const autoCompletePortalRef = useRef<HTMLDivElement>(null)
+  const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
+  useOnClickOutside(
+    [
+      containerRef,
+      clickOutsideBoundaryRef,
+      autoCompletePortalRef,
+      createButtonMenuPortalRef,
+      menuRef,
+    ],
+    () => {
+      if (isEditing) {
+        handleCancelEdit()
+      }
+    }
+  )
+
   return (
-    <Stack space={1} data-testid="reference-input">
+    <Stack space={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
       <Stack space={2}>
         {isWeakRefToNonexistent ? (
           <Alert
@@ -292,6 +323,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             renderOption={renderOption as any}
             renderValue={renderValue}
             openButton={{onClick: handleAutocompleteOpenButtonClick}}
+            portalRef={autoCompletePortalRef}
           />
 
           {createOptions.length > 0 && (
@@ -301,6 +333,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               createOptions={createOptions}
               onCreate={handleCreateNew}
               onKeyDown={handleCreateButtonKeyDown}
+              menuRef={createButtonMenuPortalRef}
             />
           )}
         </AutocompleteContainer>

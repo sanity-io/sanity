@@ -9,7 +9,6 @@ import React, {
 } from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {debounce} from 'lodash'
-import {useSlate} from '@sanity/slate-react'
 import {EditorChange, EditorChanges, EditorSelection} from '../../types/editor'
 import {Patch} from '../../types/patch'
 import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../constants'
@@ -29,7 +28,7 @@ const debug = debugWithName('component:PortableTextEditor:Synchronizer')
  */
 export interface SynchronizerProps extends PropsWithChildren {
   change$: EditorChanges
-  editor: PortableTextEditor
+  portableTextEditor: PortableTextEditor
   isPending: React.MutableRefObject<boolean | null>
   keyGenerator: () => string
   onChange: (change: EditorChange) => void
@@ -38,30 +37,21 @@ export interface SynchronizerProps extends PropsWithChildren {
 }
 
 /**
- * Synchronizes the server value and provides contexts with the editor state.
+ * Synchronizes the server value with the editor, and provides various contexts for the editor state.
  * @internal
  */
 export function Synchronizer(props: SynchronizerProps) {
-  const {change$, editor, isPending, onChange, keyGenerator, readOnly, value} = props
+  const {change$, portableTextEditor, isPending, onChange, keyGenerator, readOnly, value} = props
   const [selection, setSelection] = useState<EditorSelection>(null)
   const pendingPatches = useRef<Patch[]>([])
-  const slateEditor = useSlate()
 
   const syncValue = useSyncValue({
-    editor,
-    keyGenerator,
     isPending,
+    keyGenerator,
+    onChange,
+    portableTextEditor,
     readOnly,
-    slateEditor,
   })
-
-  useEffect(() => {
-    startTransition(() => {
-      debug('Value from props changed, syncing new value')
-      syncValue(value)
-    })
-    change$.next({type: 'value', value})
-  }, [syncValue, change$, value])
 
   const onFlushPendingPatches = useCallback(() => {
     const finalPatches = [...pendingPatches.current]
@@ -120,9 +110,24 @@ export function Synchronizer(props: SynchronizerProps) {
       sub.unsubscribe()
     }
   }, [change$, onFlushPendingPatchesDebounced, onChange, syncValue, isPending])
+
+  // This hook must be set up after setting up the subscription above, or it will not pick up validation errors from the useSyncValue hook.
+  // This will cause the editor to not be able to signal a validation error and offer invalid value resolution of the initial value.
+  const isInitialValueFromProps = useRef(true)
+  useEffect(() => {
+    debug('Value from props changed, syncing new value')
+    syncValue(value)
+    // Signal that we have our first value, and are ready to roll.
+    if (isInitialValueFromProps.current) {
+      change$.next({type: 'loading', isLoading: false})
+      change$.next({type: 'ready'})
+      isInitialValueFromProps.current = false
+    }
+  }, [change$, syncValue, value])
+
   return (
     <PortableTextEditorKeyGeneratorContext.Provider value={keyGenerator}>
-      <PortableTextEditorContext.Provider value={editor}>
+      <PortableTextEditorContext.Provider value={portableTextEditor}>
         <PortableTextEditorValueContext.Provider value={value}>
           <PortableTextEditorReadOnlyContext.Provider value={readOnly}>
             <PortableTextEditorSelectionContext.Provider value={selection}>

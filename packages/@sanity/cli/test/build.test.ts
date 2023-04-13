@@ -99,12 +99,16 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         })
         expect(result.code).toBe(0)
 
+        const files = await readdir(path.join(studioPath, 'out-basepath', 'static'))
         const builtHtml = await readFile(
           path.join(studioPath, 'out-basepath', 'index.html'),
           'utf8'
         )
+        const cssPath = files.find((file) => file.endsWith('.css'))
+
         expect(builtHtml).toContain('id="sanity"')
         expect(builtHtml).toContain('src="/custom-base-path/static/sanity')
+        expect(builtHtml).toContain(`href="/custom-base-path/static/${cssPath}"`)
       },
       120 * 1000
     )

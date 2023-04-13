@@ -127,16 +127,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   const handleToggleFullscreen = useCallback(() => {
     if (editorRef.current) {
-      const prevSel = PortableTextEditor.getSelection(editorRef.current)
       setIsFullscreen((v) => !v)
-      setTimeout(() => {
-        if (editorRef.current) {
-          PortableTextEditor.focus(editorRef.current)
-          if (prevSel) {
-            PortableTextEditor.select(editorRef.current, {...prevSel})
-          }
-        }
-      })
     }
   }, [])
 
@@ -255,12 +246,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
     () =>
       debounce(
         (sel: EditorSelection) => {
-          if (sel && hasFocus) onPathFocus(sel.focus.path)
+          if (sel && hasFocus) {
+            const fullPath = path.concat(sel.focus.path)
+            onPathFocus(fullPath)
+          }
         },
         500,
         {trailing: true, leading: false}
       ),
-    [hasFocus, onPathFocus]
+    [hasFocus, onPathFocus, path]
   )
 
   // Handle editor changes
@@ -298,6 +292,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
     [onChange, toast, setFocusPathDebounced]
   )
 
+  useEffect(() => {
+    setIgnoreValidationError(false)
+  }, [value])
+
   const handleIgnoreInvalidValue = useCallback((): void => {
     setIgnoreValidationError(true)
   }, [])
@@ -310,12 +308,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
             onChange={handleEditorChange}
             onIgnore={handleIgnoreInvalidValue}
             resolution={invalidValue.resolution}
+            readOnly={readOnly}
           />
         </Box>
       )
     }
     return null
-  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue])
+  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, readOnly])
 
   const handleActivate = useCallback((): void => {
     if (!isActive) {

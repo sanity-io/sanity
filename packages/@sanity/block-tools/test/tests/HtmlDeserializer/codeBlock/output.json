@@ -6,9 +6,7 @@
       {
         "_key": "randomKey00",
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "Hei"
       }
     ],

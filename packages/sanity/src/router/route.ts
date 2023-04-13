@@ -28,7 +28,45 @@ export const route: {
   ) => Router
   intents: (base: string) => Router
   scope: (scopeName: string, ...rest: any[]) => Router
-} = {create: createRoute, scope: routeScope, intents: routeIntents}
+} = {
+  create: (routeOrOpts, childrenOrOpts, children) =>
+    createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children)),
+  intents: (base: string) => {
+    const basePath = normalize(base).join('/')
+
+    return route.create(`${basePath}/:intent`, [
+      route.create(
+        ':params',
+        {
+          transform: {
+            params: {
+              toState: decodeParams,
+              toPath: encodeParams,
+            },
+          },
+        },
+        [
+          route.create(':payload', {
+            transform: {
+              payload: {
+                toState: decodeJsonParams,
+                toPath: encodeJsonParams,
+              },
+            },
+          }),
+        ]
+      ),
+    ])
+  },
+  scope: (scopeName, ...rest) => {
+    const options = normalizeArgs(...rest)
+
+    return createNode({
+      ...options,
+      scope: scopeName,
+    })
+  },
+}
 
 function normalizeChildren(children: any): RouteChildren {
   if (Array.isArray(children) || typeof children === 'function') {
@@ -66,53 +104,8 @@ function normalizeArgs(
   return {path, ...childrenOrOpts}
 }
 
-function createRoute(
-  routeOrOpts: RouteNodeOptions | string,
-  childrenOrOpts?: RouteNodeOptions | RouteChildren | null,
-  children?: Router | RouteChildren
-): Router {
-  return createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children))
-}
-
-function routeScope(scopeName: string, ...rest: any[]): Router {
-  const options = normalizeArgs(...rest)
-
-  return createNode({
-    ...options,
-    scope: scopeName,
-  })
-}
-
 function normalize(...paths: string[]) {
   return paths.reduce<string[]>((acc, path) => acc.concat(path.split('/')), []).filter(Boolean)
-}
-
-function routeIntents(base: string): Router {
-  const basePath = normalize(base).join('/')
-
-  return route.create(`${basePath}/:intent`, [
-    route.create(
-      ':params',
-      {
-        transform: {
-          params: {
-            toState: decodeParams,
-            toPath: encodeParams,
-          },
-        },
-      },
-      [
-        route.create(':payload', {
-          transform: {
-            payload: {
-              toState: decodeJsonParams,
-              toPath: encodeJsonParams,
-            },
-          },
-        }),
-      ]
-    ),
-  ])
 }
 
 const EMPTY_STATE = {}

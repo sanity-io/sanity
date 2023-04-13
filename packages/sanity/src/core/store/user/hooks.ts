@@ -6,7 +6,14 @@ import {UserStore, useUserStore} from '../_legacy'
 import {createHookFromObservableFactory, LoadingTuple} from '../../util'
 
 const useUserViaUserStore = createHookFromObservableFactory(
-  ([userStore, userId]: [UserStore, string]) => from(userStore.getUser(userId))
+  ([userStore, userId]: [UserStore, string]) => {
+    return from(
+      userStore.getUser(userId).catch((err) => {
+        console.error(err)
+        return null
+      })
+    )
+  }
 )
 
 /** @internal */

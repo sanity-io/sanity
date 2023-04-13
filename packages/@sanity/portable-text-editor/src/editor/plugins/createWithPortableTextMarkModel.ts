@@ -41,7 +41,7 @@ export function createWithPortableTextMarkModel(
       const isSpan = Text.isText(node) && node._type === types.span.name
       const isTextBlock = editor.isTextBlock(node)
       if (isSpan || isTextBlock) {
-        if (!isTextBlock && !Array.isArray(node.marks)) {
+        if (isSpan && !Array.isArray(node.marks)) {
           debug('Adding .marks to span node')
           Transforms.setNodes(editor, {marks: []}, {at: path})
           editor.onChange()

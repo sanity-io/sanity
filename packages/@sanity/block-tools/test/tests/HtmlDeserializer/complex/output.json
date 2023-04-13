@@ -26,9 +26,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "strong",
         "_key": "randomKey21"
       },
@@ -40,9 +38,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "bold",
         "_key": "randomKey23"
       },
@@ -54,9 +50,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "italic",
         "_key": "randomKey25"
       },
@@ -68,9 +62,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "emphasis",
         "_key": "randomKey27"
       },
@@ -82,9 +74,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strike-through"
-        ],
+        "marks": ["strike-through"],
         "text": " < del>",
         "_key": "randomKey29"
       },
@@ -96,9 +86,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strike-through"
-        ],
+        "marks": ["strike-through"],
         "text": " < strike>",
         "_key": "randomKey211"
       },
@@ -110,9 +98,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strike-through"
-        ],
+        "marks": ["strike-through"],
         "text": " < s>",
         "_key": "randomKey213"
       }
@@ -164,9 +150,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "faktisk",
         "_key": "randomKey51"
       },
@@ -178,9 +162,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "også",
         "_key": "randomKey53"
       }
@@ -232,9 +214,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "faktisk",
         "_key": "randomKey81"
       },
@@ -246,9 +226,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "også",
         "_key": "randomKey83"
       }
@@ -274,9 +252,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey0"
-        ],
+        "marks": ["randomKey0"],
         "text": "ser du at jeg er en lenke",
         "_key": "randomKey91"
       }

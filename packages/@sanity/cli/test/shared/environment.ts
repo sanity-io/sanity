@@ -6,7 +6,6 @@ import {platform, tmpdir} from 'os'
 import {createClient} from '@sanity/client'
 import which from 'which'
 
-export const cliUserEmail = 'developers+cli-ci@sanity.io'
 export const cliUserToken = (process.env.SANITY_CI_CLI_AUTH_TOKEN || '').trim()
 export const cliProjectId = 'aeysrmym'
 
@@ -66,6 +65,9 @@ export const testClient = createClient({
   useCdn: false,
   token: cliUserToken,
 })
+
+export const getCliUserEmail = (): Promise<string> =>
+  testClient.users.getById('me').then((user) => user.email)
 
 export const getTestRunArgs = (version: string) => {
   const testId = getTestId()

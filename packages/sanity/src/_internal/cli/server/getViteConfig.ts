@@ -1,7 +1,9 @@
 import path from 'path'
-import type {InlineConfig} from 'vite'
+import {ConfigEnv, InlineConfig, mergeConfig} from 'vite'
 import viteReact from '@vitejs/plugin-react'
 import readPkgUp from 'read-pkg-up'
+import debug from 'debug'
+import {UserViteConfig} from '@sanity/cli'
 import {getAliases} from './aliases'
 import {normalizeBasePath} from './helpers'
 import {loadSanityMonorepo} from './sanityMonorepo'
@@ -154,17 +156,39 @@ export function finalizeViteConfig(config: InlineConfig): InlineConfig {
     )
   }
 
-  return {
-    ...config,
+  return mergeConfig(config, {
     build: {
-      ...config.build,
       rollupOptions: {
-        ...config.build.rollupOptions,
         input: {
-          ...config.build.rollupOptions.input,
           sanity: path.join(config.root, '.sanity', 'runtime', 'app.js'),
         },
       },
     },
+  })
+}
+
+/**
+ * Merge user-provided Vite configuration object or function
+ *
+ * @param defaultConfig - Default configuration object
+ * @param userConfig - User-provided configuration object or function
+ * @returns Merged configuration
+ * @internal
+ */
+export async function extendViteConfigWithUserConfig(
+  env: ConfigEnv,
+  defaultConfig: InlineConfig,
+  userConfig: UserViteConfig
+): Promise<InlineConfig> {
+  let config = defaultConfig
+
+  if (typeof userConfig === 'function') {
+    debug('Extending vite config using user-specified function')
+    config = await userConfig(config, env)
+  } else if (typeof userConfig === 'object') {
+    debug('Merging vite config using user-specified object')
+    config = mergeConfig(config, userConfig)
   }
+
+  return config
 }

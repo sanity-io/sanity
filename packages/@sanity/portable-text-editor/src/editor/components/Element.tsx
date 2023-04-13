@@ -182,24 +182,32 @@ export const Element: FunctionComponent<ElementProps> = ({
         )
       }
     }
-    const renderProps: BlockRenderProps = {
-      children: renderedBlock,
-      editorElementRef: blockRef,
-      focused,
-      level,
-      listItem: isListItem ? element.listItem : undefined,
-      path: blockPath,
-      selected,
-      style,
-      schemaType: schemaTypes.block,
-      get type() {
-        console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
-        return schemaTypes.block
+    const renderProps: Omit<BlockRenderProps, 'type'> = Object.defineProperty(
+      {
+        children: renderedBlock,
+        editorElementRef: blockRef,
+        focused,
+        level,
+        listItem: isListItem ? element.listItem : undefined,
+        path: blockPath,
+        selected,
+        style,
+        schemaType: schemaTypes.block,
+        value,
       },
-      value,
-    }
+      'type',
+      {
+        enumerable: false,
+        get() {
+          console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+          return schemaTypes.block
+        },
+      }
+    )
 
-    const propsOrDefaultRendered = renderBlock ? renderBlock(renderProps) : children
+    const propsOrDefaultRendered = renderBlock
+      ? renderBlock(renderProps as BlockRenderProps)
+      : children
     return (
       <div key={element._key} {...attributes} className={className} spellCheck={spellCheck}>
         <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
@@ -221,21 +229,29 @@ export const Element: FunctionComponent<ElementProps> = ({
     schemaTypes.block.name,
     KEY_TO_VALUE_ELEMENT.get(editor)
   )[0]
-  const renderedBlockFromProps =
-    renderBlock &&
-    renderBlock({
-      children: <ObjectNode value={value} />,
-      editorElementRef: blockRef,
-      focused,
-      path: blockPath,
-      schemaType,
-      selected,
-      get type() {
-        console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
-        return schemaType
+  let renderedBlockFromProps
+  if (renderBlock) {
+    const _props: Omit<BlockRenderProps, 'type'> = Object.defineProperty(
+      {
+        children: <ObjectNode value={value} />,
+        editorElementRef: blockRef,
+        focused,
+        path: blockPath,
+        schemaType,
+        selected,
+        value: block,
       },
-      value: block,
-    })
+      'type',
+      {
+        enumerable: false,
+        get() {
+          console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
+          return schemaType
+        },
+      }
+    )
+    renderedBlockFromProps = renderBlock(_props as BlockRenderProps)
+  }
   return (
     <div key={element._key} {...attributes} className={className}>
       {children}

@@ -12,7 +12,7 @@
   version (by ignoring the added/removed parts of the diff).
 
   Note that for arrays and objects, unchanged/added/removed only have a "shallow" meaning. An
-  `ObjectDiff` will have a *unchanged field* if the field was present in both the old and new
+  `ObjectDiff` will have a _unchanged field_ if the field was present in both the old and new
   version - regardless of whether there's any internal changes.
 
 - `Diff` also supports _annotations_. These contain information about when a change was introduced
