@@ -831,44 +831,21 @@ export default async function initSanity(
     }
 
     // make folder if not exists (if output path is specified)
-    try {
-      await fs.mkdir(options.outputPath, {recursive: true})
-    } catch (err) {
-      debug('Error creating folder %s', options.outputPath)
-    }
+    await fs
+      .mkdir(options.outputPath, {recursive: true})
+      .catch(() => debug('Error creating folder %s', options.outputPath))
 
     // time to update or create the file
-    try {
-      const existingEnv = await fs.readFile(fileOutputPath, {encoding: 'utf8'})
-      const updatedEnv = parseAndUpdateEnvVars(existingEnv, envVars)
-      await fs.writeFile(fileOutputPath, updatedEnv, {
-        encoding: 'utf8',
-      })
+    const existingEnv = await fs
+      .readFile(fileOutputPath, {encoding: 'utf8'})
+      .catch((err) => (err.code === 'ENOENT' ? '' : Promise.reject(err)))
 
-      print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
-    } catch (err) {
-      // if fs.readFile fails, it's probably because the file doesn't exist
-      if (err.code === 'ENOENT') {
-        await fs.writeFile(
-          fileOutputPath,
-          Object.keys(envVars)
-            .map((key) => `${key}="${envVars[key]}"`)
-            .join('\n')
-            .concat('\n'),
-          {
-            encoding: 'utf8',
-          }
-        )
-        print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
-      }
+    const updatedEnv = parseAndUpdateEnvVars(existingEnv, envVars)
+    await fs.writeFile(fileOutputPath, updatedEnv, {
+      encoding: 'utf8',
+    })
 
-      throw new Error(
-        `\n${chalk.red('Error!')} Something went wrong while writing environment variables`,
-        {
-          cause: err,
-        }
-      )
-    }
+    print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
   }
 
   function parseAndUpdateEnvVars(fileContents: string, envVars: Record<string, string>): string {
