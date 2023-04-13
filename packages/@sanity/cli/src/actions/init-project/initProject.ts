@@ -844,20 +844,31 @@ export default async function initSanity(
       await fs.writeFile(fileOutputPath, updatedEnv, {
         encoding: 'utf8',
       })
+
+      print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
     } catch (err) {
-      await fs.writeFile(
-        fileOutputPath,
-        Object.keys(envVars)
-          .map((key) => `${key}="${envVars[key]}"`)
-          .join('\n')
-          .concat('\n'),
+      // if fs.readFile fails, it's probably because the file doesn't exist
+      if (err.code === 'ENOENT') {
+        await fs.writeFile(
+          fileOutputPath,
+          Object.keys(envVars)
+            .map((key) => `${key}="${envVars[key]}"`)
+            .join('\n')
+            .concat('\n'),
+          {
+            encoding: 'utf8',
+          }
+        )
+        print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
+      }
+
+      throw new Error(
+        `\n${chalk.red('Error!')} Something went wrong while writing environment variables`,
         {
-          encoding: 'utf8',
+          cause: err,
         }
       )
     }
-
-    print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
   }
 
   function parseAndUpdateEnvVars(fileContents: string, envVars: Record<string, string>): string {
@@ -877,7 +888,7 @@ export default async function initSanity(
     }
 
     // clone fileContents and replace existing keys by string matching
-    let updatedEnv = fileContents.repeat(1)
+    let updatedEnv = fileContents
     for (const [key, value] of Object.entries(updatedKeys)) {
       if (existingKeys[key]) {
         const existingValue = existingKeys[key]
