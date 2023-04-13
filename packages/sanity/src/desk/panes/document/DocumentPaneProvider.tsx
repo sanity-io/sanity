@@ -15,6 +15,7 @@ import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
+import {validationInspector} from './inspectors/validation'
 import {
   DocumentInspector,
   DocumentPresence,
@@ -160,7 +161,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [documentId, presenceStore])
 
   const inspectors: DocumentInspector[] = useMemo(
-    () => inspectorsResolver({documentId, documentType}, [changesInspector]),
+    () => inspectorsResolver({documentId, documentType}, [validationInspector, changesInspector]),
     [documentId, documentType, inspectorsResolver]
   )
 
