@@ -251,6 +251,7 @@ export const ObjectField = function ObjectField(props: {
 
   const fieldProps = useMemo((): Omit<ObjectFieldProps, 'renderDefault'> => {
     return {
+      groups: member.field.groups,
       name: member.name,
       index: member.index,
       level: member.field.level,
@@ -263,6 +264,7 @@ export const ObjectField = function ObjectField(props: {
       collapsible: member.collapsible,
       collapsed: member.collapsed,
       onCollapse: handleCollapse,
+      onFieldGroupSelect: handleSelectFieldGroup,
       onExpand: handleExpand,
 
       open: member.open,
@@ -281,6 +283,7 @@ export const ObjectField = function ObjectField(props: {
     member.name,
     member.index,
     member.field.changed,
+    member.field.groups,
     member.field.level,
     member.field.value,
     member.field.validation,
@@ -295,6 +298,7 @@ export const ObjectField = function ObjectField(props: {
     handleExpand,
     handleOpen,
     handleClose,
+    handleSelectFieldGroup,
     renderedInput,
     inputProps,
   ])
