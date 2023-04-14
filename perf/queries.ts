@@ -12,8 +12,8 @@ export const branchDeploymentsQuery = `*[_type=='branch' && name == $branch] {
 } [count(deployments) > 0].deployments[] | order(_createdAt desc) [0...$count] {_id, deploymentId, url, label}`
 
 export const tagsDeploymentsQuery = `*[_type=='tag'] | order(_createdAt desc) {
-  name,
+  "tagName": name,
   commit,
   _createdAt,
-  "deployments": *[_type == 'deployment' && name=="performance-studio" && status=="succeeded" && defined(meta.githubCommitSha) && meta.githubCommitSha==^.commit]
-} [count(deployments) > 0].deployments[] | order(_createdAt desc) [0...$count] {_id, deploymentId, url, label}`
+  "deployment": *[_type == 'deployment' && name=="performance-studio" && status=="succeeded" && defined(meta.githubCommitSha) && meta.githubCommitSha==^.commit] | order(_createdAt desc)[0]
+} [defined(deployment)] | order(deployment._createdAt desc) [0...$count] {...deployment, "label": tagName} {_id, deploymentId, url, label}`
