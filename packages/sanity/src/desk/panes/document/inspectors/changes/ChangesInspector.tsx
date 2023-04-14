@@ -1,12 +1,11 @@
 import {ObjectDiff} from '@sanity/diff'
-import {CloseIcon} from '@sanity/icons'
-import {AvatarStack, BoundaryElementProvider, Box, Button, Flex} from '@sanity/ui'
-import React, {useRef} from 'react'
+import {AvatarStack, BoundaryElementProvider, Box, Card, Flex} from '@sanity/ui'
+import React, {ReactElement, useRef} from 'react'
 import styled from 'styled-components'
-import {PaneContent, PaneHeader, usePane} from '../../../components'
-import {TimelineMenu} from '../timeline'
-import {useDocumentPane} from '../useDocumentPane'
-import {LoadingContent} from './content/LoadingContent'
+import {TimelineMenu} from '../../timeline'
+import {useDocumentPane} from '../../useDocumentPane'
+import {DocumentInspectorHeader} from '../../documentInspector'
+import {LoadingContent} from './LoadingContent'
 import {collectLatestAuthorAnnotations} from './helpers'
 import {
   ChangeFieldWrapper,
@@ -14,7 +13,9 @@ import {
   DiffTooltip,
   DocumentChangeContext,
   DocumentChangeContextInstance,
+  DocumentInspectorProps,
   NoChanges,
+  ObjectSchemaType,
   ScrollContainer,
   UserAvatar,
   useTimelineSelector,
@@ -27,10 +28,9 @@ const Scroller = styled(ScrollContainer)`
   scroll-behavior: smooth;
 `
 
-export function ChangesPanel(): React.ReactElement | null {
-  const {documentId, onHistoryClose, schemaType, timelineError, timelineStore, value} =
-    useDocumentPane()
-  const {collapsed} = usePane()
+export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
+  const {onClose} = props
+  const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
   // Subscribe to external timeline state changes
@@ -58,53 +58,33 @@ export function ChangesPanel(): React.ReactElement | null {
     [diff]
   )
 
-  if (collapsed) {
-    return null
-  }
-
   return (
-    <Flex
-      direction="column"
-      flex={1}
-      style={{
-        borderLeft: '1px dashed var(--card-border-color)',
-        overflow: 'hidden',
-        minWidth: 320,
-      }}
-      data-testid="review-changes-pane"
-    >
-      <PaneHeader
-        actions={
-          <Button
-            icon={CloseIcon}
-            mode="bleed"
-            onClick={onHistoryClose}
-            padding={3}
-            title="Hide changes panel"
-          />
-        }
-        subActions={
-          changeAnnotations.length > 0 && (
-            <Box paddingRight={1}>
-              <DiffTooltip
-                annotations={changeAnnotations}
-                description="Changes by"
-                placement="bottom-end"
-              >
-                <AvatarStack maxLength={4}>
-                  {changeAnnotations.map(({author}) => (
-                    <UserAvatar key={author} user={author} />
-                  ))}
-                </AvatarStack>
-              </DiffTooltip>
-            </Box>
-          )
-        }
-        tabs={<TimelineMenu mode="since" chunk={sinceTime} placement="bottom-start" />}
-        title="Changes"
-      />
+    <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
+      <DocumentInspectorHeader
+        as="header"
+        closeButtonLabel="Close review changes"
+        flex="none"
+        onClose={onClose}
+        title="Review changes"
+      >
+        <Flex gap={1} padding={3} paddingTop={0} paddingBottom={2}>
+          <Box flex={1}>
+            <TimelineMenu mode="since" chunk={sinceTime} placement="bottom-start" />
+          </Box>
 
-      <PaneContent>
+          <Box flex="none">
+            <DiffTooltip annotations={changeAnnotations} description="Changes by" portal>
+              <AvatarStack maxLength={4}>
+                {changeAnnotations.map(({author}) => (
+                  <UserAvatar key={author} user={author} />
+                ))}
+              </AvatarStack>
+            </DiffTooltip>
+          </Box>
+        </Flex>
+      </DocumentInspectorHeader>
+
+      <Card flex={1}>
         <BoundaryElementProvider element={scrollRef.current}>
           <Scroller data-ui="Scroller" ref={scrollRef}>
             <Box flex={1} padding={4}>
@@ -113,11 +93,12 @@ export function ChangesPanel(): React.ReactElement | null {
                 documentContext={documentContext}
                 error={timelineError}
                 loading={loading}
+                schemaType={schemaType}
               />
             </Box>
           </Scroller>
         </BoundaryElementProvider>
-      </PaneContent>
+      </Card>
     </Flex>
   )
 }
@@ -127,14 +108,14 @@ function Content({
   diff,
   documentContext,
   loading,
+  schemaType,
 }: {
   error?: Error | null
   diff: ObjectDiff<any> | null
   documentContext: DocumentChangeContextInstance
   loading: boolean
+  schemaType: ObjectSchemaType
 }) {
-  const {schemaType} = useDocumentPane()
-
   if (error) {
     return <NoChanges />
   }

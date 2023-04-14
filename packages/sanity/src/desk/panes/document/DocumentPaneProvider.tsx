@@ -13,7 +13,12 @@ import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
-import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
+import {
+  DEFAULT_MENU_ITEM_GROUPS,
+  EMPTY_PARAMS,
+  HISTORY_INSPECTOR_NAME,
+  INSPECT_ACTION_PREFIX,
+} from './constants'
 import {DocumentInspectorMenuItemsResolver} from './DocumentInspectorMenuItemsResolver'
 import {
   DocumentInspector,
@@ -126,7 +131,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
-  const changesOpen = !!params.since
 
   const [timelineError, setTimelineError] = useState<Error | null>(null)
   /**
@@ -164,7 +168,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [documentId, presenceStore])
 
   const inspectors: DocumentInspector[] = useMemo(
-    () => inspectorsResolver({documentId, documentType}, []),
+    () => inspectorsResolver({documentId, documentType}),
     [documentId, documentType, inspectorsResolver]
   )
 
@@ -180,12 +184,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [params.inspect])
 
   const currentInspector = inspectors?.find((i) => i.name === inspectorName)
+  const resolvedChangesInspector = inspectors.find((i) => i.name === HISTORY_INSPECTOR_NAME)
+
+  const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
 
   const hasValue = Boolean(value)
   const menuItems = useMemo(
     () =>
       getMenuItems({
-        changesOpen,
         currentInspector,
         features,
         hasValue,
@@ -193,7 +199,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         inspectors,
         previewUrl,
       }),
-    [changesOpen, currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl]
+    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl]
   )
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
@@ -338,12 +344,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleHistoryClose = useCallback(() => {
-    paneRouter.setParams({...params, since: undefined})
-  }, [paneRouter, params])
+    if (resolvedChangesInspector) {
+      closeInspector(resolvedChangesInspector.name)
+    }
+  }, [closeInspector, resolvedChangesInspector])
 
   const handleHistoryOpen = useCallback(() => {
-    paneRouter.setParams({...params, since: '@lastPublished'})
-  }, [paneRouter, params])
+    if (resolvedChangesInspector) {
+      openInspector(resolvedChangesInspector.name)
+    }
+  }, [openInspector, resolvedChangesInspector])
 
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
