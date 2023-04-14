@@ -15,6 +15,7 @@ config({path: `${__dirname}/.env`})
 async function main(args: {
   branch?: string
   headless?: boolean
+  tagsOnly?: boolean
   pattern?: string
   local?: boolean
   count?: string
@@ -33,15 +34,18 @@ async function main(args: {
     useCdn: false,
   })
 
-  const remoteDeployments = await studioMetricsClient.fetch(queries.branchDeploymentsQuery, {
-    branch,
-    headless,
-    count: Number(args.count),
-  })
+  const remoteDeployments = await studioMetricsClient.fetch(
+    args.tagsOnly ? queries.tagsDeploymentsQuery : queries.branchDeploymentsQuery,
+    {
+      branch,
+      headless,
+      count: Number(args.count),
+    }
+  )
   let localDeployment
 
   if (remoteDeployments.length === 0) {
-    console.error('No deployments found for branch %s', branch)
+    console.error('No deployments found')
     process.exit(0)
   }
 
@@ -69,16 +73,13 @@ async function main(args: {
     : remoteDeployments
 
   if (deployments.length === 1) {
-    console.error(
-      'Two or more deployments are required in order to run the performance tests',
-      branch
-    )
+    console.error('Two or more deployments are required in order to run the performance tests')
     process.exit(0)
   }
 
   // eslint-disable-next-line no-console
   console.log(
-    `Running tests on the ${remoteDeployments.length} most recent deployments${
+    `Running tests on ${remoteDeployments.length} deployments${
       localDeployment ? ` (including local deployment at ${localDeployment.url})` : ''
     }`
   )
@@ -120,6 +121,10 @@ const {values: args} = parseArgs({
     },
     label: {
       type: 'string',
+    },
+    tagsOnly: {
+      type: 'boolean',
+      short: 't',
     },
     pattern: {
       type: 'string',
