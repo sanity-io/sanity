@@ -1,3 +1,4 @@
+import {useMemo} from 'react'
 import {IntentParameters} from './types'
 import {useLink} from './useLink'
 import {useRouter} from './useRouter'
@@ -30,7 +31,7 @@ export function useIntentLink(props: {
 } {
   const {intent, onClick: onClickProp, params, replace, target} = props
   const {resolveIntentLink} = useRouter()
-  const href = resolveIntentLink(intent, params)
+  const href = useMemo(() => resolveIntentLink(intent, params), [intent, params, resolveIntentLink])
   const {onClick} = useLink({href, onClick: onClickProp, replace, target})
 
   return {onClick, href}

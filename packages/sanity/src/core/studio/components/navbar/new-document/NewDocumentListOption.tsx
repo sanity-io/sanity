@@ -1,6 +1,6 @@
 import {CurrentUser} from '@sanity/types'
 import {Tooltip, Box, Card, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {NewDocumentOption, PreviewLayout} from './types'
@@ -25,9 +25,13 @@ interface NewDocumentListOptionProps {
 
 export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   const {option, currentUser, onClick, preview} = props
+  const params = useMemo(
+    () => ({template: option.templateId, type: option.schemaType}),
+    [option.schemaType, option.templateId]
+  )
   const {onClick: onIntentClick, href} = useIntentLink({
     intent: 'create',
-    params: {template: option.templateId, type: option.schemaType},
+    params,
   })
 
   const handleDocumentClick = useCallback(

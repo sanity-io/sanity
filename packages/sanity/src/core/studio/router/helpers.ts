@@ -46,10 +46,10 @@ export function resolveDefaultState(
 
 export function resolveIntentState(
   tools: Tool[],
-  currentState: RouterState | null,
-  intentState: RouterState
+  prevState: RouterState | null,
+  nextState: RouterState
 ): RouterEvent {
-  const {intent, params, payload} = intentState
+  const {intent, params, payload} = nextState
 
   if (typeof intent !== 'string') {
     throw new Error('intent must be a string')
@@ -61,8 +61,8 @@ export function resolveIntentState(
 
   const orderedTools = getOrderedTools(tools)
 
-  const currentTool = currentState?.tool
-    ? orderedTools.find((tool) => tool.name === currentState.tool)
+  const currentTool = prevState?.tool
+    ? orderedTools.find((tool) => tool.name === prevState.tool)
     : null
 
   // If current tool can handle intent and if so, give it precedence
@@ -70,14 +70,14 @@ export function resolveIntentState(
     (tool) =>
       tool &&
       typeof tool.canHandleIntent === 'function' &&
-      tool.canHandleIntent(intent, params, currentState && currentState[tool.name])
+      tool.canHandleIntent(intent, params, prevState && prevState[tool.name])
   )
 
   if (matchingTool?.getIntentState) {
     const toolState = matchingTool.getIntentState(
       intent,
       params as any,
-      currentState && (currentState[matchingTool.name] as any),
+      prevState && (prevState[matchingTool.name] as any),
       payload
     )
 
@@ -85,7 +85,7 @@ export function resolveIntentState(
       type: 'state',
       isNotFound: false,
       state: {
-        ...currentState,
+        ...prevState,
         tool: matchingTool.name,
         [matchingTool.name]: toolState,
       },

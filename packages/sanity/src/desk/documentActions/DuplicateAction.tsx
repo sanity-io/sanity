@@ -17,7 +17,7 @@ const DISABLED_REASON_TITLE = {
 /** @internal */
 export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete}) => {
   const {duplicate} = useDocumentOperation(id, type)
-  const router = useRouter()
+  const {navigateIntent} = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -31,10 +31,10 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
     const dupeId = uuid()
 
     setDuplicating(true)
-    ;(duplicate.execute as any)(dupeId)
-    router.navigateIntent('edit', {id: dupeId, type})
+    duplicate.execute(dupeId)
+    navigateIntent('edit', {id: dupeId, type})
     onComplete()
-  }, [duplicate, onComplete, router, type])
+  }, [duplicate, navigateIntent, onComplete, type])
 
   if (!isPermissionsLoading && !permissions?.granted) {
     return {

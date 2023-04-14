@@ -15,6 +15,7 @@ interface DeskToolPaneProps {
   paneKey: string
   params: Record<string, string | undefined>
   payload: unknown
+  path: string
   selected: boolean
   siblingIndex: number
 }
@@ -44,6 +45,7 @@ export const DeskToolPane = memo(
       paneKey,
       params,
       payload,
+      path,
       selected,
       siblingIndex,
     } = props
@@ -58,7 +60,7 @@ export const DeskToolPane = memo(
         payload={payload}
         siblingIndex={siblingIndex}
       >
-        <Suspense fallback={<LoadingPane paneKey={paneKey} />}>
+        <Suspense fallback={<LoadingPane paneKey={paneKey} path={path} selected={selected} />}>
           <PaneComponent
             childItemId={childItemId || ''}
             index={index}
