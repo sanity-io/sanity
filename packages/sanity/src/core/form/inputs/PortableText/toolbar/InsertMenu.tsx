@@ -5,6 +5,7 @@ import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-e
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {BlockItem} from './types'
 import {useFocusBlock} from './hooks'
+import {upperFirst} from 'lodash'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
@@ -30,10 +31,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
 
   const children = useMemo(() => {
     return items.map((item) => {
-      const title =
-        item.type.title ||
-        (item?.type.type?.name !== undefined &&
-          item?.type.type?.name.charAt(0).toUpperCase() + item?.type.type?.name.slice(1))
+      const title = item.type.title || upperFirst(item.type.name)
 
       return (
         <CollapseMenuButton
