@@ -281,4 +281,67 @@ describe('initialization', () => {
       })
     })
   })
+  it("doesn't crash when containing a invalid block somewhere inside the content", async () => {
+    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const initialValue: PortableTextBlock[] = [
+      helloBlock,
+      {
+        _key: 'abc',
+        _type: 'myTestBlockType',
+        markDefs: [],
+        children: [{_key: 'def', _type: 'span', text: 'Test', marks: ['invalid']}],
+      },
+    ]
+    const initialSelection: EditorSelection = {
+      anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
+      focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
+    }
+    const onChange = jest.fn()
+    render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={editorRef}
+        selection={initialSelection}
+        schemaType={schemaType}
+        value={initialValue}
+      />
+    )
+    await waitFor(() => {
+      if (editorRef.current) {
+        expect(onChange).toHaveBeenCalledWith({
+          resolution: {
+            action: 'Remove invalid marks',
+            description:
+              "Block with _key 'abc' contains marks (invalid) not supported by the current content model.",
+            item: {
+              _key: 'abc',
+              _type: 'myTestBlockType',
+              children: [{_key: 'def', _type: 'span', marks: ['invalid'], text: 'Test'}],
+              markDefs: [],
+            },
+            patches: [
+              {path: [{_key: 'abc'}, 'children', {_key: 'def'}, 'marks'], type: 'set', value: []},
+            ],
+          },
+          type: 'invalidValue',
+          value: [
+            {
+              _key: '123',
+              _type: 'myTestBlockType',
+              children: [{_key: '567', _type: 'span', marks: [], text: 'Hello'}],
+              markDefs: [],
+            },
+            {
+              _key: 'abc',
+              _type: 'myTestBlockType',
+              children: [{_key: 'def', _type: 'span', marks: ['invalid'], text: 'Test'}],
+              markDefs: [],
+            },
+          ],
+        })
+        expect(onChange).not.toHaveBeenCalledWith({type: 'value', value: initialValue})
+        expect(onChange).toHaveBeenCalledWith({type: 'ready'})
+      }
+    })
+  })
 })
