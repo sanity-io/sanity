@@ -185,15 +185,15 @@ export function useTimelineStore({
             })),
             // Only emit (and in turn, re-render) when values have changed
             distinctUntilChanged(deepEquals),
-            tap((timelineState) => {
-              timelineStateRef.current = timelineState
-            }),
             // Emit initial timeline state whenever we encounter an error in TimelineController's `handler` callback.
             // A little ham-fisted, but also reflects how we handle timeline errors in the UI
             // (i.e. no timeline state or diffs are rendered and we revert to the current editable document)
             catchError((err) => {
               onError?.(err)
               return of(INITIAL_TIMELINE_STATE)
+            }),
+            tap((timelineState) => {
+              timelineStateRef.current = timelineState
             }),
             // Trigger callback function required by `useSyncExternalStore` to denote when to re-render
             tap(callback)
