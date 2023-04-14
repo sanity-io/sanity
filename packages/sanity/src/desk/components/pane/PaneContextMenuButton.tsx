@@ -1,8 +1,10 @@
-import {EllipsisVerticalIcon} from '@sanity/icons'
-import {Box, Button, Label, Menu, MenuButton, MenuDivider, MenuItem, PopoverProps} from '@sanity/ui'
-import React, {forwardRef, Fragment, useCallback, useMemo, useId} from 'react'
+import {CheckmarkIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import {Box, Label, Menu, MenuButton, MenuDivider, MenuItem, PopoverProps} from '@sanity/ui'
+import React, {Fragment, useCallback, useMemo, useId, MouseEvent} from 'react'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {IntentLink} from 'sanity/router'
+import {Intent} from '../../structureBuilder'
+import {StatusButton} from 'sanity'
+import {useIntentLink} from 'sanity/router'
 
 interface PaneContextMenuButtonProps {
   items: PaneMenuItem[]
@@ -30,6 +32,9 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
   const {items, itemGroups, onAction} = props
   const id = useId()
 
+  const hasCritical = items.some((item) => item.tone === 'critical')
+  const hasCaution = items.some((item) => item.tone === 'caution')
+
   const groups = useMemo(() => {
     if (!itemGroups || itemGroups.length === 0) {
       return [{id: '$default', items}]
@@ -55,7 +60,15 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
 
   return (
     <MenuButton
-      button={<Button icon={EllipsisVerticalIcon} mode="bleed" padding={3} title="Show menu" />}
+      button={
+        <StatusButton
+          icon={EllipsisVerticalIcon}
+          mode="bleed"
+          title="Show menu"
+          // eslint-disable-next-line no-nested-ternary
+          tone={hasCritical ? 'critical' : hasCaution ? 'caution' : undefined}
+        />
+      }
       id={id}
       menu={
         <Menu>
@@ -63,13 +76,17 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
             // eslint-disable-next-line react/no-array-index-key
             <Fragment key={groupIndex}>
               {groupIndex > 0 && <MenuDivider />}
+
               {group.title && (
-                <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-                  <Label muted>{group.title}</Label>
+                <Box padding={2} paddingBottom={1}>
+                  <Label muted size={0}>
+                    {group.title}
+                  </Label>
                 </Box>
               )}
+
               {group.items.map((item, itemIndex) => (
-                <PaneContextMenuItem
+                <PaneContextMenuItemResolver
                   item={item}
                   // eslint-disable-next-line react/no-array-index-key
                   key={`${itemIndex}-${item.title}`}
@@ -83,6 +100,19 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
       popover={CONTEXT_MENU_POPOVER_PROPS}
     />
   )
+}
+
+function PaneContextMenuItemResolver(props: {
+  item: PaneMenuItem
+  onAction: (action: PaneMenuItem) => void
+}) {
+  const {item} = props
+
+  if (item.intent) {
+    return <PaneContextIntentMenuItem {...props} intent={item.intent} />
+  }
+
+  return <PaneContextMenuItem {...props} />
 }
 
 function PaneContextMenuItem(props: {
@@ -101,29 +131,50 @@ function PaneContextMenuItem(props: {
     return item.shortcut.split('+')
   }, [item])
 
-  const IntentButtonOrActionButton = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>
-    item.intent ? (
-      <IntentLink
-        {...linkProps}
-        intent={item.intent.type}
-        params={item.intent.params}
-        ref={linkRef}
-      />
-    ) : (
-      <MenuItem {...linkProps} pressed={item.selected} />
-    )
+  return (
+    <MenuItem
+      hotkeys={hotkeys}
+      icon={item.icon}
+      iconRight={item.selected ? CheckmarkIcon : undefined}
+      onClick={handleClick}
+      selected={item.selected}
+      text={item.title}
+      tone={item.tone}
+    />
   )
+}
 
-  IntentButtonOrActionButton.displayName = 'Link'
+function PaneContextIntentMenuItem(props: {
+  intent: Intent
+  item: PaneMenuItem
+  onAction: (action: PaneMenuItem) => void
+}) {
+  const {intent, item, onAction} = props
+  const intentLink = useIntentLink({intent: intent.type, params: intent.params})
+
+  const hotkeys = useMemo(() => {
+    if (!item.shortcut) return undefined
+
+    return item.shortcut.split('+')
+  }, [item])
+
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      intentLink.onClick(event)
+      onAction(item)
+    },
+    [intentLink, item, onAction]
+  )
 
   return (
     <MenuItem
-      as={IntentButtonOrActionButton}
-      data-as={item.intent ? 'a' : 'button'}
+      as="a"
       hotkeys={hotkeys}
+      href={intentLink.href}
       icon={item.icon}
+      iconRight={item.selected ? CheckmarkIcon : undefined}
       onClick={handleClick}
-      padding={0}
+      pressed={item.selected}
       text={item.title}
     />
   )
