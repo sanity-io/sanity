@@ -1,5 +1,4 @@
 import {
-  BoundaryElementProvider,
   Card,
   Code,
   DialogProvider,
@@ -15,20 +14,22 @@ import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
 import {DocumentPaneNode} from '../../types'
-import {usePaneRouter} from '../../components'
-import {PaneFooter} from '../../components/pane'
+import {Pane, PaneFooter, usePaneRouter} from '../../components'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
-import {useDeskTool} from '../../useDeskTool'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
 import {DocumentOperationResults} from './DocumentOperationResults'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
-import {ChangesPanel} from './changesPanel'
 import {DocumentPanel} from './documentPanel'
 import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
 import {DocumentPaneProviderProps} from './types'
 import {useDocumentPane} from './useDocumentPane'
+import {
+  DOCUMENT_INSPECTOR_MIN_WIDTH,
+  DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
+  DOCUMENT_PANEL_MIN_WIDTH,
+} from './constants'
 import {
   ChangeConnectorRoot,
   ReferenceInputOptionsProvider,
@@ -43,10 +44,6 @@ import {
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
-const DOCUMENT_PANEL_MIN_WIDTH = 320
-const DOCUMENT_PANEL_INITIAL_MIN_WIDTH = 600
-const CHANGES_PANEL_MIN_WIDTH = 320
-
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrow screens (< 512px).
   'fixed',
@@ -57,6 +54,7 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
 const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
   flex: 1;
   display: flex;
+  flex-direction: column;
   min-height: 0;
   min-width: 0;
 `
@@ -148,8 +146,8 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       {/* stabilize the reference input options formally in the form builder */}
       {/* eslint-disable-next-line react/jsx-pascal-case */}
       <ReferenceInputOptionsProvider
-        EditReferenceLinkComponent={ReferenceChildLink as any}
-        onEditReference={handleEditReference as any}
+        EditReferenceLinkComponent={ReferenceChildLink}
+        onEditReference={handleEditReference}
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
@@ -204,16 +202,16 @@ function InnerDocumentPane() {
   const {
     changesOpen,
     documentType,
+    inspector,
+    inspectOpen,
     onFocus,
     onPathOpen,
     onHistoryOpen,
     onKeyUp,
-    inspectOpen,
     paneKey,
     schemaType,
     value,
   } = useDocumentPane()
-  const {features} = useDeskTool()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const zOffsets = useZIndex()
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
@@ -225,17 +223,6 @@ function InnerDocumentPane() {
   const footerRect = useElementRect(footerElement)
   const footerH = footerRect?.height
 
-  const changesPanel = useMemo(() => {
-    if (!features.reviewChanges) return null
-    if (!changesOpen) return null
-
-    return (
-      <BoundaryElementProvider element={rootElement}>
-        <ChangesPanel />
-      </BoundaryElementProvider>
-    )
-  }, [changesOpen, features.reviewChanges, rootElement])
-
   const onConnectorSetFocus = useCallback(
     (path: Path) => {
       onPathOpen(path)
@@ -244,13 +231,10 @@ function InnerDocumentPane() {
     [onPathOpen, onFocus]
   )
 
-  const currentMinWidth = changesOpen
-    ? DOCUMENT_PANEL_INITIAL_MIN_WIDTH + CHANGES_PANEL_MIN_WIDTH
-    : DOCUMENT_PANEL_INITIAL_MIN_WIDTH
+  const currentMinWidth =
+    DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
 
-  const minWidth = changesOpen
-    ? DOCUMENT_PANEL_MIN_WIDTH + CHANGES_PANEL_MIN_WIDTH
-    : DOCUMENT_PANEL_MIN_WIDTH
+  const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
 
   if (!schemaType) {
     return (
@@ -298,6 +282,7 @@ function InnerDocumentPane() {
   return (
     <DocumentActionShortcuts
       actionsBoxElement={actionsBoxElement}
+      as={Pane}
       currentMinWidth={currentMinWidth}
       data-testid="document-pane"
       flex={2.5}
@@ -306,38 +291,35 @@ function InnerDocumentPane() {
       onKeyUp={onKeyUp}
       rootRef={setRootElement}
     >
-      <>
+      <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+        <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
+          <StyledChangeConnectorRoot
+            data-testid="change-connector-root"
+            isReviewChangesOpen={changesOpen}
+            onOpenReviewChanges={onHistoryOpen}
+            onSetFocus={onConnectorSetFocus}
+          >
+            <DocumentPanel
+              footerHeight={footerH || null}
+              isInspectOpen={inspectOpen}
+              rootElement={rootElement}
+              setDocumentPanelPortalElement={setDocumentPanelPortalElement}
+            />
+          </StyledChangeConnectorRoot>
+        </Flex>
+      </DialogProvider>
+
+      {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
+      {/* The portal element comes from `DocumentPanel`. */}
+      <PortalProvider __unstable_elements={{documentPanelPortalElement}}>
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-          <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
-            <StyledChangeConnectorRoot
-              data-testid="change-connector-root"
-              isReviewChangesOpen={changesOpen}
-              onOpenReviewChanges={onHistoryOpen}
-              onSetFocus={onConnectorSetFocus}
-            >
-              <DocumentPanel
-                footerHeight={footerH || null}
-                isInspectOpen={inspectOpen}
-                rootElement={rootElement}
-                setDocumentPanelPortalElement={setDocumentPanelPortalElement}
-              />
-              {changesPanel}
-            </StyledChangeConnectorRoot>
-          </Flex>
+          <PaneFooter ref={setFooterElement}>
+            <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
+          </PaneFooter>
         </DialogProvider>
+      </PortalProvider>
 
-        {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
-        {/* The portal element comes from `DocumentPanel`. */}
-        <PortalProvider __unstable_elements={{documentPanelPortalElement}}>
-          <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-            <PaneFooter ref={setFooterElement}>
-              <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
-            </PaneFooter>
-          </DialogProvider>
-        </PortalProvider>
-
-        <DocumentOperationResults />
-      </>
+      <DocumentOperationResults />
     </DocumentActionShortcuts>
   )
 }
