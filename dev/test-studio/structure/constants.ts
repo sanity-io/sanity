@@ -38,6 +38,7 @@ export const DEBUG_INPUT_TYPES = [
   'actionsTest',
   'simpleArrayOfObjects',
   'simpleReferences',
+  'fieldActionsTest',
   'formInputDebug',
   'conditionalFieldsTest',
   'customInputsTest',
