@@ -1,4 +1,4 @@
-import React, {forwardRef, useMemo} from 'react'
+import React, {forwardRef, useCallback} from 'react'
 import {StateLink, useRouterState} from 'sanity/router'
 
 /** @beta */
@@ -13,11 +13,8 @@ export const ToolLink = forwardRef(function ToolLink(
   ref: React.ForwardedRef<HTMLAnchorElement>
 ) {
   const {name, ...rest} = props
-  const routerState = useRouterState()
-
-  const state = useMemo(
-    () => ({...routerState, tool: name, [name]: undefined}),
-    [routerState, name]
+  const state = useRouterState(
+    useCallback((routerState) => ({...routerState, tool: name, [name]: undefined}), [name])
   )
 
   return <StateLink state={state} {...rest} ref={ref} />

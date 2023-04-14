@@ -10,6 +10,7 @@ import {PaneLayout} from '../pane'
 import {useDeskTool} from '../../useDeskTool'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
+import {useRouterState} from 'sanity/router'
 
 interface DeskToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
@@ -30,6 +31,12 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
   const schema = useSchema()
   const {layoutCollapsed, setLayoutCollapsed} = useDeskTool()
   const {paneDataItems, resolvedPanes} = useResolvedPanes()
+  // Intent resolving is processed by the sibling `<IntentResolver />` but it doesn't have a UI for indicating progress.
+  // We handle that here, so if there are only 1 pane (the root structure), and there's an intent state in the router, we need to show a placeholder LoadingPane until
+  // the structure is resolved and we know what panes to load/display
+  const isResolvingIntent = useRouterState(
+    useCallback((routerState) => typeof routerState.intent === 'string', [])
+  )
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
@@ -109,12 +116,18 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
                   paneKey={paneKey}
                   params={paneParams}
                   payload={payload}
+                  path={path}
                   selected={selected}
                   siblingIndex={siblingIndex}
                 />
               )}
             </Fragment>
           )
+        )}
+        {/* If there's just 1 pane (the root), or less, and we're resolving an intent then it's necessary to show */}
+        {/* a loading indicator as the intent resolving is async, could take a while and can also be interrupted/redirected */}
+        {paneDataItems.length <= 1 && isResolvingIntent && (
+          <LoadingPane paneKey="intent-resolver" />
         )}
       </StyledPaneLayout>
       <div data-portal="" ref={setPortalElement} />

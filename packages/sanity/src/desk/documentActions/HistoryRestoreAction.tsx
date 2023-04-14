@@ -5,15 +5,15 @@ import {useRouter} from 'sanity/router'
 
 /** @internal */
 export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, onComplete}) => {
-  const {restore}: any = useDocumentOperation(id, type)
-  const router = useRouter()
+  const {restore} = useDocumentOperation(id, type)
+  const {navigateIntent} = useRouter()
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
   const handleConfirm = useCallback(() => {
-    restore.execute(revision)
-    router.navigateIntent('edit', {id, type})
+    restore.execute(revision!)
+    navigateIntent('edit', {id, type})
     onComplete()
-  }, [revision, restore, router, onComplete, id, type])
+  }, [restore, revision, navigateIntent, id, type, onComplete])
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
