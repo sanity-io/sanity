@@ -1,10 +1,9 @@
-import {BinaryDocumentIcon, EarthAmericasIcon, RestoreIcon} from '@sanity/icons'
+import {BinaryDocumentIcon, EarthAmericasIcon} from '@sanity/icons'
 import {DeskToolFeatures, PaneMenuItem} from '../../types'
 import {INSPECT_ACTION_PREFIX} from './constants'
 import {DocumentInspector, DocumentInspectorMenuItem, ValidationMarker, isRecord} from 'sanity'
 
 interface GetMenuItemsParams {
-  changesOpen: boolean
   currentInspector?: DocumentInspector
   features: DeskToolFeatures
   hasValue: boolean
@@ -78,19 +77,6 @@ export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
 
   return [
     ...inspectorItems,
-
-    // TODO: convert to inspector
-    ...(params.features.resizablePanes
-      ? [
-          {
-            action: 'reviewChanges',
-            group: 'inspectors',
-            title: 'Review changes',
-            icon: RestoreIcon,
-            isDisabled: params.changesOpen || !params.hasValue,
-          },
-        ]
-      : []),
 
     // TODO: convert to inspector or document view?
     getInspectItem(params),
