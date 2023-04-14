@@ -34,6 +34,7 @@ import {
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
+import {FormField} from './form/FormField'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -42,6 +43,9 @@ const sharedSettings = definePlugin({
     templates: resolveInitialValueTemplates,
   },
   form: {
+    components: {
+      field: FormField,
+    },
     image: {
       assetSources: [imageAssetSource],
     },
