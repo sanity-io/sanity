@@ -9,6 +9,7 @@ import {usePaneRouter} from '../../components'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
+import {changesInspector} from './inspectors/changes'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
@@ -122,7 +123,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
-  const changesOpen = !!params.since
 
   const [timelineError, setTimelineError] = useState<Error | null>(null)
   /**
@@ -160,17 +160,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [documentId, presenceStore])
 
   const inspectors: DocumentInspector[] = useMemo(
-    () => inspectorsResolver({documentId, documentType}, []),
+    () => inspectorsResolver({documentId, documentType}, [changesInspector]),
     [documentId, documentType, inspectorsResolver]
   )
 
   const currentInspector = inspectors?.find((i) => i.name === params.inspect)
+  const resolvedChangesInspector = inspectors.find((i) => i.name === 'changes')
+
+  const changesOpen = currentInspector?.name === 'changes'
 
   const hasValue = Boolean(value)
   const menuItems = useMemo(
     () =>
       getMenuItems({
-        changesOpen,
         currentInspector,
         features,
         hasValue,
@@ -178,7 +180,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         previewUrl,
         validation,
       }),
-    [changesOpen, currentInspector, features, hasValue, inspectors, previewUrl, validation]
+    [currentInspector, features, hasValue, inspectors, previewUrl, validation]
   )
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
@@ -297,12 +299,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleHistoryClose = useCallback(() => {
-    paneRouter.setParams({...params, since: undefined})
-  }, [paneRouter, params])
+    if (resolvedChangesInspector) {
+      closeInspector(resolvedChangesInspector)
+    }
+  }, [closeInspector, resolvedChangesInspector])
 
   const handleHistoryOpen = useCallback(() => {
-    paneRouter.setParams({...params, since: '@lastPublished'})
-  }, [paneRouter, params])
+    if (resolvedChangesInspector) {
+      openInspector(resolvedChangesInspector)
+    }
+  }, [openInspector, resolvedChangesInspector])
 
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
