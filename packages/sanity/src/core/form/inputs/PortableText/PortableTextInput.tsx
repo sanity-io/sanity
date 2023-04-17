@@ -81,11 +81,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
   }))
 
   // TODO: why are these not stable???
-  const _path = useMemo(() => props.path, [])
   const _onChange = useMemo(() => props.onChange, [])
   const _onItemRemove = useMemo(() => props.onItemRemove, [])
 
-  const {subscribe} = usePatches({path: _path})
+  const {subscribe} = usePatches({path})
   const editorRef = useRef<PortableTextEditor | null>(null)
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
