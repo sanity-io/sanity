@@ -510,12 +510,15 @@ function prepareObjectInputState<T>(
 
     // Set the "all-fields" group as selected when review changes is open to enable review of all
     // fields and changes together. When review changes is closed - switch back to the selected tab.
-    const selected = (props.changesOpen && group.name === ALL_FIELDS_GROUP.name) || isSelected
+    const selected = props.changesOpen ? group.name === ALL_FIELDS_GROUP.name : isSelected
+    // Also disable non-selected groups when review changes is open
+    const disabled = props.changesOpen ? !selected : false
 
     return groupHidden
       ? []
       : [
           {
+            disabled,
             icon: group?.icon,
             name: group.name,
             selected,
