@@ -27,6 +27,7 @@ import {pathToString} from '../../../field'
 import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
 import {FormInput} from '../../components'
 import {FIXME} from '../../../FIXME'
+import {useFormCallbacks} from '../../studio'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
@@ -81,7 +82,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   }))
 
   // TODO: why are these not stable???
-  const _onChange = useMemo(() => props.onChange, [])
   const _onItemRemove = useMemo(() => props.onItemRemove, [])
 
   const {subscribe} = usePatches({path})
@@ -232,7 +232,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
-          _onChange(toFormPatches(change.patches))
+          onChange(toFormPatches(change.patches))
           break
         case 'selection':
           // This doesn't need to be immediate,
@@ -251,7 +251,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           break
         case 'undo':
         case 'redo':
-          _onChange(toFormPatches(change.patches))
+          onChange(toFormPatches(change.patches))
           break
         case 'invalidValue':
           setInvalidValue(change)
@@ -323,7 +323,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 isActive={isActive}
                 isFullscreen={isFullscreen}
                 onActivate={handleActivate}
-                onChange={_onChange}
                 onItemRemove={_onItemRemove}
                 onCopy={onCopy}
                 onInsert={onInsert}
@@ -341,7 +340,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
 }
 
 function toFormPatches(patches: any) {
-  return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE})) as FormPatch[]
+  return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE}))
 }
 
 // Return true if the path directly points to something focusable in the editor

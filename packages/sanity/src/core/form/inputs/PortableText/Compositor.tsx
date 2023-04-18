@@ -52,7 +52,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     isActive,
     isFullscreen,
     onActivate,
-    onChange,
     onCopy,
     onItemClose,
     onItemOpen,
@@ -117,7 +116,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           boundaryElement={boundaryElement || undefined}
           focused={blockFocused}
           isFullscreen={isFullscreen}
-          onChange={onChange}
           onItemClose={onItemClose}
           onItemOpen={onItemOpen}
           onItemRemove={onItemRemove}
@@ -146,7 +144,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       _renderCustomMarkers,
       boundaryElement,
       isFullscreen,
-      onChange,
       onItemClose,
       onItemOpen,
       onItemRemove,
@@ -177,7 +174,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           boundaryElement={boundaryElement || undefined}
           focused={blockFocused}
           isFullscreen={isFullscreen}
-          onChange={onChange}
           onItemClose={onItemClose}
           onItemOpen={onItemOpen}
           onItemRemove={onItemRemove}
@@ -203,7 +199,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       boundaryElement,
       isFullscreen,
-      onChange,
       onItemClose,
       onItemOpen,
       onItemRemove,
