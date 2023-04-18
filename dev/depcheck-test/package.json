@@ -1,9 +1,9 @@
 {
   "name": "depcheck-test",
-  "version": "2.35.7",
+  "version": "2.36.1",
   "private": true,
   "dependencies": {
-    "@sanity/base": "2.35.7",
+    "@sanity/base": "2.36.1",
     "sanity-plugin-mux-input": "^1.1.1"
   }
 }
