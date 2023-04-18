@@ -10,6 +10,7 @@ import {useDeskTool} from '../../../../useDeskTool'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {ValidationMenu} from './ValidationMenu'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
+import {useTimelineSelector} from 'sanity'
 
 export interface DocumentPanelHeaderProps {
   // TODO:
@@ -26,22 +27,24 @@ export const DocumentPanelHeader = memo(
       onMenuAction,
       onPaneClose,
       onPaneSplit,
-      historyController,
       validation,
       menuItems,
       menuItemGroups,
       schemaType,
+      timelineStore,
       ready,
       views,
       unstable_languageFilter,
     } = useDocumentPane()
-    const {revTime: rev} = historyController
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
     const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
     const showTabs = views.length > 1
     const showVersionMenu = features.reviewChanges
+
+    // Subscribe to external timeline state changes
+    const rev = useTimelineSelector(timelineStore, (state) => state.revTime)
 
     // there are three kinds of buttons possible:
     //

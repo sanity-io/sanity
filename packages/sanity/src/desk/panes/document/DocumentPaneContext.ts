@@ -19,8 +19,7 @@ import {
   PatchEvent,
   PermissionCheckResult,
   StateTree,
-  Timeline,
-  TimelineController,
+  TimelineStore,
 } from 'sanity'
 
 /** @internal */
@@ -39,8 +38,6 @@ export interface DocumentPaneContextValue {
   documentType: string
   editState: EditStateFor | null
   focusPath: Path
-  // TODO: rename this for consistency
-  historyController: TimelineController
   index: number
   inspectOpen: boolean
   menuItemGroups: PaneMenuItemGroup[]
@@ -66,8 +63,9 @@ export interface DocumentPaneContextValue {
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
   source?: string
-  timeline: Timeline
+  timelineError: Error | null
   timelineMode: TimelineMode
+  timelineStore: TimelineStore
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike

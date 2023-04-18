@@ -1,12 +1,10 @@
-import React, {useCallback, createElement, useMemo, useState} from 'react'
-import {Box, ButtonTone, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import React, {useCallback, createElement, useMemo} from 'react'
+import {Box, ButtonTone, Card, Flex, Label, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
-import {TimelineItemState} from './types'
 import {UserAvatarStack} from './userAvatarStack'
-
 import {EventLabel, IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
-import {ChunkType, Chunk, useTimeAgo} from 'sanity'
+import {ChunkType, Chunk} from 'sanity'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone> = {
   initial: 'primary',
@@ -20,19 +18,29 @@ const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone
   withinSelection: 'primary',
 }
 
-export function TimelineItem(props: {
-  isSelectionBottom: boolean
-  isSelectionTop: boolean
-  state: TimelineItemState
-  onSelect: (chunk: Chunk) => void
+interface TimelineItemProps {
   chunk: Chunk
+  isFirst: boolean
+  isLast: boolean
+  isLatest: boolean
+  isSelected: boolean
+  onSelect: (chunk: Chunk) => void
   timestamp: string
   type: ChunkType
-}) {
-  const {isSelectionBottom, isSelectionTop, state, onSelect, timestamp, chunk, type} = props
+}
+
+export function TimelineItem({
+  chunk,
+  isFirst,
+  isLast,
+  isLatest,
+  isSelected,
+  onSelect,
+  timestamp,
+  type,
+}: TimelineItemProps) {
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
-  const timeAgo = useTimeAgo(timestamp, {minimal: true})
   const formattedTimestamp = useMemo(() => {
     const parsedDate = new Date(timestamp)
     const formattedDate = format(parsedDate, 'MMM d, yyyy, hh:mm a')
@@ -40,13 +48,8 @@ export function TimelineItem(props: {
     return formattedDate
   }, [timestamp])
 
-  const isSelected = state === 'selected'
-  const isWithinSelection = state === 'withinSelection'
-
-  const [isHovered, setHovered] = useState(false)
-
   const handleClick = useCallback(
-    (evt: React.MouseEvent<HTMLDivElement>) => {
+    (evt: React.MouseEvent<HTMLButtonElement>) => {
       evt.preventDefault()
       evt.stopPropagation()
       onSelect(chunk)
@@ -54,67 +57,58 @@ export function TimelineItem(props: {
     [onSelect, chunk]
   )
 
-  // @todo: ensure that tooltips are correctly displayed when navigating the parent <Menu> component with the keyboard.
   return (
     <Root
-      data-ui="timelineItem"
-      radius={2}
+      $selected={isSelected}
       data-chunk-id={chunk.id}
-      padding={0}
-      tone={
-        isHovered || isSelected || isWithinSelection ? 'default' : TIMELINE_ITEM_EVENT_TONE[type]
-      }
-      pressed={isWithinSelection}
-      state={state}
-      selected={isSelected}
-      isHovered={isHovered}
-      disabled={state === 'disabled'}
-      data-selection-bottom={isSelectionBottom}
-      data-selection-top={isSelectionTop}
+      data-first={isFirst ? true : undefined}
+      data-last={isLast ? true : undefined}
+      data-ui="timelineItem"
+      mode={isSelected ? 'default' : 'bleed'}
       onClick={handleClick}
+      padding={0}
+      radius={2}
+      tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
     >
-      <Tooltip
-        portal
-        placement="left"
-        fallbackPlacements={['bottom']}
-        content={
-          <Stack padding={3} space={3}>
-            <Text size={1}>{formattedTimestamp}</Text>
-          </Stack>
-        }
-      >
-        <Box
-          // eslint-disable-next-line react/jsx-no-bind
-          onMouseEnter={() => setHovered(true)}
-          // eslint-disable-next-line react/jsx-no-bind
-          onMouseLeave={() => setHovered(false)}
-          paddingX={2}
-        >
-          <Flex align="stretch">
-            <IconWrapper align="center">
-              <IconBox padding={2}>
-                <Text size={2}>{iconComponent && createElement(iconComponent)}</Text>
-              </IconBox>
-            </IconWrapper>
+      <Box paddingX={2}>
+        <Flex align="stretch">
+          <IconWrapper align="center">
+            <IconBox padding={2}>
+              <Text size={2}>{iconComponent && createElement(iconComponent)}</Text>
+            </IconBox>
+          </IconWrapper>
 
-            <Stack space={2} margin={2}>
-              <Box>
-                <EventLabel size={1} weight="medium">
-                  {formatTimelineEventLabel(type) || <code>{type}</code>}
-                </EventLabel>
-              </Box>
-              <TimestampBox paddingX={1}>
-                <Text size={0} muted>
-                  {timeAgo}
-                </Text>
-              </TimestampBox>
-            </Stack>
-            <Flex flex={1} justify="flex-end" align="center">
-              <UserAvatarStack maxLength={3} userIds={authorUserIds} />
-            </Flex>
+          <Stack space={2} margin={2}>
+            {isLatest && (
+              <Flex>
+                <Card
+                  padding={1}
+                  radius={2}
+                  shadow={1}
+                  tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
+                >
+                  <Label muted size={0}>
+                    Latest
+                  </Label>
+                </Card>
+              </Flex>
+            )}
+            <Box>
+              <EventLabel size={1} weight="medium">
+                {formatTimelineEventLabel(type) || <code>{type}</code>}
+              </EventLabel>
+            </Box>
+            <TimestampBox paddingX={1}>
+              <Text size={0} muted>
+                {formattedTimestamp}
+              </Text>
+            </TimestampBox>
+          </Stack>
+          <Flex flex={1} justify="flex-end" align="center">
+            <UserAvatarStack maxLength={3} userIds={authorUserIds} />
           </Flex>
-        </Box>
-      </Tooltip>
+        </Flex>
+      </Box>
     </Root>
   )
 }

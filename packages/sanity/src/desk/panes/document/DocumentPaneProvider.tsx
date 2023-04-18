@@ -4,7 +4,6 @@ import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
-import {useMemoObservable} from 'react-rx'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
 import {PaneMenuItem} from '../../types'
@@ -15,21 +14,17 @@ import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentPresence,
   PatchEvent,
   StateTree,
   toMutationPatches,
   getExpandOperations,
   getPublishedId,
-  isDev,
   setAtPath,
-  useClient,
   useConnectionState,
   useDocumentOperation,
   useEditState,
   useFormState,
-  useHistoryStore,
   useInitialValue,
   usePresenceStore,
   useSchema,
@@ -39,6 +34,8 @@ import {
   useValidationStatus,
   getDraftId,
   useDocumentValuePermissions,
+  useTimelineStore,
+  useTimelineSelector,
 } from 'sanity'
 
 const emptyObject = {} as Record<string, string | undefined>
@@ -49,7 +46,6 @@ const emptyObject = {} as Record<string, string | undefined>
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {children, index, pane, paneKey} = props
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const templates = useTemplates()
   const {
@@ -57,7 +53,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     badges: documentBadges,
     unstable_languageFilter: languageFilterResolver,
   } = useSource().document
-  const historyStore = useHistoryStore()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const {features} = useDeskTool()
@@ -119,22 +114,29 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     params.path ? pathFromString(params.path) : []
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
-  const timeline = useMemo(
-    () => historyStore.getTimeline({publishedId: documentId, enableTrace: isDev}),
-    [documentId, historyStore]
-  )
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
-  // NOTE: this emits sync so can never be null
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const {historyController} = useMemoObservable(
-    () => historyStore.getTimelineController({client, documentId, documentType, timeline}),
-    [client, documentId, documentType, timeline]
-  )!
+  const changesOpen = !!params.since
 
-  // @todo: this will now happen on each render, but should be refactored so it happens only when
-  // the `rev`, `since` or `historyController` values change.
-  historyController.setRange(params.since || null, params.rev || null)
-  const changesOpen = historyController.changesPanelActive()
+  const [timelineError, setTimelineError] = useState<Error | null>(null)
+  /**
+   * Create an intermediate store which handles document Timeline + TimelineController
+   * creation, and also fetches pre-requsite document snapshots. Compatible with `useSyncExternalStore`
+   * and made available to child components via DocumentPaneContext.
+   */
+  const timelineStore = useTimelineStore({
+    documentId,
+    documentType,
+    onError: setTimelineError,
+    rev: params.rev,
+    since: params.since,
+  })
+
+  // Subscribe to external timeline state changes
+  const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
+  const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
+  const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
+  const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
+  const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -153,22 +155,31 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const hasValue = Boolean(value)
   const menuItems = useMemo(
     () => getMenuItems({features, hasValue, changesOpen, previewUrl}),
-    [features, hasValue, changesOpen, previewUrl]
+    [changesOpen, features, hasValue, previewUrl]
   )
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
-    ? historyController.sinceAttributes()
+    ? sinceAttributes
     : editState?.published || null
-  const ready = connectionState === 'connected' && editState.ready
-  const viewOlderVersion = historyController.onOlderRevision()
+
+  /**
+   * Note that in addition to connection and edit state, we also wait for a valid document timeline
+   * range to be loaded. This means if we're loading an older revision, the full transaction range must
+   * be loaded in full prior to the document being displayed.
+   *
+   * Previously, visiting studio URLs with timeline params would display the 'current' document and then
+   * 'snap' in the older revision, which was disorienting and could happen mid-edit.
+   *
+   * In the event that the timeline cannot be loaded due to TimelineController errors or blocked requests,
+   * we skip this readiness check to ensure that users aren't locked out of editing. Trying to select
+   * a timeline revision in this instance will display an error localized to the popover itself.
+   */
+  const ready =
+    connectionState === 'connected' && editState.ready && (timelineReady || !!timelineError)
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
-    () =>
-      viewOlderVersion
-        ? historyController.displayed() || {_id: value._id, _type: value._type}
-        : value,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [historyController, params.rev, params.since, value, viewOlderVersion]
+    () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
+    [onOlderRevision, timelineDisplayed, value]
   )
 
   const setTimelineRange = useCallback(
@@ -312,7 +323,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     document: docPermissionsInput,
     permission: requiredPermission,
   })
-  const {revTime: rev} = historyController
 
   const isNonExistent = !value?._id
 
@@ -324,7 +334,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
     return (
       !ready ||
-      rev !== null ||
+      revTime !== null ||
       hasNoPermission ||
       updateActionDisabled ||
       createActionDisabled ||
@@ -336,7 +346,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     isPermissionsLoading,
     permissions?.granted,
     ready,
-    rev,
+    revTime,
     schemaType,
   ])
 
@@ -406,7 +416,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onSetActiveFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
-    historyController,
     index,
     inspectOpen,
     validation,
@@ -419,8 +428,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permissions,
     setTimelineMode,
     setTimelineRange,
-    timeline,
+    timelineError,
     timelineMode,
+    timelineStore,
     title,
     value,
     views,
