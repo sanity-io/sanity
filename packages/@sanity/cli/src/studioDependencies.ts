@@ -2,16 +2,16 @@ export const studioDependencies = {
   // Dependencies for a default Sanity installation
   dependencies: {
     // Official studio dependencies
-    sanity: '^3.0.0',
+    sanity: '^3.9.0',
 
     // Official studio plugin dependencies
-    '@sanity/vision': '^3.0.0',
+    '@sanity/vision': '^3.9.0',
 
     // Non-Sanity dependencies
     react: '^18.2.0',
     'react-dom': '^18.2.0',
     'react-is': '^18.2.0', // Peer dependency of styled-components
-    'styled-components': '^5.2.0',
+    'styled-components': '^5.3.9',
   },
 
   devDependencies: {
