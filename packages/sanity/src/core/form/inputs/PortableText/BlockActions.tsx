@@ -2,13 +2,13 @@ import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-e
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {PortableTextBlock} from '@sanity/types'
-import {PatchArg} from '../../patch'
+import {PatchEvent} from '../../patch'
 import {RenderBlockActionsCallback, RenderBlockActionsProps} from './types'
 import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
 
 interface BlockActionsProps {
   block: PortableTextBlock
-  onChange: (...patches: PatchArg[]) => void
+  onChange: (patches: PatchEvent) => void
   renderBlockActions?: RenderBlockActionsCallback
 }
 

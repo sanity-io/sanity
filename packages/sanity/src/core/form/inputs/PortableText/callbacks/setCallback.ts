@@ -1,12 +1,12 @@
 import {normalizeBlock} from '@sanity/block-tools'
 import {PortableTextBlock} from '@sanity/types'
-import {FormPatch, set} from '../../../patch'
+import {PatchEvent, set} from '../../../patch'
 import {SetCallback} from './types'
 
 export function createSetCallback(options: {
   allowedDecorators: string[]
   block: PortableTextBlock
-  onChange: (patches: FormPatch[]) => void
+  onChange: (patches: PatchEvent) => void
 }): SetCallback {
   const {allowedDecorators, block, onChange} = options
 
@@ -21,6 +21,6 @@ export function createSetCallback(options: {
       ),
     ]
 
-    return onChange(patches)
+    return onChange(PatchEvent.from(patches))
   }
 }

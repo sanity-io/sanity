@@ -17,7 +17,6 @@ import {
   RenderInputCallback,
   RenderPreviewCallback,
 } from '../../../types'
-import {PatchArg} from '../../../patch'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
@@ -29,6 +28,7 @@ import {pathToString} from '../../../../field'
 import {debugRender} from '../debugRender'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {useFormCallbacks} from '../../../studio'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -48,7 +48,6 @@ export interface TextBlockProps {
   children: React.ReactNode
   focused: boolean
   isFullscreen?: boolean
-  onChange: (...patches: PatchArg[]) => void
   onItemClose: () => void
   onItemOpen: (path: Path) => void
   onItemRemove: (itemKey: string) => void
@@ -76,7 +75,6 @@ export function TextBlock(props: TextBlockProps) {
     children,
     focused,
     isFullscreen,
-    onChange,
     onItemClose,
     onItemOpen,
     onPathFocus,
@@ -101,6 +99,7 @@ export function TextBlock(props: TextBlockProps) {
   const markers = usePortableTextMarkers(path)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const editor = usePortableTextEditor()
+  const {onChange} = useFormCallbacks()
 
   const presence = useChildPresence(path, true)
   // Include all presence paths pointing either directly to a block, or directly to a block child
