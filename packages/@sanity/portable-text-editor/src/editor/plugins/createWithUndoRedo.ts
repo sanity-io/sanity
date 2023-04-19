@@ -17,15 +17,13 @@ import {
   RemoveTextOperation,
   SelectionOperation,
 } from 'slate'
-import * as DMP from 'diff-match-patch'
+import {parsePatch} from '@sanity/diff-match-patch'
 import type {Patch} from '../../types/patch'
 import {PatchObservable, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {isPatching} from '../../utils/withoutPatching'
 
 const debug = debugWithName('plugin:withUndoRedo')
-// eslint-disable-next-line new-cap
-const dmp = new DMP.diff_match_patch()
 
 const SAVING = new WeakMap<Editor, boolean | undefined>()
 const MERGING = new WeakMap<Editor, boolean | undefined>()
@@ -237,7 +235,8 @@ function transformOperation(editor: Editor, patch: Patch, operation: Operation):
       const childIndex = block.children.findIndex((child) =>
         isEqual({_key: child._key}, patch.path[2])
       )
-      const parsed = dmp.patch_fromText(patch.value)[0]
+
+      const parsed = parsePatch(patch.value)[0]
       if (!parsed) {
         debug('Could not parse diffMatchPatch', patch)
         return [operation]
