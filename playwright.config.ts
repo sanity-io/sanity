@@ -12,6 +12,7 @@ const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'test', 'e2e', 'results')
 const STORAGE_STATE_PATH = path.join(__dirname, 'test', 'e2e', 'state', 'storageState.json')
 const OS_BROWSERS =
   os.platform() === 'darwin' ? [{name: 'webkit', use: {...devices['Desktop Safari']}}] : []
+const E2E_DEBUG = readBoolEnv('SANITY_E2E_DEBUG', false)
 
 loadEnvFiles()
 ensureStorageState()
@@ -43,26 +44,33 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     baseURL: 'http://localhost:3333/',
-    headless: readBoolEnv('SANITY_E2E_HEADLESS', true),
+    headless: readBoolEnv('SANITY_E2E_HEADLESS', !E2E_DEBUG),
     storageState: STORAGE_STATE_PATH,
     viewport: {width: 1728, height: 1000},
     contextOptions: {reducedMotion: 'reduce'},
   },
 
   /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: {...devices['Desktop Chrome']},
-    },
+  projects: E2E_DEBUG
+    ? [
+        {
+          name: 'chromium',
+          use: {...devices['Desktop Chrome']},
+        },
+      ]
+    : [
+        {
+          name: 'chromium',
+          use: {...devices['Desktop Chrome']},
+        },
 
-    {
-      name: 'firefox',
-      use: {...devices['Desktop Firefox']},
-    },
+        {
+          name: 'firefox',
+          use: {...devices['Desktop Firefox']},
+        },
 
-    ...OS_BROWSERS,
-  ],
+        ...OS_BROWSERS,
+      ],
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
   outputDir: ARTIFACT_OUTPUT_PATH,
@@ -71,6 +79,7 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     port: 3333,
+    reuseExistingServer: !process.env.CI,
   },
 })
 
