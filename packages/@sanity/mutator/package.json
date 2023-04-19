@@ -54,10 +54,9 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
+    "@sanity/diff-match-patch": "^3.0.1",
     "@sanity/uuid": "^3.0.1",
-    "@types/diff-match-patch": "^1.0.32",
     "debug": "^3.2.7",
-    "diff-match-patch": "^1.0.4",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
