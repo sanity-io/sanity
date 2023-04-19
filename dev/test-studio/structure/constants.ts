@@ -78,7 +78,7 @@ export const DEBUG_INPUT_TYPES = [
   'ptReference',
 ]
 
-export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
+export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI', 'textsTest']
 export const DEBUG_FIELD_GROUP_TYPES = [
   'fieldGroups',
   'fieldGroupsDefault',
