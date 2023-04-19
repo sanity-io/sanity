@@ -89,7 +89,7 @@ function readBoolEnv(flag: string, defaultValue: boolean) {
     return defaultValue
   }
 
-  return flag === 'true' || flag === '1' || flag === 'yes'
+  return value === 'true' || value === '1' || value === 'yes'
 }
 
 /**
