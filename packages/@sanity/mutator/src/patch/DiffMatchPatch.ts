@@ -1,25 +1,23 @@
-/* eslint-disable new-cap, camelcase */
-import * as DMP from 'diff-match-patch'
+import {applyPatches, parsePatch, type Patch} from '@sanity/diff-match-patch'
 import {Expression} from '../jsonpath'
 import {ImmutableAccessor} from './ImmutableAccessor'
 
-const dmp = new DMP.diff_match_patch()
-
-function applyPatch(patch: DMP.patch_obj[], oldValue: unknown) {
+function applyPatch(patch: Patch[], oldValue: unknown) {
   // Silently avoid patching if the value type is not string
   if (typeof oldValue !== 'string') return oldValue
-  return dmp.patch_apply(patch, oldValue)[0]
+  const [result] = applyPatches(patch, oldValue)
+  return result
 }
 
 export class DiffMatchPatch {
   path: string
-  dmpPatch: DMP.patch_obj[]
+  dmpPatch: Patch[]
   id: string
 
   constructor(id: string, path: string, dmpPatchSrc: string) {
     this.id = id
     this.path = path
-    this.dmpPatch = dmp.patch_fromText(dmpPatchSrc)
+    this.dmpPatch = parsePatch(dmpPatchSrc)
   }
 
   apply(targets: Expression[], accessor: ImmutableAccessor): ImmutableAccessor {
