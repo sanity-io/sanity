@@ -3894,10 +3894,15 @@
     get-it "^8.4.2"
     rxjs "^7.0.0"
 
-"@sanity/color@^2.1.20", "@sanity/color@^2.2.5":
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.5.tgz#6b28578573859495ed1ffd5491322cb8e90b3e07"
-  integrity sha512-tTi22KoKuER3sldXYl4c1Dq2zU7tMLDkljFiaUKVkBbu4PBvRGCFw75kXZnD2b4Bsp6vin+7sI+AKdCKRhfRuw==
+"@sanity/color@^2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.3.tgz#ec8d9ba4bd42163f6487df3e47350a9a828c3210"
+  integrity sha512-b4e6JAHHa/tKpAnLOAHaJyNEHO1l/g2oecN22FWkhTAuKCINPNhPeoeUn5rK5ngKzbXrvynBd/h2849lld3FRg==
+
+"@sanity/diff-match-patch@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/diff-match-patch/-/diff-match-patch-3.0.1.tgz#30e62a9408b2758b885a8f806d0d6d6a768f188d"
+  integrity sha512-WH3rGyX25lF0OCOsnYTGOdG7SabTOomnOemEWFBnkGKg1Sv+aD9fnEuSiT5EVaVtIkwFxtLOU749Givli05/wg==
 
 "@sanity/eslint-config-studio@^2.0.4":
   version "2.0.4"
@@ -8246,11 +8251,6 @@ didyoumean@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/didyoumean/-/didyoumean-1.2.2.tgz#989346ffe9e839b4555ecf5666edea0d3e8ad037"
   integrity sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==
-
-diff-match-patch@^1.0.4, diff-match-patch@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/diff-match-patch/-/diff-match-patch-1.0.5.tgz#abb584d5f10cd1196dfc55aa03701592ae3f7b37"
-  integrity sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==
 
 diff-sequences@^27.5.1:
   version "27.5.1"
@@ -16743,12 +16743,12 @@ sanitize.css@*:
   resolved "https://registry.yarnpkg.com/sanitize.css/-/sanitize.css-13.0.0.tgz#2675553974b27964c75562ade3bd85d79879f173"
   integrity sha512-ZRwKbh/eQ6w9vmTjkuG0Ioi3HBwPFce0O+v//ve+aOq1oeCy7jMV2qzzAlpsNuqpqCBjjriM1lbtZbF/Q8jVyA==
 
-sanity-diff-patch@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/sanity-diff-patch/-/sanity-diff-patch-1.0.9.tgz#fb1fa3b52c27d369878af57ba02fee779b3ca8bd"
-  integrity sha512-J5YeuM/S7rLTp51iqUunwzz7Rf68K/jCDGKtNCj6Wzcfgf9CH+0GtPlvf2DFsg0QQhYYZ72FOVn6skmoLjMCdw==
+sanity-diff-patch@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/sanity-diff-patch/-/sanity-diff-patch-3.0.2.tgz#94fd3fe97735433d593ed6c0691e0edd4ffb0fb5"
+  integrity sha512-Vsx6IPuMepvfaX2/jOFuUrJaloHvSmXavS9SL3iJhhIPAu20VfumCtdH5kpKlXKL1pBgCAZhWHXfLC4Fyg7qFg==
   dependencies:
-    diff-match-patch "^1.0.5"
+    "@sanity/diff-match-patch" "^3.0.0"
 
 sanity-plugin-mux-input@^2.0.2:
   version "2.2.1"

@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import {Editor, Transforms, Element, Path as SlatePath, Descendant, Text, Node} from 'slate'
-import * as DMP from 'diff-match-patch'
+import {parsePatch} from '@sanity/diff-match-patch'
 import {Path, KeyedSegment, PathSegment, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import {isEqual} from 'lodash'
 import type {Patch, InsertPatch, UnsetPatch, SetPatch, DiffMatchPatch} from '../types/patch'
@@ -11,9 +11,6 @@ import {debugWithName} from './debug'
 import {KEY_TO_SLATE_ELEMENT} from './weakMaps'
 
 const debug = debugWithName('patchToOperations')
-
-// eslint-disable-next-line new-cap
-const dmp = new DMP.diff_match_patch()
 
 export function createPatchToOperations(
   schemaTypes: PortableTextMemberSchemaTypes
@@ -29,7 +26,7 @@ export function createPatchToOperations(
       return blockKey ? node._key === blockKey : indx === patch.path[0]
     })
     const block = editor.children[blockIndex] as Element | undefined
-    const parsed = dmp.patch_fromText(patch.value)[0]
+    const parsed = parsePatch(patch.value)[0]
     const isSpanTextDiffMatchPatch =
       editor.isTextBlock(block) &&
       patch.path[1] === 'children' &&
