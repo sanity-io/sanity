@@ -132,7 +132,6 @@ export default defineConfig([
         input: Input,
         field: Field,
         item: Item,
-        preview: Preview,
       },
     },
     studio: {
