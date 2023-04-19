@@ -226,35 +226,6 @@ function InnerDocumentPane() {
   const footerRect = useElementRect(footerElement)
   const footerH = footerRect?.height
 
-  const documentPanel = useMemo(
-    () => (
-      <DocumentPanel
-        footerHeight={footerH || null}
-        isInspectOpen={inspectOpen}
-        rootElement={rootElement}
-        setDocumentPanelPortalElement={setDocumentPanelPortalElement}
-      />
-    ),
-    [footerH, rootElement, inspectOpen]
-  )
-
-  // These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane.
-  // The portal element comes from `DocumentPanel`.
-  const footer = useMemo(
-    () => (
-      <PortalProvider
-        __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
-      >
-        <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-          <PaneFooter ref={setFooterElement}>
-            <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
-          </PaneFooter>
-        </DialogProvider>
-      </PortalProvider>
-    ),
-    [documentPanelPortalElement, zOffsets.portal]
-  )
-
   const changesPanel = useMemo(() => {
     if (!features.reviewChanges) return null
     if (!changesOpen) return null
@@ -274,83 +245,6 @@ function InnerDocumentPane() {
     [onPathOpen, onFocus]
   )
 
-  const children = useMemo(() => {
-    if (!schemaType) {
-      return (
-        <ErrorPane
-          flex={2.5}
-          minWidth={320}
-          paneKey={paneKey}
-          title={
-            <>
-              Unknown document type: <code>{documentType}</code>
-            </>
-          }
-          tone="caution"
-        >
-          <Stack space={4}>
-            {documentType && (
-              <Text as="p">
-                This document has the schema type <code>{documentType}</code>, which is not defined
-                as a type in the local content studio schema.
-              </Text>
-            )}
-
-            {!documentType && (
-              <Text as="p">
-                This document does not exist, and no schema type was specified for it.
-              </Text>
-            )}
-
-            {isDev && value && (
-              <>
-                <Text as="p">Here is the JSON representation of the document:</Text>
-                <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
-                  <Code language="json" size={[1, 1, 2]}>
-                    {JSON.stringify(value, null, 2)}
-                  </Code>
-                </Card>
-              </>
-            )}
-          </Stack>
-        </ErrorPane>
-      )
-    }
-
-    return (
-      <>
-        <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-          <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
-            <StyledChangeConnectorRoot
-              data-testid="change-connector-root"
-              isReviewChangesOpen={changesOpen}
-              onOpenReviewChanges={onHistoryOpen}
-              onSetFocus={onConnectorSetFocus}
-            >
-              {documentPanel}
-              {changesPanel}
-            </StyledChangeConnectorRoot>
-          </Flex>
-        </DialogProvider>
-        {footer}
-        <DocumentOperationResults />
-      </>
-    )
-  }, [
-    schemaType,
-    zOffsets.portal,
-    layoutCollapsed,
-    changesOpen,
-    onHistoryOpen,
-    onConnectorSetFocus,
-    documentPanel,
-    changesPanel,
-    footer,
-    paneKey,
-    documentType,
-    value,
-  ])
-
   const currentMinWidth = changesOpen
     ? DOCUMENT_PANEL_INITIAL_MIN_WIDTH + CHANGES_PANEL_MIN_WIDTH
     : DOCUMENT_PANEL_INITIAL_MIN_WIDTH
@@ -358,6 +252,49 @@ function InnerDocumentPane() {
   const minWidth = changesOpen
     ? DOCUMENT_PANEL_MIN_WIDTH + CHANGES_PANEL_MIN_WIDTH
     : DOCUMENT_PANEL_MIN_WIDTH
+
+  if (!schemaType) {
+    return (
+      <ErrorPane
+        currentMinWidth={currentMinWidth}
+        flex={2.5}
+        minWidth={minWidth}
+        paneKey={paneKey}
+        title={
+          <>
+            Unknown document type: <code>{documentType}</code>
+          </>
+        }
+        tone="caution"
+      >
+        <Stack space={4}>
+          {documentType && (
+            <Text as="p">
+              This document has the schema type <code>{documentType}</code>, which is not defined as
+              a type in the local content studio schema.
+            </Text>
+          )}
+
+          {!documentType && (
+            <Text as="p">
+              This document does not exist, and no schema type was specified for it.
+            </Text>
+          )}
+
+          {isDev && value && (
+            <>
+              <Text as="p">Here is the JSON representation of the document:</Text>
+              <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
+                <Code language="json" size={[1, 1, 2]}>
+                  {JSON.stringify(value, null, 2)}
+                </Code>
+              </Card>
+            </>
+          )}
+        </Stack>
+      </ErrorPane>
+    )
+  }
 
   return (
     <DocumentActionShortcuts
@@ -370,7 +307,40 @@ function InnerDocumentPane() {
       onKeyUp={onKeyUp}
       rootRef={setRootElement}
     >
-      {children}
+      <>
+        <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+          <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
+            <StyledChangeConnectorRoot
+              data-testid="change-connector-root"
+              isReviewChangesOpen={changesOpen}
+              onOpenReviewChanges={onHistoryOpen}
+              onSetFocus={onConnectorSetFocus}
+            >
+              <DocumentPanel
+                footerHeight={footerH || null}
+                isInspectOpen={inspectOpen}
+                rootElement={rootElement}
+                setDocumentPanelPortalElement={setDocumentPanelPortalElement}
+              />
+              {changesPanel}
+            </StyledChangeConnectorRoot>
+          </Flex>
+        </DialogProvider>
+
+        {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
+        {/* The portal element comes from `DocumentPanel`. */}
+        <PortalProvider
+          __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
+        >
+          <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+            <PaneFooter ref={setFooterElement}>
+              <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
+            </PaneFooter>
+          </DialogProvider>
+        </PortalProvider>
+
+        <DocumentOperationResults />
+      </>
     </DocumentActionShortcuts>
   )
 }
