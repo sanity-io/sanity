@@ -210,36 +210,6 @@ function validateItemObservable({
     )
   }
 
-  // markDefs also do no run nested validation if the parent object is undefined
-  // for a similar reason to arrays
-  const shouldRunNestedValidationForMarkDefs =
-    isPortableTextTextBlock(value) && value.markDefs?.length && isBlockSchemaType(type)
-
-  if (shouldRunNestedValidationForMarkDefs) {
-    const [spanChildrenField] = type.fields
-    const spanType = spanChildrenField.type.of.find(isSpanSchemaType)
-
-    const annotations = (spanType?.annotations || []).reduce<Map<string, SchemaType>>(
-      (acc, annotationType) => {
-        acc.set(annotationType.name, annotationType)
-        return acc
-      },
-      new Map()
-    )
-
-    nestedChecks = nestedChecks.concat(
-      (value.markDefs || []).map((markDef) =>
-        validateItemObservable({
-          ...restOfContext,
-          parent: value,
-          value: markDef,
-          path: path.concat(['markDefs', {_key: markDef._key}]),
-          type: annotations.get(markDef._type),
-        })
-      )
-    )
-  }
-
   return defer(() => merge([...selfChecks, ...nestedChecks])).pipe(
     mergeMap((validateNode) => concat(idle(), validateNode), 40),
     mergeAll(),
