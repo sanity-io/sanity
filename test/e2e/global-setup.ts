@@ -13,7 +13,7 @@ async function globalSetup(config: FullConfig): Promise<void> {
   const {baseURL} = config.projects[0].use
   const browser = await chromium.launch()
   // Create context to store our session token cookie in
-  const context = await browser.newContext()
+  const context = await browser.newContext({reducedMotion: 'reduce'})
   const page = await context.newPage()
   const token = process.env.SANITY_E2E_SESSION_TOKEN
 

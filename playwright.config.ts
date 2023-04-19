@@ -46,6 +46,7 @@ export default defineConfig({
     headless: readBoolEnv('SANITY_E2E_HEADLESS', true),
     storageState: STORAGE_STATE_PATH,
     viewport: {width: 1728, height: 1000},
+    contextOptions: {reducedMotion: 'reduce'},
   },
 
   /* Configure projects for major browsers */
