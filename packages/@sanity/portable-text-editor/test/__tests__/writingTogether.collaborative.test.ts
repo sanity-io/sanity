@@ -62,7 +62,7 @@ describe('collaborate editing', () => {
     })
   })
 
-  it.only('will reset the value when someone deletes everything, and when they start to type again, they will produce their own respective blocks.', async () => {
+  it('will reset the value when someone deletes everything, and when they start to type again, they will produce their own respective blocks.', async () => {
     await setDocumentValue(initialValue)
     const [editorA, editorB] = await getEditors()
     await editorA.setSelection({
