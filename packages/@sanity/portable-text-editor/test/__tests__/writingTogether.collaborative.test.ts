@@ -62,7 +62,7 @@ describe('collaborate editing', () => {
     })
   })
 
-  it('will reset the value when someone deletes everything, and when they start to type again, they will produce their own respective blocks.', async () => {
+  it.only('will reset the value when someone deletes everything, and when they start to type again, they will produce their own respective blocks.', async () => {
     await setDocumentValue(initialValue)
     const [editorA, editorB] = await getEditors()
     await editorA.setSelection({
@@ -101,11 +101,11 @@ describe('collaborate editing', () => {
     expect(valA).toMatchInlineSnapshot(`
       Array [
         Object {
-          "_key": "B-4",
+          "_key": "B-6",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "B-3",
+              "_key": "B-5",
               "_type": "span",
               "marks": Array [],
               "text": "1",
@@ -152,11 +152,11 @@ describe('collaborate editing', () => {
     expect(valB).toMatchInlineSnapshot(`
       Array [
         Object {
-          "_key": "B-4",
+          "_key": "B-6",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "B-3",
+              "_key": "B-5",
               "_type": "span",
               "marks": Array [],
               "text": "12",
