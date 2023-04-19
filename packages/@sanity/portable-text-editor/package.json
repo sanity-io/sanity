@@ -74,6 +74,7 @@
     "slate": "0.81.1"
   },
   "devDependencies": {
+    "@sanity/diff-match-patch": "^3.0.1",
     "@sanity/ui": "^1.7.4",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
