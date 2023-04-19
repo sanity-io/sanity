@@ -277,30 +277,3 @@ export interface FieldOperationsAPI {
     execute: (patches: PatchOperations[]) => void
   }
 }
-
-/**
- * From sanity-diff-patch
- *
- * @internal
- */
-export interface SetDiffPatch {
-  op: 'set'
-  path: Path
-  value: unknown
-}
-
-/** @internal */
-export interface UnsetDiffPatch {
-  op: 'unset'
-  path: Path
-}
-
-/** @internal */
-export interface InsertDiffPatch {
-  op: 'insert'
-  after: Path
-  items: unknown[]
-}
-
-/** @internal */
-export type DiffPatch = SetDiffPatch | UnsetDiffPatch | InsertDiffPatch
