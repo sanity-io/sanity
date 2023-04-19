@@ -10,6 +10,12 @@ export default defineType({
   fields: [
     {
       name: 'title',
+      type: 'string',
+      title: 'Title',
+      description: 'NOT a string field',
+    },
+    {
+      name: 'simple',
       type: 'text',
       title: 'Simple text',
       description: 'This is a simple text field',
