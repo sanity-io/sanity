@@ -1,4 +1,4 @@
-import * as DiffMatchPatch from 'diff-match-patch'
+import {makePatches, stringifyPatches} from '@sanity/diff-match-patch'
 import {extractWithPath} from '../jsonpath/extractWithPath'
 import {arrayToJSONMatchPath} from '../jsonpath/arrayToJSONMatchPath'
 import {Mutation} from './Mutation'
@@ -48,12 +48,6 @@ export class SquashingBuffer {
    */
   staged: Mut[]
 
-  /**
-   * Internal reusable diffMatchPatch instance
-   * @internal
-   */
-  private dmp: DiffMatchPatch.diff_match_patch // eslint-disable-line camelcase
-
   constructor(doc: Doc | null) {
     if (doc) {
       debug('Reset mutation buffer to rev %s', doc._rev)
@@ -67,9 +61,6 @@ export class SquashingBuffer {
 
     this.BASIS = doc
     this.PRESTAGE = doc
-
-    // eslint-disable-next-line new-cap
-    this.dmp = new DiffMatchPatch.diff_match_patch()
   }
 
   add(mut: Mutation): void {
@@ -206,10 +197,7 @@ export class SquashingBuffer {
       // console.log("Rewriting to dmp")
       // We are updating a string to another string, so we are making a diffMatchPatch
       try {
-        const patch = this.dmp
-          .patch_make(match.value, nextValue)
-          .map((dmpPatch) => dmpPatch.toString())
-          .join('')
+        const patch = stringifyPatches(makePatches(match.value, nextValue))
         op = {patch: {id: this.PRESTAGE._id, diffMatchPatch: {[path]: patch}}}
       } catch {
         // patch_make failed due to unicode issue https://github.com/google/diff-match-patch/issues/59

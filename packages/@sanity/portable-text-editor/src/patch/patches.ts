@@ -1,5 +1,5 @@
-import {Path, PathSegment} from '@sanity/types'
-import * as DMP from 'diff-match-patch'
+import type {Path, PathSegment} from '@sanity/types'
+import {makePatches, stringifyPatches} from '@sanity/diff-match-patch'
 
 import type {
   SetIfMissingPatch,
@@ -18,18 +18,13 @@ export function setIfMissing(value: any, path: Path = []): SetIfMissingPatch {
   }
 }
 
-// eslint-disable-next-line new-cap
-const dmp = new DMP.diff_match_patch()
-
 export function diffMatchPatch(
   currentValue: string,
   nextValue: string,
   path: Path = []
 ): DiffMatchPatch {
-  const patch = dmp
-    .patch_make(currentValue, nextValue)
-    .map((_patch) => _patch.toString())
-    .join('')
+  const patches = makePatches(currentValue, nextValue)
+  const patch = stringifyPatches(patches)
   return {type: 'diffMatchPatch', path, value: patch}
 }
 

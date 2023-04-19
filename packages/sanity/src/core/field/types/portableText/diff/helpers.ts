@@ -13,11 +13,12 @@ import {
   SpanSchemaType,
 } from '@sanity/types'
 import {
-  diff_match_patch as DiffMatchPatch,
   DIFF_DELETE,
   DIFF_EQUAL,
   DIFF_INSERT,
-} from 'diff-match-patch'
+  cleanupEfficiency,
+  makeDiff,
+} from '@sanity/diff-match-patch'
 import {
   ArrayDiff,
   DiffComponent,
@@ -28,8 +29,6 @@ import {
 import * as TextSymbols from './symbols'
 
 import {InlineSymbolMap, MarkSymbolMap, PortableTextDiff} from './types'
-
-const dmp = new DiffMatchPatch()
 
 export const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
 
@@ -284,8 +283,7 @@ export function createPortableTextDiff(
 
 function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] {
   const segments: StringDiffSegment[] = []
-  const dmpDiffs = dmp.diff_main(fromInput, toInput)
-  dmp.diff_cleanupEfficiency(dmpDiffs)
+  const dmpDiffs = cleanupEfficiency(makeDiff(fromInput, toInput))
 
   let fromIdx = 0
   let toIdx = 0

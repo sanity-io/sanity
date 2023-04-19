@@ -1,13 +1,12 @@
 import {
-  diff_match_patch as DiffMatchPatch,
-  DIFF_DELETE,
+  makeDiff,
+  cleanupSemantic,
   DIFF_EQUAL,
+  DIFF_DELETE,
   DIFF_INSERT,
-} from 'diff-match-patch'
+} from '@sanity/diff-match-patch'
 import type {StringDiffSegment, StringDiff, StringInput, DiffOptions} from '../types'
 import {replaceProperty} from '../helpers'
-
-const dmp = new DiffMatchPatch()
 
 export function diffString<A>(
   fromInput: StringInput<A>,
@@ -49,9 +48,7 @@ function buildSegments<A>(
   toInput: StringInput<A>
 ): StringDiffSegment<A>[] {
   const segments: StringDiffSegment<A>[] = []
-
-  const dmpDiffs = dmp.diff_main(fromInput.value, toInput.value)
-  dmp.diff_cleanupSemantic(dmpDiffs)
+  const dmpDiffs = cleanupSemantic(makeDiff(fromInput.value, toInput.value))
 
   let fromIdx = 0
   let toIdx = 0
