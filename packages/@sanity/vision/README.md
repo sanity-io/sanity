@@ -68,11 +68,11 @@ export default defineConfig({
     visionTool(),
   ],
   tools: (prev, {currentUser}) => {
-    const isAdmin = currentUser?.roles.some(role => role.name === 'administrator');
-    
+    const isAdmin = currentUser?.roles.some((role) => role.name === 'administrator')
+
     // If the user has the administrator role, return all tools.
     // If the user does not have the administrator role, filter out the vision tool.
-    return isAdmin ? prev : prev.filter(tool => tool.name !== 'vision');
+    return isAdmin ? prev : prev.filter((tool) => tool.name !== 'vision')
   },
 })
 ```
