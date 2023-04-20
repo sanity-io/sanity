@@ -27,7 +27,15 @@ export function PreviewLoader(
     component: ComponentType<Omit<PreviewProps, 'renderDefault'>>
   }
 ): ReactElement {
-  const {layout, value, component, style: styleProp, schemaType, ...restProps} = props
+  const {
+    layout,
+    value,
+    component,
+    style: styleProp,
+    schemaType,
+    __internal_skip_visibility_check,
+    ...restProps
+  } = props
 
   const [element, setElement] = useState<HTMLDivElement | null>(null)
   const isPTE = layout && ['inline', 'block', 'blockImage'].includes(layout)
@@ -41,7 +49,7 @@ export function PreviewLoader(
 
   // Subscribe document preview value
   const preview = useValuePreview({
-    enabled: isPTE || isVisible,
+    enabled: __internal_skip_visibility_check || isPTE || isVisible,
     schemaType,
     value,
   })
