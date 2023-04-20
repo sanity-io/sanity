@@ -147,8 +147,11 @@ export const ReferenceChangedBanner = memo(() => {
           {referenceInfo.result?.refValue ? (
             <>
               <Box flex={1} marginLeft={3}>
-                <TextOneLine title="This reference has changed since you opened it." size={1}>
-                  This reference has changed since you opened it.
+                <TextOneLine
+                  title="The reference to this document changed since you opened it."
+                  size={1}
+                >
+                  The reference to this document changed since you opened it.
                 </TextOneLine>
               </Box>
               <Box marginLeft={3}>
@@ -166,8 +169,11 @@ export const ReferenceChangedBanner = memo(() => {
           ) : (
             <>
               <Box flex={1} marginLeft={3}>
-                <TextOneLine title="This reference has been removed since you opened it." size={1}>
-                  This reference has been removed since you opened it.
+                <TextOneLine
+                  title="The reference you followed to this document was removed."
+                  size={1}
+                >
+                  The reference you followed to this document was removed.
                 </TextOneLine>
               </Box>
               <Box marginLeft={3}>
