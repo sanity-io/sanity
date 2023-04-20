@@ -106,6 +106,7 @@ export interface ConditionalPropertyCallbackContext {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any
   currentUser: Omit<CurrentUser, 'role'> | null
+  workspace: any
 }
 
 /** @public */

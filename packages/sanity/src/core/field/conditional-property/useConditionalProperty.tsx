@@ -1,5 +1,6 @@
 import {SanityDocument, ConditionalProperty} from '@sanity/types'
 import {useCurrentUser} from '../../store'
+import {useWorkspace} from '../../studio'
 import {useUnique} from '../../util'
 import {useCheckCondition} from './utils'
 
@@ -23,12 +24,14 @@ const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
   const {checkProperty = false, checkPropertyKey, document, parent, value: valueProp} = props
   const value = useUnique(valueProp)
   const currentUser = useCurrentUser()
+  const workspace = useWorkspace()
 
   const isPropertyTruthy = useCheckCondition(checkProperty, checkPropertyKey, {
     currentUser,
     document,
     parent,
     value,
+    workspace,
   })
 
   return isPropertyTruthy

@@ -24,6 +24,7 @@ import {isRecord} from '../../util'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {FIXME} from '../../FIXME'
 import {FormNodePresence} from '../../presence'
+import {Workspace} from '../../config'
 import {ObjectArrayFormNode, PrimitiveFormNode, StateTree} from './types'
 import {resolveConditionalProperty} from './conditional-property'
 import {ALL_FIELDS_GROUP, MAX_FIELD_DEPTH} from './constants'
@@ -162,6 +163,7 @@ function prepareFieldMember(props: {
     const inputState = prepareObjectInputState({
       schemaType: field.type,
       currentUser: parent.currentUser,
+      workspace: parent.workspace,
       parent: parent.value,
       document: parent.document,
       value: fieldValue,
@@ -273,12 +275,14 @@ function prepareFieldMember(props: {
           parent: parent.value,
           document: parent.document,
           currentUser: parent.currentUser,
+          workspace: parent.workspace,
         })
 
       const fieldState = prepareArrayOfObjectsInputState({
         schemaType: field.type,
         parent: parent.value,
         currentUser: parent.currentUser,
+        workspace: parent.workspace,
         document: parent.document,
         value: fieldValue,
         changed: isChangedValue(fieldValue, fieldComparisonValue),
@@ -341,6 +345,7 @@ function prepareFieldMember(props: {
           parent: parent.value,
           document: parent.document,
           currentUser: parent.currentUser,
+          workspace: parent.workspace,
         })
 
       const fieldState = prepareArrayOfPrimitivesInputState({
@@ -349,6 +354,7 @@ function prepareFieldMember(props: {
         schemaType: field.type,
         parent: parent.value,
         currentUser: parent.currentUser,
+        workspace: parent.workspace,
         document: parent.document,
         value: fieldValue,
         fieldGroupState,
@@ -395,6 +401,7 @@ function prepareFieldMember(props: {
       parent: parent.value,
       document: parent.document,
       currentUser: parent.currentUser,
+      workspace: parent.workspace,
     }
 
     // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
@@ -439,6 +446,7 @@ interface RawState<SchemaType, T> {
   changed?: boolean
   document: FIXME_SanityDocument
   currentUser: Omit<CurrentUser, 'role'> | null
+  workspace: Workspace
   parent?: unknown
   hidden?: boolean
   readOnly?: boolean
@@ -476,6 +484,7 @@ function prepareObjectInputState<T>(
     parent: props.parent,
     document: props.document,
     currentUser: props.currentUser,
+    workspace: props.workspace,
   }
 
   const hidden =
@@ -552,6 +561,7 @@ function prepareObjectInputState<T>(
       document: props.document,
       parent: props.value,
       value: pick(props.value, fieldsetFieldNames),
+      workspace: props.workspace,
     })
 
     if (fieldsetHidden) {
@@ -563,6 +573,7 @@ function prepareObjectInputState<T>(
       document: props.document,
       parent: props.value,
       value: pick(props.value, fieldsetFieldNames),
+      workspace: props.workspace,
     })
 
     const fieldsetMembers = fieldSet.fields.flatMap((field): (FieldMember | FieldError)[] => {
@@ -671,6 +682,7 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
     parent: props.parent,
     document: props.document,
     currentUser: props.currentUser,
+    workspace: props.workspace,
   }
 
   const hidden = resolveConditionalProperty(props.schemaType.hidden, conditionalPropertyContext)
@@ -721,6 +733,7 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
     parent: props.parent,
     document: props.document,
     currentUser: props.currentUser,
+    workspace: props.workspace,
   }
   const hidden = resolveConditionalProperty(props.schemaType.hidden, conditionalPropertyContext)
 
@@ -801,6 +814,7 @@ function prepareArrayOfObjectsMember(props: {
     parent: props.parent,
     document: parent.document,
     currentUser: parent.currentUser,
+    workspace: parent.workspace,
   }
   const readOnly =
     parent.readOnly ||
@@ -826,6 +840,7 @@ function prepareArrayOfObjectsMember(props: {
       focusPath: parent.focusPath,
       openPath: parent.openPath,
       currentUser: parent.currentUser,
+      workspace: parent.workspace,
       collapsedPaths: scopedCollapsedPaths,
       collapsedFieldSets: scopedCollapsedFieldsets,
       presence: parent.presence,
@@ -896,6 +911,7 @@ function prepareArrayOfPrimitivesMember(props: {
       parent: parent.value,
       document: parent.document,
       currentUser: parent.currentUser,
+      workspace: parent.workspace,
     })
 
   const item = preparePrimitiveInputState({
