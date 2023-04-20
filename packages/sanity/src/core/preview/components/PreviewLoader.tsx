@@ -33,7 +33,7 @@ export function PreviewLoader(
   const isPTE = layout && ['inline', 'block', 'blockImage'].includes(layout)
 
   // Subscribe to visibility
-  const visibility = useVisibility({
+  const isVisible = useVisibility({
     // NOTE: disable when PTE preview
     element: isPTE ? null : element,
     hideDelay: _HIDE_DELAY,
@@ -41,7 +41,7 @@ export function PreviewLoader(
 
   // Subscribe document preview value
   const preview = useValuePreview({
-    enabled: isPTE || visibility,
+    enabled: isPTE || isVisible,
     schemaType,
     value,
   })
