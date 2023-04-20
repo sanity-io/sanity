@@ -38,18 +38,20 @@ export function PreviewLoader(
   } = props
 
   const [element, setElement] = useState<HTMLDivElement | null>(null)
-  const isPTE = layout && ['inline', 'block', 'blockImage'].includes(layout)
+  const shouldSkipVisbility =
+    (layout && ['inline', 'block', 'blockImage'].includes(layout)) ||
+    __internal_skip_visibility_check
 
   // Subscribe to visibility
   const isVisible = useVisibility({
     // NOTE: disable when PTE preview
-    element: isPTE ? null : element,
+    element: shouldSkipVisbility ? null : element,
     hideDelay: _HIDE_DELAY,
   })
 
   // Subscribe document preview value
   const preview = useValuePreview({
-    enabled: __internal_skip_visibility_check || isPTE || isVisible,
+    enabled: shouldSkipVisbility || isVisible,
     schemaType,
     value,
   })
