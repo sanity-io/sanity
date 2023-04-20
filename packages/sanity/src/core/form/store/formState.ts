@@ -681,7 +681,7 @@ function prepareObjectInputState<T>(
             castArray(memberWithHiddenState.group).includes(group.name)
           )
         })
-        return hasMembers ? group : {...group, disabled: true}
+        return hasMembers ? group : []
       })
     : []
 
