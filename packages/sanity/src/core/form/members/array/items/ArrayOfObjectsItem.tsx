@@ -204,8 +204,11 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     if (isEmptyValue) {
       onRemove()
     }
-    onPathOpen(member.item.path.slice(0, -1))
-    onPathFocus(member.item.path)
+
+    const parentPath = member.item.path.slice(0, -1)
+    onPathOpen(parentPath)
+    // @todo fix issue where the focus is on the item and not the parent
+    onPathFocus(parentPath)
   }, [isEmptyValue, onPathOpen, member.item.path, onPathFocus, onRemove])
 
   const handleSelectFieldGroup = useCallback(

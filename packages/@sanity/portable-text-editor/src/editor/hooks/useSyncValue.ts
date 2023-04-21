@@ -72,6 +72,7 @@ export function useSyncValue(
       }
 
       let isChanged = false
+      let isValid = true
       previousValue.current = value
 
       // If empty value, remove everything in the editor and insert a placeholder block
@@ -109,6 +110,7 @@ export function useSyncValue(
           },
           KEY_TO_SLATE_ELEMENT.get(slateEditor)
         )
+
         withoutSaving(slateEditor, () => {
           withoutPatching(slateEditor, () => {
             Editor.withoutNormalizing(slateEditor, () => {
@@ -126,7 +128,7 @@ export function useSyncValue(
               slateValueFromProps.forEach((currentBlock, currentBlockIndex) => {
                 const oldBlock = slateEditor.children[currentBlockIndex]
                 const hasChanges = oldBlock && !isEqual(currentBlock, oldBlock)
-                if (hasChanges) {
+                if (hasChanges && isValid) {
                   const validationValue = [value[currentBlockIndex]]
                   const validation = validateValue(validationValue, schemaTypes, keyGenerator)
                   if (validation.valid) {
@@ -144,16 +146,18 @@ export function useSyncValue(
                       resolution: validation.resolution,
                       value,
                     })
+                    isValid = false
                   }
                 }
-                // Insert new blocks exceeding the original value.
-                if (!oldBlock) {
+                if (!oldBlock && isValid) {
                   const validationValue = [value[currentBlockIndex]]
-                  debug('Adding and validating new block', currentBlock)
                   const validation = validateValue(validationValue, schemaTypes, keyGenerator)
+                  debug('Validating and inserting new block in the end of the value', currentBlock)
                   if (validation.valid) {
                     withPreserveKeys(slateEditor, () => {
-                      Transforms.insertNodes(slateEditor, currentBlock, {at: [currentBlockIndex]})
+                      Transforms.insertNodes(slateEditor, currentBlock, {
+                        at: [currentBlockIndex],
+                      })
                     })
                   } else {
                     change$.next({
@@ -161,12 +165,17 @@ export function useSyncValue(
                       resolution: validation.resolution,
                       value,
                     })
+                    isValid = false
                   }
                 }
               })
             })
           })
         })
+      }
+      if (!isValid) {
+        debug('Invalid value, returning')
+        return
       }
       if (isChanged) {
         debug('Server value changed, syncing editor')

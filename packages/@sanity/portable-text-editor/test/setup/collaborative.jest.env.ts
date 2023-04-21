@@ -287,6 +287,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   editorId,
                 })
               )
+              await delay(200)
               await waitForSelection(selection)
             },
             async getValue(): Promise<PortableTextBlock[] | undefined> {

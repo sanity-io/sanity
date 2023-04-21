@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {useVirtualizer} from '@tanstack/react-virtual'
+import {ScrollToOptions, useVirtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash/throttle'
 import React, {
   cloneElement,
@@ -96,6 +96,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   },
   ref
 ) {
+  const isMountedRef = useRef(false)
   const commandListId = useRef(useId())
   const activeIndexRef = useRef(initialIndex ?? 0)
 
@@ -251,7 +252,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       scrollIntoView = true,
     }: {
       index: number
-      scrollAlign?: boolean
+      scrollAlign?: ScrollToOptions['align']
       scrollIntoView?: boolean
     }) => {
       activeIndexRef.current = index
@@ -261,20 +262,11 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       if (scrollIntoView) {
         const virtualListIndex = itemIndices.findIndex((i) => i.activeIndex === index)
         if (virtualListIndex > -1) {
-          virtualizer.scrollToIndex(
-            virtualListIndex,
-            scrollAlign ? {align: initialScrollAlign} : {}
-          )
+          virtualizer.scrollToIndex(virtualListIndex, scrollAlign ? {align: scrollAlign} : {})
         }
       }
     },
-    [
-      handleUpdateActiveDescendant,
-      initialScrollAlign,
-      itemIndices,
-      showChildrenActiveState,
-      virtualizer,
-    ]
+    [handleUpdateActiveDescendant, itemIndices, showChildrenActiveState, virtualizer]
   )
 
   /**
@@ -396,13 +388,18 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   )
 
   /**
-   * Set active index (and align) on mount, and whenever initial index changes
+   * Optionally set active index (and align) on mount only
    */
   useEffect(() => {
-    if (typeof initialIndex !== 'undefined') {
-      setActiveIndex({index: initialIndex, scrollAlign: true, scrollIntoView: true})
+    if (typeof initialIndex !== 'undefined' && !isMountedRef.current) {
+      setActiveIndex({
+        index: initialIndex,
+        scrollAlign: initialScrollAlign,
+        scrollIntoView: true,
+      })
     }
-  }, [initialIndex, setActiveIndex])
+    isMountedRef.current = true
+  }, [initialIndex, initialScrollAlign, setActiveIndex])
 
   /**
    * Re-enable child pointer events on any mouse move event

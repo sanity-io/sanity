@@ -1,61 +1,87 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Text, Spinner, Flex} from '@sanity/ui'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {Box, Flex, Spinner, Text} from '@sanity/ui'
 import {TimelineItem} from './timelineItem'
-import {TimelineItemState} from './types'
-import {Root, StackWrapper, MenuWrapper} from './timeline.styled'
-import {Chunk, Timeline as TimelineModel} from 'sanity'
+import {ListWrapper, Root, StackWrapper} from './timeline.styled'
+import {Chunk, CommandList, CommandListRenderItemCallback} from 'sanity'
 
 interface TimelineProps {
-  timeline: TimelineModel
+  chunks: Chunk[]
+  disabledBeforeFirstChunk?: boolean
+  firstChunk?: Chunk | null
+  hasMoreChunks: boolean
+  lastChunk?: Chunk | null
+  onLoadMore: () => void
   onSelect: (chunk: Chunk) => void
-  onLoadMore: (state: boolean) => void
-
-  /** Are the chunks above the topSelection enabled? */
-  disabledBeforeSelection?: boolean
-  /** The first chunk of the selection. */
-  topSelection: Chunk
-  /** The final chunk of the selection. */
-  bottomSelection: Chunk
 }
 
-// Must be a positive number
-const LOAD_MORE_OFFSET = 20
-
 export const Timeline = ({
-  timeline,
-  disabledBeforeSelection,
-  topSelection,
-  bottomSelection,
-  onSelect,
+  chunks,
+  disabledBeforeFirstChunk,
+  hasMoreChunks,
+  lastChunk,
   onLoadMore,
+  onSelect,
+  firstChunk,
 }: TimelineProps) => {
-  const rootRef = useRef<HTMLDivElement | null>(null)
-  const listRef = useRef<HTMLDivElement | null>(null)
-  const [loadingElement, setLoadingElement] = useState<HTMLDivElement | null>(null)
+  const [mounted, setMounted] = useState(false)
 
-  let state: TimelineItemState = disabledBeforeSelection ? 'disabled' : 'enabled'
-
-  const checkIfLoadIsNeeded = useCallback(() => {
-    const rootEl = rootRef.current
-
-    if (loadingElement && rootEl) {
-      const {offsetHeight, scrollTop} = rootEl
-      const bottomPosition = offsetHeight + scrollTop + LOAD_MORE_OFFSET
-      const isVisible = loadingElement.offsetTop < bottomPosition
-
-      if (isVisible) {
-        // @todo: find out why, for some reason, it won't load without RAF wrapper
-        requestAnimationFrame(() => onLoadMore(isVisible))
+  const filteredChunks = useMemo(() => {
+    return chunks.filter((c) => {
+      if (disabledBeforeFirstChunk && firstChunk) {
+        return c.index < firstChunk.index
       }
-    }
-  }, [onLoadMore, loadingElement])
+      return true
+    })
+  }, [chunks, disabledBeforeFirstChunk, firstChunk])
 
-  // Load whenever it's needed
-  useEffect(checkIfLoadIsNeeded, [checkIfLoadIsNeeded])
+  const selectedIndex = useMemo(
+    () => (lastChunk?.id ? filteredChunks.findIndex((c) => c.id === lastChunk.id) : -1),
+    [lastChunk?.id, filteredChunks]
+  )
+
+  const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
+    (chunk, {activeIndex}) => {
+      const isFirst = activeIndex === 0
+      const isLast = (filteredChunks && activeIndex === filteredChunks.length - 1) || false
+      return (
+        <Box paddingBottom={isLast ? 1 : 0} paddingTop={isFirst ? 1 : 0} paddingX={1}>
+          <TimelineItem
+            chunk={chunk}
+            isFirst={isFirst}
+            isLast={isLast}
+            isLatest={activeIndex === 0 && !disabledBeforeFirstChunk}
+            isSelected={activeIndex === selectedIndex}
+            onSelect={onSelect}
+            timestamp={chunk.endTimestamp}
+            type={chunk.type}
+          />
+          {activeIndex === filteredChunks.length - 1 && hasMoreChunks && (
+            <Flex align="center" justify="center" padding={4}>
+              <Spinner muted />
+            </Flex>
+          )}
+        </Box>
+      )
+    },
+    [disabledBeforeFirstChunk, filteredChunks, hasMoreChunks, onSelect, selectedIndex]
+  )
+
+  useEffect(() => setMounted(true), [])
 
   return (
-    <Root ref={rootRef as any} onScroll={checkIfLoadIsNeeded} data-ui="timeline">
-      {timeline.chunkCount === 0 && (
+    <Root
+      /**
+       * We delay initial rendering if `selectedIndex` is present.
+       * This is a _temporary_ workaround to allow the virtual <CommandList>
+       * to scroll to a specific index prior to being displayed.
+       *
+       * Without this, there'll be a noticeable 'flash' where the virtual list
+       * will render with its child items at the top and then scroll into position.
+       */
+      $visible={!selectedIndex || mounted}
+      data-ui="timeline"
+    >
+      {filteredChunks.length === 0 && (
         <StackWrapper padding={3} space={3}>
           <Text size={1} weight="semibold">
             No document history
@@ -67,47 +93,23 @@ export const Timeline = ({
         </StackWrapper>
       )}
 
-      {timeline.chunkCount > 0 && (
-        <MenuWrapper ref={listRef} padding={1} space={0}>
-          {timeline.mapChunks((chunk) => {
-            const isSelectionTop = topSelection === chunk
-            const isSelectionBottom = bottomSelection === chunk
-
-            if (isSelectionTop) {
-              state = 'withinSelection'
-            }
-
-            if (isSelectionBottom) {
-              state = 'selected'
-            }
-
-            const item = (
-              <TimelineItem
-                chunk={chunk}
-                isSelectionBottom={isSelectionBottom}
-                isSelectionTop={isSelectionTop}
-                key={chunk.id}
-                state={state}
-                onSelect={onSelect}
-                type={chunk.type}
-                timestamp={chunk.endTimestamp}
-              />
-            )
-
-            // Flip it back to normal after we've rendered the active one.
-            if (state === 'selected') {
-              state = 'enabled'
-            }
-
-            return item
-          })}
-        </MenuWrapper>
-      )}
-
-      {!timeline.reachedEarliestEntry && (
-        <Flex align="center" justify="center" padding={4} ref={setLoadingElement}>
-          <Spinner muted />
-        </Flex>
+      {filteredChunks.length > 0 && (
+        <ListWrapper direction="column">
+          <CommandList
+            activeItemDataAttr="data-hovered"
+            ariaLabel="Document revisions"
+            autoFocus
+            initialIndex={selectedIndex}
+            initialScrollAlign="center"
+            itemHeight={40}
+            items={filteredChunks}
+            onEndReached={onLoadMore}
+            onEndReachedIndexOffset={20}
+            overscan={5}
+            renderItem={renderItem}
+            wrapAround={false}
+          />
+        </ListWrapper>
       )}
     </Root>
   )

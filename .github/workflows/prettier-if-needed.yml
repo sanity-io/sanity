@@ -46,7 +46,7 @@ jobs:
           key: prettier-${{ hashFiles('yarn.lock') }}
       - run: yarn prettier --write
       - name: GitHub blocks PRs from automation that alter workflows in any way
-        run: git restore .github/workflows
+        run: git restore .github/workflows yarn.lock
       - uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1
         id: generate-token
         with:

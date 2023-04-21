@@ -38,23 +38,21 @@ const GroupTabs = ({
   disabled,
 }: FieldGroupTabsProps) => (
   <TabList space={2} data-testid="field-group-tabs">
-    {groups
-      .map((group) => {
-        return (
-          <GroupTab
-            aria-controls={`${inputId}-field-group-fields`}
-            autoFocus={shouldAutoFocus && group.selected}
-            disabled={disabled || group.disabled}
-            icon={group?.icon}
-            key={`${inputId}-${group.name}-tab`}
-            name={group.name}
-            onClick={onClick}
-            selected={Boolean(group.selected)}
-            title={group.title || group.name}
-          />
-        )
-      })
-      .filter(Boolean)}
+    {groups.map((group) => {
+      return (
+        <GroupTab
+          aria-controls={`${inputId}-field-group-fields`}
+          autoFocus={shouldAutoFocus && group.selected}
+          disabled={disabled || group.disabled}
+          icon={group?.icon}
+          key={`${inputId}-${group.name}-tab`}
+          name={group.name}
+          onClick={onClick}
+          selected={Boolean(group.selected)}
+          title={group.title || group.name}
+        />
+      )
+    })}
   </TabList>
 )
 

@@ -1,6 +1,5 @@
 import {omit} from 'lodash'
 import {firstValueFrom, Observable} from 'rxjs'
-import {first} from 'rxjs/operators'
 import {PaneNode, RouterPanes, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
 import {StructureContext} from '../structureBuilder'
 import {assignId} from './assignId'

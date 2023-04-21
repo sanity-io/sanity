@@ -5,7 +5,7 @@ import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription} from 'sanity'
+import {DocumentActionDescription, useTimelineSelector} from 'sanity'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
@@ -107,8 +107,12 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {connectionState, editState, historyController} = useDocumentPane()
-  const revision = historyController.revTime?.id || ''
+  const {connectionState, editState, timelineStore} = useDocumentPane()
+
+  // Subscribe to external timeline state changes
+  const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
+
+  const revision = revTime?.id || ''
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
   const actionProps = useMemo(() => ({...(editState || {}), revision}), [editState, revision])
   const historyActions = useMemo(() => [HistoryRestoreAction], [])

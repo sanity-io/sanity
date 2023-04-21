@@ -1,12 +1,14 @@
 import {SelectIcon} from '@sanity/icons'
-import {useClickOutside, Button, Popover, Placement, useGlobalKeyDown} from '@sanity/ui'
+import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {TimelineError} from '../changesPanel/content/TimelineError'
 import {useDocumentPane} from '../useDocumentPane'
-import {sinceTimelineProps, revTimelineProps, formatTimelineEventLabel} from './helpers'
+import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
-import {Chunk, useTimeAgo} from 'sanity'
+import {Chunk, useTimelineSelector} from 'sanity'
 
 interface TimelineMenuProps {
   chunk: Chunk | null
@@ -15,30 +17,21 @@ interface TimelineMenuProps {
 }
 
 const Root = styled(Popover)`
-  & > div {
-    display: flex;
-    flex-direction: column;
-
-    & > [data-ui='Card'] {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-
-      /* This is the scrollable container rendered by <Timeline /> */
-      & > div {
-        flex: 1;
-        min-height: 0;
-      }
-    }
-  }
+  overflow: hidden;
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {historyController, setTimelineRange, setTimelineMode, timeline, ready} = useDocumentPane()
+  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
-  const [menuContent, setMenuContent] = useState<HTMLDivElement | null>(null)
+  const [popover, setPopover] = useState<HTMLElement | null>(null)
+  const toast = useToast()
+
+  const chunks = useTimelineSelector(timelineStore, (state) => state.chunks)
+  const loading = useTimelineSelector(timelineStore, (state) => state.isLoading)
+  const hasMoreChunks = useTimelineSelector(timelineStore, (state) => state.hasMoreChunks)
+  const realRevChunk = useTimelineSelector(timelineStore, (state) => state.realRevChunk)
+  const sinceTime = useTimelineSelector(timelineStore, (state) => state.sinceTime)
 
   const handleOpen = useCallback(() => {
     setTimelineMode(mode)
@@ -51,8 +44,10 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   }, [setTimelineMode])
 
   const handleClickOutside = useCallback(() => {
-    handleClose()
-  }, [handleClose])
+    if (open) {
+      handleClose()
+    }
+  }, [handleClose, open])
 
   const handleGlobalKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -64,77 +59,98 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     [button, handleClose, open]
   )
 
-  useClickOutside(handleClickOutside, [menuContent, button])
+  useClickOutside(handleClickOutside, [button, popover])
   useGlobalKeyDown(handleGlobalKeyDown)
 
   const selectRev = useCallback(
     (revChunk: Chunk) => {
-      const [sinceId, revId] = historyController.findRangeForNewRev(revChunk)
-      setTimelineMode('closed')
-      setOpen(false)
-      setTimelineRange(sinceId, revId)
+      try {
+        const [sinceId, revId] = timelineStore.findRangeForRev(revChunk)
+        setTimelineMode('closed')
+        setTimelineRange(sinceId, revId)
+      } catch (err) {
+        toast.push({
+          closable: true,
+          description: err.message,
+          status: 'error',
+          title: 'Unable to load revision',
+        })
+      }
     },
-    [historyController, setTimelineMode, setTimelineRange]
+    [setTimelineMode, setTimelineRange, timelineStore, toast]
   )
 
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
-      const [sinceId, revId] = historyController.findRangeForNewSince(sinceChunk)
-      setTimelineMode('closed')
-      setOpen(false)
-      setTimelineRange(sinceId, revId)
+      try {
+        const [sinceId, revId] = timelineStore.findRangeForSince(sinceChunk)
+        setTimelineMode('closed')
+        setTimelineRange(sinceId, revId)
+      } catch (err) {
+        toast.push({
+          closable: true,
+          description: err.message,
+          status: 'error',
+          title: 'Unable to load revision',
+        })
+      }
     },
-    [historyController, setTimelineMode, setTimelineRange]
+    [setTimelineMode, setTimelineRange, timelineStore, toast]
   )
 
-  const loadMoreHistory = useCallback(
-    (state: boolean) => {
-      historyController.setLoadMore(state)
-    },
-    [historyController]
-  )
+  const handleLoadMore = useCallback(() => {
+    if (!loading) {
+      timelineStore.loadMore()
+    }
+  }, [loading, timelineStore])
 
-  const content = open && (
-    <div ref={setMenuContent}>
-      {mode === 'rev' ? (
+  const content = timelineError ? (
+    <TimelineError />
+  ) : (
+    <>
+      {mode === 'rev' && (
         <Timeline
+          chunks={chunks}
+          firstChunk={realRevChunk}
+          hasMoreChunks={hasMoreChunks}
+          lastChunk={realRevChunk}
+          onLoadMore={handleLoadMore}
           onSelect={selectRev}
-          onLoadMore={loadMoreHistory}
-          timeline={timeline}
-          {...revTimelineProps(historyController.realRevChunk)}
-        />
-      ) : (
-        <Timeline
-          onSelect={selectSince}
-          onLoadMore={loadMoreHistory}
-          timeline={timeline}
-          {...sinceTimelineProps(historyController.sinceTime!, historyController.realRevChunk)}
         />
       )}
-    </div>
+      {mode === 'since' && (
+        <Timeline
+          chunks={chunks}
+          disabledBeforeFirstChunk
+          firstChunk={realRevChunk}
+          hasMoreChunks={hasMoreChunks}
+          lastChunk={sinceTime}
+          onLoadMore={handleLoadMore}
+          onSelect={selectSince}
+        />
+      )}
+    </>
   )
 
-  const timeAgo = useTimeAgo(chunk?.endTimestamp || '', {agoSuffix: true})
+  const timeLabel = useFormattedTimestamp(chunk?.endTimestamp || '')
 
   const revLabel = chunk
-    ? `${upperFirst(formatTimelineEventLabel(chunk.type))} ${timeAgo}`
-    : 'Current version'
+    ? `${upperFirst(formatTimelineEventLabel(chunk.type))}: ${timeLabel}`
+    : 'Latest version'
 
-  const sinceLabel = chunk
-    ? `Since ${formatTimelineEventLabel(chunk.type)} ${timeAgo}`
-    : 'Since unknown version'
+  const sinceLabel = chunk ? `Since: ${timeLabel}` : 'Since: unknown version'
 
-  const openLabel = mode === 'rev' ? 'Select version' : 'Review changes since'
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
 
   return (
     <Root
       constrainSize
-      content={content}
+      content={open && content}
       data-ui="versionMenu"
       open={open}
       placement={placement}
       portal
+      ref={setPopover}
     >
       <Button
         disabled={!ready}
@@ -145,8 +161,18 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         onClick={open ? handleClose : handleOpen}
         ref={setButton}
         selected={open}
-        text={open ? openLabel : buttonLabel}
+        text={ready ? buttonLabel : 'Loading history'}
       />
     </Root>
   )
+}
+
+export function useFormattedTimestamp(time: string): string {
+  const formatted = useMemo(() => {
+    const parsedDate = time ? new Date(time) : new Date()
+    const formattedDate = format(parsedDate, 'MMM d, yyyy, hh:mm a')
+    return formattedDate
+  }, [time])
+
+  return formatted
 }

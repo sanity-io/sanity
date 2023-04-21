@@ -4,7 +4,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {PublishStatus} from './PublishStatus'
 import {ReviewChangesButton} from './ReviewChangesButton'
-import {useSyncState} from 'sanity'
+import {useSyncState, useTimelineSelector} from 'sanity'
 
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
@@ -17,14 +17,13 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     editState,
     onHistoryClose,
     onHistoryOpen,
-    historyController,
+    timelineStore,
     value,
   } = useDocumentPane()
   const syncState = useSyncState(documentId, documentType)
 
   const lastUpdated = value?._updatedAt
   const lastPublished = editState?.published?._updatedAt
-  const showingRevision = historyController.onOlderRevision()
   const liveEdit = Boolean(editState?.liveEdit)
   const published = Boolean(editState?.published)
   const changed = Boolean(editState?.draft)
@@ -34,6 +33,9 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
   const collapsed = !rootFlexRect || rootFlexRect?.width < 300
 
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
+
+  // Subscribe to TimelineController changes and store internal state.
+  const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {

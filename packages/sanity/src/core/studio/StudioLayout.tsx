@@ -1,4 +1,4 @@
-import {Card, Flex, Spinner} from '@sanity/ui'
+import {Card, Flex, Spinner, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {
   createContext,
@@ -15,7 +15,7 @@ import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useNavbarComponent} from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
-import {RouteScope, useRouter} from 'sanity/router'
+import {RouteScope, useRouterState} from 'sanity/router'
 
 const SearchFullscreenPortalCard = styled(Card)`
   height: 100%;
@@ -43,10 +43,17 @@ export const NavbarContext = createContext<NavbarContextValue>({
 
 /** @public */
 export function StudioLayout() {
-  const {state: routerState} = useRouter()
   const {name, title, tools} = useWorkspace()
-  const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
-  const activeTool = tools.find((tool) => tool.name === activeToolName)
+  const activeToolName = useRouterState(
+    useCallback(
+      (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
+      []
+    )
+  )
+  const activeTool = useMemo(
+    () => tools.find((tool) => tool.name === activeToolName),
+    [activeToolName, tools]
+  )
   const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null
@@ -110,9 +117,11 @@ export function StudioLayout() {
   )
 }
 
+// @TODO re-use `LoadingComponent`, which is `LoadingScreen` by default, to reduce "popping" during initial load
 function LoadingTool() {
   return (
-    <Flex align="center" height="fill" justify="center">
+    <Flex justify="center" align="center" height="fill" direction="column" gap={4}>
+      <Text muted>Loading…</Text>
       <Spinner muted />
     </Flex>
   )

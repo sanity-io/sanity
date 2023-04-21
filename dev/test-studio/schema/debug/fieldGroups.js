@@ -32,7 +32,20 @@ export default {
         {name: 'group22', title: 'Group 2 / group 2'},
       ],
       fields: [
-        {type: 'string', name: 'group21', group: 'group21', title: 'string in group 1 in group 2'},
+        {
+          type: 'string',
+          name: 'group21',
+          group: 'group21',
+          title: 'string in group 1 in group 2 hidden field',
+          hidden: true,
+        },
+        {
+          type: 'string',
+          name: 'group212',
+          group: 'group21',
+          title: 'string in group 1 in group 2',
+          hidden: true,
+        },
         {type: 'string', name: 'group22', group: 'group22', title: 'string in group 2 in group 2'},
       ],
     },

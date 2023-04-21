@@ -385,9 +385,11 @@ export const AssetRow = (props: RowProps) => {
           </Text>
         </CustomFlex>
         <CustomFlex align="center">
-          <TypeText size={1} muted>
-            {formattedMimeType}
-          </TypeText>
+          <Box>
+            <TypeText size={1} muted textOverflow="ellipsis">
+              {formattedMimeType}
+            </TypeText>
+          </Box>
         </CustomFlex>
         <CustomFlex align="center">
           <Text as="time" size={1} muted dateTime={_createdAt}>

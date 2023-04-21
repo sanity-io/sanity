@@ -66,4 +66,16 @@ export default defineType({
       readOnly: true,
     },
   ],
+  orderings: [
+    {name: 'asc', title: 'Asc', by: [{field: 'myNumberField', direction: 'asc'}]},
+    {name: 'desc', title: 'Desc', by: [{field: 'myNumberField', direction: 'desc'}]},
+    {
+      title: 'Title',
+      name: 'title',
+      by: [
+        {field: 'title', direction: 'asc'},
+        {field: 'myNumberField', direction: 'asc'},
+      ],
+    },
+  ],
 })

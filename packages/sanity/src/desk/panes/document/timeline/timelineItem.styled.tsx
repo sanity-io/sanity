@@ -1,15 +1,8 @@
-import {Text, Box, MenuItem, Theme, Flex, rem} from '@sanity/ui'
+import {Text, Box, Button, Theme, Flex, rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {TimelineItemState} from './types'
 
 export interface IconWrapperProps {
   theme: Theme
-}
-
-export interface TimelineItemProps {
-  state: TimelineItemState
-  theme: Theme
-  isHovered: boolean
 }
 
 export const IconWrapper = styled(Flex)(({theme}: IconWrapperProps) => {
@@ -35,71 +28,28 @@ export const IconWrapper = styled(Flex)(({theme}: IconWrapperProps) => {
   `
 })
 
-export const Root = styled(MenuItem)(({state = 'enabled', isHovered, theme}: TimelineItemProps) => {
-  const {color} = theme.sanity
-
-  const selectedState = color.button.default.primary.enabled
+export const Root = styled(Button)(({$selected}: {$selected: boolean}) => {
   return css`
     position: relative;
-    min-width: 244px;
+    width: 100%;
 
-    ${state === 'selected' &&
-    css`
-      --card-bg-color: ${selectedState.bg};
-      --card-fg-color: ${selectedState.fg};
-      --card-muted-fg-color: ${selectedState.muted};
-      --card-border-color: ${selectedState.bg};
-      &:not([data-selection-bottom='true']) {
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-      }
-    `}
-
-    ${state === 'withinSelection' &&
-    css`
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-      box-shadow: 0px 3px 0px 0px var(--card-bg-color);
-      &:not([data-selection-top='true']) {
-        border-radius: 0;
-      }
-
-      ${IconWrapper} {
-        &::before {
-          background: var(--card-hairline-soft-color);
-        }
-      }
-    `}
-
-      ${state === 'disabled' &&
-    css`
-      [data-ui='Avatar'] {
-        opacity: 0.2;
-      }
-    `}
-
-    // line styling 👇
-      &:first-child ${IconWrapper}::before {
+    /* Line styling */
+    &[data-first] ${IconWrapper}::before {
       height: 50%;
       top: unset;
       bottom: 0;
     }
 
-    &:last-child ${IconWrapper}::before {
+    &[data-last] ${IconWrapper}::before {
       height: 50%;
     }
 
-    ${(isHovered || state === 'selected') &&
+    ${$selected &&
     css`
       ${IconWrapper}::before {
         background: transparent;
       }
     `}
-
-    // Remove timeline lines when using the keyboard to navigate timeline items
-    &:focus ${IconWrapper}::before {
-      background: transparent;
-    }
   `
 })
 

@@ -33,10 +33,10 @@ function useShallowUnique<ValueType>(value: ValueType): ValueType {
 
 const addSelectedStateToMenuItems = (options: {
   menuItems?: PaneMenuItem[]
-  sortOrder?: SortOrder
+  sortOrderRaw?: SortOrder
   layout?: GeneralPreviewLayoutKey
 }) => {
-  const {menuItems, sortOrder, layout} = options
+  const {menuItems, sortOrderRaw, layout} = options
 
   return menuItems?.map((item) => {
     if (item.params?.layout) {
@@ -46,17 +46,10 @@ const addSelectedStateToMenuItems = (options: {
       }
     }
 
-    if (item?.params?.extendedProjection) {
-      return {
-        ...item,
-        selected: sortOrder?.extendedProjection === item?.params?.extendedProjection,
-      }
-    }
-
     if (item?.params?.by) {
       return {
         ...item,
-        selected: isEqual(sortOrder?.by, item?.params?.by || EMPTY_ARRAY),
+        selected: isEqual(sortOrderRaw?.by, item?.params?.by || EMPTY_ARRAY),
       }
     }
 
@@ -121,7 +114,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     () =>
       addSelectedStateToMenuItems({
         menuItems,
-        sortOrder,
+        sortOrderRaw,
         layout,
       }),
     [layout, menuItems, sortOrder]

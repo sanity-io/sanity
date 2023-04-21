@@ -1,5 +1,5 @@
 import {Box, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
-import React, {MouseEvent, useCallback} from 'react'
+import React, {MouseEvent, useCallback, useMemo} from 'react'
 import {PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
@@ -26,12 +26,10 @@ export function SearchResultItem({
   const type = schema.get(documentType)
   const documentPresence = useDocumentPresence(documentId)
 
+  const params = useMemo(() => ({id: documentId, type: type?.name}), [documentId, type?.name])
   const {onClick: onIntentClick, href} = useIntentLink({
     intent: 'edit',
-    params: {
-      id: documentId,
-      type: type?.name,
-    },
+    params,
   })
 
   const handleClick = useCallback(

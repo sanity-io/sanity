@@ -17,6 +17,7 @@ import {
   NoChanges,
   ScrollContainer,
   UserAvatar,
+  useTimelineSelector,
 } from 'sanity'
 
 const Scroller = styled(ScrollContainer)`
@@ -27,14 +28,18 @@ const Scroller = styled(ScrollContainer)`
 `
 
 export function ChangesPanel(): React.ReactElement | null {
-  const {documentId, onHistoryClose, historyController, schemaType, value} = useDocumentPane()
+  const {documentId, onHistoryClose, schemaType, timelineError, timelineStore, value} =
+    useDocumentPane()
   const {collapsed} = usePane()
   const scrollRef = useRef<HTMLDivElement | null>(null)
-  const historyState = historyController.selectionState
-  const loading = historyState === 'loading'
-  const since = historyController.sinceTime
-  const diff: ObjectDiff<any> | null = historyController.currentObjectDiff()
-  const isComparingCurrent = !historyController.onOlderRevision()
+
+  // Subscribe to external timeline state changes
+  const diff = useTimelineSelector(timelineStore, (state) => state.diff)
+  const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
+  const selectionState = useTimelineSelector(timelineStore, (state) => state.selectionState)
+  const sinceTime = useTimelineSelector(timelineStore, (state) => state.sinceTime)
+  const loading = selectionState === 'loading'
+  const isComparingCurrent = !onOlderRevision
 
   const documentContext: DocumentChangeContextInstance = React.useMemo(
     () => ({
@@ -95,7 +100,7 @@ export function ChangesPanel(): React.ReactElement | null {
             </Box>
           )
         }
-        tabs={<TimelineMenu mode="since" chunk={since} placement="bottom-start" />}
+        tabs={<TimelineMenu mode="since" chunk={sinceTime} placement="bottom-start" />}
         title="Changes"
       />
 
@@ -103,7 +108,12 @@ export function ChangesPanel(): React.ReactElement | null {
         <BoundaryElementProvider element={scrollRef.current}>
           <Scroller data-ui="Scroller" ref={scrollRef}>
             <Box flex={1} padding={4}>
-              <Content diff={diff} documentContext={documentContext} loading={loading} />
+              <Content
+                diff={diff}
+                documentContext={documentContext}
+                error={timelineError}
+                loading={loading}
+              />
             </Box>
           </Scroller>
         </BoundaryElementProvider>
@@ -113,15 +123,21 @@ export function ChangesPanel(): React.ReactElement | null {
 }
 
 function Content({
+  error,
   diff,
   documentContext,
   loading,
 }: {
+  error?: Error | null
   diff: ObjectDiff<any> | null
   documentContext: DocumentChangeContextInstance
   loading: boolean
 }) {
   const {schemaType} = useDocumentPane()
+
+  if (error) {
+    return <NoChanges />
+  }
 
   if (loading) {
     return <LoadingContent />

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {memo} from 'react'
 import {ObjectMember} from '../../store'
 import {
   RenderArrayOfObjectsItemCallback,
@@ -21,7 +21,7 @@ export interface ObjectInputMemberProps {
 }
 
 /** @internal */
-export function ObjectInputMember(props: ObjectInputMemberProps) {
+export const ObjectInputMember = memo(function ObjectInputMember(props: ObjectInputMemberProps) {
   const {member, renderInput, renderField, renderItem, renderPreview} = props
 
   if (member.kind === 'field') {
@@ -54,4 +54,4 @@ export function ObjectInputMember(props: ObjectInputMemberProps) {
   //@ts-expect-error The branching above should cover all possible cases
   console.warn(new Error(`Unhandled member kind ${member.kind}`))
   return null
-}
+})

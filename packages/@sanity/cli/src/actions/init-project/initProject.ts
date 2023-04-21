@@ -1,20 +1,19 @@
 import fs from 'fs/promises'
 import path from 'path'
-import pFilter from 'p-filter'
+import type {DatasetAclMode} from '@sanity/client'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
-import type {DatasetAclMode} from '@sanity/client'
+import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import which from 'which'
+import dotenv from 'dotenv'
 
-import {debug} from '../../debug'
-import {dynamicRequire} from '../../util/dynamicRequire'
-import {getClientWrapper} from '../../util/clientWrapper'
-import {getUserConfig} from '../../util/getUserConfig'
-import {isCommandGroup} from '../../util/isCommandGroup'
-import {isInteractive} from '../../util/isInteractive'
-import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
+import {frameworks, Framework} from '@vercel/frameworks'
+import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
 import type {InitFlags} from '../../commands/init/initCommand'
+import {debug} from '../../debug'
+import {getPackageManagerChoice, installDeclaredPackages} from '../../packageManager'
+import type {PackageManager} from '../../packageManager/packageManagerChoice'
 import {
   CliApiClient,
   CliCommandArguments,
@@ -23,18 +22,22 @@ import {
   SanityCore,
   SanityModuleInternal,
 } from '../../types'
-import type {PackageManager} from '../../packageManager/packageManagerChoice'
-import {installDeclaredPackages, getPackageManagerChoice} from '../../packageManager'
-import {createProject} from '../project/createProject'
+import {getClientWrapper} from '../../util/clientWrapper'
+import {dynamicRequire} from '../../util/dynamicRequire'
+import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
+import {getUserConfig} from '../../util/getUserConfig'
+import {isCommandGroup} from '../../util/isCommandGroup'
+import {isInteractive} from '../../util/isInteractive'
 import {login, LoginFlags} from '../login/login'
-import {promptForDatasetName} from './promptForDatasetName'
+import {createProject} from '../project/createProject'
 import {BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
-import templates from './templates'
-import {reconfigureV2Project} from './reconfigureV2Project'
-import {validateEmptyPath, absolutify} from './fsUtils'
-import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
 import {GenerateConfigOptions} from './createStudioConfig'
+import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
+import {promptForDatasetName} from './promptForDatasetName'
+import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
+import {reconfigureV2Project} from './reconfigureV2Project'
+import templates from './templates'
 
 // eslint-disable-next-line no-process-env
 const isCI = process.env.CI
@@ -84,6 +87,8 @@ export default async function initSanity(
   const reconfigure = cliFlags.reconfigure
   const commitMessage = cliFlags.git
   const useGit = typeof commitMessage === 'undefined' ? true : Boolean(commitMessage)
+  const bareOutput = cliFlags.bare
+  const env = cliFlags.env
 
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
@@ -123,10 +128,18 @@ export default async function initSanity(
     throw new Error('`--reconfigure` is deprecated - manual configuration is now required')
   }
 
+  const envFilename = typeof env === 'string' ? env : '.env'
+  if (!envFilename.startsWith('.env')) {
+    throw new Error(`Env filename must start with .env`)
+  }
+
+  const usingBareOrEnv = cliFlags.bare || cliFlags.env
   print(`You're setting up a new project!`)
-  print(`We'll make sure you have an account with Sanity.io. Then we'll`)
-  print('install an open-source JS content editor that connects to')
-  print('the real-time hosted API on Sanity.io. Hang on.\n')
+  print(`We'll make sure you have an account with Sanity.io. ${usingBareOrEnv ? '' : `Then we'll`}`)
+  if (!usingBareOrEnv) {
+    print('install an open-source JS content editor that connects to')
+    print('the real-time hosted API on Sanity.io. Hang on.\n')
+  }
   print('Press ctrl + C at any time to quit.\n')
   print('Prefer web interfaces to terminals?')
   print('You can also set up best practice Sanity projects with')
@@ -167,6 +180,17 @@ export default async function initSanity(
 
   debug(`Dataset with name ${datasetName} selected`)
 
+  // If user doesn't want to output any template code
+  if (bareOutput) {
+    print(`\n${chalk.green('Success!')} Below are your project details:\n`)
+    print(`Project ID: ${chalk.cyan(projectId)}`)
+    print(`Dataset: ${chalk.cyan(datasetName)}`)
+    print(
+      `\nYou can find your project on Sanity Manage — https://www.sanity.io/manage/project/${projectId}\n`
+    )
+    return
+  }
+
   let outputPath = workDir
 
   // Gather project defaults based on environment
@@ -177,6 +201,12 @@ export default async function initSanity(
 
   // Ensure we are using the output path provided by user
   outputPath = answers.outputPath
+
+  // user wants to write environment variables to file
+  if (env) {
+    await createOrAppendEnvVars(envFilename)
+    return
+  }
 
   // Prompt for template to use
   const templateName = await selectProjectTemplate()
@@ -594,7 +624,7 @@ export default async function initSanity(
   async function getProjectInfo(): Promise<ProjectDefaults & {outputPath: string}> {
     const specifiedPath = flags['output-path'] && path.resolve(flags['output-path'])
 
-    if (unattended || specifiedPath) {
+    if (unattended || specifiedPath || env) {
       return {
         ...defaults,
         outputPath: specifiedPath || workDir,
@@ -751,6 +781,114 @@ export default async function initSanity(
 
   function getOrganizationsWithAttachGrant(organizations: ProjectOrganization[]) {
     return pFilter(organizations, (org) => hasProjectAttachGrant(org.id), {concurrency: 3})
+  }
+
+  async function createOrAppendEnvVars(filename: string) {
+    // we will prepend SANITY_ to these variables later, together with the prefix
+    const envVars = {
+      PROJECT_ID: projectId,
+      DATASET: datasetName,
+    }
+
+    try {
+      // use vercel's framework detector
+      const framework: Framework | null = await detectFrameworkRecord({
+        fs: new LocalFileSystemDetector(workDir),
+        frameworkList: frameworks as readonly Framework[],
+      })
+
+      if (framework && framework.envPrefix) {
+        print(
+          `\nDetected framework ${chalk.blue(framework?.name)}, using prefix '${
+            framework.envPrefix
+          }'`
+        )
+      }
+
+      await writeEnvVarsToFile(filename, envVars, {
+        framework,
+        outputPath,
+      })
+    } catch (err) {
+      print(err)
+      throw new Error('An error occurred while creating .env', {cause: err})
+    }
+  }
+
+  async function writeEnvVarsToFile(
+    filename: string,
+    envVars: Record<string, string>,
+    options: {framework: Framework | null; outputPath: string}
+  ) {
+    const envPrefix = options.framework?.envPrefix || ''
+    const keyPrefix = envPrefix.includes('SANITY') ? envPrefix : `${envPrefix}SANITY_`
+    const fileOutputPath = path.join(options.outputPath, filename)
+
+    // prepend framework and sanity prefix to envVars
+    for (const key of Object.keys(envVars)) {
+      envVars[`${keyPrefix}${key}`] = envVars[key]
+      delete envVars[key]
+    }
+
+    // make folder if not exists (if output path is specified)
+    await fs
+      .mkdir(options.outputPath, {recursive: true})
+      .catch(() => debug('Error creating folder %s', options.outputPath))
+
+    // time to update or create the file
+    const existingEnv = await fs
+      .readFile(fileOutputPath, {encoding: 'utf8'})
+      .catch((err) => (err.code === 'ENOENT' ? '' : Promise.reject(err)))
+
+    const updatedEnv = parseAndUpdateEnvVars(existingEnv, envVars)
+    await fs.writeFile(fileOutputPath, updatedEnv, {
+      encoding: 'utf8',
+    })
+
+    print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
+  }
+
+  function parseAndUpdateEnvVars(fileContents: string, envVars: Record<string, string>): string {
+    const existingKeys = dotenv.parse(fileContents) // this will contain all vars
+    const updatedKeys: Record<string, string> = {} // this will only contain our vars
+
+    // find and update keys
+    for (const [key, value] of Object.entries(envVars)) {
+      if (!existingKeys[key]) {
+        updatedKeys[key] = value
+        print(`Appended ${key}="${envVars[key]}"`)
+        continue
+      }
+
+      print(`Found existing ${key}, replacing value.`)
+      updatedKeys[key] = value
+    }
+
+    // clone fileContents and replace existing keys by string matching
+    let updatedEnv = fileContents
+    for (const [key, value] of Object.entries(updatedKeys)) {
+      if (existingKeys[key]) {
+        const existingValue = existingKeys[key]
+
+        updatedEnv = updatedEnv
+          .split('\n')
+          .map((line) => {
+            if (
+              !line.trim().startsWith('#') && // ignore comments
+              new RegExp(`(^\\s*${key})((: )|( *=))`).test(line) // match key
+            ) {
+              return line.replace(existingValue, value)
+            }
+            return line
+          })
+          .join('\n')
+      } else {
+        updatedEnv = updatedEnv.trim().concat(`\n${key}="${value}"`)
+      }
+    }
+
+    // if file is empty, add a newline
+    return updatedEnv.concat(fileContents === '' ? '\n' : '')
   }
 }
 

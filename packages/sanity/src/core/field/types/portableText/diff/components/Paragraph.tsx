@@ -1,7 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 
-const StyledParagraph = styled.p`
+// This can contain nested <div> elements, so it's not rendered as a <p> element
+const StyledParagraph = styled.div`
   text-transform: none;
   white-space: wrap;
   overflow-wrap: break-word;
