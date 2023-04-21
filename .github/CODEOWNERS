@@ -1,0 +1,31 @@
+# These owners can be changed and added to in the future,
+
+# for now these are the main people that we are required to have eyes on PRs
+
+# that changed items in the given spaces
+
+# ------------- Packages
+
+# Espen owns any file in `/packages/@sanity/cli/`
+
+# directory in the root of your repository and any of its
+
+# subdirectories.
+
+/packages/@sanity/cli/ @rexxars
+
+# Bjørge owns any file in `/packages/sanity/src/core/form/`
+
+# directory in the root of your repository and any of its
+
+# subdirectories.
+
+/packages/sanity/src/core/form/ @bjoerge
+
+# PK owns any file related to PTE
+
+# They are spread across different directories and subdirectories
+
+/packages/@sanity/portable-text-editor/ @skogsmaskin
+/packages/sanity/src/core/field/types/portableText/ @skogsmaskin
+/packages/sanity/src/core/form/inputs/PortableText/ @skogsmaskin
