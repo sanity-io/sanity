@@ -1,4 +1,4 @@
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {catchError, map, startWith} from 'rxjs/operators'
 import {Observable, of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
@@ -42,10 +42,11 @@ export function useReferenceInfo(
     setRetryAttempt((current) => current + 1)
   }, [])
 
+  const docInfo = useMemo(() => ({_id: doc._id, _type: doc._type}), [doc._id, doc._type])
   const referenceInfo = useMemoObservable(
     () =>
-      doc._id
-        ? getReferenceInfo(doc).pipe(
+      docInfo._id
+        ? getReferenceInfo(docInfo).pipe(
             map(
               (result) =>
                 ({
@@ -53,16 +54,23 @@ export function useReferenceInfo(
                   result,
                   error: undefined,
                   retry,
+                  retryAttempt,
                 } as const)
             ),
             startWith(INITIAL_LOADING_STATE),
             catchError((err: Error) => {
               console.error(err)
-              return of({isLoading: false, result: undefined, error: err, retry} as const)
+              return of({
+                isLoading: false,
+                result: undefined,
+                error: err,
+                retry,
+                retryAttempt,
+              } as const)
             })
           )
         : of(EMPTY_STATE),
-    [retryAttempt, getReferenceInfo, doc?._id, doc?._type, retry],
+    [docInfo, getReferenceInfo, retry, retryAttempt],
     INITIAL_LOADING_STATE
   )
 

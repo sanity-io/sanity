@@ -37,6 +37,8 @@ export default function HistoryTimelineStory() {
   const value: Partial<SanityDocument> =
     editState?.draft || editState?.published || initialValue.value
 
+  const [, _forceUpdate] = useState(0)
+  const forceUpdate = useCallback(() => _forceUpdate((p) => p + 1), [])
   const timelineStore = useTimelineStore({
     documentId,
     documentType,

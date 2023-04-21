@@ -199,7 +199,7 @@ export function Toolbar(props: ToolbarProps) {
         })
         .finally(() => clearTimeout(slowTimer))
     },
-    [push]
+    [push, resolveInitialValueForType]
   )
 
   const handleInsertBlock = useCallback(

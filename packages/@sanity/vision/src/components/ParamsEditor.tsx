@@ -25,9 +25,15 @@ export function ParamsEditor(props: ParamsEditorProps) {
   const {onChange} = props
   const {raw: value, error, parsed, valid} = eventFromValue(props.value)
   const [isValid, setValid] = useState(valid)
+  const [init, setInit] = useState(false)
 
   // Emit onChange on very first render
-  useEffect(() => onChange({parsed, raw: value, valid: isValid, error}), [])
+  useEffect(() => {
+    if (!init) {
+      onChange({parsed, raw: value, valid: isValid, error})
+      setInit(true)
+    }
+  }, [error, init, isValid, onChange, parsed, value])
 
   const handleChangeRaw = useCallback(
     (newValue: string) => {

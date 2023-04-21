@@ -19,5 +19,6 @@ export function useUserColorManager(): UserColorManager {
 export function useUserColor(userId: string | null): UserColor {
   const manager = useUserColorManager()
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- no need to refactor to an inline function
   return useMemoObservable(userId ? manager.listen(userId) : empty(), [userId], manager.get(null))
 }
