@@ -1,27 +1,35 @@
 /* eslint-disable no-process-env */
 import os from 'os'
-import fs from 'fs/promises'
 import path from 'path'
 import {defineConfig, devices} from '@playwright/test'
 import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
 
-const CI = Boolean(process.env.CI)
+// Paths
 const TESTS_PATH = path.join(__dirname, 'test', 'e2e', 'tests')
 const HTML_REPORT_PATH = path.join(__dirname, 'test', 'e2e', 'report')
 const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'test', 'e2e', 'results')
-const STORAGE_STATE_PATH = path.join(__dirname, 'test', 'e2e', 'state', 'storageState.json')
+
+// OS-specific browsers to include
 const OS_BROWSERS =
   os.platform() === 'darwin' ? [{name: 'webkit', use: {...devices['Desktop Safari']}}] : []
-const E2E_DEBUG = readBoolEnv('SANITY_E2E_DEBUG', false)
 
+// Load environment variables from env + dotenv files
 loadEnvFiles()
-ensureStorageState()
+
+// Read environment variables
+const CI = readBoolEnv('CI', false)
+const E2E_DEBUG = readBoolEnv('SANITY_E2E_DEBUG', false)
+const AUTH_TOKEN = process.env.SANITY_E2E_SESSION_TOKEN
+const PROJECT_ID = 'ppsg7ml5'
+
+if (!AUTH_TOKEN) {
+  throw new Error('Missing sanity token - see README.md for details')
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  globalSetup: require.resolve('./test/e2e/global-setup'),
   testDir: TESTS_PATH,
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
@@ -45,7 +53,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     baseURL: 'http://localhost:3333/',
     headless: readBoolEnv('SANITY_E2E_HEADLESS', !E2E_DEBUG),
-    storageState: STORAGE_STATE_PATH,
+    storageState: getStorageStateForProjectId(PROJECT_ID),
     viewport: {width: 1728, height: 1000},
     contextOptions: {reducedMotion: 'reduce'},
   },
@@ -102,19 +110,25 @@ function readBoolEnv(flag: string, defaultValue: boolean) {
 }
 
 /**
- * Ensures that the file we use for storing state exists.
- * If it does not, we create a file containing an empty JSON object.
+ * Returns a storage state with an auth token injected to the localstorage for the given project ID
+ *
+ * @param projectId - The ID of the project the auth token belongs to
+ * @returns A storage state object
  * @internal
  */
-async function ensureStorageState() {
-  try {
-    await fs.writeFile(STORAGE_STATE_PATH, JSON.stringify({}), {
-      encoding: 'utf8',
-      flag: 'wx',
-    })
-  } catch (err) {
-    if (err.code !== 'EEXIST') {
-      throw err
-    }
+function getStorageStateForProjectId(projectId: string) {
+  return {
+    cookies: [],
+    origins: [
+      {
+        origin: 'http://localhost:3333',
+        localStorage: [
+          {
+            name: `__studio_auth_token_${projectId}`,
+            value: JSON.stringify({token: AUTH_TOKEN, time: new Date().toISOString()}),
+          },
+        ],
+      },
+    ],
   }
 }
