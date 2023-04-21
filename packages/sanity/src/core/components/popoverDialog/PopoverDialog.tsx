@@ -46,11 +46,12 @@ interface PopoverDialogProps {
   onClose: () => void
   referenceElement: PopoverProps['referenceElement']
   width: ResponsiveWidthProps['width']
+  containerRef?: React.RefObject<HTMLDivElement>
 }
 
 /** @internal */
 export function PopoverDialog(props: PopoverDialogProps) {
-  const {children, header, onClose, referenceElement, width} = props
+  const {children, header, onClose, referenceElement, containerRef, width} = props
 
   const handleClose = useCallback(() => {
     onClose()
@@ -60,7 +61,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
   }, [onClose, referenceElement])
 
   const content = (
-    <PopoverContainer width={width}>
+    <PopoverContainer width={width} ref={containerRef}>
       <TrapFocus autoFocus>
         <Stack>
           <StickyLayer>
