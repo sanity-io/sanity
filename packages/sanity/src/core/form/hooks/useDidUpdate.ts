@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import {useEffect} from 'react'
 import shallowEquals from 'shallow-equals'
 import {usePrevious} from './usePrevious'
 
@@ -26,13 +26,8 @@ export function useDidUpdate<T>(
   didUpdate: (previous: T | undefined, current: T | undefined) => void,
   compare: (previous: T | undefined, current: T) => boolean = shallowEquals
 ): void {
-  const previous = usePrevious<T>(current)
-  const initial = useRef<boolean>(true)
+  const previous = usePrevious<T | undefined>(current)
   useEffect(() => {
-    if (initial.current) {
-      initial.current = false
-      return
-    }
     if (!compare(previous, current)) {
       didUpdate(previous, current)
     }
