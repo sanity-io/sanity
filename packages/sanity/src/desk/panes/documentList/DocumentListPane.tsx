@@ -117,7 +117,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         sortOrderRaw,
         layout,
       }),
-    [layout, menuItems, sortOrder]
+    [layout, menuItems, sortOrderRaw]
   )
 
   return (
