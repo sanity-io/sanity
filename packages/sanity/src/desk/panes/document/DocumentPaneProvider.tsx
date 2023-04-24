@@ -2,7 +2,7 @@ import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 're
 import {ObjectSchemaType, Path, SanityDocument, SanityDocumentLike} from '@sanity/types'
 import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
-import {fromString as pathFromString} from '@sanity/util/paths'
+import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
@@ -450,11 +450,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   // Reset `focusPath` when `documentId` or `params.path` changes
   useEffect(() => {
-    // Reset focus path when url params path changes
-    const pathFromUrl = params.path ? pathFromString(params.path) : []
-    setFocusPath(pathFromUrl)
-    setOpenPath(pathFromUrl)
-  }, [params.path, documentId, setOpenPath])
+    if (ready && params.path) {
+      const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(params.path))
+      // Reset focus path when url params path changes
+      setFocusPath(pathFromUrl)
+      setOpenPath(pathFromUrl)
+    }
+  }, [params.path, documentId, setOpenPath, ready])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
