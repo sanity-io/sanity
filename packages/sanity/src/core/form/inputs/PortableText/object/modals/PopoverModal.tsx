@@ -10,6 +10,7 @@ import {
   ContentContainer,
   ContentHeaderBox,
   ContentScrollerBox,
+  ModalWrapper,
   RootPopover,
 } from './PopoverModal.styles'
 
@@ -67,7 +68,7 @@ function Content(props: PopoverEditDialogProps) {
 
   return (
     <ContentContainer width={width}>
-      <Flex direction="column" flex={1}>
+      <ModalWrapper direction="column" flex={1}>
         <ContentHeaderBox padding={1}>
           <Flex align="center">
             <Box flex={1} padding={2}>
@@ -82,7 +83,7 @@ function Content(props: PopoverEditDialogProps) {
             <Box padding={3}>{props.children}</Box>
           </PresenceOverlay>
         </ContentScrollerBox>
-      </Flex>
+      </ModalWrapper>
     </ContentContainer>
   )
 }

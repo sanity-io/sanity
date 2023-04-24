@@ -1,4 +1,4 @@
-import {Box, Container, Popover} from '@sanity/ui'
+import {Box, Container, Flex, Popover} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const RootPopover = styled(Popover)`
@@ -17,6 +17,9 @@ export const ContentContainer = styled(Container)`
     display: flex;
   }
   direction: column;
+`
+export const ModalWrapper = styled(Flex)`
+  max-height: 300px;
 `
 
 export const ContentScrollerBox = styled(Box)`

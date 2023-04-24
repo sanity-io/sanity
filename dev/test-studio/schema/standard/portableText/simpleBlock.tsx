@@ -45,7 +45,53 @@ export default defineType({
         defineArrayMember({
           type: 'block',
           marks: {
-            annotations: [linkType, myStringType],
+            annotations: [
+              {
+                name: 'link',
+                type: 'object',
+                title: 'link',
+                fields: [
+                  {
+                    name: 'url',
+                    type: 'url',
+                    validation: (Rule) =>
+                      Rule.regex(/https:\/\/(www\.|)(portabletext\.org|sanity\.io)\/.*/gi, {
+                        name: 'internal url',
+                        invert: true,
+                      }).warning(
+                        `This is not an external link. Consider using internal links instead.`
+                      ),
+                  },
+                ],
+              },
+              {
+                name: 'internalLink',
+                type: 'object',
+                title: 'Internal link',
+                fields: [
+                  {
+                    name: 'reference',
+                    type: 'reference',
+                    to: [{type: 'book'}],
+                  },
+                  {
+                    name: 'reference1',
+                    type: 'reference',
+                    to: [{type: 'author'}],
+                  },
+                  {
+                    name: 'reference2',
+                    type: 'reference',
+                    to: [{type: 'author'}],
+                  },
+                  {
+                    name: 'reference3',
+                    type: 'reference',
+                    to: [{type: 'author'}],
+                  },
+                ],
+              },
+            ],
           },
           of: [
             {type: 'image', name: 'image'},
