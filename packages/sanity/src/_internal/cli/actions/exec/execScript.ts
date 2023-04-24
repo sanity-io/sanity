@@ -1,7 +1,7 @@
 import {spawn} from 'child_process'
 import fs from 'fs/promises'
 import path from 'path'
-import type {CliCommandAction, CliCommandArguments} from '@sanity/cli'
+import type {CliCommandAction, CliCommandArguments, PackageJson} from '@sanity/cli'
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
 import readPkgUp from 'read-pkg-up'
@@ -51,7 +51,12 @@ const execScript: CliCommandAction<ExecFlags> = async function execScript(args, 
     throw new Error('`sanity` module build error: missing threads')
   }
 
-  const baseArgs = mockBrowserEnv ? ['-r', browserEnvPath] : ['-r', esbuildPath]
+  const packageJsonPath = path.resolve('./package.json')
+  const packageJson = (await import(packageJsonPath)) as PackageJson | undefined
+  const isEsm = packageJson?.type === 'module'
+  const esmBuildArgs = isEsm ? ['--loader', 'esbuild-register/loader'] : []
+
+  const baseArgs = mockBrowserEnv ? ['-r', browserEnvPath] : ['-r', esbuildPath, ...esmBuildArgs]
   const tokenArgs = withUserToken ? ['-r', configClientPath] : []
 
   const nodeArgs = [...baseArgs, ...tokenArgs, scriptPath, ...args.extraArguments]

@@ -32,5 +32,12 @@ describeCliTest('CLI: `sanity exec`', () => {
       expect(data.env.SANITY_STUDIO_MODE).toBe('production')
       expect(result.code).toBe(0)
     })
+
+    // @todo: Add test for type=module
+    it.skip('sanity exec for package.json with type: module', async () => {
+      // Mock package json with type: module
+      // run cmd
+      // spy on command to confirm loader was added
+    })
   })
 })

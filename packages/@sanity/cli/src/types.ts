@@ -23,6 +23,7 @@ export interface SanityModuleInternal {
 export interface PackageJson {
   name: string
   version: string
+  type?: 'module' | 'commonjs'
 
   description?: string
   author?: string
