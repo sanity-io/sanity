@@ -1,4 +1,4 @@
-import React, {type ReactNode, useRef} from 'react'
+import React, {type ReactNode, useState} from 'react'
 import {BoundaryElementProvider, Box, Dialog, ResponsiveWidthProps} from '@sanity/ui'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
@@ -26,7 +26,7 @@ export function EditPortal(props: Props): React.ReactElement {
     type,
     width,
   } = props
-  const documentScrollElement = useRef<HTMLDivElement>(null)
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
@@ -36,14 +36,15 @@ export function EditPortal(props: Props): React.ReactElement {
 
   if (type === 'dialog') {
     return (
-      <BoundaryElementProvider element={documentScrollElement.current}>
+      <BoundaryElementProvider element={documentScrollElement}>
         <Dialog
           header={header}
           id={id || ''}
           onClickOutside={onClose}
           onClose={onClose}
           width={width}
-          contentRef={documentScrollElement}
+          contentRef={setDocumentScrollElement}
+          __unstable_autoFocus
         >
           {contents}
         </Dialog>
@@ -52,13 +53,13 @@ export function EditPortal(props: Props): React.ReactElement {
   }
 
   return (
-    <BoundaryElementProvider element={documentScrollElement.current}>
+    <BoundaryElementProvider element={documentScrollElement}>
       <PopoverDialog
         header={header}
         onClose={onClose}
         referenceElement={referenceElement}
         width={width}
-        containerRef={documentScrollElement}
+        containerRef={setDocumentScrollElement}
       >
         {contents}
       </PopoverDialog>

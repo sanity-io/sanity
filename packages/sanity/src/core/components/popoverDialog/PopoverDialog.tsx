@@ -46,7 +46,7 @@ interface PopoverDialogProps {
   onClose: () => void
   referenceElement: PopoverProps['referenceElement']
   width: ResponsiveWidthProps['width']
-  containerRef?: React.RefObject<HTMLDivElement>
+  containerRef?: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>
 }
 
 /** @internal */
