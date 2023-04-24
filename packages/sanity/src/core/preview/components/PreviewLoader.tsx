@@ -38,19 +38,17 @@ export function PreviewLoader(
   } = props
 
   const [element, setElement] = useState<HTMLDivElement | null>(null)
-  const shouldSkipVisbility =
-    (layout && ['inline', 'block', 'blockImage'].includes(layout)) || skipVisibilityCheck
 
   // Subscribe to visibility
   const isVisible = useVisibility({
     // NOTE: disable when PTE preview
-    element: shouldSkipVisbility ? null : element,
+    element: skipVisibilityCheck ? null : element,
     hideDelay: _HIDE_DELAY,
   })
 
   // Subscribe document preview value
   const preview = useValuePreview({
-    enabled: shouldSkipVisbility || isVisible,
+    enabled: skipVisibilityCheck || isVisible,
     schemaType,
     value,
   })

@@ -246,6 +246,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
           {renderPreview({
             layout: 'inline',
             schemaType,
+            skipVisibilityCheck: true,
             value,
             fallbackTitle: 'Click to edit',
           })}
