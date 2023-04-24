@@ -22,7 +22,7 @@ export function Input(props: InputProps) {
           layout="default"
           value={props.value}
           schemaType={props.schemaType}
-          __internal_skip_visibility_check
+          skipVisibilityCheck
         />
         <Text>No Layout - no skip</Text>
         <Preview
@@ -35,7 +35,7 @@ export function Input(props: InputProps) {
           key={`no-layout-${count.toString()}`}
           value={props.value}
           schemaType={props.schemaType}
-          __internal_skip_visibility_check
+          skipVisibilityCheck
         />
         <Text>Block</Text>
         <Preview
@@ -43,6 +43,7 @@ export function Input(props: InputProps) {
           layout="block"
           value={props.value}
           schemaType={props.schemaType}
+          skipVisibilityCheck
         />
         <Text>Block Image</Text>
         <Preview
@@ -50,6 +51,7 @@ export function Input(props: InputProps) {
           layout="blockImage"
           value={props.value}
           schemaType={props.schemaType}
+          skipVisibilityCheck
         />
         <Text>inline</Text>
         <Preview
@@ -57,6 +59,7 @@ export function Input(props: InputProps) {
           layout="inline"
           value={props.value}
           schemaType={props.schemaType}
+          skipVisibilityCheck
         />
       </Stack>
     </Card>

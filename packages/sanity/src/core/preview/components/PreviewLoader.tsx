@@ -33,14 +33,13 @@ export function PreviewLoader(
     component,
     style: styleProp,
     schemaType,
-    __internal_skip_visibility_check,
+    skipVisibilityCheck,
     ...restProps
   } = props
 
   const [element, setElement] = useState<HTMLDivElement | null>(null)
   const shouldSkipVisbility =
-    (layout && ['inline', 'block', 'blockImage'].includes(layout)) ||
-    __internal_skip_visibility_check
+    (layout && ['inline', 'block', 'blockImage'].includes(layout)) || skipVisibilityCheck
 
   // Subscribe to visibility
   const isVisible = useVisibility({
