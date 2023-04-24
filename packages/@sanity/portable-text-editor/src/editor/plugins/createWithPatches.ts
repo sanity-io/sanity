@@ -234,7 +234,7 @@ export function createWithPatches({
       if (
         !editorWasEmpty &&
         editorIsEmpty &&
-        ['set_node', 'remove_text', 'remove_node'].includes(operation.type)
+        ['merge_node', 'set_node', 'remove_text', 'remove_node'].includes(operation.type)
       ) {
         patches = [...patches, unset([])]
         change$.next({
