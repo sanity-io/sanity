@@ -70,9 +70,9 @@
     "@sanity/types": "3.9.0",
     "@sanity/util": "3.9.0",
     "debug": "^3.2.7",
-    "is-hotkey": "^0.1.6",
+    "is-hotkey": "^0.2.0",
     "lodash": "^4.17.21",
-    "slate": "0.81.1"
+    "slate": "0.94.0"
   },
   "devDependencies": {
     "@sanity/ui": "^1.3.0",
