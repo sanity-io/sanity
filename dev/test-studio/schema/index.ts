@@ -30,6 +30,7 @@ import {v3docs} from './docs/v3'
 import {demos3d} from './demos/3d'
 
 // Test documents for debugging
+import * as scrollBugTypes from './debug/scrollBug'
 import actions from './debug/actions'
 import button from './debug/button'
 import conditionalFields from './debug/conditionalFields'
@@ -215,6 +216,7 @@ export const schemaTypes = [
   reservedFieldNames,
   review,
   richTextObject,
+  ...Object.values(scrollBugTypes),
   select,
   simpleBlock,
   simpleBlockNote,
