@@ -2,12 +2,10 @@
  * TODO: This need to refactored once we have a better e2e framework/setup in place.
  * Makeshift code to reproduce a specific bug.
  */
-import {platform} from 'os'
 import {test, expect} from '@playwright/test'
 import {uuid} from '@sanity/uuid'
 import {testSanityClient} from '../../helpers'
 
-const isMac = platform() === 'darwin'
 const documentIds = new Set<string>()
 
 function getUniqueDocumentId() {
@@ -23,6 +21,8 @@ const kanji = `
 `.trim()
 
 test.describe('inputs: text', () => {
+  test.slow() // Because of waiting for mutations, remote values etc
+
   test('correctly applies kanji edits', async ({page}) => {
     const documentId = getUniqueDocumentId()
     await page.goto(`/test/content/input-ci;textsTest;${documentId}`)
@@ -46,14 +46,10 @@ test.describe('inputs: text', () => {
     expect(await field.inputValue()).toBe(currentExpectedValue)
     expect(await getRemoteValue()).toBe(currentExpectedValue)
 
-    // Set caret to the start of the field
-    await field.focus()
-    await field.press(isMac ? 'Meta+A' : 'Ctrl+A') // Select all the text
-    await field.press('ArrowLeft') // Press left arrow to go to start of field
-
     // Edit the value to start with "Paragraph 1: "
     const p1Prefix = 'Paragraph 1: '
-    await field.type(p1Prefix, {delay: 20})
+    let nextExpectedValue = `${p1Prefix}${kanji}`
+    await field.fill(nextExpectedValue)
     await page.waitForTimeout(1000) // Hack, we need to wait for the mutation to be received
 
     // Expect both the browser input and the document to now have the updated value
@@ -62,33 +58,24 @@ test.describe('inputs: text', () => {
     expect(await getRemoteValue()).toBe(currentExpectedValue)
 
     // Now move to the end of the paragraph and add a suffix
-    const paragraphEndPosition = currentExpectedValue.indexOf('\n')
     const p1Suffix = ' (end of paragraph 1)'
-    // Note: can't find a reliable way of going to end of line through keyboard.
-    // Control + E works on Chrome but not Firefox.
-    // await field.press('Control+E') // Move to end of paragraph
-    const handle = await field.elementHandle()
-    expect(handle).not.toBe(null)
-    await handle?.evaluate((el, charIndex) => {
-      ;(el as HTMLTextAreaElement).selectionStart = charIndex
-    }, paragraphEndPosition)
-
-    await field.type(p1Suffix, {delay: 20})
+    nextExpectedValue = currentExpectedValue.replace(/\n\n/, `${p1Suffix}\n\n`)
+    await field.fill(nextExpectedValue)
     await page.waitForTimeout(1000) // Hack, we need to wait for the mutation to be received
 
     // Expect both the browser input and the document to now have the updated value
-    currentExpectedValue = currentExpectedValue.replace(/\n\n/, `${p1Suffix}\n\n`)
+    currentExpectedValue = nextExpectedValue
     expect(await field.inputValue()).toBe(currentExpectedValue)
     expect(await getRemoteValue()).toBe(currentExpectedValue)
 
     // Move to the end of the field and add a final suffix
     const p2Suffix = `. EOL.`
-    await field.press(isMac ? 'Meta+ArrowDown' : 'Ctrl+End') // Move to end of field
-    await field.type(p2Suffix, {delay: 20})
+    nextExpectedValue = `${currentExpectedValue}${p2Suffix}`
+    await field.fill(nextExpectedValue)
     await page.waitForTimeout(1000) // Hack, we need to wait for the mutation to be received
 
     // Expect both the browser input and the document to now have the updated value
-    currentExpectedValue = `${currentExpectedValue}${p2Suffix}`
+    currentExpectedValue = nextExpectedValue
     expect(await field.inputValue()).toBe(currentExpectedValue)
     expect(await getRemoteValue()).toBe(currentExpectedValue)
   })
