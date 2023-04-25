@@ -81,7 +81,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
     },
   }))
 
-  // TODO: why are these not stable???
+  // TODO: why is this not stable?
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const _onItemRemove = useMemo(() => props.onItemRemove, [])
 
   const {subscribe} = usePatches({path})
