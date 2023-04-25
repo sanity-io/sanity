@@ -13,7 +13,7 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/react": "^1.0.6",
+    "@portabletext/react": "^2.0.0",
     "@react-three/cannon": "^6.4.0",
     "@react-three/drei": "^9.38.1",
     "@react-three/fiber": "^8.8.10",
