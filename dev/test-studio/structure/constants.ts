@@ -71,6 +71,7 @@ export const DEBUG_INPUT_TYPES = [
   'uploadsTest',
   'validationTest',
   'allNativeInputComponents',
+  'scrollBug',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
