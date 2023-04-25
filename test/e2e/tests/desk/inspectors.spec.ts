@@ -5,23 +5,23 @@ test.describe('sanity/desk: document inspectors', () => {
     await page.goto('/test/content/input-debug;inspectorsTest;inspectors-test')
 
     // Click to open inspector
-    await page.locator('[data-ui="StatusButton"][aria-label="AI assistant"]').click()
+    await page.locator('[data-ui="StatusButton"][aria-label="Custom inspector"]').click()
 
     // Expect button to be selected and inspector to be visible
     await expect(
-      page.locator('[data-ui="StatusButton"][aria-label="AI assistant"][data-selected]')
+      page.locator('[data-ui="StatusButton"][aria-label="Custom inspector"][data-selected]')
     ).toBeVisible()
     await expect(page.locator('aside[data-ui="DocumentInspectorPanel"]')).toBeVisible()
     await expect(page.locator('aside[data-ui="DocumentInspectorPanel"] h1')).toContainText(
-      'AI assistant'
+      'Custom inspector'
     )
 
     // Click to close inspector
-    await page.locator('button[aria-label="Close AI assistant"]').click()
+    await page.locator('button[aria-label="Close custom inspector"]').click()
 
     expect(
       await page
-        .locator('[data-ui="StatusButton"][aria-label="AI assistant"]')
+        .locator('[data-ui="StatusButton"][aria-label="Custom inspector"]')
         .evaluate((el) => el.getAttribute('data-selected'))
     ).toBe(null)
   })
