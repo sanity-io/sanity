@@ -218,7 +218,7 @@
     "rxjs": "^7.8.0",
     "rxjs-etc": "^10.6.0",
     "rxjs-exhaustmap-with-trailing": "^2.1.1",
-    "sanity-diff-patch": "^1.0.9",
+    "sanity-diff-patch": "^2.0.0",
     "scroll-into-view-if-needed": "^3.0.3",
     "semver": "^7.3.5",
     "shallow-equals": "^1.0.0",

@@ -3820,6 +3820,11 @@
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.5.tgz#6b28578573859495ed1ffd5491322cb8e90b3e07"
   integrity sha512-tTi22KoKuER3sldXYl4c1Dq2zU7tMLDkljFiaUKVkBbu4PBvRGCFw75kXZnD2b4Bsp6vin+7sI+AKdCKRhfRuw==
 
+"@sanity/diff-match-patch@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@sanity/diff-match-patch/-/diff-match-patch-1.0.0.tgz#ddfd6749c7777e3f45b156c2498a580f8787411c"
+  integrity sha512-e/sIq5HUNfpX2UcesaERLnW/vhn9K8mY2qKQvooLZ07/CdXHwiTPxbHzFKZ+MQ5eSipB2lYmGK1LT4R+TVt9ow==
+
 "@sanity/eslint-config-studio@^2.0.0":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@sanity/eslint-config-studio/-/eslint-config-studio-2.0.1.tgz#2c5cf68d66795ab396e972859d41848e70dce020"
@@ -8068,7 +8073,7 @@ didyoumean@^1.2.2:
   resolved "https://registry.yarnpkg.com/didyoumean/-/didyoumean-1.2.2.tgz#989346ffe9e839b4555ecf5666edea0d3e8ad037"
   integrity sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==
 
-diff-match-patch@^1.0.4, diff-match-patch@^1.0.5:
+diff-match-patch@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/diff-match-patch/-/diff-match-patch-1.0.5.tgz#abb584d5f10cd1196dfc55aa03701592ae3f7b37"
   integrity sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==
@@ -16576,12 +16581,12 @@ sanitize.css@*:
   resolved "https://registry.yarnpkg.com/sanitize.css/-/sanitize.css-13.0.0.tgz#2675553974b27964c75562ade3bd85d79879f173"
   integrity sha512-ZRwKbh/eQ6w9vmTjkuG0Ioi3HBwPFce0O+v//ve+aOq1oeCy7jMV2qzzAlpsNuqpqCBjjriM1lbtZbF/Q8jVyA==
 
-sanity-diff-patch@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/sanity-diff-patch/-/sanity-diff-patch-1.0.9.tgz#fb1fa3b52c27d369878af57ba02fee779b3ca8bd"
-  integrity sha512-J5YeuM/S7rLTp51iqUunwzz7Rf68K/jCDGKtNCj6Wzcfgf9CH+0GtPlvf2DFsg0QQhYYZ72FOVn6skmoLjMCdw==
+sanity-diff-patch@^2.0.0:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/sanity-diff-patch/-/sanity-diff-patch-2.0.3.tgz#c37c04ac0e89f1684e5141634941249fd8a66985"
+  integrity sha512-JmUkcAewB7mk3gUllNlI7tdQXCMV/ceB+arRSe1v5rQxwi0pvvBSM1BwuQ7yBOfreLXH5ouEM/VDXbcnBM3OMw==
   dependencies:
-    diff-match-patch "^1.0.5"
+    "@sanity/diff-match-patch" "^1.0.0"
 
 sanity-plugin-mux-input@^2.0.2:
   version "2.0.17"
