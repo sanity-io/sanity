@@ -11,5 +11,6 @@
       "groupSlug": "dev"
     }
   ],
-  "ignorePaths": ["packages/@sanity/cli/test/__fixtures__/v2/package.json"]
+  "ignorePaths": ["packages/@sanity/cli/test/__fixtures__/v2/package.json"],
+  "rebaseWhen": "behind-base-branch"
 }
