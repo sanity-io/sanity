@@ -13,12 +13,12 @@ export default function CustomInspector(props: DocumentInspectorProps) {
         <Flex as="header">
           <Box flex={1} padding={4}>
             <Text as="h1" size={1} weight="semibold">
-              Custom
+              Custom inspector
             </Text>
           </Box>
           <Box padding={3}>
             <Button
-              aria-label="Close Custom inspector"
+              aria-label="Close custom inspector"
               fontSize={1}
               icon={CloseIcon}
               mode="bleed"

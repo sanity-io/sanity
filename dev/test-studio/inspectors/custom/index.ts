@@ -6,7 +6,7 @@ export const customInspector = defineDocumentInspector({
   name: 'custom',
   menuItem: {
     icon: RocketIcon,
-    title: 'Custom',
+    title: 'Custom inspector',
   },
   component: lazy(() => import('./inspector')),
   showAsAction: true,
