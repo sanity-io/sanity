@@ -48,6 +48,7 @@ export interface RenderPreviewCallbackProps<TLayoutKey = PreviewLayoutKey> {
   withRadius?: boolean
   withShadow?: boolean
   schemaType: SchemaType
+  skipVisibilityCheck?: boolean
   style?: CSSProperties
 }
 

@@ -329,6 +329,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           ),
           layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,
+          skipVisibilityCheck: true,
           value,
         })}
       </Root>
