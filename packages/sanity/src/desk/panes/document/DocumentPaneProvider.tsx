@@ -419,6 +419,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onSetActiveFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+    openPath,
     index,
     inspectOpen,
     validation,

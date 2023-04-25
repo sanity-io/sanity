@@ -56,6 +56,7 @@ export interface DocumentPaneContextValue {
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
   onSetCollapsedFieldSet: (path: Path, expanded: boolean) => void
+  openPath: Path
   paneKey: string
   previewUrl?: string | null
   ready: boolean
