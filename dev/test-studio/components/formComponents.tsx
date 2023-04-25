@@ -1,11 +1,67 @@
-import React from 'react'
-import {Card} from '@sanity/ui'
-import {definePlugin, InputProps, FieldProps, ItemProps, PreviewProps} from 'sanity'
+import React, {useState} from 'react'
+import {Card, Stack, Button, Text} from '@sanity/ui'
+import {definePlugin, InputProps, FieldProps, ItemProps, Preview} from 'sanity'
 
 export function Input(props: InputProps) {
+  const [count, setCount] = useState(0)
+
   return (
     <Card data-testid="input-config-component" padding={2} border tone="primary">
-      {props.renderDefault(props)}
+      <Stack space={2}>
+        <Button onClick={() => setCount((c) => c + 1)} text={`Re-render: ${count}`} />{' '}
+        <Text>Default - no skip</Text>
+        <Preview
+          key={`default-no-${count.toString()}`}
+          layout="default"
+          value={props.value}
+          schemaType={props.schemaType}
+        />
+        <Text>Default - with skip</Text>
+        <Preview
+          key={`default-${count.toString()}`}
+          layout="default"
+          value={props.value}
+          schemaType={props.schemaType}
+          skipVisibilityCheck
+        />
+        <Text>No Layout - no skip</Text>
+        <Preview
+          key={`no-layout-no-${count.toString()}`}
+          value={props.value}
+          schemaType={props.schemaType}
+        />
+        <Text>No Layout - with skip</Text>
+        <Preview
+          key={`no-layout-${count.toString()}`}
+          value={props.value}
+          schemaType={props.schemaType}
+          skipVisibilityCheck
+        />
+        <Text>Block</Text>
+        <Preview
+          key={`block-${count.toString()}`}
+          layout="block"
+          value={props.value}
+          schemaType={props.schemaType}
+          skipVisibilityCheck
+        />
+        <Text>Block Image</Text>
+        <Preview
+          key={`blockImage-${count.toString()}`}
+          layout="blockImage"
+          value={props.value}
+          schemaType={props.schemaType}
+          skipVisibilityCheck
+        />
+        <Text>inline</Text>
+        <Preview
+          key={`inline-${count.toString()}`}
+          layout="inline"
+          value={props.value}
+          schemaType={props.schemaType}
+          skipVisibilityCheck
+        />
+      </Stack>
     </Card>
   )
 }
@@ -21,14 +77,6 @@ export function Field(props: FieldProps) {
 export function Item(props: ItemProps) {
   return (
     <Card data-testid="item-config-component" padding={2} border tone="positive">
-      {props.renderDefault(props)}
-    </Card>
-  )
-}
-
-export function Preview(props: PreviewProps) {
-  return (
-    <Card data-testid="preview-config-component" padding={2} border tone="critical">
       {props.renderDefault(props)}
     </Card>
   )
