@@ -89,5 +89,13 @@ export function PopoverDialog(props: PopoverDialogProps) {
   //    hitting escape should only close the topmost dialog
   //  - clickOutside needs to work through portals. So if you have an array inside here that opens its items in a dialog/portal,
   //    any clicks inside such dialogs or portals should not cause _this_ popover to close
-  return <StyledPopover constrainSize content={content} open referenceElement={referenceElement} />
+  return (
+    <StyledPopover
+      portal
+      constrainSize
+      content={content}
+      open
+      referenceElement={referenceElement}
+    />
+  )
 }
