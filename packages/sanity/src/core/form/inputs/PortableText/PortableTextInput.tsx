@@ -113,6 +113,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [hasFocus, focusPath])
 
+  // Scroll into view when focused
+  useEffect(() => {
+    if (hasFocus && innerElementRef.current) {
+      scrollIntoView(innerElementRef.current, {
+        scrollMode: 'if-needed',
+      })
+    }
+  }, [hasFocus])
+
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
 
@@ -335,7 +344,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         scrollMode: 'if-needed',
       })
     }
-  }, [focused, hasFocus, hasOpenItem])
+  }, [hasFocus, hasOpenItem])
 
   return (
     <Box ref={innerElementRef}>
