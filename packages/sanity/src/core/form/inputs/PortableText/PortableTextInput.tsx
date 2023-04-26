@@ -113,6 +113,24 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [hasFocus, focusPath])
 
+  // Set focused if the focusPath includes the path
+  useEffect(() => {
+    if (path && focusPath.length > 0) {
+      const pathStr = pathToString(path)
+      const focusPathStr = pathToString(focusPath)
+      setHasFocus(focusPathStr.startsWith(pathStr))
+    }
+  }, [focusPath, path])
+
+  // Scroll into view when focused
+  useEffect(() => {
+    if (hasFocus && innerElementRef.current) {
+      scrollIntoView(innerElementRef.current, {
+        scrollMode: 'if-needed',
+      })
+    }
+  }, [hasFocus])
+
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
 
@@ -335,7 +353,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         scrollMode: 'if-needed',
       })
     }
-  }, [focused, hasFocus, hasOpenItem])
+  }, [hasFocus, hasOpenItem])
 
   return (
     <Box ref={innerElementRef}>
