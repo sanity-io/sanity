@@ -75,6 +75,7 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
   action: async (args, context) => {
     const {output, chalk, prompt} = context
     const [type] = args.argsWithoutOptions
+    const unattended = args.extOptions.y || args.extOptions.yes
 
     const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
 
@@ -109,10 +110,12 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
     warn('╰────────────────────────────────────────────────────────────╯')
     warn('') // Newline to separate from other output
 
-    const continueV3Init = await prompt.single({
-      message: 'Continue creating a Sanity Studio v3 project?',
-      type: 'confirm',
-    })
+    const continueV3Init = unattended
+      ? true
+      : await prompt.single({
+          message: 'Continue creating a Sanity Studio v3 project?',
+          type: 'confirm',
+        })
 
     // Fall back
     if (!continueV3Init) {
