@@ -4,7 +4,6 @@ import {constants as fsConstants} from 'fs'
 import {build} from 'vite'
 import readPkgUp from 'read-pkg-up'
 import type {UserViteConfig} from '@sanity/cli'
-import {ensureTrailingSlash} from '../util/ensureTrailingSlash'
 import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
 import {generateWebManifest} from './webManifest'
 import {writeSanityRuntime} from './runtime'
@@ -170,6 +169,10 @@ async function writeFavicons(basePath: string, destDir: string): Promise<void> {
   await fs.mkdir(destDir, {recursive: true})
   await copyDir(faviconsPath, destDir, true)
   await writeWebManifest(basePath, destDir)
+
+  // Copy the /static/favicon.ico to /favicon.ico as well, because some tools/browsers
+  // blindly expects it to be there before requesting the HTML containing the actual path
+  await fs.copyFile(path.join(destDir, 'favicon.ico'), path.join(destDir, '..', 'favicon.ico'))
 }
 
 async function writeWebManifest(basePath: string, destDir: string): Promise<void> {
