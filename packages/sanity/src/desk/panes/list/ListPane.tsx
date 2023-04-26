@@ -1,21 +1,12 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {Box, Button, Card, Code} from '@sanity/ui'
+import {Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
-import {ArrowLeftIcon} from '@sanity/icons'
 import {PaneListItem, PaneListItemDivider} from '../../types'
-import {
-  Pane,
-  PaneContent,
-  PaneHeader,
-  usePaneLayout,
-  PaneHeaderActions,
-  BackLink,
-  PaneItem,
-} from '../../components'
+import {Pane, PaneContent, usePaneLayout, PaneItem} from '../../components'
 import {BaseDeskToolPaneProps} from '../types'
 import {_DEBUG} from '../../constants'
-import {useDeskTool} from '../../useDeskTool'
 import {useInputType} from '../../input-type'
+import {ListPaneHeader} from './ListPaneHeader'
 import {CommandList, CommandListHandle, CommandListItemContext} from 'sanity'
 
 type ListPaneProps = BaseDeskToolPaneProps<'list'>
@@ -34,15 +25,11 @@ export function ListPane(props: ListPaneProps) {
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
   const [commandListRef, setCommandListRef] = useState<CommandListHandle | null>(null)
 
-  const {features} = useDeskTool()
   const inputType = useInputType()
 
-  const {collapsed: layoutCollapsed, panes} = usePaneLayout()
+  const {collapsed: layoutCollapsed} = usePaneLayout()
   const {defaultLayout, displayOptions, items, menuItems, menuItemGroups, title} = pane
   const paneShowIcons = displayOptions?.showIcons
-
-  const isOnlyPane = index === 0 && panes.length === 1
-  const tabIndex = isOnlyPane ? -1 : 0
 
   // The index of the selected item in the list.
   // This is used as the initial index for the virtual list so
@@ -138,13 +125,10 @@ export function ListPane(props: ListPaneProps) {
         </Card>
       )}
 
-      <PaneHeader
-        actions={<PaneHeaderActions menuItems={menuItems} menuItemGroups={menuItemGroups} />}
-        backButton={
-          features.backButton &&
-          index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
-        }
-        tabIndex={tabIndex}
+      <ListPaneHeader
+        index={index}
+        menuItems={menuItems}
+        menuItemGroups={menuItemGroups}
         title={title}
       />
 
