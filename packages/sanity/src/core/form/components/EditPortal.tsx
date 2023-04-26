@@ -53,16 +53,14 @@ export function EditPortal(props: Props): React.ReactElement {
   }
 
   return (
-    <BoundaryElementProvider element={documentScrollElement}>
-      <PopoverDialog
-        header={header}
-        onClose={onClose}
-        referenceElement={referenceElement}
-        width={width}
-        containerRef={setDocumentScrollElement}
-      >
-        {contents}
-      </PopoverDialog>
-    </BoundaryElementProvider>
+    <PopoverDialog
+      header={header}
+      onClose={onClose}
+      referenceElement={referenceElement}
+      width={width}
+      containerRef={setDocumentScrollElement}
+    >
+      <BoundaryElementProvider element={documentScrollElement}>{contents}</BoundaryElementProvider>
+    </PopoverDialog>
   )
 }
