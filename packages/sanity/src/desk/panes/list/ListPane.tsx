@@ -5,7 +5,6 @@ import {PaneListItem, PaneListItemDivider} from '../../types'
 import {Pane, PaneContent, usePaneLayout, PaneItem} from '../../components'
 import {BaseDeskToolPaneProps} from '../types'
 import {_DEBUG} from '../../constants'
-import {useInputType} from '../../input-type'
 import {ListPaneHeader} from './ListPaneHeader'
 import {CommandList, CommandListHandle, CommandListItemContext} from 'sanity'
 
@@ -25,8 +24,6 @@ export function ListPane(props: ListPaneProps) {
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
   const [commandListRef, setCommandListRef] = useState<CommandListHandle | null>(null)
 
-  const inputType = useInputType()
-
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {defaultLayout, displayOptions, items, menuItems, menuItemGroups, title} = pane
   const paneShowIcons = displayOptions?.showIcons
@@ -43,7 +40,7 @@ export function ListPane(props: ListPaneProps) {
   // Focus the list when it is opened
   useEffect(() => {
     if (commandListRef && index !== 0 && (items || [])?.length > 0) {
-      commandListRef.focusElement()
+      commandListRef.focusInputElement()
     }
   }, [index, selectedIndex, items, commandListRef])
 
@@ -137,18 +134,18 @@ export function ListPane(props: ListPaneProps) {
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={`List of ${title}`}
+            autoFocus="list"
+            canReceiveFocus
             disableActivateOnHover
-            focusVisible={inputType === 'keyboard'}
+            focusRingOffset={-4}
             getItemDisabled={getItemDisabled}
             initialIndex={selectedIndex}
             initialScrollAlign="end"
             itemHeight={51}
             items={items}
             padding={2}
-            paddingBottom={1}
             ref={setCommandListRef}
             renderItem={renderItem}
-            tabIndex={0}
             wrapAround={false}
           />
         )}

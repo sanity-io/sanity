@@ -44,7 +44,7 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
       const updatedRecentSearches = recentSearchesStore.removeSearch()
       dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
     }
-    commandListRef?.current?.focusElement()
+    commandListRef?.current?.focusInputElement()
   }, [dispatch, recentSearchesStore])
 
   const mediaIndex = useMediaIndex()

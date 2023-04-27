@@ -26,6 +26,7 @@ export default function FilterableStory() {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [filter, setFilter] = useState<string>('')
   const [message, setMessage] = useState('')
+  const canReceiveFocus = useBoolean('Can receive focus', true, 'Props')
   const showInput = useBoolean('Show input', true, 'Props')
   const commandListRef = useRef<CommandListHandle | null>(null)
 
@@ -98,7 +99,8 @@ export default function FilterableStory() {
               <CommandList
                 activeItemDataAttr="data-active"
                 ariaLabel="Children"
-                autoFocus
+                autoFocus="input"
+                canReceiveFocus={canReceiveFocus}
                 inputElement={inputElement}
                 itemHeight={30}
                 items={filteredValues}

@@ -3,6 +3,9 @@ import {ScrollToOptions} from '@tanstack/react-virtual'
 import {ReactNode} from 'react'
 
 /** @internal */
+export type CommandListElementType = 'input' | 'list'
+
+/** @internal */
 export type CommandListGetItemDisabledCallback = (virtualIndex: number) => boolean
 
 /** @internal */
@@ -27,7 +30,8 @@ export type CommandListRenderItemCallback<T> = (
 
 /** @internal */
 export interface CommandListHandle {
-  focusElement: () => void
+  focusInputElement: () => void
+  focusListElement: () => void
   getTopIndex: () => number
   scrollToIndex: (index: number) => void
 }
@@ -40,8 +44,10 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   ariaLabel: string
   /** Whether `aria-multiselectable` is enabled on the virtual list container element */
   ariaMultiselectable?: boolean
-  /** Automatically focus the input (if applicable) or virtual list */
-  autoFocus?: boolean
+  /** Automatically focus the input or virtual list */
+  autoFocus?: CommandListElementType
+  /** Whether the virtual list can receive focus */
+  canReceiveFocus?: boolean
   /** Disable selecting the active item on hover */
   disableActivateOnHover?: boolean
   /** Custom function to map disabled items */
@@ -50,6 +56,8 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   getItemKey?: CommandListGetItemKeyCallback
   /** Custom function to map selected items */
   getItemSelected?: CommandListGetItemSelectedCallback
+  /** Pixel offset of the virtual list focus ring. Negative values will cause the focus ring to appear inset */
+  focusRingOffset?: number
   /** Boolean indicating whether the command list should have visible focus styles */
   focusVisible?: boolean
   /** Force a fixed height for all virtual list children and skip measurement (faster). */
@@ -72,8 +80,6 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   overscan?: number
   /** Rendered component in virtual lists */
   renderItem: CommandListRenderItemCallback<T>
-  /** The tabIndex to apply to the virtual list container element */
-  tabIndex?: number
   /** Allow wraparound keyboard navigation between first and last items */
   wrapAround?: boolean
 }

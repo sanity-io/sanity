@@ -11,7 +11,6 @@ import {_DEBUG} from '../../constants'
 import {useDeskToolSetting} from '../../useDeskToolSetting'
 import {BaseDeskToolPaneProps} from '../types'
 import {PaneMenuItem} from '../../types'
-import {useInputType} from '../../input-type'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {
   applyOrderingFunctions,
@@ -49,16 +48,6 @@ const SearchCard = styled(Card)(({theme}) => {
 
     [data-ui='TextInput'] {
       border-radius: inherit;
-    }
-
-    &[data-focus-visible='false'] {
-      [data-ui='TextInput'] {
-        box-shadow: none;
-        span {
-          box-shadow: none;
-        }
-        --card-focus-ring-color: transparent;
-      }
     }
   `
 })
@@ -123,8 +112,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     'layout',
     defaultLayout
   )
-
-  const inputType = useInputType()
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
@@ -254,7 +241,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const searchInput = (
     <Box paddingX={2} paddingBottom={2}>
-      <SearchCard tone="transparent" data-focus-visible={inputType === 'keyboard'}>
+      <SearchCard tone="transparent">
         <TextInput
           aria-label="Search list"
           autoComplete="off"

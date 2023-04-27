@@ -42,7 +42,7 @@ function TestComponent(props: TestComponentProps) {
         <CommandList
           activeItemDataAttr={CUSTOM_ACTIVE_ATTR}
           ariaLabel=""
-          autoFocus
+          autoFocus="input"
           fixedHeight
           initialIndex={initialIndex}
           itemHeight={20}

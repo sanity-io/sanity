@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Box, rem, Theme} from '@sanity/ui'
 import {ScrollToOptions, useVirtualizer, Virtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash/throttle'
 import React, {
@@ -14,13 +14,37 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import styled from 'styled-components'
-import {CommandListHandle, CommandListProps} from './types'
+import styled, {css} from 'styled-components'
+import {focusRingStyle} from '../../form/components/formField/styles'
+import {CommandListElementType, CommandListHandle, CommandListProps} from './types'
 
 // Data attribute to assign to the current active virtual list element
 const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
 // Selector to find the first interactive element in the virtual list element
 const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
+
+/**
+ * Conditionally render a focus ring overlay over the command list, with adjustable offset
+ */
+const FocusOverlayDiv = styled.div(({theme, offset}: {theme: Theme; offset: number}) => {
+  return css`
+    bottom: ${-offset}px;
+    border-radius: ${rem(theme.sanity.radius[1])};
+    left: ${-offset}px;
+    pointer-events: none;
+    position: absolute;
+    right: ${-offset}px;
+    top: ${-offset}px;
+    z-index: 2;
+
+    ${VirtualListBox}:focus-visible & {
+      box-shadow: ${focusRingStyle({
+        base: theme.sanity.color.base,
+        focusRing: theme.sanity.focusRing,
+      })};
+    }
+  `
+})
 
 /*
  * Conditionally appears over command list items to cancel existing :hover states for all child elements.
@@ -49,16 +73,6 @@ const VirtualListBox = styled(Box)`
   overflow-y: auto;
   overscroll-behavior: contain;
   width: 100%;
-
-  &[data-focus-visible='true'] {
-    &:focus {
-      box-shadow: inset 0 0 0 2px var(--card-focus-ring-color);
-    }
-
-    &:focus:not(:focus-visible) {
-      box-shadow: none;
-    }
-  }
 `
 
 type VirtualListChildBoxProps = {
@@ -88,9 +102,10 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     ariaLabel,
     ariaMultiselectable = false,
     autoFocus,
+    canReceiveFocus,
     disableActivateOnHover = false,
     fixedHeight,
-    focusVisible,
+    focusRingOffset,
     getItemDisabled,
     getItemKey,
     getItemSelected,
@@ -103,7 +118,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     onEndReachedIndexOffset: onEndReachedIndexThreshold = 0,
     overscan,
     renderItem,
-    tabIndex = -1,
     wrapAround = true,
     ...responsivePaddingProps
   },
@@ -320,27 +334,37 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     [activeItemCount, enableChildContainerPointerEvents, setActiveIndex, wrapAround]
   )
 
-  /**
-   * Focus input / virtual list element
-   */
-  const focusElement = useCallback(() => {
-    if (inputElement) {
-      inputElement?.focus()
-    } else if (virtualListElement) {
-      virtualListElement?.focus()
-    }
-  }, [inputElement, virtualListElement])
+  const focusElement = useCallback(
+    (type: CommandListElementType) => {
+      switch (type) {
+        case 'input':
+          inputElement?.focus()
+          break
+        case 'list':
+          virtualListElement?.focus()
+          break
+        default:
+          break
+      }
+    },
+    [inputElement, virtualListElement]
+  )
+
+  const focusInputElement = useCallback(() => {
+    inputElement?.focus()
+  }, [inputElement])
+
+  const focusListElement = useCallback(() => {
+    virtualListElement?.focus()
+  }, [virtualListElement])
 
   /**
-   * Focus input / virtual list element on child item mousedown and prevent nested elements from receiving focus.
+   * Prevent nested elements from receiving focus.
    */
-  const handleChildMouseDown = useCallback(
-    (event: MouseEvent) => {
-      focusElement()
-      event.preventDefault()
-    },
-    [focusElement]
-  )
+  const handleChildMouseDown = useCallback((event: MouseEvent) => {
+    event.preventDefault()
+    return false
+  }, [])
 
   /**
    * Mark hovered child item as active
@@ -352,32 +376,49 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     [setActiveIndex]
   )
 
+  const handleBlur = useCallback(() => {
+    hideChildrenActiveState()
+  }, [hideChildrenActiveState])
+
+  const handleFocus = useCallback(
+    (type: CommandListElementType) => {
+      // Conditionally prevent the container from receiving focus (which can happen when dragging overflow scroll handles)
+      if (type === 'list' && !canReceiveFocus) {
+        inputElement?.focus()
+      }
+      showChildrenActiveState()
+    },
+    [canReceiveFocus, inputElement, showChildrenActiveState]
+  )
+  const handleFocusInput = useCallback(() => handleFocus('input'), [handleFocus])
+  const handleFocusList = useCallback(() => handleFocus('list'), [handleFocus])
+
   /**
    * Handle keyboard events:
    * - Up/down arrow: scroll to adjacent items
    * - Enter: trigger click events on the current active element
    */
   const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
+    (type: CommandListElementType) => (event: KeyboardEvent) => {
       const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
       if (!childElements.length) {
         return
       }
 
-      // Re-focus current element (input / virtual list element)
-      focusElement()
-
       if (event.key === 'ArrowDown') {
         event.preventDefault()
+        focusElement(type)
         selectAdjacentItemIndex('next')
       }
       if (event.key === 'ArrowUp') {
         event.preventDefault()
+        focusElement(type)
         selectAdjacentItemIndex('previous')
       }
 
       if (event.key === 'Enter') {
         event.preventDefault()
+        focusElement(type)
         const currentElement = childElements.find(
           (el) =>
             Number(el.dataset.index) ===
@@ -394,13 +435,24 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     },
     [childContainerElement?.children, focusElement, itemIndices, selectAdjacentItemIndex]
   )
+  const handleKeyDownInput = useCallback(
+    (event: KeyboardEvent) => handleKeyDown('input')(event),
+    [handleKeyDown]
+  )
+  const handleKeyDownList = useCallback(
+    (event: KeyboardEvent) => handleKeyDown('list')(event),
+    [handleKeyDown]
+  )
 
   useImperativeHandle(
     ref,
     () => {
       return {
-        focusElement() {
-          focusElement()
+        focusInputElement() {
+          focusInputElement()
+        },
+        focusListElement() {
+          focusListElement()
         },
         getTopIndex() {
           return handleGetTopIndex()
@@ -411,7 +463,13 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         },
       }
     },
-    [enableChildContainerPointerEvents, focusElement, handleGetTopIndex, setActiveIndex]
+    [
+      enableChildContainerPointerEvents,
+      focusListElement,
+      focusInputElement,
+      handleGetTopIndex,
+      setActiveIndex,
+    ]
   )
 
   /**
@@ -443,34 +501,31 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
 
   /**
    * Listen to keyboard / blur / focus events on both input element (if present) and the virtual list element.
-   *
-   * We still listen to events on the container to handle scenarios where the input element is not present
-   * or when users focus via dragging the overflow scroll handle.
    */
   useEffect(() => {
-    function handleBlur() {
-      hideChildrenActiveState()
-    }
-    function handleFocus() {
-      showChildrenActiveState()
-    }
-
-    const elements = [inputElement, virtualListElement]
-    elements.forEach((el) => {
-      el?.addEventListener('blur', handleBlur)
-      el?.addEventListener('focus', handleFocus)
-      el?.addEventListener('keydown', handleKeyDown)
-    })
+    inputElement?.addEventListener('blur', handleBlur)
+    inputElement?.addEventListener('focus', handleFocusInput)
+    inputElement?.addEventListener('keydown', handleKeyDownInput)
+    virtualListElement?.addEventListener('blur', handleBlur)
+    virtualListElement?.addEventListener('focus', handleFocusList)
+    virtualListElement?.addEventListener('keydown', handleKeyDownList)
     return () => {
-      elements.forEach((el) => {
-        el?.removeEventListener('blur', handleBlur)
-        el?.removeEventListener('focus', handleFocus)
-        el?.removeEventListener('keydown', handleKeyDown)
-      })
+      inputElement?.removeEventListener('blur', handleBlur)
+      inputElement?.removeEventListener('focus', handleFocusInput)
+      inputElement?.removeEventListener('keydown', handleKeyDownInput)
+      virtualListElement?.removeEventListener('blur', handleBlur)
+      virtualListElement?.removeEventListener('focus', handleFocusList)
+      virtualListElement?.removeEventListener('keydown', handleKeyDownList)
     }
   }, [
-    focusElement,
+    canReceiveFocus,
+    handleBlur,
+    handleFocus,
+    handleFocusInput,
+    handleFocusList,
     handleKeyDown,
+    handleKeyDownInput,
+    handleKeyDownList,
     hideChildrenActiveState,
     inputElement,
     showChildrenActiveState,
@@ -539,25 +594,22 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    */
   useEffect(() => {
     if (autoFocus) {
-      focusElement()
+      focusElement(autoFocus)
     }
-  }, [autoFocus, focusElement])
+  }, [autoFocus, canReceiveFocus, focusListElement, focusInputElement, focusElement])
 
-  // If the input element is present, we want to ensure that the virtual list element is not focusable.
-  // This is to prevent the virtual list from being focused when the input element is focused.
-  const rootTabIndex = inputElement ? -1 : tabIndex
+  const rootTabIndex = canReceiveFocus ? 0 : -1
 
   return (
     <VirtualListBox
-      data-focus-visible={focusVisible}
       id={getCommandListChildrenId()}
       ref={setVirtualListElement}
       sizing="border"
       tabIndex={rootTabIndex}
       {...responsivePaddingProps}
     >
+      {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset ?? 0} />}
       <PointerOverlayDiv aria-hidden="true" data-enabled ref={setPointerOverlayElement} />
-
       {virtualizer && (
         <VirtualListChildBox
           $height={virtualizer.getTotalSize()}

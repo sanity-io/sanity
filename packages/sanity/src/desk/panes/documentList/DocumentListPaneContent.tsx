@@ -4,7 +4,6 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import styled from 'styled-components'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
-import {useInputType} from '../../input-type'
 import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
 import {
@@ -83,7 +82,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   } = props
 
   const schema = useSchema()
-  const inputType = useInputType()
 
   const {collapsed: layoutCollapsed, panes} = usePaneLayout()
   const {collapsed, index} = usePane()
@@ -221,8 +219,10 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel="Document list"
+            autoFocus="input"
+            canReceiveFocus
             disableActivateOnHover
-            focusVisible={inputType === 'keyboard'}
+            focusRingOffset={-4}
             initialScrollAlign="center"
             inputElement={searchInputElement}
             itemHeight={51}
@@ -234,7 +234,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             paddingBottom={1}
             ref={commandListRef}
             renderItem={renderItem}
-            tabIndex={0}
             wrapAround={false}
           />
         </CommandListBox>
@@ -245,7 +244,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     error,
     handleEndReached,
     index,
-    inputType,
     isLoading,
     items,
     layout,
