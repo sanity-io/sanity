@@ -1,5 +1,6 @@
+import type {PortableTextBlock} from '@portabletext/types'
+
 const defaults = {nonTextBehavior: 'remove'}
-import {PortableTextBlock} from '@portabletext/types'
 
 export default function (blocks: PortableTextBlock[] = [], opts = {}) {
   if (typeof blocks === 'string') {
