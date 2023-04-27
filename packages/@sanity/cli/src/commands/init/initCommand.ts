@@ -1,6 +1,8 @@
 import initProject from '../../actions/init-project/initProject'
 import initPlugin from '../../actions/init-plugin/initPlugin'
 import {CliCommandDefinition} from '../../types'
+import {Framework, frameworks} from '@vercel/frameworks'
+import {LocalFileSystemDetector, detectFrameworkRecord} from '@vercel/fs-detectors'
 
 const helpText = `
 Options
@@ -11,7 +13,7 @@ Options
   --dataset-default Set up a project with a public dataset named "production"
   --output-path <path> Path to write studio project to
   --template <template> Project template to use [default: "clean"]
-  --bare Output only the project id and dataset to stdout
+  --bare Skip the Studio initialization and only print the selected project ID and dataset name to stdout
   --env <filename> Write environment variables to file [default: ".env"]
   --provider <provider> Login provider to use
   --visibility <mode> Visibility mode for dataset (public/private)
@@ -70,7 +72,7 @@ export interface InitFlags {
 export const initCommand: CliCommandDefinition<InitFlags> = {
   name: 'init',
   signature: '',
-  description: 'Initialize a new Sanity studio project',
+  description: 'Initialize a new Sanity Studio project',
   helpText,
   action: async (args, context) => {
     const {output, chalk, prompt} = context
@@ -91,7 +93,18 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
     }
 
     // `npm create sanity` (regular v3 init)
-    if (args.argv.includes('--from-create')) {
+
+    const detectedFramework: Framework | null = await detectFrameworkRecord({
+      fs: new LocalFileSystemDetector(process.cwd()),
+      frameworkList: frameworks as readonly Framework[],
+    })
+
+    if (
+      args.argv.includes('--from-create') ||
+      args.argv.includes('--env') ||
+      args.argv.includes('--bare') ||
+      detectedFramework?.slug === 'nextjs'
+    ) {
       return initProject(args, context)
     }
 
