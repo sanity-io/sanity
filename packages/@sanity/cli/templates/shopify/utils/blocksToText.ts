@@ -1,7 +1,7 @@
 const defaults = {nonTextBehavior: 'remove'}
-import {Block} from 'sanity'
+import {PortableTextBlock} from '@portabletext/types'
 
-export default function (blocks: Block[] = [], opts = {}) {
+export default function (blocks: PortableTextBlock[] = [], opts = {}) {
   if (typeof blocks === 'string') {
     return blocks
   }
