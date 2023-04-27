@@ -1,15 +1,17 @@
+import {exec} from 'child_process'
+import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'fs'
 import fs from 'fs/promises'
 import path from 'path'
-import type {DatasetAclMode} from '@sanity/client'
+import dotenv from 'dotenv'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
 import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import which from 'which'
-import dotenv from 'dotenv'
 
-import {frameworks, Framework} from '@vercel/frameworks'
-import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
+import type {DatasetAclMode} from '@sanity/client'
+import {Framework, frameworks} from '@vercel/frameworks'
+import {LocalFileSystemDetector, detectFrameworkRecord} from '@vercel/fs-detectors'
 import type {InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'
 import {getPackageManagerChoice, installDeclaredPackages} from '../../packageManager'
@@ -24,11 +26,11 @@ import {
 } from '../../types'
 import {getClientWrapper} from '../../util/clientWrapper'
 import {dynamicRequire} from '../../util/dynamicRequire'
-import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
+import {ProjectDefaults, getProjectDefaults} from '../../util/getProjectDefaults'
 import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
 import {isInteractive} from '../../util/isInteractive'
-import {login, LoginFlags} from '../login/login'
+import {LoginFlags, login} from '../login/login'
 import {createProject} from '../project/createProject'
 import {BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
 import {GenerateConfigOptions} from './createStudioConfig'
@@ -38,6 +40,12 @@ import {promptForDatasetName} from './promptForDatasetName'
 import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
 import {reconfigureV2Project} from './reconfigureV2Project'
 import templates from './templates'
+import {
+  sanityCliTemplate,
+  sanityConfigTemplate,
+  sanityFolder,
+  sanityStudioPageTemplate,
+} from './templates/nextjs'
 
 // eslint-disable-next-line no-process-env
 const isCI = process.env.CI
@@ -128,6 +136,12 @@ export default async function initSanity(
     throw new Error('`--reconfigure` is deprecated - manual configuration is now required')
   }
 
+  // use vercel's framework detector
+  const detectedFramework: Framework | null = await detectFrameworkRecord({
+    fs: new LocalFileSystemDetector(workDir),
+    frameworkList: frameworks as readonly Framework[],
+  })
+
   const envFilename = typeof env === 'string' ? env : '.env'
   if (!envFilename.startsWith('.env')) {
     throw new Error(`Env filename must start with .env`)
@@ -191,6 +205,15 @@ export default async function initSanity(
     return
   }
 
+  const initNext =
+    detectedFramework &&
+    detectedFramework.slug === 'nextjs' &&
+    (await prompt.single({
+      type: 'confirm',
+      message: `Would you like to initialize Sanity files in this Next.js project?`,
+      default: true,
+    }))
+
   let outputPath = workDir
 
   // Gather project defaults based on environment
@@ -202,9 +225,190 @@ export default async function initSanity(
   // Ensure we are using the output path provided by user
   outputPath = answers.outputPath
 
+  if (initNext) {
+    const useTypeScript = await prompt.single<boolean>({
+      type: 'confirm',
+      message: `Would you like to use TypeScript?`,
+      default: true,
+    })
+
+    const fileEnding = useTypeScript ? 'ts' : 'js'
+
+    const embeddedStudio = await prompt.single({
+      type: 'confirm',
+      message: `Would you like an embedded Sanity Studio?`,
+      default: true,
+    })
+
+    // find pages path
+    let pagesPath = path.join(workDir, 'pages')
+    if (!existsSync(pagesPath)) {
+      pagesPath = path.join(workDir, 'src', 'pages')
+      if (!existsSync(pagesPath)) {
+        throw new Error('Could not find pages folder')
+      }
+    }
+
+    if (embeddedStudio) {
+      const studioPath = await prompt.single({
+        type: 'input',
+        message: 'What url do you want to use for the embedded studio?',
+        default: '/studio',
+        validate(input) {
+          if (!input.startsWith('/')) {
+            return 'Must start with /'
+          }
+
+          if (input.endsWith('/')) {
+            return 'Must not end with /'
+          }
+
+          // a-Z, 0-9, -, _ and /
+          if (!/^[a-zA-Z0-9-_\\/]+$/.test(input)) {
+            return 'Must only contain a-Z, 0-9, -, _ and /'
+          }
+
+          return true
+        },
+      })
+
+      const embeddedStudioPath = path.join(pagesPath, `${studioPath}/`, '[[...index]].tsx')
+      await writeOrOverwrite(
+        embeddedStudioPath,
+        sanityStudioPageTemplate.replace(
+          ':configPath:',
+          new Array(embeddedStudioPath.slice(workDir.length).split('/').length - 1)
+            .join('../')
+            .concat('sanity.config')
+        )
+      )
+
+      // sanity.config.js
+      const sanityConfigPath = path.join(workDir, 'sanity.config.'.concat(fileEnding))
+      await writeOrOverwrite(
+        sanityConfigPath,
+        sanityConfigTemplate
+          .replace(':route:', embeddedStudioPath.slice(workDir.length).replace('src/', ''))
+          .replace(':basePath:', studioPath)
+      )
+    }
+
+    const sanityCliPath = path.join(workDir, 'sanity.cli.'.concat(fileEnding))
+    await writeOrOverwrite(sanityCliPath, sanityCliTemplate)
+
+    // write sanity folder files
+    const recursivelyWriteFiles = async (
+      files: Record<string, string | Record<string, string>>,
+      folderPath?: string
+    ) => {
+      for (const [filePath, content] of Object.entries(files)) {
+        if (filePath.includes('.') && typeof content === 'string') {
+          await writeOrOverwrite(
+            path.join(workDir, 'sanity', folderPath || '', filePath.concat(fileEnding)),
+            content
+          )
+        } else {
+          await mkdirSync(path.join(workDir, 'sanity', filePath), {recursive: true})
+          if (typeof content === 'object') {
+            recursivelyWriteFiles(content, filePath)
+          }
+        }
+      }
+    }
+
+    // ask what kind of project the user wants
+    // Prompt for template to use
+    const templateToUse: 'blog' | 'clean' = await prompt.single({
+      message: 'Select project template to use',
+      type: 'list',
+      choices: [
+        {
+          value: 'clean',
+          name: 'Clean project with no predefined schemas',
+        },
+        {
+          value: 'blog',
+          name: 'Blog (schema)',
+        },
+      ],
+      default: 'clean',
+    })
+
+    await recursivelyWriteFiles(sanityFolder(useTypeScript, templateToUse))
+
+    // set tsconfig.json target to ES2017
+    const tsConfigPath = path.join(workDir, 'tsconfig.json')
+    if (useTypeScript && existsSync(tsConfigPath)) {
+      const tsConfig = JSON.parse(readFileSync(tsConfigPath, 'utf8'))
+      tsConfig.compilerOptions.target = 'ES2017'
+      await writeFileSync(tsConfigPath, JSON.stringify(tsConfig, null, 2))
+    }
+
+    // install next-sanity
+    const spinner = context.output.spinner('Installing Sanity dependencies').start()
+
+    exec('npm install next-sanity@3 @sanity/vision@3 sanity@3 @sanity/image-url@1', {
+      cwd: workDir,
+    })
+      .on('exit', async () => {
+        spinner.succeed()
+
+        const appendEnv = await prompt.single({
+          type: 'confirm',
+          message: `Would you like to add the project ID and dataset to your ${envFilename} file?`,
+          default: true,
+        })
+
+        if (appendEnv) {
+          await createOrAppendEnvVars(envFilename, detectedFramework, {
+            noLogs: true,
+          })
+        }
+
+        print(`\n${chalk.green('Success!')} Sanity has been configured in this project`)
+
+        // eslint-disable-next-line no-process-exit
+        process.exit(0)
+      })
+      .on('stderr', (err) => Promise.reject(err))
+
+    return
+  }
+
+  async function writeOrOverwrite(
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    path: string,
+    content: string
+  ) {
+    if (existsSync(path)) {
+      const overwrite = await prompt.single({
+        type: 'confirm',
+        message: `File ${chalk.yellow(
+          path.replace(workDir, '')
+        )} already exists. Do you want to overwrite it?`,
+        default: false,
+      })
+
+      if (!overwrite) {
+        return
+      }
+    }
+
+    // make folder if not exists
+    const folderPath = path.slice(0, path.lastIndexOf('/'))
+
+    await fs
+      .mkdir(folderPath, {recursive: true})
+      .catch(() => debug('Error creating folder %s', folderPath))
+
+    await fs.writeFile(path, content, {
+      encoding: 'utf8',
+    })
+  }
+
   // user wants to write environment variables to file
   if (env) {
-    await createOrAppendEnvVars(envFilename)
+    await createOrAppendEnvVars(envFilename, detectedFramework)
     return
   }
 
@@ -624,7 +828,7 @@ export default async function initSanity(
   async function getProjectInfo(): Promise<ProjectDefaults & {outputPath: string}> {
     const specifiedPath = flags['output-path'] && path.resolve(flags['output-path'])
 
-    if (unattended || specifiedPath || env) {
+    if (unattended || specifiedPath || env || initNext) {
       return {
         ...defaults,
         outputPath: specifiedPath || workDir,
@@ -783,7 +987,11 @@ export default async function initSanity(
     return pFilter(organizations, (org) => hasProjectAttachGrant(org.id), {concurrency: 3})
   }
 
-  async function createOrAppendEnvVars(filename: string) {
+  async function createOrAppendEnvVars(
+    filename: string,
+    framework: Framework | null,
+    options?: {noLogs?: boolean}
+  ) {
     // we will prepend SANITY_ to these variables later, together with the prefix
     const envVars = {
       PROJECT_ID: projectId,
@@ -791,13 +999,7 @@ export default async function initSanity(
     }
 
     try {
-      // use vercel's framework detector
-      const framework: Framework | null = await detectFrameworkRecord({
-        fs: new LocalFileSystemDetector(workDir),
-        frameworkList: frameworks as readonly Framework[],
-      })
-
-      if (framework && framework.envPrefix) {
+      if (framework && framework.envPrefix && !options?.noLogs) {
         print(
           `\nDetected framework ${chalk.blue(framework?.name)}, using prefix '${
             framework.envPrefix
@@ -808,6 +1010,7 @@ export default async function initSanity(
       await writeEnvVarsToFile(filename, envVars, {
         framework,
         outputPath,
+        noLogs: options?.noLogs,
       })
     } catch (err) {
       print(err)
@@ -818,7 +1021,7 @@ export default async function initSanity(
   async function writeEnvVarsToFile(
     filename: string,
     envVars: Record<string, string>,
-    options: {framework: Framework | null; outputPath: string}
+    options: {framework: Framework | null; outputPath: string; noLogs?: boolean}
   ) {
     const envPrefix = options.framework?.envPrefix || ''
     const keyPrefix = envPrefix.includes('SANITY') ? envPrefix : `${envPrefix}SANITY_`
@@ -840,15 +1043,25 @@ export default async function initSanity(
       .readFile(fileOutputPath, {encoding: 'utf8'})
       .catch((err) => (err.code === 'ENOENT' ? '' : Promise.reject(err)))
 
-    const updatedEnv = parseAndUpdateEnvVars(existingEnv, envVars)
+    const updatedEnv = parseAndUpdateEnvVars(existingEnv, envVars, {
+      noLogs: options.noLogs,
+    })
     await fs.writeFile(fileOutputPath, updatedEnv, {
       encoding: 'utf8',
     })
 
-    print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
+    if (!options.noLogs) {
+      print(`\n${chalk.green('Success!')} Environment variables written to ${fileOutputPath}`)
+    }
   }
 
-  function parseAndUpdateEnvVars(fileContents: string, envVars: Record<string, string>): string {
+  function parseAndUpdateEnvVars(
+    fileContents: string,
+    envVars: Record<string, string>,
+    options?: {
+      noLogs?: boolean
+    }
+  ): string {
     const existingKeys = dotenv.parse(fileContents) // this will contain all vars
     const updatedKeys: Record<string, string> = {} // this will only contain our vars
 
@@ -856,11 +1069,15 @@ export default async function initSanity(
     for (const [key, value] of Object.entries(envVars)) {
       if (!existingKeys[key]) {
         updatedKeys[key] = value
-        print(`Appended ${key}="${envVars[key]}"`)
+        if (!options?.noLogs) {
+          print(`Appended ${key}="${envVars[key]}"`)
+        }
         continue
       }
 
-      print(`Found existing ${key}, replacing value.`)
+      if (!options?.noLogs) {
+        print(`Found existing ${key}, replacing value.`)
+      }
       updatedKeys[key] = value
     }
 

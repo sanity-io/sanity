@@ -1,0 +1,193 @@
+import {blogSchemaFolder, blogSchemaTS, blogSchemaJS} from './schemas/blog'
+
+export const sanityConfigTemplate = `/**
+ * This config is used to set up Sanity Studio that's mounted on the \`:route:\` route
+ */
+
+import {visionTool} from '@sanity/vision'
+import {defineConfig} from 'sanity'
+import {deskTool} from 'sanity/desk'
+
+// see https://www.sanity.io/docs/api-versioning for how versioning works
+import {apiVersion, dataset, projectId} from './sanity/env'
+import {schema} from './sanity/schema'
+
+export default defineConfig({
+  basePath: ':basePath:',
+  projectId,
+  dataset,
+  //edit schemas in './sanity/schema'
+  schema,
+  plugins: [
+    deskTool(),
+    // Vision lets you query your content with GROQ in the studio
+    // https://www.sanity.io/docs/the-vision-plugin
+    visionTool({defaultApiVersion: apiVersion}),
+  ],
+})
+`
+
+export const sanityCliTemplate = `import { defineCliConfig } from 'sanity/cli'
+
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+
+export default defineCliConfig({ api: { projectId, dataset } })
+`
+
+export const sanityStudioPageTemplate = `import Head from 'next/head'
+import { NextStudio } from 'next-sanity/studio'
+import { NextStudioHead } from 'next-sanity/studio/head'
+import { StudioLayout, StudioProvider } from 'sanity'
+import config from ':configPath:'
+import { createGlobalStyle } from 'styled-components'
+
+const GlobalStyle = createGlobalStyle(({ theme }) => ({
+  html: { backgroundColor: theme.sanity.color.base.bg },
+}))
+
+export default function StudioPage() {
+  return (
+    <>
+      <Head>
+        <NextStudioHead favicons={false} />
+      </Head>
+
+      <NextStudio config={config}>
+        <StudioProvider config={config}>
+          <GlobalStyle />
+          <StudioLayout />
+        </StudioProvider>
+      </NextStudio>
+    </>
+  )
+}`
+
+// /sanity folder
+
+// Format today's date like YYYY-MM-DD
+const envTS = `export const apiVersion =
+  process.env.NEXT_PUBLIC_SANITY_API_VERSION || '${new Date().toISOString().split('T')[0]}'
+
+export const dataset = assertValue(
+  process.env.NEXT_PUBLIC_SANITY_DATASET,
+  'Missing environment variable: NEXT_PUBLIC_SANITY_DATASET'
+)
+
+export const projectId = assertValue(
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  'Missing environment variable: NEXT_PUBLIC_SANITY_PROJECT_ID'
+)
+
+export const useCdn = false
+
+function assertValue<T>(v: T | undefined, errorMessage: string): T {
+  if (v === undefined) {
+    throw new Error(errorMessage)
+  }
+
+  return v
+}
+`
+
+const envJS = `export const apiVersion =
+  process.env.NEXT_PUBLIC_SANITY_API_VERSION || '${new Date().toISOString().split('T')[0]}'
+
+export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+export const useCdn = false
+`
+
+const schemaTS = `import { type SchemaTypeDefinition } from 'sanity'
+
+export const schema: { types: SchemaTypeDefinition[] } = {
+  types: [],
+}
+`
+
+const schemaJS = `export const schema = {
+  types: [],
+}
+`
+
+const client = `import { createClient } from 'next-sanity'
+
+import { apiVersion, dataset, projectId, useCdn } from '../env'
+
+export const client = createClient({
+  apiVersion,
+  dataset,
+  projectId,
+  useCdn,
+})
+`
+
+const imageTS = `import createImageUrlBuilder from '@sanity/image-url'
+import type { Image } from 'sanity'
+
+import { dataset, projectId } from '../env'
+
+const imageBuilder = createImageUrlBuilder({
+  projectId: projectId || '',
+  dataset: dataset || '',
+})
+
+export const urlForImage = (source: Image) => {
+  // Ensure that source image contains a valid reference
+  if (!source?.asset?._ref) {
+    return undefined
+  }
+
+  return imageBuilder?.image(source).auto('format').fit('max')
+}
+`
+
+const imageJS = `import createImageUrlBuilder from '@sanity/image-url'
+
+import { dataset, projectId } from '../env'
+
+const imageBuilder = createImageUrlBuilder({
+  projectId: projectId || '',
+  dataset: dataset || '',
+})
+
+export const urlForImage = (source) => {
+  // Ensure that source image contains a valid reference
+  if (!source?.asset?._ref) {
+    return undefined
+  }
+
+  return imageBuilder?.image(source).auto('format').fit('max')
+}
+`
+
+type FolderStructure = Record<string, string | Record<string, string>>
+
+export const sanityFolder = (
+  useTypeScript: boolean,
+  template?: 'clean' | 'blog'
+): FolderStructure => {
+  const isBlogTemplate = template === 'blog'
+
+  const structure: FolderStructure = {
+    // eslint-disable-next-line no-nested-ternary
+    'schema.': useTypeScript
+      ? isBlogTemplate
+        ? blogSchemaTS
+        : schemaTS
+      : isBlogTemplate
+      ? blogSchemaJS
+      : schemaJS,
+    'env.': useTypeScript ? envTS : envJS,
+    lib: {
+      'client.': client,
+      'image.': useTypeScript ? imageTS : imageJS,
+    },
+  }
+
+  if (isBlogTemplate) {
+    structure.schemas = blogSchemaFolder(useTypeScript)
+  }
+
+  return structure
+}
