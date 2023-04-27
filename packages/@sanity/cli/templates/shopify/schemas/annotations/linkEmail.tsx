@@ -11,11 +11,9 @@ export default defineField({
   title: 'Email link',
   name: 'annotationLinkEmail',
   type: 'object',
-  // @ts-ignore
-  blockEditor: {
-    icon: () => <EnvelopeIcon />,
-    // @ts-ignore
-    render: ({children}) => (
+  icon: EnvelopeIcon,
+  components: {
+    annotation: (props) => (
       <span>
         <EnvelopeIcon
           style={{
@@ -24,7 +22,7 @@ export default defineField({
             width: '0.75em',
           }}
         />
-        {children}
+        {props.renderDefault(props)}
       </span>
     ),
   },
@@ -36,4 +34,9 @@ export default defineField({
       type: 'email',
     },
   ],
+  preview: {
+    select: {
+      email: 'email',
+    },
+  },
 })
