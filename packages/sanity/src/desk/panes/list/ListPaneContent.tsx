@@ -1,18 +1,12 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
-import {PaneContent, PaneItem, usePaneLayout} from '../../components'
+import {PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
 import {PaneListItem, PaneListItemDivider} from '../../types'
-import {
-  CommandList,
-  CommandListHandle,
-  CommandListItemContext,
-  GeneralPreviewLayoutKey,
-} from 'sanity'
+import {CommandList, CommandListItemContext, GeneralPreviewLayoutKey} from 'sanity'
 
 interface ListPaneContentProps {
   childItemId?: string
-  index: number
   isActive?: boolean
   items: (PaneListItem<unknown> | PaneListItemDivider)[] | undefined
   layout?: GeneralPreviewLayoutKey
@@ -32,16 +26,14 @@ const Divider = styled.hr`
  */
 export function ListPaneContent({
   childItemId,
-  index,
   items,
   isActive,
   layout,
   showIcons,
   title,
 }: ListPaneContentProps) {
-  const [commandListRef, setCommandListRef] = useState<CommandListHandle | null>(null)
-
   const {collapsed: layoutCollapsed} = usePaneLayout()
+  const {isLast} = usePane()
 
   // The index of the selected item in the list.
   // This is used as the initial index for the virtual list so
@@ -114,20 +106,13 @@ export function ListPaneContent({
     [childItemId, isActive, layout, shouldShowIconForItem]
   )
 
-  // Focus the list when it is opened
-  useEffect(() => {
-    if (commandListRef && index !== 0 && (items || [])?.length > 0) {
-      commandListRef.focusInputElement()
-    }
-  }, [index, selectedIndex, items, commandListRef])
-
   return (
     <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>
       {items && items.length > 0 && (
         <CommandList
           activeItemDataAttr="data-hovered"
           ariaLabel={`List of ${title}`}
-          autoFocus="list"
+          autoFocus={isLast ? 'list' : undefined}
           canReceiveFocus
           focusRingOffset={-4}
           getItemDisabled={getItemDisabled}
@@ -136,7 +121,6 @@ export function ListPaneContent({
           itemHeight={51}
           items={items}
           padding={2}
-          ref={setCommandListRef}
           renderItem={renderItem}
         />
       )}

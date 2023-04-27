@@ -83,8 +83,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
   const schema = useSchema()
 
-  const {collapsed: layoutCollapsed, panes} = usePaneLayout()
-  const {collapsed, index} = usePane()
+  const {collapsed: layoutCollapsed} = usePaneLayout()
+  const {collapsed, index, isLast} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
   const commandListRef = useRef<CommandListHandle | null>(null)
 
@@ -96,13 +96,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
     onListChange()
   }, [isLoading, onListChange, shouldRender])
-
-  // Determine if the pane should be auto-focused
-  useEffect(() => {
-    if (panes.length - 1 === index && shouldRender && isSearchReady) {
-      searchInputElement?.focus()
-    }
-  }, [index, isSearchReady, panes.length, searchInputElement, shouldRender])
 
   useEffect(() => {
     if (collapsed) return undefined
@@ -219,7 +212,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel="Document list"
-            autoFocus="input"
+            autoFocus={isLast && shouldRender && isSearchReady ? 'input' : undefined}
             canReceiveFocus
             focusRingOffset={-4}
             initialScrollAlign="center"
@@ -243,7 +236,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     error,
     handleEndReached,
     index,
+    isLast,
     isLoading,
+    isSearchReady,
     items,
     layout,
     loadingVariant,

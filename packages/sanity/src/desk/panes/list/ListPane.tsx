@@ -43,7 +43,6 @@ export function ListPane(props: ListPaneProps) {
       <ListPaneContent
         childItemId={childItemId}
         isActive={isActive}
-        index={index}
         items={items}
         layout={defaultLayout}
         showIcons={showIcons}
