@@ -136,7 +136,6 @@ export function ListPane(props: ListPaneProps) {
             ariaLabel={`List of ${title}`}
             autoFocus="list"
             canReceiveFocus
-            disableActivateOnHover
             focusRingOffset={-4}
             getItemDisabled={getItemDisabled}
             initialIndex={selectedIndex}

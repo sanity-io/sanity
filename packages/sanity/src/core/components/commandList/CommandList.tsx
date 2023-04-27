@@ -103,7 +103,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     ariaMultiselectable = false,
     autoFocus,
     canReceiveFocus,
-    disableActivateOnHover = false,
     fixedHeight,
     focusRingOffset,
     getItemDisabled,
@@ -643,9 +642,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
                     id: getChildDescendantId(activeIndex),
                     role: 'option',
                     onMouseDown: handleChildMouseDown,
-                    onMouseEnter: disableActivateOnHover
-                      ? null
-                      : handleChildMouseEnter(activeIndex),
+                    onMouseEnter: handleChildMouseEnter(activeIndex),
                   }
                 : {}
 

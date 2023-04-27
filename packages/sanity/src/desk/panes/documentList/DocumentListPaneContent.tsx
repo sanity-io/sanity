@@ -221,7 +221,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             ariaLabel="Document list"
             autoFocus="input"
             canReceiveFocus
-            disableActivateOnHover
             focusRingOffset={-4}
             initialScrollAlign="center"
             inputElement={searchInputElement}

@@ -48,8 +48,6 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   autoFocus?: CommandListElementType
   /** Whether the virtual list can receive focus */
   canReceiveFocus?: boolean
-  /** Disable selecting the active item on hover */
-  disableActivateOnHover?: boolean
   /** Custom function to map disabled items */
   getItemDisabled?: CommandListGetItemDisabledCallback
   /** Custom function to map virtual list items to custom keys */
