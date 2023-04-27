@@ -54,11 +54,16 @@ const shopifyTemplate: ProjectTemplate = {
   dependencies: {
     '@sanity/asset-utils': '^1.3.0',
     '@sanity/color-input': '^3.0.2',
+    '@sanity/icons': '^2.3.1',
+    '@sanity/ui': '^1.3.2',
     'lodash.get': '^4.4.2',
     'pluralize-esm': '^9.0.2',
     'sanity-plugin-hotspot-array': '^1.0.1',
     'sanity-plugin-media': '^2.0.5',
     slug: '^8.2.2',
+  },
+  devDependencies: {
+    '@portabletext/types': '^2.0.2',
     '@types/lodash.get': '^4.4.7',
     '@types/slug': '^5.0.3',
   },
