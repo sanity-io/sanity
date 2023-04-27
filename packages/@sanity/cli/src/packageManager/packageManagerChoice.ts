@@ -1,3 +1,4 @@
+/* eslint-disable no-process-env */
 import path from 'path'
 import which from 'which'
 import preferredPM from 'preferred-pm'
@@ -39,11 +40,13 @@ export async function getPackageManagerChoice(
     return {chosen: preferred, mostOptimal: preferred}
   }
 
+  const mostLikelyPM = await getMostLikelyInstalledPackageManager(rootDir)
   const interactive = typeof options.interactive === 'boolean' ? options.interactive : isInteractive
   if (!interactive) {
-    // We can't ask the user for their preference, so fall back to whatever is installed
+    // We can't ask the user for their preference, so fall back to either the one that is being run
+    // or whatever is installed on the system (npm being the preferred choice).
     // Note that the most optimal choice is already picked above if available.
-    return {chosen: await getFallback(rootDir), mostOptimal: preferred}
+    return {chosen: mostLikelyPM || (await getFallback(rootDir)), mostOptimal: preferred}
   }
 
   if (!('prompt' in options)) {
@@ -52,10 +55,11 @@ export async function getPackageManagerChoice(
 
   // We can ask the user for their preference, hurray!
   const messageSuffix = preferred ? ` (preferred is ${preferred}, but is not installed)` : ''
+  const installed = await getAvailablePackageManagers(rootDir)
   const chosen = await options.prompt.single<PackageManager>({
     type: 'list',
-    choices: await getAvailablePackageManagers(rootDir),
-    default: preferred,
+    choices: installed,
+    default: preferred || mostLikelyPM,
     message: `Package manager to use for installing dependencies?${messageSuffix}`,
   })
 
@@ -142,4 +146,34 @@ function getCommandPath(cmd: string, cwd?: string): Promise<string | null> {
 
 function hasCommand(cmd: string, cwd?: string): Promise<boolean> {
   return getCommandPath(cmd, cwd).then((cmdPath) => cmdPath !== null)
+}
+
+async function getMostLikelyInstalledPackageManager(
+  rootDir: string
+): Promise<PackageManager | undefined> {
+  const installed = await getAvailablePackageManagers(rootDir)
+  const running = getRunningPackageManager()
+  return running && installed.includes(running) ? running : undefined
+}
+
+function getRunningPackageManager(): PackageManager | undefined {
+  // Yes, the env var is lowercase - it is set by the package managers themselves
+  const agent = process.env.npm_config_user_agent || ''
+
+  if (agent.includes('yarn')) {
+    return 'yarn'
+  }
+
+  if (agent.includes('pnpm')) {
+    return 'pnpm'
+  }
+
+  // Both yarn and pnpm does a `npm/?` thing, thus the slightly different match here
+  // Theoretically not needed since we check for yarn/pnpm above, but in case other
+  // package managers do the same thing, we'll (hopefully) catch them here.
+  if (/^npm\/\d/.test(agent)) {
+    return 'npm'
+  }
+
+  return undefined
 }
