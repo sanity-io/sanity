@@ -1,38 +1,8 @@
-import {
-  useEffect,
-  useState,
-  useSyncExternalStore,
-  useMemo,
-  startTransition,
-  useCallback,
-} from 'react'
+import {useEffect, useState, startTransition} from 'react'
+import {usePrefersReducedMotion} from '@sanity/ui'
 
-function useReducedMotion() {
-  const mql = useMemo(
-    () =>
-      typeof document === 'undefined'
-        ? null
-        : window.matchMedia('(prefers-reduced-motion: reduce)'),
-    []
-  )
-
-  return useSyncExternalStore(
-    useCallback(
-      (onStoreChange) => {
-        mql?.addEventListener('change', onStoreChange)
-        return () => {
-          mql?.removeEventListener('change', onStoreChange)
-        }
-      },
-      [mql]
-    ),
-    () => mql?.matches,
-    () => true
-  )
-}
-
-export function useLazyFrameloop(ref: React.RefObject<any>) {
-  const reduceMotion = useReducedMotion()
+export function useLazyFrameloop(ref: React.RefObject<any>): 'always' | 'demand' | 'never' {
+  const reduceMotion = usePrefersReducedMotion()
   const [frameloop, setFrameloop] = useState<'always' | 'never'>('never')
 
   useEffect(() => {
