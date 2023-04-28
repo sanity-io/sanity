@@ -297,12 +297,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           isActive={isActive}
           isLazyLoading={isLazyLoading}
           isLoading={isLoading}
-          isSearchReady={isSearchReady}
           items={items}
-          // Use the paneKey as key to ensure that the list is re-rendered when the paneKey changes.
-          // This is important to ensure e.g. that the searchElement is focused when changing between
-          // document list within the same pane.
-          key={paneKey}
           layout={layout}
           loadingVariant={loadingVariant}
           noDocumentsMessage={noDocumentsMessage}

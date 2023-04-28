@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
-import {PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
+import {PaneContent, PaneItem, usePaneLayout} from '../../components'
 import {PaneListItem, PaneListItemDivider} from '../../types'
 import {CommandList, CommandListItemContext, GeneralPreviewLayoutKey} from 'sanity'
 
@@ -33,7 +33,6 @@ export function ListPaneContent({
   title,
 }: ListPaneContentProps) {
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const {isLast} = usePane()
 
   // The index of the selected item in the list.
   // This is used as the initial index for the virtual list so
@@ -112,9 +111,8 @@ export function ListPaneContent({
         <CommandList
           activeItemDataAttr="data-hovered"
           ariaLabel={`List of ${title}`}
-          autoFocus={isLast ? 'list' : undefined}
           canReceiveFocus
-          focusRingOffset={-4}
+          focusRingOffset={-3}
           getItemDisabled={getItemDisabled}
           initialIndex={selectedIndex}
           initialScrollAlign="end"

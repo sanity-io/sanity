@@ -35,7 +35,6 @@ interface DocumentListPaneContentProps {
   isActive?: boolean
   isLazyLoading: boolean
   isLoading: boolean
-  isSearchReady: boolean
   items: DocumentListPaneItem[]
   layout?: GeneralPreviewLayoutKey
   loadingVariant?: LoadingVariant
@@ -70,7 +69,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     isActive,
     isLazyLoading,
     isLoading,
-    isSearchReady,
     items,
     layout,
     noDocumentsMessage,
@@ -84,7 +82,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const schema = useSchema()
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const {collapsed, index, isLast} = usePane()
+  const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
   const commandListRef = useRef<CommandListHandle | null>(null)
 
@@ -212,9 +210,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel="Document list"
-            autoFocus={isLast && shouldRender && isSearchReady ? 'input' : undefined}
             canReceiveFocus
-            focusRingOffset={-4}
+            focusRingOffset={-3}
             initialScrollAlign="center"
             inputElement={searchInputElement}
             itemHeight={51}
@@ -236,9 +233,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     error,
     handleEndReached,
     index,
-    isLast,
     isLoading,
-    isSearchReady,
     items,
     layout,
     loadingVariant,
