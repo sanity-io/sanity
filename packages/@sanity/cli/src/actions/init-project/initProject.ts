@@ -227,25 +227,6 @@ export default async function initSanity(
   outputPath = answers.outputPath
 
   if (initNext) {
-    const useAppDir = await prompt.single({
-      type: 'confirm',
-      message: `Would you like to use the Next.js app dir?`,
-      default: false,
-    })
-
-    // find source path (app or pages dir)
-    const srcDir = useAppDir ? 'app' : 'pages'
-    let srcPath = path.join(workDir, srcDir)
-
-    if (!existsSync(srcPath)) {
-      srcPath = path.join(workDir, 'src', srcDir)
-      if (!existsSync(srcPath)) {
-        await fs
-          .mkdir(srcPath, {recursive: true})
-          .catch(() => debug('Error creating folder %s', srcPath))
-      }
-    }
-
     const useTypeScript = await prompt.single<boolean>({
       type: 'confirm',
       message: `Would you like to use TypeScript?`,
@@ -261,6 +242,25 @@ export default async function initSanity(
     })
 
     if (embeddedStudio) {
+      const useAppDir = await prompt.single({
+        type: 'confirm',
+        message: `Would you like to use the Next.js app dir?`,
+        default: false,
+      })
+
+      // find source path (app or pages dir)
+      const srcDir = useAppDir ? 'app' : 'pages'
+      let srcPath = path.join(workDir, srcDir)
+
+      if (!existsSync(srcPath)) {
+        srcPath = path.join(workDir, 'src', srcDir)
+        if (!existsSync(srcPath)) {
+          await fs
+            .mkdir(srcPath, {recursive: true})
+            .catch(() => debug('Error creating folder %s', srcPath))
+        }
+      }
+
       const studioPath = await prompt.single({
         type: 'input',
         message: 'What url do you want to use for the embedded studio?',
@@ -298,14 +298,6 @@ export default async function initSanity(
             .concat('sanity.config')
         )
       )
-
-      // add layout.tsx (TODO: when we get it to work)
-      // if (useAppDir) {
-      //   await writeOrOverwrite(
-      //     path.resolve(embeddedStudioPath, '../layout.tsx'),
-      //     sanityStudioAppLayoutTemplate
-      //   )
-      // }
 
       const sanityConfigPath = path.join(workDir, 'sanity.config.'.concat(fileEnding))
       await writeOrOverwrite(
