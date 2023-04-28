@@ -39,11 +39,22 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
 export default defineCliConfig({ api: { projectId, dataset } })
 `
 
-export const sanityStudioPagesTemplate = `import { NextStudio } from 'next-sanity/studio'
-import config from ':configPath:'
+export const sanityStudioPagesTemplate = `import Head from 'next/head'
+import { NextStudio } from 'next-sanity/studio'
+import { metadata } from 'next-sanity/studio/metadata'
+import config from ':configPath'
 
 export default function StudioPage() {
-  return <NextStudio config={config} />
+  return (
+    <>
+      <Head>
+        {Object.entries(metadata).map(([key, value]) => (
+          <meta key={key} name={key} content={value} />
+        ))}
+      </Head>
+      <NextStudio config={config} />
+    </>
+  )
 }`
 
 export const sanityStudioAppTemplate = `'use client'
