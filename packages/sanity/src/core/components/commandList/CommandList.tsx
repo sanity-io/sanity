@@ -358,14 +358,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   }, [virtualListElement])
 
   /**
-   * Prevent nested elements from receiving focus.
-   */
-  const handleChildMouseDown = useCallback((event: MouseEvent) => {
-    event.preventDefault()
-    return false
-  }, [])
-
-  /**
    * Mark hovered child item as active
    */
   const handleChildMouseEnter = useCallback(
@@ -641,7 +633,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
                     'aria-setsize': activeItemCount,
                     id: getChildDescendantId(activeIndex),
                     role: 'option',
-                    onMouseDown: handleChildMouseDown,
                     onMouseEnter: handleChildMouseEnter(activeIndex),
                   }
                 : {}
