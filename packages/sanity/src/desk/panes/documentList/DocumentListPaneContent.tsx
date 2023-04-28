@@ -90,10 +90,10 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   // This is to avoid triggering the end reached handler too often.
   // The end reached handler is re-enabled after a delay (see the useEffect below)
   const handleEndReached = useCallback(() => {
-    if (isLoading || !shouldRender) return
+    if (isLoading || isLazyLoading || !shouldRender) return
 
     onListChange()
-  }, [isLoading, onListChange, shouldRender])
+  }, [isLazyLoading, isLoading, onListChange, shouldRender])
 
   useEffect(() => {
     if (collapsed) return undefined

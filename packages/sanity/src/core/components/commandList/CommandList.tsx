@@ -114,7 +114,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     itemHeight,
     items,
     onEndReached,
-    onEndReachedIndexOffset: onEndReachedIndexThreshold = 0,
+    onEndReachedIndexOffset = 0,
     overscan,
     renderItem,
     wrapAround = true,
@@ -130,9 +130,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
   const [virtualListElement, setVirtualListElement] = useState<HTMLDivElement | null>(null)
 
-  const reachedEndPrev = useRef<boolean>(false)
-  const disableReachedEnd = useRef<boolean>(true)
-
   const handleChange = useCallback(
     (v: Virtualizer<HTMLDivElement, Element>) => {
       if (!onEndReached) return
@@ -141,17 +138,14 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
 
       if (!lastItem) return
 
-      const reachedEnd = lastItem.index >= items.length - onEndReachedIndexThreshold - 1
+      const reachedEnd = lastItem.index >= items.length - onEndReachedIndexOffset - 1
 
-      // Make sure we only trigger `onEndReached` once and not on initial render
-      if (!reachedEndPrev.current && reachedEnd && !disableReachedEnd.current) {
+      // Make sure we only trigger `onEndReached` after initial mount
+      if (reachedEnd && isMountedRef.current) {
         onEndReached()
       }
-
-      reachedEndPrev.current = reachedEnd
-      disableReachedEnd.current = false
     },
-    [onEndReached, items.length, onEndReachedIndexThreshold]
+    [onEndReached, items.length, onEndReachedIndexOffset]
   )
 
   // This will trigger a re-render whenever its internal state changes
