@@ -33,7 +33,6 @@ export default defineType({
           name: 'alt',
           type: 'string',
           title: 'Alternative Text',
-          options: { isHighlighted: true }
         }
       ]
     }),
@@ -91,7 +90,6 @@ const authorJS = `export default author = {
           name: 'alt',
           type: 'string',
           title: 'Alternative Text',
-          options: { isHighlighted: true }
         }
       ]
     },
@@ -188,7 +186,6 @@ export default defineType({
           name: 'alt',
           type: 'string',
           title: 'Alternative Text',
-          options: { isHighlighted: true }
         }
       ]
     }),
@@ -264,7 +261,6 @@ export default blockContent = {
           name: 'alt',
           type: 'string',
           title: 'Alternative Text',
-          options: { isHighlighted: true }
         }
       ]
     },
@@ -351,7 +347,6 @@ export default defineType({
           name: 'alt',
           type: 'string',
           title: 'Alternative Text',
-          options: { isHighlighted: true }
         }
       ]
     }),
@@ -424,7 +419,6 @@ const postJS = `export default post = {
           name: 'alt',
           type: 'string',
           title: 'Alternative Text',
-          options: { isHighlighted: true }
         }
       ]
     },
