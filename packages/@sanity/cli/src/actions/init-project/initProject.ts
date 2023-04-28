@@ -234,9 +234,11 @@ export default async function initSanity(
     })
 
     // find source path (app or pages dir)
-    let srcPath = path.join(workDir, useAppDir ? 'app' : 'pages')
+    const srcDir = useAppDir ? 'app' : 'pages'
+    let srcPath = path.join(workDir, srcDir)
+
     if (!existsSync(srcPath)) {
-      srcPath = path.join(workDir, 'src', useAppDir ? 'app' : 'pages')
+      srcPath = path.join(workDir, 'src', srcDir)
       if (!existsSync(srcPath)) {
         await fs
           .mkdir(srcPath, {recursive: true})
