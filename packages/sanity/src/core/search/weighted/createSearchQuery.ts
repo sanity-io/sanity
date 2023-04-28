@@ -1,6 +1,7 @@
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 import {joinPath} from '../../../core/util/searchUtils'
 import {tokenize} from '../common/tokenize'
+import {FINDABILITY_MVI} from '../constants'
 import type {
   SearchableType,
   SearchOptions,
@@ -204,8 +205,11 @@ export function createSearchQuery(
     ].join('|')
   }
 
-  // Prepend optional GROQ comments to query
-  const groqComments = (searchOpts?.comments || []).map((s) => `// ${s}`).join('\n')
+  // Prepend GROQ comments
+  const groqComments = [`findability-mvi:${FINDABILITY_MVI}`]
+    .concat(searchOpts?.comments || [])
+    .map((s) => `// ${s}`)
+    .join('\n')
   const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
 
   const offset = searchOpts?.offset ?? 0
