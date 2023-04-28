@@ -342,7 +342,7 @@ export default async function initSanity(
           })
         }
 
-        print(`\n${chalk.green('Success!')} Sanity has been configured in this project`)
+        print(`\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`)
 
         // eslint-disable-next-line no-process-exit
         process.exit(0)
