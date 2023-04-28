@@ -9,7 +9,7 @@ import {
   SanityDocument,
   SchemaType,
 } from '@sanity/types'
-import {DocumentListPaneItem, SortOrder, SortOrderBy} from './types'
+import {DocumentListPaneItem, SortOrder} from './types'
 import {getPublishedId, collate} from 'sanity'
 
 export function getDocumentKey(value: DocumentListPaneItem, index: number): string {
@@ -53,21 +53,6 @@ export function getTypeNameFromSingleTypeFilter(
 
 export function isSimpleTypeFilter(filter: string): boolean {
   return /^_type\s*==\s*['"$]\w+['"]?\s*$/.test(filter.trim())
-}
-
-export function toOrderClause(orderBy: SortOrderBy[]): string {
-  return orderBy
-    .map((ordering) =>
-      [wrapFieldWithFn(ordering), (ordering.direction || '').toLowerCase()]
-        .map((str) => str.trim())
-        .filter(Boolean)
-        .join(' ')
-    )
-    .join(',')
-}
-
-function wrapFieldWithFn(ordering: SortOrderBy): string {
-  return ordering.mapWith ? `${ordering.mapWith}(${ordering.field})` : ordering.field
 }
 
 export function applyOrderingFunctions(order: SortOrder, schemaType: ObjectSchemaType): SortOrder {
