@@ -38,7 +38,6 @@ export default defineCliConfig({ api: { projectId, dataset } })
 export const sanityStudioPagesTemplate = `import Head from 'next/head'
 import { NextStudio } from 'next-sanity/studio'
 import { NextStudioHead } from 'next-sanity/studio/head'
-import { StudioLayout, StudioProvider } from 'sanity'
 import config from ':configPath:'
 
 export default function StudioPage() {
