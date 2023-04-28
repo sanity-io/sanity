@@ -45,6 +45,7 @@ export function ListPane(props: ListPaneProps) {
         isActive={isActive}
         items={items}
         layout={defaultLayout}
+        key={paneKey}
         showIcons={showIcons}
         title={title}
       />

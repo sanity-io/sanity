@@ -294,6 +294,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           items={items}
           layout={layout}
           loadingVariant={loadingVariant}
+          key={paneKey}
           noDocumentsMessage={noDocumentsMessage}
           onListChange={onListChange}
           onRetry={onRetry}

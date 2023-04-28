@@ -35,12 +35,13 @@ export function ListPaneContent({
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   // The index of the selected item in the list.
-  // This is used as the initial index for the virtual list so
-  // that the selected item is scrolled into view.
+  // This is used as the initial index for the virtual list so that the selected item is scrolled into view.
   const selectedIndex = useMemo(() => {
-    return items
+    const foundIndex = items
       ?.filter((item) => item.type === 'listItem')
       .findIndex((item) => item.type === 'listItem' && item?.id === childItemId)
+
+    return foundIndex === -1 ? 0 : foundIndex
   }, [childItemId, items])
 
   const getItemDisabled = useCallback(
@@ -116,7 +117,7 @@ export function ListPaneContent({
           getItemDisabled={getItemDisabled}
           hideSelectionOnMouseLeave
           initialIndex={selectedIndex}
-          initialScrollAlign="end"
+          initialScrollAlign="center"
           itemHeight={51}
           items={items}
           padding={2}

@@ -1,6 +1,6 @@
 import {SyncIcon} from '@sanity/icons'
 import {Box, Button, Card, Container, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import styled from 'styled-components'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
@@ -8,7 +8,6 @@ import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
 import {
   CommandList,
-  CommandListHandle,
   CommandListRenderItemCallback,
   GeneralPreviewLayoutKey,
   SanityDefaultPreview,
@@ -84,7 +83,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
-  const commandListRef = useRef<CommandListHandle | null>(null)
 
   // Run the onListChange callback and disable the end reached handler for a period of time.
   // This is to avoid triggering the end reached handler too often.
@@ -222,7 +220,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             overscan={10}
             padding={2}
             paddingBottom={1}
-            ref={commandListRef}
             renderItem={renderItem}
             wrapAround={false}
           />

@@ -127,6 +127,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   const activeIndexRef = useRef(initialIndex ?? 0)
 
   const [childContainerElement, setChildContainerElement] = useState<HTMLDivElement | null>(null)
+  const [hovered, setHovered] = useState(false)
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
   const [virtualListElement, setVirtualListElement] = useState<HTMLDivElement | null>(null)
 
@@ -219,8 +220,14 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
 
   /**
    * Iterate through all virtual list children and apply the active data-attribute on the selected index.
+   * Don't apply styles when `hideSelectionOnMouseLeave` is true and the command list is neither focused or hovered.
    */
   const showChildrenActiveState = useCallback(() => {
+    const hasFocus = [inputElement, virtualListElement].some((el) => document.activeElement === el)
+    if (hideSelectionOnMouseLeave && !hasFocus && !hovered) {
+      return
+    }
+
     const childElements = Array.from(childContainerElement?.children || []) as HTMLElement[]
     childElements?.forEach((child) => {
       const virtualIndex = Number(child.dataset?.index)
@@ -229,7 +236,15 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         .querySelector(LIST_ITEM_INTERACTIVE_SELECTOR)
         ?.toggleAttribute(activeItemDataAttr, targetIndex === activeIndexRef.current)
     })
-  }, [activeItemDataAttr, childContainerElement?.children, itemIndices])
+  }, [
+    activeItemDataAttr,
+    childContainerElement?.children,
+    hideSelectionOnMouseLeave,
+    hovered,
+    inputElement,
+    itemIndices,
+    virtualListElement,
+  ])
 
   /**
    * Iterate through all virtual list children and clear the active data-attribute.
@@ -244,7 +259,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   }, [activeItemDataAttr, childContainerElement?.children])
 
   /**
-   * Throttled version of the above, used when DOM mutations are detected in virtual lists
+   * Throttled version of `showChildrenActiveState`, used when DOM mutations are detected in virtual lists
    */
   const refreshChildrenActiveStateThrottled = useMemo(() => {
     return throttle(showChildrenActiveState, 200)
@@ -429,9 +444,17 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     (event: KeyboardEvent) => handleKeyDown('list')(event),
     [handleKeyDown]
   )
+
+  const handleVirtualListMouseEnter = useCallback(() => {
+    if (hideSelectionOnMouseLeave) {
+      showChildrenActiveState()
+      setHovered(true)
+    }
+  }, [hideSelectionOnMouseLeave, showChildrenActiveState])
   const handleVirtualListMouseLeave = useCallback(() => {
     if (hideSelectionOnMouseLeave) {
       hideChildrenActiveState()
+      setHovered(false)
     }
   }, [hideChildrenActiveState, hideSelectionOnMouseLeave])
 
@@ -456,8 +479,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     },
     [
       enableChildContainerPointerEvents,
-      focusListElement,
       focusInputElement,
+      focusListElement,
       handleGetTopIndex,
       setActiveIndex,
     ]
@@ -475,7 +498,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       })
     }
     isMountedRef.current = true
-  }, [initialIndex, initialScrollAlign, setActiveIndex])
+  }, [hideSelectionOnMouseLeave, initialIndex, initialScrollAlign, setActiveIndex])
 
   /**
    * Re-enable child pointer events on any mouse move event
@@ -594,6 +617,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   return (
     <VirtualListBox
       id={getCommandListChildrenId()}
+      onMouseEnter={handleVirtualListMouseEnter}
       onMouseLeave={handleVirtualListMouseLeave}
       ref={setVirtualListElement}
       sizing="border"
