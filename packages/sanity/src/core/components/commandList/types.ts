@@ -42,12 +42,16 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   ariaMultiselectable?: boolean
   /** Automatically focus the input (if applicable) or virtual list */
   autoFocus?: boolean
+  /** Disable selecting the active item on hover */
+  disableActivateOnHover?: boolean
   /** Custom function to map disabled items */
   getItemDisabled?: CommandListGetItemDisabledCallback
   /** Custom function to map virtual list items to custom keys */
   getItemKey?: CommandListGetItemKeyCallback
   /** Custom function to map selected items */
   getItemSelected?: CommandListGetItemSelectedCallback
+  /** Boolean indicating whether the command list should have visible focus styles */
+  focusVisible?: boolean
   /** Force a fixed height for all virtual list children and skip measurement (faster). */
   fixedHeight?: boolean
   /** Scroll alignment of the initial active index */
@@ -68,6 +72,8 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   overscan?: number
   /** Rendered component in virtual lists */
   renderItem: CommandListRenderItemCallback<T>
+  /** The tabIndex to apply to the virtual list container element */
+  tabIndex?: number
   /** Allow wraparound keyboard navigation between first and last items */
   wrapAround?: boolean
 }
