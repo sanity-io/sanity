@@ -150,7 +150,6 @@ export const schemaTypes = [
   booleans,
   button,
   code,
-  codeInputType, // @todo temporary, until code input is v3 compatible
   color,
   conditionalFields,
   conditionalFieldset,

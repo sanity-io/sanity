@@ -15,6 +15,9 @@ export default defineCliConfig({
   vite(viteConfig: UserConfig): UserConfig {
     return {
       ...viteConfig,
+      optimizeDeps: {
+        exclude: ['@sanity/code-input', '@sanity/vision'],
+      },
       // server: {
       //   ...viteConfig.server,
       //   ...{
