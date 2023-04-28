@@ -217,6 +217,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           width={parentSchemaType?.options?.modal?.width ?? 1}
           id={value._key}
           onClose={onClose}
+          autofocus={focused}
           legacy_referenceElement={previewCardRef.current}
         >
           {children}
