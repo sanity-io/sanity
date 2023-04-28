@@ -11,7 +11,7 @@ export function promptForEmbeddedStudio(prompt: CliPrompter): Promise<string> {
 export function promptForAppDir(prompt: CliPrompter): Promise<string> {
   return prompt.single({
     type: 'confirm',
-    message: `Would you like to use the Next.js app dir?`,
+    message: `Would you like to use the Next.js app directory for routes?`,
     default: false,
   })
 }
@@ -19,7 +19,7 @@ export function promptForAppDir(prompt: CliPrompter): Promise<string> {
 export function promptForStudioPath(prompt: CliPrompter): Promise<string> {
   return prompt.single({
     type: 'input',
-    message: 'What url do you want to use for the embedded studio?',
+    message: 'What route do you want to use for the studio?',
     default: '/studio',
     validate(input) {
       if (!input.startsWith('/')) {

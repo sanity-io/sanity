@@ -218,9 +218,14 @@ export default async function initSanity(
     detectedFramework.slug === 'nextjs' &&
     (await prompt.single({
       type: 'confirm',
-      message: `Would you like to initialize Sanity files in this Next.js project?`,
+      message:
+        'Would you like to add configuration files for a Sanity project in this Next.js folder?',
       default: true,
     }))
+
+  // add more frameworks to this as we add support for them
+  // this is used to skip the getProjectInfo prompt
+  const initFramework = initNext
 
   let outputPath = workDir
 
@@ -342,7 +347,11 @@ export default async function initSanity(
           })
         }
 
-        print(`\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`)
+        print(
+          `\n${chalk.green(
+            'Success!'
+          )} Your Sanity configuration files has been added to this project`
+        )
 
         // eslint-disable-next-line no-process-exit
         process.exit(0)
@@ -805,7 +814,7 @@ export default async function initSanity(
   async function getProjectInfo(): Promise<ProjectDefaults & {outputPath: string}> {
     const specifiedPath = flags['output-path'] && path.resolve(flags['output-path'])
 
-    if (unattended || specifiedPath || env || initNext) {
+    if (unattended || specifiedPath || env || initFramework) {
       return {
         ...defaults,
         outputPath: specifiedPath || workDir,

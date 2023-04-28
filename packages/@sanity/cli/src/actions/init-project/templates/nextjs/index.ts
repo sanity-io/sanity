@@ -27,7 +27,11 @@ export default defineConfig({
 })
 `
 
-export const sanityCliTemplate = `import { defineCliConfig } from 'sanity/cli'
+export const sanityCliTemplate = `/**
+* This configuration file lets you run \`$ sanity [command]\` in this folder
+* Go to https://www.sanity.io/docs/cli to learn more.
+**/
+import { defineCliConfig } from 'sanity/cli'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -71,7 +75,6 @@ export default function StudioPage() {
 }`
 
 export const sanityStudioAppLayoutTemplate = `export {metadata} from 'next-sanity/studio'`
-
 
 // Format today's date like YYYY-MM-DD
 const envTS = `export const apiVersion =
@@ -141,11 +144,6 @@ const imageBuilder = createImageUrlBuilder({
 })
 
 export const urlForImage = (source: Image) => {
-  // Ensure that source image contains a valid reference
-  if (!source?.asset?._ref) {
-    return undefined
-  }
-
   return imageBuilder?.image(source).auto('format').fit('max')
 }
 `
@@ -160,11 +158,6 @@ const imageBuilder = createImageUrlBuilder({
 })
 
 export const urlForImage = (source) => {
-  // Ensure that source image contains a valid reference
-  if (!source?.asset?._ref) {
-    return undefined
-  }
-
   return imageBuilder?.image(source).auto('format').fit('max')
 }
 `

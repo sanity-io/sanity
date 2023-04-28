@@ -28,6 +28,14 @@ export default defineType({
       options: {
         hotspot: true,
       },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative Text',
+          options: { isHighlighted: true }
+        }
+      ]
     }),
     defineField({
       name: 'bio',
@@ -78,6 +86,14 @@ const authorJS = `export default author = {
       options: {
         hotspot: true,
       },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative Text',
+          options: { isHighlighted: true }
+        }
+      ]
     },
     {
       name: 'bio',
@@ -106,7 +122,7 @@ const blockContentTS = `import {defineType, defineArrayMember} from 'sanity'
 
 /**
  * This is the schema type for block content used in the post document type
- * Importing this type into the studio configuration's `schema` property
+ * Importing this type into the studio configuration's \`schema\` property
  * lets you reuse it in other document types with:
  *  {
  *    name: 'someName',
@@ -181,15 +197,16 @@ export default defineType({
 `
 
 const blockContentJS = `/**
- * This is the schema definition for the rich text fields used for
- * for this blog studio. When you import it in schemas.js it can be
- * reused in other parts of the studio with:
+ * This is the schema type for block content used in the post document type
+ * Importing this type into the studio configuration's \`schema\` property
+ * lets you reuse it in other document types with:
  *  {
  *    name: 'someName',
  *    title: 'Some title',
  *    type: 'blockContent'
  *  }
  */
+
 export default blockContent = {
   title: 'Block Content',
   name: 'blockContent',
@@ -242,6 +259,14 @@ export default blockContent = {
     {
       type: 'image',
       options: {hotspot: true},
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative Text',
+          options: { isHighlighted: true }
+        }
+      ]
     },
   ],
 }
@@ -321,6 +346,14 @@ export default defineType({
       options: {
         hotspot: true,
       },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative Text',
+          options: { isHighlighted: true }
+        }
+      ]
     }),
     defineField({
       name: 'categories',
@@ -386,6 +419,14 @@ const postJS = `export default post = {
       options: {
         hotspot: true,
       },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative Text',
+          options: { isHighlighted: true }
+        }
+      ]
     },
     {
       name: 'categories',
