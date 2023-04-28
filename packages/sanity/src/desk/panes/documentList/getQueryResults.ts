@@ -9,15 +9,12 @@ import {
   switchMap,
   take,
   scan,
-  delay,
-  takeUntil,
   share,
   publishReplay,
   refCount,
 } from 'rxjs/operators'
 import {concat, merge, of, fromEvent, Observable, Subject} from 'rxjs'
 import {SanityDocument} from '@sanity/types'
-import {listenQuery} from 'sanity'
 
 const INITIAL_CHILD_PROPS = {
   result: null,
@@ -26,13 +23,11 @@ const INITIAL_CHILD_PROPS = {
 
 const createResultChildProps = (documents: SanityDocument[]) => ({
   result: {documents},
-  loading: false,
   error: false,
 })
 
 const createErrorChildProps = (error: Error) => ({
   result: null,
-  loading: false,
   error,
 })
 
@@ -52,13 +47,11 @@ export const getQueryResults = (
 
   const queryResults$ = queryProps$.pipe(
     switchMap((queryProps) => {
-      const query$ = listenQuery(
-        queryProps.client,
-        queryProps.query,
-        queryProps.params,
-        options
-      ).pipe(map(createResultChildProps), share())
-      return merge(of({loading: true}).pipe(delay(400), takeUntil(query$)), query$)
+      const query$ = queryProps.client.observable
+        .fetch(queryProps.query, queryProps.params, options)
+        .pipe(map(createResultChildProps), share())
+
+      return query$
     })
   )
 
