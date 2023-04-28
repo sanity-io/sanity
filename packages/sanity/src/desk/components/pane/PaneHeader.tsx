@@ -80,18 +80,15 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 align="center"
                 hidden={collapsed}
                 overflow="auto"
-                paddingBottom={1}
-                paddingRight={3}
+                paddingBottom={3}
+                paddingX={3}
+                paddingTop={1}
               >
                 <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
                   {tabs}
                 </TabsBox>
 
-                {subActions && (
-                  <Box paddingBottom={2} paddingTop={1}>
-                    {subActions}
-                  </Box>
-                )}
+                {subActions && subActions}
               </Flex>
             )}
 
