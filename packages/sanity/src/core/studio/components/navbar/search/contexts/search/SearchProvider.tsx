@@ -181,7 +181,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           limit: SEARCH_LIMIT,
           offset: pageIndex * SEARCH_LIMIT,
           skipSortByScore: ordering.ignoreScore,
-          sort: ordering.sort,
+          sort: [ordering.sort],
         },
         terms: {
           ...terms,
