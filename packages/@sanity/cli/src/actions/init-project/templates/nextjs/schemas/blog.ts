@@ -105,15 +105,16 @@ const authorJS = `export default author = {
 const blockContentTS = `import {defineType, defineArrayMember} from 'sanity'
 
 /**
- * This is the schema definition for the rich text fields used for
- * for this blog studio. When you import it in schemas.js it can be
- * reused in other parts of the studio with:
+ * This is the schema type for block content used in the post document type
+ * Importing this type into the studio configuration's `schema` property
+ * lets you reuse it in other document types with:
  *  {
  *    name: 'someName',
  *    title: 'Some title',
  *    type: 'blockContent'
  *  }
  */
+ 
 export default defineType({
   title: 'Block Content',
   name: 'blockContent',
@@ -122,9 +123,9 @@ export default defineType({
     defineArrayMember({
       title: 'Block',
       type: 'block',
-      // Styles let you set what your user can mark up blocks with. These
-      // correspond with HTML tags, but you can set any title or value
-      // you want and decide how you want to deal with it where you want to
+      // Styles let you define what blocks can be marked up as. The default
+      // set corresponds with HTML tags, but you can set any title or value
+      // you want, and decide how you want to deal with it where you want to
       // use your content.
       styles: [
         {title: 'Normal', value: 'normal'},
@@ -135,10 +136,10 @@ export default defineType({
         {title: 'Quote', value: 'blockquote'},
       ],
       lists: [{title: 'Bullet', value: 'bullet'}],
-      // Marks let you mark up inline text in the block editor.
+      // Marks let you mark up inline text in the Portable Text Editor
       marks: {
         // Decorators usually describe a single property – e.g. a typographic
-        // preference or highlighting by editors.
+        // preference or highlighting
         decorators: [
           {title: 'Strong', value: 'strong'},
           {title: 'Emphasis', value: 'em'},
@@ -166,6 +167,14 @@ export default defineType({
     defineArrayMember({
       type: 'image',
       options: {hotspot: true},
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative Text',
+          options: { isHighlighted: true }
+        }
+      ]
     }),
   ],
 })

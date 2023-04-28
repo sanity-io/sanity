@@ -16,7 +16,7 @@ export default defineConfig({
   basePath: ':basePath:',
   projectId,
   dataset,
-  //edit schemas in './sanity/schema'
+  // Add and edit the content schema in the './sanity/schema' folder
   schema,
   plugins: [
     deskTool(),
@@ -55,8 +55,8 @@ export default function StudioPage() {
 export const sanityStudioAppTemplate = `'use client'
 
 /**
- * This route is responsible for the built-in authoring environment using Sanity Studio v3.
- * All routes under /studio will be handled by this file using Next.js' catch-all routes:
+ * This route is responsible for the built-in authoring environment using Sanity Studio.
+ * All routes under your studio path is handled by this file using Next.js' catch-all routes:
  * https://nextjs.org/docs/routing/dynamic-routes#catch-all-routes
  *
  * You can learn more about the next-sanity package here:
@@ -72,7 +72,6 @@ export default function StudioPage() {
 
 export const sanityStudioAppLayoutTemplate = `export {metadata} from 'next-sanity/studio'`
 
-// /sanity folder
 
 // Format today's date like YYYY-MM-DD
 const envTS = `export const apiVersion =
