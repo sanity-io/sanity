@@ -14,6 +14,7 @@ interface Props {
   children?: ReactNode
   // eslint-disable-next-line camelcase
   legacy_referenceElement: HTMLElement | null
+  autofocus?: boolean
 }
 
 export function EditPortal(props: Props): React.ReactElement {
@@ -25,6 +26,7 @@ export function EditPortal(props: Props): React.ReactElement {
     onClose,
     type,
     width,
+    autofocus,
   } = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
@@ -44,7 +46,7 @@ export function EditPortal(props: Props): React.ReactElement {
           onClose={onClose}
           width={width}
           contentRef={setDocumentScrollElement}
-          __unstable_autoFocus
+          __unstable_autoFocus={autofocus}
         >
           {contents}
         </Dialog>
