@@ -1,7 +1,7 @@
 import {blogSchemaFolder, blogSchemaTS, blogSchemaJS} from './schemas/blog'
 
 export const sanityConfigTemplate = `/**
- * This config is used to set up Sanity Studio that's mounted on the \`:route:\` route
+ * This configuration is used to for the Sanity Studio that’s mounted on the \`:route:\` route
  */
 
 import {visionTool} from '@sanity/vision'
