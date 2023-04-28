@@ -47,6 +47,13 @@ import {
   sanityStudioAppTemplate,
   sanityStudioPagesTemplate,
 } from './templates/nextjs'
+import {
+  promptForAppDir,
+  promptForAppendEnv,
+  promptForEmbeddedStudio,
+  promptForNextTemplate,
+  promptForStudioPath,
+} from './prompts/nextjs'
 
 // eslint-disable-next-line no-process-env
 const isCI = process.env.CI
@@ -227,26 +234,14 @@ export default async function initSanity(
   outputPath = answers.outputPath
 
   if (initNext) {
-    const useTypeScript = await prompt.single<boolean>({
-      type: 'confirm',
-      message: `Would you like to use TypeScript?`,
-      default: true,
-    })
+    const useTypeScript = await promptForTypeScript(prompt)
 
     const fileEnding = useTypeScript ? 'ts' : 'js'
 
-    const embeddedStudio = await prompt.single({
-      type: 'confirm',
-      message: `Would you like an embedded Sanity Studio?`,
-      default: true,
-    })
+    const embeddedStudio = await promptForEmbeddedStudio(prompt)
 
     if (embeddedStudio) {
-      const useAppDir = await prompt.single({
-        type: 'confirm',
-        message: `Would you like to use the Next.js app dir?`,
-        default: false,
-      })
+      const useAppDir = await promptForAppDir(prompt)
 
       // find source path (app or pages dir)
       const srcDir = useAppDir ? 'app' : 'pages'
@@ -261,27 +256,7 @@ export default async function initSanity(
         }
       }
 
-      const studioPath = await prompt.single({
-        type: 'input',
-        message: 'What url do you want to use for the embedded studio?',
-        default: '/studio',
-        validate(input) {
-          if (!input.startsWith('/')) {
-            return 'Must start with /'
-          }
-
-          if (input.endsWith('/')) {
-            return 'Must not end with /'
-          }
-
-          // a-Z, 0-9, -, _ and /
-          if (!/^[a-zA-Z0-9-_\\/]+$/.test(input)) {
-            return 'Must only contain a-Z, 0-9, -, _ and /'
-          }
-
-          return true
-        },
-      })
+      const studioPath = await promptForStudioPath(prompt)
 
       const embeddedStudioPath = path.join(
         srcPath,
@@ -289,6 +264,10 @@ export default async function initSanity(
         useAppDir ? '[[..index]]/page.tsx' : '[[...index]].tsx'
       )
 
+      // this selects the correct template string based on whether the user is using the app or pages directory and
+      // replaces the ":configPath:" placeholder in the template with the correct path to the sanity.config.ts file.
+      // we account for the user-defined embeddedStudioPath (default /studio) is accounted for by creating enough "../"
+      // relative paths to reach the root level of the project
       await writeOrOverwrite(
         embeddedStudioPath,
         (useAppDir ? sanityStudioAppTemplate : sanityStudioPagesTemplate).replace(
@@ -332,21 +311,7 @@ export default async function initSanity(
     }
 
     // ask what kind of schema setup the user wants
-    const templateToUse: 'blog' | 'clean' = await prompt.single({
-      message: 'Select project template to use',
-      type: 'list',
-      choices: [
-        {
-          value: 'clean',
-          name: 'Clean project with no predefined schemas',
-        },
-        {
-          value: 'blog',
-          name: 'Blog (schema)',
-        },
-      ],
-      default: 'clean',
-    })
+    const templateToUse = await promptForNextTemplate(prompt)
 
     const spinner = await recursivelyWriteFiles(sanityFolder(useTypeScript, templateToUse)).then(
       () => {
@@ -369,11 +334,7 @@ export default async function initSanity(
       .on('exit', async () => {
         spinner.succeed()
 
-        const appendEnv = await prompt.single({
-          type: 'confirm',
-          message: `Would you like to add the project ID and dataset to your ${envFilename} file?`,
-          default: true,
-        })
+        const appendEnv = await promptForAppendEnv(prompt, envFilename)
 
         if (appendEnv) {
           await createOrAppendEnvVars(envFilename, detectedFramework, {

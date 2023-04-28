@@ -1,4 +1,4 @@
-import {CliOutputter, CliPrompter} from '../../types'
+import {CliOutputter, CliPrompter} from '../../../types'
 
 export function promptForTypeScript(prompt: CliPrompter): Promise<boolean> {
   return prompt.single({
