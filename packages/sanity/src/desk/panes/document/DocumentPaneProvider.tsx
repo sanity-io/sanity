@@ -367,7 +367,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const formStateRef = useRef(formState)
   formStateRef.current = formState
 
-  const handleOpenPath = useCallback(
+  const setOpenPath = useCallback(
     (path: Path) => {
       const ops = getExpandOperations(formStateRef.current!, path)
       ops.forEach((op) => {
@@ -405,7 +405,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onBlur: handleBlur,
     onChange: handleChange,
     onFocus: handleFocus,
-    onPathOpen: handleOpenPath,
+    onPathOpen: setOpenPath,
     onHistoryClose: handleHistoryClose,
     onHistoryOpen: handleHistoryOpen,
     onInspectClose: handleInspectClose,
@@ -450,10 +450,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   // Reset `focusPath` when `documentId` or `params.path` changes
   useEffect(() => {
-    // Reset focus path
-    setFocusPath(params.path ? pathFromString(params.path) : [])
-    onSetOpenPath([])
-  }, [params.path, documentId])
+    // Reset focus path when url params path changes
+    const pathFromUrl = params.path ? pathFromString(params.path) : []
+    setFocusPath(pathFromUrl)
+    setOpenPath(pathFromUrl)
+  }, [params.path, documentId, setOpenPath])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
