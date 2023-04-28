@@ -120,6 +120,7 @@ export function ListPaneContent({
           itemHeight={51}
           items={items}
           padding={2}
+          paddingBottom={1}
           renderItem={renderItem}
         />
       )}
