@@ -39,6 +39,7 @@ function DocumentHeaderTab(props: {
 
   return (
     <Tab
+      {...props} // required to enable <TabList> keyboard navigation
       aria-controls={tabPanelId}
       disabled={!ready}
       fontSize={1}
