@@ -40,17 +40,11 @@ const AnimatedSpinnerIcon = styled(SpinnerIcon)`
   animation: ${rotate} 500ms linear infinite;
 `
 
-const SearchCard = styled(Card)(({theme}) => {
-  const radius = theme.sanity.radius[4]
-
-  return css`
-    border-radius: ${radius}px;
-
-    [data-ui='TextInput'] {
-      border-radius: inherit;
-    }
-  `
-})
+const SearchCard = styled(Card)`
+  [data-ui='TextInput'] {
+    border-radius: inherit;
+  }
+`
 
 function useShallowUnique<ValueType>(value: ValueType): ValueType {
   const valueRef = useRef<ValueType>(value)
@@ -241,7 +235,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const searchInput = (
     <Box paddingX={2} paddingBottom={2}>
-      <SearchCard tone="transparent">
+      <SearchCard radius={4} tone="transparent">
         <TextInput
           aria-label="Search list"
           autoComplete="off"
