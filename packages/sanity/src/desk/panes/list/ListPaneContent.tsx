@@ -114,6 +114,7 @@ export function ListPaneContent({
           canReceiveFocus
           focusRingOffset={-3}
           getItemDisabled={getItemDisabled}
+          hideSelectionOnMouseLeave
           initialIndex={selectedIndex}
           initialScrollAlign="end"
           itemHeight={51}

@@ -26,6 +26,7 @@ export default function FilterableStory() {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [filter, setFilter] = useState<string>('')
   const [message, setMessage] = useState('')
+  const hideSelectionOnMouseLeave = useBoolean('Hide selection on mouse leave', false, 'Props')
   const canReceiveFocus = useBoolean('Can receive focus', true, 'Props')
   const showInput = useBoolean('Show input', true, 'Props')
   const commandListRef = useRef<CommandListHandle | null>(null)
@@ -101,6 +102,7 @@ export default function FilterableStory() {
                 ariaLabel="Children"
                 autoFocus="input"
                 canReceiveFocus={canReceiveFocus}
+                hideSelectionOnMouseLeave={hideSelectionOnMouseLeave}
                 inputElement={inputElement}
                 itemHeight={30}
                 items={filteredValues}

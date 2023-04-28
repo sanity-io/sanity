@@ -48,18 +48,20 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   autoFocus?: CommandListElementType
   /** Whether the virtual list can receive focus */
   canReceiveFocus?: boolean
-  /** Custom function to map disabled items */
-  getItemDisabled?: CommandListGetItemDisabledCallback
-  /** Custom function to map virtual list items to custom keys */
-  getItemKey?: CommandListGetItemKeyCallback
-  /** Custom function to map selected items */
-  getItemSelected?: CommandListGetItemSelectedCallback
   /** Pixel offset of the virtual list focus ring. Negative values will cause the focus ring to appear inset */
   focusRingOffset?: number
   /** Boolean indicating whether the command list should have visible focus styles */
   focusVisible?: boolean
   /** Force a fixed height for all virtual list children and skip measurement (faster). */
   fixedHeight?: boolean
+  /** Custom function to map disabled items */
+  getItemDisabled?: CommandListGetItemDisabledCallback
+  /** Custom function to map virtual list items to custom keys */
+  getItemKey?: CommandListGetItemKeyCallback
+  /** Custom function to map selected items */
+  getItemSelected?: CommandListGetItemSelectedCallback
+  /** Clear selection state on when mouse leaves the virtual list */
+  hideSelectionOnMouseLeave?: boolean
   /** Scroll alignment of the initial active index */
   initialScrollAlign?: ScrollToOptions['align']
   /** Initial active index on mount */

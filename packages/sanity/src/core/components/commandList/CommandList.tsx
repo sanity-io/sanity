@@ -4,7 +4,6 @@ import throttle from 'lodash/throttle'
 import React, {
   cloneElement,
   forwardRef,
-  MouseEvent,
   ReactElement,
   useCallback,
   useEffect,
@@ -108,6 +107,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     getItemDisabled,
     getItemKey,
     getItemSelected,
+    hideSelectionOnMouseLeave,
     initialIndex,
     initialScrollAlign = 'start',
     inputElement,
@@ -210,8 +210,9 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    * Toggle pointer overlay element which will kill existing hover states
    */
   const enableChildContainerPointerEvents = useCallback(
-    (enabled: boolean) =>
-      pointerOverlayElement?.setAttribute('data-enabled', (!enabled).toString()),
+    (enabled: boolean) => {
+      pointerOverlayElement?.setAttribute('data-enabled', (!enabled).toString())
+    },
     [pointerOverlayElement]
   )
 
@@ -434,6 +435,11 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     (event: KeyboardEvent) => handleKeyDown('list')(event),
     [handleKeyDown]
   )
+  const handleVirtualListMouseLeave = useCallback(() => {
+    if (hideSelectionOnMouseLeave) {
+      hideChildrenActiveState()
+    }
+  }, [hideChildrenActiveState, hideSelectionOnMouseLeave])
 
   useImperativeHandle(
     ref,
@@ -484,11 +490,11 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     function handleMouseMove() {
       enableChildContainerPointerEvents(true)
     }
-    document.addEventListener('mousemove', handleMouseMove)
+    virtualListElement?.addEventListener('mousemove', handleMouseMove)
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
+      virtualListElement?.removeEventListener('mousemove', handleMouseMove)
     }
-  }, [enableChildContainerPointerEvents])
+  }, [enableChildContainerPointerEvents, virtualListElement])
 
   /**
    * Listen to keyboard / blur / focus events on both input element (if present) and the virtual list element.
@@ -594,6 +600,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   return (
     <VirtualListBox
       id={getCommandListChildrenId()}
+      onMouseLeave={handleVirtualListMouseLeave}
       ref={setVirtualListElement}
       sizing="border"
       tabIndex={rootTabIndex}
