@@ -377,22 +377,9 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     [setActiveIndex]
   )
 
-  const handleBlur = useCallback(() => {
-    hideChildrenActiveState()
-  }, [hideChildrenActiveState])
-
-  const handleFocus = useCallback(
-    (type: CommandListElementType) => {
-      // Conditionally prevent the container from receiving focus (which can happen when dragging overflow scroll handles)
-      if (type === 'list' && !canReceiveFocus) {
-        inputElement?.focus()
-      }
-      showChildrenActiveState()
-    },
-    [canReceiveFocus, inputElement, showChildrenActiveState]
-  )
-  const handleFocusInput = useCallback(() => handleFocus('input'), [handleFocus])
-  const handleFocusList = useCallback(() => handleFocus('list'), [handleFocus])
+  const handleFocus = useCallback(() => {
+    showChildrenActiveState()
+  }, [showChildrenActiveState])
 
   /**
    * Handle keyboard events:
@@ -517,26 +504,19 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    * Listen to keyboard / blur / focus events on both input element (if present) and the virtual list element.
    */
   useEffect(() => {
-    inputElement?.addEventListener('blur', handleBlur)
-    inputElement?.addEventListener('focus', handleFocusInput)
+    inputElement?.addEventListener('focus', handleFocus)
     inputElement?.addEventListener('keydown', handleKeyDownInput)
-    virtualListElement?.addEventListener('blur', handleBlur)
-    virtualListElement?.addEventListener('focus', handleFocusList)
+    virtualListElement?.addEventListener('focus', handleFocus)
     virtualListElement?.addEventListener('keydown', handleKeyDownList)
     return () => {
-      inputElement?.removeEventListener('blur', handleBlur)
-      inputElement?.removeEventListener('focus', handleFocusInput)
+      inputElement?.removeEventListener('focus', handleFocus)
       inputElement?.removeEventListener('keydown', handleKeyDownInput)
-      virtualListElement?.removeEventListener('blur', handleBlur)
-      virtualListElement?.removeEventListener('focus', handleFocusList)
+      virtualListElement?.removeEventListener('focus', handleFocus)
       virtualListElement?.removeEventListener('keydown', handleKeyDownList)
     }
   }, [
     canReceiveFocus,
-    handleBlur,
     handleFocus,
-    handleFocusInput,
-    handleFocusList,
     handleKeyDown,
     handleKeyDownInput,
     handleKeyDownList,
