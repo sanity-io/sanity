@@ -527,21 +527,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   ])
 
   /**
-   * Show the pointer overlay until the next call stack to temporarily disable pointer events (or 'flush' existing hover states)
-   * whenever virtual list values change.
-   *
-   * This is done to prevent the 'double active state' issue that can occur when changing values within the virtual list, where the
-   * `initialIndex` as well as the item directly under your pointer will be marked as active.
-   *
-   * We only show it for a moment to ensure that scrolling isn't impeded if this virtual list utilises lazy loading / infinite scroll.
-   * This workaround is a little hacky and should be refactored in future.
-   */
-  useEffect(() => {
-    enableChildContainerPointerEvents(false)
-    setTimeout(() => enableChildContainerPointerEvents(true), 0)
-  }, [activeItemCount, enableChildContainerPointerEvents, hideChildrenActiveState])
-
-  /**
    * Refresh selected state when item values change (as a result of filtering).
    * This is to ensure that we correctly clear aria-activedescendant attrs if the filtered array is empty.
    */
