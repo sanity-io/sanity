@@ -266,7 +266,7 @@ export default async function initSanity(
       const embeddedStudioPath = path.join(
         srcPath,
         `${studioPath}/`,
-        useAppDir ? '[[..index]]/page.tsx' : '[[...index]].tsx'
+        useAppDir ? '[[...index]]/page.tsx' : '[[...index]].tsx'
       )
 
       // this selects the correct template string based on whether the user is using the app or pages directory and
