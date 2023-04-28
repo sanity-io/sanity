@@ -39,21 +39,11 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
 export default defineCliConfig({ api: { projectId, dataset } })
 `
 
-export const sanityStudioPagesTemplate = `import Head from 'next/head'
-import { NextStudio } from 'next-sanity/studio'
-import { NextStudioHead } from 'next-sanity/studio/head'
+export const sanityStudioPagesTemplate = `import { NextStudio } from 'next-sanity/studio'
 import config from ':configPath:'
 
 export default function StudioPage() {
-  return (
-    <>
-      <Head>
-        <NextStudioHead favicons={false} />
-      </Head>
-
-      <NextStudio config={config} />
-    </>
-  )
+  return <NextStudio config={config} />
 }`
 
 export const sanityStudioAppTemplate = `'use client'
