@@ -5,9 +5,9 @@ import type {
   SearchableType,
   SearchOptions,
   SearchPath,
+  SearchSort,
   SearchSpec,
   SearchTerms,
-  SortDirection,
   WeightedSearchOptions,
 } from './types'
 
@@ -121,6 +121,21 @@ export function extractTermsFromQuery(query: string): string[] {
   return [...quotedTerms, ...remainingTerms]
 }
 
+export function toOrderClause(orderBy: SearchSort[]): string {
+  return (orderBy || [])
+    .map((ordering) =>
+      [wrapFieldWithFn(ordering), (ordering.direction || '').toLowerCase()]
+        .map((str) => str.trim())
+        .filter(Boolean)
+        .join(' ')
+    )
+    .join(',')
+}
+
+function wrapFieldWithFn(ordering: SearchSort): string {
+  return ordering.mapWith ? `${ordering.mapWith}(${ordering.field})` : ordering.field
+}
+
 /**
  * @internal
  */
@@ -165,19 +180,29 @@ export function createSearchQuery(
     return `${constraint}${selection}`
   })
 
-  const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
-
   // Default to `_id asc` (GROQ default) if no search sort is provided
-  const sortDirection = searchOpts?.sort?.direction || ('asc' as SortDirection)
-  const sortField = searchOpts?.sort?.field || '_id'
+  const sortOrder = toOrderClause(searchOpts?.sort || [{field: '_id', direction: 'asc'}])
+  const projectionFields = ['_type', '_id']
+  const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
+  const finalProjection = projectionFields.join(', ') + (selection ? `, ${selection}` : '')
 
-  const query =
+  let query =
     `*[${filters.join(' && ')}]` +
-    `| order(${sortField} ${sortDirection})` +
+    `| order(${sortOrder})` +
     `[$__offset...$__limit]` +
     // the following would improve search quality for paths-with-numbers, but increases the size of the query by up to 50%
     // `${hasIndexedPaths ? `[${createConstraints(terms, exactSearchSpec).join(' && ')}]` : ''}` +
-    `{_type, _id, ${selection}}`
+    `{${finalProjection}}`
+
+  if (searchOpts?.extendedProjection) {
+    const extendedProjection = searchOpts?.extendedProjection
+    const firstProjection = projectionFields.concat(extendedProjection).join(', ')
+
+    query = [
+      `*[${filters.join(' && ')}]{${firstProjection}}`,
+      `order(${sortOrder})[$__offset...$__limit]{${finalProjection}}`,
+    ].join('|')
+  }
 
   // Prepend optional GROQ comments to query
   const groqComments = (searchOpts?.comments || []).map((s) => `// ${s}`).join('\n')
