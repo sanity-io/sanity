@@ -44,7 +44,8 @@ import {
   sanityCliTemplate,
   sanityConfigTemplate,
   sanityFolder,
-  sanityStudioPageTemplate,
+  sanityStudioAppTemplate,
+  sanityStudioPagesTemplate,
 } from './templates/nextjs'
 
 // eslint-disable-next-line no-process-env
@@ -226,6 +227,23 @@ export default async function initSanity(
   outputPath = answers.outputPath
 
   if (initNext) {
+    const useAppDir = await prompt.single({
+      type: 'confirm',
+      message: `Would you like to use the Next.js app dir?`,
+      default: false,
+    })
+
+    // find source path (app or pages dir)
+    let srcPath = path.join(workDir, useAppDir ? 'app' : 'pages')
+    if (!existsSync(srcPath)) {
+      srcPath = path.join(workDir, 'src', useAppDir ? 'app' : 'pages')
+      if (!existsSync(srcPath)) {
+        await fs
+          .mkdir(srcPath, {recursive: true})
+          .catch(() => debug('Error creating folder %s', srcPath))
+      }
+    }
+
     const useTypeScript = await prompt.single<boolean>({
       type: 'confirm',
       message: `Would you like to use TypeScript?`,
@@ -239,15 +257,6 @@ export default async function initSanity(
       message: `Would you like an embedded Sanity Studio?`,
       default: true,
     })
-
-    // find pages path
-    let pagesPath = path.join(workDir, 'pages')
-    if (!existsSync(pagesPath)) {
-      pagesPath = path.join(workDir, 'src', 'pages')
-      if (!existsSync(pagesPath)) {
-        throw new Error('Could not find pages folder')
-      }
-    }
 
     if (embeddedStudio) {
       const studioPath = await prompt.single({
@@ -272,10 +281,15 @@ export default async function initSanity(
         },
       })
 
-      const embeddedStudioPath = path.join(pagesPath, `${studioPath}/`, '[[...index]].tsx')
+      const embeddedStudioPath = path.join(
+        srcPath,
+        `${studioPath}/`,
+        useAppDir ? '[[..index]]/page.tsx' : '[[...index]].tsx'
+      )
+
       await writeOrOverwrite(
         embeddedStudioPath,
-        sanityStudioPageTemplate.replace(
+        (useAppDir ? sanityStudioAppTemplate : sanityStudioPagesTemplate).replace(
           ':configPath:',
           new Array(embeddedStudioPath.slice(workDir.length).split('/').length - 1)
             .join('../')
@@ -283,7 +297,14 @@ export default async function initSanity(
         )
       )
 
-      // sanity.config.js
+      // add layout.tsx (TODO: when we get it to work)
+      // if (useAppDir) {
+      //   await writeOrOverwrite(
+      //     path.resolve(embeddedStudioPath, '../layout.tsx'),
+      //     sanityStudioAppLayoutTemplate
+      //   )
+      // }
+
       const sanityConfigPath = path.join(workDir, 'sanity.config.'.concat(fileEnding))
       await writeOrOverwrite(
         sanityConfigPath,
@@ -310,14 +331,13 @@ export default async function initSanity(
         } else {
           await mkdirSync(path.join(workDir, 'sanity', filePath), {recursive: true})
           if (typeof content === 'object') {
-            recursivelyWriteFiles(content, filePath)
+            await recursivelyWriteFiles(content, filePath)
           }
         }
       }
     }
 
-    // ask what kind of project the user wants
-    // Prompt for template to use
+    // ask what kind of schema setup the user wants
     const templateToUse: 'blog' | 'clean' = await prompt.single({
       message: 'Select project template to use',
       type: 'list',
@@ -334,7 +354,11 @@ export default async function initSanity(
       default: 'clean',
     })
 
-    await recursivelyWriteFiles(sanityFolder(useTypeScript, templateToUse))
+    const spinner = await recursivelyWriteFiles(sanityFolder(useTypeScript, templateToUse)).then(
+      () => {
+        return context.output.spinner('Installing Sanity dependencies').start()
+      }
+    )
 
     // set tsconfig.json target to ES2017
     const tsConfigPath = path.join(workDir, 'tsconfig.json')
@@ -344,10 +368,8 @@ export default async function initSanity(
       await writeFileSync(tsConfigPath, JSON.stringify(tsConfig, null, 2))
     }
 
-    // install next-sanity
-    const spinner = context.output.spinner('Installing Sanity dependencies').start()
-
-    exec('npm install next-sanity@3 @sanity/vision@3 sanity@3 @sanity/image-url@1', {
+    // install sanity deps
+    await exec('npm install next-sanity@4 @sanity/vision@3 sanity@3 @sanity/image-url@1', {
       cwd: workDir,
     })
       .on('exit', async () => {

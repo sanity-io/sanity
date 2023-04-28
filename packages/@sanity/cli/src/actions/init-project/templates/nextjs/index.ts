@@ -35,7 +35,7 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
 export default defineCliConfig({ api: { projectId, dataset } })
 `
 
-export const sanityStudioPageTemplate = `import Head from 'next/head'
+export const sanityStudioPagesTemplate = `import Head from 'next/head'
 import { NextStudio } from 'next-sanity/studio'
 import { NextStudioHead } from 'next-sanity/studio/head'
 import { StudioLayout, StudioProvider } from 'sanity'
@@ -62,6 +62,26 @@ export default function StudioPage() {
     </>
   )
 }`
+
+export const sanityStudioAppTemplate = `'use client'
+
+/**
+ * This route is responsible for the built-in authoring environment using Sanity Studio v3.
+ * All routes under /studio will be handled by this file using Next.js' catch-all routes:
+ * https://nextjs.org/docs/routing/dynamic-routes#catch-all-routes
+ *
+ * You can learn more about the next-sanity package here:
+ * https://github.com/sanity-io/next-sanity
+ */
+
+import { NextStudio } from 'next-sanity/studio'
+import config from ':configPath:'
+
+export default function StudioPage() {
+  return <NextStudio config={config} />
+}`
+
+export const sanityStudioAppLayoutTemplate = `export {metadata} from 'next-sanity/studio'`
 
 // /sanity folder
 
