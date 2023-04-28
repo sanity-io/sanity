@@ -83,7 +83,8 @@ export interface SearchOptions {
   limit?: number
   offset?: number
   skipSortByScore?: boolean
-  sort?: SearchSort
+  sort?: SearchSort[]
+  extendedProjection?: string
 }
 
 /**
@@ -97,4 +98,5 @@ export type SortDirection = 'asc' | 'desc'
 export type SearchSort = {
   direction: SortDirection
   field: string
+  mapWith?: string
 }
