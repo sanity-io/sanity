@@ -1,26 +1,47 @@
-import {VirtualListChangeOpts} from '@sanity/ui'
-import {useEffect, useState, useCallback, useMemo, useRef} from 'react'
-import {of} from 'rxjs'
-import {filter as filterEvents} from 'rxjs/operators'
+import {useEffect, useState, useCallback, useMemo} from 'react'
+import {EMPTY, concat, of, switchMap} from 'rxjs'
 import {DocumentListPaneItem, QueryResult, SortOrder} from './types'
-import {removePublishedWithDrafts, toOrderClause} from './helpers'
+import {isSimpleTypeFilter, removePublishedWithDrafts} from './helpers'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {getQueryResults} from './getQueryResults'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
+import {useDocumentTypeNames} from './hooks'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  FIXME,
+  useClient,
+  useSchema,
+  createSearchQuery,
+  SearchableType,
+  SearchOptions,
+  SearchTerms,
+  WeightedSearchOptions,
+} from 'sanity'
+
+const EMPTY_ARRAY: [] = []
+
+const INITIAL_STATE: QueryResult = {
+  error: null,
+  isInitialLoading: true,
+  onRetry: undefined,
+  result: null,
+}
 
 interface UseDocumentListOpts {
+  apiVersion?: string
   filter: string
   params: Record<string, unknown>
+  searchQuery: string | null
   sortOrder?: SortOrder
-  apiVersion?: string
 }
 
 interface DocumentListState {
   error: {message: string} | null
-  fullList: boolean
-  handleListChange: ({toIndex}: VirtualListChangeOpts) => void
+  hasMaxItems?: boolean
+  isLazyLoading: boolean
   isLoading: boolean
-  items: DocumentListPaneItem[] | null
+  isSearchReady: boolean
+  items: DocumentListPaneItem[]
+  onListChange: () => void
   onRetry?: (event: unknown) => void
 }
 
@@ -28,84 +49,187 @@ interface DocumentListState {
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
-  const {apiVersion, filter, params, sortOrder} = opts
+  const {apiVersion, filter, params: paramsProp, sortOrder, searchQuery} = opts
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const [fullList, setFullList] = useState(false)
-  const fullListRef = useRef(fullList)
-  const [result, setResult] = useState<QueryResult | null>(null)
-  const error = result?.error || null
-  const isLoading = result?.loading || result === null
-  const onRetry = result?.onRetry
-  const documents = result?.result?.documents
+  const schema = useSchema()
+
+  const [resultState, setResult] = useState<QueryResult>(INITIAL_STATE)
+  const {onRetry, error, result, loading, isInitialLoading} = resultState
+
+  const documents = result?.documents
+
   const items = useMemo(
-    () => (documents ? removePublishedWithDrafts(documents) : null),
+    () => (documents ? removePublishedWithDrafts(documents) : EMPTY_ARRAY),
     [documents]
   )
 
-  const query = useMemo(() => {
-    const extendedProjection = sortOrder?.extendedProjection
-    const projectionFields = ['_id', '_type']
-    const finalProjection = projectionFields.join(',')
-    const sortBy = sortOrder?.by || []
-    const limit = fullList ? FULL_LIST_LIMIT : PARTIAL_PAGE_LIMIT
-    const sort = sortBy.length > 0 ? sortBy : DEFAULT_ORDERING.by
-    const order = toOrderClause(sort)
+  // A state variable to keep track of whether we are currently lazy loading the list.
+  // This is used to determine whether we should show the loading spinner at the bottom of the list.
+  const [isLazyLoading, setIsLazyLoading] = useState<boolean>(false)
 
-    if (extendedProjection) {
-      const firstProjection = projectionFields.concat(extendedProjection).join(',')
-      return [
-        `*[${filter}] {${firstProjection}}`,
-        `order(${order}) [0...${limit}]`,
-        `{${finalProjection}}`,
-      ].join('|')
-    }
+  // A flag to indicate whether we have reached the maximum number of documents.
+  const hasMaxItems = documents?.length === FULL_LIST_LIMIT
 
-    return `*[${filter}]|order(${order})[0...${limit}]{${finalProjection}}`
-  }, [filter, fullList, sortOrder])
+  // A state to keep track of whether we have fetched the full list of documents.
+  const [hasFullList, setHasFullList] = useState<boolean>(false)
 
-  const handleListChange = useCallback(
-    ({toIndex}: VirtualListChangeOpts) => {
-      if (isLoading || fullListRef.current) {
+  // A state to keep track of whether we should fetch the full list of documents.
+  const [shouldFetchFullList, setShouldFetchFullList] = useState<boolean>(false)
+
+  // Check if the filter is a simple filter (i.e. a filter that only contains a single document type).
+  const isSimpleFilter = isSimpleTypeFilter(filter)
+
+  // Fetch the names of all document types that match the filter and params.
+  // This allows us to search for documents of all types in the list.
+  const {data: fetchedTypeNames, loading: loadingDocumentTypes} = useDocumentTypeNames({
+    filter,
+    params: paramsProp,
+    // Disable the hook if the filter is a simple filter.
+    disabled: isSimpleFilter,
+  })
+
+  const isLoading = isInitialLoading || Boolean(loading && result === null)
+
+  // The document types to use for the search query.
+  const typeNames = useMemo(() => {
+    const typeFromParams = paramsProp?.type as string
+
+    return [...new Set((isSimpleFilter ? [typeFromParams] : fetchedTypeNames) || EMPTY_ARRAY)]
+  }, [isSimpleFilter, fetchedTypeNames, paramsProp?.type])
+
+  const onListChange = useCallback(() => {
+    if (isLoading || hasFullList || shouldFetchFullList) return
+
+    setShouldFetchFullList(true)
+  }, [isLoading, hasFullList, shouldFetchFullList])
+
+  const handleSetResult = useCallback(
+    (res: QueryResult) => {
+      const documentsLength = res.result?.documents?.length || 0
+
+      const isLoadingMoreItems = !res.error && res?.result === null && shouldFetchFullList
+
+      // 1. When the result is null, we are loading more items. In this case, we want to
+      // set the loading state to true and wait for the next result.
+      if (isLoadingMoreItems) {
+        setResult((prev) => ({...prev, loading: true}))
+        setIsLazyLoading(true)
         return
       }
 
-      if (toIndex >= PARTIAL_PAGE_LIMIT / 2) {
-        setFullList(true)
-
-        // Prevent change handler from firing again before setState kicks in
-        fullListRef.current = true
+      // 2. If the result is not null, and less than the partial page limit, we know that
+      // we have fetched the full list of documents. In this case, we want to set the
+      // hasFullList state to true to prevent further requests.
+      if (documentsLength < PARTIAL_PAGE_LIMIT && documentsLength !== 0 && !shouldFetchFullList) {
+        setHasFullList(true)
       }
+
+      // 3. If the result is null, we are loading more items. In this case, we want to
+      // set the loading state to true and wait for the next result.
+      if (res?.result === null) {
+        setResult((prev) => ({...prev, loading: true}))
+
+        return
+      }
+
+      // 4. Finally, set the result and loading state to false.
+      setIsLazyLoading(false)
+      setResult({...res, loading: false})
     },
-    [isLoading]
+    [shouldFetchFullList]
   )
+
+  const {params, query} = useMemo(() => {
+    const sort = sortOrder?.by || DEFAULT_ORDERING?.by
+    const extendedProjection = sortOrder?.extendedProjection || DEFAULT_ORDERING?.extendedProjection
+    const limit = shouldFetchFullList ? FULL_LIST_LIMIT : PARTIAL_PAGE_LIMIT
+    const types = typeNames.flatMap((name) => schema.get(name) || []) as SearchableType[]
+
+    const terms: SearchTerms = {
+      query: searchQuery || '',
+      types,
+      filter: isSimpleFilter ? undefined : filter,
+    }
+
+    const options: SearchOptions & WeightedSearchOptions = {
+      params: paramsProp,
+      limit,
+      sort,
+      extendedProjection,
+    }
+
+    return createSearchQuery(terms, options)
+  }, [
+    filter,
+    isSimpleFilter,
+    paramsProp,
+    schema,
+    searchQuery,
+    shouldFetchFullList,
+    sortOrder?.by,
+    sortOrder?.extendedProjection,
+    typeNames,
+  ])
+
+  const listener$ = useMemo(() => {
+    if (typeNames.length === 0) {
+      return EMPTY
+    }
+
+    return client.observable.listen(
+      `*[_type in $types]`,
+      {types: typeNames},
+      {events: ['welcome', 'mutation']}
+    )
+  }, [client.observable, typeNames])
+
+  const getQueryResultsProps = useMemo(() => ({client, query, params}), [client, params, query])
 
   // Set up the document list listener
   useEffect(() => {
-    // @todo: explain what this does
-    const filterFn = fullList
-      ? (queryResult: {result: QueryResult | null}) => Boolean(queryResult.result)
-      : () => true
+    setResult((prev) => ({...prev, loading: true}))
 
-    // Set loading state
-    setResult((r) => (r ? {...r, loading: true} : null))
+    const queryResults$ = listener$.pipe(
+      switchMap(() => {
+        return getQueryResults(of(getQueryResultsProps), {
+          apiVersion,
+          tag: 'desk.document-list',
+        })
+      })
+    )
 
-    const queryResults$ = getQueryResults(of({client, query, params}), {
-      apiVersion,
-      tag: 'desk.document-list',
-    }).pipe(filterEvents(filterFn) as any)
+    const initial$ = of(INITIAL_STATE)
+    const state$ = concat(initial$, queryResults$)
+    const sub = state$.subscribe(handleSetResult as FIXME)
 
-    const sub = queryResults$.subscribe(setResult as any)
+    return () => {
+      sub.unsubscribe()
+    }
+  }, [apiVersion, getQueryResultsProps, handleSetResult, listener$])
 
-    return () => sub.unsubscribe()
-  }, [apiVersion, client, fullList, query, params])
+  const reset = useCallback(() => {
+    setResult(INITIAL_STATE)
+    setHasFullList(false)
+    setShouldFetchFullList(false)
+    setIsLazyLoading(false)
+  }, [])
 
-  // If `filter` or `params` changed, set up a new query from scratch.
-  // If `sortOrder` changed, set up a new query from scratch as well.
   useEffect(() => {
-    setResult(null)
-    setFullList(false)
-    fullListRef.current = false
-  }, [filter, params, sortOrder, apiVersion])
+    reset()
+  }, [reset, filter, paramsProp, sortOrder, searchQuery, typeNames])
 
-  return {error, fullList, handleListChange, isLoading, items, onRetry}
+  const isSearchReady = isSimpleFilter
+    ? typeNames.length > 0
+    : typeNames.length > 0 && !loadingDocumentTypes
+
+  return {
+    error,
+    hasMaxItems,
+    isLazyLoading,
+    isLoading: isSimpleFilter ? isLoading : Boolean(!isSearchReady || isLoading),
+    isSearchReady,
+    items,
+    onListChange,
+    onRetry,
+  }
 }
