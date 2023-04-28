@@ -79,6 +79,26 @@ describe('createSearchQuery', () => {
       expect(params.t1).toBeUndefined()
       expect(terms).toEqual(['term'])
     })
+
+    it('should add extendedProjection to query', () => {
+      const {query} = createSearchQuery(
+        {
+          query: 'term',
+          types: [testType],
+        },
+        {
+          extendedProjection: 'object{field}',
+        }
+      )
+
+      const result = [
+        '*[_type in $__types && (title match $t0)]{_type, _id, object{field}}',
+        '|order(_id asc)[$__offset...$__limit]',
+        '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
+      ].join('')
+
+      expect(query).toBe(result)
+    })
   })
 
   describe('searchOptions', () => {
@@ -157,10 +177,12 @@ describe('createSearchQuery', () => {
           types: [testType],
         },
         {
-          sort: {
-            direction: 'desc',
-            field: 'exampleField',
-          },
+          sort: [
+            {
+              direction: 'desc',
+              field: 'exampleField',
+            },
+          ],
         }
       )
 
@@ -170,6 +192,40 @@ describe('createSearchQuery', () => {
           '[$__offset...$__limit]' +
           '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
       )
+    })
+
+    it('should use multiple sort fields and directions', () => {
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [testType],
+        },
+        {
+          sort: [
+            {
+              direction: 'desc',
+              field: 'exampleField',
+            },
+            {
+              direction: 'asc',
+              field: 'anotherExampleField',
+            },
+            {
+              direction: 'asc',
+              field: 'mapWithField',
+              mapWith: 'lower',
+            },
+          ],
+        }
+      )
+
+      const result = [
+        '*[_type in $__types && (title match $t0)]| ',
+        'order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc)',
+        '[$__offset...$__limit]{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
+      ].join('')
+
+      expect(query).toEqual(result)
     })
 
     it('should order results by _id ASC if no sort field and direction is configured', () => {
