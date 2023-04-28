@@ -108,17 +108,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   // Set as active whenever we have focus inside the editor.
   useEffect(() => {
-    if (hasFocus || focusPath.length > 1) {
+    if (hasFocus || focusPath.length) {
       setIsActive(true)
     }
   }, [hasFocus, focusPath])
 
   // Set focused if the focusPath includes the path
   useEffect(() => {
-    if (path && focusPath.length > 0) {
-      const pathStr = pathToString(path)
-      const focusPathStr = pathToString(focusPath)
-      setHasFocus(focusPathStr.startsWith(pathStr))
+    if (focusPath.length) {
+      setHasFocus(true)
     }
   }, [focusPath, path])
 
@@ -265,14 +263,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
       debounce(
         (sel: EditorSelection) => {
           if (sel && hasFocus) {
-            const fullPath = path.concat(sel.focus.path)
-            onPathFocus(fullPath)
+            onPathFocus(sel.focus.path)
           }
         },
         500,
         {trailing: true, leading: false}
       ),
-    [hasFocus, onPathFocus, path]
+    [hasFocus, onPathFocus]
   )
 
   // Handle editor changes
