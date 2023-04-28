@@ -58,8 +58,6 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   getItemKey?: CommandListGetItemKeyCallback
   /** Custom function to map selected items */
   getItemSelected?: CommandListGetItemSelectedCallback
-  /** Clear selection state on when mouse leaves the virtual list */
-  hideSelectionOnMouseLeave?: boolean
   /** Scroll alignment of the initial active index */
   initialScrollAlign?: ScrollToOptions['align']
   /** Initial active index on mount */
@@ -74,6 +72,8 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   onEndReached?: () => void
   /** Number of items from the end of the virtual list before which `onEndReached` is triggered */
   onEndReachedIndexOffset?: number
+  /** Only show selection state when the virtual list is active (is hovered or has focus) */
+  onlyShowSelectionWhenActive?: boolean
   /** Number of items to render above and below the visible area*/
   overscan?: number
   /** Rendered component in virtual lists */

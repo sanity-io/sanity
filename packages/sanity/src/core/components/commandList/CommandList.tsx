@@ -103,11 +103,10 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     autoFocus,
     canReceiveFocus,
     fixedHeight,
-    focusRingOffset,
+    focusRingOffset = 0,
     getItemDisabled,
     getItemKey,
     getItemSelected,
-    hideSelectionOnMouseLeave,
     initialIndex,
     initialScrollAlign = 'start',
     inputElement,
@@ -115,6 +114,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     items,
     onEndReached,
     onEndReachedIndexOffset = 0,
+    onlyShowSelectionWhenActive,
     overscan,
     renderItem,
     wrapAround = true,
@@ -224,7 +224,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    */
   const showChildrenActiveState = useCallback(() => {
     const hasFocus = [inputElement, virtualListElement].some((el) => document.activeElement === el)
-    if (hideSelectionOnMouseLeave && !hasFocus && !hovered) {
+    if (onlyShowSelectionWhenActive && !hasFocus && !hovered) {
       return
     }
 
@@ -239,10 +239,10 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   }, [
     activeItemDataAttr,
     childContainerElement?.children,
-    hideSelectionOnMouseLeave,
     hovered,
     inputElement,
     itemIndices,
+    onlyShowSelectionWhenActive,
     virtualListElement,
   ])
 
@@ -446,17 +446,17 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   )
 
   const handleVirtualListMouseEnter = useCallback(() => {
-    if (hideSelectionOnMouseLeave) {
+    if (onlyShowSelectionWhenActive) {
       showChildrenActiveState()
       setHovered(true)
     }
-  }, [hideSelectionOnMouseLeave, showChildrenActiveState])
+  }, [onlyShowSelectionWhenActive, showChildrenActiveState])
   const handleVirtualListMouseLeave = useCallback(() => {
-    if (hideSelectionOnMouseLeave) {
+    if (onlyShowSelectionWhenActive) {
       hideChildrenActiveState()
       setHovered(false)
     }
-  }, [hideChildrenActiveState, hideSelectionOnMouseLeave])
+  }, [hideChildrenActiveState, onlyShowSelectionWhenActive])
 
   useImperativeHandle(
     ref,
@@ -498,7 +498,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       })
     }
     isMountedRef.current = true
-  }, [hideSelectionOnMouseLeave, initialIndex, initialScrollAlign, setActiveIndex])
+  }, [initialIndex, initialScrollAlign, onlyShowSelectionWhenActive, setActiveIndex])
 
   /**
    * Re-enable child pointer events on any mouse move event
@@ -624,7 +624,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       tabIndex={rootTabIndex}
       {...responsivePaddingProps}
     >
-      {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset ?? 0} />}
+      {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
       <PointerOverlayDiv aria-hidden="true" data-enabled ref={setPointerOverlayElement} />
       {virtualizer && (
         <VirtualListChildBox

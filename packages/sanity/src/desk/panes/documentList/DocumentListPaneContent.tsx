@@ -210,13 +210,13 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             ariaLabel="Document list"
             canReceiveFocus
             focusRingOffset={-3}
-            hideSelectionOnMouseLeave
             initialScrollAlign="center"
             inputElement={searchInputElement}
             itemHeight={51}
             items={items}
             key={key}
             onEndReached={handleEndReached}
+            onlyShowSelectionWhenActive
             overscan={10}
             padding={2}
             paddingBottom={1}
