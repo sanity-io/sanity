@@ -185,6 +185,18 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
                   )
                 ),
 
+              S.listItem()
+                .title('Drafts')
+                .child(
+                  S.documentList({
+                    id: 'drafts-list',
+                    title: 'Drafts',
+                    options: {
+                      filter: '_id in path("drafts.**")',
+                    },
+                  })
+                ),
+
               // A singleton not using `documentListItem`, eg no built-in preview
               S.listItem()
                 .title('Singleton?')
