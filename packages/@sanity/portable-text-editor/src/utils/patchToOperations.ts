@@ -53,67 +53,69 @@ export function createPatchToOperations(
 
 function diffMatchPatch(editor: Editor, patch: DiffMatchPatch): boolean {
   const blockKey = findLastKey([patch.path[0]])
-  const blockIndex = editor.children.findIndex((node, indx) => {
-    return blockKey ? node._key === blockKey : indx === patch.path[0]
+  const blockIndex = editor.children.findIndex((node, index) => {
+    return blockKey ? node._key === blockKey : index === patch.path[0]
   })
   const block = editor.children[blockIndex] as Element | undefined
-  const parsed = parsePatch(patch.value)[0]
   const isSpanTextDiffMatchPatch =
+    block &&
     editor.isTextBlock(block) &&
-    patch.path[1] === 'children' &&
     patch.path.length === 4 &&
+    patch.path[1] === 'children' &&
     patch.path[3] === 'text'
-  if (parsed && isSpanTextDiffMatchPatch) {
-    const distance = parsed.length2 - parsed.length1
-    let text
-    if (parsed.diffs[1]) {
-      text = parsed.diffs[1][1]
-    } else {
-      text = parsed.diffs[0][1]
-    }
-    if (patch.path[1] === 'children') {
-      const childKey = findLastKey([patch.path[2]])
-      const childIndex = block.children.findIndex((node, indx) => {
-        return childKey ? node._key === childKey : indx === patch.path[0]
-      })
-      const slatePath = [blockIndex]
-      if (childIndex > -1) {
-        slatePath.push(childIndex)
-      }
-      const point = {
-        path: slatePath,
-        offset:
-          distance >= 0
-            ? (parsed.start1 || 0) + parsed.diffs[0][1].length
-            : (parsed.start2 || 0) + parsed.length2 - distance,
-      }
-      // debug(
-      //   `DiffMatchPatch (${distance < 0 ? 'remove' : 'insert'}) at ${JSON.stringify(slatePath)}}: `,
-      //   JSON.stringify(point, null, 2),
-      //   JSON.stringify(parsed, null, 2)
-      // )
-      debugState(editor, 'before')
 
-      if (distance >= 0) {
-        editor.apply({
-          type: 'insert_text',
-          path: point.path,
-          offset: point.offset,
-          text,
-        })
-      } else {
-        editor.apply({
-          type: 'remove_text',
-          path: point.path,
-          offset: point.offset - text.length,
-          text,
-        })
-      }
-    }
-    debugState(editor, 'after')
-    return true
+  if (!block || !isSpanTextDiffMatchPatch) {
+    return false
   }
-  return false
+
+  const patches = parsePatch(patch.value)
+  const parsed = patches[0]
+  const distance = parsed.length2 - parsed.length1
+  let text
+  if (parsed.diffs[1]) {
+    text = parsed.diffs[1][1]
+  } else {
+    text = parsed.diffs[0][1]
+  }
+
+  const childKey = findLastKey([patch.path[2]])
+  const childIndex = block.children.findIndex((node, indx) => {
+    return childKey ? node._key === childKey : indx === patch.path[0]
+  })
+  const slatePath = [blockIndex]
+  if (childIndex > -1) {
+    slatePath.push(childIndex)
+  }
+
+  const point = {
+    path: slatePath,
+    offset:
+      distance >= 0
+        ? (parsed.start1 || 0) + parsed.diffs[0][1].length
+        : (parsed.start2 || 0) + parsed.length2 - distance,
+  }
+
+  debugState(editor, 'before')
+
+  if (distance >= 0) {
+    editor.apply({
+      type: 'insert_text',
+      path: point.path,
+      offset: point.offset,
+      text,
+    })
+  } else {
+    editor.apply({
+      type: 'remove_text',
+      path: point.path,
+      offset: point.offset - text.length,
+      text,
+    })
+  }
+
+  debugState(editor, 'after')
+
+  return true
 }
 
 function insertPatch(
