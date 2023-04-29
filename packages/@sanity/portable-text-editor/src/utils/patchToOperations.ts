@@ -14,12 +14,7 @@ const debug = debugWithName('patchToOperations')
 
 export function createPatchToOperations(
   schemaTypes: PortableTextMemberSchemaTypes
-): (
-  editor: Editor,
-  patch: Patch,
-  patches: Patch[],
-  snapshot: PortableTextBlock[] | undefined
-) => boolean {
+): (editor: Editor, patch: Patch) => boolean {
   let previousPatch: Patch | undefined
 
   return function (editor: Editor, patch: Patch): boolean {

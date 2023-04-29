@@ -5,7 +5,6 @@ import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
 import {createPatchToOperations} from '../patchToOperations'
 import {withPlugins} from '../../editor/plugins'
 import {keyGenerator, Patch, PortableTextEditor} from '../..'
-import {fromSlateValue} from '../values'
 import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
 
 const schemaTypes = getPortableTextMemberSchemaTypes(schemaType)
@@ -64,9 +63,8 @@ describe('operationToPatches', () => {
         origin: 'remote',
       },
     ] as Patch[]
-    const snapShot = fromSlateValue(editor.children, schemaTypes.block.name)
     patches.forEach((p) => {
-      patchToOperations(editor, p, patches, snapShot)
+      patchToOperations(editor, p)
     })
     expect(editor.children).toMatchInlineSnapshot(`
       Array [
@@ -118,9 +116,8 @@ describe('operationToPatches', () => {
     const patches = [
       {type: 'insert', path: [{_key: 'c01739b0d03b'}, 'nestedArray', -1], origin: 'remote'},
     ] as Patch[]
-    const snapShot = fromSlateValue(editor.children, schemaTypes.block.name)
     patches.forEach((p) => {
-      patchToOperations(editor, p, patches, snapShot)
+      patchToOperations(editor, p)
     })
     expect(editor.children).toMatchInlineSnapshot(`
       Array [
@@ -178,9 +175,8 @@ describe('operationToPatches', () => {
     const patches = [
       {type: 'unset', path: [{_key: 'c01739b0d03b'}, 'nestedArray', 0], origin: 'remote'},
     ] as Patch[]
-    const snapShot = fromSlateValue(editor.children, schemaTypes.block.name)
     patches.forEach((p) => {
-      patchToOperations(editor, p, patches, snapShot)
+      patchToOperations(editor, p)
     })
     expect(editor.children).toMatchInlineSnapshot(`
       Array [
@@ -254,9 +250,8 @@ describe('operationToPatches', () => {
         value: {href: 'http://www.test.com'},
       },
     ] as Patch[]
-    const snapShot = fromSlateValue(editor.children, schemaTypes.block.name)
     patches.forEach((p) => {
-      patchToOperations(editor, p, patches, snapShot)
+      patchToOperations(editor, p)
     })
     expect(editor.children).toMatchInlineSnapshot(`
       Array [
