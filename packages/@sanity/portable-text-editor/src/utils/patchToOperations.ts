@@ -419,7 +419,11 @@ function findLastKey(path: Path): string | null {
   return key
 }
 
-function debugState(editor: Editor, stateName: string) {
+function debugState(editor: Partial<Pick<Editor, 'children' | 'selection'>>, stateName: string) {
+  if (!debug.enabled) {
+    return
+  }
+
   debug(`Children ${stateName}:`, JSON.stringify(editor.children, null, 2))
   debug(`Selection ${stateName}: `, JSON.stringify(editor.selection, null, 2))
 }
