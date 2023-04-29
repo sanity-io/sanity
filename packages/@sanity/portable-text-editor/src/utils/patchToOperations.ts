@@ -1,7 +1,22 @@
 /* eslint-disable max-statements */
 import {Editor, Transforms, Element, Path as SlatePath, Descendant, Text, Node} from 'slate'
-import {parsePatch} from '@sanity/diff-match-patch'
-import {Path, KeyedSegment, PathSegment, PortableTextBlock, PortableTextChild} from '@sanity/types'
+import {
+  applyPatches,
+  cleanupEfficiency,
+  makeDiff,
+  parsePatch,
+  DIFF_DELETE,
+  DIFF_EQUAL,
+  DIFF_INSERT,
+} from '@sanity/diff-match-patch'
+import type {
+  Path,
+  KeyedSegment,
+  PathSegment,
+  PortableTextBlock,
+  PortableTextChild,
+  PortableTextSpan,
+} from '@sanity/types'
 import {isEqual} from 'lodash'
 import type {Patch, InsertPatch, UnsetPatch, SetPatch, DiffMatchPatch} from '../types/patch'
 import {applyAll} from '../patch/applyPatch'
@@ -51,7 +66,19 @@ export function createPatchToOperations(
   }
 }
 
-function diffMatchPatch(editor: Editor, patch: DiffMatchPatch): boolean {
+/**
+ * Apply a remote diff match patch to the current PTE instance.
+ * Note meant for external consumption, only exported for testing purposes.
+ *
+ * @param editor - Portable text slate editor instance
+ * @param patch - The PTE diff match patch operation to apply
+ * @returns true if the patch was applied, false otherwise
+ * @internal
+ */
+export function diffMatchPatch(
+  editor: Pick<Editor, 'children' | 'isTextBlock' | 'apply'>,
+  patch: DiffMatchPatch
+): boolean {
   const blockKey = findLastKey([patch.path[0]])
   const blockIndex = editor.children.findIndex((node, index) => {
     return blockKey ? node._key === blockKey : index === patch.path[0]
@@ -64,53 +91,38 @@ function diffMatchPatch(editor: Editor, patch: DiffMatchPatch): boolean {
     patch.path[1] === 'children' &&
     patch.path[3] === 'text'
 
-  if (!block || !isSpanTextDiffMatchPatch) {
+  if (!isSpanTextDiffMatchPatch) {
     return false
   }
 
-  const patches = parsePatch(patch.value)
-  const parsed = patches[0]
-  const distance = parsed.length2 - parsed.length1
-  let text
-  if (parsed.diffs[1]) {
-    text = parsed.diffs[1][1]
-  } else {
-    text = parsed.diffs[0][1]
-  }
-
   const childKey = findLastKey([patch.path[2]])
-  const childIndex = block.children.findIndex((node, indx) => {
-    return childKey ? node._key === childKey : indx === patch.path[0]
+  const childIndex = block.children.findIndex((node, index) => {
+    return childKey ? node._key === childKey : index === patch.path[0]
   })
-  const slatePath = [blockIndex]
-  if (childIndex > -1) {
-    slatePath.push(childIndex)
+
+  if (childIndex === -1) {
+    // @todo in which cases does this ever happen? is it acceptable to skip?
+    return false
   }
 
-  const point = {
-    path: slatePath,
-    offset:
-      distance >= 0
-        ? (parsed.start1 || 0) + parsed.diffs[0][1].length
-        : (parsed.start2 || 0) + parsed.length2 - distance,
-  }
+  const slatePath = [blockIndex, childIndex]
+  const child: PortableTextSpan = block.children[childIndex] as PortableTextSpan
+
+  const patches = parsePatch(patch.value)
+  const [newValue] = applyPatches(patches, child.text)
+  const diff = cleanupEfficiency(makeDiff(child.text, newValue), 5)
 
   debugState(editor, 'before')
-
-  if (distance >= 0) {
-    editor.apply({
-      type: 'insert_text',
-      path: point.path,
-      offset: point.offset,
-      text,
-    })
-  } else {
-    editor.apply({
-      type: 'remove_text',
-      path: point.path,
-      offset: point.offset - text.length,
-      text,
-    })
+  let offset = 0
+  for (const [op, text] of diff) {
+    if (op === DIFF_INSERT) {
+      editor.apply({type: 'insert_text', path: slatePath, offset, text})
+      offset += text.length
+    } else if (op === DIFF_DELETE) {
+      editor.apply({type: 'remove_text', path: slatePath, offset: offset, text})
+    } else if (op === DIFF_EQUAL) {
+      offset += text.length
+    }
   }
 
   debugState(editor, 'after')
@@ -407,6 +419,9 @@ function isKeyedSegment(segment: PathSegment): segment is KeyedSegment {
 function findLastKey(path: Path): string | null {
   let key: string | null = null
 
+  // @todo why does this find the _last_ part?
+  // if the path is root -> block -> span -> text,
+  // won't this return the block key?
   path
     .concat('')
     .reverse()
