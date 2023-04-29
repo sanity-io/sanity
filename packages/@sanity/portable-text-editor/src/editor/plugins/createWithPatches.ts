@@ -120,7 +120,7 @@ export function createWithPatches({
               return incoming
             })
           )
-          .subscribe(({patches, snapshot}) => {
+          .subscribe(({patches}) => {
             const remotePatches = patches.filter((p) => p.origin !== 'local')
             if (remotePatches.length !== 0) {
               debug('Remote patches', patches)
@@ -131,7 +131,7 @@ export function createWithPatches({
                     withoutSaving(editor, () => {
                       withPreserveKeys(editor, () => {
                         try {
-                          patchToOperations(editor, patch, patches, snapshot)
+                          patchToOperations(editor, patch)
                         } catch (err) {
                           debug('Got error trying to create operations from patch')
                           console.error(err)
