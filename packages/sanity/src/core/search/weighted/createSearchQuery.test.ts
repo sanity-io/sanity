@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import {FINDABILITY_MVI} from '../constants'
 import {createSearchQuery, DEFAULT_LIMIT, extractTermsFromQuery} from './createSearchQuery'
 import type {SearchableType} from './types'
 
@@ -21,7 +22,8 @@ describe('createSearchQuery', () => {
       })
 
       expect(query).toEqual(
-        '*[_type in $__types && (title match $t0)]' +
+        `// findability-mvi:${FINDABILITY_MVI}\n` +
+          '*[_type in $__types && (title match $t0)]' +
           '| order(_id asc)' +
           '[$__offset...$__limit]' +
           '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
@@ -92,7 +94,8 @@ describe('createSearchQuery', () => {
       )
 
       const result = [
-        '*[_type in $__types && (title match $t0)]{_type, _id, object{field}}',
+        `// findability-mvi:${FINDABILITY_MVI}\n` +
+          '*[_type in $__types && (title match $t0)]{_type, _id, object{field}}',
         '|order(_id asc)[$__offset...$__limit]',
         '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
       ].join('')
@@ -187,7 +190,8 @@ describe('createSearchQuery', () => {
       )
 
       expect(query).toEqual(
-        '*[_type in $__types && (title match $t0)]' +
+        `// findability-mvi:${FINDABILITY_MVI}\n` +
+          '*[_type in $__types && (title match $t0)]' +
           '| order(exampleField desc)' +
           '[$__offset...$__limit]' +
           '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
@@ -220,6 +224,7 @@ describe('createSearchQuery', () => {
       )
 
       const result = [
+        `// findability-mvi:${FINDABILITY_MVI}\n`,
         '*[_type in $__types && (title match $t0)]| ',
         'order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc)',
         '[$__offset...$__limit]{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
@@ -235,7 +240,8 @@ describe('createSearchQuery', () => {
       })
 
       expect(query).toEqual(
-        '*[_type in $__types && (title match $t0)]' +
+        `// findability-mvi:${FINDABILITY_MVI}\n` +
+          '*[_type in $__types && (title match $t0)]' +
           '| order(_id asc)' +
           '[$__offset...$__limit]' +
           '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
@@ -253,8 +259,9 @@ describe('createSearchQuery', () => {
         }
       )
       const splitQuery = query.split('\n')
-      expect(splitQuery[0]).toEqual('// foo=1')
-      expect(splitQuery[1]).toEqual('// bar')
+      expect(splitQuery[0]).toEqual(`// findability-mvi:${FINDABILITY_MVI}`)
+      expect(splitQuery[1]).toEqual('// foo=1')
+      expect(splitQuery[2]).toEqual('// bar')
     })
   })
 
@@ -317,8 +324,8 @@ describe('createSearchQuery', () => {
          * As a workaround, we replace numbers with [] array syntax, so we at least get hits when the path matches anywhere in the array.
          * This is an improvement over before, where an illegal term was used (number-as-string, ala ["0"]),
          * which lead to no hits at all. */
-
-        '*[_type in $__types && (cover[].cards[].title match $t0) && (cover[].cards[].title match $t1)]' +
+        `// findability-mvi:${FINDABILITY_MVI}\n` +
+          '*[_type in $__types && (cover[].cards[].title match $t0) && (cover[].cards[].title match $t1)]' +
           '| order(_id asc)' +
           '[$__offset...$__limit]' +
           // at this point we could refilter using cover[0].cards[0].title.

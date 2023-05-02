@@ -11,7 +11,6 @@ import {_DEBUG} from '../../constants'
 import {useDeskToolSetting} from '../../useDeskToolSetting'
 import {BaseDeskToolPaneProps} from '../types'
 import {PaneMenuItem} from '../../types'
-import {useInputType} from '../../input-type'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {
   applyOrderingFunctions,
@@ -41,27 +40,11 @@ const AnimatedSpinnerIcon = styled(SpinnerIcon)`
   animation: ${rotate} 500ms linear infinite;
 `
 
-const SearchCard = styled(Card)(({theme}) => {
-  const radius = theme.sanity.radius[4]
-
-  return css`
-    border-radius: ${radius}px;
-
-    [data-ui='TextInput'] {
-      border-radius: inherit;
-    }
-
-    &[data-focus-visible='false'] {
-      [data-ui='TextInput'] {
-        box-shadow: none;
-        span {
-          box-shadow: none;
-        }
-        --card-focus-ring-color: transparent;
-      }
-    }
-  `
-})
+const SearchCard = styled(Card)`
+  [data-ui='TextInput'] {
+    border-radius: inherit;
+  }
+`
 
 function useShallowUnique<ValueType>(value: ValueType): ValueType {
   const valueRef = useRef<ValueType>(value)
@@ -123,8 +106,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     'layout',
     defaultLayout
   )
-
-  const inputType = useInputType()
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
@@ -254,7 +235,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const searchInput = (
     <Box paddingX={2} paddingBottom={2}>
-      <SearchCard tone="transparent" data-focus-visible={inputType === 'keyboard'}>
+      <SearchCard radius={4} tone="transparent">
         <TextInput
           aria-label="Search list"
           autoComplete="off"
@@ -310,14 +291,10 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           isActive={isActive}
           isLazyLoading={isLazyLoading}
           isLoading={isLoading}
-          isSearchReady={isSearchReady}
           items={items}
-          // Use the paneKey as key to ensure that the list is re-rendered when the paneKey changes.
-          // This is important to ensure e.g. that the searchElement is focused when changing between
-          // document list within the same pane.
-          key={paneKey}
           layout={layout}
           loadingVariant={loadingVariant}
+          key={paneKey}
           noDocumentsMessage={noDocumentsMessage}
           onListChange={onListChange}
           onRetry={onRetry}

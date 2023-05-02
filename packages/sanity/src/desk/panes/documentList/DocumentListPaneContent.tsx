@@ -1,15 +1,13 @@
 import {SyncIcon} from '@sanity/icons'
 import {Box, Button, Card, Container, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import styled from 'styled-components'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
-import {useInputType} from '../../input-type'
 import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
 import {
   CommandList,
-  CommandListHandle,
   CommandListRenderItemCallback,
   GeneralPreviewLayoutKey,
   SanityDefaultPreview,
@@ -36,7 +34,6 @@ interface DocumentListPaneContentProps {
   isActive?: boolean
   isLazyLoading: boolean
   isLoading: boolean
-  isSearchReady: boolean
   items: DocumentListPaneItem[]
   layout?: GeneralPreviewLayoutKey
   loadingVariant?: LoadingVariant
@@ -71,7 +68,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     isActive,
     isLazyLoading,
     isLoading,
-    isSearchReady,
     items,
     layout,
     noDocumentsMessage,
@@ -83,28 +79,16 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   } = props
 
   const schema = useSchema()
-  const inputType = useInputType()
 
-  const {collapsed: layoutCollapsed, panes} = usePaneLayout()
+  const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
-  const commandListRef = useRef<CommandListHandle | null>(null)
 
-  // Run the onListChange callback and disable the end reached handler for a period of time.
-  // This is to avoid triggering the end reached handler too often.
-  // The end reached handler is re-enabled after a delay (see the useEffect below)
   const handleEndReached = useCallback(() => {
-    if (isLoading || !shouldRender) return
+    if (isLoading || isLazyLoading || !shouldRender) return
 
     onListChange()
-  }, [isLoading, onListChange, shouldRender])
-
-  // Determine if the pane should be auto-focused
-  useEffect(() => {
-    if (panes.length - 1 === index && shouldRender && isSearchReady) {
-      searchInputElement?.focus()
-    }
-  }, [index, isSearchReady, panes.length, searchInputElement, shouldRender])
+  }, [isLazyLoading, isLoading, onListChange, shouldRender])
 
   useEffect(() => {
     if (collapsed) return undefined
@@ -221,20 +205,19 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel="Document list"
-            disableActivateOnHover
-            focusVisible={inputType === 'keyboard'}
+            canReceiveFocus
+            focusRingOffset={-3}
             initialScrollAlign="center"
             inputElement={searchInputElement}
             itemHeight={51}
             items={items}
             key={key}
             onEndReached={handleEndReached}
+            onlyShowSelectionWhenActive
             overscan={10}
             padding={2}
             paddingBottom={1}
-            ref={commandListRef}
             renderItem={renderItem}
-            tabIndex={0}
             wrapAround={false}
           />
         </CommandListBox>
@@ -245,7 +228,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     error,
     handleEndReached,
     index,
-    inputType,
     isLoading,
     items,
     layout,
@@ -257,5 +239,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     shouldRender,
   ])
 
-  return <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>{content}</PaneContent>
+  return (
+    <PaneContent overflow={layoutCollapsed || loadingVariant === 'initial' ? 'hidden' : 'auto'}>
+      {content}
+    </PaneContent>
+  )
 }
