@@ -89,7 +89,7 @@ describe('createSearchQuery', () => {
           types: [testType],
         },
         {
-          extendedProjection: 'object{field}',
+          __unstable_extendedProjection: 'object{field}',
         }
       )
 

@@ -78,13 +78,13 @@ export interface WeightedSearchOptions {
  * @internal
  */
 export interface SearchOptions {
+  __unstable_extendedProjection?: string
   comments?: string[]
   includeDrafts?: boolean
   limit?: number
   offset?: number
   skipSortByScore?: boolean
   sort?: SearchSort[]
-  extendedProjection?: string
 }
 
 /**
