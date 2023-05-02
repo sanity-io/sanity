@@ -7,7 +7,6 @@ import {getQueryResults} from './getQueryResults'
 import {useDocumentTypeNames} from './hooks'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  FIXME,
   useClient,
   useSchema,
   createSearchQuery,
@@ -201,7 +200,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
     const initial$ = of(INITIAL_STATE)
     const state$ = concat(initial$, queryResults$)
-    const sub = state$.subscribe(handleSetResult as FIXME)
+    const sub = state$.subscribe(handleSetResult)
 
     return () => {
       sub.unsubscribe()
