@@ -342,6 +342,14 @@ export default async function initSanity(
       }
     }
 
+    const appendEnv = unattended ? true : await promptForAppendEnv(prompt, envFilename)
+
+    if (appendEnv) {
+      await createOrAppendEnvVars(envFilename, detectedFramework, {
+        log: true,
+      })
+    }
+
     const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
     await installNewPackages(
       {
@@ -353,14 +361,6 @@ export default async function initSanity(
         workDir,
       }
     )
-
-    const appendEnv = unattended ? true : await promptForAppendEnv(prompt, envFilename)
-
-    if (appendEnv) {
-      await createOrAppendEnvVars(envFilename, detectedFramework, {
-        log: true,
-      })
-    }
 
     print(
       `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`
