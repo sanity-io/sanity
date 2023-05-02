@@ -30,9 +30,9 @@ export const DocumentListPaneHeader = memo(
     title,
   }: DocumentListPaneHeaderProps) => {
     const {features} = useDeskTool()
-    const {isLast} = usePane()
-
-    const tabIndex = isLast ? -1 : 0
+    const {collapsed, isLast} = usePane()
+    // Prevent focus if this is the last (non-collapsed) pane.
+    const tabIndex = isLast && !collapsed ? -1 : 0
 
     const actionHandlers = useMemo((): Record<string, DeskToolPaneActionHandler> => {
       return {
@@ -47,12 +47,6 @@ export const DocumentListPaneHeader = memo(
 
     return (
       <PaneHeader
-        backButton={
-          features.backButton &&
-          index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
-        }
-        title={title}
-        tabIndex={tabIndex}
         actions={
           <PaneHeaderActions
             initialValueTemplateItems={initialValueTemplates}
@@ -61,7 +55,13 @@ export const DocumentListPaneHeader = memo(
             menuItems={menuItems}
           />
         }
+        backButton={
+          features.backButton &&
+          index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+        }
         contentAfter={contentAfter}
+        tabIndex={tabIndex}
+        title={title}
       />
     )
   }

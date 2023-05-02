@@ -152,6 +152,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     }
 
     const options: SearchOptions & WeightedSearchOptions = {
+      comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
       params: paramsProp,
       limit,
       sort,
