@@ -289,7 +289,7 @@ export default async function initSanity(
         )
       )
 
-      const sanityConfigPath = path.join(workDir, 'sanity.config.'.concat(fileExtension))
+      const sanityConfigPath = path.join(workDir, `sanity.config.${fileExtension}`)
       await writeOrOverwrite(
         sanityConfigPath,
         sanityConfigTemplate
@@ -310,7 +310,7 @@ export default async function initSanity(
         // check if file ends with full stop to indicate it's file and not directory (this only works with our template tree structure)
         if (filePath.includes('.') && typeof content === 'string') {
           await writeOrOverwrite(
-            path.join(workDir, 'sanity', folderPath || '', filePath.concat(fileExtension)),
+            path.join(workDir, 'sanity', folderPath || '', `${filePath}${fileExtension}`),
             content
           )
         } else {
