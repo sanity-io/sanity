@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback} from 'react'
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
 import {PaneContent, PaneItem, usePaneLayout} from '../../components'
@@ -24,25 +24,9 @@ const Divider = styled.hr`
 /**
  * @internal
  */
-export function ListPaneContent({
-  childItemId,
-  items,
-  isActive,
-  layout,
-  showIcons,
-  title,
-}: ListPaneContentProps) {
+export function ListPaneContent(props: ListPaneContentProps) {
+  const {childItemId, items, isActive, layout, showIcons, title} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
-
-  // The index of the selected item in the list.
-  // This is used as the initial index for the virtual list so that the selected item is scrolled into view.
-  const selectedIndex = useMemo(() => {
-    const foundIndex = items
-      ?.filter((item) => item.type === 'listItem')
-      .findIndex((item) => item.type === 'listItem' && item?.id === childItemId)
-
-    return foundIndex === -1 ? 0 : foundIndex
-  }, [childItemId, items])
 
   const getItemDisabled = useCallback(
     (itemIndex: number) => {
@@ -115,8 +99,6 @@ export function ListPaneContent({
           canReceiveFocus
           focusRingOffset={-3}
           getItemDisabled={getItemDisabled}
-          initialIndex={selectedIndex}
-          initialScrollAlign="center"
           itemHeight={51}
           items={items}
           onlyShowSelectionWhenActive
