@@ -582,8 +582,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   return (
     <VirtualListBox
       id={getCommandListChildrenId()}
-      onMouseEnter={handleVirtualListMouseEnter}
-      onMouseLeave={handleVirtualListMouseLeave}
       ref={setVirtualListElement}
       sizing="border"
       tabIndex={rootTabIndex}
@@ -597,6 +595,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
           aria-label={ariaLabel}
           aria-multiselectable={ariaMultiselectable}
           flex={1}
+          onMouseEnter={handleVirtualListMouseEnter}
+          onMouseLeave={handleVirtualListMouseLeave}
           ref={setChildContainerElement}
           role="listbox"
         >

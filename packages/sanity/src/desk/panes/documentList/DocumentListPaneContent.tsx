@@ -84,9 +84,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
 
-  // Run the onListChange callback and disable the end reached handler for a period of time.
-  // This is to avoid triggering the end reached handler too often.
-  // The end reached handler is re-enabled after a delay (see the useEffect below)
   const handleEndReached = useCallback(() => {
     if (isLoading || isLazyLoading || !shouldRender) return
 

@@ -123,6 +123,7 @@ export function ListPaneContent({
           padding={2}
           paddingBottom={1}
           renderItem={renderItem}
+          wrapAround={false}
         />
       )}
     </PaneContent>
