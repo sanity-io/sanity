@@ -15,15 +15,16 @@ import {
 } from 'rxjs/operators'
 import {concat, merge, of, fromEvent, Observable, Subject} from 'rxjs'
 import {SanityDocument} from '@sanity/types'
+import {QueryResult} from './types'
 
-const INITIAL_CHILD_PROPS = {
+const INITIAL_CHILD_PROPS: QueryResult = {
   result: null,
-  error: false,
+  error: null,
 }
 
 const createResultChildProps = (documents: SanityDocument[]) => ({
   result: {documents},
-  error: false,
+  error: null,
 })
 
 const createErrorChildProps = (error: Error) => ({
@@ -34,7 +35,7 @@ const createErrorChildProps = (error: Error) => ({
 export const getQueryResults = (
   receivedProps$: Observable<{client: SanityClient; query: string; params: Record<string, any>}>,
   options = {}
-) => {
+): Observable<QueryResult> => {
   const onRetry$ = new Subject()
   const onRetry = onRetry$.next.bind(onRetry$)
 
