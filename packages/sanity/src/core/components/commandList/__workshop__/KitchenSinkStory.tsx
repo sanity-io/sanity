@@ -92,7 +92,7 @@ export default function KitchenSinkStory() {
     setFilter('')
     setSelected({})
     commandListRef?.current?.scrollToIndex(0)
-    commandListRef?.current?.focusElement()
+    commandListRef?.current?.focusInputElement()
   }, [])
 
   const getItemDisabled = useCallback<CommandListGetItemDisabledCallback>(
@@ -164,7 +164,8 @@ export default function KitchenSinkStory() {
                 activeItemDataAttr="data-hovered"
                 ariaLabel="Children"
                 ariaMultiselectable
-                autoFocus
+                autoFocus="list"
+                canReceiveFocus
                 fixedHeight
                 getItemDisabled={getItemDisabled}
                 getItemSelected={getItemSelected}

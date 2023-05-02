@@ -118,7 +118,7 @@ export default function InfiniteScrollStory() {
               <CommandList
                 activeItemDataAttr="data-active"
                 ariaLabel="Children"
-                autoFocus
+                autoFocus="input"
                 fixedHeight
                 inputElement={inputElement}
                 itemHeight={ITEM_HEIGHT}

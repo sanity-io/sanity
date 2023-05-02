@@ -8,7 +8,6 @@ import {useResolvedPanes} from '../../structureResolvers'
 import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
 import {useDeskTool} from '../../useDeskTool'
-import {InputTypeProvider} from '../../input-type'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
 import {useRouterState} from 'sanity/router'
@@ -88,45 +87,43 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
         onCollapse={handleRootCollapse}
         onExpand={handleRootExpand}
       >
-        <InputTypeProvider>
-          {paneDataItems.map(
-            ({
-              active,
-              childItemId,
-              groupIndex,
-              itemId,
-              key: paneKey,
-              pane,
-              index: paneIndex,
-              params: paneParams,
-              path,
-              payload,
-              siblingIndex,
-              selected,
-            }) => (
-              <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
-                {pane === LOADING_PANE ? (
-                  <LoadingPane paneKey={paneKey} path={path} selected={selected} />
-                ) : (
-                  <DeskToolPane
-                    active={active}
-                    groupIndex={groupIndex}
-                    index={paneIndex}
-                    pane={pane}
-                    childItemId={childItemId}
-                    itemId={itemId}
-                    paneKey={paneKey}
-                    params={paneParams}
-                    payload={payload}
-                    path={path}
-                    selected={selected}
-                    siblingIndex={siblingIndex}
-                  />
-                )}
-              </Fragment>
-            )
-          )}
-        </InputTypeProvider>
+        {paneDataItems.map(
+          ({
+            active,
+            childItemId,
+            groupIndex,
+            itemId,
+            key: paneKey,
+            pane,
+            index: paneIndex,
+            params: paneParams,
+            path,
+            payload,
+            siblingIndex,
+            selected,
+          }) => (
+            <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
+              {pane === LOADING_PANE ? (
+                <LoadingPane paneKey={paneKey} path={path} selected={selected} />
+              ) : (
+                <DeskToolPane
+                  active={active}
+                  groupIndex={groupIndex}
+                  index={paneIndex}
+                  pane={pane}
+                  childItemId={childItemId}
+                  itemId={itemId}
+                  paneKey={paneKey}
+                  params={paneParams}
+                  payload={payload}
+                  path={path}
+                  selected={selected}
+                  siblingIndex={siblingIndex}
+                />
+              )}
+            </Fragment>
+          )
+        )}
         {/* If there's just 1 pane (the root), or less, and we're resolving an intent then it's necessary to show */}
         {/* a loading indicator as the intent resolving is async, could take a while and can also be interrupted/redirected */}
         {paneDataItems.length <= 1 && isResolvingIntent && (
