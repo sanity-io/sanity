@@ -101,11 +101,11 @@ describe('collaborate editing', () => {
     expect(valA).toMatchInlineSnapshot(`
       Array [
         Object {
-          "_key": "B-4",
+          "_key": "B-6",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "B-3",
+              "_key": "B-5",
               "_type": "span",
               "marks": Array [],
               "text": "1",
@@ -152,11 +152,11 @@ describe('collaborate editing', () => {
     expect(valB).toMatchInlineSnapshot(`
       Array [
         Object {
-          "_key": "B-4",
+          "_key": "B-6",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "B-3",
+              "_key": "B-5",
               "_type": "span",
               "marks": Array [],
               "text": "12",
@@ -682,5 +682,47 @@ describe('collaborate editing', () => {
       anchor: {path: [{_key: '26901064a3c9'}, 'children', {_key: 'ef4627c1c11b'}], offset: 16},
       focus: {path: [{_key: '26901064a3c9'}, 'children', {_key: 'ef4627c1c11b'}], offset: 16},
     })
+  })
+  it('will not result in duplicate keys when overwriting some partial bold text line, as the only content in the editor', async () => {
+    const [editorA, editorB] = await getEditors()
+    await editorA.insertText('Hey')
+    await editorA.toggleMark()
+    await editorA.insertText('there')
+    const valA = await editorA.getValue()
+    if (!valA || !Array.isArray(valA[0].children)) {
+      throw new Error('Unexpected value')
+    }
+    await editorA.setSelection({
+      anchor: {
+        path: [{_key: valA[0]._key}, 'children', {_key: valA[0].children[0]._key}],
+        offset: 0,
+      },
+      focus: {
+        path: [{_key: valA[0]._key}, 'children', {_key: valA[0].children[1]._key}],
+        offset: 5,
+      },
+    })
+    await editorA.insertText('1')
+    const newValA = await editorA.getValue()
+    expect(newValA).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "A-0",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "A-1",
+              "_type": "span",
+              "marks": Array [],
+              "text": "1",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
+    const valB = await editorB.getValue()
+    expect(newValA).toEqual(valB)
   })
 })

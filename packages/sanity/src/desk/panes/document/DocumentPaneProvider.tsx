@@ -310,7 +310,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const liveEdit = useMemo(() => Boolean(schemaType?.liveEdit), [documentType, schema])
+  const liveEdit = useMemo(() => Boolean(schemaType?.liveEdit), [schemaType?.liveEdit])
   const docId = value._id ? value._id : 'dummy-id'
   const docPermissionsInput = useMemo(() => {
     return {

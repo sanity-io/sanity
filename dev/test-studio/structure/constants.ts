@@ -71,6 +71,7 @@ export const DEBUG_INPUT_TYPES = [
   'uploadsTest',
   'validationTest',
   'allNativeInputComponents',
+  'scrollBug',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
@@ -79,6 +80,7 @@ export const DEBUG_FIELD_GROUP_TYPES = [
   'fieldGroupsDefault',
   'fieldGroupsMany',
   'fieldGroupsWithValidation',
+  'fieldGroupsWithFieldsetsAndValidation',
 ]
 
 export const EXTERNAL_PLUGIN_INPUT_TYPES = ['markdownTest', 'muxVideoPost']

@@ -12,11 +12,9 @@ export default defineField({
   title: 'Internal Link',
   name: 'annotationLinkInternal',
   type: 'object',
-  // @ts-ignore
-  blockEditor: {
-    icon: () => <LinkIcon />,
-    // @ts-ignore
-    render: ({children}) => (
+  icon: LinkIcon,
+  components: {
+    annotation: (props) => (
       <span>
         <LinkIcon
           style={{
@@ -25,7 +23,7 @@ export default defineField({
             width: '0.75em',
           }}
         />
-        {children}
+        {props.renderDefault(props)}
       </span>
     ),
   },

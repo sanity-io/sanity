@@ -3,6 +3,7 @@
     "@babel/parser",
     "@optimize-lodash/rollup-plugin",
     "@portabletext/toolkit",
+    "@portabletext/types",
     "@sanity/asset-utils",
     "@sanity/base",
     "@sanity/color",

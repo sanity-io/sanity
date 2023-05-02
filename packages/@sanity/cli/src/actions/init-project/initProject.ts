@@ -674,7 +674,7 @@ export default async function initSanity(
     aclMode?: string
     defaultConfig?: boolean
   }) {
-    if (opts.dataset && isCI) {
+    if (opts.dataset && (isCI || unattended)) {
       return {datasetName: opts.dataset}
     }
 

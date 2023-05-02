@@ -272,7 +272,13 @@ export default class CollaborationEnvironment extends NodeEnvironment {
 
               await page.keyboard.up('b')
               await page.keyboard.up(metaKey)
-              await waitForRevision()
+              const selection = await selectionHandle.evaluate((node) =>
+                node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : null
+              )
+              // Don't wait for a new revision unless something was actually selected
+              if (selection && !isEqual(selection.anchor, selection.focus)) {
+                await waitForRevision()
+              }
             },
             focus: async () => {
               await editableHandle.focus()
@@ -287,6 +293,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   editorId,
                 })
               )
+              await delay(200)
               await waitForSelection(selection)
             },
             async getValue(): Promise<PortableTextBlock[] | undefined> {

@@ -30,6 +30,7 @@ import {v3docs} from './docs/v3'
 import {demos3d} from './demos/3d'
 
 // Test documents for debugging
+import * as scrollBugTypes from './debug/scrollBug'
 import actions from './debug/actions'
 import button from './debug/button'
 import conditionalFields from './debug/conditionalFields'
@@ -79,6 +80,7 @@ import fieldGroups from './debug/fieldGroups'
 import fieldGroupsDefault from './debug/fieldGroupsDefault'
 import fieldGroupsMany from './debug/fieldGroupsMany'
 import fieldGroupsWithValidation from './debug/fieldGroupsWithValidation'
+import fieldGroupsWithFieldsetsAndValidation from './debug/fieldGroupsWithFieldsetsAndValidation'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -215,6 +217,7 @@ export const schemaTypes = [
   reservedFieldNames,
   review,
   richTextObject,
+  ...Object.values(scrollBugTypes),
   select,
   simpleBlock,
   simpleBlockNote,
@@ -241,6 +244,7 @@ export const schemaTypes = [
   fieldGroupsDefault,
   fieldGroupsMany,
   fieldGroupsWithValidation,
+  fieldGroupsWithFieldsetsAndValidation,
   allNativeInputComponents,
   ...v3docs.types,
   ...demos3d.types,

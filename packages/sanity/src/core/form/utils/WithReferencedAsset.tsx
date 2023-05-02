@@ -13,6 +13,6 @@ interface Props<AssetDoc> {
 export function WithReferencedAsset<Asset>(props: Props<Asset>) {
   const {reference, children, observeAsset, waitPlaceholder} = props
   const documentId = reference?._ref
-  const asset = useMemoObservable(() => observeAsset(documentId), [documentId])
+  const asset = useMemoObservable(() => observeAsset(documentId), [documentId, observeAsset])
   return <>{documentId && asset ? children(asset) : waitPlaceholder}</>
 }

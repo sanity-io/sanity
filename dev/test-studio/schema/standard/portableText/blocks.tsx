@@ -16,6 +16,24 @@ function CustomEditor(props: PortableTextInputProps) {
   return <BlockEditor {...props} markers={newMarkers} />
 }
 
+const linkType = defineArrayMember({
+  type: 'object',
+  name: 'link',
+  fields: [
+    {
+      type: 'string',
+      name: 'href',
+      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}).required(),
+    },
+  ],
+  options: {
+    modal: {
+      type: 'popover',
+      width: 2,
+    },
+  },
+})
+
 export default defineType({
   name: 'blocksTest',
   title: 'Blocks test',
@@ -31,7 +49,14 @@ export default defineType({
       name: 'first',
       title: 'Block array as first field',
       type: 'array',
-      of: [{type: 'block'}],
+      of: [
+        {
+          type: 'block',
+          marks: {
+            annotations: [linkType],
+          },
+        },
+      ],
     },
     defineField({
       name: 'defaults',

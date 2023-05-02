@@ -145,7 +145,9 @@ export default defineType({
               name: 'nested2',
               title: 'nested2',
               type: 'object',
-              fields: [{name: 'ge', title: 'hello', type: 'string'}],
+              fields: [
+                {name: 'ge', title: 'hello', type: 'string', validation: (Rule) => Rule.required()},
+              ],
               options: {collapsible: true, collapsed: true},
             },
           ],

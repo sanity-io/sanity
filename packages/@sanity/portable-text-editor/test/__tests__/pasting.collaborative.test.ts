@@ -1,11 +1,22 @@
 /** @jest-environment ./test/setup/collaborative.jest.env.ts */
-
+import os from 'os'
 import '../setup/globals.jest'
+import {noop} from 'lodash'
+
+function isMacOs() {
+  return os.platform() === 'darwin'
+}
 
 // Ideally pasting should be tested in a testing-library test, but I have not found a way to do it natively with testing-lib.
 // The problem is to get permission to write to the host clipboard.
 // We can do it in these test's though (as we can override browser permissions through packages/@sanity/portable-text-editor/test/setup/collaborative.jest.env.ts)
 describe('pasting', () => {
+  // 24/04/2023 - Something happened with chromium-1055 and MacOS that doesn't allow the pasting keyboard shortcut to take effect.
+  // TODO: check up on this when a new Chromium is released for Playwright and remove this exception if it is working again.
+  if (isMacOs()) {
+    it('skips these tests on macOS', noop)
+    return
+  }
   it('can paste into an empty editor', async () => {
     const [editorA] = await getEditors()
     await editorA.paste('Yo!')

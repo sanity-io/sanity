@@ -5,7 +5,6 @@ import {
   ArraySchemaType,
   BooleanSchemaType,
   CurrentUser,
-  FieldGroup,
   isArrayOfObjectsSchemaType,
   isArraySchemaType,
   isObjectSchemaType,
@@ -20,10 +19,12 @@ import {
 import {castArray, isEqual as _isEqual, pick} from 'lodash'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
 import {resolveTypeName} from '@sanity/util/content'
-import {isRecord} from '../../util'
+
+import {isNonNullable, isRecord} from '../../util'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {FIXME} from '../../FIXME'
 import {FormNodePresence} from '../../presence'
+
 import {ObjectArrayFormNode, PrimitiveFormNode, StateTree} from './types'
 import {resolveConditionalProperty} from './conditional-property'
 import {ALL_FIELDS_GROUP, MAX_FIELD_DEPTH} from './constants'
@@ -44,10 +45,10 @@ type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaTy
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
   groupsConfig: FormFieldGroup[],
-  field: ObjectField,
-  currentGroup: FormFieldGroup
+  fieldGroup: string | string[],
+  selectedGroup: FormFieldGroup
 ) {
-  if (currentGroup.name === ALL_FIELDS_GROUP.name) {
+  if (selectedGroup.name === ALL_FIELDS_GROUP.name) {
     return true
   }
 
@@ -56,7 +57,7 @@ function isFieldEnabledByGroupFilter(
     return true
   }
 
-  return castArray(field.group).includes(currentGroup.name)
+  return castArray(fieldGroup).includes(selectedGroup.name)
 }
 
 function isAcceptedObjectValue(value: any): value is Record<string, unknown> | undefined {
@@ -455,6 +456,16 @@ interface RawState<SchemaType, T> {
   changesOpen?: boolean
 }
 
+/**
+ * This allows us to give the field members an intermediate state in order to render field groups correctly in cases where all members in a field group is hidden
+ */
+export interface InternalFormStateMember {
+  hidden: boolean
+  // if it's hidden and in the currently selected group, it should still be excluded from its group
+  inSelectedGroup: boolean
+  group?: string | string[]
+  member: ObjectMember | null
+}
 function prepareObjectInputState<T>(
   props: RawState<ObjectSchemaType, T>,
   enableHiddenCheck?: false
@@ -499,12 +510,15 @@ function prepareObjectInputState<T>(
 
     // Set the "all-fields" group as selected when review changes is open to enable review of all
     // fields and changes together. When review changes is closed - switch back to the selected tab.
-    const selected = (props.changesOpen && group.name === ALL_FIELDS_GROUP.name) || isSelected
+    const selected = props.changesOpen ? group.name === ALL_FIELDS_GROUP.name : isSelected
+    // Also disable non-selected groups when review changes is open
+    const disabled = props.changesOpen ? !selected : false
 
     return groupHidden
       ? []
       : [
           {
+            disabled,
             icon: group?.icon,
             name: group.name,
             selected,
@@ -528,7 +542,7 @@ function prepareObjectInputState<T>(
     : props.schemaType.fields.map((field) => ({single: true, field}))
 
   // create a members array for the object
-  const members = normalizedSchemaMembers.flatMap((fieldSet, index): ObjectMember[] => {
+  const members = normalizedSchemaMembers.flatMap((fieldSet, index): InternalFormStateMember[] => {
     if (fieldSet.single) {
       // "single" means not part of a fieldset
       const fieldMember = prepareFieldMember({
@@ -536,13 +550,17 @@ function prepareObjectInputState<T>(
         parent: parentProps,
         index,
       })
-      if (
-        fieldMember === null ||
-        !isFieldEnabledByGroupFilter(groups, fieldSet.field, selectedGroup)
-      ) {
-        return []
-      }
-      return [fieldMember]
+
+      return [
+        {
+          hidden: fieldMember === null,
+          inSelectedGroup: fieldSet.field.group
+            ? isFieldEnabledByGroupFilter(groups, fieldSet.field.group, selectedGroup)
+            : true,
+          group: fieldSet.field.group,
+          member: fieldMember,
+        },
+      ]
     }
 
     // it's an actual fieldset
@@ -553,10 +571,6 @@ function prepareObjectInputState<T>(
       parent: props.value,
       value: pick(props.value, fieldsetFieldNames),
     })
-
-    if (fieldsetHidden) {
-      return []
-    }
 
     const fieldsetReadOnly = resolveConditionalProperty(fieldSet.readOnly, {
       currentUser: props.currentUser,
@@ -576,7 +590,8 @@ function prepareObjectInputState<T>(
       if (fieldState?.kind === 'error') {
         return [fieldState]
       }
-      if (fieldState === null || !isFieldEnabledByGroupFilter(groups, field, selectedGroup)) {
+
+      if (fieldState === null) {
         return []
       }
 
@@ -590,11 +605,6 @@ function prepareObjectInputState<T>(
 
       return [fieldStateWithReadOnly]
     })
-
-    // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
-    if (fieldsetMembers.length === 0) {
-      return []
-    }
     const defaultCollapsedState = getCollapsedWithDefaults(fieldSet.options, props.level)
 
     const collapsed =
@@ -603,19 +613,26 @@ function prepareObjectInputState<T>(
 
     return [
       {
-        kind: 'fieldSet',
-        key: `fieldset-${fieldSet.name}`,
-        fieldSet: {
-          path: pathFor(props.path.concat(fieldSet.name)),
-          name: fieldSet.name,
-          title: fieldSet.title,
-          description: fieldSet.description,
-          hidden: false,
-          level: props.level + 1,
-          members: fieldsetMembers,
-          collapsible: defaultCollapsedState?.collapsible,
-          collapsed,
-          columns: fieldSet?.options?.columns,
+        hidden: fieldsetHidden || fieldsetMembers.length === 0,
+        inSelectedGroup: fieldSet.group
+          ? isFieldEnabledByGroupFilter(groups, fieldSet.group, selectedGroup)
+          : true,
+        group: [],
+        member: {
+          kind: 'fieldSet',
+          key: `fieldset-${fieldSet.name}`,
+          fieldSet: {
+            path: pathFor(props.path.concat(fieldSet.name)),
+            name: fieldSet.name,
+            title: fieldSet.title,
+            description: fieldSet.description,
+            hidden: false,
+            level: props.level + 1,
+            members: fieldsetMembers,
+            collapsible: defaultCollapsedState?.collapsible,
+            collapsed,
+            columns: fieldSet?.options?.columns,
+          },
         },
       },
     ]
@@ -629,16 +646,32 @@ function prepareObjectInputState<T>(
     .filter((item) => isEqual(item.path, props.path))
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
 
+  const visibleMembers = members
+    .filter((memberWithHiddenState) => memberWithHiddenState.inSelectedGroup)
+    .map((m) => m.member)
+    .filter(isNonNullable)
+
   // Return null here only when enableHiddenCheck, or we end up with array members that have 'item: null' when they
   // really should not be. One example is when a block object inside the PT-input have a type with one single hidden field.
   // Then it should still be possible to see the member item, even though all of it's fields are null.
-  if (members.length === 0 && enableHiddenCheck) {
+  if (visibleMembers.length === 0 && enableHiddenCheck) {
     return null
   }
 
   // Disable all groups except the "all fields" group when the review changes pane is open.
   const _groups = hasFieldGroups
-    ? groups.map((g) => ({...g, disabled: props?.changesOpen && g.name !== ALL_FIELDS_GROUP.name}))
+    ? groups.flatMap((group) => {
+        if (group.name === ALL_FIELDS_GROUP.name) {
+          return group
+        }
+        const hasMembers = members.some((memberWithHiddenState) => {
+          return (
+            !memberWithHiddenState.hidden &&
+            castArray(memberWithHiddenState.group).includes(group.name)
+          )
+        })
+        return hasMembers ? group : []
+      })
     : []
 
   return {
@@ -653,7 +686,10 @@ function prepareObjectInputState<T>(
     focusPath: trimChildPath(props.path, props.focusPath),
     presence,
     validation,
-    members,
+    // this is currently needed by getExpandOperations which needs to know about hidden members
+    // (e.g. members not matching current group filter) in order to determine what to expand
+    _allMembers: members,
+    members: visibleMembers,
     groups: _groups,
   }
 }

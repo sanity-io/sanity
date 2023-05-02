@@ -11,11 +11,9 @@ export default defineField({
   title: 'External Link',
   name: 'annotationLinkExternal',
   type: 'object',
-  // @ts-ignore
-  blockEditor: {
-    icon: () => <EarthGlobeIcon />,
-    // @ts-ignore
-    render: ({children}) => (
+  icon: EarthGlobeIcon,
+  components: {
+    annotation: (props) => (
       <span>
         <EarthGlobeIcon
           style={{
@@ -24,7 +22,7 @@ export default defineField({
             width: '0.75em',
           }}
         />
-        {children}
+        {props.renderDefault(props)}
       </span>
     ),
   },

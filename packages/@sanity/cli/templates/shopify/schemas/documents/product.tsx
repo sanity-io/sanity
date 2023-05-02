@@ -102,7 +102,7 @@ export default defineType({
     },
     {
       name: 'priceAsc',
-      title: 'Title (Lowest first)',
+      title: 'Price (Lowest first)',
       by: [{field: 'store.priceRange.minVariantPrice', direction: 'asc'}],
     },
   ],

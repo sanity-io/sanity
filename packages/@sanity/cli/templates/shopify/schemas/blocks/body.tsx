@@ -22,6 +22,28 @@ export default defineField({
             value: 'strong',
           },
         ],
+        annotations: [
+          // product
+          {
+            name: 'annotationProduct',
+            type: 'annotationProduct',
+          },
+          // Email
+          {
+            name: 'annotationLinkEmail',
+            type: 'annotationLinkEmail',
+          },
+          // Internal link
+          {
+            name: 'annotationLinkInternal',
+            type: 'annotationLinkInternal',
+          },
+          // URL
+          {
+            name: 'annotationLinkExternal',
+            type: 'annotationLinkExternal',
+          },
+        ],
       },
       // Paragraphs
       type: 'block',

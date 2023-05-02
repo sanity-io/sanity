@@ -1,0 +1,65 @@
+---
+name: ESLint --fix
+
+on:
+  push:
+    branches: [next]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: Should the linter fix? 🤔
+    runs-on: ubuntu-latest
+    # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` thus we need an if check
+    if: ${{ github.ref_name == 'next' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --immutable --immutable-cache --check-cache
+      - name: Cache ESLint cache
+        uses: actions/cache@v3
+        with:
+          path: .eslintcache
+          key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
+      - run: yarn lint:fix
+      - uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1
+        # Run even if `yarn lint:fix` fails
+        if: always()
+        id: generate-token
+        with:
+          app_id: ${{ secrets.ECOSPARK_APP_ID }}
+          private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+      - uses: peter-evans/create-pull-request@38e0b6e68b4c852a5500a94740f0e535e0d7ba54 # v4
+        # Run even if `yarn lint:fix` fails
+        if: always()
+        with:
+          author: github-actions <41898282+github-actions[bot]@users.noreply.github.com>
+          body: I ran `yarn lint:fix` 🧑‍💻
+          branch: actions/lint-fix-if-needed
+          commit-message: 'chore(lint): fix linter issues 🤖 ✨'
+          labels: 🤖 bot
+          title: 'chore(prettier): fix linter issues 🤖 ✨'
+          token: ${{ steps.generate-token.outputs.token }}

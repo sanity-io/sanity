@@ -1,4 +1,4 @@
-import {Box, Container, Popover} from '@sanity/ui'
+import {Box, Container, Flex, Popover} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const RootPopover = styled(Popover)`
@@ -17,6 +17,14 @@ export const ContentContainer = styled(Container)`
     display: flex;
   }
   direction: column;
+`
+/*
+Setting a static max-height here to avoid scrolling issue. 
+Calculating a dynamic height to make the popover more responsive is complex, as the popover can switch top/bottom placement, 
+with different height requirements.
+*/
+export const ModalWrapper = styled(Flex)`
+  max-height: 300px;
 `
 
 export const ContentScrollerBox = styled(Box)`

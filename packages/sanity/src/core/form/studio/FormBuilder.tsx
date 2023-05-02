@@ -17,7 +17,7 @@ import {useFormCallbacks} from './contexts/FormCallbacks'
  * @alpha
  */
 export interface FormBuilderProps
-  extends Omit<ObjectFormNode, 'level' | 'path' | 'presence' | 'validation'> {
+  extends Omit<ObjectFormNode, 'level' | 'path' | 'presence' | 'validation' | '_allMembers'> {
   /**
    * @internal Considered internal – do not use.
    */

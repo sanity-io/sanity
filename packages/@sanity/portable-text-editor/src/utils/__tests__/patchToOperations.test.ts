@@ -92,7 +92,7 @@ describe('operationToPatches', () => {
       ]
     `)
   })
-  it('will not create patches for insertion inside object blocks', () => {
+  it('will not create operations for insertion inside object blocks', () => {
     editor.children = [
       {
         _type: 'someType',
@@ -147,7 +147,7 @@ describe('operationToPatches', () => {
       ]
     `)
   })
-  it('will not create patches for removal inside object blocks', () => {
+  it('will not create operations for removal inside object blocks', () => {
     editor.children = [
       {
         _type: 'someType',
@@ -208,6 +208,90 @@ describe('operationToPatches', () => {
               },
             ],
           },
+        },
+      ]
+    `)
+  })
+  it('will not create operations for setting data inside object blocks', () => {
+    editor.children = [
+      {
+        _key: '1335959d4d03',
+        _type: 'block',
+        children: [
+          {
+            _key: '9bd868adcd6b',
+            _type: 'span',
+            marks: [],
+            text: '1 ',
+          },
+          {
+            _key: '6f75d593f3fc',
+            _type: 'span',
+            marks: ['11de7fcea659'],
+            text: '2',
+          },
+          {
+            _key: '033618a7f081',
+            _type: 'span',
+            marks: [],
+            text: ' 3',
+          },
+        ],
+        markDefs: [
+          {
+            _key: '11de7fcea659',
+            _type: 'link',
+          },
+        ],
+        style: 'normal',
+      },
+    ]
+    const patches = [
+      {
+        type: 'set',
+        path: [{_key: 'c01739b0d03b'}, 'markDefs'],
+        origin: 'remote',
+        value: {href: 'http://www.test.com'},
+      },
+    ] as Patch[]
+    const snapShot = fromSlateValue(editor.children, schemaTypes.block.name)
+    patches.forEach((p) => {
+      patchToOperations(editor, p, patches, snapShot)
+    })
+    expect(editor.children).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "1335959d4d03",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "9bd868adcd6b",
+              "_type": "span",
+              "marks": Array [],
+              "text": "1 ",
+            },
+            Object {
+              "_key": "6f75d593f3fc",
+              "_type": "span",
+              "marks": Array [
+                "11de7fcea659",
+              ],
+              "text": "2",
+            },
+            Object {
+              "_key": "033618a7f081",
+              "_type": "span",
+              "marks": Array [],
+              "text": " 3",
+            },
+          ],
+          "markDefs": Array [
+            Object {
+              "_key": "11de7fcea659",
+              "_type": "link",
+            },
+          ],
+          "style": "normal",
         },
       ]
     `)

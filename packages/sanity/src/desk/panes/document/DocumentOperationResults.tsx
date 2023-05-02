@@ -26,7 +26,7 @@ function getOpSuccessTitle(op: string): string {
     return `All changes since last publish has now been discarded. The discarded draft can still be recovered from history`
   }
   if (op === 'delete') {
-    return `This document was deleted. It can still be recovered from history and if you continue editing it will be recreated.`
+    return `The document was successfully deleted`
   }
   return `Successfully performed ${op} on document`
 }
