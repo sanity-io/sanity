@@ -298,7 +298,7 @@ export default async function initSanity(
       )
     }
 
-    const sanityCliPath = path.join(workDir, 'sanity.cli.'.concat(fileExtension))
+    const sanityCliPath = path.join(workDir, `sanity.cli.${fileExtension}`)
     await writeOrOverwrite(sanityCliPath, sanityCliTemplate)
 
     // write sanity folder files
