@@ -355,6 +355,7 @@ export default async function initSanity(
       {
         packageManager: chosen,
         packages: ['next-sanity@4', '@sanity/vision@3', 'sanity@3', '@sanity/image-url@1'],
+        legacyPeerDeps: false,
       },
       {
         output: context.output,

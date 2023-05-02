@@ -5,6 +5,7 @@ import {getPartialEnvWithNpmPath, PackageManager} from './packageManagerChoice'
 export interface InstallOptions {
   packageManager: PackageManager
   packages: string[]
+  legacyPeerDeps?: boolean
 }
 
 export async function installDeclaredPackages(
@@ -46,7 +47,7 @@ export async function installNewPackages(
   options: InstallOptions,
   context: Pick<CliCommandContext, 'output' | 'workDir'>
 ): Promise<void> {
-  const {packageManager, packages} = options
+  const {packageManager, packages, legacyPeerDeps = true} = options
   const {output, workDir} = context
   const execOptions: CommonOptions<'utf8'> = {
     encoding: 'utf8',
@@ -55,7 +56,12 @@ export async function installNewPackages(
     stdio: 'inherit',
   }
 
-  const npmArgs = ['install', '--legacy-peer-deps', '--save', ...packages]
+  const npmArgs = ['install', '--save', ...packages]
+
+  if (legacyPeerDeps) {
+    npmArgs.splice(1, 0, '--legacy-peer-deps')
+  }
+
   let result: ExecaReturnValue<string> | undefined
   if (packageManager === 'npm') {
     output.print(`Running 'npm ${npmArgs.join(' ')}'`)
