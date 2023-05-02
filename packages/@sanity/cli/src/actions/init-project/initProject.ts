@@ -7,10 +7,10 @@ import noop from 'lodash/noop'
 import pFilter from 'p-filter'
 import resolveFrom from 'resolve-from'
 import which from 'which'
-import * as fleece from 'golden-fleece'
 
 import type {DatasetAclMode} from '@sanity/client'
 import {Framework, frameworks} from '@vercel/frameworks'
+import {evaluate, patch} from 'golden-fleece'
 import {LocalFileSystemDetector, detectFrameworkRecord} from '@vercel/fs-detectors'
 import type {InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'
@@ -332,12 +332,12 @@ export default async function initSanity(
 
     if (useTypeScript && existsSync(tsConfigPath)) {
       const tsConfigFile = readFileSync(tsConfigPath, 'utf8')
-      const config = fleece.evaluate(tsConfigFile)
+      const config = evaluate(tsConfigFile)
 
       if (config.compilerOptions.target?.toLowerCase() !== 'es2017') {
         config.compilerOptions.target = 'ES2017'
 
-        const newConfig = fleece.patch(tsConfigFile, config)
+        const newConfig = patch(tsConfigFile, config)
         await fs.writeFile(tsConfigPath, Buffer.from(newConfig))
       }
     }

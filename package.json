@@ -149,5 +149,6 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "isSanityMonorepo": true
+  "isSanityMonorepo": true,
+  "version": "0.0.0"
 }
