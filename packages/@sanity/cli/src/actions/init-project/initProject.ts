@@ -10,6 +10,7 @@ import which from 'which'
 
 import type {DatasetAclMode} from '@sanity/client'
 import {Framework, frameworks} from '@vercel/frameworks'
+import execa, {CommonOptions} from 'execa'
 import {evaluate, patch} from 'golden-fleece'
 import {LocalFileSystemDetector, detectFrameworkRecord} from '@vercel/fs-detectors'
 import type {InitFlags} from '../../commands/init/initCommand'
@@ -19,7 +20,7 @@ import {
   installDeclaredPackages,
   installNewPackages,
 } from '../../packageManager'
-import type {PackageManager} from '../../packageManager/packageManagerChoice'
+import {PackageManager, getPartialEnvWithNpmPath} from '../../packageManager/packageManagerChoice'
 import {
   CliApiClient,
   CliCommandArguments,
@@ -351,17 +352,33 @@ export default async function initSanity(
     }
 
     const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
+
     await installNewPackages(
       {
         packageManager: chosen,
-        packages: ['next-sanity@4', '@sanity/vision@3', 'sanity@3', '@sanity/image-url@1'],
-        legacyPeerDeps: false,
+        packages: ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1'],
       },
       {
         output: context.output,
         workDir,
       }
     )
+
+    // will refactor this later
+    const execOptions: CommonOptions<'utf8'> = {
+      encoding: 'utf8',
+      env: getPartialEnvWithNpmPath(workDir),
+      cwd: workDir,
+      stdio: 'inherit',
+    }
+
+    if (chosen === 'npm') {
+      await execa('npm', ['install', 'next-sanity@4'], execOptions)
+    } else if (chosen === 'yarn') {
+      await execa('npx', ['install-peerdeps', '--yarn', 'next-sanity@4'], execOptions)
+    } else if (chosen === 'pnpm') {
+      await execa('npx', ['install-peerdeps', '--pnpm', 'next-sanity@4'], execOptions)
+    }
 
     print(
       `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`
