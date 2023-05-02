@@ -180,11 +180,11 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     }
 
     const options: SearchOptions & WeightedSearchOptions = {
+      __unstable_extendedProjection: extendedProjection,
       comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
       params: paramsProp,
       limit,
       sort,
-      extendedProjection,
     }
 
     return createSearchQuery(terms, options)
