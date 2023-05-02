@@ -107,7 +107,7 @@ export function ListPaneContent({
   )
 
   return (
-    <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>
+    <PaneContent overflow={layoutCollapsed ? 'hidden' : 'auto'}>
       {items && items.length > 0 && (
         <CommandList
           activeItemDataAttr="data-hovered"

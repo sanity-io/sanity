@@ -239,5 +239,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     shouldRender,
   ])
 
-  return <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>{content}</PaneContent>
+  return (
+    <PaneContent overflow={layoutCollapsed || loadingVariant === 'initial' ? 'hidden' : 'auto'}>
+      {content}
+    </PaneContent>
+  )
 }
