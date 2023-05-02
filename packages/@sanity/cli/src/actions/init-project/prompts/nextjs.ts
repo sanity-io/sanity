@@ -19,7 +19,7 @@ export function promptForAppDir(prompt: CliPrompter): Promise<string> {
 export function promptForStudioPath(prompt: CliPrompter): Promise<string> {
   return prompt.single({
     type: 'input',
-    message: 'What route do you want to use for the studio?',
+    message: 'What route do you want to use for the Studio?',
     default: '/studio',
     validate(input) {
       if (!input.startsWith('/')) {

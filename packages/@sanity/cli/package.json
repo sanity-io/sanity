@@ -68,6 +68,7 @@
     "esbuild": "^0.16.5",
     "esbuild-register": "^3.4.1",
     "get-it": "^8.0.9",
+    "golden-fleece": "^1.0.9",
     "pkg-dir": "^5.0.0"
   },
   "devDependencies": {
