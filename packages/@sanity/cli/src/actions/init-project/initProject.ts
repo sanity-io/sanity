@@ -272,7 +272,7 @@ export default async function initSanity(
       const embeddedStudioRouteFilePath = path.join(
         srcPath,
         `${studioPath}/`,
-        useAppDir ? '[[...index]]/page.tsx' : '[[...index]].tsx'
+        useAppDir ? `[[...index]]/page.${fileExtension}x` : `[[...index]].${fileExtension}x`
       )
 
       // this selects the correct template string based on whether the user is using the app or pages directory and
@@ -375,7 +375,7 @@ export default async function initSanity(
   // eslint-disable-next-line @typescript-eslint/no-shadow
   function countNestedFolders(path: string): number {
     const separator = path.includes('\\') ? '\\' : '/'
-    return path.split(separator).filter(Boolean).length - 1
+    return path.split(separator).filter(Boolean).length
   }
 
   async function writeOrOverwrite(filePath: string, content: string) {
