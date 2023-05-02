@@ -134,6 +134,9 @@ export function FormView(props: FormViewProps) {
       sizing="border"
       width={1}
     >
+      <dialog open style={{position: 'fixed', top: 50, left: -100, zIndex: 1000000000}}>
+        <pre>{JSON.stringify(formState?.focusPath)}</pre>
+      </dialog>
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={formRef}>
           {ready ? (
