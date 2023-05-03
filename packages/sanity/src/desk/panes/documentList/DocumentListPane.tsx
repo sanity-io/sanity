@@ -136,24 +136,10 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const filterIsSimpleTypeConstraint = isSimpleTypeFilter(filter)
 
   const noDocumentsMessage = useMemo(() => {
-    if (searchQuery) {
-      return (
-        <>
-          No results found for <b>”{searchQuery}”</b>
-        </>
-      )
-    }
-
-    if (filterIsSimpleTypeConstraint) {
-      return (
-        <>
-          No documents of type <b>{typeName}</b> found
-        </>
-      )
-    }
-
+    if (searchQuery) return 'No results found'
+    if (filterIsSimpleTypeConstraint) return 'No documents of this type'
     return 'No documents found'
-  }, [filterIsSimpleTypeConstraint, searchQuery, typeName])
+  }, [filterIsSimpleTypeConstraint, searchQuery])
 
   const {
     error,
