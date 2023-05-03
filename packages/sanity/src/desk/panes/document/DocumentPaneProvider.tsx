@@ -2,7 +2,7 @@ import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 're
 import {ObjectSchemaType, Path, SanityDocument, SanityDocumentLike} from '@sanity/types'
 import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
-import {fromString as pathFromString} from '@sanity/util/paths'
+import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
@@ -367,7 +367,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const formStateRef = useRef(formState)
   formStateRef.current = formState
 
-  const handleOpenPath = useCallback(
+  const setOpenPath = useCallback(
     (path: Path) => {
       const ops = getExpandOperations(formStateRef.current!, path)
       ops.forEach((op) => {
@@ -405,7 +405,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onBlur: handleBlur,
     onChange: handleChange,
     onFocus: handleFocus,
-    onPathOpen: handleOpenPath,
+    onPathOpen: setOpenPath,
     onHistoryClose: handleHistoryClose,
     onHistoryOpen: handleHistoryOpen,
     onInspectClose: handleInspectClose,
@@ -450,10 +450,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   // Reset `focusPath` when `documentId` or `params.path` changes
   useEffect(() => {
-    // Reset focus path
-    setFocusPath(params.path ? pathFromString(params.path) : [])
-    onSetOpenPath([])
-  }, [params.path, documentId])
+    if (ready && params.path) {
+      const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(params.path))
+      // Reset focus path when url params path changes
+      setFocusPath(pathFromUrl)
+      setOpenPath(pathFromUrl)
+    }
+  }, [params.path, documentId, setOpenPath, ready])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
