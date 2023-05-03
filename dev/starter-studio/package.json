@@ -1,6 +1,6 @@
 {
   "name": "sanity-starter-studio",
-  "version": "3.9.1",
+  "version": "3.10.0",
   "private": true,
   "scripts": {
     "build": "../.bin/sanity build",
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "sanity": "3.9.1",
+    "sanity": "3.10.0",
     "styled-components": "^5.2.0"
   }
 }
