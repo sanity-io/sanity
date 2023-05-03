@@ -175,7 +175,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <Flex align="center" direction="column" height="fill" justify="center">
           <Container width={1}>
             <Box paddingX={4} paddingY={5}>
-              <Text align="center" muted size={1}>
+              <Text align="center" muted>
                 {noDocumentsMessage}
               </Text>
             </Box>
