@@ -3,7 +3,7 @@ import {Box, Card, Code, TextInput} from '@sanity/ui'
 import shallowEquals from 'shallow-equals'
 import {isEqual} from 'lodash'
 import {SearchIcon, SpinnerIcon} from '@sanity/icons'
-import styled, {css, keyframes} from 'styled-components'
+import styled, {keyframes} from 'styled-components'
 import {Observable, debounce, map, of, tap, timer} from 'rxjs'
 import {useObservableCallback} from 'react-rx'
 import {Pane} from '../../components/pane'
@@ -134,12 +134,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const sortOrder = useUnique(sortWithOrderingFn)
   const filterIsSimpleTypeConstraint = isSimpleTypeFilter(filter)
-
-  const noDocumentsMessage = useMemo(() => {
-    if (searchQuery) return 'No results found'
-    if (filterIsSimpleTypeConstraint) return 'No documents of this type'
-    return 'No documents found'
-  }, [filterIsSimpleTypeConstraint, searchQuery])
 
   const {
     error,
@@ -273,15 +267,16 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         <DocumentListPaneContent
           childItemId={childItemId}
           error={error}
+          filterIsSimpleTypeConstraint={filterIsSimpleTypeConstraint}
           hasMaxItems={hasMaxItems}
+          hasSearchQuery={Boolean(searchQuery)}
           isActive={isActive}
           isLazyLoading={isLazyLoading}
           isLoading={isLoading}
           items={items}
+          key={paneKey}
           layout={layout}
           loadingVariant={loadingVariant}
-          key={paneKey}
-          noDocumentsMessage={noDocumentsMessage}
           onListChange={onListChange}
           onRetry={onRetry}
           searchInputElement={searchInputElement}
