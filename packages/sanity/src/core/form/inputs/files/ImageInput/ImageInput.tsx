@@ -95,11 +95,6 @@ interface BaseImageInputState {
   isMenuOpen: boolean
 }
 
-type Focusable = {
-  focus: () => void
-  offsetHeight: number
-}
-
 function passThrough({children}: {children?: React.ReactNode}) {
   return children
 }
@@ -110,7 +105,7 @@ const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true}
 
 /** @internal */
 export class BaseImageInput extends React.PureComponent<BaseImageInputProps, BaseImageInputState> {
-  _assetElementRef: null | Focusable = null
+  _previewElement: HTMLDivElement | null = null
   _assetPath: Path
   uploadSubscription: null | Subscription = null
 
@@ -131,14 +126,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
   toast: {push: (params: ToastParams) => void} | null = null
 
-  focus() {
-    if (this._assetElementRef) {
-      this._assetElementRef.focus()
-    }
-  }
-
-  setFocusElement = (el: HTMLElement | null) => {
-    this._assetElementRef = el
+  setPreviewElement = (el: HTMLDivElement | null) => {
+    this._previewElement = el
   }
 
   setHotspotButtonElement = (el: HTMLButtonElement | null) => {
@@ -337,6 +326,19 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     })
 
     this.setState({selectedAssetSource: null})
+  }
+
+  handleFileTargetFocus = (event: React.FocusEvent) => {
+    // We want to handle focus when the file target element *itself* receives
+    // focus, not when an interactive child element receives focus. Since React has decided
+    // to let focus bubble, so this workaround is needed
+    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+    if (
+      event.currentTarget === event.target &&
+      event.currentTarget === this.props.elementProps.ref?.current
+    ) {
+      this.props.elementProps.onFocus(event)
+    }
   }
 
   handleFilesOver = (hoveringFiles: FileInfo[]) => {
@@ -642,9 +644,9 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
   renderUploadState(uploadState: UploadState) {
     const {isUploading} = this.state
-    const elementHeight = this._assetElementRef?.offsetHeight
-    const height = elementHeight === 0 ? undefined : elementHeight
 
+    // if there's a preview image already, preserve the height to avoid jumps
+    const height = this._previewElement?.offsetHeight
     return (
       <UploadProgress
         uploadState={uploadState}
@@ -748,13 +750,14 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           hasFocus={!!inputProps.focused}
           isChanged={inputProps.changed}
         >
-          {/* not uploading */}
-          {!value?._upload && (
+          {value?._upload ? (
+            this.renderUploadState(value._upload)
+          ) : (
             <FileTarget
               {...elementProps}
+              onFocus={this.handleFileTargetFocus}
               tabIndex={0}
               disabled={Boolean(readOnly)}
-              ref={this.setFocusElement}
               onFiles={this.handleSelectFiles}
               onFilesOver={this.handleFilesOver}
               onFilesOut={this.handleFilesOut}
@@ -766,16 +769,13 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
             >
               {!value?.asset && this.renderUploadPlaceholder()}
               {!value?._upload && value?.asset && (
-                <div style={{position: 'relative'}}>
+                <div style={{position: 'relative'}} ref={this.setPreviewElement}>
                   {this.renderPreview()}
                   {this.renderAssetMenu()}
                 </div>
               )}
             </FileTarget>
           )}
-
-          {/* uploading */}
-          {value?._upload && this.renderUploadState(value._upload)}
         </ChangeIndicator>
       </>
     )
