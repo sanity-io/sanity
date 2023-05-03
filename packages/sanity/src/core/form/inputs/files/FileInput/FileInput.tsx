@@ -39,7 +39,6 @@ import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {ImperativeToast} from '../../../../components'
 import {ChangeIndicator} from '../../../../changeIndicators'
-import {FIXME} from '../../../../FIXME'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileActionsMenu} from './FileActionsMenu'
 import {FileSkeleton} from './FileSkeleton'
@@ -72,15 +71,10 @@ export interface BaseFileInputState {
   isMenuOpen: boolean
 }
 
-/** @internal */
-export type Focusable = {
-  focus: () => void
-}
 const ASSET_FIELD_PATH = ['asset']
 
 /** @internal */
 export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseFileInputState> {
-  _focusRef: Focusable | null = null
   _assetFieldPath: Path
   uploadSubscription: Subscription | null = null
   browseButtonElement: HTMLButtonElement | null = null
@@ -303,17 +297,16 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     this.setState({selectedAssetSource: null})
   }
 
-  hasFileTargetFocus() {
-    return this.props.focusPath?.[0] === 'asset'
-  }
-
-  handleFileTargetFocus = (event: FIXME) => {
+  handleFileTargetFocus = (event: React.FocusEvent) => {
     // We want to handle focus when the file target element *itself* receives
     // focus, not when an interactive child element receives focus. Since React has decided
     // to let focus bubble, so this workaround is needed
     // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
-    if (event.currentTarget === event.target && event.currentTarget === this._focusRef) {
-      this.props.onPathFocus(['asset'])
+    if (
+      event.currentTarget === event.target &&
+      event.currentTarget === this.props.elementProps.ref?.current
+    ) {
+      this.props.elementProps.onFocus(event)
     }
   }
 
@@ -352,12 +345,14 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
           isChanged={changed}
         >
           {/* not uploading */}
-          {!value?._upload && (
+          {value?._upload ? (
+            this.renderUploadState(value._upload)
+          ) : (
             <FileTarget
               {...elementProps}
+              onFocus={this.handleFileTargetFocus}
               tabIndex={0}
               disabled={Boolean(readOnly)}
-              ref={this.setFocusElement}
               onFiles={this.handleSelectFiles}
               onFilesOver={this.handleFilesOver}
               onFilesOut={this.handleFilesOut}
@@ -376,9 +371,6 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
               </div>
             </FileTarget>
           )}
-
-          {/* uploading */}
-          {value?._upload && this.renderUploadState(value._upload)}
         </ChangeIndicator>
       </>
     )
@@ -587,16 +579,6 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     )
   }
 
-  focus() {
-    if (this._focusRef) {
-      this._focusRef.focus()
-    }
-  }
-
-  setFocusElement = (ref: Focusable | null) => {
-    this._focusRef = ref
-  }
-
   handleUpload = ({file, uploader}: {file: globalThis.File; uploader: Uploader}) => {
     this.uploadWith(uploader, file)
   }
@@ -630,6 +612,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     return (
       <>
         <ImperativeToast ref={this.setToast} />
+
         {members.map((member) => {
           if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
             // we're rendering these separately
