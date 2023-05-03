@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks, @typescript-eslint/ban-ts-comment */
-import {fromString, toString, get} from '../src/paths'
+import {fromString, toString, get, resolveKeyedPath} from '../src/paths'
 
 const srcObject = {
   title: 'Hei',
@@ -174,4 +174,60 @@ test('get: falls back to default value on key lookup at non-array', () => {
 test('get: can get numbered key from object', () => {
   expect(get(srcObject, 'nested.0')).toEqual('Zero-Key')
   expect(get(srcObject, ['nested', '0'])).toEqual('Zero-Key')
+})
+
+test('resolveKeyedPath: can resolve a keyed path from a path using only numeric indices', () => {
+  expect(resolveKeyedPath({foo: 'bar'}, ['foo'])).toEqual(['foo'])
+  // falls back to numeric index if item isn't keyed
+  expect(resolveKeyedPath({arr: ['one', 'two']}, ['arr', 1])).toEqual(['arr', 1])
+  expect(
+    resolveKeyedPath(
+      {
+        arr: [
+          {_key: 'a', text: 'first'},
+          {_key: 'b', text: 'second'},
+        ],
+      },
+      ['arr', 1]
+    )
+  ).toEqual(['arr', {_key: 'b'}])
+
+  // deeper
+  expect(
+    resolveKeyedPath(
+      {
+        arr: [
+          {_key: 'a', text: 'first'},
+          {_key: 'b', inner: {innerArr: [{_key: 'xyz', text: 'final'}]}},
+        ],
+      },
+      ['arr', 1, 'inner', 'innerArr', 0, 'text']
+    )
+  ).toEqual(['arr', {_key: 'b'}, 'inner', 'innerArr', {_key: 'xyz'}, 'text']) // deeper
+
+  // index 3 is out of bounds
+  expect(
+    resolveKeyedPath(
+      {
+        arr: [
+          {_key: 'a', text: 'first'},
+          {_key: 'b', text: 'second'},
+        ],
+      },
+      ['arr', 3, 'this', 'does', 'not', 'exist']
+    )
+  ).toEqual(['arr'])
+
+  // this is ok, since the array exist and is keyed - object paths are returned as-is
+  expect(
+    resolveKeyedPath(
+      {
+        arr: [
+          {_key: 'a', text: 'first'},
+          {_key: 'b', text: 'second'},
+        ],
+      },
+      ['arr', 1, 'this', 'does', 'not', 'exist']
+    )
+  ).toEqual(['arr', {_key: 'b'}, 'this', 'does', 'not', 'exist'])
 })

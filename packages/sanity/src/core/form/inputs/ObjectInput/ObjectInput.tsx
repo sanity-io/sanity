@@ -20,7 +20,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     level,
     value,
     id,
-    path,
     onFieldGroupSelect,
   } = props
 
@@ -67,7 +66,8 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
             groups={groups}
             inputId={id}
             onClick={onFieldGroupSelect}
-            shouldAutoFocus={path.length === 0}
+            // autofocus is taken care of either by focusPath or focusFirstDescendant in the parent component
+            shouldAutoFocus={false}
           />
         </FieldGroupTabsWrapper>
       ) : null}

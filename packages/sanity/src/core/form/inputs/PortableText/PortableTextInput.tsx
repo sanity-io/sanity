@@ -108,10 +108,27 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   // Set as active whenever we have focus inside the editor.
   useEffect(() => {
-    if (hasFocus || focusPath.length > 1) {
+    if (focused || hasFocus || focusPath.length) {
       setIsActive(true)
     }
-  }, [hasFocus, focusPath])
+  }, [hasFocus, focusPath, focused])
+
+  // Set focused if the focusPath includes the path
+  useEffect(() => {
+    if (focused) {
+      setIsActive(true)
+      setHasFocus(true)
+    }
+  }, [focused])
+
+  // Scroll into view when focused
+  useEffect(() => {
+    if (hasFocus && innerElementRef.current) {
+      scrollIntoView(innerElementRef.current, {
+        scrollMode: 'if-needed',
+      })
+    }
+  }, [hasFocus])
 
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
@@ -247,14 +264,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
       debounce(
         (sel: EditorSelection) => {
           if (sel && hasFocus) {
-            const fullPath = path.concat(sel.focus.path)
-            onPathFocus(fullPath)
+            onPathFocus(sel.focus.path)
           }
         },
         500,
         {trailing: true, leading: false}
       ),
-    [hasFocus, onPathFocus, path]
+    [hasFocus, onPathFocus]
   )
 
   // Handle editor changes
@@ -335,7 +351,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         scrollMode: 'if-needed',
       })
     }
-  }, [focused, hasFocus, hasOpenItem])
+  }, [hasFocus, hasOpenItem])
 
   return (
     <Box ref={innerElementRef}>
