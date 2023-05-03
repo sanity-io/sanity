@@ -488,15 +488,17 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   }, [initialIndex, initialScrollAlign, onlyShowSelectionWhenActive, setActiveIndex])
 
   /**
-   * Re-enable child pointer events on any mouse move event
+   * Re-enable child pointer events on any mousemove / wheel event
    */
   useEffect(() => {
-    function handleMouseMove() {
+    function handleMouseEvent() {
       enableChildContainerPointerEvents(true)
     }
-    virtualListElement?.addEventListener('mousemove', handleMouseMove)
+    virtualListElement?.addEventListener('mousemove', handleMouseEvent)
+    virtualListElement?.addEventListener('wheel', handleMouseEvent)
     return () => {
-      virtualListElement?.removeEventListener('mousemove', handleMouseMove)
+      virtualListElement?.removeEventListener('mousemove', handleMouseEvent)
+      virtualListElement?.removeEventListener('wheel', handleMouseEvent)
     }
   }, [enableChildContainerPointerEvents, virtualListElement])
 
