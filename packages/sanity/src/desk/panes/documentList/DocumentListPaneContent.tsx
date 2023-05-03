@@ -30,14 +30,15 @@ const CommandListBox = styled(Box)`
 interface DocumentListPaneContentProps {
   childItemId?: string
   error: {message: string} | null
+  filterIsSimpleTypeConstraint: boolean
   hasMaxItems?: boolean
+  hasSearchQuery: boolean
   isActive?: boolean
   isLazyLoading: boolean
   isLoading: boolean
   items: DocumentListPaneItem[]
   layout?: GeneralPreviewLayoutKey
   loadingVariant?: LoadingVariant
-  noDocumentsMessage?: React.ReactNode
   onListChange: () => void
   onRetry?: (event: unknown) => void
   searchInputElement: HTMLInputElement | null
@@ -64,18 +65,19 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {
     childItemId,
     error,
+    filterIsSimpleTypeConstraint,
     hasMaxItems,
+    hasSearchQuery,
     isActive,
     isLazyLoading,
     isLoading,
     items,
     layout,
-    noDocumentsMessage,
+    loadingVariant,
     onListChange,
     onRetry,
     searchInputElement,
     showIcons,
-    loadingVariant,
   } = props
 
   const schema = useSchema()
@@ -144,7 +146,35 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading]
   )
 
-  const content = useMemo(() => {
+  const noDocumentsContent = useMemo(() => {
+    if (hasSearchQuery) {
+      return (
+        <Flex align="center" direction="column" height="fill" justify="center">
+          <Container width={1}>
+            <Box paddingX={4} paddingY={5}>
+              <Text align="center" muted>
+                No results found
+              </Text>
+            </Box>
+          </Container>
+        </Flex>
+      )
+    }
+
+    return (
+      <Flex align="center" direction="column" height="fill" justify="center">
+        <Container width={1}>
+          <Box paddingX={4} paddingY={5}>
+            <Text align="center" muted>
+              {filterIsSimpleTypeConstraint ? 'No documents of this type' : 'No matching documents'}
+            </Text>
+          </Box>
+        </Container>
+      </Flex>
+    )
+  }, [filterIsSimpleTypeConstraint, hasSearchQuery])
+
+  const mainContent = useMemo(() => {
     if (!shouldRender) {
       return null
     }
@@ -171,17 +201,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     }
 
     if (!isLoading && items.length === 0) {
-      return (
-        <Flex align="center" direction="column" height="fill" justify="center">
-          <Container width={1}>
-            <Box paddingX={4} paddingY={5}>
-              <Text align="center" muted>
-                {noDocumentsMessage}
-              </Text>
-            </Box>
-          </Container>
-        </Flex>
-      )
+      return noDocumentsContent
     }
 
     if (loadingVariant === 'initial' && isLoading) {
@@ -222,6 +242,10 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         </CommandListBox>
       </RootBox>
     )
+    // Explicitly don't include `noDocumentsContent` in the deps array, as it's
+    // causing a visual bug where the "No documents" message is shown for a split second
+    // when clearing a search query with no results
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     collapsed,
     error,
@@ -231,7 +255,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     items,
     layout,
     loadingVariant,
-    noDocumentsMessage,
+    // noDocumentsContent,
     onRetry,
     renderItem,
     searchInputElement,
@@ -240,7 +264,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
   return (
     <PaneContent overflow={layoutCollapsed || loadingVariant === 'initial' ? 'hidden' : 'auto'}>
-      {content}
+      {mainContent}
     </PaneContent>
   )
 }
