@@ -181,7 +181,6 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
     onOpen,
     onRemove,
     open,
-    path,
     readOnly,
     renderPreview,
     schemaType,
@@ -271,7 +270,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
           onClose={onClose}
-          path={path}
+          autofocus={focused}
           referenceElement={__unstable_referenceElement}
           schemaType={schemaType}
         >

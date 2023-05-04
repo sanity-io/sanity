@@ -161,6 +161,7 @@ export function BlockObject(props: BlockObjectProps) {
       children: inputRef.current,
       focused,
       markers,
+      nodeFocused: memberItem?.node.focused,
       onClose,
       onOpen,
       onPathFocus,
@@ -183,6 +184,7 @@ export function BlockObject(props: BlockObjectProps) {
       isOpen,
       markers,
       memberItem?.elementRef,
+      memberItem?.node.focused,
       memberItem?.node.path,
       onClose,
       onOpen,
@@ -283,8 +285,8 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     onClose,
     onOpen,
     onRemove,
+    nodeFocused,
     open,
-    path,
     readOnly,
     renderPreview,
     selected,
@@ -292,6 +294,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     value,
     validation,
   } = props
+
   const isImagePreview = schemaType.name === 'image'
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
@@ -326,7 +329,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
         {renderPreview({
           actions: (
             <BlockObjectActionsMenu
-              focused={focused}
+              blockFocused={focused}
               isOpen={open}
               onOpen={onOpen}
               onRemove={onRemove}
@@ -345,7 +348,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="dialog"
           onClose={onClose}
-          path={path}
+          autofocus={nodeFocused}
           schemaType={schemaType}
           referenceElement={__unstable_referenceElement}
         >

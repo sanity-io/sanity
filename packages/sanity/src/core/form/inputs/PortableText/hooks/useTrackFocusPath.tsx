@@ -44,7 +44,7 @@ export function useTrackFocusPath(props: Props): void {
       const hasSelectionInSameBlock = isEqual(editorSelection?.focus.path[0], focusPath[0])
       // Only manipulate the editor selection if we are not in the same block as the user have currently selected.
       // Otherwise we may interfere when the user is creating new links or inline objects that is supposed to open.
-      if (!hasSelectionInSameBlock) {
+      if (!editorSelection || !hasSelectionInSameBlock) {
         // Make a selection in the editor
         PortableTextEditor.select(editor, {
           anchor: {path: focusPath, offset: 0},

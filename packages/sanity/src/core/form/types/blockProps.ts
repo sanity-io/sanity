@@ -83,6 +83,7 @@ export interface BlockProps {
   __unstable_referenceElement?: HTMLElement // Reference element representing the block in the DOM
   children?: ReactNode | undefined
   focused: boolean
+  nodeFocused?: boolean
   markers: PortableTextMarker[]
   onClose: () => void
   onOpen: () => void
@@ -90,7 +91,6 @@ export interface BlockProps {
   onRemove: () => void
   open: boolean
   parentSchemaType: ArraySchemaType | ObjectSchemaType
-  path: Path
   presence: FormNodePresence[]
   readOnly: boolean
   renderDefault: (props: BlockProps) => React.ReactElement

@@ -177,7 +177,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     onOpen,
     onRemove,
     open,
-    path,
+    focused,
     readOnly,
     schemaType,
     textElement,
@@ -225,7 +225,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
           onClose={onClose}
-          path={path}
+          autofocus={focused}
           referenceElement={__unstable_referenceElement}
           schemaType={schemaType}
         >
