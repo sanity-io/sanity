@@ -8,14 +8,14 @@ import {SortOrder} from './types'
 import {GeneralPreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
 
 interface DocumentListPaneHeaderProps {
+  contentAfter?: React.ReactNode
   index: number
   initialValueTemplates?: InitialValueTemplateItem[]
-  menuItems?: PaneMenuItem[]
   menuItemGroups?: PaneMenuItemGroup[]
+  menuItems?: PaneMenuItem[]
   setLayout: (layout: GeneralPreviewLayoutKey) => void
   setSortOrder: (sortOrder: SortOrder) => void
   title: string
-  contentAfter?: React.ReactNode
 }
 
 export const DocumentListPaneHeader = memo(
