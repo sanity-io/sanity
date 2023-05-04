@@ -173,6 +173,28 @@ describe('PrimitiveField', () => {
       expect(input).toBeInstanceOf(HTMLInputElement)
       expect(input.value).toEqual('1.00')
     })
+
+    it('wont trigger `onChange` callbacks when number input values are out of range', () => {
+      // Given
+      const {formCallbacks, member, TestWrapper} = setupTest('number', undefined)
+
+      const {getByTestId} = render(
+        <PrimitiveField
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper}
+      )
+
+      // When
+      const input = getByTestId('number-input') as HTMLInputElement
+      userEvent.paste(input!, (Number.MIN_SAFE_INTEGER - 1).toString())
+      userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
+
+      // Then
+      expect(formCallbacks.onChange).toBeCalledTimes(0)
+    })
   })
 })
 
