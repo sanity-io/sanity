@@ -24,7 +24,10 @@ const linkType = defineArrayMember({
 const myStringType = defineArrayMember({
   type: 'object',
   name: 'test',
-  fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
+  fields: [
+    {type: 'string', name: 'mystring', validation: (Rule) => Rule.required()},
+    {type: 'string', name: 'otherstring', validation: (Rule) => Rule.required()},
+  ],
 })
 
 export default defineType({
