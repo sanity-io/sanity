@@ -21,6 +21,7 @@ interface SearchDialogProps {
 const InnerCard = styled(Card)`
   flex-direction: column;
   overflow: hidden;
+  overflow: clip;
   pointer-events: all;
   position: relative;
 `
@@ -29,6 +30,7 @@ const SearchDialogBox = styled(Box)`
   height: 100%;
   left: 0;
   overflow: hidden;
+  overflow: clip;
   pointer-events: none;
   position: fixed;
   top: 0;

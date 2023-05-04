@@ -3982,10 +3982,10 @@
     segmented-property "^3.0.3"
     vite "^4.1.1"
 
-"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.3.0":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.3.2.tgz#8afa08da88cd84d910c50f958389b249654f8943"
-  integrity sha512-wI+XW/C7C3ZqpC2OyvEYRdU0fetT5OSSfpmiBia00dej8wygu5u3KzspPcrXFpWbPkUEdvcJjQyDEY6LMQqs8w==
+"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.3.3":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.3.3.tgz#ec3b9aeb8be79f53d94406bbf80c806af1a47e7f"
+  integrity sha512-fp5eyc6U760Mvg6wmiv0wOnX/uiPpFoPf4Ne9cJX6X80mk2/u2pOkXCuMuhfXmty3KP7uPZxkapD8atd7BaWIw==
   dependencies:
     "@floating-ui/react-dom" "1.1.1"
     "@sanity/color" "^2.2.3"

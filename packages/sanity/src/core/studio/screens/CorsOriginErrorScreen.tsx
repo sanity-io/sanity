@@ -12,6 +12,7 @@ export const ScreenReaderLabel = styled.label`
   clip-path: inset(50%);
   height: 1px;
   overflow: hidden;
+  overflow: clip;
   position: absolute;
   white-space: nowrap;
   width: 1px;
