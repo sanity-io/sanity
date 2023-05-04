@@ -32,13 +32,13 @@ export function useFetch<T>(props: FetchProps): Loadable<T> {
       }
     }
 
-    const count$: Observable<Loadable<T>> = client.observable.fetch(filter, params).pipe(
+    const value$: Observable<Loadable<T>> = client.observable.fetch(filter, params).pipe(
       map((res) => ({loading: false, data: res, error: null})),
       catchError((err) => of({loading: false, data: null, error: err}))
     )
 
     const initial$ = of(INITIAL_STATE)
-    const state$ = concat(initial$, count$)
+    const state$ = concat(initial$, value$)
     const sub = state$.pipe(tap(setState)).subscribe()
 
     return () => {
