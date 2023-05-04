@@ -137,8 +137,8 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
       const isLoadingMoreItems = !res.error && res?.result === null && shouldFetchFullList
 
-      // 1. When the result is null, we are loading more items. In this case, we want to
-      // set the loading state to true and wait for the next result.
+      // 1. When the result is null and shouldFetchFullList is true, we are loading _more_ items.
+      // In this case, we want to set the loading states to true and wait for the next result.
       if (isLoadingMoreItems) {
         setResult((prev) => ({...prev, loading: true}))
         setIsLazyLoading(true)
@@ -152,15 +152,14 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
         setHasFullList(true)
       }
 
-      // 3. If the result is null, we are loading more items. In this case, we want to
+      // 3. If the result is null, we are loading items. In this case, we want to
       // set the loading state to true and wait for the next result.
       if (res?.result === null) {
         setResult((prev) => ({...prev, loading: true}))
-
         return
       }
 
-      // 4. Finally, set the result and loading state to false.
+      // 4. Finally, set the result and loading states to false.
       setIsLazyLoading(false)
       setResult({...res, loading: false})
     },
@@ -174,16 +173,16 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     const types = uniqueTypesNames.flatMap((name) => schema.get(name) || []) as SearchableType[]
 
     const terms: SearchTerms = {
+      filter,
       query: searchQuery || '',
       types,
-      filter,
     }
 
     const options: SearchOptions & WeightedSearchOptions = {
       __unstable_extendedProjection: extendedProjection,
       comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
-      params: paramsProp,
       limit,
+      params: paramsProp,
       sort,
     }
 
