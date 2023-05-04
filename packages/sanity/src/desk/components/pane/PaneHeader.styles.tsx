@@ -45,6 +45,7 @@ export const TabsBox = styled(Box)(({theme}: {theme: Theme}) => {
   return css`
     margin: -${space[2]}px 0 -${space[2]}px -${space[3]}px;
     overflow: hidden;
+    overflow: clip;
     position: relative;
 
     & > div {

@@ -22,6 +22,7 @@ export const MediaWrapper = styled.span<{
     border-radius: ${({theme}) => rem(theme.sanity.radius[$radius])};
     display: flex;
     overflow: hidden;
+    overflow: clip;
     align-items: center;
     justify-content: center;
 

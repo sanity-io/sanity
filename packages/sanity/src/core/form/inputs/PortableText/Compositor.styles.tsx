@@ -18,6 +18,7 @@ export const Root = styled.div(({theme}) => {
 
     & [data-wrapper] {
       overflow: hidden;
+      overflow: clip;
       position: relative;
       z-index: 1;
       padding: ${input.border.width}px;

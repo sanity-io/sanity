@@ -21,6 +21,7 @@ export const ToolbarCard = styled(Card)`
 export const EditableCard = styled(Card)`
   position: relative;
   overflow: hidden;
+  overflow: clip;
 
   & > [data-portal] {
     position: absolute;
@@ -64,6 +65,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
   width: 100%;
   counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
   overflow: hidden;
+  overflow: clip;
 
   & > div {
     height: 100%;
