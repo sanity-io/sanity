@@ -1,5 +1,6 @@
-import {useEffect, useState, useCallback, useMemo} from 'react'
-import {EMPTY, concat, debounce, of, switchMap, timer} from 'rxjs'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {concat, EMPTY, fromEvent, merge, of, Subject} from 'rxjs'
+import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
 import {DocumentListPaneItem, QueryResult, SortOrder} from './types'
 import {
   getTypeNameFromSingleTypeFilter,
@@ -7,16 +8,16 @@ import {
   removePublishedWithDrafts,
 } from './helpers'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
-import {getQueryResults} from './getQueryResults'
 import {useDocumentTypeNames} from './hooks'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  useClient,
-  useSchema,
+  listenQuery,
   createSearchQuery,
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
   SearchableType,
   SearchOptions,
   SearchTerms,
+  useClient,
+  useSchema,
   WeightedSearchOptions,
 } from 'sanity'
 
@@ -46,6 +47,11 @@ interface DocumentListState {
   items: DocumentListPaneItem[]
   onListChange: () => void
   onRetry?: (event: unknown) => void
+}
+
+const INITIAL_QUERY_RESULTS: QueryResult = {
+  result: null,
+  error: null,
 }
 
 /**
@@ -198,45 +204,53 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     uniqueTypesNames,
   ])
 
-  // The query is too big to be used with a listener. To work around this, we use a
-  // listener to listen for mutations on the document types, and then re-run the query
-  // to get the updated list of documents when a mutation occurs.
-  const listener$ = useMemo(() => {
+  const queryResults$ = useMemo(() => {
     if (uniqueTypesNames.length === 0) {
       return EMPTY
     }
+    const onRetry$ = new Subject<void>()
+    const _onRetry = () => onRetry$.next()
 
-    return client.observable
-      .listen(`*[_type in $types]`, {types: uniqueTypesNames}, {events: ['welcome', 'mutation']})
-      .pipe(
-        // Add debounce to prevent multiple requests when multiple mutations occur.
-        // Skip the debounce when the event is 'welcome' to prevent a delay in the initial load.
-        debounce((value) => (value.type === 'welcome' ? of('') : timer(1000)))
-      )
-  }, [client.observable, uniqueTypesNames])
-
-  const getQueryResultsProps = useMemo(() => ({client, query, params}), [client, params, query])
+    return listenQuery(
+      client,
+      {
+        // The query is too big to be used with a listener. To work around this, we use a
+        // listener to listen for mutations on the document types, and then re-run the query
+        // to get the updated list of documents when a mutation occurs.
+        listen: '*[_type in $__types]',
+        fetch: query,
+      },
+      {...params, __types: uniqueTypesNames},
+      {
+        apiVersion,
+        tag: 'desk.document-list',
+      }
+    ).pipe(
+      map((results) => ({
+        result: {documents: results},
+        error: null,
+      })),
+      startWith(INITIAL_QUERY_RESULTS),
+      catchError((err, caught$) => {
+        return concat(
+          of({result: null, error: err}),
+          merge(fromEvent(window, 'online'), onRetry$).pipe(
+            take(1),
+            mergeMap(() => caught$)
+          )
+        )
+      }),
+      scan((prev, next) => ({...prev, ...next, onRetry: _onRetry}))
+    )
+  }, [apiVersion, client, params, query, uniqueTypesNames])
 
   useEffect(() => {
-    setResult((prev) => ({...prev, loading: true}))
-
-    const queryResults$ = listener$.pipe(
-      switchMap(() => {
-        return getQueryResults(of(getQueryResultsProps), {
-          apiVersion,
-          tag: 'desk.document-list',
-        })
-      })
-    )
-
-    const initial$ = of(INITIAL_STATE)
-    const state$ = concat(initial$, queryResults$)
-    const sub = state$.subscribe(handleSetResult)
+    const sub = queryResults$.subscribe(handleSetResult)
 
     return () => {
       sub.unsubscribe()
     }
-  }, [apiVersion, getQueryResultsProps, handleSetResult, listener$])
+  }, [handleSetResult, queryResults$])
 
   const reset = useCallback(() => {
     setHasFullList(false)
