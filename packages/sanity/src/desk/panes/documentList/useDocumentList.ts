@@ -1,25 +1,11 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {concat, EMPTY, fromEvent, merge, of, Subject} from 'rxjs'
+import {concat, fromEvent, merge, of, Subject} from 'rxjs'
 import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
 import {DocumentListPaneItem, QueryResult, SortOrder} from './types'
-import {
-  getTypeNameFromSingleTypeFilter,
-  isSimpleTypeFilter,
-  removePublishedWithDrafts,
-} from './helpers'
+import {getTypeNameFromSingleTypeFilter, removePublishedWithDrafts} from './helpers'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
-import {useDocumentTypeNames} from './hooks'
-import {
-  listenQuery,
-  createSearchQuery,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  SearchableType,
-  SearchOptions,
-  SearchTerms,
-  useClient,
-  useSchema,
-  WeightedSearchOptions,
-} from 'sanity'
+import {listenSearchQuery} from './listenSearchQuery'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useSchema} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
 
@@ -58,7 +44,7 @@ const INITIAL_QUERY_RESULTS: QueryResult = {
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
-  const {apiVersion, filter, params: paramsProp, sortOrder, searchQuery} = opts
+  const {filter, params: paramsProp, sortOrder, searchQuery} = opts
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
 
@@ -77,17 +63,11 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
   // This is used to determine whether we should show the loading spinner at the bottom of the list.
   const [isLazyLoading, setIsLazyLoading] = useState<boolean>(false)
 
-  // A flag to indicate whether we have reached the maximum number of documents.
-  const hasMaxItems = documents?.length === FULL_LIST_LIMIT
-
   // A state to keep track of whether we have fetched the full list of documents.
   const [hasFullList, setHasFullList] = useState<boolean>(false)
 
   // A state to keep track of whether we should fetch the full list of documents.
   const [shouldFetchFullList, setShouldFetchFullList] = useState<boolean>(false)
-
-  // Check if the filter is a simple type filter, e.g. `*[_type == "book"]` or `*[_type == $type]`
-  const isSimpleFilter = isSimpleTypeFilter(filter)
 
   // Get the type name from the filter, if it is a simple type filter.
   const typeNameFromFilter = useMemo(
@@ -95,39 +75,11 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     [filter, paramsProp]
   )
 
-  // If the filter is a simple type filter, we can disable fetching the document types names.
-  // This is because we already know the type name from the filter and params.
-  const disableFetchTypeNames = Boolean(typeNameFromFilter && isSimpleFilter)
-
-  // If the filter is not a simple type filter, we need to fetch the document types names
-  // to use in the search query and in the listener for the list change.
-  const {data: documentTypes, loading: loadingDocumentTypes} = useDocumentTypeNames({
-    filter,
-    params: paramsProp,
-    disabled: disableFetchTypeNames,
-  })
-
-  // The document types names are used to build the search query and to listen for changes.
-  // 1. If the filter is a simple type filter, we can use the type name directly.
-  // 2. If the filter is a complex filter, we need to use the document types names that we have fetched.
-  const uniqueTypesNames = useMemo(() => {
-    if (disableFetchTypeNames && typeNameFromFilter) return [typeNameFromFilter]
-
-    return [...new Set(documentTypes || EMPTY_ARRAY)]
-  }, [documentTypes, typeNameFromFilter, disableFetchTypeNames])
-
-  const noDocumentTypes = uniqueTypesNames.length === 0 && !loadingDocumentTypes
-
   const isLoading =
-    Boolean(isInitialLoading && !noDocumentTypes) ||
-    Boolean(loading && result === null && noDocumentTypes)
+    Boolean(isInitialLoading && !error) || Boolean(loading && result === null && !error)
 
-  // The search is ready to be interacted with when:
-  // 1. The filter is a simple type filter and we have the type name from the filter.
-  // 2. Or when the filter is not a simple type filter and we have fetched the document types names.
-  const simpleFilterSearchReady = uniqueTypesNames.length > 0
-  const complexFilterSearchReady = simpleFilterSearchReady && !loadingDocumentTypes
-  const isSearchReady = isSimpleFilter ? simpleFilterSearchReady : complexFilterSearchReady
+  // A flag to indicate whether we have reached the maximum number of documents.
+  const hasMaxItems = documents?.length === FULL_LIST_LIMIT
 
   // This function is triggered when the user has scrolled to the bottom of the list
   // and we need to fetch more items.
@@ -172,60 +124,23 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     [shouldFetchFullList]
   )
 
-  const {params, query} = useMemo(() => {
-    const sort = sortOrder?.by || DEFAULT_ORDERING?.by
-    const extendedProjection = sortOrder?.extendedProjection || DEFAULT_ORDERING?.extendedProjection
-    const limit = shouldFetchFullList ? FULL_LIST_LIMIT : PARTIAL_PAGE_LIMIT
-    const types = uniqueTypesNames.flatMap((name) => schema.get(name) || []) as SearchableType[]
-
-    const terms: SearchTerms = {
-      filter,
-      query: searchQuery || '',
-      types,
-    }
-
-    const options: SearchOptions & WeightedSearchOptions = {
-      __unstable_extendedProjection: extendedProjection,
-      comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
-      limit,
-      params: paramsProp,
-      sort,
-    }
-
-    return createSearchQuery(terms, options)
-  }, [
-    filter,
-    paramsProp,
-    schema,
-    searchQuery,
-    shouldFetchFullList,
-    sortOrder?.by,
-    sortOrder?.extendedProjection,
-    uniqueTypesNames,
-  ])
-
   const queryResults$ = useMemo(() => {
-    if (uniqueTypesNames.length === 0) {
-      return EMPTY
-    }
     const onRetry$ = new Subject<void>()
     const _onRetry = () => onRetry$.next()
 
-    return listenQuery(
+    const limit = shouldFetchFullList ? FULL_LIST_LIMIT : PARTIAL_PAGE_LIMIT
+    const sort = sortOrder || DEFAULT_ORDERING
+
+    return listenSearchQuery({
       client,
-      {
-        // The query is too big to be used with a listener. To work around this, we use a
-        // listener to listen for mutations on the document types, and then re-run the query
-        // to get the updated list of documents when a mutation occurs.
-        listen: '*[_type in $__types]',
-        fetch: query,
-      },
-      {...params, __types: uniqueTypesNames},
-      {
-        apiVersion,
-        tag: 'desk.document-list',
-      }
-    ).pipe(
+      filter,
+      limit,
+      params: paramsProp,
+      schema,
+      searchQuery: searchQuery || '',
+      sort,
+      staticTypeNames: typeNameFromFilter ? [typeNameFromFilter] : undefined,
+    }).pipe(
       map((results) => ({
         result: {documents: results},
         error: null,
@@ -242,7 +157,16 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       }),
       scan((prev, next) => ({...prev, ...next, onRetry: _onRetry}))
     )
-  }, [apiVersion, client, params, query, uniqueTypesNames])
+  }, [
+    client,
+    filter,
+    paramsProp,
+    schema,
+    searchQuery,
+    shouldFetchFullList,
+    sortOrder,
+    typeNameFromFilter,
+  ])
 
   useEffect(() => {
     const sub = queryResults$.subscribe(handleSetResult)
@@ -261,14 +185,14 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
   useEffect(() => {
     reset()
-  }, [reset, filter, paramsProp, sortOrder, searchQuery, uniqueTypesNames])
+  }, [reset, filter, paramsProp, sortOrder, searchQuery])
 
   return {
     error,
     hasMaxItems,
     isLazyLoading,
     isLoading,
-    isSearchReady,
+    isSearchReady: !error,
     items,
     onListChange,
     onRetry,
