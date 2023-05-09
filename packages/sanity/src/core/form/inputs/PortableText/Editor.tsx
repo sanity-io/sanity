@@ -12,6 +12,7 @@ import {
   usePortableTextEditor,
   RenderStyleFunction,
   RenderListItemFunction,
+  usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -86,6 +87,7 @@ export function Editor(props: EditorProps) {
   const {isTopLayer} = useLayer()
   const editableRef = useRef<HTMLDivElement | null>(null)
   const editor = usePortableTextEditor()
+  const selection = usePortableTextEditorSelection()
 
   const {element: boundaryElement} = useBoundaryElement()
 
@@ -108,6 +110,20 @@ export function Editor(props: EditorProps) {
   const spellcheck = useSpellcheck()
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
+
+  // Restore the React editor selection and focus when toggling fullscreen
+  // Note that the selection itself is not part of the dependencies here (use the last known from the PTE instance)
+  useEffect(() => {
+    if (selection) {
+      PortableTextEditor.select(editor, selection)
+    }
+    if (hasFocus) {
+      PortableTextEditor.focus(editor)
+    } else {
+      PortableTextEditor.blur(editor)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, isFullscreen]) // skip selection dep.
 
   const editable = useMemo(
     () => (
@@ -150,13 +166,6 @@ export function Editor(props: EditorProps) {
     },
     [editor, onItemOpen, path]
   )
-
-  // Focus the editor if we have focus and the editor is re-rendered (toggling fullscreen for instance)
-  useEffect(() => {
-    if (hasFocus) {
-      PortableTextEditor.focus(editor)
-    }
-  }, [editor, hasFocus])
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor">
