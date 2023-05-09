@@ -2,7 +2,7 @@
 import React, {useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {Editor, Transforms, Node, Descendant} from 'slate'
+import {Editor, Transforms, Node, Descendant, Text} from 'slate'
 import {useSlate} from '@sanity/slate-react'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
@@ -253,12 +253,19 @@ function _updateBlock(
       if (isChildChanged) {
         // Update if this is the same child
         if (currentBlockChild._key === oldBlockChild?._key) {
-          debug('Updating changed child', currentBlockChild)
+          debug('Updating changed child', currentBlockChild, oldBlockChild)
           Transforms.setNodes(slateEditor, currentBlockChild as Partial<Node>, {
             at: [currentBlockIndex, currentBlockChildIndex],
           })
-          // If it's a inline block, also update the void text node key
-          if (currentBlockChild._type !== 'span') {
+          // We must "manually" update the text for span nodes because Transform.setNodes will not target them.
+          // See https://github.com/ianstormtaylor/slate/issues/3278
+          const isSpan = Text.isText(currentBlockChild) && currentBlockChild._type === 'span'
+          if (isSpan) {
+            Transforms.insertText(slateEditor, currentBlockChild.text, {
+              at: [currentBlockIndex, currentBlockChildIndex],
+            })
+          } else {
+            // If it's a inline block, also update the void text node key
             debug('Updating changed inline object child', currentBlockChild)
             Transforms.setNodes(
               slateEditor,
