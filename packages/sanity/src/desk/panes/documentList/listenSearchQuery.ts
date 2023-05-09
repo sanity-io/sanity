@@ -39,6 +39,9 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
   const sortBy = sort.by
   const extendedProjection = sort?.extendedProjection
 
+  // Listen for changes with the given filter and params, and whenever a change occurs, we want to
+  // re-fetch the documents that match the search query (see below).
+  // We use a separate listener since the search query is too large to use in a listen query.
   const events$ = defer(() => {
     return client.listen(`*[${filter}]`, params, {
       events: ['welcome', 'mutation', 'reconnect'],
@@ -49,8 +52,8 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
     mergeMap((ev, i) => {
       const isFirst = i === 0
       if (isFirst && ev.type !== 'welcome') {
-        // if the first event is not welcome, it is most likely a reconnect and
-        // if it's not a reconnect something is very wrong
+        // If the first event is not welcome, it is most likely a reconnect and
+        // if it's not a reconnect something is very wrong and we should throw.
         return throwError(
           () =>
             new Error(
@@ -69,24 +72,19 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
 
   return merge(
     welcome$.pipe(take(1)),
-    mutationAndReconnect$.pipe(
-      // filter(isRelevantEvent),
-      throttleTime(1000, asyncScheduler, {leading: true, trailing: true})
-    )
+    mutationAndReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true}))
   ).pipe(
     exhaustMapWithTrailing(() => {
+      // Get the types names to use for searching.
+      // If we have a static list of types, we can skip fetching the types and use the static list.
       const typeNames$ = staticTypeNames
         ? of(staticTypeNames)
         : client.observable.fetch(`array::unique(*[${filter}][]._type)`, params)
 
-      // Get type names to use for searching.
-      // If we have a static list of types, we can skip fetching the types
+      // Use the type names to create a search query and fetch the documents that match the query.
       return typeNames$.pipe(
-        // Use the type names to create a search query and fetch documents
         mergeMap((typeNames: string[]) => {
-          const types = typeNames.flatMap(
-            (typeName) => schema.get(typeName) || []
-          ) as SearchableType[]
+          const types = typeNames.flatMap((name) => schema.get(name) || []) as SearchableType[]
 
           const searchTerms: SearchTerms = {
             filter,
