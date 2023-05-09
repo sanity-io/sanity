@@ -9,6 +9,7 @@ export const RootPopover = styled(Popover)`
 
   & > div {
     overflow: hidden;
+    overflow: clip;
   }
 `
 
@@ -19,8 +20,8 @@ export const ContentContainer = styled(Container)`
   direction: column;
 `
 /*
-Setting a static max-height here to avoid scrolling issue. 
-Calculating a dynamic height to make the popover more responsive is complex, as the popover can switch top/bottom placement, 
+Setting a static max-height here to avoid scrolling issue.
+Calculating a dynamic height to make the popover more responsive is complex, as the popover can switch top/bottom placement,
 with different height requirements.
 */
 export const ModalWrapper = styled(Flex)`
