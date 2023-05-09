@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {concat, fromEvent, merge, of, Subject} from 'rxjs'
+import {concat, fromEvent, merge, of, Subject, throwError} from 'rxjs'
 import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
 import {DocumentListPaneItem, QueryResult, SortOrder} from './types'
 import {getTypeNameFromSingleTypeFilter, removePublishedWithDrafts} from './helpers'
@@ -91,8 +91,12 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
   const handleSetResult = useCallback(
     (res: QueryResult) => {
-      const documentsLength = res.result?.documents?.length || 0
+      if (res.error) {
+        setResult({...res, loading: false})
+        return
+      }
 
+      const documentsLength = res.result?.documents?.length || 0
       const isLoadingMoreItems = !res.error && res?.result === null && shouldFetchFullList
 
       // 1. When the result is null and shouldFetchFullList is true, we are loading _more_ items.
@@ -113,7 +117,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       // 3. If the result is null, we are loading items. In this case, we want to
       // set the loading state to true and wait for the next result.
       if (res?.result === null) {
-        setResult((prev) => ({...prev, loading: true}))
+        setResult((prev) => ({...(prev.error ? res : prev), loading: true}))
         return
       }
 
@@ -146,6 +150,13 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
         error: null,
       })),
       startWith(INITIAL_QUERY_RESULTS),
+      catchError((err) => {
+        if (err instanceof ProgressEvent) {
+          // todo: hack to work around issue(?) with sanity client that propagates connection errors as ProgressEvent instances
+          return throwError(() => new Error(`Request error`))
+        }
+        return throwError(() => err)
+      }),
       catchError((err, caught$) => {
         return concat(
           of({result: null, error: err}),

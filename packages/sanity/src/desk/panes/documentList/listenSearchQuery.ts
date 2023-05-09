@@ -1,13 +1,26 @@
 import {SanityClient, SanityDocument} from '@sanity/client'
-import {Observable, debounce, mergeMap, of, share, throwError, timer} from 'rxjs'
+import {
+  asyncScheduler,
+  defer,
+  merge,
+  mergeMap,
+  Observable,
+  of,
+  partition,
+  share,
+  take,
+  throttleTime,
+  throwError,
+} from 'rxjs'
+import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {SortOrder} from './types'
 import {
-  SearchableType,
-  SearchTerms,
-  SearchOptions,
-  WeightedSearchOptions,
   createSearchQuery,
   Schema,
+  SearchableType,
+  SearchOptions,
+  SearchTerms,
+  WeightedSearchOptions,
 } from 'sanity'
 
 interface ListenQueryOptions {
@@ -21,67 +34,82 @@ interface ListenQueryOptions {
   staticTypeNames?: string[]
 }
 
-/** @internal */
 export function listenSearchQuery(options: ListenQueryOptions): Observable<SanityDocument[]> {
   const {client, schema, sort, limit, params, filter, searchQuery, staticTypeNames} = options
   const sortBy = sort.by
   const extendedProjection = sort?.extendedProjection
 
-  return client.listen(`*[${filter}]`, params, {events: ['welcome', 'mutation']}).pipe(
-    // If the first event is not welcome, it is most likely a reconnect and
-    // if it's not a reconnect something is very wrong
-    mergeMap((event, i) => {
-      const isFirstEvent = i === 0
-      const isWelcomeEvent = event.type === 'welcome'
-
-      if (isFirstEvent && !isWelcomeEvent) {
+  const events$ = defer(() => {
+    return client.listen(`*[${filter}]`, params, {
+      events: ['welcome', 'mutation', 'reconnect'],
+      includeResult: false,
+      visibility: 'query',
+    })
+  }).pipe(
+    mergeMap((ev, i) => {
+      const isFirst = i === 0
+      if (isFirst && ev.type !== 'welcome') {
+        // if the first event is not welcome, it is most likely a reconnect and
+        // if it's not a reconnect something is very wrong
         return throwError(
           () =>
             new Error(
-              event.type === 'reconnect'
+              ev.type === 'reconnect'
                 ? 'Could not establish EventSource connection'
-                : `Received unexpected type of first event "${event.type}"`
+                : `Received unexpected type of first event "${ev.type}"`
             )
         )
       }
-      return of(event)
+      return of(ev)
     }),
-    share(),
-    // Skip debounce on welcome events to avoid delaying the initial fetch
-    debounce((event) => (event.type === 'welcome' ? of('') : timer(1000))),
-    // Get type names to use for searching.
-    // If we have a static list of types, we can skip fetching the types
-    mergeMap((): Observable<string[]> => {
-      if (staticTypeNames) {
-        return of(staticTypeNames)
-      }
+    share()
+  )
 
-      return client.observable.fetch(`array::unique(*[${filter}][]._type)`, params)
-    }),
-    // Use the type names to create a search query and fetch documents
-    mergeMap((typeNames) => {
-      const types = typeNames.flatMap((typeName) => schema.get(typeName) || []) as SearchableType[]
+  const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
 
-      const searchTerms: SearchTerms = {
-        filter,
-        query: searchQuery || '',
-        types,
-      }
+  return merge(
+    welcome$.pipe(take(1)),
+    mutationAndReconnect$.pipe(
+      // filter(isRelevantEvent),
+      throttleTime(1000, asyncScheduler, {leading: true, trailing: true})
+    )
+  ).pipe(
+    exhaustMapWithTrailing(() => {
+      const typeNames$ = staticTypeNames
+        ? of(staticTypeNames)
+        : client.observable.fetch(`array::unique(*[${filter}][]._type)`, params)
 
-      const searchOptions: SearchOptions & WeightedSearchOptions = {
-        __unstable_extendedProjection: extendedProjection,
-        comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
-        limit,
-        params,
-        sort: sortBy,
-      }
+      // Get type names to use for searching.
+      // If we have a static list of types, we can skip fetching the types
+      return typeNames$.pipe(
+        // Use the type names to create a search query and fetch documents
+        mergeMap((typeNames: string[]) => {
+          const types = typeNames.flatMap(
+            (typeName) => schema.get(typeName) || []
+          ) as SearchableType[]
 
-      const {query: createdQuery, params: createdParams} = createSearchQuery(
-        searchTerms,
-        searchOptions
+          const searchTerms: SearchTerms = {
+            filter,
+            query: searchQuery || '',
+            types,
+          }
+
+          const searchOptions: SearchOptions & WeightedSearchOptions = {
+            __unstable_extendedProjection: extendedProjection,
+            comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
+            limit,
+            params,
+            sort: sortBy,
+          }
+
+          const {query: createdQuery, params: createdParams} = createSearchQuery(
+            searchTerms,
+            searchOptions
+          )
+
+          return client.observable.fetch(createdQuery, createdParams)
+        })
       )
-
-      return client.observable.fetch(createdQuery, createdParams)
     })
   )
 }
