@@ -18,6 +18,7 @@ interface TimelineMenuProps {
 
 const Root = styled(Popover)`
   overflow: hidden;
+  overflow: clip;
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {

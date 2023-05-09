@@ -20,6 +20,7 @@ const StyledSpan = styled.span<StyledSpanProps>(({background}) => {
     height: 100%;
     justify-content: center;
     overflow: hidden;
+    overflow: clip;
     width: 100%;
   `
 })

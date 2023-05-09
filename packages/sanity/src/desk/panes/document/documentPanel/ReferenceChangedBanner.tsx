@@ -19,6 +19,7 @@ const Root = styled(Card)`
 const TextOneLine = styled(Text)`
   & > * {
     overflow: hidden;
+    overflow: clip;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
