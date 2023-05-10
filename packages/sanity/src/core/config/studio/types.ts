@@ -1,5 +1,6 @@
+import type {InitOptions, ResourceLanguage} from 'i18next'
 import React from 'react'
-import {Tool} from '../types'
+import {ConfigContext, LanguageLoader, Tool} from '../types'
 
 /**
  * @hidden
@@ -55,4 +56,24 @@ export interface StudioComponentsPluginOptions {
   logo?: React.ComponentType<LogoProps>
   navbar?: React.ComponentType<NavbarProps>
   toolMenu?: React.ComponentType<ToolMenuProps>
+}
+
+/** @alpha */
+export interface I18nContext {
+  projectId: string
+  dataset: string
+}
+
+/** @alpha */
+export interface LanguageResource {
+  namespace: string
+  resources: ResourceLanguage
+}
+
+/** @alpha */
+export interface I18nPluginOptions {
+  initOptions?: (options: InitOptions, context: I18nContext) => InitOptions
+  languageLoaders?:
+    | ((prev: LanguageLoader[], context: I18nContext) => LanguageLoader[])
+    | LanguageLoader[]
 }

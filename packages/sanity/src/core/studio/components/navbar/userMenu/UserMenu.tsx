@@ -27,6 +27,7 @@ import {
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
 import {LoginProviderLogo} from './LoginProviderLogo'
+import {useSanityI18n, useTranslation} from '../../../i18n'
 
 const AVATAR_SIZE = 1
 
@@ -64,6 +65,36 @@ function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSc
           pressed={selected}
           text={title}
           iconRight={selected && <CheckmarkIcon />}
+        />
+      ))}
+    </>
+  )
+}
+
+function LanguageMenu() {
+  const {i18n} = useTranslation()
+  const {changeLanguage} = useSanityI18n()
+  const supportedLngs = i18n.options.supportedLngs
+  if (!supportedLngs || supportedLngs.length < 2) {
+    return null
+  }
+  return (
+    <>
+      <MenuDivider />
+
+      <Box padding={2}>
+        <Label size={1} muted>
+          Language
+        </Label>
+      </Box>
+
+      {['en', 'no'].map((lang) => (
+        <MenuItem
+          key={lang}
+          aria-label={lang}
+          icon={() => <>{lang}</>}
+          onClick={() => changeLanguage(lang)}
+          text={lang}
         />
       ))}
     </>
@@ -137,6 +168,7 @@ export function UserMenu() {
 
           {setScheme && <AppearanceMenu setScheme={setScheme} />}
 
+          <LanguageMenu />
           <MenuDivider />
 
           <MenuItem

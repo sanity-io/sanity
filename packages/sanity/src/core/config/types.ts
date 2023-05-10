@@ -11,6 +11,7 @@ import type {
 } from '@sanity/types'
 import React, {type ComponentType} from 'react'
 import type {Observable} from 'rxjs'
+import type {InitOptions, i18n, TFunction} from 'i18next'
 import type {
   BlockAnnotationProps,
   BlockProps,
@@ -26,15 +27,20 @@ import {AuthStore} from '../store'
 import {StudioTheme} from '../theme'
 import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import {StudioComponents, StudioComponentsPluginOptions} from './studio'
 import {
   DocumentActionComponent,
   DocumentBadgeComponent,
   DocumentFieldAction,
-  DocumentFieldActionsResolverContext,
   DocumentFieldActionsResolver,
+  DocumentFieldActionsResolverContext,
   DocumentInspector,
 } from './document'
+import {
+  I18nPluginOptions,
+  LanguageResource,
+  StudioComponents,
+  StudioComponentsPluginOptions,
+} from './studio'
 import {Router, RouterState} from 'sanity/router'
 
 /**
@@ -275,6 +281,8 @@ export interface PluginOptions {
   studio?: {
     components?: StudioComponentsPluginOptions
   }
+  /** alpha */
+  i18n?: I18nPluginOptions
 }
 
 /** @internal */
@@ -495,6 +503,9 @@ export interface Source {
   }
 
   /** @alpha */
+  i18n: I18nApi
+
+  /** @alpha */
   search: {
     filters: SearchFilterDefinition[]
     operators: SearchOperatorDefinition[]
@@ -506,6 +517,19 @@ export interface Source {
     staticInitialValueTemplateItems: InitialValueTemplateItem[]
     options: SourceOptions
   }
+}
+
+// TODO return observable instead of Promise?
+export type LanguageLoader = (
+  language: string,
+  context: {i18n: i18n}
+) => Promise<LanguageResource[] | undefined>
+
+export interface I18nApi {
+  initOptions: InitOptions
+  languageLoaders: LanguageLoader[]
+  t: TFunction
+  i18next: i18n
 }
 
 /** @internal */
@@ -521,6 +545,7 @@ export interface WorkspaceSummary {
   dataset: string
   theme: StudioTheme
   schema: Schema
+  i18n: I18nApi
   /**
    * @internal
    * @deprecated not actually deprecated but don't use or you'll be fired
@@ -533,6 +558,7 @@ export interface WorkspaceSummary {
       title: string
       auth: AuthStore
       schema: Schema
+      i18n: I18nApi
       source: Observable<Source>
     }>
   }

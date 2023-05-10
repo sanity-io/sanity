@@ -226,7 +226,9 @@
     "use-hot-module-reload": "^1.0.1",
     "use-sync-external-store": "^1.2.0",
     "vite": "^4.0.1",
-    "yargs": "^17.3.0"
+    "yargs": "^17.3.0",
+    "i18next": "^22.4.15",
+    "react-i18next": "^12.2.2"
   },
   "devDependencies": {
     "@sanity/tsdoc": "1.0.0-alpha.34",

@@ -5,6 +5,7 @@ import React, {forwardRef, KeyboardEvent as ReactKeyboardEvent, Ref, useCallback
 import styled from 'styled-components'
 import {GLOBAL_SEARCH_KEY, GLOBAL_SEARCH_KEY_MODIFIER} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
+import {useTranslation} from '../../../../i18n'
 
 const KeyboardShortcutFlex = styled(Flex)`
   position: absolute;
@@ -35,6 +36,8 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
     state: {terms},
   } = useSearchState()
 
+  const {t} = useTranslation()
+
   const handleChange = useCallback(
     (event: ReactKeyboardEvent<HTMLInputElement>) => {
       dispatch({type: 'TERMS_QUERY_SET', query: event.currentTarget.value})
@@ -63,7 +66,7 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
         onChange={handleChange}
         onClick={onOpen}
         onKeyDown={handleKeyDown}
-        placeholder="Search"
+        placeholder={t('searchPlaceholder')}
         radius={2}
         ref={ref}
         role="combobox"

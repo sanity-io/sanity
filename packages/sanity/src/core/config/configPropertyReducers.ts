@@ -1,19 +1,22 @@
 import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
+import type {InitOptions} from 'i18next'
 import type {Template, TemplateResponse} from '../templates'
 import {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import type {
-  DocumentLanguageFilterComponent,
-  DocumentLanguageFilterContext,
   AsyncConfigPropertyReducer,
   ConfigContext,
   ConfigPropertyReducer,
   DocumentActionsContext,
   DocumentBadgesContext,
   DocumentInspectorContext,
+  DocumentLanguageFilterComponent,
+  DocumentLanguageFilterContext,
+  LanguageLoader,
   NewDocumentOptionsContext,
   ResolveProductionUrlContext,
   Tool,
 } from './types'
+import type {I18nContext} from './studio'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
@@ -101,6 +104,35 @@ export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigCon
 
   throw new Error(
     `Expected \`schema.templates\` to be an array or a function, but received ${typeof schemaTemplates}`
+  )
+}
+
+export const i18nOptionsReducer: ConfigPropertyReducer<InitOptions, I18nContext> = (
+  prev,
+  {i18n},
+  context
+) => {
+  const initOptions = i18n?.initOptions
+  if (!initOptions) return prev
+  if (typeof initOptions === 'function') return initOptions(prev, context)
+
+  throw new Error(
+    `Expected \`i18n.initOptions\` to be ana function, but received ${typeof initOptions}`
+  )
+}
+
+export const i18nLoaderReducer: ConfigPropertyReducer<LanguageLoader[], I18nContext> = (
+  prev,
+  {i18n},
+  context
+) => {
+  const languageLoaders = i18n?.languageLoaders
+  if (!languageLoaders) return prev
+  if (typeof languageLoaders === 'function') return languageLoaders(prev, context)
+  if (Array.isArray(languageLoaders)) return [...prev, ...languageLoaders]
+
+  throw new Error(
+    `Expected \`i18n.languageLoaders\` to be ana function, but received ${typeof languageLoaders}`
   )
 }
 
