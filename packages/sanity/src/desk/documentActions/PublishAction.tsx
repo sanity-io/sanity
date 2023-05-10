@@ -1,8 +1,9 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
-import {TimeAgo} from '../components'
+import type {TFunction} from 'i18next'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
+import {deskI18nNamespace, DeskTranslations} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -11,30 +12,33 @@ import {
   useDocumentPairPermissions,
   useEditState,
   useSyncState,
+  useTimeAgo,
+  useTranslation,
   useValidationStatus,
 } from 'sanity'
 
-const DISABLED_REASON_TITLE = {
-  LIVE_EDIT_ENABLED: 'Cannot publish since liveEdit is enabled for this document type',
-  ALREADY_PUBLISHED: 'Already published',
-  NO_CHANGES: 'No unpublished changes',
-  NOT_READY: 'Operation not ready',
-}
+const DISABLED_REASON_TITLE_KEY: Record<string, keyof DeskTranslations> = {
+  LIVE_EDIT_ENABLED: 'action.publish.liveEdit.publishDisabled',
+  ALREADY_PUBLISHED: 'action.publish.alreadyPublished.noTimeAgo.tooltip',
+  NO_CHANGES: 'action.publish.tooltip.noChanges',
+  NOT_READY: 'action.publish.disabled.notReady',
+} as const
 
 function getDisabledReason(
-  reason: keyof typeof DISABLED_REASON_TITLE,
+  reason: keyof typeof DISABLED_REASON_TITLE_KEY,
   publishedAt: string | undefined,
+  t: TFunction,
 ) {
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
-    return (
-      <>
-        <span>
-          Published <TimeAgo time={publishedAt} />
-        </span>
-      </>
-    )
+    return <AlreadyPublished publishedAt={publishedAt} />
   }
-  return DISABLED_REASON_TITLE[reason]
+  return t(DISABLED_REASON_TITLE_KEY[reason])
+}
+
+function AlreadyPublished({publishedAt}: {publishedAt: string}) {
+  const {t} = useTranslation(deskI18nNamespace)
+  const timeSincePublished = useTimeAgo(publishedAt)
+  return <span>{t('action.publish.alreadyPublished.tooltip', {timeSincePublished})}</span>
 }
 
 /** @internal */
@@ -47,6 +51,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const syncState = useSyncState(id, type)
   const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
   const editState = useEditState(documentId, documentType)
+  const {t} = useTranslation(deskI18nNamespace)
 
   const revision = (editState?.draft || editState?.published || {})._rev
 
@@ -65,9 +70,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   // eslint-disable-next-line no-nested-ternary
   const title = publish.disabled
-    ? getDisabledReason(publish.disabled, (published || {})._updatedAt) || ''
+    ? getDisabledReason(publish.disabled, (published || {})._updatedAt, t) || ''
     : hasValidationErrors
-    ? 'There are validation errors that need to be fixed before this document can be published'
+    ? t('action.publish.validationIssues.tooltip')
     : ''
 
   const hasDraft = Boolean(draft)
@@ -138,9 +143,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
   if (liveEdit) {
     return {
       tone: 'positive',
-      label: 'Publish',
-      title:
-        'Live Edit is enabled for this content type and publishing happens automatically as you make changes',
+      label: t('action.publish.liveEdit.label'),
+      title: t('action.publish.liveEdit.tooltip'),
       disabled: true,
     }
   }
@@ -174,16 +178,16 @@ export const PublishAction: DocumentActionComponent = (props) => {
     label:
       // eslint-disable-next-line no-nested-ternary
       publishState === 'published'
-        ? 'Published'
+        ? t('action.publish.published.label')
         : publishScheduled || publishState === 'publishing'
-        ? 'Publishing…'
-        : 'Publish',
+        ? t('action.publish.running.label')
+        : t('action.publish.draft.label'),
     // @todo: Implement loading state, to show a `<Button loading />` state
     // loading: publishScheduled || publishState === 'publishing',
     icon: publishState === 'published' ? CheckmarkIcon : PublishIcon,
     // eslint-disable-next-line no-nested-ternary
     title: publishScheduled
-      ? 'Waiting for tasks to finish before publishing'
+      ? t('action.publish.waiting')
       : publishState === 'published' || publishState === 'publishing'
       ? null
       : title,
