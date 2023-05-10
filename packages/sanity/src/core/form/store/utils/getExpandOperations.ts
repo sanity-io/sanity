@@ -89,7 +89,7 @@ function getObjectFieldsetAndFieldGroupOperations(
   const members = fieldsetMember
     ? fieldsetMember.fieldSet.members
     : // Note: we need to use the internal `_allMembers` array here instead of members since hidden/collapsed members are omitted from members
-      node._allMembers.map((formStateMember) => formStateMember.member)
+      node._allMembers
 
   // look for the field inside the members array
   const fieldMember = members.find(

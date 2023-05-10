@@ -10,7 +10,6 @@ import {
 } from '@sanity/types'
 import {ObjectItem} from '../../types'
 import {FormNodePresence} from '../../../presence'
-import {InternalFormStateMember} from '../formState'
 import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
 import {FormFieldGroup} from './fieldGroup'
 
@@ -32,6 +31,14 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
   changed: boolean
 }
 
+/** @internal */
+export interface HiddenField {
+  kind: 'hidden'
+  key: string
+  name: string
+  index: number
+}
+
 /** @public */
 export interface ObjectFormNode<
   T = {[key in string]: unknown},
@@ -43,7 +50,7 @@ export interface ObjectFormNode<
   /** @beta */
   members: ObjectMember[]
   /** @internal */
-  _allMembers: InternalFormStateMember[]
+  _allMembers: (ObjectMember | HiddenField)[]
 }
 
 /** @public */
@@ -60,7 +67,7 @@ export interface ObjectArrayFormNode<
   members: ObjectMember[]
 
   /** @internal */
-  _allMembers: InternalFormStateMember[]
+  _allMembers: ObjectMember[]
   changesOpen?: boolean
 }
 
