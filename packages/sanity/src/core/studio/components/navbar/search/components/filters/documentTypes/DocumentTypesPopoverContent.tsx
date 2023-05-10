@@ -134,7 +134,7 @@ export function DocumentTypesPopoverContent() {
             activeItemDataAttr="data-hovered"
             ariaLabel="Document types"
             ariaMultiselectable
-            autoFocus="list"
+            autoFocus="input"
             getItemDisabled={getItemDisabled}
             getItemSelected={getItemSelected}
             getItemKey={getItemKey}
