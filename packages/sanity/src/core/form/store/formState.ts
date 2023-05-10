@@ -45,15 +45,20 @@ type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaTy
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
   groupsConfig: FormFieldGroup[],
-  fieldGroup: string | string[],
+  fieldGroup: string | string[] | undefined,
   selectedGroup: FormFieldGroup
 ) {
   if (selectedGroup.name === ALL_FIELDS_GROUP.name) {
     return true
   }
 
+  // "all fields" is not the selected group and the field has no group config, so it should be hidden
+  if (fieldGroup === undefined) {
+    return false
+  }
+
   // if there's no group config for the object type, all fields are visible
-  if (groupsConfig.length === 0) {
+  if (groupsConfig.length === 0 && selectedGroup.name === ALL_FIELDS_GROUP.name) {
     return true
   }
 
@@ -554,9 +559,8 @@ function prepareObjectInputState<T>(
       return [
         {
           hidden: fieldMember === null,
-          inSelectedGroup: fieldSet.field.group
-            ? isFieldEnabledByGroupFilter(groups, fieldSet.field.group, selectedGroup)
-            : true,
+          inSelectedGroup: isFieldEnabledByGroupFilter(groups, fieldSet.field.group, selectedGroup),
+
           group: fieldSet.field.group,
           member: fieldMember,
         },
