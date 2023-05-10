@@ -14,8 +14,10 @@ import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {prepareI18nSource} from '../i18n/i18nConfig'
 import type {
   Config,
+  I18nSource,
   MissingConfigFile,
   PreparedConfig,
   SingleWorkspace,
@@ -142,6 +144,7 @@ export function prepareConfig(
         // TODO: consider using the `ConfigResolutionError`
         throw new SchemaError(schema)
       }
+      const i18n = prepareI18nSource(source, schema)
 
       const auth = getAuthStore(source)
       const source$ = auth.state.pipe(
@@ -153,6 +156,7 @@ export function prepareConfig(
             schema,
             authenticated,
             auth,
+            i18n,
           })
         }),
         shareReplay(1),
@@ -165,6 +169,7 @@ export function prepareConfig(
         title: source.title || startCase(source.name),
         auth,
         schema,
+        i18n,
         source: source$,
       }
     })
@@ -177,6 +182,7 @@ export function prepareConfig(
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
       schema: resolvedSources[0].schema,
+      i18n: resolvedSources[0].i18n,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,
@@ -211,6 +217,7 @@ interface ResolveSourceOptions {
   currentUser: CurrentUser | null
   authenticated: boolean
   auth: AuthStore
+  i18n: I18nSource
 }
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
@@ -230,6 +237,7 @@ function resolveSource({
   schema,
   authenticated,
   auth,
+  i18n,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
   const bifur = getBifurClient(client, auth)
@@ -457,6 +465,7 @@ function resolveSource({
     authenticated,
     templates,
     auth,
+    i18n,
     document: {
       actions: (partialContext) =>
         resolveConfigProperty({
