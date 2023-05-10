@@ -141,7 +141,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     <DocumentPaneProvider
       // this needs to be here to avoid formState from being re-used across (incompatible) document types
       // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-      key={documentType}
+      key={`${documentType}-${options.id}`}
       {...providerProps}
     >
       {/* NOTE: this is a temporary location for this provider until we */}

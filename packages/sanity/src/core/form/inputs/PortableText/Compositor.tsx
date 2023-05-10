@@ -22,7 +22,7 @@ import {RenderBlockActionsCallback} from './types'
 import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {useHotkeys} from './hooks/useHotKeys'
-import {useScrollToOpenedMember} from './hooks/useScrollToOpenedMember'
+import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   hasFocus: boolean
@@ -45,7 +45,6 @@ export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
 export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
   const {
     changed,
-    focused,
     focusPath = EMPTY_ARRAY,
     hasFocus,
     hotkeys,
@@ -94,18 +93,15 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const _renderBlockActions = !!value && renderBlockActions ? renderBlockActions : undefined
   const _renderCustomMarkers = !!value && renderCustomMarkers ? renderCustomMarkers : undefined
 
-  const initialSelection = useMemo(
-    (): EditorSelection => {
-      return focusPath.length > 0
-        ? {
-            anchor: {path: focusPath, offset: 0},
-            focus: {path: focusPath, offset: 0},
-          }
-        : null
-    },
+  const initialSelection = useMemo((): EditorSelection => {
+    return focusPath.length > 0
+      ? {
+          anchor: {path: focusPath, offset: 0},
+          focus: {path: focusPath, offset: 0},
+        }
+      : null
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [] // Only initial
-  )
+  }, []) // only initial!
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
@@ -318,15 +314,15 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
     // Keep only stable ones here!
     [
-      editorHotkeys,
-      handleToggleFullscreen,
       hasFocus,
+      editorHotkeys,
       initialSelection,
       isActive,
       isFullscreen,
-      onCopy,
       onItemOpen,
+      onCopy,
       onPaste,
+      handleToggleFullscreen,
       path,
       readOnly,
       renderAnnotation,
@@ -349,7 +345,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   )
 
   // Scroll to the DOM element of the "opened" portable text member when relevant.
-  useScrollToOpenedMember({
+  useTrackFocusPath({
     editorRootPath: path,
     focusPath,
     boundaryElement: boundaryElement || undefined,
@@ -361,7 +357,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
         <ChangeIndicator
           disabled={isFullscreen}
-          hasFocus={Boolean(focused)}
+          hasFocus={hasFocus}
           isChanged={changed}
           path={path}
         >
