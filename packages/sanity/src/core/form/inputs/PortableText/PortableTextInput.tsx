@@ -22,7 +22,6 @@ import React, {
 } from 'react'
 import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
-import scrollIntoView from 'scroll-into-view-if-needed'
 import {debounce} from 'lodash'
 import {FormPatch, SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
@@ -100,33 +99,18 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   const {subscribe} = usePatches({path})
   const editorRef = useRef<PortableTextEditor | null>(null)
-  const [hasFocus, setHasFocus] = useState(false)
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isActive, setIsActive] = useState(false)
 
-  // Set as active whenever we have focus inside the editor.
-  useEffect(() => {
-    if (focused || hasFocus || focusPath.length) {
-      setIsActive(true)
-    }
-  }, [hasFocus, focusPath, focused])
+  // Let formState decide if we are focused or not.
+  const hasFocus = Boolean(focused) || focusPath.length > 0
 
-  // Set focused if the focusPath includes the path
+  // Set active if focused
   useEffect(() => {
-    if (focused) {
+    if (hasFocus) {
       setIsActive(true)
-      setHasFocus(true)
-    }
-  }, [focused])
-
-  // Scroll into view when focused
-  useEffect(() => {
-    if (hasFocus && innerElementRef.current) {
-      scrollIntoView(innerElementRef.current, {
-        scrollMode: 'if-needed',
-      })
     }
   }, [hasFocus])
 
@@ -253,24 +237,20 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return items
   }, [members, props])
 
-  const hasOpenItem = useMemo(() => {
-    return portableTextMemberItems.some((item) => item.member.open)
-  }, [portableTextMemberItems])
-
   // Sets the focusPath from editor selection (when typing, moving the cursor, clicking around)
   // This doesn't need to be immediate, so debounce it as it impacts performance.
   const setFocusPathDebounced = useMemo(
     () =>
       debounce(
         (sel: EditorSelection) => {
-          if (sel && hasFocus) {
+          if (sel) {
             onPathFocus(sel.focus.path)
           }
         },
         500,
-        {trailing: true, leading: false}
+        {trailing: true, leading: true}
       ),
-    [hasFocus, onPathFocus]
+    [onPathFocus]
   )
 
   // Handle editor changes
@@ -284,10 +264,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           setFocusPathDebounced(change.selection)
           break
         case 'focus':
-          setHasFocus(true)
-          break
-        case 'blur':
-          setHasFocus(false)
+          setIsActive(true)
           break
         case 'undo':
         case 'redo':
@@ -335,23 +312,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const handleActivate = useCallback((): void => {
     if (!isActive) {
       setIsActive(true)
-      if (!hasFocus) {
-        if (editorRef.current) {
-          PortableTextEditor.focus(editorRef.current)
-        }
-        setHasFocus(true)
+      if (editorRef.current) {
+        PortableTextEditor.focus(editorRef.current)
       }
     }
-  }, [hasFocus, isActive])
-
-  // If the editor that has an opened item and isn't focused - scroll to the input if needed.
-  useEffect(() => {
-    if (!hasFocus && hasOpenItem && innerElementRef.current) {
-      scrollIntoView(innerElementRef.current, {
-        scrollMode: 'if-needed',
-      })
-    }
-  }, [hasFocus, hasOpenItem])
+  }, [isActive])
 
   return (
     <Box ref={innerElementRef}>
@@ -370,8 +335,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
             >
               <Compositor
                 {...props}
-                focused={focused}
-                focusPath={focusPath}
                 hasFocus={hasFocus}
                 hotkeys={hotkeys}
                 isActive={isActive}
@@ -382,10 +345,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 onInsert={onInsert}
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
-                readOnly={readOnly}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
-                value={value}
               />
             </PortableTextEditor>
           </PortableTextMemberItemsProvider>

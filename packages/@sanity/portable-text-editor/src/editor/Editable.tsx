@@ -284,8 +284,17 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   const handleOnFocus = useCallback(() => {
+    const selection = PortableTextEditor.getSelection(portableTextEditor)
     change$.next({type: 'focus'})
-  }, [change$])
+    const newSelection = PortableTextEditor.getSelection(portableTextEditor)
+    // If the selection is the same, emit it explicitly here as there is no actual onChange event triggered.
+    if (selection === newSelection) {
+      change$.next({
+        type: 'selection',
+        selection,
+      })
+    }
+  }, [change$, portableTextEditor])
 
   const handleOnBlur = useCallback(() => {
     change$.next({type: 'blur'})
