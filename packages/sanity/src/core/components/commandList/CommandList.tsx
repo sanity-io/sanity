@@ -205,9 +205,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
    * Toggle pointer overlay element which will kill existing hover states
    */
   const enableChildContainerPointerEvents = useCallback(
-    (enabled: boolean) => {
-      pointerOverlayElement?.setAttribute('data-enabled', (!enabled).toString())
-    },
+    (enabled: boolean) =>
+      pointerOverlayElement?.setAttribute('data-enabled', (!enabled).toString()),
     [pointerOverlayElement]
   )
 
@@ -584,6 +583,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   return (
     <VirtualListBox
       id={getCommandListChildrenId()}
+      onMouseEnter={handleVirtualListMouseEnter}
+      onMouseLeave={handleVirtualListMouseLeave}
       ref={setVirtualListElement}
       sizing="border"
       tabIndex={rootTabIndex}
@@ -597,8 +598,6 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
           aria-label={ariaLabel}
           aria-multiselectable={ariaMultiselectable}
           flex={1}
-          onMouseEnter={handleVirtualListMouseEnter}
-          onMouseLeave={handleVirtualListMouseLeave}
           ref={setChildContainerElement}
           role="listbox"
         >
