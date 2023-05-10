@@ -30,3 +30,4 @@ export * from './useDeskTool'
 export * from './panes/document'
 
 export * from './panes/documentList'
+export * from './i18n'

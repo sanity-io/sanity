@@ -9,7 +9,7 @@ import {
   differenceInYears,
   format,
 } from 'date-fns'
-import pluralize from 'pluralize-esm'
+import {useTranslation} from 'react-i18next'
 
 interface TimeSpec {
   timestamp: string
@@ -29,7 +29,7 @@ export interface TimeAgoOpts {
 
 /** @internal */
 export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpts = {}): string {
-  const resolved = formatRelativeTime(time, {minimal, agoSuffix})
+  const resolved = useFormatRelativeTime(time, {minimal, agoSuffix})
 
   const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
@@ -59,7 +59,8 @@ export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpt
   return resolved.timestamp
 }
 
-function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSpec {
+function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSpec {
+  const {t} = useTranslation()
   const parsedDate = date instanceof Date ? date : new Date(date)
 
   // Invalid date? Return empty timestamp and `null` as refresh interval, to save us from
@@ -99,91 +100,102 @@ function formatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSp
   }
 
   const diffWeeks = differenceInWeeks(now, parsedDate)
-  const weekSuffix = pluralize('week', diffWeeks)
 
   if (diffWeeks) {
     if (opts.minimal) {
       return {
-        timestamp: opts.agoSuffix ? `${diffWeeks}w ago` : `${diffWeeks}w`,
+        timestamp: opts.agoSuffix
+          ? t('timeAgo.weeks.minimal.ago', {count: diffWeeks})
+          : t('timeAgo.weeks.minimal', {count: diffWeeks}),
         refreshInterval: ONE_HOUR,
       }
     }
 
     return {
-      timestamp: opts.agoSuffix ? `${diffWeeks} ${weekSuffix} ago` : `${diffWeeks} ${weekSuffix}`,
+      timestamp: opts.agoSuffix
+        ? t('timeAgo.weeks.ago', {count: diffWeeks})
+        : t('timeAgo.weeks', {count: diffWeeks}),
       refreshInterval: ONE_HOUR,
     }
   }
 
   const diffDays = differenceInDays(now, parsedDate)
-  const daysSuffix = pluralize('days', diffDays)
 
   if (diffDays) {
     if (opts.minimal) {
-      const daysSince = opts.agoSuffix ? `${diffDays}d ago` : `${diffDays}d`
       return {
-        timestamp: diffDays === 1 ? 'yesterday' : daysSince,
+        timestamp: opts.agoSuffix
+          ? t('timeAgo.days.minimal.ago', {count: diffDays})
+          : t('timeAgo.days.minimal', {count: diffDays}),
         refreshInterval: ONE_HOUR,
       }
     }
-    const daysSince = opts.agoSuffix ? `${diffDays} ${daysSuffix} ago` : `${diffDays} ${daysSuffix}`
     return {
-      timestamp: diffDays === 1 ? 'yesterday' : daysSince,
+      timestamp: opts.agoSuffix
+        ? t('timeAgo.days.ago', {count: diffDays})
+        : t('timeAgo.days', {count: diffDays}),
       refreshInterval: ONE_HOUR,
     }
   }
 
   const diffHours = differenceInHours(now, parsedDate)
-  const hoursSuffix = pluralize('hour', diffHours)
 
   if (diffHours) {
     if (opts.minimal) {
       return {
-        timestamp: opts.agoSuffix ? `${diffHours}h ago` : `${diffHours}h`,
+        timestamp: opts.agoSuffix
+          ? t('timeAgo.hours.minimal.ago', {count: diffHours})
+          : t('timeAgo.hours.minimal', {count: diffHours}),
         refreshInterval: ONE_MINUTE,
       }
     }
 
     return {
-      timestamp: opts.agoSuffix ? `${diffHours} ${hoursSuffix} ago` : `${diffHours} ${hoursSuffix}`,
+      timestamp: opts.agoSuffix
+        ? t('timeAgo.hours.ago', {count: diffHours})
+        : t('timeAgo.hours', {count: diffHours}),
       refreshInterval: ONE_MINUTE,
     }
   }
 
   const diffMins = differenceInMinutes(now, parsedDate)
-  const minsSuffix = pluralize('minute', diffMins)
 
   if (diffMins) {
     if (opts.minimal) {
       return {
-        timestamp: opts.agoSuffix ? `${diffMins}m ago` : `${diffMins}m`,
+        timestamp: opts.agoSuffix
+          ? t('timeAgo.minutes.minimal.ago', {count: diffMins})
+          : t('timeAgo.minutes.minimal', {count: diffMins}),
         refreshInterval: TWENTY_SECONDS,
       }
     }
     return {
-      timestamp: opts.agoSuffix ? `${diffMins} ${minsSuffix} ago` : `${diffMins} ${minsSuffix}`,
+      timestamp: opts.agoSuffix
+        ? t('timeAgo.minutes.ago', {count: diffMins})
+        : t('timeAgo.minutes', {count: diffMins}),
       refreshInterval: TWENTY_SECONDS,
     }
   }
 
   const diffSeconds = differenceInSeconds(now, parsedDate)
-  const secsSuffix = pluralize('second', diffSeconds)
 
   if (diffSeconds > 10) {
     if (opts.minimal) {
       return {
-        timestamp: opts.agoSuffix ? `${diffSeconds}s ago` : `${diffSeconds}s`,
+        timestamp: opts.agoSuffix
+          ? t('timeAgo.seconds.minimal.ago', {count: diffSeconds})
+          : t('timeAgo.seconds.minimal', {count: diffSeconds}),
         refreshInterval: FIVE_SECONDS,
       }
     }
 
     return {
       timestamp: opts.agoSuffix
-        ? `${diffSeconds} ${secsSuffix} ago`
-        : `${diffSeconds} ${secsSuffix}`,
+        ? t('timeAgo.seconds.ago', {count: diffSeconds})
+        : t('timeAgo.seconds', {count: diffSeconds}),
       refreshInterval: FIVE_SECONDS,
     }
   }
 
-  return {timestamp: 'just now', refreshInterval: FIVE_SECONDS}
+  return {timestamp: t('timeAgo.justNow'), refreshInterval: FIVE_SECONDS}
 }

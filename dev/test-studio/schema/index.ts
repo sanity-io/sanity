@@ -114,6 +114,7 @@ import {allNativeInputComponents} from './debug/allNativeInputComponents'
 import fieldGroupsWithFieldsets from './debug/fieldGroupsWithFieldsets'
 import ptReference from './debug/ptReference'
 import {commentsDebug} from './debug/comments'
+import {i18nArray, i18nDocument, i18nRef} from './debug/i18nSchemaTranslation'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -264,4 +265,7 @@ export const schemaTypes = [
   allNativeInputComponents,
   ...v3docs.types,
   ...demos3d.types,
+  i18nDocument,
+  i18nArray,
+  i18nRef,
 ]
