@@ -106,6 +106,7 @@ import validationTest from './ci/validationCI'
 import crossDatasetReference, {crossDatasetSubtype} from './standard/crossDatasetReference'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
+import fieldGroupsWithFieldsets from './debug/fieldGroupsWithFieldsets'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -244,6 +245,7 @@ export const schemaTypes = [
   fieldGroupsDefault,
   fieldGroupsMany,
   fieldGroupsWithValidation,
+  fieldGroupsWithFieldsets,
   fieldGroupsWithFieldsetsAndValidation,
   allNativeInputComponents,
   ...v3docs.types,
