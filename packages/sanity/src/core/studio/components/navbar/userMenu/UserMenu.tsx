@@ -1,4 +1,4 @@
-import {LeaveIcon, ChevronDownIcon, CogIcon, CheckmarkIcon, UsersIcon} from '@sanity/icons'
+import {CheckmarkIcon, ChevronDownIcon, CogIcon, LeaveIcon, UsersIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -27,6 +27,7 @@ import {
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
 import {LoginProviderLogo} from './LoginProviderLogo'
+import {LanguageMenu} from './LanguageMenu'
 
 const AVATAR_SIZE = 1
 
@@ -137,6 +138,7 @@ export function UserMenu() {
 
           {setScheme && <AppearanceMenu setScheme={setScheme} />}
 
+          <LanguageMenu />
           <MenuDivider />
 
           <MenuItem
