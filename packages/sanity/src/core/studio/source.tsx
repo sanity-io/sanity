@@ -26,6 +26,7 @@ export function SourceProvider({children, ...props}: SourceProviderProps) {
       throw new Error(`Could not find source with name \`${name}\` in current workspace`)
     }
     if (parentSource === source) return <>{children}</>
+
     return <SourceContext.Provider value={source}>{children}</SourceContext.Provider>
   }
 
