@@ -28,3 +28,4 @@ export type {
 export * from './structureBuilder'
 
 export * from './useDeskTool'
+export * from './i18n'
