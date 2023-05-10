@@ -21,7 +21,6 @@ import {parsePatch} from '@sanity/diff-match-patch'
 import type {Patch} from '../../types/patch'
 import {PatchObservable, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
-import {isPatching} from '../../utils/withoutPatching'
 
 const debug = debugWithName('plugin:withUndoRedo')
 
@@ -34,9 +33,6 @@ const isMerging = (editor: Editor): boolean | undefined => {
 }
 
 const isSaving = (editor: Editor): boolean | undefined => {
-  if (!isPatching(editor)) {
-    return false
-  }
   return SAVING.get(editor)
 }
 
