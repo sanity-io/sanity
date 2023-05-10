@@ -150,7 +150,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
             }),
           ],
           components: {
-            preview: InfoBoxPreview,
+            preview: InfoBoxPreview as any,
           },
           preview: {
             select: {

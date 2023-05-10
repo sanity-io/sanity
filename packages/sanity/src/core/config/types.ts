@@ -11,6 +11,7 @@ import type {
 } from '@sanity/types'
 import type {ComponentType, ReactNode} from 'react'
 import type {Observable} from 'rxjs'
+import type {i18n, InitOptions, TFunction, ResourceLanguage} from 'i18next'
 import type {
   BlockAnnotationProps,
   BlockProps,
@@ -32,8 +33,8 @@ import type {
   DocumentActionComponent,
   DocumentBadgeComponent,
   DocumentFieldAction,
-  DocumentFieldActionsResolverContext,
   DocumentFieldActionsResolver,
+  DocumentFieldActionsResolverContext,
   DocumentInspector,
 } from './document'
 import type {Router, RouterState} from 'sanity/router'
@@ -333,6 +334,126 @@ export type DocumentInspectorsResolver = ComposableOption<
  * @hidden
  * @beta
  */
+export interface I18nContext {
+  projectId: string
+  dataset: string
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface LanguageBundle {
+  namespace: string
+  resources: ResourceLanguage
+  /** Should the resources be merged deeply (nested objects). Default: true */
+  deep?: boolean
+  /** Should existing resource keys for the namespace be overwritten. Default: false */
+  overwrite?: boolean
+}
+
+/** @beta @hidden */
+export type I18nLanguagesOption =
+  | ((prev: LanguageDefinition[], context: I18nContext) => LanguageDefinition[])
+  | LanguageDefinition[]
+
+/** @beta @hidden */
+export type I18nLanguageLoaderOption =
+  | ((prev: LanguageLoader[], context: I18nContext) => LanguageLoader[])
+  | LanguageLoader[]
+
+/** @beta @hidden */
+export interface I18nPluginOptions {
+  /**
+   * Defines which languages should be available for user selection.
+   * Prev is initially `[{id: 'en-US', title: 'English (US)', icon: AmericanFlag }]`
+   *
+   * Language titles and icons can be changed by transforming the LanguageDefinition array values.
+   *
+   * User selected language
+   */
+  languages?: I18nLanguagesOption
+
+  /**
+   * Allows redefining the I18next init options before they are used.
+   * Invoked when a workspace is loaded
+   */
+  initOptions?: (options: InitOptions, context: I18nContext) => InitOptions
+
+  /**
+   * Defines language bundles that will be loaded lazily.
+   *
+   * ### Example
+   *
+   * ```ts
+   *
+   * ```
+   *
+   */
+  languageLoaders?: I18nLanguageLoaderOption
+
+  /**
+   * When this is true, schema type title and descriptions will be translated.
+   * Configure a languageLoader that returns a language bundle for the `schema` namespace,
+   * with resource keys using the following convention:
+   *
+   * ## Keys for types
+   *
+   * - `<typeName>.type-title`
+   * - `<typeName>.type-description`
+   * - `<typeName>.<fieldsetName>.fieldset-title`
+   * - `<typeName>.<fieldsetName>.fieldset-description`
+   * - `<typeName>.<groupName>.group-title`
+   *
+   * ## Keys for fields
+   *
+   * - `<objectTypeName>.<fieldName>.field-title`
+   * - `<objectTypeName>.<fieldName>.field-description`
+   *
+   * ## Keys for array items
+   *
+   * - `<arrayTypeName>.<arrayMemberTypeName>.item-title`
+   *
+   * ## Keys for reference types
+   *
+   * - `<typeName>.<refTypeName>.ref-title`
+   *
+   * ## Caveats
+   *
+   * Enabling schema translations could adversely impact studio performance.
+   * Inline definitions for objects are not supported (nested types).
+   *
+   * ## Example LanguageBundle
+   *
+   *```ts
+   * // locales/en_US/schema.ts
+   * export default {
+   *   namespace: 'schema',
+   *   resources: {
+   *     'myDocumentType|title': 'Document type 'myDocumentType' will use this string as title wherever it is used',
+   *
+   *     'myDocumentType.text|title': 'Document field named 'text' will use this string as title'
+   *     'myDocumentType.text|description': 'Document field named 'text' will this string as description',
+   *   },
+   *  }
+   *```
+   *
+   * Now, in studio.config.ts:
+   * ```ts
+   * defineConfig({
+   *   i18n: {
+   *     experimentalTranslateSchemas: true,
+   *     languageLoaders: [
+   *         (lang) => import(`./locales/${lang}/schema.ts`),
+   *     ]
+   *   },
+   * })
+   * ```
+   */
+  experimentalTranslateSchemas?: boolean
+}
+
+/** @beta */
 export interface PluginOptions {
   name: string
   plugins?: PluginOptions[]
@@ -345,6 +466,8 @@ export interface PluginOptions {
   studio?: {
     components?: StudioComponentsPluginOptions
   }
+  /** @beta @hidden */
+  i18n?: I18nPluginOptions
 }
 
 /** @internal */
@@ -554,7 +677,7 @@ export interface Source {
      */
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
 
-    /** @alpha */
+    /** @beta @hidden */
     unstable_languageFilter: (
       props: PartialContext<DocumentLanguageFilterContext>,
     ) => DocumentLanguageFilterComponent[]
@@ -634,11 +757,14 @@ export interface Source {
     components?: StudioComponents
   }
 
-  /** @alpha */
+  /** @beta @hidden */
   search: {
     filters: SearchFilterDefinition[]
     operators: SearchOperatorDefinition[]
   }
+
+  /** @internal */
+  i18n: I18nSource
 
   /** @internal */
   __internal: {
@@ -647,6 +773,29 @@ export interface Source {
     options: SourceOptions
   }
 }
+
+/** @beta @hidden */
+export interface LanguageDefinition {
+  id: string
+  title: string
+  icon?: ComponentType
+}
+
+/** @beta @hidden */
+export type LanguageLoaderResult = Promise<LanguageBundle | {default: LanguageBundle} | undefined>
+
+/** @beta @hidden */
+export type LanguageLoader = (language: string, context: {i18n: i18n}) => LanguageLoaderResult
+
+/** @internal */
+export interface I18nSource {
+  languages: LanguageDefinition[]
+  initOptions: InitOptions
+  languageLoaders: LanguageLoader[]
+  t: TFunction
+  i18next: i18n
+}
+
 /** @internal */
 export interface WorkspaceSummary {
   type: 'workspace-summary'
@@ -660,6 +809,7 @@ export interface WorkspaceSummary {
   dataset: string
   theme: StudioTheme
   schema: Schema
+  i18n: I18nSource
   /**
    * @internal
    * @deprecated not actually deprecated but don't use or you'll be fired
@@ -672,6 +822,7 @@ export interface WorkspaceSummary {
       title: string
       auth: AuthStore
       schema: Schema
+      i18n: I18nSource
       source: Observable<Source>
     }>
   }

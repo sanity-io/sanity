@@ -13,6 +13,7 @@ import {
   ConfigContext,
   InitialValueTemplateItem,
   DocumentStore,
+  I18nSource,
 } from 'sanity'
 
 /** @internal */
@@ -51,6 +52,9 @@ export interface StructureResolverContext extends ConfigContext {
    * @alpha
    * */
   documentStore: DocumentStore
+
+  /** alpha */
+  i18n: I18nSource
 }
 
 /**
