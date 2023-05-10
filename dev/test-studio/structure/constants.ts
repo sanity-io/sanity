@@ -78,6 +78,7 @@ export const DEBUG_INPUT_TYPES = [
   'ptReference',
   'virtualizationInObject',
   'virtualizationDebug',
+  'i18nDocument',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
