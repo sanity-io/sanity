@@ -109,7 +109,7 @@ export function diffMatchPatch(
   const child: PortableTextSpan = block.children[childIndex] as PortableTextSpan
 
   const patches = parsePatch(patch.value)
-  const [newValue] = applyPatches(patches, child.text)
+  const [newValue] = applyPatches(patches, child.text, {allowExceedingIndices: true})
   const diff = cleanupEfficiency(makeDiff(child.text, newValue), 5)
 
   debugState(editor, 'before')

@@ -52,7 +52,7 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/diff-match-patch": "^3.0.1"
+    "@sanity/diff-match-patch": "^3.1.1"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"

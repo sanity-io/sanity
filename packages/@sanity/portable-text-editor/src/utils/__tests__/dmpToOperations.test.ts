@@ -81,6 +81,15 @@ describe('operationToPatches: diffMatchPatch', () => {
     expect(diffMatchPatch(editor, patch)).toBe(true)
     expect(editor.getText()).toBe(target)
   })
+
+  test('should apply offset text differences correctly', () => {
+    const source = `This string has changes, but they occur somewhere near the end. That means we need to use an offset to get at the change, we cannot just rely on equality segaments in the generated diff.`
+    const target = `This string has changes, but they occur somewhere near the end. That means we need to use an offset to get at the change, we cannot just rely on equality segments in the generated diff.`
+    const patch = getPteDmpPatch(stringifyPatches(makePatches(makeDiff(source, target))))
+    const editor = getMockEditor({text: source})
+    expect(diffMatchPatch(editor, patch)).toBe(true)
+    expect(editor.getText()).toBe(target)
+  })
 })
 
 function getPteDmpPatch(
