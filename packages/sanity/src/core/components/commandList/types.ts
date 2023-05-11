@@ -3,6 +3,9 @@ import {ScrollToOptions} from '@tanstack/react-virtual'
 import {ReactNode} from 'react'
 
 /** @internal */
+export type CommandListElementType = 'input' | 'list'
+
+/** @internal */
 export type CommandListGetItemDisabledCallback = (virtualIndex: number) => boolean
 
 /** @internal */
@@ -27,7 +30,8 @@ export type CommandListRenderItemCallback<T> = (
 
 /** @internal */
 export interface CommandListHandle {
-  focusElement: () => void
+  focusInputElement: () => void
+  focusListElement: () => void
   getTopIndex: () => number
   scrollToIndex: (index: number) => void
 }
@@ -40,16 +44,20 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   ariaLabel: string
   /** Whether `aria-multiselectable` is enabled on the virtual list container element */
   ariaMultiselectable?: boolean
-  /** Automatically focus the input (if applicable) or virtual list */
-  autoFocus?: boolean
+  /** Automatically focus the input or virtual list */
+  autoFocus?: CommandListElementType
+  /** Whether the virtual list can receive focus */
+  canReceiveFocus?: boolean
+  /** Pixel offset of the virtual list focus ring. Negative values will cause the focus ring to appear inset */
+  focusRingOffset?: number
+  /** Force a fixed height for all virtual list children and skip measurement (faster). */
+  fixedHeight?: boolean
   /** Custom function to map disabled items */
   getItemDisabled?: CommandListGetItemDisabledCallback
   /** Custom function to map virtual list items to custom keys */
   getItemKey?: CommandListGetItemKeyCallback
   /** Custom function to map selected items */
   getItemSelected?: CommandListGetItemSelectedCallback
-  /** Force a fixed height for all virtual list children and skip measurement (faster). */
-  fixedHeight?: boolean
   /** Scroll alignment of the initial active index */
   initialScrollAlign?: ScrollToOptions['align']
   /** Initial active index on mount */
@@ -64,6 +72,8 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   onEndReached?: () => void
   /** Number of items from the end of the virtual list before which `onEndReached` is triggered */
   onEndReachedIndexOffset?: number
+  /** Only show selection state when the virtual list is active (is hovered or has focus) */
+  onlyShowSelectionWhenActive?: boolean
   /** Number of items to render above and below the visible area*/
   overscan?: number
   /** Rendered component in virtual lists */

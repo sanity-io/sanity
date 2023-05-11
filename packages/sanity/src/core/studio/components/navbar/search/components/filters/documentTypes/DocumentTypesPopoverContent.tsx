@@ -56,8 +56,8 @@ export function DocumentTypesPopoverContent() {
     setSelectedTypesSnapshot([])
     dispatch({type: 'TERMS_TYPES_CLEAR'})
 
-    // Re-focus the command list element (input if available, otherwise virtual list container)
-    commandListRef?.current?.focusElement()
+    // Re-focus the command list input element
+    commandListRef?.current?.focusInputElement()
     commandListRef?.current?.scrollToIndex(0)
   }, [dispatch])
 
@@ -134,7 +134,7 @@ export function DocumentTypesPopoverContent() {
             activeItemDataAttr="data-hovered"
             ariaLabel="Document types"
             ariaMultiselectable
-            autoFocus
+            autoFocus="input"
             getItemDisabled={getItemDisabled}
             getItemSelected={getItemSelected}
             getItemKey={getItemKey}

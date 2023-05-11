@@ -1,20 +1,20 @@
 import {SanityDocument} from '@sanity/types'
+import type {SearchSort} from 'sanity'
 
 export interface DocumentListPaneItem extends SanityDocument {
   hasPublished: boolean
   hasDraft: boolean
 }
 
-export type SortOrderBy = {field: string; direction: 'asc' | 'desc'; mapWith?: string}
-
 export type SortOrder = {
-  by: SortOrderBy[]
-  extendedProjection?: string[]
+  by: SearchSort[]
+  extendedProjection?: string
 }
 
 export interface QueryResult {
-  error: {message: string} | false
-  loading?: boolean
+  error: {message: string} | null
   onRetry?: (event: unknown) => void
   result: {documents: SanityDocument[]} | null
 }
+
+export type LoadingVariant = 'spinner' | 'initial'

@@ -1,13 +1,14 @@
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 import {joinPath} from '../../../core/util/searchUtils'
 import {tokenize} from '../common/tokenize'
+import {FINDABILITY_MVI} from '../constants'
 import type {
   SearchableType,
   SearchOptions,
   SearchPath,
+  SearchSort,
   SearchSpec,
   SearchTerms,
-  SortDirection,
   WeightedSearchOptions,
 } from './types'
 
@@ -121,6 +122,21 @@ export function extractTermsFromQuery(query: string): string[] {
   return [...quotedTerms, ...remainingTerms]
 }
 
+function toOrderClause(orderBy: SearchSort[]): string {
+  function wrapFieldWithFn(ordering: SearchSort): string {
+    return ordering.mapWith ? `${ordering.mapWith}(${ordering.field})` : ordering.field
+  }
+
+  return (orderBy || [])
+    .map((ordering) =>
+      [wrapFieldWithFn(ordering), (ordering.direction || '').toLowerCase()]
+        .map((str) => str.trim())
+        .filter(Boolean)
+        .join(' ')
+    )
+    .join(',')
+}
+
 /**
  * @internal
  */
@@ -165,22 +181,39 @@ export function createSearchQuery(
     return `${constraint}${selection}`
   })
 
-  const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
-
   // Default to `_id asc` (GROQ default) if no search sort is provided
-  const sortDirection = searchOpts?.sort?.direction || ('asc' as SortDirection)
-  const sortField = searchOpts?.sort?.field || '_id'
+  const sortOrder = toOrderClause(searchOpts?.sort || [{field: '_id', direction: 'asc'}])
 
-  const query =
+  const projectionFields = ['_type', '_id']
+  const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
+  const finalProjection = projectionFields.join(', ') + (selection ? `, ${selection}` : '')
+
+  let query =
     `*[${filters.join(' && ')}]` +
-    `| order(${sortField} ${sortDirection})` +
+    `| order(${sortOrder})` +
     `[$__offset...$__limit]` +
     // the following would improve search quality for paths-with-numbers, but increases the size of the query by up to 50%
     // `${hasIndexedPaths ? `[${createConstraints(terms, exactSearchSpec).join(' && ')}]` : ''}` +
-    `{_type, _id, ${selection}}`
+    `{${finalProjection}}`
 
-  // Prepend optional GROQ comments to query
-  const groqComments = (searchOpts?.comments || []).map((s) => `// ${s}`).join('\n')
+  // Optionally prepend our query with an 'extended' projection.
+  // Required if we want to sort on nested object or reference fields.
+  // In future, creating the extended projection should be handled internally by `createSearchQuery`.
+  if (searchOpts?.__unstable_extendedProjection) {
+    const extendedProjection = searchOpts?.__unstable_extendedProjection
+    const firstProjection = projectionFields.concat(extendedProjection).join(', ')
+
+    query = [
+      `*[${filters.join(' && ')}]{${firstProjection}}`,
+      `order(${sortOrder})[$__offset...$__limit]{${finalProjection}}`,
+    ].join('|')
+  }
+
+  // Prepend GROQ comments
+  const groqComments = [`findability-mvi:${FINDABILITY_MVI}`]
+    .concat(searchOpts?.comments || [])
+    .map((s) => `// ${s}`)
+    .join('\n')
   const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
 
   const offset = searchOpts?.offset ?? 0
