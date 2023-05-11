@@ -11,7 +11,6 @@ const EMPTY_ARRAY: [] = []
 
 const INITIAL_STATE: QueryResult = {
   error: null,
-  isInitialLoading: true,
   onRetry: undefined,
   result: null,
 }
@@ -49,7 +48,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
   const schema = useSchema()
 
   const [resultState, setResult] = useState<QueryResult>(INITIAL_STATE)
-  const {onRetry, error, result, loading, isInitialLoading} = resultState
+  const {onRetry, error, result} = resultState
 
   const documents = result?.documents
 
@@ -75,8 +74,13 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     [filter, paramsProp]
   )
 
-  const isLoading =
-    Boolean(isInitialLoading && !error) || Boolean(loading && result === null && !error)
+  // We can't have the loading state as part of the result state, since the loading
+  // state would be updated whenever a mutation is performed in a document in the list.
+  // Instead, we determine if the list is loading by checking if the result is null.
+  // The result is null when:
+  // 1. We are making the initial request
+  // 2. The user has performed a search or changed the sort order
+  const isLoading = result === null && !error
 
   // A flag to indicate whether we have reached the maximum number of documents.
   const hasMaxItems = documents?.length === FULL_LIST_LIMIT
@@ -92,7 +96,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
   const handleSetResult = useCallback(
     (res: QueryResult) => {
       if (res.error) {
-        setResult({...res, loading: false})
+        setResult(res)
         return
       }
 
@@ -100,9 +104,8 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       const isLoadingMoreItems = !res.error && res?.result === null && shouldFetchFullList
 
       // 1. When the result is null and shouldFetchFullList is true, we are loading _more_ items.
-      // In this case, we want to set the loading states to true and wait for the next result.
+      // In this case, we want to wait for the next result and set the isLazyLoading state to true.
       if (isLoadingMoreItems) {
-        setResult((prev) => ({...prev, loading: true}))
         setIsLazyLoading(true)
         return
       }
@@ -115,15 +118,15 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       }
 
       // 3. If the result is null, we are loading items. In this case, we want to
-      // set the loading state to true and wait for the next result.
+      // wait for the next result.
       if (res?.result === null) {
-        setResult((prev) => ({...(prev.error ? res : prev), loading: true}))
+        setResult((prev) => ({...(prev.error ? res : prev)}))
         return
       }
 
-      // 4. Finally, set the result and loading states to false.
+      // 4. Finally, set the result
       setIsLazyLoading(false)
-      setResult({...res, loading: false})
+      setResult(res)
     },
     [shouldFetchFullList]
   )
