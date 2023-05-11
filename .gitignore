@@ -71,3 +71,6 @@ etc
 /test/e2e/report
 /test/e2e/results
 /test/e2e/state
+
+# Temporary files made by yarn when running canary releases
+.yarn
