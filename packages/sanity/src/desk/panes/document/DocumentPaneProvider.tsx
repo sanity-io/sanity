@@ -451,12 +451,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   // Reset `focusPath` when `documentId` or `params.path` changes
   useEffect(() => {
     if (ready && params.path) {
-      const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(params.path))
+      const {path, ...restParams} = params
+      const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
       // Reset focus path when url params path changes
       setFocusPath(pathFromUrl)
       setOpenPath(pathFromUrl)
+      // remove the `path`-param from url after we have consumed it as the initial focus path
+      paneRouter.setParams(restParams)
     }
-  }, [params.path, documentId, setOpenPath, ready])
+  }, [params, documentId, setOpenPath, ready, paneRouter])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
