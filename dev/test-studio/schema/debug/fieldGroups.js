@@ -22,6 +22,11 @@ export default {
   ],
   fields: [
     {name: 'field1', type: 'string', group: 'group1'},
+    {
+      type: 'string',
+      name: 'noGroup',
+      title: 'This field has no group and shall only show up in "All fields"',
+    },
     {name: 'field2', type: 'string', group: 'group2'},
     {
       name: 'field3',
