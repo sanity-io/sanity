@@ -74,3 +74,4 @@ etc
 
 # Temporary files made by yarn when running canary releases
 .yarn
+.yarnrc
