@@ -155,6 +155,18 @@ export default defineType({
           },
         },
         myStringType,
+        {
+          name: 'authors',
+          type: 'object',
+          fields: [
+            {
+              type: 'array',
+              of: [{type: 'reference', to: [{type: 'author'}]}],
+              name: 'references',
+              validation: (Rule) => Rule.required(),
+            },
+          ],
+        },
       ],
     },
     {
