@@ -91,7 +91,7 @@ export default function PopoverStory() {
                       <CommandList
                         activeItemDataAttr="data-selected"
                         ariaLabel="Children"
-                        autoFocus
+                        autoFocus="list"
                         fixedHeight
                         initialScrollAlign={initialSelectedScrollAlign}
                         initialIndex={selectedIndex}
