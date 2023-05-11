@@ -3899,10 +3899,10 @@
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.3.tgz#ec8d9ba4bd42163f6487df3e47350a9a828c3210"
   integrity sha512-b4e6JAHHa/tKpAnLOAHaJyNEHO1l/g2oecN22FWkhTAuKCINPNhPeoeUn5rK5ngKzbXrvynBd/h2849lld3FRg==
 
-"@sanity/diff-match-patch@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/diff-match-patch/-/diff-match-patch-3.0.1.tgz#30e62a9408b2758b885a8f806d0d6d6a768f188d"
-  integrity sha512-WH3rGyX25lF0OCOsnYTGOdG7SabTOomnOemEWFBnkGKg1Sv+aD9fnEuSiT5EVaVtIkwFxtLOU749Givli05/wg==
+"@sanity/diff-match-patch@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@sanity/diff-match-patch/-/diff-match-patch-3.1.1.tgz#16514d3a550d880bae1f59cc3ffe6865f5a4b58a"
+  integrity sha512-dSZqGeYjHKGIkqAzGqLcG92LZyJGX+nYbs/FWawhBbTBDWi21kvQ0hsL3DJThuFVWtZMWTQijN3z6Cnd44Pf2g==
 
 "@sanity/eslint-config-studio@^2.0.4":
   version "2.0.4"
