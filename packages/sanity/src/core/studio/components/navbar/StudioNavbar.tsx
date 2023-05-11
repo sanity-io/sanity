@@ -1,4 +1,4 @@
-import {MenuIcon, SearchIcon} from '@sanity/icons'
+import {MenuIcon, SearchIcon, HelpCircleIcon} from '@sanity/icons'
 import {
   BoundaryElementProvider,
   Box,
@@ -34,6 +34,7 @@ import {LogoButton} from './LogoButton'
 import {SearchDialog, SearchField} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
+import {ResourcesButton} from './resources/ResourcesButton'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -238,11 +239,11 @@ export function StudioNavbar() {
               <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
             </Box>
 
-            {shouldRender.changelog && (
+            {/* {shouldRender.changelog && (
               <Box marginRight={1}>
                 <ChangelogButton />
               </Box>
-            )}
+            )} */}
 
             {shouldRender.configIssues && (
               <Box marginRight={2}>
@@ -255,6 +256,12 @@ export function StudioNavbar() {
                 <UserMenu />
               </Box>
             )}
+
+            {
+              <Box marginRight={1}>
+                <ResourcesButton />
+              </Box>
+            }
 
             {shouldRender.searchFullscreen && (
               <Button
