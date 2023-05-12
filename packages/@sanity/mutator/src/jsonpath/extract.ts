@@ -1,7 +1,7 @@
 import {extractAccessors} from './extractAccessors'
 
 /**
- * Extracts a value for the given JsonPath
+ * Extracts values matching the given JsonPath
  *
  * @param path - Path to extract
  * @param value - Value to extract from
