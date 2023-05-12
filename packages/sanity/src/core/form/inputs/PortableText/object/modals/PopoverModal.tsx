@@ -1,7 +1,16 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {CloseIcon} from '@sanity/icons'
-import {Box, Button, Flex, PopoverProps, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Box,
+  Button,
+  Flex,
+  PopoverProps,
+  Text,
+  useClickOutside,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
@@ -66,24 +75,31 @@ function Content(props: PopoverEditDialogProps) {
 
   useClickOutside(onClose, referenceElement ? [referenceElement] : [], boundaryElement)
 
-  return (
-    <ContentContainer width={width}>
-      <ModalWrapper direction="column" flex={1}>
-        <ContentHeaderBox padding={1}>
-          <Flex align="center">
-            <Box flex={1} padding={2}>
-              <Text weight="semibold">{title}</Text>
-            </Box>
+  // This seems to work with regular refs as well, but it might be safer to use state.
+  const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
 
-            <Button icon={CloseIcon} mode="bleed" onClick={onClose} padding={2} />
-          </Flex>
-        </ContentHeaderBox>
-        <ContentScrollerBox flex={1}>
-          <PresenceOverlay margins={[0, 0, 1, 0]}>
-            <Box padding={3}>{props.children}</Box>
-          </PresenceOverlay>
-        </ContentScrollerBox>
-      </ModalWrapper>
-    </ContentContainer>
+  return (
+    <BoundaryElementProvider element={contentElement}>
+      <ContentContainer width={width}>
+        <ModalWrapper direction="column" flex={1}>
+          <ContentHeaderBox padding={1}>
+            <Flex align="center">
+              <Box flex={1} padding={2}>
+                <Text weight="semibold">{title}</Text>
+              </Box>
+
+              <Button icon={CloseIcon} mode="bleed" onClick={onClose} padding={2} />
+            </Flex>
+          </ContentHeaderBox>
+          <ContentScrollerBox flex={1}>
+            <PresenceOverlay margins={[0, 0, 1, 0]}>
+              <Box padding={3} ref={setContentElement}>
+                {props.children}
+              </Box>
+            </PresenceOverlay>
+          </ContentScrollerBox>
+        </ModalWrapper>
+      </ContentContainer>
+    </BoundaryElementProvider>
   )
 }
