@@ -3806,14 +3806,14 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^5.2.0", "@sanity/client@^5.2.2":
-  version "5.4.2"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-5.4.2.tgz#253b11d76a058de1fe6ec4f191d5872c7825fa80"
-  integrity sha512-M/ebzTGwYq+NDGMfBWxKtwtmCRJbBvXxAIQXu/J0vxnr8mXKw8gBQ7GaG0tI4WJ54w5sI6pnrD6mPiKdRHVNYw==
+"@sanity/client@^6.0.0":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.0.1.tgz#e51042a03238820c81f9e70dde44a7f137d85d52"
+  integrity sha512-q2Mi79ttJxoUjZG3LGlfIFoYfMUxra9tRaPbfmQRVJQ2I/TiVGvuE6yt38fgox796wpeZvYeuYH8L7Ms79IXYg==
   dependencies:
-    "@sanity/eventsource" "5"
-    get-it "^8.1"
-    rxjs "7"
+    "@sanity/eventsource" "^5.0.0"
+    get-it "^8.1.0"
+    rxjs "^7.0.0"
 
 "@sanity/color@^2.1.20", "@sanity/color@^2.2.3":
   version "2.2.5"
@@ -3837,7 +3837,7 @@
     eslint-plugin-react "^7.31.10"
     eslint-plugin-react-hooks "^4.6.0"
 
-"@sanity/eventsource@5", "@sanity/eventsource@^5.0.0":
+"@sanity/eventsource@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@sanity/eventsource/-/eventsource-5.0.0.tgz#45410c8259e0bb80b4e308e1872846439590805a"
   integrity sha512-0ewT+BDzfiamHwitUfRcwsl/RREHjWv6VNZvQ8Q4OnnNKXfEEGXbWmqzof0okOTkp4XELgyliht4Qj28o9AU2g==
@@ -9889,10 +9889,26 @@ get-intrinsic@^1.0.2, get-intrinsic@^1.1.1, get-intrinsic@^1.1.3, get-intrinsic@
     has "^1.0.3"
     has-symbols "^1.0.3"
 
-get-it@^8.0.9, get-it@^8.1:
+get-it@^8.0.9:
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.1.1.tgz#6522df2b0726a0596d8087f23063ec7f5e35ea1c"
   integrity sha512-83P2+3V/3E+KSdlHnGlOr4vCrlV8wDsT580AyJkMtkK/8LtZc0TOCI9bjQXH1sgYnmQTzCoPoPaOAE+a8JZqLQ==
+  dependencies:
+    debug "^4.3.4"
+    decompress-response "^7.0.0"
+    follow-redirects "^1.15.2"
+    into-stream "^6.0.0"
+    is-plain-object "^5.0.0"
+    is-retry-allowed "^2.2.0"
+    is-stream "^2.0.1"
+    parse-headers "^2.0.5"
+    progress-stream "^2.0.0"
+    tunnel-agent "^0.6.0"
+
+get-it@^8.1.0:
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.1.2.tgz#db3da7c9358f96c1e47993574ffa0563ba5c37ad"
+  integrity sha512-B8aUYegP6PX8uqmPmPWagxaNZexkTmcegrIMytAE00PldhLem3d18WZzD+h2oB8lBbxZYnZi+zQ4luZtXkFRRw==
   dependencies:
     debug "^4.3.4"
     decompress-response "^7.0.0"
@@ -16613,19 +16629,19 @@ rxjs-exhaustmap-with-trailing@^2.1.1:
   resolved "https://registry.yarnpkg.com/rxjs-exhaustmap-with-trailing/-/rxjs-exhaustmap-with-trailing-2.1.1.tgz#133bb63b091c280a14452a07c97caaaf10c877be"
   integrity sha512-gK7nsKyPFsbjDeJ0NYTcZYGW5TbTFjT3iACa28Pwp3fIf9wT/JUR8vdlKYCjUOZKXYnXEk8eRZ4zcQyEURosIA==
 
-rxjs@7, rxjs@^7, rxjs@^7.0.0, rxjs@^7.5.5, rxjs@^7.8.0:
-  version "7.8.1"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
-  integrity sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==
-  dependencies:
-    tslib "^2.1.0"
-
 rxjs@^6.4.0, rxjs@^6.6.0, rxjs@^6.6.3:
   version "6.6.7"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
   integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==
   dependencies:
     tslib "^1.9.0"
+
+rxjs@^7, rxjs@^7.0.0, rxjs@^7.5.5, rxjs@^7.8.0:
+  version "7.8.1"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
+  integrity sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==
+  dependencies:
+    tslib "^2.1.0"
 
 safe-array-concat@^1.0.0:
   version "1.0.0"
