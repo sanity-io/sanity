@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
+import {isEmpty} from '@sanity/util/content'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {FieldMember, ObjectFormNode} from '../../../store'
 import {
@@ -11,9 +12,10 @@ import {
   RenderInputCallback,
   RenderPreviewCallback,
 } from '../../../types'
-import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
+import {PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {createProtoValue} from '../../../utils/createProtoValue'
+import {applyAll} from '../../../patch/applyPatch'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
@@ -63,13 +65,40 @@ export const ObjectField = function ObjectField(props: {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
+      //const patchesIncludesUnset = event.patches.some((patch) => patch.type === 'unset')
+      const isRoot = member.field.path.length === 0
+      const patches = PatchEvent.from(event).patches
+      // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
+      const isRemovingLastItem = patches.some(
+        (patch) => patch.type === 'unset' && patch.path.length === 1
+      )
+
+      //debugger
+      if (!isRoot) {
+        if (isRemovingLastItem) {
+          // apply the patch to the current value
+          const result = applyAll(member.field.value || {}, patches)
+
+          // meaning only run this if the result is an empty object with only _type
+          if (result && result._type && Object.keys(result).length === 1) {
+            // The value has a _type key, but the type name from schema is 'object',
+            // but _type: 'object' is implicit so we should fix it by removing it
+            onChange(PatchEvent.from(unset(['_type'])).prefixAll(member.name))
+          }
+
+          if (isEmpty(result)) {
+            onChange(PatchEvent.from(unset([member.name]))) //.prefixAll(member.name))
+            return
+          }
+        }
+      }
       onChange(
         PatchEvent.from(event)
           .prepend(setIfMissing(createProtoValue(member.field.schemaType)))
           .prefixAll(member.name)
       )
     },
-    [onChange, member.field.schemaType, member.name]
+    [onChange, member]
   )
 
   const handleCollapse = useCallback(() => {
