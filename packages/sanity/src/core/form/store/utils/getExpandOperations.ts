@@ -76,8 +76,7 @@ function getObjectFieldsetAndFieldGroupOperations(
   // extract the field name for the current level we're looking at
   const [fieldName, ...tail] = path
 
-  // check if we can find the field inside a fieldset
-  const fieldsetMember = node.members.find(
+  const fieldsetMember = node._allMembers.find(
     (member): member is FieldSetMember =>
       member.kind === 'fieldSet' &&
       member.fieldSet.members.some(
@@ -89,7 +88,7 @@ function getObjectFieldsetAndFieldGroupOperations(
   const members = fieldsetMember
     ? fieldsetMember.fieldSet.members
     : // Note: we need to use the internal `_allMembers` array here instead of members since hidden/collapsed members are omitted from members
-      node._allMembers.map((formStateMember) => formStateMember.member)
+      node._allMembers
 
   // look for the field inside the members array
   const fieldMember = members.find(

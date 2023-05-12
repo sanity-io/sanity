@@ -147,6 +147,8 @@ describe('basic examples', () => {
               open: false,
               collapsible: true,
               key: 'first-field',
+              inSelectedGroup: false,
+              groups: [],
               index: 0,
               field: {
                 schemaType,
