@@ -76,15 +76,6 @@ function getObjectFieldsetAndFieldGroupOperations(
   // extract the field name for the current level we're looking at
   const [fieldName, ...tail] = path
 
-  /**
-   * When this function is called as a result of clicking the validation button whilst Group 2 is selected:
-   * - `path` reflects the path of the field with the validation error
-   * - `node.members` appears to reflect the state of available nodes whilst group 2 is selected
-   * - the field specified by `path` isn't visible in Group 2
-   * - as such, we're unable to find the fieldsetMember, and this resolves to undefined
-   * - since `fieldsetMember` is undefined, the `expandFieldSet` operation is never added
-   * - as such, the studio will select 'all fields' but wont expand the fieldset
-   */
   const fieldsetMember = node._allMembers.find(
     (member): member is FieldSetMember =>
       member.kind === 'fieldSet' &&
