@@ -6,7 +6,7 @@ import {extractAccessors} from './extractAccessors'
  * @param path - Path to extract
  * @param value - Value to extract from
  * @returns An array of values matching the given path
- * @internal
+ * @public
  */
 export function extract(path: string, value: unknown): unknown[] {
   const accessors = extractAccessors(path, value)
