@@ -65,33 +65,37 @@ export const ObjectField = function ObjectField(props: {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
-      //const patchesIncludesUnset = event.patches.some((patch) => patch.type === 'unset')
       const isRoot = member.field.path.length === 0
+      // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
       const patches = PatchEvent.from(event).patches
       // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
       const isRemovingLastItem = patches.some(
         (patch) => patch.type === 'unset' && patch.path.length === 1
       )
 
-      //debugger
+      // this handle touches on more than just object fields, documents included
+      // if we're at a "document" level, then we want to have a way to skip the following logic
       if (!isRoot) {
         if (isRemovingLastItem) {
           // apply the patch to the current value
           const result = applyAll(member.field.value || {}, patches)
 
-          // meaning only run this if the result is an empty object with only _type
+          // only run this if the result is an empty object with only _type
           if (result && result._type && Object.keys(result).length === 1) {
             // The value has a _type key, but the type name from schema is 'object',
             // but _type: 'object' is implicit so we should fix it by removing it
+            // this happens, for example, when a type is made of objects
             onChange(PatchEvent.from(unset(['_type'])).prefixAll(member.name))
           }
 
+          // if the result after applying the patches is empty, then we should unset the field
           if (isEmpty(result)) {
-            onChange(PatchEvent.from(unset([member.name]))) //.prefixAll(member.name))
+            onChange(PatchEvent.from(unset([member.name])))
             return
           }
         }
       }
+      // otherwise apply the patch
       onChange(
         PatchEvent.from(event)
           .prepend(setIfMissing(createProtoValue(member.field.schemaType)))
