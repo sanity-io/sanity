@@ -56,6 +56,18 @@ export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
   collapsible: boolean | undefined
   open: boolean
 
+  /**
+   * @internal
+   * Whether this field is in the selected group
+   */
+  inSelectedGroup: boolean
+
+  /**
+   * @internal
+   * Names of the field groups this field is part of
+   */
+  groups: string[]
+
   /** @beta */
   field: Node
 }
@@ -64,6 +76,10 @@ export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
 export interface FieldSetMember {
   kind: 'fieldSet'
   key: string
+
+  // if it's hidden and in the currently selected group, it should still be excluded from its group
+  _inSelectedGroup: boolean
+  groups: string[]
 
   /** @beta */
   fieldSet: FieldsetState

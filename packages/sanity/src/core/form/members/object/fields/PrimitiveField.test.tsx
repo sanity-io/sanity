@@ -207,6 +207,8 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
     collapsed: false,
     collapsible: false,
     open: true,
+    groups: [],
+    inSelectedGroup: false,
     field: {
       id: 'id',
       schemaType: {
