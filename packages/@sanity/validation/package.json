@@ -60,7 +60,7 @@
     "rxjs": "^7.8.0"
   },
   "devDependencies": {
-    "@sanity/client": "^5.2.0",
+    "@sanity/client": "^6.0.0",
     "@sanity/schema": "3.10.3"
   },
   "publishConfig": {
