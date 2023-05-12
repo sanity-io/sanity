@@ -1,7 +1,9 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
-import {useEffect} from 'react'
+import {useEffect, useRef} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
+import {isEqual} from 'lodash'
+import {PortableTextMemberItem} from '../PortableTextInput'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {
@@ -32,17 +34,28 @@ export function useTrackFocusPath(props: Props): void {
         scrollIntoView(boundaryElement, {
           scrollMode: 'if-needed',
         })
+        // Scroll the member into view
+        scrollIntoView(memberItem.elementRef?.current, {
+          scrollMode: 'if-needed',
+          boundary: boundaryElement,
+        })
       }
-      // Make a selection in the editor
-      PortableTextEditor.select(editor, {
-        anchor: {path: focusPath, offset: 0},
-        focus: {path: focusPath, offset: 0},
-      })
-      if (memberItem.kind === 'textBlock') {
-        PortableTextEditor.focus(editor)
-        // "auto-close" regular text blocks or they get sticky here when trying to focus on an other field
-        // There is no natural way of closing them (however opening something else would close them)
-        onItemClose()
+      const editorSelection = PortableTextEditor.getSelection(editor)
+      const hasSelectionInSameBlock = isEqual(editorSelection?.focus.path[0], focusPath[0])
+      // Only manipulate the editor selection if we are not in the same block as the user have currently selected.
+      // Otherwise we may interfere when the user is creating new links or inline objects that is supposed to open.
+      if (!hasSelectionInSameBlock) {
+        // Make a selection in the editor
+        PortableTextEditor.select(editor, {
+          anchor: {path: focusPath, offset: 0},
+          focus: {path: focusPath, offset: 0},
+        })
+        if (memberItem.kind === 'textBlock') {
+          PortableTextEditor.focus(editor)
+          // "auto-close" regular text blocks or they get sticky here when trying to focus on an other field
+          // There is no natural way of closing them (however opening something else would close them)
+          onItemClose()
+        }
       }
     }
   }, [
