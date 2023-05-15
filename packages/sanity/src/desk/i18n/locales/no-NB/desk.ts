@@ -1,6 +1,6 @@
 import {DeskTranslations} from '../types/desk'
 import {deskI18nNamespace} from '../../i18nNamespaces'
-import {defineBundle} from 'sanity'
+import {defineLanguageBundle} from 'sanity'
 
 export const deskI18nNamespaceStrings: Partial<DeskTranslations> = {
   /** Label for the "Publish" document action when there are pending changes.*/
@@ -43,7 +43,7 @@ export const deskI18nNamespaceStrings: Partial<DeskTranslations> = {
   'action.publish.waiting': 'Venter på at andre oppgaver skal fullføre',
 }
 
-export default defineBundle({
+export default defineLanguageBundle({
   namespace: deskI18nNamespace,
   resources: deskI18nNamespaceStrings,
 })

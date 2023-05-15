@@ -1,12 +1,13 @@
-import {type LanguageBundle, typed} from 'sanity'
+import {defineLanguageBundle} from 'sanity'
 
-export const testStudioNamespace = {
-  brandingTitle: 'English logo',
-  structureRootTitle: 'Content',
-  translatedFieldTitle: 'English custom component title',
+export const testStudioI18nNamespace = 'testStudio' as const
+
+export const testStudioI18nNamespaceStrings = {
+  'studio.logo.title': 'English logo',
+  'structure.root.title': 'Content',
 }
 
-export default typed<LanguageBundle>({
-  namespace: 'testStudio',
-  resources: testStudioNamespace,
+export default defineLanguageBundle({
+  namespace: testStudioI18nNamespace,
+  resources: testStudioI18nNamespaceStrings,
 })

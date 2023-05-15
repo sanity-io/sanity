@@ -1,5 +1,5 @@
 import type {StudioTranslations} from '../types/studio'
-import {defineBundle} from '../../defineHelpers'
+import {defineLanguageBundle} from '../../defineHelpers'
 import {studioI18nNamespace} from '../../i18nNamespaces'
 
 export const studioI18nNamespaceStrings: Partial<StudioTranslations> = {
@@ -63,7 +63,7 @@ export const studioI18nNamespaceStrings: Partial<StudioTranslations> = {
   'timeAgo.seconds.minimal.ago': '{{count}}m ago',
 }
 
-export default defineBundle({
+export default defineLanguageBundle({
   namespace: studioI18nNamespace,
   resources: studioI18nNamespaceStrings,
 })

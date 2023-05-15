@@ -1,12 +1,12 @@
-import {LanguageBundle, typed} from 'sanity'
+import {defineLanguageBundle, schemaI18nNamespace} from 'sanity'
 
-export const schemaNamespace = {
+export const schemaI18nNamespaceStrings = {
   'pt_allTheBellsAndWhistles|title': 'All the bells',
   'pt_allTheBellsAndWhistles.title|title': 'Title (en)',
   'pt_allTheBellsAndWhistles.text|title': 'Text (en)',
 }
 
-export default typed<LanguageBundle>({
-  namespace: 'schema',
-  resources: schemaNamespace,
+export default defineLanguageBundle({
+  namespace: schemaI18nNamespace,
+  resources: schemaI18nNamespaceStrings,
 })

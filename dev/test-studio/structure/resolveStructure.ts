@@ -31,7 +31,7 @@ import {typesInOptionGroup} from './groupByOption'
 export const structure: StructureResolver = (S, {schema, documentStore, i18n}) => {
   const {t} = i18n
   return S.list()
-    .title(t('testStudio:structureRootTitle'))
+    .title(t('testStudio:structure.root.title' as const))
     .items([
       S.listItem()
         .title('Untitled repro')

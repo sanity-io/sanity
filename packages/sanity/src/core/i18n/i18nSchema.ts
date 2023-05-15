@@ -3,6 +3,7 @@ import {i18n} from 'i18next'
 import {schemaI18nNamespace} from './i18nNamespaces'
 
 /**
+ * @internal
  This function mutates the schema.
  Does not translate inline definitions (ie, inline nested arrays or objects)
  */
@@ -16,7 +17,7 @@ export function i18nSchema(schema: Schema, i18next: i18n): void {
     }
     const i18nKey = `${schemaI18nNamespace}:${path}|${property}`
     const hasTranslation = i18next.exists(i18nKey)
-    return hasTranslation ? i18next.t(i18nKey) : defaultValue
+    return hasTranslation ? i18next.t(i18nKey as any) : defaultValue
   }
 
   function translateField(parentType: SchemaType, field: ObjectField) {

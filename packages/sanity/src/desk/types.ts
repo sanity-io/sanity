@@ -50,7 +50,7 @@ export interface StructureResolverContext extends ConfigContext {
    * */
   documentStore: DocumentStore
 
-  /** alpha*/
+  /** alpha */
   i18n: I18nSource
 }
 

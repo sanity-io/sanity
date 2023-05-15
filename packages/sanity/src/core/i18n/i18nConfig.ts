@@ -13,7 +13,7 @@ import {getPreferredLang} from './languageStore'
 import {schemaI18nNamespace, studioI18nNamespace} from './i18nNamespaces'
 import {studioLocaleLoader} from './studioLocaleLoader'
 import {i18nSchema} from './i18nSchema'
-import {SanityResources} from './locales/types'
+import {SanityLanguageResources} from './locales/types'
 
 export const defaultI18nOptions: InitOptions = {
   partialBundledLanguages: true,
@@ -21,7 +21,7 @@ export const defaultI18nOptions: InitOptions = {
   lng: defaultLanguage.id,
   fallbackLng: defaultLanguage.id,
   resources: {
-    [defaultLanguage.id]: typed<Partial<SanityResources>>({
+    [defaultLanguage.id]: typed<Partial<SanityLanguageResources>>({
       [studioI18nNamespace]: studioI18nNamespaceStrings,
       [schemaI18nNamespace]: {},
     }),

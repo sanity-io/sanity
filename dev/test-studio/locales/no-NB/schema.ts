@@ -1,14 +1,14 @@
 /* eslint-disable camelcase */
-import {LanguageBundle, typed} from 'sanity'
-import {SchemaTranslations} from '../types'
+import {defineLanguageBundle, schemaI18nNamespace} from 'sanity'
+import {TestStudioSchemaTranslations} from '../types'
 
-export const schemaNamespace: Partial<SchemaTranslations> = {
+export const schemaI18nNamespaceStrings: Partial<TestStudioSchemaTranslations> = {
   'pt_allTheBellsAndWhistles|title': 'Alle bjeller og fløyter',
   'pt_allTheBellsAndWhistles.title|title': 'Tittel',
   'pt_allTheBellsAndWhistles.text|title': 'Tekst',
 }
 
-export default typed<LanguageBundle>({
-  namespace: 'schema',
-  resources: schemaNamespace,
+export default defineLanguageBundle({
+  namespace: schemaI18nNamespace,
+  resources: schemaI18nNamespaceStrings,
 })

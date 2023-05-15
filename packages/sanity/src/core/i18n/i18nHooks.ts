@@ -56,9 +56,9 @@ export function useLoadLanguage(
   return useCallback(
     async (lang: string, instance: i18n) => {
       if (!setLangLoaded(lang) || !languageLoaders) {
-        return
+        return undefined
       }
-      runLanguageLoaders(lang, instance, languageLoaders).catch((e) => console.error(e))
+      return runLanguageLoaders(lang, instance, languageLoaders).catch((e) => console.error(e))
     },
     [setLangLoaded, languageLoaders]
   )

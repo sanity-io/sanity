@@ -6,7 +6,7 @@ export function Branding() {
   const {t} = useTranslation('testStudio')
   return (
     <Box padding={3}>
-      <Text weight="bold">{t('brandingTitle')}&trade;</Text>
+      <Text weight="bold">{t('studio.logo.title')}&trade;</Text>
     </Box>
   )
 }
