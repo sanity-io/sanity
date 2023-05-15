@@ -7,7 +7,6 @@ import {
   PortableTextEditor,
   HotkeyOptions,
   InvalidValue,
-  EditorSelection,
   Patch,
 } from '@sanity/portable-text-editor'
 import React, {
@@ -19,10 +18,10 @@ import React, {
   useImperativeHandle,
   createRef,
   ReactNode,
+  startTransition,
 } from 'react'
 import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
-import {debounce} from 'lodash'
 import {FormPatch, SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {ArrayOfObjectsInputProps, PortableTextMarker, RenderCustomMarkers} from '../../types'
@@ -237,22 +236,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return items
   }, [members, props])
 
-  // Sets the focusPath from editor selection (when typing, moving the cursor, clicking around)
-  // This doesn't need to be immediate, so debounce it as it impacts performance.
-  const setFocusPathDebounced = useMemo(
-    () =>
-      debounce(
-        (sel: EditorSelection) => {
-          if (sel) {
-            onPathFocus(sel.focus.path)
-          }
-        },
-        500,
-        {trailing: true, leading: true}
-      ),
-    [onPathFocus]
-  )
-
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
@@ -261,7 +244,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
           onChange(toFormPatches(change.patches))
           break
         case 'selection':
-          setFocusPathDebounced(change.selection)
+          // This doesn't need to be immediate,
+          // call through startTransition
+          startTransition(() => {
+            if (change.selection) {
+              onPathFocus(change.selection.focus.path)
+            }
+          })
           break
         case 'focus':
           setIsActive(true)
@@ -282,7 +271,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onChange, toast, setFocusPathDebounced]
+    [onChange, onPathFocus, toast]
   )
 
   useEffect(() => {
