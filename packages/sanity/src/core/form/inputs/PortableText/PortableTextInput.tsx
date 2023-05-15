@@ -103,16 +103,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isActive, setIsActive] = useState(false)
 
-  // Let formState decide if we are focused or not.
-  const hasFocus = Boolean(focused) || focusPath.length > 0
-
-  // Set active if focused
-  useEffect(() => {
-    if (hasFocus) {
-      setIsActive(true)
-    }
-  }, [hasFocus])
-
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
 
@@ -306,6 +296,19 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
     }
   }, [isActive])
+
+  // The editor has focus if we have selected a single block or one of it's children.
+  const hasFocus =
+    Boolean(focused) ||
+    focusPath.length === 1 ||
+    (focusPath.length === 3 && focusPath[1] === 'children')
+
+  // Set active if focused
+  useEffect(() => {
+    if (hasFocus) {
+      setIsActive(true)
+    }
+  }, [hasFocus])
 
   return (
     <Box ref={innerElementRef}>

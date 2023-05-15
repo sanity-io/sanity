@@ -1,6 +1,5 @@
 import React, {useState, useMemo, useCallback} from 'react'
 import {
-  EditorSelection,
   OnCopyFn,
   OnPasteFn,
   usePortableTextEditor,
@@ -45,6 +44,7 @@ export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
 export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
   const {
     changed,
+    focused,
     focusPath = EMPTY_ARRAY,
     hasFocus,
     hotkeys,
@@ -92,16 +92,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const _renderBlockActions = !!value && renderBlockActions ? renderBlockActions : undefined
   const _renderCustomMarkers = !!value && renderCustomMarkers ? renderCustomMarkers : undefined
-
-  const initialSelection = useMemo((): EditorSelection => {
-    return focusPath.length > 0
-      ? {
-          anchor: {path: focusPath, offset: 0},
-          focus: {path: focusPath, offset: 0},
-        }
-      : null
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // only initial!
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
@@ -294,7 +284,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       <Editor
         hasFocus={hasFocus}
         hotkeys={editorHotkeys}
-        initialSelection={initialSelection}
+        initialSelection={null}
         isActive={isActive}
         isFullscreen={isFullscreen}
         onItemOpen={onItemOpen}
@@ -314,21 +304,20 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
     // Keep only stable ones here!
     [
-      hasFocus,
+      boundaryElement,
       editorHotkeys,
-      initialSelection,
+      handleToggleFullscreen,
+      hasFocus,
       isActive,
       isFullscreen,
-      onItemOpen,
       onCopy,
+      onItemOpen,
       onPaste,
-      handleToggleFullscreen,
       path,
       readOnly,
       renderAnnotation,
       renderBlock,
       renderChild,
-      boundaryElement,
     ]
   )
 
@@ -346,7 +335,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   // Scroll to the DOM element of the "opened" portable text member when relevant.
   useTrackFocusPath({
-    editorRootPath: path,
     focusPath,
     boundaryElement: boundaryElement || undefined,
     onItemClose,
@@ -357,7 +345,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
         <ChangeIndicator
           disabled={isFullscreen}
-          hasFocus={hasFocus}
+          hasFocus={Boolean(focused)}
           isChanged={changed}
           path={path}
         >

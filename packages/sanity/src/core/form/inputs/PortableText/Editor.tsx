@@ -112,18 +112,13 @@ export function Editor(props: EditorProps) {
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
   // Restore the React editor selection and focus when toggling fullscreen
-  // Note that the selection itself is not part of the dependencies here (use the last known from the PTE instance)
   useEffect(() => {
-    if (selection) {
-      PortableTextEditor.select(editor, selection)
-    }
     if (hasFocus) {
       PortableTextEditor.focus(editor)
     } else {
       PortableTextEditor.blur(editor)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor, isFullscreen]) // skip selection dep.
+  }, [editor, hasFocus, isFullscreen])
 
   const editable = useMemo(
     () => (
