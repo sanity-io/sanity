@@ -66,7 +66,6 @@ export const ObjectField = function ObjectField(props: {
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
       const isRoot = member.field.path.length === 0
-      // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
       const patches = PatchEvent.from(event).patches
       // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
       const isRemovingLastItem = patches.some(
