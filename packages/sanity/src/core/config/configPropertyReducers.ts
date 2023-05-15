@@ -11,6 +11,7 @@ import type {
   DocumentInspectorContext,
   DocumentLanguageFilterComponent,
   DocumentLanguageFilterContext,
+  LanguageDefinition,
   LanguageLoader,
   NewDocumentOptionsContext,
   ResolveProductionUrlContext,
@@ -117,7 +118,7 @@ export const i18nOptionsReducer: ConfigPropertyReducer<InitOptions, I18nContext>
   if (typeof initOptions === 'function') return initOptions(prev, context)
 
   throw new Error(
-    `Expected \`i18n.initOptions\` to be ana function, but received ${typeof initOptions}`
+    `Expected \`i18n.initOptions\` to be a function, but received ${typeof initOptions}`
   )
 }
 
@@ -132,7 +133,22 @@ export const i18nLoaderReducer: ConfigPropertyReducer<LanguageLoader[], I18nCont
   if (Array.isArray(languageLoaders)) return [...prev, ...languageLoaders]
 
   throw new Error(
-    `Expected \`i18n.languageLoaders\` to be ana function, but received ${typeof languageLoaders}`
+    `Expected \`i18n.languageLoaders\` to be an array or a function, but received ${typeof languageLoaders}`
+  )
+}
+
+export const i18nLangDefReducer: ConfigPropertyReducer<LanguageDefinition[], I18nContext> = (
+  prev,
+  {i18n},
+  context
+) => {
+  const languages = i18n?.languages
+  if (!languages) return prev
+  if (typeof languages === 'function') return languages(prev, context)
+  if (Array.isArray(languages)) return [...prev, ...languages]
+
+  throw new Error(
+    `Expected \`i18n.languages\` to be an array or a function, but received ${typeof languages}`
   )
 }
 

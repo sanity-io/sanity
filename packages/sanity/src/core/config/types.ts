@@ -37,7 +37,7 @@ import {
 } from './document'
 import {
   I18nPluginOptions,
-  LanguageResource,
+  LanguageBundle,
   StudioComponents,
   StudioComponentsPluginOptions,
 } from './studio'
@@ -503,7 +503,7 @@ export interface Source {
   }
 
   /** @alpha */
-  i18n: I18nApi
+  i18n: I18nSource
 
   /** @alpha */
   search: {
@@ -519,13 +519,20 @@ export interface Source {
   }
 }
 
-// TODO return observable instead of Promise?
-export type LanguageLoader = (
-  language: string,
-  context: {i18n: i18n}
-) => Promise<LanguageResource[] | undefined>
+export interface LanguageDefinition {
+  id: string
+  title: string
+  icon?: ComponentType
+}
 
-export interface I18nApi {
+export type LanguageLoaderResult = Promise<LanguageBundle | {default: LanguageBundle} | undefined>
+
+// TODO return observable instead of Promise?
+export type LanguageLoader = (language: string, context: {i18n: i18n}) => LanguageLoaderResult
+
+/** @internal */
+export interface I18nSource {
+  languages: LanguageDefinition[]
   initOptions: InitOptions
   languageLoaders: LanguageLoader[]
   t: TFunction
@@ -545,7 +552,7 @@ export interface WorkspaceSummary {
   dataset: string
   theme: StudioTheme
   schema: Schema
-  i18n: I18nApi
+  i18n: I18nSource
   /**
    * @internal
    * @deprecated not actually deprecated but don't use or you'll be fired
@@ -558,7 +565,7 @@ export interface WorkspaceSummary {
       title: string
       auth: AuthStore
       schema: Schema
-      i18n: I18nApi
+      i18n: I18nSource
       source: Observable<Source>
     }>
   }

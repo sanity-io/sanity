@@ -3,7 +3,6 @@ import {Rule} from '@sanity/types'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {InfoBoxPreview} from './InfoBoxPreview'
 import {LinkAnnotationInput} from './LinkAnnotationInput'
-import {TranslatedField} from './components/TranslatedField'
 
 export const ptAllTheBellsAndWhistlesType = defineType({
   type: 'document',
@@ -15,9 +14,6 @@ export const ptAllTheBellsAndWhistlesType = defineType({
       type: 'string',
       name: 'title',
       title: 'Title',
-      components: {
-        field: TranslatedField,
-      },
     }),
     defineField({
       type: 'array',

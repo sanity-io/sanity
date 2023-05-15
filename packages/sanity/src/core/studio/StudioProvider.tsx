@@ -25,7 +25,7 @@ import {
 } from './screens'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
-import {I18nProvider} from './i18n'
+import {I18nProvider} from '../i18n'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
