@@ -67,7 +67,7 @@ export const ObjectField = function ObjectField(props: {
     (event: PatchEvent | PatchArg) => {
       const isRoot = member.field.path.length === 0
       const patches = PatchEvent.from(event).patches
-      // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
+      // if the patch is an unset patch that targets a field in the object (as opposed to unsetting a field somewhere deeper)
       const isRemovingLastItem = patches.some(
         (patch) => patch.type === 'unset' && patch.path.length === 1
       )
