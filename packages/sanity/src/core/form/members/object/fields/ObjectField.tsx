@@ -81,9 +81,9 @@ export const ObjectField = function ObjectField(props: {
 
           // only run this if the result is an empty object with only _type
           if (result && result._type && Object.keys(result).length === 1) {
-            // The value has a _type key, but the type name from schema is 'object',
-            // but _type: 'object' is implicit so we should fix it by removing it
-            // this happens, for example, when a type is made of objects
+            // this happens, for example, when a type is made of objects and all values from
+            // that object were removed except the _type key
+            // by removing the _type key completely it allows for the field to be completely removed
             onChange(PatchEvent.from(unset(['_type'])).prefixAll(member.name))
           }
 
