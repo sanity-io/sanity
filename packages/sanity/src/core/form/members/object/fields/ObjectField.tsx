@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
+import {isEmpty} from '@sanity/util/content'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {FieldMember, ObjectFormNode} from '../../../store'
 import {
@@ -11,9 +12,10 @@ import {
   RenderInputCallback,
   RenderPreviewCallback,
 } from '../../../types'
-import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
+import {PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {createProtoValue} from '../../../utils/createProtoValue'
+import {applyAll} from '../../../patch/applyPatch'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
@@ -63,13 +65,43 @@ export const ObjectField = function ObjectField(props: {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
+      const isRoot = member.field.path.length === 0
+      const patches = PatchEvent.from(event).patches
+      // if the patch is an unset patch that targets a field in the object (as opposed to unsetting a field somewhere deeper)
+      const isRemovingLastItem = patches.some(
+        (patch) => patch.type === 'unset' && patch.path.length === 1
+      )
+
+      // this handle touches on more than just object fields, documents included
+      // if we're at a "document" level, then we want to have a way to skip the following logic
+      if (!isRoot) {
+        if (isRemovingLastItem) {
+          // apply the patch to the current value
+          const result = applyAll(member.field.value || {}, patches)
+
+          // only run this if the result is an empty object with only _type
+          if (result && result._type && Object.keys(result).length === 1) {
+            // this happens, for example, when a type is made of objects and all values from
+            // that object were removed except the _type key
+            // by removing the _type key completely it allows for the field to be completely removed
+            onChange(PatchEvent.from(unset(['_type'])).prefixAll(member.name))
+          }
+
+          // if the result after applying the patches is empty, then we should unset the field
+          if (isEmpty(result)) {
+            onChange(PatchEvent.from(unset([member.name])))
+            return
+          }
+        }
+      }
+      // otherwise apply the patch
       onChange(
         PatchEvent.from(event)
           .prepend(setIfMissing(createProtoValue(member.field.schemaType)))
           .prefixAll(member.name)
       )
     },
-    [onChange, member.field.schemaType, member.name]
+    [onChange, member]
   )
 
   const handleCollapse = useCallback(() => {
