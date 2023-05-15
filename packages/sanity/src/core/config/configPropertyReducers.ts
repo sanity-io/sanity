@@ -1,7 +1,7 @@
 import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
 import type {InitOptions} from 'i18next'
 import type {Template, TemplateResponse} from '../templates'
-import {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
+import type {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import type {
   AsyncConfigPropertyReducer,
   ConfigContext,
@@ -11,13 +11,13 @@ import type {
   DocumentInspectorContext,
   DocumentLanguageFilterComponent,
   DocumentLanguageFilterContext,
+  I18nContext,
   LanguageDefinition,
   LanguageLoader,
   NewDocumentOptionsContext,
   ResolveProductionUrlContext,
   Tool,
 } from './types'
-import type {I18nContext} from './studio'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 

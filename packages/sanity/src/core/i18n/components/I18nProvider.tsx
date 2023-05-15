@@ -10,6 +10,9 @@ import {useLoadedLanguages, useLoadLanguage} from '../i18nHooks'
 import {defaultLanguage} from '../localizedLanguages'
 import {LanguageProvider} from './LanguageContext'
 
+/**
+ * @internal
+ */
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function I18nProvider(props: PropsWithChildren<{}>) {
   const {i18n} = useSource()

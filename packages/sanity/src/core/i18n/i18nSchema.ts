@@ -1,5 +1,5 @@
 import {Fieldset, ObjectField, Schema, SchemaType} from '@sanity/types'
-import {i18n} from 'i18next'
+import {type i18n} from 'i18next'
 import {schemaI18nNamespace} from './i18nNamespaces'
 
 /**

@@ -1,7 +1,8 @@
 import {typed} from '@sanity/types'
-import {LanguageBundle} from '../config'
+import type {LanguageBundle} from '../config'
 
 /**
  * Pass-trough function that provides type safety when defining a LanguageBundle.
+ * @alpha
  */
 export const defineLanguageBundle = typed<LanguageBundle>

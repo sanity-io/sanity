@@ -2,7 +2,7 @@ import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {deskI18nNamespace, DeskTranslations} from '../i18n'
+import {deskI18nNamespace, i18nDeskNS, DeskTranslations} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -16,7 +16,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-const DISABLED_REASON_TITLE_KEY = {
+const DISABLED_REASON_TITLE_KEY: Record<string, keyof DeskTranslations> = {
   LIVE_EDIT_ENABLED: 'action.publish.liveEdit.publishDisabled',
   ALREADY_PUBLISHED: 'action.publish.alreadyPublished.noTimeAgo.tooltip',
   NO_CHANGES: 'action.publish.tooltip.noChanges',
@@ -31,7 +31,7 @@ function DisabledReason(
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return <AlreadyPublished publishedAt={publishedAt} />
   }
-  return t(DISABLED_REASON_TITLE_KEY[reason])
+  return t(i18nDeskNS(DISABLED_REASON_TITLE_KEY[reason]))
 }
 
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
