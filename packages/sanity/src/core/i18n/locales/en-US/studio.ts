@@ -5,6 +5,9 @@ export const studioI18nNamespaceStrings = {
   /** Placeholder text for the omnisearch input field */
   'navbar.search.placeholder': 'Search',
 
+  /* Relative time, just now */
+  'timeAgo.justNow': 'just now',
+
   /* Relative time, granularity: weeks*/
   'timeAgo.weeks_one': '{{count}} week',
   'timeAgo.weeks_other': '{{count}} weeks',

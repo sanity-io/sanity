@@ -63,13 +63,6 @@ const sharedSettings = definePlugin({
 
   i18n: {
     languages: (prev) => [localizedLanguages['no-NB'], ...prev],
-    /*    initOptions: (prev) => {
-      return {
-        ...prev,
-        /!*        lng: 'no-NB',
-        supportedLngs: ['no-NB', 'en-US'],*!/
-      }
-    },*/
     languageLoaders: (prev) => {
       return [
         ...prev,

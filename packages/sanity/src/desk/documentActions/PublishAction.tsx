@@ -1,8 +1,9 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
+import type {TFunction} from 'i18next'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {deskI18nNamespace, i18nDeskNS, DeskTranslations} from '../i18n'
+import {deskI18nNamespace, DeskTranslations} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -23,15 +24,15 @@ const DISABLED_REASON_TITLE_KEY: Record<string, keyof DeskTranslations> = {
   NOT_READY: 'action.publish.disabled.notReady',
 } as const
 
-function DisabledReason(
+function getDisabledReason(
   reason: keyof typeof DISABLED_REASON_TITLE_KEY,
-  publishedAt: string | undefined
+  publishedAt: string | undefined,
+  t: TFunction
 ) {
-  const {t} = useTranslation(deskI18nNamespace)
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return <AlreadyPublished publishedAt={publishedAt} />
   }
-  return t(i18nDeskNS(DISABLED_REASON_TITLE_KEY[reason]))
+  return t(DISABLED_REASON_TITLE_KEY[reason])
 }
 
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
@@ -69,7 +70,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   // eslint-disable-next-line no-nested-ternary
   const title = publish.disabled
-    ? DisabledReason(publish.disabled, (published || {})._updatedAt) || ''
+    ? getDisabledReason(publish.disabled, (published || {})._updatedAt, t) || ''
     : hasValidationErrors
     ? t('action.publish.validationIssues.tooltip')
     : ''

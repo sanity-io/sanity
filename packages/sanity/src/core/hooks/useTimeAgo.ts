@@ -197,5 +197,5 @@ function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): Tim
     }
   }
 
-  return {timestamp: 'just now', refreshInterval: FIVE_SECONDS}
+  return {timestamp: t('timeAgo.justNow'), refreshInterval: FIVE_SECONDS}
 }

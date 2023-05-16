@@ -6,6 +6,9 @@ export const studioI18nNamespaceStrings: Partial<StudioTranslations> = {
   /** Placeholder text for the omnisearch input field */
   'navbar.search.placeholder': 'Søk',
 
+  /* Relative time, just now */
+  'timeAgo.justNow': 'akkurat nå',
+
   /* Relative time, granularity: weeks*/
   'timeAgo.weeks_one': '{{count}} uke',
   'timeAgo.weeks_other': '{{count}} uker',

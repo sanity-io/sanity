@@ -329,18 +329,25 @@ export interface I18nPluginOptions {
    * with resource keys using the following convention:
    *
    * ## Keys for types
-   * - `<typeName>|title`
-   * - `<typeName>|description`
+   *
+   * - `<typeName>.type-title`
+   * - `<typeName>.type-description`
+   * - `<typeName>.<fieldsetName>.fieldset-title`
+   * - `<typeName>.<fieldsetName>.fieldset-description`
+   * - `<typeName>.<groupName>.group-title`
    *
    * ## Keys for fields
    *
-   * -`<objectTypeName>.<fieldName>|title`
-   * -`<objectTypeName>.<fieldName>|description`
+   * - `<objectTypeName>.<fieldName>.field-title`
+   * - `<objectTypeName>.<fieldName>.field-description`
    *
    * ## Keys for array items
    *
-   * - `<arrayTypeName>.<arrayMemberTypeName>|title`
-   * - `<arrayTypeName>.<arrayMemberTypeName>|description`
+   * - `<arrayTypeName>.<arrayMemberTypeName>.item-title`
+   *
+   * ## Keys for reference types
+   *
+   * - `<typeName>.<refTypeName>.ref-title`
    *
    * ## Caveats
    *
