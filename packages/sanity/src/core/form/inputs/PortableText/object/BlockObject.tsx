@@ -123,7 +123,10 @@ export function BlockObject(props: BlockObjectProps) {
   const parentSchemaType = editor.schemaTypes.portableText
   const hasMarkers = Boolean(markers.length > 0)
 
-  const presence = memberItem?.node.presence || EMPTY_ARRAY
+  const presence =
+    memberItem?.node.presence && memberItem?.node.presence.length > 0
+      ? memberItem.node.presence
+      : EMPTY_ARRAY
 
   // Tooltip indicating validation errors, warnings, info and markers
   const tooltipEnabled = hasError || hasWarning || hasInfo || hasMarkers
