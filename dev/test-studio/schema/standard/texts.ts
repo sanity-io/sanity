@@ -12,7 +12,7 @@ export default defineType({
       name: 'title',
       type: 'string',
       title: 'Title',
-      description: 'NOT a string field',
+      description: "NOT a text field (it's a string!)",
     },
     {
       name: 'simple',
