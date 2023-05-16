@@ -89,6 +89,9 @@ export function ArrayOfObjectsField(props: {
     [member.field.path, onPathBlur]
   )
 
+  const valueRef = useRef(member.field.value)
+  valueRef.current = member.field.value
+
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
       const patches = PatchEvent.from(event).patches
@@ -99,7 +102,7 @@ export function ArrayOfObjectsField(props: {
 
       if (isRemovingLastItem) {
         // apply the patch to the current value
-        const result = applyAll(member.field.value || [], patches)
+        const result = applyAll(valueRef.current || [], patches)
 
         // if the result is an empty array
         if (Array.isArray(result) && !result.length) {
@@ -111,7 +114,7 @@ export function ArrayOfObjectsField(props: {
       // otherwise apply the patch
       onChange(PatchEvent.from(event).prepend(setIfMissing([])).prefixAll(member.name))
     },
-    [onChange, member.name, member.field.value]
+    [onChange, member.name, valueRef]
   )
   const resolveInitialValue = useResolveInitialValueForType()
 
