@@ -23,7 +23,7 @@ import {PortableTextBlock} from '@sanity/types'
 import {IntentLink} from 'sanity/router'
 
 interface BlockObjectActionsMenuProps extends PropsWithChildren {
-  blockFocused?: boolean
+  focused: boolean
   isOpen?: boolean
   onOpen: () => void
   onRemove: () => void
@@ -39,7 +39,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): ReactElement {
-  const {children, blockFocused, isOpen, onOpen, onRemove, readOnly, value} = props
+  const {children, focused, isOpen, onOpen, onRemove, readOnly, value} = props
   const menuButtonId = useId()
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
@@ -67,7 +67,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   useGlobalKeyDown(
     useCallback(
       (event) => {
-        if (!blockFocused) {
+        if (!focused) {
           return
         }
         if (event.key === 'Tab') {
@@ -79,7 +79,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
           }
         }
       },
-      [blockFocused, isOpen]
+      [focused, isOpen]
     )
   )
 
@@ -95,7 +95,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
               iconRight={EllipsisVerticalIcon}
               mode="bleed"
               paddingX={2}
-              tabIndex={blockFocused ? 0 : 1}
+              tabIndex={focused ? 0 : 1}
             />
           }
           ref={menuButton}

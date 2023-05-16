@@ -1,4 +1,4 @@
-import {ArraySchemaType, PortableTextBlock} from '@sanity/types'
+import {ArraySchemaType, Path, PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
   OnCopyFn,
@@ -68,6 +68,7 @@ export interface PortableTextInputProps
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {
+    elementProps,
     focused,
     focusPath,
     hotkeys,
@@ -75,17 +76,18 @@ export function PortableTextInput(props: PortableTextInputProps) {
     members,
     onChange,
     onCopy,
-    onPathFocus,
     onInsert,
     onPaste,
+    onPathFocus,
     path,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
     schemaType,
     value,
-    elementProps,
   } = props
+
+  const {onBlur} = elementProps
 
   // Make the PTE focusable from the outside
   useImperativeHandle(elementProps.ref, () => ({
@@ -226,6 +228,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return items
   }, [members, props])
 
+  const hasFocus = focused || isEditorFocusablePath(focusPath)
+
+  // Set active if focused
+  useEffect(() => {
+    if (hasFocus) {
+      setIsActive(true)
+    }
+  }, [hasFocus])
+
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
@@ -245,6 +256,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
         case 'focus':
           setIsActive(true)
           break
+        case 'blur':
+          onBlur(change.event)
+          break
         case 'undo':
         case 'redo':
           onChange(toFormPatches(change.patches))
@@ -261,7 +275,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onChange, onPathFocus, toast]
+    [onBlur, onChange, onPathFocus, toast]
   )
 
   useEffect(() => {
@@ -296,19 +310,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
     }
   }, [isActive])
-
-  // The editor has focus if we have selected a single block or one of it's children.
-  const hasFocus =
-    Boolean(focused) ||
-    focusPath.length === 1 ||
-    (focusPath.length === 3 && focusPath[1] === 'children')
-
-  // Set active if focused
-  useEffect(() => {
-    if (hasFocus) {
-      setIsActive(true)
-    }
-  }, [hasFocus])
 
   return (
     <Box ref={innerElementRef}>
@@ -350,4 +351,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
 function toFormPatches(patches: any) {
   return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE})) as FormPatch[]
+}
+
+// Return true if the path directly points to something focusable in the editor
+function isEditorFocusablePath(path: Path) {
+  return path.length === 1 || (path.length === 3 && path[1] === 'children')
 }

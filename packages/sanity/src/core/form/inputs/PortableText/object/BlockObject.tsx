@@ -94,8 +94,13 @@ export function BlockObject(props: BlockObjectProps) {
 
   const onClose = useCallback(() => {
     onItemClose()
+    const sel: EditorSelection = {
+      focus: {path: relativePath, offset: 0},
+      anchor: {path: relativePath, offset: 0},
+    }
+    PortableTextEditor.select(editor, sel)
     PortableTextEditor.focus(editor)
-  }, [editor, onItemClose])
+  }, [relativePath, editor, onItemClose])
 
   const onRemove = useCallback(() => {
     const sel: EditorSelection = {
@@ -329,8 +334,8 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
         {renderPreview({
           actions: (
             <BlockObjectActionsMenu
-              blockFocused={focused}
               isOpen={open}
+              focused={focused}
               onOpen={onOpen}
               onRemove={onRemove}
               readOnly={readOnly}

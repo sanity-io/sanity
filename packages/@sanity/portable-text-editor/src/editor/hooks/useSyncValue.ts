@@ -250,7 +250,7 @@ function _updateBlock(
     currentBlock.children.forEach((currentBlockChild, currentBlockChildIndex) => {
       const oldBlockChild = oldBlock.children[currentBlockChildIndex]
       const isChildChanged = !isEqual(currentBlockChild, oldBlockChild)
-      const isTextChanged = !isEqual(currentBlockChild.text, oldBlockChild.text)
+      const isTextChanged = !isEqual(currentBlockChild.text, oldBlockChild?.text)
       const path = [currentBlockIndex, currentBlockChildIndex]
       if (isChildChanged) {
         // Update if this is the same child

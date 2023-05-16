@@ -12,7 +12,6 @@ import {
   usePortableTextEditor,
   RenderStyleFunction,
   RenderListItemFunction,
-  usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -87,7 +86,6 @@ export function Editor(props: EditorProps) {
   const {isTopLayer} = useLayer()
   const editableRef = useRef<HTMLDivElement | null>(null)
   const editor = usePortableTextEditor()
-  const selection = usePortableTextEditorSelection()
 
   const {element: boundaryElement} = useBoundaryElement()
 
@@ -155,11 +153,9 @@ export function Editor(props: EditorProps) {
 
   const handleToolBarOnMemberOpen = useCallback(
     (relativePath: Path) => {
-      PortableTextEditor.blur(editor)
-      const fullPath = path.concat(relativePath)
-      onItemOpen(fullPath)
+      onItemOpen(path.concat(relativePath))
     },
-    [editor, onItemOpen, path]
+    [onItemOpen, path]
   )
 
   return (
