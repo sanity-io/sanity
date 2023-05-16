@@ -192,8 +192,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     } else {
       onPathFocus(['_ref'])
     }
-    onChange(unset(['_ref']))
-  }, [hasRef, isEditing, onChange, onPathFocus])
+  }, [hasRef, isEditing, onPathFocus])
 
   const menu = useMemo(
     () =>
