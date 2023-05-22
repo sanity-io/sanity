@@ -41,6 +41,7 @@ export const ObjectField = function ObjectField(props: {
 
   const {member, renderField, renderInput, renderItem, renderPreview} = props
   const focusRef = useRef<{focus: () => void}>()
+  // Keep a local reference to the most recent value. See comment in `handleChange` below for more details
   const pendingValue = useRef(member.field.value)
 
   useEffect(() => {
