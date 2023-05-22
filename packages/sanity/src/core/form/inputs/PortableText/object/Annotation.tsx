@@ -96,7 +96,7 @@ export function Annotation(props: AnnotationProps) {
     [Markers, markers, renderCustomMarkers, text, validation]
   )
 
-  const presence = memberItem?.node.presence?.length ? memberItem.node.presence : EMPTY_ARRAY
+  const presence = memberItem?.node.presence || EMPTY_ARRAY
 
   const isOpen = Boolean(memberItem?.member.open)
   const inputRef = useRef(memberItem?.input)
