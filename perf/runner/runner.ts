@@ -97,6 +97,7 @@ export async function run({
   perfStudioClient,
   deployments,
   testFiles,
+  testIds,
   registerHelpersFile,
   headless,
   iterations = 1,
@@ -106,16 +107,19 @@ export async function run({
   perfStudioClient: SanityClient
   deployments: Deployment[]
   testFiles: string[]
+  testIds?: string[]
   registerHelpersFile: string
   headless?: boolean
   iterations?: number
   token: string
 }) {
-  const testModules = await Promise.all(
-    testFiles.map((testModule) =>
-      import(testModule).then((module) => module.default as PerformanceTestProps)
+  const testModules = (
+    await Promise.all(
+      testFiles.map((testModule) =>
+        import(testModule).then((module) => module.default as PerformanceTestProps)
+      )
     )
-  )
+  ).filter((test) => !testIds || testIds.includes(test.id))
   // Start by syncing test documents
   await Promise.all(
     testModules.map((test) =>
