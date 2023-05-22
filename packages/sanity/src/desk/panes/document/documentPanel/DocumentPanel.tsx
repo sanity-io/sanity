@@ -9,7 +9,7 @@ import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelHeader} from './header'
-import {ScrollContainer} from 'sanity'
+import {ScrollContainer, VirtualizerScrollInstanceProvider} from 'sanity'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -122,32 +122,34 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           __unstable_elements={{documentScrollElement: documentScrollElement}}
         >
           <BoundaryElementProvider element={documentScrollElement}>
-            {activeView.type === 'form' && !isPermissionsLoading && ready && (
-              <>
-                <PermissionCheckBanner
-                  granted={Boolean(permissions?.granted)}
-                  requiredPermission={requiredPermission}
+            <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
+              {activeView.type === 'form' && !isPermissionsLoading && ready && (
+                <>
+                  <PermissionCheckBanner
+                    granted={Boolean(permissions?.granted)}
+                    requiredPermission={requiredPermission}
+                  />
+                  <ReferenceChangedBanner />
+                </>
+              )}
+
+              <Scroller
+                $disabled={layoutCollapsed || false}
+                data-testid="document-panel-scroller"
+                ref={setDocumentScrollElement}
+              >
+                <FormView
+                  hidden={formViewHidden}
+                  key={documentId + (ready ? '_ready' : '_pending')}
+                  margins={margins}
                 />
-                <ReferenceChangedBanner />
-              </>
-            )}
+                {activeViewNode}
+              </Scroller>
 
-            <Scroller
-              $disabled={layoutCollapsed || false}
-              data-testid="document-panel-scroller"
-              ref={setDocumentScrollElement}
-            >
-              <FormView
-                hidden={formViewHidden}
-                key={documentId + (ready ? '_ready' : '_pending')}
-                margins={margins}
-              />
-              {activeViewNode}
-            </Scroller>
+              {inspectDialog}
 
-            {inspectDialog}
-
-            <div data-testid="document-panel-portal" ref={portalRef} />
+              <div data-testid="document-panel-portal" ref={portalRef} />
+            </VirtualizerScrollInstanceProvider>
           </BoundaryElementProvider>
         </PortalProvider>
       </PaneContent>

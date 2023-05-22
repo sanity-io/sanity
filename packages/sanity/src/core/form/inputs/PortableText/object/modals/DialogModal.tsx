@@ -1,6 +1,7 @@
-import React, {useId, useRef, useState} from 'react'
-import {BoundaryElementProvider, Box, Dialog} from '@sanity/ui'
+import React, {useId, useState} from 'react'
+import {Box, Dialog} from '@sanity/ui'
 import {PresenceOverlay} from '../../../../../presence'
+import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ModalWidth} from './types'
 
 interface DefaultEditDialogProps {
@@ -17,20 +18,20 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
 
   return (
-    <BoundaryElementProvider element={contentElement}>
-      <Dialog
-        header={title}
-        id={dialogId}
-        onClickOutside={onClose}
-        onClose={onClose}
-        portal="default"
-        width={width}
-        contentRef={setContentElement}
-      >
-        <PresenceOverlay margins={[0, 0, 1, 0]}>
+    <Dialog
+      header={title}
+      id={dialogId}
+      onClickOutside={onClose}
+      onClose={onClose}
+      portal="default"
+      width={width}
+      contentRef={setContentElement}
+    >
+      <PresenceOverlay margins={[0, 0, 1, 0]}>
+        <VirtualizerScrollInstanceProvider scrollElement={contentElement}>
           <Box padding={4}>{children}</Box>
-        </PresenceOverlay>
-      </Dialog>
-    </BoundaryElementProvider>
+        </VirtualizerScrollInstanceProvider>
+      </PresenceOverlay>
+    </Dialog>
   )
 }

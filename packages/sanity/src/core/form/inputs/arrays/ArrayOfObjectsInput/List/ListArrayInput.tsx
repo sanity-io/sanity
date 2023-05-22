@@ -1,4 +1,4 @@
-import {Card, Stack, Text, useBoundaryElement, useTheme} from '@sanity/ui'
+import {Card, Stack, Text, useTheme} from '@sanity/ui'
 import {isKeySegment} from '@sanity/types'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
@@ -16,6 +16,7 @@ import {ArrayOfObjectsItem} from '../../../../members'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
+import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
 import {ErrorItem} from './ErrorItem'
 import {useMemoCompare} from './useMemoCompare'
 
@@ -64,7 +65,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     shallowEquals
   )
 
-  const boundaryElement = useBoundaryElement()
+  const {scrollElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
 
   const focusPathKey = useMemo(() => {
@@ -138,7 +139,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize,
-    getScrollElement: useCallback(() => boundaryElement.element, [boundaryElement.element]),
+    getScrollElement: useCallback(() => scrollElement, [scrollElement]),
     observeElementOffset,
     rangeExtractor,
     getItemKey: useCallback((index: number) => memberKeys[index], [memberKeys]),

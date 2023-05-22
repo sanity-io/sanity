@@ -7,6 +7,8 @@ export {PortableTextInput as BlockEditor} from './PortableText/PortableTextInput
 export * from './arrays/UniversalArrayInput'
 export * from './arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
 export * from './arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
+export * from './arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+export * from './arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
 export * from './arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
 export * from './arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
 export * from './arrays/ArrayOfOptionsInput/ArrayOfPrimitiveOptionsInput'

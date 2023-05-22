@@ -1,7 +1,8 @@
 import React, {type ReactNode, useState} from 'react'
-import {BoundaryElementProvider, Box, Dialog, ResponsiveWidthProps} from '@sanity/ui'
+import {Box, Dialog, ResponsiveWidthProps} from '@sanity/ui'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
+import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -38,7 +39,7 @@ export function EditPortal(props: Props): React.ReactElement {
 
   if (type === 'dialog') {
     return (
-      <BoundaryElementProvider element={documentScrollElement}>
+      <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
         <Dialog
           header={header}
           id={id || ''}
@@ -50,7 +51,7 @@ export function EditPortal(props: Props): React.ReactElement {
         >
           {contents}
         </Dialog>
-      </BoundaryElementProvider>
+      </VirtualizerScrollInstanceProvider>
     )
   }
 
@@ -62,7 +63,9 @@ export function EditPortal(props: Props): React.ReactElement {
       width={width}
       containerRef={setDocumentScrollElement}
     >
-      <BoundaryElementProvider element={documentScrollElement}>{contents}</BoundaryElementProvider>
+      <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
+        {contents}
+      </VirtualizerScrollInstanceProvider>
     </PopoverDialog>
   )
 }
