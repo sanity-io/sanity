@@ -78,8 +78,10 @@ export const ObjectField = function ObjectField(props: {
       // if we're at a "document" level, then we want to have a way to skip the following logic
       if (!isRoot) {
         const patches = PatchEvent.from(event).patches
-        // apply the patch to the current value
-        // needs to update the current value since there might have been a patch
+        // Apply the patch to a local cache of the last received field value from props.
+        // We might receive several calls to `handleChange` synchronously within the same update cycle before React
+        // passes the updated value back through props member.field.value, so we want to check if it's become empty, we can't do that by looking at the stale `props.member.field.value`
+        // Instead we keep updating the local ref/value as we receive the patches
         pendingValue.current = applyAll(pendingValue.current || {}, patches)
 
         // if the result after applying the patches is empty, then we should unset the field
