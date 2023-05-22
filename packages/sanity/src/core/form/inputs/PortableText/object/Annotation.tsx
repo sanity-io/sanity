@@ -1,7 +1,7 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
 import {Tooltip} from '@sanity/ui'
-import React, {ComponentType, useCallback, useMemo} from 'react'
+import React, {ComponentType, useCallback, useMemo, useRef} from 'react'
 import {pathToString} from '../../../../field'
 import {BlockAnnotationProps, RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
@@ -99,13 +99,14 @@ export function Annotation(props: AnnotationProps) {
   const presence = memberItem?.node.presence?.length ? memberItem.node.presence : EMPTY_ARRAY
 
   const isOpen = Boolean(memberItem?.member.open)
-  const input = memberItem?.input
+  const inputRef = useRef(memberItem?.input)
+  inputRef.current = memberItem?.input // Update at every render as other Annotation props updates
 
   const componentProps = useMemo(
     (): BlockAnnotationProps => ({
       __unstable_boundaryElement: boundaryElement || undefined,
       __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
-      children: input,
+      children: inputRef.current,
       focused,
       markers,
       onClose,
@@ -128,7 +129,7 @@ export function Annotation(props: AnnotationProps) {
       boundaryElement,
       editor.schemaTypes.block,
       focused,
-      input,
+      inputRef,
       isOpen,
       markers,
       markersToolTip,
