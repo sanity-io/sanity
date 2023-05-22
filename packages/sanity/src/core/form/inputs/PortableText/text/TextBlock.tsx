@@ -147,7 +147,7 @@ export function TextBlock(props: TextBlockProps) {
 
   const isOpen = Boolean(memberItem?.member.open)
   const parentSchemaType = editor.schemaTypes.portableText
-  const presence = memberItem?.node.presence?.length ? memberItem.node.presence : EMPTY_ARRAY
+  const presence = memberItem?.node.presence || EMPTY_ARRAY
 
   const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
   const componentProps: BlockProps = useMemo(
