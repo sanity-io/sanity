@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {map, tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -90,7 +90,9 @@ export function ArrayOfObjectsField(props: {
   )
 
   const valueRef = useRef(member.field.value)
-  valueRef.current = member.field.value
+  useEffect(() => {
+    valueRef.current = member.field.value
+  }, [member.field.value])
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
@@ -102,10 +104,10 @@ export function ArrayOfObjectsField(props: {
 
       if (isRemovingLastItem) {
         // apply the patch to the current value
-        const result = applyAll(valueRef.current || [], patches)
+        valueRef.current = applyAll(valueRef.current || [], patches)
 
         // if the result is an empty array
-        if (Array.isArray(result) && !result.length) {
+        if (Array.isArray(valueRef.current) && !valueRef.current.length) {
           // then unset the array field
           onChange(PatchEvent.from(unset([member.name])))
           return
