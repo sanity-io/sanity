@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {isEmpty} from '@sanity/util/content'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -41,6 +41,12 @@ export const ObjectField = function ObjectField(props: {
 
   const {member, renderField, renderInput, renderItem, renderPreview} = props
   const focusRef = useRef<{focus: () => void}>()
+  const pendingValue = useRef(member.field.value)
+
+  useEffect(() => {
+    // if the props value has changed, then we should update the pending value
+    pendingValue.current = member.field.value
+  }, [member.field.value])
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -66,32 +72,19 @@ export const ObjectField = function ObjectField(props: {
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
       const isRoot = member.field.path.length === 0
-      const patches = PatchEvent.from(event).patches
-      // if the patch is an unset patch that targets a field in the object (as opposed to unsetting a field somewhere deeper)
-      const isRemovingLastItem = patches.some(
-        (patch) => patch.type === 'unset' && patch.path.length === 1
-      )
 
       // this handle touches on more than just object fields, documents included
       // if we're at a "document" level, then we want to have a way to skip the following logic
       if (!isRoot) {
-        if (isRemovingLastItem) {
-          // apply the patch to the current value
-          const result = applyAll(member.field.value || {}, patches)
+        const patches = PatchEvent.from(event).patches
+        // apply the patch to the current value
+        // needs to update the current value since there might have been a patch
+        pendingValue.current = applyAll(pendingValue.current || {}, patches)
 
-          // only run this if the result is an empty object with only _type
-          if (result && result._type && Object.keys(result).length === 1) {
-            // this happens, for example, when a type is made of objects and all values from
-            // that object were removed except the _type key
-            // by removing the _type key completely it allows for the field to be completely removed
-            onChange(PatchEvent.from(unset(['_type'])).prefixAll(member.name))
-          }
-
-          // if the result after applying the patches is empty, then we should unset the field
-          if (isEmpty(result)) {
-            onChange(PatchEvent.from(unset([member.name])))
-            return
-          }
+        // if the result after applying the patches is empty, then we should unset the field
+        if (isEmpty(pendingValue.current)) {
+          onChange(PatchEvent.from(unset([member.name])))
+          return
         }
       }
       // otherwise apply the patch
@@ -101,7 +94,7 @@ export const ObjectField = function ObjectField(props: {
           .prefixAll(member.name)
       )
     },
-    [onChange, member]
+    [onChange, member, pendingValue]
   )
 
   const handleCollapse = useCallback(() => {
