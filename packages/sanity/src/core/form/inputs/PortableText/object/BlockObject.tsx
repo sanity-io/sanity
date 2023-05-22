@@ -6,7 +6,14 @@ import {
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps, Box} from '@sanity/ui'
-import React, {ComponentType, PropsWithChildren, useCallback, useMemo, useState} from 'react'
+import React, {
+  ComponentType,
+  PropsWithChildren,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {PatchArg} from '../../../patch'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
@@ -143,14 +150,15 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const isOpen = Boolean(memberItem?.member.open)
-  const input = memberItem?.input
+  const inputRef = useRef(memberItem?.input)
+  inputRef.current = memberItem?.input // Update at every render as other BlockObjectProps updates
 
   const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
   const componentProps: BlockProps = useMemo(
     () => ({
       __unstable_boundaryElement: boundaryElement || undefined,
       __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
-      children: input,
+      children: inputRef.current,
       focused,
       markers,
       onClose,
@@ -172,7 +180,6 @@ export function BlockObject(props: BlockObjectProps) {
     [
       boundaryElement,
       focused,
-      input,
       isOpen,
       markers,
       memberItem?.elementRef,

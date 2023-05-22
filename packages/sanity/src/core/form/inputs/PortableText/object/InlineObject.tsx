@@ -4,7 +4,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Tooltip} from '@sanity/ui'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
@@ -75,13 +75,17 @@ export const InlineObject = (props: InlineObjectProps) => {
   }, [memberItem, onItemOpen])
 
   const isOpen = Boolean(memberItem?.member.open)
-  const input = memberItem?.input
-  const presence = memberItem?.node.presence?.length ? memberItem.node.presence : EMPTY_ARRAY
+
+  const inputRef = useRef(memberItem?.input)
+  inputRef.current = memberItem?.input // Update at every render as other Annotation props updates
+
+  const presence = memberItem?.node.presence || EMPTY_ARRAY
+
   const componentProps: BlockProps | undefined = useMemo(
     () => ({
       __unstable_boundaryElement: boundaryElement || undefined,
       __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
-      children: input,
+      children: inputRef.current,
       focused,
       onClose: onItemClose,
       onOpen,
@@ -104,7 +108,7 @@ export const InlineObject = (props: InlineObjectProps) => {
     [
       boundaryElement,
       focused,
-      input,
+      inputRef,
       isOpen,
       markers,
       memberItem,
