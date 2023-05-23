@@ -57,22 +57,31 @@ export const InlineObject = (props: InlineObjectProps) => {
   const parentSchemaType = editor.schemaTypes.block
   const CustomComponent = schemaType.components?.inlineBlock
   const hasMarkers = markers.length > 0
+  const selfSelection = useMemo(
+    (): EditorSelection => ({
+      anchor: {path: relativePath, offset: 0},
+      focus: {path: relativePath, offset: 0},
+    }),
+    [relativePath]
+  )
 
   const onRemove = useCallback(() => {
-    const sel: EditorSelection = {
-      focus: {path: relativePath, offset: 0},
-      anchor: {path: relativePath, offset: 0},
-    }
-    PortableTextEditor.delete(editor, sel, {mode: 'children'})
-    // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
-    setTimeout(() => PortableTextEditor.focus(editor))
-  }, [editor, relativePath])
+    PortableTextEditor.delete(editor, selfSelection, {mode: 'children'})
+    PortableTextEditor.focus(editor)
+  }, [selfSelection, editor])
 
   const onOpen = useCallback(() => {
     if (memberItem) {
-      onItemOpen(memberItem?.node.path)
+      PortableTextEditor.blur(editor)
+      onItemOpen(memberItem.node.path)
     }
-  }, [memberItem, onItemOpen])
+  }, [editor, onItemOpen, memberItem])
+
+  const onClose = useCallback(() => {
+    onItemClose()
+    PortableTextEditor.select(editor, selfSelection)
+    PortableTextEditor.focus(editor)
+  }, [onItemClose, editor, selfSelection])
 
   const isOpen = Boolean(memberItem?.member.open)
   const input = memberItem?.input
@@ -87,7 +96,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       __unstable_referenceElement: referenceElement || undefined,
       children: input,
       focused,
-      onClose: onItemClose,
+      onClose,
       onOpen,
       onPathFocus,
       onRemove,
@@ -183,7 +192,6 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
     onOpen,
     onRemove,
     open,
-    path,
     readOnly,
     renderPreview,
     schemaType,
@@ -191,7 +199,6 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
     validation,
     value,
   } = props
-  const editor = usePortableTextEditor()
   const hasMarkers = markers.length > 0
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const popoverTitle = schemaType?.title || schemaType.name
@@ -230,8 +237,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
 
   const onClosePopover = useCallback(() => {
     setPopoverOpen(false)
-    PortableTextEditor.focus(editor)
-  }, [editor])
+  }, [])
 
   return (
     <>
@@ -273,7 +279,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
           onClose={onClose}
-          path={path}
+          autofocus={focused}
           referenceElement={__unstable_referenceElement}
           schemaType={schemaType}
         >
