@@ -107,6 +107,7 @@ import crossDatasetReference, {crossDatasetSubtype} from './standard/crossDatase
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
 import fieldGroupsWithFieldsets from './debug/fieldGroupsWithFieldsets'
+import ptReference from './debug/ptReference'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -203,6 +204,7 @@ export const schemaTypes = [
   previewSelectBugRepro,
   ptAllTheBellsAndWhistlesType,
   ptCustomMarkersTestType,
+  ptReference,
   radio,
   readOnly,
   recursive,

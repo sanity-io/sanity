@@ -72,6 +72,7 @@ export const DEBUG_INPUT_TYPES = [
   'validationTest',
   'allNativeInputComponents',
   'scrollBug',
+  'ptReference',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
