@@ -1,11 +1,8 @@
-import {ArraySchemaType, PortableTextBlock} from '@sanity/types'
+import {PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
-  OnCopyFn,
-  OnPasteFn,
   Patch as EditorPatch,
   PortableTextEditor,
-  HotkeyOptions,
   InvalidValue,
   EditorSelection,
   Patch,
@@ -25,7 +22,7 @@ import {Box, useToast} from '@sanity/ui'
 import {debounce} from 'lodash'
 import {FormPatch, SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
-import type {ArrayOfObjectsInputProps, PortableTextMarker, RenderCustomMarkers} from '../../types'
+import type {PortableTextInputProps} from '../../types'
 import {EMPTY_ARRAY} from '../../../util'
 import {pathToString} from '../../../field'
 import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
@@ -34,7 +31,6 @@ import {FIXME} from '../../../FIXME'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
-import {RenderBlockActionsCallback} from './types'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {_isArrayOfObjectsFieldMember, _isBlockType} from './_helpers'
@@ -47,19 +43,6 @@ export interface PortableTextMemberItem {
   node: ObjectFormNode
   elementRef?: React.MutableRefObject<PortableTextEditorElement> | undefined
   input?: ReactNode
-}
-
-/**
- * @beta
- */
-export interface PortableTextInputProps
-  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
-  hotkeys?: HotkeyOptions
-  markers?: PortableTextMarker[]
-  onCopy?: OnCopyFn
-  onPaste?: OnPasteFn
-  renderBlockActions?: RenderBlockActionsCallback
-  renderCustomMarkers?: RenderCustomMarkers
 }
 
 /**
