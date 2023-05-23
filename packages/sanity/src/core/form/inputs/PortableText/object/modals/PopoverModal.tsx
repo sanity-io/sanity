@@ -11,7 +11,7 @@ import {
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
@@ -38,7 +38,6 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 
 export function PopoverEditDialog(props: PopoverEditDialogProps) {
   const {referenceElement, boundaryElement} = props
   const [open, setOpen] = useState(false)
-  const popoverRef = useRef<HTMLDivElement | null>(null)
   const {element} = useBoundaryElement()
 
   // This hook is here to set open after the initial render.
@@ -58,7 +57,6 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
       open={open}
       placement="bottom"
       portal="default"
-      ref={popoverRef}
       referenceElement={referenceElement}
     />
   )
