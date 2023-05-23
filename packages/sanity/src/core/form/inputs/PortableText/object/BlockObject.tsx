@@ -76,6 +76,15 @@ export function BlockObject(props: BlockObjectProps) {
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
   const memberItem = usePortableTextMemberItem(pathToString(path))
+  const isDeleting = useRef<boolean>(false)
+
+  const selfSelection = useMemo(
+    (): EditorSelection => ({
+      anchor: {path: relativePath, offset: 0},
+      focus: {path: relativePath, offset: 0},
+    }),
+    [relativePath]
+  )
 
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
@@ -87,18 +96,30 @@ export function BlockObject(props: BlockObjectProps) {
 
   const onClose = useCallback(() => {
     onItemClose()
+    PortableTextEditor.select(editor, selfSelection)
     PortableTextEditor.focus(editor)
-  }, [editor, onItemClose])
+  }, [onItemClose, editor, selfSelection])
 
   const onRemove = useCallback(() => {
-    const sel: EditorSelection = {
-      focus: {path: relativePath, offset: 0},
-      anchor: {path: relativePath, offset: 0},
+    // Guard against clicking "Delete" multiple times.
+    if (isDeleting.current) {
+      return
     }
-    PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
-    // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
-    setTimeout(() => PortableTextEditor.focus(editor))
-  }, [editor, relativePath])
+    PortableTextEditor.delete(editor, selfSelection, {mode: 'blocks'})
+    isDeleting.current = true
+  }, [editor, selfSelection])
+
+  // Focus the editor if this object is removed because it was deleted.
+  // This is some special code needed for how the Menu for the block object
+  // is taking focus while clicking "Delete" from the menu.
+  useEffect(
+    () => () => {
+      if (isDeleting.current) {
+        PortableTextEditor.focus(editor)
+      }
+    },
+    [editor]
+  )
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
@@ -155,6 +176,7 @@ export function BlockObject(props: BlockObjectProps) {
       children: input,
       focused,
       markers,
+      nodeFocused: memberItem?.node.focused,
       onClose,
       onOpen,
       onPathFocus,
@@ -278,8 +300,8 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     onClose,
     onOpen,
     onRemove,
+    nodeFocused,
     open,
-    path,
     readOnly,
     renderPreview,
     selected,
@@ -322,8 +344,8 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
         {renderPreview({
           actions: (
             <BlockObjectActionsMenu
-              focused={focused}
               isOpen={open}
+              focused={focused}
               onOpen={onOpen}
               onRemove={onRemove}
               readOnly={readOnly}
@@ -341,7 +363,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="dialog"
           onClose={onClose}
-          path={path}
+          autofocus={nodeFocused}
           schemaType={schemaType}
           referenceElement={__unstable_referenceElement}
         >

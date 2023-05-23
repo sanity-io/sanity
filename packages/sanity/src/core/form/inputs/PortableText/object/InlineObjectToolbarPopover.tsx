@@ -1,4 +1,4 @@
-import React, {useRef, useCallback, useMemo} from 'react'
+import React, {useRef, useCallback, useMemo, MouseEvent} from 'react'
 import {
   Box,
   Button,
@@ -34,6 +34,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   const {onClosePopover, onEdit, onDelete, referenceElement, boundaryElement, title, open} = props
   const {sanity} = useTheme()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
+  const deleteButtonRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
 
   // Close floating toolbar on Escape
@@ -49,6 +50,21 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
       },
       [onClosePopover]
     )
+  )
+
+  const handleDelete = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (deleteButtonRef.current?.disabled) {
+        return
+      }
+      event.preventDefault()
+      event.stopPropagation()
+      onDelete(event)
+      if (deleteButtonRef.current) {
+        deleteButtonRef.current.disabled = true
+      }
+    },
+    [onDelete]
   )
 
   const popoverContent = useMemo(
@@ -69,17 +85,18 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             alt="Edit object"
           />
           <Button
+            ref={deleteButtonRef}
             icon={TrashIcon}
             mode="bleed"
             padding={2}
-            onClick={onDelete}
+            onClick={handleDelete}
             tone="critical"
             alt="Remove object"
           />
         </Inline>
       </Box>
     ),
-    [onDelete, onEdit, title]
+    [handleDelete, onEdit, title]
   )
 
   return (

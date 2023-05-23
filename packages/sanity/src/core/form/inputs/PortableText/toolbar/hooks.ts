@@ -41,9 +41,9 @@ export function useActionGroups({
   const editor = usePortableTextEditor()
 
   const handleInsertAnnotation = useCallback(
-    async (type: ObjectSchemaType) => {
-      const initialValue = await resolveInitialValue(type)
-      const paths = PortableTextEditor.addAnnotation(editor, type as FIXME, initialValue)
+    async (schemaType: ObjectSchemaType) => {
+      const initialValue = await resolveInitialValue(schemaType)
+      const paths = PortableTextEditor.addAnnotation(editor, schemaType, initialValue)
       if (paths && paths.markDefPath) {
         onMemberOpen(paths.markDefPath)
       }

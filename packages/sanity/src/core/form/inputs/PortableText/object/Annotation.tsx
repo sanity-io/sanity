@@ -51,6 +51,8 @@ export function Annotation(props: AnnotationProps) {
     () => path.slice(0, path.length - 2).concat(['markDefs', {_key: value._key}]),
     [path, value._key]
   )
+  const [spanElm, setSpanElm] = useState<HTMLSpanElement | null>(null)
+  const spanPath: Path = useMemo(() => path.slice(path.length - 3, path.length), [path])
   const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
   const {validation} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
@@ -66,8 +68,16 @@ export function Annotation(props: AnnotationProps) {
 
   const onClose = useCallback(() => {
     onItemClose()
+    // Keep track of any previous offsets on the spanNode before we select it.
+    const sel = PortableTextEditor.getSelection(editor)
+    const focusOffset = sel?.focus.path && isEqual(sel.focus.path, spanPath) && sel.focus.offset
+    const anchorOffset = sel?.anchor.path && isEqual(sel.anchor.path, spanPath) && sel.anchor.offset
+    PortableTextEditor.select(editor, {
+      anchor: {path: spanPath, offset: anchorOffset || 0},
+      focus: {path: spanPath, offset: focusOffset || 0},
+    })
     PortableTextEditor.focus(editor)
-  }, [editor, onItemClose])
+  }, [editor, spanPath, onItemClose])
 
   const onRemove = useCallback(() => {
     PortableTextEditor.removeAnnotation(editor, schemaType)
@@ -144,6 +154,7 @@ export function Annotation(props: AnnotationProps) {
       referenceElement,
       schemaType,
       selected,
+      spanElm,
       text,
       validation,
       value,
@@ -154,9 +165,19 @@ export function Annotation(props: AnnotationProps) {
     | ComponentType<BlockAnnotationProps>
     | undefined
 
+  const setRef = useCallback(
+    (elm: HTMLSpanElement) => {
+      if (memberItem?.elementRef) {
+        memberItem.elementRef.current = elm
+      }
+      setSpanElm(elm) // update state here so the reference element is available on first render
+    },
+    [memberItem]
+  )
+
   return useMemo(
     () => (
-      <span ref={memberItem?.elementRef} style={debugRender()}>
+      <span ref={setRef} style={debugRender()}>
         {CustomComponent ? (
           <CustomComponent {...componentProps} />
         ) : (
@@ -164,7 +185,7 @@ export function Annotation(props: AnnotationProps) {
         )}
       </span>
     ),
-    [CustomComponent, componentProps, memberItem?.elementRef]
+    [CustomComponent, componentProps, setRef]
   )
 }
 
@@ -178,7 +199,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     onOpen,
     onRemove,
     open,
-    path,
+    focused,
     readOnly,
     schemaType,
     textElement,
@@ -226,7 +247,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
           onClose={onClose}
-          path={path}
+          autofocus={focused}
           referenceElement={__unstable_referenceElement}
           schemaType={schemaType}
         >

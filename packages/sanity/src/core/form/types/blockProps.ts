@@ -13,9 +13,8 @@ import {
 } from '@sanity/types'
 import {ReactElement, ReactNode} from 'react'
 import {FormNodePresence} from '../../presence'
-import {ArrayOfObjectsItemMember, ObjectArrayFormNode, PortableTextMarker} from '../..'
+import {PortableTextMarker} from '../..'
 import {RenderPreviewCallback} from './renderCallback'
-import {ObjectItem} from './itemProps'
 
 /** @beta */
 export interface BlockDecoratorProps {
