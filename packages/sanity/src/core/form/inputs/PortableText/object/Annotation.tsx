@@ -1,7 +1,7 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
 import {Tooltip} from '@sanity/ui'
-import React, {ComponentType, useCallback, useMemo, useRef} from 'react'
+import React, {ComponentType, useCallback, useMemo, useRef, useState} from 'react'
 import {pathToString} from '../../../../field'
 import {BlockAnnotationProps, RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
@@ -51,6 +51,7 @@ export function Annotation(props: AnnotationProps) {
     () => path.slice(0, path.length - 2).concat(['markDefs', {_key: value._key}]),
     [path, value._key]
   )
+  const [spanElm, setSpanElm] = useState<HTMLSpanElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
   const {validation} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
@@ -105,7 +106,7 @@ export function Annotation(props: AnnotationProps) {
   const componentProps = useMemo(
     (): BlockAnnotationProps => ({
       __unstable_boundaryElement: boundaryElement || undefined,
-      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
+      __unstable_referenceElement: spanElm || undefined,
       children: inputRef.current,
       focused,
       markers,
@@ -129,11 +130,10 @@ export function Annotation(props: AnnotationProps) {
       boundaryElement,
       editor.schemaTypes.block,
       focused,
-      inputRef,
       isOpen,
       markers,
       markersToolTip,
-      memberItem,
+      memberItem?.node.path,
       onClose,
       onOpen,
       onPathFocus,
@@ -143,6 +143,7 @@ export function Annotation(props: AnnotationProps) {
       readOnly,
       schemaType,
       selected,
+      spanElm,
       text,
       validation,
       value,
@@ -153,9 +154,19 @@ export function Annotation(props: AnnotationProps) {
     | ComponentType<BlockAnnotationProps>
     | undefined
 
+  const setRef = useCallback(
+    (elm: HTMLSpanElement) => {
+      if (memberItem?.elementRef) {
+        memberItem.elementRef.current = elm
+      }
+      setSpanElm(elm) // update state here so the reference element is available on first render
+    },
+    [memberItem]
+  )
+
   return useMemo(
     () => (
-      <span ref={memberItem?.elementRef} style={debugRender()}>
+      <span ref={setRef} style={debugRender()}>
         {CustomComponent ? (
           <CustomComponent {...componentProps} />
         ) : (
@@ -163,7 +174,7 @@ export function Annotation(props: AnnotationProps) {
         )}
       </span>
     ),
-    [CustomComponent, componentProps, memberItem?.elementRef]
+    [CustomComponent, componentProps, setRef]
   )
 }
 
