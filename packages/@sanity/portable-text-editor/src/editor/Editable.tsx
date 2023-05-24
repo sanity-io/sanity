@@ -283,22 +283,28 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [change$, onPaste, portableTextEditor, schemaTypes, slateEditor]
   )
 
-  const handleOnFocus = useCallback(() => {
-    const selection = PortableTextEditor.getSelection(portableTextEditor)
-    change$.next({type: 'focus'})
-    const newSelection = PortableTextEditor.getSelection(portableTextEditor)
-    // If the selection is the same, emit it explicitly here as there is no actual onChange event triggered.
-    if (selection === newSelection) {
-      change$.next({
-        type: 'selection',
-        selection,
-      })
-    }
-  }, [change$, portableTextEditor])
+  const handleOnFocus: React.FocusEventHandler<HTMLDivElement> = useCallback(
+    (event) => {
+      const selection = PortableTextEditor.getSelection(portableTextEditor)
+      change$.next({type: 'focus', event})
+      const newSelection = PortableTextEditor.getSelection(portableTextEditor)
+      // If the selection is the same, emit it explicitly here as there is no actual onChange event triggered.
+      if (selection === newSelection) {
+        change$.next({
+          type: 'selection',
+          selection,
+        })
+      }
+    },
+    [change$, portableTextEditor]
+  )
 
-  const handleOnBlur = useCallback(() => {
-    change$.next({type: 'blur'})
-  }, [change$])
+  const handleOnBlur: React.FocusEventHandler<HTMLDivElement> = useCallback(
+    (event) => {
+      change$.next({type: 'blur', event})
+    },
+    [change$]
+  )
 
   const handleOnBeforeInput = useCallback(
     (event: Event) => {
