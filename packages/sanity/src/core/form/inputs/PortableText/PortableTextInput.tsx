@@ -59,6 +59,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     markers = EMPTY_ARRAY,
     members,
     onCopy,
+    onItemRemove,
     onInsert,
     onPaste,
     onPathFocus,
@@ -80,10 +81,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
     },
   }))
-
-  // TODO: why is this not stable?
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const _onItemRemove = useMemo(() => props.onItemRemove, [])
 
   const {subscribe} = usePatches({path})
   const editorRef = useRef<PortableTextEditor | null>(null)
@@ -324,7 +321,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 isActive={isActive}
                 isFullscreen={isFullscreen}
                 onActivate={handleActivate}
-                onItemRemove={_onItemRemove}
+                onItemRemove={onItemRemove}
                 onCopy={onCopy}
                 onInsert={onInsert}
                 onPaste={onPaste}
