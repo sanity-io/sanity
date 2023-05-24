@@ -8,12 +8,14 @@ import {
   NumberSchemaType,
   ObjectSchemaType,
   Path,
+  PortableTextBlock,
   ReferenceValue,
   SchemaType,
   SlugValue,
   StringSchemaType,
 } from '@sanity/types'
 import React, {ComponentType, FocusEventHandler, FormEventHandler} from 'react'
+import {HotkeyOptions, OnCopyFn, OnPasteFn} from '@sanity/portable-text-editor'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
@@ -26,6 +28,7 @@ import {
 
 import {UploaderResolver} from '../studio'
 import {FormFieldGroup} from '../store'
+import {RenderBlockActionsCallback} from '../inputs'
 import {
   RenderArrayOfObjectsItemCallback,
   RenderArrayOfPrimitivesItemCallback,
@@ -34,7 +37,7 @@ import {
   RenderPreviewCallback,
 } from './renderCallback'
 import {ArrayInputInsertEvent, ArrayInputMoveItemEvent, UploadEvent} from './event'
-import {ArrayInputFunctionsProps} from './_transitional'
+import {ArrayInputFunctionsProps, PortableTextMarker, RenderCustomMarkers} from './_transitional'
 
 /** @beta */
 export interface BaseInputProps {
@@ -286,7 +289,22 @@ export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaTy
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps
 
 /** @beta */
+export interface PortableTextInputProps
+  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
+  hotkeys?: HotkeyOptions
+  markers?: PortableTextMarker[]
+  onCopy?: OnCopyFn
+  onPaste?: OnPasteFn
+  renderBlockActions?: RenderBlockActionsCallback
+  renderCustomMarkers?: RenderCustomMarkers
+}
+
+/** @beta */
 export type InputProps =
+  | ArrayOfObjectsInputProps
+  | ArrayOfPrimitivesInputProps
+  | BooleanInputProps
+  | NumberInputProps
   | ObjectInputProps
   | ObjectInputProps<CrossDatasetReferenceValue>
   | ObjectInputProps<FileValue>
@@ -294,8 +312,5 @@ export type InputProps =
   | ObjectInputProps<ImageValue>
   | ObjectInputProps<ReferenceValue>
   | ObjectInputProps<SlugValue>
-  | ArrayOfObjectsInputProps
-  | ArrayOfPrimitivesInputProps
+  | PortableTextInputProps
   | StringInputProps
-  | BooleanInputProps
-  | NumberInputProps
