@@ -199,16 +199,18 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     onOpen,
     onRemove,
     open,
-    focused,
+    path,
     readOnly,
     schemaType,
     textElement,
     validation,
+    value,
   } = props
   const isLink = schemaType.name === 'link'
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
   const hasMarkers = markers.length > 0
+  const autofocus = isEqual(path.slice(-2), ['markDefs', {_key: value._key}])
 
   const toneKey = useMemo(() => {
     if (hasError) {
@@ -247,7 +249,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
           onClose={onClose}
-          autofocus={focused}
+          autofocus={autofocus}
           referenceElement={__unstable_referenceElement}
           schemaType={schemaType}
         >

@@ -176,7 +176,6 @@ export function BlockObject(props: BlockObjectProps) {
       children: input,
       focused,
       markers,
-      nodeFocused: memberItem?.node.focused,
       onClose,
       onOpen,
       onPathFocus,
@@ -300,8 +299,8 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     onClose,
     onOpen,
     onRemove,
-    nodeFocused,
     open,
+    path,
     readOnly,
     renderPreview,
     selected,
@@ -315,6 +314,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
   const hasMarkers = Boolean(markers.length > 0)
   const tone = selected || focused ? 'primary' : 'default'
+  const autofocus = isEqual(path.slice(-1), [{_key: value._key}])
 
   const handleDoubleClickToOpen = useCallback(
     (e: React.MouseEvent<Element, MouseEvent>) => {
@@ -363,7 +363,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="dialog"
           onClose={onClose}
-          autofocus={nodeFocused}
+          autofocus={autofocus}
           schemaType={schemaType}
           referenceElement={__unstable_referenceElement}
         >
