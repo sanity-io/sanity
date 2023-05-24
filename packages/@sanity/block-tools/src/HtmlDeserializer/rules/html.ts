@@ -177,7 +177,7 @@ export default function createHTMLRules(
           children: next(el.childNodes),
         }
       },
-    }, // Deal with decorators
+    }, // Deal with decorators - this is a limited set of known html elements that we know how to deserialize
     {
       deserialize(el, next) {
         const decorator = HTML_DECORATOR_TAGS[tagName(el) || '']
