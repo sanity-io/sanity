@@ -1,22 +1,17 @@
-import {
-  EditorSelection,
-  PortableTextEditor,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
 
 export function ObjectEditModal(props: {
+  autofocus?: boolean
   boundaryElement: HTMLElement | undefined
   children: React.ReactNode
   defaultType: 'dialog' | 'popover'
   onClose: () => void
   referenceElement: HTMLElement | undefined
   schemaType: ObjectSchemaType
-  autofocus?: boolean
 }) {
   const {onClose, defaultType, referenceElement, boundaryElement, schemaType, autofocus} = props
 
@@ -34,6 +29,7 @@ export function ObjectEditModal(props: {
   if (modalType === 'popover') {
     return (
       <PopoverEditDialog
+        autofocus={autofocus}
         boundaryElement={boundaryElement}
         onClose={handleClose}
         referenceElement={referenceElement}
