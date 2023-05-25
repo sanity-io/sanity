@@ -240,8 +240,8 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
       <AnnotationToolbarPopover
         referenceElement={__unstable_referenceElement}
         boundaryElement={__unstable_boundaryElement}
-        onEdit={onOpen}
-        onDelete={onRemove}
+        onOpen={onOpen}
+        onRemove={onRemove}
         title={schemaType.title || schemaType.name}
       />
       {open && (

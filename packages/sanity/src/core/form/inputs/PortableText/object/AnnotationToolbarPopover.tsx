@@ -22,14 +22,14 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 
 
 interface AnnotationToolbarPopoverProps {
   boundaryElement?: HTMLElement
-  onDelete: () => void
-  onEdit: () => void
+  onOpen: () => void
+  onRemove: () => void
   referenceElement?: HTMLElement
   title: string
 }
 
 export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
-  const {boundaryElement, onDelete, onEdit, referenceElement, title} = props
+  const {boundaryElement, onOpen, onRemove, referenceElement, title} = props
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [selection, setSelection] = useState<{
@@ -119,13 +119,13 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
 
   const handleEditButtonClicked = useCallback(() => {
     setPopoverOpen(false)
-    onEdit()
-  }, [onEdit])
+    onOpen()
+  }, [onOpen])
 
   const handleRemoveButtonClicked = useCallback(() => {
     setPopoverOpen(false)
-    onDelete()
-  }, [onDelete])
+    onRemove()
+  }, [onRemove])
 
   useEffect(() => {
     if (!popoverOpen) {
