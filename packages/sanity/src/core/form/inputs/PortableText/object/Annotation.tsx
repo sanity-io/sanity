@@ -11,6 +11,7 @@ import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {debugRender} from '../debugRender'
+import {useChildPresence} from '../../../studio/contexts/Presence'
 import {EMPTY_ARRAY} from '../../../../util'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 import {Root, TooltipBox} from './Annotation.styles'
@@ -111,7 +112,11 @@ export function Annotation(props: AnnotationProps) {
     [Markers, markers, renderCustomMarkers, text, validation]
   )
 
-  const presence = memberItem?.node.presence || EMPTY_ARRAY
+  const presence = useChildPresence(path, true)
+  const rootPresence = useMemo(
+    () => presence.filter((p) => isEqual(p.path, path)),
+    [path, presence]
+  )
 
   const isOpen = Boolean(memberItem?.member.open)
   const input = memberItem?.input
@@ -133,7 +138,7 @@ export function Annotation(props: AnnotationProps) {
       open: isOpen,
       parentSchemaType: editor.schemaTypes.block,
       path: nodePath,
-      presence,
+      presence: rootPresence,
       readOnly: Boolean(readOnly),
       renderDefault: DefaultAnnotationComponent,
       schemaType,
@@ -156,9 +161,9 @@ export function Annotation(props: AnnotationProps) {
       onOpen,
       onPathFocus,
       onRemove,
-      presence,
       readOnly,
       referenceElement,
+      rootPresence,
       schemaType,
       selected,
       text,
