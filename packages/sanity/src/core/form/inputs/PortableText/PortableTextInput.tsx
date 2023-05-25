@@ -199,9 +199,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
 
       if (existingItem) {
+        // Only update the input if the node is open or the value has changed
+        // This is a performance optimization.
+        if (item.member.open || existingItem.node.value !== item.node.value) {
+          existingItem.input = input
+        }
         existingItem.member = item.member
         existingItem.node = item.node
-        existingItem.input = input
         return existingItem
       }
 

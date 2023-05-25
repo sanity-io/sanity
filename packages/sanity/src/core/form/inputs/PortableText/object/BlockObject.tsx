@@ -6,14 +6,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps, Box} from '@sanity/ui'
-import React, {
-  ComponentType,
-  PropsWithChildren,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, {ComponentType, PropsWithChildren, useCallback, useMemo, useState} from 'react'
 import {PatchArg} from '../../../patch'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
@@ -150,15 +143,16 @@ export function BlockObject(props: BlockObjectProps) {
   )
 
   const isOpen = Boolean(memberItem?.member.open)
-  const inputRef = useRef(memberItem?.input)
-  inputRef.current = memberItem?.input // Update at every render as other BlockObjectProps updates
+  const input = memberItem?.input
+  const nodePath = memberItem?.node.path || EMPTY_ARRAY
+  const referenceElement = memberItem?.elementRef?.current
 
   const CustomComponent = schemaType.components?.block as ComponentType<BlockProps> | undefined
   const componentProps: BlockProps = useMemo(
     () => ({
       __unstable_boundaryElement: boundaryElement || undefined,
-      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
-      children: inputRef.current,
+      __unstable_referenceElement: referenceElement || undefined,
+      children: input,
       focused,
       markers,
       onClose,
@@ -167,7 +161,7 @@ export function BlockObject(props: BlockObjectProps) {
       onRemove,
       open: isOpen,
       parentSchemaType,
-      path: memberItem?.node.path || EMPTY_ARRAY,
+      path: nodePath,
       presence,
       readOnly: Boolean(readOnly),
       renderDefault: DefaultBlockObjectComponent,
@@ -179,16 +173,17 @@ export function BlockObject(props: BlockObjectProps) {
     }),
     [
       boundaryElement,
+      referenceElement,
+      input,
       focused,
-      isOpen,
       markers,
-      memberItem?.elementRef,
-      memberItem?.node.path,
       onClose,
       onOpen,
       onPathFocus,
       onRemove,
+      isOpen,
       parentSchemaType,
+      nodePath,
       presence,
       readOnly,
       renderPreview,

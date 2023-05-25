@@ -1,7 +1,7 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
 import {Tooltip} from '@sanity/ui'
-import React, {ComponentType, useCallback, useMemo, useRef} from 'react'
+import React, {ComponentType, useCallback, useMemo} from 'react'
 import {pathToString} from '../../../../field'
 import {BlockAnnotationProps, RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
@@ -99,14 +99,15 @@ export function Annotation(props: AnnotationProps) {
   const presence = memberItem?.node.presence || EMPTY_ARRAY
 
   const isOpen = Boolean(memberItem?.member.open)
-  const inputRef = useRef(memberItem?.input)
-  inputRef.current = memberItem?.input // Update at every render as other Annotation props updates
+  const input = memberItem?.input
+  const nodePath = memberItem?.node.path || EMPTY_ARRAY
+  const referenceElement = memberItem?.elementRef?.current
 
   const componentProps = useMemo(
     (): BlockAnnotationProps => ({
       __unstable_boundaryElement: boundaryElement || undefined,
-      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
-      children: inputRef.current,
+      __unstable_referenceElement: referenceElement || undefined,
+      children: input,
       focused,
       markers,
       onClose,
@@ -115,7 +116,7 @@ export function Annotation(props: AnnotationProps) {
       onRemove,
       open: isOpen,
       parentSchemaType: editor.schemaTypes.block,
-      path: memberItem?.node.path || path,
+      path: nodePath,
       presence,
       readOnly: Boolean(readOnly),
       renderDefault: DefaultAnnotationComponent,
@@ -129,18 +130,18 @@ export function Annotation(props: AnnotationProps) {
       boundaryElement,
       editor.schemaTypes.block,
       focused,
-      inputRef,
+      input,
       isOpen,
       markers,
       markersToolTip,
-      memberItem,
+      nodePath,
       onClose,
       onOpen,
       onPathFocus,
       onRemove,
-      path,
       presence,
       readOnly,
+      referenceElement,
       schemaType,
       selected,
       text,
