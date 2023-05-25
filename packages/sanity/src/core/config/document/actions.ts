@@ -77,10 +77,17 @@ export interface DocumentActionPopoverDialogProps {
 }
 
 /** @beta */
+export interface DocumentActionCustomDialogComponentProps {
+  type: 'custom'
+  component: React.ReactNode
+}
+
+/** @beta */
 export type DocumentActionDialogProps =
   | DocumentActionConfirmDialogProps
   | DocumentActionPopoverDialogProps
   | DocumentActionModalDialogProps
+  | DocumentActionCustomDialogComponentProps
 
 /** @beta */
 export interface DocumentActionDescription {
