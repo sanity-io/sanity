@@ -99,9 +99,11 @@ export function BlockObject(props: BlockObjectProps) {
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
 
   const onOpen = useCallback(() => {
-    PortableTextEditor.blur(editor)
-    onItemOpen(path)
-  }, [editor, onItemOpen, path])
+    if (memberItem) {
+      PortableTextEditor.blur(editor)
+      onItemOpen(memberItem.node.path)
+    }
+  }, [editor, onItemOpen, memberItem])
 
   const onClose = useCallback(() => {
     onItemClose()
