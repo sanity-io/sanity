@@ -4,7 +4,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Tooltip} from '@sanity/ui'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
@@ -75,17 +75,17 @@ export const InlineObject = (props: InlineObjectProps) => {
   }, [memberItem, onItemOpen])
 
   const isOpen = Boolean(memberItem?.member.open)
-
-  const inputRef = useRef(memberItem?.input)
-  inputRef.current = memberItem?.input // Update at every render as other Annotation props updates
+  const input = memberItem?.input
+  const nodePath = memberItem?.node.path || EMPTY_ARRAY
+  const referenceElement = memberItem?.elementRef?.current
 
   const presence = memberItem?.node.presence || EMPTY_ARRAY
 
   const componentProps: BlockProps | undefined = useMemo(
     () => ({
       __unstable_boundaryElement: boundaryElement || undefined,
-      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
-      children: inputRef.current,
+      __unstable_referenceElement: referenceElement || undefined,
+      children: input,
       focused,
       onClose: onItemClose,
       onOpen,
@@ -95,7 +95,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       markers,
       member: memberItem?.member,
       parentSchemaType,
-      path: memberItem?.member.item.path || EMPTY_ARRAY,
+      path: nodePath,
       presence,
       readOnly: Boolean(readOnly),
       renderDefault: DefaultInlineObjectComponent,
@@ -108,10 +108,11 @@ export const InlineObject = (props: InlineObjectProps) => {
     [
       boundaryElement,
       focused,
-      inputRef,
+      input,
       isOpen,
       markers,
-      memberItem,
+      memberItem?.member,
+      nodePath,
       onItemClose,
       onOpen,
       onPathFocus,
@@ -119,6 +120,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       parentSchemaType,
       presence,
       readOnly,
+      referenceElement,
       renderPreview,
       schemaType,
       selected,
