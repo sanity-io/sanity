@@ -41,11 +41,15 @@ export function useTrackFocusPath(props: Props): void {
         // Scroll the boundary element into view (the scrollable element itself)
         scrollIntoView(boundaryElement, {
           scrollMode: 'if-needed',
+          block: 'start',
+          inline: 'start',
         })
         // Scroll the member into view (the member within the scroll-boundary)
-        scrollIntoView(openItem.elementRef?.current, {
+        scrollIntoView(openItem.elementRef.current, {
           scrollMode: 'if-needed',
           boundary: boundaryElement,
+          block: 'start',
+          inline: 'start',
         })
       }
       // If the focusPath i targeting a text block (with focusPath on the block itself),
