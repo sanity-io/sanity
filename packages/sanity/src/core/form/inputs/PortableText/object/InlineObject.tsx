@@ -6,6 +6,7 @@ import {
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Tooltip} from '@sanity/ui'
+import {isEqual} from '@sanity/util/paths'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -13,6 +14,7 @@ import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
 import {EMPTY_ARRAY} from '../../../../util'
+import {useChildPresence} from '../../../studio/contexts/Presence'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
@@ -89,7 +91,11 @@ export const InlineObject = (props: InlineObjectProps) => {
   const nodePath = memberItem?.node.path || EMPTY_ARRAY
   const referenceElement = memberItem?.elementRef?.current
 
-  const presence = memberItem?.node.presence || EMPTY_ARRAY
+  const presence = useChildPresence(path, true)
+  const rootPresence = useMemo(
+    () => presence.filter((p) => isEqual(p.path, path)),
+    [path, presence]
+  )
 
   const componentProps: BlockProps | undefined = useMemo(
     () => ({
@@ -106,7 +112,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       member: memberItem?.member,
       parentSchemaType,
       path: nodePath,
-      presence,
+      presence: rootPresence,
       readOnly: Boolean(readOnly),
       renderDefault: DefaultInlineObjectComponent,
       renderPreview,
@@ -128,10 +134,10 @@ export const InlineObject = (props: InlineObjectProps) => {
       onPathFocus,
       onRemove,
       parentSchemaType,
-      presence,
       readOnly,
       referenceElement,
       renderPreview,
+      rootPresence,
       schemaType,
       selected,
       validation,

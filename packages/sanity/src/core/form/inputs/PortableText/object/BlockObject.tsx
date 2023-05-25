@@ -15,6 +15,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import {isEqual} from '@sanity/util/paths'
 import {PatchArg} from '../../../patch'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
@@ -27,6 +28,7 @@ import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field'
 import {debugRender} from '../debugRender'
 import {EMPTY_ARRAY} from '../../../../util'
+import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
   Root,
   ChangeIndicatorWrapper,
@@ -160,7 +162,11 @@ export function BlockObject(props: BlockObjectProps) {
   const parentSchemaType = editor.schemaTypes.portableText
   const hasMarkers = Boolean(markers.length > 0)
 
-  const presence = memberItem?.node.presence || EMPTY_ARRAY
+  const presence = useChildPresence(path, true)
+  const rootPresence = useMemo(
+    () => presence.filter((p) => isEqual(p.path, path)),
+    [path, presence]
+  )
 
   // Tooltip indicating validation errors, warnings, info and markers
   const tooltipEnabled = hasError || hasWarning || hasInfo || hasMarkers
@@ -199,7 +205,7 @@ export function BlockObject(props: BlockObjectProps) {
       open: isOpen,
       parentSchemaType,
       path: nodePath,
-      presence,
+      presence: rootPresence,
       readOnly: Boolean(readOnly),
       renderDefault: DefaultBlockObjectComponent,
       renderPreview,
@@ -221,7 +227,7 @@ export function BlockObject(props: BlockObjectProps) {
       isOpen,
       parentSchemaType,
       nodePath,
-      presence,
+      rootPresence,
       readOnly,
       renderPreview,
       schemaType,
