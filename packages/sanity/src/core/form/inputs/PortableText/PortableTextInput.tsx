@@ -1,4 +1,4 @@
-import {PortableTextBlock} from '@sanity/types'
+import {Path, PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
   Patch as EditorPatch,

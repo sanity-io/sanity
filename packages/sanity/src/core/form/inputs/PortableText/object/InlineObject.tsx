@@ -123,7 +123,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       markers,
       memberItem?.member,
       nodePath,
-      onItemClose,
+      onClose,
       onOpen,
       onPathFocus,
       onRemove,
