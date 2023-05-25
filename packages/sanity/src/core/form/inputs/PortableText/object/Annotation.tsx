@@ -1,7 +1,8 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
 import {Tooltip} from '@sanity/ui'
-import React, {ComponentType, useCallback, useMemo} from 'react'
+import React, {ComponentType, useCallback, useMemo, useState} from 'react'
+import {isEqual} from '@sanity/util/paths'
 import {pathToString} from '../../../../field'
 import {BlockAnnotationProps, RenderCustomMarkers} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
@@ -111,7 +112,7 @@ export function Annotation(props: AnnotationProps) {
   const isOpen = Boolean(memberItem?.member.open)
   const input = memberItem?.input
   const nodePath = memberItem?.node.path || EMPTY_ARRAY
-  const referenceElement = memberItem?.elementRef?.current
+  const referenceElement = spanElm
 
   const componentProps = useMemo(
     (): BlockAnnotationProps => ({
@@ -154,7 +155,6 @@ export function Annotation(props: AnnotationProps) {
       referenceElement,
       schemaType,
       selected,
-      spanElm,
       text,
       validation,
       value,
