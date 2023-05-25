@@ -1,5 +1,5 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import React, {useCallback, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {PortableTextBlock} from '@sanity/types'
 import {PatchArg} from '../../patch'
@@ -36,18 +36,9 @@ export function BlockActions(props: BlockActionsProps) {
     return undefined
   }, [renderBlockActions, block, editor, onChange, decoratorValues])
 
-  // Take focus away from the editor so dealing with block actions doesn't interfere with the editor focus
-  const handleClick = useCallback(() => {
-    PortableTextEditor.blur(editor)
-  }, [editor])
-
   // Don't render anything if the renderBlockActions function returns null.
   // Note that if renderBlockComponent is a React class, this will never be the case.
   if (!blockActions) return null
 
-  return (
-    <Root contentEditable={false} onKeyDown={handleClick} onMouseDown={handleClick}>
-      {blockActions}
-    </Root>
-  )
+  return <Root contentEditable={false}>{blockActions}</Root>
 }
