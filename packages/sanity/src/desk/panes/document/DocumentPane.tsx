@@ -21,6 +21,7 @@ import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {useDeskTool} from '../../useDeskTool'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../constants'
 import {DocumentOperationResults} from './DocumentOperationResults'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {ChangesPanel} from './changesPanel'
@@ -241,7 +242,9 @@ function InnerDocumentPane() {
   // The portal element comes from `DocumentPanel`.
   const footer = useMemo(
     () => (
-      <PortalProvider __unstable_elements={{documentPanelPortalElement}}>
+      <PortalProvider
+        __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
+      >
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
           <PaneFooter ref={setFooterElement}>
             <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
