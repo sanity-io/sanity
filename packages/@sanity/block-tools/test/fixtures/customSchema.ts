@@ -24,6 +24,14 @@ export default Schema.compile({
         decorators: [
           {title: 'Strong', value: 'strong'},
           {title: 'Emphasis', value: 'em'},
+          {title: 'Code', value: 'code'},
+          {title: 'Strike through', value: 'strike-through'},
+          {title: 'Highlight', value: 'highlight'},
+          {title: 'Subscript', value: 'sub'},
+          {title: 'Superscript', value: 'sup'},
+          {title: 'Mark', value: 'mark'},
+          {title: 'Inserted', value: 'ins'},
+          {title: 'Small', value: 'small'},
         ],
         // Support annotating text with a reference to an author
         annotations: [
