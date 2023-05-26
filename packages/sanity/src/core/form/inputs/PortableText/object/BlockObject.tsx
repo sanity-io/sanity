@@ -116,8 +116,13 @@ export function BlockObject(props: BlockObjectProps) {
     if (isDeleting.current) {
       return
     }
-    PortableTextEditor.delete(editor, selfSelection, {mode: 'blocks'})
-    isDeleting.current = true
+    try {
+      PortableTextEditor.delete(editor, selfSelection, {mode: 'blocks'})
+    } catch (err) {
+      console.error(err)
+    } finally {
+      isDeleting.current = true
+    }
   }, [editor, selfSelection])
 
   // Focus the editor if this object is removed because it was deleted.

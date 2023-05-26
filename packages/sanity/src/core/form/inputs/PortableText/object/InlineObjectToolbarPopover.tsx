@@ -59,9 +59,14 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
       }
       event.preventDefault()
       event.stopPropagation()
-      onDelete(event)
-      if (deleteButtonRef.current) {
-        deleteButtonRef.current.disabled = true
+      try {
+        onDelete(event)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        if (deleteButtonRef.current) {
+          deleteButtonRef.current.disabled = true
+        }
       }
     },
     [onDelete]
