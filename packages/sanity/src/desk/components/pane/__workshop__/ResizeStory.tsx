@@ -1,4 +1,4 @@
-import {Box, Card, Code, Flex} from '@sanity/ui'
+import {Box, Card, Code, Flex, PopoverProvider} from '@sanity/ui'
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {usePaneLayout} from '../usePaneLayout'
@@ -53,42 +53,44 @@ export default function ResizeStory() {
   }, [controller, rootElement])
 
   return (
-    <PaneLayoutContext.Provider value={paneLayout}>
-      <PaneLayoutRoot
-        data-resizing={state.resizing ? '' : undefined}
-        height="fill"
-        ref={setRootElement}
-      >
-        <Pane
-          currentMinWidth={undefined}
-          // currentMaxWidth={320}
-          flex={1}
-          minWidth={160}
-          maxWidth={320}
-        />
-        <Pane
-          currentMinWidth={undefined}
-          // currentMaxWidth={320}
-          flex={1}
-          minWidth={160}
-          maxWidth={320}
-        />
-        <Pane
-          currentMinWidth={undefined}
-          // currentMaxWidth={320}
-          flex={1}
-          minWidth={160}
-          maxWidth={320}
-        />
-        <Pane
-          currentMinWidth={320}
-          currentMaxWidth={undefined}
-          flex={2}
-          minWidth={160}
-          maxWidth={undefined}
-        />
-      </PaneLayoutRoot>
-    </PaneLayoutContext.Provider>
+    <PopoverProvider>
+      <PaneLayoutContext.Provider value={paneLayout}>
+        <PaneLayoutRoot
+          data-resizing={state.resizing ? '' : undefined}
+          height="fill"
+          ref={setRootElement}
+        >
+          <Pane
+            currentMinWidth={undefined}
+            // currentMaxWidth={320}
+            flex={1}
+            minWidth={160}
+            maxWidth={320}
+          />
+          <Pane
+            currentMinWidth={undefined}
+            // currentMaxWidth={320}
+            flex={1}
+            minWidth={160}
+            maxWidth={320}
+          />
+          <Pane
+            currentMinWidth={undefined}
+            // currentMaxWidth={320}
+            flex={1}
+            minWidth={160}
+            maxWidth={320}
+          />
+          <Pane
+            currentMinWidth={320}
+            currentMaxWidth={undefined}
+            flex={2}
+            minWidth={160}
+            maxWidth={undefined}
+          />
+        </PaneLayoutRoot>
+      </PaneLayoutContext.Provider>
+    </PopoverProvider>
   )
 }
 
