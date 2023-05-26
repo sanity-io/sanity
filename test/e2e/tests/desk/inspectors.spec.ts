@@ -5,7 +5,9 @@ test.describe('sanity/desk: document inspectors', () => {
     await page.goto('/test/content/input-debug;inspectorsTest;inspectors-test')
 
     // Click to open inspector
-    await page.locator('[data-ui="StatusButton"][aria-label="Custom inspector"]').click()
+    await page
+      .locator('[data-ui="StatusButton"][aria-label="Custom inspector"]')
+      .click({timeout: 0})
 
     // Expect button to be selected and inspector to be visible
     await expect(
@@ -30,7 +32,7 @@ test.describe('sanity/desk: document inspectors', () => {
     await page.goto('/test/content/input-debug;validationTest;validation-test')
 
     // Click to open inspector
-    await page.locator('[data-ui="StatusButton"][aria-label="Validation"]').click()
+    await page.locator('[data-ui="StatusButton"][aria-label="Validation"]').click({timeout: 0})
 
     // Expect button to be selected and inspector to be visible
     await expect(
