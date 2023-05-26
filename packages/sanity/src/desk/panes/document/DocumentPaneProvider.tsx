@@ -165,7 +165,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [documentId, documentType, inspectorsResolver]
   )
 
-  const currentInspector = inspectors?.find((i) => i.name === params.inspect)
+  const [inspectorName, setInspectorName] = useState<string | null>(() => params.inspect || null)
+  const currentInspector = inspectors?.find((i) => i.name === inspectorName)
   const resolvedChangesInspector = inspectors.find((i) => i.name === 'changes')
 
   const changesOpen = currentInspector?.name === 'changes'
@@ -262,6 +263,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       if (inspector) {
         const result = inspector.onClose?.({params}) ?? {params}
 
+        setInspectorName(null)
         setPaneParams({...result.params, inspect: undefined})
 
         return
@@ -270,6 +272,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       if (currentInspector) {
         const result = currentInspector.onClose?.({params}) ?? {params}
 
+        setInspectorName(null)
         setPaneParams({...result.params, inspect: undefined})
       }
     },
@@ -294,6 +297,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
       const result = inspector.onOpen?.({params: currentParams}) ?? {params: currentParams}
 
+      setInspectorName(inspector.name)
       setPaneParams({...result.params, inspect: inspector.name})
     },
     [closeInspector, currentInspector, params, setPaneParams]
@@ -344,12 +348,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       }
 
       if (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX)) {
-        const inspectorName = item.action.slice(INSPECT_ACTION_PREFIX.length)
+        const nextInspectorName = item.action.slice(INSPECT_ACTION_PREFIX.length)
+        const nextInspector = inspectors.find((i) => i.name === nextInspectorName)
 
-        const inspector = inspectors.find((i) => i.name === inspectorName)
-
-        if (inspector) {
-          openInspector(inspector)
+        if (nextInspector) {
+          openInspector(nextInspector)
           return true
         }
       }
