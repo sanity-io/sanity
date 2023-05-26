@@ -52,7 +52,7 @@ export function Annotation(props: AnnotationProps) {
     () => path.slice(0, path.length - 2).concat(['markDefs', {_key: value._key}]),
     [path, value._key]
   )
-  const [spanElm, setSpanElm] = useState<HTMLSpanElement | null>(null)
+  const [spanElement, setSpanElement] = useState<HTMLSpanElement | null>(null)
   const spanPath: Path = useMemo(() => path.slice(path.length - 3, path.length), [path])
   const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
   const {validation} = useMemberValidation(memberItem?.node)
@@ -112,7 +112,7 @@ export function Annotation(props: AnnotationProps) {
   const isOpen = Boolean(memberItem?.member.open)
   const input = memberItem?.input
   const nodePath = memberItem?.node.path || EMPTY_ARRAY
-  const referenceElement = spanElm
+  const referenceElement = spanElement
 
   const componentProps = useMemo(
     (): BlockAnnotationProps => ({
@@ -170,7 +170,7 @@ export function Annotation(props: AnnotationProps) {
       if (memberItem?.elementRef) {
         memberItem.elementRef.current = elm
       }
-      setSpanElm(elm) // update state here so the reference element is available on first render
+      setSpanElement(elm) // update state here so the reference element is available on first render
     },
     [memberItem]
   )
