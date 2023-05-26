@@ -24,8 +24,6 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
         </Flex>
       }
       onClose={props.onCancel}
-      // Custom portal element configured in `DocumentPane` so that the dialog is scoped to the current pane
-      portal="documentPanelPortalElement"
     >
       <Box padding={4}>
         <Text>An error occurred while loading referencing documents.</Text>
