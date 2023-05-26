@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@sanity/cli": "3.11.3",
-    "@sanity/ui": "^1.3.3",
+    "@sanity/ui": "popover-fixes-canary",
     "react": "^18.2.0",
     "react-barcode": "^1.4.1",
     "react-dom": "^18.2.0",
