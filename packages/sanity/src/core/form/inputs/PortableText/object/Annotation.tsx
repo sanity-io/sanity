@@ -62,6 +62,7 @@ export function Annotation(props: AnnotationProps) {
 
   const onOpen = useCallback(() => {
     if (memberItem) {
+      // Take focus away from the editor so that it doesn't propagate a new focusPath and interfere here.
       PortableTextEditor.blur(editor)
       onItemOpen(memberItem.node.path)
     }
