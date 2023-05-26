@@ -17,7 +17,7 @@ export const validationInspector: DocumentInspector = {
     const hasWarnings = formNodeValidation.filter(isValidationWarning).length > 0
 
     return {
-      hidden: validation.length === 0,
+      // hidden: validation.length === 0,
       // eslint-disable-next-line no-nested-ternary
       icon: hasErrors ? ErrorOutlineIcon : hasWarnings ? WarningOutlineIcon : CheckmarkCircleIcon,
       title: 'Validation',
