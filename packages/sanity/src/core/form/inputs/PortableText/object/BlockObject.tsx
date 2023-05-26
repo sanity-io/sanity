@@ -4,7 +4,7 @@ import {
   EditorSelection,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path, PortableTextBlock} from '@sanity/types'
+import {ObjectSchemaType, Path, PortableTextBlock, isImage} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps, Box} from '@sanity/ui'
 import React, {ComponentType, PropsWithChildren, useCallback, useMemo, useState} from 'react'
 import {PatchArg} from '../../../patch'
@@ -287,7 +287,8 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     value,
     validation,
   } = props
-  const isImagePreview = schemaType.name === 'image'
+
+  const isImagePreview = isImage(schemaType)
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
   const hasMarkers = Boolean(markers.length > 0)
