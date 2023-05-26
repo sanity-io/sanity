@@ -284,7 +284,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       <Editor
         hasFocus={hasFocus}
         hotkeys={editorHotkeys}
-        initialSelection={null}
         isActive={isActive}
         isFullscreen={isFullscreen}
         onItemOpen={onItemOpen}
