@@ -116,7 +116,7 @@ export default defineConfig([
     name: 'tsdoc',
     title: 'tsdoc',
     projectId: 'ppsg7ml5',
-    dataset: 'tsdoc-test',
+    dataset: 'tsdoc-2',
     plugins: [sharedSettings()],
     basePath: '/tsdoc',
   },
