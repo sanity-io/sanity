@@ -43,14 +43,22 @@ export const FormInput = memo(function FormInput(
     return hasAbsolutePath(props) ? props.absolutePath : props.path.concat(props.relativePath)
   }, [props])
 
+  // TODO: Refactor this at some point in Studio v4
+  //
+  // renderBlock, renderInlineBlock and renderAnnotation
+  // was introduced as optional InputProps after the initial
+  // release of v3, in order to not introduce breaking changes.
+  // They are still required in this inner internal component.
+  const nullRender = useCallback(() => <>Missing destination render function</>, [])
+
   return (
     <FormInputInner
       {...props}
       absolutePath={absolutePath}
-      destinationRenderAnnotation={props.renderAnnotation}
-      destinationRenderBlock={props.renderBlock}
+      destinationRenderAnnotation={props.renderAnnotation || nullRender}
+      destinationRenderBlock={props.renderBlock || nullRender}
       destinationRenderField={props.renderField}
-      destinationRenderInlineBlock={props.renderInlineBlock}
+      destinationRenderInlineBlock={props.renderInlineBlock || nullRender}
       destinationRenderInput={props.renderInput}
       destinationRenderItem={props.renderItem}
       destinationRenderPreview={props.renderPreview}

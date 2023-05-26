@@ -76,11 +76,11 @@ export interface BlockAnnotationProps {
   path: Path
   presence: FormNodePresence[]
   readOnly: boolean
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderDefault: (props: BlockAnnotationProps) => ReactElement
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
@@ -107,11 +107,11 @@ export interface BlockProps {
   path: Path
   presence: FormNodePresence[]
   readOnly: boolean
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderDefault: (props: BlockProps) => ReactElement
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback

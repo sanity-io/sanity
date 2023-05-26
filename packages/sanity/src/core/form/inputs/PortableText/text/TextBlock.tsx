@@ -54,12 +54,12 @@ export interface TextBlockProps {
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
@@ -281,7 +281,7 @@ export function TextBlock(props: TextBlockProps) {
                   data-warning={hasWarning ? '' : undefined}
                   spellCheck={spellCheck}
                 >
-                  {renderBlock(componentProps)}
+                  {renderBlock && renderBlock(componentProps)}
                 </TextRoot>
               </Tooltip>
             </Box>

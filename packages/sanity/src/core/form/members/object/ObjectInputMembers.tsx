@@ -14,9 +14,9 @@ import {ObjectInputMember} from './ObjectInputMember'
 /** @internal */
 export interface ObjectMembersProps {
   members: ObjectMember[]
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
-  renderInlineBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
   renderItem: RenderArrayOfObjectsItemCallback

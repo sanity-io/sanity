@@ -18,10 +18,10 @@ import {isMemberArrayOfObjects, isMemberArrayOfPrimitives, isMemberObject} from 
 /** @internal */
 export interface MemberFieldProps {
   member: FieldMember
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback

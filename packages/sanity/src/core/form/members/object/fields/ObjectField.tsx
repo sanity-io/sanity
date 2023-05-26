@@ -26,10 +26,10 @@ import {applyAll} from '../../../patch/applyPatch'
  */
 export const ObjectField = function ObjectField(props: {
   member: FieldMember<ObjectFormNode>
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
