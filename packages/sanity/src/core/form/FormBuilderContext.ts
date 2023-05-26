@@ -51,10 +51,10 @@ export interface FormBuilderContextValue {
   id: string
   members: ObjectMember[]
   readOnly?: boolean
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderItemCallback
   renderPreview: RenderPreviewCallback

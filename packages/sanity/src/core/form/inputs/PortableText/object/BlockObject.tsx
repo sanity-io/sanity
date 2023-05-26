@@ -63,12 +63,12 @@ interface BlockObjectProps extends PropsWithChildren {
   path: Path
   readOnly?: boolean
   relativePath: Path
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
@@ -284,7 +284,7 @@ export function BlockObject(props: BlockObjectProps) {
               content={toolTipContent}
             >
               <PreviewContainer {...innerPaddingProps}>
-                {renderBlock(componentProps)}
+                {renderBlock && renderBlock(componentProps)}
               </PreviewContainer>
             </Tooltip>
             <BlockActionsOuter marginRight={1}>

@@ -17,10 +17,10 @@ import {MemberFieldError} from './MemberFieldError'
 /** @internal */
 export const MemberFieldSet = memo(function MemberFieldSet(props: {
   member: FieldSetMember
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback

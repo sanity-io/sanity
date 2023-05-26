@@ -16,11 +16,11 @@ import {MemberFieldSet} from './MemberFieldset'
 /** @internal */
 export interface ObjectInputMemberProps {
   member: ObjectMember
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
-  renderInlineBlock: RenderBlockCallback
-  renderInput: RenderInputCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock?: RenderBlockCallback
+  renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
 }

@@ -40,10 +40,10 @@ import {applyAll} from '../../../patch/applyPatch'
  */
 export function ArrayOfObjectsField(props: {
   member: FieldMember<ArrayOfObjectsFormNode>
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback

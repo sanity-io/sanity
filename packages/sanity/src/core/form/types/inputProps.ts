@@ -83,10 +83,10 @@ export interface ObjectInputProps<
   onFieldClose: (fieldName: string) => void
 
   /** @beta */
-  renderAnnotation: RenderAnnotationCallback
+  renderAnnotation?: RenderAnnotationCallback
 
   /** @beta */
-  renderBlock: RenderBlockCallback
+  renderBlock?: RenderBlockCallback
 
   /** @beta */
   renderInput: RenderInputCallback
@@ -95,7 +95,7 @@ export interface ObjectInputProps<
   renderField: RenderFieldCallback
 
   /** @beta */
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
 
   /** @beta */
   renderItem: RenderArrayOfObjectsItemCallback
@@ -166,16 +166,16 @@ export interface ArrayOfObjectsInputProps<
   onItemClose: () => void
 
   /** @beta */
-  renderAnnotation: RenderAnnotationCallback
+  renderAnnotation?: RenderAnnotationCallback
 
   /** @beta */
-  renderBlock: RenderBlockCallback
+  renderBlock?: RenderBlockCallback
 
   /** @beta */
   renderField: RenderFieldCallback
 
   /** @beta */
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
 
   /** @beta */
   renderInput: RenderInputCallback
@@ -233,13 +233,13 @@ export interface ArrayOfPrimitivesInputProps<
   onIndexFocus: (index: number) => void
 
   /** @beta */
-  renderAnnotation: RenderAnnotationCallback
+  renderAnnotation?: RenderAnnotationCallback
 
   /** @beta */
-  renderBlock: RenderBlockCallback
+  renderBlock?: RenderBlockCallback
 
   /** @beta */
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
 
   /** @beta */
   renderInput: RenderInputCallback

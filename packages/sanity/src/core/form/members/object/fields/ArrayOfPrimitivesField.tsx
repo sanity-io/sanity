@@ -128,10 +128,10 @@ function createPlainTextUploader(itemTypes: PrimitiveSchemaType[]): Uploader<Pri
  */
 export function ArrayOfPrimitivesField(props: {
   member: FieldMember<ArrayOfPrimitivesFormNode>
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfPrimitivesItemCallback
   renderPreview: RenderPreviewCallback

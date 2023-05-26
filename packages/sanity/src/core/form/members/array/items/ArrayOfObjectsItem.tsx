@@ -29,9 +29,9 @@ import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
  */
 export interface MemberItemProps {
   member: ArrayOfObjectsItemMember
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
-  renderInlineBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback

@@ -51,10 +51,10 @@ export interface FormBuilderProviderProps {
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
   presence: FormNodePresence[]
   readOnly?: boolean
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderItemCallback
   renderPreview: RenderPreviewCallback

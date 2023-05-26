@@ -37,11 +37,11 @@ interface InlineObjectProps {
   path: Path
   readOnly?: boolean
   relativePath: Path
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderCustomMarkers?: RenderCustomMarkers
   renderField: RenderFieldCallback
-  renderInlineBlock: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
@@ -204,7 +204,9 @@ export const InlineObject = (props: InlineObjectProps) => {
           content={toolTipContent}
         >
           {/* This relative span must be here for the ToolTip to properly show */}
-          <span style={{position: 'relative'}}>{renderInlineBlock(componentProps)}</span>
+          {renderInlineBlock && (
+            <span style={{position: 'relative'}}>{renderInlineBlock(componentProps)}</span>
+          )}
         </Tooltip>
       </span>
     ),
