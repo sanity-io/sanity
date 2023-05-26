@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {ErrorBoundary} from '@sanity/ui'
+import {ErrorBoundary, PopoverProvider} from '@sanity/ui'
 import {DeskToolOptions} from '../../types'
 import {DeskToolProvider} from '../../DeskToolProvider'
 import {setActivePanes} from '../../getIntentState'
@@ -30,10 +30,12 @@ export function DeskToolBoundary({tool: {options}}: DeskToolBoundaryProps) {
   return (
     <ErrorBoundary onCatch={setError}>
       <SourceProvider name={source || firstSource.name}>
-        <DeskToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
-          <DeskTool onPaneChange={setActivePanes} />
-          <IntentResolver />
-        </DeskToolProvider>
+        <PopoverProvider>
+          <DeskToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
+            <DeskTool onPaneChange={setActivePanes} />
+            <IntentResolver />
+          </DeskToolProvider>
+        </PopoverProvider>
       </SourceProvider>
     </ErrorBoundary>
   )
