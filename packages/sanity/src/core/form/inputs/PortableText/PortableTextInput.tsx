@@ -19,7 +19,7 @@ import React, {
 } from 'react'
 import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
-import {FormPatch, SANITY_PATCH_TYPE} from '../../patch'
+import {SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
 import {EMPTY_ARRAY} from '../../../util'
@@ -27,7 +27,6 @@ import {pathToString} from '../../../field'
 import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
 import {FormInput} from '../../components'
 import {FIXME} from '../../../FIXME'
-import {useFormCallbacks} from '../../studio'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
@@ -58,6 +57,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     hotkeys,
     markers = EMPTY_ARRAY,
     members,
+    onChange,
     onCopy,
     onItemRemove,
     onInsert,

@@ -335,7 +335,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderCustomMarkers,
       renderAnnotation,
       renderBlock,
-      renderCustomMarkers,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -375,9 +374,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
-      handleToggleFullscreen,
-      hasFocus,
-      initialSelection,
       isActive,
       isFullscreen,
       onCopy,
@@ -385,9 +381,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       onPaste,
       path,
       readOnly,
-      renderAnnotation,
-      renderBlock,
-      renderChild,
     ]
   )
 
