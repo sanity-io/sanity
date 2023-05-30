@@ -52,32 +52,30 @@ export function useTrackFocusPath(props: Props): void {
           inline: 'start',
         })
       }
+      const isBlockFocusPath = focusPath.length === 1
+      const isChildFocusPath = focusPath.length === 3 && focusPath[1] === 'children'
       // If the focusPath i targeting a text block (with focusPath on the block itself),
       // ensure that an editor selection is pointing to it's first child and then focus the editor.
       if (openItem.kind === 'textBlock') {
-        const path =
-          focusPath.length === 3 && focusPath[1] === 'children'
-            ? focusPath // focusPath pointing to known span
-            : [
-                focusPath[0],
-                'children',
-                (Array.isArray(openItem.node.value?.children) &&
-                  openItem.node.value?.children[0]._key && {
-                    _key: openItem.node.value?.children[0]._key,
-                  }) ||
-                  0,
-              ] // unknown span (just a block key given as focusPath), select the first span
+        const path = isChildFocusPath
+          ? focusPath // focusPath pointing to known span
+          : [
+              focusPath[0],
+              'children',
+              (Array.isArray(openItem.node.value?.children) &&
+                openItem.node.value?.children[0]._key && {
+                  _key: openItem.node.value?.children[0]._key,
+                }) ||
+                0,
+            ] // unknown span (just a block key given as focusPath), select the first span
 
-        // Make an editor selection unless we are focusing into a annotation (markDefs) or inside inline object
-        if (path.length === 3 && focusPath[1] !== 'markDefs' && focusPath.length < 4) {
+        // Make an editor selection if we have a child path, and not have focus inside of it
+        if (isBlockFocusPath || isChildFocusPath) {
           PortableTextEditor.select(editor, {
             anchor: {path, offset: 0},
             focus: {path, offset: 0},
           })
-          // Focus the editor if focusing directly on block or child
-          if (focusPath.length === 1 || (focusPath.length === 3 && focusPath[1] === 'children')) {
-            PortableTextEditor.focus(editor)
-          }
+          PortableTextEditor.focus(editor)
         }
       }
     }
