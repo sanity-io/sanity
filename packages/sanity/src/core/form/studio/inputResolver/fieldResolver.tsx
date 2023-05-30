@@ -8,8 +8,16 @@ import {FormField, FormFieldSet} from '../../components'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {getTypeChain} from './helpers'
 
-function PassThrough({children}: {children: React.ReactNode}) {
-  return <>{children}</>
+function BooleanField(field: FieldProps) {
+  return (
+    <ChangeIndicator
+      path={field.path}
+      hasFocus={Boolean(field.inputProps.focused)}
+      isChanged={field.inputProps.changed}
+    >
+      {field.children}
+    </ChangeIndicator>
+  )
 }
 
 function PrimitiveField(field: FieldProps) {
@@ -85,7 +93,7 @@ export function defaultResolveFieldComponent(
   if (schemaType.components?.field) return schemaType.components.field
 
   if (isBooleanSchemaType(schemaType)) {
-    return PassThrough
+    return BooleanField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   const typeChain = getTypeChain(schemaType, new Set())
