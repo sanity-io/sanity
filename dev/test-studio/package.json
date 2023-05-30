@@ -24,7 +24,7 @@
     "@sanity/image-url": "^1.0.2",
     "@sanity/portable-text-editor": "3.11.3",
     "@sanity/types": "3.11.3",
-    "@sanity/ui": "^1.3.3",
+    "@sanity/ui": "popover-fixes-canary",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "3.11.3",
     "@sanity/uuid": "^3.0.1",

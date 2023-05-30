@@ -1,6 +1,6 @@
 import {ArrowLeftIcon, RestoreIcon} from '@sanity/icons'
-import {Box, Button, Flex, Text, Stack, Container} from '@sanity/ui'
-import React from 'react'
+import {Box, Button, Flex, Text, Stack, Container, Popover, Card} from '@sanity/ui'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PaneContent} from '../../../PaneContent'
 import {PaneFooter} from '../../../PaneFooter'
 import {PaneHeader} from '../../../PaneHeader'
@@ -15,6 +15,26 @@ export function DocumentViewPanel(props: {
 }) {
   const {onBackClick, reviewChanges, title, toggleReviewChanges} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
+  const [refElement, setRefElement] = useState<HTMLSpanElement | null>(null)
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+  const handlePopoverClick = useCallback(() => {
+    setIsPopoverOpen((v) => !v)
+  }, [])
+
+  const element = useMemo(() => {
+    return (
+      <Card
+        as="span"
+        border
+        radius={2}
+        style={{display: 'inline', padding: '0.4, 1'}}
+        ref={setRefElement}
+        tone="primary"
+      >
+        nunc
+      </Card>
+    )
+  }, [])
 
   return (
     <Flex
@@ -36,6 +56,14 @@ export function DocumentViewPanel(props: {
         >
           <Container width={1}>
             <Stack padding={4} space={4}>
+              <Popover
+                content={<Text size={2}>Hello, world</Text>}
+                padding={4}
+                placement="top"
+                referenceElement={refElement}
+                portal
+                open
+              />
               <Text as="p" muted>
                 Lorem ipsum dolor <a href="#">sit amet</a>, consectetur adipiscing elit. Donec vitae
                 odio tellus. Etiam non metus at ante varius viverra. Pellentesque in iaculis lectus.
@@ -46,7 +74,7 @@ export function DocumentViewPanel(props: {
                 nibh nec, fermentum ipsum. Nulla at erat eu felis fermentum pellentesque.
               </Text>
               <Text as="p" muted>
-                Suspendisse lacinia mi nibh, sit amet ultricies neque vulputate eget. Vivamus nisl
+                Suspendisse lacinia mi nibh, sit {element} amet neque vulputate eget. Vivamus nisl
                 augue, sodales vitae velit ac, vehicula dignissim leo. Suspendisse ornare efficitur
                 porttitor. Cras placerat, augue in tempus malesuada, urna dolor volutpat erat, vitae
                 pulvinar odio sapien sed odio. Nulla est enim, rutrum sit amet felis non, blandit

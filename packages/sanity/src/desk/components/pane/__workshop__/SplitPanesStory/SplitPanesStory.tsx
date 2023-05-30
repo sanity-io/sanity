@@ -1,5 +1,5 @@
-import {Flex, ToastProvider, PortalProvider} from '@sanity/ui'
-import React, {useState, useCallback} from 'react'
+import {Flex, ToastProvider, PortalProvider, PopoverProvider, usePopover} from '@sanity/ui'
+import React, {useState, useCallback, useEffect} from 'react'
 import {useBoolean} from '@sanity/ui-workshop'
 import {PaneLayout} from '../../PaneLayout'
 import {DocumentPane} from './DocumentPane'
@@ -17,27 +17,29 @@ export function SplitPanesStory() {
   const handleExpand = useCallback(() => setLayoutCollapsed(false), [])
 
   return (
-    <ToastProvider paddingY={7} zOffset={[100, 11000]}>
-      <PortalProvider element={portalElement}>
-        <Flex
-          direction="column"
-          height={layoutCollapsed ? undefined : 'fill'}
-          style={{minHeight: '100%'}}
-        >
-          <Navbar path={path} setPath={setPath} />
+    <PopoverProvider>
+      <ToastProvider paddingY={7} zOffset={[100, 11000]}>
+        <PortalProvider element={portalElement}>
+          <Flex
+            direction="column"
+            height={layoutCollapsed ? undefined : 'fill'}
+            style={{minHeight: '100%'}}
+          >
+            <Navbar path={path} setPath={setPath} />
 
-          <DeskTool
-            collapsed={layoutCollapsed}
-            onExpand={handleExpand}
-            onCollapse={handleCollapse}
-            path={path}
-            setPath={setPath}
-          />
-        </Flex>
-      </PortalProvider>
+            <DeskTool
+              collapsed={layoutCollapsed}
+              onExpand={handleExpand}
+              onCollapse={handleCollapse}
+              path={path}
+              setPath={setPath}
+            />
+          </Flex>
+        </PortalProvider>
 
-      <div data-portal="" ref={setPortalElement} style={{outline: '1px solid red'}} />
-    </ToastProvider>
+        <div data-portal="" ref={setPortalElement} style={{outline: '1px solid red'}} />
+      </ToastProvider>
+    </PopoverProvider>
   )
 }
 

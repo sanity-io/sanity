@@ -3982,10 +3982,22 @@
     segmented-property "^3.0.3"
     vite "^4.1.1"
 
-"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.3.3":
+"@sanity/ui@^1", "@sanity/ui@^1.0.0":
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.3.3.tgz#ec3b9aeb8be79f53d94406bbf80c806af1a47e7f"
   integrity sha512-fp5eyc6U760Mvg6wmiv0wOnX/uiPpFoPf4Ne9cJX6X80mk2/u2pOkXCuMuhfXmty3KP7uPZxkapD8atd7BaWIw==
+  dependencies:
+    "@floating-ui/react-dom" "1.1.1"
+    "@sanity/color" "^2.2.3"
+    "@sanity/icons" "^2.2.2"
+    csstype "^3.1.1"
+    framer-motion "^10.0.0"
+    react-refractor "^2.1.7"
+
+"@sanity/ui@popover-fixes-canary":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.4.0.tgz#63c5cf642c5a1d089479ad3332da61d0006bb77d"
+  integrity sha512-9pcBJ3kUFCvBVYsbKam6mKgWT72HcZ0yRSxdZPsjJD1Nwo4jKWSAaBfqKZ7W2zWkV2TBAfoSF85Hw5foGAho1Q==
   dependencies:
     "@floating-ui/react-dom" "1.1.1"
     "@sanity/color" "^2.2.3"

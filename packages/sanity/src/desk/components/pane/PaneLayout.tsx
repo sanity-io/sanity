@@ -1,4 +1,4 @@
-import {CardProps, useElementRect} from '@sanity/ui'
+import {CardProps, useElementRect, usePopover} from '@sanity/ui'
 import React, {useMemo, useState, useEffect} from 'react'
 import {PaneLayoutContext} from './PaneLayoutContext'
 import {PaneLayoutContextValue} from './types'
@@ -22,6 +22,7 @@ export function PaneLayout(
     CardProps &
     Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'wrap'>
 ) {
+  const {forceUpdate: forcePopoverUpdate} = usePopover()
   const {children, minWidth, onCollapse, onExpand, ...restProps} = props
   const controller = useMemo(() => createPaneLayoutController(), [])
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
@@ -49,6 +50,16 @@ export function PaneLayout(
     if (collapsed && onCollapse) onCollapse()
     if (!collapsed && onExpand) onExpand()
   }, [collapsed, onCollapse, onExpand])
+
+  // Force popover position update when panes change
+  // This is needed to ensure that any open popovers is positioned correctly if a pane is toggled
+  // between collapsed and expanded. We normally use the boundary element, but that won't work
+  // inside the PTE
+  useEffect(() => {
+    if (state.panes.length) {
+      forcePopoverUpdate?.()
+    }
+  }, [state.panes, forcePopoverUpdate])
 
   // This is the context value that gives each pane the information they need
   const paneLayout: PaneLayoutContextValue = useMemo(
