@@ -8,6 +8,7 @@ import {TextWithTone} from 'sanity'
 export function PublishedStatus(props: {document?: PreviewValue | Partial<SanityDocument> | null}) {
   const {document} = props
   const updatedAt = document && '_updatedAt' in document && document._updatedAt
+  const statusLabel = document ? 'Published' : 'Not published'
 
   return (
     <Tooltip
@@ -25,7 +26,7 @@ export function PublishedStatus(props: {document?: PreviewValue | Partial<Sanity
       }
     >
       <TextWithTone tone="positive" dimmed={!document} muted={!document} size={1}>
-        <PublishIcon />
+        <PublishIcon aria-label={statusLabel} />
       </TextWithTone>
     </Tooltip>
   )
