@@ -1,13 +1,18 @@
-import {BookIcon, CopyIcon, PublishIcon, TrashIcon, UnpublishIcon} from '@sanity/icons'
+import {BookIcon, PublishIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
-import {OperationsAPI, defineConfig, definePlugin} from 'sanity'
+import {defineConfig, definePlugin, useDocumentOperation} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {theme as tailwindTheme} from 'https://themer.sanity.build/api/hues?preset=tw-cyan&default=64748b&primary=d946ef;lightest:fdf4ff;darkest:701a75&transparent=6b7180;darkest:111826&positive=43d675;400;lightest:f8fafc&caution=f59e09;300;lightest:fffbeb;darkest:783510&critical=f43f5e;lightest:fef1f2;darkest:881337&lightest=ffffff&darkest=0f172a'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {DocumentAction2} from 'packages/sanity/src/core/config/document/actions2'
-import {Observable, tap} from 'rxjs'
-import {uuid} from '@sanity/uuid'
+import {
+  DocumentAction2,
+  DocumentActionUseProps,
+  HookMenuItem,
+} from 'packages/sanity/src/core/config/document/actions2'
+
+import React, {useCallback, useEffect, useState} from 'react'
+import {Box, Card, Text} from '@sanity/ui'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
 import {resolveDocumentActions as documentActions} from './documentActions'
@@ -30,82 +35,67 @@ import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {customInspector} from './inspectors/custom'
 
+function usePublishAction(props: DocumentActionUseProps): HookMenuItem {
+  const {draft} = props
+  const {publish} = useDocumentOperation(props.documentId, props.documentType)
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const handleClick = useCallback(() => {
+    setLoading(true)
+    publish.execute()
+  }, [publish])
+
+  useEffect(() => {
+    if (!draft) {
+      setLoading(false)
+    }
+  }, [draft])
+
+  return {
+    disabled: !draft || loading,
+    icon: PublishIcon,
+    onClick: handleClick,
+    title: 'Publish (hook)',
+    tone: 'positive',
+  }
+}
+
 const publishAction: DocumentAction2 = {
   name: 'publish',
-  menuItem: ({loading, draft}) => {
-    return {
-      disabled: loading || !draft,
-      icon: PublishIcon,
-      title: 'Publish',
-      tone: 'positive',
-    }
+  use: usePublishAction,
+}
+
+const dialogComponentAction: DocumentAction2 = {
+  name: 'dialog-action',
+  menuItem: {
+    title: 'Component (dialog)',
+    icon: PublishIcon,
+    tone: 'primary',
   },
-  onAction: ({onActionStart, onActionEnd, operations}) => {
-    onActionStart()
-
-    operations.publish.execute()
-
-    onActionEnd()
+  view: {
+    component: () => (
+      <Card padding={4} tone="positive">
+        <Text>Dialog</Text>
+      </Card>
+    ),
+    type: 'dialog',
   },
 }
 
-const deleteAction: DocumentAction2 = {
-  name: 'delete',
-  menuItem: ({loading, draft, published}) => {
-    return {
-      disabled: loading || (!draft && !published),
-      icon: TrashIcon,
-      title: 'Delete',
-      tone: 'critical',
-    }
+const popoverComponentAction: DocumentAction2 = {
+  name: 'popover-action',
+  menuItem: {
+    title: 'Component (popover)',
+    icon: PublishIcon,
+    tone: 'primary',
   },
-  onAction: ({onActionStart, onActionEnd, operations}) => {
-    onActionStart()
-
-    operations.delete.execute()
-
-    onActionEnd()
-  },
-}
-
-const duplicateAction: DocumentAction2 = {
-  name: 'duplicate',
-  context: 'menu',
-  menuItem: ({loading, draft, published}) => {
-    return {
-      disabled: loading || (!draft && !published),
-      icon: CopyIcon,
-      title: 'Duplicate',
-      tone: 'primary',
-    }
-  },
-  onAction: ({onActionStart, onActionEnd, operations}) => {
-    onActionStart()
-
-    const newId = uuid()
-
-    operations.duplicate.execute(newId)
-
-    onActionEnd()
-  },
-}
-
-const unpublishAction: DocumentAction2 = {
-  name: 'unpublish',
-  menuItem: ({loading, published}) => {
-    return {
-      disabled: loading || !published,
-      icon: UnpublishIcon,
-      title: 'Unpublish',
-      tone: 'caution',
-    }
-  },
-  onAction: ({onActionStart, onActionEnd, operations}) => {
-    onActionStart()
-
-    operations.unpublish.execute()
-
-    onActionEnd()
+  view: {
+    component: () => (
+      <Box padding={4}>
+        <Text>Popover</Text>
+      </Box>
+    ),
+    type: 'popover',
   },
 }
 
@@ -127,7 +117,8 @@ const sharedSettings = definePlugin({
   },
   document: {
     actions: documentActions,
-    actions2: [publishAction, deleteAction, duplicateAction, unpublishAction],
+    // actions2: [publishAction, deleteAction, duplicateAction, unpublishAction],
+    actions2: [publishAction, dialogComponentAction, popoverComponentAction],
     inspectors: (prev, ctx) => {
       if (ctx.documentType === 'inspectorsTest') {
         return [customInspector, ...prev]

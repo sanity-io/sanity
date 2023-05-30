@@ -314,16 +314,16 @@ function InnerDocumentPane() {
         </Flex>
       </DialogProvider>
 
-      <Card padding={2} borderTop>
-        <DocumentActionsTest />
-      </Card>
-
       {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
       {/* The portal element comes from `DocumentPanel`. */}
       <PortalProvider
         __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
       >
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+          <Card padding={2} borderTop>
+            <DocumentActionsTest />
+          </Card>
+
           <PaneFooter ref={setFooterElement}>
             <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
           </PaneFooter>

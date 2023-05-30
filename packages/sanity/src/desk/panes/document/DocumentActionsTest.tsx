@@ -1,15 +1,22 @@
-import {Button, Flex, Menu, MenuButton, MenuItem} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
 import {
-  useClient,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  useDocumentOperation,
-  useEditState,
-  useDocumentStore,
-} from '../../../core'
+  Box,
+  Button,
+  ButtonProps,
+  Dialog,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Popover,
+} from '@sanity/ui'
+import React, {HTMLProps, createElement, useCallback, useMemo, useState} from 'react'
+import {EllipsisVerticalIcon} from '@sanity/icons'
+// eslint-disable-next-line boundaries/element-types
+import {useEditState} from '../../../core'
+// eslint-disable-next-line boundaries/element-types
 import {DocumentAction2} from '../../../core/config/document/actions2'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../constants'
 import {useDocumentPane} from './useDocumentPane'
-import {EllipsisVerticalIcon, IceCreamIcon} from '@sanity/icons'
 
 function DocumentActionButton(props: {
   action: DocumentAction2
@@ -17,60 +24,84 @@ function DocumentActionButton(props: {
   schemaType: string
   context: 'default' | 'menu'
 }) {
-  const {menuItem, onAction} = props.action
-  const {documentId, schemaType, context} = props
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const [loading, setLoading] = useState<boolean>(false)
-
+  const {action, documentId, schemaType, context} = props
   const {draft, published} = useEditState(documentId, schemaType)
-  const operations = useDocumentOperation(documentId, schemaType)
 
-  const documentStore = useDocumentStore()
+  const [open, setOpen] = useState<boolean>(false)
+  const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
+
+  const useHook = useMemo(() => {
+    if ('use' in action) {
+      return action.use
+    }
+
+    return () => ({} as any)
+  }, [action])
+
+  const hookValues = useHook?.({
+    documentId,
+    documentType: schemaType,
+    draft,
+    published,
+  })
 
   const handleClick = useCallback(() => {
-    try {
-      onAction({
-        id: documentId,
-        type: schemaType,
-        client: client,
-        operations: operations,
-        draft,
-        published,
-        documentStore,
-        onActionStart: () => setLoading(true),
-        onActionEnd: () => setLoading(false),
-      })
-    } catch (error) {
-      setLoading(false)
-    }
-  }, [client, documentId, documentStore, draft, onAction, operations, published, schemaType])
+    setOpen((v) => !v)
+  }, [])
 
-  const resolvedMenuItem = useMemo(() => {
-    if (typeof menuItem === 'function')
-      return menuItem({loading, draft, published, id: documentId, type: schemaType})
-    return menuItem
-  }, [documentId, draft, loading, menuItem, published, schemaType])
+  const btnProps: ButtonProps &
+    Omit<HTMLProps<HTMLDivElement | HTMLButtonElement>, 'as' | 'type' | 'tabIndex' | 'ref'> =
+    useMemo(() => {
+      if ('menuItem' in action) {
+        return {
+          ...action.menuItem,
+          text: action.menuItem?.title,
+          onClick: handleClick,
+        }
+      }
+
+      return {...hookValues, text: hookValues.title}
+    }, [action, handleClick, hookValues])
+
+  const component = useMemo(() => {
+    if ('view' in action && action.view.component) {
+      const element = createElement(action.view.component)
+
+      if (action.view.type === 'dialog' && open) {
+        return (
+          <Dialog
+            id="test"
+            onClose={() => setOpen(false)}
+            portal={DOCUMENT_PANEL_PORTAL_ELEMENT}
+            title="Test"
+          >
+            {element}
+          </Dialog>
+        )
+      }
+
+      if (action.view.type === 'popover' && open) {
+        return <Popover content={element} referenceElement={buttonElement} open={open} portal />
+      }
+    }
+
+    return null
+  }, [action, buttonElement, open])
 
   if (context === 'menu') {
     return (
-      <MenuItem
-        disabled={resolvedMenuItem?.disabled}
-        icon={resolvedMenuItem?.icon}
-        onClick={handleClick}
-        text={resolvedMenuItem?.title}
-        tone={resolvedMenuItem?.tone}
-      />
+      <>
+        <MenuItem {...btnProps} ref={setButtonElement} />
+        <>{component}</>
+      </>
     )
   }
 
   return (
-    <Button
-      disabled={resolvedMenuItem?.disabled}
-      icon={resolvedMenuItem?.icon}
-      onClick={handleClick}
-      text={resolvedMenuItem?.title}
-      tone={resolvedMenuItem?.tone}
-    />
+    <>
+      <Button {...btnProps} ref={setButtonElement} />
+      <>{component}</>
+    </>
   )
 }
 
@@ -78,7 +109,6 @@ export function DocumentActionsTest() {
   const {actions2, documentId, schemaType} = useDocumentPane()
 
   const menuItems = actions2?.filter((action) => action.context === 'menu')
-
   const defaultItems = actions2?.filter((action) => !action.context)
 
   return (
