@@ -21,6 +21,7 @@ jobs:
         os: [ubuntu-latest]
         node: [16, 18]
         experimental: [false]
+        shard: [1, 2, 3, 4]
         # include:
         #   - os: windows-latest
         #     node: 16
@@ -77,6 +78,6 @@ jobs:
         run: |
           node -v
           npm -v
-          yarn test
+          yarn test --shard=${{ matrix.shard }}/4
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
