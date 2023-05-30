@@ -109,14 +109,21 @@ export function Editor(props: EditorProps) {
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
-  // Restore the React editor selection and focus when toggling fullscreen
+  // Re-focus/blur the editor when toggling fullscreen.
+  // The hasFocus is kept in ref so focus or blur is called only
+  // when `isFullscreen` changes (and not when `hasFocus` changes)
+  // This is important to avoid focus/blur loops when opening up
+  // object blocks for editing where the form focus and
+  // the editor selection share the same path.
+  const focusRef = useRef(hasFocus)
   useEffect(() => {
-    if (hasFocus) {
+    focusRef.current = hasFocus
+  }, [hasFocus])
+  useEffect(() => {
+    if (focusRef.current) {
       PortableTextEditor.focus(editor)
-    } else {
-      PortableTextEditor.blur(editor)
     }
-  }, [editor, hasFocus, isFullscreen])
+  }, [editor, isFullscreen])
 
   const editable = useMemo(
     () => (
