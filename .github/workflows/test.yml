@@ -24,6 +24,7 @@ jobs:
         os: [ubuntu-latest]
         node: [18, 20]
         experimental: [false]
+        shard: [1, 2, 3, 4]
         # include:
         #   - os: windows-latest
         #     node: 16
