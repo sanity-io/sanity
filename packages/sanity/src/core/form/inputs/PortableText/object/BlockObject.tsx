@@ -6,17 +6,8 @@ import {
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, isImage} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps, Box} from '@sanity/ui'
-import React, {
-  ComponentType,
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, {PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
-import {PatchArg} from '../../../patch'
 import {
   BlockProps,
   RenderAnnotationCallback,
