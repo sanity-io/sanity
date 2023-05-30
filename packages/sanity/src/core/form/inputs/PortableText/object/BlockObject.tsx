@@ -288,7 +288,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     validation,
   } = props
 
-  const isImagePreview = isImage(schemaType)
+  const isImagePreview = isImage(value)
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
   const hasMarkers = Boolean(markers.length > 0)
