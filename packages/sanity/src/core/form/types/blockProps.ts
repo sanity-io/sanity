@@ -56,6 +56,7 @@ export interface BlockListItemProps {
 export interface BlockAnnotationProps {
   __unstable_boundaryElement?: HTMLElement // Boundary element for the annotation, typically a scroll container
   __unstable_referenceElement?: HTMLElement // Reference element representing the annotation in the DOM
+  __unstable_textElementFocus?: boolean // Wether the related text element (in the editor) has selection focus. Differs from form state focus.
   children?: ReactNode | undefined
   focused: boolean // Whether the annotation data object has form focus
   markers: PortableTextMarker[]
