@@ -74,7 +74,7 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
 
           <Box flex="none">
             <DiffTooltip annotations={changeAnnotations} description="Changes by" portal>
-              <AvatarStack maxLength={4}>
+              <AvatarStack maxLength={4} aria-label="Changes by">
                 {changeAnnotations.map(({author}) => (
                   <UserAvatar key={author} user={author} />
                 ))}
