@@ -26,7 +26,7 @@ import {
 import {HotkeyOptions} from '../types/options'
 import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {normalizeSelection} from '../utils/selection'
-import {toSlateRange} from '../utils/ranges'
+import {toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
 import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
 import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
@@ -250,11 +250,14 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
       // Resolve it as promise (can be either async promise or sync return value)
       new Promise<OnPasteResult>((resolve) => {
+        const value = PortableTextEditor.getValue(portableTextEditor)
+        const ptRange = toPortableTextRange(value, slateEditor.selection, schemaTypes)
+        const path = ptRange?.focus.path || []
         resolve(
           onPaste({
             event,
-            value: PortableTextEditor.getValue(portableTextEditor),
-            path: slateEditor.selection?.focus.path || [],
+            value,
+            path,
             schemaTypes,
           })
         )
