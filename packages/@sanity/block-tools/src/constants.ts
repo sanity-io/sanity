@@ -8,6 +8,8 @@ export interface PartialBlock {
   listItem?: string
 }
 
+export const PRESERVE_WHITESPACE_TAGS = ['pre', 'textarea', 'code']
+
 export const BLOCK_DEFAULT_STYLE = 'normal'
 
 export const DEFAULT_BLOCK: PartialBlock = Object.freeze({

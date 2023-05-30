@@ -1,8 +1,6 @@
 [
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey9",
     "children": [
       {
         "_type": "span",
@@ -11,18 +9,18 @@
         "_key": "randomKey90"
       }
     ],
-    "_key": "randomKey9"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "<marquee bgcolor=\"#ffa7c4\">hi</marquee> ",
+    "code": "<marquee bgcolor=\"#ffa7c4\">hi</marquee>\n\t",
     "_key": "randomKey10"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey11",
     "children": [
       {
         "_type": "span",
@@ -31,18 +29,18 @@
         "_key": "randomKey110"
       }
     ],
-    "_key": "randomKey11"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "React.createElement( /* type */ 'marquee', /* props */ { bgcolor: '#ffa7c4' }, /* children */ 'hi' ) ",
+    "code": "React.createElement(\n\t\t/* type */ 'marquee',\n\t\t/* props */ { bgcolor: '#ffa7c4' },\n\t\t/* children */ 'hi'\n\t)\n\t",
     "_key": "randomKey12"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey13",
     "children": [
       {
         "_type": "span",
@@ -52,7 +50,9 @@
       },
       {
         "_type": "span",
-        "marks": ["em"],
+        "marks": [
+          "em"
+        ],
         "text": "element",
         "_key": "randomKey131"
       },
@@ -63,18 +63,18 @@
         "_key": "randomKey132"
       }
     ],
-    "_key": "randomKey13"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "{ type: 'marquee', props: { bgcolor: '#ffa7c4', children: 'hi', }, key: null, ref: null, $$typeof: Symbol.for('react.element'), // 🧐 Who dis } ",
+    "code": "{\n\t\ttype: 'marquee',\n\t\tprops: {\n\t\t\tbgcolor: '#ffa7c4',\n\t\t\tchildren: 'hi',\n\t\t},\n\t\tkey: null,\n\t\tref: null,\n\t\t$$typeof: Symbol.for('react.element'), // 🧐 Who dis\n\t}\n\t",
     "_key": "randomKey14"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey15",
     "children": [
       {
         "_type": "span",
@@ -84,7 +84,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "type",
         "_key": "randomKey151"
       },
@@ -96,7 +98,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "props",
         "_key": "randomKey153"
       },
@@ -108,7 +112,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "key",
         "_key": "randomKey155"
       },
@@ -120,7 +126,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "ref",
         "_key": "randomKey157"
       },
@@ -132,41 +140,53 @@
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "But what is ",
         "_key": "randomKey159"
       },
       {
         "_type": "span",
-        "marks": ["strong", "code"],
+        "marks": [
+          "strong",
+          "code"
+        ],
         "text": "$$typeof",
         "_key": "randomKey1510"
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "? And why does it have a ",
         "_key": "randomKey1511"
       },
       {
         "_type": "span",
-        "marks": ["strong", "code"],
+        "marks": [
+          "strong",
+          "code"
+        ],
         "text": "Symbol()",
         "_key": "randomKey1512"
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": " as a value?",
         "_key": "randomKey1513"
       }
     ],
-    "_key": "randomKey15"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey16",
     "children": [
       {
         "_type": "span",
@@ -176,7 +196,9 @@
       },
       {
         "_type": "span",
-        "marks": ["em"],
+        "marks": [
+          "em"
+        ],
         "text": "need",
         "_key": "randomKey161"
       },
@@ -187,12 +209,12 @@
         "_key": "randomKey162"
       }
     ],
-    "_key": "randomKey16"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey17",
     "children": [
       {
         "_type": "span",
@@ -201,18 +223,18 @@
         "_key": "randomKey170"
       }
     ],
-    "_key": "randomKey17"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "const messageEl = document.getElementById('message'); messageEl.innerHTML = '<p>' + message.text + '</p>'; ",
+    "code": "const messageEl = document.getElementById('message');\n\tmessageEl.innerHTML = '<p>' + message.text + '</p>';\n\t",
     "_key": "randomKey18"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey19",
     "children": [
       {
         "_type": "span",
@@ -222,7 +244,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "message.text",
         "_key": "randomKey191"
       },
@@ -234,7 +258,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "'<img src onerror=\"stealYourPassword()\">'",
         "_key": "randomKey193"
       },
@@ -246,23 +272,19 @@
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "You don’t want things written by strangers to appear verbatim in your app’s rendered HTML.",
         "_key": "randomKey195"
       }
     ],
-    "_key": "randomKey19"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey0",
-        "_type": "link",
-        "href": "https://gomakethings.com/preventing-cross-site-scripting-attacks-when-using-innerhtml-in-vanilla-javascript/"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey20",
     "children": [
       {
         "_type": "span",
@@ -272,7 +294,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "<script>",
         "_key": "randomKey201"
       },
@@ -284,7 +308,9 @@
       },
       {
         "_type": "span",
-        "marks": ["randomKey0"],
+        "marks": [
+          "randomKey0"
+        ],
         "text": "don’t let this",
         "_key": "randomKey203"
       },
@@ -295,12 +321,18 @@
         "_key": "randomKey204"
       }
     ],
-    "_key": "randomKey20"
+    "markDefs": [
+      {
+        "_key": "randomKey0",
+        "_type": "link",
+        "href": "https://gomakethings.com/preventing-cross-site-scripting-attacks-when-using-innerhtml-in-vanilla-javascript/"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey21",
     "children": [
       {
         "_type": "span",
@@ -310,7 +342,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "document.createTextNode()",
         "_key": "randomKey211"
       },
@@ -322,7 +356,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "textContent",
         "_key": "randomKey213"
       },
@@ -334,7 +370,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "<",
         "_key": "randomKey215"
       },
@@ -346,7 +384,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": ">",
         "_key": "randomKey217"
       },
@@ -357,12 +397,12 @@
         "_key": "randomKey218"
       }
     ],
-    "_key": "randomKey21"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey22",
     "children": [
       {
         "_type": "span",
@@ -372,23 +412,25 @@
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "This is why modern libraries like React escape text content for strings by default:",
         "_key": "randomKey221"
       }
     ],
-    "_key": "randomKey22"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "<p> {message.text} </p> ",
+    "code": "<p>\n\t\t{message.text}\n\t</p>\n\t",
     "_key": "randomKey23"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey24",
     "children": [
       {
         "_type": "span",
@@ -398,7 +440,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "message.text",
         "_key": "randomKey241"
       },
@@ -410,7 +454,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "<img>",
         "_key": "randomKey243"
       },
@@ -422,7 +468,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "<img>",
         "_key": "randomKey245"
       },
@@ -434,7 +482,9 @@
       },
       {
         "_type": "span",
-        "marks": ["em"],
+        "marks": [
+          "em"
+        ],
         "text": "then",
         "_key": "randomKey247"
       },
@@ -446,7 +496,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "<img>",
         "_key": "randomKey249"
       },
@@ -457,12 +509,12 @@
         "_key": "randomKey2410"
       }
     ],
-    "_key": "randomKey24"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey25",
     "children": [
       {
         "_type": "span",
@@ -472,7 +524,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "dangerouslySetInnerHTML={{ __html: message.text }}",
         "_key": "randomKey251"
       },
@@ -484,19 +538,26 @@
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "The fact that it’s clumsy to write is a ",
         "_key": "randomKey253"
       },
       {
         "_type": "span",
-        "marks": ["strong", "em"],
+        "marks": [
+          "strong",
+          "em"
+        ],
         "text": "feature",
         "_key": "randomKey254"
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": ".",
         "_key": "randomKey255"
       },
@@ -507,22 +568,18 @@
         "_key": "randomKey256"
       }
     ],
-    "_key": "randomKey25"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey1",
-        "_type": "link",
-        "href": "https://github.com/facebook/react/issues/3473#issuecomment-90594748"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey26",
     "children": [
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "Does it mean React is entirely safe from injection attacks? No.",
         "_key": "randomKey260"
       },
@@ -534,7 +591,9 @@
       },
       {
         "_type": "span",
-        "marks": ["randomKey1"],
+        "marks": [
+          "randomKey1"
+        ],
         "text": "plenty of attack surface",
         "_key": "randomKey262"
       },
@@ -546,7 +605,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "<a href={user.website}>",
         "_key": "randomKey264"
       },
@@ -558,7 +619,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "'javascript: stealYourPassword()'",
         "_key": "randomKey266"
       },
@@ -570,7 +633,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "<div {...userData}>",
         "_key": "randomKey268"
       },
@@ -581,10 +646,54 @@
         "_key": "randomKey269"
       }
     ],
-    "_key": "randomKey26"
+    "markDefs": [
+      {
+        "_key": "randomKey1",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/issues/3473#issuecomment-90594748"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
+    "_key": "randomKey27",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "React ",
+        "_key": "randomKey270"
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "randomKey2"
+        ],
+        "text": "could",
+        "_key": "randomKey271"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " provide more protection over time but in many cases these are consequences of server issues that ",
+        "_key": "randomKey272"
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "randomKey3"
+        ],
+        "text": "should",
+        "_key": "randomKey273"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " be fixed there anyway.",
+        "_key": "randomKey274"
+      }
+    ],
     "markDefs": [
       {
         "_key": "randomKey2",
@@ -597,45 +706,11 @@
         "href": "https://github.com/facebook/react/issues/3473#issuecomment-91327040"
       }
     ],
-    "style": "normal",
-    "children": [
-      {
-        "_type": "span",
-        "marks": [],
-        "text": "React ",
-        "_key": "randomKey270"
-      },
-      {
-        "_type": "span",
-        "marks": ["randomKey2"],
-        "text": "could",
-        "_key": "randomKey271"
-      },
-      {
-        "_type": "span",
-        "marks": [],
-        "text": " provide more protection over time but in many cases these are consequences of server issues that ",
-        "_key": "randomKey272"
-      },
-      {
-        "_type": "span",
-        "marks": ["randomKey3"],
-        "text": "should",
-        "_key": "randomKey273"
-      },
-      {
-        "_type": "span",
-        "marks": [],
-        "text": " be fixed there anyway.",
-        "_key": "randomKey274"
-      }
-    ],
-    "_key": "randomKey27"
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey28",
     "children": [
       {
         "_type": "span",
@@ -644,22 +719,24 @@
         "_key": "randomKey280"
       }
     ],
-    "_key": "randomKey28"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "// Escaped automatically <p> {message.text} </p> ",
+    "code": "// Escaped automatically\n\t<p>\n\t\t{message.text}\n\t</p>\n\t",
     "_key": "randomKey29"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey30",
     "children": [
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "Well, that wasn’t always true either.",
         "_key": "randomKey300"
       },
@@ -671,7 +748,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "$$typeof",
         "_key": "randomKey302"
       },
@@ -682,12 +761,12 @@
         "_key": "randomKey303"
       }
     ],
-    "_key": "randomKey30"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey31",
     "children": [
       {
         "_type": "span",
@@ -696,24 +775,18 @@
         "_key": "randomKey310"
       }
     ],
-    "_key": "randomKey31"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "{ type: 'marquee', props: { bgcolor: '#ffa7c4', children: 'hi', }, key: null, ref: null, $$typeof: Symbol.for('react.element'), } ",
+    "code": "{\n\t\ttype: 'marquee',\n\t\tprops: {\n\t\t\tbgcolor: '#ffa7c4',\n\t\t\tchildren: 'hi',\n\t\t},\n\t\tkey: null,\n\t\tref: null,\n\t\t$$typeof: Symbol.for('react.element'),\n\t}\n\t",
     "_key": "randomKey32"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey4",
-        "_type": "link",
-        "href": "https://github.com/facebook/react/pull/3583#issuecomment-90296667"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey33",
     "children": [
       {
         "_type": "span",
@@ -723,7 +796,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "React.createElement()",
         "_key": "randomKey331"
       },
@@ -735,7 +810,9 @@
       },
       {
         "_type": "span",
-        "marks": ["em"],
+        "marks": [
+          "em"
+        ],
         "text": "want",
         "_key": "randomKey333"
       },
@@ -747,7 +824,9 @@
       },
       {
         "_type": "span",
-        "marks": ["randomKey4"],
+        "marks": [
+          "randomKey4"
+        ],
         "text": "can be",
         "_key": "randomKey335"
       },
@@ -758,12 +837,18 @@
         "_key": "randomKey336"
       }
     ],
-    "_key": "randomKey33"
+    "markDefs": [
+      {
+        "_key": "randomKey4",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/pull/3583#issuecomment-90296667"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey34",
     "children": [
       {
         "_type": "span",
@@ -773,7 +858,9 @@
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "if your server has a hole that lets the user store an arbitrary JSON object",
         "_key": "randomKey341"
       },
@@ -784,24 +871,18 @@
         "_key": "randomKey342"
       }
     ],
-    "_key": "randomKey34"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "// Server could have a hole that lets user store JSON let expectedTextButGotJSON = { type: 'div', props: { dangerouslySetInnerHTML: { __html: '/* put your exploit here */' }, }, // ... }; let message = { text: expectedTextButGotJSON }; // Dangerous in React 0.13 <p> {message.text} </p> ",
+    "code": "// Server could have a hole that lets user store JSON\n\tlet expectedTextButGotJSON = {\n\t\ttype: 'div',\n\t\tprops: {\n\t\t\tdangerouslySetInnerHTML: {\n\t\t\t\t__html: '/* put your exploit here */'\n\t\t\t},\n\t\t},\n\t\t// ...\n\t};\n\tlet message = { text: expectedTextButGotJSON };\n\n\t// Dangerous in React 0.13\n\t<p>\n\t\t{message.text}\n\t</p>\n\t",
     "_key": "randomKey35"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey5",
-        "_type": "link",
-        "href": "http://danlec.com/blog/xss-via-a-spoofed-react-element"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey36",
     "children": [
       {
         "_type": "span",
@@ -811,7 +892,9 @@
       },
       {
         "_type": "span",
-        "marks": ["randomKey5"],
+        "marks": [
+          "randomKey5"
+        ],
         "text": "vulnerable",
         "_key": "randomKey361"
       },
@@ -823,7 +906,9 @@
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "this attack depends on an existing server hole",
         "_key": "randomKey363"
       },
@@ -834,18 +919,18 @@
         "_key": "randomKey364"
       }
     ],
-    "_key": "randomKey36"
-  },
-  {
-    "_type": "block",
     "markDefs": [
       {
-        "_key": "randomKey6",
+        "_key": "randomKey5",
         "_type": "link",
-        "href": "https://github.com/facebook/react/pull/4832"
+        "href": "http://danlec.com/blog/xss-via-a-spoofed-react-element"
       }
     ],
-    "style": "normal",
+    "_type": "block",
+    "style": "normal"
+  },
+  {
+    "_key": "randomKey37",
     "children": [
       {
         "_type": "span",
@@ -855,7 +940,9 @@
       },
       {
         "_type": "span",
-        "marks": ["randomKey6"],
+        "marks": [
+          "randomKey6"
+        ],
         "text": "tag every React element with a Symbol",
         "_key": "randomKey371"
       },
@@ -866,18 +953,24 @@
         "_key": "randomKey372"
       }
     ],
-    "_key": "randomKey37"
+    "markDefs": [
+      {
+        "_key": "randomKey6",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/pull/4832"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "{ type: 'marquee', props: { bgcolor: '#ffa7c4', children: 'hi', }, key: null, ref: null, $$typeof: Symbol.for('react.element'), } ",
+    "code": "{\n\t\ttype: 'marquee',\n\t\tprops: {\n\t\t\tbgcolor: '#ffa7c4',\n\t\t\tchildren: 'hi',\n\t\t},\n\t\tkey: null,\n\t\tref: null,\n\t\t$$typeof: Symbol.for('react.element'),\n\t}\n\t",
     "_key": "randomKey38"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey39",
     "children": [
       {
         "_type": "span",
@@ -887,7 +980,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "Symbol",
         "_key": "randomKey391"
       },
@@ -899,19 +994,26 @@
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "So even if the server has a security hole and returns JSON instead of text, that JSON can’t include ",
         "_key": "randomKey393"
       },
       {
         "_type": "span",
-        "marks": ["strong", "code"],
+        "marks": [
+          "strong",
+          "code"
+        ],
         "text": "Symbol.for('react.element')",
         "_key": "randomKey394"
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": ".",
         "_key": "randomKey395"
       },
@@ -923,7 +1025,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "element.$$typeof",
         "_key": "randomKey397"
       },
@@ -934,12 +1038,12 @@
         "_key": "randomKey398"
       }
     ],
-    "_key": "randomKey39"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey40",
     "children": [
       {
         "_type": "span",
@@ -949,7 +1053,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "Symbol.for()",
         "_key": "randomKey401"
       },
@@ -961,7 +1067,9 @@
       },
       {
         "_type": "span",
-        "marks": ["strong"],
+        "marks": [
+          "strong"
+        ],
         "text": "Symbols are global between environments like iframes and workers.",
         "_key": "randomKey403"
       },
@@ -973,7 +1081,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "$$typeof",
         "_key": "randomKey405"
       },
@@ -984,18 +1094,12 @@
         "_key": "randomKey406"
       }
     ],
-    "_key": "randomKey40"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey7",
-        "_type": "link",
-        "href": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#Browser_compatibility"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey41",
     "children": [
       {
         "_type": "span",
@@ -1005,7 +1109,9 @@
       },
       {
         "_type": "span",
-        "marks": ["randomKey7"],
+        "marks": [
+          "randomKey7"
+        ],
         "text": "don’t support",
         "_key": "randomKey411"
       },
@@ -1016,18 +1122,18 @@
         "_key": "randomKey412"
       }
     ],
-    "_key": "randomKey41"
-  },
-  {
-    "_type": "block",
     "markDefs": [
       {
-        "_key": "randomKey8",
+        "_key": "randomKey7",
         "_type": "link",
-        "href": "https://github.com/facebook/react/blob/8482cbe22d1a421b73db602e1f470c632b09f693/packages/shared/ReactSymbols.js#L14-L16"
+        "href": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#Browser_compatibility"
       }
     ],
-    "style": "normal",
+    "_type": "block",
+    "style": "normal"
+  },
+  {
+    "_key": "randomKey42",
     "children": [
       {
         "_type": "span",
@@ -1037,7 +1143,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "$$typeof",
         "_key": "randomKey421"
       },
@@ -1049,7 +1157,9 @@
       },
       {
         "_type": "span",
-        "marks": ["randomKey8"],
+        "marks": [
+          "randomKey8"
+        ],
         "text": "set to a number",
         "_key": "randomKey423"
       },
@@ -1061,7 +1171,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "0xeac7",
         "_key": "randomKey425"
       },
@@ -1072,12 +1184,18 @@
         "_key": "randomKey426"
       }
     ],
-    "_key": "randomKey42"
+    "markDefs": [
+      {
+        "_key": "randomKey8",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/blob/8482cbe22d1a421b73db602e1f470c632b09f693/packages/shared/ReactSymbols.js#L14-L16"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey43",
     "children": [
       {
         "_type": "span",
@@ -1087,7 +1205,9 @@
       },
       {
         "_type": "span",
-        "marks": ["code"],
+        "marks": [
+          "code"
+        ],
         "text": "0xeac7",
         "_key": "randomKey431"
       },
@@ -1098,6 +1218,8 @@
         "_key": "randomKey432"
       }
     ],
-    "_key": "randomKey43"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   }
 ]

@@ -37,6 +37,9 @@ export default function createHTMLRules(
     // Text nodes
     {
       deserialize(el) {
+        if (tagName(el) === 'pre') {
+          return undefined
+        }
         const isValidWhiteSpace =
           el.nodeType === 3 &&
           (el.textContent || '').replace(/[\r\n]/g, ' ').replace(/\s\s+/g, ' ') === ' ' &&
@@ -54,6 +57,28 @@ export default function createHTMLRules(
           }
         }
         return undefined
+      },
+    }, // Pre element
+    {
+      deserialize(el) {
+        if (tagName(el) !== 'pre') {
+          return undefined
+        }
+
+        const isCodeEnabled = options.enabledBlockStyles.includes('code')
+
+        return {
+          _type: 'block',
+          style: 'normal',
+          markDefs: [],
+          children: [
+            {
+              ...DEFAULT_SPAN,
+              marks: isCodeEnabled ? ['code'] : [],
+              text: el.textContent || '',
+            },
+          ],
+        }
       },
     }, // Blockquote element
     {
