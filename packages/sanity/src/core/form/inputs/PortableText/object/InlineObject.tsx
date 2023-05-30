@@ -280,7 +280,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
           onClose={onClose}
-          autofocus={focused}
+          autoFocus={focused}
           referenceElement={__unstable_referenceElement}
           schemaType={schemaType}
         >

@@ -16,7 +16,7 @@ import {
 } from './PopoverModal.styles'
 
 interface PopoverEditDialogProps {
-  autofocus?: boolean
+  autoFocus?: boolean
   boundaryElement?: PortableTextEditorElement
   children: React.ReactNode
   onClose: () => void
@@ -53,7 +53,7 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
 }
 
 function Content(props: PopoverEditDialogProps) {
-  const {onClose, referenceElement, width = 0, title, boundaryElement, autofocus} = props
+  const {onClose, referenceElement, width = 0, title, boundaryElement, autoFocus} = props
 
   useGlobalKeyDown(
     useCallback(
@@ -82,7 +82,7 @@ function Content(props: PopoverEditDialogProps) {
               </Box>
 
               <Button
-                autoFocus={Boolean(autofocus)}
+                autoFocus={Boolean(autoFocus)}
                 icon={CloseIcon}
                 mode="bleed"
                 onClick={onClose}
