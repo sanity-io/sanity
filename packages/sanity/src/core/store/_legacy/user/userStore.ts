@@ -18,7 +18,9 @@ const INTERNAL_USER_IDS: User[] = [
   },
 ]
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface UserStore {
   getUser(userId: string): Promise<User | null>
   getUsers(userIds: string[]): Promise<User[]>

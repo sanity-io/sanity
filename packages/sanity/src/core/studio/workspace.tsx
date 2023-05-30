@@ -13,7 +13,9 @@ export function WorkspaceProvider({children, workspace}: WorkspaceProviderProps)
   return <WorkspaceContext.Provider value={workspace}>{children}</WorkspaceContext.Provider>
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function useWorkspace(): Workspace {
   const workspace = useContext(WorkspaceContext)
 

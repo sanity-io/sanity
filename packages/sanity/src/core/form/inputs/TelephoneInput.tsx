@@ -3,11 +3,15 @@ import {TextInput} from '@sanity/ui'
 import {StringInputProps} from '../types'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type TelephoneInputProps = StringInputProps
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function TelephoneInput(props: TelephoneInputProps) {

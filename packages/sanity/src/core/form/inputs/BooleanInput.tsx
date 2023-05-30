@@ -14,6 +14,8 @@ const ZeroLineHeightBox = styled(Box)`
 `
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function BooleanInput(props: BooleanInputProps) {

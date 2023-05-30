@@ -50,6 +50,8 @@ const Root = styled(Layer)`
 `
 
 /**
+ *
+ * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export function PaneDivider({

@@ -3,6 +3,8 @@ import {AssetSourceSpec, SchemaType, AssetMetadataType} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {FormPatch} from '../../patch'
 /**
+ *
+ * @hidden
  * @beta
  */
 export type UploadProgressEvent = {
@@ -11,11 +13,15 @@ export type UploadProgressEvent = {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type ResolvedUploader = {uploader: Uploader; type: SchemaType}
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type UploadOptions = {
@@ -38,6 +44,8 @@ export type UploaderDef = {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type Uploader<S extends SchemaType = SchemaType> = {
@@ -53,6 +61,8 @@ export type Uploader<S extends SchemaType = SchemaType> = {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FileLike {
@@ -63,6 +73,8 @@ export interface FileLike {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type UploaderResolver<S extends SchemaType = SchemaType> = (

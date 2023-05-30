@@ -9,7 +9,9 @@ import {Reconstruction} from './Reconstruction'
 
 const TRANSLOG_ENTRY_LIMIT = 50
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type TimelineControllerOptions = {
   timeline: Timeline
   client: SanityClient
@@ -18,13 +20,17 @@ export type TimelineControllerOptions = {
   handler?: (err: Error | null, controller: TimelineController) => void
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type SelectionState = 'inactive' | 'rev' | 'range' | 'loading' | 'invalid'
 
 /**
  * The controller is responsible for fetching information
  * about a document and maintaining a Timeline.
  *
+ *
+ * @hidden
  * @beta
  */
 export class TimelineController {

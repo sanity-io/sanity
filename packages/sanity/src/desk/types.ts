@@ -17,6 +17,8 @@ import {
 /** @internal */
 export interface DeskToolFeatures {
   /**
+   *
+   * @hidden
    * @beta
    */
   backButton: boolean
@@ -45,14 +47,18 @@ export interface StructureResolverContext extends ConfigContext {
   documentStore: DocumentStore
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 // TODO: this should be updated to enforce the correct return type
 export type StructureResolver = (S: StructureBuilder, context: StructureResolverContext) => unknown
 
 /** @internal */
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DeskToolOptions {
   icon?: React.ComponentType
   name?: string
@@ -97,6 +103,8 @@ export interface DeskToolOptions {
  *
  * [0]: https://github.com/sanity-io/sanity/blob/287d308442938c98cbec4608d159401631792d7a/packages/%40sanity/desk-tool/src/utils/parsePanesSegment.ts#L71-L88
  *
+ *
+ * @hidden
  * @beta
  */
 export type RouterPanes = RouterPaneGroup[]
@@ -106,6 +114,8 @@ export type RouterPanes = RouterPaneGroup[]
  *
  * @see RouterPanes
  *
+ *
+ * @hidden
  * @beta
  */
 export type RouterPaneGroup = RouterPaneSibling[]
@@ -115,6 +125,8 @@ export type RouterPaneGroup = RouterPaneSibling[]
  *
  * @see RouterPanes
  *
+ *
+ * @hidden
  * @beta
  */
 export interface RouterPaneSibling {

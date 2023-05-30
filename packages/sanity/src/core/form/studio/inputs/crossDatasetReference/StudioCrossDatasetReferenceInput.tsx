@@ -45,6 +45,8 @@ async function resolveUserDefinedFilter(
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type StudioCrossDatasetReferenceInputProps = ObjectInputProps<
@@ -67,6 +69,8 @@ type SearchError = {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {

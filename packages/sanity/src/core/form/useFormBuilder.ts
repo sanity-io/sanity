@@ -2,6 +2,8 @@ import {useContext} from 'react'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function useFormBuilder(): FormBuilderContextValue {

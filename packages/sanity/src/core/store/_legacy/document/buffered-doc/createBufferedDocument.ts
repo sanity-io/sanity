@@ -11,7 +11,9 @@ import {
   SnapshotEvent,
 } from './types'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type BufferedDocumentEvent =
   | SnapshotEvent
   | DocumentRebaseEvent

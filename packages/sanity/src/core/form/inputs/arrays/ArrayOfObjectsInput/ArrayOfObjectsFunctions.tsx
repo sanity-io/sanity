@@ -16,7 +16,9 @@ import {ArrayInputFunctionsProps, ObjectItem} from '../../../types'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {constrainSize: true, portal: true}
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function ArrayOfObjectsFunctions<
   Item extends ObjectItem,
   SchemaType extends ArraySchemaType

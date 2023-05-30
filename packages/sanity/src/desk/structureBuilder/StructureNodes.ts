@@ -11,14 +11,18 @@ import type {InitialValueTemplateItemBuilder} from './InitialValueTemplateItem'
 import type {DocumentBuilder} from './Document'
 import type {View} from './types'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface StructureNode {
   id: string
   title?: string
   type?: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentNode extends StructureNode {
   child?: Child
   options: {
@@ -30,7 +34,9 @@ export interface DocumentNode extends StructureNode {
   views: View[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface EditorNode extends StructureNode {
   child?: Child
   options: {
@@ -41,31 +47,43 @@ export interface EditorNode extends StructureNode {
   }
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface Divider {
   id: string
   type: 'divider'
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type SerializePath = (string | number)[]
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface SerializeOptions {
   path: SerializePath
   index?: number
   hint?: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface Serializable<T> {
   serialize(options: SerializeOptions): T
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type Collection = List | DocumentList | EditorNode | DocumentNode | Component
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type CollectionBuilder =
   | ListBuilder
   | DocumentListBuilder
@@ -73,7 +91,9 @@ export type CollectionBuilder =
   | DocumentBuilder
   | ComponentBuilder
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type Child = Collection | CollectionBuilder | ChildResolver
 
 /** @internal */

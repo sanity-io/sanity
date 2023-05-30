@@ -4,7 +4,9 @@ import {SanityDocument} from '@sanity/types'
 /** @internal */
 export type CommitFunction = (mutation: Mutation['params']) => Promise<unknown>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentRebaseEvent {
   type: 'rebase'
   document: SanityDocument
@@ -12,7 +14,9 @@ export interface DocumentRebaseEvent {
   localMutations: MutationPayload[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentMutationEvent {
   type: 'mutation'
   document: SanityDocument
@@ -20,18 +24,24 @@ export interface DocumentMutationEvent {
   origin: 'local' | 'remote'
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface SnapshotEvent {
   type: 'snapshot'
   document: SanityDocument
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface CommittedEvent {
   type: 'committed'
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentRemoteMutationEvent {
   type: 'remoteMutation'
   head: SanityDocument
@@ -44,10 +54,14 @@ export interface DocumentRemoteMutationEvent {
   }
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type RemoteSnapshotEvent = DocumentRemoteMutationEvent | SnapshotEvent
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 // HTTP API Mutation payloads
 // Note: this is *not* the same as the Mutation helper class exported by @sanity/mutator
 export interface MutationPayload {

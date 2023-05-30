@@ -71,6 +71,8 @@ export type MixedArrayError = {type: 'MIXED_ARRAY'; schemaType: ArraySchemaType;
 /**
  * This error may happen for arrays (of both objects and primitive values) if we encounter items that are not valid according to the schema definition
  *
+ *
+ * @hidden
  * @beta
  */
 export type InvalidItemTypeError = {
@@ -94,7 +96,9 @@ export interface FieldError {
     | MixedArrayError
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ArrayItemError {
   kind: 'error'
   key: string

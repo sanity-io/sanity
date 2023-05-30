@@ -21,7 +21,9 @@ import {resolveTypeForDocument} from './resolveTypeForDocument'
 import type {IdPair} from './types'
 import {getInitialValueStream, InitialValueMsg, InitialValueOptions} from './initialValue'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type QueryParams = Record<string, string | number | boolean | string[]>
 
 function getIdPairFromPublished(publishedId: string): IdPair {
@@ -32,7 +34,9 @@ function getIdPairFromPublished(publishedId: string): IdPair {
   return {publishedId, draftId: getDraftId(publishedId)}
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentStore {
   /** @internal */
   checkoutPair: (idPair: IdPair) => Pair

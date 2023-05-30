@@ -8,10 +8,14 @@ import {FormFieldHeaderText} from './FormFieldHeaderText'
 
 export interface FormFieldHeaderProps {
   /**
+   *
+   * @hidden
    * @beta
    */
   validation?: FormNodeValidation[]
   /**
+   *
+   * @hidden
    * @beta
    */
   __unstable_presence?: FormNodePresence[]

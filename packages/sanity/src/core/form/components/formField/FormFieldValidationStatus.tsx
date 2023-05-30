@@ -10,10 +10,14 @@ import styled from 'styled-components'
 /** @internal */
 export interface FormFieldValidationStatusProps {
   /**
+   *
+   * @hidden
    * @beta
    */
   validation?: FormNodeValidation[]
   /**
+   *
+   * @hidden
    * @beta
    */
   __unstable_showSummary?: boolean

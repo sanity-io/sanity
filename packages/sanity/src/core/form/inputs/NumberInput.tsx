@@ -5,6 +5,8 @@ import {getValidationRule} from '../utils/getValidationRule'
 import {NumberInputProps} from '../types'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function NumberInput(props: NumberInputProps) {

@@ -44,7 +44,9 @@ import {FileActionsMenu} from './FileActionsMenu'
 import {FileSkeleton} from './FileSkeleton'
 import {InvalidFileWarning} from './InvalidFileWarning'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BaseFileInputValue extends Partial<BaseFile> {
   _upload?: UploadState
 }
@@ -53,7 +55,9 @@ function passThrough({children}: {children?: React.ReactNode}) {
   return children
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BaseFileInputProps extends ObjectInputProps<BaseFileInputValue, FileSchemaType> {
   assetSources: AssetSource[]
   directUploads?: boolean
