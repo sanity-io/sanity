@@ -22,10 +22,12 @@ import {
   StateTree,
   TimelineStore,
 } from 'sanity'
+import {DocumentAction2} from '../../../core/config/document/actions2'
 
 /** @internal */
 export interface DocumentPaneContextValue {
   actions: DocumentActionComponent[] | null
+  actions2: DocumentAction2[] | null
   activeViewId: string | null
   badges: DocumentBadgeComponent[] | null
   changesOpen: boolean

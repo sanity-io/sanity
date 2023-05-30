@@ -14,6 +14,8 @@ import type {
   ResolveProductionUrlContext,
   Tool,
 } from './types'
+import {DocumentAction2} from './document/actions2'
+import {SanityClient} from '@sanity/client'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
@@ -131,6 +133,21 @@ export const documentActionsReducer: ConfigPropertyReducer<
 
   throw new Error(
     `Expected \`document.actions\` to be an array or a function, but received ${typeof documentActions}`
+  )
+}
+
+export const documentActionsReducer2: ConfigPropertyReducer<
+  DocumentAction2[],
+  DocumentActionsContext & {client: SanityClient}
+> = (prev, {document}, context) => {
+  const documentActions2 = document?.actions2
+  if (!documentActions2) return prev
+
+  if (typeof documentActions2 === 'function') return documentActions2(prev, context)
+  if (Array.isArray(documentActions2)) return [...prev, ...documentActions2]
+
+  throw new Error(
+    `Expected \`document.actions2\` to be an array or a function, but received ${typeof documentActions2}`
   )
 }
 

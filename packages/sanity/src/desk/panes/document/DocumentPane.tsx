@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   Code,
   DialogProvider,
@@ -33,15 +34,18 @@ import {
 } from './constants'
 import {
   ChangeConnectorRoot,
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
   ReferenceInputOptionsProvider,
   SourceProvider,
   isDev,
+  useClient,
   useDocumentType,
   useSource,
   useTemplatePermissions,
   useTemplates,
   useZIndex,
 } from 'sanity'
+import {DocumentActionsTest} from './DocumentActionsTest'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
@@ -310,15 +314,9 @@ function InnerDocumentPane() {
         </Flex>
       </DialogProvider>
 
-      {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
-      {/* The portal element comes from `DocumentPanel`. */}
-      <PortalProvider __unstable_elements={{documentPanelPortalElement}}>
-        <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-          <PaneFooter ref={setFooterElement}>
-            <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
-          </PaneFooter>
-        </DialogProvider>
-      </PortalProvider>
+      <Card padding={2} borderTop>
+        <DocumentActionsTest />
+      </Card>
 
       {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
       {/* The portal element comes from `DocumentPanel`. */}

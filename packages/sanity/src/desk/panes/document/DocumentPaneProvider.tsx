@@ -55,6 +55,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     badges: documentBadges,
     unstable_languageFilter: languageFilterResolver,
     inspectors: inspectorsResolver,
+    actions2: actions2Resolver,
   } = useSource().document
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
@@ -102,6 +103,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const actions = useMemo(
     () => documentActions({schemaType: documentType, documentId}),
     [documentActions, documentId, documentType]
+  )
+
+  const actions2 = useMemo(
+    () => actions2Resolver({schemaType: documentType, documentId}),
+    [actions2Resolver, documentId, documentType]
   )
 
   // Resolve document badges
@@ -481,6 +487,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const documentPane: DocumentPaneContextValue = {
     actions,
+    actions2,
     activeViewId,
     badges,
     changesOpen,

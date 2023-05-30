@@ -27,6 +27,7 @@ import {
 } from './types'
 import {
   documentActionsReducer,
+  documentActionsReducer2,
   documentBadgesReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
@@ -453,6 +454,16 @@ function resolveSource({
           propertyName: 'document.actions',
           reducer: documentActionsReducer,
         }),
+
+      actions2: (partialContext) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, ...partialContext},
+          initialValue: [],
+          propertyName: 'document.actions2',
+          reducer: documentActionsReducer2,
+        }),
+
       badges: (partialContext) =>
         resolveConfigProperty({
           config,

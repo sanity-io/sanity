@@ -1,10 +1,13 @@
-import {BookIcon} from '@sanity/icons'
+import {BookIcon, CopyIcon, PublishIcon, TrashIcon, UnpublishIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin} from 'sanity'
+import {OperationsAPI, defineConfig, definePlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {theme as tailwindTheme} from 'https://themer.sanity.build/api/hues?preset=tw-cyan&default=64748b&primary=d946ef;lightest:fdf4ff;darkest:701a75&transparent=6b7180;darkest:111826&positive=43d675;400;lightest:f8fafc&caution=f59e09;300;lightest:fffbeb;darkest:783510&critical=f43f5e;lightest:fef1f2;darkest:881337&lightest=ffffff&darkest=0f172a'
 import {googleMapsInput} from '@sanity/google-maps-input'
+import {DocumentAction2} from 'packages/sanity/src/core/config/document/actions2'
+import {Observable, tap} from 'rxjs'
+import {uuid} from '@sanity/uuid'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
 import {resolveDocumentActions as documentActions} from './documentActions'
@@ -27,6 +30,85 @@ import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {customInspector} from './inspectors/custom'
 
+const publishAction: DocumentAction2 = {
+  name: 'publish',
+  menuItem: ({loading, draft}) => {
+    return {
+      disabled: loading || !draft,
+      icon: PublishIcon,
+      title: 'Publish',
+      tone: 'positive',
+    }
+  },
+  onAction: ({onActionStart, onActionEnd, operations}) => {
+    onActionStart()
+
+    operations.publish.execute()
+
+    onActionEnd()
+  },
+}
+
+const deleteAction: DocumentAction2 = {
+  name: 'delete',
+  menuItem: ({loading, draft, published}) => {
+    return {
+      disabled: loading || (!draft && !published),
+      icon: TrashIcon,
+      title: 'Delete',
+      tone: 'critical',
+    }
+  },
+  onAction: ({onActionStart, onActionEnd, operations}) => {
+    onActionStart()
+
+    operations.delete.execute()
+
+    onActionEnd()
+  },
+}
+
+const duplicateAction: DocumentAction2 = {
+  name: 'duplicate',
+  context: 'menu',
+  menuItem: ({loading, draft, published}) => {
+    return {
+      disabled: loading || (!draft && !published),
+      icon: CopyIcon,
+      title: 'Duplicate',
+      tone: 'primary',
+    }
+  },
+  onAction: ({onActionStart, onActionEnd, operations}) => {
+    onActionStart()
+
+    const newId = uuid()
+
+    operations.duplicate.execute(newId)
+
+    onActionEnd()
+  },
+}
+
+const unpublishAction: DocumentAction2 = {
+  name: 'unpublish',
+  menuItem: ({loading, published}) => {
+    return {
+      disabled: loading || !published,
+      icon: UnpublishIcon,
+      title: 'Unpublish',
+      tone: 'caution',
+    }
+  },
+  onAction: ({onActionStart, onActionEnd, operations}) => {
+    onActionStart()
+
+    operations.unpublish.execute()
+
+    onActionEnd()
+  },
+}
+
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
   schema: {
@@ -45,6 +127,7 @@ const sharedSettings = definePlugin({
   },
   document: {
     actions: documentActions,
+    actions2: [publishAction, deleteAction, duplicateAction, unpublishAction],
     inspectors: (prev, ctx) => {
       if (ctx.documentType === 'inspectorsTest') {
         return [customInspector, ...prev]
@@ -107,6 +190,13 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
+    // document: {
+    //   actions2: (prev) => {
+    //     console.log(prev)
+
+    //     return prev.filter(v => v.name !== 'action')
+    //   },
+    // },
   },
   {
     name: 'playground',

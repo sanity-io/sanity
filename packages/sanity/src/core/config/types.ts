@@ -27,6 +27,7 @@ import {SearchOperatorDefinition} from '../studio/components/navbar/search/defin
 import {StudioComponents, StudioComponentsPluginOptions} from './studio'
 import {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import {Router, RouterState} from 'sanity/router'
+import {DocumentAction2} from './document/actions2'
 
 /**
  * @beta
@@ -157,6 +158,7 @@ export type NewDocumentCreationContext =
 export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
+  actions2?: DocumentAction2[] | DocumentActions2Resolver
   /** @beta */
   inspectors?: DocumentInspector[] | DocumentInspectorsResolver
   /** @beta */
@@ -192,6 +194,12 @@ export type DocumentLanguageFilterResolver = ComposableOption<
 export type DocumentActionsResolver = ComposableOption<
   DocumentActionComponent[],
   DocumentActionsContext
+>
+
+/** @beta */
+export type DocumentActions2Resolver = ComposableOption<
+  DocumentAction2[],
+  DocumentActionsContext & {client: SanityClient}
 >
 
 /** @beta */
@@ -338,6 +346,9 @@ export interface Source {
   document: {
     /** @beta */
     actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]
+
+    /** @beta */
+    actions2: (props: PartialContext<DocumentActionsContext>) => DocumentAction2[]
 
     /** @beta */
     badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]
