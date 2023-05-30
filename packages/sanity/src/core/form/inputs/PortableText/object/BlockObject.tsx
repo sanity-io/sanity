@@ -15,7 +15,6 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {isEqual} from '@sanity/util/paths'
 import {PatchArg} from '../../../patch'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
@@ -104,7 +103,7 @@ export function BlockObject(props: BlockObjectProps) {
       PortableTextEditor.blur(editor)
       onItemOpen(memberItem.node.path)
     }
-  }, [editor, onItemOpen, memberItem])
+  }, [editor, memberItem, onItemOpen])
 
   const onClose = useCallback(() => {
     onItemClose()
@@ -317,11 +316,10 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     onOpen,
     onRemove,
     open,
-    path,
     readOnly,
     renderPreview,
-    selected,
     schemaType,
+    selected,
     value,
     validation,
   } = props
@@ -331,7 +329,6 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
   const hasMarkers = Boolean(markers.length > 0)
   const tone = selected || focused ? 'primary' : 'default'
-  const autofocus = isEqual(path.slice(-1), [{_key: value._key}])
 
   const handleDoubleClickToOpen = useCallback(
     (e: React.MouseEvent<Element, MouseEvent>) => {
@@ -380,7 +377,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="dialog"
           onClose={onClose}
-          autofocus={autofocus}
+          autofocus={focused}
           schemaType={schemaType}
           referenceElement={__unstable_referenceElement}
         >

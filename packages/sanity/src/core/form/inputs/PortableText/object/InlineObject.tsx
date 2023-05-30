@@ -6,7 +6,6 @@ import {
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Tooltip} from '@sanity/ui'
-import {isEqual} from '@sanity/util/paths'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -194,7 +193,6 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
     onOpen,
     onRemove,
     open,
-    path,
     readOnly,
     renderPreview,
     schemaType,
@@ -242,8 +240,6 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
     setPopoverOpen(false)
   }, [])
 
-  const autofocus = isEqual(path.slice(-2), ['children', {_key: value._key}])
-
   return (
     <>
       <Root
@@ -284,7 +280,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
           onClose={onClose}
-          autofocus={autofocus}
+          autofocus={focused}
           referenceElement={__unstable_referenceElement}
           schemaType={schemaType}
         >

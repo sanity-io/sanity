@@ -19,6 +19,7 @@ import {ObjectEditModal} from './modals/ObjectEditModal'
 interface AnnotationProps {
   boundaryElement: HTMLElement | null
   children: React.ReactElement
+  editorNodeFocused: boolean
   focused: boolean
   onItemClose: () => void
   onItemOpen: (path: Path) => void
@@ -35,6 +36,7 @@ export function Annotation(props: AnnotationProps) {
   const {
     boundaryElement,
     children,
+    editorNodeFocused,
     focused,
     onItemClose,
     onItemOpen,
@@ -64,9 +66,10 @@ export function Annotation(props: AnnotationProps) {
     if (memberItem) {
       // Take focus away from the editor so that it doesn't propagate a new focusPath and interfere here.
       PortableTextEditor.blur(editor)
+      onPathFocus(memberItem.node.focusPath) // Set the focus path to be the markDef here as we currently have focus on the text node
       onItemOpen(memberItem.node.path)
     }
-  }, [editor, onItemOpen, memberItem])
+  }, [editor, memberItem, onItemOpen, onPathFocus])
 
   const onClose = useCallback(() => {
     onItemClose()
@@ -117,6 +120,7 @@ export function Annotation(props: AnnotationProps) {
 
   const componentProps = useMemo(
     (): BlockAnnotationProps => ({
+      __unstable_textElementFocus: editorNodeFocused, // Is there focus on the related text element for this object?
       __unstable_boundaryElement: boundaryElement || undefined,
       __unstable_referenceElement: referenceElement || undefined,
       children: input,
@@ -141,6 +145,7 @@ export function Annotation(props: AnnotationProps) {
     [
       boundaryElement,
       editor.schemaTypes.block,
+      editorNodeFocused,
       focused,
       input,
       isOpen,
@@ -195,23 +200,21 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     __unstable_boundaryElement,
     __unstable_referenceElement,
     children,
+    focused,
     markers,
     onClose,
     onOpen,
     onRemove,
     open,
-    path,
     readOnly,
     schemaType,
     textElement,
     validation,
-    value,
   } = props
   const isLink = schemaType.name === 'link'
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
   const hasMarkers = markers.length > 0
-  const autofocus = isEqual(path.slice(-2), ['markDefs', {_key: value._key}])
 
   const toneKey = useMemo(() => {
     if (hasError) {
@@ -250,7 +253,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
           onClose={onClose}
-          autofocus={autofocus}
+          autofocus={focused}
           referenceElement={__unstable_referenceElement}
           schemaType={schemaType}
         >

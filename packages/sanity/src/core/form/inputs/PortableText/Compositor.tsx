@@ -252,7 +252,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     (annotationProps: BlockAnnotationRenderProps) => {
       const {
         children,
-        focused: aFocused,
+        focused: editorNodeFocused,
         path: aPath,
         selected,
         schemaType: aSchemaType,
@@ -261,7 +261,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       return (
         <Annotation
           boundaryElement={boundaryElement}
-          focused={aFocused}
+          focused={Boolean(focused)}
+          editorNodeFocused={editorNodeFocused}
           onItemClose={onItemClose}
           onItemOpen={onItemOpen}
           onPathFocus={onPathFocus}
@@ -276,7 +277,16 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         </Annotation>
       )
     },
-    [boundaryElement, onItemClose, onItemOpen, onPathFocus, path, readOnly, renderCustomMarkers]
+    [
+      boundaryElement,
+      focused,
+      onItemClose,
+      onItemOpen,
+      onPathFocus,
+      path,
+      readOnly,
+      renderCustomMarkers,
+    ]
   )
 
   const editorNode = useMemo(
