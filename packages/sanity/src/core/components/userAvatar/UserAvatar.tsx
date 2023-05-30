@@ -97,6 +97,7 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
       ref={ref}
       size={typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size}
       status={status}
+      title={user?.displayName}
     />
   )
 })

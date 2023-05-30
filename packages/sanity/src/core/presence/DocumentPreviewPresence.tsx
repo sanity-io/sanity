@@ -70,7 +70,7 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>
       <AvatarStackCard scheme={selected ? invertedScheme : undefined} $selected={selected}>
-        <AvatarStack maxLength={2}>
+        <AvatarStack maxLength={2} aria-label={getTooltipText(uniqueUsers)}>
           {uniqueUsers.map((item) => (
             <UserAvatar key={item.user.id} user={item.user} />
           ))}
