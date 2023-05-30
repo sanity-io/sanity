@@ -20,7 +20,9 @@ const Bar = styled(Card)(({theme}: {theme: Theme}) => {
   `
 })
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function LinearProgress(props: {
   /** Percentage */
   value: number

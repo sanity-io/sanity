@@ -47,6 +47,7 @@ export interface PortableTextMemberItem {
 /**
  * The root Portable Text Input component
  *
+ * @hidden
  * @beta
  */
 export function PortableTextInput(props: PortableTextInputProps) {

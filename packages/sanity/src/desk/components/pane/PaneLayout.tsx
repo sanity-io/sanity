@@ -6,6 +6,8 @@ import {Root} from './PaneLayout.styles'
 import {createPaneLayoutController, PaneLayoutState} from './paneLayoutController'
 
 /**
+ *
+ * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export interface PaneLayoutProps {
@@ -15,6 +17,8 @@ export interface PaneLayoutProps {
 }
 
 /**
+ *
+ * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export function PaneLayout(

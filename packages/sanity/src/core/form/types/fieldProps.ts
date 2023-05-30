@@ -25,12 +25,16 @@ import {
   StringInputProps,
 } from './inputProps'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BaseFieldProps {
   schemaType: SchemaType
   title: string | undefined
   description: string | undefined
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   presence: FormNodePresence[]
   validation: FormNodeValidation[]
   level: number
@@ -44,7 +48,9 @@ export interface BaseFieldProps {
   renderDefault: (props: FieldProps) => ReactElement
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ObjectFieldProps<T = Record<string, any>> extends BaseFieldProps {
   schemaType: ObjectSchemaType
   value: {[field in string]: unknown} | undefined
@@ -58,7 +64,9 @@ export interface ObjectFieldProps<T = Record<string, any>> extends BaseFieldProp
   inputProps: ObjectInputProps<T>
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ArrayFieldProps extends BaseFieldProps {
   schemaType: ArraySchemaType
   value: unknown[] | undefined
@@ -69,7 +77,9 @@ export interface ArrayFieldProps extends BaseFieldProps {
   inputProps: ArrayOfObjectsInputProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
   schemaType: ArraySchemaType
   value: unknown[] | undefined
@@ -80,21 +90,27 @@ export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
   inputProps: ArrayOfPrimitivesInputProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface NumberFieldProps extends BaseFieldProps {
   schemaType: NumberSchemaType
   value: number | undefined
   inputProps: NumberInputProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BooleanFieldProps extends BaseFieldProps {
   schemaType: BooleanSchemaType
   value: boolean | undefined
   inputProps: BooleanInputProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface StringFieldProps extends BaseFieldProps {
   schemaType: StringSchemaType
   value: string | undefined
@@ -104,7 +120,9 @@ export interface StringFieldProps extends BaseFieldProps {
 /** @internal */
 export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringFieldProps
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type FieldProps =
   | ObjectFieldProps
   | ObjectFieldProps<CrossDatasetReferenceValue>

@@ -5,6 +5,8 @@ import styled from 'styled-components'
 import {StringInputProps} from '../types'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type TextInputProps = StringInputProps<TextSchemaType>
@@ -16,6 +18,8 @@ const StyledTextArea = styled(TextArea)`
 `
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function TextInput(props: TextInputProps) {

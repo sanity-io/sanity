@@ -24,6 +24,8 @@ const CONTEXT_MENU_POPOVER_PROPS: PopoverProps = {
 }
 
 /**
+ *
+ * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {

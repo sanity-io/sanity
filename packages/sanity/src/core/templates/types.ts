@@ -43,14 +43,18 @@ export type TemplateArrayFieldDefinition = TemplateFieldDefinition & {
   of: (TemplateReferenceTarget | TypeTarget)[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface InitialValueTemplateItem extends TemplateResponse {
   id: string
   type: 'initialValueTemplateItem'
   schemaType: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type TemplateResponse = {
   templateId: string
   title?: string

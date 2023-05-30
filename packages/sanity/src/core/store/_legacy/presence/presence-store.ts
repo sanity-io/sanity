@@ -35,7 +35,9 @@ import {mock$} from './mock-events'
 import {createBifurTransport} from './message-transports/bifurTransport'
 import {DocumentPresence, GlobalPresence, PresenceLocation, Session, UserSessionPair} from './types'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface PresenceStore {
   /**
    * @internal

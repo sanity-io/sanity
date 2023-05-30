@@ -25,6 +25,8 @@ import {useResolveInitialValueForType} from '../../../../store'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface MemberItemProps {
@@ -39,6 +41,8 @@ export interface MemberItemProps {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function ArrayOfObjectsItem(props: MemberItemProps) {

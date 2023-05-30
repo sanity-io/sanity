@@ -1,6 +1,8 @@
 import {Observable} from 'rxjs'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ProjectData {
   id: string
   displayName: string
@@ -29,7 +31,9 @@ export interface ProjectData {
   pendingInvites: number
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ProjectDatasetData {
   name: string
   aclMode: 'public' | 'private'
@@ -41,7 +45,9 @@ export interface ProjectDatasetData {
   }[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ProjectStore {
   get: () => Observable<ProjectData>
   getDatasets: () => Observable<ProjectDatasetData[]>

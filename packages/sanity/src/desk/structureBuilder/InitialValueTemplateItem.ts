@@ -7,7 +7,9 @@ import {IntentParams} from './Intent'
 import {StructureContext} from './types'
 import {InitialValueTemplateItem} from 'sanity'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export class InitialValueTemplateItemBuilder implements Serializable<InitialValueTemplateItem> {
   protected spec: Partial<InitialValueTemplateItem>
 

@@ -12,6 +12,8 @@ import {focusRingStyle} from './styles'
 /** @internal */
 export interface FormFieldSetProps {
   /**
+   *
+   * @hidden
    * @beta
    */
   __unstable_presence?: FormNodePresence[]
@@ -28,6 +30,8 @@ export interface FormFieldSetProps {
   onExpand?: () => void
   title?: React.ReactNode
   /**
+   *
+   * @hidden
    * @beta
    */
   validation?: FormNodeValidation[]

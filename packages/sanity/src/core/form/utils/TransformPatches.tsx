@@ -4,7 +4,9 @@ import {FormCallbacksContext, useFormCallbacks} from '../studio'
 
 type PatchTransformer = (patches: FormPatch[]) => FormPatch[]
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export const TransformPatches = memo(function OnChangeProvider(
   props: {transform: PatchTransformer} & {children: React.ReactNode}
 ) {

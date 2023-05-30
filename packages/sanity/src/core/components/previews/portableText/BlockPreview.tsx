@@ -18,7 +18,9 @@ const HeaderFlex = styled(Flex).attrs({align: 'center'})`
   min-height: ${rem(PREVIEW_MEDIA_SIZE.block.height)};
 `
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>) {
   const {
     actions,

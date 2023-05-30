@@ -27,6 +27,8 @@ const Root = styled(Card)`
 `
 
 /**
+ *
+ * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 // eslint-disable-next-line complexity

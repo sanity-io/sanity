@@ -30,6 +30,8 @@ import {FieldValueError} from './validation'
 /**
  * History timeline / chunking
  *
+ *
+ * @hidden
  * @beta
  */
 export type ChunkType =
@@ -42,7 +44,9 @@ export type ChunkType =
   | 'discardDraft'
   | 'editLive'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type Chunk = {
   index: number
 
@@ -60,6 +64,8 @@ export type Chunk = {
 /**
  * Annotation connected to a change
  *
+ *
+ * @hidden
  * @beta
  */
 export type AnnotationDetails = {
@@ -68,7 +74,9 @@ export type AnnotationDetails = {
   author: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type Annotation = AnnotationDetails | null
 
 // Diff types with annotation type set automatically

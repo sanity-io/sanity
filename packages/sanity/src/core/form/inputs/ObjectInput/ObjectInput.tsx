@@ -6,7 +6,9 @@ import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const {
     schemaType,

@@ -10,6 +10,8 @@ export interface PaneData {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface PaneContextValue {
@@ -42,6 +44,8 @@ export interface PaneConfigOpts {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface PaneLayoutContextValue {

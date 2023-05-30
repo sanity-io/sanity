@@ -4,7 +4,9 @@ import {Observable} from 'rxjs'
 /** @internal */
 export type Id = string
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type Previewable = (
   | {_id: string}
   | {_type: string}
@@ -22,6 +24,8 @@ export type Previewable = (
 /**
  * TODO: unify with content path from `@sanity/types`
  *
+ *
+ * @hidden
  * @beta
  */
 export type PreviewPath = FieldName[]
@@ -29,7 +33,9 @@ export type PreviewPath = FieldName[]
 /** @internal */
 export type Selection = [Id, FieldName[]]
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type FieldName = string
 
 /** @internal */
@@ -40,19 +46,25 @@ export interface AvailabilityResponse {
 /** @internal */
 export type AvailabilityReason = 'READABLE' | 'PERMISSION_DENIED' | 'NOT_FOUND'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface PreviewableType {
   fields?: {name: string; type: SchemaType}[]
   preview?: PreviewConfig
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ApiConfig {
   projectId: string
   dataset: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type DocumentAvailability =
   | {
       available: true
@@ -63,7 +75,9 @@ export type DocumentAvailability =
       reason: 'PERMISSION_DENIED' | 'NOT_FOUND'
     }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DraftsModelDocumentAvailability {
   /**
    * document readability for the published document
@@ -76,7 +90,9 @@ export interface DraftsModelDocumentAvailability {
   draft: DocumentAvailability
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocumentLike> {
   id: string
   type: string | null
@@ -90,7 +106,9 @@ export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocume
   }
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface PreparedSnapshot {
   type?: PreviewableType
   snapshot: PreviewValue | null | undefined
@@ -99,7 +117,9 @@ export interface PreparedSnapshot {
 /** @internal */
 export type ObserveDocumentTypeFromIdFn = (id: string) => Observable<string | undefined>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ObservePathsFn {
   (value: Previewable, paths: (string | PreviewPath)[], apiConfig?: ApiConfig): Observable<
     PreviewValue | SanityDocumentLike | Reference | string | null

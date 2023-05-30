@@ -1,7 +1,9 @@
 import {SanityDocument} from '@sanity/types'
 import type {Observable} from 'rxjs'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type DocumentValuePermission = 'read' | 'create' | 'update' | 'history' | 'editHistory'
 
 /** @internal */
@@ -10,13 +12,17 @@ export interface Grant {
   permissions: DocumentValuePermission[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface PermissionCheckResult {
   granted: boolean
   reason: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface GrantsStore {
   /**
    * Returns an observable of `PermissionCheckResult`

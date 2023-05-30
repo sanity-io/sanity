@@ -11,13 +11,17 @@ export function maybeSerializeMenuItemGroup(
   return item instanceof MenuItemGroupBuilder ? item.serialize({path, index}) : item
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface MenuItemGroup {
   id: string
   title: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
   protected _id: string
   protected _title: string

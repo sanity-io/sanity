@@ -11,27 +11,37 @@ import {validateId} from './util/validateId'
 import {StructureContext} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type UnserializedListItemChild =
   | Collection
   | CollectionBuilder
   | ChildResolver
   | Observable<ItemChild>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type ListItemChild = Collection | ChildResolver | Observable<ItemChild> | undefined
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ListItemSerializeOptions extends SerializeOptions {
   titleIsOptional?: boolean
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ListItemDisplayOptions {
   showIcon?: boolean
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ListItemInput {
   id: string
   title?: string
@@ -41,7 +51,9 @@ export interface ListItemInput {
   schemaType?: SchemaType | string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ListItem {
   id: string
   type: string
@@ -52,7 +64,9 @@ export interface ListItem {
   schemaType?: SchemaType
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface UnserializedListItem {
   id: string
   title: string
@@ -62,10 +76,14 @@ export interface UnserializedListItem {
   schemaType?: SchemaType | string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type PartialListItem = Partial<UnserializedListItem>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export class ListItemBuilder implements Serializable<ListItem> {
   protected spec: PartialListItem
 

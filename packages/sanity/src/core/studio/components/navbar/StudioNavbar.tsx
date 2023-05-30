@@ -53,7 +53,9 @@ const LeftFlex = styled(Flex)`
   width: max-content;
 `
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function StudioNavbar() {
   const {name, tools, ...workspace} = useWorkspace()
   const theme = useRootTheme().theme as StudioTheme

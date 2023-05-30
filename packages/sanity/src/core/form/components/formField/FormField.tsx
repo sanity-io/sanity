@@ -7,10 +7,14 @@ import {FormFieldHeader} from './FormFieldHeader'
 /** @internal */
 export interface FormFieldProps {
   /**
+   *
+   * @hidden
    * @beta
    */
   validation?: FormNodeValidation[]
   /**
+   *
+   * @hidden
    * @beta
    */
   __unstable_presence?: FormNodePresence[]

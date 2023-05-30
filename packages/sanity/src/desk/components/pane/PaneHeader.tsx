@@ -16,6 +16,8 @@ interface PaneHeaderProps {
 }
 
 /**
+ *
+ * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export const PaneHeader = forwardRef(function PaneHeader(

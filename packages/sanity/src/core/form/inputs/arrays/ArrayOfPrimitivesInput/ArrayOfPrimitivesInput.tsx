@@ -18,7 +18,9 @@ interface State {
   disableTransition: boolean
 }
 // Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export class ArrayOfPrimitivesInput extends React.PureComponent<
   ArrayOfPrimitivesInputProps,
   State

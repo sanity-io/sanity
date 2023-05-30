@@ -7,7 +7,9 @@ import {MutationEvent, ReconnectEvent, WelcomeEvent} from './types'
 /** @internal */
 export type ListenQueryParams = Record<string, string | number | boolean | string[]>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ListenQueryOptions {
   tag?: string
   apiVersion?: string

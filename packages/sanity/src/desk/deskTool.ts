@@ -25,7 +25,9 @@ const documentActions = [
 
 const documentBadges = [LiveEditBadge]
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
   name: '@sanity/desk-tool',
   document: {

@@ -21,12 +21,16 @@ export const shallowIntentChecker: IntentChecker = (intentName, params, {pane, i
   return index <= 1 && defaultIntentChecker(intentName, params, {pane, index})
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ListDisplayOptions {
   showIcons?: boolean
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BaseGenericList extends StructureNode {
   defaultLayout?: PreviewLayoutKey
   canHandleIntent?: IntentChecker
@@ -35,7 +39,9 @@ export interface BaseGenericList extends StructureNode {
   initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 // "POJO"/verbatim-version - end result
 export interface GenericList extends BaseGenericList {
   type: string
@@ -43,14 +49,18 @@ export interface GenericList extends BaseGenericList {
   menuItemGroups: MenuItemGroup[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 // Used internally in builder classes to make everything optional
 export interface BuildableGenericList extends Partial<BaseGenericList> {
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 // Input version, allows builders and only requires things not inferrable
 export interface GenericListInput extends StructureNode {
   id: string
@@ -63,7 +73,9 @@ export interface GenericListInput extends StructureNode {
   child?: Child
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export abstract class GenericListBuilder<TList extends BuildableGenericList, ConcreteImpl>
   implements Serializable<GenericList>
 {
