@@ -12,7 +12,6 @@ import {
   usePortableTextEditor,
   RenderStyleFunction,
   RenderListItemFunction,
-  usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -87,7 +86,6 @@ export function Editor(props: EditorProps) {
   const {isTopLayer} = useLayer()
   const editableRef = useRef<HTMLDivElement | null>(null)
   const editor = usePortableTextEditor()
-  const selection = usePortableTextEditorSelection()
 
   const {element: boundaryElement} = useBoundaryElement()
 
@@ -111,19 +109,21 @@ export function Editor(props: EditorProps) {
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
-  // Restore the React editor selection and focus when toggling fullscreen
-  // Note that the selection itself is not part of the dependencies here (use the last known from the PTE instance)
+  // Re-focus/blur the editor when toggling fullscreen.
+  // The hasFocus is kept in ref so focus or blur is called only
+  // when `isFullscreen` changes (and not when `hasFocus` changes)
+  // This is important to avoid focus/blur loops when opening up
+  // object blocks for editing where the form focus and
+  // the editor selection share the same path.
+  const focusRef = useRef(hasFocus)
   useEffect(() => {
-    if (selection) {
-      PortableTextEditor.select(editor, selection)
-    }
-    if (hasFocus) {
+    focusRef.current = hasFocus
+  }, [hasFocus])
+  useEffect(() => {
+    if (focusRef.current) {
       PortableTextEditor.focus(editor)
-    } else {
-      PortableTextEditor.blur(editor)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor, isFullscreen]) // skip selection dep.
+  }, [editor, isFullscreen])
 
   const editable = useMemo(
     () => (
@@ -160,11 +160,9 @@ export function Editor(props: EditorProps) {
 
   const handleToolBarOnMemberOpen = useCallback(
     (relativePath: Path) => {
-      PortableTextEditor.blur(editor)
-      const fullPath = path.concat(relativePath)
-      onItemOpen(fullPath)
+      onItemOpen(path.concat(relativePath))
     },
-    [editor, onItemOpen, path]
+    [onItemOpen, path]
   )
 
   return (

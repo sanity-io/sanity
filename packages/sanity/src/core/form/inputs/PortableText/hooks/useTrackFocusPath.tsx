@@ -1,56 +1,90 @@
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
+} from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {useEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
+import {isEqual} from '@sanity/util/paths'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {
   focusPath: Path
   boundaryElement?: HTMLElement
-  editorRootPath: Path
   onItemClose: () => void
 }
 
 // This hook will track the focusPath and make sure editor content is visible and focused accordingly.
 export function useTrackFocusPath(props: Props): void {
-  const {focusPath, editorRootPath, boundaryElement, onItemClose} = props
+  const {focusPath, boundaryElement, onItemClose} = props
   const portableTextMemberItems = usePortableTextMemberItems()
   const editor = usePortableTextEditor()
+  const selection = usePortableTextEditorSelection()
 
   useEffect(() => {
-    // Don't do anything if no internal focusPath
+    // Don't do anything if no focusPath
     if (focusPath.length === 0) {
       return
     }
-    // Find the most specific opened member item and scroll to it
-    const memberItem = portableTextMemberItems
-      .filter((item) => item.member.open)
-      .sort((a, b) => b.member.item.path.length - a.member.item.path.length)[0]
-    if (memberItem && memberItem.elementRef?.current) {
+
+    // Don't do anything if the selection focus path already is the focusPath
+    if (selection?.focus.path && isEqual(selection.focus.path, focusPath)) {
+      return
+    }
+
+    // Find the opened member item
+    const openItem = portableTextMemberItems.find((m) => m.member.open)
+
+    if (openItem && openItem.elementRef?.current) {
       if (boundaryElement) {
-        // Scroll the boundary element into view
+        // Scroll the boundary element into view (the scrollable element itself)
         scrollIntoView(boundaryElement, {
           scrollMode: 'if-needed',
+          block: 'start',
+          inline: 'start',
+        })
+        // Scroll the member into view (the member within the scroll-boundary)
+        scrollIntoView(openItem.elementRef.current, {
+          scrollMode: 'if-needed',
+          boundary: boundaryElement,
+          block: 'start',
+          inline: 'start',
         })
       }
-      // Make a selection in the editor
-      PortableTextEditor.select(editor, {
-        anchor: {path: focusPath, offset: 0},
-        focus: {path: focusPath, offset: 0},
-      })
-      if (memberItem.kind === 'textBlock') {
-        PortableTextEditor.focus(editor)
-        // "auto-close" regular text blocks or they get sticky here when trying to focus on an other field
-        // There is no natural way of closing them (however opening something else would close them)
-        onItemClose()
+      const isBlockFocusPath = focusPath.length === 1
+      const isChildFocusPath = focusPath.length === 3 && focusPath[1] === 'children'
+      // If the focusPath i targeting a text block (with focusPath on the block itself),
+      // ensure that an editor selection is pointing to it's first child and then focus the editor.
+      if (openItem.kind === 'textBlock') {
+        const path = isChildFocusPath
+          ? focusPath // focusPath pointing to known span
+          : [
+              focusPath[0],
+              'children',
+              (Array.isArray(openItem.node.value?.children) &&
+                openItem.node.value?.children[0]._key && {
+                  _key: openItem.node.value?.children[0]._key,
+                }) ||
+                0,
+            ] // unknown span (just a block key given as focusPath), select the first span
+
+        // Make an editor selection if we have a child path, and not have focus inside of it
+        if (isBlockFocusPath || isChildFocusPath) {
+          PortableTextEditor.select(editor, {
+            anchor: {path, offset: 0},
+            focus: {path, offset: 0},
+          })
+          PortableTextEditor.focus(editor)
+        }
       }
     }
   }, [
     boundaryElement,
     editor,
-    editorRootPath.length,
     focusPath,
     onItemClose,
     portableTextMemberItems,
+    selection?.focus.path,
   ])
 }

@@ -13,9 +13,8 @@ import {
 } from '@sanity/types'
 import {ReactElement, ReactNode} from 'react'
 import {FormNodePresence} from '../../presence'
-import {ArrayOfObjectsItemMember, ObjectArrayFormNode, PortableTextMarker} from '../..'
+import {PortableTextMarker} from '../..'
 import {RenderPreviewCallback} from './renderCallback'
-import {ObjectItem} from './itemProps'
 
 /** @beta */
 export interface BlockDecoratorProps {
@@ -57,8 +56,9 @@ export interface BlockListItemProps {
 export interface BlockAnnotationProps {
   __unstable_boundaryElement?: HTMLElement // Boundary element for the annotation, typically a scroll container
   __unstable_referenceElement?: HTMLElement // Reference element representing the annotation in the DOM
+  __unstable_textElementFocus?: boolean // Wether the related text element (in the editor) has selection focus. Differs from form state focus.
   children?: ReactNode | undefined
-  focused: boolean
+  focused: boolean // Whether the annotation data object has form focus
   markers: PortableTextMarker[]
   onClose: () => void
   onOpen: () => void
@@ -71,7 +71,7 @@ export interface BlockAnnotationProps {
   readOnly: boolean
   renderDefault: (props: BlockAnnotationProps) => React.ReactElement
   schemaType: ObjectSchemaType
-  selected: boolean
+  selected: boolean // Whether the object is selected in the editor
   textElement: ReactElement
   validation: FormNodeValidation[]
   value: PortableTextObject
@@ -82,7 +82,7 @@ export interface BlockProps {
   __unstable_boundaryElement?: HTMLElement // Boundary element for the block, typically a scroll container
   __unstable_referenceElement?: HTMLElement // Reference element representing the block in the DOM
   children?: ReactNode | undefined
-  focused: boolean
+  focused: boolean // Whether the object has form focus
   markers: PortableTextMarker[]
   onClose: () => void
   onOpen: () => void
@@ -96,7 +96,7 @@ export interface BlockProps {
   renderDefault: (props: BlockProps) => React.ReactElement
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
-  selected: boolean
+  selected: boolean // Whether the object is selected in the editor
   validation: FormNodeValidation[]
   value: PortableTextBlock
 }

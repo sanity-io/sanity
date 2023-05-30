@@ -17,6 +17,7 @@ import {
 import {Subject, Observable} from 'rxjs'
 import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from '@sanity/slate-react'
+import {FocusEvent} from 'react'
 import type {Patch} from '../types/patch'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 
@@ -217,6 +218,7 @@ export type SelectionChange = {
 /** @beta */
 export type FocusChange = {
   type: 'focus'
+  event: FocusEvent<HTMLDivElement, Element>
 }
 
 /** @beta */
@@ -228,6 +230,7 @@ export type UnsetChange = {
 /** @beta */
 export type BlurChange = {
   type: 'blur'
+  event: FocusEvent<HTMLDivElement, Element>
 }
 
 /** @beta */

@@ -6,7 +6,15 @@ import {
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, isImage} from '@sanity/types'
 import {Tooltip, Flex, ResponsivePaddingProps, Box} from '@sanity/ui'
-import React, {ComponentType, PropsWithChildren, useCallback, useMemo, useState} from 'react'
+import React, {
+  ComponentType,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {PatchArg} from '../../../patch'
 import {BlockProps, RenderCustomMarkers, RenderPreviewCallback} from '../../../types'
 import {RenderBlockActionsCallback} from '../types'
@@ -76,29 +84,58 @@ export function BlockObject(props: BlockObjectProps) {
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
   const memberItem = usePortableTextMemberItem(pathToString(path))
+  const isDeleting = useRef<boolean>(false)
+
+  const selfSelection = useMemo(
+    (): EditorSelection => ({
+      anchor: {path: relativePath, offset: 0},
+      focus: {path: relativePath, offset: 0},
+    }),
+    [relativePath]
+  )
 
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
   const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
 
   const onOpen = useCallback(() => {
-    PortableTextEditor.blur(editor)
-    onItemOpen(path)
-  }, [editor, onItemOpen, path])
+    if (memberItem) {
+      // Take focus away from the editor so that it doesn't propagate a new focusPath and interfere here.
+      PortableTextEditor.blur(editor)
+      onItemOpen(memberItem.node.path)
+    }
+  }, [editor, memberItem, onItemOpen])
 
   const onClose = useCallback(() => {
     onItemClose()
+    PortableTextEditor.select(editor, selfSelection)
     PortableTextEditor.focus(editor)
-  }, [editor, onItemClose])
+  }, [onItemClose, editor, selfSelection])
 
   const onRemove = useCallback(() => {
-    const sel: EditorSelection = {
-      focus: {path: relativePath, offset: 0},
-      anchor: {path: relativePath, offset: 0},
+    // Guard against clicking "Delete" multiple times.
+    if (isDeleting.current) {
+      return
     }
-    PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
-    // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
-    setTimeout(() => PortableTextEditor.focus(editor))
-  }, [editor, relativePath])
+    try {
+      PortableTextEditor.delete(editor, selfSelection, {mode: 'blocks'})
+    } catch (err) {
+      console.error(err)
+    } finally {
+      isDeleting.current = true
+    }
+  }, [editor, selfSelection])
+
+  // Focus the editor if this object is removed because it was deleted.
+  // This is some special code needed for how the Menu for the block object
+  // is taking focus while clicking "Delete" from the menu.
+  useEffect(
+    () => () => {
+      if (isDeleting.current) {
+        PortableTextEditor.focus(editor)
+      }
+    },
+    [editor]
+  )
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
     if (isFullscreen && !renderBlockActions) {
@@ -279,11 +316,10 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     onOpen,
     onRemove,
     open,
-    path,
     readOnly,
     renderPreview,
-    selected,
     schemaType,
+    selected,
     value,
     validation,
   } = props
@@ -322,8 +358,8 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
         {renderPreview({
           actions: (
             <BlockObjectActionsMenu
-              focused={focused}
               isOpen={open}
+              focused={focused}
               onOpen={onOpen}
               onRemove={onRemove}
               readOnly={readOnly}
@@ -341,7 +377,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           boundaryElement={__unstable_boundaryElement}
           defaultType="dialog"
           onClose={onClose}
-          path={path}
+          autoFocus={focused}
           schemaType={schemaType}
           referenceElement={__unstable_referenceElement}
         >

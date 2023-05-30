@@ -1,10 +1,9 @@
-import {PortableTextBlock} from '@sanity/types'
+import {Path, PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
   Patch as EditorPatch,
   PortableTextEditor,
   InvalidValue,
-  EditorSelection,
   Patch,
 } from '@sanity/portable-text-editor'
 import React, {
@@ -16,10 +15,10 @@ import React, {
   useImperativeHandle,
   createRef,
   ReactNode,
+  startTransition,
 } from 'react'
 import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
-import {debounce} from 'lodash'
 import {FormPatch, SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
@@ -52,6 +51,7 @@ export interface PortableTextMemberItem {
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {
+    elementProps,
     focused,
     focusPath,
     hotkeys,
@@ -59,17 +59,18 @@ export function PortableTextInput(props: PortableTextInputProps) {
     members,
     onChange,
     onCopy,
-    onPathFocus,
     onInsert,
     onPaste,
+    onPathFocus,
     path,
     readOnly,
     renderBlockActions,
     renderCustomMarkers,
     schemaType,
     value,
-    elementProps,
   } = props
+
+  const {onBlur} = elementProps
 
   // Make the PTE focusable from the outside
   useImperativeHandle(elementProps.ref, () => ({
@@ -86,16 +87,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isActive, setIsActive] = useState(false)
-
-  // Let formState decide if we are focused or not.
-  const hasFocus = Boolean(focused) || focusPath.length > 0
-
-  // Set active if focused
-  useEffect(() => {
-    if (hasFocus) {
-      setIsActive(true)
-    }
-  }, [hasFocus])
 
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
@@ -224,21 +215,14 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return items
   }, [members, props])
 
-  // Sets the focusPath from editor selection (when typing, moving the cursor, clicking around)
-  // This doesn't need to be immediate, so debounce it as it impacts performance.
-  const setFocusPathDebounced = useMemo(
-    () =>
-      debounce(
-        (sel: EditorSelection) => {
-          if (sel) {
-            onPathFocus(sel.focus.path)
-          }
-        },
-        500,
-        {trailing: true, leading: true}
-      ),
-    [onPathFocus]
-  )
+  const hasFocus = focused || isEditorFocusablePath(focusPath)
+
+  // Set active if focused
+  useEffect(() => {
+    if (hasFocus) {
+      setIsActive(true)
+    }
+  }, [hasFocus])
 
   // Handle editor changes
   const handleEditorChange = useCallback(
@@ -248,10 +232,19 @@ export function PortableTextInput(props: PortableTextInputProps) {
           onChange(toFormPatches(change.patches))
           break
         case 'selection':
-          setFocusPathDebounced(change.selection)
+          // This doesn't need to be immediate,
+          // call through startTransition
+          startTransition(() => {
+            if (change.selection) {
+              onPathFocus(change.selection.focus.path)
+            }
+          })
           break
         case 'focus':
           setIsActive(true)
+          break
+        case 'blur':
+          onBlur(change.event)
           break
         case 'undo':
         case 'redo':
@@ -269,7 +262,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onChange, toast, setFocusPathDebounced]
+    [onBlur, onChange, onPathFocus, toast]
   )
 
   useEffect(() => {
@@ -345,4 +338,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
 function toFormPatches(patches: any) {
   return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE})) as FormPatch[]
+}
+
+// Return true if the path directly points to something focusable in the editor
+function isEditorFocusablePath(path: Path) {
+  return path.length === 1 || (path.length === 3 && path[1] === 'children')
 }
