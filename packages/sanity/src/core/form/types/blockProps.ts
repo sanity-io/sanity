@@ -57,7 +57,7 @@ export interface BlockAnnotationProps {
   __unstable_boundaryElement?: HTMLElement // Boundary element for the annotation, typically a scroll container
   __unstable_referenceElement?: HTMLElement // Reference element representing the annotation in the DOM
   children?: ReactNode | undefined
-  focused: boolean
+  focused: boolean // Whether the annotation data object has form focus
   markers: PortableTextMarker[]
   onClose: () => void
   onOpen: () => void
@@ -70,7 +70,7 @@ export interface BlockAnnotationProps {
   readOnly: boolean
   renderDefault: (props: BlockAnnotationProps) => React.ReactElement
   schemaType: ObjectSchemaType
-  selected: boolean
+  selected: boolean // Whether the object is selected in the editor
   textElement: ReactElement
   validation: FormNodeValidation[]
   value: PortableTextObject
@@ -81,7 +81,7 @@ export interface BlockProps {
   __unstable_boundaryElement?: HTMLElement // Boundary element for the block, typically a scroll container
   __unstable_referenceElement?: HTMLElement // Reference element representing the block in the DOM
   children?: ReactNode | undefined
-  focused: boolean
+  focused: boolean // Whether the object has form focus
   markers: PortableTextMarker[]
   onClose: () => void
   onOpen: () => void
@@ -95,7 +95,7 @@ export interface BlockProps {
   renderDefault: (props: BlockProps) => React.ReactElement
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
-  selected: boolean
+  selected: boolean // Whether the object is selected in the editor
   validation: FormNodeValidation[]
   value: PortableTextBlock
 }
