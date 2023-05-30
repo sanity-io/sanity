@@ -26,6 +26,7 @@ import {SearchFilterDefinition} from '../studio/components/navbar/search/definit
 import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {StudioComponents, StudioComponentsPluginOptions} from './studio'
 import {DocumentActionComponent, DocumentBadgeComponent} from './document'
+import {DocumentEnhancement} from './document/enhancements'
 import {Router, RouterState} from 'sanity/router'
 
 /**
@@ -157,6 +158,7 @@ export type NewDocumentCreationContext =
 export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
+  enhancements?: DocumentEnhancement[] | DocumentEnhancementResolver
   /** @beta */
   productionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
   /** @beta */
@@ -190,6 +192,12 @@ export type DocumentLanguageFilterResolver = ComposableOption<
 export type DocumentActionsResolver = ComposableOption<
   DocumentActionComponent[],
   DocumentActionsContext
+>
+
+/** @beta */
+export type DocumentEnhancementResolver = ComposableOption<
+  DocumentEnhancement[],
+  DocumentEnhancementContext
 >
 
 /** @beta */
@@ -287,6 +295,12 @@ export interface DocumentActionsContext extends ConfigContext {
 }
 
 /** @beta */
+export interface DocumentEnhancementContext extends ConfigContext {
+  documentId?: string
+  schemaType: string
+}
+
+/** @beta */
 export interface DocumentBadgesContext extends ConfigContext {
   documentId?: string
   schemaType: string
@@ -324,6 +338,9 @@ export interface Source {
   document: {
     /** @beta */
     actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]
+
+    /** @beta */
+    enhancements: (props: PartialContext<DocumentEnhancementContext>) => DocumentEnhancement[]
 
     /** @beta */
     badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]

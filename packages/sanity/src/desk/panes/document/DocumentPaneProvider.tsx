@@ -52,6 +52,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     actions: documentActions,
     badges: documentBadges,
     unstable_languageFilter: languageFilterResolver,
+    enhancements: documentEnhancements,
   } = useSource().document
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
@@ -105,6 +106,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const languageFilter = useMemo(
     () => languageFilterResolver({schemaType: documentType, documentId}),
     [documentId, documentType, languageFilterResolver]
+  )
+
+  const enhancements = useMemo(
+    () => documentEnhancements({schemaType: documentType, documentId}),
+    [documentEnhancements, documentId, documentType]
   )
 
   const validation = useUnique(validationRaw)
@@ -400,6 +406,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentIdRaw,
     documentType,
     editState,
+    enhancements,
     focusPath,
     menuItems,
     onBlur: handleBlur,

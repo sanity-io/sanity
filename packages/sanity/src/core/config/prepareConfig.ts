@@ -26,6 +26,7 @@ import {
   WorkspaceSummary,
 } from './types'
 import {
+  documentEnhancementsReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentLanguageFilterReducer,
@@ -444,6 +445,14 @@ function resolveSource({
     templates,
     auth,
     document: {
+      enhancements: (partialContext) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, ...partialContext},
+          initialValue: [],
+          propertyName: 'document.enhancements',
+          reducer: documentEnhancementsReducer,
+        }),
       actions: (partialContext) =>
         resolveConfigProperty({
           config,

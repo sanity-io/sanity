@@ -13,7 +13,9 @@ import type {
   NewDocumentOptionsContext,
   ResolveProductionUrlContext,
   Tool,
+  DocumentEnhancementContext,
 } from './types'
+import {DocumentEnhancement} from './document/enhancements'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
@@ -131,6 +133,21 @@ export const documentActionsReducer: ConfigPropertyReducer<
 
   throw new Error(
     `Expected \`document.actions\` to be an array or a function, but received ${typeof documentActions}`
+  )
+}
+
+export const documentEnhancementsReducer: ConfigPropertyReducer<
+  DocumentEnhancement[],
+  DocumentEnhancementContext
+> = (prev, {document}, context) => {
+  const documentEnhancements = document?.enhancements
+  if (!documentEnhancements) return prev
+
+  if (typeof documentEnhancements === 'function') return documentEnhancements(prev, context)
+  if (Array.isArray(documentEnhancements)) return [...prev, ...documentEnhancements]
+
+  throw new Error(
+    `Expected \`document.enhancements\` to be an array or a function, but received ${typeof documentEnhancements}`
   )
 }
 

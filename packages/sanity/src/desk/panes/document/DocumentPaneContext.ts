@@ -12,9 +12,9 @@ import {TimelineMode} from './types'
 import {
   DocumentActionComponent,
   DocumentBadgeComponent,
+  DocumentEnhancement,
   DocumentFormNode,
   DocumentLanguageFilterComponent,
-  DocumentPermission,
   EditStateFor,
   PatchEvent,
   PermissionCheckResult,
@@ -37,6 +37,7 @@ export interface DocumentPaneContextValue {
   documentIdRaw: string
   documentType: string
   editState: EditStateFor | null
+  enhancements: DocumentEnhancement[] | null
   focusPath: Path
   index: number
   inspectOpen: boolean

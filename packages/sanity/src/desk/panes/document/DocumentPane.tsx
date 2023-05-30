@@ -41,6 +41,7 @@ import {
   useTemplates,
   useZIndex,
 } from 'sanity'
+import {DocumentFooterEnhancements} from './enhancements'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
@@ -246,6 +247,8 @@ function InnerDocumentPane() {
         __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
       >
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+          <DocumentFooterEnhancements />
+
           <PaneFooter ref={setFooterElement}>
             <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
           </PaneFooter>
