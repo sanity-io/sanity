@@ -1,5 +1,6 @@
 import {ButtonTone} from '@sanity/ui'
 
+/** @beta */
 export interface DocumentEnhancementMenuItem {
   disabled?: boolean
   icon?: React.ComponentType | React.ReactNode
@@ -7,15 +8,18 @@ export interface DocumentEnhancementMenuItem {
   tone?: ButtonTone
 }
 
+/** @beta */
 export interface DocumentEnhancementHookDefinition extends DocumentEnhancementMenuItem {
   onClick?: () => void
 }
 
+/** @beta */
 export interface BaseDocumentEnhancement {
   name: string
   context?: 'default' | 'menu'
 }
 
+/** @beta */
 export interface DocumentEnhancementProps extends BaseDocumentEnhancement {
   menuItem: DocumentEnhancementMenuItem
   view: {
@@ -24,16 +28,20 @@ export interface DocumentEnhancementProps extends BaseDocumentEnhancement {
   }
 }
 
+/** @beta */
 export interface DocumentEnhancementHookContext {
   documentId: string
   documentType: string
 }
 
+/** @beta */
 export interface DocumentEnhancementHookProps extends BaseDocumentEnhancement {
   use: (context: DocumentEnhancementHookContext) => DocumentEnhancementHookDefinition
 }
 
+/** @beta */
 export type DocumentEnhancement = DocumentEnhancementProps | DocumentEnhancementHookProps
 
+/** @beta */
 export const defineDocumentEnhancement = (action: DocumentEnhancement): DocumentEnhancement =>
   action
