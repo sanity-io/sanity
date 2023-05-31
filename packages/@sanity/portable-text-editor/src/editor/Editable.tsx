@@ -8,6 +8,7 @@ import {
   useSlate,
 } from '@sanity/slate-react'
 import {noop} from 'lodash'
+import {PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
   EditorSelection,
@@ -268,7 +269,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             return
           }
           if (result && result.insert) {
-            slateEditor.insertFragment(toSlateValue(result.insert, {schemaTypes}))
+            slateEditor.insertFragment(
+              toSlateValue(result.insert as PortableTextBlock[], {schemaTypes})
+            )
             change$.next({type: 'loading', isLoading: false})
             return
           }
