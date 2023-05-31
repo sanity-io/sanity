@@ -170,24 +170,6 @@ export function UserMenu() {
               icon={UsersIcon}
             />
           )}
-          <MenuItem
-            as="a"
-            aria-label="Help & support"
-            href={`https://www.sanity.io/contact/support`}
-            target="_blank"
-            text="Help & support"
-            icon={HelpCircleIcon}
-          />
-          {isAdmin && (
-            <MenuItem
-              as="a"
-              aria-label="Contact sales"
-              href={`https://www.sanity.io/contact/sales?ref=studio`}
-              target="_blank"
-              text="Contact sales"
-              icon={CommentIcon}
-            />
-          )}
 
           {auth.logout && (
             <>
