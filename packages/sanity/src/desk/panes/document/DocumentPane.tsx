@@ -228,20 +228,23 @@ function InnerDocumentPane() {
   const footerRect = useElementRect(footerElement)
   const footerH = footerRect?.height
 
+  const [inspectorOpen, setInspectorOpen] = useState<boolean>(false)
+
   const [inspector, setInspector] = useState<DocumentEnhancement | null>(null)
 
   const handleEnhancementClick = useCallback((v: DocumentEnhancement | null) => {
     setInspector(v)
+    setInspectorOpen((prev) => !prev)
   }, [])
 
   const inspectorElement = useMemo(() => {
-    if (!inspector) return null
+    if (!inspector || !inspectorOpen) return null
     if (!('view' in inspector)) return null
 
     const {component} = inspector.view
 
-    return createElement(component)
-  }, [inspector])
+    return createElement(component, {onClose: () => setInspectorOpen(false)})
+  }, [inspector, inspectorOpen])
 
   const documentPanel = useMemo(
     () => (

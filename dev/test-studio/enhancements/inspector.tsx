@@ -1,22 +1,32 @@
 import React from 'react'
-import {EyeOpenIcon} from '@sanity/icons'
+import {CloseIcon, EyeOpenIcon} from '@sanity/icons'
 import {defineDocumentEnhancement} from 'sanity'
-import {Box, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 
 export const inspector = defineDocumentEnhancement({
   name: 'inspector',
   view: {
     type: 'inspector',
-    component: () => (
-      <Box padding={4} paddingY={5}>
+    component: ({onClose}) => (
+      <Box>
         <Stack space={2}>
-          <Text size={1} weight="semibold">
-            Inspector
-          </Text>
+          <Card padding={2} paddingLeft={3} borderBottom>
+            <Flex align="center">
+              <Box flex={1}>
+                <Text size={1} weight="semibold">
+                  Inspector
+                </Text>
+              </Box>
 
-          <Text muted size={1}>
-            This is a custom inspector
-          </Text>
+              <Button icon={CloseIcon} onClick={onClose} fontSize={1} mode="bleed" />
+            </Flex>
+          </Card>
+
+          <Box padding={5}>
+            <Text muted size={1}>
+              This is a custom inspector
+            </Text>
+          </Box>
         </Stack>
       </Box>
     ),

@@ -23,7 +23,7 @@ export interface BaseDocumentEnhancement {
 export interface DocumentEnhancementProps extends BaseDocumentEnhancement {
   menuItem: DocumentEnhancementMenuItem
   view: {
-    component: React.ComponentType<any>
+    component: React.ComponentType<{onClose: () => void}>
     type: 'dialog' | 'popover' | 'inspector'
   }
 }

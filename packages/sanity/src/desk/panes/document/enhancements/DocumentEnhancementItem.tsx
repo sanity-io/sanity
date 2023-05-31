@@ -19,29 +19,18 @@ export function DocumentEnhancementItem(props: DocumentEnhancementItemProps) {
 
   const handleToggleOpen = useCallback(() => setOpen((v) => !v), [])
 
-  const [currentInspector, setCurrentInspector] = useState<DocumentEnhancement | null>(null)
-
   const handleInspectorClick = useCallback(
     (v: DocumentEnhancement) => {
-      handleToggleOpen()
-      setCurrentInspector(v)
+      onClick?.(v)
     },
-    [handleToggleOpen]
+    [onClick]
   )
 
-  useEffect(() => {
-    if (open && currentInspector) {
-      onClick?.(currentInspector)
-      setCurrentInspector(null)
+  useClickOutside(() => {
+    if ('view' in enhancement && enhancement.view.type === 'popover') {
+      setOpen(false)
     }
-
-    if (!open && currentInspector) {
-      setCurrentInspector(null)
-      onClick?.(null)
-    }
-  }, [currentInspector, onClick, open])
-
-  useClickOutside(() => setOpen(false), [popoverElement, buttonElement])
+  }, [popoverElement, buttonElement])
 
   const useHook = useMemo(() => {
     if ('use' in enhancement) {
@@ -80,7 +69,7 @@ export function DocumentEnhancementItem(props: DocumentEnhancementItemProps) {
   const viewComponent = useMemo(() => {
     if (!('view' in enhancement) || !enhancement.view.component) return null
 
-    const component = createElement(enhancement.view.component)
+    const component = createElement(enhancement.view.component, {onClose: () => setOpen(false)})
 
     if (enhancement.view.type === 'dialog' && open) {
       return (
