@@ -30,6 +30,7 @@ import {
   publishEnhancement,
   popoverEnhancement,
   unpublishEnhancement,
+  inspector,
 } from './enhancements'
 
 const sharedSettings = definePlugin({
@@ -51,7 +52,13 @@ const sharedSettings = definePlugin({
   document: {
     actions: documentActions,
     newDocumentOptions,
-    enhancements: [publishEnhancement, unpublishEnhancement, dialogEnhancement, popoverEnhancement],
+    enhancements: [
+      publishEnhancement,
+      unpublishEnhancement,
+      inspector,
+      dialogEnhancement,
+      popoverEnhancement,
+    ],
   },
   plugins: [
     deskTool({

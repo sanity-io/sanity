@@ -10,7 +10,7 @@ import {
   Text,
   useElementRect,
 } from '@sanity/ui'
-import React, {memo, useCallback, useMemo, useState} from 'react'
+import React, {createElement, memo, useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
@@ -34,6 +34,7 @@ import {
   ChangeConnectorRoot,
   ReferenceInputOptionsProvider,
   SourceProvider,
+  DocumentEnhancement,
   isDev,
   useDocumentType,
   useSource,
@@ -227,6 +228,21 @@ function InnerDocumentPane() {
   const footerRect = useElementRect(footerElement)
   const footerH = footerRect?.height
 
+  const [inspector, setInspector] = useState<DocumentEnhancement | null>(null)
+
+  const handleEnhancementClick = useCallback((v: DocumentEnhancement | null) => {
+    setInspector(v)
+  }, [])
+
+  const inspectorElement = useMemo(() => {
+    if (!inspector) return null
+    if (!('view' in inspector)) return null
+
+    const {component} = inspector.view
+
+    return createElement(component)
+  }, [inspector])
+
   const documentPanel = useMemo(
     () => (
       <DocumentPanel
@@ -247,7 +263,7 @@ function InnerDocumentPane() {
         __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
       >
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-          <DocumentFooterEnhancements />
+          <DocumentFooterEnhancements onEnhancementSelect={handleEnhancementClick} />
 
           <PaneFooter ref={setFooterElement}>
             <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
@@ -255,7 +271,7 @@ function InnerDocumentPane() {
         </DialogProvider>
       </PortalProvider>
     ),
-    [documentPanelPortalElement, zOffsets.portal]
+    [documentPanelPortalElement, handleEnhancementClick, zOffsets.portal]
   )
 
   const changesPanel = useMemo(() => {
@@ -332,6 +348,12 @@ function InnerDocumentPane() {
             >
               {documentPanel}
               {changesPanel}
+
+              {inspectorElement && (
+                <Card borderLeft style={{width: 320}}>
+                  {inspectorElement}
+                </Card>
+              )}
             </StyledChangeConnectorRoot>
           </Flex>
         </DialogProvider>
@@ -348,6 +370,7 @@ function InnerDocumentPane() {
     onConnectorSetFocus,
     documentPanel,
     changesPanel,
+    inspectorElement,
     footer,
     paneKey,
     documentType,

@@ -11,12 +11,12 @@ export interface DocumentEnhancementHookDefinition extends DocumentEnhancementMe
   onClick?: () => void
 }
 
-export interface BaseDocumentEnhancementProps {
+export interface BaseDocumentEnhancement {
   name: string
   context?: 'default' | 'menu'
 }
 
-export interface DocumentEnhancementProps extends BaseDocumentEnhancementProps {
+export interface DocumentEnhancementProps extends BaseDocumentEnhancement {
   menuItem: DocumentEnhancementMenuItem
   view: {
     component: React.ComponentType<any>
@@ -29,7 +29,7 @@ export interface DocumentEnhancementHookContext {
   documentType: string
 }
 
-export interface DocumentEnhancementHookProps extends BaseDocumentEnhancementProps {
+export interface DocumentEnhancementHookProps extends BaseDocumentEnhancement {
   use: (context: DocumentEnhancementHookContext) => DocumentEnhancementHookDefinition
 }
 
