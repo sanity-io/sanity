@@ -21,6 +21,7 @@ import {
   CustomToolMenu,
   studioComponentsPlugin,
 } from './components/studioComponents'
+import {FormField} from './form/FormField'
 import {
   Annotation,
   Block,
@@ -43,6 +44,9 @@ const sharedSettings = definePlugin({
     templates: resolveInitialValueTemplates,
   },
   form: {
+    components: {
+      field: FormField,
+    },
     image: {
       assetSources: [imageAssetSource],
     },

@@ -109,6 +109,7 @@ import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetRef
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
 import fieldGroupsWithFieldsets from './debug/fieldGroupsWithFieldsets'
 import ptReference from './debug/ptReference'
+import {fieldActionsTestType} from './debug/fieldActions'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -166,6 +167,7 @@ export const schemaTypes = [
   emails,
   empty,
   experiment,
+  fieldActionsTestType,
   fieldComponentsTest,
   fieldValidationInferReproDoc,
   fieldValidationInferReproSharedObject,

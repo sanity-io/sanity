@@ -16,6 +16,7 @@ import {
 } from '@sanity/types'
 import {ReactElement, ReactNode} from 'react'
 import {FormNodePresence} from '../../presence'
+import {FormFieldGroup} from '../store'
 import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesInputProps,
@@ -27,6 +28,8 @@ import {
 
 /** @beta */
 export interface BaseFieldProps {
+  /** @beta */
+  actions?: ReactNode
   schemaType: SchemaType
   title: string | undefined
   description: string | undefined
@@ -46,15 +49,19 @@ export interface BaseFieldProps {
 
 /** @beta */
 export interface ObjectFieldProps<T = Record<string, any>> extends BaseFieldProps {
+  /** @beta */
+  groups: FormFieldGroup[]
   schemaType: ObjectSchemaType
   value: {[field in string]: unknown} | undefined
   collapsed?: boolean
   collapsible?: boolean
+  onClose: () => void
   onCollapse: () => void
   onExpand: () => void
-  open: boolean
-  onClose: () => void
+  /** @beta */
+  onFieldGroupSelect: (groupName: string) => void
   onOpen: () => void
+  open: boolean
   inputProps: ObjectInputProps<T>
 }
 

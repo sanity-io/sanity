@@ -37,7 +37,7 @@ const GroupTabs = ({
   shouldAutoFocus = true,
   disabled,
 }: FieldGroupTabsProps) => (
-  <TabList space={2} data-testid="field-group-tabs">
+  <TabList space={1} data-testid="field-group-tabs">
     {groups.map((group) => {
       return (
         <GroupTab

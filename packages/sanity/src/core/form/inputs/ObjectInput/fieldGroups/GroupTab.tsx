@@ -27,12 +27,13 @@ export const GroupTab = forwardRef(function GroupTab(
   return (
     <Tab
       data-testid={`group-tab-${name}`}
-      size={1}
+      fontSize={1}
       id={`${props.name}-tab`}
       label={props.title}
       ref={ref}
       {...props}
       onClick={handleClick}
+      padding={2}
     />
   )
 })
