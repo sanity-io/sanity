@@ -1,6 +1,6 @@
 {
   "name": "@sanity/export",
-  "version": "3.11.4",
+  "version": "3.11.5",
   "description": "Export Sanity documents and assets",
   "keywords": [
     "sanity",
@@ -47,5 +47,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
 }
