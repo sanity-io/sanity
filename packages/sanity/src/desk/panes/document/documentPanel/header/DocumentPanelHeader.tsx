@@ -1,14 +1,19 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Button, Inline} from '@sanity/ui'
+import {Button, Flex, Text, Tooltip} from '@sanity/ui'
 import {negate} from 'lodash'
 import React, {createElement, memo, forwardRef, useMemo} from 'react'
 import {PaneMenuItem} from '../../../../types'
-import {PaneHeader, PaneContextMenuButton, usePaneRouter, usePane} from '../../../../components'
+import {
+  PaneContextMenuButton,
+  PaneHeader,
+  PaneHeaderActionButton,
+  usePane,
+  usePaneRouter,
+} from '../../../../components'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDeskTool} from '../../../../useDeskTool'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
-import {ValidationMenu} from './ValidationMenu'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useTimelineSelector} from 'sanity'
 
@@ -27,7 +32,6 @@ export const DocumentPanelHeader = memo(
       onMenuAction,
       onPaneClose,
       onPaneSplit,
-      validation,
       menuItems,
       menuItemGroups,
       schemaType,
@@ -38,10 +42,9 @@ export const DocumentPanelHeader = memo(
     } = useDocumentPane()
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
+    const actionItems = useMemo(() => menuItems.filter(isActionButton), [menuItems])
     const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
-    const [isValidationOpen, setValidationOpen] = React.useState<boolean>(false)
     const showTabs = views.length > 1
-    const showVersionMenu = features.reviewChanges
 
     // Subscribe to external timeline state changes
     const rev = useTimelineSelector(timelineStore, (state) => state.revTime)
@@ -79,13 +82,13 @@ export const DocumentPanelHeader = memo(
         tabIndex={tabIndex}
         backButton={
           features.backButton &&
-          index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+          index > 0 && (
+            <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" padding={2} />
+          )
         }
-        subActions={
-          showVersionMenu && <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
-        }
+        subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}
         actions={
-          <Inline space={1}>
+          <Flex align="center" gap={1}>
             {unstable_languageFilter.length > 0 && (
               <>
                 {unstable_languageFilter.map((languageFilterComponent, idx) => {
@@ -98,14 +101,9 @@ export const DocumentPanelHeader = memo(
               </>
             )}
 
-            {validation.length > 0 && (
-              <ValidationMenu
-                boundaryElement={rootElement}
-                isOpen={isValidationOpen}
-                key="validation-menu"
-                setOpen={setValidationOpen}
-              />
-            )}
+            {actionItems.map((item, itemIndex) => (
+              <PaneHeaderActionButton item={item} key={itemIndex} onMenuAction={onMenuAction} />
+            ))}
 
             <PaneContextMenuButton
               itemGroups={menuItemGroups}
@@ -115,13 +113,24 @@ export const DocumentPanelHeader = memo(
             />
 
             {showSplitPaneButton && (
-              <Button
-                icon={SplitVerticalIcon}
-                key="split-pane-button"
-                mode="bleed"
-                onClick={onPaneSplit}
-                title="Split pane right"
-              />
+              <Tooltip
+                content={
+                  <Text size={1} style={{whiteSpace: 'nowrap'}}>
+                    Split pane right
+                  </Text>
+                }
+                padding={2}
+                placement="bottom"
+                portal
+              >
+                <Button
+                  aria-label="Split pane right"
+                  icon={SplitVerticalIcon}
+                  key="split-pane-button"
+                  mode="bleed"
+                  onClick={onPaneSplit}
+                />
+              </Tooltip>
             )}
 
             {showSplitPaneCloseButton && (
@@ -143,7 +152,7 @@ export const DocumentPanelHeader = memo(
                 as={BackLink}
               />
             )}
-          </Inline>
+          </Flex>
         }
       />
     )

@@ -183,6 +183,7 @@ export const Pane = forwardRef(function Pane(
         <PaneContext.Provider value={contextValue}>
           <Root
             data-testid="pane"
+            data-ui="Pane"
             tone="inherit"
             hidden={hidden}
             id={id}
