@@ -43,8 +43,8 @@ export function ResourcesButton() {
   const handleOpen = useCallback(() => setOpen(!open), [open])
   const {value, error, isLoading} = useGetHelpResources()
 
-  const modalTitle = value?.resources.title
-  const sections = value?.resources.sectionArray
+  const modalTitle = value?.resources?.title
+  const sections = value?.resources?.sectionArray
 
   return (
     <>
@@ -59,6 +59,7 @@ export function ResourcesButton() {
               </Text>
             </Card>
             {sections?.map((subSection) => {
+              if (!subSection) return null
               return SubSections({subSection})
             })}
             {/* Fallback values if fetching is loading or fails */}
@@ -73,16 +74,9 @@ export function ResourcesButton() {
   )
 }
 
-//Error handling - assume that not everthing is mandatory.
 //Errors should be localized to the component itself and not crashing the entire studio.
 
-interface SubSectionProps {
-  subSection: SectionItem
-}
-
-function SubSections(props: SubSectionProps) {
-  const {subSection} = props
-
+function SubSections({subSection}: {subSection: SectionItem}) {
   return (
     <>
       <MenuDivider />
@@ -91,21 +85,24 @@ function SubSections(props: SubSectionProps) {
           {subSection.sectionTitle}
         </Label>
       </Card>
-      {subSection.items.map((item) => {
+      {subSection?.items?.map((item) => {
+        if (!item || !item.title) return null
         switch (item._type) {
           case 'externalLink':
+            if (!item.url) return null
             return (
               <MenuItem
                 as="a"
                 tone="default"
                 key={item._key}
-                text={item.title || 'Untitled'}
+                text={item.title}
                 size={0}
-                href={item.url || 'Could not find URL'}
+                href={item.url}
                 target="_blank"
               />
             )
           case 'internalAction': // TODO: Add support for internal actions
+            if (!item.type) return null
             return (
               item.type === 'welcome-modal' && (
                 <MenuItem key={item._key} text={item.title} size={0} />
