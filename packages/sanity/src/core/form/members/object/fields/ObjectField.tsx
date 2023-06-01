@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
-import {isEmpty} from '@sanity/util/content'
+import {isShallowEmptyObject} from '@sanity/util/content'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {FieldMember, ObjectFormNode} from '../../../store'
 import {
@@ -99,7 +99,7 @@ export const ObjectField = function ObjectField(props: {
         pendingValue.current = applyAll(pendingValue.current || {}, patches)
 
         // if the result after applying the patches is empty, then we should unset the field
-        if (isEmpty(pendingValue.current)) {
+        if (pendingValue.current && isShallowEmptyObject(pendingValue.current)) {
           onChange(PatchEvent.from(unset([member.name])))
           return
         }
