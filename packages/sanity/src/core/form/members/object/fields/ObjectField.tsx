@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {isShallowEmptyObject} from '@sanity/util/content'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -18,6 +18,10 @@ import {PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {applyAll} from '../../../patch/applyPatch'
+import {useFormBuilder} from '../../../useFormBuilder'
+import {useFormPublishedId} from '../../../useFormPublishedId'
+import {DocumentFieldActionNode} from '../../../../config'
+import {FieldActionMenu, FieldActionsProvider, FieldActionsResolver} from '../../../field'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
@@ -54,6 +58,13 @@ export const ObjectField = function ObjectField(props: {
     renderItem,
     renderPreview,
   } = props
+
+  const {
+    field: {actions: fieldActions},
+  } = useFormBuilder().__internal
+  const documentId = useFormPublishedId()
+  const [fieldActionNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
+
   const focusRef = useRef<{focus: () => void}>()
   // Keep a local reference to the most recent value. See comment in `handleChange` below for more details
   const pendingValue = useRef(member.field.value)
@@ -251,6 +262,8 @@ export const ObjectField = function ObjectField(props: {
 
   const fieldProps = useMemo((): Omit<ObjectFieldProps, 'renderDefault'> => {
     return {
+      actions:
+        fieldActionNodes.length > 0 ? <FieldActionMenu nodes={fieldActionNodes} /> : undefined,
       name: member.name,
       index: member.index,
       level: member.field.level,
@@ -278,6 +291,7 @@ export const ObjectField = function ObjectField(props: {
       inputProps: inputProps as ObjectInputProps,
     }
   }, [
+    fieldActionNodes,
     member.name,
     member.index,
     member.field.changed,
@@ -309,7 +323,23 @@ export const ObjectField = function ObjectField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      <FieldActionsResolver
+        actions={fieldActions}
+        documentId={documentId}
+        documentType={member.field.schemaType.name}
+        onActions={setFieldActionNodes}
+        path={member.field.path}
+        schemaType={member.field.schemaType}
+      />
+
+      <FieldActionsProvider
+        actions={fieldActionNodes}
+        documentId={documentId}
+        focused={member.field.focused}
+        path={member.field.path}
+      >
+        {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      </FieldActionsProvider>
     </FormCallbacksProvider>
   )
 }
