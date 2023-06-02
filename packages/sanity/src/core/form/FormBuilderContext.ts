@@ -6,6 +6,8 @@ import {
   FormBuilderCustomMarkersComponent,
   FormBuilderFilterFieldFn,
   FormBuilderMarkersComponent,
+  RenderAnnotationCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderItemCallback,
@@ -49,7 +51,10 @@ export interface FormBuilderContextValue {
   id: string
   members: ObjectMember[]
   readOnly?: boolean
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderItemCallback
   renderPreview: RenderPreviewCallback

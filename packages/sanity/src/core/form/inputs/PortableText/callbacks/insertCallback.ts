@@ -1,12 +1,12 @@
 import {normalizeBlock} from '@sanity/block-tools'
 import {PortableTextBlock} from '@sanity/types'
-import {FormPatch, insert} from '../../../patch'
+import {PatchEvent, insert} from '../../../patch'
 import {InsertCallback} from './types'
 
 export function createInsertCallback(options: {
   allowedDecorators: string[]
   block: PortableTextBlock
-  onChange: (patches: FormPatch[]) => void
+  onChange: (patches: PatchEvent) => void
 }): InsertCallback {
   const {allowedDecorators, block, onChange} = options
 
@@ -22,6 +22,6 @@ export function createInsertCallback(options: {
 
     const patches = [insert(toInsert, 'after', [{_key: block._key}])]
 
-    return onChange(patches)
+    return onChange(PatchEvent.from(patches))
   }
 }

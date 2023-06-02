@@ -14,20 +14,23 @@ const EMPTY: [] = []
 
 export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInputProps<Item>) {
   const {
-    schemaType,
-    onChange,
-    value = EMPTY,
-    readOnly,
-    members,
+    arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
     elementProps,
-    resolveUploader,
+    members,
+    onChange,
     onInsert,
     onItemMove,
     onUpload,
-    renderPreview,
+    readOnly,
+    renderAnnotation,
+    renderBlock,
     renderField,
+    renderInlineBlock,
     renderInput,
-    arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
+    renderPreview,
+    resolveUploader,
+    schemaType,
+    value = EMPTY,
   } = props
 
   const handlePrepend = useCallback(
@@ -86,6 +89,9 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                     {member.kind === 'item' && (
                       <ArrayOfObjectsItem
                         member={member}
+                        renderAnnotation={renderAnnotation}
+                        renderBlock={renderBlock}
+                        renderInlineBlock={renderInlineBlock}
                         renderItem={renderItem}
                         renderField={renderField}
                         renderInput={renderInput}

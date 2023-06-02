@@ -8,7 +8,9 @@ import {
   ObjectInputProps,
   ObjectItem,
   ObjectItemProps,
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -27,6 +29,9 @@ import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
  */
 export interface MemberItemProps {
   member: ArrayOfObjectsItemMember
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
@@ -38,7 +43,16 @@ export interface MemberItemProps {
  */
 export function ArrayOfObjectsItem(props: MemberItemProps) {
   const focusRef = useRef<{focus: () => void}>()
-  const {member, renderItem, renderInput, renderField, renderPreview} = props
+  const {
+    member,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
+  } = props
 
   const {
     onPathBlur,
@@ -249,7 +263,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       path: member.item.path,
       presence: member.item.presence,
       readOnly: member.item.readOnly,
+      renderAnnotation,
+      renderBlock,
       renderField,
+      renderInlineBlock,
       renderInput,
       renderItem,
       renderPreview,
@@ -282,7 +299,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.item.schemaType,
     member.item.validation,
     member.item.value,
+    renderAnnotation,
+    renderBlock,
     renderField,
+    renderInlineBlock,
     renderInput,
     renderItem,
     renderPreview,

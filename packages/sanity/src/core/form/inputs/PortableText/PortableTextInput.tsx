@@ -19,7 +19,7 @@ import React, {
 } from 'react'
 import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
-import {FormPatch, SANITY_PATCH_TYPE} from '../../patch'
+import {SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
 import {EMPTY_ARRAY} from '../../../util'
@@ -32,7 +32,7 @@ import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
-import {_isArrayOfObjectsFieldMember, _isBlockType} from './_helpers'
+import {isArrayOfObjectsFieldMember, isBlockType} from './_helpers'
 
 /** @internal */
 export interface PortableTextMemberItem {
@@ -59,6 +59,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     members,
     onChange,
     onCopy,
+    onItemRemove,
     onInsert,
     onPaste,
     onPathFocus,
@@ -130,7 +131,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
     for (const member of members) {
       if (member.kind === 'item') {
-        const isObjectBlock = !_isBlockType(member.item.schemaType)
+        const isObjectBlock = !isBlockType(member.item.schemaType)
         if (isObjectBlock) {
           result.push({kind: 'objectBlock', member, node: member.item})
         } else {
@@ -161,7 +162,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           }
           // Markdefs
           const markDefArrayMember = member.item.members
-            .filter(_isArrayOfObjectsFieldMember)
+            .filter(isArrayOfObjectsFieldMember)
             .find((f) => f.name === 'markDefs')
           if (markDefArrayMember) {
             // eslint-disable-next-line max-depth
@@ -320,7 +321,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 isActive={isActive}
                 isFullscreen={isFullscreen}
                 onActivate={handleActivate}
-                onChange={onChange}
+                onItemRemove={onItemRemove}
                 onCopy={onCopy}
                 onInsert={onInsert}
                 onPaste={onPaste}
@@ -337,7 +338,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
 }
 
 function toFormPatches(patches: any) {
-  return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE})) as FormPatch[]
+  return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE}))
 }
 
 // Return true if the path directly points to something focusable in the editor
