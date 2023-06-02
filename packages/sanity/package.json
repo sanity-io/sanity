@@ -232,7 +232,7 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@sanity/tsdoc": "^1.0.0-alpha.16",
+    "@sanity/tsdoc": "1.0.0-alpha.22",
     "@sanity/ui-workshop": "^1.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
