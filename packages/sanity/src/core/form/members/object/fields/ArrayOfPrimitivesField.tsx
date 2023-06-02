@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {
   ArraySchemaType,
   BooleanSchemaType,
@@ -36,6 +36,15 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {readAsText} from '../../../studio/uploads/file/readAsText'
 import {accepts} from '../../../studio/uploads/accepts'
 import {applyAll} from '../../../patch/applyPatch'
+import {
+  FieldActionMenu,
+  FieldActionsProvider,
+  FieldActionsResolver,
+  useFieldActions,
+} from '../../../field'
+import {useFormPublishedId} from '../../../useFormPublishedId'
+import {useFormBuilder} from '../../../useFormBuilder'
+import {DocumentFieldActionNode} from '../../../../config'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -155,6 +164,12 @@ export function ArrayOfPrimitivesField(props: {
     renderItem,
     renderPreview,
   } = props
+
+  const {
+    field: {actions: fieldActions},
+  } = useFormBuilder().__internal
+  const documentId = useFormPublishedId()
+  const [fieldActionNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
   const focusRef = useRef<Element & {focus: () => void}>()
   const uploadSubscriptions = useRef<Subscription>()
@@ -395,6 +410,10 @@ export function ArrayOfPrimitivesField(props: {
 
   const fieldProps: Omit<ArrayOfPrimitivesFieldProps, 'renderDefault'> = useMemo(() => {
     return {
+      actions:
+        fieldActionNodes.length > 0 ? (
+          <FieldActionMenu focused={member.field.focused} nodes={fieldActionNodes} />
+        ) : undefined,
       name: member.name,
       index: member.index,
       level: member.field.level,
@@ -415,18 +434,20 @@ export function ArrayOfPrimitivesField(props: {
       inputProps: inputProps as ArrayOfPrimitivesInputProps,
     }
   }, [
-    member.name,
-    member.index,
+    fieldActionNodes,
+    member.field.focused,
     member.field.level,
     member.field.value,
     member.field.schemaType,
+    member.field.changed,
     member.field.id,
     member.field.path,
     member.field.presence,
     member.field.validation,
+    member.name,
+    member.index,
     member.collapsible,
     member.collapsed,
-    member.field.changed,
     handleExpand,
     handleCollapse,
     renderedInput,
@@ -443,7 +464,20 @@ export function ArrayOfPrimitivesField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps as FIXME), [fieldProps, renderField])}
+      {documentId && fieldActions.length > 0 && (
+        <FieldActionsResolver
+          actions={fieldActions}
+          documentId={documentId}
+          documentType={member.field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={member.field.path}
+          schemaType={member.field.schemaType}
+        />
+      )}
+
+      <FieldActionsProvider actions={fieldActionNodes} path={member.field.path}>
+        {useMemo(() => renderField(fieldProps as FIXME), [fieldProps, renderField])}
+      </FieldActionsProvider>
     </FormCallbacksProvider>
   )
 }

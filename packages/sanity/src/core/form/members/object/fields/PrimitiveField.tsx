@@ -10,6 +10,10 @@ import {
 import {FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
+import {FieldActionMenu, FieldActionsProvider, FieldActionsResolver} from '../../../field'
+import {useFormBuilder} from '../../../useFormBuilder'
+import {useFormPublishedId} from '../../../useFormPublishedId'
+import {DocumentFieldActionNode} from '../../../../config'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
@@ -23,6 +27,13 @@ export function PrimitiveField(props: {
   renderField: RenderFieldCallback<PrimitiveFieldProps>
 }) {
   const {member, renderInput, renderField} = props
+
+  const {
+    field: {actions: fieldActions},
+  } = useFormBuilder().__internal
+  const documentId = useFormPublishedId()
+  const [fieldActionNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
+
   const focusRef = useRef<{focus: () => void}>()
 
   const [localValue, setLocalValue] = useState<string | undefined>()
@@ -148,6 +159,10 @@ export function PrimitiveField(props: {
 
   const fieldProps = useMemo((): Omit<PrimitiveFieldProps, 'renderDefault'> => {
     return {
+      actions:
+        fieldActionNodes.length > 0 ? (
+          <FieldActionMenu focused={member.field.focused} nodes={fieldActionNodes} />
+        ) : undefined,
       name: member.name,
       index: member.index,
       level: member.field.level,
@@ -164,8 +179,8 @@ export function PrimitiveField(props: {
       inputProps: inputProps as any,
     }
   }, [
-    member.name,
-    member.index,
+    fieldActionNodes,
+    member.field.focused,
     member.field.level,
     member.field.value,
     member.field.schemaType,
@@ -174,9 +189,28 @@ export function PrimitiveField(props: {
     member.field.validation,
     member.field.presence,
     member.field.changed,
+    member.name,
+    member.index,
     renderedInput,
     inputProps,
   ])
 
-  return <>{renderField(fieldProps)}</>
+  return (
+    <>
+      {documentId && fieldActions.length > 0 && (
+        <FieldActionsResolver
+          actions={fieldActions}
+          documentId={documentId}
+          documentType={member.field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={member.field.path}
+          schemaType={member.field.schemaType}
+        />
+      )}
+
+      <FieldActionsProvider actions={fieldActionNodes} path={member.field.path}>
+        {renderField(fieldProps)}
+      </FieldActionsProvider>
+    </>
+  )
 }

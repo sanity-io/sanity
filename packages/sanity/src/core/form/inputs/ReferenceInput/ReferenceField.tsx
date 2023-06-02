@@ -260,6 +260,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
 
   return (
     <FormField
+      __unstable_headerActions={props.actions}
       level={props.level}
       title={props.title}
       description={props.description}
