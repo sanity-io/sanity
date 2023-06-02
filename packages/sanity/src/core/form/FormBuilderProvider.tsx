@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React, {useEffect, useMemo, useRef} from 'react'
-import {Source} from '../config'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {DocumentFieldAction, Source} from '../config'
 import {FormNodePresence} from '../presence'
 import {FIXME} from '../FIXME'
+import {EMPTY_ARRAY} from '../util'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {
   FormBuilderFilterFieldFn,
@@ -23,12 +24,14 @@ import {PatchChannel, PatchEvent} from './patch'
 import {FormCallbacksProvider} from './studio/contexts/FormCallbacks'
 import {PresenceProvider} from './studio/contexts/Presence'
 import {ValidationProvider} from './studio/contexts/Validation'
+import {HoveredFieldProvider} from './field'
 
 export interface FormBuilderProviderProps {
-  /**
-   * @internal
-   */
+  /** @internal */
+  __internal_fieldActions?: DocumentFieldAction[]
+  /** @internal */
   __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
+
   autoFocus?: boolean
   changesOpen?: boolean
   children?: React.ReactNode
@@ -77,6 +80,7 @@ const missingPatchChannel: PatchChannel = {
 
 export function FormBuilderProvider(props: FormBuilderProviderProps) {
   const {
+    __internal_fieldActions: fieldActions = EMPTY_ARRAY,
     __internal_patchChannel: patchChannel = missingPatchChannel,
     autoFocus,
     changesOpen,
@@ -127,6 +131,9 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         CustomMarkers: unstable?.CustomMarkers || DefaultCustomMarkers,
         Markers: unstable?.Markers || DefaultMarkers,
       },
+      field: {
+        actions: fieldActions,
+      },
       file: {
         assetSources: file.assetSources,
         directUploads: file?.directUploads !== false,
@@ -139,7 +146,18 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       getDocument: () => documentValueRef.current as FIXME,
       onChange,
     }),
-    [file, filterField, image, onChange, patchChannel, unstable]
+    [
+      fieldActions,
+      file.assetSources,
+      file?.directUploads,
+      filterField,
+      image.assetSources,
+      image?.directUploads,
+      onChange,
+      patchChannel,
+      unstable?.CustomMarkers,
+      unstable?.Markers,
+    ]
   )
 
   const formBuilder: FormBuilderContextValue = useMemo(
@@ -201,7 +219,9 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         onSetFieldSetCollapsed={onSetFieldSetCollapsed}
       >
         <PresenceProvider presence={presence}>
-          <ValidationProvider validation={validation}>{children}</ValidationProvider>
+          <ValidationProvider validation={validation}>
+            <HoveredFieldProvider>{children}</HoveredFieldProvider>
+          </ValidationProvider>
         </PresenceProvider>
       </FormCallbacksProvider>
     </FormBuilderContext.Provider>
