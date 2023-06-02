@@ -42,17 +42,17 @@ export function getStudioEnvironmentVariables(
       continue
     }
 
+    if (key.startsWith(envPrefix)) {
+      studioEnv[`${prefix}${key}`] = jsonEncode
+        ? JSON.stringify(fullEnv[key] || '')
+        : fullEnv[key] || ''
+    }
+
     if (
       envsExceptedFromPrefix.includes(key) ||
       envsExceptedFromPrefix.some((env) => key.startsWith(env))
     ) {
       studioEnv[key] = jsonEncode ? JSON.stringify(fullEnv[key] || '') : fullEnv[key] || ''
-    }
-
-    if (key.startsWith(envPrefix)) {
-      studioEnv[`${prefix}${key}`] = jsonEncode
-        ? JSON.stringify(fullEnv[key] || '')
-        : fullEnv[key] || ''
     }
   }
   return studioEnv
