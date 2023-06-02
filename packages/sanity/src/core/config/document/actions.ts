@@ -97,6 +97,14 @@ export interface DocumentActionPopoverDialogProps {
 /**
  * @hidden
  * @beta */
+export interface DocumentActionCustomDialogComponentProps {
+  type: 'custom'
+  component: React.ReactNode
+}
+
+/**
+ * @hidden
+ * @beta */
 export type DocumentActionDialogProps =
   | DocumentActionConfirmDialogProps
   | DocumentActionPopoverDialogProps
