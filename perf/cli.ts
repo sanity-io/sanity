@@ -9,6 +9,7 @@ import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {Deployment} from './runner/types'
 import {sanityIdify} from './runner/utils/sanityIdIfy'
+import {KNOWN_TEST_IDS} from './runner/utils/testIds'
 
 config({path: `${__dirname}/.env`})
 
@@ -117,6 +118,9 @@ const {values: args} = parseArgs({
       type: 'boolean',
       short: 'h',
     },
+    list: {
+      type: 'boolean',
+    },
     local: {
       type: 'boolean',
       short: 'l',
@@ -144,6 +148,14 @@ const {values: args} = parseArgs({
   },
 })
 
+if (args.list) {
+  /* eslint-disable no-console */
+  console.log('\n# Known test ids:\n')
+  console.log(Object.keys(KNOWN_TEST_IDS).join('\n'))
+  console.log()
+  process.exit(0)
+  /* eslint-enable no-console */
+}
 main(args).then(
   () => {
     // eslint-disable-next-line no-console
