@@ -41,6 +41,7 @@ export const DEBUG_INPUT_TYPES = [
   'formInputDebug',
   'conditionalFieldsTest',
   'customInputsTest',
+  'customInputsWithPatches',
   'documentActionsTest',
   'collapsibleObjects',
   'empty',

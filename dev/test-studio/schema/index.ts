@@ -35,6 +35,7 @@ import actions from './debug/actions'
 import button from './debug/button'
 import conditionalFields from './debug/conditionalFields'
 import customInputs from './debug/customInputs'
+import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
 import {collapsibleObjects} from './debug/collapsibleObjects'
 import documentActions from './debug/documentActions'
@@ -158,6 +159,7 @@ export const schemaTypes = [
   conditionalFieldset,
   customBlock,
   customInputs,
+  customInputsWithPatches,
   customNumber,
   date,
   datetime,
