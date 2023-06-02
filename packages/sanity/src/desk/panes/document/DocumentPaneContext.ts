@@ -12,6 +12,7 @@ import {TimelineMode} from './types'
 import {
   DocumentActionComponent,
   DocumentBadgeComponent,
+  DocumentFieldAction,
   DocumentFormNode,
   DocumentInspector,
   DocumentLanguageFilterComponent,
@@ -39,6 +40,7 @@ export interface DocumentPaneContextValue {
   documentIdRaw: string
   documentType: string
   editState: EditStateFor | null
+  fieldActions: DocumentFieldAction[]
   focusPath: Path
   index: number
   inspectOpen: boolean
