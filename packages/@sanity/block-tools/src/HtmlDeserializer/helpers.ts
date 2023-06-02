@@ -1,6 +1,6 @@
 import {ArraySchemaType, PortableTextTextBlock, isPortableTextTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {DEFAULT_BLOCK} from '../constants'
+import {DEFAULT_BLOCK, PRESERVE_WHITESPACE_TAGS} from '../constants'
 import {resolveJsType} from '../util/resolveJsType'
 import type {
   BlockEnabledFeatures,
@@ -49,15 +49,15 @@ export function tagName(el: HTMLElement | Node | null): string | undefined {
 
 // TODO: make this plugin-style
 export function preprocess(html: string, parseHtml: HtmlParser): Document {
-  const compactHtml = html
-    .trim() // Trim whitespace
-    .replace(/\s\s+/g, ' ') // Remove multiple whitespace
-    .replace(/[\r\n]/g, ' ') // Remove newlines / carriage returns
-  const doc = parseHtml(compactHtml)
+  const doc = parseHtml(normalizeHtmlBeforePreprocess(html))
   preprocessors.forEach((processor) => {
     processor(html, doc)
   })
   return doc
+}
+
+function normalizeHtmlBeforePreprocess(html: string): string {
+  return html.trim()
 }
 
 /**
