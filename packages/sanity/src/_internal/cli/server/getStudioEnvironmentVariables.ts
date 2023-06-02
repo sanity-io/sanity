@@ -1,6 +1,9 @@
 /* eslint-disable no-process-env */
 import {loadEnv} from '@sanity/cli'
 
+/*Fill this array with envs that should not be prefixed*/
+const envsExceptedFromPrefix = ['VERCEL_ENV', 'NODE_ENV']
+
 const envPrefix = 'SANITY_STUDIO_'
 
 /**
@@ -35,6 +38,13 @@ export function getStudioEnvironmentVariables(
 
   const studioEnv: Record<string, string> = {}
   for (const key in fullEnv) {
+    if (!Object.prototype.hasOwnProperty.call(fullEnv, key)) {
+      continue
+    }
+    if (envsExceptedFromPrefix.includes(key)) {
+      studioEnv[key] = jsonEncode ? JSON.stringify(fullEnv[key] || '') : fullEnv[key] || ''
+    }
+
     if (key.startsWith(envPrefix)) {
       studioEnv[`${prefix}${key}`] = jsonEncode
         ? JSON.stringify(fullEnv[key] || '')
