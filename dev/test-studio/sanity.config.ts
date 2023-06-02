@@ -36,7 +36,11 @@ import {
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
+import {copyAction} from './fieldActions/copyAction'
+import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
+import {commentAction} from './fieldActions/commentFieldAction'
 import {customInspector} from './inspectors/custom'
+import {pasteAction} from './fieldActions/pasteAction'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -59,6 +63,13 @@ const sharedSettings = definePlugin({
     inspectors: (prev, ctx) => {
       if (ctx.documentType === 'inspectorsTest') {
         return [customInspector, ...prev]
+      }
+
+      return prev
+    },
+    unstable_fieldActions: (prev, ctx) => {
+      if (['fieldActionsTest', 'stringsTest'].includes(ctx.documentType)) {
+        return [...prev, commentAction, assistFieldActionGroup, copyAction, pasteAction]
       }
 
       return prev

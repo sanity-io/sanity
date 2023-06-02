@@ -45,6 +45,7 @@ export const DEBUG_INPUT_TYPES = [
   'documentActionsTest',
   'collapsibleObjects',
   'empty',
+  'fieldActionsTest',
   'fieldComponentsTest',
   'fieldsetsTest',
   'fieldValidationInferReproDoc',
