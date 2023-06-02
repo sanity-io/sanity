@@ -4798,10 +4798,10 @@
     tmp "^0.2.1"
     yargs "^17.6.2"
 
-"@sanity/tsdoc@^1.0.0-alpha.16":
-  version "1.0.0-params.1"
-  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-params.1.tgz#97f9943408303b7310946bba2b594011017614b9"
-  integrity sha512-M4UCugDdJQ8fWggIT3DVp2LEaMc4dY4zxuG/RVq8ldFZDjB9trvKIx4rK1hXLfJZifEjgOMKqwbERZPGtrWcPw==
+"@sanity/tsdoc@1.0.0-alpha.22":
+  version "1.0.0-alpha.22"
+  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-alpha.22.tgz#01832be76a7e357cb97c4260b46de7db25ddaa1d"
+  integrity sha512-UWnk+W1sOfgYNKxlwimD3LkdsZtcsVZvEVYIn0txESGMLZgWZWOz4eAW5I38MjvqJfSV5OaSWDL738ApAwxkNA==
   dependencies:
     "@microsoft/api-extractor" "7.35.0"
     "@microsoft/api-extractor-model" "7.27.0"
@@ -6332,7 +6332,7 @@ acorn-globals@^7.0.0:
     acorn "^8.1.0"
     acorn-walk "^8.0.2"
 
-acorn-import-assertions@^1.9.0:
+acorn-import-assertions@^1.7.6:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/acorn-import-assertions/-/acorn-import-assertions-1.9.0.tgz#507276249d684797c84e0734ef84860334cfb1ac"
   integrity sha512-cmMwop9x+8KFhxvKrKfPYmN6/pKTYYHBqLa0DfvVZcKMJWNyWLnaqND7dx/qn66R7ewM1UX5XMaDVP5wlVTaVA==
