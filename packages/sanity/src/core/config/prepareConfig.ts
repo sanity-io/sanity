@@ -45,6 +45,7 @@ import {resolveConfigProperty} from './resolveConfigProperty'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {SchemaError} from './SchemaError'
 import {createDefaultIcon} from './createDefaultIcon'
+import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -461,6 +462,14 @@ function resolveSource({
           initialValue: initialDocumentBadges,
           propertyName: 'document.badges',
           reducer: documentBadgesReducer,
+        }),
+      unstable_fieldActions: (partialContext) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, ...partialContext},
+          initialValue: initialDocumentFieldActions,
+          propertyName: 'document.unstable_fieldActions',
+          reducer: documentFieldActionsReducer,
         }),
       inspectors: (partialContext) =>
         resolveConfigProperty({
