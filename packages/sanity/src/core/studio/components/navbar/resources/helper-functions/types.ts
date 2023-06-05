@@ -1,4 +1,4 @@
-import {Image} from '@sanity/types'
+import {Image, PortableTextBlock} from '@sanity/types'
 
 interface WelcomeVideo {
   link?: Link
@@ -6,7 +6,7 @@ interface WelcomeVideo {
 }
 
 interface Video {
-  description?: any //PTE
+  description?: PortableTextBlock //PTE
   image?: Image
   title?: string
   youtube?: YouTube[]
@@ -29,19 +29,28 @@ interface Resource {
 }
 
 export interface SectionItem {
+  _key: string
   sectionTitle?: string
-  items?: Item[]
+  items?: (InternalAction | ExternalLink)[]
 }
 
 interface Item {
   _key: string
-  _type: string
   title?: string
-  type?: string
+}
+
+interface ExternalLink extends Item {
+  _type: 'externalLink'
   url?: string
+}
+
+interface InternalAction extends Item {
+  _type: 'internalAction'
+  type?: 'welcome-modal'
 }
 
 export interface ResourcesResponse {
   resources?: Resource
   welcome?: WelcomeVideo
+  latestVersion?: string
 }

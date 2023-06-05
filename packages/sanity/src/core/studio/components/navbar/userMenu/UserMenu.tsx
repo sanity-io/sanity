@@ -1,12 +1,4 @@
-import {
-  LeaveIcon,
-  ChevronDownIcon,
-  CogIcon,
-  CheckmarkIcon,
-  UsersIcon,
-  HelpCircleIcon,
-  CommentIcon,
-} from '@sanity/icons'
+import {LeaveIcon, ChevronDownIcon, CogIcon, CheckmarkIcon, UsersIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -32,8 +24,10 @@ import {
   useColorSchemeSetValue,
   useColorSchemeValue,
 } from '../../../colorScheme'
+import {SANITY_VERSION} from '../../../../version'
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
+import {useGetHelpResources} from '../resources/helper-functions/hooks'
 import {LoginProviderLogo} from './LoginProviderLogo'
 
 const AVATAR_SIZE = 1
@@ -82,6 +76,8 @@ export function UserMenu() {
   const {currentUser, projectId, auth} = useWorkspace()
   const scheme = useColorSchemeValue()
   const setScheme = useColorSchemeSetValue()
+  const {value, error, isLoading} = useGetHelpResources()
+  const latestStudioVersion = value?.latestVersion
 
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
   const providerTitle = getProviderTitle(currentUser?.provider)
@@ -113,12 +109,6 @@ export function UserMenu() {
       menu={
         <StyledMenu>
           <Card padding={2}>
-            <Box marginBottom={3}>
-              <Label size={1} muted>
-                Signed in as
-              </Label>
-            </Box>
-
             <Flex align="center">
               <Tooltip
                 disabled={!providerTitle}
@@ -148,6 +138,21 @@ export function UserMenu() {
               </Stack>
             </Flex>
           </Card>
+          <MenuDivider />
+
+          <Box padding={3}>
+            <Text size={1} muted weight="bold" textOverflow="ellipsis">
+              Sanity Studio version {SANITY_VERSION}
+            </Text>
+            {!error && !isLoading && latestStudioVersion && (
+              <Box paddingTop={2}>
+                <Text size={1} muted textOverflow="ellipsis">
+                  Latest version is {latestStudioVersion}
+                </Text>
+              </Box>
+            )}
+          </Box>
+
           {setScheme && <AppearanceMenu setScheme={setScheme} />}
 
           <MenuDivider />

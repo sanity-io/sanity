@@ -1,6 +1,17 @@
 import React, {useCallback, useState} from 'react'
 import {HelpCircleIcon} from '@sanity/icons'
-import {Button, Card, Text, Label, Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui'
+import {
+  Button,
+  Card,
+  Text,
+  Label,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  Flex,
+  Spinner,
+} from '@sanity/ui'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
 import {useGetHelpResources} from './helper-functions/hooks'
@@ -58,12 +69,19 @@ export function ResourcesButton() {
                 {modalTitle || 'Resources & Updates'}
               </Text>
             </Card>
-            {sections?.map((subSection) => {
-              if (!subSection) return null
-              return SubSections({subSection})
-            })}
-            {/* Fallback values if fetching is loading or fails */}
-            {(value === undefined || error || isLoading) && fallbackComponent}
+            {/*Spinner when response is loading */}
+            {isLoading && (
+              <Flex align="center" justify="center" padding={3}>
+                <Spinner />
+              </Flex>
+            )}
+            {!isLoading &&
+              sections?.map((subSection) => {
+                if (!subSection) return null
+                return <SubSections key={subSection._key} subSection={subSection} />
+              })}
+            {/* Fallback values if no response */}
+            {!isLoading && (value === undefined || error) && fallbackComponent}
           </StyledMenu>
         }
         popoverScheme={scheme}
@@ -74,13 +92,11 @@ export function ResourcesButton() {
   )
 }
 
-//Errors should be localized to the component itself and not crashing the entire studio.
-
 function SubSections({subSection}: {subSection: SectionItem}) {
   return (
     <>
       <MenuDivider />
-      <Card paddingTop={3} paddingLeft={3}>
+      <Card paddingBottom={1} paddingTop={3} paddingLeft={3}>
         <Label muted size={1}>
           {subSection.sectionTitle}
         </Label>
