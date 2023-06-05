@@ -128,7 +128,7 @@ export function UserMenu() {
               </Tooltip>
 
               <Stack space={2} flex={1}>
-                <Text size={1} weight="semibold" textOverflow="ellipsis">
+                <Text size={1} weight="medium" textOverflow="ellipsis">
                   {currentUser?.name}
                 </Text>
 
@@ -141,7 +141,7 @@ export function UserMenu() {
           <MenuDivider />
 
           <Box padding={3}>
-            <Text size={1} muted weight="bold" textOverflow="ellipsis">
+            <Text size={1} muted weight="semibold" textOverflow="ellipsis">
               Sanity Studio version {SANITY_VERSION}
             </Text>
             {!error && !isLoading && latestStudioVersion && (
