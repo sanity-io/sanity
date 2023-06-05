@@ -7,10 +7,11 @@ import {DocumentEnhancement} from 'sanity'
 
 interface DocumentFooterDocumentEnhancementsProps {
   onEnhancementSelect?: (enhancement: DocumentEnhancement | null) => void
+  onOpenChange: (open: boolean) => void
 }
 
 export function DocumentFooterEnhancements(props: DocumentFooterDocumentEnhancementsProps) {
-  const {onEnhancementSelect} = props
+  const {onEnhancementSelect, onOpenChange} = props
   const {enhancements, documentId, documentType} = useDocumentPane()
 
   const defaultItems = useMemo(
@@ -29,11 +30,12 @@ export function DocumentFooterEnhancements(props: DocumentFooterDocumentEnhancem
         {defaultItems?.map((v) => (
           <DocumentEnhancementItem
             {...v}
-            key={v.name}
-            enhancement={v}
             documentId={documentId}
             documentType={documentType}
+            enhancement={v}
+            key={v.name}
             onClick={onEnhancementSelect}
+            onOpenChange={onOpenChange}
           />
         ))}
 
@@ -46,11 +48,12 @@ export function DocumentFooterEnhancements(props: DocumentFooterDocumentEnhancem
                 {menuItems?.map((v) => (
                   <DocumentEnhancementItem
                     {...v}
-                    key={v.name}
-                    enhancement={v}
                     documentId={documentId}
                     documentType={documentType}
+                    enhancement={v}
+                    key={v.name}
                     onClick={onEnhancementSelect}
+                    onOpenChange={onOpenChange}
                   />
                 ))}
               </Menu>

@@ -43,6 +43,7 @@ import {
   useZIndex,
 } from 'sanity'
 import {DocumentFooterEnhancements} from './enhancements'
+import {set} from 'lodash'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
@@ -232,18 +233,11 @@ function InnerDocumentPane() {
 
   const [inspector, setInspector] = useState<DocumentEnhancement | null>(null)
 
-  const handleEnhancementClick = useCallback((v: DocumentEnhancement | null) => {
-    setInspector(v)
-    setInspectorOpen((prev) => !prev)
-  }, [])
-
   const inspectorElement = useMemo(() => {
     if (!inspector || !inspectorOpen) return null
-    if (!('view' in inspector)) return null
+    if (!('view' in inspector) || !inspector?.view?.component) return null
 
-    const {component} = inspector.view
-
-    return createElement(component, {onClose: () => setInspectorOpen(false)})
+    return createElement(inspector?.view?.component, {onClose: () => setInspectorOpen(false)})
   }, [inspector, inspectorOpen])
 
   const documentPanel = useMemo(
@@ -266,7 +260,17 @@ function InnerDocumentPane() {
         __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
       >
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-          <DocumentFooterEnhancements onEnhancementSelect={handleEnhancementClick} />
+          <DocumentFooterEnhancements
+            onEnhancementSelect={setInspector}
+            // eslint-disable-next-line react/jsx-no-bind
+            onOpenChange={(v) => {
+              if (!v) {
+                setInspector(null)
+              }
+
+              setInspectorOpen(v)
+            }}
+          />
 
           <PaneFooter ref={setFooterElement}>
             <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
@@ -274,7 +278,7 @@ function InnerDocumentPane() {
         </DialogProvider>
       </PortalProvider>
     ),
-    [documentPanelPortalElement, handleEnhancementClick, zOffsets.portal]
+    [documentPanelPortalElement, zOffsets.portal]
   )
 
   const changesPanel = useMemo(() => {

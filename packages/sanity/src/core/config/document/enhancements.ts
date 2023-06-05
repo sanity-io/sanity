@@ -32,11 +32,18 @@ export interface DocumentEnhancementProps extends BaseDocumentEnhancement {
 export interface DocumentEnhancementHookContext {
   documentId: string
   documentType: string
+  onOpen: () => void
+  onClose: () => void
+  isOpen: boolean
 }
 
 /** @beta */
 export interface DocumentEnhancementHookProps extends BaseDocumentEnhancement {
   use: (context: DocumentEnhancementHookContext) => DocumentEnhancementHookDefinition
+  view?: {
+    component: React.ComponentType<{onClose: () => void}>
+    type: 'dialog' | 'popover' | 'inspector'
+  }
 }
 
 /** @beta */

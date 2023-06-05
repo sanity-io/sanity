@@ -8,10 +8,11 @@ interface DocumentEnhancementItemProps {
   documentId: string
   documentType: string
   onClick?: (enhancement: DocumentEnhancement | null) => void
+  onOpenChange: (open: boolean) => void
 }
 
 export function DocumentEnhancementItem(props: DocumentEnhancementItemProps) {
-  const {documentId, documentType, enhancement, onClick} = props
+  const {documentId, documentType, enhancement, onClick, onOpenChange} = props
   const isMenuContext = enhancement.context === 'menu'
   const [open, setOpen] = useState<boolean>(false)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
@@ -27,7 +28,7 @@ export function DocumentEnhancementItem(props: DocumentEnhancementItemProps) {
   )
 
   useClickOutside(() => {
-    if ('view' in enhancement && enhancement.view.type === 'popover') {
+    if ('view' in enhancement && enhancement?.view?.type === 'popover') {
       setOpen(false)
     }
   }, [popoverElement, buttonElement])
@@ -40,7 +41,17 @@ export function DocumentEnhancementItem(props: DocumentEnhancementItemProps) {
     return () => ({} as any)
   }, [enhancement])
 
-  const hookMenuItem = useHook?.({documentId, documentType})
+  const hookMenuItem = useHook?.({
+    documentId,
+    documentType,
+    onOpen: () => setOpen(true),
+    onClose: () => setOpen(false),
+    isOpen: open,
+  })
+
+  useEffect(() => {
+    onOpenChange?.(open)
+  }, [onOpenChange, open])
 
   const buttonProps: ButtonProps & {onClick: () => void} = useMemo(() => {
     if ('menuItem' in enhancement && enhancement.view.type === 'inspector') {
@@ -59,6 +70,17 @@ export function DocumentEnhancementItem(props: DocumentEnhancementItemProps) {
       }
     }
 
+    if ('use' in enhancement && enhancement?.view?.type === 'inspector') {
+      return {
+        ...hookMenuItem,
+        text: hookMenuItem.title,
+        onClick: () => {
+          hookMenuItem?.onClick()
+          handleInspectorClick(enhancement)
+        },
+      }
+    }
+
     return {
       ...hookMenuItem,
       text: hookMenuItem.title,
@@ -67,7 +89,7 @@ export function DocumentEnhancementItem(props: DocumentEnhancementItemProps) {
   }, [enhancement, hookMenuItem, handleInspectorClick, handleToggleOpen])
 
   const viewComponent = useMemo(() => {
-    if (!('view' in enhancement) || !enhancement.view.component) return null
+    if (!('view' in enhancement) || !enhancement?.view?.component) return null
 
     const component = createElement(enhancement.view.component, {onClose: () => setOpen(false)})
 
