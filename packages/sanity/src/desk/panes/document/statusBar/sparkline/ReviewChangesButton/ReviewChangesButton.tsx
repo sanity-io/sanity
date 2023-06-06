@@ -16,6 +16,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
   const {collapsed, status, lastUpdated, ...rest} = props
   const lastUpdatedTime = useTimeAgo(lastUpdated || '', {minimal: true})
   const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
+  const a11yUpdatedAgo = useTimeAgo(lastUpdated || '', {minimal: false, agoSuffix: true})
 
   const buttonProps: ButtonProps = useMemo(() => {
     if (status === 'syncing') {
@@ -55,7 +56,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
             Review changes
           </Text>
           <Text size={1} muted>
-            Changes saved {lastUpdatedTimeAgo}
+            Changes saved <abbr aria-label={a11yUpdatedAgo}>{lastUpdatedTimeAgo}</abbr>
           </Text>
         </Stack>
       }
@@ -67,9 +68,10 @@ const ReviewButton = React.forwardRef(function ReviewButton(
         {...rest}
         data-testid="review-changes-button"
         ref={ref}
+        aria-label="Review changes"
       >
         <Flex align="center">
-          <Box marginRight={collapsed ? 0 : 3}>
+          <Box marginRight={collapsed ? 0 : 3} aria-hidden="true">
             <Text>
               <AnimatedStatusIcon status={status} />
             </Text>
