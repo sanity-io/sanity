@@ -13,6 +13,7 @@ import {
   PortableTextSpan,
   PortableTextTextBlock,
   SpanSchemaType,
+  TypedObject,
 } from '@sanity/types'
 import {Subject, Observable} from 'rxjs'
 import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
@@ -303,19 +304,22 @@ export type EditorChanges = Subject<EditorChange>
 /** @beta */
 export type OnPasteResult =
   | {
-      insert?: PortableTextBlock[]
+      insert?: TypedObject[]
       path?: Path
     }
   | undefined
 export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 
 /** @beta */
-export type OnPasteFn = (arg0: {
+export interface PasteData {
   event: React.ClipboardEvent
   path: Path
   schemaTypes: PortableTextMemberSchemaTypes
   value: PortableTextBlock[] | undefined
-}) => OnPasteResultOrPromise
+}
+
+/** @beta */
+export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise
 
 /** @beta */
 export type OnBeforeInputFn = (event: Event) => void
