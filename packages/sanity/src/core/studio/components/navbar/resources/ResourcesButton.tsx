@@ -39,7 +39,7 @@ const fallbackComponent = (
       key={'fallback-link-contact-sales'}
       text={'Contact Sales'}
       size={0}
-      href={'https://www.sanity.io/contact/sales'}
+      href={'https://www.sanity.io/contact/sales?ref=studio'}
       target="_blank"
       muted={false}
     />
@@ -60,11 +60,11 @@ export function ResourcesButton() {
   return (
     <>
       <MenuButton
-        button={<Button icon={HelpCircleIcon} onClick={handleOpen} mode="bleed" />}
+        button={<Button icon={HelpCircleIcon} onClick={handleOpen} mode="bleed" fontSize={2} />}
         id="menu-button-resources"
         menu={
-          <StyledMenu padding={1}>
-            <Card paddingY={3} paddingX={3}>
+          <StyledMenu>
+            <Card paddingY={3} paddingX={2}>
               <Text weight="medium" size={2}>
                 {modalTitle || 'Resources & Updates'}
               </Text>
@@ -96,11 +96,13 @@ function SubSections({subSection}: {subSection: SectionItem}) {
   return (
     <>
       <MenuDivider />
-      <Card paddingBottom={1} paddingTop={3} paddingLeft={3}>
-        <Label muted size={1}>
-          {subSection.sectionTitle}
-        </Label>
-      </Card>
+      {subSection.sectionTitle && (
+        <Card padding={2}>
+          <Label muted size={1}>
+            {subSection.sectionTitle}
+          </Label>
+        </Card>
+      )}
       {subSection?.items?.map((item) => {
         if (!item || !item.title) return null
         switch (item._type) {
@@ -117,7 +119,7 @@ function SubSections({subSection}: {subSection: SectionItem}) {
                 target="_blank"
               />
             )
-          case 'internalAction': // TODO: Add support for internal actions
+          case 'internalAction': // TODO: Add support for internal actions (MVI-2)
             if (!item.type) return null
             return (
               item.type === 'welcome-modal' && (

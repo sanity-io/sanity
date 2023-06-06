@@ -214,7 +214,7 @@ export function StudioNavbar() {
             </LayerProvider>
 
             {shouldRender.tools && (
-              <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
+              <Card flex={1} marginX={2} overflow="visible" paddingRight={1}>
                 <ToolMenu
                   activeToolName={activeToolName}
                   closeSidebar={handleCloseDrawer}
@@ -234,31 +234,25 @@ export function StudioNavbar() {
             </Box>
           )}
 
+          {shouldRender.configIssues && (
+            <Card borderRight paddingRight={1}>
+              <ConfigIssuesButton />
+            </Card>
+          )}
+
           <Flex align="center">
-            <Box marginRight={1}>
+            <Box paddingLeft={1} paddingRight={1}>
               <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
             </Box>
 
-            {/* {shouldRender.changelog && (
-              <Box marginRight={1}>
-                <ChangelogButton />
-              </Box>
-            )} */}
-
-            {shouldRender.configIssues && (
-              <Box marginRight={2}>
-                <ConfigIssuesButton />
-              </Box>
-            )}
-
             {shouldRender.tools && (
-              <Box>
+              <Box paddingRight={1}>
                 <UserMenu />
               </Box>
             )}
 
             {shouldRender.resources && (
-              <Card marginLeft={2} paddingLeft={1} borderLeft>
+              <Card borderLeft paddingLeft={1}>
                 <ResourcesButton />
               </Card>
             )}
