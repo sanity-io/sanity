@@ -535,6 +535,11 @@ function prepareObjectInputState<T>(
     currentUser: props.currentUser,
   }
 
+  // readonly is inherited
+  const readOnly =
+    props.readOnly ||
+    resolveConditionalProperty(props.schemaType.readOnly, conditionalPropertyContext)
+
   const schemaTypeGroupConfig = props.schemaType.groups || []
   const defaultGroupName = (schemaTypeGroupConfig.find((g) => g.default) || ALL_FIELDS_GROUP)?.name
 
@@ -578,7 +583,7 @@ function prepareObjectInputState<T>(
 
         const fieldMember = prepareFieldMember({
           field: field,
-          parent: {...props, groups, selectedGroup},
+          parent: {...props, readOnly, groups, selectedGroup},
           index,
         })
 
@@ -613,11 +618,9 @@ function prepareObjectInputState<T>(
               },
             ]
           }
-          // readonly is inherited
-          const readOnly = props.readOnly || fieldsetReadOnly
           const fieldMember = prepareFieldMember({
             field: field,
-            parent: {...props, readOnly, groups, selectedGroup},
+            parent: {...props, readOnly: readOnly || fieldsetReadOnly, groups, selectedGroup},
             index,
           }) as FieldMember | FieldError | HiddenField
 
@@ -729,7 +732,7 @@ function prepareObjectInputState<T>(
     value: props.value as Record<string, unknown> | undefined,
     changed: isChangedValue(props.value, props.comparisonValue),
     schemaType: props.schemaType,
-    readOnly: props.readOnly,
+    readOnly,
     path: props.path,
     id: toString(props.path),
     level: props.level,
