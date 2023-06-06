@@ -47,23 +47,7 @@ export default defineField({
     defineField({
       name: 'callToAction',
       title: 'Call to action',
-      type: 'object',
-      fields: [
-        // Title
-        {
-          name: 'title',
-          title: 'Title',
-          type: 'string',
-        },
-        // Link
-        {
-          name: 'links',
-          title: 'Link',
-          type: 'array',
-          of: [{type: 'linkInternal'}, {type: 'linkExternal'}],
-          validation: (Rule) => Rule.max(1),
-        },
-      ],
+      type: 'imageCallToAction',
       hidden: ({parent}) => parent.variant !== 'callToAction',
     }),
     // Product hotspots

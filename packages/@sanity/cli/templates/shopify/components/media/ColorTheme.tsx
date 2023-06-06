@@ -1,4 +1,5 @@
-import styled, {css} from 'styled-components'
+import React from 'react'
+import styled, { css } from 'styled-components'
 
 interface Props {
   background?: string
@@ -20,7 +21,6 @@ const StyledSpan = styled.span<StyledSpanProps>(({background}) => {
     height: 100%;
     justify-content: center;
     overflow: hidden;
-    overflow: clip;
     width: 100%;
   `
 })

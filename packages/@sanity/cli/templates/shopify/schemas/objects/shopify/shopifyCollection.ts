@@ -85,8 +85,6 @@ export default defineField({
       description: 'Include Shopify products that satisfy these conditions',
       of: [
         {
-          name: 'rule',
-          title: 'Rule',
           type: 'collectionRule',
         },
       ],

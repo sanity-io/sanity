@@ -10,6 +10,7 @@ const GROUPS = [
   {
     name: 'editorial',
     title: 'Editorial',
+    default: true,
   },
   {
     name: 'shopifySync',

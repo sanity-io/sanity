@@ -70,6 +70,7 @@ export default defineField({
         {
           icon: ImageIcon,
           type: 'image',
+          title: 'Image',
           options: {hotspot: true},
         },
         {
