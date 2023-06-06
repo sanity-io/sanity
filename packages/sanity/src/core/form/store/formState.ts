@@ -603,9 +603,7 @@ function prepareObjectInputState<T>(
 
       const fieldsetMembers = fieldSet.fields.flatMap(
         (field): (FieldMember | FieldError | HiddenField)[] => {
-          const hidden = resolveConditionalProperty(field.type.hidden, conditionalPropertyContext)
-
-          if (fieldsetHidden || hidden) {
+          if (fieldsetHidden) {
             return [
               {
                 kind: 'hidden',
@@ -615,14 +613,13 @@ function prepareObjectInputState<T>(
               },
             ]
           }
-
           // readonly is inherited
           const readOnly = props.readOnly || fieldsetReadOnly
           const fieldMember = prepareFieldMember({
             field: field,
-            parent: {...props, readOnly, hidden, groups, selectedGroup},
+            parent: {...props, readOnly, groups, selectedGroup},
             index,
-          }) as FieldMember | FieldError
+          }) as FieldMember | FieldError | HiddenField
 
           return fieldMember ? [fieldMember] : []
         }
