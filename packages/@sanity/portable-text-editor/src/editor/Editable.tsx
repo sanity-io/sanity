@@ -398,7 +398,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   if (!portableTextEditor) {
     return null
   }
-  return hasInvalidValue ? null : (
+  return (
     <SlateEditable
       {...restProps}
       autoFocus={false}
