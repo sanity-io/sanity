@@ -36,6 +36,15 @@ const fallbackComponent = (
     />
     <MenuItem
       as="a"
+      key={'fallback-link-help-support'}
+      text={'Help & Support'}
+      size={0}
+      href={'https://www.sanity.io/contact/support'}
+      target="_blank"
+      muted={false}
+    />
+    <MenuItem
+      as="a"
       key={'fallback-link-contact-sales'}
       text={'Contact Sales'}
       size={0}
