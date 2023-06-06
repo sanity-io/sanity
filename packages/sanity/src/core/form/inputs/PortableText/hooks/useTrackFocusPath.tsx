@@ -53,27 +53,38 @@ export function useTrackFocusPath(props: Props): void {
         })
       }
       const isBlockFocusPath = focusPath.length === 1
-      const isChildFocusPath = focusPath.length === 3 && focusPath[1] === 'children'
+      const isTextBlock = openItem.kind === 'textBlock'
+      // Handle paths coming from the outside that are ending on `.text`
+      // when pointing to span nodes. 'Click to edit' does this for instance.
+      const isSpanTextFocusPath =
+        isTextBlock &&
+        focusPath.length === 4 &&
+        focusPath[1] === 'children' &&
+        focusPath[3] === 'text'
+      // This is a normal span node path
+      const isSpanFocusPath = isTextBlock && focusPath.length === 3 && focusPath[1] === 'children'
+
       // If the focusPath i targeting a text block (with focusPath on the block itself),
       // ensure that an editor selection is pointing to it's first child and then focus the editor.
       if (openItem.kind === 'textBlock') {
-        const path = isChildFocusPath
-          ? focusPath // focusPath pointing to known span
-          : [
-              focusPath[0],
-              'children',
-              (Array.isArray(openItem.node.value?.children) &&
-                openItem.node.value?.children[0]._key && {
-                  _key: openItem.node.value?.children[0]._key,
-                }) ||
-                0,
-            ] // unknown span (just a block key given as focusPath), select the first span
+        const editorPath =
+          isSpanFocusPath || isSpanTextFocusPath
+            ? focusPath.slice(0, 3) // focusPath pointing to known span (slice so that the path doesn't include `.text`)
+            : [
+                focusPath[0],
+                'children',
+                (Array.isArray(openItem.node.value?.children) &&
+                  openItem.node.value?.children[0]._key && {
+                    _key: openItem.node.value?.children[0]._key,
+                  }) ||
+                  0,
+              ] // unknown span (just a block key given as focusPath), select the first span
 
         // Make an editor selection if we have a child path, and not have focus inside of it
-        if (isBlockFocusPath || isChildFocusPath) {
+        if (isBlockFocusPath || isSpanFocusPath || isSpanTextFocusPath) {
           PortableTextEditor.select(editor, {
-            anchor: {path, offset: 0},
-            focus: {path, offset: 0},
+            anchor: {path: editorPath, offset: 0},
+            focus: {path: editorPath, offset: 0},
           })
           PortableTextEditor.focus(editor)
         }
