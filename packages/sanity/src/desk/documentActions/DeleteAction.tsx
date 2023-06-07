@@ -10,6 +10,7 @@ import {
   useDocumentOperation,
   useDocumentPairPermissions,
 } from 'sanity'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_TITLE = {
   NOTHING_TO_DELETE: 'This document doesn’t yet exist or is already deleted',
@@ -17,6 +18,7 @@ const DISABLED_REASON_TITLE = {
 
 /** @internal */
 export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete}) => {
+  const {setIsDeleting: paneSetIsDeleting} = useDocumentPane()
   const {delete: deleteOp} = useDocumentOperation(id, type)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
@@ -29,9 +31,10 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   const handleConfirm = useCallback(() => {
     setIsDeleting(true)
     setConfirmDialogOpen(false)
+    paneSetIsDeleting(true)
     deleteOp.execute()
     onComplete()
-  }, [deleteOp, onComplete])
+  }, [deleteOp, onComplete, paneSetIsDeleting])
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)

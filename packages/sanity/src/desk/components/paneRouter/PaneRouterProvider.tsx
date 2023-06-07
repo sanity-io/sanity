@@ -150,6 +150,16 @@ export function PaneRouterProvider(props: {
         )
       },
 
+      // Removes all panes to the right including current
+      closeCurrentAndAfter: (): void => {
+        navigate(
+          {
+            panes: [...routerPaneGroups.slice(0, groupIndex)],
+          },
+          {replace: true}
+        )
+      },
+
       // Duplicate the current pane, with optional overrides for payload, parameters
       duplicateCurrent: (options): void => {
         modifyCurrentGroup((siblings, item) => {
@@ -188,6 +198,7 @@ export function PaneRouterProvider(props: {
       handleEditReference,
       modifyCurrentGroup,
       navigateIntent,
+      navigate,
       params,
       payload,
       routerPaneGroups,

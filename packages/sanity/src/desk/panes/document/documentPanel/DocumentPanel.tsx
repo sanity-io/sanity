@@ -18,6 +18,7 @@ import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelHeader} from './header'
 import {ScrollContainer, VirtualizerScrollInstanceProvider} from 'sanity'
+import {DeletedDocumentBanner} from './DeletedDocumentBanner'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -58,6 +59,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
+    isDeleting,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -92,6 +94,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const formViewHidden = activeView.type !== 'form'
 
+  const isDeleted = useMemo(
+    () => Boolean(!editState?.draft && !editState?.published),
+    [editState?.draft, editState?.published]
+  )
   const activeViewNode = useMemo(
     () =>
       activeView.type === 'component' &&
@@ -152,6 +158,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                           granted={Boolean(permissions?.granted)}
                           requiredPermission={requiredPermission}
                         />
+                        {!isDeleting && isDeleted && <DeletedDocumentBanner />}
                         <ReferenceChangedBanner />
                       </>
                     )}
