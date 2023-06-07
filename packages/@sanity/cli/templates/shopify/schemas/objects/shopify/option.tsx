@@ -3,7 +3,7 @@ import {defineField} from 'sanity'
 
 export default defineField({
   title: 'Product option',
-  name: 'productOption',
+  name: 'option',
   type: 'object',
   icon: SunIcon,
   readOnly: true,

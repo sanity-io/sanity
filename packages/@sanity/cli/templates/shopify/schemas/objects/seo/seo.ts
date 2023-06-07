@@ -1,9 +1,11 @@
 import {defineField} from 'sanity'
 
 export default defineField({
-  name: 'seo.home',
+  name: 'seo',
   title: 'SEO',
   type: 'object',
+  group: 'seo',
+  description: 'Defaults for every page',
   options: {
     collapsed: false,
     collapsible: true,
@@ -11,20 +13,17 @@ export default defineField({
   fields: [
     defineField({
       name: 'title',
-      title: 'Title',
+      title: 'Site title',
       type: 'string',
-      validation: (Rule) =>
-        Rule.max(50).warning('Longer titles may be truncated by search engines'),
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'seo.description',
-    }),
-    defineField({
-      name: 'image',
-      title: 'Image',
-      type: 'image',
+      type: 'text',
+      rows: 2,
+      validation: (Rule) =>
+        Rule.max(150).warning('Longer descriptions may be truncated by search engines'),
     }),
   ],
   validation: (Rule) => Rule.required(),

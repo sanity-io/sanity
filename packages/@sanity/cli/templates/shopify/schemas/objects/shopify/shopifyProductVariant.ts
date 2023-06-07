@@ -109,30 +109,10 @@ export default defineField({
     defineField({
       name: 'inventory',
       title: 'Inventory',
-      type: 'object',
+      type: 'inventory',
       options: {
         columns: 3,
       },
-      fields: [
-        // Available
-        {
-          name: 'isAvailable',
-          title: 'Available',
-          type: 'boolean',
-        },
-        // Management
-        {
-          name: 'management',
-          title: 'Management',
-          type: 'string',
-        },
-        // Policy
-        {
-          name: 'policy',
-          title: 'Policy',
-          type: 'string',
-        },
-      ],
     }),
     // Option 1
     defineField({

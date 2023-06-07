@@ -1,5 +1,6 @@
 import {DocumentIcon} from '@sanity/icons'
 import {defineField} from 'sanity'
+
 import {validateSlug} from '../../utils/validateSlug'
 
 export default defineField({

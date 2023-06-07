@@ -1,5 +1,6 @@
 import {defineField} from 'sanity'
-import ProxyStringInput from '../../components/inputs/ProxyString'
+
+import ProxyStringInput from '../../../components/inputs/ProxyString'
 
 export default defineField({
   name: 'proxyString',
