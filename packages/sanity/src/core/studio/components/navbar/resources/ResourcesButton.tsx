@@ -11,9 +11,11 @@ import {
   MenuItem,
   Flex,
   Spinner,
+  Box,
 } from '@sanity/ui'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
+import {SANITY_VERSION} from '../../../../version'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {SectionItem} from './helper-functions/types'
 
@@ -22,7 +24,7 @@ const StyledMenu = styled(Menu)`
   min-width: 250px;
 `
 
-const fallbackComponent = (
+const fallbackLinks = (
   <>
     <MenuDivider />
     <MenuItem
@@ -65,6 +67,7 @@ export function ResourcesButton() {
 
   const modalTitle = value?.resources?.title
   const sections = value?.resources?.sectionArray
+  const latestStudioVersion = value?.latestVersion
 
   return (
     <>
@@ -74,7 +77,7 @@ export function ResourcesButton() {
         menu={
           <StyledMenu>
             <Card paddingY={3} paddingX={2}>
-              <Text weight="medium" size={2}>
+              <Text weight="medium" size={2} textOverflow="ellipsis">
                 {modalTitle || 'Resources & Updates'}
               </Text>
             </Card>
@@ -90,7 +93,21 @@ export function ResourcesButton() {
                 return <SubSections key={subSection._key} subSection={subSection} />
               })}
             {/* Fallback values if no response */}
-            {!isLoading && (value === undefined || error) && fallbackComponent}
+            {!isLoading && (value === undefined || error) && fallbackLinks}
+            {/* Studio version information */}
+            <MenuDivider />
+            <Box padding={3}>
+              <Text size={1} muted weight="medium" textOverflow="ellipsis">
+                Sanity Studio version {SANITY_VERSION}
+              </Text>
+              {!error && !isLoading && latestStudioVersion && (
+                <Box paddingTop={2}>
+                  <Text size={1} muted textOverflow="ellipsis">
+                    Latest version is {latestStudioVersion}
+                  </Text>
+                </Box>
+              )}
+            </Box>
           </StyledMenu>
         }
         popoverScheme={scheme}
