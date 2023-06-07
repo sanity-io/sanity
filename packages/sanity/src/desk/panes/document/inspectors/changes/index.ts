@@ -4,10 +4,10 @@ import {DocumentInspector} from 'sanity'
 
 export const changesInspector: DocumentInspector = {
   name: 'changes',
-  menuItem: {
+  useMenuItem: () => ({
     icon: RestoreIcon,
     title: 'Review changes',
-  },
+  }),
   component: lazy(() => import('./inspector')),
   onClose: ({params}) => {
     return {params: {...params, since: undefined}}
