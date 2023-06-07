@@ -4,10 +4,10 @@ import {defineDocumentInspector} from 'sanity'
 
 export const customInspector = defineDocumentInspector({
   name: 'custom',
-  menuItem: {
+  useMenuItem: () => ({
     icon: RocketIcon,
+    showAsAction: true,
     title: 'Custom inspector',
-  },
+  }),
   component: lazy(() => import('./inspector')),
-  showAsAction: true,
 })
