@@ -176,7 +176,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
           {showInspector && (
             <BoundaryElementProvider element={rootElement}>
-              <DocumentInspectorPanel flex={1} />
+              <DocumentInspectorPanel
+                documentId={documentId}
+                documentType={schemaType.name}
+                flex={1}
+              />
             </BoundaryElementProvider>
           )}
         </Flex>
