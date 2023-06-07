@@ -1,10 +1,11 @@
-import {ValidationMarker} from '@sanity/types'
 import {ButtonTone} from '@sanity/ui'
 import {ComponentType} from 'react'
 
 /** @beta */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentInspectorProps {
+  documentId: string
+  documentType: string
   onClose: () => void
 }
 
@@ -12,15 +13,18 @@ export interface DocumentInspectorProps {
 export type DocumentInspectorComponent = ComponentType<DocumentInspectorProps>
 
 /** @beta */
-export interface DocumentInspectorCallbackContext {
-  validation: ValidationMarker[]
+export interface DocumentInspectorMenuItemContext {
+  documentId: string
+  documentType: string
 }
 
 /** @beta */
 export interface DocumentInspectorMenuItem {
-  hidden?: boolean | ((props: DocumentInspectorCallbackContext) => boolean)
+  hidden?: boolean
   hotkeys?: string[]
   icon?: ComponentType
+  showAsAction?: boolean
+  status?: ButtonTone
   title: string
   tone?: ButtonTone
 }
@@ -29,10 +33,10 @@ export interface DocumentInspectorMenuItem {
 export interface DocumentInspector {
   name: string
   component: DocumentInspectorComponent
-  showAsAction?: boolean
-  menuItem?:
-    | DocumentInspectorMenuItem
-    | ((props: DocumentInspectorCallbackContext) => DocumentInspectorMenuItem)
+  /**
+   * Hook for defining a menu item for the inspector.
+   */
+  useMenuItem: (props: DocumentInspectorMenuItemContext) => DocumentInspectorMenuItem
 
   /**
    * Callback for when the inspector is closed, which can be used to clean up custom document pane
@@ -64,12 +68,12 @@ export interface DocumentInspector {
  *
  * const customInspector = defineDocumentInspector({
  *   name: 'custom',
- *   menuItem: {
+ *   useMenuItem: () => ({
  *     icon: RocketIcon,
- *     title: 'Custom',
- *   },
+ *     showAsAction: true,
+ *     title: 'Custom'
+ *   }),
  *   component: lazy(() => import('./inspectors/custom')),
- *   showAsAction: true,
  * })
  *
  * export default defineConfig({
