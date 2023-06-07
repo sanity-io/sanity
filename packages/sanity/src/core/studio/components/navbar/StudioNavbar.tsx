@@ -95,7 +95,6 @@ export function StudioNavbar() {
   const shouldRender = useMemo(
     () => ({
       brandingCenter: mediaIndex <= 1,
-      changelog: mediaIndex > 1,
       resources: mediaIndex > 1,
       collapsedPresenceMenu: mediaIndex <= 1,
       loginStatus: mediaIndex > 1,
