@@ -44,6 +44,7 @@ import {
   useDocumentValuePermissions,
   useTimelineStore,
   useTimelineSelector,
+  useDocumentOperationEvent,
   DocumentFieldAction,
   DocumentInspectorMenuItem,
   FieldActionsResolver,
@@ -108,6 +109,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const connectionState = useConnectionState(documentId, documentType)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
+  const [isDeleting, setIsDeleting] = useState(false)
+  const isDeleted = useMemo(
+    () => Boolean(!editState?.draft && !editState?.published),
+    [editState?.draft, editState?.published]
+  )
 
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
 
@@ -500,17 +506,21 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       updateActionDisabled ||
       createActionDisabled ||
       reconnecting ||
-      isLocked
+      isLocked ||
+      isDeleting ||
+      isDeleted
     )
   }, [
     connectionState,
+    editState.transactionSyncLock,
     isNonExistent,
+    isDeleted,
+    isDeleting,
     isPermissionsLoading,
     permissions?.granted,
     ready,
     revTime,
     schemaType,
-    editState.transactionSyncLock,
   ])
 
   const formState = useFormState(schemaType!, {
@@ -596,6 +606,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permissions,
     setTimelineMode,
     setTimelineRange,
+    setIsDeleting,
+    isDeleting,
     timelineError,
     timelineMode,
     timelineStore,

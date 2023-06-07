@@ -2,6 +2,7 @@ import {useToast} from '@sanity/ui'
 import React, {memo, useEffect, useRef} from 'react'
 import {useDocumentPane} from './useDocumentPane'
 import {useDocumentOperationEvent} from 'sanity'
+import {usePaneRouter} from '../../components'
 
 function getOpErrorTitle(op: string): string {
   if (op === 'delete') {
@@ -38,6 +39,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   const {documentId, documentType} = useDocumentPane()
   const event: any = useDocumentOperationEvent(documentId, documentType)
   const prevEvent = useRef(event)
+  const paneRouter = usePaneRouter()
 
   useEffect(() => {
     if (!event || event === prevEvent.current) return
@@ -65,8 +67,16 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
       })
     }
 
+    /**
+     * If the document was deleted successfully, close the pane.
+     * This lives here instead of in the DocumentPaneProvider to avoid race conditions.
+     */
+    if (event.type === 'success' && event.op === 'delete') {
+      paneRouter.closeCurrentAndAfter()
+    }
+
     prevEvent.current = event
-  }, [event, pushToast])
+  }, [event, paneRouter, pushToast])
 
   return null
 })
