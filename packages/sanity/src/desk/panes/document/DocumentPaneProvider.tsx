@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {ObjectSchemaType, Path, SanityDocument, SanityDocumentLike} from '@sanity/types'
-import {omit} from 'lodash'
+import {omit, set} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
@@ -166,6 +166,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const [inspectorName, setInspectorName] = useState<string | null>(() => params.inspect || null)
+
+  // Handle inspector name changes from URL
+  const inspectParamRef = useRef<string | undefined>(params.inspect)
+  useEffect(() => {
+    if (inspectParamRef.current !== params.inspect) {
+      inspectParamRef.current = params.inspect
+      setInspectorName(params.inspect || null)
+    }
+  }, [params.inspect])
+
   const currentInspector = inspectors?.find((i) => i.name === inspectorName)
   const resolvedChangesInspector = inspectors.find((i) => i.name === 'changes')
 
@@ -272,6 +282,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         const result = inspector.onClose?.({params}) ?? {params}
 
         setInspectorName(null)
+        inspectParamRef.current = undefined
+
         setPaneParams({...result.params, inspect: undefined})
 
         return
@@ -281,6 +293,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         const result = currentInspector.onClose?.({params}) ?? {params}
 
         setInspectorName(null)
+        inspectParamRef.current = undefined
+
         setPaneParams({...result.params, inspect: undefined})
       }
     },
@@ -315,6 +329,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       const result = nextInspector.onOpen?.({params: currentParams}) ?? {params: currentParams}
 
       setInspectorName(nextInspector.name)
+      inspectParamRef.current = nextInspector.name
+
       setPaneParams({...result.params, ...paneParams, inspect: nextInspector.name})
     },
     [closeInspector, currentInspector, inspectors, params, setPaneParams]
