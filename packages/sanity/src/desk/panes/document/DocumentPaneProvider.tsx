@@ -16,6 +16,7 @@ import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {validationInspector} from './inspectors/validation'
+import {DocumentInspectorMenuItemsResolver} from './DocumentInspectorMenuItemsResolver'
 import {
   DocumentInspector,
   DocumentPresence,
@@ -40,6 +41,7 @@ import {
   useDocumentValuePermissions,
   useTimelineStore,
   useTimelineSelector,
+  DocumentInspectorMenuItem,
 } from 'sanity'
 
 /**
@@ -97,6 +99,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const connectionState = useConnectionState(documentId, documentType)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
+
+  const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
 
   // Resolve document actions
   const actions = useMemo(
@@ -188,11 +192,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         currentInspector,
         features,
         hasValue,
+        inspectorMenuItems,
         inspectors,
         previewUrl,
-        validation,
       }),
-    [currentInspector, features, hasValue, inspectors, previewUrl, validation]
+    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl]
   )
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
@@ -595,7 +599,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [params, documentId, setOpenPath, ready, paneRouter])
 
   return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    <DocumentPaneContext.Provider value={documentPane}>
+      {inspectors.length > 0 && (
+        <DocumentInspectorMenuItemsResolver
+          documentId={documentId}
+          documentType={documentType}
+          inspectors={inspectors}
+          onResolvedItems={setInspectorMenuItems}
+        />
+      )}
+
+      {children}
+    </DocumentPaneContext.Provider>
   )
 })
 

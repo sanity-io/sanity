@@ -1,7 +1,7 @@
 import {BinaryDocumentIcon, EarthAmericasIcon} from '@sanity/icons'
 import {DeskToolFeatures, PaneMenuItem} from '../../types'
 import {INSPECT_ACTION_PREFIX} from './constants'
-import {DocumentInspector, DocumentInspectorMenuItem, ValidationMarker, isRecord} from 'sanity'
+import {DocumentInspector, DocumentInspectorMenuItem, ValidationMarker} from 'sanity'
 
 interface GetMenuItemsParams {
   currentInspector?: DocumentInspector
@@ -9,36 +9,30 @@ interface GetMenuItemsParams {
   hasValue: boolean
   inspectors: DocumentInspector[]
   previewUrl?: string | null
-  validation: ValidationMarker[]
+  inspectorMenuItems: DocumentInspectorMenuItem[]
 }
 
 function getInspectorItems({
   currentInspector,
   hasValue,
   inspectors,
-  validation,
+  inspectorMenuItems,
 }: GetMenuItemsParams): PaneMenuItem[] {
   return inspectors
-    .map((inspector) => {
-      let menuItem: DocumentInspectorMenuItem | undefined
-
-      if (typeof inspector.menuItem === 'function') {
-        menuItem = inspector.menuItem({validation})
-      } else if (isRecord(inspector.menuItem)) {
-        menuItem = inspector.menuItem
-      }
+    .map((inspector, index) => {
+      const menuItem = inspectorMenuItems[index]
 
       if (menuItem?.hidden) return null
 
       return {
         action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
         group: 'inspectors',
-        title: menuItem?.title,
         icon: menuItem?.icon,
         isDisabled: !hasValue,
         selected: currentInspector?.name === inspector.name,
         shortcut: menuItem?.hotkeys?.join('+'),
-        showAsAction: inspector.showAsAction,
+        showAsAction: menuItem?.showAsAction,
+        title: menuItem?.title,
         tone: menuItem?.tone,
       }
     })
