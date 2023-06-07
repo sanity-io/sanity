@@ -3890,7 +3890,7 @@
   resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.1.2.tgz#0568c315cd1cfa292deebf61db1582a12474648f"
   integrity sha512-nxJUQQzEEG8EqjiOEswQQpBUuFc3iSxTVF9D9Memg/tlOChX76dStNHoa1RWuvSPu895aqJV+9zxijAa0kF9Vg==
 
-"@sanity/pkg-utils@^2.1.0":
+"@sanity/pkg-utils@2.2.14":
   version "2.2.14"
   resolved "https://registry.yarnpkg.com/@sanity/pkg-utils/-/pkg-utils-2.2.14.tgz#ae79fb7cae2b7e35a2baed7f29104b2f390da603"
   integrity sha512-k8/yORoGsRFyT6zSdsL+SfBdAf7yX1koNIPXNcitjpQ3x8RHpmWuC+9inrxTYRu97QTyUrnN8z7j67PSS9lVPw==
