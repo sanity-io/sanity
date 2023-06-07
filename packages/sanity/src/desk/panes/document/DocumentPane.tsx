@@ -244,12 +244,13 @@ function InnerDocumentPane() {
     () => (
       <DocumentPanel
         footerHeight={footerH || null}
+        inspectorElement={inspectorElement}
         isInspectOpen={inspectOpen}
         rootElement={rootElement}
         setDocumentPanelPortalElement={setDocumentPanelPortalElement}
       />
     ),
-    [footerH, rootElement, inspectOpen]
+    [footerH, inspectOpen, rootElement, inspectorElement]
   )
 
   // These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane.
@@ -355,12 +356,6 @@ function InnerDocumentPane() {
             >
               {documentPanel}
               {changesPanel}
-
-              {inspectorElement && (
-                <Card borderLeft style={{width: 320}}>
-                  {inspectorElement}
-                </Card>
-              )}
             </StyledChangeConnectorRoot>
           </Flex>
         </DialogProvider>
@@ -377,7 +372,6 @@ function InnerDocumentPane() {
     onConnectorSetFocus,
     documentPanel,
     changesPanel,
-    inspectorElement,
     footer,
     paneKey,
     documentType,

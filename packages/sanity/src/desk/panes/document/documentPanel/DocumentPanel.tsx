@@ -1,4 +1,12 @@
-import {BoundaryElementProvider, Flex, PortalProvider, usePortal, useElementRect} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Flex,
+  PortalProvider,
+  usePortal,
+  useElementRect,
+  Box,
+  Card,
+} from '@sanity/ui'
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {PaneContent, usePaneLayout} from '../../../components'
@@ -16,6 +24,7 @@ interface DocumentPanelProps {
   rootElement: HTMLDivElement | null
   isInspectOpen: boolean
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
+  inspectorElement: React.ReactNode
 }
 
 const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
@@ -33,7 +42,13 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 })
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
-  const {footerHeight, isInspectOpen, rootElement, setDocumentPanelPortalElement} = props
+  const {
+    footerHeight,
+    isInspectOpen,
+    inspectorElement,
+    rootElement,
+    setDocumentPanelPortalElement,
+  } = props
   const {
     activeViewId,
     displayed,
@@ -116,43 +131,51 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     <Flex direction="column" flex={2} overflow={layoutCollapsed ? undefined : 'hidden'}>
       <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
 
-      <PaneContent>
-        <PortalProvider
-          element={portalElement}
-          __unstable_elements={{documentScrollElement: documentScrollElement}}
-        >
-          <BoundaryElementProvider element={documentScrollElement}>
-            <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
-              {activeView.type === 'form' && !isPermissionsLoading && ready && (
-                <>
-                  <PermissionCheckBanner
-                    granted={Boolean(permissions?.granted)}
-                    requiredPermission={requiredPermission}
+      <Flex flex={1}>
+        <PaneContent>
+          <PortalProvider
+            element={portalElement}
+            __unstable_elements={{documentScrollElement: documentScrollElement}}
+          >
+            <BoundaryElementProvider element={documentScrollElement}>
+              <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
+                {activeView.type === 'form' && !isPermissionsLoading && ready && (
+                  <>
+                    <PermissionCheckBanner
+                      granted={Boolean(permissions?.granted)}
+                      requiredPermission={requiredPermission}
+                    />
+                    <ReferenceChangedBanner />
+                  </>
+                )}
+
+                <Scroller
+                  $disabled={layoutCollapsed || false}
+                  data-testid="document-panel-scroller"
+                  ref={setDocumentScrollElement}
+                >
+                  <FormView
+                    hidden={formViewHidden}
+                    key={documentId + (ready ? '_ready' : '_pending')}
+                    margins={margins}
                   />
-                  <ReferenceChangedBanner />
-                </>
-              )}
+                  {activeViewNode}
+                </Scroller>
 
-              <Scroller
-                $disabled={layoutCollapsed || false}
-                data-testid="document-panel-scroller"
-                ref={setDocumentScrollElement}
-              >
-                <FormView
-                  hidden={formViewHidden}
-                  key={documentId + (ready ? '_ready' : '_pending')}
-                  margins={margins}
-                />
-                {activeViewNode}
-              </Scroller>
+                {inspectDialog}
 
-              {inspectDialog}
+                <div data-testid="document-panel-portal" ref={portalRef} />
+              </VirtualizerScrollInstanceProvider>
+            </BoundaryElementProvider>
+          </PortalProvider>
+        </PaneContent>
 
-              <div data-testid="document-panel-portal" ref={portalRef} />
-            </VirtualizerScrollInstanceProvider>
-          </BoundaryElementProvider>
-        </PortalProvider>
-      </PaneContent>
+        {inspectorElement && (
+          <Card style={{width: 350}} borderLeft>
+            {inspectorElement}
+          </Card>
+        )}
+      </Flex>
     </Flex>
   )
 }

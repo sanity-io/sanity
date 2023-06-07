@@ -15,13 +15,13 @@ export interface DocumentEnhancementHookDefinition extends DocumentEnhancementMe
 
 /** @beta */
 export interface BaseDocumentEnhancement {
+  useMenuItem: (context: DocumentEnhancementHookContext) => DocumentEnhancementHookDefinition
   name: string
   context?: 'default' | 'menu'
 }
 
 /** @beta */
 export interface DocumentEnhancementProps extends BaseDocumentEnhancement {
-  menuItem: DocumentEnhancementMenuItem
   view: {
     component: React.ComponentType<{onClose: () => void}>
     type: 'dialog' | 'popover' | 'inspector'
@@ -39,7 +39,6 @@ export interface DocumentEnhancementHookContext {
 
 /** @beta */
 export interface DocumentEnhancementHookProps extends BaseDocumentEnhancement {
-  use: (context: DocumentEnhancementHookContext) => DocumentEnhancementHookDefinition
   view?: {
     component: React.ComponentType<{onClose: () => void}>
     type: 'dialog' | 'popover' | 'inspector'

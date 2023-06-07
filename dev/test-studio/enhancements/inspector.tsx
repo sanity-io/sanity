@@ -1,24 +1,16 @@
 import React from 'react'
-import {CloseIcon} from '@sanity/icons'
-import {
-  DocumentEnhancementHookContext,
-  DocumentEnhancementHookDefinition,
-  defineDocumentEnhancement,
-} from 'sanity'
+import {CloseIcon, EyeOpenIcon} from '@sanity/icons'
+import {defineDocumentEnhancement} from 'sanity'
 import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 
-function useMyHook(props: DocumentEnhancementHookContext): DocumentEnhancementHookDefinition {
-  const {onClose, onOpen, isOpen} = props
-
-  return {
-    title: 'Hello',
-    onClick: () => (isOpen ? onClose() : onOpen()),
-  }
-}
-
 export const inspector = defineDocumentEnhancement({
-  name: 'dialog-2',
-  use: useMyHook,
+  name: 'inspector',
+  useMenuItem: ({isOpen, onClose, onOpen}) => ({
+    icon: EyeOpenIcon,
+    onClick: () => (isOpen ? onClose() : onOpen()),
+    title: 'Inspector',
+    tone: 'primary',
+  }),
   view: {
     type: 'inspector',
     component: ({onClose}) => (
@@ -36,7 +28,7 @@ export const inspector = defineDocumentEnhancement({
             </Flex>
           </Card>
 
-          <Box padding={5}>
+          <Box padding={3}>
             <Text muted size={1}>
               This is a custom inspector
             </Text>
@@ -45,9 +37,4 @@ export const inspector = defineDocumentEnhancement({
       </Box>
     ),
   },
-  // menuItem: {
-  //   title: 'Inspector',
-  //   icon: EyeOpenIcon,
-  //   tone: 'primary',
-  // },
 })

@@ -13,9 +13,10 @@ export const dialogEnhancement = defineDocumentEnhancement({
       </Box>
     ),
   },
-  menuItem: {
-    title: 'Dialog',
+  useMenuItem: ({isOpen, onClose, onOpen}) => ({
     icon: BookIcon,
+    onClick: () => (isOpen ? onClose() : onOpen()),
+    title: 'Dialog',
     tone: 'primary',
-  },
+  }),
 })

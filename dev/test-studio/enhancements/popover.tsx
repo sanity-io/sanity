@@ -13,9 +13,10 @@ export const popoverEnhancement = defineDocumentEnhancement({
       </Box>
     ),
   },
-  menuItem: {
-    title: 'Popover',
+  useMenuItem: ({isOpen, onClose, onOpen}) => ({
     icon: BookIcon,
+    onClick: () => (isOpen ? onClose() : onOpen()),
+    title: 'Popover',
     tone: 'primary',
-  },
+  }),
 })

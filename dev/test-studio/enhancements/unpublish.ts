@@ -38,5 +38,5 @@ function useUnpublishAction(
 
 export const unpublishEnhancement = defineDocumentEnhancement({
   name: 'unpublish',
-  use: useUnpublishAction,
+  useMenuItem: useUnpublishAction,
 })

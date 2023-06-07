@@ -33,15 +33,7 @@ export function DocumentEnhancementItem(props: DocumentEnhancementItemProps) {
     }
   }, [popoverElement, buttonElement])
 
-  const useHook = useMemo(() => {
-    if ('use' in enhancement) {
-      return enhancement.use
-    }
-
-    return () => ({} as any)
-  }, [enhancement])
-
-  const hookMenuItem = useHook?.({
+  const hookMenuItem = enhancement.useMenuItem?.({
     documentId,
     documentType,
     onOpen: () => setOpen(true),
@@ -50,43 +42,24 @@ export function DocumentEnhancementItem(props: DocumentEnhancementItemProps) {
   })
 
   useEffect(() => {
-    onOpenChange?.(open)
-  }, [onOpenChange, open])
+    if (enhancement?.view?.type === 'inspector') {
+      onOpenChange?.(open)
+    }
+  }, [enhancement?.view?.type, onOpenChange, open])
 
   const buttonProps: ButtonProps & {onClick: () => void} = useMemo(() => {
-    if ('menuItem' in enhancement && enhancement.view.type === 'inspector') {
-      return {
-        ...enhancement.menuItem,
-        text: enhancement.menuItem.title,
-        onClick: () => handleInspectorClick(enhancement),
-      }
-    }
-
-    if ('menuItem' in enhancement) {
-      return {
-        ...enhancement.menuItem,
-        text: enhancement.menuItem.title,
-        onClick: handleToggleOpen,
-      }
-    }
-
-    if ('use' in enhancement && enhancement?.view?.type === 'inspector') {
-      return {
-        ...hookMenuItem,
-        text: hookMenuItem.title,
-        onClick: () => {
-          hookMenuItem?.onClick()
-          handleInspectorClick(enhancement)
-        },
-      }
-    }
-
     return {
       ...hookMenuItem,
       text: hookMenuItem.title,
-      onClick: hookMenuItem.onClick,
+      onClick: () => {
+        hookMenuItem.onClick?.()
+
+        if (enhancement?.view?.type === 'inspector') {
+          handleInspectorClick(enhancement)
+        }
+      },
     }
-  }, [enhancement, hookMenuItem, handleInspectorClick, handleToggleOpen])
+  }, [enhancement, hookMenuItem, handleInspectorClick])
 
   const viewComponent = useMemo(() => {
     if (!('view' in enhancement) || !enhancement?.view?.component) return null

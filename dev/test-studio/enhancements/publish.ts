@@ -38,5 +38,5 @@ function usePublishAction(
 
 export const publishEnhancement = defineDocumentEnhancement({
   name: 'publish',
-  use: usePublishAction,
+  useMenuItem: usePublishAction,
 })
