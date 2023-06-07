@@ -4,6 +4,7 @@ import SplitPane from '@rexxars/react-split-pane'
 import type {ListenEvent, MutationEvent, SanityClient} from '@sanity/client'
 import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
 import isHotkey from 'is-hotkey'
+import {mapToEditLinks} from '@sanity/preview-kit/client'
 import {
   Flex,
   Card,
@@ -116,6 +117,7 @@ interface VisionGuiState {
 
   // Query/listen result
   queryResult?: unknown | undefined
+  queryResultSourceMap?: unknown | undefined
   listenMutations: MutationEvent[]
   error?: Error | undefined
 
@@ -177,6 +179,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       apiVersion: customApiVersion || apiVersion,
       dataset,
       allowReconfigure: true,
+      resultSourceMap: true,
     })
 
     // Initial root height without header
@@ -464,6 +467,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       listenMutations: [],
       queryInProgress: false,
       queryResult: undefined,
+      queryResultSourceMap: undefined,
       listenInProgress: shouldExecute,
       error: paramsError,
       queryTime: undefined,
@@ -525,17 +529,20 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
     const queryStart = Date.now()
 
+    // @ts-expect-error -- fix @sanity/client typings for client.fetch and resultSourceMap: true
     this._querySubscription = this._client.observable
-      .fetch(query, params, {filterResponse: false, tag: 'vision'})
+      .fetch(query, params, {filterResponse: false, tag: 'vision', resultSourceMap: true})
       .subscribe({
-        next: (res) =>
-          this.setState({
+        next: (res) => {
+          return this.setState({
             queryTime: res.ms,
             e2eTime: Date.now() - queryStart,
             queryResult: res.result,
+            queryResultSourceMap: res.resultSourceMap,
             queryInProgress: false,
             error: undefined,
-          }),
+          })
+        },
         error: (error) =>
           this.setState({
             error,
@@ -589,6 +596,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     const {
       error,
       queryResult,
+      queryResultSourceMap,
       url,
       queryInProgress,
       listenInProgress,
@@ -604,6 +612,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       paramsError,
     } = this.state
     const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
+    const hasResultSourceMap = hasResult && typeof queryResultSourceMap !== 'undefined'
 
     return (
       <Root
@@ -841,7 +850,20 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                         </Box>
                       )}
                       {error && <QueryErrorDialog error={error} />}
-                      {hasResult && <ResultView data={queryResult} />}
+                      {hasResultSourceMap ? (
+                        <ResultView
+                          data={{
+                            result: queryResult,
+                            resultSourceMap: queryResultSourceMap,
+                            resultEditLinks: mapToEditLinks(
+                              {result: queryResult, resultSourceMap: queryResultSourceMap as any},
+                              location.pathname.replace(/\/vision$/, '')
+                            ),
+                          }}
+                        />
+                      ) : (
+                        hasResult && <ResultView data={queryResult} />
+                      )}
                       {listenInProgress && listenMutations.length > 0 && (
                         <ResultView data={listenMutations} />
                       )}
