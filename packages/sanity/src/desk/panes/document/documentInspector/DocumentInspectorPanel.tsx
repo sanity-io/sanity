@@ -13,7 +13,7 @@ export function DocumentInspectorPanel(props: {flex?: number}): ReactElement | n
   const {features} = useDeskTool()
 
   const handleClose = useCallback(() => {
-    if (inspector) closeInspector(inspector)
+    if (inspector) closeInspector(inspector.name)
   }, [closeInspector, inspector])
 
   if (collapsed || !inspector) return null

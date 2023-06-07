@@ -29,7 +29,7 @@ export interface DocumentPaneContextValue {
   activeViewId: string | null
   badges: DocumentBadgeComponent[] | null
   changesOpen: boolean
-  closeInspector: (inspector?: DocumentInspector) => void
+  closeInspector: (inspectorName?: string) => void
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
   compareValue: Partial<SanityDocument> | null
@@ -60,6 +60,7 @@ export interface DocumentPaneContextValue {
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
   onSetCollapsedFieldSet: (path: Path, expanded: boolean) => void
+  openInspector: (inspectorName: string, paneParams?: Record<string, string>) => void
   paneKey: string
   previewUrl?: string | null
   ready: boolean

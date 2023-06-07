@@ -255,7 +255,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
 
   const closeInspector = useCallback(
-    (inspector?: DocumentInspector) => {
+    (closeInspectorName?: string) => {
+      // inspector?: DocumentInspector
+      const inspector = closeInspectorName && inspectors.find((i) => i.name === closeInspectorName)
+
+      if (closeInspectorName && !inspector) {
+        console.warn(`No inspector named "${closeInspectorName}"`)
+        return
+      }
+
       if (!currentInspector) {
         return
       }
@@ -276,42 +284,51 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         setPaneParams({...result.params, inspect: undefined})
       }
     },
-    [currentInspector, params, setPaneParams]
+    [currentInspector, inspectors, params, setPaneParams]
   )
 
   const openInspector = useCallback(
-    (inspector: DocumentInspector) => {
+    (nextInspectorName: string, paneParams?: Record<string, string>) => {
+      const nextInspector = inspectors.find((i) => i.name === nextInspectorName)
+
+      if (!nextInspector) {
+        console.warn(`No inspector named "${nextInspectorName}"`)
+        return
+      }
+
       // toggle if the same inspector is already open
-      if (currentInspector?.name === inspector.name) {
-        closeInspector(inspector)
+      if (currentInspector?.name === nextInspector.name) {
+        closeInspector(nextInspector.name)
         return
       }
 
       let currentParams = params
 
       if (currentInspector) {
-        const closeResult = inspector.onClose?.({params: currentParams}) ?? {params: currentParams}
+        const closeResult = nextInspector.onClose?.({params: currentParams}) ?? {
+          params: currentParams,
+        }
 
         currentParams = closeResult.params
       }
 
-      const result = inspector.onOpen?.({params: currentParams}) ?? {params: currentParams}
+      const result = nextInspector.onOpen?.({params: currentParams}) ?? {params: currentParams}
 
-      setInspectorName(inspector.name)
-      setPaneParams({...result.params, inspect: inspector.name})
+      setInspectorName(nextInspector.name)
+      setPaneParams({...result.params, ...paneParams, inspect: nextInspector.name})
     },
-    [closeInspector, currentInspector, params, setPaneParams]
+    [closeInspector, currentInspector, inspectors, params, setPaneParams]
   )
 
   const handleHistoryClose = useCallback(() => {
     if (resolvedChangesInspector) {
-      closeInspector(resolvedChangesInspector)
+      closeInspector(resolvedChangesInspector.name)
     }
   }, [closeInspector, resolvedChangesInspector])
 
   const handleHistoryOpen = useCallback(() => {
     if (resolvedChangesInspector) {
-      openInspector(resolvedChangesInspector)
+      openInspector(resolvedChangesInspector.name)
     }
   }, [openInspector, resolvedChangesInspector])
 
@@ -352,7 +369,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         const nextInspector = inspectors.find((i) => i.name === nextInspectorName)
 
         if (nextInspector) {
-          openInspector(nextInspector)
+          openInspector(nextInspector.name)
           return true
         }
       }
@@ -515,6 +532,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onSetActiveFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+    openInspector,
     index,
     inspectOpen,
     validation,
