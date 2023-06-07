@@ -38,7 +38,7 @@ jobs:
             ${{ runner.os }}-
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable --immutable-cache --check-cache
+        run: yarn install --ignore-scripts --frozen-lockfile
       - name: Cache Prettier
         uses: actions/cache@v3
         with:

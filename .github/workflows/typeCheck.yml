@@ -26,7 +26,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable --immutable-cache --check-cache
+        run: yarn install --frozen-lockfile
 
       - name: Check type system
         # If TypeScript project references is set up properly, `tsc --build` should work right after dependencies
