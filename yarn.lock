@@ -2118,6 +2118,11 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.2.6.tgz#d21ace437cc919cdd8f1640302fa8851e65e75c0"
   integrity sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==
 
+"@floating-ui/core@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.3.1.tgz#4d795b649cc3b1cbb760d191c80dcb4353c9a366"
+  integrity sha512-Bu+AMaXNjrpjh41znzHqaz3r2Nr8hHuHZT6V2LBKMhyMl0FgKA62PNYbqnfgmzOhoWZj70Zecisbo4H1rotP5g==
+
 "@floating-ui/dom@^1.1.0":
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.2.7.tgz#c123e4db014b07b97e996cd459245fa217049c6b"
@@ -2125,12 +2130,26 @@
   dependencies:
     "@floating-ui/core" "^1.2.6"
 
+"@floating-ui/dom@^1.2.7":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.4.1.tgz#3dff8b1b429e60d36ce03281a1cc3cd923a8e7fa"
+  integrity sha512-loCXUOLzIC3jp50RFOKXZ/kQjjz26ryr/23M+FWG9jrmAv8lRf3DUfC2AiVZ3+K316GOhB08CR+Povwz8e9mDw==
+  dependencies:
+    "@floating-ui/core" "^1.3.1"
+
 "@floating-ui/react-dom@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@floating-ui/react-dom/-/react-dom-1.1.1.tgz#8289bd28188fa0fce7e24fc2a6e57f3d94fea930"
   integrity sha512-F27E+7SLB5NZvwF9Egqx/PlvxOhMnA6k/yNMQUqaQ9BPZdr4fQgSW6J6AKNIrBQElBT8IRDtv9j6h7FDkgp3dA==
   dependencies:
     "@floating-ui/dom" "^1.1.0"
+
+"@floating-ui/react-dom@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@floating-ui/react-dom/-/react-dom-2.0.0.tgz#7514baac526c818892bbcc84e1c3115008c029f9"
+  integrity sha512-Ke0oU3SeuABC2C4OFu2mSAwHIP5WUiV98O9YWoHV4Q5aT6E9k06DV0Khi5uYspR8xmmBk08t8ZDcz3TR3ARkEg==
+  dependencies:
+    "@floating-ui/dom" "^1.2.7"
 
 "@gar/promisify@^1.0.1":
   version "1.1.3"
@@ -4350,7 +4369,7 @@
     get-it "^8.1.0"
     rxjs "^7.0.0"
 
-"@sanity/color@^2.1.20", "@sanity/color@^2.2.3":
+"@sanity/color@^2.1.20", "@sanity/color@^2.2.3", "@sanity/color@^2.2.5":
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.5.tgz#6b28578573859495ed1ffd5491322cb8e90b3e07"
   integrity sha512-tTi22KoKuER3sldXYl4c1Dq2zU7tMLDkljFiaUKVkBbu4PBvRGCFw75kXZnD2b4Bsp6vin+7sI+AKdCKRhfRuw==
@@ -4402,7 +4421,7 @@
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.10.tgz#df934a94ae6669fe6b15515d800afb221cba0498"
   integrity sha512-5wVG/vIiGuGrSmq+Bl3PY7XDgQrGv0fyHdJI64FSulnr2wH3NMqZ6C59UFxnrZ93sr7kOt0zQFoNv2lkPBi0Cg==
 
-"@sanity/icons@^2", "@sanity/icons@^2.0.0", "@sanity/icons@^2.2.2", "@sanity/icons@^2.3.0":
+"@sanity/icons@^2", "@sanity/icons@^2.0.0", "@sanity/icons@^2.2.2", "@sanity/icons@^2.3.0", "@sanity/icons@^2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-2.3.1.tgz#38e0e85095a2ae41c7e9836aa4e4dbf1905ac68f"
   integrity sha512-DyUdjjWFIokrMewnK24Vvxpv2lKx5LrzUM3eEk0ZVwhS8+hWkFFN1Z7jhcwQnQ5NweejhzsZkT4JHUdffCAQaw==
@@ -4523,7 +4542,7 @@
     segmented-property "^3.0.3"
     vite "^4.1.1"
 
-"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.3.3":
+"@sanity/ui@^1", "@sanity/ui@^1.0.0":
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.3.3.tgz#ec3b9aeb8be79f53d94406bbf80c806af1a47e7f"
   integrity sha512-fp5eyc6U760Mvg6wmiv0wOnX/uiPpFoPf4Ne9cJX6X80mk2/u2pOkXCuMuhfXmty3KP7uPZxkapD8atd7BaWIw==
@@ -4533,6 +4552,18 @@
     "@sanity/icons" "^2.2.2"
     csstype "^3.1.1"
     framer-motion "^10.0.0"
+    react-refractor "^2.1.7"
+
+"@sanity/ui@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.6.0.tgz#88d063c7611a2447c0a62fb40b793ab630a0ac94"
+  integrity sha512-iU0TKXmBCQngi3mgy84RwVy8xR7PJUg052qpZdgJCueBWiq28uAU9rwIdNnXSjAJyVYeDZBarL9jNUkH+CKAug==
+  dependencies:
+    "@floating-ui/react-dom" "2.0.0"
+    "@sanity/color" "^2.2.5"
+    "@sanity/icons" "^2.3.1"
+    csstype "^3.1.2"
+    framer-motion "^10.12.16"
     react-refractor "^2.1.7"
 
 "@sanity/uuid@^3", "@sanity/uuid@^3.0.1":
@@ -8203,7 +8234,7 @@ cssstyle@^2.3.0:
   dependencies:
     cssom "~0.3.6"
 
-csstype@^3.0.2, csstype@^3.0.4, csstype@^3.1.1:
+csstype@^3.0.2, csstype@^3.0.4, csstype@^3.1.1, csstype@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
@@ -10342,6 +10373,15 @@ framer-motion@^10.0.0:
   version "10.12.10"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.12.10.tgz#39aff293d8c520f6d9a4a34bf25121a8f1a12d6d"
   integrity sha512-f/VkrpxfG4xSmBi105/NCfcTt219IgglQEUR0BsuFZAg+be6N3QAcujFyBEvBvbDOSP9Ccv6OMiaY0HFMnBoMA==
+  dependencies:
+    tslib "^2.4.0"
+  optionalDependencies:
+    "@emotion/is-prop-valid" "^0.8.2"
+
+framer-motion@^10.12.16:
+  version "10.12.16"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.12.16.tgz#ccba11d216ac370c6bc65fcd9953a61deb54f071"
+  integrity sha512-w/SfWEIWJkYSgRHYBmln7EhcNo31ao8Xexol8lGXf1pR/tlnBtf1HcxoUmEiEh6pacB4/geku5ami53AAQWHMQ==
   dependencies:
     tslib "^2.4.0"
   optionalDependencies:
