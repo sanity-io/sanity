@@ -234,13 +234,19 @@ export function StudioNavbar() {
           )}
 
           {shouldRender.configIssues && (
-            <Card borderRight paddingRight={1}>
+            <Card>
               <ConfigIssuesButton />
             </Card>
           )}
 
+          {shouldRender.resources && (
+            <Card borderRight paddingRight={1}>
+              <ResourcesButton />
+            </Card>
+          )}
+
           <Flex align="center">
-            <Box paddingLeft={1} paddingRight={1}>
+            <Box paddingLeft={2} paddingRight={1}>
               <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
             </Box>
 
@@ -248,12 +254,6 @@ export function StudioNavbar() {
               <Box paddingRight={1}>
                 <UserMenu />
               </Box>
-            )}
-
-            {shouldRender.resources && (
-              <Card borderLeft paddingLeft={1}>
-                <ResourcesButton />
-              </Card>
             )}
 
             {shouldRender.searchFullscreen && (

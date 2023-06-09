@@ -20,8 +20,8 @@ import {useGetHelpResources} from './helper-functions/hooks'
 import {SectionItem} from './helper-functions/types'
 
 const StyledMenu = styled(Menu)`
-  max-width: 350px;
-  min-width: 250px;
+  max-width: 300px;
+  min-width: 200px;
 `
 
 const fallbackLinks = (
@@ -76,7 +76,7 @@ export function ResourcesButton() {
         id="menu-button-resources"
         menu={
           <StyledMenu>
-            <Card paddingY={3} paddingX={2}>
+            <Card paddingY={3} paddingLeft={3}>
               <Text weight="medium" size={2} textOverflow="ellipsis">
                 {modalTitle || 'Resources & Updates'}
               </Text>
@@ -95,7 +95,6 @@ export function ResourcesButton() {
             {/* Fallback values if no response */}
             {!isLoading && (value === undefined || error) && fallbackLinks}
             {/* Studio version information */}
-            <MenuDivider />
             <Box padding={3}>
               <Text size={1} muted weight="medium" textOverflow="ellipsis">
                 Sanity Studio version {SANITY_VERSION}
@@ -121,9 +120,8 @@ export function ResourcesButton() {
 function SubSections({subSection}: {subSection: SectionItem}) {
   return (
     <>
-      <MenuDivider />
       {subSection.sectionTitle && (
-        <Card padding={2}>
+        <Card padding={2} marginLeft={1}>
           <Label muted size={1}>
             {subSection.sectionTitle}
           </Label>
@@ -157,6 +155,7 @@ function SubSections({subSection}: {subSection: SectionItem}) {
             return null
         }
       })}
+      <MenuDivider />
     </>
   )
 }
