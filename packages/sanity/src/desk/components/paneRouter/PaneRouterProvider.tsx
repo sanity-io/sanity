@@ -2,6 +2,7 @@ import {omit} from 'lodash'
 import React, {useCallback, useMemo} from 'react'
 import {toString as pathToString} from '@sanity/util/paths'
 import {RouterPaneGroup, RouterPanes, RouterPaneSibling} from '../../types'
+import {usePaneLayout} from '../pane/usePaneLayout'
 import {ChildLink} from './ChildLink'
 import {BackLink} from './BackLink'
 import {ReferenceChildLink} from './ReferenceChildLink'
@@ -26,10 +27,12 @@ export function PaneRouterProvider(props: {
   const {children, flatIndex, index, params, payload, siblingIndex} = props
   const {navigate, navigateIntent} = useRouter()
   const routerState = useRouterState()
+  const {panes, expand} = usePaneLayout()
   const routerPaneGroups: RouterPaneGroup[] = useMemo(
     () => (routerState?.panes || emptyArray) as RouterPanes,
     [routerState?.panes]
   )
+  const lastPane = useMemo(() => panes?.[panes.length - 2], [panes])
 
   const groupIndex = index - 1
 
@@ -151,7 +154,10 @@ export function PaneRouterProvider(props: {
       },
 
       // Removes all panes to the right including current
-      closeCurrentAndAfter: (): void => {
+      closeCurrentAndAfter: (expandLast = true): void => {
+        if (expandLast && lastPane) {
+          expand(lastPane.element)
+        }
         navigate(
           {
             panes: [...routerPaneGroups.slice(0, groupIndex)],
@@ -195,16 +201,18 @@ export function PaneRouterProvider(props: {
     [
       flatIndex,
       groupIndex,
-      handleEditReference,
-      modifyCurrentGroup,
-      navigateIntent,
-      navigate,
-      params,
+      siblingIndex,
       payload,
+      params,
       routerPaneGroups,
+      handleEditReference,
       setParams,
       setPayload,
-      siblingIndex,
+      navigateIntent,
+      modifyCurrentGroup,
+      lastPane,
+      navigate,
+      expand,
     ]
   )
 
