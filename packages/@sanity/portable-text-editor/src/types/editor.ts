@@ -196,6 +196,7 @@ export interface PortableTextSlateEditor extends ReactEditor {
 export type MutationChange = {
   type: 'mutation'
   patches: Patch[]
+  snapshot: PortableTextBlock[] | undefined
 }
 
 /** @beta */

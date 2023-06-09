@@ -61,9 +61,10 @@ export function Synchronizer(props: SynchronizerProps) {
         finalPatches.length,
         pendingPatches.current.length
       )
-      onChange({type: 'mutation', patches: finalPatches})
+      const editorValue = PortableTextEditor.getValue(portableTextEditor)
+      onChange({type: 'mutation', patches: finalPatches, snapshot: editorValue})
     }
-  }, [onChange])
+  }, [portableTextEditor, onChange])
 
   // Debounced version of flush pending patches
   const onFlushPendingPatchesDebounced = useMemo(
