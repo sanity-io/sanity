@@ -11,11 +11,6 @@ export default defineScope({
       component: lazy(() => import('./NavbarStory')),
     },
     {
-      name: 'changelog-dialog',
-      title: 'ChangelogDialog',
-      component: lazy(() => import('./ChangelogDialogStory')),
-    },
-    {
       name: 'workspacePreview',
       title: 'WorkspacePreview',
       component: lazy(() => import('./WorkspacePreviewStory')),
