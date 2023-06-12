@@ -6,14 +6,23 @@ import {PopoverEditDialog} from './PopoverModal'
 
 export function ObjectEditModal(props: {
   autoFocus?: boolean
-  boundaryElement: HTMLElement | undefined
   children: React.ReactNode
   defaultType: 'dialog' | 'popover'
+  floatingBoundary: HTMLElement | null
   onClose: () => void
-  referenceElement: HTMLElement | undefined
+  referenceBoundary: HTMLElement | null
+  referenceElement: HTMLElement | null
   schemaType: ObjectSchemaType
 }) {
-  const {onClose, defaultType, referenceElement, boundaryElement, schemaType, autoFocus} = props
+  const {
+    autoFocus,
+    defaultType,
+    floatingBoundary,
+    onClose,
+    referenceBoundary,
+    referenceElement,
+    schemaType,
+  } = props
 
   const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
   const modalType = schemaModalOption?.type || defaultType
@@ -30,8 +39,9 @@ export function ObjectEditModal(props: {
     return (
       <PopoverEditDialog
         autoFocus={autoFocus}
-        boundaryElement={boundaryElement}
+        floatingBoundary={floatingBoundary}
         onClose={handleClose}
+        referenceBoundary={referenceBoundary}
         referenceElement={referenceElement}
         title={modalTitle}
         width={modalWidth}

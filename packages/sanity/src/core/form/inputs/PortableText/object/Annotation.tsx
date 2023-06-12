@@ -27,15 +27,16 @@ import {Root, TooltipBox} from './Annotation.styles'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface AnnotationProps {
-  boundaryElement: HTMLElement | null
   children: React.ReactElement
   editorNodeFocused: boolean
+  floatingBoundary: HTMLElement | null
   focused: boolean
   onItemClose: () => void
   onItemOpen: (path: Path) => void
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
+  referenceBoundary: HTMLElement | null
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
   renderCustomMarkers?: RenderCustomMarkers
@@ -51,15 +52,16 @@ interface AnnotationProps {
 
 export function Annotation(props: AnnotationProps) {
   const {
-    boundaryElement,
     children,
     editorNodeFocused,
+    floatingBoundary,
     focused,
     onItemClose,
     onItemOpen,
     onPathFocus,
     path,
     readOnly,
+    referenceBoundary,
     renderAnnotation,
     renderBlock,
     renderCustomMarkers,
@@ -148,9 +150,10 @@ export function Annotation(props: AnnotationProps) {
 
   const componentProps = useMemo(
     (): BlockAnnotationProps => ({
+      __unstable_floatingBoundary: floatingBoundary,
+      __unstable_referenceBoundary: referenceBoundary,
+      __unstable_referenceElement: referenceElement,
       __unstable_textElementFocus: editorNodeFocused, // Is there focus on the related text element for this object?
-      __unstable_boundaryElement: boundaryElement || undefined,
-      __unstable_referenceElement: referenceElement || undefined,
       children: input,
       focused,
       markers,
@@ -178,9 +181,9 @@ export function Annotation(props: AnnotationProps) {
       value,
     }),
     [
-      boundaryElement,
       editor.schemaTypes.block,
       editorNodeFocused,
+      floatingBoundary,
       focused,
       input,
       isOpen,
@@ -192,6 +195,7 @@ export function Annotation(props: AnnotationProps) {
       onPathFocus,
       onRemove,
       readOnly,
+      referenceBoundary,
       referenceElement,
       renderAnnotation,
       renderBlock,
@@ -239,8 +243,9 @@ export function Annotation(props: AnnotationProps) {
 
 export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   const {
-    __unstable_boundaryElement,
-    __unstable_referenceElement,
+    __unstable_floatingBoundary: floatingBoundary,
+    __unstable_referenceBoundary: referenceBoundary,
+    __unstable_referenceElement: referenceElement,
     children,
     focused,
     markers,
@@ -284,19 +289,21 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     >
       {textElement}
       <AnnotationToolbarPopover
-        referenceElement={__unstable_referenceElement}
-        boundaryElement={__unstable_boundaryElement}
+        floatingBoundary={floatingBoundary}
+        referenceBoundary={referenceBoundary}
+        referenceElement={referenceElement}
         onOpen={onOpen}
         onRemove={onRemove}
         title={schemaType.title || schemaType.name}
       />
       {open && (
         <ObjectEditModal
-          boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
+          floatingBoundary={floatingBoundary}
           onClose={onClose}
           autoFocus={focused}
-          referenceElement={__unstable_referenceElement}
+          referenceBoundary={referenceBoundary}
+          referenceElement={referenceElement}
           schemaType={schemaType}
         >
           {children}

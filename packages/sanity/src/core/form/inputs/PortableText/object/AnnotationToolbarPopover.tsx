@@ -21,15 +21,16 @@ const ToolbarPopover = styled(Popover)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface AnnotationToolbarPopoverProps {
-  boundaryElement?: HTMLElement
+  floatingBoundary: HTMLElement | null
   onOpen: () => void
   onRemove: () => void
-  referenceElement?: HTMLElement
+  referenceBoundary: HTMLElement | null
+  referenceElement: HTMLElement | null
   title: string
 }
 
 export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
-  const {boundaryElement, onOpen, onRemove, referenceElement, title} = props
+  const {floatingBoundary, onOpen, onRemove, referenceBoundary, referenceElement, title} = props
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [selection, setSelection] = useState<{
@@ -138,12 +139,12 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       }
     }
 
-    boundaryElement?.addEventListener('scroll', handleScroll, {passive: true})
+    floatingBoundary?.addEventListener('scroll', handleScroll, {passive: true})
 
     return () => {
-      boundaryElement?.removeEventListener('scroll', handleScroll)
+      floatingBoundary?.removeEventListener('scroll', handleScroll)
     }
-  }, [popoverOpen, boundaryElement])
+  }, [popoverOpen, floatingBoundary])
 
   if (!popoverOpen) {
     return null
@@ -151,9 +152,8 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
 
   return (
     <ToolbarPopover
-      boundaryElement={boundaryElement}
+      floatingBoundary={floatingBoundary}
       constrainSize
-      ref={popoverRef}
       content={
         <Box padding={1}>
           <Inline space={1}>
@@ -185,7 +185,10 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       open
       placement="top"
-      portal="editor"
+      portal
+      preventOverflow
+      ref={popoverRef}
+      referenceBoundary={referenceBoundary}
       referenceElement={cursorElement}
       scheme={popoverScheme}
     />

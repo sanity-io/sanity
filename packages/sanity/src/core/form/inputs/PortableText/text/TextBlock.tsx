@@ -44,8 +44,8 @@ import {
 import {TextContainer} from './textStyles'
 
 export interface TextBlockProps {
-  boundaryElement?: HTMLElement
   children: React.ReactNode
+  floatingBoundary: HTMLElement | null
   focused: boolean
   isFullscreen?: boolean
   onItemClose: () => void
@@ -54,6 +54,7 @@ export interface TextBlockProps {
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
+  referenceBoundary: HTMLElement | null
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
   renderBlockActions?: RenderBlockActionsCallback
@@ -71,8 +72,8 @@ export interface TextBlockProps {
 
 export function TextBlock(props: TextBlockProps) {
   const {
-    boundaryElement,
     children,
+    floatingBoundary,
     focused,
     isFullscreen,
     onItemClose,
@@ -80,6 +81,7 @@ export function TextBlock(props: TextBlockProps) {
     onPathFocus,
     path,
     readOnly,
+    referenceBoundary,
     renderBlock,
     renderAnnotation,
     renderBlockActions,
@@ -183,8 +185,9 @@ export function TextBlock(props: TextBlockProps) {
 
   const componentProps: BlockProps = useMemo(
     () => ({
-      __unstable_boundaryElement: boundaryElement || undefined,
-      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
+      __unstable_floatingBoundary: floatingBoundary,
+      __unstable_referenceBoundary: referenceBoundary,
+      __unstable_referenceElement: (memberItem?.elementRef?.current || null) as HTMLElement | null,
       children: text,
       focused,
       markers,
@@ -211,7 +214,7 @@ export function TextBlock(props: TextBlockProps) {
       value,
     }),
     [
-      boundaryElement,
+      floatingBoundary,
       focused,
       isOpen,
       markers,
@@ -223,6 +226,7 @@ export function TextBlock(props: TextBlockProps) {
       onRemove,
       parentSchemaType,
       readOnly,
+      referenceBoundary,
       renderAnnotation,
       renderBlock,
       renderField,
