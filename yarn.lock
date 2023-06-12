@@ -3531,7 +3531,7 @@
   dependencies:
     "@portabletext/types" "^2.0.5"
 
-"@portabletext/types@^2.0.0", "@portabletext/types@^2.0.5":
+"@portabletext/types@^2.0.5":
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/@portabletext/types/-/types-2.0.5.tgz#89872bd5b25df8c1d917e13fe3f035cdf135ae0e"
   integrity sha512-AceKp/Y6UIzvUe/T675oPKlO2Dnt1BVIiUpwhcplPzLeYqaYaWYvb7ricVyWj7j0rukYRgBRQdrTBvgo9E1D+g==
@@ -4057,10 +4057,19 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.1", "@sanity/client@^6.1.2":
+"@sanity/client@^6.1.2":
   version "6.1.3"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.1.3.tgz#94b87b1de78b041fb85cc489fefc03304c353e3b"
   integrity sha512-asO/AvN+/D1Ljd6UNPWlo/toeO6SmZdsxyl+fJdLfI9by4svp/K3hD4Qy2DXXmwOfGYqGSH7etv2lnRhu+C5YA==
+  dependencies:
+    "@sanity/eventsource" "^5.0.0"
+    get-it "^8.1.0"
+    rxjs "^7.0.0"
+
+"@sanity/client@^6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.1.5.tgz#4cd4b5f57f4c89598e6c42bbebde65778dec559b"
+  integrity sha512-X0Du8McoE2564AqAuSlwsQ2i9cHMfPos/a+cslmcTWXY3leV/QKzpqHQomuDlfEmkIhoFZW1UL33+MTxw7+Miw==
   dependencies:
     "@sanity/eventsource" "^5.0.0"
     get-it "^8.1.0"

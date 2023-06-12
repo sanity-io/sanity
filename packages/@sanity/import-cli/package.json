@@ -31,7 +31,7 @@
     "src"
   ],
   "dependencies": {
-    "@sanity/client": "^6.1.1",
+    "@sanity/client": "^6.1.5",
     "@sanity/import": "3.13.0",
     "get-it": "^8.0.9",
     "meow": "^9.0.0",
