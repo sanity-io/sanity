@@ -1,17 +1,18 @@
 import {useMemo} from 'react'
 import {LoadableState, useLoadable} from '../../../../../util'
 import {useClient} from '../../../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {ResourcesResponse} from './types'
-import {checkResourcesStatus} from './resourcesStatus'
+import {getHelpResources} from './helpResources'
 
 /**
+ * Fetch help resources (content for the navbar help menu) from `/help`.
+ *
  * @internal
  */
 export function useGetHelpResources(): LoadableState<ResourcesResponse | undefined> {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const client = useClient({apiVersion: '1'})
 
-  const moduleStatus$ = useMemo(() => checkResourcesStatus(client), [client])
+  const moduleStatus$ = useMemo(() => getHelpResources(client), [client])
 
   return useLoadable(moduleStatus$)
 }
