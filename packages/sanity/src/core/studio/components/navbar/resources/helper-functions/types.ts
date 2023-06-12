@@ -6,7 +6,7 @@ interface WelcomeVideo {
 }
 
 interface Video {
-  description?: PortableTextBlock //PTE
+  description?: PortableTextBlock[]
   image?: Image
   title?: string
   youtube?: YouTube[]
@@ -24,11 +24,11 @@ interface YouTube {
 }
 
 interface Resource {
-  sectionArray?: SectionItem[]
+  sectionArray?: Section[]
   title?: string
 }
 
-export interface SectionItem {
+export interface Section {
   _key: string
   sectionTitle?: string
   items?: (InternalAction | ExternalLink)[]

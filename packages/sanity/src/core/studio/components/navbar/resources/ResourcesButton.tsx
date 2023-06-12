@@ -17,36 +17,36 @@ import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
 import {SANITY_VERSION} from '../../../../version'
 import {useGetHelpResources} from './helper-functions/hooks'
-import {SectionItem} from './helper-functions/types'
+import {Section} from './helper-functions/types'
 
 const StyledMenu = styled(Menu)`
   max-width: 300px;
   min-width: 200px;
 `
 
-const fallbackLinks = (
+const FallbackLinks = () => (
   <>
     <MenuItem
       as="a"
-      text={'Join our community'}
+      text="Join our community"
       size={0}
-      href={'https://www.sanity.io/exchange/community'}
+      href="https://www.sanity.io/exchange/community"
       target="_blank"
       muted={false}
     />
     <MenuItem
       as="a"
-      text={'Help and support'}
+      text="Help and support"
       size={0}
-      href={'https://www.sanity.io/contact/support'}
+      href="https://www.sanity.io/contact/support"
       target="_blank"
       muted={false}
     />
     <MenuItem
       as="a"
-      text={'Contact sales'}
+      text="Contact sales"
       size={0}
-      href={'https://www.sanity.io/contact/sales?ref=studio'}
+      href="https://www.sanity.io/contact/sales?ref=studio"
       target="_blank"
       muted={false}
     />
@@ -72,32 +72,35 @@ export function ResourcesButton() {
         id="menu-button-resources"
         menu={
           <StyledMenu>
-            {/*Spinner when response is loading */}
-            {isLoading && (
+            {isLoading ? (
               <Flex align="center" justify="center" padding={3}>
                 <Spinner />
               </Flex>
-            )}
-            {!isLoading &&
-              sections?.map((subSection) => {
-                if (!subSection) return null
-                return <SubSections key={subSection._key} subSection={subSection} />
-              })}
-            {/* Fallback values if no response */}
-            {!isLoading && (value === undefined || error) && fallbackLinks}
-            {/* Studio version information */}
-            <Box padding={3}>
-              <Text size={1} muted weight="medium" textOverflow="ellipsis">
-                Sanity Studio version {SANITY_VERSION}
-              </Text>
-              {!error && !isLoading && latestStudioVersion && (
-                <Box paddingTop={2}>
-                  <Text size={1} muted textOverflow="ellipsis">
-                    Latest version is {latestStudioVersion}
+            ) : (
+              <>
+                {/* Display fallback values on error / no response */}
+                {(value === undefined || error) && <FallbackLinks />}
+
+                {sections?.map((subSection) => {
+                  if (!subSection) return null
+                  return <SubSection key={subSection._key} subSection={subSection} />
+                })}
+
+                {/* Studio version information */}
+                <Box padding={3}>
+                  <Text size={1} muted weight="medium" textOverflow="ellipsis">
+                    Sanity Studio version {SANITY_VERSION}
                   </Text>
+                  {!error && !isLoading && latestStudioVersion && (
+                    <Box paddingTop={2}>
+                      <Text size={1} muted textOverflow="ellipsis">
+                        Latest version is {latestStudioVersion}
+                      </Text>
+                    </Box>
+                  )}
                 </Box>
-              )}
-            </Box>
+              </>
+            )}
           </StyledMenu>
         }
         popoverScheme={scheme}
@@ -108,7 +111,7 @@ export function ResourcesButton() {
   )
 }
 
-function SubSections({subSection}: {subSection: SectionItem}) {
+function SubSection({subSection}: {subSection: Section}) {
   return (
     <>
       {subSection.sectionTitle && (
