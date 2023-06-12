@@ -62,7 +62,6 @@ export function ResourcesButton() {
   const handleOpen = useCallback(() => setOpen(!open), [open])
   const {value, error, isLoading} = useGetHelpResources()
 
-  const modalTitle = value?.resources?.title
   const sections = value?.resources?.sectionArray
   const latestStudioVersion = value?.latestVersion
 
@@ -73,11 +72,6 @@ export function ResourcesButton() {
         id="menu-button-resources"
         menu={
           <StyledMenu>
-            <Card paddingY={3} paddingLeft={3}>
-              <Text weight="medium" size={2} textOverflow="ellipsis">
-                {modalTitle || 'Resources & Updates'}
-              </Text>
-            </Card>
             {/*Spinner when response is loading */}
             {isLoading && (
               <Flex align="center" justify="center" padding={3}>
@@ -108,7 +102,7 @@ export function ResourcesButton() {
         }
         popoverScheme={scheme}
         placement="bottom"
-        popover={{portal: true}}
+        popover={{constrainSize: true, portal: true}}
       />
     </>
   )
@@ -118,7 +112,7 @@ function SubSections({subSection}: {subSection: SectionItem}) {
   return (
     <>
       {subSection.sectionTitle && (
-        <Card padding={2} marginLeft={1}>
+        <Card padding={2} paddingTop={3} marginLeft={1}>
           <Label muted size={1}>
             {subSection.sectionTitle}
           </Label>
