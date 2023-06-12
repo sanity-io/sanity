@@ -22,7 +22,7 @@ export function ActionsMenu(props: Props) {
 
   const handleCopyURL = useCallback(() => {
     navigator.clipboard.writeText(copyUrl || '')
-    pushToast({closable: true, status: 'success', title: 'The url is copied to the clipboard'})
+    pushToast({closable: true, status: 'success', title: 'The URL is copied to the clipboard'})
   }, [pushToast, copyUrl])
 
   return (

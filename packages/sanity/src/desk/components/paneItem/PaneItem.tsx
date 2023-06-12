@@ -115,7 +115,14 @@ export function PaneItem(props: PaneItemProps) {
     [ChildLink, id]
   )
 
-  const handleClick = useCallback(() => setClicked(true), [])
+  const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (e.metaKey) {
+      setClicked(false)
+      return
+    }
+
+    setClicked(true)
+  }, [])
 
   // Reset `clicked` state when `selected` prop changes
   useEffect(() => setClicked(false), [selected])
