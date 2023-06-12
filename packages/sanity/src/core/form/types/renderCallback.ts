@@ -41,12 +41,16 @@ export type RenderInputCallback<T extends InputProps = InputProps> = (
   inputProps: Omit<T, 'renderDefault'>
 ) => ReactNode
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type RenderBlockCallback<T extends BlockProps = BlockProps> = (
   blockProps: Omit<T, 'renderDefault'>
 ) => ReactNode
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type RenderAnnotationCallback<T extends BlockAnnotationProps = BlockAnnotationProps> = (
   annotationProps: Omit<T, 'renderDefault'>
 ) => ReactNode
