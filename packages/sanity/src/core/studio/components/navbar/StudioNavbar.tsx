@@ -233,38 +233,29 @@ export function StudioNavbar() {
             </Box>
           )}
 
-          {shouldRender.configIssues && (
-            <Card>
-              <ConfigIssuesButton />
-            </Card>
-          )}
+          <Flex gap={2}>
+            {(shouldRender.configIssues || shouldRender.resources) && (
+              <Card borderRight>
+                <Flex gap={1} paddingX={2}>
+                  {shouldRender.configIssues && <ConfigIssuesButton />}
+                  {shouldRender.resources && <ResourcesButton />}
+                </Flex>
+              </Card>
+            )}
 
-          {shouldRender.resources && (
-            <Card borderRight paddingRight={1}>
-              <ResourcesButton />
-            </Card>
-          )}
-
-          <Flex align="center">
-            <Box paddingLeft={2} paddingRight={1}>
+            <Flex align="center" gap={1}>
               <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
-            </Box>
-
-            {shouldRender.tools && (
-              <Box paddingRight={1}>
-                <UserMenu />
-              </Box>
-            )}
-
-            {shouldRender.searchFullscreen && (
-              <Button
-                aria-label="Open search"
-                icon={SearchIcon}
-                mode="bleed"
-                onClick={handleOpenSearchFullscreen}
-                ref={setSearchOpenButtonEl}
-              />
-            )}
+              {shouldRender.tools && <UserMenu />}
+              {shouldRender.searchFullscreen && (
+                <Button
+                  aria-label="Open search"
+                  icon={SearchIcon}
+                  mode="bleed"
+                  onClick={handleOpenSearchFullscreen}
+                  ref={setSearchOpenButtonEl}
+                />
+              )}
+            </Flex>
           </Flex>
         </Flex>
       </RootCard>

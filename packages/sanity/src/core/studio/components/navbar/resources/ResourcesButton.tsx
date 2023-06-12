@@ -26,20 +26,17 @@ const StyledMenu = styled(Menu)`
 
 const fallbackLinks = (
   <>
-    <MenuDivider />
     <MenuItem
       as="a"
-      key={'fallback-link-slack'}
-      text={'Join our Slack community'}
+      text={'Join our community'}
       size={0}
-      href={'https://slack.sanity.io/'}
+      href={'https://www.sanity.io/exchange/community'}
       target="_blank"
       muted={false}
     />
     <MenuItem
       as="a"
-      key={'fallback-link-help-support'}
-      text={'Help & Support'}
+      text={'Help and support'}
       size={0}
       href={'https://www.sanity.io/contact/support'}
       target="_blank"
@@ -47,13 +44,13 @@ const fallbackLinks = (
     />
     <MenuItem
       as="a"
-      key={'fallback-link-contact-sales'}
-      text={'Contact Sales'}
+      text={'Contact sales'}
       size={0}
       href={'https://www.sanity.io/contact/sales?ref=studio'}
       target="_blank"
       muted={false}
     />
+    <MenuDivider />
   </>
 )
 
