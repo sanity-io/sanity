@@ -46,8 +46,10 @@ interface ExternalLink extends Item {
 
 interface InternalAction extends Item {
   _type: 'internalAction'
-  type?: 'welcome-modal'
+  type?: InternalActionType
 }
+
+type InternalActionType = 'show-welcome-modal'
 
 export interface ResourcesResponse {
   resources?: Resource

@@ -137,7 +137,7 @@ function SubSections({subSection}: {subSection: SectionItem}) {
           case 'internalAction': // TODO: Add support for internal actions (MVI-2)
             if (!item.type) return null
             return (
-              item.type === 'welcome-modal' && (
+              item.type === 'show-welcome-modal' && (
                 <MenuItem key={item._key} text={item.title} size={0} />
               )
             )
