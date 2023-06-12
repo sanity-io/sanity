@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import React, {ChangeEvent, type RefObject} from 'react'
 import SplitPane from '@rexxars/react-split-pane'
-import type {ListenEvent, MutationEvent, SanityClient} from '@sanity/client'
+import type {ListenEvent, MutationEvent, SanityClient, ClientPerspective} from '@sanity/client'
 import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
 import isHotkey from 'is-hotkey'
 import {
@@ -17,6 +17,7 @@ import {
   Grid,
   Button,
   ToastContextValue,
+  Inline,
 } from '@sanity/ui'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {getLocalStorage, LocalStorageish} from '../util/localStorage'
@@ -26,12 +27,14 @@ import {prefixApiVersion} from '../util/prefixApiVersion'
 import {tryParseParams} from '../util/tryParseParams'
 import {encodeQueryString} from '../util/encodeQueryString'
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
+import {PERSPECTIVES, DEFAULT_PERSPECTIVE, isPerspective} from '../perspectives'
 import {ResizeObserver} from '../util/resizeObserver'
 import type {VisionProps} from '../types'
 import {DelayedSpinner} from './DelayedSpinner'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
 import {ResultView} from './ResultView'
 import {QueryErrorDialog} from './QueryErrorDialog'
+import {PerspectivePopover} from './PerspectivePopover'
 import {
   Root,
   Header,
@@ -62,7 +65,7 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
 }
 
 const sanityUrl =
-  /\.(?:api|apicdn)\.sanity\.io\/(vx|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+  /\.(?:api|apicdn)\.sanity\.io\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
 
@@ -98,6 +101,7 @@ interface VisionGuiState {
   dataset: string
   apiVersion: string
   customApiVersion: string | false
+  perspective: ClientPerspective
 
   // Selected options validation state
   isValidApiVersion: boolean
@@ -154,10 +158,12 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
     const defaultDataset = config.defaultDataset || client.config().dataset || datasets[0]
     const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
+    const defaultPerspective = DEFAULT_PERSPECTIVE
 
     let dataset = this._localStorage.get('dataset', defaultDataset)
     let apiVersion = this._localStorage.get('apiVersion', defaultApiVersion)
     const customApiVersion = API_VERSIONS.includes(apiVersion) ? false : apiVersion
+    let perspective = this._localStorage.get('perspective', defaultPerspective)
 
     if (!datasets.includes(dataset)) {
       dataset = datasets.includes(defaultDataset) ? defaultDataset : datasets[0]
@@ -165,6 +171,10 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
     if (!API_VERSIONS.includes(apiVersion)) {
       apiVersion = DEFAULT_API_VERSION
+    }
+
+    if (!PERSPECTIVES.includes(perspective)) {
+      perspective = DEFAULT_PERSPECTIVE
     }
 
     this._visionRoot = React.createRef()
@@ -176,6 +186,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     this._client = props.client.withConfig({
       apiVersion: customApiVersion || apiVersion,
       dataset,
+      perspective: perspective,
       allowReconfigure: true,
     })
 
@@ -192,6 +203,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       dataset,
       apiVersion,
       customApiVersion,
+      perspective,
 
       // Selected options validation state
       isValidApiVersion: customApiVersion ? validateApiVersion(customApiVersion) : false,
@@ -218,6 +230,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     this.handleChangeDataset = this.handleChangeDataset.bind(this)
     this.handleChangeApiVersion = this.handleChangeApiVersion.bind(this)
     this.handleCustomApiVersionChange = this.handleCustomApiVersionChange.bind(this)
+    this.handleChangePerspective = this.handleChangePerspective.bind(this)
     this.handleListenExecution = this.handleListenExecution.bind(this)
     this.handleListenerEvent = this.handleListenerEvent.bind(this)
     this.handleQueryExecution = this.handleQueryExecution.bind(this)
@@ -301,6 +314,10 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       }
     }
 
+    const perspective = PERSPECTIVES.includes(parts.options.perspective as ClientPerspective)
+      ? (parts.options.perspective as ClientPerspective)
+      : undefined
+
     evt.preventDefault()
     this.setState(
       (prevState) => ({
@@ -311,6 +328,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
         apiVersion: typeof apiVersion === 'undefined' ? prevState.apiVersion : apiVersion,
         customApiVersion:
           typeof customApiVersion === 'undefined' ? prevState.customApiVersion : customApiVersion,
+        perspective: typeof perspective === 'undefined' ? prevState.perspective : perspective,
       }),
       () => {
         this._localStorage.merge({
@@ -318,10 +336,12 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
           params: this.state.params,
           dataset: this.state.dataset,
           apiVersion: customApiVersion || apiVersion,
+          perspective: this.state.perspective,
         })
         this._client.config({
           dataset: this.state.dataset,
           apiVersion: customApiVersion || apiVersion,
+          perspective: this.state.perspective,
         })
         this.handleQueryExecution()
         this.props.toast.push({
@@ -373,10 +393,13 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       return
     }
 
-    this._localStorage.set('apiVersion', apiVersion)
-    this.setState({apiVersion, customApiVersion: false})
-    this._client.config({apiVersion})
-    this.handleQueryExecution()
+    this.setState({apiVersion, customApiVersion: false}, () => {
+      this._localStorage.set('apiVersion', this.state.apiVersion)
+      this._client.config({
+        apiVersion: this.state.apiVersion,
+      })
+      this.handleQueryExecution()
+    })
   }
 
   handleCustomApiVersionChange(evt: ChangeEvent<HTMLInputElement>) {
@@ -398,6 +421,21 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
         this._client.config({apiVersion: this.state.customApiVersion})
       }
     )
+  }
+
+  handleChangePerspective(evt: ChangeEvent<HTMLSelectElement>) {
+    const perspective = evt.target.value
+    if (!isPerspective(perspective)) {
+      return
+    }
+
+    this.setState({perspective}, () => {
+      this._localStorage.set('perspective', this.state.perspective)
+      this._client.config({
+        perspective: this.state.perspective,
+      })
+      this.handleQueryExecution()
+    })
   }
 
   handleListenerEvent(evt: ListenEvent<any>) {
@@ -450,7 +488,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
     const paramsError = params instanceof Error ? params : undefined
     const encodeParams = params instanceof Error ? {} : params || {}
-    const url = this._client.getDataUrl('listen', encodeQueryString(query, encodeParams))
+    const url = this._client.getDataUrl('listen', encodeQueryString(query, encodeParams, {}))
 
     const shouldExecute = !paramsError && query.trim().length > 0
 
@@ -518,8 +556,14 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     }
 
     this.ensureSelectedApiVersion()
+
+    const urlQueryOpts: Record<string, string> = {}
+    if (this.state.perspective !== 'raw') {
+      urlQueryOpts.perspective = this.state.perspective
+    }
+
     const url = this._client.getUrl(
-      this._client.getDataUrl('query', encodeQueryString(query, params))
+      this._client.getDataUrl('query', encodeQueryString(query, params, urlQueryOpts))
     )
     this.setState({url})
 
@@ -602,6 +646,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       isValidApiVersion,
       hasValidParams,
       paramsError,
+      perspective,
     } = this.state
     const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
 
@@ -618,7 +663,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
             {/* Dataset selector */}
             <Box padding={1} column={2}>
               <Stack>
-                <Card paddingY={2}>
+                <Card paddingTop={2} paddingBottom={3}>
                   <StyledLabel>Dataset</StyledLabel>
                 </Card>
                 <Select value={dataset} onChange={this.handleChangeDataset}>
@@ -632,7 +677,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
             {/* API version selector */}
             <Box padding={1} column={2}>
               <Stack>
-                <Card paddingY={2}>
+                <Card paddingTop={2} paddingBottom={3}>
                   <StyledLabel>API version</StyledLabel>
                 </Card>
                 <Select
@@ -653,7 +698,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
             {customApiVersion !== false && (
               <Box padding={1} column={2}>
                 <Stack>
-                  <Card paddingY={2}>
+                  <Card paddingTop={2} paddingBottom={3}>
                     <StyledLabel textOverflow="ellipsis">Custom API version</StyledLabel>
                   </Card>
 
@@ -668,11 +713,34 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
               </Box>
             )}
 
+            {/* Perspective selector */}
+            <Box padding={1} column={2}>
+              <Stack>
+                <Card paddingBottom={1}>
+                  <Inline space={1}>
+                    <Box>
+                      <StyledLabel>PERSPECTIVE</StyledLabel>
+                    </Box>
+
+                    <Box>
+                      <PerspectivePopover />
+                    </Box>
+                  </Inline>
+                </Card>
+
+                <Select value={perspective} onChange={this.handleChangePerspective}>
+                  {PERSPECTIVES.map((p) => (
+                    <option key={p}>{p}</option>
+                  ))}
+                </Select>
+              </Stack>
+            </Box>
+
             {/* Query URL (for copying) */}
             {typeof url === 'string' ? (
-              <Box padding={1} flex={1} column={customApiVersion === false ? 8 : 6}>
+              <Box padding={1} flex={1} column={customApiVersion === false ? 6 : 4}>
                 <Stack>
-                  <Card paddingY={2}>
+                  <Card paddingTop={2} paddingBottom={3}>
                     <StyledLabel>
                       Query URL&nbsp;
                       <QueryCopyLink onClick={this.handleCopyUrl}>[copy]</QueryCopyLink>
