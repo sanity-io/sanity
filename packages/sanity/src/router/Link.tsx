@@ -21,10 +21,8 @@ export interface LinkProps {
  * @param props - Props to pass to the anchor element.
  *  {@link LinkProps}
  * @param ref - A ref to the anchor element.
- * @returns The created anchor element.
  *
- * @remarks
- * This component uses the `useLink` hook to handle link clicks and generate the `onClick` handler.
+ * @returns The created anchor element.
  *
  * @example
  * ```tsx

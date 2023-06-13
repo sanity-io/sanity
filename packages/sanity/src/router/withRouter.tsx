@@ -9,7 +9,9 @@ import {useRouter} from './useRouter'
  * @public
  *
  * @param Component - The component to wrap.
+ *
  * @returns The wrapped component.
+ *
  * @example
  * ```tsx
  * function MyComponent(props) {
@@ -39,25 +41,39 @@ export function withRouter<Props extends {router: RouterContextValue}>(
 export interface WithRouterProps {
   /**
    * The `router` object from the `useRouter` hook.
+   *  {@link RouterContextValue}
    */
   router: RouterContextValue
   /**
    * A function that renders the wrapped component with the `router` object as a parameter.
-   *
-   * @param router - The `router` object from the `useRouter` hook.
-   * @returns - The rendered component.
    */
   children: (router: RouterContextValue) => React.ReactElement
 }
 
 /**
- * A component that renders the wrapped component with the `router` object from the `useRouter` hook
- * injected into its props.
+ * A higher-order component that injects the router object into its child component.
  *
  * @public
  *
- * @param props - Props to pass to the wrapped component.
  * @returns The rendered component.
  *
+ * @example
+ * ```tsx
+ * function MyComponent(props: {router: Router}) {
+ *   const {location} = props.router
+ *   const {pathname} = location
+ *   return <p>The current path is: {pathname}</p>
+ * }
+ *
+ * function App() {
+ *   return (
+ *     <Router>
+ *       <WithRouter>
+ *         {router => <MyComponent router={router} />}
+ *       </WithRouter>
+ *     </Router>
+ *   )
+ * }
+ * ```
  */
 export const WithRouter = withRouter((props: WithRouterProps) => props.children(props.router))
