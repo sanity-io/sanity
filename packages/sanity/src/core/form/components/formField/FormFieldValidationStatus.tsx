@@ -4,7 +4,7 @@ import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {FormNodeValidation} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import React, {useContext, useMemo} from 'react'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
@@ -42,8 +42,11 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
     __unstable_showSummary: showSummary,
     fontSize,
     placement = 'top',
-    portal,
+    portal: portalProp,
   } = props
+
+  const portalEnabledContextValue = useContext(PortalEnabledContext)
+  const portal = portalProp ?? portalEnabledContextValue
 
   const errors = validation.filter((v) => v.level === 'error')
   const warnings = validation.filter((v) => v.level === 'warning')
@@ -152,3 +155,5 @@ function FormFieldValidationSummary({validation}: {validation: FormNodeValidatio
     </Text>
   )
 }
+
+export const PortalEnabledContext = React.createContext(false)

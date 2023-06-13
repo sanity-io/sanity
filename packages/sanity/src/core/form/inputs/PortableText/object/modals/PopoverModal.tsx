@@ -6,6 +6,7 @@ import React, {useCallback, useEffect, useState} from 'react'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {PortalEnabledContext} from '../../../../components'
 import {ModalWidth} from './types'
 import {
   ContentContainer,
@@ -92,9 +93,11 @@ function Content(props: PopoverEditDialogProps) {
           </ContentHeaderBox>
           <ContentScrollerBox flex={1}>
             <PresenceOverlay margins={[0, 0, 1, 0]}>
-              <Box padding={3} ref={setContentElement}>
-                {props.children}
-              </Box>
+              <PortalEnabledContext.Provider value>
+                <Box padding={3} ref={setContentElement}>
+                  {props.children}
+                </Box>
+              </PortalEnabledContext.Provider>
             </PresenceOverlay>
           </ContentScrollerBox>
         </ModalWrapper>
