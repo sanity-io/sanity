@@ -5,6 +5,7 @@ import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/ico
 import {FormNodeValidation} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
 import React, {useMemo} from 'react'
+import styled from 'styled-components'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
@@ -33,6 +34,10 @@ const VALIDATION_ICONS: Record<'error' | 'warning' | 'info', React.ReactElement>
   warning: <WarningOutlineIcon data-testid="input-validation-icon-warning" />,
   info: <InfoOutlineIcon data-testid="input-validation-icon-info" />,
 }
+
+const StyledStack = styled(Stack)`
+  max-width: 200px;
+`
 
 /** @internal */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
@@ -68,7 +73,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   return (
     <Tooltip
       content={
-        <Stack padding={3} space={3}>
+        <StyledStack padding={3} space={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
@@ -79,7 +84,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
               ))}
             </>
           )}
-        </Stack>
+        </StyledStack>
       }
       portal
       placement={placement}
