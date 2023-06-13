@@ -40,4 +40,4 @@ jobs:
       - name: Extract API docs
         env:
           EXTRACT_SANITY_API_TOKEN: ${{ secrets.EXTRACT_SANITY_API_TOKEN }}
-        run: yarn etl --quiet
+        run: yarn etl sanity
