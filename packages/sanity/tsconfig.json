@@ -1,6 +1,14 @@
 {
   "extends": "../../tsconfig.settings",
-  "include": ["./exports", "./package.json", "./scripts", "./src", "./test", "./typings"],
+  "include": [
+    "./exports",
+    "./package.json",
+    "./playwright-ct",
+    "./scripts",
+    "./src",
+    "./test",
+    "./typings"
+  ],
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
