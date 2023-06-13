@@ -18,7 +18,6 @@ export interface FormFieldValidationStatusProps {
   __unstable_showSummary?: boolean
   fontSize?: number | number
   placement?: Placement
-  portal?: boolean
 }
 
 const EMPTY_ARRAY: never[] = []
@@ -42,7 +41,6 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
     __unstable_showSummary: showSummary,
     fontSize,
     placement = 'top',
-    portal,
   } = props
 
   const errors = validation.filter((v) => v.level === 'error')
@@ -83,7 +81,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
           )}
         </Stack>
       }
-      portal={portal}
+      portal
       placement={placement}
       fallbackPlacements={['bottom', 'right', 'left']}
     >
@@ -121,9 +119,7 @@ function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) 
         </Text>
       </Box>
       <Box flex={1}>
-        <Text muted size={1}>
-          {validation.message}
-        </Text>
+        <Text size={1}>{validation.message}</Text>
       </Box>
     </Flex>
   )
@@ -145,7 +141,7 @@ function FormFieldValidationSummary({validation}: {validation: FormNodeValidatio
   const hasBoth = hasErrors && hasWarnings
 
   return (
-    <Text muted size={1}>
+    <Text size={1}>
       {errorText || ''}
       {hasBoth && <> and </>}
       {warningText || ''}
