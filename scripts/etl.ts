@@ -2,6 +2,7 @@ import path from 'path'
 import {createClient} from '@sanity/client'
 import {SanityTSDocConfigOptions, _loadConfig, extract, load, transform} from '@sanity/tsdoc'
 import chalk from 'chalk'
+import lodash from 'lodash'
 
 // RUN
 main().catch((err) => {
@@ -76,7 +77,8 @@ async function etl(options: {cwd: string; packagePath: string}): Promise<void> {
   // TODO
   for (const doc of documents) {
     if ('slug' in doc) {
-      doc.slug.current = doc.slug.current.toLowerCase()
+      const slug = lodash.kebabCase(doc.slug.current).toLowerCase()
+      doc.slug.current = slug.indexOf('-') === 0 ? slug.slice(1) : slug
     }
   }
 
