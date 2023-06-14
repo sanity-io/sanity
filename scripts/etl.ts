@@ -74,11 +74,9 @@ async function etl(options: {cwd: string; packagePath: string}): Promise<void> {
     },
   })
 
-  // TODO
   for (const doc of documents) {
     if ('slug' in doc) {
-      const slug = lodash.kebabCase(doc.slug.current).toLowerCase()
-      doc.slug.current = slug.indexOf('-') === 0 ? slug.slice(1) : slug
+      doc.slug.current = `${doc._type}-${lodash.kebabCase(doc.slug.current).toLowerCase()}`
     }
   }
 
