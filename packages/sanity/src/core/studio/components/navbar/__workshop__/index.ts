@@ -16,6 +16,11 @@ export default defineScope({
       component: lazy(() => import('./WorkspacePreviewStory')),
     },
     {
+      name: 'help-resources-dropdown',
+      title: 'HelpResourcesDropdown',
+      component: lazy(() => import('./HelpResourcesStory')),
+    },
+    {
       name: 'new-document-button',
       title: 'NewDocumentButton',
       component: lazy(() => import('./NewDocumentButtonStory')),
