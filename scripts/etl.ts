@@ -50,7 +50,7 @@ async function etl(options: {cwd: string; packagePath: string}): Promise<void> {
 
   const tsdocConfig = await _loadConfig({packagePath})
 
-  const sanityConfig = tsdocConfig?.output.sanity
+  const sanityConfig = tsdocConfig?.output?.sanity
 
   if (!sanityConfig) {
     throw new Error(
