@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import {Subject, concatMap, tap} from 'rxjs'
+import {Subject} from 'rxjs'
 import {
   Descendant,
   Editor,
@@ -28,7 +28,6 @@ import {PATCHING, isPatching, withoutPatching} from '../../utils/withoutPatching
 import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
 import {createPatchToOperations} from '../../utils/patchToOperations'
 import {withPreserveKeys} from '../../utils/withPreserveKeys'
-import {bufferUntil} from '../../utils/bufferUntil'
 import {withoutSaving} from './createWithUndoRedo'
 
 const debug = debugWithName('plugin:withPatches')
@@ -78,7 +77,6 @@ export interface PatchFunctions {
 
 interface Options {
   change$: Subject<EditorChange>
-  isPending: React.MutableRefObject<boolean | null>
   keyGenerator: () => string
   patches$?: PatchObservable
   patchFunctions: PatchFunctions
@@ -88,7 +86,6 @@ interface Options {
 
 export function createWithPatches({
   change$,
-  isPending,
   patches$,
   patchFunctions,
   readOnly,
@@ -108,41 +105,29 @@ export function createWithPatches({
     if (patches$) {
       editor.subscriptions.push(() => {
         debug('Subscribing to patches$')
-        const sub = patches$
-          .pipe(
-            tap(({patches}) => {
-              if (patches.every((p) => p.origin === 'local')) {
-                isPending.current = false
-              }
-            }),
-            bufferUntil(() => !isPending.current),
-            concatMap((incoming) => {
-              return incoming
-            })
-          )
-          .subscribe(({patches}) => {
-            const remotePatches = patches.filter((p) => p.origin !== 'local')
-            if (remotePatches.length !== 0) {
-              debug('Remote patches', patches)
-              Editor.withoutNormalizing(editor, () => {
-                remotePatches.forEach((patch) => {
-                  debug(`Handling remote patch ${JSON.stringify(patch)}`)
-                  withoutPatching(editor, () => {
-                    withoutSaving(editor, () => {
-                      withPreserveKeys(editor, () => {
-                        try {
-                          patchToOperations(editor, patch)
-                        } catch (err) {
-                          debug('Got error trying to create operations from patch')
-                          console.error(err)
-                        }
-                      })
+        const sub = patches$.subscribe(({patches}) => {
+          const remotePatches = patches.filter((p) => p.origin !== 'local')
+          if (remotePatches.length !== 0) {
+            debug('Remote patches', patches)
+            Editor.withoutNormalizing(editor, () => {
+              remotePatches.forEach((patch) => {
+                debug(`Handling remote patch ${JSON.stringify(patch)}`)
+                withoutPatching(editor, () => {
+                  withoutSaving(editor, () => {
+                    withPreserveKeys(editor, () => {
+                      try {
+                        patchToOperations(editor, patch)
+                      } catch (err) {
+                        debug('Got error trying to create operations from patch')
+                        console.error(err)
+                      }
                     })
                   })
                 })
               })
-            }
-          })
+            })
+          }
+        })
         return () => {
           debug('Unsubscribing to patches$')
           sub.unsubscribe()

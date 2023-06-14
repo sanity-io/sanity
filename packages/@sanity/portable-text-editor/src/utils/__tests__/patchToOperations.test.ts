@@ -1,6 +1,5 @@
 import {createEditor, Descendant} from 'slate'
 import {noop} from 'lodash'
-import {createRef} from 'react'
 import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
 import {createPatchToOperations} from '../patchToOperations'
 import {withPlugins} from '../../editor/plugins'
@@ -11,14 +10,11 @@ const schemaTypes = getPortableTextMemberSchemaTypes(schemaType)
 
 const patchToOperations = createPatchToOperations(schemaTypes)
 const portableTextEditor = new PortableTextEditor({schemaType, onChange: noop})
-const isPending: React.MutableRefObject<boolean | null> = createRef()
-isPending.current = false
 
 const {editor} = withPlugins(createEditor(), {
   portableTextEditor,
   keyGenerator,
   readOnly: false,
-  isPending,
 })
 
 const createDefaultValue = (): Descendant[] => [

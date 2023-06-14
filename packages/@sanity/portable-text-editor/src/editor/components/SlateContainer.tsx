@@ -32,7 +32,6 @@ export function SlateContainer(props: SlateContainerProps) {
   const [slateEditor, subscribe] = useMemo(() => {
     debug('Creating new Slate editor instance')
     const {editor, subscribe: _sub} = withPlugins(withReact(createEditor()), {
-      isPending,
       keyGenerator,
       maxBlocks,
       patches$,
@@ -56,7 +55,6 @@ export function SlateContainer(props: SlateContainerProps) {
   useEffect(() => {
     debug('Re-initializing plugin chain')
     withPlugins(slateEditor, {
-      isPending,
       keyGenerator,
       maxBlocks,
       patches$,
