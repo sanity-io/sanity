@@ -8,10 +8,10 @@ import React, {
   useState,
 } from 'react'
 import {PortableTextBlock} from '@sanity/types'
-import {debounce} from 'lodash'
+import {throttle} from 'lodash'
 import {EditorChange, EditorChanges, EditorSelection} from '../../types/editor'
 import {Patch} from '../../types/patch'
-import {FLUSH_PATCHES_DEBOUNCE_MS} from '../../constants'
+import {FLUSH_PATCHES_MS} from '../../constants'
 import {debugWithName} from '../../utils/debug'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {PortableTextEditorSelectionContext} from '../hooks/usePortableTextEditorSelection'
@@ -54,27 +54,23 @@ export function Synchronizer(props: SynchronizerProps) {
   })
 
   const onFlushPendingPatches = useCallback(() => {
-    const finalPatches = [...pendingPatches.current]
+    const finalPatches = pendingPatches.current
     debug('Flushing pending patches', finalPatches)
     if (finalPatches.length > 0) {
-      pendingPatches.current = pendingPatches.current.splice(
-        finalPatches.length,
-        pendingPatches.current.length
-      )
-      const editorValue = PortableTextEditor.getValue(portableTextEditor)
-      onChange({type: 'mutation', patches: finalPatches, snapshot: editorValue})
+      pendingPatches.current = []
+      const snapshot = PortableTextEditor.getValue(portableTextEditor)
+      onChange({type: 'mutation', patches: finalPatches, snapshot})
     }
-  }, [portableTextEditor, onChange])
+    isPending.current = false
+  }, [portableTextEditor, isPending, onChange])
 
   // Debounced version of flush pending patches
-  const onFlushPendingPatchesDebounced = useMemo(
-    () =>
-      debounce(onFlushPendingPatches, FLUSH_PATCHES_DEBOUNCE_MS, {
-        leading: false,
-        trailing: true,
-      }),
-    [onFlushPendingPatches]
-  )
+  const onFlushPendingPatchesDebounced = useMemo(() => {
+    return throttle(onFlushPendingPatches, FLUSH_PATCHES_MS, {
+      leading: false,
+      trailing: true,
+    })
+  }, [onFlushPendingPatches])
 
   // Flush pending patches on unmount
   useEffect(() => {
@@ -91,8 +87,8 @@ export function Synchronizer(props: SynchronizerProps) {
         case 'patch':
           isPending.current = true
           pendingPatches.current.push(next.patch)
-          onChange(next)
           onFlushPendingPatchesDebounced()
+          onChange(next)
           break
         case 'selection':
           // Set the selection state in a transition, we don't need the state immediately.
