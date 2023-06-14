@@ -43,7 +43,9 @@ export const Wrapper = ({
         <LayerProvider>
           <WorkspaceProvider workspace={mockWorkspace}>
             <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-              <Card tone="default">{children}</Card>
+              <Card tone="default" padding={3}>
+                {children}
+              </Card>
             </SourceProvider>
           </WorkspaceProvider>
         </LayerProvider>
