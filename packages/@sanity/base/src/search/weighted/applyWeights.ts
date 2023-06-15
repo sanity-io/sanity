@@ -4,29 +4,16 @@ import {SearchHit, WeightedHit, SearchSpec} from './types'
 type SearchScore = [number, string]
 
 // takes a set of terms and a value and returns a [score, story] pair where score is a value between 0, 1 and story is the explanation
-export const calculateScore = (
-  searchTerms: string[],
-  value: string,
-  options?: {
-    skipPhraseScore?: boolean
-    skipWordScore?: boolean
-  }
-): SearchScore => {
-  const {skipPhraseScore, skipWordScore} = options
-
+export const calculateScore = (searchTerms: string[], value: string): SearchScore => {
   // Separate search terms by phrases (wrapped with quotes) and words.
   const {phrases: uniqueSearchPhrases, words: uniqueSearchWords} = partitionAndSanitizeSearchTerms(
     searchTerms
   )
   // Calculate an aggregated score of words (partial + whole) and phrase matches.
-  const [baseScore, baseWhy] = calculateCharacterScore(uniqueSearchWords, value)
-  const [phraseScore, phraseWhy] = skipPhraseScore
-    ? [0, []]
-    : calculatePhraseScore(uniqueSearchPhrases, value)
-  const [wordScore, wordWhy] = skipWordScore
-    ? [0, []]
-    : calculateMatchingWordScore(uniqueSearchWords, value)
-  return [baseScore + wordScore + phraseScore, [baseWhy, wordWhy, phraseWhy].flat().join(', ')]
+  const [charScore, charWhy] = calculateCharacterScore(uniqueSearchWords, value)
+  const [phraseScore, phraseWhy] = calculatePhraseScore(uniqueSearchPhrases, value)
+  const [wordScore, wordWhy] = calculateMatchingWordScore(uniqueSearchWords, value)
+  return [charScore + wordScore + phraseScore, [charWhy, wordWhy, phraseWhy].flat().join(', ')]
 }
 
 const stringify = (value: unknown): string =>
@@ -38,7 +25,7 @@ export function applyWeights(
   terms: string[] = []
 ): WeightedHit[] {
   const specByType = keyBy(searchSpec, (spec) => spec.typeName)
-  return hits.map((hit, index) => {
+  return hits.reduce((allHits, hit, index) => {
     const typeSpec = specByType[hit._type]
     const stories = typeSpec.paths.map((pathSpec, idx) => {
       const pathHit = hit[`w${idx}`]
@@ -47,12 +34,7 @@ export function applyWeights(
       if (!value) {
         return {path: pathSpec.path, score: 0, why: 'No match'}
       }
-      // Don't calculate word score for internal fields (_id, _type) etc.
-      // This is to ensure that document IDs don't errorenously get broken up into
-      // multiple tokens, which creates false positives.
-      const [score, why] = calculateScore(terms, value, {
-        skipWordScore: pathSpec.path.startsWith('_'),
-      })
+      const [score, why] = calculateScore(terms, value)
       return {
         path: pathSpec.path,
         score: score * pathSpec.weight,
@@ -61,9 +43,23 @@ export function applyWeights(
     })
 
     const totalScore = stories.reduce((acc, rank) => acc + rank.score, 0)
-
-    return {hit, resultIndex: hits.length - index, score: totalScore, stories: stories}
-  })
+    /**
+     * Filter out hits with no score.
+     * (only if search terms are present, otherwise we always show results)
+     *
+     * Due to how we generate search queries, in some cases it's possible to have returned search hits
+     * which shouldn't be displayed. This can happen when searching on multiple document types and
+     * user-configured `__experimental_search` paths are in play.
+     *
+     * Since search generates a GROQ query with filters that may refer to field names shared across
+     * multiple document types, it's possible that one document type searches on a field path
+     * that is hidden by another via `__experimental_search`.
+     */
+    if (terms.length === 0 || totalScore > 0) {
+      allHits.push({hit, resultIndex: hits.length - index, score: totalScore, stories: stories})
+    }
+    return allHits
+  }, [])
 }
 
 /**
@@ -132,7 +128,7 @@ export function calculateMatchingWordScore(
 
   const matches = intersection(uniqueSearchTerms, uniqueValueTerms)
   const all = union(uniqueValueTerms, uniqueSearchTerms)
-  const fieldScore = matches.length / all.length
+  const fieldScore = matches.length / all.length || 0
   return fieldScore === 1
     ? [1, '[Word] Exact match']
     : [fieldScore / 2, `[Word] ${matches.length}/${all.length} terms: [${matches.join(', ')}]`]
