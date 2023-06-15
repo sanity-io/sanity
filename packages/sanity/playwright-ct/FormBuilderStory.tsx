@@ -1,6 +1,6 @@
 import {defineArrayMember, defineField, defineType, Path, SanityDocumentLike} from '@sanity/types'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {BufferedDocument} from '@sanity/mutator'
+// import {BufferedDocument} from '@sanity/mutator'
 import {applyAll} from '../src/core/form/patch/applyPatch'
 import {
   createPatchChannel,
