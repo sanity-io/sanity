@@ -12,11 +12,16 @@ export default defineStructure<ListItemBuilder>((S) =>
         .child(async (id) =>
           S.list()
             .title('Product')
+            .canHandleIntent(
+              (intentName, params) => intentName === 'edit' && params.type === 'product'
+            )
             .items([
               // Details
               S.listItem()
                 .title('Details')
                 .icon(InfoOutlineIcon)
+                .schemaType('product')
+                .id(id)
                 .child(S.document().schemaType('product').documentId(id)),
               // Product variants
               S.listItem()
@@ -35,6 +40,10 @@ export default defineStructure<ListItemBuilder>((S) =>
                     .params({
                       productId: Number(id.replace('shopifyProduct-', '')),
                     })
+                    .canHandleIntent(
+                      (intentName, params) =>
+                        intentName === 'edit' && params.type === 'productVariant'
+                    )
                 ),
             ])
         )
