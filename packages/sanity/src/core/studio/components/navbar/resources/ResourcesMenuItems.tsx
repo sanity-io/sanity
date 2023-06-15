@@ -1,57 +1,20 @@
+import {Box, Card, Flex, Label, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
 import React from 'react'
-import {Card, Text, Label, Menu, MenuDivider, MenuItem, Flex, Spinner, Box} from '@sanity/ui'
-import styled from 'styled-components'
 import {SANITY_VERSION} from '../../../../version'
 import {ResourcesResponse, Section} from './helper-functions/types'
 
-const StyledMenu = styled(Menu)`
-  max-width: 300px;
-  min-width: 200px;
-`
-
-export const FallbackLinks = () => (
-  <>
-    <MenuItem
-      as="a"
-      text="Join our community"
-      size={0}
-      href="https://www.sanity.io/exchange/community"
-      target="_blank"
-      muted={false}
-    />
-    <MenuItem
-      as="a"
-      text="Help and support"
-      size={0}
-      href="https://www.sanity.io/contact/support"
-      target="_blank"
-      muted={false}
-    />
-    <MenuItem
-      as="a"
-      text="Contact sales"
-      size={0}
-      href="https://www.sanity.io/contact/sales?ref=studio"
-      target="_blank"
-      muted={false}
-    />
-    <MenuDivider />
-  </>
-)
-
-interface ResourcesMenuProps {
-  value: ResourcesResponse | undefined
+interface ResourcesMenuItemProps {
   error: Error | null
   isLoading: boolean
+  value: ResourcesResponse | undefined
 }
 
-export function ResourcesMenu(props: ResourcesMenuProps) {
-  const {value, error, isLoading} = props
+export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
   const latestStudioVersion = value?.latestVersion
 
   return (
-    <StyledMenu>
+    <>
       {isLoading ? (
         <Flex align="center" justify="center" padding={3}>
           <Spinner />
@@ -82,9 +45,39 @@ export function ResourcesMenu(props: ResourcesMenuProps) {
           </Box>
         </>
       )}
-    </StyledMenu>
+    </>
   )
 }
+
+const FallbackLinks = () => (
+  <>
+    <MenuItem
+      as="a"
+      text="Join our community"
+      size={0}
+      href="https://www.sanity.io/exchange/community"
+      target="_blank"
+      muted={false}
+    />
+    <MenuItem
+      as="a"
+      text="Help and support"
+      size={0}
+      href="https://www.sanity.io/contact/support"
+      target="_blank"
+      muted={false}
+    />
+    <MenuItem
+      as="a"
+      text="Contact sales"
+      size={0}
+      href="https://www.sanity.io/contact/sales?ref=studio"
+      target="_blank"
+      muted={false}
+    />
+    <MenuDivider />
+  </>
+)
 
 function SubSection({subSection}: {subSection: Section}) {
   return (

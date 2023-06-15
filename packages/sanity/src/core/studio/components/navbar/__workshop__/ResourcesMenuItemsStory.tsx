@@ -1,23 +1,20 @@
-import React from 'react'
+import {Card, Flex, Menu} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-import {Button, Flex, MenuButton} from '@sanity/ui'
-import {HelpCircleIcon} from '@sanity/icons'
-import {ResourcesMenu} from '../resources/ResourcesMenu'
+import React from 'react'
+import {ResourcesMenuItems} from '../resources/ResourcesMenuItems'
 
-export default function HelpResourcesStory() {
-  const customLoading = useBoolean('Loading', false, 'Props') || false
-  const noItems = useBoolean('Simulate error', false, 'Props') || false
-  const error = noItems ? new Error('No items') : null
+export default function ResourcesMenuItemsStory() {
+  const isLoading = useBoolean('Loading', false, 'Props') || false
+  const noItems = useBoolean('Error / no items', false, 'Props') || false
+  const error = noItems ? new Error() : null
 
   return (
     <Flex justify="center" align="center" paddingTop={3}>
-      <MenuButton
-        button={<Button icon={HelpCircleIcon} mode="bleed" fontSize={2} />}
-        id="menu-button-resources"
-        menu={<ResourcesMenu value={helpResources} error={error} isLoading={customLoading} />}
-        placement="bottom"
-        popover={{constrainSize: true, portal: true}}
-      />
+      <Card radius={2} shadow={1}>
+        <Menu>
+          <ResourcesMenuItems error={error} isLoading={isLoading} value={helpResources} />
+        </Menu>
+      </Card>
     </Flex>
   )
 }
