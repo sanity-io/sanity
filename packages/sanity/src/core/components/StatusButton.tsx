@@ -16,12 +16,14 @@ import React, {
   HTMLProps,
   forwardRef,
   ForwardedRef,
+  ReactNode,
 } from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
 
 /** @beta */
 export interface StatusButtonProps extends Omit<ButtonProps, 'iconRight'> {
+  disabled?: boolean | {reason: ReactNode}
   hotkey?: string[]
   label?: string
   tooltip?: Omit<TooltipProps, 'content' | 'disabled' | 'portal'>
@@ -43,44 +45,70 @@ const Dot = styled.div({
 
 /** @beta */
 export const StatusButton = forwardRef(function StatusButton(
-  props: StatusButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'ref'>,
+  props: StatusButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref'>,
   ref: ForwardedRef<HTMLButtonElement>
 ) {
-  const {fontSize, hotkey, icon, label, space = 3, text, tone, tooltip, ...restProps} = props
+  const {
+    disabled: disabledProp,
+    fontSize,
+    hotkey,
+    icon,
+    label,
+    space = 3,
+    text,
+    tone,
+    tooltip,
+    ...restProps
+  } = props
   const theme = useTheme()
   const toneColor = tone && theme.sanity.color.solid[tone]
   const dotStyle = useMemo(() => ({backgroundColor: toneColor?.enabled.bg}), [toneColor])
+  const disabled = Boolean(disabledProp)
+
+  const tooltipContent =
+    typeof disabledProp === 'object' ? (
+      <Text size={1}>{disabledProp.reason}</Text>
+    ) : (
+      <Flex align="center" gap={2} style={{lineHeight: 0}}>
+        <Text size={1}>{label}</Text>
+        {hotkey && <Hotkeys fontSize={0} keys={hotkey} style={{margin: -4}} />}
+      </Flex>
+    )
 
   return (
     <Tooltip
       padding={2}
       placement="bottom"
       {...tooltip}
-      content={
-        <Flex align="center" gap={2} style={{lineHeight: 0}}>
-          <Text size={1}>{label}</Text>
-          {hotkey && <Hotkeys fontSize={0} keys={hotkey} style={{margin: -4}} />}
-        </Flex>
-      }
+      content={tooltipContent}
       disabled={!label}
       portal
     >
-      <Button data-ui="StatusButton" {...restProps} aria-label={label} mode="bleed" ref={ref}>
-        <Flex gap={space}>
-          <IconBox>
-            <Text size={fontSize}>
-              {isValidElement(icon) && icon}
-              {isValidElementType(icon) && createElement(icon)}
-            </Text>
-            {tone && <Dot style={dotStyle} />}
-          </IconBox>
-          {text && (
-            <Box flex={1}>
-              <Text size={fontSize}>{text}</Text>
-            </Box>
-          )}
-        </Flex>
-      </Button>
+      <div>
+        <Button
+          data-ui="StatusButton"
+          {...restProps}
+          aria-label={label}
+          disabled={disabled}
+          mode="bleed"
+          ref={ref}
+        >
+          <Flex gap={space}>
+            <IconBox>
+              <Text size={fontSize}>
+                {isValidElement(icon) && icon}
+                {isValidElementType(icon) && createElement(icon)}
+              </Text>
+              {tone && <Dot style={dotStyle} />}
+            </IconBox>
+            {text && (
+              <Box flex={1}>
+                <Text size={fontSize}>{text}</Text>
+              </Box>
+            )}
+          </Flex>
+        </Button>
+      </div>
     </Tooltip>
   )
 })
