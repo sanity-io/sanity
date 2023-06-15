@@ -74,12 +74,6 @@ async function etl(options: {cwd: string; packagePath: string}): Promise<void> {
     },
   })
 
-  for (const doc of documents) {
-    if ('slug' in doc) {
-      doc.slug.current = `${doc._type}-${lodash.kebabCase(doc.slug.current).toLowerCase()}`
-    }
-  }
-
   if (sanityConfig.token) {
     console.log(
       `Loading ${documents.length} API documents to ${sanityConfig.projectId}:${sanityConfig.dataset} …`
