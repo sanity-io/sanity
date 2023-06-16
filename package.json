@@ -88,7 +88,6 @@
     "@sanity/client": "^6.1.1",
     "@sanity/pkg-utils": "^2.3.1",
     "@sanity/tsdoc": "1.0.0-alpha.27",
-    "@sanity/tsdoc-to-portable-text": "^0.4.3",
     "@sanity/uuid": "^3.0.1",
     "@types/jest": "^27.0.3",
     "@types/mkdirp": "^1.0.2",
