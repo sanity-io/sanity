@@ -41,6 +41,7 @@ interface DocumentListPaneContentProps {
   loadingVariant?: LoadingVariant
   onListChange: () => void
   onRetry?: (event: unknown) => void
+  paneTitle: string
   searchInputElement: HTMLInputElement | null
   showIcons: boolean
 }
@@ -76,6 +77,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     loadingVariant,
     onListChange,
     onRetry,
+    paneTitle,
     searchInputElement,
     showIcons,
   } = props
@@ -224,7 +226,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <CommandListBox>
           <CommandList
             activeItemDataAttr="data-hovered"
-            ariaLabel="Document list"
+            ariaLabel={paneTitle}
             canReceiveFocus
             focusRingOffset={-3}
             inputElement={searchInputElement}

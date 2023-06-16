@@ -279,6 +279,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           loadingVariant={loadingVariant}
           onListChange={onListChange}
           onRetry={onRetry}
+          paneTitle={title}
           searchInputElement={searchInputElement}
           showIcons={showIcons}
         />
