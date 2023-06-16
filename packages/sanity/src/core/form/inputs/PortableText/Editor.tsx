@@ -47,6 +47,7 @@ interface EditorProps {
   renderBlock: RenderBlockFunction
   renderChild: RenderChildFunction
   scrollElement: HTMLElement | null
+  setEditableWrapper: (element: HTMLDivElement | null) => void
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement | null) => void
 }
@@ -80,6 +81,7 @@ export function Editor(props: EditorProps) {
     renderBlock,
     renderChild,
     scrollElement,
+    setEditableWrapper,
     setPortalElement,
     setScrollElement,
   } = props
@@ -184,6 +186,7 @@ export function Editor(props: EditorProps) {
           <EditableContainer padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
             <EditableWrapper
               $isFullscreen={isFullscreen}
+              ref={setEditableWrapper}
               tone={readOnly ? 'transparent' : 'default'}
             >
               <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>

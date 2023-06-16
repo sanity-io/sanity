@@ -5,7 +5,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {Tooltip} from '@sanity/ui'
+import {ElementRectValue, Tooltip} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
   BlockProps,
@@ -30,6 +30,7 @@ import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
 
 interface InlineObjectProps {
   boundaryElement?: HTMLElement
+  editableWrapperSize: ElementRectValue | undefined
   focused: boolean
   onItemClose: () => void
   onItemOpen: (path: Path) => void
@@ -53,6 +54,7 @@ interface InlineObjectProps {
 export const InlineObject = (props: InlineObjectProps) => {
   const {
     boundaryElement,
+    editableWrapperSize,
     focused,
     onItemClose,
     onItemOpen,
@@ -122,6 +124,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       __unstable_boundaryElement: boundaryElement || undefined,
       __unstable_referenceElement: referenceElement || undefined,
       children: input,
+      editableWrapperSize,
       focused,
       onClose,
       onOpen,
@@ -148,6 +151,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       validation,
     }),
     [
+      editableWrapperSize,
       boundaryElement,
       focused,
       input,
@@ -219,6 +223,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
     __unstable_boundaryElement,
     __unstable_referenceElement,
     children,
+    editableWrapperSize,
     focused,
     markers,
     onClose,
@@ -311,6 +316,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
         <ObjectEditModal
           boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
+          editableWrapperSize={editableWrapperSize}
           onClose={onClose}
           autoFocus={focused}
           referenceElement={__unstable_referenceElement}

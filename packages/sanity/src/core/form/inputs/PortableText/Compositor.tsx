@@ -9,7 +9,7 @@ import {
   BlockAnnotationRenderProps,
 } from '@sanity/portable-text-editor'
 import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
-import {Box, Portal, PortalProvider, usePortal} from '@sanity/ui'
+import {Box, Portal, PortalProvider, useElementSize, usePortal} from '@sanity/ui'
 import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../../util'
@@ -230,6 +230,9 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [editor.schemaTypes.block.name, renderObjectBlock, renderTextBlock]
   )
 
+  const [editableWrapper, setEditableWrapper] = useState<HTMLDivElement | null>(null)
+  const editableWrapperSize = useElementSize(editableWrapper)?.border
+
   // This is the function that is sent to PortableTextEditor's renderChild callback
   const editorRenderChild = useCallback(
     (childProps: EditorChildRenderProps) => {
@@ -248,6 +251,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       return (
         <InlineObject
           boundaryElement={boundaryElement || undefined}
+          editableWrapperSize={editableWrapperSize}
           focused={childFocused}
           onItemClose={onItemClose}
           onItemOpen={onItemOpen}
@@ -271,6 +275,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     },
     [
       editor.schemaTypes.span.name,
+      editableWrapperSize,
       boundaryElement,
       onItemClose,
       onItemOpen,
@@ -361,6 +366,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         renderChild={editorRenderChild}
         setPortalElement={setPortalElement}
         scrollElement={boundaryElement}
+        setEditableWrapper={setEditableWrapper}
         setScrollElement={setBoundaryElement}
       />
     ),

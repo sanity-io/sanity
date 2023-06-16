@@ -12,6 +12,7 @@ import {
   SchemaType,
 } from '@sanity/types'
 import {ReactElement, ReactNode} from 'react'
+import {ElementRectValue} from '@sanity/ui'
 import {FormNodePresence} from '../../presence'
 import {PortableTextMarker} from '../..'
 import {
@@ -96,6 +97,7 @@ export interface BlockProps {
   __unstable_boundaryElement?: HTMLElement // Boundary element for the block, typically a scroll container
   __unstable_referenceElement?: HTMLElement // Reference element representing the block in the DOM
   children: ReactNode
+  editableWrapperSize: ElementRectValue | undefined
   focused: boolean // Whether the object has form focus
   markers: PortableTextMarker[]
   onClose: () => void

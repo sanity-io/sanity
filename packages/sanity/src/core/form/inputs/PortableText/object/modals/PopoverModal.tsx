@@ -1,8 +1,18 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {CloseIcon} from '@sanity/icons'
-import {Box, Button, Flex, PopoverProps, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import React, {useCallback, useEffect, useState} from 'react'
+import {
+  Box,
+  Button,
+  ElementRectValue,
+  Flex,
+  PopoverProps,
+  PopoverUpdateCallback,
+  Text,
+  useClickOutside,
+  useGlobalKeyDown,
+} from '@sanity/ui'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
@@ -19,6 +29,7 @@ interface PopoverEditDialogProps {
   autoFocus?: boolean
   boundaryElement?: PortableTextEditorElement
   children: React.ReactNode
+  editableWrapperSize: ElementRectValue | undefined
   onClose: () => void
   referenceElement?: PortableTextEditorElement
   title: string | React.ReactNode
@@ -28,7 +39,7 @@ interface PopoverEditDialogProps {
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverEditDialog(props: PopoverEditDialogProps) {
-  const {referenceElement, boundaryElement} = props
+  const {editableWrapperSize, referenceElement, boundaryElement} = props
   const [open, setOpen] = useState(false)
 
   // This hook is here to set open after the initial render.
@@ -39,6 +50,20 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
     setOpen(true)
   }, [])
 
+  const updateRef = useRef<PopoverUpdateCallback>()
+
+  useEffect(() => {
+    updateRef.current?.()
+  }, [editableWrapperSize?.width, editableWrapperSize?.height])
+
+  const handleClickOutside = useCallback(() => {
+    setOpen(false)
+  }, [])
+
+  const [popover, setPopover] = useState<HTMLDivElement | null>(null)
+
+  useClickOutside(handleClickOutside, [referenceElement || null, popover], boundaryElement)
+
   return (
     <RootPopover
       boundaryElement={boundaryElement}
@@ -47,6 +72,7 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
       open={open}
       placement="bottom"
       portal="default"
+      ref={setPopover}
       referenceElement={referenceElement}
     />
   )

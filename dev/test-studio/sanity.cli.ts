@@ -37,6 +37,13 @@ export default defineCliConfig({
           },
         },
       },
+      resolve: {
+        ...viteConfig.resolve,
+        alias: {
+          ...viteConfig.resolve?.alias,
+          '@sanity/ui': path.resolve(__dirname, '../../../ui/src'),
+        },
+      },
     }
   },
 })

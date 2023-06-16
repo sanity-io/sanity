@@ -2,6 +2,7 @@ import React from 'react'
 import {defineArrayMember, defineType} from 'sanity'
 import {toPlainText} from '@portabletext/react'
 import {CalloutPreview} from './components/CalloutPreview'
+import {TestInputComponent} from './components/TestInput'
 
 const linkType = defineArrayMember({
   type: 'object',
@@ -39,6 +40,14 @@ export default defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
+    },
+    {
+      type: 'string',
+      name: 'test',
+      title: 'Test',
+      components: {
+        input: TestInputComponent,
+      },
     },
     {
       name: 'body',

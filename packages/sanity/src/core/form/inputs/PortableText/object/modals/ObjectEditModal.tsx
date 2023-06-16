@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
+import {ElementRectValue} from '@sanity/ui'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
@@ -9,11 +10,20 @@ export function ObjectEditModal(props: {
   boundaryElement: HTMLElement | undefined
   children: React.ReactNode
   defaultType: 'dialog' | 'popover'
+  editableWrapperSize: ElementRectValue | undefined
   onClose: () => void
   referenceElement: HTMLElement | undefined
   schemaType: ObjectSchemaType
 }) {
-  const {onClose, defaultType, referenceElement, boundaryElement, schemaType, autoFocus} = props
+  const {
+    onClose,
+    defaultType,
+    editableWrapperSize,
+    referenceElement,
+    boundaryElement,
+    schemaType,
+    autoFocus,
+  } = props
 
   const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
   const modalType = schemaModalOption?.type || defaultType
@@ -31,6 +41,7 @@ export function ObjectEditModal(props: {
       <PopoverEditDialog
         autoFocus={autoFocus}
         boundaryElement={boundaryElement}
+        editableWrapperSize={editableWrapperSize}
         onClose={handleClose}
         referenceElement={referenceElement}
         title={modalTitle}
