@@ -1,8 +1,6 @@
 name: Extract, Transform & Load
 
 on:
-  # Build on pushes branches that have a PR (including drafts)
-  pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [current]
