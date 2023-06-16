@@ -6,7 +6,8 @@ import {useRouter} from './useRouter'
  * A higher-order component that injects the `router` object from the `useRouter` hook
  * into the props of the wrapped component.
  *
- * @public
+ * @internal
+ * @deprecated - Use the `useRouter` hook instead.
  *
  * @param Component - The component to wrap.
  *
@@ -36,7 +37,8 @@ export function withRouter<Props extends {router: RouterContextValue}>(
 }
 
 /**
- * @public
+ * @internal
+ * @deprecated - Use the `useRouter` hook instead.
  */
 export interface WithRouterProps {
   /**
@@ -53,7 +55,8 @@ export interface WithRouterProps {
 /**
  * A higher-order component that injects the router object into its child component.
  *
- * @public
+ * @internal
+ * @deprecated - Use the `useRouter` hook instead.
  *
  * @returns The rendered component.
  *
