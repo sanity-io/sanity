@@ -39,5 +39,7 @@ jobs:
 
       - name: Extract API docs
         env:
+          EXTRACT_SANITY_PROJECT_ID: ${{ secrets.EXTRACT_SANITY_PROJECT_ID }}
+          EXTRACT_SANITY_DATASET: ${{ secrets.EXTRACT_SANITY_DATASET }}
           EXTRACT_SANITY_API_TOKEN: ${{ secrets.EXTRACT_SANITY_API_TOKEN }}
         run: yarn etl sanity
