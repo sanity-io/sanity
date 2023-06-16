@@ -124,25 +124,17 @@ export function createSearchQuery(
 ): SearchQuery {
   const {filter, params, tag} = searchOpts
 
-  /**
-   * First pass: create initial search specs and determine if this subset of types contains
-   * any indexed paths in `__experimental_search`.
-   * e.g. "authors.0.title" or ["authors", 0, "title"]
-   */
-  const {specs: exactSearchSpecs, hasIndexedPaths} = createSearchSpecs(searchTerms.types, false)
-
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
 
   /**
-   * Second pass: create an optimized spec (with array indices removed), but only if types with any
-   * indexed paths have been previously found. Otherwise, passthrough original search specs.
+   * Create an optimized search spec which removes array indices from __experimental_search paths.
+   * e.g. ["authors", 0, "title"] => "authors[].title"
    *
-   * These optimized specs are only used when building constraints in this search query.
+   * These optimized specs are used when building constraints in this search query and assigning
+   * weight to search hits.
    */
-  const optimizedSpecs = hasIndexedPaths
-    ? createSearchSpecs(searchTerms.types, true).specs
-    : exactSearchSpecs
+  const optimizedSpecs = createSearchSpecs(searchTerms.types, true).specs
 
   // Construct search filters used in this GROQ query
   const filters = [
@@ -152,7 +144,7 @@ export function createSearchQuery(
     filter ? `(${filter})` : '',
   ].filter(Boolean)
 
-  const selections = exactSearchSpecs.map((spec) => {
+  const selections = optimizedSpecs.map((spec) => {
     const constraint = `_type == "${spec.typeName}" => `
     const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
     return `${constraint}${selection}`
@@ -183,13 +175,13 @@ export function createSearchQuery(
     query: updatedQuery,
     params: {
       ...toGroqParams(terms),
-      __types: exactSearchSpecs.map((spec) => spec.typeName),
+      __types: optimizedSpecs.map((spec) => spec.typeName),
       __limit: limit,
       __offset: offset,
       ...(params || {}),
     },
     options: {tag},
-    searchSpec: exactSearchSpecs,
+    searchSpec: optimizedSpecs,
     terms,
   }
 }

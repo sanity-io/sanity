@@ -267,9 +267,7 @@ describe('createSearchQuery', () => {
           '[$__offset...$__limit]' +
           // at this point we could refilter using cover[0].cards[0].title.
           // This solution was discarded at it would increase the size of the query payload by up to 50%
-
-          // we still map out the path with number
-          '{_type, _id, ...select(_type == "numbers-in-path" => { "w0": cover[0].cards[0].title })}'
+          '{_type, _id, ...select(_type == "numbers-in-path" => { "w0": cover[].cards[].title })}'
       )
     })
 
