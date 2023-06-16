@@ -4798,10 +4798,10 @@
     tmp "^0.2.1"
     yargs "^17.6.2"
 
-"@sanity/tsdoc@1.0.0-alpha.22":
-  version "1.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-alpha.22.tgz#01832be76a7e357cb97c4260b46de7db25ddaa1d"
-  integrity sha512-UWnk+W1sOfgYNKxlwimD3LkdsZtcsVZvEVYIn0txESGMLZgWZWOz4eAW5I38MjvqJfSV5OaSWDL738ApAwxkNA==
+"@sanity/tsdoc@1.0.0-alpha.27":
+  version "1.0.0-alpha.27"
+  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-alpha.27.tgz#dd5235837036ca9788fa75f6696401c572a36b77"
+  integrity sha512-84Pu05pYav4hOJb4tI/cfkHdrIzr5oc+W2oz68cBMQu9ezWkmmOiWRLTeZFqYTtV8NwwmMCfZZUDu92r0bz7/Q==
   dependencies:
     "@microsoft/api-extractor" "7.35.0"
     "@microsoft/api-extractor-model" "7.27.0"
