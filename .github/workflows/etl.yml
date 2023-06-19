@@ -1,6 +1,8 @@
 name: Extract, Transform & Load
 
 on:
+  # Build on pushes branches that have a PR (including drafts)
+  pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [current]
@@ -37,7 +39,7 @@ jobs:
 
       - name: Extract API docs
         env:
-          EXTRACT_SANITY_PROJECT_ID: ${{ secrets.EXTRACT_SANITY_PROJECT_ID }}
-          EXTRACT_SANITY_DATASET: ${{ secrets.EXTRACT_SANITY_DATASET }}
-          EXTRACT_SANITY_API_TOKEN: ${{ secrets.EXTRACT_SANITY_API_TOKEN }}
+          EXTRACT_SANITY_PROJECT_ID: "${{(github.event_name == 'push' && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_PROJECT_ID || secrets.DEV_EXTRACT_SANITY_PROJECT_ID}}"
+          EXTRACT_SANITY_DATASET: "${{(github.event_name == 'push' && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_DATASET || secrets.DEV_EXTRACT_SANITY_DATASET}}"
+          EXTRACT_SANITY_API_TOKEN: "${{(github.event_name == 'push' && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_API_TOKEN || secrets.DEV_EXTRACT_SANITY_API_TOKEN}}"
         run: yarn etl sanity
