@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonMode,
   ButtonProps,
   Flex,
   Hotkeys,
@@ -26,6 +27,7 @@ export interface StatusButtonProps extends Omit<ButtonProps, 'iconRight'> {
   disabled?: boolean | {reason: ReactNode}
   hotkey?: string[]
   label?: string
+  mode?: ButtonMode
   tooltip?: Omit<TooltipProps, 'content' | 'disabled' | 'portal'>
 }
 
@@ -54,6 +56,7 @@ export const StatusButton = forwardRef(function StatusButton(
     hotkey,
     icon,
     label,
+    mode = 'bleed',
     space = 3,
     text,
     tone,
@@ -90,7 +93,7 @@ export const StatusButton = forwardRef(function StatusButton(
           {...restProps}
           aria-label={label}
           disabled={disabled}
-          mode="bleed"
+          mode={mode}
           ref={ref}
         >
           <Flex gap={space}>
