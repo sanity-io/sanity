@@ -17,8 +17,6 @@ const envPrefix = 'SANITY_STUDIO_'
  * Specify `options.jsonEncode` to JSON-encode the values, which is handy if you want to pass
  * this to a bundlers hardcoded defines, such as Vite's `define` or Webpack's `DefinePlugin`.
  *
- * This is a test for the yml with a different dataset
- *
  * @param options - Options for the environment variable loading
  * @returns Object of studio environment variables
  * @public
