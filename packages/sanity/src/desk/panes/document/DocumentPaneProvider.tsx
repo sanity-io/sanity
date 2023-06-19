@@ -46,6 +46,10 @@ import {
   useTimelineSelector,
   DocumentFieldAction,
   DocumentInspectorMenuItem,
+  FieldActionsResolver,
+  EMPTY_ARRAY,
+  DocumentFieldActionNode,
+  FieldActionsProvider,
 } from 'sanity'
 
 /**
@@ -625,6 +629,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
   }, [params, documentId, setOpenPath, ready, paneRouter])
 
+  const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
+
   return (
     <DocumentPaneContext.Provider value={documentPane}>
       {inspectors.length > 0 && (
@@ -636,7 +642,21 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         />
       )}
 
-      {children}
+      {/* Resolve root-level field actions */}
+      {fieldActions.length > 0 && schemaType && (
+        <FieldActionsResolver
+          actions={fieldActions}
+          documentId={documentId}
+          documentType={documentType}
+          onActions={setRootFieldActionNodes}
+          path={EMPTY_ARRAY}
+          schemaType={schemaType}
+        />
+      )}
+
+      <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
+        {children}
+      </FieldActionsProvider>
     </DocumentPaneContext.Provider>
   )
 })
