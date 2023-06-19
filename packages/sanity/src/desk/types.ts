@@ -179,7 +179,7 @@ export interface PaneMenuItem extends DeskToolMenuItem {
   isDisabled?: boolean
   shortcut?: string
   selected?: boolean
-  tone?: ButtonTone
+  tone?: 'primary' | 'positive' | 'caution' | 'critical'
 }
 
 /** @internal */
