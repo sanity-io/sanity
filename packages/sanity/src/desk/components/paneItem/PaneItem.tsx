@@ -15,7 +15,8 @@ import {
   useSchema,
 } from 'sanity'
 
-interface PaneItemProps {
+/** @internal */
+export interface PaneItemProps {
   id: string
   layout?: GeneralPreviewLayoutKey
   icon?: React.ComponentType<any> | false
@@ -32,8 +33,10 @@ interface PaneItemProps {
 /**
  * Return `false` if we explicitly disable the icon.
  * Otherwise return the passed icon or the schema type icon as a backup.
+ *
+ * @internal
  */
-export function getIconWithFallback(
+export function getPaneItemIconWithFallback(
   icon: React.ComponentType<any> | false | undefined,
   schemaType: SchemaType | undefined,
   defaultIcon: React.ComponentType<any>
@@ -45,6 +48,7 @@ export function getIconWithFallback(
   return icon || (schemaType && schemaType.icon) || defaultIcon || false
 }
 
+/** @internal */
 export function PaneItem(props: PaneItemProps) {
   const {
     icon,
@@ -75,7 +79,7 @@ export function PaneItem(props: PaneItemProps) {
       return (
         <PaneItemPreview
           documentPreviewStore={documentPreviewStore}
-          icon={getIconWithFallback(icon, schemaType, DocumentIcon)}
+          icon={getPaneItemIconWithFallback(icon, schemaType, DocumentIcon)}
           layout={layout}
           schemaType={schemaType}
           value={value}
@@ -91,7 +95,7 @@ export function PaneItem(props: PaneItemProps) {
             <ChevronRightIcon />
           </Text>
         }
-        icon={getIconWithFallback(icon, schemaType, FolderIcon)}
+        icon={getPaneItemIconWithFallback(icon, schemaType, FolderIcon)}
         layout={layout}
         title={title}
       />

@@ -1,4 +1,4 @@
-import {UserComponent, usePaneRouter} from 'sanity/desk'
+import {Pane, UserComponentProps, usePaneRouter} from 'sanity/desk'
 import {ChevronDownIcon, ChevronRightIcon, ControlsIcon, LinkIcon} from '@sanity/icons'
 import {Box, Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
@@ -31,9 +31,21 @@ function usePaneParameterizedLinkComponent(props: {
   }, [ParameterizedLink, params, payload])
 }
 
-export const DebugPane: UserComponent = function DebugPane(props) {
-  const {childItemId, id, isActive, isSelected, itemId, options, paneKey, urlParams} = props
-  const {groupIndex, hasGroupSiblings, index, params, payload, siblingIndex} = usePaneRouter()
+export function DebugPane(props: UserComponentProps) {
+  const {childItemId, id, isActive, isSelected, itemId, options, paneKey} = props
+  const {
+    groupIndex,
+    groupLength,
+    hasGroupSiblings,
+    index,
+    params,
+    payload,
+    routerPanesState,
+    siblingIndex,
+    ...restPane
+  } = usePaneRouter()
+
+  // restPane.
 
   const ChildLink = usePaneChildLinkComponent({id: 'test'})
 
@@ -50,99 +62,102 @@ export const DebugPane: UserComponent = function DebugPane(props) {
   const randomId = useMemo(() => Math.floor(Math.random() * 10000000).toString(16), [])
 
   return (
-    <Box height="fill">
-      <Card padding={3} tone="transparent">
-        <Stack space={2}>
-          <Text textOverflow="ellipsis">
-            Random ID: <code>{randomId}</code>
-          </Text>
-          <Text textOverflow="ellipsis" size={1} muted>
-            Assigned on pane component mount
-          </Text>
-        </Stack>
-      </Card>
+    <Pane currentMaxWidth={350} id={paneKey} maxWidth={640} minWidth={320} selected={isSelected}>
+      <Box height="fill">
+        <Card padding={3} tone="transparent">
+          <Stack space={2}>
+            <Text textOverflow="ellipsis">
+              Random ID: <code>{randomId}</code>
+            </Text>
+            <Text textOverflow="ellipsis" size={1} muted>
+              Assigned on pane component mount
+            </Text>
+          </Stack>
+        </Card>
 
-      <Card borderBottom padding={2}>
-        <Stack space={1}>
-          <Card
-            as={ChildLink}
-            data-as="a"
-            padding={3}
-            pressed={!isActive && childItemId === 'test'}
-            radius={2}
-            selected={isActive && childItemId === 'test'}
-          >
-            <Flex>
-              <Box>
-                <Text>
-                  <LinkIcon />
-                </Text>
-              </Box>
-              <Box flex={1} marginLeft={3}>
-                <Text textOverflow="ellipsis">ChildLink</Text>
-              </Box>
-              <Box>
-                <Text>
-                  <ChevronRightIcon />
-                </Text>
-              </Box>
-            </Flex>
-          </Card>
+        <Card borderBottom padding={2}>
+          <Stack space={1}>
+            <Card
+              as={ChildLink}
+              data-as="a"
+              padding={3}
+              pressed={!isActive && childItemId === 'test'}
+              radius={2}
+              selected={isActive && childItemId === 'test'}
+            >
+              <Flex>
+                <Box>
+                  <Text>
+                    <LinkIcon />
+                  </Text>
+                </Box>
+                <Box flex={1} marginLeft={3}>
+                  <Text textOverflow="ellipsis">ChildLink</Text>
+                </Box>
+                <Box>
+                  <Text>
+                    <ChevronRightIcon />
+                  </Text>
+                </Box>
+              </Flex>
+            </Card>
 
-          <Card
-            as={ParameterizedLink}
-            data-as="a"
-            padding={3}
-            pressed={params?.param1 === 'test'}
-            radius={2}
-          >
-            <Flex>
-              <Box>
-                <Text>
-                  <ControlsIcon />
-                </Text>
-              </Box>
-              <Box flex={1} marginLeft={3}>
-                <Text textOverflow="ellipsis">ParameterizedLink</Text>
-              </Box>
-              <Box>
-                <Text>
-                  <ChevronDownIcon />
-                </Text>
-              </Box>
-            </Flex>
-          </Card>
-        </Stack>
-      </Card>
+            <Card
+              as={ParameterizedLink}
+              data-as="a"
+              padding={3}
+              pressed={params?.param1 === 'test'}
+              radius={2}
+            >
+              <Flex>
+                <Box>
+                  <Text>
+                    <ControlsIcon />
+                  </Text>
+                </Box>
+                <Box flex={1} marginLeft={3}>
+                  <Text textOverflow="ellipsis">ParameterizedLink</Text>
+                </Box>
+                <Box>
+                  <Text>
+                    <ChevronDownIcon />
+                  </Text>
+                </Box>
+              </Flex>
+            </Card>
+          </Stack>
+        </Card>
 
-      <Card padding={4}>
-        <Code language="json" size={1}>
-          {JSON.stringify(
-            {
-              paneRouter: {
-                groupIndex,
-                hasGroupSiblings,
-                index,
-                params,
-                payload,
-                siblingIndex,
+        <Card padding={4}>
+          <Code language="json" size={1}>
+            {JSON.stringify(
+              {
+                paneRouter: {
+                  groupIndex,
+                  groupLength,
+                  hasGroupSiblings,
+                  index,
+                  params,
+                  payload,
+                  routerPanesState,
+                  siblingIndex,
+                },
+                props: {
+                  childItemId,
+                  id,
+                  isActive,
+                  isSelected,
+                  itemId,
+                  options,
+                  paneKey,
+                },
               },
-              props: {
-                childItemId,
-                id,
-                isActive,
-                isSelected,
-                itemId,
-                options,
-                paneKey,
-                urlParams,
-              },
-            },
-            null,
-            2
-          )}
-        </Code>
-      </Card>
-    </Box>
+              null,
+              2
+            )}
+          </Code>
+        </Card>
+      </Box>
+    </Pane>
   )
 }

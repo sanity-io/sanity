@@ -2,10 +2,12 @@ import {SanityDocumentLike} from '@sanity/types'
 import React from 'react'
 import {useSchema, unstable_useValuePreview as useValuePreview} from 'sanity'
 
+/** @internal */
 export interface DocTitleProps {
   document: SanityDocumentLike
 }
 
+/** @internal */
 export function DocTitle(props: DocTitleProps) {
   const {document: documentValue} = props
   const schema = useSchema()
