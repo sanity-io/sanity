@@ -130,7 +130,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   return (
     <>
-      <DocumentPanelHeader rootElement={rootElement} ref={setHeaderElement} />
+      <DocumentPanelHeader ref={setHeaderElement} />
 
       <PaneContent>
         <Flex height="fill">

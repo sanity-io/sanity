@@ -1,16 +1,12 @@
-import {UnknownIcon} from '@sanity/icons'
-import {Box, Button, Flex, Text, Tooltip} from '@sanity/ui'
-import {partition, uniqBy} from 'lodash'
+import {Flex} from '@sanity/ui'
+import {uniqBy} from 'lodash'
 import React, {memo, useCallback, useMemo} from 'react'
+import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../menuNodes'
 import {DeskToolPaneActionHandler, PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {IntentButton} from '../IntentButton'
 import {PaneContextMenuButton} from '../pane/PaneContextMenuButton'
+import {PaneHeaderActionButton} from '../pane/PaneHeaderActionButton'
 import {PaneHeaderCreateButton} from './PaneHeaderCreateButton'
-import {useTemplates, InitialValueTemplateItem} from 'sanity'
-
-// to preserve memory references
-const emptyArray: never[] = []
-const emptyObject = {}
+import {useTemplates, InitialValueTemplateItem, EMPTY_ARRAY, EMPTY_OBJECT} from 'sanity'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
@@ -38,12 +34,14 @@ interface PaneHeaderActionsProps {
   actionHandlers?: Record<string, DeskToolPaneActionHandler>
 }
 
-export const PaneHeaderActions = memo(function PaneHeaderActions({
-  initialValueTemplateItems: initialValueTemplateItemsFromStructure = emptyArray,
-  menuItems = emptyArray,
-  menuItemGroups = emptyArray,
-  actionHandlers = emptyObject,
-}: PaneHeaderActionsProps) {
+export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHeaderActionsProps) {
+  const {
+    initialValueTemplateItems: initialValueTemplateItemsFromStructure = EMPTY_ARRAY,
+    menuItems = EMPTY_ARRAY,
+    menuItemGroups = EMPTY_ARRAY,
+    actionHandlers = EMPTY_OBJECT as Record<string, DeskToolPaneActionHandler>,
+  } = props
+
   const templates = useTemplates()
 
   const handleAction = useCallback(
@@ -71,14 +69,21 @@ export const PaneHeaderActions = memo(function PaneHeaderActions({
     [actionHandlers]
   )
 
-  const [actionMenuItems, contextMenuItems] = useMemo(() => {
-    const nonCreateMenuItem = menuItems
-      // remove items with `create` intents because those will get combined
-      // into one action button later
-      .filter((item) => item.intent?.type !== 'create')
+  const menuNodes = useMemo(
+    () =>
+      resolveMenuNodes({
+        actionHandler: handleAction,
+        menuItemGroups,
+        menuItems: menuItems
+          // remove items with `create` intents because those will get combined
+          // into one action button (see `initialValueTemplateItemFromMenuItems`)
+          .filter((item) => item.intent?.type !== 'create'),
+      }),
+    [handleAction, menuItemGroups, menuItems]
+  )
 
-    return partition(nonCreateMenuItem, (item) => item.showAsAction)
-  }, [menuItems])
+  const actionNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
+  const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
 
   const initialValueTemplateItemFromMenuItems = useMemo(() => {
     return menuItems
@@ -144,43 +149,11 @@ export const PaneHeaderActions = memo(function PaneHeaderActions({
         <PaneHeaderCreateButton templateItems={combinedInitialValueTemplates} />
       )}
 
-      {actionMenuItems.map((actionItem, actionIndex) => (
-        <Tooltip
-          content={
-            <Box padding={2}>
-              <Text size={1}>{actionItem.title}</Text>
-            </Box>
-          }
-          // eslint-disable-next-line react/no-array-index-key
-          key={`${actionIndex}-${actionItem.title}`}
-          placement="bottom"
-        >
-          {actionItem.intent ? (
-            <IntentButton
-              intent={actionItem.intent}
-              aria-label={actionItem.title}
-              icon={actionItem.icon || UnknownIcon}
-              mode="bleed"
-            />
-          ) : (
-            <Button
-              aria-label={actionItem.title}
-              icon={actionItem.icon || UnknownIcon}
-              mode="bleed"
-              // eslint-disable-next-line react/jsx-no-bind
-              onClick={() => handleAction(actionItem)}
-            />
-          )}
-        </Tooltip>
+      {actionNodes.map((node) => (
+        <PaneHeaderActionButton key={node.key} node={node} />
       ))}
 
-      {contextMenuItems.length > 0 && (
-        <PaneContextMenuButton
-          items={contextMenuItems}
-          itemGroups={menuItemGroups}
-          onAction={handleAction}
-        />
-      )}
+      {contextMenuNodes.length > 0 && <PaneContextMenuButton nodes={contextMenuNodes} />}
     </Flex>
   )
 })

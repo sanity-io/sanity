@@ -1,8 +1,6 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Button, Flex, Text, Tooltip} from '@sanity/ui'
-import {negate} from 'lodash'
 import React, {createElement, memo, forwardRef, useMemo} from 'react'
-import {PaneMenuItem} from '../../../../types'
 import {
   PaneContextMenuButton,
   PaneHeader,
@@ -12,22 +10,20 @@ import {
 } from '../../../../components'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
+import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {useTimelineSelector} from 'sanity'
+import {useFieldActions, useTimelineSelector} from 'sanity'
 
-export interface DocumentPanelHeaderProps {
-  // TODO:
-  // eslint-disable-next-line react/no-unused-prop-types
-  rootElement: HTMLDivElement | null
-}
-
-const isActionButton = (item: PaneMenuItem) => Boolean(item.showAsAction)
-const isMenuButton = negate(isActionButton)
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface DocumentPanelHeaderProps {}
 
 export const DocumentPanelHeader = memo(
-  forwardRef(({rootElement}: DocumentPanelHeaderProps, ref: React.ForwardedRef<HTMLDivElement>) => {
+  forwardRef(function DocumentPanelHeader(
+    _props: DocumentPanelHeaderProps,
+    ref: React.ForwardedRef<HTMLDivElement>
+  ) {
     const {
       onMenuAction,
       onPaneClose,
@@ -42,8 +38,14 @@ export const DocumentPanelHeader = memo(
     } = useDocumentPane()
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
-    const actionItems = useMemo(() => menuItems.filter(isActionButton), [menuItems])
-    const contextMenuItems = useMemo(() => menuItems.filter(isMenuButton), [menuItems])
+    const {actions: fieldActions} = useFieldActions()
+    const menuNodes = useMemo(
+      () =>
+        resolveMenuNodes({actionHandler: onMenuAction, fieldActions, menuItems, menuItemGroups}),
+      [onMenuAction, fieldActions, menuItemGroups, menuItems]
+    )
+    const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
+    const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
     const showTabs = views.length > 1
 
     // Subscribe to external timeline state changes
@@ -101,16 +103,11 @@ export const DocumentPanelHeader = memo(
               </>
             )}
 
-            {actionItems.map((item, itemIndex) => (
-              <PaneHeaderActionButton item={item} key={itemIndex} onMenuAction={onMenuAction} />
+            {menuButtonNodes.map((item) => (
+              <PaneHeaderActionButton key={item.key} node={item} />
             ))}
 
-            <PaneContextMenuButton
-              itemGroups={menuItemGroups}
-              items={contextMenuItems}
-              key="context-menu"
-              onAction={onMenuAction}
-            />
+            <PaneContextMenuButton nodes={contextMenuNodes} key="context-menu" />
 
             {showSplitPaneButton && (
               <Tooltip
@@ -158,5 +155,3 @@ export const DocumentPanelHeader = memo(
     )
   })
 )
-
-DocumentPanelHeader.displayName = 'DocumentPanelHeader'
