@@ -8,7 +8,7 @@ const envPrefix = 'SANITY_STUDIO_'
  *
  * @public
  */
-export interface studioEnvVariablesOptions {
+export interface StudioEnvVariablesOptions {
   /**
    * When specified adds a prefix to the environment variable keys,
    * eg: `getStudioEnvironmentVariables({prefix: 'process.env.'})`
@@ -32,7 +32,7 @@ export interface studioEnvVariablesOptions {
  * Get environment variables prefixed with SANITY_STUDIO_, as an object.
  *
  * @param options - Options for the environment variable loading
- *  {@link studioEnvVariablesOptions}
+ *  {@link StudioEnvVariablesOptions}
  * @returns Object of studio environment variables
  *
  * @example
@@ -43,7 +43,7 @@ export interface studioEnvVariablesOptions {
  * @public
  */
 export function getStudioEnvironmentVariables(
-  options: studioEnvVariablesOptions = {}
+  options: StudioEnvVariablesOptions = {}
 ): Record<string, string> {
   const {prefix = '', envFile = false, jsonEncode = false} = options
   const fullEnv = envFile
