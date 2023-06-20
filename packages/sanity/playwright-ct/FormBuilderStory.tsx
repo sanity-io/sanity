@@ -1,6 +1,14 @@
-import {defineArrayMember, defineField, defineType, Path, SanityDocumentLike} from '@sanity/types'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  Path,
+  SanityDocument,
+  ValidationMarker,
+} from '@sanity/types'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 // import {BufferedDocument} from '@sanity/mutator'
+import {validateDocument} from '@sanity/validation'
 import {applyAll} from '../src/core/form/patch/applyPatch'
 import {
   createPatchChannel,
@@ -10,11 +18,11 @@ import {
   PatchEvent,
   setAtPath,
   StateTree,
-  toMutationPatches,
   useFormState,
   useWorkspace,
 } from '../exports'
 import {Wrapper} from './Wrapper'
+import {createMockSanityClient} from './createMockSanityClient'
 
 const NOOP = () => null
 
@@ -30,6 +38,12 @@ const SCHEMA_TYPES = [
         type: 'string',
         name: 'title',
         title: 'Title',
+      }),
+      defineField({
+        type: 'string',
+        name: 'requiredSubtitle',
+        title: 'Required Subtitle',
+        validation: (Rule) => Rule.required(),
       }),
       defineField({
         type: 'array',
@@ -66,14 +80,21 @@ export function FormBuilderStory() {
   )
 }
 
+const client = createMockSanityClient() as any as ReturnType<ValidationContext['getClient']>
+const getClient = (options: {apiVersion: string}) => client
+
 function TestForm() {
+  const [validation, setValidation] = useState<ValidationMarker[]>([])
   const [openPath, onSetOpenPath] = useState<Path>([])
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
-  const [document, setDocument] = useState<SanityDocumentLike>({
+  const [document, setDocument] = useState<SanityDocument>({
     _id: '123',
     _type: 'test',
+    _createdAt: new Date().toISOString(),
+    _updatedAt: new Date().toISOString(),
+    _rev: '123',
     title: 'An title',
   })
   const [focusPath, setFocusPath] = useState<Path>(
@@ -93,6 +114,15 @@ function TestForm() {
     throw new Error('schema type is not an object')
   }
 
+  useEffect(() => {
+    async function validateStaticDocument() {
+      const result = await validateDocument(getClient, document, schema)
+
+      setValidation(result)
+    }
+    validateStaticDocument()
+  }, [document, schema])
+
   const formState = useFormState(schemaType, {
     focusPath,
     collapsedPaths: collapsedPaths,
@@ -101,7 +131,7 @@ function TestForm() {
     fieldGroupState: fieldGroupState,
     openPath: openPath,
     presence: EMPTY_ARRAY,
-    validation: EMPTY_ARRAY,
+    validation,
     value: document,
   })
 
@@ -194,7 +224,7 @@ function TestForm() {
       path: EMPTY_ARRAY,
       presence: EMPTY_ARRAY,
       schemaType: formState?.schemaType || schemaType,
-      validation: EMPTY_ARRAY,
+      validation,
       value: formState?.value,
     }),
     [
