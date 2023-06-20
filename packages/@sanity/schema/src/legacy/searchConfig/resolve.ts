@@ -5,6 +5,9 @@ const stringFieldsSymbol = Symbol('__cachedStringFields')
 
 const isReference = (type) => type.type && type.type.name === 'reference'
 
+// eslint-disable-next-line no-process-env
+const maxTraversalDepth = process.env.SANITY_STUDIO_UNSTABLE_SEARCH_DEPTH || 4
+
 const portableTextFields = ['style', 'list']
 const isPortableTextBlock = (type) =>
   type.name === 'block' || (type.type && isPortableTextBlock(type.type))
@@ -98,7 +101,7 @@ function getCachedStringFieldPaths(type, maxDepth) {
   return type[stringFieldsSymbol]
 }
 
-function getCachedBaseFieldPaths(type, maxDepth) {
+function getCachedBaseFieldPaths(type) {
   if (!type[stringFieldsSymbol]) {
     type[stringFieldsSymbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type)], (spec) =>
       spec.path.join('.')
@@ -122,9 +125,9 @@ function getPortableTextFieldPaths(type, maxDepth) {
 }
 
 export function resolveSearchConfigForBaseFieldPaths(type) {
-  return getCachedBaseFieldPaths(type, 4)
+  return getCachedBaseFieldPaths(type)
 }
 
 export default function resolveSearchConfig(type) {
-  return getCachedStringFieldPaths(type, 4)
+  return getCachedStringFieldPaths(type, maxTraversalDepth)
 }
