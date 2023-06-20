@@ -1,7 +1,13 @@
 import {SanityClient} from '@sanity/client'
 import {Card, LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import React, {ReactNode, useEffect, useState} from 'react'
-import {SchemaTypeDefinition, SourceProvider, Workspace, WorkspaceProvider} from '../exports'
+import {
+  ResourceCacheProvider,
+  SchemaTypeDefinition,
+  SourceProvider,
+  Workspace,
+  WorkspaceProvider,
+} from '../exports'
 import {createMockSanityClient} from '../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../test/testUtils/getMockWorkspaceFromConfig'
 
@@ -42,11 +48,13 @@ export const Wrapper = ({
       <ToastProvider>
         <LayerProvider>
           <WorkspaceProvider workspace={mockWorkspace}>
-            <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-              <Card tone="default" padding={3}>
-                {children}
-              </Card>
-            </SourceProvider>
+            <ResourceCacheProvider>
+              <SourceProvider source={mockWorkspace.unstable_sources[0]}>
+                <Card tone="default" padding={3}>
+                  {children}
+                </Card>
+              </SourceProvider>
+            </ResourceCacheProvider>
           </WorkspaceProvider>
         </LayerProvider>
       </ToastProvider>

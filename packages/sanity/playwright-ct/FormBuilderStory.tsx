@@ -77,7 +77,7 @@ function TestForm() {
     title: 'An title',
   })
   const [focusPath, setFocusPath] = useState<Path>(
-    () => []
+    () => ['title']
     // params.path ? pathFromString(params.path) : []
   )
   const patchChannel = useMemo(() => createPatchChannel(), [])
