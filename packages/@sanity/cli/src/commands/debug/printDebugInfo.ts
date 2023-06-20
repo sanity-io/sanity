@@ -4,6 +4,7 @@ import path from 'path'
 import xdgBasedir from 'xdg-basedir'
 import promiseProps from 'promise-props-recursive'
 import {pick, omit} from 'lodash'
+import type {SanityProject, SanityProjectMember} from '@sanity/client'
 import {getCliToken} from '../../util/clientWrapper'
 import {getUserConfig} from '../../util/getUserConfig'
 import {printResult as printVersionsResult} from '../versions/printVersionResult'
@@ -23,7 +24,15 @@ export const printDebugInfo: CliCommandAction = async (args, context) => {
   if (user instanceof Error) {
     context.output.print(`  ${chalk.red(user.message)}\n`)
   } else {
-    printKeyValue({ID: user.id, Name: user.name, Email: user.email}, context)
+    printKeyValue(
+      {
+        ID: user.id,
+        Name: user.name,
+        Email: user.email,
+        Roles: project ? project.userRoles : undefined,
+      },
+      context
+    )
   }
 
   // Project info (API-based)
@@ -34,7 +43,6 @@ export const printDebugInfo: CliCommandAction = async (args, context) => {
         ID: project.id,
         'Display name': project.displayName,
         'Studio URL': project.studioHostname,
-        'User role': project.userRole,
       },
       context
     )
@@ -114,7 +122,7 @@ interface ProjectInfo {
   id: string
   displayName: string
   studioHostname?: string | null
-  userRole: string
+  userRoles: string[]
 }
 
 interface ConfigsWithUser extends Configs {
@@ -124,6 +132,16 @@ interface ConfigsWithUser extends Configs {
 interface DebugInfo extends ConfigsWithUser {
   project: ProjectInfo
   versions: ModuleVersionResult[]
+}
+
+interface SanityRole {
+  name: string
+  title: string
+  description: string
+}
+
+interface SanityProjectWithRoles extends SanityProject {
+  members: (SanityProjectMember & {roles: SanityRole[]})[]
 }
 
 async function gatherInfo(context: CliCommandContext): Promise<DebugInfo> {
@@ -178,8 +196,11 @@ async function gatherProjectInfo(
     return null
   }
 
-  const client = context.apiClient({requireUser: true, requireProject: false})
-  const projectInfo = await client.projects.getById(projectId)
+  const client = context
+    .apiClient({requireUser: true, requireProject: false})
+    .withConfig({apiVersion: '2023-06-06'})
+
+  const projectInfo = await client.request<SanityProjectWithRoles>({url: `/projects/${projectId}`})
   if (!projectInfo) {
     return new Error(`Project specified in configuration (${projectId}) does not exist in API`)
   }
@@ -192,7 +213,7 @@ async function gatherProjectInfo(
     id: projectId,
     displayName: projectInfo.displayName,
     studioHostname: hostname,
-    userRole: member ? member.role : 'unknown',
+    userRoles: member ? member.roles.map((role) => role.name) : ['<none>'],
   }
 }
 
