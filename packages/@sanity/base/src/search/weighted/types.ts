@@ -48,6 +48,7 @@ export interface SearchHit {
  * @internal
  */
 export interface SearchStory {
+  indices?: number[]
   path: string
   score: number
   why: string

@@ -6,7 +6,7 @@ const stringFieldsSymbol = Symbol('__cachedStringFields')
 const isReference = (type) => type.type && type.type.name === 'reference'
 
 // eslint-disable-next-line no-process-env
-const maxTraversalDepth = process.env.SANITY_STUDIO_UNSTABLE_SEARCH_DEPTH || 4
+const maxTraversalDepth = Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_DEPTH) || 4
 
 const portableTextFields = ['style', 'list']
 const isPortableTextBlock = (type) =>

@@ -29,6 +29,7 @@ export function applyWeights(
     const typeSpec = specByType[hit._type]
     const stories = typeSpec.paths.map((pathSpec, idx) => {
       const pathHit = hit[`w${idx}`]
+      const indices = Array.isArray(pathHit) ? findMatchingIndices(terms, pathHit) : null
       // Only stringify non-falsy values so null values don't pollute search
       const value = pathHit ? stringify(pathHit) : null
       if (!value) {
@@ -36,6 +37,7 @@ export function applyWeights(
       }
       const [score, why] = calculateScore(terms, value)
       return {
+        indices,
         path: pathSpec.path,
         score: score * pathSpec.weight,
         why: `${why} (*${pathSpec.weight})`,
@@ -147,6 +149,26 @@ export function partitionAndSanitizeSearchTerms(
     phrases: uniq(searchPhrases).map(toLower).map(stripWrappingQuotes), //
     words: uniq(searchWords.map(toLower)),
   }
+}
+
+export function findMatchingIndices(uniqueSearchTerms: string[], values: unknown[]): number[] {
+  // Separate search terms by phrases (wrapped with quotes) and words.
+  const {phrases: uniqueSearchPhrases, words: uniqueSearchWords} = partitionAndSanitizeSearchTerms(
+    uniqueSearchTerms
+  )
+
+  return values.reduce<number[]>((acc, val, index) => {
+    if (val) {
+      const contains = [...uniqueSearchPhrases, ...uniqueSearchWords].some((term) => {
+        const stringifiedValue = stringify(val).toLowerCase().trim()
+        return stringifiedValue.includes(term)
+      })
+      if (contains) {
+        acc.push(index)
+      }
+    }
+    return acc
+  }, [])
 }
 
 function stripWrappingQuotes(str: string) {
