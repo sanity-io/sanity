@@ -6,13 +6,19 @@ import {ArrayItemError, FieldError} from './memberErrors'
 /** @public */
 export type ObjectMember = FieldMember | FieldSetMember | FieldError
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type ArrayOfObjectsMember = ArrayOfObjectsItemMember | ArrayItemError
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type ArrayOfPrimitivesMember = ArrayOfPrimitivesItemMember | ArrayItemError
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ArrayOfObjectsItemMember<Node extends ObjectArrayFormNode = ObjectArrayFormNode> {
   kind: 'item'
   key: string
@@ -25,11 +31,15 @@ export interface ArrayOfObjectsItemMember<Node extends ObjectArrayFormNode = Obj
 
   parentSchemaType: ArraySchemaType
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   item: Node
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ArrayOfPrimitivesItemMember<Node extends PrimitiveFormNode = PrimitiveFormNode> {
   kind: 'item'
   // note: there's no persistent handle on primitive items, so our only option is to use the index as key here
@@ -42,7 +52,9 @@ export interface ArrayOfPrimitivesItemMember<Node extends PrimitiveFormNode = Pr
 
   parentSchemaType: ArraySchemaType
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   item: Node
 }
 
@@ -68,7 +80,9 @@ export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
    */
   groups: string[]
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   field: Node
 }
 
@@ -81,6 +95,8 @@ export interface FieldSetMember {
   _inSelectedGroup: boolean
   groups: string[]
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   fieldSet: FieldsetState
 }

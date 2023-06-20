@@ -120,6 +120,7 @@
     "coverage": "jest --coverage",
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
+    "tsdoc:publish": "sanity-tsdoc etl",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
     "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
     "write:version": "node -r esbuild-register scripts/writeVersion.ts"
@@ -151,14 +152,14 @@
     "@sanity/portable-text-editor": "3.12.1",
     "@sanity/schema": "3.12.1",
     "@sanity/types": "3.12.1",
-    "@sanity/ui": "^1.3.3",
+    "@sanity/ui": "^1.6.0",
     "@sanity/util": "3.12.1",
     "@sanity/uuid": "^3.0.1",
     "@sanity/validation": "3.12.1",
     "@tanstack/react-virtual": "3.0.0-beta.54",
     "@types/is-hotkey": "^0.1.7",
     "@types/react-copy-to-clipboard": "^5.0.2",
-    "@types/react-is": "^17.0.3",
+    "@types/react-is": "^18.2.0",
     "@types/shallow-equals": "^1.0.0",
     "@types/speakingurl": "^13.0.3",
     "@types/use-sync-external-store": "^0.0.3",
@@ -231,6 +232,7 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
+    "@sanity/tsdoc": "1.0.0-alpha.27",
     "@sanity/ui-workshop": "^1.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

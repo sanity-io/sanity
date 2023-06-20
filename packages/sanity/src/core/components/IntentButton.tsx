@@ -3,6 +3,8 @@ import React, {HTMLProps} from 'react'
 import {IntentLink, IntentLinkProps} from 'sanity/router'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function IntentButton(

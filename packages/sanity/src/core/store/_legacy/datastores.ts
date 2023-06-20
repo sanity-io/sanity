@@ -19,7 +19,9 @@ import {useResourceCache} from './ResourceCacheProvider'
 import {createSettingsStore, SettingsStore} from './settings'
 import {createUserStore, UserStore} from './user'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function useUserStore(): UserStore {
   const {getClient, currentUser} = useSource()
   const resourceCache = useResourceCache()
@@ -42,7 +44,9 @@ export function useUserStore(): UserStore {
   }, [client, currentUser, resourceCache])
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function useGrantsStore(): GrantsStore {
   const {getClient} = useSource()
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -66,7 +70,9 @@ export function useGrantsStore(): GrantsStore {
   }, [client, currentUser, resourceCache])
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function useHistoryStore(): HistoryStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -88,7 +94,9 @@ export function useHistoryStore(): HistoryStore {
   }, [client, resourceCache])
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function useDocumentPreviewStore(): DocumentPreviewStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
@@ -110,7 +118,9 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
   }, [client, resourceCache])
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function useDocumentStore(): DocumentStore {
   const getClient = useSource().getClient
   const schema = useSchema()
@@ -165,7 +175,9 @@ export function useConnectionStatusStore(): ConnectionStatusStore {
   }, [bifur, resourceCache])
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function usePresenceStore(): PresenceStore {
   const {
     __internal: {bifur},
@@ -191,7 +203,9 @@ export function usePresenceStore(): PresenceStore {
   }, [bifur, connectionStatusStore, resourceCache, userStore])
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function useProjectStore(): ProjectStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()

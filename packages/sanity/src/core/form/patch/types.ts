@@ -1,6 +1,8 @@
 import type {Path} from '@sanity/types'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface FormPatchBase {
   /**
    * A property used to identify this as a Sanity patch type, eg "set", "unset", "insert", etc.
@@ -14,6 +16,8 @@ export interface FormPatchBase {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type FormPatchJSONValue =
@@ -24,11 +28,15 @@ export type FormPatchJSONValue =
   | FormPatchJSONValue[]
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type FormPatchOrigin = 'remote' | 'local' | 'internal'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FormSetPatch extends FormPatchBase {
@@ -39,6 +47,8 @@ export interface FormSetPatch extends FormPatchBase {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FormIncPatch extends FormPatchBase {
@@ -49,6 +59,8 @@ export interface FormIncPatch extends FormPatchBase {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FormDecPatch extends FormPatchBase {
@@ -59,6 +71,8 @@ export interface FormDecPatch extends FormPatchBase {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FormSetIfMissingPatch extends FormPatchBase {
@@ -69,6 +83,8 @@ export interface FormSetIfMissingPatch extends FormPatchBase {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FormUnsetPatch extends FormPatchBase {
@@ -78,11 +94,15 @@ export interface FormUnsetPatch extends FormPatchBase {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type FormInsertPatchPosition = 'before' | 'after'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FormInsertPatch extends FormPatchBase {
@@ -94,6 +114,8 @@ export interface FormInsertPatch extends FormPatchBase {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FormDiffMatchPatch extends FormPatchBase {
@@ -104,6 +126,8 @@ export interface FormDiffMatchPatch extends FormPatchBase {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type FormPatch =
@@ -114,6 +138,8 @@ export type FormPatch =
   | FormDiffMatchPatch
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type PatchArg = FormPatch | FormPatch[]

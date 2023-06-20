@@ -38,7 +38,9 @@ export interface Location {
   path: Path
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface FormNodePresence {
   user: User
   path: Path

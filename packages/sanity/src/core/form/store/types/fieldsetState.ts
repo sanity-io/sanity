@@ -2,7 +2,9 @@ import {Path} from '@sanity/types'
 import {FieldError} from './memberErrors'
 import {FieldMember} from './members'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface FieldsetState {
   path: Path
   name: string

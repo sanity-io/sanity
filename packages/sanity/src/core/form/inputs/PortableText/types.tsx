@@ -11,6 +11,8 @@ export type ObjectEditData = {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface RenderBlockActionsProps {
@@ -22,6 +24,8 @@ export interface RenderBlockActionsProps {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type RenderBlockActionsCallback = (props: RenderBlockActionsProps) => React.ReactNode

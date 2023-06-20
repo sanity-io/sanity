@@ -31,7 +31,9 @@ const builtinTypes = [
   imagePaletteSwatch,
 ]
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function createSchema(schemaDef: {name: string; types: any[]}): Schema {
   const validated = validateSchema(schemaDef.types).getTypes()
   const validation = groupProblems(validated)

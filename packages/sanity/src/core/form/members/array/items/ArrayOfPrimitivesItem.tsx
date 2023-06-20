@@ -15,6 +15,8 @@ import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface PrimitiveMemberItemProps {
@@ -24,6 +26,8 @@ export interface PrimitiveMemberItemProps {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {

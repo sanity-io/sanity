@@ -16,6 +16,8 @@ import {
 import {FormFieldGroup, ObjectMember, StateTree} from './store'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FormBuilderContextValue {

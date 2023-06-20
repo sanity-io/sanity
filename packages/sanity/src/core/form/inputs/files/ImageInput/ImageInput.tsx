@@ -56,12 +56,16 @@ import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BaseImageInputValue extends Partial<BaseImage> {
   _upload?: UploadState
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BaseImageInputProps
   extends ObjectInputProps<BaseImageInputValue, ImageSchemaType> {
   assetSources: AssetSource[]

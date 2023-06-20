@@ -12,7 +12,9 @@ import {isDev} from '../../../environment'
 import {getDraftId, getPublishedId, isRecord} from '../../../util'
 import {Timeline, TimelineController} from './history'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface HistoryStore {
   getDocumentAtRevision: (
     documentId: string,

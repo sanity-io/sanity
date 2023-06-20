@@ -9,10 +9,14 @@ import {mergeChunk, chunkFromTransaction} from './chunker'
 import {TraceEvent} from './replay'
 import {getAttrs} from './utils'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type ParsedTimeRef = Chunk | 'loading' | 'invalid'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface TimelineOptions {
   publishedId: string
   enableTrace?: boolean
@@ -26,6 +30,8 @@ export interface TimelineOptions {
  * Note that this class by itself is not capable of _fetching_ information,
  * but will only organize and structure the incoming translog entries.
  *
+ *
+ * @hidden
  * @beta
  */
 export class Timeline {
