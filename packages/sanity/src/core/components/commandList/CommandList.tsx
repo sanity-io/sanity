@@ -271,10 +271,12 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     const activeIndex = activeIndexRef?.current
     if (items.length > 0) {
       inputElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
+      virtualListElement?.setAttribute('aria-activedescendant', getChildDescendantId(activeIndex))
     } else {
       inputElement?.removeAttribute('aria-activedescendant')
+      virtualListElement?.removeAttribute('aria-activedescendant')
     }
-  }, [getChildDescendantId, inputElement, items.length])
+  }, [getChildDescendantId, inputElement, items.length, virtualListElement])
 
   /**
    * Obtain index of the top most visible element
