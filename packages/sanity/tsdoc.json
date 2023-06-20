@@ -20,6 +20,8 @@
     "@alpha": true,
     "@param": true,
     "@returns": true,
-    "@remarks": true
+    "@remarks": true,
+    "@throws": true,
+    "@defaultValue": true
   }
 }
