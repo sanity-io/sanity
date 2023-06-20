@@ -1,12 +1,7 @@
-import {defineType, ObjectSchemaType} from '@sanity/types'
+import {defineType} from '@sanity/types'
 import React from 'react'
+import {renderObjectInput} from '../../../../../../test/form'
 import {ObjectInput} from '../ObjectInput'
-import {ObjectInputProps} from '../../../types'
-import {FormCallbacksProvider} from '../../../studio/contexts/FormCallbacks'
-import {createSchema} from '../../../../schema'
-import {render} from './test-utils'
-
-const noopRenderDefault = () => <></>
 
 const defs = {
   basic: defineType({
@@ -68,80 +63,34 @@ const defs = {
   }),
 }
 
-function getTestSchema(name: keyof typeof defs): ObjectSchemaType {
-  return createSchema({name: 'test', types: [defs[name]]}).get(name) as ObjectSchemaType
-}
+// const noopRenderDefault = () => <></>
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-function noop(...args: any[]): void {}
-function returnNull(...args: any[]): null {
-  return null
-}
+describe('ObjectInput', () => {
+  it('renders as empty if given no members', async () => {
+    const {container} = await renderObjectInput({
+      fieldDefinition: defs.basic as any,
+      render: (inputProps) => <ObjectInput {...inputProps} members={[]} />,
+    })
 
-const noopProps: Omit<ObjectInputProps, 'schemaType' | 'renderDefault'> = {
-  groups: [],
-  onChange: noop,
-  onFieldCollapse: noop,
-  onFieldExpand: noop,
-  onFieldSetCollapse: noop,
-  onFieldSetExpand: noop,
-  onFieldGroupSelect: noop,
-  onPathFocus: noop,
-  onFieldOpen: noop,
-  onFieldClose: noop,
-  renderAnnotation: returnNull,
-  renderBlock: returnNull,
-  renderInlineBlock: returnNull,
-  renderInput: returnNull,
-  renderField: returnNull,
-  renderItem: returnNull,
-  renderPreview: returnNull,
-  members: [],
-  focusPath: [],
-  id: 'test',
-  level: 0,
-  path: [],
-  presence: [],
-  validation: [],
-  value: {},
-  changed: false,
-  elementProps: {ref: {current: null}, onBlur: noop, onFocus: noop, id: 'test'},
-}
-
-describe('basic examples', () => {
-  it('renders as empty if given no members', () => {
-    const {container} = render(
-      <ObjectInput
-        {...noopProps}
-        renderDefault={noopRenderDefault}
-        schemaType={getTestSchema('basic')}
-      />
-    )
     expect(container).toBeEmptyDOMElement()
   })
-  it('calls renderField and renderInput for each member', () => {
-    const schemaType = getTestSchema('collapsibleTest')
+
+  it('calls renderField and renderInput for each member', async () => {
     const renderField = jest
       .fn()
       .mockImplementationOnce((props) => (
         <div data-testid={`field-${props.inputId}`}>{props.children}</div>
       ))
+
     const renderInput = jest
       .fn()
       .mockImplementationOnce((props) => <div data-testid={`input-${props.id}`} />)
 
-    const {queryByTestId} = render(
-      <FormCallbacksProvider
-        onFieldGroupSelect={noop}
-        onChange={noop}
-        onSetFieldSetCollapsed={noop}
-        onSetPathCollapsed={noop}
-        onPathFocus={noop}
-        onPathBlur={noop}
-        onPathOpen={noop}
-      >
+    const {result} = await renderObjectInput({
+      fieldDefinition: defs.collapsibleTest as any,
+      render: (inputProps) => (
         <ObjectInput
-          {...noopProps}
+          {...inputProps}
           members={[
             {
               kind: 'field',
@@ -154,7 +103,7 @@ describe('basic examples', () => {
               groups: [],
               index: 0,
               field: {
-                schemaType,
+                schemaType: inputProps.schemaType,
                 validation: [],
                 level: 0,
                 path: ['first'],
@@ -167,15 +116,14 @@ describe('basic examples', () => {
               },
             },
           ]}
-          schemaType={schemaType}
-          renderInput={renderInput}
           renderField={renderField}
-          renderDefault={noopRenderDefault}
+          renderInput={renderInput}
         />
-      </FormCallbacksProvider>
-    )
-    expect(queryByTestId('field-first-field')).toBeInTheDocument()
-    expect(queryByTestId('input-first-field')).toBeInTheDocument()
+      ),
+    })
+
+    expect(result.queryByTestId('field-first-field')).toBeInTheDocument()
+    expect(result.queryByTestId('input-first-field')).toBeInTheDocument()
     expect(renderField.mock.calls.length).toBe(1)
     expect(renderInput.mock.calls.length).toBe(1)
   })
