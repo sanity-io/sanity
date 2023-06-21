@@ -1,4 +1,4 @@
-import React, {useRef, useCallback, useMemo, MouseEvent} from 'react'
+import React, {useRef, useCallback, useMemo} from 'react'
 import {
   Box,
   Button,
@@ -21,17 +21,27 @@ const ToolbarPopover = styled(Popover)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface InlineObjectToolbarPopoverProps {
+  floatingBoundary: HTMLElement | null
   open: boolean
   onClosePopover: () => void
   onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
-  referenceElement?: HTMLElement
-  boundaryElement?: HTMLElement
+  referenceBoundary: HTMLElement | null
+  referenceElement: HTMLElement | null
   title: string
 }
 
 export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProps) {
-  const {onClosePopover, onEdit, onDelete, referenceElement, boundaryElement, title, open} = props
+  const {
+    floatingBoundary,
+    onClosePopover,
+    onEdit,
+    onDelete,
+    referenceBoundary,
+    referenceElement,
+    title,
+    open,
+  } = props
   const {sanity} = useTheme()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null)
@@ -106,13 +116,14 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
 
   return (
     <ToolbarPopover
-      boundaryElement={boundaryElement}
       constrainSize
       content={popoverContent}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      floatingBoundary={floatingBoundary}
       open={open}
       placement="top"
-      portal="editor"
+      portal
+      referenceBoundary={referenceBoundary}
       referenceElement={referenceElement}
       scheme={popoverScheme}
     />

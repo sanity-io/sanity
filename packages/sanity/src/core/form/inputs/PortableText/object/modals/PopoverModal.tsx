@@ -7,20 +7,15 @@ import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ModalWidth} from './types'
-import {
-  ContentContainer,
-  ContentHeaderBox,
-  ContentScrollerBox,
-  ModalWrapper,
-  RootPopover,
-} from './PopoverModal.styles'
+import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
 
 interface PopoverEditDialogProps {
   autoFocus?: boolean
-  boundaryElement?: PortableTextEditorElement
   children: React.ReactNode
+  floatingBoundary: HTMLElement | null
   onClose: () => void
-  referenceElement?: PortableTextEditorElement
+  referenceBoundary: HTMLElement | null
+  referenceElement: PortableTextEditorElement | null
   title: string | React.ReactNode
   width?: ModalWidth
 }
@@ -28,7 +23,7 @@ interface PopoverEditDialogProps {
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverEditDialog(props: PopoverEditDialogProps) {
-  const {referenceElement, boundaryElement} = props
+  const {floatingBoundary, referenceBoundary, referenceElement, width = 0} = props
   const [open, setOpen] = useState(false)
 
   // This hook is here to set open after the initial render.
@@ -41,19 +36,25 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
 
   return (
     <RootPopover
-      boundaryElement={boundaryElement}
       content={<Content {...props} />}
+      constrainSize
+      data-ui="PopoverEditDialog"
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      floatingBoundary={floatingBoundary}
       open={open}
+      overflow="auto"
       placement="bottom"
       portal="default"
+      preventOverflow
+      referenceBoundary={referenceBoundary}
       referenceElement={referenceElement}
+      width={width}
     />
   )
 }
 
 function Content(props: PopoverEditDialogProps) {
-  const {onClose, referenceElement, width = 0, title, boundaryElement, autoFocus} = props
+  const {onClose, referenceBoundary, referenceElement, title, autoFocus} = props
 
   useGlobalKeyDown(
     useCallback(
@@ -66,39 +67,37 @@ function Content(props: PopoverEditDialogProps) {
     )
   )
 
-  useClickOutside(onClose, referenceElement ? [referenceElement] : [], boundaryElement)
+  useClickOutside(onClose, referenceElement ? [referenceElement] : [], referenceBoundary)
 
   // This seems to work with regular refs as well, but it might be safer to use state.
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
 
   return (
     <VirtualizerScrollInstanceProvider scrollElement={contentElement}>
-      <ContentContainer width={width}>
-        <ModalWrapper direction="column" flex={1}>
-          <ContentHeaderBox padding={1}>
-            <Flex align="center">
-              <Box flex={1} padding={2}>
-                <Text weight="semibold">{title}</Text>
-              </Box>
+      <Flex direction="column" height="fill">
+        <ContentHeaderBox flex="none" padding={1}>
+          <Flex align="center">
+            <Box flex={1} padding={2}>
+              <Text weight="semibold">{title}</Text>
+            </Box>
 
-              <Button
-                autoFocus={Boolean(autoFocus)}
-                icon={CloseIcon}
-                mode="bleed"
-                onClick={onClose}
-                padding={2}
-              />
-            </Flex>
-          </ContentHeaderBox>
-          <ContentScrollerBox flex={1}>
-            <PresenceOverlay margins={[0, 0, 1, 0]}>
-              <Box padding={3} ref={setContentElement}>
-                {props.children}
-              </Box>
-            </PresenceOverlay>
-          </ContentScrollerBox>
-        </ModalWrapper>
-      </ContentContainer>
+            <Button
+              autoFocus={Boolean(autoFocus)}
+              icon={CloseIcon}
+              mode="bleed"
+              onClick={onClose}
+              padding={2}
+            />
+          </Flex>
+        </ContentHeaderBox>
+        <ContentScrollerBox flex={1}>
+          <PresenceOverlay margins={[0, 0, 1, 0]}>
+            <Box padding={3} ref={setContentElement}>
+              {props.children}
+            </Box>
+          </PresenceOverlay>
+        </ContentScrollerBox>
+      </Flex>
     </VirtualizerScrollInstanceProvider>
   )
 }

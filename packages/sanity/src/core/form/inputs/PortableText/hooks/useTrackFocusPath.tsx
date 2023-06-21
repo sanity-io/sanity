@@ -11,7 +11,7 @@ import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {
   focusPath: Path
-  boundaryElement?: HTMLElement
+  boundaryElement: HTMLElement | null
   onItemClose: () => void
 }
 

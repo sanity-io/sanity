@@ -9,7 +9,7 @@ import {
   BlockAnnotationRenderProps,
 } from '@sanity/portable-text-editor'
 import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
-import {Box, Portal, PortalProvider, usePortal} from '@sanity/ui'
+import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
 import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../../util'
@@ -39,7 +39,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 }
 
 /** @internal */
-export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement | null
+export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement
 
 /** @internal */
 export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
@@ -75,8 +75,9 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const editor = usePortableTextEditor()
 
+  const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
-  const [boundaryElement, setBoundaryElement] = useState<HTMLElement | null>(null)
+  const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
     onToggleFullscreen()
@@ -113,7 +114,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       } = blockProps
       return (
         <TextBlock
-          boundaryElement={boundaryElement || undefined}
+          floatingBoundary={boundaryElement}
           focused={blockFocused}
           isFullscreen={isFullscreen}
           onItemClose={onItemClose}
@@ -122,6 +123,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           onPathFocus={onPathFocus}
           path={path.concat(blockPath)}
           readOnly={readOnly}
+          referenceBoundary={scrollElement}
           renderAnnotation={renderAnnotation}
           renderField={renderField}
           renderInlineBlock={renderInlineBlock}
@@ -142,12 +144,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       _renderBlockActions,
       _renderCustomMarkers,
-      boundaryElement,
+      scrollElement,
       isFullscreen,
       onItemClose,
       onItemOpen,
       onItemRemove,
       onPathFocus,
+      boundaryElement,
       path,
       readOnly,
       renderAnnotation,
@@ -171,7 +174,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       } = blockProps
       return (
         <BlockObject
-          boundaryElement={boundaryElement || undefined}
+          floatingBoundary={boundaryElement}
           focused={blockFocused}
           isFullscreen={isFullscreen}
           onItemClose={onItemClose}
@@ -180,6 +183,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           onPathFocus={onPathFocus}
           path={path.concat(blockPath)}
           readOnly={readOnly}
+          referenceBoundary={scrollElement}
           relativePath={blockPath}
           renderAnnotation={renderAnnotation}
           renderBlock={renderBlock}
@@ -198,6 +202,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     },
     [
       boundaryElement,
+      scrollElement,
       isFullscreen,
       onItemClose,
       onItemOpen,
@@ -247,13 +252,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
       return (
         <InlineObject
-          boundaryElement={boundaryElement || undefined}
+          floatingBoundary={boundaryElement}
           focused={childFocused}
           onItemClose={onItemClose}
           onItemOpen={onItemOpen}
           onPathFocus={onPathFocus}
           path={path.concat(childPath)}
           readOnly={readOnly}
+          referenceBoundary={scrollElement}
           relativePath={childPath}
           renderAnnotation={renderAnnotation}
           renderBlock={renderBlock}
@@ -270,8 +276,9 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
-      editor.schemaTypes.span.name,
       boundaryElement,
+      scrollElement,
+      editor.schemaTypes.span.name,
       onItemClose,
       onItemOpen,
       onPathFocus,
@@ -300,14 +307,15 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       } = annotationProps
       return (
         <Annotation
-          boundaryElement={boundaryElement}
-          focused={Boolean(focused)}
           editorNodeFocused={editorNodeFocused}
+          floatingBoundary={boundaryElement}
+          focused={Boolean(focused)}
           onItemClose={onItemClose}
           onItemOpen={onItemOpen}
           onPathFocus={onPathFocus}
           path={path.concat(aPath)}
           readOnly={readOnly}
+          referenceBoundary={scrollElement}
           renderAnnotation={renderAnnotation}
           renderBlock={renderBlock}
           renderCustomMarkers={renderCustomMarkers}
@@ -326,15 +334,16 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     },
     [
       boundaryElement,
+      scrollElement,
       focused,
       onItemClose,
       onItemOpen,
       onPathFocus,
       path,
       readOnly,
-      renderCustomMarkers,
       renderAnnotation,
       renderBlock,
+      renderCustomMarkers,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -360,14 +369,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         renderBlock={editorRenderBlock}
         renderChild={editorRenderChild}
         setPortalElement={setPortalElement}
-        scrollElement={boundaryElement}
-        setScrollElement={setBoundaryElement}
+        scrollElement={scrollElement}
+        setScrollElement={setScrollElement}
       />
     ),
 
     // Keep only stable ones here!
     [
-      boundaryElement,
+      scrollElement,
       editorHotkeys,
       handleToggleFullscreen,
       hasFocus,
@@ -399,7 +408,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   // Scroll to the DOM element of the "opened" portable text member when relevant.
   useTrackFocusPath({
     focusPath,
-    boundaryElement: boundaryElement || undefined,
+    boundaryElement: scrollElement,
     onItemClose,
   })
 

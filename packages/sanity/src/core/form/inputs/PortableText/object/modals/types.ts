@@ -1,1 +1,1 @@
-export type ModalWidth = (number | 'auto')[]
+export type ModalWidth = number | 'auto' | (number | 'auto')[]
