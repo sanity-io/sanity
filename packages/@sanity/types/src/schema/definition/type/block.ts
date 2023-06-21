@@ -15,10 +15,17 @@ export interface BlockOptions {
 export interface BlockRule extends RuleDef<BlockRule, any[]> {}
 
 /** @public */
+export interface BlockEditorDefinition {
+  icon: ReactNode | ComponentType
+  render: ReactNode | ComponentType
+}
+
+/** @public */
 export interface BlockDecoratorDefinition {
   title: string
   value: string
   icon?: ReactNode | ComponentType
+  blockEditor?: BlockEditorDefinition
 }
 
 /** @public */
