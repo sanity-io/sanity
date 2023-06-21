@@ -6,9 +6,23 @@ import {IntentParameters, RouterContextValue, NavigateOptions, Router, RouterSta
  * @public
  */
 export interface RouterProviderProps {
+  /**
+   * A function that is called when the user navigates to a new path.
+   *
+   * @param opts - An object containing the path to navigate to and an optional `replace` flag.
+   */
   onNavigate: (opts: {path: string; replace?: boolean}) => void
+  /**
+   * The router object that is used to handle navigation. See {@link Router}
+   */
   router: Router
+  /**
+   * The current state of the router. See {@link RouterState}
+   */
   state: RouterState
+  /**
+   * The child elements to render.
+   */
   children: React.ReactNode
 }
 
@@ -48,6 +62,9 @@ export interface RouterProviderProps {
  *   )
  * }
  * ```
+ *
+ * @param props - The component props.
+ *  {@link RouterProviderProps}
  *
  * @public
  */

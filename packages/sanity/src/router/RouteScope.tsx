@@ -23,12 +23,24 @@ function addScope(
  * @public
  */
 export interface RouteScopeProps {
+  /**
+   * The scope for the nested routes.
+   */
   scope: string
+  /**
+   * The content to display inside the route scope.
+   */
   children: React.ReactNode
 }
 
 /**
+ * A component that creates a new router scope with a given scope name.
+ *
  * @public
+ *
+ * @param props - The component props.
+ *  {@link RouteScopeProps}
+ * @returns A React element representing the new router scope.
  */
 export function RouteScope(props: RouteScopeProps): React.ReactElement {
   const {children, scope} = props
