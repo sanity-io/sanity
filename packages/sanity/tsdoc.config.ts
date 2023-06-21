@@ -5,9 +5,9 @@ export default defineConfig({
   extract: packageConfig.extract,
   output: {
     sanity: {
-      projectId: process.env.SANITY_PROJECT_ID,
-      dataset: process.env.SANITY_DATASET,
-      token: process.env.SANITY_TOKEN,
+      projectId: process.env.EXTRACT_SANITY_PROJECT_ID,
+      dataset: process.env.EXTRACT_SANITY_DATASET,
+      token: process.env.EXTRACT_SANITY_API_TOKEN,
     },
   },
 })
