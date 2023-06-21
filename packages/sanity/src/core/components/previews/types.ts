@@ -2,18 +2,22 @@ import {ImageUrlFitMode, SchemaType} from '@sanity/types'
 import React, {ComponentType, ReactNode} from 'react'
 
 /**
- * @hidden
- * @beta */
+ * Type for portable text preview layout key
+ *
+ * @public */
 export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
 
 /**
- * @hidden
- * @beta */
+ * Type for generic preview layout key
+ *
+ * @public */
 export type GeneralPreviewLayoutKey = 'default' | 'media' | 'detail'
 
 /**
- * @hidden
- * @beta */
+ * Type for preview layout key
+ *
+ * @public
+ */
 export type PreviewLayoutKey = GeneralPreviewLayoutKey | PortableTextPreviewLayoutKey
 
 /**

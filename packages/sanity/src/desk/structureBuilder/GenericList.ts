@@ -22,60 +22,89 @@ export const shallowIntentChecker: IntentChecker = (intentName, params, {pane, i
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for list display options
+ *
+ * @public */
 export interface ListDisplayOptions {
   showIcons?: boolean
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for base generic list
+ *
+ * @public
+ */
 export interface BaseGenericList extends StructureNode {
+  /** List layout key */
   defaultLayout?: PreviewLayoutKey
+  /** Can handle intent */
   canHandleIntent?: IntentChecker
+  /** List display options */
   displayOptions?: ListDisplayOptions
+  /** List child */
   child: Child
+  /** List initial values */
   initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for generic list
+ *
+ * @public
+ */
 // "POJO"/verbatim-version - end result
 export interface GenericList extends BaseGenericList {
+  /** List type */
   type: string
+  /** List menu items */
   menuItems: MenuItem[]
+  /** List menu item groups */
   menuItemGroups: MenuItemGroup[]
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for buildable generic list
+ *
+ * @public
+ */
 // Used internally in builder classes to make everything optional
 export interface BuildableGenericList extends Partial<BaseGenericList> {
+  /** List menu items */
   menuItems?: (MenuItem | MenuItemBuilder)[]
+  /** List menu items groups */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for generic list input
+ * Allows builders and only requires things not inferrable
+ *
+ * @public */
 // Input version, allows builders and only requires things not inferrable
 export interface GenericListInput extends StructureNode {
+  /* Input id */
   id: string
+  /* Input title */
   title: string
+  /* Input menu items */
   menuItems?: (MenuItem | MenuItemBuilder)[]
+  /* Input menu items groups */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
+  /* Input initial value */
   initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
+  /* Input default layout */
   defaultLayout?: PreviewLayoutKey
+  /* If input can handle intent */
   canHandleIntent?: IntentChecker
+  /* Input child */
   child?: Child
 }
 
 /**
- * @hidden
- * @beta */
+ * Class for building generic lists
+ *
+ * @public
+ */
 export abstract class GenericListBuilder<TList extends BuildableGenericList, ConcreteImpl>
   implements Serializable<GenericList>
 {

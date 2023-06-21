@@ -15,13 +15,16 @@ import type {FormView, FormViewBuilder} from './views/FormView'
 import type {ConfigContext, Source, InitialValueTemplateItem} from 'sanity'
 
 /**
- * @hidden
- * @beta */
+ * Type for view
+ *
+ * @public
+ */
 export type View = FormView | ComponentView
 
 /**
- * @hidden
- * @beta */
+ * Type for a user view component
+ *
+ * @public */
 export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentType<{
   document: {
     draft: SanityDocument | null
@@ -35,24 +38,35 @@ export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentT
 }>
 
 /**
- * @hidden
- * @beta */
+ * Type for User defined component
+ *
+ * @public
+ */
 export type UserComponent = React.ComponentType<{
+  /** Component child */
   child?: ComponentBuilder
+  /** Component child item ID */
   childItemId?: string
+  /** Component ID */
   id: string
+  /** Is component active */
   isActive?: boolean
+  /** Is component selected */
   isSelected?: boolean
+  /** item ID */
   itemId: string
+  /** Component options */
   options?: Record<string, unknown>
+  /** Pane key */
   paneKey: string
+  /** URL parameters */
   urlParams: Record<string, string | undefined> | undefined
 }>
 
 /**
+ * Interface for the structure builder context.
  *
- * @hidden
- * @beta
+ * @public
  */
 export interface StructureContext extends Source {
   resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
@@ -60,24 +74,51 @@ export interface StructureContext extends Source {
 }
 
 /**
- * @hidden
- * @beta */
+ * An object holding the documentId and schemaType for the document node being resolved.
+ *
+ * @public
+ */
 export interface DefaultDocumentNodeContext extends ConfigContext {
+  /**
+   * The id of the sanity document
+   */
   documentId?: string
+  /**
+   * the schema of the sanity document
+   */
   schemaType: string
 }
 
 /**
- * @hidden
- * @beta */
+ * A resolver function used to return the default document node used when editing documents.
+ *
+ * @public
+ *
+ * @returns a document node builder, or null/undefined if no document node should be returned.
+ *
+ */
 export type DefaultDocumentNodeResolver = (
+  /**
+   * S - an instance of the structure builder, that can be used to build the lists/items/panes for the desk tool
+   * context - an object holding various context that may be used to customize the structure, for instance the current user.
+   *  Defaults to
+   * ```ts
+   * (S) => S.defaults()
+   * ```
+   */
   S: StructureBuilder,
+  /**
+   * An object holding the documentId and schemaType for the document node being resolved.
+   * {@link DefaultDocumentNodeContext}
+   */
   options: DefaultDocumentNodeContext
 ) => DocumentBuilder | null | undefined
 
 /**
- * @hidden
- * @beta */
+ * Interface for the structure builder.
+ *
+ * @public
+ */
 export interface StructureBuilder {
   /**
    * @internal

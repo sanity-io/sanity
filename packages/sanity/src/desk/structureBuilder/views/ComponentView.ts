@@ -5,8 +5,9 @@ import {BaseView, GenericViewBuilder} from './View'
 import {isRecord} from 'sanity'
 
 /**
- * @hidden
- * @beta */
+ * Interface for component views.
+ *
+ * @public */
 export interface ComponentView<TOptions = Record<string, any>> extends BaseView {
   type: 'component'
   component: UserViewComponent
@@ -17,8 +18,9 @@ const isComponentSpec = (spec: unknown): spec is ComponentView =>
   isRecord(spec) && spec.type === 'component'
 
 /**
- * @hidden
- * @beta */
+ * Class for building a component view.
+ *
+ * @public */
 export class ComponentViewBuilder extends GenericViewBuilder<
   Partial<ComponentView>,
   ComponentViewBuilder

@@ -7,17 +7,23 @@ import {ComponentViewBuilder} from './ComponentView'
 import {FormViewBuilder} from './FormView'
 
 /**
- * @hidden
- * @beta */
+ * Interface for base view
+ *
+ * @public */
 export interface BaseView {
+  /* View id */
   id: string
+  /* View Title */
   title: string
+  /* View Icon */
   icon?: React.ComponentType | React.ReactNode
 }
 
 /**
- * @hidden
- * @beta */
+ * Class for building generic views.
+ *
+ * @public
+ */
 export abstract class GenericViewBuilder<TView extends Partial<BaseView>, ConcreteImpl>
   implements Serializable<BaseView>
 {
@@ -89,6 +95,8 @@ export function maybeSerializeView(
 }
 
 /**
- * @hidden
- * @beta */
+ * Type for view builder
+ *
+ * @public
+ */
 export type ViewBuilder = ComponentViewBuilder | FormViewBuilder

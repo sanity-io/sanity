@@ -12,16 +12,21 @@ export function maybeSerializeMenuItemGroup(
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for menu item groups
+ * @public
+ */
 export interface MenuItemGroup {
+  /* Menu group Id */
   id: string
+  /* Menu group title */
   title: string
 }
 
 /**
- * @hidden
- * @beta */
+ * Class for building menu item groups.
+ *
+ * @public
+ */
 export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
   protected _id: string
   protected _title: string

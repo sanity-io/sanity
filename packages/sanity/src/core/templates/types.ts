@@ -44,25 +44,38 @@ export type TemplateArrayFieldDefinition = TemplateFieldDefinition & {
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for initial value template item
+ *
+ * @public
+ */
 export interface InitialValueTemplateItem extends TemplateResponse {
+  /** Initial value id */
   id: string
   type: 'initialValueTemplateItem'
+  /** Initial value schema type */
   schemaType: string
 }
 
 /**
- * @hidden
- * @beta */
+ * Type for template response
+ *
+ * @public
+ */
 export type TemplateResponse = {
+  /** Template id */
   templateId: string
+  /** Template title */
   title?: string
+  /** template subtitle */
   subtitle?: string
+  /** template description */
   description?: string
+  /** template parameters */
   parameters?: {[key: string]: any}
+  /** template icon */
   icon?: React.ElementType | React.ReactElement
   /**
+   * The id of the document to use as initial value
    * @experimental
    */
   initialDocumentId?: string

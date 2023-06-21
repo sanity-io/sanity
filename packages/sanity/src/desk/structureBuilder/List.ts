@@ -86,30 +86,39 @@ function isPromise<T>(thing: unknown): thing is PromiseLike<T> {
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for List
+ *
+ * @public
+ */
 export interface List extends GenericList {
   type: 'list'
+  /* List items */
   items: (ListItem | Divider)[]
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for list input
+ *
+ * @public
+ */
 export interface ListInput extends GenericListInput {
   items?: (ListItem | ListItemBuilder | Divider)[]
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for buildable list
+ *
+ * @public
+ */
 export interface BuildableList extends BuildableGenericList {
+  /** List items */
   items?: (ListItem | ListItemBuilder | Divider)[]
 }
 
 /**
- * @hidden
- * @beta */
+ * A `ListBuilder` is used to build a list of items in the desk tool.
+ *
+ * @public */
 export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> {
   protected spec: BuildableList
 

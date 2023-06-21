@@ -7,23 +7,31 @@ import {StructureContext} from './types'
 import {isRecord} from 'sanity'
 
 /**
- * @hidden
- * @beta */
+ * Interface for document list item input
+ *
+ * @public
+ */
 export interface DocumentListItemInput extends ListItemInput {
   schemaType: SchemaType | string
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for document list item
+ *
+ * @public
+ */
 export interface DocumentListItem extends ListItem {
+  /** Document schema type */
   schemaType: SchemaType
+  /** Document ID */
   _id: string
 }
 
 /**
- * @hidden
- * @beta */
+ * Type for partial document list item
+ *
+ * @public
+ */
 export type PartialDocumentListItem = Partial<UnserializedListItem>
 
 const createDefaultChildResolver =
@@ -38,8 +46,10 @@ const createDefaultChildResolver =
   }
 
 /**
- * @hidden
- * @beta */
+ * Class for building a document list item
+ *
+ * @public
+ */
 export class DocumentListItemBuilder extends ListItemBuilder {
   protected spec: PartialDocumentListItem
 

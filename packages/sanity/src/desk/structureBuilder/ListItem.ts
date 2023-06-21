@@ -12,8 +12,10 @@ import {StructureContext} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
 
 /**
- * @hidden
- * @beta */
+ * Type for unserialize list item child
+ *
+ * @public
+ */
 export type UnserializedListItemChild =
   | Collection
   | CollectionBuilder
@@ -21,69 +23,100 @@ export type UnserializedListItemChild =
   | Observable<ItemChild>
 
 /**
- * @hidden
- * @beta */
+ * Type for child of List Item
+ *
+ * @public
+ */
 export type ListItemChild = Collection | ChildResolver | Observable<ItemChild> | undefined
 
 /**
- * @hidden
- * @beta */
+ * Interface for serialize list item options
+ *
+ * @public
+ */
 export interface ListItemSerializeOptions extends SerializeOptions {
+  /** Check if list item title is optional */
   titleIsOptional?: boolean
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for ist item display options
+ *
+ * @public */
 export interface ListItemDisplayOptions {
   showIcon?: boolean
 }
 
 /**
- * @hidden
- * @beta */
+ * interface for list item input
+ *
+ * @public */
 export interface ListItemInput {
+  /** List item id */
   id: string
+  /** List item title */
   title?: string
+  /** List item icon */
   icon?: React.ComponentType | React.ReactNode
+  /** List item child */
   child?: ListItemChild
+  /** List item display options */
   displayOptions?: ListItemDisplayOptions
+  /** List item schema type */
   schemaType?: SchemaType | string
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for List Item
+ *
+ * @public */
 export interface ListItem {
+  /* List item id */
   id: string
+  /* List item type */
   type: string
+  /* List item title */
   title?: string
+  /* List item icon */
   icon?: React.ComponentType | React.ReactNode
+  /* List item child */
   child?: ListItemChild
+  /* List item display options */
   displayOptions?: ListItemDisplayOptions
+  /* List item schema type */
   schemaType?: SchemaType
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for unserialized list items.
+ *
+ * @public
+ */
 export interface UnserializedListItem {
+  /** List item id */
   id: string
+  /** List item title */
   title: string
+  /** List item icon */
   icon?: React.ComponentType | React.ReactNode
+  /** List item child */
   child?: UnserializedListItemChild
+  /** List item display options */
   displayOptions?: ListItemDisplayOptions
+  /** List item schema */
   schemaType?: SchemaType | string
 }
 
 /**
- * @hidden
- * @beta */
+ * Type for a partial list item
+ *
+ * @public */
 export type PartialListItem = Partial<UnserializedListItem>
 
 /**
- * @hidden
- * @beta */
+ * Class for building list items.
+ *
+ * @public */
 export class ListItemBuilder implements Serializable<ListItem> {
   protected spec: PartialListItem
 

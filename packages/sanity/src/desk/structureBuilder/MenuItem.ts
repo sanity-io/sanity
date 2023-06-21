@@ -17,39 +17,50 @@ export function maybeSerializeMenuItem(
 }
 
 /**
- * @hidden
- * @beta */
+ * Menu item action type
+ * @public */
 export type MenuItemActionType =
   | string
   | ((params: Record<string, string> | undefined, scope?: any) => void)
 
 /**
- * @hidden
- * @beta */
+ * Menu items parameters
+ *
+ * @public */
 export type MenuItemParamsType = Record<string, string | unknown | undefined>
 
 /**
- * @hidden
- * @beta */
+ * Interface for menu items
+ *
+ * @public */
 export interface MenuItem {
+  /** Menu Item title */
   title: string
+  /** Menu Item action */
   action?: MenuItemActionType
+  /** Menu Item intent */
   intent?: Intent
+  /** Menu Item group */
   group?: string
   // TODO: align these with TemplateResponse['icon']
+  /** Menu Item icon */
   icon?: React.ComponentType | React.ReactNode
+  /** Menu Item parameters */
   params?: MenuItemParamsType
+  /** Determine if it will show the MenuItem as action */
   showAsAction?: boolean
 }
 
 /**
- * @hidden
- * @beta */
+ * Type for partial menu items
+ * @public
+ */
 export type PartialMenuItem = Partial<MenuItem>
 
 /**
- * @hidden
- * @beta */
+ * Class for building menu items.
+ *
+ * @public */
 export class MenuItemBuilder implements Serializable<MenuItem> {
   protected spec: PartialMenuItem
 

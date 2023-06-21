@@ -8,8 +8,10 @@ import {StructureContext} from './types'
 import {InitialValueTemplateItem} from 'sanity'
 
 /**
- * @hidden
- * @beta */
+ * A `InitialValueTemplateItemBuilder` is used to build a document node with an initial value set.
+ *
+ * @public
+ */
 export class InitialValueTemplateItemBuilder implements Serializable<InitialValueTemplateItem> {
   protected spec: Partial<InitialValueTemplateItem>
 

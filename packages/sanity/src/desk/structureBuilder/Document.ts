@@ -34,29 +34,47 @@ const createDocumentChildResolver =
   }
 
 /**
- * @hidden
- * @beta */
+ * Interface for options of Partial Documents
+ * {@link PartialDocumentNode}
+ *
+ * @public */
 export interface DocumentOptions {
+  /** Document Id */
   id: string
+  /** Document Type */
   type: string
+  /** Document Template */
   template?: string
+  /** Template parameters */
   templateParameters?: Record<string, unknown>
 }
 
 /**
- * @hidden
- * @beta */
+ * Type for partial document (focused on the document pane)
+ *
+ * @public */
 export type PartialDocumentNode = {
+  /* Document Id */
   id?: string
+  /* Document title */
   title?: string
+  /* Document children */
   child?: Child
+  /**
+   * Views for the document pane
+   */
   views?: (View | ViewBuilder)[]
+  /**
+   * Document options
+   * {@link DocumentOptions}
+   */
   options?: Partial<DocumentOptions>
 }
 
 /**
- * @hidden
- * @beta */
+ * A `DocumentBuilder` is used to build a document node.
+ *
+ * @public */
 export class DocumentBuilder implements Serializable<DocumentNode> {
   protected spec: PartialDocumentNode
 
