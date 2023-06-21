@@ -8,24 +8,25 @@ Contributions are always welcome, no matter how large or small.
 
 Before contributing, please read our [code of conduct](https://github.com/sanity-io/sanity/blob/current/CODE_OF_CONDUCT.md).
 
-Then make sure you have _Node.js version 10 or newer_ and _npm version 6 or newer_.
+Then make sure you have _Node.js version 16 or newer_. We currently use [Yarn](https://classic.yarnpkg.com/en/docs/install) 1 as our package manager, so make sure you have that installed as well.
 
 ```sh
 git clone git@github.com:sanity-io/sanity.git
 cd sanity
-yarn install
-yarn start
+yarn
+yarn build
+yarn dev
 ```
 
 # Release/workflow guidelines
 
 - `current` always points to the last released version
 - Anything in the `next` branch is scheduled for the next release and should always be ready to released
-- To work on something new, create a descriptively named branch off of `next` (ie: feature/new-oauth2-scopes)
-- Commit to that branch locally and regularly push your work to the same named branch on the server
+- To work on something new, create a descriptively named branch off of `next` (ie: `feat/some-new-feature`)
+- Commit to that branch locally and regularly push your work to the same named branch on the remote
 - Rebase your feature branch regularly against `next`. Make sure its even with `next` before merging
-- Once it's done, open a pull request to merge your feature branch into `next`
-- After someone else has reviewed and signed off on the pull request, you can merge it into `next`
+- Once it's done, open a pull request targeting `next`
+- After at least two reviewers has approved the pull request, you can merge it into `next` when you feel ready (if you're on the Sanity team, obviously)
 - Everything except minor _trivial_ changes should go through pull-requests. If you're unsure whether it's a trivial change or not, submit a pull request just to be sure
 - Pull requests should be as ready as possible for merge. Unless stated otherwise, it should be safe to assume that:
 
@@ -39,7 +40,7 @@ yarn start
 
 ## Merging
 
-Prefer squash + merge. If it makes sense to keep individual commits (e.g. different people have been working on the same feature), the pull request should be merged with the "Rebase + merge"-button. If possible, each individual commit message should be rewritten with the pull-request number in parenthesis, e.g. `[some-package] Fix stuff (#22)`
+Prefer squash + merge. If it makes sense to keep individual commits (e.g. different people have been working on the same feature), rebase + merge is preferred. If possible, each individual commit message should be rewritten with the pull-request number in parenthesis, e.g. `fix(scope): some fixed thing (#22)`
 
 ## Branches
 
@@ -48,15 +49,11 @@ Prefer squash + merge. If it makes sense to keep individual commits (e.g. differ
 
 ## Publishing official releases
 
-When `next` is ready for release, run `yarn publish` in the `next` branch and select version. After a successful release, remember to rebase `next` against `current`.
-
-## Publishing a hotfix release from `current`
-
-If we need to publish a hotfix, a patch release should be done by running `yarn publish` from the project root, selecting "Patch" from the menu. Remember to rebase `next` against `current` after the release is completed.
+When `next` is ready for release, merge `next` into `current`, then run `yarn release` in the `current` branch and select version. After a successful release, remember to merge the new version number commits that were performed as part of the release into `next`.
 
 ## Publishing _canary_ versions from feature branches
 
-This can be done at any time by anyone and is done by `yarn publish-canary`. This will publish with the commit hash from HEAD, and can be installed with `sanity upgrade --tag=canary --save-exact`
+This can be done at any time by anyone and is done by `yarn release-canary`. This will publish with the commit hash from HEAD.
 
 # How to file an issue
 
