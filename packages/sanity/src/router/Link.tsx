@@ -2,14 +2,38 @@ import React, {forwardRef} from 'react'
 import {useLink} from './useLink'
 
 /**
+ * The props for the `Link` component that creates an HTML anchor element.
+ *
  * @public
  */
 export interface LinkProps {
+  /**
+   * Whether to replace the current URL in the browser history instead of adding a new entry.
+   */
   replace?: boolean
 }
 
 /**
+ * A component that creates an HTML anchor element.
+ *
  * @public
+ *
+ * @param props - Props to pass to the anchor element.
+ *  {@link LinkProps}
+ * @param ref - A ref to the anchor element.
+ *
+ * @returns The created anchor element.
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   return (
+ *    <Link href="https://www.sanity.io" target="_blank" replace>
+ *      Go to Sanity
+ *    </Link>
+ *   )
+ * }
+ * ```
  */
 export const Link = forwardRef(function Link(
   props: LinkProps & React.HTMLProps<HTMLAnchorElement>,

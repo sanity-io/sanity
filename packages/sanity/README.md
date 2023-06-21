@@ -8,7 +8,7 @@
 <p align="center">
   <img alt="" src="https://img.shields.io/npm/v/sanity?style=flat">
   <img alt="" src="https://img.shields.io/npm/dm/@sanity/client?style=flat">
-  <img alt="" src="https://img.shields.io/npm/l/@sanity/client.svg?style=flat">
+  <img alt="" src="https://img.shields.io/npm/l/sanity.svg?style=flat">
   <a aria-label="Join the community on Slack" href="https://slack.sanity.io">
     <img alt="" src="https://img.shields.io/badge/Join%20Slack-f03e2f?logo=Slack&style=flat">
   </a>

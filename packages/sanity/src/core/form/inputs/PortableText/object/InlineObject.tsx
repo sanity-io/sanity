@@ -29,13 +29,14 @@ import {ObjectEditModal} from './modals/ObjectEditModal'
 import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
 
 interface InlineObjectProps {
-  boundaryElement?: HTMLElement
+  floatingBoundary: HTMLElement | null
   focused: boolean
   onItemClose: () => void
   onItemOpen: (path: Path) => void
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
+  referenceBoundary: HTMLElement | null
   relativePath: Path
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
@@ -52,13 +53,14 @@ interface InlineObjectProps {
 
 export const InlineObject = (props: InlineObjectProps) => {
   const {
-    boundaryElement,
+    floatingBoundary,
     focused,
     onItemClose,
     onItemOpen,
     onPathFocus,
     path,
     readOnly,
+    referenceBoundary,
     relativePath,
     renderAnnotation,
     renderBlock,
@@ -119,8 +121,9 @@ export const InlineObject = (props: InlineObjectProps) => {
 
   const componentProps: BlockProps = useMemo(
     () => ({
-      __unstable_boundaryElement: boundaryElement || undefined,
-      __unstable_referenceElement: referenceElement || undefined,
+      __unstable_floatingBoundary: floatingBoundary,
+      __unstable_referenceBoundary: referenceBoundary,
+      __unstable_referenceElement: referenceElement as HTMLElement | null,
       children: input,
       focused,
       onClose,
@@ -148,7 +151,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       validation,
     }),
     [
-      boundaryElement,
+      floatingBoundary,
       focused,
       input,
       isOpen,
@@ -161,6 +164,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       onRemove,
       parentSchemaType,
       readOnly,
+      referenceBoundary,
       referenceElement,
       renderAnnotation,
       renderBlock,
@@ -216,8 +220,9 @@ export const InlineObject = (props: InlineObjectProps) => {
 
 export const DefaultInlineObjectComponent = (props: BlockProps) => {
   const {
-    __unstable_boundaryElement,
-    __unstable_referenceElement,
+    __unstable_floatingBoundary: floatingBoundary,
+    __unstable_referenceBoundary: referenceBoundary,
+    __unstable_referenceElement: referenceElement,
     children,
     focused,
     markers,
@@ -296,24 +301,26 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
           })}
         </PreviewSpan>
       </Root>
-      {__unstable_referenceElement && (
+      {referenceElement && (
         <InlineObjectToolbarPopover
-          boundaryElement={__unstable_boundaryElement}
+          floatingBoundary={floatingBoundary}
           onClosePopover={onClosePopover}
           onDelete={onRemove}
           onEdit={openItem}
           open={popoverOpen}
-          referenceElement={__unstable_referenceElement}
+          referenceBoundary={referenceBoundary}
+          referenceElement={referenceElement}
           title={popoverTitle}
         />
       )}
       {open && (
         <ObjectEditModal
-          boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
           onClose={onClose}
           autoFocus={focused}
-          referenceElement={__unstable_referenceElement}
+          floatingBoundary={floatingBoundary}
+          referenceBoundary={referenceBoundary}
+          referenceElement={referenceElement}
           schemaType={schemaType}
         >
           {children}

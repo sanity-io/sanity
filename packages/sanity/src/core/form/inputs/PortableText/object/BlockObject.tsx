@@ -43,7 +43,7 @@ import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface BlockObjectProps extends PropsWithChildren {
-  boundaryElement?: HTMLElement
+  floatingBoundary: HTMLElement | null
   focused: boolean
   isActive?: boolean
   isFullscreen?: boolean
@@ -53,6 +53,7 @@ interface BlockObjectProps extends PropsWithChildren {
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
+  referenceBoundary: HTMLElement | null
   relativePath: Path
   renderAnnotation?: RenderAnnotationCallback
   renderBlock?: RenderBlockCallback
@@ -70,7 +71,7 @@ interface BlockObjectProps extends PropsWithChildren {
 
 export function BlockObject(props: BlockObjectProps) {
   const {
-    boundaryElement,
+    floatingBoundary,
     focused,
     isFullscreen,
     onItemClose,
@@ -78,6 +79,7 @@ export function BlockObject(props: BlockObjectProps) {
     onPathFocus,
     path,
     readOnly,
+    referenceBoundary,
     relativePath,
     renderAnnotation,
     renderBlock,
@@ -204,8 +206,9 @@ export function BlockObject(props: BlockObjectProps) {
 
   const componentProps: BlockProps = useMemo(
     () => ({
-      __unstable_boundaryElement: boundaryElement || undefined,
-      __unstable_referenceElement: referenceElement || undefined,
+      __unstable_floatingBoundary: floatingBoundary,
+      __unstable_referenceBoundary: referenceBoundary,
+      __unstable_referenceElement: (referenceElement || null) as HTMLElement | null,
       children: input,
       focused,
       markers,
@@ -232,7 +235,7 @@ export function BlockObject(props: BlockObjectProps) {
       value,
     }),
     [
-      boundaryElement,
+      floatingBoundary,
       referenceElement,
       input,
       focused,
@@ -246,6 +249,7 @@ export function BlockObject(props: BlockObjectProps) {
       nodePath,
       rootPresence,
       readOnly,
+      referenceBoundary,
       renderAnnotation,
       renderBlock,
       renderField,
@@ -332,7 +336,8 @@ export function BlockObject(props: BlockObjectProps) {
 
 export const DefaultBlockObjectComponent = (props: BlockProps) => {
   const {
-    __unstable_boundaryElement,
+    __unstable_floatingBoundary,
+    __unstable_referenceBoundary,
     __unstable_referenceElement,
     children,
     focused,
@@ -399,11 +404,12 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
       </Root>
       {open && (
         <ObjectEditModal
-          boundaryElement={__unstable_boundaryElement}
+          floatingBoundary={__unstable_floatingBoundary}
           defaultType="dialog"
           onClose={onClose}
           autoFocus={focused}
           schemaType={schemaType}
+          referenceBoundary={__unstable_referenceBoundary}
           referenceElement={__unstable_referenceElement}
         >
           {children}
