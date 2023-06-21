@@ -61,6 +61,7 @@ export default defineConfig({
     storageState: getStorageStateForProjectId(PROJECT_ID),
     viewport: {width: 1728, height: 1000},
     contextOptions: {reducedMotion: 'reduce'},
+    video: {mode: 'on-first-retry'},
   },
 
   /* Configure projects for major browsers */
