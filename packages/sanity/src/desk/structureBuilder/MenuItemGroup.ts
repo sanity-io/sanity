@@ -16,9 +16,9 @@ export function maybeSerializeMenuItemGroup(
  * @public
  */
 export interface MenuItemGroup {
-  /* Menu group Id */
+  /** Menu group Id */
   id: string
-  /* Menu group title */
+  /** Menu group title */
   title: string
 }
 

@@ -92,7 +92,7 @@ function isPromise<T>(thing: unknown): thing is PromiseLike<T> {
  */
 export interface List extends GenericList {
   type: 'list'
-  /* List items */
+  /** List items */
   items: (ListItem | Divider)[]
 }
 
@@ -102,6 +102,7 @@ export interface List extends GenericList {
  * @public
  */
 export interface ListInput extends GenericListInput {
+  /** List input items array */
   items?: (ListItem | ListItemBuilder | Divider)[]
 }
 

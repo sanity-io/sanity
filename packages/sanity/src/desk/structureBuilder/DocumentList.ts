@@ -53,9 +53,9 @@ const createDocumentChildResolverForItem =
  * @public
  */
 export interface PartialDocumentList extends BuildableGenericList {
-  /* Document list options */
+  /** Document list options */
   options?: DocumentListOptions
-  /* Schema type name */
+  /** Schema type name */
   schemaTypeName?: string
 }
 
@@ -65,7 +65,7 @@ export interface PartialDocumentList extends BuildableGenericList {
  * @public
  */
 export interface DocumentListInput extends GenericListInput {
-  /* Document list options */
+  /** Document list options */
   options: DocumentListOptions
 }
 
@@ -76,11 +76,11 @@ export interface DocumentListInput extends GenericListInput {
  */
 export interface DocumentList extends GenericList {
   type: 'documentList'
-  /* Document list options */
+  /** Document list options */
   options: DocumentListOptions
-  /* Document list child */
+  /** Document list child */
   child: Child
-  /* Document schema type name */
+  /** Document schema type name */
   schemaTypeName?: string
 }
 
@@ -90,13 +90,13 @@ export interface DocumentList extends GenericList {
  * @public
  */
 export interface DocumentListOptions {
-  /* Document list filter */
+  /** Document list filter */
   filter: string
-  /* Document list parameters */
+  /** Document list parameters */
   params?: Record<string, unknown>
-  /* Document list API version */
+  /** Document list API version */
   apiVersion?: string
-  /* Document list API default ordering */
+  /** Document list API default ordering */
   defaultOrdering?: SortOrderingItem[]
 }
 

@@ -69,7 +69,16 @@ export type UserComponent = React.ComponentType<{
  * @public
  */
 export interface StructureContext extends Source {
-  resolveDocumentNode: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
+  /** Resolve document method
+   * @returns a document node builder, or null/undefined if no document node should be returned.
+   */
+  resolveDocumentNode: (
+    /** an object holding the documentId and schemaType for the document node being resolved. */
+    options: {documentId?: string; schemaType: string}
+  ) => DocumentBuilder
+  /** Get structure builder
+   * @returns a structure builder
+   */
   getStructureBuilder: () => StructureBuilder
 }
 

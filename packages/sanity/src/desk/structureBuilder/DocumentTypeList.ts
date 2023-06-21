@@ -11,6 +11,7 @@ import {StructureContext} from './types'
  * @public
  */
 export interface DocumentTypeListInput extends Partial<GenericListInput> {
+  /** Document type list input schema type */
   schemaType: SchemaType | string
 }
 

@@ -36,9 +36,9 @@ export type IntentParams = BaseIntentParams | [BaseIntentParams, IntentJsonParam
  * @public */
 // TODO: intents should be unified somewhere
 export interface Intent {
-  /* Intent type */
+  /** Intent type */
   type: string
-  /* Intent parameters */
+  /** Intent parameters */
   params?: IntentParams
 }
 

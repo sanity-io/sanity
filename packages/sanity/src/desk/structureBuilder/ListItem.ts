@@ -44,6 +44,7 @@ export interface ListItemSerializeOptions extends SerializeOptions {
  *
  * @public */
 export interface ListItemDisplayOptions {
+  /** Check if list item display should show icon */
   showIcon?: boolean
 }
 
@@ -71,19 +72,19 @@ export interface ListItemInput {
  *
  * @public */
 export interface ListItem {
-  /* List item id */
+  /** List item id */
   id: string
-  /* List item type */
+  /** List item type */
   type: string
-  /* List item title */
+  /** List item title */
   title?: string
-  /* List item icon */
+  /** List item icon */
   icon?: React.ComponentType | React.ReactNode
-  /* List item child */
+  /** List item child */
   child?: ListItemChild
-  /* List item display options */
+  /** List item display options */
   displayOptions?: ListItemDisplayOptions
-  /* List item schema type */
+  /** List item schema type */
   schemaType?: SchemaType
 }
 
@@ -93,7 +94,7 @@ export interface ListItem {
  * @public
  */
 export interface UnserializedListItem {
-  /** List item id */
+  /** List item ID */
   id: string
   /** List item title */
   title: string

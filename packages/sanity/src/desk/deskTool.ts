@@ -41,14 +41,14 @@ const documentBadges = [LiveEditBadge]
  * import { deskTool } from 'sanity/desk'
  *
  * export default defineConfig((
- * // ...
- * plugins: [
- * deskTool() // use defaults
- * ]
+ *  // ...
+ *  plugins: [
+ *    deskTool() // use defaults
+ *  ]
  * })
  * ```
  *
- * * @example To customise your desk tool
+ * @example To customise your desk tool
  * ```ts
  * // sanity.config.ts
  * import { defineConfig } from 'sanity'
@@ -67,9 +67,9 @@ const documentBadges = [LiveEditBadge]
  *        S.document().views([
  *          S.view.form(),
  *          S.view.component(Preview).title('Preview')
- *     ])
- *  })
- * ]
+ *        ])
+ *    })
+ *  ]
  * })
  * ```
  * */

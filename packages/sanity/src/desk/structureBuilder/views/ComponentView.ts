@@ -10,7 +10,9 @@ import {isRecord} from 'sanity'
  * @public */
 export interface ComponentView<TOptions = Record<string, any>> extends BaseView {
   type: 'component'
+  /** Component view components */
   component: UserViewComponent
+  /** Component view options */
   options: TOptions
 }
 

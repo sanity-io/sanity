@@ -58,17 +58,17 @@ export interface DocumentNode extends StructureNode {
  *
  * @public */
 export interface EditorNode extends StructureNode {
-  /* Editor Id */
+  /** Editor Id */
   child?: Child
-  /* Editor options */
+  /** Editor options */
   options: {
-    /* Editor ID */
+    /** Editor ID */
     id: string
-    /* Editor type */
+    /** Editor type */
     type?: string
-    /* Editor template */
+    /** Editor template */
     template?: string
-    /* Template parameters */
+    /** Template parameters */
     templateParameters?: {[key: string]: any}
   }
 }
@@ -97,11 +97,11 @@ export type SerializePath = (string | number)[]
  * Interface for seraializing a structure node
  * @public */
 export interface SerializeOptions {
-  /* path */
+  /** path */
   path: SerializePath
-  /* index */
+  /** index */
   index?: number
-  /* hint */
+  /** hint */
   hint?: string
 }
 

@@ -11,11 +11,11 @@ import {FormViewBuilder} from './FormView'
  *
  * @public */
 export interface BaseView {
-  /* View id */
+  /** View id */
   id: string
-  /* View Title */
+  /** View Title */
   title: string
-  /* View Icon */
+  /** View Icon */
   icon?: React.ComponentType | React.ReactNode
 }
 

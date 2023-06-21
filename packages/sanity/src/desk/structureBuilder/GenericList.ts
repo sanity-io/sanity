@@ -26,6 +26,7 @@ export const shallowIntentChecker: IntentChecker = (intentName, params, {pane, i
  *
  * @public */
 export interface ListDisplayOptions {
+  /** Check if list display should show icons */
   showIcons?: boolean
 }
 
@@ -82,21 +83,21 @@ export interface BuildableGenericList extends Partial<BaseGenericList> {
  * @public */
 // Input version, allows builders and only requires things not inferrable
 export interface GenericListInput extends StructureNode {
-  /* Input id */
+  /** Input id */
   id: string
-  /* Input title */
+  /** Input title */
   title: string
-  /* Input menu items */
+  /** Input menu items */
   menuItems?: (MenuItem | MenuItemBuilder)[]
-  /* Input menu items groups */
+  /** Input menu items groups */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
-  /* Input initial value */
+  /** Input initial value */
   initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
-  /* Input default layout */
+  /** Input default layout */
   defaultLayout?: PreviewLayoutKey
-  /* If input can handle intent */
+  /** If input can handle intent */
   canHandleIntent?: IntentChecker
-  /* Input child */
+  /** Input child */
   child?: Child
 }
 

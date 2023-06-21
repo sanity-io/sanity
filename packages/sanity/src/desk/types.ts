@@ -68,24 +68,23 @@ export interface StructureResolverContext extends ConfigContext {
  * import {schemaTypes} from './schema'
  *
  * export default defineConfig({
- * name: 'default',
- * title: 'My Cool Project',
- * projectId: 'my-project-id',
- * dataset: 'production',
- * plugins: [
- *   deskTool({
- *     structure: (S, context) => {
- *       console.log(context) // returns { currentUser, dataset, projectId, schema, getClient, documentStore }
- *       return S.documentTypeList('post')
- *     },
- *   })
- * ],
- * schema: schemaTypes
+ *  name: 'default',
+ *  title: 'My Cool Project',
+ *  projectId: 'my-project-id',
+ *  dataset: 'production',
+ *  plugins: [
+ *    deskTool({
+ *      structure: (S, context) => {
+ *        console.log(context) // returns { currentUser, dataset, projectId, schema, getClient, documentStore }
+ *        return S.documentTypeList('post')
+ *      },
+ *    })
+ *  ],
+ *  schema: schemaTypes
  * })
  * ```
  *
  */
-// TODO: this should be updated to enforce the correct return type
 export type StructureResolver = (
   /**
    * S - An instance of the structure builder, that can be used to build the lists/items/panes for the desk tool

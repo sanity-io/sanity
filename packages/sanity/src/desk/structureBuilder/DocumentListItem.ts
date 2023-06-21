@@ -12,6 +12,7 @@ import {isRecord} from 'sanity'
  * @public
  */
 export interface DocumentListItemInput extends ListItemInput {
+  /** Document list item input schema type */
   schemaType: SchemaType | string
 }
 
