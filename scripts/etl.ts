@@ -2,7 +2,6 @@ import path from 'path'
 import {createClient} from '@sanity/client'
 import {SanityTSDocConfigOptions, _loadConfig, extract, load, transform} from '@sanity/tsdoc'
 import chalk from 'chalk'
-import lodash from 'lodash'
 
 // RUN
 main().catch((err) => {
