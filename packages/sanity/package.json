@@ -120,7 +120,6 @@
     "coverage": "jest --coverage",
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
-    "tsdoc:publish": "sanity-tsdoc etl",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
     "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
     "write:version": "node -r esbuild-register scripts/writeVersion.ts"
@@ -232,7 +231,7 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@sanity/tsdoc": "1.0.0-alpha.27",
+    "@sanity/tsdoc": "1.0.0-alpha.31",
     "@sanity/ui-workshop": "^1.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
