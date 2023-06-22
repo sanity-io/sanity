@@ -133,37 +133,61 @@ export interface StructureBuilder {
    * @internal
    */
   component: (spec?: ComponentInput | UserComponent) => ComponentBuilder
+  /** By giving an object of options with documentID and its schema type receive the the respective Document builder */
   defaultDocument: (options: {documentId?: string; schemaType: string}) => DocumentBuilder
+  /** Get an array of Item builders that take Initial Value template into consideration */
   defaultInitialValueTemplateItems: () => InitialValueTemplateItemBuilder[]
+  /** Get the default List builder */
   defaults: () => ListBuilder
+  /** Get a structure Divider */
   divider: () => Divider
+  /** By giving a partial Document Node receive the respective Document Builder */
   document: (spec?: PartialDocumentNode) => DocumentBuilder
+  /** By giving a Document List Input receive the respective Document List Builder */
   documentList: (spec?: DocumentListInput) => DocumentListBuilder
+  /** By giving a Document List Item Input receive the respective Document List Item builder */
   documentListItem: (spec?: DocumentListItemInput) => DocumentListItemBuilder
+  /** By giving a type name or Document Type List Input receive the respective Document List Builder */
   documentTypeList: (typeNameOrSpec: string | DocumentTypeListInput) => DocumentListBuilder
+  /** By providing a type name receive a List Item builder */
   documentTypeListItem: (typeName: string) => ListItemBuilder
+  /** Get an array of List Item builders */
   documentTypeListItems: () => ListItemBuilder[]
+  /** By giving a templateID and a set of parameters receive a Document builder that takes InitialValueTemplate into account */
   documentWithInitialValueTemplate: (
     templateId: string,
     parameters?: Record<string, unknown>
   ) => DocumentBuilder
+  /** By giving a Editor Node receive the respective Document Builder */
   editor: (spec?: EditorNode) => DocumentBuilder
+  /** By giving a templateID and a set of parameters receive an Item Builder that takes InitialValueTemplate into account */
   initialValueTemplateItem: (
     templateId: string,
     parameters?: Record<string, any>
   ) => InitialValueTemplateItemBuilder
+  /** By giving a List Input receive the respective Builder, otherwise return default ListBuilder builder */
   list: (spec?: ListInput) => ListBuilder
+  /** By giving a List Item Input receive the respective Builder, otherwise return default ListItem builder */
   listItem: (spec?: ListItemInput) => ListItemBuilder
+  /** By giving a Menu Item receive the respective Builder, otherwise return default MenuItem builder */
   menuItem: (spec?: MenuItem) => MenuItemBuilder
+  /** By giving a Menu Item Group receive the respective Builder */
   menuItemGroup: (spec?: MenuItemGroup) => MenuItemGroupBuilder
+  /** By giving an array of initial value template receive an array of Menu Items, otherwise return default MenuItem builder */
   menuItemsFromInitialValueTemplateItems: (templateItems: InitialValueTemplateItem[]) => MenuItem[]
+  /** By giving a sort ordering object receive a Menu Item Builder */
   orderingMenuItem: (ordering: SortOrdering) => MenuItemBuilder
+  /** By giving a type receive a list of Menu Items ordered by it */
   orderingMenuItemsForType: (type: string) => MenuItemBuilder[]
+  /** View for structure */
   view: {
     form: (spec?: Partial<FormView>) => FormViewBuilder
     component: (
       componentOrSpec?: Partial<ComponentView> | React.ComponentType<any>
     ) => ComponentViewBuilder
   }
+  /** Context for the structure builder
+   * {@link StructureContext}
+   */
   context: StructureContext
 }
