@@ -98,6 +98,7 @@ export async function run({
   deployments,
   testFiles,
   testIds,
+  excludeTestIds,
   registerHelpersFile,
   headless,
   iterations = 1,
@@ -108,21 +109,36 @@ export async function run({
   deployments: Deployment[]
   testFiles: string[]
   testIds?: string[]
+  excludeTestIds?: string[]
   registerHelpersFile: string
   headless?: boolean
   iterations?: number
   token: string
 }) {
-  const testModules = (
-    await Promise.all(
-      testFiles.map((testModule) =>
-        import(testModule).then((module) => module.default as PerformanceTestProps)
-      )
+  const testModules = await Promise.all(
+    testFiles.map((testModule) =>
+      import(testModule).then((module) => module.default as PerformanceTestProps)
     )
-  ).filter((test) => !testIds || testIds.includes(test.id))
+  )
+
+  const givenIds = [...(testIds || []), ...(excludeTestIds || [])]
+  if (givenIds.length > 0) {
+    // make sure that the test ids are valid
+    givenIds.forEach((testId) => {
+      if (!testModules.some((testModule) => testModule.id === testId)) {
+        throw new Error(
+          `Invalid test id: "${testId}". Use yarn perf:test --list to see all tests ids`
+        )
+      }
+    })
+  }
+  const tests = testModules.filter(
+    (testModule) =>
+      (!testIds || testIds.includes(testModule.id)) && !excludeTestIds?.includes(testModule.id)
+  )
   // Start by syncing test documents
   await Promise.all(
-    testModules.map((test) =>
+    tests.map((test) =>
       studioMetricsClient.createOrReplace({
         _id: `test-${test.id}-${test.version}`,
         _type: 'performanceTest',
@@ -147,7 +163,7 @@ export async function run({
   await page.addInitScript({content: bundleHelpers})
 
   const testResults = await lastValueFrom(
-    from(Object.values(testModules)).pipe(
+    from(Object.values(tests)).pipe(
       concatMap(async (test) => {
         const iterationResults = await runCompare({
           deployments,

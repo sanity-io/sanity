@@ -20,6 +20,7 @@ async function main(args: {
   pattern?: string
   local?: boolean
   testIds?: string
+  excludeTestIds?: string
   count?: string
   label?: string
 }) {
@@ -98,6 +99,7 @@ async function main(args: {
     testFiles,
     deployments,
     testIds: args.testIds ? args.testIds.split(',') : undefined,
+    excludeTestIds: args.excludeTestIds ? args.excludeTestIds.split(',') : undefined,
     perfStudioClient,
     studioMetricsClient,
     registerHelpersFile: require.resolve(`${__dirname}/tests/helpers/register.ts`),
@@ -139,6 +141,10 @@ const {values: args} = parseArgs({
     testIds: {
       type: 'string',
       short: 'i',
+    },
+    excludeTestIds: {
+      type: 'string',
+      short: 'e',
     },
     count: {
       type: 'string',
