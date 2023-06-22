@@ -2,8 +2,6 @@ import React, {forwardRef} from 'react'
 import {useLink} from './useLink'
 
 /**
- * The props for the `Link` component that creates an HTML anchor element.
- *
  * @public
  */
 export interface LinkProps {

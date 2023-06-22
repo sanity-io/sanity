@@ -8,25 +8,61 @@ import {decodeParams, encodeParams} from './utils/paramsEncoding'
 /**
  * @public
  */
-export type RouteNodeOptions = {
+export interface RouteNodeOptions {
+  /**
+   * The path of the route node.
+   */
   path?: string
+  /**
+   * The children of the route node. See {@link RouteChildren}
+   */
   children?: RouteChildren
+  /**
+   * The transforms to apply to the route node. See {@link RouteTransform}
+   */
   transform?: {
     [key: string]: RouteTransform<any>
   }
+  /**
+   * The scope of the route node.
+   */
   scope?: string
 }
 
 /**
+ * An object containing functions for creating routers and router scopes.
  * @public
  */
 export const route: {
+  /**
+   * Creates a new router.
+   *
+   * @param routeOrOpts - The route options or string.
+   * @param childrenOrOpts - The children options or children.
+   * @param children - The children.
+   * @returns The new router. See {@link Router}
+   */
   create: (
     routeOrOpts: RouteNodeOptions | string,
     childrenOrOpts?: RouteNodeOptions | RouteChildren | null,
     children?: Router | RouteChildren
   ) => Router
+
+  /**
+   * Creates a new router for handling intents.
+   *
+   * @param base - The base path for the router.
+   * @returns The new router. See {@link Router}
+   */
   intents: (base: string) => Router
+
+  /**
+   * Creates a new router scope.
+   *
+   * @param scopeName - The name of the scope.
+   * @param rest - Additional options for the scope.
+   * @returns The new router scope. {@link Router}
+   */
   scope: (scopeName: string, ...rest: any[]) => Router
 } = {
   create: (routeOrOpts, childrenOrOpts, children) =>
