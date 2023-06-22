@@ -9,6 +9,7 @@ import {
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 // import {BufferedDocument} from '@sanity/mutator'
 import {validateDocument} from '@sanity/validation'
+import {Box} from '@sanity/ui'
 import {applyAll} from '../src/core/form/patch/applyPatch'
 import {
   createPatchChannel,
@@ -20,6 +21,8 @@ import {
   StateTree,
   useFormState,
   useWorkspace,
+  PreviewProps,
+  useFormValue,
 } from '../exports'
 import {Wrapper} from './Wrapper'
 import {createMockSanityClient} from './createMockSanityClient'
@@ -27,6 +30,11 @@ import {createMockSanityClient} from './createMockSanityClient'
 const NOOP = () => null
 
 const EMPTY_ARRAY: never[] = []
+
+// This is to emulate preview updates to the object without the preview store
+function CustomObjectPreview(props: PreviewProps) {
+  return <Box>{props.renderDefault({...props, title: props.actions?.props?.value?.title})}</Box>
+}
 
 const SCHEMA_TYPES = [
   defineType({
@@ -54,6 +62,14 @@ const SCHEMA_TYPES = [
             name: 'object',
             type: 'object',
             fields: [{type: 'string', name: 'title', title: 'Title'}],
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+            components: {
+              preview: CustomObjectPreview,
+            },
           }),
         ],
       }),
@@ -72,10 +88,10 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function FormBuilderStory() {
+export function FormBuilderStory({onRender}: {onRender?: () => void}) {
   return (
     <Wrapper schemaTypes={SCHEMA_TYPES}>
-      <TestForm />
+      <TestForm onRender={onRender} />
     </Wrapper>
   )
 }
@@ -83,7 +99,17 @@ export function FormBuilderStory() {
 const client = createMockSanityClient() as any as ReturnType<ValidationContext['getClient']>
 const getClient = (options: {apiVersion: string}) => client
 
-function TestForm() {
+async function validateStaticDocument(
+  document: any,
+  schema: any,
+  setCallback: (result: ValidationMarker[]) => void
+) {
+  const result = await validateDocument(getClient, document, schema)
+
+  setCallback(result)
+}
+
+function TestForm({onRender}: {onRender?: () => void}) {
   const [validation, setValidation] = useState<ValidationMarker[]>([])
   const [openPath, onSetOpenPath] = useState<Path>([])
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
@@ -103,6 +129,21 @@ function TestForm() {
   )
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
+  useEffect(() => {
+    console.log('Component has rerendered')
+    onRender?.()
+  })
+
+  useEffect(() => {
+    console.log('document updated', document)
+
+    patchChannel.publish({
+      type: 'mutation',
+      patches: [],
+      snapshot: document,
+    })
+  }, [document, patchChannel])
+
   const {schema} = useWorkspace()
   const schemaType = schema.get('test')
 
@@ -115,12 +156,7 @@ function TestForm() {
   }
 
   useEffect(() => {
-    async function validateStaticDocument() {
-      const result = await validateDocument(getClient, document, schema)
-
-      setValidation(result)
-    }
-    validateStaticDocument()
+    validateStaticDocument(document, schema, (result) => setValidation(result))
   }, [document, schema])
 
   const formState = useFormState(schemaType, {
