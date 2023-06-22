@@ -1,4 +1,5 @@
-import {expect, test} from '@playwright/experimental-ct-react'
+import {expect, test, type ComponentFixtures} from '@playwright/experimental-ct-react'
+import type {PlaywrightTestArgs} from '@playwright/test'
 import React from 'react'
 
 import {FormBuilderStory} from './FormBuilderStory'
@@ -7,7 +8,9 @@ test.use({viewport: {width: 1000, height: 1000}})
 
 const DEFAULT_TYPE_DELAY = 150
 
-function testHelpers({page, component}: any) {
+type MountResult = Awaited<ReturnType<ComponentFixtures['mount']>>
+
+function testHelpers({page, component}: {page: PlaywrightTestArgs['page'], component: MountResult}) {
   return {
     type: async (input: string, delay?: number) =>
       page.keyboard.type(input, {delay: delay || DEFAULT_TYPE_DELAY}),
