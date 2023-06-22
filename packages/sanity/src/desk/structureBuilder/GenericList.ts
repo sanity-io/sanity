@@ -109,75 +109,128 @@ export interface GenericListInput extends StructureNode {
 export abstract class GenericListBuilder<TList extends BuildableGenericList, ConcreteImpl>
   implements Serializable<GenericList>
 {
+  /** Check if initial value templates are set */
   protected initialValueTemplatesSpecified = false
+  /** Generic list option object */
   protected spec: TList = {} as TList
 
+  /** Set generic list ID
+   * @returns generic list builder based on ID provided
+   */
   id(id: string): ConcreteImpl {
     return this.clone({id})
   }
 
+  /** Get generic list ID
+   * @returns generic list ID
+   */
   getId(): TList['id'] {
     return this.spec.id
   }
 
+  /** Set generic list title
+   * @returns generic list builder based on title and ID provided
+   */
   title(title: string): ConcreteImpl {
     return this.clone({title, id: getStructureNodeId(title, this.spec.id)})
   }
 
+  /** Get generic list title
+   * @returns generic list title
+   */
   getTitle(): TList['title'] {
     return this.spec.title
   }
 
+  /** Set generic list layout
+   * @returns generic list builder based on layout provided
+   */
   defaultLayout(defaultLayout: PreviewLayoutKey): ConcreteImpl {
     return this.clone({defaultLayout})
   }
 
+  /** Get generic list layout
+   * @returns generic list layout
+   */
   getDefaultLayout(): TList['defaultLayout'] {
     return this.spec.defaultLayout
   }
 
+  /** Set generic list menu items
+   * @returns generic list builder based on menu items provided
+   */
   menuItems(menuItems: (MenuItem | MenuItemBuilder)[] | undefined): ConcreteImpl {
     return this.clone({menuItems})
   }
 
+  /** Get generic list menu items
+   * @returns generic list menu items
+   */
   getMenuItems(): TList['menuItems'] {
     return this.spec.menuItems
   }
 
+  /** Set generic list menu item groups
+   * @returns generic list builder based on menu item groups provided
+   */
   menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]): ConcreteImpl {
     return this.clone({menuItemGroups})
   }
 
+  /** Get generic list menu item groups
+   * @returns generic list menu item groups
+   */
   getMenuItemGroups(): TList['menuItemGroups'] {
     return this.spec.menuItemGroups
   }
 
+  /** Set generic list child
+   * @returns generic list builder based on child provided (clone)
+   */
   child(child: Child): ConcreteImpl {
     return this.clone({child})
   }
 
+  /** Get generic list child
+   * @returns generic list child
+   */
   getChild(): TList['child'] {
     return this.spec.child
   }
 
+  /** Set generic list can handle intent
+   * @returns generic list builder based on can handle intent provided
+   */
   canHandleIntent(canHandleIntent: IntentChecker): ConcreteImpl {
     return this.clone({canHandleIntent})
   }
 
+  /** Get generic list can handle intent
+   * @returns generic list can handle intent
+   */
   getCanHandleIntent(): TList['canHandleIntent'] {
     return this.spec.canHandleIntent
   }
 
+  /** Set generic list display options
+   * @returns generic list builder based on display options (showIcons) provided
+   */
   showIcons(enabled = true): ConcreteImpl {
     return this.clone({
       displayOptions: {...(this.spec.displayOptions || {}), showIcons: enabled},
     })
   }
 
+  /** Get generic list display options
+   * @returns generic list display options (specifically showIcons)
+   */
   getShowIcons(): boolean | undefined {
     return this.spec.displayOptions ? this.spec.displayOptions.showIcons : undefined
   }
 
+  /** Set generic list initial value templates
+   * @returns generic list builder based on templates provided
+   */
   initialValueTemplates(
     templates:
       | InitialValueTemplateItem
@@ -188,10 +241,16 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
     return this.clone({initialValueTemplates: Array.isArray(templates) ? templates : [templates]})
   }
 
+  /** Get generic list initial value templates
+   * @returns generic list initial value templates
+   */
   getInitialValueTemplates(): TList['initialValueTemplates'] {
     return this.spec.initialValueTemplates
   }
 
+  /** Serialize generic list
+   * @returns generic list object based on path provided in options
+   */
   serialize(options: SerializeOptions = {path: []}): GenericList {
     const id = this.spec.id || ''
     const path = options.path
@@ -228,5 +287,8 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
     }
   }
 
+  /** Clone generic list builder (allows for options overriding)
+   * @returns generic list builder
+   */
   abstract clone(_withSpec?: object): ConcreteImpl
 }

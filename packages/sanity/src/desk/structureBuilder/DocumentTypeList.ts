@@ -21,17 +21,31 @@ export interface DocumentTypeListInput extends Partial<GenericListInput> {
  * @public
  */
 export class DocumentTypeListBuilder extends DocumentListBuilder {
+  /** Document list options */
   protected spec: PartialDocumentList
 
-  constructor(protected _context: StructureContext, spec?: DocumentListInput) {
+  constructor(
+    /**
+     * Desk structure context
+     */
+    protected _context: StructureContext,
+    spec?: DocumentListInput
+  ) {
     super(_context)
     this.spec = spec ? spec : {}
   }
 
+  /**
+   * Set Document type list child
+   * @returns document type list builder based on child component provided without default intent handler
+   */
   child(child: Child): DocumentTypeListBuilder {
     return this.cloneWithoutDefaultIntentHandler({child})
   }
 
+  /** Clone Document type list builder (allows for options overriding)
+   * @returns document type list builder
+   */
   clone(withSpec?: PartialDocumentList): DocumentTypeListBuilder {
     const parent = super.clone(withSpec)
     const builder = new DocumentTypeListBuilder(this._context)
@@ -39,6 +53,9 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
     return builder
   }
 
+  /** Clone Document type list builder (allows for options overriding) and remove default intent handler
+   * @returns document type list builder without default intent handler
+   */
   cloneWithoutDefaultIntentHandler(withSpec?: PartialDocumentList): DocumentTypeListBuilder {
     const parent = super.clone(withSpec)
     const builder = new DocumentTypeListBuilder(this._context)

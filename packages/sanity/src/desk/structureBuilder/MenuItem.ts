@@ -62,68 +62,134 @@ export type PartialMenuItem = Partial<MenuItem>
  *
  * @public */
 export class MenuItemBuilder implements Serializable<MenuItem> {
+  /** menu item option object */
   protected spec: PartialMenuItem
 
-  constructor(protected _context: StructureContext, spec?: MenuItem) {
+  constructor(
+    /**
+     * Desk structure context
+     */
+    protected _context: StructureContext,
+    spec?: MenuItem
+  ) {
     this.spec = spec ? spec : {}
   }
 
+  /**
+   * Set menu item action
+   * @returns menu item builder based on action provided
+   */
   action(action: MenuItemActionType): MenuItemBuilder {
     return this.clone({action})
   }
 
+  /**
+   * Get menu item action
+   * @returns menu item builder action
+   */
   getAction(): PartialMenuItem['action'] {
     return this.spec.action
   }
 
+  /**
+   * Set menu item intent
+   * @returns menu item builder based on intent provided
+   */
   intent(intent: Intent): MenuItemBuilder {
     return this.clone({intent})
   }
 
+  /**
+   * Get menu item intent
+   * @returns menu item intent
+   */
   getIntent(): PartialMenuItem['intent'] {
     return this.spec.intent
   }
 
+  /**
+   * Set menu item title
+   * @returns menu item builder based on title provided
+   */
   title(title: string): MenuItemBuilder {
     return this.clone({title})
   }
 
+  /**
+   * Get menu item title
+   * @returns menu item title
+   */
   getTitle(): string | undefined {
     return this.spec.title
   }
 
+  /**
+   * Set menu item group
+   * @returns menu item builder based on group provided
+   */
   group(group: string): MenuItemBuilder {
     return this.clone({group})
   }
 
+  /**
+   * Get menu item group
+   * @returns menu item group
+   */
   getGroup(): PartialMenuItem['group'] {
     return this.spec.group
   }
 
+  /**
+   * Set menu item icon
+   * @returns menu item builder based on icon provided
+   */
   icon(icon: React.ComponentType | React.ReactNode): MenuItemBuilder {
     return this.clone({icon})
   }
 
+  /**
+   * Get menu item icon
+   * @returns menu item icon
+   */
   getIcon(): PartialMenuItem['icon'] {
     return this.spec.icon
   }
 
+  /**
+   * Set menu item parameters
+   * @returns menu item builder based on parameters provided
+   */
   params(params: MenuItemParamsType): MenuItemBuilder {
     return this.clone({params})
   }
 
+  /**
+   * Get meny item parameters
+   * @returns menu item parameters
+   */
   getParams(): PartialMenuItem['params'] {
     return this.spec.params
   }
 
+  /**
+   * Set menu item to show as action
+   * @returns menu item builder based on if it should show as action
+   */
   showAsAction(showAsAction = true): MenuItemBuilder {
     return this.clone({showAsAction: Boolean(showAsAction)})
   }
 
+  /**
+   * Check if menu item should show as action
+   * @returns true if menu item should show as action, false if not
+   */
   getShowAsAction(): PartialMenuItem['showAsAction'] {
     return this.spec.showAsAction
   }
 
+  /** Serialize menu item builder
+   * @returns menu item node based on path provided in options
+   */
   serialize(options: SerializeOptions = {path: []}): MenuItem {
     const {title, action, intent} = this.spec
     if (!title) {
@@ -157,6 +223,9 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
     return {...this.spec, title}
   }
 
+  /** Clone menu item builder
+   * @returns menu item builder based on context and spec provided
+   */
   clone(withSpec?: PartialMenuItem): MenuItemBuilder {
     const builder = new MenuItemBuilder(this._context)
     builder.spec = {...this.spec, ...(withSpec || {})}

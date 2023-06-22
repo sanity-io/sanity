@@ -52,13 +52,24 @@ const createDefaultChildResolver =
  * @public
  */
 export class DocumentListItemBuilder extends ListItemBuilder {
+  /** Document list options */
   protected spec: PartialDocumentListItem
 
-  constructor(protected _context: StructureContext, spec?: DocumentListItemInput) {
+  constructor(
+    /**
+     * Desk structure context
+     */
+    protected _context: StructureContext,
+    spec?: DocumentListItemInput
+  ) {
     super(_context, spec)
     this.spec = spec ? spec : {}
   }
 
+  /**
+   * Serialize document list item
+   * @returns document list item object based on path provided in options
+   */
   serialize(options: SerializeOptions = {path: []}): DocumentListItem {
     const spec = super.serialize({...options, titleIsOptional: true})
 
@@ -74,6 +85,9 @@ export class DocumentListItemBuilder extends ListItemBuilder {
     return {...spec, child, schemaType: spec.schemaType, _id: spec.id}
   }
 
+  /** Clone Document list item builder (allows for options overriding)
+   * @returns document list item builder
+   */
   clone(withSpec?: PartialDocumentListItem): DocumentListItemBuilder {
     const builder = new DocumentListItemBuilder(this._context)
     builder.spec = {...this.spec, ...(withSpec || {})}

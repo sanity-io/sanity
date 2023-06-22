@@ -28,30 +28,61 @@ export interface MenuItemGroup {
  * @public
  */
 export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
+  /** Menu item group ID */
   protected _id: string
+  /** Menu item group title */
   protected _title: string
 
-  constructor(protected _context: StructureContext, spec?: MenuItemGroup) {
+  constructor(
+    /**
+     * Desk structure context
+     */
+    protected _context: StructureContext,
+    spec?: MenuItemGroup
+  ) {
     this._id = spec ? spec.id : ''
     this._title = spec ? spec.title : ''
   }
 
+  /**
+   * Set menu item group ID
+   * @param id - menu item group ID
+   * @returns menu item group builder based on ID provided
+   */
   id(id: string): MenuItemGroupBuilder {
     return new MenuItemGroupBuilder(this._context, {id, title: this._title})
   }
 
+  /**
+   * Get menu item group ID
+   * @returns menu item group ID
+   */
   getId(): string {
     return this._id
   }
 
+  /**
+   * Set menu item group title
+   * @param title - menu item group title
+   * @returns menu item group builder based on title provided
+   */
   title(title: string): MenuItemGroupBuilder {
     return new MenuItemGroupBuilder(this._context, {id: this._id, title})
   }
 
+  /**
+   * Get menu item group title
+   * @returns menu item group title
+   */
   getTitle(): string {
     return this._title
   }
 
+  /**
+   * Serialize menu item group builder
+   * @param options - serialization options (path)
+   * @returns menu item group based on path provided in options
+   */
   serialize(options: SerializeOptions = {path: []}): MenuItemGroup {
     const {_id, _title} = this
     if (!_id) {

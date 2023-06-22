@@ -121,22 +121,39 @@ export interface BuildableList extends BuildableGenericList {
  *
  * @public */
 export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> {
+  /** buildable list option object */
   protected spec: BuildableList
 
-  constructor(protected _context: StructureContext, spec?: ListInput) {
+  constructor(
+    /**
+     * Desk structure context
+     */
+    protected _context: StructureContext,
+    spec?: ListInput
+  ) {
     super()
     this.spec = spec ? spec : {}
     this.initialValueTemplatesSpecified = Boolean(spec && spec.initialValueTemplates)
   }
 
+  /**
+   * Set list builder based on items provided
+   * @returns list builder based on items provided
+   */
   items(items: (ListItemBuilder | ListItem | Divider)[]): ListBuilder {
     return this.clone({items})
   }
 
+  /** Get list builder items
+   * @returns list items
+   */
   getItems(): BuildableList['items'] {
     return this.spec.items
   }
 
+  /** Serialize list builder
+   * @returns list based on path in options
+   */
   serialize(options: SerializeOptions = {path: []}): List {
     const id = this.spec.id
     if (typeof id !== 'string' || !id) {
@@ -179,6 +196,10 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
     }
   }
 
+  /**
+   * Clone list builder and return new list builder based on context and spec provided
+   * @returns new list builder based on context and spec provided
+   */
   clone(withSpec?: BuildableList): ListBuilder {
     const builder = new ListBuilder(this._context)
     builder.spec = {...this.spec, ...(withSpec || {})}

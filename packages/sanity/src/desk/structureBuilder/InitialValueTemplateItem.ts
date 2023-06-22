@@ -13,36 +13,64 @@ import {InitialValueTemplateItem} from 'sanity'
  * @public
  */
 export class InitialValueTemplateItemBuilder implements Serializable<InitialValueTemplateItem> {
+  /** Initial Value template item option object */
   protected spec: Partial<InitialValueTemplateItem>
 
-  constructor(protected _context: StructureContext, spec?: Partial<InitialValueTemplateItem>) {
+  constructor(
+    /**
+     * Desk structure context
+     */
+    protected _context: StructureContext,
+    spec?: Partial<InitialValueTemplateItem>
+  ) {
     this.spec = spec ? spec : {}
   }
 
+  /** Set initial value template item builder ID
+   * @returns initial value template item based on ID provided
+   */
   id(id: string): InitialValueTemplateItemBuilder {
     return this.clone({id})
   }
 
+  /** Get initial value template item builder ID
+   * @returns initial value template item ID
+   */
   getId(): Partial<InitialValueTemplateItem>['id'] {
     return this.spec.id
   }
 
+  /** Set initial value template item title
+   * @returns initial value template item based on title provided
+   */
   title(title: string): InitialValueTemplateItemBuilder {
     return this.clone({title})
   }
 
+  /** Get initial value template item title
+   * @returns initial value template item title
+   */
   getTitle(): Partial<InitialValueTemplateItem>['title'] {
     return this.spec.title
   }
 
+  /** Set initial value template item description
+   * @returns initial value template item builder based on description provided
+   */
   description(description: string): InitialValueTemplateItemBuilder {
     return this.clone({description})
   }
 
+  /** Get initial value template item description
+   * @returns initial value template item description
+   */
   getDescription(): Partial<InitialValueTemplateItem>['description'] {
     return this.spec.description
   }
 
+  /** Set initial value template ID
+   * @returns initial value template item based builder on template ID provided
+   */
   templateId(templateId: string): InitialValueTemplateItemBuilder {
     // Let's try to be a bit helpful and assign an ID from template ID if none is specified
     const paneId = this.spec.id || templateId
@@ -52,18 +80,30 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
     })
   }
 
+  /** Get initial value template item template ID
+   * @returns initial value template item ID
+   */
   getTemplateId(): Partial<InitialValueTemplateItem>['templateId'] {
     return this.spec.templateId
   }
 
+  /** Get initial value template item template parameters
+   * @returns initial value template item builder based on parameters provided
+   */
   parameters(parameters: {[key: string]: any}): InitialValueTemplateItemBuilder {
     return this.clone({parameters})
   }
 
+  /** Get initial value template item template parameters
+   * @returns initial value template item parameters
+   */
   getParameters(): Partial<InitialValueTemplateItem>['parameters'] {
     return this.spec.parameters
   }
 
+  /** Serialize initial value template item
+   * @returns initial value template item object based on the path, index and hint provided in options
+   */
   serialize({path = [], index, hint}: SerializeOptions = {path: []}): InitialValueTemplateItem {
     const {spec, _context} = this
     const {templates} = _context
@@ -111,6 +151,9 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
     }
   }
 
+  /** Clone generic view builder (allows for options overriding)
+   * @returns initial value template item builder based on the context and options provided
+   */
   clone(withSpec: Partial<InitialValueTemplateItem> = {}): InitialValueTemplateItemBuilder {
     const builder = new InitialValueTemplateItemBuilder(this._context)
     builder.spec = {...this.spec, ...withSpec}

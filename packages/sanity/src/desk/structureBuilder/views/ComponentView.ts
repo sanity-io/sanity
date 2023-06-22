@@ -44,22 +44,38 @@ export class ComponentViewBuilder extends GenericViewBuilder<
     }
   }
 
+  /** Set view Component
+   * @returns component view builder based on component view provided
+   */
   component(component: UserViewComponent): ComponentViewBuilder {
     return this.clone({component})
   }
 
+  /** Get view Component
+   * @returns component view component
+   */
   getComponent(): Partial<ComponentView>['component'] {
     return this.spec.component
   }
 
+  /** Set view Component options
+   * @returns component view builder based on options provided
+   */
   options(options: {[key: string]: any}): ComponentViewBuilder {
     return this.clone({options})
   }
 
+  /** Get view Component options
+   * @returns component view options
+   */
   getOptions(): ComponentView['options'] {
     return this.spec.options || {}
   }
 
+  /** Serialize view Component
+   * @returns component view based on path provided in options
+   *
+   */
   serialize(options: SerializeOptions = {path: []}): ComponentView {
     const base = super.serialize(options)
 
@@ -80,6 +96,9 @@ export class ComponentViewBuilder extends GenericViewBuilder<
     }
   }
 
+  /** Clone Component view builder (allows for options overriding)
+   * @returns component view builder
+   */
   clone(withSpec?: Partial<ComponentView>): ComponentViewBuilder {
     const builder = new ComponentViewBuilder()
     builder.spec = {...this.spec, ...(withSpec || {})}

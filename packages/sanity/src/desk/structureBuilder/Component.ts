@@ -68,62 +68,108 @@ export class ComponentBuilder implements Serializable<Component> {
     this.spec = {options: {}, ...(spec ? spec : {})}
   }
 
+  /** Set Component ID
+   * @returns component builder based on ID provided
+   */
   id(id: string): ComponentBuilder {
     return this.clone({id})
   }
 
+  /** Get ID
+   * @returns ID
+   */
   getId(): BuildableComponent['id'] {
     return this.spec.id
   }
 
+  /** Set Component title
+   * @returns component builder based on title provided (and ID)
+   */
   title(title: string): ComponentBuilder {
     return this.clone({title, id: getStructureNodeId(title, this.spec.id)})
   }
 
+  /** Get Component title
+   * @returns title
+   */
   getTitle(): BuildableComponent['title'] {
     return this.spec.title
   }
 
+  /** Set Component child
+   * @returns component builder based on child component provided
+   */
   child(child: Child): ComponentBuilder {
     return this.clone({child})
   }
 
+  /** Get Component child
+   * @returns child component
+   */
   getChild(): BuildableComponent['child'] {
     return this.spec.child
   }
 
+  /** Set component
+   * @returns component builder based on component provided
+   */
   component(component: UserComponent): ComponentBuilder {
     return this.clone({component})
   }
 
+  /** Get Component
+   * @returns component
+   */
   getComponent(): BuildableComponent['component'] {
     return this.spec.component
   }
 
+  /** Set Component options
+   * @returns component builder based on options provided
+   */
   options(options: {[key: string]: unknown}): ComponentBuilder {
     return this.clone({options})
   }
 
+  /** Get Component options
+   * @returns component options
+   */
   getOptions(): NonNullable<BuildableComponent['options']> {
     return this.spec.options || {}
   }
 
+  /** Set Component menu items
+   * @returns component builder based on menuItems provided
+   */
   menuItems(menuItems: (MenuItem | MenuItemBuilder)[]): ComponentBuilder {
     return this.clone({menuItems})
   }
 
+  /** Get Component menu items
+   * @returns menu items
+   */
   getMenuItems(): BuildableComponent['menuItems'] {
     return this.spec.menuItems
   }
 
+  /** Set Component menu item groups
+   * @returns component builder based on menuItemGroups provided
+   */
   menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]): ComponentBuilder {
     return this.clone({menuItemGroups})
   }
 
+  /** Get Component menu item groups
+   * @returns menu item groups
+   */
   getMenuItemGroups(): BuildableComponent['menuItemGroups'] {
     return this.spec.menuItemGroups
   }
 
+  /** Serialize component
+   * @returns component object based on path provided in options
+   *
+   */
   serialize(options: SerializeOptions = {path: []}): Component {
     const {id, title, child, options: componentOptions, component} = this.spec
     if (!id) {
@@ -158,6 +204,9 @@ export class ComponentBuilder implements Serializable<Component> {
     }
   }
 
+  /** Clone component builder (allows for options overriding)
+   * @returns cloned builder
+   */
   clone(withSpec?: BuildableComponent): ComponentBuilder {
     const builder = new ComponentBuilder()
     builder.spec = {...this.spec, ...(withSpec || {})}

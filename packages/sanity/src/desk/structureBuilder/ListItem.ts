@@ -119,58 +119,113 @@ export type PartialListItem = Partial<UnserializedListItem>
  *
  * @public */
 export class ListItemBuilder implements Serializable<ListItem> {
+  /** list item option object */
   protected spec: PartialListItem
 
-  constructor(protected _context: StructureContext, spec?: ListItemInput) {
+  constructor(
+    /**
+     * Desk structure context
+     */
+    protected _context: StructureContext,
+    spec?: ListItemInput
+  ) {
     this.spec = spec ? spec : {}
   }
 
+  /**
+   * Set list item ID
+   * @returns list item builder based on ID provided
+   */
   id(id: string): ListItemBuilder {
     return this.clone({id})
   }
 
+  /**
+   * Get list item ID
+   * @returns list item ID
+   */
   getId(): PartialListItem['id'] {
     return this.spec.id
   }
 
+  /**
+   * Set list item title
+   * @returns list item builder based on title provided
+   */
   title(title: string): ListItemBuilder {
     return this.clone({title, id: getStructureNodeId(title, this.spec.id)})
   }
 
+  /**
+   * Get list item title
+   * @returns list item title
+   */
   getTitle(): PartialListItem['title'] {
     return this.spec.title
   }
 
+  /**
+   * Set list item icon
+   * @returns list item builder based on icon provided
+   */
   icon(icon: React.ComponentType | React.ReactNode): ListItemBuilder {
     return this.clone({icon})
   }
 
+  /**
+   * Set if list item should show icon
+   * @returns list item builder based on showIcon provided
+   */
   showIcon(enabled = true): ListItemBuilder {
     return this.clone({
       displayOptions: {...(this.spec.displayOptions || {}), showIcon: enabled},
     })
   }
 
+  /**
+   * Check if list item should show icon
+   * @returns true if it should show the icon, false if not, undefined if not set
+   */
   getShowIcon(): boolean | undefined {
     return this.spec.displayOptions ? this.spec.displayOptions.showIcon : undefined
   }
 
+  /**
+   *Get list item icon
+   * @returns list item icon
+   */
   getIcon(): PartialListItem['icon'] {
     return this.spec.icon
   }
 
+  /**
+   * Set list item child
+   * @returns list item builder based on child provided
+   */
   child(child: UnserializedListItemChild): ListItemBuilder {
     return this.clone({child})
   }
 
+  /**
+   * Get list item child
+   * @returns list item child
+   */
   getChild(): PartialListItem['child'] {
     return this.spec.child
   }
 
+  /**
+   * Set list item schema type
+   * @returns list item builder based on schema type provided
+   */
   schemaType(schemaType: SchemaType | string): ListItemBuilder {
     return this.clone({schemaType})
   }
 
+  /**
+   * Get list item schema type
+   * @returns list item schema type
+   */
   getSchemaType(): PartialListItem['schemaType'] {
     const schemaType = this.spec.schemaType
 
@@ -181,6 +236,9 @@ export class ListItemBuilder implements Serializable<ListItem> {
     return this.spec.schemaType
   }
 
+  /** Serialize list item builder
+   * @returns list item node based on path provided in options
+   */
   serialize(options: ListItemSerializeOptions = {path: []}): ListItem {
     const {id, title, child} = this.spec
     if (typeof id !== 'string' || !id) {
@@ -239,6 +297,9 @@ export class ListItemBuilder implements Serializable<ListItem> {
     }
   }
 
+  /** Clone list item builder
+   * @returns list item builder based on context and spec provided
+   */
   clone(withSpec?: PartialListItem): ListItemBuilder {
     const builder = new ListItemBuilder(this._context)
     builder.spec = {...this.spec, ...(withSpec || {})}
