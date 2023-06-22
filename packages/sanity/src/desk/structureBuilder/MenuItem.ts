@@ -77,6 +77,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item action
+   * @param action - menu item action
    * @returns menu item builder based on action provided
    */
   action(action: MenuItemActionType): MenuItemBuilder {
@@ -93,6 +94,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item intent
+   * @param intent - menu item intent
    * @returns menu item builder based on intent provided
    */
   intent(intent: Intent): MenuItemBuilder {
@@ -109,6 +111,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item title
+   * @param title - menu item title
    * @returns menu item builder based on title provided
    */
   title(title: string): MenuItemBuilder {
@@ -125,6 +128,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item group
+   * @param group - menu item group
    * @returns menu item builder based on group provided
    */
   group(group: string): MenuItemBuilder {
@@ -141,6 +145,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item icon
+   * @param icon - menu item icon
    * @returns menu item builder based on icon provided
    */
   icon(icon: React.ComponentType | React.ReactNode): MenuItemBuilder {
@@ -157,6 +162,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item parameters
+   * @param params - menu item parameters
    * @returns menu item builder based on parameters provided
    */
   params(params: MenuItemParamsType): MenuItemBuilder {
@@ -173,6 +179,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item to show as action
+   * @param showAsAction - determine if menu item should show as action
    * @returns menu item builder based on if it should show as action
    */
   showAsAction(showAsAction = true): MenuItemBuilder {
@@ -188,6 +195,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   }
 
   /** Serialize menu item builder
+   * @param options - serialization options
    * @returns menu item node based on path provided in options
    */
   serialize(options: SerializeOptions = {path: []}): MenuItem {
@@ -224,6 +232,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   }
 
   /** Clone menu item builder
+   * @param withSpec - menu item options
    * @returns menu item builder based on context and spec provided
    */
   clone(withSpec?: PartialMenuItem): MenuItemBuilder {

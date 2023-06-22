@@ -37,6 +37,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
 
   /**
    * Set Document type list child
+   * @param child - Child component
    * @returns document type list builder based on child component provided without default intent handler
    */
   child(child: Child): DocumentTypeListBuilder {
@@ -44,6 +45,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
   }
 
   /** Clone Document type list builder (allows for options overriding)
+   * @param withSpec - Document type list builder options
    * @returns document type list builder
    */
   clone(withSpec?: PartialDocumentList): DocumentTypeListBuilder {
@@ -54,6 +56,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
   }
 
   /** Clone Document type list builder (allows for options overriding) and remove default intent handler
+   * @param withSpec - Document type list builder options
    * @returns document type list builder without default intent handler
    */
   cloneWithoutDefaultIntentHandler(withSpec?: PartialDocumentList): DocumentTypeListBuilder {

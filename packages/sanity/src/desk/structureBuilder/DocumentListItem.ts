@@ -68,6 +68,7 @@ export class DocumentListItemBuilder extends ListItemBuilder {
 
   /**
    * Serialize document list item
+   * @param options - serialization options
    * @returns document list item object based on path provided in options
    */
   serialize(options: SerializeOptions = {path: []}): DocumentListItem {
@@ -86,6 +87,7 @@ export class DocumentListItemBuilder extends ListItemBuilder {
   }
 
   /** Clone Document list item builder (allows for options overriding)
+   * @param withSpec - Document list item builder options
    * @returns document list item builder
    */
   clone(withSpec?: PartialDocumentListItem): DocumentListItemBuilder {

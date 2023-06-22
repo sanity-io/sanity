@@ -27,6 +27,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   }
 
   /** Set initial value template item builder ID
+   * @param id - initial value template item ID
    * @returns initial value template item based on ID provided
    */
   id(id: string): InitialValueTemplateItemBuilder {
@@ -41,6 +42,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   }
 
   /** Set initial value template item title
+   * @param title - initial value template item title
    * @returns initial value template item based on title provided
    */
   title(title: string): InitialValueTemplateItemBuilder {
@@ -55,6 +57,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   }
 
   /** Set initial value template item description
+   * @param description - initial value template item description
    * @returns initial value template item builder based on description provided
    */
   description(description: string): InitialValueTemplateItemBuilder {
@@ -69,6 +72,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   }
 
   /** Set initial value template ID
+   * @param templateId - initial value template item template ID
    * @returns initial value template item based builder on template ID provided
    */
   templateId(templateId: string): InitialValueTemplateItemBuilder {
@@ -88,6 +92,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   }
 
   /** Get initial value template item template parameters
+   * @param parameters - initial value template item parameters
    * @returns initial value template item builder based on parameters provided
    */
   parameters(parameters: {[key: string]: any}): InitialValueTemplateItemBuilder {
@@ -102,6 +107,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   }
 
   /** Serialize initial value template item
+   * @param options - serialization options
    * @returns initial value template item object based on the path, index and hint provided in options
    */
   serialize({path = [], index, hint}: SerializeOptions = {path: []}): InitialValueTemplateItem {
@@ -152,6 +158,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   }
 
   /** Clone generic view builder (allows for options overriding)
+   * @param withSpec - initial value template item builder options
    * @returns initial value template item builder based on the context and options provided
    */
   clone(withSpec: Partial<InitialValueTemplateItem> = {}): InitialValueTemplateItemBuilder {

@@ -138,6 +138,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
 
   /**
    * Set list builder based on items provided
+   * @param items - list items
    * @returns list builder based on items provided
    */
   items(items: (ListItemBuilder | ListItem | Divider)[]): ListBuilder {
@@ -152,6 +153,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
   }
 
   /** Serialize list builder
+   * @param options - serialization options
    * @returns list based on path in options
    */
   serialize(options: SerializeOptions = {path: []}): List {
@@ -198,6 +200,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
 
   /**
    * Clone list builder and return new list builder based on context and spec provided
+   * @param withSpec - list options
    * @returns new list builder based on context and spec provided
    */
   clone(withSpec?: BuildableList): ListBuilder {

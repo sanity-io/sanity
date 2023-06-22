@@ -125,6 +125,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Set API version
+   * @param apiVersion - API version
    * @returns document list builder based on the options and API version provided
    */
   apiVersion(apiVersion: string): DocumentListBuilder {
@@ -139,6 +140,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Set Document list filter
+   * @param filter - filter
    * @returns document list builder based on the options and filter provided
    */
   filter(filter: string): DocumentListBuilder {
@@ -153,6 +155,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Set Document list schema type name
+   * @param type - schema type name
    * @returns document list builder based on the schema type name provided
    */
   schemaType(type: SchemaType | string): DocumentListBuilder {
@@ -168,6 +171,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Set Document list options' parameters
+   * @param params - parameters
    * @returns document list builder based on the options provided
    */
   params(params: Record<string, unknown>): DocumentListBuilder {
@@ -184,6 +188,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Set Document list default ordering
+   * @param ordering - default sort ordering
    * @returns document list builder based on ordering provided
    */
   defaultOrdering(ordering: SortOrderingItem[]): DocumentListBuilder {
@@ -204,6 +209,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Serialize Document list
+   * @param options - serialization options
    * @returns document list object based on path provided in options
    */
   serialize(options: SerializeOptions = {path: []}): DocumentList {
@@ -242,6 +248,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Clone Document list builder (allows for options overriding)
+   * @param withSpec - override document list spec
    * @returns document list builder
    */
   clone(withSpec?: PartialDocumentList): DocumentListBuilder {

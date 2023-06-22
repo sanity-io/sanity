@@ -119,7 +119,7 @@ export type PartialListItem = Partial<UnserializedListItem>
  *
  * @public */
 export class ListItemBuilder implements Serializable<ListItem> {
-  /** list item option object */
+  /** List item option object */
   protected spec: PartialListItem
 
   constructor(

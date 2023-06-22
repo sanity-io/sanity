@@ -62,6 +62,7 @@ export interface BuildableComponent extends Partial<StructureNode> {
  * @public
  */
 export class ComponentBuilder implements Serializable<Component> {
+  /** component builder option object */
   protected spec: BuildableComponent
 
   constructor(spec?: ComponentInput) {
@@ -69,6 +70,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   /** Set Component ID
+   * @param id - component ID
    * @returns component builder based on ID provided
    */
   id(id: string): ComponentBuilder {
@@ -83,6 +85,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   /** Set Component title
+   * @param title - component title
    * @returns component builder based on title provided (and ID)
    */
   title(title: string): ComponentBuilder {
@@ -97,6 +100,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   /** Set Component child
+   * @param child - child component
    * @returns component builder based on child component provided
    */
   child(child: Child): ComponentBuilder {
@@ -111,6 +115,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   /** Set component
+   * @param component - user built component
    * @returns component builder based on component provided
    */
   component(component: UserComponent): ComponentBuilder {
@@ -125,6 +130,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   /** Set Component options
+   * @param options - component options
    * @returns component builder based on options provided
    */
   options(options: {[key: string]: unknown}): ComponentBuilder {
@@ -139,6 +145,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   /** Set Component menu items
+   * @param menuItems - component menu items
    * @returns component builder based on menuItems provided
    */
   menuItems(menuItems: (MenuItem | MenuItemBuilder)[]): ComponentBuilder {
@@ -153,6 +160,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   /** Set Component menu item groups
+   * @param menuItemGroups - component menu item groups
    * @returns component builder based on menuItemGroups provided
    */
   menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]): ComponentBuilder {
@@ -167,6 +175,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   /** Serialize component
+   * @param options - serialization options
    * @returns component object based on path provided in options
    *
    */
@@ -205,6 +214,7 @@ export class ComponentBuilder implements Serializable<Component> {
   }
 
   /** Clone component builder (allows for options overriding)
+   * @param withSpec - component builder options
    * @returns cloned builder
    */
   clone(withSpec?: BuildableComponent): ComponentBuilder {

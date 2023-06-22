@@ -24,6 +24,7 @@ export class FormViewBuilder extends GenericViewBuilder<Partial<BaseView>, FormV
 
   /**
    * Serialize Form view builder
+   * @param options - Serialize options
    * @returns form view builder based on path provided in options
    */
   serialize(options: SerializeOptions = {path: []}): FormView {
@@ -35,6 +36,7 @@ export class FormViewBuilder extends GenericViewBuilder<Partial<BaseView>, FormV
 
   /**
    * Clone Form view builder (allows for options overriding)
+   * @param withSpec - Form view builder options
    * @returns form view builder
    */
   clone(withSpec?: Partial<FormView>): FormViewBuilder {

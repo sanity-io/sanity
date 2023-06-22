@@ -76,6 +76,7 @@ export type PartialDocumentNode = {
  *
  * @public */
 export class DocumentBuilder implements Serializable<DocumentNode> {
+  /** component builder option object */
   protected spec: PartialDocumentNode
 
   constructor(
@@ -89,6 +90,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Set Document Builder ID
+   * @param id - document builder ID
    * @returns document builder based on ID provided
    */
   id(id: string): DocumentBuilder {
@@ -103,6 +105,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Set Document title
+   * @param title - document title
    * @returns document builder based on title provided (and ID)
    */
   title(title: string): DocumentBuilder {
@@ -117,6 +120,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Set Document child
+   * @param child - document child
    * @returns document builder based on child provided
    */
   child(child: Child): DocumentBuilder {
@@ -131,6 +135,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Set Document ID
+   * @param documentId - document ID
    * @returns document builder with document based on ID provided
    */
   documentId(documentId: string): DocumentBuilder {
@@ -153,6 +158,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Set Document Type
+   * @param documentType - document type
    * @returns document builder with document based on type provided
    */
   schemaType(documentType: SchemaType | string): DocumentBuilder {
@@ -172,6 +178,8 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Set Document Template
+   * @param templateId - document template ID
+   * @param parameters - document template parameters
    * @returns document builder with document based on template provided
    */
   initialValueTemplate(templateId: string, parameters?: Record<string, unknown>): DocumentBuilder {
@@ -199,6 +207,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Set Document views
+   * @param views - document views
    * @returns document builder with document based on views provided
    */
   views(views: (View | ViewBuilder)[]): DocumentBuilder {
@@ -213,6 +222,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Serialize Document builder
+   * @param options - serialization options
    * @returns document node based on path, index and hint provided in options
    */
   serialize({path = [], index, hint}: SerializeOptions = {path: []}): DocumentNode {
@@ -281,6 +291,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Clone Document builder
+   * @param withSpec - partial document node specification used to extend the cloned builder
    * @returns document builder based on context and spec provided
    */
   clone(withSpec: PartialDocumentNode = {}): DocumentBuilder {

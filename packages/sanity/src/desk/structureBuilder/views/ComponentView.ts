@@ -27,6 +27,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
   Partial<ComponentView>,
   ComponentViewBuilder
 > {
+  /** component view option object */
   protected spec: Partial<ComponentView>
 
   constructor(componentOrSpec?: UserViewComponent | Partial<ComponentView>) {
@@ -45,6 +46,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
   }
 
   /** Set view Component
+   * @param component - component view component
    * @returns component view builder based on component view provided
    */
   component(component: UserViewComponent): ComponentViewBuilder {
@@ -59,6 +61,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
   }
 
   /** Set view Component options
+   * @param options - component view options
    * @returns component view builder based on options provided
    */
   options(options: {[key: string]: any}): ComponentViewBuilder {
@@ -73,6 +76,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
   }
 
   /** Serialize view Component
+   * @param options - serialization options
    * @returns component view based on path provided in options
    *
    */
@@ -97,6 +101,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
   }
 
   /** Clone Component view builder (allows for options overriding)
+   * @param withSpec - new component view options
    * @returns component view builder
    */
   clone(withSpec?: Partial<ComponentView>): ComponentViewBuilder {

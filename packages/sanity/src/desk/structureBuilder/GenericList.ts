@@ -115,6 +115,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   protected spec: TList = {} as TList
 
   /** Set generic list ID
+   * @param id - generic list ID
    * @returns generic list builder based on ID provided
    */
   id(id: string): ConcreteImpl {
@@ -129,6 +130,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Set generic list title
+   * @param title - generic list title
    * @returns generic list builder based on title and ID provided
    */
   title(title: string): ConcreteImpl {
@@ -143,6 +145,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Set generic list layout
+   * @param defaultLayout - generic list layout key
    * @returns generic list builder based on layout provided
    */
   defaultLayout(defaultLayout: PreviewLayoutKey): ConcreteImpl {
@@ -157,6 +160,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Set generic list menu items
+   * @param menuItems - generic list menu items
    * @returns generic list builder based on menu items provided
    */
   menuItems(menuItems: (MenuItem | MenuItemBuilder)[] | undefined): ConcreteImpl {
@@ -171,6 +175,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Set generic list menu item groups
+   * @param menuItemGroups - generic list menu item groups
    * @returns generic list builder based on menu item groups provided
    */
   menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]): ConcreteImpl {
@@ -185,6 +190,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Set generic list child
+   * @param child - generic list child
    * @returns generic list builder based on child provided (clone)
    */
   child(child: Child): ConcreteImpl {
@@ -199,6 +205,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Set generic list can handle intent
+   * @param canHandleIntent - generic list intent checker
    * @returns generic list builder based on can handle intent provided
    */
   canHandleIntent(canHandleIntent: IntentChecker): ConcreteImpl {
@@ -213,6 +220,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Set generic list display options
+   * @param enabled - allow / disallow for showing icons
    * @returns generic list builder based on display options (showIcons) provided
    */
   showIcons(enabled = true): ConcreteImpl {
@@ -229,6 +237,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Set generic list initial value templates
+   * @param templates - generic list initial value templates
    * @returns generic list builder based on templates provided
    */
   initialValueTemplates(
@@ -249,6 +258,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Serialize generic list
+   * @param options - serialization options
    * @returns generic list object based on path provided in options
    */
   serialize(options: SerializeOptions = {path: []}): GenericList {
@@ -288,6 +298,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Clone generic list builder (allows for options overriding)
+   * @param _withSpec - generic list options
    * @returns generic list builder
    */
   abstract clone(_withSpec?: object): ConcreteImpl
