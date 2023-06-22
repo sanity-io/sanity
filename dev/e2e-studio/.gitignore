@@ -1,0 +1,9 @@
+/dist
+
+.env.*
+!.env.example
+
+# Automated testing files
+/test/report
+/test/results
+/test/state

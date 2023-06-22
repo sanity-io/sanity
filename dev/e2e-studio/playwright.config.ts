@@ -2,12 +2,13 @@
 import os from 'os'
 import path from 'path'
 import {defineConfig, devices} from '@playwright/test'
-import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
+import {loadEnvFiles} from '../../scripts/utils/loadEnvFiles'
+import {STUDIO_PROJECT_ID} from './test/helpers'
 
 // Paths
-const TESTS_PATH = path.join(__dirname, 'test', 'e2e', 'tests')
-const HTML_REPORT_PATH = path.join(__dirname, 'test', 'e2e', 'report')
-const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'test', 'e2e', 'results')
+const TESTS_PATH = path.join(__dirname, 'test', 'tests')
+const HTML_REPORT_PATH = path.join(__dirname, 'test', 'report')
+const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'test', 'results')
 
 // OS-specific browsers to include
 const OS_BROWSERS =
@@ -20,7 +21,6 @@ loadEnvFiles()
 const CI = readBoolEnv('CI', false)
 const E2E_DEBUG = readBoolEnv('SANITY_E2E_DEBUG', false)
 const AUTH_TOKEN = process.env.SANITY_E2E_SESSION_TOKEN
-const PROJECT_ID = 'ppsg7ml5'
 
 if (!AUTH_TOKEN) {
   throw new Error('Missing sanity token - see README.md for details')
@@ -30,7 +30,7 @@ if (!AUTH_TOKEN) {
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  globalSetup: require.resolve('./test/e2e/globalSetup'),
+  globalSetup: require.resolve('./test/globalSetup'),
 
   testDir: TESTS_PATH,
 
@@ -56,9 +56,9 @@ export default defineConfig({
     actionTimeout: 10000,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    baseURL: 'http://localhost:3333/',
+    baseURL: 'http://localhost:3337/',
     headless: readBoolEnv('SANITY_E2E_HEADLESS', !E2E_DEBUG),
-    storageState: getStorageStateForProjectId(PROJECT_ID),
+    storageState: getStorageStateForProjectId(STUDIO_PROJECT_ID),
     viewport: {width: 1728, height: 1000},
     contextOptions: {reducedMotion: 'reduce'},
   },
@@ -91,7 +91,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npm run dev',
-    port: 3333,
+    port: 3337,
     reuseExistingServer: !process.env.CI,
   },
 })
@@ -126,7 +126,7 @@ function getStorageStateForProjectId(projectId: string) {
     cookies: [],
     origins: [
       {
-        origin: 'http://localhost:3333',
+        origin: 'http://localhost:3337',
         localStorage: [
           {
             name: `__studio_auth_token_${projectId}`,
