@@ -25,6 +25,7 @@ export interface DeskToolFeatures {
    */
   backButton: boolean
   resizablePanes: boolean
+  reviewChanges: boolean
   splitPanes: boolean
   splitViews: boolean
 }

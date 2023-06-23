@@ -350,10 +350,14 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [closeInspector, resolvedChangesInspector])
 
   const handleHistoryOpen = useCallback(() => {
+    if (!features.reviewChanges) {
+      return
+    }
+
     if (resolvedChangesInspector) {
       openInspector(resolvedChangesInspector.name)
     }
-  }, [openInspector, resolvedChangesInspector])
+  }, [features.reviewChanges, openInspector, resolvedChangesInspector])
 
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
