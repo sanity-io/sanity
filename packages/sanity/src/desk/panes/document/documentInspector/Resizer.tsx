@@ -8,21 +8,10 @@ const Root = styled.div`
   bottom: 0;
   width: 9px;
   z-index: 201;
-  cursor: col-resize;
+  cursor: ew-resize;
 
-  & > span:nth-child(1),
-  & > span:nth-child(3) {
-    opacity: 0;
-    display: block;
-    border-left: 1px solid var(--card-border-color);
-    position: absolute;
-    top: 50%;
-    margin-top: -16px;
-    height: 32px;
-    transition: opacity 200ms;
-  }
-
-  & > span:nth-child(2) {
+  /* Border */
+  & > span:nth-child(1) {
     display: block;
     border-left: 1px solid var(--card-border-color);
     position: absolute;
@@ -33,19 +22,22 @@ const Root = styled.div`
     opacity: 0.5;
   }
 
-  & > span:nth-child(1) {
+  /* Hover effect */
+  & > span:nth-child(2) {
+    display: block;
+    position: absolute;
+    top: 0;
     left: 0;
+    width: 9px;
+    bottom: 0;
+    background-color: var(--card-border-color);
+    opacity: 0;
+    transition: opacity 150ms;
   }
 
-  & > span:nth-child(3) {
-    left: 8px;
-  }
-
-  &:hover > span {
-    opacity: 1;
-
-    &:nth-child(2) {
-      border-left-style: solid;
+  @media (hover: hover) {
+    &:hover > span:nth-child(2) {
+      opacity: 0.2;
     }
   }
 `
@@ -81,8 +73,10 @@ export function Resizer(props: {onResize: (delta: number) => void; onResizeStart
 
   return (
     <Root onMouseDown={handleMouseDown}>
+      {/* Hover effect */}
       <span />
-      <span />
+
+      {/* Border */}
       <span />
     </Root>
   )
