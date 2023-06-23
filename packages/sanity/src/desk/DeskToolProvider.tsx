@@ -43,6 +43,7 @@ export function DeskToolProvider({
     () => ({
       backButton: layoutCollapsed,
       resizablePanes: !layoutCollapsed,
+      reviewChanges: !layoutCollapsed,
       splitPanes: !layoutCollapsed,
       splitViews: !layoutCollapsed,
     }),
