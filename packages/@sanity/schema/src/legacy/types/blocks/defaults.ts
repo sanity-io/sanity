@@ -32,8 +32,8 @@ export const DEFAULT_MARKS_FIELD = {
 }
 
 export const LIST_TYPES = {
-  bullet: {title: 'Bullet', value: 'bullet'},
-  numbered: {title: 'Numbered', value: 'number'},
+  bullet: {title: 'Bulleted list', value: 'bullet'},
+  numbered: {title: 'Numbered list', value: 'number'},
 }
 
 export const DEFAULT_LIST_TYPES = [LIST_TYPES.bullet, LIST_TYPES.numbered]
@@ -61,7 +61,7 @@ export const DEFAULT_BLOCK_STYLES = [
 ]
 
 export const DECORATOR_STRONG = {title: 'Strong', value: 'strong'}
-export const DECORATOR_EMPHASIS = {title: 'Emphasis', value: 'em'}
+export const DECORATOR_EMPHASIS = {title: 'Italic', value: 'em'}
 export const DECORATOR_CODE = {title: 'Code', value: 'code'}
 export const DECORATOR_UNDERLINE = {title: 'Underline', value: 'underline'}
 export const DECORATOR_STRIKE = {title: 'Strike', value: 'strike-through'}
