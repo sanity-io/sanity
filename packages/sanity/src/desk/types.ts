@@ -42,6 +42,7 @@ export interface DeskToolContextValue {
 
 /**
  * Type for a desk tool context. Extends from ConfigContext.
+ *  @hidden
  *  @public
  */
 export interface StructureResolverContext extends ConfigContext {
@@ -96,8 +97,7 @@ export type StructureResolver = (
    */
   S: StructureBuilder,
   /**
-   * An object containing pane and index
-   * {@link StructureResolverContext}
+   * An object containing pane and index information for the current desk tool.
    */
   context: StructureResolverContext
 ) => unknown
