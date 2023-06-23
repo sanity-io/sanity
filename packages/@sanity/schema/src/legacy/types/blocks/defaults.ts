@@ -8,7 +8,8 @@ export const DEFAULT_LINK_ANNOTATION = {
     {
       name: 'href',
       type: 'url',
-      title: 'Url',
+      title: 'Link',
+      description: 'A valid web, email, phone, or relative link.',
       validation: (Rule) =>
         Rule.uri({
           scheme: ['http', 'https', 'tel', 'mailto'],
