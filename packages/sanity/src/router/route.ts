@@ -38,6 +38,7 @@ export interface RouteObject {
   /**
    * Creates a new router.
    * Returns {@link Router}
+   * See {@link RouteNodeOptions} and {@link RouteChildren}
    */
   create: (
     routeOrOpts: RouteNodeOptions | string,
@@ -61,7 +62,31 @@ export interface RouteObject {
 /**
  * An object containing functions for creating routers and router scopes.
  * See {@link RouteObject}
+ *
  * @public
+ *
+ * @example
+ * ```ts
+ * const router = route.create({
+ *   path: "/foo",
+ *   children: [
+ *     route.create({
+ *       path: "/bar",
+ *       children: [
+ *         route.create({
+ *           path: "/:baz",
+ *           transform: {
+ *             baz: {
+ *               toState: (id) => ({ id }),
+ *               toPath: (state) => state.id,
+ *             },
+ *           },
+ *         }),
+ *       ],
+ *     }),
+ *   ],
+ * });
+ * ```
  */
 export const route: RouteObject = {
   create: (routeOrOpts, childrenOrOpts, children) =>
