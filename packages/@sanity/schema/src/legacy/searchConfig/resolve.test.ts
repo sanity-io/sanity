@@ -143,6 +143,7 @@ describe('searchConfig.resolve', () => {
             title: 'cover.0.card.0.title',
             subtitle: 'singleField',
             description: 'nested.field',
+            // @ts-expect-error test-specific: ignored isn't a valid key
             ignored: 'anyField',
           },
         },
