@@ -39,8 +39,6 @@ export interface UseIntentLinkOptions {
  *
  * @example
  * ```tsx
- * import {useIntentLink} from 'sanity'
- *
  * const {onClick, href} = useIntentLink({
  *   intent: 'edit',
  *   params: {id: 'foo'}
