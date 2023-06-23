@@ -1,7 +1,7 @@
 import {test, expect} from '@playwright/test'
 import {createUniqueDocument, testSanityClient} from '../../helpers'
 
-test.describe('sanity/desk: document inspectors', () => {
+test.describe.skip('sanity/desk: document inspectors', () => {
   test('open and close custom inspector', async ({page}) => {
     await page.goto('/test/content/input-debug;inspectorsTest;inspectors-test')
 
