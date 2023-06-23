@@ -2,6 +2,8 @@ import React, {forwardRef} from 'react'
 import {useStateLink} from './useStateLink'
 
 /**
+ * The props for the {@link StateLink} component.
+ *
  * @public
  */
 export interface StateLinkProps {

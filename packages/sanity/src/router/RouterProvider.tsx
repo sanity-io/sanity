@@ -3,6 +3,8 @@ import {RouterContext} from './RouterContext'
 import {IntentParameters, RouterContextValue, NavigateOptions, Router, RouterState} from './types'
 
 /**
+ * The props for the {@link RouterProvider} component.
+ *
  * @public
  */
 export interface RouterProviderProps {

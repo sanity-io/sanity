@@ -3,6 +3,8 @@ import {IntentParameters} from './types'
 import {useIntentLink} from './useIntentLink'
 
 /**
+ * The props for the {@link IntentLink} component.
+ *
  * @public
  */
 export interface IntentLinkProps {

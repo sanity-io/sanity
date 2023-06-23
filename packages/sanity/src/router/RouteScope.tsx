@@ -20,6 +20,8 @@ function addScope(
 }
 
 /**
+ * The props for the {@link RouteScope} component.
+ *
  * @public
  */
 export interface RouteScopeProps {

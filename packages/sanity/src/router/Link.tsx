@@ -2,6 +2,8 @@ import React, {forwardRef} from 'react'
 import {useLink} from './useLink'
 
 /**
+ * The props for the {@link Link} component.
+ *
  * @public
  */
 export interface LinkProps {
