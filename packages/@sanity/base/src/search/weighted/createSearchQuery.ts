@@ -28,6 +28,8 @@ export interface SearchQuery {
 
 export const DEFAULT_LIMIT = 1000
 
+const MAX_ATTRIBUTES = 1000
+
 const combinePaths = flow([flatten, union, compact])
 
 /**
@@ -43,6 +45,17 @@ const combinePaths = flow([flatten, union, compact])
 function createSearchSpecs(types: SearchableType[], optimizeIndexedPaths) {
   let hasIndexedPaths = false
 
+  const paths: {
+    path: string
+    pathLength: number
+    typeName: string
+    pathObj: {
+      weight: number
+      path: string
+      mapWith: string
+    }
+  }[] = []
+
   const specs = types.map((type) => ({
     typeName: type.name,
     paths: type.__experimental_search.map((config) => {
@@ -55,15 +68,63 @@ function createSearchSpecs(types: SearchableType[], optimizeIndexedPaths) {
         }
         return p
       })
+
+      const joinedPath = joinPath(path)
+      paths.push({
+        typeName: type.name,
+        path: joinedPath,
+        pathLength: joinedPath.split('.').length,
+        pathObj: {
+          weight: config.weight,
+          path: joinedPath,
+          mapWith: config.mapWith,
+        },
+      })
+
       return {
         weight: config.weight,
-        path: joinPath(path),
+        path: joinedPath,
         mapWith: config.mapWith,
       }
     }),
   }))
+
+  // @todo: refactor!
+
+  // Sorting paths by pathLength, largest first
+  const sortedPaths = paths.sort((a, b) => {
+    if (a.pathLength === b.pathLength) {
+      if (a.typeName === b.typeName) {
+        return a.path > b.path ? 1 : -1
+      }
+      return a.typeName > b.typeName ? 1 : -1
+    }
+    return a.pathLength > b.pathLength ? 1 : -1
+  })
+
+  // Limiting the number of paths
+  const allowedPaths = sortedPaths.slice(0, MAX_ATTRIBUTES).reduce((acc, val) => {
+    if (!acc[val.typeName]) {
+      acc[val.typeName] = []
+    }
+    acc[val.typeName].push({
+      ...val.pathObj,
+    })
+    return acc
+  }, {})
+
+  // Create a flat list of all paths
+  const newSpecs = specs.reduce((acc, val) => {
+    const hasPaths = !!allowedPaths[val.typeName]?.length
+    if (hasPaths) {
+      const spec = {...val, paths: allowedPaths[val.typeName]}
+      acc.push(spec)
+    }
+    return acc
+  }, [])
+
   return {
-    specs,
+    specs: newSpecs,
     hasIndexedPaths,
   }
 }
