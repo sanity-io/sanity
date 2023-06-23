@@ -42,7 +42,17 @@ export interface RouteScopeProps {
  *
  * @param props - The component props.
  *  {@link RouteScopeProps}
- * @returns A React element representing the new router scope.
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *  return (
+ *   <RouteScope scope="foo">
+ *    <StateLink state={{bar: 'baz'}}>Link</StateLink>
+ *   </RouteScope>
+ *   )
+ * }
+ * ```
  */
 export function RouteScope(props: RouteScopeProps): React.ReactElement {
   const {children, scope} = props

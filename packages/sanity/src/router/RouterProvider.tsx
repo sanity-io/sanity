@@ -10,8 +10,7 @@ import {IntentParameters, RouterContextValue, NavigateOptions, Router, RouterSta
 export interface RouterProviderProps {
   /**
    * A function that is called when the user navigates to a new path.
-   *
-   * @param opts - An object containing the path to navigate to and an optional `replace` flag.
+   * Takes an object containing the path to navigate to and an optional `replace` flag.
    */
   onNavigate: (opts: {path: string; replace?: boolean}) => void
   /**

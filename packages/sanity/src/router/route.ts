@@ -30,17 +30,14 @@ export interface RouteNodeOptions {
 }
 
 /**
- * An object containing functions for creating routers and router scopes.
+ * Interface for the {@link route} object.
+ *
  * @public
  */
-export const route: {
+export interface RouteObject {
   /**
    * Creates a new router.
-   *
-   * @param routeOrOpts - The route options or string.
-   * @param childrenOrOpts - The children options or children.
-   * @param children - The children.
-   * @returns The new router. See {@link Router}
+   * Returns {@link Router}
    */
   create: (
     routeOrOpts: RouteNodeOptions | string,
@@ -50,21 +47,23 @@ export const route: {
 
   /**
    * Creates a new router for handling intents.
-   *
-   * @param base - The base path for the router.
-   * @returns The new router. See {@link Router}
+   * Returns {@link Router}
    */
   intents: (base: string) => Router
 
   /**
    * Creates a new router scope.
-   *
-   * @param scopeName - The name of the scope.
-   * @param rest - Additional options for the scope.
-   * @returns The new router scope. {@link Router}
+   * Returns {@link Router}
    */
   scope: (scopeName: string, ...rest: any[]) => Router
-} = {
+}
+
+/**
+ * An object containing functions for creating routers and router scopes.
+ * See {@link RouteObject}
+ * @public
+ */
+export const route: RouteObject = {
   create: (routeOrOpts, childrenOrOpts, children) =>
     createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children)),
   intents: (base: string) => {

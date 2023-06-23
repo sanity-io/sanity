@@ -25,13 +25,20 @@ export interface StateLinkProps {
  * A component that creates a link that updates the URL state.
  *
  * @remarks
- * This component uses the {@link useStateLink | `useStateLink`} hook to create a link that updates the URL state.
+ * This component uses the {@link useStateLink} hook
+ * to create a link that updates the URL state.
  *
  * @param props - The props for the component. See {@link StateLinkProps}.
- * @param ref - A React ref to forward to the underlying `a` element.
+ * @param ref - A React ref to forward to the underlying anchor element.
  *
  * @public
- * @returns A link that updates the URL state.
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *  return <StateLink state={{foo: 'bar'}}>Link</StateLink>
+ * }
+ * ```
  */
 export const StateLink = forwardRef(function StateLink(
   props: StateLinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'href'>,
