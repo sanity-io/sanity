@@ -82,11 +82,48 @@ export type InvalidItemTypeError = {
   value: unknown
 }
 
-/** @public */
+/**
+ * Represents an error that occurred in a specific field of a data object.
+ * @public
+ *
+ * @remarks
+ * This interface is used to provide detailed information about the error,
+ * including the field name, the error type, and the error message.
+ */
 export interface FieldError {
+  /**
+   * The type of error that occurred.
+   */
   kind: 'error'
+  /**
+   * The unique identifier for the error.
+   */
   key: string
+  /**
+   * The name of the field that the error occurred in.
+   */
   fieldName: string
+  /**
+   * The specific error that occurred.
+   *
+   * ```md
+   * Possible error types include:
+   * - IncompatibleTypeError
+   * - TypeAnnotationMismatchError
+   * - MissingKeysError
+   * - DuplicateKeysError
+   * - UndeclaredMembersError
+   * - MixedArrayError
+   * ```
+   *
+   * See {@link IncompatibleTypeError},
+   * {@link TypeAnnotationMismatchError},
+   * {@link MissingKeysError},
+   * {@link DuplicateKeysError},
+   * {@link UndeclaredMembersError} and
+   * {@link MixedArrayError} for more information.
+   *
+   */
   error:
     | IncompatibleTypeError
     | TypeAnnotationMismatchError

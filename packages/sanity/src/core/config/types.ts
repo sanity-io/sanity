@@ -141,10 +141,25 @@ export type AsyncComposableOption<TValue, TContext> = (
 
 /** @public */
 export interface ConfigContext {
+  /**
+   * The ID of the project.
+   */
   projectId: string
+  /**
+   * The name of the dataset.
+   */
   dataset: string
+  /**
+   * The schema for the dataset.
+   */
   schema: Schema
+  /**
+   * The current user or null
+   */
   currentUser: CurrentUser | null
+  /**
+   * A function that returns a Sanity client with the {@link SourceClientOptions | specified options}.
+   */
   getClient: (options: SourceClientOptions) => SanityClient
 }
 
@@ -388,6 +403,9 @@ export type PartialContext<TContext extends ConfigContext> = Pick<
 
 /** @public */
 export interface SourceClientOptions {
+  /**
+   * API version to use. See {@link https://www.sanity.io/docs/api-versioning}
+   */
   apiVersion: string
 }
 
