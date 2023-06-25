@@ -170,7 +170,7 @@ import {FieldDefinitionBase, IntrinsicTypeName} from './definition'
  * @beta
  */
 export function defineType<
-  TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  TType extends IntrinsicTypeName | (string & {}), // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
