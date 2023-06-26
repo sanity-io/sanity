@@ -1,3 +1,4 @@
+import {ExperimentalSearchPath} from '@sanity/types/src'
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
@@ -26,6 +27,12 @@ export interface SearchQuery {
   terms: string[]
 }
 
+interface IntermediateSearchType extends Omit<ExperimentalSearchPath, 'path'> {
+  path: string
+  pathLength: number
+  typeName: string
+}
+
 export const DEFAULT_LIMIT = 1000
 
 const MAX_ATTRIBUTES = 1000
@@ -42,89 +49,70 @@ const combinePaths = flow([flatten, union, compact])
  * This optimization will yield more search results than may be intended, but offers better performance over arrays with indices.
  * (which are currently unoptimizable by Content Lake)
  */
-function createSearchSpecs(types: SearchableType[], optimizeIndexedPaths) {
+function createSearchSpecs(
+  types: SearchableType[],
+  optimizeIndexedPaths
+): {
+  hasIndexedPaths: boolean
+  specs: SearchSpec[]
+} {
   let hasIndexedPaths = false
 
-  const paths: {
-    path: string
-    pathLength: number
-    typeName: string
-    pathObj: {
-      weight: number
-      path: string
-      mapWith: string
-    }
-  }[] = []
-
-  const specs = types.map((type) => ({
-    typeName: type.name,
-    paths: type.__experimental_search.map((config) => {
-      const path = config.path.map((p) => {
-        if (typeof p === 'number') {
-          hasIndexedPaths = true
-          if (optimizeIndexedPaths) {
-            return [] as []
+  const specsByType = types
+    // Extract all paths
+    .reduce<IntermediateSearchType[]>((acc, val) => {
+      const newPaths = val.__experimental_search.map((config) => {
+        const path = config.path.map((p) => {
+          if (typeof p === 'number') {
+            hasIndexedPaths = true
+            if (optimizeIndexedPaths) {
+              return [] as []
+            }
           }
+          return p
+        })
+        return {
+          ...config,
+          path: joinPath(path),
+          pathLength: path.length,
+          typeName: val.name,
         }
-        return p
       })
-
-      const joinedPath = joinPath(path)
-      paths.push({
-        typeName: type.name,
-        path: joinedPath,
-        pathLength: joinedPath.split('.').length,
-        pathObj: {
-          weight: config.weight,
-          path: joinedPath,
-          mapWith: config.mapWith,
-        },
-      })
-
-      return {
-        weight: config.weight,
-        path: joinedPath,
-        mapWith: config.mapWith,
+      return acc.concat(newPaths)
+    }, [])
+    // Sort by path length (ASC)
+    .sort((a, b) => {
+      if (a.pathLength === b.pathLength) {
+        if (a.typeName === b.typeName) return a.path > b.path ? 1 : -1
+        return a.typeName > b.typeName ? 1 : -1
       }
-    }),
-  }))
-
-  // @todo: refactor!
-
-  // Sorting paths by pathLength, largest first
-  const sortedPaths = paths.sort((a, b) => {
-    if (a.pathLength === b.pathLength) {
-      if (a.typeName === b.typeName) {
-        return a.path > b.path ? 1 : -1
-      }
-      return a.typeName > b.typeName ? 1 : -1
-    }
-    return a.pathLength > b.pathLength ? 1 : -1
-  })
-
-  // Limiting the number of paths
-  const allowedPaths = sortedPaths.slice(0, MAX_ATTRIBUTES).reduce((acc, val) => {
-    if (!acc[val.typeName]) {
-      acc[val.typeName] = []
-    }
-    acc[val.typeName].push({
-      ...val.pathObj,
+      return a.pathLength > b.pathLength ? 1 : -1
     })
-    return acc
-  }, {})
-
-  // Create a flat list of all paths
-  const newSpecs = specs.reduce((acc, val) => {
-    const hasPaths = !!allowedPaths[val.typeName]?.length
-    if (hasPaths) {
-      const spec = {...val, paths: allowedPaths[val.typeName]}
-      acc.push(spec)
-    }
-    return acc
-  }, [])
+    // Reduce into specs by type and conditionally add paths based on whether they either
+    // 1. fall within the MAX_ATTRIBUTES limit OR
+    // 2. have been explicitly included by the user (i.e. custom values for __experimental_search)
+    .reduce<Record<string, SearchSpec>>((acc, val, index) => {
+      const included = index < MAX_ATTRIBUTES || val.userProvided
+      const searchPath: SearchPath = {
+        mapWith: val.mapWith,
+        path: val.path,
+        weight: val.weight,
+      }
+      acc[val.typeName] = {
+        ...acc[val.typeName],
+        ...(included && {
+          paths: (acc[val.typeName]?.paths || []).concat([searchPath]),
+        }),
+        ...(!included && {
+          skippedPaths: (acc[val.typeName]?.skippedPaths || []).concat([searchPath]),
+        }),
+        typeName: val.typeName,
+      }
+      return acc
+    }, {})
 
   return {
-    specs: newSpecs,
+    specs: Object.values(specsByType),
     hasIndexedPaths,
   }
 }

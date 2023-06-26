@@ -33,6 +33,7 @@ export interface SearchPath {
 export interface SearchSpec {
   typeName: string
   paths: SearchPath[]
+  skippedPaths: SearchPath[]
 }
 
 /**

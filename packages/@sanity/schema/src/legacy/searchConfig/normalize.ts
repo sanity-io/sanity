@@ -1,6 +1,6 @@
 import {isPlainObject, toPath} from 'lodash'
 
-export function normalizeSearchConfigs(configs) {
+export function normalizeUserSearchConfigs(configs) {
   if (!Array.isArray(configs)) {
     throw new Error(
       'The search config of a document type must be an array of search config objects'
@@ -17,6 +17,7 @@ export function normalizeSearchConfigs(configs) {
       weight: 'weight' in conf ? conf.weight : 1,
       path: toPath(conf.path).map(stringsToNumbers),
       mapWith: typeof conf.mapWith === 'string' ? conf.mapWith : undefined,
+      userProvided: true,
     }
   })
 }
