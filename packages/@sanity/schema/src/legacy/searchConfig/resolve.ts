@@ -7,7 +7,7 @@ import {
   isReferenceSchemaType,
   ObjectSchemaType,
   SchemaType,
-} from '../../../../types'
+} from '@sanity/types'
 import {stringsToNumbers} from './normalize'
 
 interface SearchPath {
