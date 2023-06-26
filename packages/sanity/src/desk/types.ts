@@ -1,7 +1,9 @@
 import {SchemaType} from '@sanity/types'
-import {InteropObservable, Observable, ObservableInput, Subscribable} from 'rxjs'
+import {Observable} from 'rxjs'
+import {ButtonTone} from '@sanity/ui'
 import {
   DefaultDocumentNodeResolver,
+  MenuItem as DeskToolMenuItem,
   StructureBuilder,
   StructureContext,
   UserComponent,
@@ -22,6 +24,7 @@ export interface DeskToolFeatures {
    * @beta
    */
   backButton: boolean
+  resizablePanes: boolean
   reviewChanges: boolean
   splitPanes: boolean
   splitViews: boolean
@@ -161,7 +164,7 @@ export interface RouterPaneSiblingContext {
 }
 
 /** @internal */
-export type DeskToolMenuItem = ReturnType<ReturnType<StructureBuilder['menuItem']>['serialize']>
+export {type DeskToolMenuItem}
 
 /**
  * Represents what can be passed into `menuItems` inside of desk-tool panes
@@ -176,6 +179,7 @@ export interface PaneMenuItem extends DeskToolMenuItem {
   isDisabled?: boolean
   shortcut?: string
   selected?: boolean
+  tone?: ButtonTone
 }
 
 /** @internal */

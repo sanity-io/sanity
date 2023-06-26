@@ -1,49 +1,80 @@
-import {EarthAmericasIcon, BinaryDocumentIcon, RestoreIcon} from '@sanity/icons'
+import {BinaryDocumentIcon, EarthAmericasIcon} from '@sanity/icons'
 import {DeskToolFeatures, PaneMenuItem} from '../../types'
+import {INSPECT_ACTION_PREFIX} from './constants'
+import {DocumentInspector, DocumentInspectorMenuItem, ValidationMarker} from 'sanity'
 
-interface Params {
+interface GetMenuItemsParams {
+  currentInspector?: DocumentInspector
   features: DeskToolFeatures
-  changesOpen: boolean
   hasValue: boolean
+  inspectors: DocumentInspector[]
   previewUrl?: string | null
+  inspectorMenuItems: DocumentInspectorMenuItem[]
 }
 
-const getHistoryMenuItem = (params: Params): PaneMenuItem | null => {
-  const {features, hasValue, changesOpen} = params
+function getInspectorItems({
+  currentInspector,
+  hasValue,
+  inspectors,
+  inspectorMenuItems,
+}: GetMenuItemsParams): PaneMenuItem[] {
+  return inspectors
+    .map((inspector, index) => {
+      const menuItem = inspectorMenuItems[index]
 
-  if (!features.reviewChanges) return null
+      if (!menuItem || menuItem.hidden) return null
 
+      return {
+        action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
+        group: menuItem.showAsAction ? undefined : 'inspectors',
+        icon: menuItem.icon,
+        isDisabled: !hasValue,
+        selected: currentInspector?.name === inspector.name,
+        shortcut: menuItem.hotkeys?.join('+'),
+        showAsAction: menuItem.showAsAction,
+        title: menuItem.title,
+        tone: menuItem.tone,
+      }
+    })
+    .filter(Boolean) as PaneMenuItem[]
+}
+
+function getInspectItem({hasValue}: GetMenuItemsParams): PaneMenuItem {
   return {
-    action: 'reviewChanges',
-    title: 'Review changes',
-    icon: RestoreIcon,
-    isDisabled: changesOpen || !hasValue,
+    action: 'inspect',
+    group: 'inspectors',
+    title: 'Inspect',
+    icon: BinaryDocumentIcon,
+    isDisabled: !hasValue,
+    shortcut: 'Ctrl+Alt+I',
   }
 }
 
-const getInspectItem = ({hasValue}: Params): PaneMenuItem => ({
-  action: 'inspect',
-  title: 'Inspect',
-  icon: BinaryDocumentIcon,
-  isDisabled: !hasValue,
-  shortcut: 'Ctrl+Alt+I',
-})
-
-export const getProductionPreviewItem = ({previewUrl}: Params): PaneMenuItem | null => {
+export function getProductionPreviewItem({previewUrl}: GetMenuItemsParams): PaneMenuItem | null {
   if (!previewUrl) return null
 
   return {
     action: 'production-preview',
+    group: 'links',
     title: 'Open preview',
     icon: EarthAmericasIcon,
     shortcut: 'Ctrl+Alt+O',
   }
 }
 
-export const getMenuItems = (params: Params): PaneMenuItem[] => {
-  const items = [getProductionPreviewItem, getHistoryMenuItem, getInspectItem]
-    .filter(Boolean)
-    .map((fn) => fn(params))
+export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
+  const inspectorItems = getInspectorItems(params)
+  const items = [
+    // Get production preview item
+    getProductionPreviewItem(params),
+  ].filter(Boolean) as PaneMenuItem[]
 
-  return items.filter((i) => i !== null) as PaneMenuItem[]
+  return [
+    ...inspectorItems,
+
+    // TODO: convert to inspector or document view?
+    getInspectItem(params),
+
+    ...items,
+  ]
 }

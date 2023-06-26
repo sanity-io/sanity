@@ -10,7 +10,7 @@ import {createSchema} from '../schema'
 import {AuthStore, createAuthStore} from '../store/_legacy'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
-import {isNonNullable} from '../util'
+import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
@@ -28,6 +28,7 @@ import {
 import {
   documentActionsReducer,
   documentBadgesReducer,
+  documentInspectorsReducer,
   documentLanguageFilterReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -460,6 +461,14 @@ function resolveSource({
           initialValue: initialDocumentBadges,
           propertyName: 'document.badges',
           reducer: documentBadgesReducer,
+        }),
+      inspectors: (partialContext) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, ...partialContext},
+          initialValue: EMPTY_ARRAY,
+          propertyName: 'document.inspectors',
+          reducer: documentInspectorsReducer,
         }),
       resolveProductionUrl: (partialContext) =>
         resolveConfigProperty({

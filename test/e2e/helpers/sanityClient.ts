@@ -1,10 +1,11 @@
 import {createClient} from '@sanity/client'
+import {SANITY_E2E_SESSION_TOKEN} from '../env'
 import {STALE_TEST_THRESHOLD_MS, STUDIO_DATASET_NAME, STUDIO_PROJECT_ID} from './constants'
 
 export const testSanityClient = createClient({
   projectId: STUDIO_PROJECT_ID,
   dataset: STUDIO_DATASET_NAME,
-  token: process.env.SANITY_E2E_SESSION_TOKEN,
+  token: SANITY_E2E_SESSION_TOKEN,
   useCdn: false,
   apiVersion: '2021-08-31',
 })

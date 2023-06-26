@@ -1,9 +1,10 @@
 import React, {useCallback, useState, useId} from 'react'
-import {Box, Button, Dialog, Heading, Stack, Text, Tooltip} from '@sanity/ui'
+import {Dialog, Heading, Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {useSchema} from '../../../../hooks'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 import {useColorScheme} from '../../../colorScheme'
+import {StatusButton} from '../../../../components'
 
 export function ConfigIssuesButton() {
   const schema = useSchema()
@@ -35,27 +36,16 @@ export function ConfigIssuesButton() {
 
   return (
     <>
-      <Tooltip
-        content={
-          <Box padding={2}>
-            <Text size={1}>Found configuration issues</Text>
-          </Box>
-        }
-        placement="bottom"
-        portal
-        scheme={scheme}
-      >
-        <Box>
-          <Button
-            icon={WarningOutlineIcon}
-            mode="bleed"
-            tone="caution"
-            onClick={handleOpen}
-            ref={setButtonElement}
-            selected={isDialogOpen}
-          />
-        </Box>
-      </Tooltip>
+      <StatusButton
+        icon={WarningOutlineIcon}
+        label="Found configuration issues"
+        mode="bleed"
+        onClick={handleOpen}
+        ref={setButtonElement}
+        selected={isDialogOpen}
+        tone="caution"
+        tooltip={{scheme}}
+      />
 
       {isDialogOpen && (
         <Dialog

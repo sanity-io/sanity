@@ -13,6 +13,7 @@ import {
   DocumentActionComponent,
   DocumentBadgeComponent,
   DocumentFormNode,
+  DocumentInspector,
   DocumentLanguageFilterComponent,
   DocumentPermission,
   EditStateFor,
@@ -28,6 +29,7 @@ export interface DocumentPaneContextValue {
   activeViewId: string | null
   badges: DocumentBadgeComponent[] | null
   changesOpen: boolean
+  closeInspector: (inspectorName?: string) => void
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
   compareValue: Partial<SanityDocument> | null
@@ -40,6 +42,8 @@ export interface DocumentPaneContextValue {
   focusPath: Path
   index: number
   inspectOpen: boolean
+  inspector: DocumentInspector | null
+  inspectors: DocumentInspector[]
   menuItemGroups: PaneMenuItemGroup[]
   menuItems: PaneMenuItem[]
   onBlur: (blurredPath: Path) => void
@@ -56,6 +60,7 @@ export interface DocumentPaneContextValue {
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
   onSetCollapsedFieldSet: (path: Path, expanded: boolean) => void
+  openInspector: (inspectorName: string, paneParams?: Record<string, string>) => void
   paneKey: string
   previewUrl?: string | null
   ready: boolean
