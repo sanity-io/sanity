@@ -11,6 +11,10 @@ import {
 import {createMockSanityClient} from '../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../test/testUtils/getMockWorkspaceFromConfig'
 
+/**
+ * @description This component is used to wrap all tests in the providers it needs to be able to run successfully.
+ * It provides a mock Sanity client and a mock workspace.
+ */
 export const Wrapper = ({
   children,
   schemaTypes,
