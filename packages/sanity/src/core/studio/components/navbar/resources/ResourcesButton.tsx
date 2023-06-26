@@ -21,7 +21,7 @@ export function ResourcesButton() {
       <Tooltip
         content={
           <Box padding={2}>
-            <Text size={1}>Help and Resources </Text>
+            <Text size={1}>Help and resources </Text>
           </Box>
         }
         scheme={scheme}

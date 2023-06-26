@@ -6,50 +6,50 @@ import {ResourcesResponse, Section} from './helper-functions/types'
 interface ResourcesMenuItemProps {
   error: Error | null
   isLoading: boolean
-  value: ResourcesResponse | undefined
+  value?: ResourcesResponse
 }
 
 export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
   const latestStudioVersion = value?.latestVersion
 
+  if (isLoading) {
+    return (
+      <Flex align="center" justify="center" padding={3}>
+        <Spinner />
+      </Flex>
+    )
+  }
+
   return (
     <>
-      {isLoading ? (
-        <Flex align="center" justify="center" padding={3}>
-          <Spinner />
-        </Flex>
-      ) : (
-        <>
-          {/* Display fallback values on error / no response */}
-          {(value === undefined || error) && <FallbackLinks />}
+      {/* Display fallback values on error / no response */}
+      {(value === undefined || error) && <div>{fallbackLinks}</div>}
 
-          {!error &&
-            sections?.map((subSection) => {
-              if (!subSection) return null
-              return <SubSection key={subSection._key} subSection={subSection} />
-            })}
+      {!error &&
+        sections?.map((subSection) => {
+          if (!subSection) return null
+          return <SubSection key={subSection._key} subSection={subSection} />
+        })}
 
-          {/* Studio version information */}
-          <Box padding={3}>
-            <Text size={1} muted weight="medium" textOverflow="ellipsis">
-              Sanity Studio version {SANITY_VERSION}
+      {/* Studio version information */}
+      <Box padding={3}>
+        <Text size={1} muted weight="medium" textOverflow="ellipsis">
+          Sanity Studio version {SANITY_VERSION}
+        </Text>
+        {!error && latestStudioVersion && (
+          <Box paddingTop={2}>
+            <Text size={1} muted textOverflow="ellipsis">
+              Latest version is {latestStudioVersion}
             </Text>
-            {!error && !isLoading && latestStudioVersion && (
-              <Box paddingTop={2}>
-                <Text size={1} muted textOverflow="ellipsis">
-                  Latest version is {latestStudioVersion}
-                </Text>
-              </Box>
-            )}
           </Box>
-        </>
-      )}
+        )}
+      </Box>
     </>
   )
 }
 
-const FallbackLinks = () => (
+const fallbackLinks = (
   <>
     <MenuItem
       as="a"
@@ -57,6 +57,7 @@ const FallbackLinks = () => (
       size={0}
       href="https://www.sanity.io/exchange/community"
       target="_blank"
+      rel="noopener noreferrer"
       muted={false}
     />
     <MenuItem
@@ -65,6 +66,7 @@ const FallbackLinks = () => (
       size={0}
       href="https://www.sanity.io/contact/support"
       target="_blank"
+      rel="noopener noreferrer"
       muted={false}
     />
     <MenuItem
@@ -73,6 +75,7 @@ const FallbackLinks = () => (
       size={0}
       href="https://www.sanity.io/contact/sales?ref=studio"
       target="_blank"
+      rel="noopener noreferrer"
       muted={false}
     />
     <MenuDivider />
@@ -103,6 +106,7 @@ function SubSection({subSection}: {subSection: Section}) {
                 size={0}
                 href={item.url}
                 target="_blank"
+                rel="noopener noreferrer"
               />
             )
           case 'internalAction': // TODO: Add support for internal actions (MVI-2)

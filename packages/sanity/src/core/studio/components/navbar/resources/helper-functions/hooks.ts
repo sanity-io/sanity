@@ -8,6 +8,7 @@ import {getHelpResources} from './helpResources'
  * Fetch help resources (content for the navbar help menu) from `/help`.
  *
  * @internal
+ * @hidden
  */
 export function useGetHelpResources(): LoadableState<ResourcesResponse | undefined> {
   const client = useClient({apiVersion: '1'})

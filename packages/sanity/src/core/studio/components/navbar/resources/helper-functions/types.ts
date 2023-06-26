@@ -51,6 +51,9 @@ interface InternalAction extends Item {
 
 type InternalActionType = 'show-welcome-modal'
 
+/**
+ * @hidden
+ * @beta */
 export interface ResourcesResponse {
   resources?: Resource
   welcome?: WelcomeVideo
