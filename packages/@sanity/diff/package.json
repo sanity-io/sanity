@@ -55,7 +55,7 @@
     "diff-match-patch": "^1.0.4"
   },
   "devDependencies": {
-    "rimraf": "^3.0.2"
+    "rimraf": "^4.0.0"
   },
   "engines": {
     "node": ">=14.18.0"

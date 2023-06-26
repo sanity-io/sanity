@@ -116,7 +116,7 @@
     "promise-props-recursive": "^2.0.2",
     "recast": "^0.22.0",
     "resolve-from": "^5.0.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^4.0.0",
     "semver": "^7.3.5",
     "semver-compare": "^1.0.0",
     "tar": "^6.1.11",
