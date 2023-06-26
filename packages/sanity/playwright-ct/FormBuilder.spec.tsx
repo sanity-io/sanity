@@ -4,13 +4,19 @@ import React from 'react'
 
 import {FormBuilderStory} from './FormBuilderStory'
 
-test.use({viewport: {width: 1000, height: 1000}})
+test.use({viewport: {width: 1200, height: 1000}})
 
 const DEFAULT_TYPE_DELAY = 150
 
 type MountResult = Awaited<ReturnType<ComponentFixtures['mount']>>
 
-function testHelpers({page, component}: {page: PlaywrightTestArgs['page'], component: MountResult}) {
+function testHelpers({
+  page,
+  component,
+}: {
+  page: PlaywrightTestArgs['page']
+  component: MountResult
+}) {
   return {
     type: async (input: string, delay?: number) =>
       page.keyboard.type(input, {delay: delay || DEFAULT_TYPE_DELAY}),
@@ -203,158 +209,166 @@ test.describe('PTE basic functionality', () => {
     // Then we focus input since this isn't automatically happening
   })
 
-    test('blocks', async ({mount, page}) => {
-      let rerenders = 0
+  test('blocks', async ({mount, page}) => {
+    let rerenders = 0
 
-      const component = await mount(<FormBuilderStory onRender={() => (rerenders += 1)} />)
+    const component = await mount(<FormBuilderStory onRender={() => (rerenders += 1)} />)
 
-      const {press, type, goToPTE} = testHelpers({page, component})
+    const {press, type, goToPTE} = testHelpers({page, component})
 
-      await expect(component).toBeVisible()
+    await expect(component).toBeVisible()
 
-      await goToPTE()
+    await goToPTE()
 
-      // await component.getByRole('button')
+    // await component.getByRole('button')
 
-      // Now we wait for the text to be output and render pass to finish
-      // Note: This is important because the component / PTE won't have the correct state without waiting
-      // and the next steps related to dialogs will end up flaky.
-      // await expect(component.getByRole('textbox').getByText('this should be bolded')).toBeVisible()
+    // Now we wait for the text to be output and render pass to finish
+    // Note: This is important because the component / PTE won't have the correct state without waiting
+    // and the next steps related to dialogs will end up flaky.
+    // await expect(component.getByRole('textbox').getByText('this should be bolded')).toBeVisible()
 
-      // Insert Object into PTE - should trigger dialog to open
-      await component.getByRole('button').filter({hasText: 'Object'}).press('Enter', {delay: 150})
+    // Insert Object into PTE - should trigger dialog to open
+    await component
+      .getByRole('button')
+      .filter({hasText: /^Object$/})
+      .press('Enter', {delay: 150})
 
-      // await expect(component.getByRole('textbox').getByText('this should be bolded')).toBeVisible()
+    // Assertion: Blocks that appear in the menu bar should always display a title
+    await expect(
+      component.getByRole('button').filter({hasText: 'Object Without Title'})
+    ).toBeVisible()
 
-      // Wait for the object preview to show inside of PTE
-      await page.waitForSelector('.pt-block.pt-object-block')
+    // await expect(component.getByRole('textbox').getByText('this should be bolded')).toBeVisible()
 
-      // Assertion: Object preview should be visible
-      await expect(component.getByRole('textbox').locator('.pt-block.pt-object-block')).toBeVisible()
+    // Wait for the object preview to show inside of PTE
+    await page.waitForSelector('.pt-block.pt-object-block')
 
-      await component.getByTestId('default-edit-object-dialog')
+    // Assertion: Object preview should be visible
+    await expect(component.getByRole('textbox').locator('.pt-block.pt-object-block')).toBeVisible()
 
-      // await new Promise((r) => setTimeout(r, 1000))
+    await component.getByTestId('default-edit-object-dialog')
 
-      const $dialog = await page.locator('[data-testid="default-edit-object-dialog"]')
-      await page.waitForSelector('[data-testid="default-edit-object-dialog"]')
+    // await new Promise((r) => setTimeout(r, 1000))
 
-      // await component.getByTestId('default-edit-object-dialog').waitFor()
+    const $dialog = await page.locator('[data-testid="default-edit-object-dialog"]')
+    await page.waitForSelector('[data-testid="default-edit-object-dialog"]')
 
-      // Assertion: Expect close button to be focused
-      await expect($dialog.locator('button[aria-label="Close dialog"]')).toBeFocused()
+    // await component.getByTestId('default-edit-object-dialog').waitFor()
 
-      // Tab to the input
-      await page.keyboard.press('Tab', {delay: 150})
+    // Assertion: Expect close button to be focused
+    await expect($dialog.locator('button[aria-label="Close dialog"]')).toBeFocused()
 
-      // Assertion: Dialog should not be closed when you tab
-      await expect($dialog).not.toBeHidden()
+    // Tab to the input
+    await page.keyboard.press('Tab', {delay: 150})
 
-      // await page.waitForSelector('[data-testid="default-edit-object-dialog"]')
+    // Assertion: Dialog should not be closed when you tab
+    await expect($dialog).not.toBeHidden()
 
-      const $dialogInput = await page.locator('[data-testid="default-edit-object-dialog"] input')
+    // await page.waitForSelector('[data-testid="default-edit-object-dialog"]')
 
-      // Now we await the input inside the dialog to be rendered
-      // await page.waitForSelector('[data-testid="default-edit-object-dialog"] input')
+    const $dialogInput = await page.locator('[data-testid="default-edit-object-dialog"] input')
 
-      // Check that we have focus on the input
-      await expect($dialogInput).toBeFocused()
+    // Now we await the input inside the dialog to be rendered
+    // await page.waitForSelector('[data-testid="default-edit-object-dialog"] input')
 
-      const TEXT_DIALOG_TITLE_INPUT = `it works to type into the dialog title input`
+    // Check that we have focus on the input
+    await expect($dialogInput).toBeFocused()
 
-      // Lets's type into the input
-      await type(TEXT_DIALOG_TITLE_INPUT, 90)
+    const TEXT_DIALOG_TITLE_INPUT = `it works to type into the dialog title input`
 
-      await expect($dialogInput).toHaveValue(TEXT_DIALOG_TITLE_INPUT)
+    // Lets's type into the input
+    await type(TEXT_DIALOG_TITLE_INPUT, 90)
 
-      // Close dialog
-      await press('Escape')
+    await expect($dialogInput).toHaveValue(TEXT_DIALOG_TITLE_INPUT)
 
-      // Dialog should now be gone
-      await expect(component.getByTestId('default-edit-object-dialog')).toBeHidden()
+    // Close dialog
+    await press('Escape')
 
-      // The object preview should now show the text we typed into the dialog title input
-      // Disabled for now, since the preview store only uses document store behind the scenes and won't update
-      // based on the hardcoded document value we use
-      // await expect(component.locator('.pt-block.pt-object-block')).toHaveText(TEXT_DIALOG_TITLE_INPUT)
-      await expect(component.locator('.pt-block.pt-object-block')).toHaveText('Untitled')
+    // Dialog should now be gone
+    await expect(component.getByTestId('default-edit-object-dialog')).toBeHidden()
 
-      // Test that we can open dialog by double clicking
-      await page.getByRole('textbox').getByTestId('pte-block-object').dblclick()
+    // The object preview should now show the text we typed into the dialog title input
+    // Disabled for now, since the preview store only uses document store behind the scenes and won't update
+    // based on the hardcoded document value we use
+    // await expect(component.locator('.pt-block.pt-object-block')).toHaveText(TEXT_DIALOG_TITLE_INPUT)
+    await expect(component.locator('.pt-block.pt-object-block')).toHaveText('Untitled')
 
-      await expect($dialog).toBeVisible()
+    // Test that we can open dialog by double clicking
+    await page.getByRole('textbox').getByTestId('pte-block-object').dblclick()
 
-      // Close dialog
-      await press('Escape')
+    await expect($dialog).toBeVisible()
 
-      await press('Tab')
-      await press('Enter')
-      await press('Enter')
+    // Close dialog
+    await press('Escape')
 
-      // Assertion: Dialog should be open
-      await expect($dialog).toBeVisible()
+    await press('Tab')
+    await press('Enter')
+    await press('Enter')
 
-      // Close dialog
-      await press('Escape')
+    // Assertion: Dialog should be open
+    await expect($dialog).toBeVisible()
 
-      // Open context menu -> select delete
-      await press('Tab')
-      await press('Enter')
-      await press('ArrowDown')
-      await press('Enter')
+    // Close dialog
+    await press('Escape')
 
-      // Assertion: Block should now be deleted
-      await expect(page.getByRole('textbox').getByTestId('pte-block-object')).not.toBeVisible()
+    // Open context menu -> select delete
+    await press('Tab')
+    await press('Enter')
+    await press('ArrowDown')
+    await press('Enter')
 
-      // Insert a ghost Enter to trigger render pass?
-      await press('Enter+Enter')
-      await page.keyboard.type('We now enter a new line', {delay: 150})
+    // Assertion: Block should now be deleted
+    await expect(page.getByRole('textbox').getByTestId('pte-block-object')).not.toBeVisible()
 
-      // // await component.update(component.)
+    // Insert a ghost Enter to trigger render pass?
+    await press('Enter+Enter')
+    await page.keyboard.type('We now enter a new line', {delay: 150})
 
-      // // await page.mouse.move(10, 10)
+    // // await component.update(component.)
 
-      // // const editModal = await component.getByTestId('default-edit-object-dialog')
+    // // await page.mouse.move(10, 10)
 
-      // // await page.mouse.move(10, 10)
-      // // await page.mouse.move(200, 200)
+    // // const editModal = await component.getByTestId('default-edit-object-dialog')
 
-      // // await editModal.waitFor({timeout: 10000})
-      // // await editModal.waitFor({timeout: 20000})
+    // // await page.mouse.move(10, 10)
+    // // await page.mouse.move(200, 200)
 
-      // // await expect(component.getByRole('textbox').filter({hasText: 'Empty'})).toBeFocused()
-      // // await editModal.locator('input').focus()
+    // // await editModal.waitFor({timeout: 10000})
+    // // await editModal.waitFor({timeout: 20000})
 
-      // await expect(component.locator('.pt-block.pt-object-block')).toBeVisible()
+    // // await expect(component.getByRole('textbox').filter({hasText: 'Empty'})).toBeFocused()
+    // // await editModal.locator('input').focus()
 
-      // // // Close dialog
-      // // await page.keyboard.press('Escape', {delay: 150})
+    // await expect(component.locator('.pt-block.pt-object-block')).toBeVisible()
 
-      // // Now we try opening the edit modal by the edit button
-      // await component.locator('.pt-block.pt-object-block button').click()
+    // // // Close dialog
+    // // await page.keyboard.press('Escape', {delay: 150})
 
-      // console.log('rerenders', rerenders)
+    // // Now we try opening the edit modal by the edit button
+    // await component.locator('.pt-block.pt-object-block button').click()
 
-      // // Find the edit button after the menu is opened
-      // // await component.getByRole('button').filter({hasText: 'Edit'}).hover()
-      // await component.getByRole('button').filter({hasText: 'Edit'}).press('Enter', {delay: 150})
+    // console.log('rerenders', rerenders)
 
-      // // await component.getByTestId('default-edit-object-dialog').focus()
-      // // await editModal.getByTestId('string-input').focus()
-      // await expect(component.getByTestId('string-input')).toBeVisible()
+    // // Find the edit button after the menu is opened
+    // // await component.getByRole('button').filter({hasText: 'Edit'}).hover()
+    // await component.getByRole('button').filter({hasText: 'Edit'}).press('Enter', {delay: 150})
 
-      // await component.getByTestId('default-edit-object-dialog').focus()
+    // // await component.getByTestId('default-edit-object-dialog').focus()
+    // // await editModal.getByTestId('string-input').focus()
+    // await expect(component.getByTestId('string-input')).toBeVisible()
 
-      // await t)
+    // await component.getByTestId('default-edit-object-dialog').focus()
 
-      // // await expect(editModal).toBeVisible({})
+    // await t)
 
-      // // await typ)
-      // await t)
-      // .filter({hasText: 'Close'})
-      // .type('Enter')
+    // // await expect(editModal).toBeVisible({})
 
-      /*
+    // // await typ)
+    // await t)
+    // .filter({hasText: 'Close'})
+    // .type('Enter')
+
+    /*
         - **Blocks**
             - [x]  Clicking a block link in the menu create a new block element
                 - [x]  Double-clicking opens the block
@@ -385,5 +399,5 @@ test.describe('PTE basic functionality', () => {
             - [ ]  Overflowing block links should appear in the “Add” menu button
             - [ ]  Blocks that appear in the menu bar should always display a title
           */
-    })
+  })
 })

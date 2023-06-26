@@ -4,6 +4,7 @@ import {
   defineType,
   Path,
   SanityDocument,
+  ValidationContext,
   ValidationMarker,
 } from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -33,7 +34,7 @@ const EMPTY_ARRAY: never[] = []
 
 // This is to emulate preview updates to the object without the preview store
 function CustomObjectPreview(props: PreviewProps) {
-  return <Box>{props.renderDefault({...props, title: props.actions?.props?.value?.title})}</Box>
+  return <Box padding={1}>{props.renderDefault({...props})}</Box>
 }
 
 const SCHEMA_TYPES = [
@@ -61,16 +62,20 @@ const SCHEMA_TYPES = [
             type: 'block',
             of: [
               defineArrayMember({
-                type: 'object', 
+                type: 'object',
                 title: 'Inline Object',
+                components: {
+                  preview: CustomObjectPreview,
+                },
                 fields: [
-                defineField({
-                  type: 'string',
-                  name: 'title',
-                  title: 'Title',
-                }),
-              ]}),
-            ]
+                  defineField({
+                    type: 'string',
+                    name: 'title',
+                    title: 'Title',
+                  }),
+                ],
+              }),
+            ],
           }),
           defineArrayMember({
             name: 'object',
@@ -84,6 +89,16 @@ const SCHEMA_TYPES = [
             },
             components: {
               preview: CustomObjectPreview,
+            },
+          }),
+          defineArrayMember({
+            name: 'objectWithoutTitle',
+            type: 'object',
+            fields: [{type: 'string', name: 'title', title: 'Title'}],
+            preview: {
+              select: {
+                title: 'title',
+              },
             },
           }),
         ],
@@ -138,20 +153,14 @@ function TestForm({onRender}: {onRender?: () => void}) {
     _rev: '123',
     title: 'An title',
   })
-  const [focusPath, setFocusPath] = useState<Path>(
-    () => ['title']
-    // params.path ? pathFromString(params.path) : []
-  )
+  const [focusPath, setFocusPath] = useState<Path>(() => ['title'])
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
   useEffect(() => {
-    console.log('Component has rerendered')
     onRender?.()
   })
 
   useEffect(() => {
-    console.log('document updated', document)
-
     patchChannel.publish({
       type: 'mutation',
       patches: [],
@@ -296,6 +305,7 @@ function TestForm({onRender}: {onRender?: () => void}) {
       patchChannel,
       schemaType,
       setOpenPath,
+      validation,
     ]
   )
 
