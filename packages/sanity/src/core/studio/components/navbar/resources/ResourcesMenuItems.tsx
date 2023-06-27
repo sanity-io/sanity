@@ -57,7 +57,6 @@ const fallbackLinks = (
       size={0}
       href="https://www.sanity.io/exchange/community"
       target="_blank"
-      rel="noopener noreferrer"
       muted={false}
     />
     <MenuItem
@@ -66,7 +65,6 @@ const fallbackLinks = (
       size={0}
       href="https://www.sanity.io/contact/support"
       target="_blank"
-      rel="noopener noreferrer"
       muted={false}
     />
     <MenuItem
@@ -75,7 +73,6 @@ const fallbackLinks = (
       size={0}
       href="https://www.sanity.io/contact/sales?ref=studio"
       target="_blank"
-      rel="noopener noreferrer"
       muted={false}
     />
     <MenuDivider />
@@ -106,7 +103,6 @@ function SubSection({subSection}: {subSection: Section}) {
                 size={0}
                 href={item.url}
                 target="_blank"
-                rel="noopener noreferrer"
               />
             )
           case 'internalAction': // TODO: Add support for internal actions (MVI-2)
