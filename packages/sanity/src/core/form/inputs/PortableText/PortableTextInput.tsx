@@ -65,7 +65,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onPaste,
     onPathFocus,
     path,
-    readOnly,
+    readOnly: readOnlyFromProps,
     renderBlockActions,
     renderCustomMarkers,
     schemaType,
@@ -89,6 +89,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isActive, setIsActive] = useState(false)
+  const [readOnly, setReadOnly] = useState(readOnlyFromProps)
 
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
@@ -107,6 +108,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
       setIsFullscreen((v) => !v)
     }
   }, [])
+
+  // Keep readOnly state in sync with props.readOnly
+  useEffect(() => {
+    setReadOnly(readOnlyFromProps)
+  }, [readOnlyFromProps])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -233,6 +239,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
         case 'mutation':
           onChange(toFormPatches(change.patches))
           break
+        case 'connection':
+          if (change.value === 'offline') {
+            setReadOnly(true)
+          } else if (change.value === 'online') {
+            setReadOnly(readOnlyFromProps)
+          }
+          break
         case 'selection':
           // This doesn't need to be immediate,
           // call through startTransition
@@ -264,7 +277,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onBlur, onChange, onPathFocus, toast]
+    [onBlur, onChange, onPathFocus, readOnlyFromProps, toast]
   )
 
   useEffect(() => {
