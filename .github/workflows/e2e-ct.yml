@@ -1,4 +1,4 @@
-name: End-to-End Tests
+name: End-to-End Component Tests
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:

@@ -14,6 +14,11 @@ export default defineConfig({
 
   outputDir: ARTIFACT_OUTPUT_PATH,
 
+  expect: {
+    // Maximum time expect() should wait for the condition to be met.
+    timeout: process.env.CI ? 10000 : 5000,
+  },
+
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
   /* Run tests in files in parallel */
