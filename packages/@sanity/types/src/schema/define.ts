@@ -170,7 +170,9 @@ import {FieldDefinitionBase, IntrinsicTypeName} from './definition'
  * @beta
  */
 export function defineType<
-  TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  // The `(string & {})` added here is to allow autocompletion in IDEs. see https://stackoverflow.com/a/61048124
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  TType extends IntrinsicTypeName | (string & {}),
   TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
