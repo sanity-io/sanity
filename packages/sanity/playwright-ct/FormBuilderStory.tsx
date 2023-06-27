@@ -114,6 +114,27 @@ const SCHEMA_TYPES = [
           ],
         },
       }),
+      defineField({
+        type: 'array',
+        name: 'bodyStyles',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            styles: [{title: 'Normal', value: 'normal'}],
+          }),
+          defineArrayMember({
+            name: 'object',
+            type: 'object',
+            title: 'Object',
+            fields: [{type: 'string', name: 'title', title: 'Title'}],
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+          }),
+        ],
+      }),
     ],
   }),
 ]

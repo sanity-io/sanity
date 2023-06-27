@@ -1,5 +1,5 @@
 import {expect, test, type ComponentFixtures} from '@playwright/experimental-ct-react'
-import type {PlaywrightTestArgs} from '@playwright/test'
+import type {PlaywrightTestArgs, Locator} from '@playwright/test'
 import React from 'react'
 
 import {FormBuilderStory} from './FormBuilderStory'
@@ -35,33 +35,37 @@ function testHelpers({
         .getByRole('button')
         .filter({has: page.locator(locator)})
         .press('Enter', {delay: delay || DEFAULT_TYPE_DELAY}),
-    goToPTE: async () => {
+    goToPTE: async (
+      $pteTextboxLocator: Locator = page.getByTestId('field-body').getByRole('textbox')
+    ) => {
       // We wait for rendering of string inputs
       await expect(
         page.getByTestId('field-title').getByTestId('string-input').first()
       ).toBeVisible()
       await expect(
-        component.getByTestId('field-title').getByTestId('string-input').first()
+        page.getByTestId('field-title').getByTestId('string-input').first()
       ).toBeFocused()
 
       // Wait for rendering of PTE
-      await expect(component.getByRole('textbox').filter({hasText: 'Empty'})).toBeVisible()
+      await expect(
+        page.getByTestId('field-body').getByRole('textbox').first().filter({hasText: 'Empty'})
+      ).toBeVisible()
 
       // Tab over the required field, down to the PTE input.
       await page.keyboard.press('Tab+Tab', {delay: 200})
 
-      await expect(component.locator('[data-testid="field-body"] :focus')).toBeFocused()
+      await expect(page.getByTestId('field-body').locator(':focus')).toBeFocused()
 
       // Textbox should now be focused so we can active PTE
       await expect(
-        component.getByTestId('field-body').locator(':focus', {hasText: 'to activate'})
+        page.getByTestId('field-body').locator(':focus', {hasText: 'to activate'})
       ).toBeFocused()
 
       // Activate the input so we can type in it
       await page.keyboard.press('Space', {delay: 150})
 
       // Textbox should now be focused so we can type
-      await expect(component.getByRole('textbox').filter({hasText: 'Empty'})).toBeFocused()
+      await expect($pteTextboxLocator.filter({hasText: 'Empty'})).toBeFocused()
     },
   }
 }
@@ -90,14 +94,10 @@ test.describe('PTE basic functionality', () => {
     })
     await press('Enter')
 
-    // await press('Meta+b')
-    // await type('this should be bolded.')
-    // await press('Meta+b')
+    const $pteTextboxLocator = component.getByRole('textbox').first()
 
     await expect(
-      component
-        .getByRole('textbox')
-        .locator('[data-mark="strong"]', {hasText: 'this should be bolded'})
+      $pteTextboxLocator.locator('[data-mark="strong"]', {hasText: 'this should be bolded'})
     ).toBeVisible()
 
     // Emphasis
@@ -110,19 +110,8 @@ test.describe('PTE basic functionality', () => {
     // Note: This is important because the component / PTE won't have the correct state without waiting
     // and the next steps related to dialogs will end up flaky.
     await expect(
-      component
-        .getByRole('textbox')
-        .locator('[data-mark="em"]', {hasText: 'this should be emphasised'})
+      $pteTextboxLocator.locator('[data-mark="em"]', {hasText: 'this should be emphasised'})
     ).toBeVisible()
-
-    // await expect(
-    //     component.getByRole('textbox').getByText('this should be emphasised')
-    //   ).toBeVisible()
-
-    // await press('Meta+i')
-    // await type('this should be emphasised.')
-    // await press('Meta+i')
-    // await press('Enter')
 
     // Underline text
     await toggleShortcut('Meta+u', async () => {
@@ -131,14 +120,8 @@ test.describe('PTE basic functionality', () => {
     await press('Enter')
 
     await expect(
-      component
-        .getByRole('textbox')
-        .locator('[data-mark="underline"]', {hasText: 'this should be underlined'})
+      $pteTextboxLocator.locator('[data-mark="underline"]', {hasText: 'this should be underlined'})
     ).toBeVisible()
-
-    // await expect(
-    //   component.getByRole('textbox').getByText('this should be underlined')
-    // ).toBeVisible()
 
     // Code text
     await toggleShortcut(`Meta+'`, async () => {
@@ -147,9 +130,8 @@ test.describe('PTE basic functionality', () => {
     await press('Enter')
 
     await expect(
-      component.getByRole('textbox').locator('[data-mark="code"]', {hasText: 'this should be code'})
+      $pteTextboxLocator.locator('[data-mark="code"]', {hasText: 'this should be code'})
     ).toBeVisible()
-    // await expect(component.getByRole('textbox').getByText('this should be code')).toBeVisible()
 
     // @todo Test if using the keyboard shortcut for Emphasis or Bold works if you haven't typed anything yet will highlight it in the toolbar - this should currently fail
   })
@@ -168,11 +150,13 @@ test.describe('PTE basic functionality', () => {
 
     await goToPTE()
 
+    const $pteTextboxLocator = component.getByRole('textbox').first()
+
     await type('Now we should insert a link.')
     await expect(
-      component
-        .getByRole('textbox')
-        .locator('[data-slate-string="true"]', {hasText: 'Now we should insert a link.'})
+      $pteTextboxLocator.locator('[data-slate-string="true"]', {
+        hasText: 'Now we should insert a link.',
+      })
     ).toBeVisible()
     // Wait for the text to be rendered
 
@@ -183,7 +167,7 @@ test.describe('PTE basic functionality', () => {
 
     // Wait for link to be re-rendered / PTE internal state to be done
     await expect(
-      component.getByRole('textbox').locator('[data-slate-node="text"] span[data-link]')
+      $pteTextboxLocator.locator('[data-slate-node="text"] span[data-link]')
     ).toBeVisible()
 
     // Now we check if the edit popover shows automatically
@@ -197,16 +181,30 @@ test.describe('PTE basic functionality', () => {
 
     await type('https://www.sanity.io')
     await press('Escape')
+  })
 
-    // await expect(
-    //   component
-    //     .locator('div')
-    //     .filter({hasText: /^Edit Link$/})
-    //     .first()
-    // ).toBeAttached({
-    //   timeout: 10000,
-    // })
-    // Then we focus input since this isn't automatically happening
+  test('block styles', async ({mount, page}) => {
+    let rerenders = 0
+
+    const component = await mount(<FormBuilderStory onRender={() => (rerenders += 1)} />)
+
+    const {press, type, goToPTE} = testHelpers({page, component})
+
+    await expect(component).toBeVisible()
+
+    await goToPTE()
+
+    // Target the last PTE input on the page
+    const $pteField = page.getByTestId('field-bodyStyles')
+    const $pteTextboxLocator = page.getByTestId('field-bodyStyles').getByRole('textbox')
+
+    // Tab down to the last PTE input.
+    await page.keyboard.press('Tab+Tab+Tab+Tab', {delay: 200})
+
+    // Assert: Strong style should be visible
+    await expect($pteField.getByRole('button').locator('[data-sanity-icon="bold"]')).toBeVisible()
+
+    await expect($pteField.locator('button#block-style-select')).not.toBeVisible()
   })
 
   test('blocks', async ({mount, page}) => {
@@ -220,12 +218,10 @@ test.describe('PTE basic functionality', () => {
 
     await goToPTE()
 
-    // await component.getByRole('button')
-
     // Now we wait for the text to be output and render pass to finish
     // Note: This is important because the component / PTE won't have the correct state without waiting
     // and the next steps related to dialogs will end up flaky.
-    // await expect(component.getByRole('textbox').getByText('this should be bolded')).toBeVisible()
+    // await expect(component.getByRole('textbox').first().getByText('this should be bolded')).toBeVisible()
 
     // Insert Object into PTE - should trigger dialog to open
     await component
@@ -238,22 +234,19 @@ test.describe('PTE basic functionality', () => {
       component.getByRole('button').filter({hasText: 'Object Without Title'})
     ).toBeVisible()
 
-    // await expect(component.getByRole('textbox').getByText('this should be bolded')).toBeVisible()
-
     // Wait for the object preview to show inside of PTE
     await page.waitForSelector('.pt-block.pt-object-block')
 
+    const $pteField = page.getByTestId('field-body')
+    const $pteTextboxLocator = $pteField.getByRole('textbox')
+
     // Assertion: Object preview should be visible
-    await expect(component.getByRole('textbox').locator('.pt-block.pt-object-block')).toBeVisible()
+    await expect($pteTextboxLocator.locator('.pt-block.pt-object-block')).toBeVisible()
 
     await component.getByTestId('default-edit-object-dialog')
 
-    // await new Promise((r) => setTimeout(r, 1000))
-
     const $dialog = await page.locator('[data-testid="default-edit-object-dialog"]')
     await page.waitForSelector('[data-testid="default-edit-object-dialog"]')
-
-    // await component.getByTestId('default-edit-object-dialog').waitFor()
 
     // Assertion: Expect close button to be focused
     await expect($dialog.locator('button[aria-label="Close dialog"]')).toBeFocused()
@@ -264,12 +257,7 @@ test.describe('PTE basic functionality', () => {
     // Assertion: Dialog should not be closed when you tab
     await expect($dialog).not.toBeHidden()
 
-    // await page.waitForSelector('[data-testid="default-edit-object-dialog"]')
-
     const $dialogInput = await page.locator('[data-testid="default-edit-object-dialog"] input')
-
-    // Now we await the input inside the dialog to be rendered
-    // await page.waitForSelector('[data-testid="default-edit-object-dialog"] input')
 
     // Check that we have focus on the input
     await expect($dialogInput).toBeFocused()
@@ -290,11 +278,10 @@ test.describe('PTE basic functionality', () => {
     // The object preview should now show the text we typed into the dialog title input
     // Disabled for now, since the preview store only uses document store behind the scenes and won't update
     // based on the hardcoded document value we use
-    // await expect(component.locator('.pt-block.pt-object-block')).toHaveText(TEXT_DIALOG_TITLE_INPUT)
     await expect(component.locator('.pt-block.pt-object-block')).toHaveText('Untitled')
 
     // Test that we can open dialog by double clicking
-    await page.getByRole('textbox').getByTestId('pte-block-object').dblclick()
+    await $pteTextboxLocator.getByTestId('pte-block-object').dblclick()
 
     await expect($dialog).toBeVisible()
 
@@ -318,86 +305,21 @@ test.describe('PTE basic functionality', () => {
     await press('Enter')
 
     // Assertion: Block should now be deleted
-    await expect(page.getByRole('textbox').getByTestId('pte-block-object')).not.toBeVisible()
+    await expect($pteTextboxLocator.getByTestId('pte-block-object')).not.toBeVisible()
 
     // Insert a ghost Enter to trigger render pass?
     await press('Enter+Enter')
     await page.keyboard.type('We now enter a new line', {delay: 150})
 
-    // // await component.update(component.)
+    // Assertion: Overflowing block links should appear in the “Add” menu button
+    await expect($pteField.getByRole('button').filter({hasText: 'Inline Object'})).toBeVisible()
 
-    // // await page.mouse.move(10, 10)
+    await page.setViewportSize({width: 800, height: 1000})
 
-    // // const editModal = await component.getByTestId('default-edit-object-dialog')
+    // Check if the Inline Object button is now hidden
+    await expect($pteField.getByRole('button').filter({hasText: 'Inline Object'})).toBeHidden()
 
-    // // await page.mouse.move(10, 10)
-    // // await page.mouse.move(200, 200)
-
-    // // await editModal.waitFor({timeout: 10000})
-    // // await editModal.waitFor({timeout: 20000})
-
-    // // await expect(component.getByRole('textbox').filter({hasText: 'Empty'})).toBeFocused()
-    // // await editModal.locator('input').focus()
-
-    // await expect(component.locator('.pt-block.pt-object-block')).toBeVisible()
-
-    // // // Close dialog
-    // // await page.keyboard.press('Escape', {delay: 150})
-
-    // // Now we try opening the edit modal by the edit button
-    // await component.locator('.pt-block.pt-object-block button').click()
-
-    // console.log('rerenders', rerenders)
-
-    // // Find the edit button after the menu is opened
-    // // await component.getByRole('button').filter({hasText: 'Edit'}).hover()
-    // await component.getByRole('button').filter({hasText: 'Edit'}).press('Enter', {delay: 150})
-
-    // // await component.getByTestId('default-edit-object-dialog').focus()
-    // // await editModal.getByTestId('string-input').focus()
-    // await expect(component.getByTestId('string-input')).toBeVisible()
-
-    // await component.getByTestId('default-edit-object-dialog').focus()
-
-    // await t)
-
-    // // await expect(editModal).toBeVisible({})
-
-    // // await typ)
-    // await t)
-    // .filter({hasText: 'Close'})
-    // .type('Enter')
-
-    /*
-        - **Blocks**
-            - [x]  Clicking a block link in the menu create a new block element
-                - [x]  Double-clicking opens the block
-                - [x]  The block context menu should be focusable
-                    - [x]  Clicking ‘edit’ should open the block
-                    - [x]  Clicking ‘delete’ should delete the block
-                - [ ]  Custom block elements renders correctly
-            - [ ]  In an open block Dialog
-                - [x]  Pressing tab should focus the first element (close button)
-                - [x]  Pressing tab should not close the dialog
-                - [ ]  It should not be possible to focus elements outside the dialog (focus lock)
-                - [ ]  Reference inputs
-                    - [ ]  Nested reference AutoComplete popovers should be correctly constrained within the PTE’s Dialog boundary
-                    - [ ]  Reference input renders correctly and is possible to access (via click + kb)
-            - [ ]  Custom Inline blocks API?
-        - **Annotations**
-            - [ ]  Select text and create an inline annotation [object] (via the menu)
-                - [x]  All default inline annotations should be rendered
-                - [ ]  Custom inline annotations should be rendered
-                - [x]  Link annotation
-                    - [ ]  Link annotation popover renders correctly
-                - [ ]  It should be possible to open the annotation (via click + kb enter)
-                    - [ ]  [Focus] Pressing tab should focus the first element (close button)
-                    - [ ]  [Focus] Pressing tab should not close the popover
-                    - [ ]  [Positioning] The popover should be positioned correctly
-        - **Menu Bar**
-            - [ ]  Block styles should not be visible if there is only 1 style
-            - [ ]  Overflowing block links should appear in the “Add” menu button
-            - [ ]  Blocks that appear in the menu bar should always display a title
-          */
+    // Check if the Add + button is showing
+    await expect($pteField.getByRole('button').locator('[data-sanity-icon="add"]')).toBeVisible()
   })
 })
