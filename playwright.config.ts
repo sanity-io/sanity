@@ -1,8 +1,10 @@
-/* eslint-disable no-process-env */
+// NOTE: load env files before other imports
+// eslint-disable-next-line import/order
+import {SANITY_E2E_SESSION_TOKEN} from './test/e2e/env'
+
 import os from 'os'
 import path from 'path'
 import {defineConfig, devices} from '@playwright/test'
-import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
 
 // Paths
 const TESTS_PATH = path.join(__dirname, 'test', 'e2e', 'tests')
@@ -13,18 +15,10 @@ const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'test', 'e2e', 'results')
 const OS_BROWSERS =
   os.platform() === 'darwin' ? [{name: 'webkit', use: {...devices['Desktop Safari']}}] : []
 
-// Load environment variables from env + dotenv files
-loadEnvFiles()
-
 // Read environment variables
 const CI = readBoolEnv('CI', false)
 const E2E_DEBUG = readBoolEnv('SANITY_E2E_DEBUG', false)
-const AUTH_TOKEN = process.env.SANITY_E2E_SESSION_TOKEN
 const PROJECT_ID = 'ppsg7ml5'
-
-if (!AUTH_TOKEN) {
-  throw new Error('Missing sanity token - see README.md for details')
-}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -93,9 +87,9 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'npm run dev',
+    command: 'yarn dev',
     port: 3333,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !CI,
   },
 })
 
@@ -133,7 +127,10 @@ function getStorageStateForProjectId(projectId: string) {
         localStorage: [
           {
             name: `__studio_auth_token_${projectId}`,
-            value: JSON.stringify({token: AUTH_TOKEN, time: new Date().toISOString()}),
+            value: JSON.stringify({
+              token: SANITY_E2E_SESSION_TOKEN,
+              time: new Date().toISOString(),
+            }),
           },
         ],
       },

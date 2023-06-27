@@ -27,7 +27,14 @@ import {StudioTheme} from '../theme'
 import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {StudioComponents, StudioComponentsPluginOptions} from './studio'
-import {DocumentActionComponent, DocumentBadgeComponent} from './document'
+import {
+  DocumentActionComponent,
+  DocumentBadgeComponent,
+  DocumentFieldAction,
+  DocumentFieldActionsResolverContext,
+  DocumentFieldActionsResolver,
+  DocumentInspector,
+} from './document'
 import {Router, RouterState} from 'sanity/router'
 
 /**
@@ -186,6 +193,10 @@ export type NewDocumentCreationContext =
 export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
+  /** @internal */
+  unstable_fieldActions?: DocumentFieldAction[] | DocumentFieldActionsResolver
+  /** @hidden @beta */
+  inspectors?: DocumentInspector[] | DocumentInspectorsResolver
   /**
    * @hidden
    * @beta */
@@ -241,6 +252,12 @@ export type DocumentActionsResolver = ComposableOption<
 export type DocumentBadgesResolver = ComposableOption<
   DocumentBadgeComponent[],
   DocumentBadgesContext
+>
+
+/** @hidden @beta */
+export type DocumentInspectorsResolver = ComposableOption<
+  DocumentInspector[],
+  DocumentInspectorContext
 >
 
 /**
@@ -357,6 +374,12 @@ export interface DocumentBadgesContext extends ConfigContext {
   schemaType: string
 }
 
+/** @hidden @beta */
+export interface DocumentInspectorContext extends ConfigContext {
+  documentId?: string
+  documentType: string
+}
+
 /**
  * @hidden
  * @beta */
@@ -399,6 +422,11 @@ export interface Source {
      * @beta */
     badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]
 
+    /** @internal */
+    unstable_fieldActions: (
+      props: PartialContext<DocumentFieldActionsResolverContext>
+    ) => DocumentFieldAction[]
+
     /**
      * @hidden
      * @beta */
@@ -415,6 +443,9 @@ export interface Source {
     unstable_languageFilter: (
       props: PartialContext<DocumentLanguageFilterContext>
     ) => DocumentLanguageFilterComponent[]
+
+    /** @hidden @beta */
+    inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
   }
   form: {
     /**

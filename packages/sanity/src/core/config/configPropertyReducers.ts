@@ -1,7 +1,6 @@
 import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
 import type {Template, TemplateResponse} from '../templates'
-import {DocumentActionComponent} from './document/actions'
-import {DocumentBadgeComponent} from './document/badges'
+import {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import type {
   DocumentLanguageFilterComponent,
   DocumentLanguageFilterContext,
@@ -10,6 +9,7 @@ import type {
   ConfigPropertyReducer,
   DocumentActionsContext,
   DocumentBadgesContext,
+  DocumentInspectorContext,
   NewDocumentOptionsContext,
   ResolveProductionUrlContext,
   Tool,
@@ -200,5 +200,21 @@ export const documentLanguageFilterReducer: ConfigPropertyReducer<
 
   throw new Error(
     `Expected \`document.unstable_languageFilter\` to be an array or a function, but received ${typeof resolveDocumentLanguageFilter}`
+  )
+}
+
+export const documentInspectorsReducer: ConfigPropertyReducer<
+  DocumentInspector[],
+  DocumentInspectorContext
+> = (prev, {document}, context) => {
+  const resolveInspectorsFilter = document?.inspectors
+  if (!resolveInspectorsFilter) return prev
+
+  if (typeof resolveInspectorsFilter === 'function') return resolveInspectorsFilter(prev, context)
+
+  if (Array.isArray(resolveInspectorsFilter)) return [...prev, ...resolveInspectorsFilter]
+
+  throw new Error(
+    `Expected \`document.inspectors\` to be an array or a function, but received ${typeof resolveInspectorsFilter}`
   )
 }

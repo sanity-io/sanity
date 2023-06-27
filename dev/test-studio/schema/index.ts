@@ -41,6 +41,7 @@ import {collapsibleObjects} from './debug/collapsibleObjects'
 import documentActions from './debug/documentActions'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
+import {fieldActionsTest} from './debug/fieldActionsTest'
 import fieldComponentsTest from './debug/fieldComponentsTest'
 import fieldsets from './debug/fieldsets'
 import {
@@ -51,6 +52,7 @@ import focus from './debug/focus'
 import gallery from './debug/gallery'
 import {hoistedPt, hoistedPtDocument, customBlock} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
+import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
 import {languageFilterDebugType} from './debug/languageFilter'
 import liveEdit from './debug/liveEdit'
@@ -167,6 +169,7 @@ export const schemaTypes = [
   emails,
   empty,
   experiment,
+  fieldActionsTest,
   fieldComponentsTest,
   fieldValidationInferReproDoc,
   fieldValidationInferReproSharedObject,
@@ -236,6 +239,7 @@ export const schemaTypes = [
   spotifyEmbed,
   strings,
   superlatives,
+  inspectorsTestType,
   texts,
   topLevelArrayType,
   topLevelPrimitiveArrayType,
