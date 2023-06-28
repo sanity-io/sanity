@@ -1,5 +1,5 @@
 import React, {PropsWithChildren, useEffect, useMemo} from 'react'
-import {Slate, withReact} from '@sanity/slate-react'
+import {Slate, withReact} from 'slate-react'
 import {createEditor} from 'slate'
 import {KEY_TO_SLATE_ELEMENT, KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
 import {debugWithName} from '../../utils/debug'
@@ -13,7 +13,6 @@ const debug = debugWithName('component:PortableTextEditor:SlateContainer')
  * @internal
  */
 export interface SlateContainerProps extends PropsWithChildren {
-  isPending: React.MutableRefObject<boolean | null>
   keyGenerator: () => string
   maxBlocks: number | undefined
   patches$?: PatchObservable
@@ -26,7 +25,7 @@ export interface SlateContainerProps extends PropsWithChildren {
  * @internal
  */
 export function SlateContainer(props: SlateContainerProps) {
-  const {patches$, portableTextEditor, readOnly, maxBlocks, keyGenerator, isPending} = props
+  const {patches$, portableTextEditor, readOnly, maxBlocks, keyGenerator} = props
 
   // Create the slate instance
   const [slateEditor, subscribe] = useMemo(() => {
@@ -61,7 +60,7 @@ export function SlateContainer(props: SlateContainerProps) {
       portableTextEditor,
       readOnly,
     })
-  }, [keyGenerator, portableTextEditor, maxBlocks, readOnly, patches$, slateEditor, isPending])
+  }, [keyGenerator, portableTextEditor, maxBlocks, readOnly, patches$, slateEditor])
 
   const initialValue = useMemo(() => {
     return [slateEditor.createPlaceholderBlock()]
@@ -75,7 +74,7 @@ export function SlateContainer(props: SlateContainerProps) {
   }, [slateEditor])
 
   return (
-    <Slate editor={slateEditor} value={initialValue}>
+    <Slate editor={slateEditor} initialValue={initialValue}>
       {props.children}
     </Slate>
   )
