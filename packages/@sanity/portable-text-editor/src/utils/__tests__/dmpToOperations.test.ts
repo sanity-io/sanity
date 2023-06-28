@@ -1,4 +1,4 @@
-import {Descendant, Editor, Operation} from 'slate'
+import {Descendant, Operation} from 'slate'
 import {
   Path,
   PortableTextBlock,
@@ -8,8 +8,9 @@ import {
   isPortableTextTextBlock,
 } from '@sanity/types'
 import {makeDiff, makePatches, stringifyPatches} from '@sanity/diff-match-patch'
-import {diffMatchPatch} from '../patchToOperations'
+import {diffMatchPatch} from '../applyPatch'
 import {DiffMatchPatch} from '../../types/patch'
+import {PortableTextSlateEditor} from '../../types/editor'
 
 describe('operationToPatches: diffMatchPatch', () => {
   test.todo('skips patches for blocks that cannot be found locally')
@@ -106,9 +107,12 @@ function getPteDmpPatch(
 
 type MockEditorOptions = {children: PortableTextTextBlock[]} | {text: string}
 
-function getMockEditor(
-  options: MockEditorOptions
-): Pick<Editor, 'children' | 'isTextBlock' | 'apply'> & {getText: () => string} {
+function getMockEditor(options: MockEditorOptions): Pick<
+  PortableTextSlateEditor,
+  'children' | 'isTextBlock' | 'apply' | 'selection' | 'onChange'
+> & {
+  getText: () => string
+} {
   let children: PortableTextBlock[] = 'children' in options ? options.children : []
   if (!('children' in options)) {
     children = [
@@ -163,9 +167,13 @@ function getMockEditor(
   }
 
   return {
+    selection: null,
     getText,
     children: children as Descendant[],
     apply,
+    onChange: () => {
+      // NOOP
+    },
     isTextBlock,
   }
 }

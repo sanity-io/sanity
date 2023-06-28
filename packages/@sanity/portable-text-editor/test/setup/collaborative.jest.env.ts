@@ -25,11 +25,11 @@ const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 const DEBUG = process.env.DEBUG || false
 
 // Wait this long for selections and a new doc revision to appear in the clients.
-const SELECTION_TIMEOUT_MS = 1000
+const SELECTION_TIMEOUT_MS = 500
 
 // How long to wait for a new revision to come back to the client(s) when patched through the server.
 // Wait for patch debounce time and some slack for selection adjustment time for everything to be ready
-const REVISION_TIMEOUT_MS = 2000
+const REVISION_TIMEOUT_MS = 1000
 
 export default class CollaborationEnvironment extends NodeEnvironment {
   private _browserA?: Browser
