@@ -1,4 +1,4 @@
-import {Element, Operation, InsertNodeOperation, Text as SlateText} from 'slate'
+import {Element, Operation, InsertNodeOperation, Text as SlateText, Transforms} from 'slate'
 import {
   isPortableTextTextBlock,
   PortableTextTextBlock,
@@ -41,24 +41,16 @@ export function createWithSchemaTypes(types: PortableTextMemberSchemaTypes) {
         element.__inline === true
       )
     }
-    // Extend Slate's default normalization to add _type span to span inserted after a inline void object
-    const {apply} = editor
-    editor.apply = (op: Operation) => {
-      const isInsertTextWithoutType =
-        op.type === 'insert_node' &&
-        op.path.length === 2 &&
-        SlateText.isText(op.node) &&
-        op.node._type === undefined
-      if (isInsertTextWithoutType) {
-        const insertNodeOperation = op as InsertNodeOperation
-        const newNode: SlateText = {
-          ...(insertNodeOperation.node as SlateText),
-          _type: 'span',
-        }
-        op.node = newNode
-        debug('Setting span type to child without a type', op)
+
+    // Extend Slate's default normalization to add `_type: 'span'` to texts if they are inserted without
+    const {normalizeNode} = editor
+    editor.normalizeNode = (entry) => {
+      const [node, path] = entry
+      if (SlateText.isText(node) && path.length === 2 && node._type === undefined) {
+        debug('Setting span type on text node without a type')
+        Transforms.setNodes(editor, {_type: 'span'}, {at: path})
       }
-      apply(op)
+      normalizeNode(entry)
     }
     return editor
   }

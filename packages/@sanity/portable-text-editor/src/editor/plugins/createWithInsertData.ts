@@ -1,6 +1,6 @@
 import {Node, Transforms, Editor, Descendant, Range} from 'slate'
 import {htmlToBlocks, normalizeBlock} from '@sanity/block-tools'
-import {ReactEditor} from '@sanity/slate-react'
+import {ReactEditor} from 'slate-react'
 import {PortableTextBlock, PortableTextChild} from '@sanity/types'
 import {isEqual, uniq} from 'lodash'
 import {

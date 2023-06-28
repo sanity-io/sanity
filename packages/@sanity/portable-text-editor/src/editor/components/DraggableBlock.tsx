@@ -1,6 +1,6 @@
 import React, {useState, useRef, useMemo, useCallback, DragEvent, useEffect} from 'react'
 import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
-import {ReactEditor, useSlateStatic} from '@sanity/slate-react'
+import {ReactEditor, useSlateStatic} from 'slate-react'
 import {debugWithName} from '../../utils/debug'
 import {
   IS_DRAGGING_ELEMENT_TARGET,
