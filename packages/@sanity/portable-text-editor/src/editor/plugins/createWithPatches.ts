@@ -25,12 +25,15 @@ import {
 } from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {PATCHING, isPatching, withoutPatching} from '../../utils/withoutPatching'
-import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
-import {createPatchToOperations} from '../../utils/patchToOperations'
+import {KEY_TO_VALUE_ELEMENT, IS_PROCESSING_REMOTE_CHANGES} from '../../utils/weakMaps'
+import {createApplyPatch} from '../../utils/applyPatch'
 import {withPreserveKeys} from '../../utils/withPreserveKeys'
+import {removeAllDocumentSelectionRanges} from '../../utils/ranges'
+import {withRemoteChanges} from '../../utils/withChanges'
 import {withoutSaving} from './createWithUndoRedo'
 
 const debug = debugWithName('plugin:withPatches')
+const debugVerbose = false
 
 export interface PatchFunctions {
   insertNodePatch: (
@@ -95,45 +98,66 @@ export function createWithPatches({
   // The editor.children would no longer contain that information if the node is already deleted.
   let previousChildren: Descendant[]
 
-  const patchToOperations = createPatchToOperations(schemaTypes)
+  const applyPatch = createApplyPatch(schemaTypes)
+
   return function withPatches(editor: PortableTextSlateEditor) {
+    IS_PROCESSING_REMOTE_CHANGES.set(editor, false)
     PATCHING.set(editor, true)
     previousChildren = [...editor.children]
 
     const {apply} = editor
+    let bufferedPatches: Patch[] = []
+
+    const handleBufferedRemotePatches = () => {
+      if (bufferedPatches.length === 0) {
+        return
+      }
+      const patches = bufferedPatches
+      bufferedPatches = []
+      let changed = false
+      withRemoteChanges(editor, () => {
+        Editor.withoutNormalizing(editor, () => {
+          withoutPatching(editor, () => {
+            withoutSaving(editor, () => {
+              withPreserveKeys(editor, () => {
+                patches.forEach((patch) => {
+                  if (patch.type === 'insert' || patch.type === 'unset') {
+                    removeAllDocumentSelectionRanges(!!editor.selection)
+                  }
+                  if (debug.enabled) debug(`Handling remote patch ${JSON.stringify(patch)}`)
+                  changed = applyPatch(editor, patch)
+                })
+              })
+            })
+          })
+        })
+        if (changed) {
+          editor.normalize()
+          editor.onChange()
+        }
+      })
+    }
+
+    const handlePatches = ({patches}: {patches: Patch[]}) => {
+      const remotePatches = patches.filter((p) => p.origin !== 'local')
+      if (remotePatches.length === 0) {
+        return
+      }
+      bufferedPatches = bufferedPatches.concat(remotePatches)
+      handleBufferedRemotePatches()
+    }
 
     if (patches$) {
       editor.subscriptions.push(() => {
         debug('Subscribing to patches$')
-        const sub = patches$.subscribe(({patches}) => {
-          const remotePatches = patches.filter((p) => p.origin !== 'local')
-          if (remotePatches.length !== 0) {
-            debug('Remote patches', patches)
-            Editor.withoutNormalizing(editor, () => {
-              remotePatches.forEach((patch) => {
-                debug(`Handling remote patch ${JSON.stringify(patch)}`)
-                withoutPatching(editor, () => {
-                  withoutSaving(editor, () => {
-                    withPreserveKeys(editor, () => {
-                      try {
-                        patchToOperations(editor, patch)
-                      } catch (err) {
-                        debug('Got error trying to create operations from patch')
-                        console.error(err)
-                      }
-                    })
-                  })
-                })
-              })
-            })
-          }
-        })
+        const sub = patches$.subscribe(handlePatches)
         return () => {
           debug('Unsubscribing to patches$')
           sub.unsubscribe()
         }
       })
     }
+
     editor.apply = (operation: Operation): void | Editor => {
       if (readOnly) {
         apply(operation)
@@ -152,7 +176,8 @@ export function createWithPatches({
       const editorIsEmpty = isEqualToEmptyEditor(editor.children, schemaTypes)
 
       if (!isPatching(editor)) {
-        debug(`Editor is not producing patch for operation ${operation.type}`, operation)
+        if (debugVerbose && debug.enabled)
+          debug(`Editor is not producing patch for operation ${operation.type}`, operation)
         return editor
       }
 

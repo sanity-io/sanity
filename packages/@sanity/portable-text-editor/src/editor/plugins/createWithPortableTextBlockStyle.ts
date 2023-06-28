@@ -1,19 +1,11 @@
-import {Subject} from 'rxjs'
 import {Editor, Transforms, Element, Path, Text as SlateText, Node} from 'slate'
-import {
-  EditorChange,
-  PortableTextMemberSchemaTypes,
-  PortableTextSlateEditor,
-} from '../../types/editor'
+import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
-import {toPortableTextRange} from '../../utils/ranges'
-import {fromSlateValue} from '../../utils/values'
 
 const debug = debugWithName('plugin:withPortableTextBlockStyle')
 
 export function createWithPortableTextBlockStyle(
-  types: PortableTextMemberSchemaTypes,
-  change$: Subject<EditorChange>
+  types: PortableTextMemberSchemaTypes
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   const defaultStyle = types.styles[0].value
   return function withPortableTextBlockStyle(
@@ -66,7 +58,7 @@ export function createWithPortableTextBlockStyle(
       const selectedBlocks = [
         ...Editor.nodes(editor, {
           at: editor.selection,
-          match: (node) => Element.isElement(node) && node._type === types.block.name,
+          match: (node) => editor.isTextBlock(node),
         }),
       ]
       selectedBlocks.forEach(([node, path]) => {
