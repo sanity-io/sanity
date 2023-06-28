@@ -101,11 +101,11 @@ describe('collaborate editing', () => {
     expect(valA).toMatchInlineSnapshot(`
       Array [
         Object {
-          "_key": "B-6",
+          "_key": "B-9",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "B-5",
+              "_key": "B-8",
               "_type": "span",
               "marks": Array [],
               "text": "1",
@@ -116,35 +116,6 @@ describe('collaborate editing', () => {
         },
       ]
     `)
-    // const selA = await editorA.getSelection()
-    // expect(selA).toMatchInlineSnapshot(`
-    //   Object {
-    //     "anchor": Object {
-    //       "offset": 1,
-    //       "path": Array [
-    //         Object {
-    //           "_key": "B-4",
-    //         },
-    //         "children",
-    //         Object {
-    //           "_key": "B-3",
-    //         },
-    //       ],
-    //     },
-    //     "focus": Object {
-    //       "offset": 1,
-    //       "path": Array [
-    //         Object {
-    //           "_key": "B-4",
-    //         },
-    //         "children",
-    //         Object {
-    //           "_key": "B-3",
-    //         },
-    //       ],
-    //     },
-    //   }
-    // `)
     await editorA.pressKey('2')
     valA = await editorA.getValue()
     valB = await editorB.getValue()
@@ -152,11 +123,11 @@ describe('collaborate editing', () => {
     expect(valB).toMatchInlineSnapshot(`
       Array [
         Object {
-          "_key": "B-6",
+          "_key": "B-9",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "B-5",
+              "_key": "B-8",
               "_type": "span",
               "marks": Array [],
               "text": "12",
@@ -272,11 +243,11 @@ describe('collaborate editing', () => {
         ],
       },
       {
-        _key: 'B-3',
+        _key: 'B-6',
         _type: 'block',
         children: [
           {
-            _key: 'B-2',
+            _key: 'B-5',
             _type: 'span',
             marks: [],
             text: '',
@@ -290,8 +261,8 @@ describe('collaborate editing', () => {
     const selectionB = await editorB.getSelection()
     expect(selectionA).toEqual(desiredSelectionA)
     expect(selectionB).toEqual({
-      anchor: {offset: 0, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
-      focus: {offset: 0, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
+      anchor: {offset: 0, path: [{_key: 'B-6'}, 'children', {_key: 'B-5'}]},
+      focus: {offset: 0, path: [{_key: 'B-6'}, 'children', {_key: 'B-5'}]},
     })
   })
 
@@ -485,7 +456,24 @@ describe('collaborate editing', () => {
     const valAa = await editorA.getValue()
     const valBb = await editorB.getValue()
     expect(valAa).toEqual(valBb)
-    expect(valAa).toMatchInlineSnapshot(`
+    const newExpectedSelA = {
+      anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
+      focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
+    }
+    await editorA.setSelection(newExpectedSelA)
+    const newSelA = await editorA.getSelection()
+    expect(newExpectedSelA).toEqual(newSelA)
+    await editorB.setSelection({
+      anchor: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
+      focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
+    })
+    await editorA.pressKey('Enter')
+    // await editorA.pressKey('Enter')
+    // await editorA.insertText('A new line appears')
+    const valA = await editorA.getValue()
+    const valB = await editorB.getValue()
+    expect(valA).toEqual(valB)
+    expect(valA).toMatchInlineSnapshot(`
       Array [
         Object {
           "_key": "randomKey0",
@@ -495,7 +483,21 @@ describe('collaborate editing', () => {
               "_key": "randomKey1",
               "_type": "span",
               "marks": Array [],
-              "text": "Hello world<- I left off here. And you wrote that -> there!",
+              "text": "Hello world<- I left off here. And you wrote that ->",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "A-6",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "A-5",
+              "_type": "span",
+              "marks": Array [],
+              "text": " there!",
             },
           ],
           "markDefs": Array [],
@@ -517,23 +519,35 @@ describe('collaborate editing', () => {
         },
       ]
     `)
-    const newExpectedSelA = {
-      anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
-      focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
-    }
-    await editorA.setSelection(newExpectedSelA)
-    const newSelA = await editorA.getSelection()
-    expect(newExpectedSelA).toEqual(newSelA)
-    await editorB.setSelection({
-      anchor: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
-      focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
-    })
+    expect(await editorA.getSelection()).toMatchInlineSnapshot(`
+      Object {
+        "anchor": Object {
+          "offset": 0,
+          "path": Array [
+            Object {
+              "_key": "A-6",
+            },
+            "children",
+            Object {
+              "_key": "A-5",
+            },
+          ],
+        },
+        "focus": Object {
+          "offset": 0,
+          "path": Array [
+            Object {
+              "_key": "A-6",
+            },
+            "children",
+            Object {
+              "_key": "A-5",
+            },
+          ],
+        },
+      }
+    `)
     await editorA.pressKey('Enter')
-    await editorA.pressKey('Enter')
-    await editorA.insertText('A new line appears')
-    const valA = await editorA.getValue()
-    const valB = await editorB.getValue()
-    expect(valA).toEqual(valB)
     expect(valA).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -551,28 +565,14 @@ describe('collaborate editing', () => {
           "style": "normal",
         },
         Object {
-          "_key": "A-3",
+          "_key": "A-6",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "A-2",
+              "_key": "A-5",
               "_type": "span",
               "marks": Array [],
-              "text": "",
-            },
-          ],
-          "markDefs": Array [],
-          "style": "normal",
-        },
-        Object {
-          "_key": "A-5",
-          "_type": "block",
-          "children": Array [
-            Object {
-              "_key": "A-4",
-              "_type": "span",
-              "marks": Array [],
-              "text": "A new line appears there!",
+              "text": " there!",
             },
           ],
           "markDefs": Array [],
@@ -596,8 +596,8 @@ describe('collaborate editing', () => {
     `)
     const selectionA = await editorA.getSelection()
     expect(selectionA).toEqual({
-      anchor: {path: [{_key: 'A-5'}, 'children', {_key: 'A-4'}], offset: 18},
-      focus: {path: [{_key: 'A-5'}, 'children', {_key: 'A-4'}], offset: 18},
+      anchor: {path: [{_key: 'A-8'}, 'children', {_key: 'A-7'}], offset: 0},
+      focus: {path: [{_key: 'A-8'}, 'children', {_key: 'A-7'}], offset: 0},
     })
     const selectionB = await editorB.getSelection()
     expect(selectionB).toEqual({
@@ -707,11 +707,11 @@ describe('collaborate editing', () => {
     expect(newValA).toMatchInlineSnapshot(`
       Array [
         Object {
-          "_key": "A-0",
+          "_key": "A-4",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "A-1",
+              "_key": "A-3",
               "_type": "span",
               "marks": Array [],
               "text": "1",

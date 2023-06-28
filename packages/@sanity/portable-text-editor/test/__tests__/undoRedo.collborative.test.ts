@@ -115,11 +115,11 @@ describe('undo/redo', () => {
           "style": "normal",
         },
         Object {
-          "_key": "A-3",
+          "_key": "A-6",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "A-2",
+              "_key": "A-5",
               "_type": "span",
               "marks": Array [],
               "text": "Hey!",
@@ -131,7 +131,7 @@ describe('undo/redo', () => {
       ]
     `)
     await editorA.undo()
-    await editorA.undo()
+    await editorB.undo()
     valA = await editorA.getValue()
     valB = await editorB.getValue()
     expect(valA).toEqual(valB)
@@ -145,7 +145,21 @@ describe('undo/redo', () => {
               "_key": "randomKey1",
               "_type": "span",
               "marks": Array [],
-              "text": "Hello world there!",
+              "text": "Hello world",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "A-6",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "A-5",
+              "_type": "span",
+              "marks": Array [],
+              "text": "",
             },
           ],
           "markDefs": Array [],
@@ -257,7 +271,7 @@ describe('undo/redo', () => {
     expect(selectionB).toEqual(startSelectionB)
   })
 
-  it("will let editor A undo all changes after B pressed Enter in between A's changes", async () => {
+  it("will let editor A undo all changes after B pressed Enter and wrote something in between A's changes", async () => {
     await setDocumentValue(initialValue)
     const [editorA, editorB] = await getEditors()
     const desiredSelectionA = {
@@ -292,11 +306,11 @@ describe('undo/redo', () => {
           "style": "normal",
         },
         Object {
-          "_key": "A-3",
+          "_key": "A-6",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "A-2",
+              "_key": "A-5",
               "_type": "span",
               "marks": Array [],
               "text": "Hey!",
@@ -384,11 +398,11 @@ describe('undo/redo', () => {
           "style": "normal",
         },
         Object {
-          "_key": "A-3",
+          "_key": "A-6",
           "_type": "block",
           "children": Array [
             Object {
-              "_key": "A-2",
+              "_key": "A-5",
               "_type": "span",
               "marks": Array [],
               "text": " worldABC there!",
@@ -452,7 +466,34 @@ describe('undo/redo', () => {
       }
     `)
     const selectionB = await editorB.getSelection()
-    expect(selectionB).toBe(null)
+    expect(selectionB).toMatchInlineSnapshot(`
+      Object {
+        "anchor": Object {
+          "offset": 14,
+          "path": Array [
+            Object {
+              "_key": "randomKey0",
+            },
+            "children",
+            Object {
+              "_key": "randomKey1",
+            },
+          ],
+        },
+        "focus": Object {
+          "offset": 14,
+          "path": Array [
+            Object {
+              "_key": "randomKey0",
+            },
+            "children",
+            Object {
+              "_key": "randomKey1",
+            },
+          ],
+        },
+      }
+    `)
   })
 
   it('will undo respective changes in same text node correctly', async () => {
