@@ -1,12 +1,4 @@
-import {
-  LeaveIcon,
-  ChevronDownIcon,
-  CogIcon,
-  CheckmarkIcon,
-  UsersIcon,
-  HelpCircleIcon,
-  CommentIcon,
-} from '@sanity/icons'
+import {LeaveIcon, ChevronDownIcon, CogIcon, CheckmarkIcon, UsersIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -39,8 +31,8 @@ import {LoginProviderLogo} from './LoginProviderLogo'
 const AVATAR_SIZE = 1
 
 const StyledMenu = styled(Menu)`
-  min-width: 125px;
-  max-width: 350px;
+  min-width: 200px;
+  max-width: 300px;
 `
 
 const AvatarBox = styled(Box)`
@@ -113,12 +105,6 @@ export function UserMenu() {
       menu={
         <StyledMenu>
           <Card padding={2}>
-            <Box marginBottom={3}>
-              <Label size={1} muted>
-                Signed in as
-              </Label>
-            </Box>
-
             <Flex align="center">
               <Tooltip
                 disabled={!providerTitle}
@@ -138,7 +124,7 @@ export function UserMenu() {
               </Tooltip>
 
               <Stack space={2} flex={1}>
-                <Text size={1} weight="semibold" textOverflow="ellipsis">
+                <Text size={2} weight="medium" textOverflow="ellipsis">
                   {currentUser?.name}
                 </Text>
 
@@ -148,6 +134,7 @@ export function UserMenu() {
               </Stack>
             </Flex>
           </Card>
+
           {setScheme && <AppearanceMenu setScheme={setScheme} />}
 
           <MenuDivider />
@@ -168,24 +155,6 @@ export function UserMenu() {
               target="_blank"
               text="Invite members"
               icon={UsersIcon}
-            />
-          )}
-          <MenuItem
-            as="a"
-            aria-label="Help & support"
-            href={`https://www.sanity.io/contact/support`}
-            target="_blank"
-            text="Help & support"
-            icon={HelpCircleIcon}
-          />
-          {isAdmin && (
-            <MenuItem
-              as="a"
-              aria-label="Contact sales"
-              href={`https://www.sanity.io/contact/sales?ref=studio`}
-              target="_blank"
-              text="Contact sales"
-              icon={CommentIcon}
             />
           )}
 
