@@ -42,6 +42,7 @@ describe('initialization', () => {
         <div>
           <div>
             <div
+              aria-multiline="true"
               autocapitalize="false"
               autocorrect="false"
               class="pt-editable"
@@ -50,7 +51,7 @@ describe('initialization', () => {
               data-slate-node="value"
               role="textbox"
               spellcheck="false"
-              style="position: relative; outline: none; white-space: pre-wrap; word-wrap: break-word;"
+              style="position: relative; white-space: pre-wrap; word-wrap: break-word;"
               zindex="-1"
             >
               <div
@@ -177,7 +178,7 @@ describe('initialization', () => {
     })
   })
 
-  it('validates initial value', async () => {
+  it('handles empty array value', async () => {
     const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
     const initialValue: PortableTextBlock[] = []
     const initialSelection: EditorSelection = {
@@ -196,7 +197,7 @@ describe('initialization', () => {
     )
     await waitFor(() => {
       if (editorRef.current) {
-        expect(onChange).toHaveBeenCalledWith({
+        expect(onChange).not.toHaveBeenCalledWith({
           type: 'invalidValue',
           value: initialValue,
           resolution: {
@@ -211,7 +212,7 @@ describe('initialization', () => {
             ],
           },
         })
-        expect(onChange).not.toHaveBeenCalledWith({type: 'value', value: initialValue})
+        expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
         expect(onChange).toHaveBeenCalledWith({type: 'ready'})
       }
     })
@@ -224,15 +225,19 @@ describe('initialization', () => {
       focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
     }
     const onChange = jest.fn()
-    const {rerender} = render(
-      <PortableTextEditorTester
-        onChange={onChange}
-        ref={editorRef}
-        selection={initialSelection}
-        schemaType={schemaType}
-        value={value}
-      />
-    )
+    let _rerender: any
+    await waitFor(() => {
+      const {rerender} = render(
+        <PortableTextEditorTester
+          onChange={onChange}
+          ref={editorRef}
+          selection={initialSelection}
+          schemaType={schemaType}
+          value={value}
+        />
+      )
+      _rerender = render
+    })
     await waitFor(() => {
       expect(onChange).not.toHaveBeenCalledWith({
         type: 'invalidValue',
@@ -251,9 +256,9 @@ describe('initialization', () => {
       })
       expect(onChange).toHaveBeenCalledWith({type: 'value', value})
     })
-    value = []
+    value = [{_type: 'banana', _key: '123'}]
     const newOnChange = jest.fn()
-    rerender(
+    _rerender(
       <PortableTextEditorTester
         onChange={newOnChange}
         ref={editorRef}
@@ -263,17 +268,16 @@ describe('initialization', () => {
       />
     )
     await waitFor(() => {
-      expect(newOnChange).not.toHaveBeenCalledWith({type: 'ready'})
       expect(newOnChange).toHaveBeenCalledWith({
         type: 'invalidValue',
         value,
         resolution: {
-          action: 'Unset the value',
-          description: 'Editor value must be an array of Portable Text blocks, or undefined.',
-          item: value,
+          action: 'Remove the block',
+          description: "Block with _key '123' has invalid _type 'banana'",
+          item: value[0],
           patches: [
             {
-              path: [],
+              path: [{_key: '123'}],
               type: 'unset',
             },
           ],
