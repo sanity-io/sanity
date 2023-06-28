@@ -1,5 +1,5 @@
 import {BaseEditor, Descendant} from 'slate'
-import {ReactEditor} from '@sanity/slate-react'
+import {ReactEditor} from 'slate-react'
 import {PortableTextSpan, PortableTextTextBlock} from '@sanity/types'
 import {PortableTextSlateEditor} from '..'
 

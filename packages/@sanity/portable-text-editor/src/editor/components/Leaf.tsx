@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react'
 import {Text} from 'slate'
-import {RenderLeafProps, useSelected} from '@sanity/slate-react'
+import {RenderLeafProps, useSelected} from 'slate-react'
 import {isEqual, uniq} from 'lodash'
 import {Path, PortableTextObject, PortableTextTextBlock} from '@sanity/types'
 import {

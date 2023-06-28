@@ -6,7 +6,7 @@ import {
   RenderElementProps,
   RenderLeafProps,
   useSlate,
-} from '@sanity/slate-react'
+} from 'slate-react'
 import {noop} from 'lodash'
 import {PortableTextBlock} from '@sanity/types'
 import {
@@ -27,7 +27,7 @@ import {
 import {HotkeyOptions} from '../types/options'
 import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {normalizeSelection} from '../utils/selection'
-import {toPortableTextRange, toSlateRange} from '../utils/ranges'
+import {removeAllDocumentSelectionRanges, toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
 import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
 import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
@@ -321,6 +321,36 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [onBeforeInput]
   )
 
+  const handleDOMChange = useCallback(() => {
+    let newDomRange: any = null
+    const currentSelection = slateEditor.selection
+    try {
+      newDomRange =
+        slateEditor.selection && ReactEditor.toDOMRange(slateEditor, slateEditor.selection)
+    } catch (error) {
+      removeAllDocumentSelectionRanges(true)
+      Transforms.deselect(slateEditor)
+      Transforms.select(slateEditor, [0, 0])
+      slateEditor.onChange()
+      debug(`Could not resolve selection (${JSON.stringify(currentSelection)}), unselecting`)
+    }
+  }, [slateEditor])
+
+  useEffect(() => {
+    const mutationObserver = new MutationObserver(handleDOMChange)
+
+    if (ref.current) {
+      mutationObserver.observe(ref.current, {
+        childList: true,
+        subtree: true,
+      })
+    }
+
+    return () => {
+      mutationObserver.disconnect()
+    }
+  }, [handleDOMChange, ref])
+
   const handleKeyDown = slateEditor.pteWithHotKeys
 
   const scrollSelectionIntoViewToSlate = useMemo(() => {
@@ -373,6 +403,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         readOnly={readOnly}
         renderElement={renderElement}
         renderLeaf={renderLeaf}
+        style={props.style}
         scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
       />
     ),
@@ -384,6 +415,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       handleOnBlur,
       handleOnFocus,
       handlePaste,
+      props.style,
       readOnly,
       renderElement,
       renderLeaf,

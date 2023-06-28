@@ -1,5 +1,5 @@
 import {isEqual} from 'lodash'
-import {Editor, Point, Path as SlatePath, Element} from 'slate'
+import {Editor, Point, Path as SlatePath, Element, Descendant} from 'slate'
 import {isKeySegment, Path} from '@sanity/types'
 import {EditorSelectionPoint, PortableTextMemberSchemaTypes} from '../types/editor'
 import {ObjectWithKeyAndType} from './ranges'
@@ -37,14 +37,14 @@ export function createArrayedPath(point: EditorSelectionPoint, editor: Editor): 
   const [block, blockPath] = Array.from(
     Editor.nodes(editor, {
       at: [],
-      match: (n) => isKeySegment(point.path[0]) && n._key === point.path[0]._key,
+      match: (n) => isKeySegment(point.path[0]) && (n as Descendant)._key === point.path[0]._key,
     })
   )[0] || [undefined, undefined]
   if (!block || !Element.isElement(block)) {
     return []
   }
   if (editor.isVoid(block)) {
-    return blockPath
+    return [blockPath[0], 0]
   }
   const childPath = [point.path[2]]
   const childIndex = block.children.findIndex((child) => isEqual([{_key: child._key}], childPath))

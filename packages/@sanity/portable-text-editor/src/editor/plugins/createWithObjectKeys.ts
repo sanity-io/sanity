@@ -47,7 +47,6 @@ export function createWithObjectKeys(
           }
         }
       }
-      // Do the original `normalizeNode` to enforce other constraints.
       normalizeNode(entry)
     }
 

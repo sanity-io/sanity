@@ -87,7 +87,7 @@ export function toSlateValue(
 }
 
 export function fromSlateValue(
-  value: (Node | Partial<Node>)[],
+  value: Descendant[],
   textBlockType: string,
   keyMap: Record<string, PortableTextBlock | PortableTextChild> = {}
 ): PortableTextBlock[] {
