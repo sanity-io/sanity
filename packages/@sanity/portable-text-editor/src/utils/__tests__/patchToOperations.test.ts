@@ -1,14 +1,14 @@
 import {createEditor, Descendant} from 'slate'
 import {noop} from 'lodash'
 import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
-import {createPatchToOperations} from '../patchToOperations'
+import {createApplyPatch} from '../applyPatch'
 import {withPlugins} from '../../editor/plugins'
 import {keyGenerator, Patch, PortableTextEditor} from '../..'
 import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
 
 const schemaTypes = getPortableTextMemberSchemaTypes(schemaType)
 
-const patchToOperations = createPatchToOperations(schemaTypes)
+const patchToOperations = createApplyPatch(schemaTypes)
 const portableTextEditor = new PortableTextEditor({schemaType, onChange: noop})
 
 const {editor} = withPlugins(createEditor(), {
@@ -110,7 +110,7 @@ describe('operationToPatches', () => {
       },
     ]
     const patches = [
-      {type: 'insert', path: [{_key: 'c01739b0d03b'}, 'nestedArray', -1], origin: 'remote'},
+      {type: 'insert', path: [{_key: 'c01739b0d03b'}, 'nestedArray'], origin: 'remote'},
     ] as Patch[]
     patches.forEach((p) => {
       patchToOperations(editor, p)
@@ -241,7 +241,7 @@ describe('operationToPatches', () => {
     const patches = [
       {
         type: 'set',
-        path: [{_key: 'c01739b0d03b'}, 'markDefs'],
+        path: [{_key: '1335959d4d03'}, 'markDefs', {_key: '11de7fcea659'}],
         origin: 'remote',
         value: {href: 'http://www.test.com'},
       },
