@@ -17,7 +17,7 @@ export default defineCliConfig({
       ...viteConfig,
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
-        exclude: [...(viteConfig.optimizeDeps?.exclude || []), '@sanity/tsdoc'],
+        exclude: [...(viteConfig.optimizeDeps?.exclude || []), '@sanity/tsdoc', '@sanity/assist'],
       },
       // server: {
       //   ...viteConfig.server,

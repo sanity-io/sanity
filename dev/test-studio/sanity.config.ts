@@ -3,6 +3,7 @@ import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {muxInput} from 'sanity-plugin-mux-input'
+import {assist} from '@sanity/assist'
 import {theme as tailwindTheme} from 'https://themer.sanity.build/api/hues?preset=tw-cyan&default=64748b&primary=d946ef;lightest:fdf4ff;darkest:701a75&transparent=6b7180;darkest:111826&positive=43d675;400;lightest:f8fafc&caution=f59e09;300;lightest:fffbeb;darkest:783510&critical=f43f5e;lightest:fef1f2;darkest:881337&lightest=ffffff&darkest=0f172a'
 import {googleMapsInput} from '@sanity/google-maps-input'
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -215,5 +216,13 @@ export default defineConfig([
     basePath: '/tailwind',
     theme: tailwindTheme,
     icon: TailwindLogo,
+  },
+  {
+    name: 'ai-assist',
+    title: 'Sanity AI Assist',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings(), assist()],
+    basePath: '/ai-assist',
   },
 ])
