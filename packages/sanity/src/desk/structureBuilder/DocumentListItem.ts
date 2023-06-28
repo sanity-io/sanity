@@ -12,7 +12,7 @@ import {isRecord} from 'sanity'
  * @public
  */
 export interface DocumentListItemInput extends ListItemInput {
-  /** Document list item input schema type */
+  /** Document list item input schema type. See {@link SchemaType} */
   schemaType: SchemaType | string
 }
 
@@ -22,7 +22,7 @@ export interface DocumentListItemInput extends ListItemInput {
  * @public
  */
 export interface DocumentListItem extends ListItem {
-  /** Document schema type */
+  /** Document schema type. See {@link SchemaType} */
   schemaType: SchemaType
   /** Document ID */
   _id: string
@@ -52,12 +52,12 @@ const createDefaultChildResolver =
  * @public
  */
 export class DocumentListItemBuilder extends ListItemBuilder {
-  /** Document list options */
+  /** Document list options. See {@link PartialDocumentListItem} */
   protected spec: PartialDocumentListItem
 
   constructor(
     /**
-     * Desk structure context
+     * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: DocumentListItemInput
@@ -68,8 +68,8 @@ export class DocumentListItemBuilder extends ListItemBuilder {
 
   /**
    * Serialize document list item
-   * @param options - serialization options
-   * @returns document list item object based on path provided in options
+   * @param options - serialization options. See {@link SerializeOptions}
+   * @returns document list item object based on path provided in options. See {@link DocumentListItem}
    */
   serialize(options: SerializeOptions = {path: []}): DocumentListItem {
     const spec = super.serialize({...options, titleIsOptional: true})
@@ -87,8 +87,8 @@ export class DocumentListItemBuilder extends ListItemBuilder {
   }
 
   /** Clone Document list item builder (allows for options overriding)
-   * @param withSpec - Document list item builder options
-   * @returns document list item builder
+   * @param withSpec - Document list item builder options. See {@link PartialDocumentListItem}
+   * @returns document list item builder. See {@link DocumentListItemBuilder}
    */
   clone(withSpec?: PartialDocumentListItem): DocumentListItemBuilder {
     const builder = new DocumentListItemBuilder(this._context)

@@ -34,8 +34,7 @@ const createDocumentChildResolver =
   }
 
 /**
- * Interface for options of Partial Documents
- * {@link PartialDocumentNode}
+ * Interface for options of Partial Documents. See {@link PartialDocumentNode}
  *
  * @public */
 export interface DocumentOptions {
@@ -97,7 +96,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   }
 
   /** Get Document Builder ID
-   * @returns document ID
+   * @returns document ID. See {@link PartialDocumentNode}
    */
   getId(): PartialDocumentNode['id'] {
     return this.spec.id

@@ -12,7 +12,8 @@ import {StructureContext} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
 
 /**
- * Type for unserialize list item child
+ * Type for unserialize list item child.
+ * See {@link Collection}, {@link CollectionBuilder}, {@link ChildResolver} and {@link ItemChild}
  *
  * @public
  */
@@ -24,7 +25,7 @@ export type UnserializedListItemChild =
 
 /**
  * Type for child of List Item
- *
+ * See {@link Collection}, {@link ChildResolver}, {@link ItemChild}
  * @public
  */
 export type ListItemChild = Collection | ChildResolver | Observable<ItemChild> | undefined
@@ -59,11 +60,11 @@ export interface ListItemInput {
   title?: string
   /** List item icon */
   icon?: React.ComponentType | React.ReactNode
-  /** List item child */
+  /** List item child. See {@link ListItemChild} */
   child?: ListItemChild
-  /** List item display options */
+  /** List item display options. See {@link ListItemDisplayOptions} */
   displayOptions?: ListItemDisplayOptions
-  /** List item schema type */
+  /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType | string
 }
 
@@ -80,11 +81,11 @@ export interface ListItem {
   title?: string
   /** List item icon */
   icon?: React.ComponentType | React.ReactNode
-  /** List item child */
+  /** List item child. See {@link ListItemChild} */
   child?: ListItemChild
-  /** List item display options */
+  /** List item display options. See {@link ListItemDisplayOptions} */
   displayOptions?: ListItemDisplayOptions
-  /** List item schema type */
+  /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType
 }
 
@@ -100,31 +101,31 @@ export interface UnserializedListItem {
   title: string
   /** List item icon */
   icon?: React.ComponentType | React.ReactNode
-  /** List item child */
+  /** List item child. See {@link UnserializedListItemChild} */
   child?: UnserializedListItemChild
-  /** List item display options */
+  /** List item display options. See {@link ListItemDisplayOptions} */
   displayOptions?: ListItemDisplayOptions
-  /** List item schema */
+  /** List item schema. See {@link SchemaType} */
   schemaType?: SchemaType | string
 }
 
 /**
- * Type for a partial list item
+ * Type for a partial list item. See {@link UnserializedListItem}
  *
  * @public */
 export type PartialListItem = Partial<UnserializedListItem>
 
 /**
- * Class for building list items.
+ * Class for building list items
  *
  * @public */
 export class ListItemBuilder implements Serializable<ListItem> {
-  /** List item option object */
+  /** List item option object. See {@link PartialListItem} */
   protected spec: PartialListItem
 
   constructor(
     /**
-     * Desk structure context
+     * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: ListItemInput
@@ -134,7 +135,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Set list item ID
-   * @returns list item builder based on ID provided
+   * @returns list item builder based on ID provided. See {@link ListItemBuilder}
    */
   id(id: string): ListItemBuilder {
     return this.clone({id})
@@ -142,7 +143,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Get list item ID
-   * @returns list item ID
+   * @returns list item ID. See {@link PartialListItem}
    */
   getId(): PartialListItem['id'] {
     return this.spec.id
@@ -150,7 +151,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Set list item title
-   * @returns list item builder based on title provided
+   * @returns list item builder based on title provided. See {@link ListItemBuilder}
    */
   title(title: string): ListItemBuilder {
     return this.clone({title, id: getStructureNodeId(title, this.spec.id)})
@@ -158,7 +159,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Get list item title
-   * @returns list item title
+   * @returns list item title. See {@link PartialListItem}
    */
   getTitle(): PartialListItem['title'] {
     return this.spec.title
@@ -166,7 +167,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Set list item icon
-   * @returns list item builder based on icon provided
+   * @returns list item builder based on icon provided. See {@link ListItemBuilder}
    */
   icon(icon: React.ComponentType | React.ReactNode): ListItemBuilder {
     return this.clone({icon})
@@ -174,7 +175,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Set if list item should show icon
-   * @returns list item builder based on showIcon provided
+   * @returns list item builder based on showIcon provided. See {@link ListItemBuilder}
    */
   showIcon(enabled = true): ListItemBuilder {
     return this.clone({
@@ -192,7 +193,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    *Get list item icon
-   * @returns list item icon
+   * @returns list item icon. See {@link PartialListItem}
    */
   getIcon(): PartialListItem['icon'] {
     return this.spec.icon
@@ -200,7 +201,8 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Set list item child
-   * @returns list item builder based on child provided
+   * @param child - list item child. See {@link UnserializedListItemChild}
+   * @returns list item builder based on child provided. See {@link ListItemBuilder}
    */
   child(child: UnserializedListItemChild): ListItemBuilder {
     return this.clone({child})
@@ -208,7 +210,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Get list item child
-   * @returns list item child
+   * @returns list item child. See {@link PartialListItem}
    */
   getChild(): PartialListItem['child'] {
     return this.spec.child
@@ -216,7 +218,8 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Set list item schema type
-   * @returns list item builder based on schema type provided
+   * @param schemaType - list item schema type. See {@link SchemaType}
+   * @returns list item builder based on schema type provided. See {@link ListItemBuilder}
    */
   schemaType(schemaType: SchemaType | string): ListItemBuilder {
     return this.clone({schemaType})
@@ -224,7 +227,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
 
   /**
    * Get list item schema type
-   * @returns list item schema type
+   * @returns list item schema type. See {@link PartialListItem}
    */
   getSchemaType(): PartialListItem['schemaType'] {
     const schemaType = this.spec.schemaType
@@ -237,7 +240,8 @@ export class ListItemBuilder implements Serializable<ListItem> {
   }
 
   /** Serialize list item builder
-   * @returns list item node based on path provided in options
+   * @param options - serialization options. See {@link ListItemSerializeOptions}
+   * @returns list item node based on path provided in options. See {@link ListItem}
    */
   serialize(options: ListItemSerializeOptions = {path: []}): ListItem {
     const {id, title, child} = this.spec
@@ -298,7 +302,8 @@ export class ListItemBuilder implements Serializable<ListItem> {
   }
 
   /** Clone list item builder
-   * @returns list item builder based on context and spec provided
+   * @param withSpec - partial list item options. See {@link PartialListItem}
+   * @returns list item builder based on context and spec provided. See {@link ListItemBuilder}
    */
   clone(withSpec?: PartialListItem): ListItemBuilder {
     const builder = new ListItemBuilder(this._context)

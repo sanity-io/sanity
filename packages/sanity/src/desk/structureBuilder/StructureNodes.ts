@@ -31,7 +31,7 @@ export interface StructureNode {
  * @public */
 export interface DocumentNode extends StructureNode {
   /**
-   * Document children
+   * Document children. See {@link Child}
    */
   child?: Child
   /**
@@ -48,7 +48,7 @@ export interface DocumentNode extends StructureNode {
     templateParameters?: {[key: string]: any}
   }
   /**
-   * Views for the document pane
+   * View array for the document pane. See {@link View}
    */
   views: View[]
 }
@@ -58,7 +58,7 @@ export interface DocumentNode extends StructureNode {
  *
  * @public */
 export interface EditorNode extends StructureNode {
-  /** Editor Id */
+  /** Editor child. See {@link Child} */
   child?: Child
   /** Editor options */
   options: {
@@ -97,7 +97,7 @@ export type SerializePath = (string | number)[]
  * Interface for seraializing a structure node
  * @public */
 export interface SerializeOptions {
-  /** path */
+  /** path. See {@link SerializePath} */
   path: SerializePath
   /** index */
   index?: number
@@ -115,7 +115,8 @@ export interface Serializable<T> {
 }
 
 /**
- * Type for a collection
+ * Type for a collection.
+ * See {@link List}, {@link DocumentList}, {@link EditorNode}, {@link DocumentNode} and {@link Component}
  *
  * @public
  */
@@ -123,6 +124,7 @@ export type Collection = List | DocumentList | EditorNode | DocumentNode | Compo
 
 /**
  * Type for a collection builder
+ * See {@link ListBuilder}, {@link DocumentListBuilder}, {@link DocumentTypeListBuilder}, {@link DocumentBuilder} and {@link ComponentBuilder}
  *
  * @public
  */
@@ -135,6 +137,7 @@ export type CollectionBuilder =
 
 /**
  * Type for Child of a structure node
+ * See {@link Collection}, {@link CollectionBuilder} and {@link ChildResolver}
  *
  * @public
  */

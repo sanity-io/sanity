@@ -57,9 +57,9 @@ export interface StructureResolverContext extends ConfigContext {
 /**
  * Lets you configure how lists, documents, views, menus, and initial value templates are organized in the Sanity Studio’s desk-tool.
  *
- *  @public
+ * @public
  *
- * @returns A structure builder, or null/undefined if no structure should be returned.
+ * @returns A structure builder, or null/undefined if no structure should be returned. See {@link StructureBuilder}
  * @example Configuring structure
  * ```ts
  * // sanity.config.js
@@ -94,10 +94,12 @@ export type StructureResolver = (
    * ```ts
    * (S) => S.defaults()
    * ```
+   * See {@link StructureBuilder}
    */
   S: StructureBuilder,
   /**
    * An object containing pane and index information for the current desk tool.
+   * See {@link StructureResolverContext}
    */
   context: StructureResolverContext
 ) => unknown
@@ -106,8 +108,7 @@ export type StructureResolver = (
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
 /**
- * The params for the `deskTool` api
- * {@link deskTool}
+ * The params for the `deskTool` api. See {@link deskTool}
  *
  * @public */
 export interface DeskToolOptions {
@@ -129,13 +130,11 @@ export interface DeskToolOptions {
   */
   source?: string
   /**
-   * A structure resolver function.
-   * {@link StructureResolver}
+   * A structure resolver function. See {@link StructureResolver}
    */
   structure?: StructureResolver
   /**
-   * A resolver function used to return the default document node used when editing documents.
-   * {@link DefaultDocumentNodeResolver}
+   * A resolver function used to return the default document node used when editing documents. See {@link DefaultDocumentNodeResolver}
    */
   defaultDocumentNode?: DefaultDocumentNodeResolver
   /**

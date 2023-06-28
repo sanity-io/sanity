@@ -11,7 +11,7 @@ import {StructureContext} from './types'
  * @public
  */
 export interface DocumentTypeListInput extends Partial<GenericListInput> {
-  /** Document type list input schema type */
+  /** Document type list input schema type. See {@link SchemaType} */
   schemaType: SchemaType | string
 }
 
@@ -21,12 +21,12 @@ export interface DocumentTypeListInput extends Partial<GenericListInput> {
  * @public
  */
 export class DocumentTypeListBuilder extends DocumentListBuilder {
-  /** Document list options */
+  /** Document list options. See {@link PartialDocumentList} */
   protected spec: PartialDocumentList
 
   constructor(
     /**
-     * Desk structure context
+     * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: DocumentListInput
@@ -37,16 +37,16 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
 
   /**
    * Set Document type list child
-   * @param child - Child component
-   * @returns document type list builder based on child component provided without default intent handler
+   * @param child - Child component. See {@link Child}
+   * @returns document type list builder based on child component provided without default intent handler. See {@link DocumentTypeListBuilder}
    */
   child(child: Child): DocumentTypeListBuilder {
     return this.cloneWithoutDefaultIntentHandler({child})
   }
 
   /** Clone Document type list builder (allows for options overriding)
-   * @param withSpec - Document type list builder options
-   * @returns document type list builder
+   * @param withSpec - Document type list builder options. See {@link PartialDocumentList}
+   * @returns document type list builder. See {@link DocumentTypeListBuilder}
    */
   clone(withSpec?: PartialDocumentList): DocumentTypeListBuilder {
     const parent = super.clone(withSpec)
@@ -56,8 +56,8 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
   }
 
   /** Clone Document type list builder (allows for options overriding) and remove default intent handler
-   * @param withSpec - Document type list builder options
-   * @returns document type list builder without default intent handler
+   * @param withSpec - Document type list builder options. See {@link PartialDocumentList}
+   * @returns document type list builder without default intent handler. See {@link DocumentTypeListBuilder}
    */
   cloneWithoutDefaultIntentHandler(withSpec?: PartialDocumentList): DocumentTypeListBuilder {
     const parent = super.clone(withSpec)

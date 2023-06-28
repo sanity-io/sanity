@@ -92,7 +92,7 @@ function isPromise<T>(thing: unknown): thing is PromiseLike<T> {
  */
 export interface List extends GenericList {
   type: 'list'
-  /** List items */
+  /** List items. See {@link ListItem} and {@link Divider} */
   items: (ListItem | Divider)[]
 }
 
@@ -102,7 +102,7 @@ export interface List extends GenericList {
  * @public
  */
 export interface ListInput extends GenericListInput {
-  /** List input items array */
+  /** List input items array. See {@link ListItem}, {@link ListItemBuilder} and {@link Divider} */
   items?: (ListItem | ListItemBuilder | Divider)[]
 }
 
@@ -112,7 +112,7 @@ export interface ListInput extends GenericListInput {
  * @public
  */
 export interface BuildableList extends BuildableGenericList {
-  /** List items */
+  /** List items. See {@link ListItem}, {@link ListItemBuilder} and {@link Divider} */
   items?: (ListItem | ListItemBuilder | Divider)[]
 }
 
@@ -121,12 +121,12 @@ export interface BuildableList extends BuildableGenericList {
  *
  * @public */
 export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> {
-  /** buildable list option object */
+  /** buildable list option object. See {@link BuildableList} */
   protected spec: BuildableList
 
   constructor(
     /**
-     * Desk structure context
+     * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: ListInput
@@ -138,23 +138,23 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
 
   /**
    * Set list builder based on items provided
-   * @param items - list items
-   * @returns list builder based on items provided
+   * @param items - list items. See {@link ListItemBuilder}, {@link ListItem} and {@link Divider}
+   * @returns list builder based on items provided. See {@link ListBuilder}
    */
   items(items: (ListItemBuilder | ListItem | Divider)[]): ListBuilder {
     return this.clone({items})
   }
 
   /** Get list builder items
-   * @returns list items
+   * @returns list items. See {@link BuildableList}
    */
   getItems(): BuildableList['items'] {
     return this.spec.items
   }
 
   /** Serialize list builder
-   * @param options - serialization options
-   * @returns list based on path in options
+   * @param options - serialization options. See {@link SerializeOptions}
+   * @returns list based on path in options. See {@link List}
    */
   serialize(options: SerializeOptions = {path: []}): List {
     const id = this.spec.id
@@ -200,8 +200,8 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
 
   /**
    * Clone list builder and return new list builder based on context and spec provided
-   * @param withSpec - list options
-   * @returns new list builder based on context and spec provided
+   * @param withSpec - list options. See {@link BuildableList}
+   * @returns new list builder based on context and spec provided. See {@link ListBuilder}
    */
   clone(withSpec?: BuildableList): ListBuilder {
     const builder = new ListBuilder(this._context)

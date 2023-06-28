@@ -32,8 +32,7 @@ const documentBadges = [LiveEditBadge]
  * You can configure your Studio's desk tool(s).
  *
  * @public
- * @param options - Options for the desk tool
- * {@link DeskToolOptions}
+ * @param options - Options for the desk tool. See {@link DeskToolOptions}
  * @example Minimal example
  * ```ts
  * // sanity.config.ts

@@ -76,9 +76,9 @@ export interface DocumentListInput extends GenericListInput {
  */
 export interface DocumentList extends GenericList {
   type: 'documentList'
-  /** Document list options */
+  /** Document list options. See {@link DocumentListOptions} */
   options: DocumentListOptions
-  /** Document list child */
+  /** Document list child. See {@link Child} */
   child: Child
   /** Document schema type name */
   schemaTypeName?: string
@@ -96,7 +96,7 @@ export interface DocumentListOptions {
   params?: Record<string, unknown>
   /** Document list API version */
   apiVersion?: string
-  /** Document list API default ordering */
+  /** Document list API default ordering array. See {@link SortOrderingItem} */
   defaultOrdering?: SortOrderingItem[]
 }
 
@@ -109,12 +109,12 @@ export class DocumentListBuilder extends GenericListBuilder<
   PartialDocumentList,
   DocumentListBuilder
 > {
-  /** Document list options */
+  /** Document list options. See {@link PartialDocumentList} */
   protected spec: PartialDocumentList
 
   constructor(
     /**
-     * Desk structure context
+     * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: DocumentListInput
@@ -126,7 +126,7 @@ export class DocumentListBuilder extends GenericListBuilder<
 
   /** Set API version
    * @param apiVersion - API version
-   * @returns document list builder based on the options and API version provided
+   * @returns document list builder based on the options and API version provided. See {@link DocumentListBuilder}
    */
   apiVersion(apiVersion: string): DocumentListBuilder {
     return this.clone({options: {...(this.spec.options || {filter: ''}), apiVersion}})
@@ -141,7 +141,7 @@ export class DocumentListBuilder extends GenericListBuilder<
 
   /** Set Document list filter
    * @param filter - filter
-   * @returns document list builder based on the options and filter provided
+   * @returns document list builder based on the options and filter provided. See {@link DocumentListBuilder}
    */
   filter(filter: string): DocumentListBuilder {
     return this.clone({options: {...(this.spec.options || {}), filter}})
@@ -155,8 +155,8 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Set Document list schema type name
-   * @param type - schema type name
-   * @returns document list builder based on the schema type name provided
+   * @param type - schema type name. See {@link SchemaType}
+   * @returns document list builder based on the schema type name provided. See {@link DocumentListBuilder}
    */
   schemaType(type: SchemaType | string): DocumentListBuilder {
     const schemaTypeName = typeof type === 'string' ? type : type.name
@@ -172,7 +172,7 @@ export class DocumentListBuilder extends GenericListBuilder<
 
   /** Set Document list options' parameters
    * @param params - parameters
-   * @returns document list builder based on the options provided
+   * @returns document list builder based on the options provided. See {@link DocumentListBuilder}
    */
   params(params: Record<string, unknown>): DocumentListBuilder {
     return this.clone({
@@ -188,8 +188,8 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Set Document list default ordering
-   * @param ordering - default sort ordering
-   * @returns document list builder based on ordering provided
+   * @param ordering - default sort ordering array. See {@link SortOrderingItem}
+   * @returns document list builder based on ordering provided. See {@link DocumentListBuilder}
    */
   defaultOrdering(ordering: SortOrderingItem[]): DocumentListBuilder {
     if (!Array.isArray(ordering)) {
@@ -202,15 +202,15 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Get Document list default ordering
-   * @returns default ordering
+   * @returns default ordering. See {@link SortOrderingItem}
    */
   getDefaultOrdering(): SortOrderingItem[] | undefined {
     return this.spec.options?.defaultOrdering
   }
 
   /** Serialize Document list
-   * @param options - serialization options
-   * @returns document list object based on path provided in options
+   * @param options - serialization options. See {@link SerializeOptions}
+   * @returns document list object based on path provided in options. See {@link DocumentList}
    */
   serialize(options: SerializeOptions = {path: []}): DocumentList {
     if (typeof this.spec.id !== 'string' || !this.spec.id) {
@@ -248,8 +248,8 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Clone Document list builder (allows for options overriding)
-   * @param withSpec - override document list spec
-   * @returns document list builder
+   * @param withSpec - override document list spec. See {@link PartialDocumentList}
+   * @returns document list builder. See {@link DocumentListBuilder}
    */
   clone(withSpec?: PartialDocumentList): DocumentListBuilder {
     const builder = new DocumentListBuilder(this._context)
@@ -267,7 +267,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Get Document list spec
-   * @returns document list spec
+   * @returns document list spec. See {@link PartialDocumentList}
    */
   getSpec(): PartialDocumentList {
     return this.spec

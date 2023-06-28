@@ -32,7 +32,7 @@ export abstract class GenericViewBuilder<TView extends Partial<BaseView>, Concre
 
   /** Set generic view ID
    * @param id - generic view ID
-   * @returns generic view builder based on ID provided
+   * @returns generic view builder based on ID provided. See {@link ConcreteImpl}
    */
   id(id: string): ConcreteImpl {
     return this.clone({id})
@@ -46,7 +46,7 @@ export abstract class GenericViewBuilder<TView extends Partial<BaseView>, Concre
 
   /** Set generic view title
    * @param title - generic view title
-   * @returns generic view builder based on title provided and (if provided) its ID
+   * @returns generic view builder based on title provided and (if provided) its ID. See {@link ConcreteImpl}
    */
   title(title: string): ConcreteImpl {
     return this.clone({title, id: this.spec.id || kebabCase(title)})
@@ -61,7 +61,7 @@ export abstract class GenericViewBuilder<TView extends Partial<BaseView>, Concre
 
   /** Set generic view icon
    * @param icon - generic view icon
-   * @returns generic view builder based on icon provided
+   * @returns generic view builder based on icon provided. See {@link ConcreteImpl}
    */
   icon(icon: React.ComponentType | React.ReactNode): ConcreteImpl {
     return this.clone({icon})
@@ -75,8 +75,8 @@ export abstract class GenericViewBuilder<TView extends Partial<BaseView>, Concre
   }
 
   /** Serialize generic view
-   * @param options - serialization options
-   * @returns generic view object based on path provided in options
+   * @param options - serialization options. See {@link SerializeOptions}
+   * @returns generic view object based on path provided in options. See {@link BaseView}
    */
   serialize(options: SerializeOptions = {path: []}): BaseView {
     const {id, title, icon} = this.spec
@@ -104,8 +104,8 @@ export abstract class GenericViewBuilder<TView extends Partial<BaseView>, Concre
   }
 
   /** Clone generic view builder (allows for options overriding)
-   * @param withSpec - generic view builder options
-   * @returns generic view builder
+   * @param withSpec - Partial generic view builder options. See {@link BaseView}
+   * @returns Generic view builder. See {@link ConcreteImpl}
    */
   abstract clone(withSpec?: Partial<BaseView>): ConcreteImpl
 }
@@ -124,7 +124,7 @@ export function maybeSerializeView(
 }
 
 /**
- * Type for view builder
+ * Type for view builder. See {@link ComponentViewBuilder} and {@link FormViewBuilder}
  *
  * @public
  */

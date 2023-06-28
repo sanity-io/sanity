@@ -14,7 +14,7 @@ export interface FormView extends BaseView {
  *
  * @public */
 export class FormViewBuilder extends GenericViewBuilder<Partial<BaseView>, FormViewBuilder> {
-  /** Document list options */
+  /** Document list options. See {@link FormView} */
   protected spec: Partial<FormView>
 
   constructor(spec?: Partial<FormView>) {
@@ -24,8 +24,8 @@ export class FormViewBuilder extends GenericViewBuilder<Partial<BaseView>, FormV
 
   /**
    * Serialize Form view builder
-   * @param options - Serialize options
-   * @returns form view builder based on path provided in options
+   * @param options - Serialize options. See {@link SerializeOptions}
+   * @returns form view builder based on path provided in options. See {@link FormView}
    */
   serialize(options: SerializeOptions = {path: []}): FormView {
     return {
@@ -36,8 +36,8 @@ export class FormViewBuilder extends GenericViewBuilder<Partial<BaseView>, FormV
 
   /**
    * Clone Form view builder (allows for options overriding)
-   * @param withSpec - Form view builder options
-   * @returns form view builder
+   * @param withSpec - Partial form view builder options. See {@link FormView}
+   * @returns form view builder. See {@link FormViewBuilder}
    */
   clone(withSpec?: Partial<FormView>): FormViewBuilder {
     const builder = new FormViewBuilder()

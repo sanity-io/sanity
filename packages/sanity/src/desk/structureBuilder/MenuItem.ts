@@ -45,7 +45,7 @@ export interface MenuItem {
   // TODO: align these with TemplateResponse['icon']
   /** Menu Item icon */
   icon?: React.ComponentType | React.ReactNode
-  /** Menu Item parameters */
+  /** Menu Item parameters. See {@link MenuItemParamsType} */
   params?: MenuItemParamsType
   /** Determine if it will show the MenuItem as action */
   showAsAction?: boolean
@@ -62,12 +62,12 @@ export type PartialMenuItem = Partial<MenuItem>
  *
  * @public */
 export class MenuItemBuilder implements Serializable<MenuItem> {
-  /** menu item option object */
+  /** menu item option object. See {@link PartialMenuItem} */
   protected spec: PartialMenuItem
 
   constructor(
     /**
-     * Desk structure context
+     * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: MenuItem
@@ -77,8 +77,8 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item action
-   * @param action - menu item action
-   * @returns menu item builder based on action provided
+   * @param action - menu item action. See {@link MenuItemActionType}
+   * @returns menu item builder based on action provided. See {@link MenuItemBuilder}
    */
   action(action: MenuItemActionType): MenuItemBuilder {
     return this.clone({action})
@@ -86,7 +86,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Get menu item action
-   * @returns menu item builder action
+   * @returns menu item builder action. See {@link PartialMenuItem}
    */
   getAction(): PartialMenuItem['action'] {
     return this.spec.action
@@ -94,8 +94,8 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item intent
-   * @param intent - menu item intent
-   * @returns menu item builder based on intent provided
+   * @param intent - menu item intent. See {@link Intent}
+   * @returns menu item builder based on intent provided. See {@link MenuItemBuilder}
    */
   intent(intent: Intent): MenuItemBuilder {
     return this.clone({intent})
@@ -103,7 +103,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Get menu item intent
-   * @returns menu item intent
+   * @returns menu item intent. See {@link PartialMenuItem}
    */
   getIntent(): PartialMenuItem['intent'] {
     return this.spec.intent
@@ -112,7 +112,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   /**
    * Set menu item title
    * @param title - menu item title
-   * @returns menu item builder based on title provided
+   * @returns menu item builder based on title provided. See {@link MenuItemBuilder}
    */
   title(title: string): MenuItemBuilder {
     return this.clone({title})
@@ -129,7 +129,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   /**
    * Set menu item group
    * @param group - menu item group
-   * @returns menu item builder based on group provided
+   * @returns menu item builder based on group provided. See {@link MenuItemBuilder}
    */
   group(group: string): MenuItemBuilder {
     return this.clone({group})
@@ -137,7 +137,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Get menu item group
-   * @returns menu item group
+   * @returns menu item group. See {@link PartialMenuItem}
    */
   getGroup(): PartialMenuItem['group'] {
     return this.spec.group
@@ -146,7 +146,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   /**
    * Set menu item icon
    * @param icon - menu item icon
-   * @returns menu item builder based on icon provided
+   * @returns menu item builder based on icon provided. See {@link MenuItemBuilder}
    */
   icon(icon: React.ComponentType | React.ReactNode): MenuItemBuilder {
     return this.clone({icon})
@@ -154,7 +154,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Get menu item icon
-   * @returns menu item icon
+   * @returns menu item icon. See {@link PartialMenuItem}
    */
   getIcon(): PartialMenuItem['icon'] {
     return this.spec.icon
@@ -162,8 +162,8 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Set menu item parameters
-   * @param params - menu item parameters
-   * @returns menu item builder based on parameters provided
+   * @param params - menu item parameters. See {@link MenuItemParamsType}
+   * @returns menu item builder based on parameters provided. See {@link MenuItemBuilder}
    */
   params(params: MenuItemParamsType): MenuItemBuilder {
     return this.clone({params})
@@ -171,7 +171,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Get meny item parameters
-   * @returns menu item parameters
+   * @returns menu item parameters. See {@link PartialMenuItem}
    */
   getParams(): PartialMenuItem['params'] {
     return this.spec.params
@@ -180,7 +180,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   /**
    * Set menu item to show as action
    * @param showAsAction - determine if menu item should show as action
-   * @returns menu item builder based on if it should show as action
+   * @returns menu item builder based on if it should show as action. See {@link MenuItemBuilder}
    */
   showAsAction(showAsAction = true): MenuItemBuilder {
     return this.clone({showAsAction: Boolean(showAsAction)})
@@ -188,15 +188,15 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   /**
    * Check if menu item should show as action
-   * @returns true if menu item should show as action, false if not
+   * @returns true if menu item should show as action, false if not. See {@link PartialMenuItem}
    */
   getShowAsAction(): PartialMenuItem['showAsAction'] {
     return this.spec.showAsAction
   }
 
   /** Serialize menu item builder
-   * @param options - serialization options
-   * @returns menu item node based on path provided in options
+   * @param options - serialization options. See {@link SerializeOptions}
+   * @returns menu item node based on path provided in options. See {@link MenuItem}
    */
   serialize(options: SerializeOptions = {path: []}): MenuItem {
     const {title, action, intent} = this.spec
@@ -232,8 +232,8 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   }
 
   /** Clone menu item builder
-   * @param withSpec - menu item options
-   * @returns menu item builder based on context and spec provided
+   * @param withSpec - menu item options. See {@link PartialMenuItem}
+   * @returns menu item builder based on context and spec provided. See {@link MenuItemBuilder}
    */
   clone(withSpec?: PartialMenuItem): MenuItemBuilder {
     const builder = new MenuItemBuilder(this._context)
