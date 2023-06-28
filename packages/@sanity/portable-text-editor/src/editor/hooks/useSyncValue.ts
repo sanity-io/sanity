@@ -1,18 +1,18 @@
 /* eslint-disable max-nested-callbacks */
-import React, {useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
-import {isEqual} from 'lodash'
+import {debounce, isEqual} from 'lodash'
 import {Editor, Transforms, Node, Descendant, Text} from 'slate'
-import {useSlate} from '@sanity/slate-react'
+import {useSlate} from 'slate-react'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {toSlateValue} from '../../utils/values'
-import {KEY_TO_SLATE_ELEMENT} from '../../utils/weakMaps'
 import {withoutSaving} from '../plugins/createWithUndoRedo'
 import {withPreserveKeys} from '../../utils/withPreserveKeys'
 import {withoutPatching} from '../../utils/withoutPatching'
 import {validateValue} from '../../utils/validateValue'
+import {isChangingLocally, isChangingRemotely, withRemoteChanges} from '../../utils/withChanges'
 
 const debug = debugWithName('hook:useSyncValue')
 
@@ -20,12 +20,13 @@ const debug = debugWithName('hook:useSyncValue')
  * @internal
  */
 export interface UseSyncValueProps {
-  isPending: React.MutableRefObject<boolean | null>
   keyGenerator: () => string
   onChange: (change: EditorChange) => void
   portableTextEditor: PortableTextEditor
   readOnly: boolean
 }
+
+const CURRENT_VALUE = new WeakMap<PortableTextEditor, PortableTextBlock[] | undefined>()
 
 /**
  * Sync value with the editor state
@@ -42,46 +43,59 @@ export interface UseSyncValueProps {
 export function useSyncValue(
   props: UseSyncValueProps
 ): (value: PortableTextBlock[] | undefined, userCallbackFn?: () => void) => void {
-  const {portableTextEditor, isPending, readOnly, keyGenerator} = props
+  const {portableTextEditor, readOnly, keyGenerator} = props
   const {change$, schemaTypes} = portableTextEditor
   const previousValue = useRef<PortableTextBlock[] | undefined>()
   const slateEditor = useSlate()
-  return useMemo(
-    () => (value: PortableTextBlock[] | undefined) => {
-      // Don't sync the value if there are pending local changes.
-      // The value will be synced again after the local changes are submitted.
-      if (isPending.current && !readOnly) {
-        debug('Has local patches')
-        return
-      }
+  const updateValueFunctionRef = useRef<(value: PortableTextBlock[] | undefined) => void>()
 
-      if (previousValue.current === value) {
-        debug('Value is the same object')
-        change$.next({type: 'value', value})
-        return
-      }
+  const updateFromCurrentValue = useCallback(() => {
+    const currentValue = CURRENT_VALUE.get(portableTextEditor)
+    if (previousValue.current === currentValue) {
+      debug('Value is the same object as previous, not need to sync')
+      return
+    }
+    if (updateValueFunctionRef.current && currentValue) {
+      debug('Updating the value debounced')
+      updateValueFunctionRef.current(currentValue)
+    }
+  }, [portableTextEditor])
 
-      if (value && value.length === 0) {
-        const validation = validateValue(value, schemaTypes, keyGenerator)
-        change$.next({
-          type: 'invalidValue',
-          resolution: validation.resolution,
-          value,
-        })
-        return
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const updateValueDebounced = useCallback(
+    debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false}),
+    [updateFromCurrentValue]
+  )
+
+  return useMemo(() => {
+    const updateFunction = (value: PortableTextBlock[] | undefined) => {
+      CURRENT_VALUE.set(portableTextEditor, value)
+      const isProcessingLocalChanges = isChangingLocally(slateEditor)
+      const isProcessingRemoteChanges = isChangingRemotely(slateEditor)
+      if (!readOnly) {
+        if (isProcessingLocalChanges) {
+          debug('Has local changes, not syncing value right now')
+          updateValueDebounced()
+          return
+        }
+        if (isProcessingRemoteChanges) {
+          debug('Has remote changes, not syncing value right now')
+          updateValueDebounced()
+          return
+        }
       }
 
       let isChanged = false
       let isValid = true
-      previousValue.current = value
+
+      const hadSelection = !!slateEditor.selection
 
       // If empty value, remove everything in the editor and insert a placeholder block
       if (!value || value.length === 0) {
         debug('Value is empty')
-        withoutSaving(slateEditor, () => {
-          withoutPatching(slateEditor, () => {
-            Editor.withoutNormalizing(slateEditor, () => {
-              const hadSelection = !!slateEditor.selection
+        Editor.withoutNormalizing(slateEditor, () => {
+          withoutSaving(slateEditor, () => {
+            withoutPatching(slateEditor, () => {
               if (hadSelection) {
                 Transforms.deselect(slateEditor)
               }
@@ -103,91 +117,120 @@ export function useSyncValue(
       }
       // Remove, replace or add nodes according to what is changed.
       if (value && value.length > 0) {
-        const slateValueFromProps = toSlateValue(
-          value,
-          {
-            schemaTypes,
-          },
-          KEY_TO_SLATE_ELEMENT.get(slateEditor)
-        )
-
-        withoutSaving(slateEditor, () => {
-          withoutPatching(slateEditor, () => {
-            Editor.withoutNormalizing(slateEditor, () => {
-              const childrenLength = slateEditor.children.length
-              // Remove blocks that have become superfluous
-              if (slateValueFromProps.length < childrenLength) {
-                for (let i = childrenLength - 1; i > slateValueFromProps.length - 1; i--) {
-                  Transforms.removeNodes(slateEditor, {
-                    at: [i],
-                  })
+        const slateValueFromProps = toSlateValue(value, {
+          schemaTypes,
+        })
+        Editor.withoutNormalizing(slateEditor, () => {
+          withRemoteChanges(slateEditor, () => {
+            withoutSaving(slateEditor, () => {
+              withoutPatching(slateEditor, () => {
+                const childrenLength = slateEditor.children.length
+                // Remove blocks that have become superfluous
+                if (slateValueFromProps.length < childrenLength) {
+                  for (let i = childrenLength - 1; i > slateValueFromProps.length - 1; i--) {
+                    Transforms.removeNodes(slateEditor, {
+                      at: [i],
+                    })
+                  }
+                  isChanged = true
                 }
-                isChanged = true
-              }
-              // Go through all of the blocks and see if they need to be updated
-              slateValueFromProps.forEach((currentBlock, currentBlockIndex) => {
-                const oldBlock = slateEditor.children[currentBlockIndex]
-                const hasChanges = oldBlock && !isEqual(currentBlock, oldBlock)
-                if (hasChanges && isValid) {
-                  const validationValue = [value[currentBlockIndex]]
-                  const validation = validateValue(validationValue, schemaTypes, keyGenerator)
-                  if (validation.valid) {
-                    if (oldBlock._key === currentBlock._key) {
-                      debug('Updating block', oldBlock, currentBlock)
-                      _updateBlock(slateEditor, currentBlock, oldBlock, currentBlockIndex)
+                // Go through all of the blocks and see if they need to be updated
+                slateValueFromProps.forEach((currentBlock, currentBlockIndex) => {
+                  const oldBlock = slateEditor.children[currentBlockIndex]
+                  const hasChanges = oldBlock && !isEqual(currentBlock, oldBlock)
+                  if (hasChanges && isValid) {
+                    const validationValue = [value[currentBlockIndex]]
+                    const validation = validateValue(validationValue, schemaTypes, keyGenerator)
+                    if (validation.valid) {
+                      if (oldBlock._key === currentBlock._key) {
+                        if (debug.enabled) debug('Updating block', oldBlock, currentBlock)
+                        _updateBlock(slateEditor, currentBlock, oldBlock, currentBlockIndex)
+                      } else {
+                        if (debug.enabled) debug('Replacing block', oldBlock, currentBlock)
+                        _replaceBlock(slateEditor, currentBlock, currentBlockIndex)
+                      }
+                      isChanged = true
                     } else {
-                      debug('Replacing block', oldBlock, currentBlock)
-                      _replaceBlock(slateEditor, currentBlock, currentBlockIndex)
-                    }
-                    isChanged = true
-                  } else {
-                    change$.next({
-                      type: 'invalidValue',
-                      resolution: validation.resolution,
-                      value,
-                    })
-                    isValid = false
-                  }
-                }
-                if (!oldBlock && isValid) {
-                  const validationValue = [value[currentBlockIndex]]
-                  const validation = validateValue(validationValue, schemaTypes, keyGenerator)
-                  debug('Validating and inserting new block in the end of the value', currentBlock)
-                  if (validation.valid) {
-                    withPreserveKeys(slateEditor, () => {
-                      Transforms.insertNodes(slateEditor, currentBlock, {
-                        at: [currentBlockIndex],
+                      change$.next({
+                        type: 'invalidValue',
+                        resolution: validation.resolution,
+                        value,
                       })
-                    })
-                  } else {
-                    change$.next({
-                      type: 'invalidValue',
-                      resolution: validation.resolution,
-                      value,
-                    })
-                    isValid = false
+                      isValid = false
+                    }
                   }
-                }
+                  if (!oldBlock && isValid) {
+                    const validationValue = [value[currentBlockIndex]]
+                    const validation = validateValue(validationValue, schemaTypes, keyGenerator)
+                    if (debug.enabled)
+                      debug(
+                        'Validating and inserting new block in the end of the value',
+                        currentBlock
+                      )
+                    if (validation.valid) {
+                      withPreserveKeys(slateEditor, () => {
+                        Transforms.insertNodes(slateEditor, currentBlock, {
+                          at: [currentBlockIndex],
+                        })
+                      })
+                    } else {
+                      debug('Invalid', validation)
+                      change$.next({
+                        type: 'invalidValue',
+                        resolution: validation.resolution,
+                        value,
+                      })
+                      isValid = false
+                    }
+                  }
+                })
               })
             })
           })
         })
       }
+
       if (!isValid) {
         debug('Invalid value, returning')
         return
       }
       if (isChanged) {
         debug('Server value changed, syncing editor')
-        Editor.normalize(slateEditor)
-        slateEditor.onChange()
+        try {
+          slateEditor.onChange()
+        } catch (err) {
+          console.error(err)
+          change$.next({
+            type: 'invalidValue',
+            resolution: null,
+            value,
+          })
+          return
+        }
+        if (hadSelection && !slateEditor.selection) {
+          Transforms.select(slateEditor, {
+            anchor: {path: [0, 0], offset: 0},
+            focus: {path: [0, 0], offset: 0},
+          })
+          slateEditor.onChange()
+        }
         change$.next({type: 'value', value})
       } else {
-        debug('Server value and editor value is the same, no need to sync.')
+        debug('Server value and editor value is equal, no need to sync.')
       }
-    },
-    [change$, isPending, keyGenerator, readOnly, schemaTypes, slateEditor]
-  )
+      previousValue.current = value
+    }
+    updateValueFunctionRef.current = updateFunction
+    return updateFunction
+  }, [
+    change$,
+    keyGenerator,
+    portableTextEditor,
+    readOnly,
+    schemaTypes,
+    slateEditor,
+    updateValueDebounced,
+  ])
 }
 
 /**
@@ -271,6 +314,7 @@ function _updateBlock(
             Transforms.insertText(slateEditor, currentBlockChild.text, {
               at: path,
             })
+            slateEditor.onChange()
           } else if (!isSpanNode) {
             // If it's a inline block, also update the void text node key
             debug('Updating changed inline object child', currentBlockChild)
@@ -294,6 +338,7 @@ function _updateBlock(
               at: [currentBlockIndex, currentBlockChildIndex],
             })
           })
+          slateEditor.onChange()
           // Insert it if it didn't exist before
         } else if (!oldBlockChild) {
           debug('Inserting new child', currentBlockChild)
@@ -301,6 +346,7 @@ function _updateBlock(
             Transforms.insertNodes(slateEditor, currentBlockChild as Node, {
               at: [currentBlockIndex, currentBlockChildIndex],
             })
+            slateEditor.onChange()
           })
         }
       }

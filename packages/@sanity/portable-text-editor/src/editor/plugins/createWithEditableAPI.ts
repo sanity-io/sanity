@@ -1,14 +1,15 @@
-import {Text, Range, Transforms, Editor, Element as SlateElement, Node} from 'slate'
+import {Text, Range, Transforms, Editor, Element as SlateElement, Node, Descendant} from 'slate'
 import {
   ObjectSchemaType,
   Path,
   PortableTextBlock,
   PortableTextChild,
   PortableTextObject,
+  PortableTextTextBlock,
   SchemaType,
 } from '@sanity/types'
-import {ReactEditor} from '@sanity/slate-react'
-import {DOMNode} from '@sanity/slate-react/dist/utils/dom'
+import {ReactEditor} from 'slate-react'
+import {DOMNode} from 'slate-react/dist/utils/dom'
 import {
   EditableAPIDeleteOptions,
   EditorSelection,
@@ -82,52 +83,23 @@ export function createWithEditableAPI(
       },
       focusBlock: (): PortableTextBlock | undefined => {
         if (editor.selection) {
-          // Try/catch this, as Slate may error because the selection is currently wrong
-          // TODO: catch only relevant error from Slate
-          try {
-            const [block] = Array.from(
-              Editor.nodes(editor, {
-                at: editor.selection.focus,
-                match: (n) => Editor.isBlock(editor, n),
-              })
-            )[0] || [undefined]
-            if (block) {
-              return fromSlateValue([block], types.block.name, KEY_TO_VALUE_ELEMENT.get(editor))[0]
-            }
-          } catch (err) {
-            return undefined
+          const block = Node.descendant(editor, editor.selection.focus.path.slice(0, 1))
+          if (block) {
+            return fromSlateValue([block], types.block.name, KEY_TO_VALUE_ELEMENT.get(editor))[0]
           }
         }
         return undefined
       },
       focusChild: (): PortableTextChild | undefined => {
         if (editor.selection) {
-          try {
-            const [node] = Array.from(
-              Editor.nodes(editor, {
-                mode: 'lowest',
-                at: editor.selection.focus,
-                match: (n) => n._type !== undefined,
-                voids: true,
-              })
-            )[0] || [undefined]
-            if (node && !Editor.isBlock(editor, node)) {
-              const pseudoBlock: PortableTextBlock = {
-                _key: 'pseudo',
-                _type: types.block.name,
-                children: [node],
-              }
-              const blocks = fromSlateValue(
-                [pseudoBlock],
-                types.block.name,
-                KEY_TO_VALUE_ELEMENT.get(editor)
-              )
-              if (editor.isTextBlock(blocks[0])) {
-                return blocks[0].children[0]
-              }
-            }
-          } catch (err) {
-            return undefined
+          const block = Node.descendant(editor, editor.selection.focus.path.slice(0, 1))
+          if (block && editor.isTextBlock(block)) {
+            const ptBlock = fromSlateValue(
+              [block],
+              types.block.name,
+              KEY_TO_VALUE_ELEMENT.get(editor)
+            )[0] as PortableTextTextBlock
+            return ptBlock.children[editor.selection.focus.path[1]]
           }
         }
         return undefined
@@ -138,15 +110,11 @@ export function createWithEditableAPI(
         }
         const [focusBlock] = Array.from(
           Editor.nodes(editor, {
-            at: editor.selection.focus,
-            match: (n) => Editor.isBlock(editor, n),
+            at: editor.selection.focus.path.slice(0, 1),
           })
         )[0] || [undefined]
         if (!focusBlock) {
           throw new Error('No focus block')
-        }
-        if (focusBlock && Editor.isVoid(editor, focusBlock)) {
-          throw new Error("Can't insert childs into block objects")
         }
         const block = toSlateValue(
           [
