@@ -18,7 +18,7 @@ export interface ChildResolverOptions {
   path: string[]
   /** Child parameters */
   params: Record<string, string | undefined>
-  /** Structure context */
+  /** Structure context. See {@link StructureContext} */
   structureContext: StructureContext
   /** Serialize options. See {@link SerializeOptions} */
   serializeOptions?: SerializeOptions

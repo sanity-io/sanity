@@ -55,7 +55,7 @@ export interface IntentChecker {
     intentName: string,
     /** Intent checker parameter */
     params: {[key: string]: any},
-    /** Structure context */
+    /** Structure context. See {@link StructureNode} */
     context: {pane: StructureNode; index: number}
   ): boolean
   /** intent checker identify */
