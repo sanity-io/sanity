@@ -4037,10 +4037,10 @@
   resolved "https://registry.yarnpkg.com/@sanity/asset-utils/-/asset-utils-1.3.0.tgz#6460cd993a2c24368a6308028f3bc57df91f131e"
   integrity sha512-uyIOtGA4Duf+68I3BSbYHY5P+WGftn3QtNJD2Pn7h9WPGYsSrWViIPebE9yRN8N0NHhYj+hDQXaMpVdjG7r+zA==
 
-"@sanity/assist@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@sanity/assist/-/assist-1.0.4.tgz#fd6faaceac385b3c4c937e81a576c32c56734eaa"
-  integrity sha512-thjKX42OQ+ShUn+d9Qea8nf6Mq+bz8lHZGq2QsNlSSSBbPpHGaf25OFCzIqr5dmQnDoEYmSsua3dqPIxEtG7Rw==
+"@sanity/assist@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@sanity/assist/-/assist-1.0.6.tgz#90c60eee0944f213fd33266cdad8a60b4d7afdfc"
+  integrity sha512-lWYTKL1S4kWqpwihxrMOJj8Un0qGwbQhParjF0FjjxzrzUconKFKoRWp/XY1eHKUrXC5BbAzJoZmvdnhXcQHTg==
   dependencies:
     "@sanity/icons" "^2.4.0"
     "@sanity/incompatible-plugin" "^1.0.4"
