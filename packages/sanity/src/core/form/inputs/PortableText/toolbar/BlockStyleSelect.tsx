@@ -99,19 +99,12 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
   const handleChange = useCallback(
     (item: BlockStyleItem): void => {
       if (focusBlock && item.style !== focusBlock.style) {
-        const sel = PortableTextEditor.getSelection(editor)
-        PortableTextEditor.toggleBlockStyle(editor, item.style)
-        // Force a new selection here, so that the toolbar will be refreshed
-        // It memo'es on the selection for showing the active style.
-        PortableTextEditor.select(editor, null)
-        if (sel) {
-          PortableTextEditor.select(editor, {...sel})
-        }
+        // This must be done in the next tick for the focus to stick
+        setTimeout(() => {
+          PortableTextEditor.toggleBlockStyle(editor, item.style)
+          PortableTextEditor.focus(editor)
+        })
       }
-      // Focus will not stick unless this is done through a timeout.
-      setTimeout(() => {
-        PortableTextEditor.focus(editor)
-      })
     },
     [editor, focusBlock]
   )
