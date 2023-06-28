@@ -31,6 +31,8 @@ import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {Style} from './text/Style'
 import {ListItem} from './text/ListItem'
 
+const noOutlineStyle: React.CSSProperties = {outline: 'none'}
+
 interface EditorProps {
   hasFocus: boolean
   hotkeys: HotkeyOptions
@@ -141,6 +143,7 @@ export function Editor(props: EditorProps) {
         renderStyle={renderStyle}
         scrollSelectionIntoView={scrollSelectionIntoView}
         selection={initialSelection}
+        style={noOutlineStyle}
         spellCheck={spellcheck}
       />
     ),
