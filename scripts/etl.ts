@@ -1,26 +1,34 @@
 import path from 'path'
+import cac from 'cac'
 import {createClient} from '@sanity/client'
 import {SanityTSDocConfigOptions, _loadConfig, extract, load, transform} from '@sanity/tsdoc'
 import chalk from 'chalk'
 
-// RUN
-main().catch((err) => {
-  console.error(chalk.red(err.message))
-  process.exit(1)
-})
+const cli = cac('yarn etl')
 
-async function main(): Promise<void> {
-  const args = process.argv.slice(2)
+cli
+  .command('[packageName]', 'Extract, transform, and load API documents for a package')
+  .option('--releaseVersion <version>', 'Version with which to tag the documents')
+  .action((packageName, options) => {
+    main({...options, packageName}).catch((err) => {
+      console.error(chalk.red(err.message))
+      process.exit(1)
+    })
+  })
 
-  const packageName = args[0]
+cli.help()
+cli.parse()
+
+async function main(options: {packageName: string; releaseVersion?: string}): Promise<void> {
+  const {packageName, releaseVersion} = options
 
   if (!packageName) {
-    throw new Error('Missing package name. Usage: yarn etl <package-name>')
+    throw new Error('Missing package name. Usage: yarn etl [packageName]')
   }
 
   const packagePath = path.resolve(__dirname, '../packages', packageName)
 
-  await etl({cwd: process.cwd(), packagePath})
+  await etl({cwd: process.cwd(), packageName, packagePath, releaseVersion})
 }
 
 function _fetchCurrentPackage(
@@ -43,10 +51,15 @@ function _fetchCurrentPackage(
   })
 }
 
-async function etl(options: {cwd: string; packagePath: string}): Promise<void> {
-  const {cwd, packagePath} = options
+async function etl(options: {
+  cwd: string
+  packageName: string
+  packagePath: string
+  releaseVersion?: string
+}): Promise<void> {
+  const {cwd, packageName, packagePath, releaseVersion: releaseVersionOption} = options
 
-  console.log(`Extracting API documents from ${path.relative(cwd, packagePath)} …`)
+  console.log(`Extracting API documents from \`${packageName}\` …`)
 
   const tsdocConfig = await _loadConfig({packagePath})
 
@@ -62,16 +75,22 @@ async function etl(options: {cwd: string; packagePath: string}): Promise<void> {
     packagePath,
   })
 
+  const releaseVersion = releaseVersionOption || pkg.version
+
   const currPackageDoc = await _fetchCurrentPackage(sanityConfig, {name: pkg.name})
 
-  console.log(`Transforming API documents …`)
+  console.log(`Transforming API documents from \`${packageName}\` …`)
 
   const documents = transform(results, {
     currPackageDoc,
     package: {
-      version: pkg.version,
+      version: releaseVersion,
     },
   })
+
+  const targetPath = path.resolve(cwd, `etc/${packageName}/${releaseVersion}.json`)
+
+  console.log(`Loading ${documents.length} API documents to ./${path.relative(cwd, targetPath)} …`)
 
   if (sanityConfig.token) {
     console.log(
@@ -83,12 +102,19 @@ async function etl(options: {cwd: string; packagePath: string}): Promise<void> {
       sanity: sanityConfig,
     })
 
-    console.log('Wrote', documents.length, 'documents')
+    console.log('Loaded', documents.length, 'documents')
 
     return
   }
 
   console.log('NOTE: Set EXTRACT_SANITY_WRITE_TOKEN in .env.local to write to Sanity')
 
-  console.log('Transformed', documents.length, 'documents')
+  await load(documents, {
+    cwd: packagePath,
+    fs: {
+      path: targetPath,
+    },
+  })
+
+  console.log('Loaded', documents.length, 'documents')
 }
