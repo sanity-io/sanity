@@ -20,7 +20,7 @@ function addScope(
 }
 
 /**
- * The props for the {@link RouteScope} component.
+ * Props for the {@link RouteScope} component.
  *
  * @public
  */
@@ -36,21 +36,23 @@ export interface RouteScopeProps {
 }
 
 /**
- * A component that creates a new router scope with a given scope name.
+ * A component that wraps a scoped router context, so that calls to
+ * `useRouter()`, `useRouterState()`, and usage of `<StateLink />`
+ * will be prefixed with the scope segment.
  *
  * @public
  *
- * @param props - The component props.
- *  {@link RouteScopeProps}
+ * @param props - Props to pass `RouteScope` component.
+ *  See {@link RouteScopeProps}
  *
  * @example
  * ```tsx
  * function MyComponent() {
  *  return (
- *   <RouteScope scope="foo">
- *    <StateLink state={{bar: 'baz'}}>Link</StateLink>
- *   </RouteScope>
- *   )
+ *    <RouteScope scope="foo">
+ *      <StateLink state={{bar: 'baz'}}>Link</StateLink>
+ *    </RouteScope>
+ *  )
  * }
  * ```
  */

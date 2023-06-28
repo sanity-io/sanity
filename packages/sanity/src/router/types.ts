@@ -92,14 +92,14 @@ export interface Router extends RouterNode {
    */
   _isRoute: boolean
   /**
-   * Encodes the specified router state into a string.
+   * Encodes the specified router state into a path string.
    * See {@link RouterState}
    *
    */
   encode: (state: RouterState) => string
 
   /**
-   * Decodes the specified string into a router state.
+   * Decodes the specified path string into a router state.
    * See {@link RouterState}
    */
   decode: (path: string) => RouterState | null

@@ -2,7 +2,7 @@ import React, {forwardRef} from 'react'
 import {useStateLink} from './useStateLink'
 
 /**
- * The props for the {@link StateLink} component.
+ * Props for the {@link StateLink} component.
  *
  * @public
  */
@@ -28,8 +28,8 @@ export interface StateLinkProps {
  * This component uses the {@link useStateLink} hook
  * to create a link that updates the URL state.
  *
- * @param props - The props for the component. See {@link StateLinkProps}.
- * @param ref - A React ref to forward to the underlying anchor element.
+ * @param props - Props to pass to the `StateLink` component.
+ *  See {@link StateLinkProps}.
  *
  * @public
  *

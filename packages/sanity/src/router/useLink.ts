@@ -40,16 +40,18 @@ export interface UseLinkOptions {
  * @public
  *
  * @param options - An object containing the properties for the link.
- *  {@link UseLinkOptions}
+ *  See {@link UseLinkOptions}
  *
  * @returns An object with an `onClick` function.
  *
  * @example
  * ```tsx
- * const {onClick} = useLink({
+ * const linkProps = useLink({
  *  href: 'https://www.sanity.io',
  *  target: '_blank'
  * })
+ *
+ * <a {...linkProps}>Link</a>
  * ```
  */
 export function useLink(options: UseLinkOptions): {onClick: React.MouseEventHandler<HTMLElement>} {
