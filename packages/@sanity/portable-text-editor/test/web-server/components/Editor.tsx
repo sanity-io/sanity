@@ -71,6 +71,7 @@ export const Editor = ({
   const selectionString = useMemo(() => JSON.stringify(selectionValue), [selectionValue])
   const editor = useRef<PortableTextEditor>(null)
   const keyGenFn = useMemo(() => createKeyGenerator(editorId.substring(0, 1)), [editorId])
+  const [readOnly, setReadOnly] = useState(!window.navigator.onLine)
 
   const renderBlock: RenderBlockFunction = useCallback((props) => {
     const {value: block, schemaType, children} = props
@@ -140,11 +141,18 @@ export const Editor = ({
         case 'mutation':
           onMutation(change.patches)
           break
-        case 'patch':
+        case 'connection':
+          if (change.value === 'offline') {
+            setReadOnly(true)
+          } else if (change.value === 'online') {
+            setReadOnly(false)
+          }
+          break
         case 'blur':
         case 'focus':
         case 'invalidValue':
         case 'loading':
+        case 'patch':
         case 'ready':
         case 'unset':
         case 'value':
@@ -162,8 +170,6 @@ export const Editor = ({
     return <li style={{listStyleType, paddingLeft: `${level * 10}pt`}}>{children}</li>
   }, [])
 
-  const [readOnly, setReadOnly] = useState(false)
-
   const editable = useMemo(
     () => (
       <PortableTextEditable
@@ -175,6 +181,7 @@ export const Editor = ({
         renderListItem={renderListItem}
         renderStyle={renderStyle}
         selection={selection}
+        style={{outline: 'none'}}
         spellCheck
       />
     ),

@@ -14,17 +14,76 @@ describe('selection adjustment', () => {
           children: [{_key: 'anotherKey', _type: 'span', text: 'Hello', marks: []}],
         },
       ])
-      const expectedSelection = {
+      const expectedSelectionA = {
         anchor: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey'}], offset: 2},
         focus: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey'}], offset: 2},
       }
       const [editorA, editorB] = await getEditors()
       await editorA.pressKey('ArrowRight', 2)
       let selectionA = await editorA.getSelection()
-      expect(selectionA).toEqual(expectedSelection)
+      expect(selectionA).toEqual(expectedSelectionA)
       await editorB.pressKey('Enter')
+      expect(await editorA.getValue()).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "_key": "someKey",
+            "_type": "block",
+            "children": Array [
+              Object {
+                "_key": "anotherKey",
+                "_type": "span",
+                "marks": Array [],
+                "text": "",
+              },
+            ],
+            "markDefs": Array [],
+            "style": "normal",
+          },
+          Object {
+            "_key": "B-6",
+            "_type": "block",
+            "children": Array [
+              Object {
+                "_key": "B-5",
+                "_type": "span",
+                "marks": Array [],
+                "text": "Hello",
+              },
+            ],
+            "markDefs": Array [],
+            "style": "normal",
+          },
+        ]
+      `)
       selectionA = await editorA.getSelection()
-      expect(selectionA).toEqual(expectedSelection)
+      expect(selectionA).toMatchInlineSnapshot(`
+        Object {
+          "anchor": Object {
+            "offset": 0,
+            "path": Array [
+              Object {
+                "_key": "someKey",
+              },
+              "children",
+              Object {
+                "_key": "anotherKey",
+              },
+            ],
+          },
+          "focus": Object {
+            "offset": 0,
+            "path": Array [
+              Object {
+                "_key": "someKey",
+              },
+              "children",
+              Object {
+                "_key": "anotherKey",
+              },
+            ],
+          },
+        }
+      `)
     })
 
     it('will keep A on same line if B delete a line above', async () => {
@@ -233,13 +292,13 @@ describe('selection adjustment', () => {
           ],
         },
         {
-          _key: 'B-3',
+          _key: 'B-6',
           _type: 'block',
           markDefs: [],
           style: 'normal',
           children: [
             {
-              _key: 'B-2',
+              _key: 'B-5',
               _type: 'span',
               text: '',
               marks: [],
@@ -336,10 +395,34 @@ describe('selection adjustment', () => {
       ])
       const valueA = await editorA.getValue()
       expect(valueA).toEqual(valueB)
-      expect(await editorA.getSelection()).toEqual({
-        anchor: {path: [{_key: 'someKey5'}, 'children', {_key: 'anotherKey5'}], offset: 3},
-        focus: {path: [{_key: 'someKey5'}, 'children', {_key: 'anotherKey5'}], offset: 3},
-      })
+      expect(await editorA.getSelection()).toMatchInlineSnapshot(`
+        Object {
+          "anchor": Object {
+            "offset": 0,
+            "path": Array [
+              Object {
+                "_key": "someKey7",
+              },
+              "children",
+              Object {
+                "_key": "anotherKey7",
+              },
+            ],
+          },
+          "focus": Object {
+            "offset": 0,
+            "path": Array [
+              Object {
+                "_key": "someKey7",
+              },
+              "children",
+              Object {
+                "_key": "anotherKey7",
+              },
+            ],
+          },
+        }
+      `)
     })
   })
 
@@ -393,8 +476,8 @@ describe('selection adjustment', () => {
     const valueA = await editorA.getValue()
     expect(valueA).toEqual(valueB)
     expect(await editorA.getSelection()).toEqual({
-      anchor: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey1'}], offset: 5},
-      focus: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey1'}], offset: 5},
+      anchor: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey1'}], offset: 8},
+      focus: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey1'}], offset: 8},
     })
   })
 
