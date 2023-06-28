@@ -13,10 +13,15 @@ import {getStructureNodeId} from './util/getStructureNodeId'
  */
 // TODO: rename to `StructureComponent` since it clashes with React?
 export interface Component extends StructureNode {
+  /** Component of type {@link UserComponent} */
   component: UserComponent
+  /** Component child of type {@link Child} */
   child?: Child
+  /** Component menu items, array of type {@link MenuItem} */
   menuItems: MenuItem[]
+  /** Component menu item group, array of type {@link MenuItemGroup} */
   menuItemGroups: MenuItemGroup[]
+  /** Component options */
   options: {[key: string]: unknown}
 }
 
@@ -26,15 +31,15 @@ export interface Component extends StructureNode {
  * @public
  */
 export interface ComponentInput extends StructureNode {
-  /** Component */
+  /** Component of type {@link UserComponent} */
   component: UserComponent
-  /** Component child */
+  /** Component child of type {@link Child} */
   child?: Child
   /** Component options */
   options?: {[key: string]: unknown}
-  /** Component menu items */
+  /** Component menu items. See {@link MenuItem} and {@link MenuItemBuilder}  */
   menuItems?: (MenuItem | MenuItemBuilder)[]
-  /** Component menu item groups */
+  /** Component menu item groups. See {@link MenuItemGroup} and {@link MenuItemGroupBuilder} */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
@@ -44,15 +49,15 @@ export interface ComponentInput extends StructureNode {
  * @public
  */
 export interface BuildableComponent extends Partial<StructureNode> {
-  /** Component */
+  /** Component of type {@link UserComponent} */
   component?: UserComponent
-  /** Component child */
+  /** Component child of type {@link Child} */
   child?: Child
   /** Component options */
   options?: {[key: string]: unknown}
-  /** Component menu items */
+  /** Component menu items. See {@link MenuItem} and {@link MenuItemBuilder}  */
   menuItems?: (MenuItem | MenuItemBuilder)[]
-  /** Component menu item groups */
+  /** Component menu item groups. See {@link MenuItemGroup} and {@link MenuItemGroupBuilder} */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 

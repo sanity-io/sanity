@@ -20,7 +20,7 @@ export interface ChildResolverOptions {
   params: Record<string, string | undefined>
   /** Structure context */
   structureContext: StructureContext
-  /** Serialize options */
+  /** Serialize options. See {@link SerializeOptions} */
   serializeOptions?: SerializeOptions
 }
 
@@ -37,6 +37,7 @@ export type ItemChild = CollectionBuilder | Collection | undefined
  * @public
  */
 export interface ChildObservable {
+  /** Subscribes to the child observable. See {@link ItemChild} */
   subscribe: (child: ItemChild | Promise<ItemChild>) => Record<string, unknown>
 }
 

@@ -36,15 +36,15 @@ export interface ListDisplayOptions {
  * @public
  */
 export interface BaseGenericList extends StructureNode {
-  /** List layout key */
+  /** List layout key. See {@link PreviewLayoutKey} */
   defaultLayout?: PreviewLayoutKey
-  /** Can handle intent */
+  /** Can handle intent. See {@link IntentChecker} */
   canHandleIntent?: IntentChecker
-  /** List display options */
+  /** List display options. See {@link ListDisplayOptions} */
   displayOptions?: ListDisplayOptions
-  /** List child */
+  /** List child. See {@link Child} */
   child: Child
-  /** List initial values */
+  /** List initial values array. See {@link InitialValueTemplateItem} and {@link InitialValueTemplateItemBuilder} */
   initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
 }
 
@@ -87,17 +87,17 @@ export interface GenericListInput extends StructureNode {
   id: string
   /** Input title */
   title: string
-  /** Input menu items */
+  /** Input menu items groups. See {@link MenuItem} and {@link MenuItemBuilder} */
   menuItems?: (MenuItem | MenuItemBuilder)[]
-  /** Input menu items groups */
+  /** Input menu items groups. See {@link MenuItemGroup} and {@link MenuItemGroupBuilder} */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
-  /** Input initial value */
+  /** Input initial value array. See {@link InitialValueTemplateItem} and {@link InitialValueTemplateItemBuilder} */
   initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
-  /** Input default layout */
+  /** Input default layout. See {@link PreviewLayoutKey} */
   defaultLayout?: PreviewLayoutKey
-  /** If input can handle intent */
+  /** If input can handle intent. See {@link IntentChecker} */
   canHandleIntent?: IntentChecker
-  /** Input child */
+  /** Input child of type {@link Child} */
   child?: Child
 }
 

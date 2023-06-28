@@ -53,7 +53,7 @@ const createDocumentChildResolverForItem =
  * @public
  */
 export interface PartialDocumentList extends BuildableGenericList {
-  /** Document list options */
+  /** Document list options. See {@link DocumentListOptions} */
   options?: DocumentListOptions
   /** Schema type name */
   schemaTypeName?: string
@@ -65,7 +65,7 @@ export interface PartialDocumentList extends BuildableGenericList {
  * @public
  */
 export interface DocumentListInput extends GenericListInput {
-  /** Document list options */
+  /** Document list options. See {@link DocumentListOptions} */
   options: DocumentListOptions
 }
 

@@ -9,10 +9,10 @@ import {StructureNode} from './StructureNodes'
 export type IntentJsonParams = {[key: string]: any}
 
 /**
- * Type for base intent parameters
+ * Interface for base intent parameters
  *
  * @public */
-export type BaseIntentParams = {
+export interface BaseIntentParams {
   /* Intent type */
   type?: string
   /* Intent Id */
@@ -26,6 +26,7 @@ export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent
 
 /**
  * Intent parameters
+ * See {@link BaseIntentParams} and {@link IntentJsonParams}
  *
  * @public
  */
@@ -38,7 +39,8 @@ export type IntentParams = BaseIntentParams | [BaseIntentParams, IntentJsonParam
 export interface Intent {
   /** Intent type */
   type: string
-  /** Intent parameters */
+  /** Intent parameters. See {@link IntentParams}
+   */
   params?: IntentParams
 }
 

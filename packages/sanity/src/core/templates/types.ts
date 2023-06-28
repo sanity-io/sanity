@@ -57,11 +57,11 @@ export interface InitialValueTemplateItem extends TemplateResponse {
 }
 
 /**
- * Type for template response
+ * Interface for template response
  *
  * @public
  */
-export type TemplateResponse = {
+export interface TemplateResponse {
   /** Template id */
   templateId: string
   /** Template title */
