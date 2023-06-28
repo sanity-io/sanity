@@ -77,7 +77,7 @@ export const withPlugins = <T extends Editor>(
     blockSchemaType: schemaTypes.block,
   })
   const withPortableTextMarkModel = createWithPortableTextMarkModel(schemaTypes)
-  const withPortableTextBlockStyle = createWithPortableTextBlockStyle(schemaTypes, change$)
+  const withPortableTextBlockStyle = createWithPortableTextBlockStyle(schemaTypes)
 
   const withPlaceholderBlock = createWithPlaceholderBlock({
     keyGenerator,
@@ -92,9 +92,10 @@ export const withPlugins = <T extends Editor>(
     if (!originalFunctions) {
       throw new Error('Could not find pristine versions of editor functions')
     }
-    e.onChange = originalFunctions.onChange
     e.apply = originalFunctions.apply
+    e.history = {undos: [], redos: []}
     e.normalizeNode = originalFunctions.normalizeNode
+    e.onChange = originalFunctions.onChange
   }
   if (readOnly) {
     return {

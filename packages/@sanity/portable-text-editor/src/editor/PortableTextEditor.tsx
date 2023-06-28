@@ -1,4 +1,4 @@
-import React, {PropsWithChildren, createRef} from 'react'
+import React, {PropsWithChildren} from 'react'
 import {
   ArrayDefinition,
   ArraySchemaType,
@@ -98,11 +98,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
    * The editor API (currently implemented with Slate).
    */
   private editable?: EditableAPI
-  /**
-   * This reference tracks if we are in a pending local edit state. If local changes are unsettled (patches yet not submitted and result returned),
-   * we use it to make sure we don't handle any new props.value or remote patches that can interfere with the user's typing until the local changes are solved.
-   */
-  private isPending: React.MutableRefObject<boolean | null>
 
   constructor(props: PortableTextEditorProps) {
     super(props)
@@ -116,9 +111,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
     }
 
     this.change$.next({type: 'loading', isLoading: true})
-
-    this.isPending = createRef()
-    this.isPending.current = false
 
     this.schemaTypes = getPortableTextMemberSchemaTypes(
       props.schemaType.hasOwnProperty('jsonType') ? props.schemaType : compileType(props.schemaType)
@@ -142,7 +134,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
 
   render() {
     const {onChange, value, children, patches$, incomingPatches$} = this.props
-    const {change$, isPending} = this
+    const {change$} = this
     const _patches$ = incomingPatches$ || patches$ // Backward compatibility
 
     const maxBlocks =
@@ -154,7 +146,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
     const keyGenerator = this.props.keyGenerator || defaultKeyGenerator
     return (
       <SlateContainer
-        isPending={isPending}
         keyGenerator={keyGenerator}
         maxBlocks={maxBlocks}
         patches$={_patches$}
@@ -163,7 +154,6 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
       >
         <Synchronizer
           change$={change$}
-          isPending={isPending}
           keyGenerator={keyGenerator}
           onChange={onChange}
           portableTextEditor={this}

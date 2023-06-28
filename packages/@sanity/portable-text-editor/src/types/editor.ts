@@ -17,7 +17,7 @@ import {
 } from '@sanity/types'
 import {Subject, Observable} from 'rxjs'
 import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
-import {ReactEditor} from '@sanity/slate-react'
+import {ReactEditor} from 'slate-react'
 import {FocusEvent} from 'react'
 import type {Patch} from '../types/patch'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
@@ -192,32 +192,42 @@ export interface PortableTextSlateEditor extends ReactEditor {
   redo: () => void
 }
 
-/** @beta */
+/**
+ * The editor has mutated it's content.
+ * @beta */
 export type MutationChange = {
   type: 'mutation'
   patches: Patch[]
   snapshot: PortableTextBlock[] | undefined
 }
 
-/** @beta */
+/**
+ * The editor has produced a patch
+ * @beta */
 export type PatchChange = {
   type: 'patch'
   patch: Patch
 }
 
-/** @beta */
+/**
+ * The editor has received a new (props) value
+ * @beta */
 export type ValueChange = {
   type: 'value'
   value: PortableTextBlock[] | undefined
 }
 
-/** @beta */
+/**
+ * The editor has a new selection
+ * @beta */
 export type SelectionChange = {
   type: 'selection'
   selection: EditorSelection
 }
 
-/** @beta */
+/**
+ * The editor received focus
+ * @beta */
 export type FocusChange = {
   type: 'focus'
   event: FocusEvent<HTMLDivElement, Element>
@@ -229,24 +239,33 @@ export type UnsetChange = {
   previousValue: PortableTextBlock[]
 }
 
-/** @beta */
+/**
+ * The editor blurred
+ * @beta */
 export type BlurChange = {
   type: 'blur'
   event: FocusEvent<HTMLDivElement, Element>
 }
 
-/** @beta */
+/**
+ * The editor is currently loading something
+ * Could be used to show a spinner etc.
+ * @beta */
 export type LoadingChange = {
   type: 'loading'
   isLoading: boolean
 }
 
-/** @beta */
+/**
+ * The editor content is ready to be edited by the user
+ * @beta */
 export type ReadyChange = {
   type: 'ready'
 }
 
-/** @beta */
+/**
+ * The editor produced an error
+ * @beta */
 export type ErrorChange = {
   type: 'error'
   name: string // short computer readable name
@@ -255,7 +274,9 @@ export type ErrorChange = {
   data?: unknown
 }
 
-/** @beta */
+/**
+ * The editor has invalid data in the value that can be resolved by the user
+ * @beta */
 export type InvalidValueResolution = {
   patches: Patch[]
   description: string
@@ -263,30 +284,48 @@ export type InvalidValueResolution = {
   item: PortableTextBlock[] | PortableTextBlock | PortableTextChild | undefined
 }
 
-/** @beta */
+/**
+ * The editor has an invalid value
+ * @beta */
 export type InvalidValue = {
   type: 'invalidValue'
   resolution: InvalidValueResolution | null
-  value: PortableTextBlock[]
+  value: PortableTextBlock[] | undefined
 }
 
-/** @beta */
+/**
+ * The editor performed a undo history step
+ * @beta */
 export type UndoChange = {
   type: 'undo'
   patches: Patch[]
   timestamp: Date
 }
 
-/** @beta */
+/**
+ * The editor performed redo history step
+ * @beta */
 export type RedoChange = {
   type: 'redo'
   patches: Patch[]
   timestamp: Date
 }
 
-/** @beta */
+/**
+ * The editor was either connected or disconnected to the network
+ * To show out of sync warnings etc when in collaborative mode.
+ * @beta */
+export type ConnectionChange = {
+  type: 'connection'
+  value: 'online' | 'offline'
+}
+
+/**
+ * When the editor changes, it will emit a change item describing the change
+ * @beta */
 export type EditorChange =
   | BlurChange
+  | ConnectionChange
   | ErrorChange
   | FocusChange
   | InvalidValue

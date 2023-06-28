@@ -11,6 +11,7 @@ import {ObjectWithKeyAndType, toPortableTextRange} from '../../utils/ranges'
 import {SLATE_TO_PORTABLE_TEXT_RANGE} from '../../utils/weakMaps'
 
 const debug = debugWithName('plugin:withPortableTextSelections')
+const debugVerbose = debug.enabled && false
 
 // This plugin will make sure that we emit a PT selection whenever the editor has changed.
 export function createWithPortableTextSelections(
@@ -34,7 +35,13 @@ export function createWithPortableTextSelections(
             SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
           }
         }
-        debug(`Emitting selection ${JSON.stringify(ptRange || null)}`)
+        if (debugVerbose) {
+          debug(
+            `Emitting selection ${JSON.stringify(ptRange || null)} (${JSON.stringify(
+              editor.selection
+            )})`
+          )
+        }
         if (ptRange) {
           change$.next({type: 'selection', selection: ptRange})
         } else {

@@ -6,10 +6,11 @@
  */
 
 import {isEqual, flatten, uniq} from 'lodash'
-import {Editor, Range, Transforms, Text, Path, NodeEntry, Element} from 'slate'
+import {Editor, Range, Transforms, Text, Path, NodeEntry, Element, Descendant} from 'slate'
 
 import {debugWithName} from '../../utils/debug'
 import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
+import {IS_PROCESSING_REMOTE_CHANGES} from '../../utils/weakMaps'
 
 const debug = debugWithName('plugin:withPortableTextMarkModel')
 
@@ -97,7 +98,7 @@ export function createWithPortableTextMarkModel(
           if (
             op.type === 'split_node' &&
             op.path.length === 2 &&
-            op.properties._type === types.span.name &&
+            (op.properties as unknown as Descendant)._type === types.span.name &&
             'marks' in op.properties &&
             Array.isArray(op.properties.marks) &&
             op.properties.marks.length > 0 &&
@@ -118,7 +119,7 @@ export function createWithPortableTextMarkModel(
           if (
             op.type === 'split_node' &&
             op.path.length === 1 &&
-            op.properties._type === types.block.name &&
+            (op.properties as unknown as Descendant)._type === types.block.name &&
             'markDefs' in op.properties &&
             Array.isArray(op.properties.markDefs) &&
             op.properties.markDefs.length > 0
@@ -139,7 +140,11 @@ export function createWithPortableTextMarkModel(
           }
         }
         // Empty marks if text is empty
-        if (isSpan && Array.isArray(node.marks) && node.marks.length > 0 && node.text === '') {
+        if (
+          isSpan &&
+          Array.isArray(node.marks) &&
+          (!node.marks || (node.marks.length > 0 && node.text === ''))
+        ) {
           Transforms.setNodes(editor, {marks: []}, {at: path, voids: false})
           editor.onChange()
         }
@@ -168,7 +173,7 @@ export function createWithPortableTextMarkModel(
             Editor.nodes(editor, {
               mode: 'lowest',
               at: selection.focus,
-              match: (n) => n._type === types.span.name,
+              match: (n) => (n as unknown as Descendant)._type === types.span.name,
               voids: false,
             })
           )[0] || [undefined]
@@ -215,7 +220,7 @@ export function createWithPortableTextMarkModel(
           ).includes(mark)
           if (shouldRemoveMark) {
             editor.removeMark(mark)
-            return
+            return editor
           }
           Editor.withoutNormalizing(editor, () => {
             splitTextNodes.forEach(([node, path]) => {
@@ -243,9 +248,11 @@ export function createWithPortableTextMarkModel(
             marks: [...existingMarks, mark],
           }
           editor.marks = marks as Text
+          return editor
         }
         editor.onChange()
       }
+      return editor
     }
 
     // Override built in removeMark function
@@ -285,11 +292,13 @@ export function createWithPortableTextMarkModel(
           const marks = {
             ...(Editor.marks(editor) || {}),
             marks: existingMarks.filter((eMark) => eMark !== mark),
-          }
-          editor.marks = marks as Text
+          } as Text
+          editor.marks = {marks: marks.marks} as Text
+          return editor
         }
         editor.onChange()
       }
+      return editor
     }
 
     editor.pteIsMarkActive = (mark: string): boolean => {
@@ -321,7 +330,6 @@ export function createWithPortableTextMarkModel(
         debug(`Add mark '${mark}'`)
         Editor.addMark(editor, mark, true)
       }
-      editor.onChange()
     }
     return editor
   }
@@ -329,7 +337,7 @@ export function createWithPortableTextMarkModel(
   /**
    * Normalize re-marked spans in selection
    */
-  function mergeSpans(editor: Editor) {
+  function mergeSpans(editor: PortableTextSlateEditor) {
     const {selection} = editor
     if (selection) {
       for (const [node, path] of Array.from(
@@ -339,7 +347,7 @@ export function createWithPortableTextMarkModel(
       ).reverse()) {
         const [parent] = path.length > 1 ? Editor.node(editor, Path.parent(path)) : [undefined]
         const nextPath = [path[0], path[1] + 1]
-        if (Editor.isBlock(editor, parent)) {
+        if (editor.isTextBlock(parent)) {
           const nextNode = parent.children[nextPath[1]]
           if (Text.isText(node) && Text.isText(nextNode) && isEqual(nextNode.marks, node.marks)) {
             debug('Merging spans')
@@ -354,12 +362,12 @@ export function createWithPortableTextMarkModel(
    * Normalize markDefs
    *
    */
-  function normalizeMarkDefs(editor: Editor) {
+  function normalizeMarkDefs(editor: PortableTextSlateEditor) {
     const {selection} = editor
     if (selection) {
       const blocks = Editor.nodes(editor, {
         at: selection,
-        match: (n) => n._type === types.block.name,
+        match: (n) => (n as unknown as Descendant)._type === types.block.name,
       })
       for (const [block, path] of blocks) {
         if (editor.isTextBlock(block)) {

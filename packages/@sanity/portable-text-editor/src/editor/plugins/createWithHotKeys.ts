@@ -1,14 +1,15 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
-import {Editor, Transforms, Path, Range} from 'slate'
+import {Editor, Transforms, Path, Range, Node} from 'slate'
 import isHotkey from 'is-hotkey'
-import {ReactEditor} from '@sanity/slate-react'
+import {ReactEditor} from 'slate-react'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
 import {HotkeyOptions} from '../../types/options'
 import {debugWithName} from '../../utils/debug'
 import {toSlateValue} from '../../utils/values'
 import {PortableTextEditor} from '../PortableTextEditor'
+import {SlateTextBlock, VoidElement} from '../../types/slate'
 
 const debug = debugWithName('plugin:withHotKeys')
 
@@ -108,11 +109,9 @@ export function createWithHotkeys(
         editor.selection.focus.path[0] > 0 &&
         Range.isCollapsed(editor.selection)
       ) {
-        const [prevBlock, prevPath] = Editor.node(
-          editor,
-          Path.previous(editor.selection.focus.path.slice(0, 1))
-        )
-        const [focusBlock] = Editor.node(editor, editor.selection.focus, {depth: 1})
+        const prevPath = Path.previous(editor.selection.focus.path.slice(0, 1))
+        const prevBlock = Node.descendant(editor, prevPath) as SlateTextBlock | VoidElement
+        const focusBlock = Node.descendant(editor, editor.selection.focus.path.slice(0, 1))
         if (
           prevBlock &&
           focusBlock &&
@@ -135,8 +134,13 @@ export function createWithHotkeys(
         Range.isCollapsed(editor.selection) &&
         editor.children[editor.selection.focus.path[0] + 1]
       ) {
-        const [nextBlock] = Editor.node(editor, Path.next(editor.selection.focus.path.slice(0, 1)))
-        const [focusBlock, focusBlockPath] = Editor.node(editor, editor.selection.focus, {depth: 1})
+        const nextBlock = Node.descendant(
+          editor,
+          Path.next(editor.selection.focus.path.slice(0, 1))
+        ) as SlateTextBlock | VoidElement
+        const focusBlockPath = editor.selection.focus.path.slice(0, 1)
+        const focusBlock = Node.descendant(editor, focusBlockPath) as SlateTextBlock | VoidElement
+
         if (
           nextBlock &&
           focusBlock &&
@@ -183,12 +187,9 @@ export function createWithHotkeys(
 
       // Deal with enter key combos
       if (isEnter && !isShiftEnter && editor.selection) {
-        let focusBlock
-        try {
-          ;[focusBlock] = Editor.node(editor, editor.selection.focus, {depth: 1})
-        } catch (err) {
-          // Just ignore
-        }
+        const focusBlockPath = editor.selection.focus.path.slice(0, 1)
+        const focusBlock = Node.descendant(editor, focusBlockPath) as SlateTextBlock | VoidElement
+
         // List item enter key
         if (editor.isListBlock(focusBlock)) {
           if (editor.pteEndList()) {
@@ -217,6 +218,8 @@ export function createWithHotkeys(
           event.preventDefault()
           return
         }
+        event.preventDefault()
+        editor.insertBreak()
       }
 
       // Soft line breaks

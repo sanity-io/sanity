@@ -4,15 +4,17 @@
  */
 
 import {isEqual, flatten} from 'lodash'
-import {Descendant, Editor, Operation, Path, SelectionOperation} from 'slate'
+import {Descendant, Editor, Operation, Path, SelectionOperation, Transforms} from 'slate'
 import {DIFF_DELETE, DIFF_EQUAL, DIFF_INSERT, parsePatch} from '@sanity/diff-match-patch'
 import {ObjectSchemaType, PortableTextBlock} from '@sanity/types'
 import type {Patch} from '../../types/patch'
 import {PatchObservable, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {fromSlateValue} from '../../utils/values'
+import {removeAllDocumentSelectionRanges} from '../../utils/ranges'
 
 const debug = debugWithName('plugin:withUndoRedo')
+const debugVerbose = debug.enabled && false
 
 const SAVING = new WeakMap<Editor, boolean | undefined>()
 const REMOTE_PATCHES = new WeakMap<
@@ -59,8 +61,17 @@ export function createWithUndoRedo(
       editor.subscriptions.push(() => {
         debug('Subscribing to patches')
         const sub = patches$.subscribe(({patches, snapshot}) => {
+          let reset = false
           patches.forEach((patch) => {
-            if (patch.origin !== 'local' && remotePatches) {
+            if (!reset && patch.origin !== 'local' && remotePatches) {
+              if (patch.type === 'unset' && patch.path.length === 0) {
+                debug('Someone else cleared the content, resetting undo/redo history')
+                editor.history = {undos: [], redos: []}
+                remotePatches.splice(0, remotePatches.length)
+                SAVING.set(editor, true)
+                reset = true
+                return
+              }
               remotePatches.push({patch, time: new Date(), snapshot, previousSnapshot})
             }
           })
@@ -134,11 +145,10 @@ export function createWithUndoRedo(
               )
             )
           })
-          // Try this as the document could be changed from the outside,
-          // and sometimes we can't perform the undo operation on the current doc.
+          removeAllDocumentSelectionRanges(!!editor.selection)
           try {
-            withoutSaving(editor, () => {
-              Editor.withoutNormalizing(editor, () => {
+            Editor.withoutNormalizing(editor, () => {
+              withoutSaving(editor, () => {
                 transformedOperations
                   .map(Operation.inverse)
                   .reverse()
@@ -147,10 +157,15 @@ export function createWithUndoRedo(
                   })
               })
             })
+            editor.normalize()
             editor.onChange()
           } catch (err) {
             debug('Could not perform undo step', err)
-            editor.history.undos.pop()
+            remotePatches.splice(0, remotePatches.length)
+            Transforms.deselect(editor)
+            editor.history = {undos: [], redos: []}
+            SAVING.set(editor, true)
+            editor.onChange()
             return
           }
           editor.history.redos.push(step)
@@ -177,20 +192,24 @@ export function createWithUndoRedo(
               )
             )
           })
-          // Try this as the document could be changed from the outside,
-          // and sometimes we can't perform the undo operation on the current doc.
+          removeAllDocumentSelectionRanges(!!editor.selection)
           try {
-            withoutSaving(editor, () => {
-              Editor.withoutNormalizing(editor, () => {
+            Editor.withoutNormalizing(editor, () => {
+              withoutSaving(editor, () => {
                 transformedOperations.forEach((op) => {
                   editor.apply(op)
                 })
               })
             })
+            editor.normalize()
             editor.onChange()
           } catch (err) {
             debug('Could not perform redo step', err)
-            editor.history.redos.pop()
+            remotePatches.splice(0, remotePatches.length)
+            Transforms.deselect(editor)
+            editor.history = {undos: [], redos: []}
+            SAVING.set(editor, true)
+            editor.onChange()
             return
           }
           editor.history.undos.push(step)
@@ -209,15 +228,17 @@ export function createWithUndoRedo(
  * remote patches by other editors since the step operations was performed.
  */
 function transformOperation(
-  editor: Editor,
+  editor: PortableTextSlateEditor,
   patch: Patch,
   operation: Operation,
   snapshot: PortableTextBlock[] | undefined,
   previousSnapshot: PortableTextBlock[] | undefined
 ): Operation[] {
-  debug(`Adjusting '${operation.type}' operation paths for '${patch.type}' patch`)
-  debug(`Operation ${JSON.stringify(operation)}`)
-  debug(`Patch ${JSON.stringify(patch)}`)
+  if (debugVerbose) {
+    debug(`Adjusting '${operation.type}' operation paths for '${patch.type}' patch`)
+    debug(`Operation ${JSON.stringify(operation)}`)
+    debug(`Patch ${JSON.stringify(patch)}`)
+  }
 
   const transformedOperation = {...operation}
 
@@ -244,9 +265,12 @@ function transformOperation(
       debug('Skipping transformation that targeted removed block')
       return []
     }
-    debug(
-      `Adjusting block path (-1) for '${transformedOperation.type}' operation and patch '${patch.type}'`
-    )
+    if (debugVerbose) {
+      debug(`Selection ${JSON.stringify(editor.selection)}`)
+      debug(
+        `Adjusting block path (-1) for '${transformedOperation.type}' operation and patch '${patch.type}'`
+      )
+    }
     return [adjustBlockPath(transformedOperation, -1, unsetBlockIndex)]
   }
 
@@ -364,7 +388,7 @@ function adjustBlockPath(operation: Operation, level: number, blockIndex: number
     if ((currentFocus && currentAnchor) || (newFocus && newAnchor)) {
       const points = [currentFocus, currentAnchor, newFocus, newAnchor]
       points.forEach((point) => {
-        if (point && point.path[0] >= blockIndex + level) {
+        if (point && point.path[0] >= blockIndex + level && point.path[0] + level > -1) {
           point.path = [point.path[0] + level, ...point.path.slice(1)]
         }
       })

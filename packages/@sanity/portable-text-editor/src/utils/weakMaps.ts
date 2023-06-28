@@ -1,9 +1,10 @@
-import {Editor, Element, Range, Text} from 'slate'
+import {Editor, Element, Range} from 'slate'
 import {EditorSelection} from '..'
 
-/**
- * Dragging
- */
+// Is the editor currently receiving remote changes that are being applied to the content?
+export const IS_PROCESSING_REMOTE_CHANGES: WeakMap<Editor, boolean> = new WeakMap()
+// Is the editor currently producing local changes that are not yet submitted?
+export const IS_PROCESSING_LOCAL_CHANGES: WeakMap<Editor, boolean> = new WeakMap()
 
 // Is the editor dragging something?
 export const IS_DRAGGING: WeakMap<Editor, boolean> = new WeakMap()
