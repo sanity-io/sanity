@@ -63,6 +63,7 @@
     "perf:studio": "cd perf && yarn studio",
     "perf:studio:dev": "cd perf && yarn studio:dev",
     "perf:codegen": "cd perf && yarn perf:codegen",
+    "tsdoc:dev": "sanity-tsdoc dev",
     "type-check": "tsc --build",
     "updated": "lerna updated",
     "build:test-studio": "yarn build:cli && (cd dev/test-studio && yarn build)",
