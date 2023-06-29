@@ -48,9 +48,7 @@ export type TemplateArrayFieldDefinition = TemplateFieldDefinition & {
  *
  * @public
  */
-export interface InitialValueTemplateItem extends TemplateResponse {
-  /** Initial value id */
-  id: string
+export interface InitialValueTemplateItem extends TemplateItem {
   type: 'initialValueTemplateItem'
   /** Initial value schema type */
   schemaType: string
@@ -61,8 +59,10 @@ export interface InitialValueTemplateItem extends TemplateResponse {
  *
  * @public
  */
-export interface TemplateResponse {
-  /** Template id */
+export interface TemplateItem {
+  /**
+   * ID for the template the item references
+   */
   templateId: string
   /** Template title */
   title?: string

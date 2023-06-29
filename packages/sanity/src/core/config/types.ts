@@ -20,7 +20,7 @@ import type {
   InputProps,
   ItemProps,
 } from '../form'
-import type {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
+import type {InitialValueTemplateItem, Template, TemplateItem} from '../templates'
 import {PreviewProps} from '../components/previews'
 import {AuthStore} from '../store'
 import {StudioTheme} from '../theme'
@@ -167,10 +167,7 @@ export interface SchemaPluginOptions {
 /**
  * @hidden
  * @beta */
-export type NewDocumentOptionsResolver = ComposableOption<
-  TemplateResponse[],
-  NewDocumentOptionsContext
->
+export type NewDocumentOptionsResolver = ComposableOption<TemplateItem[], NewDocumentOptionsContext>
 
 /**
  * @hidden

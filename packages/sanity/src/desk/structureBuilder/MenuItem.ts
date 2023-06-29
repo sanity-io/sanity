@@ -42,7 +42,7 @@ export interface MenuItem {
   intent?: Intent
   /** Menu Item group */
   group?: string
-  // TODO: align these with TemplateResponse['icon']
+  // TODO: align these with TemplateItem['icon']
   /** Menu Item icon */
   icon?: React.ComponentType | React.ReactNode
   /** Menu Item parameters. See {@link MenuItemParamsType} */

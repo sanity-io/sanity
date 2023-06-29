@@ -1,5 +1,5 @@
 import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
-import type {Template, TemplateResponse} from '../templates'
+import type {Template, TemplateItem} from '../templates'
 import {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import type {
   DocumentLanguageFilterComponent,
@@ -135,7 +135,7 @@ export const documentActionsReducer: ConfigPropertyReducer<
 }
 
 export const newDocumentOptionsResolver: ConfigPropertyReducer<
-  TemplateResponse[],
+  TemplateItem[],
   NewDocumentOptionsContext
 > = (prev, {document}, context) => {
   const resolveNewDocumentOptions = document?.newDocumentOptions
