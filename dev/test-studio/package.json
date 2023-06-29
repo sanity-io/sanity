@@ -24,7 +24,7 @@
     "@sanity/icons": "^2.4.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/portable-text-editor": "3.14.0",
-    "@sanity/tsdoc": "1.0.0-alpha.31",
+    "@sanity/tsdoc": "1.0.0-alpha.34",
     "@sanity/types": "3.14.0",
     "@sanity/ui": "^1.6.0",
     "@sanity/ui-workshop": "^1.0.0",
