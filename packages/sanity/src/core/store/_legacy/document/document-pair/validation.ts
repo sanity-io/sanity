@@ -133,7 +133,7 @@ export const validation = memoize(
           )
         )
       ),
-      scan((acc: Record<string, boolean>, [id, result]) => {
+      scan((acc: Record<string, boolean>, [id, result]): Record<string, boolean> => {
         if (Boolean(acc[id]) === result) {
           return acc
         }
