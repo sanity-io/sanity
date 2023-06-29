@@ -9,7 +9,7 @@ import type {
   SchemaType,
   SchemaTypeDefinition,
 } from '@sanity/types'
-import React, {type ComponentType} from 'react'
+import type {ComponentType, ReactNode} from 'react'
 import type {Observable} from 'rxjs'
 import type {
   BlockAnnotationProps,
@@ -21,13 +21,13 @@ import type {
   ItemProps,
 } from '../form'
 import type {InitialValueTemplateItem, Template, TemplateItem} from '../templates'
-import {PreviewProps} from '../components/previews'
-import {AuthStore} from '../store'
-import {StudioTheme} from '../theme'
-import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
-import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import {StudioComponents, StudioComponentsPluginOptions} from './studio'
-import {
+import type {PreviewProps} from '../components/previews'
+import type {AuthStore} from '../store'
+import type {StudioTheme} from '../theme'
+import type {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
+import type {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
+import type {StudioComponents, StudioComponentsPluginOptions} from './studio'
+import type {
   DocumentActionComponent,
   DocumentBadgeComponent,
   DocumentFieldAction,
@@ -35,7 +35,7 @@ import {
   DocumentFieldActionsResolver,
   DocumentInspector,
 } from './document'
-import {Router, RouterState} from 'sanity/router'
+import type {Router, RouterState} from 'sanity/router'
 
 /**
  *
@@ -88,7 +88,8 @@ export interface SanityFormConfig {
   file?: {
     /**
      * @hidden
-     * @beta */
+     * @beta
+     */
     assetSources?: AssetSource[] | AssetSourceResolver
     // TODO: this option needs more thought on composition and availability
     directUploads?: boolean
@@ -411,12 +412,14 @@ export interface Source {
   document: {
     /**
      * @hidden
-     * @beta */
+     * @beta
+     */
     actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]
 
     /**
      * @hidden
-     * @beta */
+     * @beta
+     */
     badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]
 
     /** @internal */
@@ -426,14 +429,16 @@ export interface Source {
 
     /**
      * @hidden
-     * @beta */
+     * @beta
+     */
     resolveProductionUrl: (
       context: PartialContext<ResolveProductionUrlContext>
     ) => Promise<string | undefined>
 
     /**
      * @hidden
-     * @beta */
+     * @beta
+     */
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
 
     /** @alpha */
@@ -441,13 +446,17 @@ export interface Source {
       props: PartialContext<DocumentLanguageFilterContext>
     ) => DocumentLanguageFilterComponent[]
 
-    /** @hidden @beta */
+    /**
+     * @hidden
+     * @beta
+     */
     inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
   }
   form: {
     /**
      * @hidden
-     * @beta */
+     * @beta
+     */
     file: {
       assetSources: AssetSource[]
       directUploads: boolean
@@ -455,7 +464,8 @@ export interface Source {
 
     /**
      * @hidden
-     * @beta */
+     * @beta
+     */
     image: {
       assetSources: AssetSource[]
       directUploads: boolean
@@ -463,7 +473,8 @@ export interface Source {
 
     /**
      * @hidden
-     * @beta */
+     * @beta
+     */
     components?: {
       input?: ComponentType<Omit<InputProps, 'renderDefault'>>
       field?: ComponentType<Omit<FieldProps, 'renderDefault'>>
@@ -487,7 +498,8 @@ export interface Source {
   studio?: {
     /**
      * @hidden
-     * @beta */
+     * @beta
+     */
     components?: StudioComponents
   }
 
@@ -510,7 +522,7 @@ export interface WorkspaceSummary {
   type: 'workspace-summary'
   name: string
   title: string
-  icon: React.ReactNode
+  icon: ReactNode
   subtitle?: string
   basePath: string
   auth: AuthStore
@@ -540,7 +552,7 @@ export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
   basePath: string
   subtitle?: string
-  icon: React.ReactNode
+  icon: ReactNode
   /**
    *
    * @hidden
