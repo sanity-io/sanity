@@ -121,6 +121,7 @@
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
+    "write:playwright-report-as-table": "node -r esbuild-register playwright-ct/scripts/parsePlaywrightReportJson.ts",
     "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
     "write:version": "node -r esbuild-register scripts/writeVersion.ts"
   },
