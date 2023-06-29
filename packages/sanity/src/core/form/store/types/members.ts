@@ -58,45 +58,69 @@ export interface ArrayOfPrimitivesItemMember<Node extends PrimitiveFormNode = Pr
   item: Node
 }
 
-/** @public */
+/**
+ * Represents a field member in a form.
+ * @public
+ */
 export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
+  /** The kind of the form node. */
   kind: 'field'
+  /** The key of the field. */
   key: string
+  /** The name of the field. */
   name: string
+  /** The index of the field. */
   index: number
+  /** Whether the field is collapsed. */
   collapsed: boolean | undefined
+  /** Whether the field is collapsible. */
   collapsible: boolean | undefined
+  /** Whether the field is open. */
   open: boolean
 
   /**
    * @internal
-   * Whether this field is in the selected group
+   * Whether this field is in the selected group.
    */
   inSelectedGroup: boolean
 
   /**
    * @internal
-   * Names of the field groups this field is part of
+   * Names of the field groups this field is part of.
    */
   groups: string[]
 
   /**
    * @hidden
-   * @beta */
+   * @beta
+   * The form node that represents this field.
+   */
   field: Node
 }
 
-/** @public */
+/**
+ * Represents a member of a field set.
+ * @public
+ */
 export interface FieldSetMember {
+  /** The kind of member. */
   kind: 'fieldSet'
+  /** The key of the member. */
   key: string
 
-  // if it's hidden and in the currently selected group, it should still be excluded from its group
+  /**
+   * Indicates whether the member is included in the currently selected group.
+   * If it's hidden and in the currently selected group, it should still be excluded from its group.
+   * @internal
+   */
   _inSelectedGroup: boolean
+  /** The groups that the member belongs to. */
   groups: string[]
 
   /**
    * @hidden
-   * @beta */
+   * @beta
+   * The state of the field set.
+   */
   fieldSet: FieldsetState
 }

@@ -110,21 +110,65 @@ export interface FormBuilderComponentResolverContext extends ConfigContext {
 }
 
 /**
+ * Represents a tool that can be used in the application.
+ *
  * @public
  */
 export interface Tool<Options = any> {
+  /**
+   * The React component that renders the tool.
+   */
   component: ComponentType<{tool: Tool<Options>}>
+
+  /**
+   * The icon component for the tool.
+   */
   icon?: ComponentType
+
+  /**
+   * The name of the tool.
+   */
   name: string
+
+  /**
+   * The options for the tool.
+   */
   options?: Options
+
+  /**
+   * The router for the tool. See {@link router.Router}
+   */
   router?: Router
+
+  /**
+   * The title of the tool.
+   */
   title: string
+
+  /**
+   * Gets the state for the given intent.
+   *
+   * @param intent - The intent to get the state for.
+   * @param params - The parameters for the intent.
+   * @param routerState - The current router state. See {@link router.RouterState}
+   * @param payload - The payload for the intent.
+   * @returns The state for the intent.
+   */
   getIntentState?: (
     intent: string,
     params: Record<string, string>,
     routerState: RouterState | undefined,
     payload: unknown
   ) => unknown
+
+  /**
+   * Determines whether the tool can handle the given intent.
+   *
+   * @param intent - The intent to check.
+   * @param params - The parameters for the intent.
+   * @param payload - The payload for the intent.
+   * @returns `true` if the tool can handle the intent, `false` otherwise.
+   */
   canHandleIntent?: (intent: string, params: Record<string, unknown>, payload: unknown) => boolean
 }
 
@@ -404,37 +448,61 @@ export type PartialContext<TContext extends ConfigContext> = Pick<
 /** @public */
 export interface SourceClientOptions {
   /**
-   * API version to use. See {@link https://www.sanity.io/docs/api-versioning}
+   * API version to use. See {@link https://www.sanity.io/docs/api-versioning | api-versioning}
    */
   apiVersion: string
 }
 
-/** @public */
+/**
+ * Represents a source.
+ * @public
+ */
 export interface Source {
+  /** The type of the source. */
   type: 'source'
+  /** The name of the source. */
   name: string
+  /** The title of the source. */
   title: string
+  /** The ID of the project. */
   projectId: string
+  /** The name of the dataset. */
   dataset: string
+  /** The schema of the source. */
   schema: Schema
+  /** The templates of the source. */
   templates: Template[]
+  /** The tools of the source. */
   tools: Tool[]
+  /** The current user of the source. */
   currentUser: CurrentUser | null
+  /** Whether the user is authenticated. */
   authenticated: boolean
 
   /** @internal */
   auth: AuthStore
 
+  /**
+   * Returns a client instance.
+   * @param clientOptions - Options to pass to the client. See {@link SourceClientOptions}
+   */
   getClient: (clientOptions: SourceClientOptions) => SanityClient
 
+  /**
+   * Document-related functionality.
+   * @hidden
+   * @beta
+   */
   document: {
     /**
+     * Returns an array of actions for the document.
      * @hidden
      * @beta
      */
     actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]
 
     /**
+     * Returns an array of badges for the document.
      * @hidden
      * @beta
      */
@@ -446,6 +514,7 @@ export interface Source {
     ) => DocumentFieldAction[]
 
     /**
+     * Resolves the production URL for the document.
      * @hidden
      * @beta
      */
@@ -454,6 +523,7 @@ export interface Source {
     ) => Promise<string | undefined>
 
     /**
+     * Resolves the new document options.
      * @hidden
      * @beta
      */
@@ -470,26 +540,41 @@ export interface Source {
      */
     inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
   }
+
+  /**
+   * Form-related functionality.
+   * @hidden
+   * @beta
+   */
   form: {
     /**
+     * File-related functionality.
      * @hidden
      * @beta
      */
     file: {
+      /** The asset sources. */
       assetSources: AssetSource[]
+
+      /** Whether direct uploads are enabled. */
       directUploads: boolean
     }
 
     /**
+     * Image-related functionality.
      * @hidden
      * @beta
      */
     image: {
+      /** The asset sources. */
       assetSources: AssetSource[]
+
+      /** Whether direct uploads are enabled. */
       directUploads: boolean
     }
 
     /**
+     * Components for the form.
      * @hidden
      * @beta
      */
@@ -503,7 +588,6 @@ export interface Source {
     /**
      * these have not been migrated over and are not merged by the form builder
      *
-     *
      * @hidden
      * @beta
      */
@@ -513,6 +597,10 @@ export interface Source {
     }
   }
 
+  /**
+   * @hidden
+   * @beta
+   */
   studio?: {
     /**
      * @hidden
@@ -534,7 +622,6 @@ export interface Source {
     options: SourceOptions
   }
 }
-
 /** @internal */
 export interface WorkspaceSummary {
   type: 'workspace-summary'
@@ -565,11 +652,18 @@ export interface WorkspaceSummary {
   }
 }
 
-/** @public */
+/**
+ * Definition for Workspace
+ *
+ * @public
+ */
 export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
+  /** URL base path to use, for instance `/myWorkspace` */
   basePath: string
+  /** Subtitle to show under the name of the workspace */
   subtitle?: string
+  /** React component to use as icon for this workspace */
   icon: ReactNode
   /**
    *
