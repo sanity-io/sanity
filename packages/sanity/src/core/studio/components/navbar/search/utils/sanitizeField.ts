@@ -9,7 +9,8 @@ export function sanitizeFieldValue(name: string | ReactElement): string {
   if (isValidElement(name)) {
     return stripHtmlTags(renderToString(name))
   }
-  return name
+
+  return typeof name === 'string' ? name : ''
 }
 
 function stripHtmlTags(str: string) {
