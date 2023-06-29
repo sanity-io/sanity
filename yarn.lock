@@ -4209,10 +4209,10 @@
     scroll-into-view-if-needed "^2.2.20"
     tiny-invariant "1.0.6"
 
-"@sanity/tsdoc@1.0.0-alpha.31":
-  version "1.0.0-alpha.31"
-  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-alpha.31.tgz#a6b7e837b672141f125643506788ed1841a29aab"
-  integrity sha512-aSEhdi5HTkwS4P+fHXE2KfiIcFEkLMXLVY3I4biwmi/upOu7i3JjF2w4aMsew2i95Vm6aimwqLynkvwRvWzazg==
+"@sanity/tsdoc@1.0.0-alpha.34":
+  version "1.0.0-alpha.34"
+  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-alpha.34.tgz#e5f33db7836a3d72442ff85ff48e35fc2ba31802"
+  integrity sha512-k5kuVRFeN/lang85UWBQjgZ/KwOX7tveG4qkvSvy4Dy9lV4ge3+1W2DYKnvHflMTm8LnRqBjQsEpxONJWRNHlA==
   dependencies:
     "@microsoft/api-extractor" "7.35.0"
     "@microsoft/api-extractor-model" "7.27.0"
