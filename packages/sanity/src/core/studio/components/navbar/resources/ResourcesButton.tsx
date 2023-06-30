@@ -30,7 +30,14 @@ export function ResourcesButton() {
       >
         <div>
           <MenuButton
-            button={<Button icon={HelpCircleIcon} mode="bleed" fontSize={2} />}
+            button={
+              <Button
+                aria-label="Help and resources"
+                icon={HelpCircleIcon}
+                mode="bleed"
+                fontSize={2}
+              />
+            }
             id="menu-button-resources"
             menu={
               <StyledMenu>
