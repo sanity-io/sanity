@@ -4,7 +4,7 @@ on:
   pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [test/playwright-ct]
+    branches: [next]
 jobs:
   test:
     timeout-minutes: 30
@@ -14,7 +14,13 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-
+      - name: PR comment with report
+        uses: thollander/actions-comment-pull-request@v2
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        with:
+          comment_tag: 'playwright-ct-report'
+          message: |
+            Preparing to run end-to-end component tests
       - name: Cache node modules
         id: cache-node-modules
         uses: actions/cache@v3
@@ -62,7 +68,11 @@ jobs:
         env:
           GITHUB_WORKFLOW_URL: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           REPORT_JSON_PATH: '${{ github.workspace }}/playwright-ct-test-results.json'
-
+      - name: Debug step
+        if: always()
+        run: |
+          echo ${{ steps.parse-playwright-report.outputs.conclusion }}
+          echo ${{ github.event_name }}
       - name: PR comment with report
         uses: thollander/actions-comment-pull-request@v2
         if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
