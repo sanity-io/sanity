@@ -102,7 +102,6 @@
     "@vercel/node": "^1.12.1",
     "babel-jest": "^27.4.2",
     "boxen": "^4.1.0",
-    "browserstack-local": "^1.5.3",
     "cac": "^6.7.12",
     "chalk": "^4.1.2",
     "date-fns": "^2.26.1",
