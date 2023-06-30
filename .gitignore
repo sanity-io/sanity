@@ -74,6 +74,12 @@ etc
 /test/playwright-ct/report
 /test/playwright-ct/results
 /test/playwright-ct/template/.cache/
+/packages/sanity/playwright-report-output.md
+/playwright-ct-test-results.json
+
+
+# Browserstack local
+browserstack.err
 
 # Temporary files made by yarn when running canary releases
 .yarn

@@ -1,5 +1,6 @@
 import path from 'path'
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
+import {getCdpEndpoint} from './packages/sanity/playwright-ct/browserstack.config'
 
 // Paths
 const TESTS_PATH = path.join(__dirname, 'packages', 'sanity', 'playwright-ct')
@@ -13,6 +14,8 @@ export default defineConfig({
   testDir: TESTS_PATH,
 
   outputDir: ARTIFACT_OUTPUT_PATH,
+  globalSetup: require.resolve('./packages/sanity/playwright-ct/globalSetup.ts'),
+  globalTeardown: require.resolve('./packages/sanity/playwright-ct/globalTeardown.ts'),
 
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -61,8 +64,25 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    {name: 'chromium', use: {...devices['Desktop Chrome']}},
-    {name: 'firefox', use: {...devices['Desktop Firefox']}},
-    {name: 'webkit', use: {...devices['Desktop Safari']}},
+    {
+      name: 'chrome@latest:Windows 11',
+      use: {
+        connectOptions: {wsEndpoint: getCdpEndpoint('chrome@latest:Windows 11', 'test1')},
+      },
+    },
+    {
+      name: 'playwright-webkit@latest:OSX Ventura',
+      use: {
+        connectOptions: {
+          wsEndpoint: getCdpEndpoint('playwright-webkit@latest:OSX Ventura', 'test2'),
+        },
+      },
+    },
+    {
+      name: 'playwright-firefox:Windows 11',
+      use: {
+        connectOptions: {wsEndpoint: getCdpEndpoint('playwright-firefox:Windows 11', 'test3')},
+      },
+    },
   ],
 })
