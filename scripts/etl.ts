@@ -1,5 +1,6 @@
 import path from 'path'
 import cac from 'cac'
+import ora from 'ora'
 import {createClient} from '@sanity/client'
 import {SanityTSDocConfigOptions, _loadConfig, extract, load, transform} from '@sanity/tsdoc'
 import chalk from 'chalk'
@@ -59,8 +60,6 @@ async function etl(options: {
 }): Promise<void> {
   const {cwd, packageName, packagePath, releaseVersion: releaseVersionOption} = options
 
-  console.log(`Extracting API documents from \`${packageName}\` …`)
-
   const tsdocConfig = await _loadConfig({packagePath})
 
   const sanityConfig = tsdocConfig?.output?.sanity
@@ -71,30 +70,40 @@ async function etl(options: {
     )
   }
 
+  let timer = startTimer(`Extracting API documents from \`${packageName}\``)
   const {pkg, results} = await extract({
     packagePath,
   })
+  timer.end()
 
   const releaseVersion = releaseVersionOption || pkg.version
 
+  timer = startTimer('Fetching current package info from Sanity')
   const currPackageDoc = await _fetchCurrentPackage(sanityConfig, {name: pkg.name})
+  timer.end()
 
-  console.log(`Transforming API documents from \`${packageName}\` …`)
-
+  timer = startTimer(`Transforming API documents from \`${packageName}\``)
   const documents = transform(results, {
     currPackageDoc,
     package: {
       version: releaseVersion,
     },
   })
+  timer.end()
 
   const targetPath = path.resolve(cwd, `etc/${packageName}/${releaseVersion}.json`)
+  const relativePath = path.relative(cwd, targetPath)
 
-  console.log(`Loading ${documents.length} API documents to ./${path.relative(cwd, targetPath)} …`)
+  timer = startTimer(`Loading ${documents.length} API documents to ./${relativePath}`)
+  await load(documents, {
+    cwd: packagePath,
+    fs: {path: targetPath},
+  })
+  timer.end()
 
   if (sanityConfig.token) {
-    console.log(
-      `Loading ${documents.length} API documents to ${sanityConfig.projectId}:${sanityConfig.dataset} …`
+    timer = startTimer(
+      `Loading ${documents.length} API documents to ${sanityConfig.projectId}:${sanityConfig.dataset}`
     )
 
     await load(documents, {
@@ -102,19 +111,20 @@ async function etl(options: {
       sanity: sanityConfig,
     })
 
-    console.log('Loaded', documents.length, 'documents')
-
-    return
+    timer.end()
+  } else {
+    console.log('NOTE: Set EXTRACT_SANITY_API_TOKEN in .env.local to write to Sanity')
   }
+}
 
-  console.log('NOTE: Set EXTRACT_SANITY_WRITE_TOKEN in .env.local to write to Sanity')
+function startTimer(label: string) {
+  const spinner = ora(label).start()
+  const start = Date.now()
+  return {
+    end: () => spinner.succeed(`${label} (${formatMs(Date.now() - start)})`),
+  }
+}
 
-  await load(documents, {
-    cwd: packagePath,
-    fs: {
-      path: targetPath,
-    },
-  })
-
-  console.log('Loaded', documents.length, 'documents')
+function formatMs(ms: number) {
+  return ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(2)}s`
 }
