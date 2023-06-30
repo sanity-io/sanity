@@ -10,7 +10,7 @@ test.use({viewport: {width: 1200, height: 1000}})
 
 test.describe('PTE basic functionality', () => {
   test.beforeEach(async ({page, browserName}, testInfo) => {
-    // await setSessionTestName(page, testInfo)
+    await setSessionTestName(page, testInfo)
 
     test.skip(
       browserName === 'webkit' || testInfo.project.name.toLowerCase().includes('webkit'),
@@ -18,7 +18,7 @@ test.describe('PTE basic functionality', () => {
     )
   })
   test.afterEach(async ({page}, testInfo) => {
-    // await setSessionStatus(page, testInfo)
+    await setSessionStatus(page, testInfo)
   })
 
   test('PTE: default decorators should work', async ({mount, page, browser}, testInfo) => {
