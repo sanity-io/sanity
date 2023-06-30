@@ -6,7 +6,19 @@ import {DEFAULT_TYPE_DELAY, setSessionStatus, setSessionTestName, testHelpers} f
 
 test.use({viewport: {width: 1200, height: 1000}})
 
-// Reference issues: https://github.com/microsoft/playwright/issues?page=2&q=is%3Aopen+label%3Afeature-components+sort%3Aupdated-desc
+/*
+ * Some important notes
+ * - Its important to await locator() calls to ensure the element is actually rendered after you do something, like waiting for a dialog to show up.
+ *   Otherwise you might end up with flaky tests.
+ * - The same goes for typing/keypresses. The default delay is 150ms, to emulate a human typing and to allow the PTE to render
+ *   the text before we continue the test.
+ * - Ideally we would use testid's for all elements, but the focus for these tests was to get working tests up and running
+ * - Sometimes you probably will end up with arbritary selectors. In that case an idea is to have a SELECTORS object with all selectors
+ *   and then use that in the tests. This way we can label the selectors to explain what they map to in the Sanity Studio.
+ * - Running these tests in CI might take a relatively long time. We have tweaked the timeouts to be a bit more generous.
+ *   If you run into issues with timeouts, adjusting timeouts in the playwright config and making sure selectors are correct is
+ *   the two first things you should try.
+ */
 
 test.describe('PTE basic functionality', () => {
   test.beforeEach(async ({page, browserName}, testInfo) => {
@@ -14,11 +26,8 @@ test.describe('PTE basic functionality', () => {
 
     test.skip(
       browserName === 'webkit' || testInfo.project.name.toLowerCase().includes('webkit'),
-      'Currently failing on Webkit/Safari due to different focus behaviour on activation'
+      'Currently failing on Webkit/Safari due to different focus behaviour on activation of the PTE'
     )
-  })
-  test.afterEach(async ({page}, testInfo) => {
-    // await setSessionStatus(page, testInfo)
   })
 
   test('PTE: default decorators should work', async ({mount, page, browser}, testInfo) => {
@@ -90,26 +99,27 @@ test.describe('PTE basic functionality', () => {
       testInfo,
     })
 
+    // Make sure the component is rendered and ready
     await expect(component).toBeVisible()
-
     await goToPTE()
 
     const $pteTextboxLocator = await page.getByTestId('field-body').getByRole('textbox')
 
     await type('Now we should insert a link.')
+
+    // Assertion: Wait for the text to be rendered
     await expect(
       $pteTextboxLocator.locator('[data-slate-string="true"]', {
         hasText: 'Now we should insert a link.',
       })
     ).toBeVisible()
-    // Wait for the text to be rendered
 
     // Backtrack
     await press('ArrowLeft')
     await press('Shift+ArrowLeft+ArrowLeft+ArrowLeft+ArrowLeft')
     await toolbarButtonWithSelector('[data-sanity-icon="link"]', 250)
 
-    // Wait for link to be re-rendered / PTE internal state to be done
+    // Assertion: Wait for link to be re-rendered / PTE internal state to be done
     await expect(
       $pteTextboxLocator.locator('[data-slate-node="text"] span[data-link]')
     ).toBeVisible()
@@ -119,11 +129,16 @@ test.describe('PTE basic functionality', () => {
       timeout: 10000,
     })
 
+    // Focus the URL input
     await page.getByLabel('Url').first().focus()
 
+    // Assertion: The URL input should be focused
     await expect(page.getByLabel('Url').first()).toBeFocused()
 
+    // Type in the URL
     await type('https://www.sanity.io')
+
+    // Close the popover
     await press('Escape')
   })
 
@@ -267,6 +282,7 @@ test.describe('PTE basic functionality', () => {
     // Assertion: Overflowing block links should appear in the “Add” menu button
     await expect($pteField.getByRole('button').filter({hasText: 'Inline Object'})).toBeVisible()
 
+    // Adjust the viewport size to make the Inline Object button hidden
     await page.setViewportSize({width: 800, height: 1000})
 
     // Assertion: Check if the Inline Object button is now hidden
