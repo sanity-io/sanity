@@ -14,13 +14,6 @@ export default defineConfig({
 
   outputDir: ARTIFACT_OUTPUT_PATH,
 
-  expect: {
-    // Maximum time expect() should wait for the condition to be met.
-    timeout: 20 * 1000,
-  },
-
-  /* Maximum time one test can run for. */
-  timeout: 120 * 1000,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -35,6 +28,13 @@ export default defineConfig({
     ['html', {outputFolder: HTML_REPORT_PATH}],
     ['json', {outputFile: 'playwright-ct-test-results.json'}],
   ],
+
+  /* Maximum time one test can run for. */
+  timeout: 120 * 1000,
+  expect: {
+    // Maximum time expect() should wait for the condition to be met.
+    timeout: 20 * 1000,
+  },
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
