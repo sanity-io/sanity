@@ -164,6 +164,13 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const listGridGap = 1
   const paddingY = 1
 
+  // If the item is visible. Custom component could be using a hidden display
+  const isItemVisible = !!(
+    elementProps.ref?.current?.offsetWidth ||
+    elementProps.ref?.current?.offsetHeight ||
+    elementProps.ref?.current?.getClientRects().length
+  )
+
   return (
     <Stack space={3} ref={parentRef}>
       <UploadTargetCard
@@ -212,38 +219,40 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                   transform: `translateY(${items[0].start}px)`,
                 }}
               >
-                {items.map((virtualRow) => {
-                  const member = members[virtualRow.index]
-                  return (
-                    <Item
-                      ref={virtualizer.measureElement}
-                      key={virtualRow.key}
-                      sortable={sortable}
-                      data-index={virtualRow.index}
-                      id={member.key}
-                    >
-                      {member.kind === 'item' && (
-                        <ArrayOfObjectsItem
-                          member={member}
-                          renderAnnotation={renderAnnotation}
-                          renderBlock={renderBlock}
-                          renderField={renderField}
-                          renderInlineBlock={renderInlineBlock}
-                          renderInput={renderInput}
-                          renderItem={renderItem}
-                          renderPreview={renderPreview}
-                        />
-                      )}
-                      {member.kind === 'error' && (
-                        <ErrorItem
+                {isItemVisible === true
+                  ? items.map((virtualRow) => {
+                      const member = members[virtualRow.index]
+                      return (
+                        <Item
+                          ref={virtualizer.measureElement}
+                          key={virtualRow.key}
                           sortable={sortable}
-                          member={member}
-                          onRemove={() => props.onItemRemove(member.key)}
-                        />
-                      )}
-                    </Item>
-                  )
-                })}
+                          data-index={virtualRow.index}
+                          id={member.key}
+                        >
+                          {member.kind === 'item' && (
+                            <ArrayOfObjectsItem
+                              member={member}
+                              renderAnnotation={renderAnnotation}
+                              renderBlock={renderBlock}
+                              renderField={renderField}
+                              renderInlineBlock={renderInlineBlock}
+                              renderInput={renderInput}
+                              renderItem={renderItem}
+                              renderPreview={renderPreview}
+                            />
+                          )}
+                          {member.kind === 'error' && (
+                            <ErrorItem
+                              sortable={sortable}
+                              member={member}
+                              onRemove={() => props.onItemRemove(member.key)}
+                            />
+                          )}
+                        </Item>
+                      )
+                    })
+                  : null}
               </List>
             </Card>
           )}
