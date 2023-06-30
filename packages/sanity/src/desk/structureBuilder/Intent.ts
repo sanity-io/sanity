@@ -19,6 +19,12 @@ export interface BaseIntentParams {
   id?: string
   /* Intent template */
   template?: string
+  /**
+   * Experimental field path
+   * @beta
+   * @experimental
+   */
+  path?: string
 }
 
 /** @internal */
