@@ -22,7 +22,7 @@ import React, {
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
 
-/** @beta */
+/** @hidden @beta */
 export interface StatusButtonProps extends Omit<ButtonProps, 'iconRight'> {
   disabled?: boolean | {reason: ReactNode}
   hotkey?: string[]
@@ -45,7 +45,7 @@ const Dot = styled.div({
   boxShadow: '0 0 0 1px var(--card-bg-color)',
 })
 
-/** @beta */
+/** @hidden @beta */
 export const StatusButton = forwardRef(function StatusButton(
   props: StatusButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref'>,
   ref: ForwardedRef<HTMLButtonElement>
