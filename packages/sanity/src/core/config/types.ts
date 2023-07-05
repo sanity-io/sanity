@@ -688,7 +688,7 @@ export interface Source {
      */
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
 
-    /** @beta @hidden */
+    /** @alpha */
     unstable_languageFilter: (
       props: PartialContext<DocumentLanguageFilterContext>,
     ) => DocumentLanguageFilterComponent[]
@@ -773,7 +773,7 @@ export interface Source {
     components?: StudioComponents
   }
 
-  /** @beta @hidden */
+  /** @alpha */
   search: {
     filters: SearchFilterDefinition[]
     operators: SearchOperatorDefinition[]
