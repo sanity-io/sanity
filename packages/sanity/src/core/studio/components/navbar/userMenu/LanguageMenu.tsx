@@ -1,9 +1,9 @@
+import {useTranslation} from 'react-i18next'
 import {Box, Label, MenuDivider, MenuItem} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useSource} from '../../../source'
-import {LanguageDefinition} from '../../../../config'
 import {useLanguage} from '../../../../i18n/components/LanguageContext'
-import {useTranslation} from 'react-i18next'
+import type {LanguageDefinition} from '../../../../i18n'
 
 export function LanguageMenu() {
   const {changeLanguage} = useLanguage()
