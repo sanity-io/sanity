@@ -14,11 +14,9 @@ import {router} from './router'
 import {DeskToolOptions} from './types'
 import {comments} from './comments'
 import {changesInspector} from './panes/document/inspectors/changes'
-import {deskI18nNamespace} from './i18n/i18nNamespaces'
-import {deskI18nNamespaceStrings} from './i18n/locales/en-US/desk'
-import {deskLocaleLoader} from './i18n/deskLocaleLoader'
+import {deskUsEnglishLanguageBundle} from './i18n'
 import {validationInspector} from './panes/document/inspectors/validation'
-import {definePlugin, localizedLanguages} from 'sanity'
+import {definePlugin} from 'sanity'
 
 const documentActions = [
   PublishAction,
@@ -122,16 +120,6 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
     },
   ],
   i18n: {
-    initOptions: (initOptions) => ({
-      ...initOptions,
-      resources: {
-        ...initOptions.resources,
-        [localizedLanguages['en-US'].id]: {
-          ...initOptions.resources?.['en-US'],
-          [deskI18nNamespace]: deskI18nNamespaceStrings,
-        },
-      },
-    }),
-    languageLoaders: [deskLocaleLoader],
+    bundles: [deskUsEnglishLanguageBundle],
   },
 }))
