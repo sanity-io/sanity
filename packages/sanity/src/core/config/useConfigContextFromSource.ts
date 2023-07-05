@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
-import type {Source, ConfigContext, I18nSource} from './types'
+import type {I18nSource} from '../i18n'
+import type {Source, ConfigContext} from './types'
 
 /**
  * Reduce a {@link Source} down to a {@link ConfigContext}, memoizing using `React.useMemo`

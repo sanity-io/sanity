@@ -1,8 +1,5 @@
-/** @alpha */
-export const studioI18nNamespace = 'studio' as const
-
 /**
- * By-convention namespace for schema translations. Use to just-in-time translate schema title and description.
+ * @todo Rename to a shared prefix with the rest of i18n types?
  * @alpha
- * */
-export const schemaI18nNamespace = 'schema' as const
+ */
+export const studioI18nNamespace = 'studio' as const
