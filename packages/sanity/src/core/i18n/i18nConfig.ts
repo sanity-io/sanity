@@ -1,6 +1,6 @@
 import i18nApi, {type i18n, type InitOptions} from 'i18next'
-import {Schema} from '@sanity/types'
-import {I18nSource, LanguageDefinition, LanguageLoader, SourceOptions} from '../config'
+import type {Schema} from '@sanity/types'
+import type {I18nSource, LanguageDefinition, LanguageLoader, SourceOptions} from '../config'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
 import {
   i18nLangDefReducer,

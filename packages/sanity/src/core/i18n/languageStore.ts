@@ -1,7 +1,7 @@
 const LOCAL_STORAGE_PREFIX = 'sanity-language'
 
 export function getPreferredLang(projectId: string, sourceId: string): string | undefined {
-  if (!hasLocalStorage) {
+  if (!hasLocalStorage()) {
     return undefined
   }
   const language = localStorage.getItem(itemId(projectId, sourceId))
@@ -9,7 +9,7 @@ export function getPreferredLang(projectId: string, sourceId: string): string | 
 }
 
 export function storePreferredLang(projectId: string, sourceId: string, lang: string): void {
-  if (!hasLocalStorage) {
+  if (!hasLocalStorage()) {
     return
   }
   localStorage.setItem(itemId(projectId, sourceId), lang)
