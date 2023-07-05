@@ -10265,9 +10265,9 @@ get-intrinsic@^1.0.2, get-intrinsic@^1.1.1, get-intrinsic@^1.1.3, get-intrinsic@
     has-symbols "^1.0.3"
 
 get-it@^8.0.9, get-it@^8.1.0:
-  version "8.1.3"
-  resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.1.3.tgz#9991e5232c8525a93af0ee596d00224ddb475ca0"
-  integrity sha512-cbyYSla0qAQrwirBNHM4CERo8H32eUWNxhsby4AcKiRW3jIwMPDhgLnR0Ok/UmZO68vsccjRCFbZFEeB3BXvLg==
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.2.0.tgz#b37bcac0f196d7fece2e57d422a4867f8600edd5"
+  integrity sha512-2bP102AY795kVmqE5roTc9pnbji3Wzcm8q9zXh3pDrmkqIYwonFMqwnjyOMZtyHsGvzwe/o/LUAS/vA0VKBQFg==
   dependencies:
     debug "^4.3.4"
     decompress-response "^7.0.0"
