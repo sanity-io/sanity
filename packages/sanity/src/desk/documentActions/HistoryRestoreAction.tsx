@@ -11,8 +11,8 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
 
   const handleConfirm = useCallback(() => {
     restore.execute(revision!)
-    navigateIntent('edit', {id, type})
     onComplete()
+    navigateIntent('edit', {id, type})
   }, [restore, revision, navigateIntent, id, type, onComplete])
 
   const handle = useCallback(() => {
