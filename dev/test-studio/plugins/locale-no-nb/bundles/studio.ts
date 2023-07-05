@@ -1,8 +1,6 @@
-import type {StudioTranslations} from '../types/studio'
-import {defineLanguageBundle} from '../../defineHelpers'
-import {studioI18nNamespace} from '../../i18nNamespaces'
+import type {I18nStudioResourceKeys} from 'sanity'
 
-export const studioI18nNamespaceStrings: Partial<StudioTranslations> = {
+const studioResources: Record<I18nStudioResourceKeys, string> = {
   /** Placeholder text for the omnisearch input field */
   'navbar.search.placeholder': 'Søk',
 
@@ -66,7 +64,4 @@ export const studioI18nNamespaceStrings: Partial<StudioTranslations> = {
   'timeAgo.seconds.minimal.ago': '{{count}}m ago',
 }
 
-export default defineLanguageBundle({
-  namespace: studioI18nNamespace,
-  resources: studioI18nNamespaceStrings,
-})
+export default studioResources

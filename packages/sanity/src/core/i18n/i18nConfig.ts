@@ -1,30 +1,22 @@
 import i18nApi, {type i18n, type InitOptions} from 'i18next'
-import {Schema} from '@sanity/types'
-import {I18nSource, LanguageDefinition, LanguageLoader, SourceOptions} from '../config'
+import type {SourceOptions} from '../config'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
 import {
+  i18nBundlesReducer,
   i18nLangDefReducer,
-  i18nLoaderReducer,
   i18nOptionsReducer,
 } from '../config/configPropertyReducers'
-import {studioI18nNamespaceStrings} from './locales/en-US/studio'
 import {defaultLanguage} from './localizedLanguages'
 import {getPreferredLang} from './languageStore'
-import {schemaI18nNamespace, studioI18nNamespace} from './i18nNamespaces'
-import {studioLocaleLoader} from './studioLocaleLoader'
-import {i18nSchema} from './i18nSchema'
+import {studioI18nNamespace} from './i18nNamespaces'
+import {createSanityI18nBackend} from './backend'
+import {I18nSource, LanguageDefinition, LanguageResourceBundle} from './types'
 
 export const defaultI18nOptions: InitOptions = {
   partialBundledLanguages: true,
   defaultNS: studioI18nNamespace,
   lng: defaultLanguage.id,
   fallbackLng: defaultLanguage.id,
-  resources: {
-    [defaultLanguage.id]: {
-      [studioI18nNamespace]: studioI18nNamespaceStrings,
-      [schemaI18nNamespace]: {},
-    },
-  },
   debug: false,
   initImmediate: false,
 
@@ -51,14 +43,22 @@ export function getInitialI18nOptions(
   }
 }
 
-export function prepareI18nSource(source: SourceOptions, schema: Schema): I18nSource {
+export function prepareI18nSource(source: SourceOptions): I18nSource {
   const {projectId, dataset} = source
-  const i18nLanguages = resolveConfigProperty({
+  const languages = resolveConfigProperty({
     config: source,
     context: {projectId: projectId, dataset},
-    propertyName: 'i18n',
+    propertyName: 'i18n.languages',
     reducer: i18nLangDefReducer,
     initialValue: [defaultLanguage],
+  })
+
+  const bundles = resolveConfigProperty({
+    config: source,
+    context: {projectId: projectId, dataset},
+    propertyName: 'i18n.bundles',
+    reducer: i18nBundlesReducer,
+    initialValue: normalizeResourceBundles(languages),
   })
 
   const i18nInitOptions = resolveConfigProperty({
@@ -66,46 +66,32 @@ export function prepareI18nSource(source: SourceOptions, schema: Schema): I18nSo
     config: source,
     context: {projectId, dataset},
     reducer: i18nOptionsReducer,
-    initialValue: getInitialI18nOptions(projectId, source.name, i18nLanguages),
-  })
-
-  const i18nLoaders = resolveConfigProperty({
-    config: source,
-    context: {projectId, dataset},
-    propertyName: 'i18n',
-    reducer: i18nLoaderReducer,
-    initialValue: [studioLocaleLoader],
+    initialValue: getInitialI18nOptions(projectId, source.name, languages),
   })
 
   const i18nSource = createI18nApi({
-    languages: i18nLanguages,
+    languages,
+    bundles,
     initOptions: i18nInitOptions,
-    languageLoaders: i18nLoaders,
   })
 
-  // no support for reducing this prop atm
-  if (source.i18n?.experimentalTranslateSchemas) {
-    i18nSchema(schema, i18nSource.i18next)
-  }
   return i18nSource
 }
 
 function createI18nApi({
   languages,
+  bundles,
   initOptions,
-  languageLoaders,
 }: {
   languages: LanguageDefinition[]
+  bundles: LanguageResourceBundle[]
   initOptions: InitOptions
-  languageLoaders: LanguageLoader[]
 }): I18nSource {
-  // We start out with an uninitialized instance.
-  // The async init call happens in I18nProvider
-  let i18nInstance = i18nApi.createInstance()
+  // We start out with an uninitialized instance - the async init call happens in I18nProvider
+  let i18nInstance = i18nApi.createInstance().use(createSanityI18nBackend({bundles}))
   return {
     languages,
     initOptions,
-    languageLoaders,
     get t() {
       return i18nInstance.t
     },
@@ -116,4 +102,40 @@ function createI18nApi({
       i18nInstance = newInstance
     },
   }
+}
+
+/**
+ * Takes the i18n config and returns a normalized array of bundles from the defined languages.
+ *
+ * @param languages - The i18n languages defined in configuration/plugins
+ * @returns An array of normalized bundles
+ * @internal
+ */
+function normalizeResourceBundles(languages: LanguageDefinition[]): LanguageResourceBundle[] {
+  const normalized: LanguageResourceBundle[] = []
+
+  for (const lang of languages) {
+    if (lang.bundles && !Array.isArray(lang.bundles)) {
+      throw new Error(`Language bundle for language ${lang.id} is not an array`)
+    }
+
+    if (!lang.bundles) {
+      continue
+    }
+
+    for (const bundle of lang.bundles) {
+      if ('language' in bundle && bundle.language !== lang.id) {
+        throw new Error(`Language bundle inside language ${lang.id} has mismatching language id`)
+      }
+
+      const ns = bundle.namespace
+      if (!ns) {
+        throw new Error(`Language bundle for language ${lang.id} is missing namespace`)
+      }
+
+      normalized.push('language' in bundle ? bundle : {...bundle, language: lang.id})
+    }
+  }
+
+  return normalized
 }

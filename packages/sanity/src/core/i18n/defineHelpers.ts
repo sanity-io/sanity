@@ -1,8 +1,19 @@
-import {typed} from '@sanity/types'
-import type {LanguageBundle} from '../config'
+import type {LanguageDefinition, LanguageResourceBundle} from './types'
 
 /**
- * Pass-trough function that provides type safety when defining a LanguageBundle.
+ * @todo
  * @alpha
  */
-export const defineLanguageBundle = typed<LanguageBundle>
+export function defineLanguageResourceBundle(
+  bundle: LanguageResourceBundle,
+): LanguageResourceBundle {
+  return bundle
+}
+
+/**
+ * Defines a language and makes it available for use in the studio.
+ * @alpha
+ */
+export function defineLanguage(language: LanguageDefinition): LanguageDefinition {
+  return language
+}
