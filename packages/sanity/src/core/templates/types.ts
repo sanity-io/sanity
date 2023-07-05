@@ -182,6 +182,7 @@ export interface TemplateItem {
    *
    * @experimental
    * @beta
+   * @hidden
    */
   initialDocumentId?: string
 

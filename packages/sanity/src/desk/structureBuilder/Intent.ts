@@ -23,6 +23,7 @@ export interface BaseIntentParams {
    * Experimental field path
    * @beta
    * @experimental
+   * @hidden
    */
   path?: string
 }
