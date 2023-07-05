@@ -1,7 +1,7 @@
-import {defineLanguageBundle} from '../../defineHelpers'
-import {studioI18nNamespace} from '../../i18nNamespaces'
+import {defineLanguageResourceBundle} from '../defineHelpers'
+import {studioI18nNamespace} from '../i18nNamespaces'
 
-export const studioI18nNamespaceStrings = {
+const studioI18nNamespaceStrings = {
   /** Placeholder text for the omnisearch input field */
   'navbar.search.placeholder': 'Search',
 
@@ -65,7 +65,15 @@ export const studioI18nNamespaceStrings = {
   'timeAgo.seconds.minimal.ago': '{{count}}m ago',
 }
 
-export default defineLanguageBundle({
+/**
+ * The i18n resource keys for the studio.
+ *
+ * @alpha
+ */
+export type I18nStudioResourceKeys = keyof typeof studioI18nNamespaceStrings
+
+export const defaultStudioLanguageBundle = defineLanguageResourceBundle({
+  language: 'en-US',
   namespace: studioI18nNamespace,
   resources: studioI18nNamespaceStrings,
 })

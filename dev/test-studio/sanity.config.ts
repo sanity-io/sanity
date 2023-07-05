@@ -1,6 +1,6 @@
 import {BookIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin, localizedLanguages} from 'sanity'
+import {defineConfig, definePlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {assist} from '@sanity/assist'
@@ -42,7 +42,7 @@ import {customInspector} from './inspectors/custom'
 import {pasteAction} from './fieldActions/pasteAction'
 import {routerDebugTool} from './plugins/router-debug'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
-import {asyncTranslationTool} from './plugins/async-translation/plugin'
+import {noNBLocale} from './plugins/locale-no-nb'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -58,17 +58,6 @@ const sharedSettings = definePlugin({
   studio: {
     components: {
       logo: Branding,
-    },
-  },
-
-  i18n: {
-    languages: (prev) => [localizedLanguages['no-NB'], ...prev],
-    languageLoaders: (prev) => {
-      return [
-        ...prev,
-        (lang) => import(`./locales/${lang}/testStudio.ts`),
-        (lang) => import(`./locales/${lang}/schema.ts`),
-      ]
     },
   },
 
@@ -95,6 +84,7 @@ const sharedSettings = definePlugin({
     },
   },
   plugins: [
+    noNBLocale(),
     deskTool({
       icon: BookIcon,
       structure,
@@ -136,7 +126,6 @@ const sharedSettings = definePlugin({
     presenceTool(),
     routerDebugTool(),
     tsdoc(),
-    asyncTranslationTool(),
   ],
 })
 
@@ -148,9 +137,6 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
-    i18n: {
-      experimentalTranslateSchemas: true,
-    },
   },
   {
     name: 'tsdoc',
