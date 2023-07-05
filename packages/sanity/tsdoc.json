@@ -5,11 +5,6 @@
       "tagName": "@hidden",
       "syntaxKind": "block",
       "allowMultiple": true
-    },
-    {
-      "tagName": "@todo",
-      "syntaxKind": "block",
-      "allowMultiple": true
     }
   ],
   "supportForTags": {
