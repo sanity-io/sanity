@@ -35,7 +35,7 @@ export interface SearchFilterPinnedDefinition<TOperators = string>
 }
 
 /**
- * @alpha
+ * @beta
  */
 export type SearchFilterDefinition<TOperators = string> =
   | SearchFilterFieldDefinition<TOperators>
