@@ -15,9 +15,9 @@ import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {prepareI18nSource} from '../i18n/i18nConfig'
+import type {I18nSource} from '../i18n'
 import type {
   Config,
-  I18nSource,
   MissingConfigFile,
   PreparedConfig,
   SingleWorkspace,
@@ -138,7 +138,7 @@ export function prepareConfig(
           // TODO: consider using the `ConfigResolutionError`
           throw new SchemaError(schema)
         }
-        const i18n = prepareI18nSource(source, schema)
+        const i18n = prepareI18nSource(source)
 
         const auth = getAuthStore(source)
         const source$ = auth.state.pipe(
