@@ -293,6 +293,7 @@ export interface ValidationErrorOptions {
   paths?: Path[]
   children?: ValidationMarker[]
   operation?: 'AND' | 'OR'
+  metaData?: unknown
 }
 
 /**
@@ -309,6 +310,7 @@ export interface ValidationErrorClass {
 /** @public */
 export interface ValidationError {
   message: string
+  metaData?: unknown
   children?: ValidationMarker[]
   operation?: 'AND' | 'OR'
   /**
@@ -351,4 +353,5 @@ export interface FormNodeValidation {
   level: 'error' | 'warning' | 'info'
   message: string
   path: Path
+  metaData?: unknown
 }

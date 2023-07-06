@@ -14,12 +14,14 @@ export const ValidationError: ValidationErrorClass = class ValidationError
   paths: Path[]
   children: ValidationMarker[] | undefined
   operation: 'AND' | 'OR' | undefined
+  metaData: unknown
 
   constructor(message: string, options: ValidationErrorOptions = {}) {
     this.message = message
     this.paths = options.paths || []
     this.children = options.children
     this.operation = options.operation
+    this.metaData = options.metaData
   }
 
   cloneWithMessage(msg: string): ValidationError {
@@ -27,6 +29,7 @@ export const ValidationError: ValidationErrorClass = class ValidationError
       paths: this.paths,
       children: this.children,
       operation: this.operation,
+      metaData: this.metaData,
     })
   }
 }

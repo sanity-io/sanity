@@ -22,6 +22,7 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
         level: item.level,
         message: item.item.message,
         path: item.path,
+        metaData: item.item.metaData,
       })),
     [validationMarkers],
   )

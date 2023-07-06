@@ -41,6 +41,7 @@ export function useChildValidation(path: Path, inclusive = false): FormNodeValid
           message: marker.item.message,
           level: marker.level,
           path: marker.path,
+          metaData: marker.item.metaData,
         })) as FormNodeValidation[],
     [inclusive, path, validation],
   )
