@@ -1,5 +1,5 @@
 import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import React, {ReactNode, useCallback, useState} from 'react'
+import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import {
   Box,
   Button,
@@ -40,6 +40,7 @@ export function FileActionsMenu(props: Props) {
   } = props
   const [menuElement, setMenuElement] = useState<HTMLDivElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const [shouldFocus, setShouldFocus] = useState<'first' | undefined>('first')
 
   const handleClick = useCallback(() => onMenuOpen(true), [onMenuOpen])
 
@@ -53,6 +54,17 @@ export function FileActionsMenu(props: Props) {
     },
     [setMenuButtonElement]
   )
+
+  //Necessary to prevent focus to be on first element when hovering over MenuDivider
+  useEffect(() => {
+    if (isMenuOpen) {
+      setTimeout(() => setShouldFocus(undefined), 1)
+    }
+
+    if (!isMenuOpen) {
+      setShouldFocus('first')
+    }
+  }, [isMenuOpen])
 
   useGlobalKeyDown(
     useCallback(
@@ -101,7 +113,15 @@ export function FileActionsMenu(props: Props) {
 
       <Box padding={2}>
         <Flex justify="center">
-          <Popover content={<Menu ref={setMenuElement}>{children}</Menu>} portal open={isMenuOpen}>
+          <Popover
+            content={
+              <Menu ref={setMenuElement} shouldFocus={shouldFocus}>
+                {children}
+              </Menu>
+            }
+            portal
+            open={isMenuOpen}
+          >
             <Button
               data-testid="options-menu-button"
               icon={EllipsisVerticalIcon}

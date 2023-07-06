@@ -1,4 +1,4 @@
-import React, {MouseEventHandler, ReactNode, useCallback, useState} from 'react'
+import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
 import {Button, Inline, Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import styled from 'styled-components'
@@ -32,6 +32,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
   const [menuElement, setMenuElement] = useState<HTMLDivElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const [shouldFocus, setShouldFocus] = useState<'first' | undefined>('first')
 
   const handleClick = useCallback(() => onMenuOpen(!isMenuOpen), [onMenuOpen, isMenuOpen])
 
@@ -46,6 +47,17 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
       [isMenuOpen, onMenuOpen, buttonElement]
     )
   )
+
+  //Necessary to prevent focus to be on first element when hovering over MenuDivider
+  useEffect(() => {
+    if (isMenuOpen) {
+      setTimeout(() => setShouldFocus(undefined), 1)
+    }
+
+    if (!isMenuOpen) {
+      setShouldFocus('first')
+    }
+  }, [isMenuOpen])
 
   // Close menu when clicking outside of it
   // Not when clicking on the button
@@ -87,7 +99,11 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
       <Popover
         id="image-actions-menu"
-        content={<Menu ref={setMenuElement}>{children}</Menu>}
+        content={
+          <Menu ref={setMenuElement} shouldFocus={shouldFocus}>
+            {children}
+          </Menu>
+        }
         portal
         open={isMenuOpen}
         constrainSize
