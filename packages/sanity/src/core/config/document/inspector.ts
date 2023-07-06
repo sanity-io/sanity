@@ -1,7 +1,7 @@
 import {ButtonTone} from '@sanity/ui'
 import {ComponentType} from 'react'
 
-/** @beta */
+/** @hidden @beta */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentInspectorProps {
   documentId: string
@@ -9,16 +9,16 @@ export interface DocumentInspectorProps {
   onClose: () => void
 }
 
-/** @beta */
+/** @hidden @beta */
 export type DocumentInspectorComponent = ComponentType<DocumentInspectorProps>
 
-/** @beta */
+/** @hidden @beta */
 export interface DocumentInspectorUseMenuItemProps {
   documentId: string
   documentType: string
 }
 
-/** @beta */
+/** @hidden @beta */
 export interface DocumentInspectorMenuItem {
   hidden?: boolean
   hotkeys?: string[]
@@ -29,7 +29,7 @@ export interface DocumentInspectorMenuItem {
   tone?: ButtonTone
 }
 
-/** @beta */
+/** @hidden @beta */
 export interface DocumentInspector {
   name: string
   component: DocumentInspectorComponent
@@ -85,7 +85,7 @@ export interface DocumentInspector {
  * })
  * ```
  *
- * @internal
+ * @hidden @beta
  * */
 export function defineDocumentInspector(inspector: DocumentInspector): DocumentInspector {
   return inspector
