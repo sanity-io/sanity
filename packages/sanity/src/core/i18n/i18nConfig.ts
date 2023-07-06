@@ -1,5 +1,4 @@
 import i18nApi, {type i18n, type InitOptions} from 'i18next'
-import type {Schema} from '@sanity/types'
 import type {I18nSource, LanguageDefinition, LanguageLoader, SourceOptions} from '../config'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
 import {
@@ -10,9 +9,8 @@ import {
 import {studioI18nNamespaceStrings} from './locales/en-US/studio'
 import {defaultLanguage} from './localizedLanguages'
 import {getPreferredLang} from './languageStore'
-import {schemaI18nNamespace, studioI18nNamespace} from './i18nNamespaces'
+import {studioI18nNamespace} from './i18nNamespaces'
 import {studioLocaleLoader} from './studioLocaleLoader'
-import {i18nSchema} from './i18nSchema'
 
 export const defaultI18nOptions: InitOptions = {
   partialBundledLanguages: true,
@@ -22,7 +20,6 @@ export const defaultI18nOptions: InitOptions = {
   resources: {
     [defaultLanguage.id]: {
       [studioI18nNamespace]: studioI18nNamespaceStrings,
-      [schemaI18nNamespace]: {},
     },
   },
   debug: false,
@@ -51,7 +48,7 @@ export function getInitialI18nOptions(
   }
 }
 
-export function prepareI18nSource(source: SourceOptions, schema: Schema): I18nSource {
+export function prepareI18nSource(source: SourceOptions): I18nSource {
   const {projectId, dataset} = source
   const i18nLanguages = resolveConfigProperty({
     config: source,
@@ -83,10 +80,6 @@ export function prepareI18nSource(source: SourceOptions, schema: Schema): I18nSo
     languageLoaders: i18nLoaders,
   })
 
-  // no support for reducing this prop atm
-  if (source.i18n?.experimentalTranslateSchemas) {
-    i18nSchema(schema, i18nSource.i18next)
-  }
   return i18nSource
 }
 

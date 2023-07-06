@@ -387,66 +387,6 @@ export interface I18nPluginOptions {
    *
    */
   languageLoaders?: I18nLanguageLoaderOption
-
-  /**
-   * When this is true, schema type title and descriptions will be translated.
-   * Configure a languageLoader that returns a language bundle for the `schema` namespace,
-   * with resource keys using the following convention:
-   *
-   * ## Keys for types
-   *
-   * - `<typeName>.type-title`
-   * - `<typeName>.type-description`
-   * - `<typeName>.<fieldsetName>.fieldset-title`
-   * - `<typeName>.<fieldsetName>.fieldset-description`
-   * - `<typeName>.<groupName>.group-title`
-   *
-   * ## Keys for fields
-   *
-   * - `<objectTypeName>.<fieldName>.field-title`
-   * - `<objectTypeName>.<fieldName>.field-description`
-   *
-   * ## Keys for array items
-   *
-   * - `<arrayTypeName>.<arrayMemberTypeName>.item-title`
-   *
-   * ## Keys for reference types
-   *
-   * - `<typeName>.<refTypeName>.ref-title`
-   *
-   * ## Caveats
-   *
-   * Enabling schema translations could adversely impact studio performance.
-   * Inline definitions for objects are not supported (nested types).
-   *
-   * ## Example LanguageBundle
-   *
-   *```ts
-   * // locales/en_US/schema.ts
-   * export default {
-   *   namespace: 'schema',
-   *   resources: {
-   *     'myDocumentType|title': 'Document type 'myDocumentType' will use this string as title wherever it is used',
-   *
-   *     'myDocumentType.text|title': 'Document field named 'text' will use this string as title'
-   *     'myDocumentType.text|description': 'Document field named 'text' will this string as description',
-   *   },
-   *  }
-   *```
-   *
-   * Now, in studio.config.ts:
-   * ```ts
-   * defineConfig({
-   *   i18n: {
-   *     experimentalTranslateSchemas: true,
-   *     languageLoaders: [
-   *         (lang) => import(`./locales/${lang}/schema.ts`),
-   *     ]
-   *   },
-   * })
-   * ```
-   */
-  experimentalTranslateSchemas?: boolean
 }
 
 /** @beta */

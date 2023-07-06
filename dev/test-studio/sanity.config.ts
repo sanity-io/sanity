@@ -64,11 +64,7 @@ const sharedSettings = definePlugin({
   i18n: {
     languages: (prev) => [localizedLanguages['no-NB'], ...prev],
     languageLoaders: (prev) => {
-      return [
-        ...prev,
-        (lang) => import(`./locales/${lang}/testStudio.ts`),
-        (lang) => import(`./locales/${lang}/schema.ts`),
-      ]
+      return [...prev, (lang) => import(`./locales/${lang}/testStudio.ts`)]
     },
   },
 
@@ -145,9 +141,6 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
-    i18n: {
-      experimentalTranslateSchemas: true,
-    },
   },
   {
     name: 'tsdoc',
