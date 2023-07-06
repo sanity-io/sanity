@@ -142,7 +142,7 @@ export function prepareConfig(
           // TODO: consider using the `ConfigResolutionError`
           throw new SchemaError(schema)
         }
-        const i18n = prepareI18nSource(source, schema)
+        const i18n = prepareI18nSource(source)
 
         const source$ = auth.state.pipe(
           map(({client, authenticated, currentUser}) => {
