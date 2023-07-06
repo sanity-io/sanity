@@ -15,7 +15,13 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import React, {ComponentType, FocusEventHandler, FormEventHandler} from 'react'
-import {HotkeyOptions, OnCopyFn, OnPasteFn} from '@sanity/portable-text-editor'
+import {
+  EditorChange,
+  HotkeyOptions,
+  OnCopyFn,
+  OnPasteFn,
+  RangeDecoration,
+} from '@sanity/portable-text-editor'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
@@ -489,6 +495,10 @@ export interface PortableTextInputProps
    */
   markers?: PortableTextMarker[]
   /**
+   * Returns changes from the underlying editor
+   */
+  onEditorChange?: (change: EditorChange) => void
+  /**
    * Custom copy function
    */
   onCopy?: OnCopyFn
@@ -508,6 +518,7 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
+  rangeDecorations?: RangeDecoration[]
 }
 
 /**
