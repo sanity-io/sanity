@@ -27,8 +27,8 @@ const defaults = {
 }
 
 const authErrors = () => ({
-  onError: (err: Error | ClientError | ServerError) => {
-    if (!('response' in err)) {
+  onError: (err: Error | null) => {
+    if (!err || !isReqResError(err)) {
       return err
     }
 
@@ -42,6 +42,10 @@ const authErrors = () => ({
     return err
   },
 })
+
+function isReqResError(err: Error): err is ClientError | ServerError {
+  return err.hasOwnProperty('response')
+}
 
 export function getCliToken(): string | undefined {
   // eslint-disable-next-line no-process-env
