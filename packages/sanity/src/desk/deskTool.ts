@@ -28,7 +28,8 @@ const documentActions = [
 const documentBadges = [LiveEditBadge]
 
 /**
- * A “desk tool” is a top-level view within Sanity Studio in which content editors can drill down to specific documents to edit them.
+ * The deskTool is a studio plugin which adds the “desk tool” – a tool within Sanity Studio in which
+ * content editors can drill down to specific documents to edit them.
  * You can configure your Studio's desk tool(s).
  *
  * @public

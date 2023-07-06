@@ -92,7 +92,7 @@ export interface BaseIntentParams {
 }
 
 /**
- * Type for intent parameters (json)
+ * Intent parameters (json)
  *
  * @public
  */

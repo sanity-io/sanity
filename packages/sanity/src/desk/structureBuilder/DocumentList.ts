@@ -48,7 +48,7 @@ const createDocumentChildResolverForItem =
   }
 
 /**
- * Type for partial document list
+ * Partial document list
  *
  * @public
  */

@@ -124,7 +124,7 @@ export function maybeSerializeView(
 }
 
 /**
- * Type for view builder. See {@link ComponentViewBuilder} and {@link FormViewBuilder}
+ * View builder. See {@link ComponentViewBuilder} and {@link FormViewBuilder}
  *
  * @public
  */

@@ -52,7 +52,7 @@ export interface MenuItem {
 }
 
 /**
- * Type for partial menu items
+ * Partial menu items
  * @public
  */
 export type PartialMenuItem = Partial<MenuItem>

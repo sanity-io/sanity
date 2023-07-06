@@ -87,7 +87,7 @@ export interface Divider {
 }
 
 /**
- * Type for the path of a serialized structure node
+ * Path of a serialized structure node
  *
  * @public
  */
@@ -115,7 +115,7 @@ export interface Serializable<T> {
 }
 
 /**
- * Type for a collection.
+ * Collection
  * See {@link List}, {@link DocumentList}, {@link EditorNode}, {@link DocumentNode} and {@link Component}
  *
  * @public
@@ -123,7 +123,7 @@ export interface Serializable<T> {
 export type Collection = List | DocumentList | EditorNode | DocumentNode | Component
 
 /**
- * Type for a collection builder
+ * Collection builder
  * See {@link ListBuilder}, {@link DocumentListBuilder}, {@link DocumentTypeListBuilder}, {@link DocumentBuilder} and {@link ComponentBuilder}
  *
  * @public
@@ -136,7 +136,7 @@ export type CollectionBuilder =
   | ComponentBuilder
 
 /**
- * Type for Child of a structure node
+ * Child of a structure node
  * See {@link Collection}, {@link CollectionBuilder} and {@link ChildResolver}
  *
  * @public

@@ -41,7 +41,7 @@ export interface DeskToolContextValue {
 }
 
 /**
- * Type for a desk tool context. Extends from ConfigContext.
+ *  Desk tool context. Extends from {@link ConfigContext}.
  *  @hidden
  *  @public
  */

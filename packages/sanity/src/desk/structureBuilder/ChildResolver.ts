@@ -25,7 +25,7 @@ export interface ChildResolverOptions {
 }
 
 /**
- * Type for Item Child. See {@link CollectionBuilder} and {@link Collection}
+ * Item Child. See {@link CollectionBuilder} and {@link Collection}
  *
  * @public
  */

@@ -12,7 +12,7 @@ import {StructureContext} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
 
 /**
- * Type for unserialize list item child.
+ * Unserialized list item child.
  * See {@link Collection}, {@link CollectionBuilder}, {@link ChildResolver} and {@link ItemChild}
  *
  * @public
@@ -24,7 +24,7 @@ export type UnserializedListItemChild =
   | Observable<ItemChild>
 
 /**
- * Type for child of List Item
+ * Child of List Item
  * See {@link Collection}, {@link ChildResolver}, {@link ItemChild}
  * @public
  */
@@ -110,7 +110,7 @@ export interface UnserializedListItem {
 }
 
 /**
- * Type for a partial list item. See {@link UnserializedListItem}
+ * Partial list item. See {@link UnserializedListItem}
  *
  * @public */
 export type PartialListItem = Partial<UnserializedListItem>

@@ -29,7 +29,7 @@ export interface DocumentListItem extends ListItem {
 }
 
 /**
- * Type for partial document list item
+ * Partial document list item
  *
  * @public
  */

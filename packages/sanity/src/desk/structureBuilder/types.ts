@@ -15,14 +15,14 @@ import type {FormView, FormViewBuilder} from './views/FormView'
 import type {ConfigContext, Source, InitialValueTemplateItem} from 'sanity'
 
 /**
- * Type for view. See {@link FormView} and {@link ComponentView}
+ * View. See {@link FormView} and {@link ComponentView}
  *
  * @public
  */
 export type View = FormView | ComponentView
 
 /**
- * Type for a user view component
+ * User view component
  *
  * @public */
 export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentType<{
@@ -38,7 +38,7 @@ export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentT
 }>
 
 /**
- * Type for User defined component
+ * User defined component
  *
  * @public
  */

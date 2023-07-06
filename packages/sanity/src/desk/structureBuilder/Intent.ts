@@ -2,7 +2,7 @@ import {PartialDocumentList, getTypeNamesFromFilter} from './DocumentList'
 import {StructureNode} from './StructureNodes'
 
 /**
- * Type for intent parameters (json)
+ * Intent parameters (json)
  *
  * @public
  */
