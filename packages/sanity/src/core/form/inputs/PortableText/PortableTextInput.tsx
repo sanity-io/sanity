@@ -235,6 +235,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
+      if (editorRef.current && onEditorChange) {
+        onEditorChange(change, editorRef.current)
+      }
       switch (change.type) {
         case 'mutation':
           onChange(toFormPatches(change.patches))

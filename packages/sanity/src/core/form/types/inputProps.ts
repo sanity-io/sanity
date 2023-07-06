@@ -20,6 +20,7 @@ import {
   HotkeyOptions,
   OnCopyFn,
   OnPasteFn,
+  PortableTextEditor,
   RangeDecoration,
 } from '@sanity/portable-text-editor'
 import {FormPatch, PatchEvent} from '../patch'
@@ -497,7 +498,7 @@ export interface PortableTextInputProps
   /**
    * Returns changes from the underlying editor
    */
-  onEditorChange?: (change: EditorChange) => void
+  onEditorChange?: (change: EditorChange, editor: PortableTextEditor) => void
   /**
    * Custom copy function
    */
@@ -506,6 +507,10 @@ export interface PortableTextInputProps
    * Custom paste function
    */
   onPaste?: OnPasteFn
+  /**
+   * Range decorations
+   */
+  rangeDecorations?: RangeDecoration[]
   /**
    * Function to render custom block actions
    * @deprecated will be removed in the next major version of Sanity Studio.
@@ -518,7 +523,6 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
-  rangeDecorations?: RangeDecoration[]
 }
 
 /**
