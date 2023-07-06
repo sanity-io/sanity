@@ -9,6 +9,7 @@ import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {Deployment} from './runner/types'
 import {sanityIdify} from './runner/utils/sanityIdIfy'
+import {KNOWN_TEST_IDS} from './runner/utils/testIds'
 
 config({path: `${__dirname}/.env`})
 
@@ -18,6 +19,8 @@ async function main(args: {
   tagsOnly?: boolean
   pattern?: string
   local?: boolean
+  testIds?: string
+  excludeTestIds?: string
   count?: string
   label?: string
 }) {
@@ -95,6 +98,8 @@ async function main(args: {
   return run({
     testFiles,
     deployments,
+    testIds: args.testIds ? args.testIds.split(',') : undefined,
+    excludeTestIds: args.excludeTestIds ? args.excludeTestIds.split(',') : undefined,
     perfStudioClient,
     studioMetricsClient,
     registerHelpersFile: require.resolve(`${__dirname}/tests/helpers/register.ts`),
@@ -115,6 +120,9 @@ const {values: args} = parseArgs({
       type: 'boolean',
       short: 'h',
     },
+    list: {
+      type: 'boolean',
+    },
     local: {
       type: 'boolean',
       short: 'l',
@@ -130,6 +138,14 @@ const {values: args} = parseArgs({
       type: 'string',
       short: 'p',
     },
+    testIds: {
+      type: 'string',
+      short: 'i',
+    },
+    excludeTestIds: {
+      type: 'string',
+      short: 'e',
+    },
     count: {
       type: 'string',
       short: 'c',
@@ -138,6 +154,14 @@ const {values: args} = parseArgs({
   },
 })
 
+if (args.list) {
+  /* eslint-disable no-console */
+  console.log('\n# Known test ids:\n')
+  console.log(Object.keys(KNOWN_TEST_IDS).join('\n'))
+  console.log()
+  process.exit(0)
+  /* eslint-enable no-console */
+}
 main(args).then(
   () => {
     // eslint-disable-next-line no-console

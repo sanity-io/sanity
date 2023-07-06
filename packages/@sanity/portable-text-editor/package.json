@@ -1,6 +1,6 @@
 {
   "name": "@sanity/portable-text-editor",
-  "version": "3.9.0",
+  "version": "3.14.1",
   "description": "Portable Text Editor made in React",
   "keywords": [
     "sanity",
@@ -64,18 +64,18 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/block-tools": "3.9.0",
-    "@sanity/schema": "3.9.0",
+    "@sanity/block-tools": "3.14.1",
+    "@sanity/schema": "3.14.1",
     "@sanity/slate-react": "2.30.1",
-    "@sanity/types": "3.9.0",
-    "@sanity/util": "3.9.0",
+    "@sanity/types": "3.14.1",
+    "@sanity/util": "3.14.1",
     "debug": "^3.2.7",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.21",
     "slate": "0.81.1"
   },
   "devDependencies": {
-    "@sanity/ui": "^1.3.0",
+    "@sanity/ui": "^1.6.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@types/debug": "^4.1.5",
@@ -116,5 +116,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
 }

@@ -1,70 +1,47 @@
-import {
-  EditorSelection,
-  PortableTextEditor,
-  usePortableTextEditor,
-} from '@sanity/portable-text-editor'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {ObjectSchemaType, Path} from '@sanity/types'
+import React, {useCallback, useMemo} from 'react'
+import {ObjectSchemaType} from '@sanity/types'
 import {_getModalOption} from '../helpers'
-import {pathToString} from '../../../../../field'
-import {usePortableTextMemberItem} from '../../hooks/usePortableTextMembers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
 
 export function ObjectEditModal(props: {
-  boundaryElement: HTMLElement | undefined
+  autoFocus?: boolean
   children: React.ReactNode
   defaultType: 'dialog' | 'popover'
+  floatingBoundary: HTMLElement | null
   onClose: () => void
-  path: Path
-  referenceElement: HTMLElement | undefined
+  referenceBoundary: HTMLElement | null
+  referenceElement: HTMLElement | null
   schemaType: ObjectSchemaType
 }) {
-  const {onClose, defaultType, referenceElement, boundaryElement, schemaType, path} = props
-  const editor = usePortableTextEditor()
-  const firstElementIsFocused = useRef(false)
+  const {
+    autoFocus,
+    defaultType,
+    floatingBoundary,
+    onClose,
+    referenceBoundary,
+    referenceElement,
+    schemaType,
+  } = props
 
   const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
   const modalType = schemaModalOption?.type || defaultType
 
   const modalTitle = <>Edit {schemaType.title}</>
 
-  // The initial editor selection when opening the object
-  const initialSelection = useRef<EditorSelection | null>(PortableTextEditor.getSelection(editor))
-
-  const memberItem = usePortableTextMemberItem(pathToString(path))
-
   const handleClose = useCallback(() => {
-    PortableTextEditor.select(editor, initialSelection.current)
     onClose()
-  }, [editor, onClose])
+  }, [onClose])
 
   const modalWidth = schemaModalOption?.width
-
-  // Set focus on the first field
-  useEffect(() => {
-    if (firstElementIsFocused.current) {
-      return
-    }
-    const firstFieldMember = memberItem?.member.item.members.find((m) => m.kind === 'field')
-    if (firstFieldMember && firstFieldMember.kind === 'field') {
-      setTimeout(() => {
-        const firstFieldElm = document.getElementById(
-          firstFieldMember.field.id
-        ) as HTMLElement | null
-        if (firstFieldElm) {
-          firstFieldElm.focus()
-        }
-      }, 0)
-      firstElementIsFocused.current = true
-    }
-  }, [memberItem])
 
   if (modalType === 'popover') {
     return (
       <PopoverEditDialog
-        boundaryElement={boundaryElement}
+        autoFocus={autoFocus}
+        floatingBoundary={floatingBoundary}
         onClose={handleClose}
+        referenceBoundary={referenceBoundary}
         referenceElement={referenceElement}
         title={modalTitle}
         width={modalWidth}
@@ -75,7 +52,12 @@ export function ObjectEditModal(props: {
   }
 
   return (
-    <DefaultEditDialog onClose={handleClose} title={modalTitle} width={modalWidth}>
+    <DefaultEditDialog
+      onClose={handleClose}
+      title={modalTitle}
+      width={modalWidth}
+      autoFocus={autoFocus}
+    >
       {props.children}
     </DefaultEditDialog>
   )

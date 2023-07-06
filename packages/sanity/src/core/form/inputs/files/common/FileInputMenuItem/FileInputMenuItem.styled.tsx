@@ -18,6 +18,7 @@ export const FileButton = styled(MenuItem)(({theme}: {theme: Theme}) => {
 
     & input {
       overflow: hidden;
+      overflow: clip;
       top: 0;
       left: 0;
       width: 100%;

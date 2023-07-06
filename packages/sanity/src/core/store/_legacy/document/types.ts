@@ -19,7 +19,9 @@ export interface MutationEvent {
   transition: 'update' | 'appear' | 'disappear'
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ReconnectEvent {
   type: 'reconnect'
 }

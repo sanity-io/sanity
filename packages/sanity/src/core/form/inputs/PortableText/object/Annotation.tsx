@@ -1,30 +1,50 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
 import {Tooltip} from '@sanity/ui'
-import React, {ComponentType, useCallback, useMemo} from 'react'
+import React, {ComponentType, useCallback, useMemo, useState} from 'react'
+import {isEqual} from '@sanity/util/paths'
 import {pathToString} from '../../../../field'
-import {BlockAnnotationProps, RenderCustomMarkers} from '../../../types'
+import {
+  BlockAnnotationProps,
+  RenderAnnotationCallback,
+  RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
+  RenderCustomMarkers,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderPreviewCallback,
+} from '../../../types'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {debugRender} from '../debugRender'
+import {useChildPresence} from '../../../studio/contexts/Presence'
 import {EMPTY_ARRAY} from '../../../../util'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 import {Root, TooltipBox} from './Annotation.styles'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface AnnotationProps {
-  boundaryElement: HTMLElement | null
   children: React.ReactElement
+  editorNodeFocused: boolean
+  floatingBoundary: HTMLElement | null
   focused: boolean
   onItemClose: () => void
   onItemOpen: (path: Path) => void
   onPathFocus: (path: Path) => void
   path: Path
   readOnly?: boolean
+  referenceBoundary: HTMLElement | null
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderCustomMarkers?: RenderCustomMarkers
+  renderField: RenderFieldCallback
+  renderInlineBlock?: RenderBlockCallback
+  renderInput: RenderInputCallback
+  renderItem: RenderArrayOfObjectsItemCallback
+  renderPreview: RenderPreviewCallback
   selected: boolean
   schemaType: ObjectSchemaType
   value: PortableTextObject
@@ -32,15 +52,24 @@ interface AnnotationProps {
 
 export function Annotation(props: AnnotationProps) {
   const {
-    boundaryElement,
     children,
+    editorNodeFocused,
+    floatingBoundary,
     focused,
     onItemClose,
     onItemOpen,
     onPathFocus,
     path,
     readOnly,
+    referenceBoundary,
+    renderAnnotation,
+    renderBlock,
     renderCustomMarkers,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
     schemaType,
     selected,
     value,
@@ -51,6 +80,8 @@ export function Annotation(props: AnnotationProps) {
     () => path.slice(0, path.length - 2).concat(['markDefs', {_key: value._key}]),
     [path, value._key]
   )
+  const [spanElement, setSpanElement] = useState<HTMLSpanElement | null>(null)
+  const spanPath: Path = useMemo(() => path.slice(path.length - 3, path.length), [path])
   const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
   const {validation} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
@@ -59,15 +90,25 @@ export function Annotation(props: AnnotationProps) {
 
   const onOpen = useCallback(() => {
     if (memberItem) {
+      // Take focus away from the editor so that it doesn't propagate a new focusPath and interfere here.
       PortableTextEditor.blur(editor)
+      onPathFocus(memberItem.node.focusPath) // Set the focus path to be the markDef here as we currently have focus on the text node
       onItemOpen(memberItem.node.path)
     }
-  }, [editor, onItemOpen, memberItem])
+  }, [editor, memberItem, onItemOpen, onPathFocus])
 
   const onClose = useCallback(() => {
     onItemClose()
+    // Keep track of any previous offsets on the spanNode before we select it.
+    const sel = PortableTextEditor.getSelection(editor)
+    const focusOffset = sel?.focus.path && isEqual(sel.focus.path, spanPath) && sel.focus.offset
+    const anchorOffset = sel?.anchor.path && isEqual(sel.anchor.path, spanPath) && sel.anchor.offset
+    PortableTextEditor.select(editor, {
+      anchor: {path: spanPath, offset: anchorOffset || 0},
+      focus: {path: spanPath, offset: focusOffset || 0},
+    })
     PortableTextEditor.focus(editor)
-  }, [editor, onItemClose])
+  }, [editor, spanPath, onItemClose])
 
   const onRemove = useCallback(() => {
     PortableTextEditor.removeAnnotation(editor, schemaType)
@@ -96,14 +137,23 @@ export function Annotation(props: AnnotationProps) {
     [Markers, markers, renderCustomMarkers, text, validation]
   )
 
-  const presence = memberItem?.node.presence || EMPTY_ARRAY
+  const presence = useChildPresence(path, true)
+  const rootPresence = useMemo(
+    () => presence.filter((p) => isEqual(p.path, path)),
+    [path, presence]
+  )
+
   const isOpen = Boolean(memberItem?.member.open)
   const input = memberItem?.input
+  const nodePath = memberItem?.node.path || EMPTY_ARRAY
+  const referenceElement = spanElement
 
   const componentProps = useMemo(
     (): BlockAnnotationProps => ({
-      __unstable_boundaryElement: boundaryElement || undefined,
-      __unstable_referenceElement: memberItem?.elementRef?.current || undefined,
+      __unstable_floatingBoundary: floatingBoundary,
+      __unstable_referenceBoundary: referenceBoundary,
+      __unstable_referenceElement: referenceElement,
+      __unstable_textElementFocus: editorNodeFocused, // Is there focus on the related text element for this object?
       children: input,
       focused,
       markers,
@@ -113,9 +163,16 @@ export function Annotation(props: AnnotationProps) {
       onRemove,
       open: isOpen,
       parentSchemaType: editor.schemaTypes.block,
-      path: memberItem?.node.path || path,
-      presence,
+      path: nodePath,
+      presence: rootPresence,
       readOnly: Boolean(readOnly),
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderPreview,
+      renderItem,
       renderDefault: DefaultAnnotationComponent,
       schemaType,
       selected,
@@ -124,21 +181,30 @@ export function Annotation(props: AnnotationProps) {
       value,
     }),
     [
-      boundaryElement,
       editor.schemaTypes.block,
+      editorNodeFocused,
+      floatingBoundary,
       focused,
       input,
       isOpen,
       markers,
       markersToolTip,
-      memberItem,
+      nodePath,
       onClose,
       onOpen,
       onPathFocus,
       onRemove,
-      path,
-      presence,
       readOnly,
+      referenceBoundary,
+      referenceElement,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
+      rootPresence,
       schemaType,
       selected,
       text,
@@ -151,9 +217,19 @@ export function Annotation(props: AnnotationProps) {
     | ComponentType<BlockAnnotationProps>
     | undefined
 
+  const setRef = useCallback(
+    (elm: HTMLSpanElement) => {
+      if (memberItem?.elementRef) {
+        memberItem.elementRef.current = elm
+      }
+      setSpanElement(elm) // update state here so the reference element is available on first render
+    },
+    [memberItem]
+  )
+
   return useMemo(
     () => (
-      <span ref={memberItem?.elementRef} style={debugRender()}>
+      <span ref={setRef} style={debugRender()}>
         {CustomComponent ? (
           <CustomComponent {...componentProps} />
         ) : (
@@ -161,21 +237,22 @@ export function Annotation(props: AnnotationProps) {
         )}
       </span>
     ),
-    [CustomComponent, componentProps, memberItem?.elementRef]
+    [CustomComponent, componentProps, setRef]
   )
 }
 
 export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   const {
-    __unstable_boundaryElement,
-    __unstable_referenceElement,
+    __unstable_floatingBoundary: floatingBoundary,
+    __unstable_referenceBoundary: referenceBoundary,
+    __unstable_referenceElement: referenceElement,
     children,
+    focused,
     markers,
     onClose,
     onOpen,
     onRemove,
     open,
-    path,
     readOnly,
     schemaType,
     textElement,
@@ -212,19 +289,21 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     >
       {textElement}
       <AnnotationToolbarPopover
-        referenceElement={__unstable_referenceElement}
-        boundaryElement={__unstable_boundaryElement}
-        onEdit={onOpen}
-        onDelete={onRemove}
+        floatingBoundary={floatingBoundary}
+        referenceBoundary={referenceBoundary}
+        referenceElement={referenceElement}
+        onOpen={onOpen}
+        onRemove={onRemove}
         title={schemaType.title || schemaType.name}
       />
       {open && (
         <ObjectEditModal
-          boundaryElement={__unstable_boundaryElement}
           defaultType="popover"
+          floatingBoundary={floatingBoundary}
           onClose={onClose}
-          path={path}
-          referenceElement={__unstable_referenceElement}
+          autoFocus={focused}
+          referenceBoundary={referenceBoundary}
+          referenceElement={referenceElement}
           schemaType={schemaType}
         >
           {children}

@@ -154,7 +154,15 @@ export function createPatchToOperations(
     })
     debug('blockIndex', blockIndex)
     const block = blockIndex > -1 ? editor.children[blockIndex] : undefined
-    const childIndex = editor.isTextBlock(block)
+    const isTextBlock = editor.isTextBlock(block)
+
+    // Ignore patches targeting nested void data, like 'markDefs'
+    if (isTextBlock && patch.path.length > 2 && patch.path[1] !== 'children') {
+      debug('Ignoring setting void value')
+      return false
+    }
+
+    const childIndex = isTextBlock
       ? block.children.findIndex((node: PortableTextChild, indx: number) => {
           return isKeyedSegment(patch.path[2])
             ? node._key === patch.path[2]._key
@@ -167,7 +175,6 @@ export function createPatchToOperations(
       value = {}
       value[patch.path[3]] = patch.value
     }
-    const isTextBlock = editor.isTextBlock(block)
     if (isTextBlock) {
       debug(`Setting nodes at ${JSON.stringify(patch.path)} - ${JSON.stringify(targetPath)}`)
       debug('Value to set', JSON.stringify(value, null, 2))

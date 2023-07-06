@@ -4,7 +4,7 @@ on:
   pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [next, refactor/e2e-tweaks]
+    branches: [next]
 jobs:
   test:
     timeout-minutes: 30
@@ -30,7 +30,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable --immutable-cache --check-cache
+        run: yarn install --frozen-lockfile
 
       - name: Store Playwright's Version
         run: |
@@ -62,6 +62,6 @@ jobs:
         with:
           name: playwright-report
           path: |
-            test/e2e/report/
-            test/e2e/results/
+            test/e2e/report
+            test/e2e/results
           retention-days: 30

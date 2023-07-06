@@ -83,6 +83,15 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
     )
   )
 
+  const handleDelete = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      onRemove()
+    },
+    [onRemove]
+  )
+
   return (
     <Flex>
       <Box flex={1}>{children}</Box>
@@ -110,7 +119,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
                 {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onOpen} text="View" />}
                 {!readOnly && <MenuItem icon={EditIcon} onClick={onOpen} text="Edit" />}
                 {!readOnly && (
-                  <MenuItem icon={TrashIcon} onClick={onRemove} text="Delete" tone="critical" />
+                  <MenuItem icon={TrashIcon} onClick={handleDelete} text="Delete" tone="critical" />
                 )}
               </>
             </Menu>

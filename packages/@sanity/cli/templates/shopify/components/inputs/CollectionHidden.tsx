@@ -12,9 +12,7 @@ export default function CollectionHiddenInput(props: StringFieldProps) {
         </Text>
         <Box flex={1} marginLeft={3}>
           <Box>
-            <Text weight="semibold">
-              This collection is hidden
-            </Text>
+            <Text weight="semibold">This collection is hidden</Text>
           </Box>
           <Stack marginTop={4} space={2}>
             <Text size={1}>It has been deleted from Shopify.</Text>

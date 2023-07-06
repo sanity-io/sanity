@@ -101,7 +101,7 @@ export default defineType({
       description: 'If disabled, page title will be displayed instead',
       group: 'editorial',
     }),
-    // // Hero
+    // Hero
     defineField({
       name: 'hero',
       title: 'Hero',
@@ -109,7 +109,7 @@ export default defineType({
       hidden: ({document}) => !document?.showHero,
       group: 'editorial',
     }),
-    // // Modules
+    // Modules
     defineField({
       name: 'modules',
       title: 'Modules',

@@ -35,6 +35,7 @@ export function FormView(props: FormViewProps) {
     editState,
     documentId,
     documentType,
+    fieldActions,
     onChange,
     validation,
     ready,
@@ -106,8 +107,14 @@ export function FormView(props: FormViewProps) {
   const formRef = useRef<null | HTMLDivElement>(null)
 
   useEffect(() => {
-    focusFirstDescendant(formRef.current!)
-  }, [])
+    // Only focus on the first descendant if there is not already a focus path
+    // This is to avoid stealing focus from intent links
+    if (ready && !formState?.focusPath.length) {
+      focusFirstDescendant(formRef.current!)
+    }
+    // We only want to run it on first mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready])
 
   // const after = useMemo(
   //   () =>
@@ -137,6 +144,7 @@ export function FormView(props: FormViewProps) {
               </Box>
             ) : (
               <FormBuilder
+                __internal_fieldActions={fieldActions}
                 __internal_patchChannel={patchChannel}
                 collapsedFieldSets={collapsedFieldSets}
                 collapsedPaths={collapsedPaths}

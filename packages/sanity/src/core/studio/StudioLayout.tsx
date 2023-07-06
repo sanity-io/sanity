@@ -21,6 +21,7 @@ const SearchFullscreenPortalCard = styled(Card)`
   height: 100%;
   left: 0;
   overflow: hidden;
+  overflow: clip;
   position: fixed;
   top: 0;
   width: 100%;

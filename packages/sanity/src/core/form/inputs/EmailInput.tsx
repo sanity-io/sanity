@@ -3,11 +3,15 @@ import {TextInput} from '@sanity/ui'
 import {StringInputProps} from '../types'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type EmailInputProps = StringInputProps
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function EmailInput(props: EmailInputProps) {

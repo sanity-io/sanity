@@ -1,6 +1,8 @@
 import {EditStateFor} from '../../store'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentBadgeDescription {
   title?: string
   label?: string | undefined
@@ -8,11 +10,15 @@ export interface DocumentBadgeDescription {
   icon?: React.ReactNode | React.ComponentType
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentBadgeProps extends EditStateFor {}
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentBadgeComponent {
   (props: DocumentBadgeProps): DocumentBadgeDescription | null
 }

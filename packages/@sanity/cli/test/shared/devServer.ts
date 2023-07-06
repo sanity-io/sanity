@@ -1,4 +1,5 @@
 import {spawn} from 'child_process'
+import {createHash} from 'crypto'
 import {cliBinPath, sanityEnv} from './environment'
 import {request, ResponseData} from './request'
 
@@ -8,15 +9,22 @@ export function testServerCommand({
   cwd,
   env,
   expectedTitle,
+  expectedFiles = [],
   args,
 }: {
   command: 'preview' | 'dev' | 'start'
   port: number
   cwd: string
   expectedTitle: string
+  expectedFiles?: string[]
   env?: Record<string, string>
   args?: string[]
-}): Promise<{html: string; stdout: string; stderr: string}> {
+}): Promise<{
+  html: string
+  fileHashes: Map<string, string | null>
+  stdout: string
+  stderr: string
+}> {
   return new Promise(async (resolve, reject) => {
     const maxWaitForServer = 120000
     const startedAt = Date.now()
@@ -85,9 +93,21 @@ export function testServerCommand({
         return
       }
 
+      const fileHashes = new Map<string, string | null>()
+      for (const file of expectedFiles) {
+        fileHashes.set(
+          file,
+          await request(`http://localhost:${port}/${file}`)
+            .then(({body, statusCode}) =>
+              statusCode === 200 ? createHash('sha256').update(body).digest('hex') : null
+            )
+            .catch(() => null)
+        )
+      }
+
       const html = res.body.toString('utf8')
       if (html.includes(`<title>${expectedTitle}`)) {
-        onSuccess(html)
+        onSuccess(html, fileHashes)
         return
       }
 
@@ -95,12 +115,13 @@ export function testServerCommand({
       reject(new Error(`Did not find expected <title> in HTML:\n\n${html}`))
     }
 
-    function onSuccess(html: string) {
+    function onSuccess(html: string, fileHashes: Map<string, string | null>) {
       hasSucceeded = true
       clearTimeout(timer)
       proc.kill()
       resolve({
         html,
+        fileHashes,
         stdout: buffersToString(stdout),
         stderr: buffersToString(stderr),
       })

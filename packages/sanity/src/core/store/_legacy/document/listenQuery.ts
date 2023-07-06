@@ -1,13 +1,15 @@
 import {SanityClient} from '@sanity/client'
-import {defer, partition, merge, of, throwError, asyncScheduler, Observable} from 'rxjs'
-import {mergeMap, throttleTime, share, take, filter} from 'rxjs/operators'
-import {exhaustMapToWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {ReconnectEvent, WelcomeEvent, MutationEvent} from './types'
+import {asyncScheduler, defer, merge, Observable, of, partition, throwError} from 'rxjs'
+import {filter, mergeMap, share, take, throttleTime} from 'rxjs/operators'
+import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
+import {MutationEvent, ReconnectEvent, WelcomeEvent} from './types'
 
 /** @internal */
 export type ListenQueryParams = Record<string, string | number | boolean | string[]>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ListenQueryOptions {
   tag?: string
   apiVersion?: string
@@ -52,18 +54,14 @@ function isWelcomeEvent(
 }
 
 /** @internal */
-// todo: promote as building block for better re-use
-// todo: optimize by patching collection in-place
-export const listenQuery = (
+export function listenQuery(
   client: SanityClient,
   query: string | {fetch: string; listen: string},
   params: ListenQueryParams = {},
   options: ListenQueryOptions = {}
-) => {
+): Observable<any> {
   const fetchQuery = typeof query === 'string' ? query : query.fetch
   const listenerQuery = typeof query === 'string' ? query : query.listen
-
-  const fetchOnce$ = fetch(client, fetchQuery, params, options)
 
   const events$ = listen(client, listenerQuery, params, options).pipe(
     mergeMap((ev, i) => {
@@ -72,11 +70,12 @@ export const listenQuery = (
         // if the first event is not welcome, it is most likely a reconnect and
         // if it's not a reconnect something is very wrong
         return throwError(
-          new Error(
-            ev.type === 'reconnect'
-              ? 'Could not establish EventSource connection'
-              : `Received unexpected type of first event "${ev.type}"`
-          )
+          () =>
+            new Error(
+              ev.type === 'reconnect'
+                ? 'Could not establish EventSource connection'
+                : `Received unexpected type of first event "${ev.type}"`
+            )
         )
       }
       return of(ev)
@@ -99,5 +98,5 @@ export const listenQuery = (
       filter(isRelevantEvent),
       throttleTime(options.throttleTime || 1000, asyncScheduler, {leading: true, trailing: true})
     )
-  ).pipe(exhaustMapToWithTrailing(fetchOnce$))
+  ).pipe(exhaustMapWithTrailing(() => fetch(client, fetchQuery, params, options)))
 }

@@ -16,15 +16,21 @@ export function maybeSerializeMenuItem(
   return item instanceof MenuItemBuilder ? item.serialize({path, index}) : item
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type MenuItemActionType =
   | string
   | ((params: Record<string, string> | undefined, scope?: any) => void)
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type MenuItemParamsType = Record<string, string | unknown | undefined>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface MenuItem {
   title: string
   action?: MenuItemActionType
@@ -36,10 +42,14 @@ export interface MenuItem {
   showAsAction?: boolean
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type PartialMenuItem = Partial<MenuItem>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export class MenuItemBuilder implements Serializable<MenuItem> {
   protected spec: PartialMenuItem
 

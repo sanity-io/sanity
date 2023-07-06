@@ -232,34 +232,6 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                           />
                         </Stack>
                       )}
-
-                      <Stack as="li">
-                        <Button
-                          aria-label="Help and support"
-                          as="a"
-                          href={`https://www.sanity.io/contact/support`}
-                          icon={HelpCircleIcon}
-                          justify="flex-start"
-                          mode="bleed"
-                          target="_blank"
-                          text="Help & support"
-                        />
-                      </Stack>
-
-                      {isAdmin && (
-                        <Stack as="li">
-                          <Button
-                            aria-label="Contact sales"
-                            as="a"
-                            href={`https://www.sanity.io/contact/sales?ref=studio`}
-                            icon={CommentIcon}
-                            justify="flex-start"
-                            mode="bleed"
-                            target="_blank"
-                            text="Contact sales"
-                          />
-                        </Stack>
-                      )}
                     </Stack>
                   </Card>
                 </Flex>

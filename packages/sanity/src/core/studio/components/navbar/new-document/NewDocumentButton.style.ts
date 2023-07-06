@@ -10,6 +10,7 @@ export const StyledPopover = styled(Popover)(() => {
       border-radius: ${({theme}) => theme.sanity.radius[3]}px;
       position: relative;
       overflow: hidden;
+      overflow: clip;
     }
   `
 })

@@ -21,16 +21,24 @@ const isMutationEventForDocId =
     return event.type !== 'reconnect' && event.type !== 'pending' && event.documentId === id
   }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type WithVersion<T> = T & {version: 'published' | 'draft'}
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type DocumentVersionEvent = WithVersion<ReconnectEvent | BufferedDocumentEvent>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type RemoteSnapshotVersionEvent = WithVersion<RemoteSnapshotEvent>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentVersion {
   consistency$: Observable<boolean>
   remoteSnapshot$: Observable<RemoteSnapshotVersionEvent>
@@ -46,7 +54,9 @@ export interface DocumentVersion {
   commit: () => void
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface Pair {
   /** @internal */
   transactionsPendingEvents$: Observable<PendingMutationsEvent>

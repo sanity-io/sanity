@@ -1,26 +1,33 @@
 import {useElementRect, Box, Card, Flex, LayerProvider} from '@sanity/ui'
 import React, {useMemo, useCallback, forwardRef} from 'react'
 import {usePane} from './usePane'
-import {Layout, Root, TabsBox, TitleBox, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
+import {Layout, Root, TabsBox, TitleCard, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
 import {LegacyLayerProvider} from 'sanity'
 
-interface PaneHeaderProps {
+/**
+ * @beta This API will change. DO NOT USE IN PRODUCTION.
+ */
+export interface PaneHeaderProps {
   actions?: React.ReactNode
   backButton?: React.ReactNode
+  contentAfter?: React.ReactNode
   loading?: boolean
   subActions?: React.ReactNode
+  tabIndex?: number
   tabs?: React.ReactNode
   title: React.ReactNode
 }
 
 /**
+ *
+ * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
-  const {actions, backButton, loading, subActions, tabs, title} = props
+  const {actions, backButton, contentAfter, loading, subActions, tabs, tabIndex, title} = props
   const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
 
@@ -41,58 +48,63 @@ export const PaneHeader = forwardRef(function PaneHeader(
     expand()
   }, [collapsed, expand])
 
+  const showTabsOrSubActions = Boolean(!collapsed && (tabs || subActions))
+
   return (
     <LayerProvider zOffset={100}>
       <Root data-collapsed={collapsed ? '' : undefined} data-testid="pane-header" ref={ref}>
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
-            <Layout
-              onClick={handleLayoutClick}
-              padding={2}
-              paddingBottom={tabs || subActions ? 0 : 2}
-              sizing="border"
-              style={layoutStyle}
-            >
-              {backButton}
+            <Layout onClick={handleLayoutClick} padding={2} sizing="border" style={layoutStyle}>
+              {backButton && (
+                <Box flex="none" padding={1}>
+                  {backButton}
+                </Box>
+              )}
 
-              <TitleBox
+              <TitleCard
+                __unstable_focusRing
                 flex={1}
+                forwardedAs="button"
+                marginRight={actions ? 1 : 0}
                 onClick={handleTitleClick}
-                paddingY={3}
                 paddingLeft={backButton ? 1 : 3}
+                paddingY={3}
+                tabIndex={tabIndex}
               >
                 {loading && <TitleTextSkeleton animated radius={1} />}
                 {!loading && (
-                  <TitleText tabIndex={0} textOverflow="ellipsis" weight="semibold">
+                  <TitleText textOverflow="ellipsis" weight="semibold">
                     {title}
                   </TitleText>
                 )}
-              </TitleBox>
+              </TitleCard>
 
               {actions && (
-                <Box hidden={collapsed} paddingLeft={1}>
+                <Box flex="none" hidden={collapsed}>
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
                 </Box>
               )}
             </Layout>
 
-            {(tabs || subActions) && (
+            {showTabsOrSubActions && (
               <Flex
                 align="center"
                 hidden={collapsed}
-                paddingTop={1}
-                paddingRight={2}
-                paddingBottom={2}
-                paddingLeft={3}
                 overflow="auto"
+                paddingBottom={3}
+                paddingX={3}
+                paddingTop={1}
               >
                 <TabsBox flex={1} marginRight={subActions ? 3 : 0}>
-                  <div>{tabs}</div>
+                  {tabs}
                 </TabsBox>
 
-                {subActions && <Box>{subActions}</Box>}
+                {subActions && subActions}
               </Flex>
             )}
+
+            {!collapsed && contentAfter && contentAfter}
           </Card>
         </LegacyLayerProvider>
       </Root>

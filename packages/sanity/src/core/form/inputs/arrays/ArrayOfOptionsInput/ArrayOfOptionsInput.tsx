@@ -8,6 +8,8 @@ import {ArrayOfObjectOptionsInput} from './ArrayOfObjectOptionsInput'
 import {ArrayOfPrimitiveOptionsInput} from './ArrayOfPrimitiveOptionsInput'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function ArrayOfOptionsInput(props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps) {

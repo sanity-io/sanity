@@ -22,7 +22,9 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
   path: Path
 
   // state
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   presence: FormNodePresence[]
   validation: FormNodeValidation[]
   value: T | undefined
@@ -31,16 +33,30 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
   changed: boolean
 }
 
+/** @internal */
+export interface HiddenField {
+  kind: 'hidden'
+  key: string
+  name: string
+  index: number
+}
+
 /** @public */
 export interface ObjectFormNode<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseFormNode<T, S> {
   focusPath: Path
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   groups: FormFieldGroup[]
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   members: ObjectMember[]
+  /** @internal */
+  _allMembers: (ObjectMember | HiddenField)[]
 }
 
 /** @public */
@@ -51,10 +67,17 @@ export interface ObjectArrayFormNode<
   focusPath: Path
   value: T
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   groups: FormFieldGroup[]
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   members: ObjectMember[]
+
+  /** @internal */
+  _allMembers: ObjectMember[]
   changesOpen?: boolean
 }
 
@@ -70,7 +93,9 @@ export interface ArrayOfObjectsFormNode<
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
   focusPath: Path
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   members: ArrayOfObjectsMember[]
 }
 
@@ -80,7 +105,9 @@ export interface ArrayOfPrimitivesFormNode<
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
   focusPath: Path
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   members: ArrayOfPrimitivesMember[]
 }
 
@@ -96,5 +123,7 @@ export type NumberFormNode<S extends NumberSchemaType = NumberSchemaType> = Base
 /** @public */
 export type StringFormNode<S extends StringSchemaType = StringSchemaType> = BaseFormNode<string, S>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type PrimitiveFormNode = BooleanFormNode | NumberFormNode | StringFormNode

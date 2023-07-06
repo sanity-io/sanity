@@ -324,6 +324,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             renderValue={renderValue}
             openButton={{onClick: handleAutocompleteOpenButtonClick}}
             portalRef={autoCompletePortalRef}
+            value={value?._ref}
           />
 
           {createOptions.length > 0 && (

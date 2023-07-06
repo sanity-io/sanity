@@ -392,17 +392,20 @@ export function createWithEditableAPI(
               editor.onChange()
               return
             }
+            if (options?.mode === 'blocks') {
+              debug(`Deleting blocks touched by selection`)
+            } else {
+              debug(`Deleting children touched by selection`)
+            }
             const nodes = Editor.nodes(editor, {
               at: range,
               match: (node) => {
                 if (options?.mode === 'blocks') {
-                  debug(`Deleting blocks touched by selection`)
                   return (
                     editor.isTextBlock(node) ||
                     (!editor.isTextBlock(node) && SlateElement.isElement(node))
                   )
                 }
-                debug(`Deleting children touched by selection`)
                 return (
                   node._type === types.span.name || // Text children
                   (!editor.isTextBlock(node) && SlateElement.isElement(node)) // inline blocks

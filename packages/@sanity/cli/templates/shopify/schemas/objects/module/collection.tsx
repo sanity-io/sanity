@@ -1,6 +1,7 @@
-import {PackageIcon} from '@sanity/icons'
 import React from 'react'
+import {PackageIcon} from '@sanity/icons'
 import {defineField} from 'sanity'
+
 import ShopifyDocumentStatus from '../../../components/media/ShopifyDocumentStatus'
 
 export default defineField({

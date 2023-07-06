@@ -14,7 +14,9 @@ interface SchemaOptions {
   calendarTodayLabel?: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type DateInputProps = StringInputProps
 
 // This is the format dates are stored on
@@ -32,7 +34,9 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
 const deserialize = (value: string) => parse(value, VALUE_FORMAT)
 const serialize = (date: Date) => format(date, VALUE_FORMAT)
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function DateInput(props: DateInputProps) {
   const {readOnly, onChange, schemaType, elementProps, value} = props
   const {dateFormat} = parseOptions(schemaType.options)

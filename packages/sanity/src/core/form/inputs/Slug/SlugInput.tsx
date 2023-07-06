@@ -18,6 +18,8 @@ import {useAsync} from './utils/useAsync'
 import {SlugContext, useSlugContext} from './utils/useSlugContext'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type SlugInputProps = ObjectInputProps<SlugValue, SlugSchemaType>
@@ -44,6 +46,8 @@ async function getNewFromSource(
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function SlugInput(props: SlugInputProps) {

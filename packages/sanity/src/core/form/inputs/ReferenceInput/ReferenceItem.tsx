@@ -186,6 +186,14 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     [refType?.name, value?._ref]
   )
 
+  const handleReplace = useCallback(() => {
+    if (hasRef && isEditing) {
+      onPathFocus([])
+    } else {
+      onPathFocus(['_ref'])
+    }
+  }, [hasRef, isEditing, onPathFocus])
+
   const menu = useMemo(
     () =>
       readOnly ? null : (
@@ -201,9 +209,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                     <MenuItem
                       text={hasRef && isEditing ? 'Cancel replace' : 'Replace'}
                       icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
-                      onClick={
-                        hasRef && isEditing ? () => onPathFocus([]) : () => onPathFocus(['_ref'])
-                      }
+                      onClick={handleReplace}
                     />
                     <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
                     <InsertMenu onInsert={handleInsert} types={insertableTypes} />
@@ -231,11 +237,11 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       onRemove,
       hasRef,
       isEditing,
+      handleReplace,
       handleDuplicate,
       handleInsert,
       insertableTypes,
       OpenLink,
-      onPathFocus,
     ]
   )
 

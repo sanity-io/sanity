@@ -187,6 +187,42 @@ export function toString(path: Path): string {
   }, '')
 }
 
+export function _resolveKeyedPath(value: unknown, path: Path): Path {
+  if (path.length === 0) {
+    return path
+  }
+  const [next, ...rest] = path
+  if (typeof next === 'number') {
+    if (!Array.isArray(value) || !(next in value)) {
+      return []
+    }
+    const item = value[next]
+    const key = item?._key
+    return [typeof key === 'string' ? {_key: item._key} : next, ..._resolveKeyedPath(item, rest)]
+  }
+  const nextVal = get(value, [next])
+  return [next, ..._resolveKeyedPath(nextVal, rest)]
+}
+
+/**
+ * Takes a value and a path that may include numeric indices and attempts to replace numeric indices with keyed paths
+ *
+ * @param value - any json value
+ * @param path - a Path that may include numeric indices
+ * @returns a path where numeric indices has been replaced by keyed segments (e.g. `{_key: <key>}`)
+ * Will do as good attempt as possible, but in case of missing array items, it will return the best possible match:
+ * - `resolveKeyedPath([0, 'bar'], [])` will return [] since array has no value at index 0
+ * - `resolveKeyedPath([0, 'foo'], [{_key: 'xyz', 'foo': 'bar'}, {_key: 'abc'}])` will return `[{_key: 'xyz'}, 'foo']` since array has no value at index 0
+ * - `resolveKeyedPath([0, 'foo', 'bar'], [{_key: 'xyz'}])` will return `[{_key: 'xyz'}, 'foo', 'bar']` since array has no value at index 0
+ * Object keys will be preserved as-is, e.g. `resolveKeyedPath(['foo', 'bar'], undefined)` will return `['foo', 'bar']`
+ */
+export function resolveKeyedPath(value: unknown, path: Path): Path {
+  if (!Array.isArray(path)) {
+    throw new Error('Path is not an array')
+  }
+  return pathFor(_resolveKeyedPath(value, path))
+}
+
 export function fromString(path: string): Path {
   if (typeof path !== 'string') {
     throw new Error('Path is not a string')

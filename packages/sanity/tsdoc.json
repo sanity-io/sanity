@@ -1,0 +1,27 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+  "tagDefinitions": [
+    {
+      "tagName": "@hidden",
+      "syntaxKind": "block",
+      "allowMultiple": true
+    }
+  ],
+  "supportForTags": {
+    "@hidden": true,
+    "@beta": true,
+    "@internal": true,
+    "@public": true,
+    "@experimental": true,
+    "@see": true,
+    "@link": true,
+    "@example": true,
+    "@deprecated": true,
+    "@alpha": true,
+    "@param": true,
+    "@returns": true,
+    "@remarks": true,
+    "@throws": true,
+    "@defaultValue": true
+  }
+}

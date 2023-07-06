@@ -6,7 +6,9 @@ import {RouterHistory} from './router'
 import {useLayoutComponent} from './studio-components-hooks'
 import {StudioProvider} from './StudioProvider'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface StudioProps {
   config: Config
   basePath?: string
@@ -38,6 +40,8 @@ export interface StudioProps {
    * }
    * ```
    *
+   *
+   * @hidden
    * @beta
    */
   onSchemeChange?: (nextScheme: StudioThemeColorSchemeKey) => void
@@ -65,14 +69,22 @@ export interface StudioProps {
    * }
    * ```
    *
+   *
+   * @hidden
    * @beta
    */
   scheme?: StudioThemeColorSchemeKey
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   unstable_history?: RouterHistory
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   unstable_globalStyles?: boolean
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   unstable_noAuthBoundary?: boolean
 }
 
@@ -82,7 +94,9 @@ function StudioLayout() {
   return <Layout />
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function Studio(props: StudioProps): ReactElement {
   const {
     basePath,

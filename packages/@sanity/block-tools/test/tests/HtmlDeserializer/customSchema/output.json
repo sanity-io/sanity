@@ -1,7 +1,8 @@
 [
   {
-    "_key": "randomKey0",
     "_type": "customBlock",
+    "markDefs": [],
+    "style": "normal",
     "children": [
       {
         "_type": "span",
@@ -9,7 +10,89 @@
         "text": "A heading that is not allowed"
       }
     ],
+    "_key": "randomKey0"
+  },
+  {
+    "_type": "customBlock",
     "markDefs": [],
-    "style": "normal"
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "Strong text but "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em"],
+        "text": "this is also emphasized and "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em", "strike-through"],
+        "text": "striked"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em", "sub"],
+        "text": "and subbed"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em", "sup"],
+        "text": "and supped"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em", "ins"],
+        "text": "and inserted"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em", "mark"],
+        "text": "and marked"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em", "strike-through"],
+        "text": "and deleted"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em", "small"],
+        "text": "and shrunk"
+      }
+    ],
+    "_key": "randomKey1"
   }
 ]

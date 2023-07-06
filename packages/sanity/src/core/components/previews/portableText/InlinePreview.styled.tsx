@@ -69,6 +69,7 @@ export const TextSpan = styled(Text).attrs({forwardedAs: 'span'})(({theme}: {the
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+      overflow: clip;
     }
   `
 })

@@ -27,6 +27,8 @@ const Root = styled(Card)`
 `
 
 /**
+ *
+ * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 // eslint-disable-next-line complexity
@@ -183,6 +185,7 @@ export const Pane = forwardRef(function Pane(
         <PaneContext.Provider value={contextValue}>
           <Root
             data-testid="pane"
+            data-ui="Pane"
             tone="inherit"
             hidden={hidden}
             id={id}

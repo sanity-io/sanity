@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff",
-  "version": "3.9.0",
+  "version": "3.14.1",
   "description": "Generates diffs between documents and primitive types",
   "keywords": [
     "sanity",
@@ -62,5 +62,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
 }

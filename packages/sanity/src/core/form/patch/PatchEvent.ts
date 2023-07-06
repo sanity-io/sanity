@@ -4,6 +4,8 @@ import {prefixPath} from './patch'
 import {FormPatch, PatchArg} from './types'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export class PatchEvent {

@@ -14,7 +14,7 @@ import type {SearchableType, SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {useSource} from '../../../../../source'
-import {FINDABILITY_MVI, SEARCH_LIMIT} from '../../constants'
+import {SEARCH_LIMIT} from '../../constants'
 import {
   createRecentSearchesStore,
   RecentSearch,
@@ -170,18 +170,18 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
         options: {
           // Comments prepended to each query for future measurement
           comments: [
-            `findability-mvi:${FINDABILITY_MVI}`,
             ...(isRecentSearchTerms(terms)
               ? [`findability-recent-search:${terms.__recent.index}`]
               : []),
             `findability-selected-types:${terms.types.length}`,
             `findability-sort:${sortLabel}`,
+            `findability-source: global`,
             `findability-filter-count:${completeFilters.length}`,
           ],
           limit: SEARCH_LIMIT,
           offset: pageIndex * SEARCH_LIMIT,
           skipSortByScore: ordering.ignoreScore,
-          sort: ordering.sort,
+          sort: [ordering.sort],
         },
         terms: {
           ...terms,

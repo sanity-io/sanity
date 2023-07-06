@@ -4,11 +4,15 @@ import {TagInput} from '../components/tagInput'
 import {ArrayOfPrimitivesInputProps} from '../types'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type TagsArrayInputProps = ArrayOfPrimitivesInputProps<string>
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function TagsArrayInput(props: TagsArrayInputProps) {

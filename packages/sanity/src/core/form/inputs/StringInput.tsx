@@ -3,6 +3,8 @@ import {TextInput} from '@sanity/ui'
 import {StringInputProps} from '../types'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function StringInput(props: StringInputProps) {

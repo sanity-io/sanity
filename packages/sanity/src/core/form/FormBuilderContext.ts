@@ -1,11 +1,14 @@
 import {AssetSource, ObjectSchemaType, Path, SanityDocument} from '@sanity/types'
 import {createContext} from 'react'
+import {DocumentFieldAction} from '../config'
 import {PatchChannel} from './patch'
 import {
   FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
   FormBuilderFilterFieldFn,
   FormBuilderMarkersComponent,
+  RenderAnnotationCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderItemCallback,
@@ -14,6 +17,8 @@ import {
 import {FormFieldGroup, ObjectMember, StateTree} from './store'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FormBuilderContextValue {
@@ -25,6 +30,9 @@ export interface FormBuilderContextValue {
     components: {
       CustomMarkers: FormBuilderCustomMarkersComponent
       Markers: FormBuilderMarkersComponent
+    }
+    field: {
+      actions: DocumentFieldAction[]
     }
     file: {
       assetSources: AssetSource[]
@@ -49,7 +57,10 @@ export interface FormBuilderContextValue {
   id: string
   members: ObjectMember[]
   readOnly?: boolean
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderItemCallback
   renderPreview: RenderPreviewCallback

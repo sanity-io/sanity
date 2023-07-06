@@ -51,6 +51,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const [open, setOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const [dialogElement, setDialogElement] = useState<HTMLDivElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
 
@@ -102,7 +103,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     if (open) {
       handleClose()
     }
-  }, [buttonElement, popoverElement])
+  }, [buttonElement, dialogElement, popoverElement])
 
   const sharedListProps: NewDocumentListProps = useMemo(
     () => ({
@@ -199,6 +200,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
             id="create-new-document-dialog"
             onClickOutside={handleClose}
             onClose={handleClose}
+            ref={setDialogElement}
             scheme={scheme}
             width={1}
           >

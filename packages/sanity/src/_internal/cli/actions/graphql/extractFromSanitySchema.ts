@@ -444,9 +444,11 @@ export function extractFromSanitySchema(
         .map((type) => type.name || '')
 
       // Here we remove duplicates, as they might appear twice due to in-line usage of types as well as references
-      const allTypeNames: string[] = flattened.map((type: any) => {
-        return type.isReference ? type.type : type.name
-      })
+      const allTypeNames: string[] = flattened
+        .filter((type: any) => type.name || type.type)
+        .map((type: any) => {
+          return type.isReference ? type.type : type.name
+        })
 
       const possibleTypes = [...new Set(allTypeNames)].sort()
 

@@ -12,6 +12,8 @@ import type {
 import React, {type ComponentType} from 'react'
 import type {Observable} from 'rxjs'
 import type {
+  BlockAnnotationProps,
+  BlockProps,
   FieldProps,
   FormBuilderCustomMarkersComponent,
   FormBuilderMarkersComponent,
@@ -25,10 +27,19 @@ import {StudioTheme} from '../theme'
 import {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {StudioComponents, StudioComponentsPluginOptions} from './studio'
-import {DocumentActionComponent, DocumentBadgeComponent} from './document'
+import {
+  DocumentActionComponent,
+  DocumentBadgeComponent,
+  DocumentFieldAction,
+  DocumentFieldActionsResolverContext,
+  DocumentFieldActionsResolver,
+  DocumentInspector,
+} from './document'
 import {Router, RouterState} from 'sanity/router'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface SanityAuthConfig {
@@ -42,7 +53,9 @@ export interface SanityAuthConfig {
   }[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type AssetSourceResolver = ComposableOption<AssetSource[], ConfigContext>
 
 /**
@@ -52,26 +65,37 @@ export interface SanityFormConfig {
   /**
    * these have not been migrated over
    *
+   *
+   * @hidden
    * @beta
    */
   unstable?: {
     CustomMarkers?: FormBuilderCustomMarkersComponent
     Markers?: FormBuilderMarkersComponent
   }
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   components?: {
     input?: ComponentType<InputProps>
     field?: ComponentType<FieldProps>
     item?: ComponentType<ItemProps>
     preview?: ComponentType<PreviewProps>
+    block?: ComponentType<BlockProps>
+    inlineBlock?: ComponentType<BlockProps>
+    annotation?: ComponentType<BlockAnnotationProps>
   }
   file?: {
-    /** @beta */
+    /**
+     * @hidden
+     * @beta */
     assetSources?: AssetSource[] | AssetSourceResolver
     // TODO: this option needs more thought on composition and availability
     directUploads?: boolean
   }
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   image?: {
     assetSources?: AssetSource[] | AssetSourceResolver
     // TODO: this option needs more thought on composition and availability
@@ -106,7 +130,9 @@ export interface Tool<Options = any> {
 /** @public */
 export type ComposableOption<TValue, TContext> = (prev: TValue, context: TContext) => TValue
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type AsyncComposableOption<TValue, TContext> = (
   prev: TValue,
   context: TContext
@@ -124,7 +150,9 @@ export interface ConfigContext {
 /** @public */
 export type TemplateResolver = ComposableOption<Template[], ConfigContext>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface SchemaPluginOptions {
   name?: string
   types?:
@@ -136,36 +164,56 @@ export interface SchemaPluginOptions {
   templates?: Template[] | TemplateResolver
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type NewDocumentOptionsResolver = ComposableOption<
   TemplateResponse[],
   NewDocumentOptionsContext
 >
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface NewDocumentOptionsContext extends ConfigContext {
   creationContext: NewDocumentCreationContext
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type NewDocumentCreationContext =
   | {type: 'global'; documentId?: undefined; schemaType?: undefined}
   | {type: 'document'; documentId: string; schemaType: string}
   | {type: 'structure'; documentId?: undefined; schemaType: string}
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
-  /** @beta */
+  /** @internal */
+  unstable_fieldActions?: DocumentFieldAction[] | DocumentFieldActionsResolver
+  /** @hidden @beta */
+  inspectors?: DocumentInspector[] | DocumentInspectorsResolver
+  /**
+   * @hidden
+   * @beta */
   productionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   unstable_languageFilter?: DocumentLanguageFilterResolver
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   newDocumentOptions?: NewDocumentOptionsResolver
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface DocumentLanguageFilterContext extends ConfigContext {
@@ -174,11 +222,15 @@ export interface DocumentLanguageFilterContext extends ConfigContext {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type DocumentLanguageFilterComponent = ComponentType<{schemaType: ObjectSchemaType}>
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type DocumentLanguageFilterResolver = ComposableOption<
@@ -186,19 +238,31 @@ export type DocumentLanguageFilterResolver = ComposableOption<
   DocumentLanguageFilterContext
 >
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type DocumentActionsResolver = ComposableOption<
   DocumentActionComponent[],
   DocumentActionsContext
 >
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type DocumentBadgesResolver = ComposableOption<
   DocumentBadgeComponent[],
   DocumentBadgesContext
 >
 
-/** @beta */
+/** @hidden @beta */
+export type DocumentInspectorsResolver = ComposableOption<
+  DocumentInspector[],
+  DocumentInspectorContext
+>
+
+/**
+ * @hidden
+ * @beta */
 export interface PluginOptions {
   name: string
   plugins?: PluginOptions[]
@@ -227,24 +291,34 @@ export type AsyncConfigPropertyReducer<TValue, TContext> = (
   context: TContext
 ) => TValue | Promise<TValue>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
   logo?: ComponentType
   icon?: ComponentType
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   theme?: StudioTheme
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   unstable_sources?: SourceOptions[]
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface SourceOptions extends PluginOptions {
   title?: string
 
@@ -271,28 +345,44 @@ export interface SourceOptions extends PluginOptions {
   /** @internal */
   auth?: AuthStore
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   unstable_clientFactory?: (options: SanityClientConfig) => SanityClient
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ResolveProductionUrlContext extends ConfigContext {
   document: SanityDocumentLike
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentActionsContext extends ConfigContext {
   documentId?: string
   schemaType: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentBadgesContext extends ConfigContext {
   documentId?: string
   schemaType: string
 }
 
-/** @beta */
+/** @hidden @beta */
+export interface DocumentInspectorContext extends ConfigContext {
+  documentId?: string
+  documentType: string
+}
+
+/**
+ * @hidden
+ * @beta */
 export type PartialContext<TContext extends ConfigContext> = Pick<
   TContext,
   Exclude<keyof TContext, keyof ConfigContext>
@@ -322,39 +412,61 @@ export interface Source {
   getClient: (clientOptions: SourceClientOptions) => SanityClient
 
   document: {
-    /** @beta */
+    /**
+     * @hidden
+     * @beta */
     actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]
 
-    /** @beta */
+    /**
+     * @hidden
+     * @beta */
     badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]
 
-    /** @beta */
+    /** @internal */
+    unstable_fieldActions: (
+      props: PartialContext<DocumentFieldActionsResolverContext>
+    ) => DocumentFieldAction[]
+
+    /**
+     * @hidden
+     * @beta */
     resolveProductionUrl: (
       context: PartialContext<ResolveProductionUrlContext>
     ) => Promise<string | undefined>
 
-    /** @beta */
+    /**
+     * @hidden
+     * @beta */
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
 
     /** @alpha */
     unstable_languageFilter: (
       props: PartialContext<DocumentLanguageFilterContext>
     ) => DocumentLanguageFilterComponent[]
+
+    /** @hidden @beta */
+    inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
   }
   form: {
-    /** @beta */
+    /**
+     * @hidden
+     * @beta */
     file: {
       assetSources: AssetSource[]
       directUploads: boolean
     }
 
-    /** @beta */
+    /**
+     * @hidden
+     * @beta */
     image: {
       assetSources: AssetSource[]
       directUploads: boolean
     }
 
-    /** @beta */
+    /**
+     * @hidden
+     * @beta */
     components?: {
       input?: ComponentType<Omit<InputProps, 'renderDefault'>>
       field?: ComponentType<Omit<FieldProps, 'renderDefault'>>
@@ -365,6 +477,8 @@ export interface Source {
     /**
      * these have not been migrated over and are not merged by the form builder
      *
+     *
+     * @hidden
      * @beta
      */
     unstable?: {
@@ -374,7 +488,9 @@ export interface Source {
   }
 
   studio?: {
-    /** @beta */
+    /**
+     * @hidden
+     * @beta */
     components?: StudioComponents
   }
 
@@ -429,6 +545,8 @@ export interface Workspace extends Omit<Source, 'type'> {
   subtitle?: string
   icon: React.ReactNode
   /**
+   *
+   * @hidden
    * @beta
    */
   unstable_sources: Source[]
@@ -437,6 +555,8 @@ export interface Workspace extends Omit<Source, 'type'> {
 /**
  * If a single workspace is used, not specifying a name or basePath is acceptable
  *
+ *
+ * @hidden
  * @beta
  */
 export type SingleWorkspace = Omit<WorkspaceOptions, 'name' | 'basePath'> & {
@@ -444,10 +564,14 @@ export type SingleWorkspace = Omit<WorkspaceOptions, 'name' | 'basePath'> & {
   basePath?: string
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type Config = SingleWorkspace | WorkspaceOptions[]
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface MissingConfigFile {
   missingConfigFile: true
 }

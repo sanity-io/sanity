@@ -27,12 +27,12 @@ import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
 import {NavDrawer} from './NavDrawer'
-import {ChangelogButton} from './changelog'
 import {WorkspaceMenuButton} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {LogoButton} from './LogoButton'
 import {SearchDialog, SearchField} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
+import {ResourcesButton} from './resources/ResourcesButton'
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 
 const RootLayer = styled(Layer)`
@@ -53,7 +53,9 @@ const LeftFlex = styled(Flex)`
   width: max-content;
 `
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function StudioNavbar() {
   const {name, tools, ...workspace} = useWorkspace()
   const theme = useRootTheme().theme as StudioTheme
@@ -93,7 +95,7 @@ export function StudioNavbar() {
   const shouldRender = useMemo(
     () => ({
       brandingCenter: mediaIndex <= 1,
-      changelog: mediaIndex > 1,
+      resources: mediaIndex > 1,
       collapsedPresenceMenu: mediaIndex <= 1,
       loginStatus: mediaIndex > 1,
       searchFullscreen: mediaIndex <= 1,
@@ -211,7 +213,7 @@ export function StudioNavbar() {
             </LayerProvider>
 
             {shouldRender.tools && (
-              <Card borderRight flex={1} marginX={2} overflow="visible" paddingRight={1}>
+              <Card flex={1} marginX={2} overflow="visible" paddingRight={1}>
                 <ToolMenu
                   activeToolName={activeToolName}
                   closeSidebar={handleCloseDrawer}
@@ -231,38 +233,29 @@ export function StudioNavbar() {
             </Box>
           )}
 
-          <Flex align="center">
-            <Box marginRight={1}>
+          <Flex gap={2}>
+            {(shouldRender.configIssues || shouldRender.resources) && (
+              <Card borderRight>
+                <Flex gap={1} paddingX={2}>
+                  {shouldRender.configIssues && <ConfigIssuesButton />}
+                  {shouldRender.resources && <ResourcesButton />}
+                </Flex>
+              </Card>
+            )}
+
+            <Flex align="center" gap={1}>
               <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
-            </Box>
-
-            {shouldRender.changelog && (
-              <Box marginRight={1}>
-                <ChangelogButton />
-              </Box>
-            )}
-
-            {shouldRender.configIssues && (
-              <Box marginRight={2}>
-                <ConfigIssuesButton />
-              </Box>
-            )}
-
-            {shouldRender.tools && (
-              <Box>
-                <UserMenu />
-              </Box>
-            )}
-
-            {shouldRender.searchFullscreen && (
-              <Button
-                aria-label="Open search"
-                icon={SearchIcon}
-                mode="bleed"
-                onClick={handleOpenSearchFullscreen}
-                ref={setSearchOpenButtonEl}
-              />
-            )}
+              {shouldRender.tools && <UserMenu />}
+              {shouldRender.searchFullscreen && (
+                <Button
+                  aria-label="Open search"
+                  icon={SearchIcon}
+                  mode="bleed"
+                  onClick={handleOpenSearchFullscreen}
+                  ref={setSearchOpenButtonEl}
+                />
+              )}
+            </Flex>
           </Flex>
         </Flex>
       </RootCard>

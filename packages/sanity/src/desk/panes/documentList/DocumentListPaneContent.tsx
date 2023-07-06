@@ -1,51 +1,84 @@
 import {SyncIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Container,
-  Flex,
-  Heading,
-  Spinner,
-  Stack,
-  Text,
-  VirtualList,
-  VirtualListChangeOpts,
-} from '@sanity/ui'
+import {Box, Button, Card, Container, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
+import styled from 'styled-components'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
-import {DocumentListPaneItem} from './types'
-import {getDocumentKey} from './helpers'
+import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
-import {GeneralPreviewLayoutKey, getPublishedId, useSchema} from 'sanity'
+import {
+  CommandList,
+  CommandListRenderItemCallback,
+  GeneralPreviewLayoutKey,
+  SanityDefaultPreview,
+  getPublishedId,
+  useSchema,
+} from 'sanity'
+
+const RootBox = styled(Box)`
+  position: relative;
+`
+
+const CommandListBox = styled(Box)`
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+`
 
 interface DocumentListPaneContentProps {
   childItemId?: string
   error: {message: string} | null
-  filterIsSimpleTypeContraint: boolean
-  fullList: boolean
+  filterIsSimpleTypeConstraint: boolean
+  hasMaxItems?: boolean
+  hasSearchQuery: boolean
   isActive?: boolean
+  isLazyLoading: boolean
   isLoading: boolean
-  items: DocumentListPaneItem[] | null
+  items: DocumentListPaneItem[]
   layout?: GeneralPreviewLayoutKey
-  onListChange: (opts: VirtualListChangeOpts) => void
+  loadingVariant?: LoadingVariant
+  onListChange: () => void
   onRetry?: (event: unknown) => void
+  paneTitle: string
+  searchInputElement: HTMLInputElement | null
   showIcons: boolean
+}
+
+const SKELETON_ITEMS = [...Array(30).keys()]
+
+function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
+  const {layout} = props
+
+  return (
+    <Stack padding={2} space={1}>
+      {SKELETON_ITEMS.map((num) => (
+        <Card padding={2} key={num}>
+          <SanityDefaultPreview isPlaceholder layout={layout} />
+        </Card>
+      ))}
+    </Stack>
+  )
 }
 
 export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {
     childItemId,
     error,
-    filterIsSimpleTypeContraint,
-    fullList,
+    filterIsSimpleTypeConstraint,
+    hasMaxItems,
+    hasSearchQuery,
     isActive,
+    isLazyLoading,
     isLoading,
     items,
     layout,
+    loadingVariant,
     onListChange,
     onRetry,
+    paneTitle,
+    searchInputElement,
     showIcons,
   } = props
 
@@ -54,6 +87,12 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
+
+  const handleEndReached = useCallback(() => {
+    if (isLoading || isLazyLoading || !shouldRender) return
+
+    onListChange()
+  }, [isLazyLoading, isLoading, onListChange, shouldRender])
 
   useEffect(() => {
     if (collapsed) return undefined
@@ -65,31 +104,79 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     return () => {
       clearTimeout(timer)
     }
-  }, [collapsed])
+  }, [collapsed, items])
 
-  const renderItem = useCallback(
-    (item: SanityDocument) => {
+  const renderItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
+    (item, {activeIndex}) => {
       const publishedId = getPublishedId(item._id)
       const isSelected = childItemId === publishedId
       const pressed = !isActive && isSelected
       const selected = isActive && isSelected
+      const isLastItem = activeIndex === items.length - 1
+      const showSpinner = isLastItem && isLazyLoading
+      const showMaxItemsMessage = isLastItem && hasMaxItems
 
       return (
-        <PaneItem
-          icon={showIcons === false ? false : undefined}
-          id={publishedId}
-          pressed={pressed}
-          selected={selected}
-          layout={layout}
-          schemaType={schema.get(item._type)}
-          value={item}
-        />
+        <>
+          <PaneItem
+            icon={showIcons === false ? false : undefined}
+            id={publishedId}
+            layout={layout}
+            marginBottom={1}
+            pressed={pressed}
+            schemaType={schema.get(item._type)}
+            selected={selected}
+            value={item}
+          />
+
+          {showSpinner && (
+            <Flex align="center" justify="center" padding={4}>
+              <Spinner muted />
+            </Flex>
+          )}
+
+          {showMaxItemsMessage && (
+            <Box marginY={1} paddingX={3} paddingY={4}>
+              <Text align="center" muted size={1}>
+                Displaying a maximum of {FULL_LIST_LIMIT} documents
+              </Text>
+            </Box>
+          )}
+        </>
       )
     },
-    [childItemId, isActive, layout, schema, showIcons]
+    [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading]
   )
 
-  const content = useMemo(() => {
+  const noDocumentsContent = useMemo(() => {
+    if (hasSearchQuery) {
+      return (
+        <Flex align="center" direction="column" height="fill" justify="center">
+          <Container width={1}>
+            <Box paddingX={4} paddingY={5}>
+              <Text align="center" muted>
+                No results found
+              </Text>
+            </Box>
+          </Container>
+        </Flex>
+      )
+    }
+
+    return (
+      <Flex align="center" direction="column" height="fill" justify="center">
+        <Container width={1}>
+          <Box paddingX={4} paddingY={5}>
+            <Text align="center" muted>
+              {filterIsSimpleTypeConstraint ? 'No documents of this type' : 'No matching documents'}
+            </Text>
+          </Box>
+        </Container>
+      </Flex>
+    )
+  }, [filterIsSimpleTypeConstraint, hasSearchQuery])
+
+  const mainContent = useMemo(() => {
     if (!shouldRender) {
       return null
     }
@@ -103,9 +190,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
               <Text as="p">
                 Error: <code>{error.message}</code>
               </Text>
+
               {onRetry && (
                 <Box>
-                  {/* eslint-disable-next-line react/jsx-handler-names */}
                   <Button icon={SyncIcon} onClick={onRetry} text="Retry" tone="primary" />
                 </Box>
               )}
@@ -115,85 +202,71 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       )
     }
 
-    if (items === null) {
-      return (
-        <Flex align="center" direction="column" height="fill" justify="center">
-          <Delay ms={300}>
-            <>
-              <Spinner muted />
-              <Box marginTop={3}>
-                <Text align="center" muted size={1}>
-                  Loading documents…
-                </Text>
-              </Box>
-            </>
-          </Delay>
-        </Flex>
-      )
-    }
-
     if (!isLoading && items.length === 0) {
+      return noDocumentsContent
+    }
+
+    if (loadingVariant === 'initial' && isLoading) {
       return (
-        <Flex align="center" direction="column" height="fill" justify="center">
-          <Container width={1}>
-            <Box paddingX={4} paddingY={5}>
-              <Text align="center" muted size={2}>
-                {filterIsSimpleTypeContraint
-                  ? 'No documents of this type'
-                  : 'No matching documents'}
-              </Text>
-            </Box>
-          </Container>
-        </Flex>
+        <Delay ms={300}>
+          <LoadingView layout={layout} />
+        </Delay>
       )
     }
 
-    const hasMoreItems = fullList && items.length === FULL_LIST_LIMIT
+    if (loadingVariant === 'spinner' && isLoading) {
+      return null
+    }
+
+    // prevents bug when panes won't render if first rendered while collapsed
+    const key = `${index}-${collapsed}`
 
     return (
-      <Box padding={2}>
-        {items.length > 0 && (
-          <VirtualList
-            gap={1}
-            getItemKey={getDocumentKey}
+      <RootBox overflow="hidden" height="fill">
+        <CommandListBox>
+          <CommandList
+            activeItemDataAttr="data-hovered"
+            ariaLabel={paneTitle}
+            canReceiveFocus
+            focusRingOffset={-3}
+            inputElement={searchInputElement}
+            itemHeight={51}
             items={items}
+            key={key}
+            onEndReached={handleEndReached}
+            onlyShowSelectionWhenActive
+            overscan={10}
+            padding={2}
+            paddingBottom={1}
             renderItem={renderItem}
-            onChange={onListChange}
-            // prevents bug when panes won't render if first rendered while collapsed
-            key={`${index}-${collapsed}`}
+            wrapAround={false}
           />
-        )}
-
-        {isLoading && (
-          <Card borderTop marginTop={1} paddingX={3} paddingY={4}>
-            <Text align="center" muted size={1}>
-              Loading…
-            </Text>
-          </Card>
-        )}
-
-        {hasMoreItems && (
-          <Card marginTop={1} paddingX={3} paddingY={4} radius={2} tone="transparent">
-            <Text align="center" muted size={1}>
-              Displaying a maximum of {FULL_LIST_LIMIT} documents
-            </Text>
-          </Card>
-        )}
-      </Box>
+        </CommandListBox>
+      </RootBox>
     )
+    // Explicitly don't include `noDocumentsContent` in the deps array, as it's
+    // causing a visual bug where the "No documents" message is shown for a split second
+    // when clearing a search query with no results
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    collapsed,
     error,
-    filterIsSimpleTypeContraint,
-    fullList,
-    onListChange,
+    handleEndReached,
+    index,
     isLoading,
     items,
+    layout,
+    loadingVariant,
+    // noDocumentsContent,
     onRetry,
     renderItem,
+    searchInputElement,
     shouldRender,
-    collapsed,
-    index,
   ])
 
-  return <PaneContent overflow={layoutCollapsed ? undefined : 'auto'}>{content}</PaneContent>
+  return (
+    <PaneContent overflow={layoutCollapsed || loadingVariant === 'initial' ? 'hidden' : 'auto'}>
+      {mainContent}
+    </PaneContent>
+  )
 }

@@ -1,12 +1,16 @@
 import {SerializeOptions} from '../StructureNodes'
 import {BaseView, GenericViewBuilder} from './View'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface FormView extends BaseView {
   type: 'form'
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export class FormViewBuilder extends GenericViewBuilder<Partial<BaseView>, FormViewBuilder> {
   protected spec: Partial<FormView>
 

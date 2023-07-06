@@ -11,12 +11,10 @@ export default defineField({
   title: 'Product',
   name: 'annotationProduct',
   type: 'object',
-  // @ts-ignore - TODO - fix these TS errors
-  blockEditor: {
-    icon: () => <TagIcon />,
-    // @ts-ignore
-    render: ({children}) => (
-      <>
+  icon: TagIcon,
+  components: {
+    annotation: (props) => (
+      <span>
         <TagIcon
           style={{
             marginLeft: '0.05em',
@@ -24,8 +22,8 @@ export default defineField({
             width: '0.75em',
           }}
         />
-        {children}
-      </>
+        {props.renderDefault(props)}
+      </span>
     ),
   },
   fields: [

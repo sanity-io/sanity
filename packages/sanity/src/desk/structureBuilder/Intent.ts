@@ -1,10 +1,14 @@
 import {PartialDocumentList, getTypeNamesFromFilter} from './DocumentList'
 import {StructureNode} from './StructureNodes'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type IntentJsonParams = {[key: string]: any}
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type BaseIntentParams = {
   type?: string
   id?: string
@@ -14,17 +18,23 @@ export type BaseIntentParams = {
 /** @internal */
 export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type IntentParams = BaseIntentParams | [BaseIntentParams, IntentJsonParams]
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 // TODO: intents should be unified somewhere
 export interface Intent {
   type: string
   params?: IntentParams
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface IntentChecker {
   (
     intentName: string,

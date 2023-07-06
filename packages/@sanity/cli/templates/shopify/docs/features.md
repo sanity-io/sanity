@@ -8,7 +8,7 @@ You can use the official [Sanity Connect app on Shopify][sanity-shopify] to sync
 
 Inside `/schemas` you'll find schema definitions for all the content types. They are organized in folders:
 
-- `/schemas/annotations/`: Annotations let editors mark up inline text in the block content editor with rich objects. These can be used to agument editorial content with product information.
+- `/schemas/annotations/`: Annotations let editors mark up inline text in the block content editor with rich objects. These can be used to augment editorial content with product information.
 - `/schemas/documents/`: Document types determines the shape of the JSON documents that's stored in your content lake. This is where you define the content forms for things like collections, products, product variants, as well as articles.
 - `/schemas/objects/`: General purpose & re-usable content structures, such as links, custom product options and modules.
 
@@ -18,7 +18,7 @@ Sanity Studio will automatically list all your [document types][docs-document-ty
 
 - Groups product information and variants by individual products for more convenient editing
 - Creates a singleton document for controlling a homepage with custom editorial modules.
-- Creates a singleton document for settings to control naviagation and global content
+- Creates a singleton document for settings to control navigation and global content
 - Lists general purpose pages for other editorial content
 
 ## Custom modules
@@ -143,7 +143,7 @@ Since we are using certain product fields from Shopify as the source of truth (s
 
 `/components/media/ShopifyDocumentStatus.tsx`
 
-A custom preview component that will display colllection, product and product variant images defined in `store.previewImageUrl`.
+A custom preview component that will display collection, product and product variant images defined in `store.previewImageUrl`.
 
 By default, Sanity Connect will populate these fields with the default image from Shopify. These images are not re-uploaded into your dataset and instead reference Shopify's CDN directly.
 

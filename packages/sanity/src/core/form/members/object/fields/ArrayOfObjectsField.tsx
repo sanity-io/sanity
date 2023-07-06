@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {map, tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -10,7 +10,9 @@ import {
   ArrayInputMoveItemEvent,
   ArrayOfObjectsInputProps,
   ObjectItem,
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -30,6 +32,9 @@ import * as is from '../../../utils/is'
 import {useResolveInitialValueForType} from '../../../../store'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 import {applyAll} from '../../../patch/applyPatch'
+import {useFormPublishedId} from '../../../useFormPublishedId'
+import {DocumentFieldActionNode} from '../../../../config'
+import {FieldActionMenu, FieldActionsProvider, FieldActionsResolver} from '../../../field'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -38,7 +43,10 @@ import {applyAll} from '../../../patch/applyPatch'
  */
 export function ArrayOfObjectsField(props: {
   member: FieldMember<ArrayOfObjectsFormNode>
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
@@ -53,7 +61,23 @@ export function ArrayOfObjectsField(props: {
     onFieldGroupSelect,
   } = useFormCallbacks()
 
-  const {member, renderField, renderInput, renderItem, renderPreview} = props
+  const {
+    member,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
+  } = props
+
+  const {
+    field: {actions: fieldActions},
+  } = useFormBuilder().__internal
+  const documentId = useFormPublishedId()
+  const [fieldActionNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
+
   const focusRef = useRef<Element & {focus: () => void}>()
   const uploadSubscriptions = useRef<Record<string, Subscription>>({})
 
@@ -89,6 +113,11 @@ export function ArrayOfObjectsField(props: {
     [member.field.path, onPathBlur]
   )
 
+  const valueRef = useRef(member.field.value)
+  useEffect(() => {
+    valueRef.current = member.field.value
+  }, [member.field.value])
+
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
       const patches = PatchEvent.from(event).patches
@@ -99,10 +128,10 @@ export function ArrayOfObjectsField(props: {
 
       if (isRemovingLastItem) {
         // apply the patch to the current value
-        const result = applyAll(member.field.value || [], patches)
+        valueRef.current = applyAll(valueRef.current || [], patches)
 
         // if the result is an empty array
-        if (Array.isArray(result) && !result.length) {
+        if (Array.isArray(valueRef.current) && !valueRef.current.length) {
           // then unset the array field
           onChange(PatchEvent.from(unset([member.name])))
           return
@@ -111,7 +140,7 @@ export function ArrayOfObjectsField(props: {
       // otherwise apply the patch
       onChange(PatchEvent.from(event).prepend(setIfMissing([])).prefixAll(member.name))
     },
-    [onChange, member.name, member.field.value]
+    [onChange, member.name, valueRef]
   )
   const resolveInitialValue = useResolveInitialValueForType()
 
@@ -354,6 +383,9 @@ export function ArrayOfObjectsField(props: {
       resolveUploader: resolveUploader,
       validation: member.field.validation,
       presence: member.field.presence,
+      renderAnnotation,
+      renderBlock,
+      renderInlineBlock,
       renderInput,
       renderField,
       renderItem,
@@ -387,6 +419,9 @@ export function ArrayOfObjectsField(props: {
     resolveInitialValue,
     handleUpload,
     resolveUploader,
+    renderAnnotation,
+    renderBlock,
+    renderInlineBlock,
     renderInput,
     renderField,
     renderItem,
@@ -398,6 +433,10 @@ export function ArrayOfObjectsField(props: {
 
   const fieldProps = useMemo((): Omit<ArrayFieldProps, 'renderDefault'> => {
     return {
+      actions:
+        fieldActionNodes.length > 0 ? (
+          <FieldActionMenu focused={member.field.focused} nodes={fieldActionNodes} />
+        ) : undefined,
       name: member.name,
       index: member.index,
       level: member.field.level,
@@ -418,8 +457,10 @@ export function ArrayOfObjectsField(props: {
       inputProps: inputProps as ArrayOfObjectsInputProps,
     }
   }, [
+    fieldActionNodes,
     member.name,
     member.index,
+    member.field.focused,
     member.field.level,
     member.field.value,
     member.field.schemaType,
@@ -446,7 +487,20 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      {documentId && fieldActions.length > 0 && (
+        <FieldActionsResolver
+          actions={fieldActions}
+          documentId={documentId}
+          documentType={member.field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={member.field.path}
+          schemaType={member.field.schemaType}
+        />
+      )}
+
+      <FieldActionsProvider actions={fieldActionNodes} path={member.field.path}>
+        {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      </FieldActionsProvider>
     </FormCallbacksProvider>
   )
 }

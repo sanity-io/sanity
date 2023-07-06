@@ -40,6 +40,7 @@ export function PreviewReferenceValue(props: {
               layout: 'default',
               schemaType: refType,
               value: stub,
+              skipVisibilityCheck: true,
             })}
           </Box>
           <Box>

@@ -46,14 +46,18 @@ export interface BaseItemProps<T> {
   // onMoveTo: (event: {ref: number|string, position: 'before'|'after'}) => void
   // onDuplicate: () => void
   // ---
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onInsert: (event: Omit<ArrayInputInsertEvent<T>, 'referenceItem'>) => void
 
   children: React.ReactNode
 
   validation: FormNodeValidation[]
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   presence: FormNodePresence[]
 
   renderDefault: (props: ItemProps) => React.ReactElement
@@ -72,7 +76,9 @@ export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends B
   onClose: () => void
   onOpen: () => void
   value: Item
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   inputProps: Omit<ObjectInputProps, 'renderDefault'>
 }
 

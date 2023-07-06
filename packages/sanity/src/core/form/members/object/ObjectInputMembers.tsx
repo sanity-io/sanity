@@ -1,7 +1,9 @@
 import React, {useMemo} from 'react'
 import {ObjectMember} from '../../store'
 import {
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -12,6 +14,9 @@ import {ObjectInputMember} from './ObjectInputMember'
 /** @internal */
 export interface ObjectMembersProps {
   members: ObjectMember[]
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
   renderItem: RenderArrayOfObjectsItemCallback
@@ -23,7 +28,16 @@ export interface ObjectMembersProps {
  * @internal
  */
 export function ObjectInputMembers(props: ObjectMembersProps) {
-  const {members, renderField, renderInput, renderItem, renderPreview} = props
+  const {
+    members,
+    renderAnnotation,
+    renderBlock,
+    renderInput,
+    renderInlineBlock,
+    renderField,
+    renderItem,
+    renderPreview,
+  } = props
 
   const renderMembers = useMemo(
     () =>
@@ -31,13 +45,25 @@ export function ObjectInputMembers(props: ObjectMembersProps) {
         <ObjectInputMember
           key={member.key}
           member={member}
+          renderAnnotation={renderAnnotation}
+          renderBlock={renderBlock}
           renderField={renderField}
+          renderInlineBlock={renderInlineBlock}
           renderInput={renderInput}
           renderItem={renderItem}
           renderPreview={renderPreview}
         />
       )),
-    [members, renderField, renderInput, renderItem, renderPreview]
+    [
+      members,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
+    ]
   )
 
   return <>{renderMembers}</>

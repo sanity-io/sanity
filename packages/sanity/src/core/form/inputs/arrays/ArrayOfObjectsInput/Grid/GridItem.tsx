@@ -231,6 +231,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           width={parentSchemaType?.options?.modal?.width ?? 1}
           id={value._key}
           onClose={onClose}
+          autofocus={focused}
           legacy_referenceElement={previewCardRef.current}
         >
           {children}

@@ -1,7 +1,9 @@
 import React, {memo} from 'react'
 import {ObjectMember} from '../../store'
 import {
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -14,21 +16,36 @@ import {MemberFieldSet} from './MemberFieldset'
 /** @internal */
 export interface ObjectInputMemberProps {
   member: ObjectMember
-  renderInput: RenderInputCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock?: RenderBlockCallback
+  renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
 }
 
 /** @internal */
 export const ObjectInputMember = memo(function ObjectInputMember(props: ObjectInputMemberProps) {
-  const {member, renderInput, renderField, renderItem, renderPreview} = props
+  const {
+    member,
+    renderAnnotation,
+    renderBlock,
+    renderInput,
+    renderInlineBlock,
+    renderField,
+    renderItem,
+    renderPreview,
+  } = props
 
   if (member.kind === 'field') {
     return (
       <MemberField
         key={member.key}
         member={member}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
+        renderInlineBlock={renderInlineBlock}
         renderInput={renderInput}
         renderField={renderField}
         renderItem={renderItem}
@@ -44,6 +61,9 @@ export const ObjectInputMember = memo(function ObjectInputMember(props: ObjectIn
       <MemberFieldSet
         key={member.key}
         member={member}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
+        renderInlineBlock={renderInlineBlock}
         renderInput={renderInput}
         renderField={renderField}
         renderItem={renderItem}

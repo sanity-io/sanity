@@ -1,9 +1,11 @@
 ---
-name: Yarn lockfile
+name: Dedupe yarn lockfile
 
 on:
   push:
     branches: [next]
+    paths:
+      - 'yarn.lock'
   workflow_dispatch:
 
 concurrency:
@@ -15,28 +17,39 @@ permissions:
 
 jobs:
   run:
-    name: Is yarn.lock in sync? 🤔
+    name: Can yarn.lock be deduped? 🤔
     runs-on: ubuntu-latest
     # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` thus we need an if check
     if: ${{ github.ref_name == 'next' }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
         with:
-          cache: yarn
-          node-version: lts/*
-      - run: yarn install --ignore-scripts
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --ignore-scripts --frozen-lockfile --update-checksums --force
+      - run: npx yarn-deduplicate -- yarn.lock --strategy highest
       - uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1
         id: generate-token
         with:
           app_id: ${{ secrets.ECOSPARK_APP_ID }}
           private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-      - uses: peter-evans/create-pull-request@38e0b6e68b4c852a5500a94740f0e535e0d7ba54 # v4
+      - uses: peter-evans/create-pull-request@284f54f989303d2699d373481a0cfa13ad5a6666 # v5
         with:
           author: github-actions <41898282+github-actions[bot]@users.noreply.github.com>
-          body: I ran `yarn install --ignore-scripts` 🧑‍💻
+          body: I ran `npx yarn-deduplicate -- yarn.lock --strategy highest` 🧑‍💻
           branch: actions/yarn-if-needed
-          commit-message: 'chore(deps): lock file maintenance'
+          commit-message: 'chore(deps): dedupe yarn.lock'
           labels: 🤖 bot
-          title: 'chore(deps): lock file maintenance'
+          title: 'chore(deps): dedupe yarn.lock'
           token: ${{ steps.generate-token.outputs.token }}

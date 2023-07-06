@@ -19,3 +19,11 @@ export * from './theme'
 export * from './user-color'
 export * from './util'
 export * from './version'
+export {createSearchQuery} from './search'
+export type {
+  SearchableType,
+  SearchTerms,
+  SearchOptions,
+  SearchSort,
+  WeightedSearchOptions,
+} from './search'

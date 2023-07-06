@@ -12,7 +12,9 @@ interface TransactionSyncLockState {
   enabled: boolean
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface EditStateFor {
   id: string
   type: string

@@ -1,12 +1,14 @@
 /**
  * Situations can occur where cancelled test runs leave dangling resources behind.
  * This function will clean up any dangling resources from previous test runs,
- * determined by "older than 48 hours".
+ * determined by "older than 16 hours".
  */
 
 import {testClient} from './environment'
 
-const threshold = Date.now() - 48 * 60 * 60 * 1000
+// 16 hours in milliseconds, subtracted from current time, then rounded
+// to same precision as test IDs(8 digits)
+const threshold = Math.floor((Date.now() - 16 * 60 * 60 * 1000) / 10000)
 
 /* eslint-disable no-console */
 export async function cleanupDangling(): Promise<void> {
@@ -72,7 +74,7 @@ async function deleteDatasets() {
 }
 
 function isTestEntity(entity: string): boolean {
-  return /^test[-_]\d{8}[-_]/.test(entity)
+  return /^test[-_]\d{8,9}[-_]/.test(entity)
 }
 
 function isTestEntityOlderThanThreshold(entity: string): boolean {
@@ -80,13 +82,16 @@ function isTestEntityOlderThanThreshold(entity: string): boolean {
     return false
   }
 
-  // test-20220929-darwin-v16-wode-11664
-  // => 20220929
-  const dateOnly = entity.slice(5, 13)
-  // => 2022-09-29
-  const date = `${dateOnly.slice(0, 4)}-${dateOnly.slice(4, 6)}-${dateOnly.slice(6, 8)}`
-  // => 1664409600000
-  const timestamp = Date.parse(date)
+  // test-168262061-darwin-v16-wode-11664 => 168262061
+  const tsString = entity.slice(5, 14) // `'168262061'`
+  const timestamp = parseInt(tsString, 10) // `168262061`
+
+  // Old test IDs used to have dates (eg 20220131 for `2022-01-31`)
+  // Always clean those up. This is only relevant in a migration period.
+  // Remove this prior to Jan 27th 2034 in order to not have issues ;)
+  if (tsString.startsWith('202')) {
+    return true
+  }
 
   return timestamp < threshold
 }

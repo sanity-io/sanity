@@ -33,7 +33,9 @@ const ProgressCircle = styled.circle(({theme}: {theme: Theme}) => {
   `
 })
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function CircularProgress(props: {
   /** Percentage */
   value: number

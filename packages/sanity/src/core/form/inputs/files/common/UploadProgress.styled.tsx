@@ -9,6 +9,7 @@ export const CardWrapper = styled(Card)`
 export const FlexWrapper = styled(Flex)`
   text-overflow: ellipsis;
   overflow: hidden;
+  overflow: clip;
 `
 
 export const LeftSection = styled(Stack)`
@@ -22,6 +23,7 @@ export const CodeWrapper = styled(Code)`
 
   code {
     overflow: hidden;
+    overflow: clip;
     text-overflow: ellipsis;
     position: relative;
     max-width: 200px;

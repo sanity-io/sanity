@@ -15,6 +15,8 @@ import {ItemProps} from './itemProps'
 /**
  * Export `PortableTextMarker` so it can be used to build custom Portable Text markers.
  *
+ *
+ * @hidden
  * @beta
  */
 export type RenderCustomMarkers = (markers: PortableTextMarker[]) => React.ReactNode
@@ -22,6 +24,8 @@ export type RenderCustomMarkers = (markers: PortableTextMarker[]) => React.React
 /**
  * A generic marker for attaching metadata to specific nodes of the Portable Text input.
  *
+ *
+ * @hidden
  * @beta
  */
 export interface PortableTextMarker {
@@ -31,6 +35,8 @@ export interface PortableTextMarker {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type FormBuilderArrayFunctionComponent = React.ComponentType<
@@ -38,11 +44,15 @@ export type FormBuilderArrayFunctionComponent = React.ComponentType<
 >
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type FormBuilderCustomMarkersComponent = React.ComponentType<{markers: PortableTextMarker[]}>
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type FormBuilderMarkersComponent = React.ComponentType<{
@@ -52,6 +62,8 @@ export type FormBuilderMarkersComponent = React.ComponentType<{
 }>
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type FormBuilderInputComponentMap = Record<
@@ -67,6 +79,8 @@ export type FormBuilderInputComponentMap = Record<
 /**
  * These are the props an implementation of the ArrayFunctions component will receive
  *
+ *
+ * @hidden
  * @beta
  */
 export interface ArrayInputFunctionsProps<Item, SchemaType extends ArraySchemaType> {

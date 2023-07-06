@@ -191,19 +191,26 @@ export async function renderInput(props: {
 
   const result = render(
     <TestProvider>
-      <TestForm {...initialTestProps} render={initialRender} />
+      <div id="__test_container__">
+        <TestForm {...initialTestProps} render={initialRender} />
+      </div>
     </TestProvider>
   )
 
   function rerender(subsequentRender: TestRenderInputCallback<any>) {
     render(
       <TestProvider>
-        <TestForm {...initialTestProps} render={subsequentRender} />
+        <div id="__test_container__">
+          <TestForm {...initialTestProps} render={subsequentRender} />
+        </div>
       </TestProvider>
     )
   }
 
+  const container = result.container.querySelector('#__test_container__')!
+
   return {
+    container,
     focusRef,
     onBlur,
     onChange,

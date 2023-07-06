@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "3.9.0",
+  "version": "3.14.1",
   "description": "",
   "keywords": [
     "sanity",
@@ -74,7 +74,7 @@
   },
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.9.0",
+    "@sanity/types": "3.14.1",
     "arrify": "^1.0.1",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
@@ -83,5 +83,6 @@
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
-  }
+  },
+  "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
 }

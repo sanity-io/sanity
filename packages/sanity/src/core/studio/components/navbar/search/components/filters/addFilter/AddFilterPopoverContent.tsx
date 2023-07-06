@@ -110,7 +110,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel="Filters"
-            autoFocus
+            autoFocus="input"
             getItemDisabled={getItemDisabled}
             getItemKey={getItemKey}
             inputElement={inputElement}

@@ -78,12 +78,13 @@ export interface WeightedSearchOptions {
  * @internal
  */
 export interface SearchOptions {
+  __unstable_extendedProjection?: string
   comments?: string[]
   includeDrafts?: boolean
   limit?: number
   offset?: number
   skipSortByScore?: boolean
-  sort?: SearchSort
+  sort?: SearchSort[]
 }
 
 /**
@@ -97,4 +98,5 @@ export type SortDirection = 'asc' | 'desc'
 export type SearchSort = {
   direction: SortDirection
   field: string
+  mapWith?: string
 }

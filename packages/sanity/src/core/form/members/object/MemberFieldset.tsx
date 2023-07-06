@@ -2,7 +2,9 @@ import React, {memo, useCallback} from 'react'
 import {capitalize} from 'lodash'
 import {FieldSetMember} from '../../store'
 import {
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -15,12 +17,24 @@ import {MemberFieldError} from './MemberFieldError'
 /** @internal */
 export const MemberFieldSet = memo(function MemberFieldSet(props: {
   member: FieldSetMember
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
 }) {
-  const {member, renderField, renderInput, renderItem, renderPreview} = props
+  const {
+    member,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
+  } = props
 
   const {onSetFieldSetCollapsed} = useFormCallbacks()
 
@@ -51,7 +65,10 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
         return (
           <MemberField
             member={fieldsetMember}
+            renderAnnotation={renderAnnotation}
+            renderBlock={renderBlock}
             renderField={renderField}
+            renderInlineBlock={renderInlineBlock}
             renderInput={renderInput}
             renderItem={renderItem}
             renderPreview={renderPreview}

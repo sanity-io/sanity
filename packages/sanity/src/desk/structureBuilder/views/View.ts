@@ -6,14 +6,18 @@ import {View} from '../types'
 import {ComponentViewBuilder} from './ComponentView'
 import {FormViewBuilder} from './FormView'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BaseView {
   id: string
   title: string
   icon?: React.ComponentType | React.ReactNode
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export abstract class GenericViewBuilder<TView extends Partial<BaseView>, ConcreteImpl>
   implements Serializable<BaseView>
 {
@@ -84,5 +88,7 @@ export function maybeSerializeView(
   return isSerializable(item) ? item.serialize({path, index}) : item
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type ViewBuilder = ComponentViewBuilder | FormViewBuilder

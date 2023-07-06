@@ -447,6 +447,17 @@ export default defineType({
       ],
     },
     {
+      name: 'fileArray',
+      title: 'File array (with defaults)',
+      type: 'array',
+      of: [
+        {
+          title: 'File',
+          type: 'file',
+        },
+      ],
+    },
+    {
       name: 'polymorphicGridArray',
       title: 'Polymorphic grid array',
       description: 'An array of multiple types. options: {layout: "grid"}',

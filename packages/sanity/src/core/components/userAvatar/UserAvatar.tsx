@@ -5,7 +5,9 @@ import {useUser} from '../../store'
 import {isRecord} from '../../util'
 import {useUserColor} from '../../user-color'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface UserAvatarProps {
   animateArrowFrom?: AvatarPosition
   position?: AvatarPosition
@@ -35,7 +37,9 @@ function nameToInitials(fullName: string) {
   return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function UserAvatar(props: UserAvatarProps) {
   const {user, ...restProps} = props
 

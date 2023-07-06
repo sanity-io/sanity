@@ -12,6 +12,12 @@ import {focusRingStyle} from './styles'
 /** @internal */
 export interface FormFieldSetProps {
   /**
+   *
+   * @hidden
+   * @beta
+   */
+  __unstable_headerActions?: React.ReactNode
+  /**
    * @beta
    */
   __unstable_presence?: FormNodePresence[]
@@ -28,6 +34,8 @@ export interface FormFieldSetProps {
   onExpand?: () => void
   title?: React.ReactNode
   /**
+   *
+   * @hidden
    * @beta
    */
   validation?: FormNodeValidation[]
@@ -45,6 +53,12 @@ const Root = styled(Box).attrs({forwardedAs: 'fieldset'})`
     display: table-cell;
   }
 `
+
+const Header = styled(Flex)({
+  // This prevents the buttons from taking up extra vertical space in the flex layout,
+  // due to their default vertical alignment being baseline.
+  lineHeight: 1,
+})
 
 const Content = styled(Box)<{
   /*
@@ -82,6 +96,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   ref: React.ForwardedRef<HTMLDivElement>
 ) {
   const {
+    __unstable_headerActions: headerActions,
     validation = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
     children,
@@ -131,7 +146,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   return (
     <Root data-level={level} {...restProps}>
       {title && (
-        <Flex align="flex-end">
+        <Header align="flex-end">
           <Box flex={1} paddingY={2}>
             <Stack space={2}>
               <Flex>
@@ -158,11 +173,17 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
           </Box>
 
           {presence.length > 0 && (
-            <Box>
+            <Box flex="none">
               <FieldPresence maxAvatars={4} presence={presence} />
             </Box>
           )}
-        </Flex>
+
+          {headerActions && (
+            <Box flex="none" marginLeft={1}>
+              {headerActions}
+            </Box>
+          )}
+        </Header>
       )}
 
       <Content

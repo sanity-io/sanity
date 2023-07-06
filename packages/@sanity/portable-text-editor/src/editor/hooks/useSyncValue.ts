@@ -2,7 +2,7 @@
 import React, {useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {Editor, Transforms, Node, Descendant} from 'slate'
+import {Editor, Transforms, Node, Descendant, Text} from 'slate'
 import {useSlate} from '@sanity/slate-react'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
@@ -250,21 +250,35 @@ function _updateBlock(
     currentBlock.children.forEach((currentBlockChild, currentBlockChildIndex) => {
       const oldBlockChild = oldBlock.children[currentBlockChildIndex]
       const isChildChanged = !isEqual(currentBlockChild, oldBlockChild)
+      const isTextChanged = !isEqual(currentBlockChild.text, oldBlockChild?.text)
+      const path = [currentBlockIndex, currentBlockChildIndex]
       if (isChildChanged) {
         // Update if this is the same child
         if (currentBlockChild._key === oldBlockChild?._key) {
-          debug('Updating changed child', currentBlockChild)
+          debug('Updating changed child', currentBlockChild, oldBlockChild)
           Transforms.setNodes(slateEditor, currentBlockChild as Partial<Node>, {
-            at: [currentBlockIndex, currentBlockChildIndex],
+            at: path,
           })
-          // If it's a inline block, also update the void text node key
-          if (currentBlockChild._type !== 'span') {
+          const isSpanNode =
+            Text.isText(currentBlockChild) &&
+            currentBlockChild._type === 'span' &&
+            Text.isText(oldBlockChild) &&
+            oldBlockChild._type === 'span'
+          if (isSpanNode && isTextChanged) {
+            Transforms.delete(slateEditor, {
+              at: {focus: {path, offset: 0}, anchor: {path, offset: oldBlockChild.text.length}},
+            })
+            Transforms.insertText(slateEditor, currentBlockChild.text, {
+              at: path,
+            })
+          } else if (!isSpanNode) {
+            // If it's a inline block, also update the void text node key
             debug('Updating changed inline object child', currentBlockChild)
             Transforms.setNodes(
               slateEditor,
               {_key: `${currentBlock._key}-void-child`},
               {
-                at: [currentBlockIndex, currentBlockChildIndex, 0],
+                at: [...path, 0],
                 voids: true,
               }
             )

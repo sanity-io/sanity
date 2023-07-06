@@ -19,7 +19,9 @@ import {
   PreviewPath,
 } from './types'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type ObserveForPreviewFn = (
   value: Previewable,
   type: PreviewableType,
@@ -27,13 +29,17 @@ export type ObserveForPreviewFn = (
   apiConfig?: ApiConfig
 ) => Observable<PreparedSnapshot>
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentPreviewStore {
   observePaths: ObservePathsFn
   observeForPreview: ObserveForPreviewFn
   observeDocumentTypeFromId: (id: string, apiConfig?: ApiConfig) => Observable<string | undefined>
 
   /**
+   *
+   * @hidden
    * @beta
    */
   unstable_observeDocumentPairAvailability: (

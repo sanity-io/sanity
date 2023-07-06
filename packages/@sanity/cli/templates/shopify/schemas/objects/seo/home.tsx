@@ -19,10 +19,7 @@ export default defineField({
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'text',
-      rows: 2,
-      validation: (Rule) =>
-        Rule.max(150).warning('Longer descriptions may be truncated by search engines'),
+      type: 'seo.description',
     }),
     defineField({
       name: 'image',

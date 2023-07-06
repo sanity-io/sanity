@@ -1357,6 +1357,38 @@ Object {
       "title": "Emphasis",
       "value": "em",
     },
+    Object {
+      "title": "Code",
+      "value": "code",
+    },
+    Object {
+      "title": "Strike through",
+      "value": "strike-through",
+    },
+    Object {
+      "title": "Highlight",
+      "value": "highlight",
+    },
+    Object {
+      "title": "Subscript",
+      "value": "sub",
+    },
+    Object {
+      "title": "Superscript",
+      "value": "sup",
+    },
+    Object {
+      "title": "Mark",
+      "value": "mark",
+    },
+    Object {
+      "title": "Inserted",
+      "value": "ins",
+    },
+    Object {
+      "title": "Small",
+      "value": "small",
+    },
   ],
   "lists": Array [
     Object {
@@ -1677,6 +1709,38 @@ Object {
                       Object {
                         "title": "Emphasis",
                         "value": "em",
+                      },
+                      Object {
+                        "title": "Code",
+                        "value": "code",
+                      },
+                      Object {
+                        "title": "Strike through",
+                        "value": "strike-through",
+                      },
+                      Object {
+                        "title": "Highlight",
+                        "value": "highlight",
+                      },
+                      Object {
+                        "title": "Subscript",
+                        "value": "sub",
+                      },
+                      Object {
+                        "title": "Superscript",
+                        "value": "sup",
+                      },
+                      Object {
+                        "title": "Mark",
+                        "value": "mark",
+                      },
+                      Object {
+                        "title": "Inserted",
+                        "value": "ins",
+                      },
+                      Object {
+                        "title": "Small",
+                        "value": "small",
                       },
                     ],
                     "fields": Array [
@@ -2429,6 +2493,38 @@ Object {
                         Object {
                           "title": "Emphasis",
                           "value": "em",
+                        },
+                        Object {
+                          "title": "Code",
+                          "value": "code",
+                        },
+                        Object {
+                          "title": "Strike through",
+                          "value": "strike-through",
+                        },
+                        Object {
+                          "title": "Highlight",
+                          "value": "highlight",
+                        },
+                        Object {
+                          "title": "Subscript",
+                          "value": "sub",
+                        },
+                        Object {
+                          "title": "Superscript",
+                          "value": "sup",
+                        },
+                        Object {
+                          "title": "Mark",
+                          "value": "mark",
+                        },
+                        Object {
+                          "title": "Inserted",
+                          "value": "ins",
+                        },
+                        Object {
+                          "title": "Small",
+                          "value": "small",
                         },
                       ],
                       "fields": Array [
@@ -3192,6 +3288,38 @@ Object {
         Object {
           "title": "Emphasis",
           "value": "em",
+        },
+        Object {
+          "title": "Code",
+          "value": "code",
+        },
+        Object {
+          "title": "Strike through",
+          "value": "strike-through",
+        },
+        Object {
+          "title": "Highlight",
+          "value": "highlight",
+        },
+        Object {
+          "title": "Subscript",
+          "value": "sub",
+        },
+        Object {
+          "title": "Superscript",
+          "value": "sup",
+        },
+        Object {
+          "title": "Mark",
+          "value": "mark",
+        },
+        Object {
+          "title": "Inserted",
+          "value": "ins",
+        },
+        Object {
+          "title": "Small",
+          "value": "small",
         },
       ],
       "fields": Array [

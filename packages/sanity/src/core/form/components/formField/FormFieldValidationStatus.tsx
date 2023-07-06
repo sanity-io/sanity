@@ -5,20 +5,24 @@ import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/ico
 import {FormNodeValidation} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
 import React, {useMemo} from 'react'
+import styled from 'styled-components'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
   /**
+   *
+   * @hidden
    * @beta
    */
   validation?: FormNodeValidation[]
   /**
+   *
+   * @hidden
    * @beta
    */
   __unstable_showSummary?: boolean
   fontSize?: number | number
   placement?: Placement
-  portal?: boolean
 }
 
 const EMPTY_ARRAY: never[] = []
@@ -35,6 +39,10 @@ const VALIDATION_ICONS: Record<'error' | 'warning' | 'info', React.ReactElement>
   info: <InfoOutlineIcon data-testid="input-validation-icon-info" />,
 }
 
+const StyledStack = styled(Stack)`
+  max-width: 200px;
+`
+
 /** @internal */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
   const {
@@ -42,7 +50,6 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
     __unstable_showSummary: showSummary,
     fontSize,
     placement = 'top',
-    portal,
   } = props
 
   const errors = validation.filter((v) => v.level === 'error')
@@ -70,7 +77,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   return (
     <Tooltip
       content={
-        <Stack padding={3} space={3}>
+        <StyledStack padding={3} space={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
@@ -81,9 +88,9 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
               ))}
             </>
           )}
-        </Stack>
+        </StyledStack>
       }
-      portal={portal}
+      portal
       placement={placement}
       fallbackPlacements={['bottom', 'right', 'left']}
     >
@@ -121,9 +128,7 @@ function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) 
         </Text>
       </Box>
       <Box flex={1}>
-        <Text muted size={1}>
-          {validation.message}
-        </Text>
+        <Text size={1}>{validation.message}</Text>
       </Box>
     </Flex>
   )
@@ -145,7 +150,7 @@ function FormFieldValidationSummary({validation}: {validation: FormNodeValidatio
   const hasBoth = hasErrors && hasWarnings
 
   return (
-    <Text muted size={1}>
+    <Text size={1}>
       {errorText || ''}
       {hasBoth && <> and </>}
       {warningText || ''}

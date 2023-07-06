@@ -46,11 +46,12 @@ interface PopoverDialogProps {
   onClose: () => void
   referenceElement: PopoverProps['referenceElement']
   width: ResponsiveWidthProps['width']
+  containerRef?: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>
 }
 
 /** @internal */
 export function PopoverDialog(props: PopoverDialogProps) {
-  const {children, header, onClose, referenceElement, width} = props
+  const {children, header, onClose, referenceElement, containerRef, width} = props
 
   const handleClose = useCallback(() => {
     onClose()
@@ -60,7 +61,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
   }, [onClose, referenceElement])
 
   const content = (
-    <PopoverContainer width={width}>
+    <PopoverContainer width={width} ref={containerRef}>
       <TrapFocus autoFocus>
         <Stack>
           <StickyLayer>
@@ -88,5 +89,13 @@ export function PopoverDialog(props: PopoverDialogProps) {
   //    hitting escape should only close the topmost dialog
   //  - clickOutside needs to work through portals. So if you have an array inside here that opens its items in a dialog/portal,
   //    any clicks inside such dialogs or portals should not cause _this_ popover to close
-  return <StyledPopover constrainSize content={content} open referenceElement={referenceElement} />
+  return (
+    <StyledPopover
+      portal
+      constrainSize
+      content={content}
+      open
+      referenceElement={referenceElement}
+    />
+  )
 }

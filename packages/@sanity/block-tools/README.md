@@ -68,13 +68,34 @@ This will deserialize the input html (string) into blocks.
 
 #### Params
 
+##### `html`
+
+The stringified version of the HTML you are importing
+
 ##### `blockContentType`
 
 A compiled version of the block content schema type.
-When you give this option, the deserializer will respect the schema when deserializing to blocks.
-I.e. if the schema doesn't allow h2-styles, all h2 html-elements will deserialized to normal styled blocks.
 
-##### `options`
+The deserializer will respect the schema when deserializing the HTML elements to blocks.
+
+It only supports a subset of HTML tags. Any HTML tag not in the block-tools [whitelist](https://github.com/sanity-io/sanity/blob/243b4a5686a1293a8a977574a5cabc768ec01725/packages/%40sanity/block-tools/src/constants.ts#L24-L78) will be deserialized to normal blocks/spans.
+
+For instance, if the schema doesn't allow H2 styles, all H2 HTML elements will be output like this:
+
+```js
+{
+  _type: 'block',
+  style: 'normal'
+  children: [
+    {
+      _type: 'span'
+      text: 'Hello world!'
+    }
+  ]
+}
+```
+
+##### `options` (optional)
 
 ###### `parseHtml`
 
@@ -146,7 +167,7 @@ const partialBlock = {
     },
   ],
 }
-normalizeBlock(partialBlock, {alowedDecorators: ['strong']})
+normalizeBlock(partialBlock, {allowedDecorators: ['strong']})
 ```
 
 Will produce

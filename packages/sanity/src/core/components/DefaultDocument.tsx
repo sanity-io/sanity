@@ -18,7 +18,9 @@ const globalStyles = `
   }
 `
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DefaultDocumentProps {
   entryPath: string
   css?: string[]
@@ -27,7 +29,9 @@ export interface DefaultDocumentProps {
 
 const EMPTY_ARRAY: never[] = []
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function DefaultDocument(props: DefaultDocumentProps): React.ReactElement {
   const {entryPath, css = EMPTY_ARRAY, basePath = '/'} = props
   return (

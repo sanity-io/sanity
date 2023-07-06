@@ -32,12 +32,16 @@ Refractor.registerLanguage(json)
 Refractor.registerLanguage(jsx)
 Refractor.registerLanguage(typescript)
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface StudioProviderProps extends StudioProps {
   children: React.ReactNode
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function StudioProvider({
   children,
   config,

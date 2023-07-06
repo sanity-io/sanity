@@ -13,11 +13,10 @@ import {
 } from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {UserAvatar} from '../../../../components'
+import {StatusButton, UserAvatar} from '../../../../components'
 import {useGlobalPresence} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
-import {StatusButton} from '../../StatusButton'
 import {PresenceMenuItem} from './PresenceMenuItem'
 
 const MAX_AVATARS = 4
@@ -64,7 +63,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
   const button = useMemo(() => {
     if (collapse) {
       return (
-        <StatusButton icon={UsersIcon} mode="bleed" active={hasPresence} statusTone="positive" />
+        <StatusButton icon={UsersIcon} mode="bleed" tone={hasPresence ? 'positive' : undefined} />
       )
     }
 

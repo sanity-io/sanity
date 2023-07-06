@@ -1,4 +1,4 @@
-export {extractWithPath, arrayToJSONMatchPath} from './jsonpath'
+export {extract, extractWithPath, arrayToJSONMatchPath} from './jsonpath'
 export {
   BufferedDocument,
   Mutation,

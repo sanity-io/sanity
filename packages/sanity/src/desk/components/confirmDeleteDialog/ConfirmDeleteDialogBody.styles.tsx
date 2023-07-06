@@ -65,6 +65,7 @@ export const ReferencesCard = styled(Card).attrs({
   flex: 'auto',
 })`
   overflow: hidden;
+  overflow: clip;
   min-height: 150px;
 `
 

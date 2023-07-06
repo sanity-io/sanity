@@ -178,6 +178,8 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           schemaType: props.schemaType,
           value: props.value,
           layout: 'default',
+          // Don't do visibility check for virtualized items as the calculation will be incorrect causing it to scroll
+          skipVisibilityCheck: true,
         })}
         {resolvingInitialValue && (
           <Card
@@ -215,6 +217,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           width={parentSchemaType?.options?.modal?.width ?? 1}
           id={value._key}
           onClose={onClose}
+          autofocus={focused}
           legacy_referenceElement={previewCardRef.current}
         >
           {children}

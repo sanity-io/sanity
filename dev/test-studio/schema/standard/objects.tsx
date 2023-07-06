@@ -21,6 +21,16 @@ export const myObject = defineType({
       type: 'string',
       title: 'Second',
     },
+    {
+      name: 'third',
+      type: 'image',
+      title: 'Image',
+    },
+    {
+      name: 'fourth',
+      type: 'file',
+      title: 'File',
+    },
   ],
 })
 
@@ -78,6 +88,16 @@ export default defineType({
           type: 'number',
           title: 'Number 2',
           name: 'number2',
+        },
+        {
+          type: 'image',
+          title: 'Image 1',
+          name: 'image1',
+        },
+        {
+          name: 'file',
+          type: 'file',
+          title: 'File',
         },
       ],
     },
@@ -145,7 +165,9 @@ export default defineType({
               name: 'nested2',
               title: 'nested2',
               type: 'object',
-              fields: [{name: 'ge', title: 'hello', type: 'string'}],
+              fields: [
+                {name: 'ge', title: 'hello', type: 'string', validation: (Rule) => Rule.required()},
+              ],
               options: {collapsible: true, collapsed: true},
             },
           ],

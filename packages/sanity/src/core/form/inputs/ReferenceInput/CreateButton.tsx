@@ -1,9 +1,6 @@
-/* eslint-disable complexity */
-/* eslint-disable max-nested-callbacks,no-nested-ternary */
-
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
-import {Box, Button, Menu, MenuButton, MenuItem, Tooltip} from '@sanity/ui'
+import {Box, Button, Menu, MenuButton, MenuButtonProps, MenuItem, Tooltip} from '@sanity/ui'
 import {InsufficientPermissionsMessage} from '../../../components'
 import {CreateReferenceOption} from './types'
 
@@ -15,15 +12,17 @@ interface Props extends ComponentProps<typeof Button> {
   readOnly?: boolean
 }
 
-function ConditionalTooltip(
-  props: ComponentProps<typeof Tooltip> & {enabled: boolean}
-): React.ReactElement {
-  const {enabled, ...rest} = props
-  return enabled ? <Tooltip {...rest} /> : <>{props.children}</>
-}
-
 const INLINE_BLOCK_STYLE = {display: 'inline-flex'}
 const FULL_WIDTH = {width: '100%'}
+
+const POPOVER_PROPS: MenuButtonProps['popover'] = {
+  portal: true,
+  tone: 'default',
+  constrainSize: true,
+  fallbackPlacements: ['bottom', 'left', 'top'],
+  placement: 'right',
+  preventOverflow: true,
+}
 
 export function CreateButton(props: Props) {
   const {createOptions, onCreate, id, ...rest} = props
@@ -61,8 +60,8 @@ export function CreateButton(props: Props) {
       menu={
         <Menu ref={props.menuRef}>
           {createOptions.map((createOption) => (
-            <ConditionalTooltip
-              enabled={!createOption.permission.granted}
+            <Tooltip
+              disabled={createOption.permission.granted}
               key={createOption.id}
               content={
                 <Box padding={2}>
@@ -80,12 +79,11 @@ export function CreateButton(props: Props) {
                   onClick={() => onCreate(createOption)}
                 />
               </div>
-            </ConditionalTooltip>
+            </Tooltip>
           ))}
         </Menu>
       }
-      placement="right"
-      popover={{portal: true, tone: 'default', constrainSize: true}}
+      popover={POPOVER_PROPS}
     />
   ) : (
     <Button

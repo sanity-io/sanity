@@ -9,7 +9,7 @@ import {
   Schema,
   SchemaType,
 } from '@sanity/types'
-import {isEmpty, randomKey, resolveTypeName} from '@sanity/util/content'
+import {isDeepEmpty, randomKey, resolveTypeName} from '@sanity/util/content'
 import {isRecord} from './util/isRecord'
 import {Template} from './types'
 import {validateInitialObjectValue} from './validate'
@@ -189,7 +189,7 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
 
   const merged = deepAssign(fieldValues, initialObject)
 
-  if (isEmpty(merged)) {
+  if (isDeepEmpty(merged)) {
     return undefined
   }
 

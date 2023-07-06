@@ -5,7 +5,9 @@ import React, {useMemo, useId} from 'react'
 import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
 import {ArrayInputFunctionsProps} from '../../../types'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function ArrayOfPrimitivesFunctions<
   MemberType extends string | boolean | number,
   SchemaType extends ArraySchemaType

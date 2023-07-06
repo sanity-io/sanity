@@ -4,7 +4,7 @@ import {EMPTY_ARRAY} from '../../../../util'
 import {BaseFormNode} from '../../../store'
 import {immutableReconcile} from '../../../store/utils/immutableReconcile'
 import {useChildValidation} from '../../../studio/contexts/Validation'
-import {_isBlockType} from '../_helpers'
+import {isBlockType} from '../_helpers'
 
 const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 
@@ -17,7 +17,7 @@ export function useMemberValidation(member: BaseFormNode | undefined) {
 
   const validation = useMemo(
     () =>
-      member?.schemaType && _isBlockType(member?.schemaType)
+      member?.schemaType && isBlockType(member?.schemaType)
         ? memberValidation
         : memberValidation.concat(childValidation),
     [childValidation, member, memberValidation]

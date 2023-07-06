@@ -26,7 +26,15 @@ export const nodeMajorVersion = process.version.split('.')[0]
 export const npmPath = which.sync('npm')
 export const nodePath = process.execPath
 
-let cachedTestId: string | undefined
+// We don't need a super precise timestamp, but enough to include hours (for dangling cleanup)
+const testIdTimestamp =
+  process.env.SANITY_CLI_TEST_ID_TIMESTAMP || `${Math.floor(Date.now() / 10000)}`
+
+// We're setting this to the environment because the global setup and the tests run in
+// isolated workers/threads, meaning the local `cachedTestId` variable won't be available
+process.env.SANITY_CLI_TEST_ID_TIMESTAMP = testIdTimestamp
+
+let cachedTestId: string | undefined = process.env.SANITY_CLI_TEST_ID
 
 /**
  * The generated ID contains enough information to:
@@ -40,8 +48,8 @@ let cachedTestId: string | undefined
  * multiple studio versions without conflicts.
  *
  * Examples:
- *   - Local : test-20220929-dar-v16-wode-11664
- *   - GitHub: test-20220929-lin-v14-gh-1234
+ *   - Local : test-168262061-dar-v16-wode-11664
+ *   - GitHub: test-168262061-lin-v14-gh-1234
  */
 const getTestId = () => {
   if (cachedTestId) {
@@ -49,12 +57,18 @@ const getTestId = () => {
   }
 
   const localId = readFileSync(testIdPath, 'utf8').trim()
-  const ghId = `${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}`
+  const ghRunId = `${process.env.GITHUB_RUN_ID || ''}`.slice(-4)
+  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}`
   const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}` : ''
   const runId = `${githubId || localId}`.replace(/\W/g, '-').replace(/(^-+|-+$)/g, '')
-  const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+
   const osPlatform = platform().slice(0, 3)
-  cachedTestId = `test-${timestamp}-${osPlatform}-${nodeMajorVersion}-${runId}`
+  cachedTestId = `test-${testIdTimestamp}-${osPlatform}-${nodeMajorVersion}-${runId}`
+
+  // We're setting this to the environment because the global setup and the tests run in
+  // isolated workers/threads, meaning the local `cachedTestId` variable won't be available
+  process.env.SANITY_CLI_TEST_ID = cachedTestId
+
   return cachedTestId
 }
 

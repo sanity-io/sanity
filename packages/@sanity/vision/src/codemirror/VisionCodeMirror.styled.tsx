@@ -6,6 +6,7 @@ export const EditorRoot = styled.div`
   box-sizing: border-box;
   height: 100%;
   overflow: hidden;
+  overflow: clip;
   position: relative;
   display: flex;
 

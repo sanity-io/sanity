@@ -41,15 +41,18 @@ export const DEBUG_INPUT_TYPES = [
   'formInputDebug',
   'conditionalFieldsTest',
   'customInputsTest',
+  'customInputsWithPatches',
   'documentActionsTest',
   'collapsibleObjects',
   'empty',
+  'fieldActionsTest',
   'fieldComponentsTest',
   'fieldsetsTest',
   'fieldValidationInferReproDoc',
   'focusTest',
   'documentWithHoistedPt',
   'initialValuesTest',
+  'inspectorsTest',
   'invalidPreviews',
   'thesis',
   'manyFieldsTest',
@@ -71,6 +74,8 @@ export const DEBUG_INPUT_TYPES = [
   'uploadsTest',
   'validationTest',
   'allNativeInputComponents',
+  'scrollBug',
+  'ptReference',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']
@@ -79,6 +84,8 @@ export const DEBUG_FIELD_GROUP_TYPES = [
   'fieldGroupsDefault',
   'fieldGroupsMany',
   'fieldGroupsWithValidation',
+  'fieldGroupsWithFieldsets',
+  'fieldGroupsWithFieldsetsAndValidation',
 ]
 
 export const EXTERNAL_PLUGIN_INPUT_TYPES = ['markdownTest', 'muxVideoPost']

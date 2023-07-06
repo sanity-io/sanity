@@ -1,7 +1,9 @@
 import React from 'react'
 import {ArrayOfObjectsMember} from '../../store'
 import {
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
@@ -13,8 +15,11 @@ import {MemberItemError} from './MemberItemError'
 /** @internal */
 export interface ArrayOfObjectsMemberProps {
   member: ArrayOfObjectsMember
-  renderInput: RenderInputCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock?: RenderBlockCallback
+  renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
 }
@@ -24,14 +29,26 @@ export interface ArrayOfObjectsMemberProps {
  * @internal
  */
 export function ArrayOfObjectsInputMember(props: ArrayOfObjectsMemberProps) {
-  const {member, renderInput, renderField, renderItem, renderPreview} = props
+  const {
+    member,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
+  } = props
   if (member.kind === 'item') {
     return (
       <ArrayOfObjectsItem
         key={member.key}
         member={member}
-        renderInput={renderInput}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
         renderField={renderField}
+        renderInlineBlock={renderInlineBlock}
+        renderInput={renderInput}
         renderItem={renderItem}
         renderPreview={renderPreview}
       />

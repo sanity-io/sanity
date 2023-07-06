@@ -7,6 +7,7 @@ export const RatioBox = styled(Card)`
   position: relative;
   width: 100%;
   overflow: hidden;
+  overflow: clip;
   min-height: 3.75rem;
   max-height: 20rem;
 

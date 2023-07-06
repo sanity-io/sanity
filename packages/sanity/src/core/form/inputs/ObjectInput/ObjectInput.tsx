@@ -6,13 +6,18 @@ import {UnknownFields} from './UnknownFields'
 import {FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const {
     schemaType,
     groups,
     members,
     onChange,
+    renderAnnotation,
+    renderBlock,
+    renderInlineBlock,
     renderInput,
     renderField,
     renderItem,
@@ -20,7 +25,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     level,
     value,
     id,
-    path,
     onFieldGroupSelect,
   } = props
 
@@ -47,13 +51,25 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     () => (
       <ObjectInputMembers
         members={members}
-        renderInput={renderInput}
+        renderAnnotation={renderAnnotation}
+        renderBlock={renderBlock}
         renderField={renderField}
+        renderInlineBlock={renderInlineBlock}
+        renderInput={renderInput}
         renderItem={renderItem}
         renderPreview={renderPreview}
       />
     ),
-    [members, renderField, renderInput, renderItem, renderPreview]
+    [
+      members,
+      renderAnnotation,
+      renderBlock,
+      renderField,
+      renderInlineBlock,
+      renderInput,
+      renderItem,
+      renderPreview,
+    ]
   )
 
   if (members.length === 0) {
@@ -67,7 +83,8 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
             groups={groups}
             inputId={id}
             onClick={onFieldGroupSelect}
-            shouldAutoFocus={path.length === 0}
+            // autofocus is taken care of either by focusPath or focusFirstDescendant in the parent component
+            shouldAutoFocus={false}
           />
         </FieldGroupTabsWrapper>
       ) : null}

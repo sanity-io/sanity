@@ -30,15 +30,18 @@ import {v3docs} from './docs/v3'
 import {demos3d} from './demos/3d'
 
 // Test documents for debugging
+import * as scrollBugTypes from './debug/scrollBug'
 import actions from './debug/actions'
 import button from './debug/button'
 import conditionalFields from './debug/conditionalFields'
 import customInputs from './debug/customInputs'
+import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
 import {collapsibleObjects} from './debug/collapsibleObjects'
 import documentActions from './debug/documentActions'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
+import {fieldActionsTest} from './debug/fieldActionsTest'
 import fieldComponentsTest from './debug/fieldComponentsTest'
 import fieldsets from './debug/fieldsets'
 import {
@@ -49,6 +52,7 @@ import focus from './debug/focus'
 import gallery from './debug/gallery'
 import {hoistedPt, hoistedPtDocument, customBlock} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
+import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
 import {languageFilterDebugType} from './debug/languageFilter'
 import liveEdit from './debug/liveEdit'
@@ -79,6 +83,7 @@ import fieldGroups from './debug/fieldGroups'
 import fieldGroupsDefault from './debug/fieldGroupsDefault'
 import fieldGroupsMany from './debug/fieldGroupsMany'
 import fieldGroupsWithValidation from './debug/fieldGroupsWithValidation'
+import fieldGroupsWithFieldsetsAndValidation from './debug/fieldGroupsWithFieldsetsAndValidation'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -104,6 +109,8 @@ import validationTest from './ci/validationCI'
 import crossDatasetReference, {crossDatasetSubtype} from './standard/crossDatasetReference'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
+import fieldGroupsWithFieldsets from './debug/fieldGroupsWithFieldsets'
+import ptReference from './debug/ptReference'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -154,6 +161,7 @@ export const schemaTypes = [
   conditionalFieldset,
   customBlock,
   customInputs,
+  customInputsWithPatches,
   customNumber,
   date,
   datetime,
@@ -161,6 +169,7 @@ export const schemaTypes = [
   emails,
   empty,
   experiment,
+  fieldActionsTest,
   fieldComponentsTest,
   fieldValidationInferReproDoc,
   fieldValidationInferReproSharedObject,
@@ -200,6 +209,7 @@ export const schemaTypes = [
   previewSelectBugRepro,
   ptAllTheBellsAndWhistlesType,
   ptCustomMarkersTestType,
+  ptReference,
   radio,
   readOnly,
   recursive,
@@ -215,6 +225,7 @@ export const schemaTypes = [
   reservedFieldNames,
   review,
   richTextObject,
+  ...Object.values(scrollBugTypes),
   select,
   simpleBlock,
   simpleBlockNote,
@@ -228,6 +239,7 @@ export const schemaTypes = [
   spotifyEmbed,
   strings,
   superlatives,
+  inspectorsTestType,
   texts,
   topLevelArrayType,
   topLevelPrimitiveArrayType,
@@ -241,6 +253,8 @@ export const schemaTypes = [
   fieldGroupsDefault,
   fieldGroupsMany,
   fieldGroupsWithValidation,
+  fieldGroupsWithFieldsets,
+  fieldGroupsWithFieldsetsAndValidation,
   allNativeInputComponents,
   ...v3docs.types,
   ...demos3d.types,

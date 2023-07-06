@@ -94,8 +94,6 @@ export function ConfirmDeleteDialog({
       }
       onClose={onCancel}
       onClickOutside={onCancel}
-      // Custom portal element configured in `DocumentPane` so that the dialog is scoped to the current pane
-      portal="documentPanelPortalElement"
     >
       <DialogBody>
         {crossDatasetReferences && internalReferences && !isLoading ? (

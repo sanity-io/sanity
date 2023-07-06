@@ -31,6 +31,7 @@ const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme:
     font: inherit;
     outline: none;
     border-radius: ${rem(radius[1])};
+    position: relative;
 
     &:not([hidden]) {
       display: flex;
@@ -42,6 +43,16 @@ const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme:
 
     &:focus:not(:focus-visible) {
       box-shadow: none;
+    }
+
+    /* Added to increase the hit area of the collapsible fieldset */
+    &::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      bottom: -10px;
+      left: -10px;
     }
   `
 })

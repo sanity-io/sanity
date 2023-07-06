@@ -35,6 +35,8 @@ import {
 } from './blockProps'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface ArrayOfObjectsComponents {
@@ -49,6 +51,8 @@ export interface ArrayOfObjectsComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface ArrayOfPrimitivesComponents {
@@ -60,6 +64,8 @@ export interface ArrayOfPrimitivesComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface BooleanComponents {
@@ -71,6 +77,8 @@ export interface BooleanComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface DateComponents {
@@ -82,6 +90,8 @@ export interface DateComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface DatetimeComponents {
@@ -93,6 +103,8 @@ export interface DatetimeComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface DocumentComponents {
@@ -104,6 +116,8 @@ export interface DocumentComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface FileComponents {
@@ -118,6 +132,8 @@ export interface FileComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface GeopointComponents {
@@ -132,6 +148,8 @@ export interface GeopointComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface ImageComponents {
@@ -146,6 +164,8 @@ export interface ImageComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface NumberComponents {
@@ -157,6 +177,8 @@ export interface NumberComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface ObjectComponents {
@@ -171,6 +193,8 @@ export interface ObjectComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface ReferenceComponents {
@@ -185,6 +209,8 @@ export interface ReferenceComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface CrossDatasetReferenceComponents {
@@ -199,6 +225,8 @@ export interface CrossDatasetReferenceComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface SlugComponents {
@@ -210,6 +238,8 @@ export interface SlugComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface SpanComponents {
@@ -221,6 +251,8 @@ export interface SpanComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface StringComponents {
@@ -232,6 +264,8 @@ export interface StringComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface TextComponents {
@@ -243,6 +277,8 @@ export interface TextComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface UrlComponents {
@@ -254,6 +290,8 @@ export interface UrlComponents {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface EmailComponents {
@@ -268,6 +306,8 @@ export interface EmailComponents {
 declare module '@sanity/types' {
   export interface ArrayDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: ArrayOfObjectsComponents | ArrayOfPrimitivesComponents
@@ -275,6 +315,8 @@ declare module '@sanity/types' {
 
   export interface BlockDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: {
@@ -284,6 +326,8 @@ declare module '@sanity/types' {
 
   export interface BlockDecoratorDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     component?: ComponentType<BlockDecoratorProps>
@@ -291,12 +335,16 @@ declare module '@sanity/types' {
 
   export interface BlockStyleDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     component?: ComponentType<BlockStyleProps>
   }
   export interface BlockListDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     component?: ComponentType<BlockListItemProps>
@@ -304,6 +352,8 @@ declare module '@sanity/types' {
 
   export interface BlockAnnotationDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: {
@@ -317,6 +367,8 @@ declare module '@sanity/types' {
 
   export interface DateDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: DateComponents
@@ -328,6 +380,8 @@ declare module '@sanity/types' {
 
   export interface DocumentDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: DocumentComponents
@@ -335,6 +389,8 @@ declare module '@sanity/types' {
 
   export interface FileDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: FileComponents
@@ -342,6 +398,8 @@ declare module '@sanity/types' {
 
   export interface GeopointDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: GeopointComponents
@@ -349,6 +407,8 @@ declare module '@sanity/types' {
 
   export interface ImageDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: ImageComponents
@@ -356,6 +416,8 @@ declare module '@sanity/types' {
 
   export interface NumberDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: NumberComponents
@@ -363,6 +425,8 @@ declare module '@sanity/types' {
 
   export interface ObjectDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: ObjectComponents
@@ -370,6 +434,8 @@ declare module '@sanity/types' {
 
   export interface ReferenceDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: ReferenceComponents
@@ -377,6 +443,8 @@ declare module '@sanity/types' {
 
   export interface CrossDatasetReferenceDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: CrossDatasetReferenceComponents
@@ -384,6 +452,8 @@ declare module '@sanity/types' {
 
   export interface SlugDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: SlugComponents
@@ -395,6 +465,8 @@ declare module '@sanity/types' {
 
   export interface StringDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: StringComponents
@@ -402,6 +474,8 @@ declare module '@sanity/types' {
 
   export interface TextDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: TextComponents
@@ -409,6 +483,8 @@ declare module '@sanity/types' {
 
   export interface UrlDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: UrlComponents
@@ -416,6 +492,8 @@ declare module '@sanity/types' {
 
   export interface EmailDefinition {
     /**
+     *
+     * @hidden
      * @beta
      */
     components?: EmailComponents

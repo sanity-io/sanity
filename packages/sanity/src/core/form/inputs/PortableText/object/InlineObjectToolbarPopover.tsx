@@ -21,19 +21,30 @@ const ToolbarPopover = styled(Popover)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface InlineObjectToolbarPopoverProps {
+  floatingBoundary: HTMLElement | null
   open: boolean
   onClosePopover: () => void
   onDelete: (event: React.MouseEvent<HTMLButtonElement>) => void
   onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
-  referenceElement?: HTMLElement
-  boundaryElement?: HTMLElement
+  referenceBoundary: HTMLElement | null
+  referenceElement: HTMLElement | null
   title: string
 }
 
 export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProps) {
-  const {onClosePopover, onEdit, onDelete, referenceElement, boundaryElement, title, open} = props
+  const {
+    floatingBoundary,
+    onClosePopover,
+    onEdit,
+    onDelete,
+    referenceBoundary,
+    referenceElement,
+    title,
+    open,
+  } = props
   const {sanity} = useTheme()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
+  const deleteButtonRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
 
   // Close floating toolbar on Escape
@@ -49,6 +60,26 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
       },
       [onClosePopover]
     )
+  )
+
+  const handleDelete = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (deleteButtonRef.current?.disabled) {
+        return
+      }
+      event.preventDefault()
+      event.stopPropagation()
+      try {
+        onDelete(event)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        if (deleteButtonRef.current) {
+          deleteButtonRef.current.disabled = true
+        }
+      }
+    },
+    [onDelete]
   )
 
   const popoverContent = useMemo(
@@ -69,28 +100,30 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             alt="Edit object"
           />
           <Button
+            ref={deleteButtonRef}
             icon={TrashIcon}
             mode="bleed"
             padding={2}
-            onClick={onDelete}
+            onClick={handleDelete}
             tone="critical"
             alt="Remove object"
           />
         </Inline>
       </Box>
     ),
-    [onDelete, onEdit, title]
+    [handleDelete, onEdit, title]
   )
 
   return (
     <ToolbarPopover
-      boundaryElement={boundaryElement}
       constrainSize
       content={popoverContent}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      floatingBoundary={floatingBoundary}
       open={open}
       placement="top"
-      portal="editor"
+      portal
+      referenceBoundary={referenceBoundary}
       referenceElement={referenceElement}
       scheme={popoverScheme}
     />

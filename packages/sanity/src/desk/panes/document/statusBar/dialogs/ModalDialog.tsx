@@ -25,8 +25,6 @@ export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
         // eslint-disable-next-line react/jsx-handler-names
         onClickOutside={dialog.onClose}
         width={dialog.width === undefined ? 1 : DIALOG_WIDTH_TO_UI_WIDTH[dialog.width]}
-        // Custom portal element configured in `DocumentPane` so that the dialog is scoped to the current pane
-        portal="documentPanelPortalElement"
       >
         <Box padding={4}>{dialog.content}</Box>
       </Dialog>

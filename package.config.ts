@@ -7,6 +7,13 @@ export default defineConfig({
   },
   dist: 'lib',
   extract: {
+    customTags: [
+      {
+        name: 'hidden',
+        allowMultiple: true,
+        syntaxKind: 'block',
+      },
+    ],
     rules: {
       // Disable rules for now
       'ae-forgotten-export': 'off',
@@ -19,4 +26,5 @@ export default defineConfig({
   rollup: {
     plugins: [optimizeLodashImports()],
   },
+  tsconfig: 'tsconfig.dist.json',
 })

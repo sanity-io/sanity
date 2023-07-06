@@ -1,6 +1,8 @@
 import React from 'react'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface FormFieldGroup {
   name: string
   selected?: boolean

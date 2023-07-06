@@ -76,7 +76,8 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     throw new Error('Unable to resolve `sanity` module root')
   }
 
-  const faviconsPath = path.join(path.dirname(sanityPkgPath), 'static', 'favicons')
+  const customFaviconsPath = path.join(cwd, 'static')
+  const defaultFaviconsPath = path.join(path.dirname(sanityPkgPath), 'static', 'favicons')
   const staticPath = `${basePath}static`
 
   const viteConfig: InlineConfig = {
@@ -99,7 +100,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     mode,
     plugins: [
       viteReact(),
-      sanityFaviconsPlugin({faviconsPath, staticUrlPath: staticPath}),
+      sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityDotWorkaroundPlugin(),
       sanityRuntimeRewritePlugin(),
       sanityBuildEntries({basePath, cwd, monorepo}),

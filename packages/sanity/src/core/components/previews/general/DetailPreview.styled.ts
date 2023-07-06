@@ -43,6 +43,7 @@ export const DescriptionText = styled(Text)(({theme}) => {
       /* Multi-line text overflow */
       display: -webkit-box;
       overflow: hidden;
+      overflow: clip;
       text-overflow: ellipsis;
       -webkit-line-clamp: ${maxLines};
       -webkit-box-orient: vertical;

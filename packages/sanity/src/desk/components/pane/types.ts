@@ -1,3 +1,6 @@
+import {ComponentType, ReactNode} from 'react'
+import {Intent} from '../../structureBuilder'
+
 /**
  * @internal
  */
@@ -10,6 +13,8 @@ export interface PaneData {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface PaneContextValue {
@@ -42,6 +47,8 @@ export interface PaneConfigOpts {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export interface PaneLayoutContextValue {
@@ -63,3 +70,38 @@ export interface PaneResizeCache {
   left: {element: HTMLElement; flex: number; width: number}
   right: {element: HTMLElement; flex: number; width: number}
 }
+
+export interface _PaneMenuItem {
+  type: 'item'
+  key: string
+
+  disabled?: boolean | {reason: ReactNode}
+  hotkey?: string
+  icon: ComponentType | ReactNode
+  iconRight?: ComponentType | ReactNode
+  intent?: Intent
+  onAction: () => void
+  renderAsButton: boolean
+  selected?: boolean
+  title: string
+  tone?: 'primary' | 'critical' | 'caution' | 'positive'
+}
+
+export interface _PaneMenuGroup {
+  type: 'group'
+  key: string
+
+  disabled?: boolean | {reason: ReactNode}
+  expanded: boolean
+  icon?: ComponentType | ReactNode
+  title?: string
+  children: _PaneMenuNode[]
+  renderAsButton: boolean
+}
+
+export interface _PaneMenuDivider {
+  type: 'divider'
+  key: string
+}
+
+export type _PaneMenuNode = _PaneMenuItem | _PaneMenuGroup | _PaneMenuDivider

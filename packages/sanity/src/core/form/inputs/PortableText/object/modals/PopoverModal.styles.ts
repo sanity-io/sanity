@@ -1,4 +1,4 @@
-import {Box, Container, Popover} from '@sanity/ui'
+import {Box, Popover} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const RootPopover = styled(Popover)`
@@ -9,14 +9,8 @@ export const RootPopover = styled(Popover)`
 
   & > div {
     overflow: hidden;
+    overflow: clip;
   }
-`
-
-export const ContentContainer = styled(Container)`
-  &:not([hidden]) {
-    display: flex;
-  }
-  direction: column;
 `
 
 export const ContentScrollerBox = styled(Box)`

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.9.0",
+  "version": "3.14.1",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -56,11 +56,12 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/client": "^5.2.0",
+    "@sanity/client": "^6.1.5",
     "@types/react": "^18.0.25"
   },
   "devDependencies": {
     "react": "^18.2.0",
     "rimraf": "^3.0.2"
-  }
+  },
+  "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
 }

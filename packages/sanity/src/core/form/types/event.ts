@@ -1,7 +1,9 @@
 import {KeyedSegment, SchemaType} from '@sanity/types'
 import {Uploader} from '../studio'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ArrayInputInsertEvent<Item> {
   items: Item[]
   position: 'before' | 'after'
@@ -10,13 +12,17 @@ export interface ArrayInputInsertEvent<Item> {
   open?: boolean
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ArrayInputMoveItemEvent {
   fromIndex: number
   toIndex: number
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface UploadEvent {
   file: File
   schemaType: SchemaType

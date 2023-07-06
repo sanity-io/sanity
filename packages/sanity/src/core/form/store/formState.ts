@@ -20,12 +20,18 @@ import {castArray, isEqual as _isEqual, pick} from 'lodash'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
 import {resolveTypeName} from '@sanity/util/content'
 
-import {isNonNullable, isRecord} from '../../util'
+import {EMPTY_ARRAY, isNonNullable, isRecord} from '../../util'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {FIXME} from '../../FIXME'
 import {FormNodePresence} from '../../presence'
 
-import {ObjectArrayFormNode, PrimitiveFormNode, StateTree} from './types'
+import {
+  FieldSetMember,
+  HiddenField,
+  ObjectArrayFormNode,
+  PrimitiveFormNode,
+  StateTree,
+} from './types'
 import {resolveConditionalProperty} from './conditional-property'
 import {ALL_FIELDS_GROUP, MAX_FIELD_DEPTH} from './constants'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
@@ -45,15 +51,20 @@ type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaTy
 function isFieldEnabledByGroupFilter(
   // the groups config for the "enclosing object" type
   groupsConfig: FormFieldGroup[],
-  fieldGroup: string | string[],
+  fieldGroup: string | string[] | undefined,
   selectedGroup: FormFieldGroup
 ) {
   if (selectedGroup.name === ALL_FIELDS_GROUP.name) {
     return true
   }
 
+  // "all fields" is not the selected group and the field has no group config, so it should be hidden
+  if (fieldGroup === undefined) {
+    return false
+  }
+
   // if there's no group config for the object type, all fields are visible
-  if (groupsConfig.length === 0) {
+  if (groupsConfig.length === 0 && selectedGroup.name === ALL_FIELDS_GROUP.name) {
     return true
   }
 
@@ -109,9 +120,12 @@ function isChangedValue(value: any, comparisonValue: any) {
  */
 function prepareFieldMember(props: {
   field: ObjectField
-  parent: RawState<ObjectSchemaType, unknown>
+  parent: RawState<ObjectSchemaType, unknown> & {
+    groups: FormFieldGroup[]
+    selectedGroup: FormFieldGroup
+  }
   index: number
-}): ObjectMember | null {
+}): ObjectMember | HiddenField | null {
   const {parent, field, index} = props
   const fieldPath = pathFor([...parent.path, field.name])
   const fieldLevel = getFieldLevel(field.type, parent.level + 1)
@@ -124,11 +138,19 @@ function prepareFieldMember(props: {
     throw new Error('Unexpected non-object value')
   }
 
+  const normalizedFieldGroupNames = field.group ? castArray(field.group) : []
+  const inSelectedGroup = isFieldEnabledByGroupFilter(
+    parent.groups,
+    field.group,
+    parent.selectedGroup
+  )
+
   if (isObjectSchemaType(field.type)) {
     const fieldValue = parentValue?.[field.name]
     const fieldComparisonValue = isRecord(parentComparisonValue)
       ? parentComparisonValue?.[field.name]
       : undefined
+
     if (!isAcceptedObjectValue(fieldValue)) {
       return {
         kind: 'error',
@@ -142,6 +164,27 @@ function prepareFieldMember(props: {
         },
       }
     }
+
+    const conditionalPropertyContext = {
+      value: fieldValue,
+      parent: parent.value,
+      document: parent.document,
+      currentUser: parent.currentUser,
+    }
+    const hidden = resolveConditionalProperty(field.type.hidden, conditionalPropertyContext)
+
+    if (hidden) {
+      return {
+        kind: 'hidden',
+        key: `field-${field.name}`,
+        name: field.name,
+        index: index,
+      }
+    }
+
+    // readonly is inherited
+    const readOnly =
+      parent.readOnly || resolveConditionalProperty(field.type.readOnly, conditionalPropertyContext)
 
     // todo: consider requiring a _type annotation for object values on fields as well
     // if (resolvedValueType !== field.type.name) {
@@ -177,11 +220,12 @@ function prepareFieldMember(props: {
       openPath: parent.openPath,
       collapsedPaths: scopedCollapsedPaths,
       collapsedFieldSets: scopedCollapsedFieldsets,
-      readOnly: parent.readOnly,
+      readOnly,
       changesOpen: parent.changesOpen,
     })
 
     if (inputState === null) {
+      // if inputState is null is either because we reached max field depth or if it has no visible members
       return null
     }
 
@@ -195,6 +239,10 @@ function prepareFieldMember(props: {
       key: `field-${field.name}`,
       name: field.name,
       index: index,
+
+      inSelectedGroup,
+      groups: normalizedFieldGroupNames,
+
       open: startsWith(fieldPath, parent.openPath),
       field: inputState,
       collapsed,
@@ -308,6 +356,9 @@ function prepareFieldMember(props: {
 
         open: startsWith(fieldPath, parent.openPath),
 
+        inSelectedGroup,
+        groups: normalizedFieldGroupNames,
+
         collapsible: false,
         collapsed: false,
         // note: this is what we actually end up passing down as to the next input component
@@ -374,6 +425,9 @@ function prepareFieldMember(props: {
         name: field.name,
         index: index,
 
+        inSelectedGroup,
+        groups: normalizedFieldGroupNames,
+
         open: startsWith(fieldPath, parent.openPath),
 
         // todo: consider support for collapsible arrays
@@ -422,8 +476,10 @@ function prepareFieldMember(props: {
       key: `field-${field.name}`,
       name: field.name,
       index: index,
-
       open: startsWith(fieldPath, parent.openPath),
+
+      inSelectedGroup,
+      groups: normalizedFieldGroupNames,
 
       // todo: consider support for collapsible primitive fields
       collapsible: false,
@@ -456,16 +512,6 @@ interface RawState<SchemaType, T> {
   changesOpen?: boolean
 }
 
-/**
- * This exists merely to give the field members an intermediate state in order to render field groups correctly
- */
-interface MemberWithHiddenState {
-  hidden: boolean
-  // if it's hidden and in the currently selected group, it should still be excluded from its group
-  inSelectedGroup: boolean
-  group?: string | string[]
-  member: ObjectMember | null
-}
 function prepareObjectInputState<T>(
   props: RawState<ObjectSchemaType, T>,
   enableHiddenCheck?: false
@@ -489,15 +535,8 @@ function prepareObjectInputState<T>(
     currentUser: props.currentUser,
   }
 
-  const hidden =
-    enableHiddenCheck &&
-    resolveConditionalProperty(props.schemaType.hidden, conditionalPropertyContext)
-
-  if (hidden) {
-    return null
-  }
-
-  const objectIsReadOnly =
+  // readonly is inherited
+  const readOnly =
     props.readOnly ||
     resolveConditionalProperty(props.schemaType.readOnly, conditionalPropertyContext)
 
@@ -529,12 +568,6 @@ function prepareObjectInputState<T>(
 
   const selectedGroup = groups.find((group) => group.selected)!
 
-  const parentProps: RawState<ObjectSchemaType, unknown> = {
-    ...props,
-    hidden,
-    readOnly: objectIsReadOnly,
-  }
-
   // note: this is needed because not all object types gets a ´fieldsets´ property during schema parsing.
   // ideally members should be normalized as part of the schema parsing and not here
   const normalizedSchemaMembers: typeof props.schemaType.fieldsets = props.schemaType.fieldsets
@@ -542,96 +575,71 @@ function prepareObjectInputState<T>(
     : props.schemaType.fields.map((field) => ({single: true, field}))
 
   // create a members array for the object
-  const members = normalizedSchemaMembers.flatMap((fieldSet, index): MemberWithHiddenState[] => {
-    if (fieldSet.single) {
+  const members = normalizedSchemaMembers.flatMap(
+    (fieldSet, index): (ObjectMember | HiddenField)[] => {
       // "single" means not part of a fieldset
-      const fieldMember = prepareFieldMember({
-        field: fieldSet.field,
-        parent: parentProps,
-        index,
+      if (fieldSet.single) {
+        const field = fieldSet.field
+
+        const fieldMember = prepareFieldMember({
+          field: field,
+          parent: {...props, readOnly, groups, selectedGroup},
+          index,
+        })
+
+        return fieldMember ? [fieldMember] : []
+      }
+
+      // it's an actual fieldset
+      const fieldsetFieldNames = fieldSet.fields.map((f) => f.name)
+      const fieldsetHidden = resolveConditionalProperty(fieldSet.hidden, {
+        currentUser: props.currentUser,
+        document: props.document,
+        parent: props.value,
+        value: pick(props.value, fieldsetFieldNames),
       })
+
+      const fieldsetReadOnly = resolveConditionalProperty(fieldSet.readOnly, {
+        currentUser: props.currentUser,
+        document: props.document,
+        parent: props.value,
+        value: pick(props.value, fieldsetFieldNames),
+      })
+
+      const fieldsetMembers = fieldSet.fields.flatMap(
+        (field): (FieldMember | FieldError | HiddenField)[] => {
+          if (fieldsetHidden) {
+            return [
+              {
+                kind: 'hidden',
+                key: `field-${field.name}`,
+                name: field.name,
+                index: index,
+              },
+            ]
+          }
+          const fieldMember = prepareFieldMember({
+            field: field,
+            parent: {...props, readOnly: readOnly || fieldsetReadOnly, groups, selectedGroup},
+            index,
+          }) as FieldMember | FieldError | HiddenField
+
+          return fieldMember ? [fieldMember] : []
+        }
+      )
+
+      const defaultCollapsedState = getCollapsedWithDefaults(fieldSet.options, props.level)
+
+      const collapsed =
+        (props.collapsedFieldSets?.children || {})[fieldSet.name]?.value ??
+        defaultCollapsedState.collapsed
 
       return [
         {
-          hidden: fieldMember === null,
-          inSelectedGroup: fieldSet.field.group
-            ? isFieldEnabledByGroupFilter(groups, fieldSet.field.group, selectedGroup)
-            : true,
-          group: fieldSet.field.group,
-          member: fieldMember,
-        },
-      ]
-    }
-
-    // it's an actual fieldset
-    const fieldsetFieldNames = fieldSet.fields.map((f) => f.name)
-    const fieldsetHidden = resolveConditionalProperty(fieldSet.hidden, {
-      currentUser: props.currentUser,
-      document: props.document,
-      parent: props.value,
-      value: pick(props.value, fieldsetFieldNames),
-    })
-
-    if (fieldsetHidden) {
-      return []
-    }
-
-    const fieldsetReadOnly = resolveConditionalProperty(fieldSet.readOnly, {
-      currentUser: props.currentUser,
-      document: props.document,
-      parent: props.value,
-      value: pick(props.value, fieldsetFieldNames),
-    })
-
-    const fieldsetMembers = fieldSet.fields.flatMap((field): (FieldMember | FieldError)[] => {
-      const fieldState = prepareFieldMember({
-        field,
-        parent: parentProps,
-        index,
-        // the explicit type cast here is ok - we know that a fieldset can not have fieldsets
-      }) as FieldMember | FieldError | null
-
-      if (fieldState?.kind === 'error') {
-        return [fieldState]
-      }
-      if (
-        fieldState === null ||
-        (field.group && !isFieldEnabledByGroupFilter(groups, field.group, selectedGroup))
-      ) {
-        return []
-      }
-
-      const fieldStateWithReadOnly = {
-        ...fieldState,
-        field: {
-          ...fieldState.field,
-          readOnly: objectIsReadOnly || fieldState.field.readOnly || fieldsetReadOnly,
-        },
-      }
-
-      return [fieldStateWithReadOnly]
-    })
-
-    // if all members of the fieldset is hidden, the fieldset should effectively also be hidden
-    if (fieldsetMembers.length === 0) {
-      return []
-    }
-    const defaultCollapsedState = getCollapsedWithDefaults(fieldSet.options, props.level)
-
-    const collapsed =
-      (props.collapsedFieldSets?.children || {})[fieldSet.name]?.value ??
-      defaultCollapsedState.collapsed
-
-    return [
-      {
-        hidden: false,
-        inSelectedGroup: fieldSet.group
-          ? isFieldEnabledByGroupFilter(groups, fieldSet.group, selectedGroup)
-          : true,
-        group: [],
-        member: {
           kind: 'fieldSet',
           key: `fieldset-${fieldSet.name}`,
+          _inSelectedGroup: isFieldEnabledByGroupFilter(groups, fieldSet.group, selectedGroup),
+          groups: fieldSet.group ? castArray(fieldSet.group) : [],
           fieldSet: {
             path: pathFor(props.path.concat(fieldSet.name)),
             name: fieldSet.name,
@@ -639,28 +647,30 @@ function prepareObjectInputState<T>(
             description: fieldSet.description,
             hidden: false,
             level: props.level + 1,
-            members: fieldsetMembers,
+            members: fieldsetMembers.filter(
+              (member): member is FieldMember => member.kind !== 'hidden'
+            ),
             collapsible: defaultCollapsedState?.collapsible,
             collapsed,
             columns: fieldSet?.options?.columns,
           },
         },
-      },
-    ]
-  })
+      ]
+    }
+  )
 
   const hasFieldGroups = schemaTypeGroupConfig.length > 0
 
-  const presence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const filteredPresence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
 
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
 
-  const visibleMembers = members
-    .filter((memberWithHiddenState) => memberWithHiddenState.inSelectedGroup)
-    .map((m) => m.member)
-    .filter(isNonNullable)
+  const visibleMembers = members.filter(
+    (member): member is ObjectMember => member.kind !== 'hidden'
+  )
 
   // Return null here only when enableHiddenCheck, or we end up with array members that have 'item: null' when they
   // really should not be. One example is when a block object inside the PT-input have a type with one single hidden field.
@@ -669,27 +679,60 @@ function prepareObjectInputState<T>(
     return null
   }
 
-  // Disable all groups except the "all fields" group when the review changes pane is open.
-  const _groups = hasFieldGroups
+  const visibleGroups = hasFieldGroups
     ? groups.flatMap((group) => {
+        // The "all fields" group is always visible
         if (group.name === ALL_FIELDS_GROUP.name) {
           return group
         }
-        const hasMembers = members.some((memberWithHiddenState) => {
+        const hasVisibleMembers = visibleMembers.some((member) => {
+          if (member.kind === 'error') {
+            return false
+          }
+          if (member.kind === 'field') {
+            return member.groups.includes(group.name)
+          }
+
           return (
-            !memberWithHiddenState.hidden &&
-            castArray(memberWithHiddenState.group).includes(group.name)
+            member.groups.includes(group.name) ||
+            member.fieldSet.members.some(
+              (fieldsetMember) =>
+                fieldsetMember.kind !== 'error' && fieldsetMember.groups.includes(group.name)
+            )
           )
         })
-        return hasMembers ? group : []
+        return hasVisibleMembers ? group : []
       })
     : []
+
+  const filtereredMembers = visibleMembers.flatMap(
+    (member): (FieldError | FieldMember | FieldSetMember)[] => {
+      if (member.kind === 'error') {
+        return [member]
+      }
+      if (member.kind === 'field') {
+        return member.inSelectedGroup ? [member] : []
+      }
+
+      const filteredFieldsetMembers: ObjectMember[] = member.fieldSet.members.filter(
+        (fieldsetMember) => fieldsetMember.kind !== 'field' || fieldsetMember.inSelectedGroup
+      )
+      return filteredFieldsetMembers.length > 0
+        ? [
+            {
+              ...member,
+              fieldSet: {...member.fieldSet, members: filteredFieldsetMembers},
+            } as FieldSetMember,
+          ]
+        : []
+    }
+  )
 
   return {
     value: props.value as Record<string, unknown> | undefined,
     changed: isChangedValue(props.value, props.comparisonValue),
     schemaType: props.schemaType,
-    readOnly: props.readOnly || objectIsReadOnly,
+    readOnly,
     path: props.path,
     id: toString(props.path),
     level: props.level,
@@ -697,8 +740,11 @@ function prepareObjectInputState<T>(
     focusPath: trimChildPath(props.path, props.focusPath),
     presence,
     validation,
-    members: visibleMembers,
-    groups: _groups,
+    // this is currently needed by getExpandOperations which needs to know about hidden members
+    // (e.g. members not matching current group filter) in order to determine what to expand
+    _allMembers: members,
+    members: filtereredMembers,
+    groups: visibleGroups,
   }
 }
 
@@ -730,7 +776,8 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
 
-  const presence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const filteredPresence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
@@ -779,7 +826,8 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
   // Todo: improve error handling at the parent level so that the value here is either undefined or an array
   const items = Array.isArray(props.value) ? props.value : []
 
-  const presence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const filteredPresence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
     .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
@@ -965,7 +1013,8 @@ function prepareArrayOfPrimitivesMember(props: {
 function preparePrimitiveInputState<SchemaType extends PrimitiveSchemaType>(
   props: RawState<SchemaType, unknown>
 ): PrimitiveFormNode {
-  const presence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const filteredPresence = props.presence.filter((item) => isEqual(item.path, props.path))
+  const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
 
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))

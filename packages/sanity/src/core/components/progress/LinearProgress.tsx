@@ -7,6 +7,7 @@ const STROKE_WIDTH = 0.5
 
 const Root = styled(Card)`
   overflow: hidden;
+  overflow: clip;
 `
 
 const Bar = styled(Card)(({theme}: {theme: Theme}) => {
@@ -19,7 +20,9 @@ const Bar = styled(Card)(({theme}: {theme: Theme}) => {
   `
 })
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function LinearProgress(props: {
   /** Percentage */
   value: number

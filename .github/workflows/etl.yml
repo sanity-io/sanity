@@ -5,7 +5,7 @@ on:
   pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [next]
+    branches: [current]
 
 jobs:
   etl:
@@ -30,7 +30,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable --immutable-cache --check-cache
+        run: yarn install --frozen-lockfile
 
       - name: Build packages
         run: yarn build
@@ -39,5 +39,7 @@ jobs:
 
       - name: Extract API docs
         env:
-          EXTRACT_SANITY_API_TOKEN: ${{ secrets.EXTRACT_SANITY_API_TOKEN }}
-        run: yarn etl --quiet
+          EXTRACT_SANITY_PROJECT_ID: "${{(github.event_name == 'push' && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_PROJECT_ID || secrets.DEV_EXTRACT_SANITY_PROJECT_ID}}"
+          EXTRACT_SANITY_DATASET: "${{(github.event_name == 'push' && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_DATASET || secrets.DEV_EXTRACT_SANITY_DATASET}}"
+          EXTRACT_SANITY_API_TOKEN: "${{(github.event_name == 'push' && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_API_TOKEN || secrets.DEV_EXTRACT_SANITY_API_TOKEN}}"
+        run: yarn etl sanity

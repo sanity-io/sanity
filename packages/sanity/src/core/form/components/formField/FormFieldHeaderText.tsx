@@ -8,6 +8,8 @@ import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 /** @internal */
 export interface FormFieldHeaderTextProps {
   /**
+   *
+   * @hidden
    * @beta
    */
   validation?: FormNodeValidation[]

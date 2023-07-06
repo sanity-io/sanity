@@ -22,6 +22,7 @@ export const OverlayWrapper = styled.div`
 
 export const RegionWrapper = css`
   overflow: hidden;
+  overflow: clip;
   pointer-events: none;
   position: absolute;
 `

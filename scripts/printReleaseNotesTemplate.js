@@ -17,9 +17,9 @@ const TEMPLATE = `
 
 **To initiate a new Studio without installing the CLI globally:**
 
-    npx create-sanity@latest
+    npm create sanity@latest
 
-**To upgrade a v3 Studio:**
+**To upgrade a v3 Studio, run this command in its folder:**
 
     npm install sanity@latest
 

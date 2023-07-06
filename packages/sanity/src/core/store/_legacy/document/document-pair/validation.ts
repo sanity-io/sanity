@@ -37,7 +37,9 @@ import {IdPair} from '../types'
 import {DraftsModelDocumentAvailability} from '../../../../preview'
 import {editState} from './editState'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ValidationStatus {
   isValidating: boolean
   validation: ValidationMarker[]

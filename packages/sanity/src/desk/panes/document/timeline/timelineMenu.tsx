@@ -4,8 +4,8 @@ import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {TimelineError} from '../changesPanel/content/TimelineError'
 import {useDocumentPane} from '../useDocumentPane'
+import {TimelineError} from './TimelineError'
 import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
 import {Chunk, useTimelineSelector} from 'sanity'
@@ -18,6 +18,7 @@ interface TimelineMenuProps {
 
 const Root = styled(Popover)`
   overflow: hidden;
+  overflow: clip;
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
@@ -161,6 +162,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         onClick={open ? handleClose : handleOpen}
         ref={setButton}
         selected={open}
+        style={{maxWidth: '100%'}}
         text={ready ? buttonLabel : 'Loading history'}
       />
     </Root>

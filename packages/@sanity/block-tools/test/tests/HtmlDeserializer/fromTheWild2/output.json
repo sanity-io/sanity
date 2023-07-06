@@ -1,8 +1,6 @@
 [
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey9",
     "children": [
       {
         "_type": "span",
@@ -11,18 +9,18 @@
         "_key": "randomKey90"
       }
     ],
-    "_key": "randomKey9"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "<marquee bgcolor=\"#ffa7c4\">hi</marquee> ",
+    "code": "<marquee bgcolor=\"#ffa7c4\">hi</marquee>\n\t",
     "_key": "randomKey10"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey11",
     "children": [
       {
         "_type": "span",
@@ -31,18 +29,18 @@
         "_key": "randomKey110"
       }
     ],
-    "_key": "randomKey11"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "React.createElement( /* type */ 'marquee', /* props */ { bgcolor: '#ffa7c4' }, /* children */ 'hi' ) ",
+    "code": "React.createElement(\n\t\t/* type */ 'marquee',\n\t\t/* props */ { bgcolor: '#ffa7c4' },\n\t\t/* children */ 'hi'\n\t)\n\t",
     "_key": "randomKey12"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey13",
     "children": [
       {
         "_type": "span",
@@ -63,18 +61,18 @@
         "_key": "randomKey132"
       }
     ],
-    "_key": "randomKey13"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "{ type: 'marquee', props: { bgcolor: '#ffa7c4', children: 'hi', }, key: null, ref: null, $$typeof: Symbol.for('react.element'), // 🧐 Who dis } ",
+    "code": "{\n\t\ttype: 'marquee',\n\t\tprops: {\n\t\t\tbgcolor: '#ffa7c4',\n\t\t\tchildren: 'hi',\n\t\t},\n\t\tkey: null,\n\t\tref: null,\n\t\t$$typeof: Symbol.for('react.element'), // 🧐 Who dis\n\t}\n\t",
     "_key": "randomKey14"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey15",
     "children": [
       {
         "_type": "span",
@@ -161,12 +159,12 @@
         "_key": "randomKey1513"
       }
     ],
-    "_key": "randomKey15"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey16",
     "children": [
       {
         "_type": "span",
@@ -187,12 +185,12 @@
         "_key": "randomKey162"
       }
     ],
-    "_key": "randomKey16"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey17",
     "children": [
       {
         "_type": "span",
@@ -201,18 +199,18 @@
         "_key": "randomKey170"
       }
     ],
-    "_key": "randomKey17"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "const messageEl = document.getElementById('message'); messageEl.innerHTML = '<p>' + message.text + '</p>'; ",
+    "code": "const messageEl = document.getElementById('message');\n\tmessageEl.innerHTML = '<p>' + message.text + '</p>';\n\t",
     "_key": "randomKey18"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey19",
     "children": [
       {
         "_type": "span",
@@ -251,18 +249,12 @@
         "_key": "randomKey195"
       }
     ],
-    "_key": "randomKey19"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey0",
-        "_type": "link",
-        "href": "https://gomakethings.com/preventing-cross-site-scripting-attacks-when-using-innerhtml-in-vanilla-javascript/"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey20",
     "children": [
       {
         "_type": "span",
@@ -295,12 +287,18 @@
         "_key": "randomKey204"
       }
     ],
-    "_key": "randomKey20"
+    "markDefs": [
+      {
+        "_key": "randomKey0",
+        "_type": "link",
+        "href": "https://gomakethings.com/preventing-cross-site-scripting-attacks-when-using-innerhtml-in-vanilla-javascript/"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey21",
     "children": [
       {
         "_type": "span",
@@ -357,12 +355,12 @@
         "_key": "randomKey218"
       }
     ],
-    "_key": "randomKey21"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey22",
     "children": [
       {
         "_type": "span",
@@ -377,18 +375,18 @@
         "_key": "randomKey221"
       }
     ],
-    "_key": "randomKey22"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "<p> {message.text} </p> ",
+    "code": "<p>\n\t\t{message.text}\n\t</p>\n\t",
     "_key": "randomKey23"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey24",
     "children": [
       {
         "_type": "span",
@@ -457,12 +455,12 @@
         "_key": "randomKey2410"
       }
     ],
-    "_key": "randomKey24"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey25",
     "children": [
       {
         "_type": "span",
@@ -507,18 +505,12 @@
         "_key": "randomKey256"
       }
     ],
-    "_key": "randomKey25"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey1",
-        "_type": "link",
-        "href": "https://github.com/facebook/react/issues/3473#issuecomment-90594748"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey26",
     "children": [
       {
         "_type": "span",
@@ -581,23 +573,18 @@
         "_key": "randomKey269"
       }
     ],
-    "_key": "randomKey26"
-  },
-  {
-    "_type": "block",
     "markDefs": [
       {
-        "_key": "randomKey2",
+        "_key": "randomKey1",
         "_type": "link",
-        "href": "https://github.com/facebook/react/issues/10506"
-      },
-      {
-        "_key": "randomKey3",
-        "_type": "link",
-        "href": "https://github.com/facebook/react/issues/3473#issuecomment-91327040"
+        "href": "https://github.com/facebook/react/issues/3473#issuecomment-90594748"
       }
     ],
-    "style": "normal",
+    "_type": "block",
+    "style": "normal"
+  },
+  {
+    "_key": "randomKey27",
     "children": [
       {
         "_type": "span",
@@ -630,12 +617,23 @@
         "_key": "randomKey274"
       }
     ],
-    "_key": "randomKey27"
+    "markDefs": [
+      {
+        "_key": "randomKey2",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/issues/10506"
+      },
+      {
+        "_key": "randomKey3",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/issues/3473#issuecomment-91327040"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey28",
     "children": [
       {
         "_type": "span",
@@ -644,18 +642,18 @@
         "_key": "randomKey280"
       }
     ],
-    "_key": "randomKey28"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "// Escaped automatically <p> {message.text} </p> ",
+    "code": "// Escaped automatically\n\t<p>\n\t\t{message.text}\n\t</p>\n\t",
     "_key": "randomKey29"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey30",
     "children": [
       {
         "_type": "span",
@@ -682,12 +680,12 @@
         "_key": "randomKey303"
       }
     ],
-    "_key": "randomKey30"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey31",
     "children": [
       {
         "_type": "span",
@@ -696,24 +694,18 @@
         "_key": "randomKey310"
       }
     ],
-    "_key": "randomKey31"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "{ type: 'marquee', props: { bgcolor: '#ffa7c4', children: 'hi', }, key: null, ref: null, $$typeof: Symbol.for('react.element'), } ",
+    "code": "{\n\t\ttype: 'marquee',\n\t\tprops: {\n\t\t\tbgcolor: '#ffa7c4',\n\t\t\tchildren: 'hi',\n\t\t},\n\t\tkey: null,\n\t\tref: null,\n\t\t$$typeof: Symbol.for('react.element'),\n\t}\n\t",
     "_key": "randomKey32"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey4",
-        "_type": "link",
-        "href": "https://github.com/facebook/react/pull/3583#issuecomment-90296667"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey33",
     "children": [
       {
         "_type": "span",
@@ -758,12 +750,18 @@
         "_key": "randomKey336"
       }
     ],
-    "_key": "randomKey33"
+    "markDefs": [
+      {
+        "_key": "randomKey4",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/pull/3583#issuecomment-90296667"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey34",
     "children": [
       {
         "_type": "span",
@@ -784,24 +782,18 @@
         "_key": "randomKey342"
       }
     ],
-    "_key": "randomKey34"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "// Server could have a hole that lets user store JSON let expectedTextButGotJSON = { type: 'div', props: { dangerouslySetInnerHTML: { __html: '/* put your exploit here */' }, }, // ... }; let message = { text: expectedTextButGotJSON }; // Dangerous in React 0.13 <p> {message.text} </p> ",
+    "code": "// Server could have a hole that lets user store JSON\n\tlet expectedTextButGotJSON = {\n\t\ttype: 'div',\n\t\tprops: {\n\t\t\tdangerouslySetInnerHTML: {\n\t\t\t\t__html: '/* put your exploit here */'\n\t\t\t},\n\t\t},\n\t\t// ...\n\t};\n\tlet message = { text: expectedTextButGotJSON };\n\n\t// Dangerous in React 0.13\n\t<p>\n\t\t{message.text}\n\t</p>\n\t",
     "_key": "randomKey35"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey5",
-        "_type": "link",
-        "href": "http://danlec.com/blog/xss-via-a-spoofed-react-element"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey36",
     "children": [
       {
         "_type": "span",
@@ -834,18 +826,18 @@
         "_key": "randomKey364"
       }
     ],
-    "_key": "randomKey36"
-  },
-  {
-    "_type": "block",
     "markDefs": [
       {
-        "_key": "randomKey6",
+        "_key": "randomKey5",
         "_type": "link",
-        "href": "https://github.com/facebook/react/pull/4832"
+        "href": "http://danlec.com/blog/xss-via-a-spoofed-react-element"
       }
     ],
-    "style": "normal",
+    "_type": "block",
+    "style": "normal"
+  },
+  {
+    "_key": "randomKey37",
     "children": [
       {
         "_type": "span",
@@ -866,18 +858,24 @@
         "_key": "randomKey372"
       }
     ],
-    "_key": "randomKey37"
+    "markDefs": [
+      {
+        "_key": "randomKey6",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/pull/4832"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
     "_type": "code",
     "language": "javascript",
-    "code": "{ type: 'marquee', props: { bgcolor: '#ffa7c4', children: 'hi', }, key: null, ref: null, $$typeof: Symbol.for('react.element'), } ",
+    "code": "{\n\t\ttype: 'marquee',\n\t\tprops: {\n\t\t\tbgcolor: '#ffa7c4',\n\t\t\tchildren: 'hi',\n\t\t},\n\t\tkey: null,\n\t\tref: null,\n\t\t$$typeof: Symbol.for('react.element'),\n\t}\n\t",
     "_key": "randomKey38"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey39",
     "children": [
       {
         "_type": "span",
@@ -934,12 +932,12 @@
         "_key": "randomKey398"
       }
     ],
-    "_key": "randomKey39"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey40",
     "children": [
       {
         "_type": "span",
@@ -984,18 +982,12 @@
         "_key": "randomKey406"
       }
     ],
-    "_key": "randomKey40"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [
-      {
-        "_key": "randomKey7",
-        "_type": "link",
-        "href": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#Browser_compatibility"
-      }
-    ],
-    "style": "normal",
+    "_key": "randomKey41",
     "children": [
       {
         "_type": "span",
@@ -1016,18 +1008,18 @@
         "_key": "randomKey412"
       }
     ],
-    "_key": "randomKey41"
-  },
-  {
-    "_type": "block",
     "markDefs": [
       {
-        "_key": "randomKey8",
+        "_key": "randomKey7",
         "_type": "link",
-        "href": "https://github.com/facebook/react/blob/8482cbe22d1a421b73db602e1f470c632b09f693/packages/shared/ReactSymbols.js#L14-L16"
+        "href": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#Browser_compatibility"
       }
     ],
-    "style": "normal",
+    "_type": "block",
+    "style": "normal"
+  },
+  {
+    "_key": "randomKey42",
     "children": [
       {
         "_type": "span",
@@ -1072,12 +1064,18 @@
         "_key": "randomKey426"
       }
     ],
-    "_key": "randomKey42"
+    "markDefs": [
+      {
+        "_key": "randomKey8",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/blob/8482cbe22d1a421b73db602e1f470c632b09f693/packages/shared/ReactSymbols.js#L14-L16"
+      }
+    ],
+    "_type": "block",
+    "style": "normal"
   },
   {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
+    "_key": "randomKey43",
     "children": [
       {
         "_type": "span",
@@ -1098,6 +1096,8 @@
         "_key": "randomKey432"
       }
     ],
-    "_key": "randomKey43"
+    "markDefs": [],
+    "_type": "block",
+    "style": "normal"
   }
 ]

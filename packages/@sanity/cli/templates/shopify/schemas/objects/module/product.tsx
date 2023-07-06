@@ -1,6 +1,7 @@
 import {TagIcon} from '@sanity/icons'
 import React from 'react'
 import {defineField} from 'sanity'
+
 import ShopifyDocumentStatus from '../../../components/media/ShopifyDocumentStatus'
 
 export default defineField({

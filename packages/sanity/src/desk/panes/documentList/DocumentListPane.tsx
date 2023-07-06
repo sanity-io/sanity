@@ -1,7 +1,11 @@
-import React, {memo, useMemo, useRef} from 'react'
-import {Card, Code} from '@sanity/ui'
+import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Box, Card, Code, TextInput} from '@sanity/ui'
 import shallowEquals from 'shallow-equals'
 import {isEqual} from 'lodash'
+import {SearchIcon, SpinnerIcon} from '@sanity/icons'
+import styled, {keyframes} from 'styled-components'
+import {Observable, debounce, map, of, tap, timer} from 'rxjs'
+import {useObservableCallback} from 'react-rx'
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
 import {useDeskToolSetting} from '../../useDeskToolSetting'
@@ -15,13 +19,32 @@ import {
 } from './helpers'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
-import {SortOrder} from './types'
+import {LoadingVariant, SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
 import {GeneralPreviewLayoutKey, SourceProvider, useSchema, useSource, useUnique} from 'sanity'
 
 type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
 
 const EMPTY_ARRAY: never[] = []
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`
+
+const AnimatedSpinnerIcon = styled(SpinnerIcon)`
+  animation: ${rotate} 500ms linear infinite;
+`
+
+const SearchCard = styled(Card)`
+  [data-ui='TextInput'] {
+    border-radius: inherit;
+  }
+`
 
 function useShallowUnique<ValueType>(value: ValueType): ValueType {
   const valueRef = useRef<ValueType>(value)
@@ -68,8 +91,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     defaultLayout = 'default',
     displayOptions,
     initialValueTemplates = EMPTY_ARRAY,
-    menuItems,
     menuItemGroups,
+    menuItems,
     options,
     title,
   } = pane
@@ -83,6 +106,15 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     'layout',
     defaultLayout
   )
+
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [searchInputValue, setSearchInputValue] = useState<string>('')
+  const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
+
+  // A ref to determine if we should show the loading spinner in the search input.
+  // This is used to avoid showing the spinner on initial load of the document list.
+  // We only wan't to show the spinner when the user interacts with the search input.
+  const showSearchLoadingRef = useRef<boolean>(false)
 
   // Ensure that we use the defaultOrdering value from structure builder if any as the default
   const defaultSortOrder = useMemo(() => {
@@ -101,13 +133,23 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
       : sortOrderRaw
 
   const sortOrder = useUnique(sortWithOrderingFn)
-  const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
+  const filterIsSimpleTypeConstraint = isSimpleTypeFilter(filter)
 
-  const {error, fullList, handleListChange, isLoading, items, onRetry} = useDocumentList({
+  const {
+    error,
+    hasMaxItems,
+    isLazyLoading,
+    isLoading,
+    isSearchReady,
+    items,
+    onListChange,
+    onRetry,
+  } = useDocumentList({
+    apiVersion,
     filter,
     params,
+    searchQuery: searchQuery?.trim(),
     sortOrder,
-    apiVersion,
   })
 
   const menuItemsWithSelectedState = useMemo(
@@ -120,9 +162,91 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     [layout, menuItems, sortOrderRaw]
   )
 
+  const handleQueryChange = useObservableCallback(
+    (event$: Observable<React.ChangeEvent<HTMLInputElement>>) => {
+      return event$.pipe(
+        map((event) => event.target.value),
+        tap(setSearchInputValue),
+        debounce((value) => (value === '' ? of('') : timer(300))),
+        tap(setSearchQuery)
+      )
+    },
+    []
+  )
+
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery('')
+    setSearchInputValue('')
+  }, [])
+
+  const handleSearchKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'Escape') {
+        handleClearSearch()
+      }
+    },
+    [handleClearSearch]
+  )
+
+  useEffect(() => {
+    if (showSearchLoadingRef.current === false && !isLoading) {
+      showSearchLoadingRef.current = true
+    }
+
+    return () => {
+      showSearchLoadingRef.current = false
+    }
+  }, [isLoading])
+
+  useEffect(() => {
+    // Clear search field and reset showSearchLoadingRef ref
+    // when switching between panes (i.e. when paneKey changes).
+    handleClearSearch()
+    showSearchLoadingRef.current = false
+  }, [paneKey, handleClearSearch])
+
+  const loadingVariant: LoadingVariant = useMemo(() => {
+    const showSpinner = isLoading && items.length === 0 && showSearchLoadingRef.current
+
+    if (showSpinner) return 'spinner'
+
+    return 'initial'
+  }, [isLoading, items.length])
+
+  const searchInput = (
+    <Box paddingX={2} paddingBottom={2}>
+      <SearchCard radius={4} tone="transparent">
+        <TextInput
+          aria-label="Search list"
+          autoComplete="off"
+          border={false}
+          clearButton={Boolean(searchQuery)}
+          disabled={!isSearchReady}
+          fontSize={[2, 2, 1]}
+          icon={loadingVariant === 'spinner' ? AnimatedSpinnerIcon : SearchIcon}
+          onChange={handleQueryChange}
+          onClear={handleClearSearch}
+          onKeyDown={handleSearchKeyDown}
+          placeholder="Search list"
+          radius={2}
+          ref={setSearchInputElement}
+          spellCheck={false}
+          value={searchInputValue}
+        />
+      </SearchCard>
+    </Box>
+  )
+
   return (
     <SourceProvider name={sourceName || parentSourceName}>
-      <Pane currentMaxWidth={350} id={paneKey} maxWidth={640} minWidth={320} selected={isSelected}>
+      <Pane
+        currentMaxWidth={350}
+        data-ui="DocumentListPane"
+        id={paneKey}
+        maxWidth={640}
+        minWidth={320}
+        selected={isSelected}
+      >
         {_DEBUG && (
           <Card padding={4} tone="transparent">
             <Code>{pane.source || '(none)'}</Code>
@@ -130,10 +254,11 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         )}
 
         <DocumentListPaneHeader
+          contentAfter={searchInput}
           index={index}
           initialValueTemplates={initialValueTemplates}
-          menuItems={menuItemsWithSelectedState}
           menuItemGroups={menuItemGroups}
+          menuItems={menuItemsWithSelectedState}
           setLayout={setLayout}
           setSortOrder={setSortOrder}
           title={title}
@@ -142,14 +267,20 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         <DocumentListPaneContent
           childItemId={childItemId}
           error={error}
-          filterIsSimpleTypeContraint={filterIsSimpleTypeContraint}
-          fullList={fullList}
+          filterIsSimpleTypeConstraint={filterIsSimpleTypeConstraint}
+          hasMaxItems={hasMaxItems}
+          hasSearchQuery={Boolean(searchQuery)}
           isActive={isActive}
+          isLazyLoading={isLazyLoading}
           isLoading={isLoading}
           items={items}
+          key={paneKey}
           layout={layout}
-          onListChange={handleListChange}
+          loadingVariant={loadingVariant}
+          onListChange={onListChange}
           onRetry={onRetry}
+          paneTitle={title}
+          searchInputElement={searchInputElement}
           showIcons={showIcons}
         />
       </Pane>

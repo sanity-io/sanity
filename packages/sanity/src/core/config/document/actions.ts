@@ -2,18 +2,24 @@ import {type ButtonTone} from '@sanity/ui'
 import type React from 'react'
 import {type EditStateFor} from '../../store/_legacy'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ActionComponent<ActionProps> {
   (props: ActionProps): DocumentActionDescription | null
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentActionProps extends EditStateFor {
   revision?: string
   onComplete: () => void
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentActionComponent extends ActionComponent<DocumentActionProps> {
   /**
    * An optional meta property that can used to replace this document action
@@ -36,7 +42,9 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
   action?: 'delete' | 'discardChanges' | 'duplicate' | 'restore' | 'publish' | 'unpublish'
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentActionConfirmDialogProps {
   type: 'confirm'
   tone?: ButtonTone
@@ -49,40 +57,63 @@ export interface DocumentActionConfirmDialogProps {
   confirmButtonText?: React.ReactNode
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentActionModalDialogProps {
   type?: 'dialog'
   content: React.ReactNode
   /**
+   *
+   * @hidden
    * @beta
    */
   footer?: React.ReactNode
   /**
+   *
+   * @hidden
    * @beta
    */
   header?: React.ReactNode
   onClose: () => void
   showCloseButton?: boolean
   /**
+   *
+   * @hidden
    * @beta
    */
   width?: 'small' | 'medium' | 'large' | 'full'
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentActionPopoverDialogProps {
   type: 'popover'
   content: React.ReactNode
   onClose: () => void
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
+export interface DocumentActionCustomDialogComponentProps {
+  type: 'custom'
+  component: React.ReactNode
+}
+
+/**
+ * @hidden
+ * @beta */
 export type DocumentActionDialogProps =
   | DocumentActionConfirmDialogProps
   | DocumentActionPopoverDialogProps
   | DocumentActionModalDialogProps
+  | DocumentActionCustomDialogComponentProps
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentActionDescription {
   tone?: ButtonTone
   dialog?: DocumentActionDialogProps | false | null

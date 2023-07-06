@@ -3,15 +3,24 @@
 import React, {memo} from 'react'
 import {Box, Flex} from '@sanity/ui'
 import {FormNodeValidation} from '@sanity/types'
+import styled from 'styled-components'
 import {FieldPresence, FormNodePresence} from '../../../presence'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 
 export interface FormFieldHeaderProps {
   /**
+   *
+   * @hidden
+   * @beta
+   */
+  __unstable_actions?: React.ReactNode
+  /**
    * @beta
    */
   validation?: FormNodeValidation[]
   /**
+   *
+   * @hidden
    * @beta
    */
   __unstable_presence?: FormNodePresence[]
@@ -23,11 +32,24 @@ export interface FormFieldHeaderProps {
   title?: React.ReactNode
 }
 
+const Root = styled(Flex)({
+  // This prevents the buttons from taking up extra vertical space in the flex layout,
+  // due to their default vertical alignment being baseline.
+  lineHeight: 1,
+})
+
 export const FormFieldHeader = memo(function FormFieldHeader(props: FormFieldHeaderProps) {
-  const {validation, __unstable_presence: presence, description, inputId, title} = props
+  const {
+    __unstable_actions: actions,
+    __unstable_presence: presence,
+    description,
+    inputId,
+    title,
+    validation,
+  } = props
 
   return (
-    <Flex align="flex-end">
+    <Root align="flex-end">
       <Box flex={1} paddingY={2}>
         <FormFieldHeaderText
           validation={validation}
@@ -38,10 +60,16 @@ export const FormFieldHeader = memo(function FormFieldHeader(props: FormFieldHea
       </Box>
 
       {presence && presence.length > 0 && (
-        <Box>
+        <Box flex="none">
           <FieldPresence maxAvatars={4} presence={presence} />
         </Box>
       )}
-    </Flex>
+
+      {actions && (
+        <Box flex="none" marginLeft={3}>
+          {actions}
+        </Box>
+      )}
+    </Root>
   )
 })

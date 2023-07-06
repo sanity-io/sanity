@@ -4,6 +4,7 @@
 
 export * from './FormBuilderContext'
 export * from './components'
+export * from './field'
 export * from './inputs'
 export * from './members'
 export * from './patch'

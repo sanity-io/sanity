@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "3.9.0",
+  "version": "3.14.1",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -117,7 +117,7 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/types": "3.9.0",
+    "@sanity/types": "3.14.1",
     "get-random-values-esm": "^1.0.0",
     "moment": "^2.29.4"
   },
@@ -127,5 +127,6 @@
   },
   "engines": {
     "node": ">=14.18.0"
-  }
+  },
+  "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
 }

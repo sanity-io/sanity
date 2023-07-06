@@ -1,6 +1,8 @@
 /**
  * TODO: rename to `VERSION`
  *
+ *
+ * @hidden
  * @beta
  */
 // This string is overwritten by prepublish script with `.version` from package.json

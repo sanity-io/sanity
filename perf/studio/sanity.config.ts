@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
-import {defineConfig, PluginOptions} from 'sanity'
+import {defineConfig, defineDocumentFieldAction, PluginOptions} from 'sanity'
 import {deskTool} from 'sanity/desk'
+import {useCallback} from 'react'
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from '../config/constants'
 import {simple} from './schema/simple'
 import {deepObject} from './schema/deepObject'
@@ -19,6 +20,26 @@ export default defineConfig({
   name: 'default',
   projectId: STUDIO_PROJECT_ID,
   dataset: import.meta.env.SANITY_STUDIO_DATASET || STUDIO_DATASET,
+  document: {
+    unstable_fieldActions: (prev) => [
+      ...prev,
+      defineDocumentFieldAction({
+        name: 'perf/test',
+        useAction({documentId, documentType, path}) {
+          const handleAction = useCallback(() => {
+            // eslint-disable-next-line no-console
+            console.log('test action', {documentId, documentType, path})
+          }, [documentId, documentType, path])
+
+          return {
+            type: 'action',
+            title: 'Test',
+            onAction: handleAction,
+          }
+        },
+      }),
+    ],
+  },
   schema: {
     types: [simple, deepObject, deepArray, deepArrayString, deepArrayReferences, largeDocument],
   },

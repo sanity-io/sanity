@@ -4,11 +4,15 @@ import {getValidationRule} from '../utils/getValidationRule'
 import {StringInputProps} from '../types'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type UrlInputProps = StringInputProps
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function UrlInput(props: UrlInputProps) {

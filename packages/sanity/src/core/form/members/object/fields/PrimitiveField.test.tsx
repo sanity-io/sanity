@@ -4,6 +4,7 @@ import {render} from '@testing-library/react'
 import React, {PropsWithChildren} from 'react'
 import {ThemeProvider, studioTheme, LayerProvider} from '@sanity/ui'
 import userEvent from '@testing-library/user-event'
+import {ObjectSchemaType} from '@sanity/types'
 import {FieldMember} from '../../../store'
 import {
   defaultRenderField,
@@ -13,27 +14,23 @@ import {
 } from '../../../studio'
 import {PatchEvent, set} from '../../../patch'
 import {FIXME} from '../../../../FIXME'
+import {FormBuilderContext, FormBuilderContextValue} from '../../../FormBuilderContext'
 import {PrimitiveField} from './PrimitiveField'
 
 describe('PrimitiveField', () => {
   describe('number', () => {
     it('renders empty input when given no value', () => {
       // Given
-      const {member, formCallbacks} = setupTest('number', undefined)
+      const {member, TestWrapper} = setupTest('number', undefined)
 
       // When
       const {getByTestId} = render(
-        <ThemeProvider theme={studioTheme}>
-          <LayerProvider>
-            <FormCallbacksProvider {...formCallbacks}>
-              <PrimitiveField
-                member={member}
-                renderInput={defaultRenderInput}
-                renderField={defaultRenderField}
-              />
-            </FormCallbacksProvider>
-          </LayerProvider>
-        </ThemeProvider>
+        <PrimitiveField
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper}
       )
 
       // Then
@@ -173,10 +170,37 @@ describe('PrimitiveField', () => {
       expect(input).toBeInstanceOf(HTMLInputElement)
       expect(input.value).toEqual('1.00')
     })
+
+    it('wont trigger `onChange` callbacks when number input values are out of range', () => {
+      // Given
+      const {formCallbacks, member, TestWrapper} = setupTest('number', undefined)
+
+      const {getByTestId} = render(
+        <PrimitiveField
+          member={member}
+          renderInput={defaultRenderInput}
+          renderField={defaultRenderField}
+        />,
+        {wrapper: TestWrapper}
+      )
+
+      // When
+      const input = getByTestId('number-input') as HTMLInputElement
+      userEvent.paste(input!, (Number.MIN_SAFE_INTEGER - 1).toString())
+      userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
+
+      // Then
+      expect(formCallbacks.onChange).toBeCalledTimes(0)
+    })
   })
 })
 
 function setupTest(type: string, value: string | number | boolean | undefined) {
+  const schemaType = {
+    name: type,
+    jsonType: type as FIXME,
+  }
+
   const member: FieldMember = {
     kind: 'field',
     key: 'key',
@@ -185,12 +209,11 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
     collapsed: false,
     collapsible: false,
     open: true,
+    groups: [],
+    inSelectedGroup: false,
     field: {
       id: 'id',
-      schemaType: {
-        name: type,
-        jsonType: type as FIXME,
-      },
+      schemaType,
       level: 1,
       path: ['id'],
       presence: [],
@@ -212,11 +235,32 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
     onFieldGroupSelect: jest.fn(),
   }
 
+  const formBuilder: FormBuilderContextValue = {
+    __internal: {
+      documentId: 'test',
+      field: {actions: []},
+    } as any,
+    collapsedFieldSets: {value: undefined},
+    collapsedPaths: {value: undefined},
+    focusPath: [],
+    groups: [],
+    id: 'test',
+    members: [],
+    renderField: () => <>field</>,
+    renderInput: () => <>input</>,
+    renderItem: () => <>item</>,
+    renderPreview: () => <>preview</>,
+    schemaType: {} as ObjectSchemaType,
+    value: undefined,
+  }
+
   function TestWrapper({children}: PropsWithChildren) {
     return (
       <ThemeProvider theme={studioTheme}>
         <LayerProvider>
-          <FormCallbacksProvider {...formCallbacks}>{children}</FormCallbacksProvider>
+          <FormBuilderContext.Provider value={formBuilder}>
+            <FormCallbacksProvider {...formCallbacks}>{children}</FormCallbacksProvider>
+          </FormBuilderContext.Provider>
         </LayerProvider>
       </ThemeProvider>
     )

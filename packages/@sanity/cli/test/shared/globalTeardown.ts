@@ -25,10 +25,8 @@ export default async function globalTeardown(): Promise<void> {
   await rm(baseTestPath, {recursive: true, force: true})
 
   // Very hacky, but good enough for now:
-  // Force a cleanup of dangling entities left over from previous test runs every once in a while
-  if (Math.random() < 0.7) {
-    await cleanupDangling()
-  }
+  // Force a cleanup of dangling entities left over from previous test runs
+  await cleanupDangling()
 }
 
 function getErrorWarner(entity: string, id: string) {

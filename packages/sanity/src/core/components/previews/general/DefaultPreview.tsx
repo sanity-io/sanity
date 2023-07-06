@@ -8,7 +8,9 @@ import {PREVIEW_MEDIA_SIZE} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DefaultPreviewProps extends Omit<PreviewProps<'default'>, 'renderDefault'> {
   styles?: {
     root?: string
@@ -45,7 +47,9 @@ const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, 
   width: 60%;
 `
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export function DefaultPreview(props: DefaultPreviewProps) {
   const {title, subtitle, media, status, isPlaceholder, children, styles} = props
   const rootClassName = classNames(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)

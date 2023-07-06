@@ -11,5 +11,5 @@
     "packages/groq",
     "packages/sanity"
   ],
-  "version": "3.9.0"
+  "version": "3.14.1"
 }

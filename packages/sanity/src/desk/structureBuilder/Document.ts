@@ -33,7 +33,9 @@ const createDocumentChildResolver =
     return resolveDocumentNode({documentId: itemId, schemaType: type})
   }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentOptions {
   id: string
   type: string
@@ -41,7 +43,9 @@ export interface DocumentOptions {
   templateParameters?: Record<string, unknown>
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type PartialDocumentNode = {
   id?: string
   title?: string
@@ -50,7 +54,9 @@ export type PartialDocumentNode = {
   options?: Partial<DocumentOptions>
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export class DocumentBuilder implements Serializable<DocumentNode> {
   protected spec: PartialDocumentNode
 

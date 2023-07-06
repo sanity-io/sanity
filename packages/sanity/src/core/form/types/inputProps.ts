@@ -8,12 +8,14 @@ import {
   NumberSchemaType,
   ObjectSchemaType,
   Path,
+  PortableTextBlock,
   ReferenceValue,
   SchemaType,
   SlugValue,
   StringSchemaType,
 } from '@sanity/types'
 import React, {ComponentType, FocusEventHandler, FormEventHandler} from 'react'
+import {HotkeyOptions, OnCopyFn, OnPasteFn} from '@sanity/portable-text-editor'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
@@ -26,203 +28,361 @@ import {
 
 import {UploaderResolver} from '../studio'
 import {FormFieldGroup} from '../store'
+import {RenderBlockActionsCallback} from '../inputs'
 import {
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
   RenderArrayOfPrimitivesItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
 } from './renderCallback'
 import {ArrayInputInsertEvent, ArrayInputMoveItemEvent, UploadEvent} from './event'
-import {ArrayInputFunctionsProps} from './_transitional'
+import {ArrayInputFunctionsProps, PortableTextMarker, RenderCustomMarkers} from './_transitional'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BaseInputProps {
   renderDefault: (props: InputProps) => React.ReactElement
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ObjectInputProps<
   T = Record<string, any>,
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseInputProps,
-    ObjectFormNode<T, S> {
-  /** @beta */
+    Omit<ObjectFormNode<T, S>, '_allMembers'> {
+  /**
+   * @hidden
+   * @beta */
   groups: FormFieldGroup[]
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onFieldCollapse: (fieldName: string) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onFieldExpand: (fieldName: string) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onFieldSetCollapse: (fieldSetName: string) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onFieldSetExpand: (fieldSetName: string) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onFieldGroupSelect: (groupName: string) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onPathFocus: (path: Path) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onFieldOpen: (fieldName: string) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onFieldClose: (fieldName: string) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
+  renderAnnotation?: RenderAnnotationCallback
+
+  /**
+   * @hidden
+   * @beta */
+  renderBlock?: RenderBlockCallback
+
+  /**
+   * @hidden
+   * @beta */
   renderInput: RenderInputCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   renderField: RenderFieldCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
+  renderInlineBlock?: RenderBlockCallback
+
+  /**
+   * @hidden
+   * @beta */
   renderItem: RenderArrayOfObjectsItemCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   renderPreview: RenderPreviewCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   elementProps: ComplexElementProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseInputProps,
     ArrayOfObjectsFormNode<T[], S> {
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   arrayFunctions?: ComponentType<ArrayInputFunctionsProps<T, S>>
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   // Data manipulation callbacks special for array inputs
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onItemAppend: (item: T) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onItemPrepend: (item: T) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onItemRemove: (itemKey: string) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onItemMove: (event: ArrayInputMoveItemEvent) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onInsert: (event: ArrayInputInsertEvent<T>) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   resolveInitialValue: (type: SchemaType, params: Record<string, unknown>) => Promise<T>
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   resolveUploader: UploaderResolver
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onUpload: (event: UploadEvent) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onPathFocus: (path: Path) => void
 
   /**
    * for array inputs using expand/collapse semantics for items
+   *
+   * @hidden
    * @beta
    */
   onItemCollapse: (itemKey: string) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onItemExpand: (itemKey: string) => void
 
   /**
    * for array inputs using modal open/close semantics for items
+   *
+   * @hidden
    * @beta
    */
   onItemOpen: (path: Path) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onItemClose: () => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
+  renderAnnotation?: RenderAnnotationCallback
+
+  /**
+   * @hidden
+   * @beta */
+  renderBlock?: RenderBlockCallback
+
+  /**
+   * @hidden
+   * @beta */
+  renderInlineBlock?: RenderBlockCallback
+
+  /**
+   * @hidden
+   * @beta */
   renderField: RenderFieldCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   renderInput: RenderInputCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   renderItem: RenderArrayOfObjectsItemCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   renderPreview: RenderPreviewCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   elementProps: ComplexElementProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[] ? K : unknown
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ArrayOfPrimitivesInputProps<
   T extends string | boolean | number = string | boolean | number,
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseInputProps,
     ArrayOfPrimitivesFormNode<T[], S> {
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   arrayFunctions?: ComponentType<ArrayInputFunctionsProps<T, S>>
 
   // note: not a priority to support collapsible arrays right now
   onSetCollapsed: (collapsed: boolean) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onItemAppend: (item: ArrayOfPrimitivesElementType<T[]>) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onItemPrepend: (item: ArrayOfPrimitivesElementType<T[]>) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onItemRemove: (index: number) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onMoveItem: (event: ArrayInputMoveItemEvent) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onInsert: (event: {items: T[]; position: 'before' | 'after'; referenceIndex: number}) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   resolveUploader: UploaderResolver<NumberSchemaType | BooleanSchemaType | StringSchemaType>
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onUpload: (event: UploadEvent) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onIndexFocus: (index: number) => void
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
+  renderAnnotation?: RenderAnnotationCallback
+
+  /**
+   * @hidden
+   * @beta */
+  renderBlock?: RenderBlockCallback
+
+  /**
+   * @hidden
+   * @beta */
+  renderInlineBlock?: RenderBlockCallback
+
+  /**
+   * @hidden
+   * @beta */
   renderInput: RenderInputCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   renderItem: RenderArrayOfPrimitivesItemCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   renderPreview: RenderPreviewCallback
 
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   elementProps: ComplexElementProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface PrimitiveInputElementProps {
   value?: string
   id: string
@@ -234,7 +394,9 @@ export interface PrimitiveInputElementProps {
   ref: React.MutableRefObject<any>
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ComplexElementProps {
   id: string
   onFocus: FocusEventHandler
@@ -242,33 +404,49 @@ export interface ComplexElementProps {
   ref: React.MutableRefObject<any>
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   extends BaseInputProps,
     StringFormNode<S> {
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   elementProps: PrimitiveInputElementProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   extends BaseInputProps,
     NumberFormNode<S> {
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   validationError?: string
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   elementProps: PrimitiveInputElementProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
   extends BaseInputProps,
     BooleanFormNode<S> {
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
 
   /**
@@ -278,15 +456,38 @@ export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaTy
    * For advanced use cases use the ´validation´ prop which contains more levels and details
    */
   validationError?: string
-  /** @beta */
+  /**
+   * @hidden
+   * @beta */
   elementProps: PrimitiveInputElementProps
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
+export interface PortableTextInputProps
+  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
+  hotkeys?: HotkeyOptions
+  markers?: PortableTextMarker[]
+  onCopy?: OnCopyFn
+  onPaste?: OnPasteFn
+  renderBlockActions?: RenderBlockActionsCallback
+  renderCustomMarkers?: RenderCustomMarkers
+}
+
+/**
+ * @hidden
+ * @beta */
 export type InputProps =
+  | ArrayOfObjectsInputProps
+  | ArrayOfPrimitivesInputProps
+  | BooleanInputProps
+  | NumberInputProps
   | ObjectInputProps
   | ObjectInputProps<CrossDatasetReferenceValue>
   | ObjectInputProps<FileValue>
@@ -294,8 +495,5 @@ export type InputProps =
   | ObjectInputProps<ImageValue>
   | ObjectInputProps<ReferenceValue>
   | ObjectInputProps<SlugValue>
-  | ArrayOfObjectsInputProps
-  | ArrayOfPrimitivesInputProps
+  | PortableTextInputProps
   | StringInputProps
-  | BooleanInputProps
-  | NumberInputProps

@@ -55,8 +55,10 @@ async function matchesFilter(
   }
   const parsed = PARSED_FILTERS_MEMO.get(filter)
 
-  const params = getParams(currentUser)
-  const data = await (await evaluate(parsed, {dataset: [document], params})).get()
+  const evalParams = getParams(currentUser)
+  const {identity} = evalParams
+  const params: Record<string, unknown> = {...evalParams}
+  const data = await (await evaluate(parsed, {dataset: [document], identity, params})).get()
   return data?.length === 1
 }
 

@@ -17,6 +17,7 @@ export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
 
       & input {
         overflow: hidden;
+        overflow: clip;
         top: 0;
         left: 0;
         width: 100%;

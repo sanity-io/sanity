@@ -49,6 +49,8 @@ async function resolveUserDefinedFilter(
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export type StudioReferenceInputProps = ObjectInputProps<Reference, ReferenceSchemaType>
@@ -68,6 +70,8 @@ type SearchError = {
 }
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function StudioReferenceInput(props: StudioReferenceInputProps) {

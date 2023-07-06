@@ -1,8 +1,9 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, {useContext, createContext, useMemo} from 'react'
+import React, {useContext, createContext, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {startsWith, isEqual} from '@sanity/util/paths'
 import {FormNodePresence} from '../../../presence'
+import {immutableReconcile} from '../../store/utils/immutableReconcile'
 
 const PresenceContext = createContext<FormNodePresence[]>([])
 
@@ -27,11 +28,13 @@ export function useFormFieldPresence(): FormNodePresence[] {
  */
 export function useChildPresence(path: Path, inclusive?: boolean): FormNodePresence[] {
   const presence = useFormFieldPresence()
-  return useMemo(
-    () =>
-      presence.filter(
-        (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path))
-      ),
-    [inclusive, path, presence]
+  const prev = useRef(presence)
+  const next = immutableReconcile(
+    prev.current,
+    presence.filter(
+      (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path))
+    )
   )
+  prev.current = next
+  return next
 }

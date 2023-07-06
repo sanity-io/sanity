@@ -13,7 +13,7 @@ const PlaceholderStringInput = (props: Props) => {
 
   return props.renderDefault({
     ...props,
-    elementProps: {placeholder: proxyValue, ...props.elementProps},
+    elementProps: {...props.elementProps, placeholder: proxyValue},
   })
 }
 

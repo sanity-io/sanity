@@ -10,7 +10,7 @@ import {createSchema} from '../schema'
 import {AuthStore, createAuthStore} from '../store/_legacy'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
-import {isNonNullable} from '../util'
+import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
@@ -28,6 +28,7 @@ import {
 import {
   documentActionsReducer,
   documentBadgesReducer,
+  documentInspectorsReducer,
   documentLanguageFilterReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -44,6 +45,7 @@ import {resolveConfigProperty} from './resolveConfigProperty'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {SchemaError} from './SchemaError'
 import {createDefaultIcon} from './createDefaultIcon'
+import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -205,11 +207,12 @@ interface ResolveSourceOptions {
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
   const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
-  const {dataset, url: baseUrl} = bifurVersionedClient.config()
+  const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
   const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
+  const urlWithTag = `${url}?tag=${requestTagPrefix}`
 
   const options = auth.token ? {token$: auth.token} : {}
-  return fromUrl(url, options)
+  return fromUrl(urlWithTag, options)
 }
 
 function resolveSource({
@@ -459,6 +462,22 @@ function resolveSource({
           initialValue: initialDocumentBadges,
           propertyName: 'document.badges',
           reducer: documentBadgesReducer,
+        }),
+      unstable_fieldActions: (partialContext) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, ...partialContext},
+          initialValue: initialDocumentFieldActions,
+          propertyName: 'document.unstable_fieldActions',
+          reducer: documentFieldActionsReducer,
+        }),
+      inspectors: (partialContext) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, ...partialContext},
+          initialValue: EMPTY_ARRAY,
+          propertyName: 'document.inspectors',
+          reducer: documentInspectorsReducer,
         }),
       resolveProductionUrl: (partialContext) =>
         resolveConfigProperty({

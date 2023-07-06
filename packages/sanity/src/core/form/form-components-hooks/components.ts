@@ -5,9 +5,14 @@ import {
   defaultResolveInputComponent,
   defaultResolvePreviewComponent,
 } from '../studio/inputResolver/inputResolver'
-import {FieldProps, InputProps, ItemProps} from '../types'
+import {BlockAnnotationProps, BlockProps, FieldProps, InputProps, ItemProps} from '../types'
 import {defaultResolveFieldComponent} from '../studio/inputResolver/fieldResolver'
 import {defaultResolveItemComponent} from '../studio/inputResolver/itemResolver'
+import {
+  defaultResolveBlockComponent,
+  defaultResolveInlineBlockComponent,
+  defaultResolveAnnotationComponent,
+} from '../studio/inputResolver/blockResolver'
 
 function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: {
   componentProps: Omit<T, 'renderDefault'>
@@ -83,5 +88,37 @@ export function DefaultPreview(props: Omit<PreviewProps, 'renderDefault'>): Reac
   return useResolveDefaultComponent<PreviewProps>({
     componentProps: props,
     componentResolver: defaultResolvePreviewComponent,
+  })
+}
+
+/**
+ * @internal
+ */
+export function DefaultBlock(props: Omit<BlockProps, 'renderDefault'>): React.ReactElement {
+  return useResolveDefaultComponent<Omit<BlockProps, 'renderDefault'>>({
+    componentProps: props,
+    componentResolver: defaultResolveBlockComponent,
+  })
+}
+
+/**
+ * @internal
+ */
+export function DefaultInlineBlock(props: Omit<BlockProps, 'renderDefault'>): React.ReactElement {
+  return useResolveDefaultComponent<Omit<BlockProps, 'renderDefault'>>({
+    componentProps: props,
+    componentResolver: defaultResolveInlineBlockComponent,
+  })
+}
+
+/**
+ * @internal
+ */
+export function DefaultAnnotation(
+  props: Omit<BlockAnnotationProps, 'renderDefault'>
+): React.ReactElement {
+  return useResolveDefaultComponent<Omit<BlockAnnotationProps, 'renderDefault'>>({
+    componentProps: props,
+    componentResolver: defaultResolveAnnotationComponent,
   })
 }

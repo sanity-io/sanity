@@ -1,7 +1,8 @@
-import React, {ReactNode, useCallback} from 'react'
-import {Box, Dialog, Layer, ResponsiveWidthProps} from '@sanity/ui'
+import React, {type ReactNode, useState} from 'react'
+import {Box, Dialog, ResponsiveWidthProps} from '@sanity/ui'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
+import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -14,6 +15,7 @@ interface Props {
   children?: ReactNode
   // eslint-disable-next-line camelcase
   legacy_referenceElement: HTMLElement | null
+  autofocus?: boolean
 }
 
 export function EditPortal(props: Props): React.ReactElement {
@@ -25,7 +27,9 @@ export function EditPortal(props: Props): React.ReactElement {
     onClose,
     type,
     width,
+    autofocus,
   } = props
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
@@ -35,15 +39,19 @@ export function EditPortal(props: Props): React.ReactElement {
 
   if (type === 'dialog') {
     return (
-      <Dialog
-        header={header}
-        id={id || ''}
-        onClickOutside={onClose}
-        onClose={onClose}
-        width={width}
-      >
-        {contents}
-      </Dialog>
+      <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
+        <Dialog
+          header={header}
+          id={id || ''}
+          onClickOutside={onClose}
+          onClose={onClose}
+          width={width}
+          contentRef={setDocumentScrollElement}
+          __unstable_autoFocus={autofocus}
+        >
+          {contents}
+        </Dialog>
+      </VirtualizerScrollInstanceProvider>
     )
   }
 
@@ -53,8 +61,11 @@ export function EditPortal(props: Props): React.ReactElement {
       onClose={onClose}
       referenceElement={referenceElement}
       width={width}
+      containerRef={setDocumentScrollElement}
     >
-      {contents}
+      <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
+        {contents}
+      </VirtualizerScrollInstanceProvider>
     </PopoverDialog>
   )
 }

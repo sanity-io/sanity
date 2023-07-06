@@ -1,4 +1,4 @@
-import {Card, Stack, Text, useBoundaryElement, useTheme} from '@sanity/ui'
+import {Card, Stack, Text, useTheme} from '@sanity/ui'
 import {isKeySegment} from '@sanity/types'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
@@ -16,6 +16,7 @@ import {ArrayOfObjectsItem} from '../../../../members'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
+import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
 import {ErrorItem} from './ErrorItem'
 import {useMemoCompare} from './useMemoCompare'
 
@@ -23,22 +24,25 @@ const EMPTY: [] = []
 
 export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInputProps<Item>) {
   const {
-    schemaType,
-    onChange,
-    value = EMPTY,
-    readOnly,
-    members,
+    arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
     elementProps,
-    resolveUploader,
+    members,
+    onChange,
     onInsert,
     onItemMove,
     onUpload,
     focusPath,
-    renderPreview,
+    readOnly,
+    renderAnnotation,
+    renderBlock,
     renderField,
-    renderItem,
+    renderInlineBlock,
     renderInput,
-    arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
+    renderItem,
+    renderPreview,
+    resolveUploader,
+    schemaType,
+    value = EMPTY,
   } = props
 
   // Stores the index of the item being dragged
@@ -64,7 +68,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     shallowEquals
   )
 
-  const boundaryElement = useBoundaryElement()
+  const {scrollElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
 
   const focusPathKey = useMemo(() => {
@@ -138,7 +142,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize,
-    getScrollElement: useCallback(() => boundaryElement.element, [boundaryElement.element]),
+    getScrollElement: useCallback(() => scrollElement, [scrollElement]),
     observeElementOffset,
     rangeExtractor,
     getItemKey: useCallback((index: number) => memberKeys[index], [memberKeys]),
@@ -221,9 +225,12 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                       {member.kind === 'item' && (
                         <ArrayOfObjectsItem
                           member={member}
-                          renderItem={renderItem}
+                          renderAnnotation={renderAnnotation}
+                          renderBlock={renderBlock}
                           renderField={renderField}
+                          renderInlineBlock={renderInlineBlock}
                           renderInput={renderInput}
+                          renderItem={renderItem}
                           renderPreview={renderPreview}
                         />
                       )}

@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react'
 import {DeskToolContext} from './DeskToolContext'
 import {createStructureBuilder, DefaultDocumentNodeResolver} from './structureBuilder'
-import {StructureResolver, UnresolvedPaneNode} from './types'
+import {DeskToolContextValue, StructureResolver, UnresolvedPaneNode} from './types'
 import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
 
 /** @internal */
@@ -39,24 +39,26 @@ export function DeskToolProvider({
     return S.defaults() as UnresolvedPaneNode
   }, [S, resolveStructure, configContext, documentStore])
 
-  return (
-    <DeskToolContext.Provider
-      value={useMemo(() => {
-        return {
-          features: {
-            backButton: layoutCollapsed,
-            reviewChanges: !layoutCollapsed,
-            splitPanes: !layoutCollapsed,
-            splitViews: !layoutCollapsed,
-          },
-          layoutCollapsed,
-          setLayoutCollapsed,
-          rootPaneNode,
-          structureContext: S.context,
-        }
-      }, [layoutCollapsed, rootPaneNode, S.context])}
-    >
-      {children}
-    </DeskToolContext.Provider>
+  const features: DeskToolContextValue['features'] = useMemo(
+    () => ({
+      backButton: layoutCollapsed,
+      resizablePanes: !layoutCollapsed,
+      reviewChanges: !layoutCollapsed,
+      splitPanes: !layoutCollapsed,
+      splitViews: !layoutCollapsed,
+    }),
+    [layoutCollapsed]
   )
+
+  const deskTool: DeskToolContextValue = useMemo(() => {
+    return {
+      features,
+      layoutCollapsed,
+      setLayoutCollapsed,
+      rootPaneNode,
+      structureContext: S.context,
+    }
+  }, [features, layoutCollapsed, rootPaneNode, S.context])
+
+  return <DeskToolContext.Provider value={deskTool}>{children}</DeskToolContext.Provider>
 }

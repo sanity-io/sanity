@@ -109,6 +109,22 @@ export function Editor(props: EditorProps) {
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
+  // Re-focus/blur the editor when toggling fullscreen.
+  // The hasFocus is kept in ref so focus or blur is called only
+  // when `isFullscreen` changes (and not when `hasFocus` changes)
+  // This is important to avoid focus/blur loops when opening up
+  // object blocks for editing where the form focus and
+  // the editor selection share the same path.
+  const focusRef = useRef(hasFocus)
+  useEffect(() => {
+    focusRef.current = hasFocus
+  }, [hasFocus])
+  useEffect(() => {
+    if (focusRef.current) {
+      PortableTextEditor.focus(editor)
+    }
+  }, [editor, isFullscreen])
+
   const editable = useMemo(
     () => (
       <PortableTextEditable
@@ -144,19 +160,10 @@ export function Editor(props: EditorProps) {
 
   const handleToolBarOnMemberOpen = useCallback(
     (relativePath: Path) => {
-      PortableTextEditor.blur(editor)
-      const fullPath = path.concat(relativePath)
-      onItemOpen(fullPath)
+      onItemOpen(path.concat(relativePath))
     },
-    [editor, onItemOpen, path]
+    [onItemOpen, path]
   )
-
-  // Focus the editor if we have focus and the editor is re-rendered (toggling fullscreen for instance)
-  useEffect(() => {
-    if (hasFocus) {
-      PortableTextEditor.focus(editor)
-    }
-  }, [editor, hasFocus])
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor">

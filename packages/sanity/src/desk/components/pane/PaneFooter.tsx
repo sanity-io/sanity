@@ -10,6 +10,8 @@ interface PaneFooterProps {
 }
 
 /**
+ *
+ * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export const PaneFooter = forwardRef(function PaneFooter(

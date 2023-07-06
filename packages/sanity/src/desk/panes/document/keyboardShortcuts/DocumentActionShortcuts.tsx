@@ -1,13 +1,14 @@
 import isHotkey from 'is-hotkey'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {ElementType, createElement, useCallback, useMemo, useState} from 'react'
 import {ActionStateDialog} from '../statusBar'
-import {Pane, RenderActionCollectionState} from '../../../components'
+import {RenderActionCollectionState} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentActionDescription, DocumentActionProps, LegacyLayerProvider} from 'sanity'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null
   activeIndex: number
+  as?: ElementType
   currentMinWidth?: number
   flex?: number
   id: string
@@ -18,11 +19,12 @@ export interface KeyboardShortcutResponderProps {
 }
 
 function KeyboardShortcutResponder(
-  props: KeyboardShortcutResponderProps & Omit<React.HTMLProps<HTMLDivElement>, 'height'>
+  props: KeyboardShortcutResponderProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height'>
 ) {
   const {
     actionsBoxElement,
     activeIndex,
+    as = 'div',
     children,
     id,
     onActionStart,
@@ -63,21 +65,29 @@ function KeyboardShortcutResponder(
     [onActionStart, onKeyDown, states]
   )
 
-  return (
-    <Pane id={id} onKeyDown={handleKeyDown} tabIndex={-1} {...rest} ref={rootRef}>
-      {children}
-
-      {activeAction && activeAction.dialog && (
+  return createElement(
+    as,
+    {
+      id,
+      onKeyDown: handleKeyDown,
+      tabIndex: -1,
+      ...rest,
+      ref: rootRef,
+    },
+    [
+      children,
+      activeAction && activeAction.dialog && (
         <LegacyLayerProvider zOffset="paneFooter">
           <ActionStateDialog dialog={activeAction.dialog} referenceElement={actionsBoxElement} />
         </LegacyLayerProvider>
-      )}
-    </Pane>
+      ),
+    ]
   )
 }
 
 export interface DocumentActionShortcutsProps {
   actionsBoxElement: HTMLElement | null
+  as?: ElementType
   currentMinWidth?: number
   debug?: boolean
   flex: number
@@ -87,8 +97,8 @@ export interface DocumentActionShortcutsProps {
 }
 
 export const DocumentActionShortcuts = React.memo(
-  (props: DocumentActionShortcutsProps & React.HTMLProps<HTMLDivElement>) => {
-    const {actionsBoxElement, children, ...rest} = props
+  (props: DocumentActionShortcutsProps & Omit<React.HTMLProps<HTMLDivElement>, 'as'>) => {
+    const {actionsBoxElement, as = 'div', children, ...rest} = props
     const {actions, editState} = useDocumentPane()
     const [activeIndex, setActiveIndex] = useState(-1)
 
@@ -119,6 +129,7 @@ export const DocumentActionShortcuts = React.memo(
             {...rest}
             activeIndex={activeIndex}
             actionsBoxElement={actionsBoxElement}
+            as={as}
             onActionStart={onActionStart}
             states={states}
           >

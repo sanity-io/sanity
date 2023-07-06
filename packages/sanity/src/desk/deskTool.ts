@@ -1,6 +1,5 @@
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
-import {definePlugin} from 'sanity'
 import {
   DeleteAction,
   DiscardChangesAction,
@@ -13,6 +12,9 @@ import {LiveEditBadge} from './documentBadges'
 import {getIntentState} from './getIntentState'
 import {router} from './router'
 import {DeskToolOptions} from './types'
+import {validationInspector} from './panes/document/inspectors/validation'
+import {changesInspector} from './panes/document/inspectors/changes'
+import {definePlugin} from 'sanity'
 
 const documentActions = [
   PublishAction,
@@ -25,7 +27,9 @@ const documentActions = [
 
 const documentBadges = [LiveEditBadge]
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
   name: '@sanity/desk-tool',
   document: {
@@ -47,6 +51,7 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
       }
       return badges
     },
+    inspectors: [validationInspector, changesInspector],
   },
   tools: [
     {

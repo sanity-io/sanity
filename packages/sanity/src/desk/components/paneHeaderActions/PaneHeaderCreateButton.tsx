@@ -112,14 +112,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
 
   return (
     <MenuButton
-      button={
-        <Button
-          icon={ComposeIcon}
-          mode="bleed"
-          padding={3}
-          data-testid="multi-action-intent-button"
-        />
-      }
+      button={<Button icon={ComposeIcon} mode="bleed" data-testid="multi-action-intent-button" />}
       id="create-menu"
       menu={
         <Menu>

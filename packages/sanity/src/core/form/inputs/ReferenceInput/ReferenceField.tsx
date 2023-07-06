@@ -76,7 +76,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
   useDidUpdate(focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus && elementRef.current) {
       // Note: if editing an inline item, focus is handled by the item input itself and no ref is being set
-      elementRef.current?.focus()
+      elementRef.current.focus()
     }
   })
 
@@ -260,6 +260,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
 
   return (
     <FormField
+      __unstable_headerActions={props.actions}
       level={props.level}
       title={props.title}
       description={props.description}
@@ -285,6 +286,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
                 __unstable_focusRing
                 selected={selected}
                 pressed={pressed}
+                ref={elementRef}
                 data-selected={selected ? true : undefined}
                 data-pressed={pressed ? true : undefined}
               >

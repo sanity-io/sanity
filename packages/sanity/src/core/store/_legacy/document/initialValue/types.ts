@@ -1,23 +1,31 @@
 import {SanityDocumentLike} from '@sanity/types'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface InitialValueLoadingMsg {
   type: 'loading'
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface InitialValueSuccessMsg {
   type: 'success'
   value: SanityDocumentLike | null
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface InitialValueErrorMsg {
   type: 'error'
   error: Error
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export type InitialValueMsg = InitialValueLoadingMsg | InitialValueSuccessMsg | InitialValueErrorMsg
 
 /** @internal */

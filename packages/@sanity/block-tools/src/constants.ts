@@ -8,6 +8,8 @@ export interface PartialBlock {
   listItem?: string
 }
 
+export const PRESERVE_WHITESPACE_TAGS = ['pre', 'textarea', 'code']
+
 export const BLOCK_DEFAULT_STYLE = 'normal'
 
 export const DEFAULT_BLOCK: PartialBlock = Object.freeze({
@@ -61,6 +63,11 @@ export const HTML_DECORATOR_TAGS: Record<string, string | undefined> = {
   del: 'strike-through',
 
   code: 'code',
+  sup: 'sup',
+  sub: 'sub',
+  ins: 'ins',
+  mark: 'mark',
+  small: 'small',
 }
 
 export const HTML_LIST_ITEM_TAGS: Record<string, PartialBlock | undefined> = {

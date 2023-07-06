@@ -116,7 +116,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
     <CommandList
       activeItemDataAttr="data-hovered"
       ariaLabel="New document"
-      autoFocus={!supportsTouch}
+      autoFocus={supportsTouch ? undefined : 'input'}
       getItemDisabled={getItemDisabled}
       inputElement={textInputElement}
       itemHeight={INLINE_PREVIEW_HEIGHT}

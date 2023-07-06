@@ -4,6 +4,8 @@ import {GridArrayInput} from './Grid/GridArrayInput'
 import {ListArrayInput} from './List/ListArrayInput'
 
 /**
+ *
+ * @hidden
  * @beta
  */
 export function ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {

@@ -1,4 +1,4 @@
-import {useSyncExternalStore} from 'react'
+import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
 import {TimelineState, TimelineStore} from './useTimelineStore'
 
 /**
@@ -11,5 +11,10 @@ export function useTimelineSelector<ReturnValue>(
   timelineStore: TimelineStore,
   selector: (timelineState: TimelineState) => ReturnValue
 ): ReturnValue {
-  return useSyncExternalStore(timelineStore.subscribe, () => selector(timelineStore.getSnapshot()))
+  return useSyncExternalStoreWithSelector(
+    timelineStore.subscribe,
+    timelineStore.getSnapshot,
+    null,
+    selector
+  )
 }

@@ -140,12 +140,14 @@ async function prepareDatasets() {
     const datasets = [args.documentsDataset, args.graphqlDataset, args.aclDataset]
 
     await Promise.all(
-      datasets.map((ds) =>
-        client.datasets.create(ds, {aclMode: 'public'}).catch((err) => {
+      datasets.map((ds) => {
+        // eslint-disable-next-line no-console
+        console.log(`Creating dataset ${ds}...`)
+        return client.datasets.create(ds, {aclMode: 'public'}).catch((err) => {
           err.message = `Failed to create dataset "${ds}":\n${err.message}`
           throw err
         })
-      )
+      })
     )
   }
 }

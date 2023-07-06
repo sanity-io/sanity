@@ -1,5 +1,5 @@
 import path from 'path'
-import {readFile, readdir} from 'fs/promises'
+import {readFile, readdir, stat} from 'fs/promises'
 import {runSanityCmdCommand, studiosPath, studioVersions} from './shared/environment'
 import {describeCliTest, testConcurrent} from './shared/describe'
 
@@ -52,6 +52,14 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
           if (!cssPath) {
             throw new Error('Could not find Sanity CSS entry file (-[hash].css)')
           }
+
+          // Ensure favicons + web manifest
+          expect(
+            await stat(path.join(studioPath, 'out/favicon.ico')).catch(() => null)
+          ).toBeTruthy()
+          const favicons = files.filter((file) => /^favicon|^apple-touch-icon/.test(file))
+          expect(favicons).toHaveLength(5)
+          expect(files).toContain('manifest.webmanifest')
 
           const builtHtml = await readFile(path.join(studioPath, 'out', 'index.html'), 'utf8')
           const builtJs = await readFile(path.join(studioPath, 'out', 'static', jsPath), 'utf8')

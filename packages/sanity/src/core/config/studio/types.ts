@@ -1,24 +1,32 @@
 import React from 'react'
 import {Tool} from '../types'
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 // Components
 export interface LayoutProps {
   renderDefault: (props: LayoutProps) => React.ReactElement
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface LogoProps {
   title: string
   renderDefault: (props: LogoProps) => React.ReactElement
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface NavbarProps {
   renderDefault: (props: NavbarProps) => React.ReactElement
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface ToolMenuProps {
   activeToolName?: string
   closeSidebar: () => void
@@ -28,7 +36,9 @@ export interface ToolMenuProps {
   renderDefault: (props: ToolMenuProps) => React.ReactElement
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 // Config
 export interface StudioComponents {
   layout: React.ComponentType<Omit<LayoutProps, 'renderDefault'>>
@@ -37,7 +47,9 @@ export interface StudioComponents {
   toolMenu: React.ComponentType<Omit<ToolMenuProps, 'renderDefault'>>
 }
 
-/** @beta */
+/**
+ * @hidden
+ * @beta */
 export interface StudioComponentsPluginOptions {
   layout?: React.ComponentType<LayoutProps>
   logo?: React.ComponentType<LogoProps>

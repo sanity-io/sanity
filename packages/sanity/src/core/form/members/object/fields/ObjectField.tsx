@@ -1,19 +1,27 @@
-import React, {useCallback, useMemo, useRef} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
+import {isShallowEmptyObject} from '@sanity/util/content'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {FieldMember, ObjectFormNode} from '../../../store'
 import {
   ArrayOfObjectsInputProps,
   ObjectFieldProps,
   ObjectInputProps,
+  RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
   RenderFieldCallback,
   RenderInputCallback,
   RenderPreviewCallback,
 } from '../../../types'
-import {PatchArg, PatchEvent, setIfMissing} from '../../../patch'
+import {PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {createProtoValue} from '../../../utils/createProtoValue'
+import {applyAll} from '../../../patch/applyPatch'
+import {useFormBuilder} from '../../../useFormBuilder'
+import {useFormPublishedId} from '../../../useFormPublishedId'
+import {DocumentFieldActionNode} from '../../../../config'
+import {FieldActionMenu, FieldActionsProvider, FieldActionsResolver} from '../../../field'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
@@ -22,7 +30,10 @@ import {createProtoValue} from '../../../utils/createProtoValue'
  */
 export const ObjectField = function ObjectField(props: {
   member: FieldMember<ObjectFormNode>
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
   renderField: RenderFieldCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
@@ -37,8 +48,31 @@ export const ObjectField = function ObjectField(props: {
     onFieldGroupSelect,
   } = useFormCallbacks()
 
-  const {member, renderField, renderInput, renderItem, renderPreview} = props
+  const {
+    member,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
+  } = props
+
+  const {
+    field: {actions: fieldActions},
+  } = useFormBuilder().__internal
+  const documentId = useFormPublishedId()
+  const [fieldActionNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
+
   const focusRef = useRef<{focus: () => void}>()
+  // Keep a local reference to the most recent value. See comment in `handleChange` below for more details
+  const pendingValue = useRef(member.field.value)
+
+  useEffect(() => {
+    // if the props value has changed, then we should update the pending value
+    pendingValue.current = member.field.value
+  }, [member.field.value])
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -63,13 +97,32 @@ export const ObjectField = function ObjectField(props: {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
+      const isRoot = member.field.path.length === 0
+
+      // this handle touches on more than just object fields, documents included
+      // if we're at a "document" level, then we want to have a way to skip the following logic
+      if (!isRoot) {
+        const patches = PatchEvent.from(event).patches
+        // Apply the patch to a local cache of the last received field value from props.
+        // We might receive several calls to `handleChange` synchronously within the same update cycle before React
+        // passes the updated value back through props member.field.value, so we want to check if it's become empty, we can't do that by looking at the stale `props.member.field.value`
+        // Instead we keep updating the local ref/value as we receive the patches
+        pendingValue.current = applyAll(pendingValue.current || {}, patches)
+
+        // if the result after applying the patches is empty, then we should unset the field
+        if (pendingValue.current && isShallowEmptyObject(pendingValue.current)) {
+          onChange(PatchEvent.from(unset([member.name])))
+          return
+        }
+      }
+      // otherwise apply the patch
       onChange(
         PatchEvent.from(event)
           .prepend(setIfMissing(createProtoValue(member.field.schemaType)))
           .prefixAll(member.name)
       )
     },
-    [onChange, member.field.schemaType, member.name]
+    [onChange, member, pendingValue]
   )
 
   const handleCollapse = useCallback(() => {
@@ -164,7 +217,10 @@ export const ObjectField = function ObjectField(props: {
       focused: member.field.focused,
       groups: member.field.groups,
       onChange: handleChange,
+      renderAnnotation,
+      renderBlock,
       renderField,
+      renderInlineBlock,
       renderInput,
       renderItem,
       renderPreview,
@@ -193,7 +249,10 @@ export const ObjectField = function ObjectField(props: {
     handleCollapseFieldSet,
     handleFocusChildPath,
     handleChange,
+    renderAnnotation,
+    renderBlock,
     renderField,
+    renderInlineBlock,
     renderInput,
     renderItem,
     renderPreview,
@@ -203,6 +262,10 @@ export const ObjectField = function ObjectField(props: {
 
   const fieldProps = useMemo((): Omit<ObjectFieldProps, 'renderDefault'> => {
     return {
+      actions:
+        fieldActionNodes.length > 0 ? (
+          <FieldActionMenu focused={member.field.focused} nodes={fieldActionNodes} />
+        ) : undefined,
       name: member.name,
       index: member.index,
       level: member.field.level,
@@ -230,16 +293,18 @@ export const ObjectField = function ObjectField(props: {
       inputProps: inputProps as ObjectInputProps,
     }
   }, [
-    member.name,
-    member.index,
-    member.field.changed,
+    fieldActionNodes,
+    member.field.focused,
     member.field.level,
     member.field.value,
     member.field.validation,
     member.field.presence,
     member.field.schemaType,
+    member.field.changed,
     member.field.id,
     member.field.path,
+    member.name,
+    member.index,
     member.collapsible,
     member.collapsed,
     member.open,
@@ -261,7 +326,20 @@ export const ObjectField = function ObjectField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      {documentId && fieldActions.length > 0 && (
+        <FieldActionsResolver
+          actions={fieldActions}
+          documentId={documentId}
+          documentType={member.field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={member.field.path}
+          schemaType={member.field.schemaType}
+        />
+      )}
+
+      <FieldActionsProvider actions={fieldActionNodes} path={member.field.path}>
+        {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      </FieldActionsProvider>
     </FormCallbacksProvider>
   )
 }

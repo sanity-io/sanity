@@ -27,21 +27,27 @@ export function PreviewLoader(
     component: ComponentType<Omit<PreviewProps, 'renderDefault'>>
   }
 ): ReactElement {
-  const {layout, value, component, style: styleProp, schemaType, ...restProps} = props
+  const {
+    layout,
+    value,
+    component,
+    style: styleProp,
+    schemaType,
+    skipVisibilityCheck,
+    ...restProps
+  } = props
 
   const [element, setElement] = useState<HTMLDivElement | null>(null)
-  const isPTE = layout && ['inline', 'block', 'blockImage'].includes(layout)
 
   // Subscribe to visibility
-  const visibility = useVisibility({
-    // NOTE: disable when PTE preview
-    element: isPTE ? null : element,
+  const isVisible = useVisibility({
+    element: skipVisibilityCheck ? null : element,
     hideDelay: _HIDE_DELAY,
   })
 
   // Subscribe document preview value
   const preview = useValuePreview({
-    enabled: isPTE || visibility,
+    enabled: skipVisibilityCheck || isVisible,
     schemaType,
     value,
   })

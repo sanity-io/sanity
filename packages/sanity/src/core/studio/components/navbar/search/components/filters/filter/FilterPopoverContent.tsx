@@ -15,6 +15,7 @@ const ContainerFlex = styled(Flex)`
   max-width: 480px;
   min-width: 150px;
   overflow: hidden;
+  overflow: clip;
   width: 100%;
 `
 
