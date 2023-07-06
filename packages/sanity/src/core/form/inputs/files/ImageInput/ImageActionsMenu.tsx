@@ -87,11 +87,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
       <Popover
         id="image-actions-menu"
-        content={
-          <Menu ref={setMenuElement} shouldFocus="first">
-            {children}
-          </Menu>
-        }
+        content={<Menu ref={setMenuElement}>{children}</Menu>}
         portal
         open={isMenuOpen}
         constrainSize

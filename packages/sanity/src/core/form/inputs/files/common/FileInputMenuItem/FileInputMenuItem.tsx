@@ -71,6 +71,7 @@ export const FileInputMenuItem = React.forwardRef(function FileInputMenuItem(
       fontSize={2}
       disabled={disabled}
       ref={forwardedRef}
+      showFocusRing={false}
     >
       {content}
 

@@ -101,15 +101,7 @@ export function FileActionsMenu(props: Props) {
 
       <Box padding={2}>
         <Flex justify="center">
-          <Popover
-            content={
-              <Menu ref={setMenuElement} shouldFocus="first">
-                {children}
-              </Menu>
-            }
-            portal
-            open={isMenuOpen}
-          >
+          <Popover content={<Menu ref={setMenuElement}>{children}</Menu>} portal open={isMenuOpen}>
             <Button
               data-testid="options-menu-button"
               icon={EllipsisVerticalIcon}

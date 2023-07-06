@@ -2,7 +2,7 @@ import {Theme, MenuItem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {focusRingStyle} from '../../../../components/withFocusRing/helpers'
 
-export const FileButton = styled(MenuItem)(({theme}: {theme: Theme}) => {
+export const FileButton = styled(MenuItem)(({theme}: {theme: Theme; showFocusRing: boolean}) => {
   const {focusRing} = theme.sanity
   const base = theme.sanity.color.base
   const border = {width: 1, color: 'var(--card-border-color)'}
@@ -10,9 +10,11 @@ export const FileButton = styled(MenuItem)(({theme}: {theme: Theme}) => {
   return css`
     position: relative;
 
-    &:not([data-disabled='true']) {
-      &:focus-within {
-        box-shadow: ${focusRingStyle({base, border, focusRing})};
+    showFocusRing && {
+      &:not([data-disabled='true']) {
+        &:focus-within {
+          box-shadow: ${focusRingStyle({base, border, focusRing})};
+        }
       }
     }
 
