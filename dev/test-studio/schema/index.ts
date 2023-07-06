@@ -13,6 +13,7 @@ import blocks from './standard/portableText/blocks'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
+import customBlockType from './standard/portableText/customBlockType'
 import manyEditors from './standard/portableText/manyEditors'
 import simpleBlockNote from './standard/portableText/simpleBlockNote'
 import simpleBlockNoteBody from './standard/portableText/simpleBlockNoteBody'
@@ -229,6 +230,7 @@ export const schemaTypes = [
   richTextObject,
   ...Object.values(scrollBugTypes),
   select,
+  customBlockType,
   simpleBlock,
   simpleBlockNote,
   simpleBlockNoteBody,

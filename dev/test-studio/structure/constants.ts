@@ -21,6 +21,7 @@ export const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
   'blocksTest',
   // 'richTextObject',
   'simpleBlock',
+  'customBlockTypeDocument',
   'manyEditors',
   'documentWithHoistedPt',
 ]
