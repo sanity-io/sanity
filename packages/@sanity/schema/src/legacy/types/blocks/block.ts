@@ -127,17 +127,27 @@ function createListField(lists) {
 const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]
 
 function createChildrenField(marks, of = []) {
+  const userSpanType = of.find((t) => t.type === 'span')
+  const defaultSpanType = {
+    type: 'span',
+    title: 'Span',
+    fields: [DEFAULT_TEXT_FIELD, DEFAULT_MARKS_FIELD],
+    annotations: marks && marks.annotations ? marks.annotations : DEFAULT_ANNOTATIONS,
+    decorators: marks && marks.decorators ? marks.decorators : DEFAULT_DECORATORS,
+  }
   return {
     name: 'children',
     title: 'Content',
     type: 'array',
     of: [
-      {
-        type: 'span',
-        fields: [DEFAULT_TEXT_FIELD, DEFAULT_MARKS_FIELD],
-        annotations: marks && marks.annotations ? marks.annotations : DEFAULT_ANNOTATIONS,
-        decorators: marks && marks.decorators ? marks.decorators : DEFAULT_DECORATORS,
-      },
+      userSpanType
+        ? {
+            ...userSpanType,
+            fields: [DEFAULT_TEXT_FIELD, DEFAULT_MARKS_FIELD],
+            annotations: marks && marks.annotations ? marks.annotations : DEFAULT_ANNOTATIONS,
+            decorators: marks && marks.decorators ? marks.decorators : DEFAULT_DECORATORS,
+          }
+        : defaultSpanType,
       ...of.filter((memberType) => memberType.type !== 'span'),
     ],
   }
