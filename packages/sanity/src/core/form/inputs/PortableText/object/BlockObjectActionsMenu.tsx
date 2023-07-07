@@ -19,7 +19,7 @@ import React, {
   useEffect,
   PropsWithChildren,
 } from 'react'
-import {PortableTextBlock} from '@sanity/types'
+import {PortableTextBlock, isReference} from '@sanity/types'
 import {IntentLink} from 'sanity/router'
 
 interface BlockObjectActionsMenuProps extends PropsWithChildren {
@@ -46,7 +46,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
 
   const referenceLink = useMemo(
     () =>
-      '_ref' in value && value._ref
+      isReference(value)
         ? forwardRef(function ReferenceLink(
             linkProps,
             ref: React.Ref<HTMLAnchorElement> | undefined

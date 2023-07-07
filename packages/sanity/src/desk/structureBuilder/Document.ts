@@ -34,60 +34,108 @@ const createDocumentChildResolver =
   }
 
 /**
- * @hidden
- * @beta */
+ * Interface for options of Partial Documents. See {@link PartialDocumentNode}
+ *
+ * @public */
 export interface DocumentOptions {
+  /** Document Id */
   id: string
+  /** Document Type */
   type: string
+  /** Document Template */
   template?: string
+  /** Template parameters */
   templateParameters?: Record<string, unknown>
 }
 
 /**
- * @hidden
- * @beta */
-export type PartialDocumentNode = {
+ * Interface for partial document (focused on the document pane)
+ *
+ * @public */
+export interface PartialDocumentNode {
+  /** Document Id */
   id?: string
+  /** Document title */
   title?: string
+  /** Document children of type {@link Child} */
   child?: Child
+  /**
+   * Views for the document pane. See {@link ViewBuilder} and {@link View}
+   */
   views?: (View | ViewBuilder)[]
+  /**
+   * Document options. See {@link DocumentOptions}
+   */
   options?: Partial<DocumentOptions>
 }
 
 /**
- * @hidden
- * @beta */
+ * A `DocumentBuilder` is used to build a document node.
+ *
+ * @public */
 export class DocumentBuilder implements Serializable<DocumentNode> {
+  /** Component builder option object See {@link PartialDocumentNode} */
   protected spec: PartialDocumentNode
 
-  constructor(protected _context: StructureContext, spec?: PartialDocumentNode) {
+  constructor(
+    /**
+     * Desk structure context. See {@link StructureContext}
+     */
+    protected _context: StructureContext,
+    spec?: PartialDocumentNode
+  ) {
     this.spec = spec ? spec : {}
   }
 
+  /** Set Document Builder ID
+   * @param id - document builder ID
+   * @returns document builder based on ID provided. See {@link DocumentBuilder}
+   */
   id(id: string): DocumentBuilder {
     return this.clone({id})
   }
 
+  /** Get Document Builder ID
+   * @returns document ID. See {@link PartialDocumentNode}
+   */
   getId(): PartialDocumentNode['id'] {
     return this.spec.id
   }
 
+  /** Set Document title
+   * @param title - document title
+   * @returns document builder based on title provided (and ID). See {@link DocumentBuilder}
+   */
   title(title: string): DocumentBuilder {
     return this.clone({title, id: getStructureNodeId(title, this.spec.id)})
   }
 
+  /** Get Document title
+   * @returns document title. See {@link PartialDocumentNode}
+   */
   getTitle(): PartialDocumentNode['title'] {
     return this.spec.title
   }
 
+  /** Set Document child
+   * @param child - document child
+   * @returns document builder based on child provided. See {@link DocumentBuilder}
+   */
   child(child: Child): DocumentBuilder {
     return this.clone({child})
   }
 
+  /** Get Document child
+   * @returns document child. See {@link PartialDocumentNode}
+   */
   getChild(): PartialDocumentNode['child'] {
     return this.spec.child
   }
 
+  /** Set Document ID
+   * @param documentId - document ID
+   * @returns document builder with document based on ID provided. See {@link DocumentBuilder}
+   */
   documentId(documentId: string): DocumentBuilder {
     // Let's try to be a bit helpful and assign an ID from document ID if none is specified
     const paneId = this.spec.id || documentId
@@ -100,10 +148,17 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
     })
   }
 
+  /** Get Document ID
+   * @returns document ID. See {@link DocumentOptions}
+   */
   getDocumentId(): Partial<DocumentOptions>['id'] {
     return this.spec.options?.id
   }
 
+  /** Set Document Type
+   * @param documentType - document type
+   * @returns document builder with document based on type provided. See {@link DocumentBuilder}
+   */
   schemaType(documentType: SchemaType | string): DocumentBuilder {
     return this.clone({
       options: {
@@ -113,10 +168,18 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
     })
   }
 
+  /** Get Document Type
+   * @returns document type. See {@link DocumentOptions}
+   */
   getSchemaType(): Partial<DocumentOptions>['type'] {
     return this.spec.options?.type
   }
 
+  /** Set Document Template
+   * @param templateId - document template ID
+   * @param parameters - document template parameters
+   * @returns document builder with document based on template provided. See {@link DocumentBuilder}
+   */
   initialValueTemplate(templateId: string, parameters?: Record<string, unknown>): DocumentBuilder {
     return this.clone({
       options: {
@@ -127,22 +190,39 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
     })
   }
 
+  /** Get Document Template
+   * @returns document template. See {@link DocumentOptions}
+   */
   getInitialValueTemplate(): Partial<DocumentOptions>['template'] {
     return this.spec.options?.template
   }
 
+  /** Get Document's initial value Template parameters
+   * @returns document template parameters. See {@link DocumentOptions}
+   */
   getInitialValueTemplateParameters(): Partial<DocumentOptions>['templateParameters'] {
     return this.spec.options?.templateParameters
   }
 
+  /** Set Document views
+   * @param views - document views. See {@link ViewBuilder} and {@link View}
+   * @returns document builder with document based on views provided. See {@link DocumentBuilder}
+   */
   views(views: (View | ViewBuilder)[]): DocumentBuilder {
     return this.clone({views})
   }
 
+  /** Get Document views
+   * @returns document views. See {@link ViewBuilder} and {@link View}
+   */
   getViews(): (View | ViewBuilder)[] {
     return this.spec.views || []
   }
 
+  /** Serialize Document builder
+   * @param options - serialization options. See {@link SerializeOptions}
+   * @returns document node based on path, index and hint provided in options. See {@link DocumentNode}
+   */
   serialize({path = [], index, hint}: SerializeOptions = {path: []}): DocumentNode {
     const urlId = path[index || path.length - 1]
 
@@ -208,6 +288,10 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
     }
   }
 
+  /** Clone Document builder
+   * @param withSpec - partial document node specification used to extend the cloned builder. See {@link PartialDocumentNode}
+   * @returns document builder based on context and spec provided. See {@link DocumentBuilder}
+   */
   clone(withSpec: PartialDocumentNode = {}): DocumentBuilder {
     const builder = new DocumentBuilder(this._context)
     const options = {...(this.spec.options || {}), ...(withSpec.options || {})}

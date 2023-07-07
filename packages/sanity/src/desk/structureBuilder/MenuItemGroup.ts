@@ -12,41 +12,77 @@ export function maybeSerializeMenuItemGroup(
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for menu item groups
+ * @public
+ */
 export interface MenuItemGroup {
+  /** Menu group Id */
   id: string
+  /** Menu group title */
   title: string
 }
 
 /**
- * @hidden
- * @beta */
+ * Class for building menu item groups.
+ *
+ * @public
+ */
 export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
+  /** Menu item group ID */
   protected _id: string
+  /** Menu item group title */
   protected _title: string
 
-  constructor(protected _context: StructureContext, spec?: MenuItemGroup) {
+  constructor(
+    /**
+     * Desk structure context. See {@link StructureContext}
+     */
+    protected _context: StructureContext,
+    spec?: MenuItemGroup
+  ) {
     this._id = spec ? spec.id : ''
     this._title = spec ? spec.title : ''
   }
 
+  /**
+   * Set menu item group ID
+   * @param id - menu item group ID
+   * @returns menu item group builder based on ID provided. See {@link MenuItemGroupBuilder}
+   */
   id(id: string): MenuItemGroupBuilder {
     return new MenuItemGroupBuilder(this._context, {id, title: this._title})
   }
 
+  /**
+   * Get menu item group ID
+   * @returns menu item group ID
+   */
   getId(): string {
     return this._id
   }
 
+  /**
+   * Set menu item group title
+   * @param title - menu item group title
+   * @returns menu item group builder based on title provided. See {@link MenuItemGroupBuilder}
+   */
   title(title: string): MenuItemGroupBuilder {
     return new MenuItemGroupBuilder(this._context, {id: this._id, title})
   }
 
+  /**
+   * Get menu item group title
+   * @returns menu item group title
+   */
   getTitle(): string {
     return this._title
   }
 
+  /**
+   * Serialize menu item group builder
+   * @param options - serialization options (path). See {@link SerializeOptions}
+   * @returns menu item group based on path provided in options. See {@link MenuItemGroup}
+   */
   serialize(options: SerializeOptions = {path: []}): MenuItemGroup {
     const {_id, _title} = this
     if (!_id) {

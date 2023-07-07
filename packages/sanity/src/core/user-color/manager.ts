@@ -33,7 +33,7 @@ const getTints = (scheme: ThemeColorSchemeKey): Record<string, ColorTintKey> => 
   }
 }
 
-const getDefaultColors = (scheme: ThemeColorSchemeKey): Record<ColorHueKey, UserColor> => {
+const getDefaultColors = (scheme: ThemeColorSchemeKey): Record<string, UserColor> => {
   const {background, border, text} = getTints(scheme)
 
   return defaultHues.reduce((colors, hue) => {

@@ -12,78 +12,122 @@ import type {DocumentBuilder} from './Document'
 import type {View} from './types'
 
 /**
- * @hidden
- * @beta */
+ * Interface for the structure builder node.
+ *
+ * @public
+ */
 export interface StructureNode {
+  /** Node ID */
   id: string
+  /** Node ID */
   title?: string
+  /** Node type */
   type?: string
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for the document list builder (focused on the document pane)
+ *
+ * @public */
 export interface DocumentNode extends StructureNode {
+  /**
+   * Document children. See {@link Child}
+   */
   child?: Child
+  /**
+   * Options for the document pane
+   */
   options: {
+    /** Document Id */
     id: string
+    /** Document Type */
     type?: string
+    /** Document Template */
     template?: string
+    /** Template parameters */
     templateParameters?: {[key: string]: any}
   }
+  /**
+   * View array for the document pane. See {@link View}
+   */
   views: View[]
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for Editor node
+ *
+ * @public */
 export interface EditorNode extends StructureNode {
+  /** Editor child. See {@link Child} */
   child?: Child
+  /** Editor options */
   options: {
+    /** Editor ID */
     id: string
+    /** Editor type */
     type?: string
+    /** Editor template */
     template?: string
+    /** Template parameters */
     templateParameters?: {[key: string]: any}
   }
 }
 
 /**
- * @hidden
- * @beta */
+ * A `Divider` is a visual separator in the structure tree.
+ *
+ * @public
+ */
 export interface Divider {
+  /**
+   * The divider's ID
+   */
   id: string
   type: 'divider'
 }
 
 /**
- * @hidden
- * @beta */
+ * Path of a serialized structure node
+ *
+ * @public
+ */
 export type SerializePath = (string | number)[]
 
 /**
- * @hidden
- * @beta */
+ * Interface for seraializing a structure node
+ * @public */
 export interface SerializeOptions {
+  /** path. See {@link SerializePath} */
   path: SerializePath
+  /** index */
   index?: number
+  /** hint */
   hint?: string
 }
 
 /**
- * @hidden
- * @beta */
+ *  A interface for serializing a structure node to a plain JavaScript object.
+ *
+ * @public
+ */
 export interface Serializable<T> {
   serialize(options: SerializeOptions): T
 }
 
 /**
- * @hidden
- * @beta */
+ * Collection
+ * See {@link List}, {@link DocumentList}, {@link EditorNode}, {@link DocumentNode} and {@link Component}
+ *
+ * @public
+ */
 export type Collection = List | DocumentList | EditorNode | DocumentNode | Component
 
 /**
- * @hidden
- * @beta */
+ * Collection builder
+ * See {@link ListBuilder}, {@link DocumentListBuilder}, {@link DocumentTypeListBuilder}, {@link DocumentBuilder} and {@link ComponentBuilder}
+ *
+ * @public
+ */
 export type CollectionBuilder =
   | ListBuilder
   | DocumentListBuilder
@@ -92,8 +136,11 @@ export type CollectionBuilder =
   | ComponentBuilder
 
 /**
- * @hidden
- * @beta */
+ * Child of a structure node
+ * See {@link Collection}, {@link CollectionBuilder} and {@link ChildResolver}
+ *
+ * @public
+ */
 export type Child = Collection | CollectionBuilder | ChildResolver
 
 /** @internal */

@@ -73,10 +73,36 @@ export type NavigateOptions = {
 
 /**
  * @public
+ * @todo dedupe with intent types in core
  */
-export type IntentParameters =
-  | Record<string, unknown>
-  | [Record<string, unknown>, Record<string, unknown>]
+export interface BaseIntentParams {
+  /* Intent type */
+  type?: string
+  /* Intent Id */
+  id?: string
+  /* Intent template */
+  template?: string
+  /**
+   * Experimental field path
+   * @beta
+   * @experimental
+   * @hidden
+   */
+  path?: string
+}
+
+/**
+ * Intent parameters (json)
+ *
+ * @public
+ */
+export type IntentJsonParams = {[key: string]: any}
+
+/**
+ * @public
+ * @todo dedupe with intent types in core
+ */
+export type IntentParameters = BaseIntentParams | [BaseIntentParams, IntentJsonParams]
 
 /**
  * @public

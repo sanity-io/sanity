@@ -40,7 +40,11 @@ export interface DeskToolContextValue {
   structureContext: StructureContext
 }
 
-/** @public */
+/**
+ *  Desk tool context. Extends from {@link ConfigContext}.
+ *  @hidden
+ *  @public
+ */
 export interface StructureResolverContext extends ConfigContext {
   /**
    * This can be replaced by a different API in the future.
@@ -51,23 +55,91 @@ export interface StructureResolverContext extends ConfigContext {
 }
 
 /**
- * @hidden
- * @beta */
-// TODO: this should be updated to enforce the correct return type
-export type StructureResolver = (S: StructureBuilder, context: StructureResolverContext) => unknown
+ * Lets you configure how lists, documents, views, menus, and initial value templates are organized in the Sanity Studio’s desk-tool.
+ *
+ * @public
+ *
+ * @returns A structure builder, or null/undefined if no structure should be returned. See {@link StructureBuilder}
+ * @example Configuring structure
+ * ```ts
+ * // sanity.config.js
+ *
+ * import {defineConfig} from 'sanity'
+ * import {deskTool} from 'sanity/desk'
+ * import {schemaTypes} from './schema'
+ *
+ * export default defineConfig({
+ *  name: 'default',
+ *  title: 'My Cool Project',
+ *  projectId: 'my-project-id',
+ *  dataset: 'production',
+ *  plugins: [
+ *    deskTool({
+ *      structure: (S, context) => {
+ *        console.log(context) // returns { currentUser, dataset, projectId, schema, getClient, documentStore }
+ *        return S.documentTypeList('post')
+ *      },
+ *    })
+ *  ],
+ *  schema: schemaTypes
+ * })
+ * ```
+ *
+ */
+export type StructureResolver = (
+  /**
+   * S - An instance of the structure builder, that can be used to build the lists/items/panes for the desk tool
+   * context - an object holding various context that may be used to customize the structure, for instance the current user.
+   *  Defaults to
+   * ```ts
+   * (S) => S.defaults()
+   * ```
+   * See {@link StructureBuilder}
+   */
+  S: StructureBuilder,
+  /**
+   * An object containing pane and index information for the current desk tool.
+   * See {@link StructureResolverContext}
+   */
+  context: StructureResolverContext
+) => unknown
 
 /** @internal */
 export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
 
 /**
- * @hidden
- * @beta */
+ * The params for the `deskTool` api. See {@link deskTool}
+ *
+ * @public */
 export interface DeskToolOptions {
+  /*
+   * React icon component for the tool, used in navigation bar. Defaults to MasterDetailIcon from @sanity/icons
+   */
   icon?: React.ComponentType
+  /*
+   * The name you want this desk to have (among other places, this name is used in routing,
+   * if name is set to “desk”, it is shown on /desk). Usually lowercase or camelcase by convention. Defaults to desk.
+   */
   name?: string
+  /**
+   * A workspace can have different "sources". These sources were meant to allow using multiple datasets within the same workspace, for instance. 
+   * This is not supported yet, but the API is still here.
+   * 
+    @hidden
+    @alpha
+  */
   source?: string
+  /**
+   * A structure resolver function. See {@link StructureResolver}
+   */
   structure?: StructureResolver
+  /**
+   * A resolver function used to return the default document node used when editing documents. See {@link DefaultDocumentNodeResolver}
+   */
   defaultDocumentNode?: DefaultDocumentNodeResolver
+  /**
+   * The title that will be displayed for the tool. Defaults to Desk
+   */
   title?: string
 }
 

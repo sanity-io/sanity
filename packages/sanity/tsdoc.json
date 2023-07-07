@@ -5,6 +5,11 @@
       "tagName": "@hidden",
       "syntaxKind": "block",
       "allowMultiple": true
+    },
+    {
+      "tagName": "@todo",
+      "syntaxKind": "block",
+      "allowMultiple": true
     }
   ],
   "supportForTags": {
@@ -22,6 +27,7 @@
     "@returns": true,
     "@remarks": true,
     "@throws": true,
-    "@defaultValue": true
+    "@defaultValue": true,
+    "@todo": true
   }
 }

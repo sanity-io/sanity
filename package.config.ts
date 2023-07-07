@@ -13,6 +13,11 @@ export default defineConfig({
         allowMultiple: true,
         syntaxKind: 'block',
       },
+      {
+        name: 'todo',
+        allowMultiple: true,
+        syntaxKind: 'block',
+      },
     ],
     rules: {
       // Disable rules for now

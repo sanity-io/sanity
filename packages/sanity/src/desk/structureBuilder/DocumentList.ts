@@ -48,90 +48,149 @@ const createDocumentChildResolverForItem =
   }
 
 /**
- * @hidden
- * @beta */
+ * Partial document list
+ *
+ * @public
+ */
 export interface PartialDocumentList extends BuildableGenericList {
+  /** Document list options. See {@link DocumentListOptions} */
   options?: DocumentListOptions
+  /** Schema type name */
   schemaTypeName?: string
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for document list input
+ *
+ * @public
+ */
 export interface DocumentListInput extends GenericListInput {
+  /** Document list options. See {@link DocumentListOptions} */
   options: DocumentListOptions
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for document list
+ *
+ * @public
+ */
 export interface DocumentList extends GenericList {
   type: 'documentList'
+  /** Document list options. See {@link DocumentListOptions} */
   options: DocumentListOptions
+  /** Document list child. See {@link Child} */
   child: Child
+  /** Document schema type name */
   schemaTypeName?: string
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for document List options
+ *
+ * @public
+ */
 export interface DocumentListOptions {
+  /** Document list filter */
   filter: string
+  /** Document list parameters */
   params?: Record<string, unknown>
+  /** Document list API version */
   apiVersion?: string
+  /** Document list API default ordering array. See {@link SortOrderingItem} */
   defaultOrdering?: SortOrderingItem[]
 }
 
 /**
- * @hidden
- * @beta */
+ * Class for building document list
+ *
+ * @public
+ */
 export class DocumentListBuilder extends GenericListBuilder<
   PartialDocumentList,
   DocumentListBuilder
 > {
+  /** Document list options. See {@link PartialDocumentList} */
   protected spec: PartialDocumentList
 
-  constructor(protected _context: StructureContext, spec?: DocumentListInput) {
+  constructor(
+    /**
+     * Desk structure context. See {@link StructureContext}
+     */
+    protected _context: StructureContext,
+    spec?: DocumentListInput
+  ) {
     super()
     this.spec = spec || {}
     this.initialValueTemplatesSpecified = Boolean(spec?.initialValueTemplates)
   }
 
+  /** Set API version
+   * @param apiVersion - API version
+   * @returns document list builder based on the options and API version provided. See {@link DocumentListBuilder}
+   */
   apiVersion(apiVersion: string): DocumentListBuilder {
     return this.clone({options: {...(this.spec.options || {filter: ''}), apiVersion}})
   }
 
+  /** Get API version
+   * @returns API version
+   */
   getApiVersion(): string | undefined {
     return this.spec.options?.apiVersion
   }
 
+  /** Set Document list filter
+   * @param filter - filter
+   * @returns document list builder based on the options and filter provided. See {@link DocumentListBuilder}
+   */
   filter(filter: string): DocumentListBuilder {
     return this.clone({options: {...(this.spec.options || {}), filter}})
   }
 
+  /** Get Document list filter
+   * @returns filter
+   */
   getFilter(): string | undefined {
     return this.spec.options?.filter
   }
 
+  /** Set Document list schema type name
+   * @param type - schema type name. See {@link SchemaType}
+   * @returns document list builder based on the schema type name provided. See {@link DocumentListBuilder}
+   */
   schemaType(type: SchemaType | string): DocumentListBuilder {
     const schemaTypeName = typeof type === 'string' ? type : type.name
     return this.clone({schemaTypeName})
   }
 
+  /** Get Document list schema type name
+   * @returns schema type name
+   */
   getSchemaType(): string | undefined {
     return this.spec.schemaTypeName
   }
 
+  /** Set Document list options' parameters
+   * @param params - parameters
+   * @returns document list builder based on the options provided. See {@link DocumentListBuilder}
+   */
   params(params: Record<string, unknown>): DocumentListBuilder {
     return this.clone({
       options: {...(this.spec.options || {filter: ''}), params},
     })
   }
 
+  /** Get Document list options' parameters
+   * @returns options
+   */
   getParams(): Record<string, unknown> | undefined {
     return this.spec.options?.params
   }
 
+  /** Set Document list default ordering
+   * @param ordering - default sort ordering array. See {@link SortOrderingItem}
+   * @returns document list builder based on ordering provided. See {@link DocumentListBuilder}
+   */
   defaultOrdering(ordering: SortOrderingItem[]): DocumentListBuilder {
     if (!Array.isArray(ordering)) {
       throw new Error('`defaultOrdering` must be an array of order clauses')
@@ -142,10 +201,17 @@ export class DocumentListBuilder extends GenericListBuilder<
     })
   }
 
+  /** Get Document list default ordering
+   * @returns default ordering. See {@link SortOrderingItem}
+   */
   getDefaultOrdering(): SortOrderingItem[] | undefined {
     return this.spec.options?.defaultOrdering
   }
 
+  /** Serialize Document list
+   * @param options - serialization options. See {@link SerializeOptions}
+   * @returns document list object based on path provided in options. See {@link DocumentList}
+   */
   serialize(options: SerializeOptions = {path: []}): DocumentList {
     if (typeof this.spec.id !== 'string' || !this.spec.id) {
       throw new SerializeError(
@@ -181,6 +247,10 @@ export class DocumentListBuilder extends GenericListBuilder<
     }
   }
 
+  /** Clone Document list builder (allows for options overriding)
+   * @param withSpec - override document list spec. See {@link PartialDocumentList}
+   * @returns document list builder. See {@link DocumentListBuilder}
+   */
   clone(withSpec?: PartialDocumentList): DocumentListBuilder {
     const builder = new DocumentListBuilder(this._context)
     builder.spec = {...this.spec, ...(withSpec || {})}
@@ -196,6 +266,9 @@ export class DocumentListBuilder extends GenericListBuilder<
     return builder
   }
 
+  /** Get Document list spec
+   * @returns document list spec. See {@link PartialDocumentList}
+   */
   getSpec(): PartialDocumentList {
     return this.spec
   }

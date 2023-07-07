@@ -28,8 +28,51 @@ const documentActions = [
 const documentBadges = [LiveEditBadge]
 
 /**
- * @hidden
- * @beta */
+ * The deskTool is a studio plugin which adds the “desk tool” – a tool within Sanity Studio in which
+ * content editors can drill down to specific documents to edit them.
+ * You can configure your Studio's desk tool(s).
+ *
+ * @public
+ * @param options - Options for the desk tool. See {@link DeskToolOptions}
+ * @example Minimal example
+ * ```ts
+ * // sanity.config.ts
+ * import { defineConfig } from 'sanity'
+ * import { deskTool } from 'sanity/desk'
+ *
+ * export default defineConfig((
+ *  // ...
+ *  plugins: [
+ *    deskTool() // use defaults
+ *  ]
+ * })
+ * ```
+ *
+ * @example To customise your desk tool
+ * ```ts
+ * // sanity.config.ts
+ * import { defineConfig } from 'sanity'
+ * import { deskTool } from 'sanity/desk'
+ * import { FaCar } from 'react-icons'
+
+ * export default defineConfig((
+ *	 // ...
+ *   plugins: [
+ *    deskTool({
+ *      name: 'cars',
+ *      title: 'Cars',
+ *      icon: FaCar,
+ *      structure: (S) => S.documentTypeList('car'),
+ *      defaultDocumentNode: (S) =>
+ *        S.document().views([
+ *          S.view.form(),
+ *          S.view.component(Preview).title('Preview')
+ *        ])
+ *    })
+ *  ]
+ * })
+ * ```
+ * */
 export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
   name: '@sanity/desk-tool',
   document: {

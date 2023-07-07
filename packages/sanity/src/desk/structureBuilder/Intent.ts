@@ -2,45 +2,70 @@ import {PartialDocumentList, getTypeNamesFromFilter} from './DocumentList'
 import {StructureNode} from './StructureNodes'
 
 /**
- * @hidden
- * @beta */
+ * Intent parameters (json)
+ *
+ * @public
+ */
 export type IntentJsonParams = {[key: string]: any}
 
 /**
- * @hidden
- * @beta */
-export type BaseIntentParams = {
+ * Interface for base intent parameters
+ *
+ * @public */
+export interface BaseIntentParams {
+  /* Intent type */
   type?: string
+  /* Intent Id */
   id?: string
+  /* Intent template */
   template?: string
+  /**
+   * Experimental field path
+   * @beta
+   * @experimental
+   * @hidden
+   */
+  path?: string
 }
 
 /** @internal */
 export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
 
 /**
- * @hidden
- * @beta */
+ * Intent parameters
+ * See {@link BaseIntentParams} and {@link IntentJsonParams}
+ *
+ * @public
+ */
 export type IntentParams = BaseIntentParams | [BaseIntentParams, IntentJsonParams]
 
 /**
- * @hidden
- * @beta */
+ * Interface for intents
+ * @public */
 // TODO: intents should be unified somewhere
 export interface Intent {
+  /** Intent type */
   type: string
+  /** Intent parameters. See {@link IntentParams}
+   */
   params?: IntentParams
 }
 
 /**
- * @hidden
- * @beta */
+ * Interface for intent checker
+ *
+ * @public
+ */
 export interface IntentChecker {
   (
+    /** Intent name */
     intentName: string,
+    /** Intent checker parameter */
     params: {[key: string]: any},
+    /** Structure context. See {@link StructureNode} */
     context: {pane: StructureNode; index: number}
   ): boolean
+  /** intent checker identify */
   identity?: symbol
 }
 

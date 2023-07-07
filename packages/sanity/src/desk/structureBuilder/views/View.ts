@@ -7,46 +7,77 @@ import {ComponentViewBuilder} from './ComponentView'
 import {FormViewBuilder} from './FormView'
 
 /**
- * @hidden
- * @beta */
+ * Interface for base view
+ *
+ * @public */
 export interface BaseView {
+  /** View id */
   id: string
+  /** View Title */
   title: string
+  /** View Icon */
   icon?: React.ComponentType | React.ReactNode
 }
 
 /**
- * @hidden
- * @beta */
+ * Class for building generic views.
+ *
+ * @public
+ */
 export abstract class GenericViewBuilder<TView extends Partial<BaseView>, ConcreteImpl>
   implements Serializable<BaseView>
 {
+  /** Generic view option object */
   protected spec: TView = {} as TView
 
+  /** Set generic view ID
+   * @param id - generic view ID
+   * @returns generic view builder based on ID provided. See {@link ConcreteImpl}
+   */
   id(id: string): ConcreteImpl {
     return this.clone({id})
   }
-
+  /** Get generic view ID
+   * @returns generic view ID
+   */
   getId(): TView['id'] {
     return this.spec.id
   }
 
+  /** Set generic view title
+   * @param title - generic view title
+   * @returns generic view builder based on title provided and (if provided) its ID. See {@link ConcreteImpl}
+   */
   title(title: string): ConcreteImpl {
     return this.clone({title, id: this.spec.id || kebabCase(title)})
   }
 
+  /** Get generic view title
+   * @returns generic view title
+   */
   getTitle(): TView['title'] {
     return this.spec.title
   }
 
+  /** Set generic view icon
+   * @param icon - generic view icon
+   * @returns generic view builder based on icon provided. See {@link ConcreteImpl}
+   */
   icon(icon: React.ComponentType | React.ReactNode): ConcreteImpl {
     return this.clone({icon})
   }
 
+  /** Get generic view icon
+   * @returns generic view icon
+   */
   getIcon(): TView['icon'] {
     return this.spec.icon
   }
 
+  /** Serialize generic view
+   * @param options - serialization options. See {@link SerializeOptions}
+   * @returns generic view object based on path provided in options. See {@link BaseView}
+   */
   serialize(options: SerializeOptions = {path: []}): BaseView {
     const {id, title, icon} = this.spec
     if (!id) {
@@ -72,6 +103,10 @@ export abstract class GenericViewBuilder<TView extends Partial<BaseView>, Concre
     }
   }
 
+  /** Clone generic view builder (allows for options overriding)
+   * @param withSpec - Partial generic view builder options. See {@link BaseView}
+   * @returns Generic view builder. See {@link ConcreteImpl}
+   */
   abstract clone(withSpec?: Partial<BaseView>): ConcreteImpl
 }
 
@@ -89,6 +124,8 @@ export function maybeSerializeView(
 }
 
 /**
- * @hidden
- * @beta */
+ * View builder. See {@link ComponentViewBuilder} and {@link FormViewBuilder}
+ *
+ * @public
+ */
 export type ViewBuilder = ComponentViewBuilder | FormViewBuilder

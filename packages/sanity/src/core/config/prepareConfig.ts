@@ -9,7 +9,7 @@ import {isValidElementType} from 'react-is'
 import {createSchema} from '../schema'
 import {AuthStore, createAuthStore} from '../store/_legacy'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
-import {InitialValueTemplateItem, Template, TemplateResponse} from '../templates'
+import {InitialValueTemplateItem, Template, TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
@@ -333,7 +333,7 @@ function resolveSource({
     // filter out the ones with parameters to fill
     .filter((template) => !template.parameters?.length)
     .map(
-      (template): TemplateResponse => ({
+      (template): TemplateItem => ({
         templateId: template.id,
         description: template.description,
         icon: template.icon,

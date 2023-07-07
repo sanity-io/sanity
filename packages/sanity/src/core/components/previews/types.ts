@@ -1,25 +1,32 @@
-import {ImageUrlFitMode, SchemaType} from '@sanity/types'
-import React, {ComponentType, ReactNode} from 'react'
+import type {ImageUrlFitMode, SchemaType} from '@sanity/types'
+import type {ComponentType, ReactNode, ReactElement} from 'react'
 
 /**
- * @hidden
- * @beta */
+ * Portable text preview layout key
+ *
+ * @public
+ */
 export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
 
 /**
- * @hidden
- * @beta */
+ * General preview layout key
+ *
+ * @public
+ */
 export type GeneralPreviewLayoutKey = 'default' | 'media' | 'detail'
 
 /**
- * @hidden
- * @beta */
+ * Preview layout key. See also {@link GeneralPreviewLayoutKey} and {@link PortableTextPreviewLayoutKey}
+ *
+ * @public
+ */
 export type PreviewLayoutKey = GeneralPreviewLayoutKey | PortableTextPreviewLayoutKey
 
 /**
  * @hidden
- * @beta */
-export type PreviewMediaDimensions = {
+ * @beta
+ */
+export interface PreviewMediaDimensions {
   aspect?: number
   dpr?: number
   fit?: ImageUrlFitMode
@@ -28,7 +35,6 @@ export type PreviewMediaDimensions = {
 }
 
 /**
- *
  * @hidden
  * @beta
  */
@@ -51,10 +57,11 @@ export interface PreviewProps<TLayoutKey = PreviewLayoutKey> {
   withRadius?: boolean
   withShadow?: boolean
   schemaType?: SchemaType
-  renderDefault: (props: PreviewProps) => React.ReactElement
+  renderDefault: (props: PreviewProps) => ReactElement
 }
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export type PreviewComponent = ComponentType<PreviewProps>
