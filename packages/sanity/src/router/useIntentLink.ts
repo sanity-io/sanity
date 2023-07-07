@@ -4,11 +4,41 @@ import {useLink} from './useLink'
 import {useRouter} from './useRouter'
 
 /**
+ * @public
+ */
+export interface UseIntentLinkOptions {
+  /**
+   * The name of the intent to trigger.
+   */
+  intent: string
+
+  /**
+   * An optional click event handler.
+   */
+  onClick?: React.MouseEventHandler<HTMLElement>
+
+  /**
+   * Optional parameters to pass to the intent. See {@link IntentParameters}
+   */
+  params?: IntentParameters
+
+  /**
+   * Whether to replace the current URL in the browser history.
+   */
+  replace?: boolean
+
+  /**
+   * The target window or frame to open the link in.
+   */
+  target?: string
+}
+
+/**
+ *
+ * Returns props for an anchor element that will trigger an intent when clicked.
  *
  * @example
  * ```tsx
- * import {useIntentLink} from 'sanity'
- *
  * const {onClick, href} = useIntentLink({
  *   intent: 'edit',
  *   params: {id: 'foo'}
@@ -18,18 +48,17 @@ import {useRouter} from './useRouter'
  * ```
  *
  * @public
+ *
+ * @param options - Options to use for the link
+ *  {@link UseIntentLinkOptions}
+ *
+ * @returns - An object with `onClick` and `href` props to use for the link
  */
-export function useIntentLink(props: {
-  intent: string
-  onClick?: React.MouseEventHandler<HTMLElement>
-  params?: IntentParameters
-  replace?: boolean
-  target?: string
-}): {
+export function useIntentLink(options: UseIntentLinkOptions): {
   onClick: React.MouseEventHandler<HTMLElement>
   href: string
 } {
-  const {intent, onClick: onClickProp, params, replace, target} = props
+  const {intent, onClick: onClickProp, params, replace, target} = options
   const {resolveIntentLink} = useRouter()
   const href = useMemo(() => resolveIntentLink(intent, params), [intent, params, resolveIntentLink])
   const {onClick} = useLink({href, onClick: onClickProp, replace, target})

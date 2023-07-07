@@ -2,7 +2,14 @@
  * @public
  */
 export interface RouteSegment {
+  /**
+   * The name of the segment.
+   */
   name: string
+  /**
+   * The type of the segment.
+   * Can be either "dir" or "param".
+   */
   type: 'dir' | 'param'
 }
 
@@ -10,7 +17,14 @@ export interface RouteSegment {
  * @public
  */
 export interface RouteTransform<T> {
+  /**
+   * Converts a path string to a state object.
+   */
   toState: (value: string) => T
+
+  /**
+   * Converts a state object to a path string.
+   */
   toPath: (value: T) => string
 }
 
@@ -18,8 +32,19 @@ export interface RouteTransform<T> {
  * @public
  */
 export interface Route {
+  /**
+   * The raw string representation of the route.
+   */
   raw: string
+  /**
+   * An array of route segments that make up the route.
+   * See {@link RouteSegment}
+   */
   segments: RouteSegment[]
+  /**
+   * An optional object containing route transforms.
+   * See {@link RouteTransform} and {@link RouterState}
+   */
   transform?: {
     [key: string]: RouteTransform<RouterState>
   }
@@ -36,11 +61,24 @@ export type RouteChildren =
  * @public
  */
 export interface RouterNode {
+  /**
+   * The route information for this node. See {@link Route}
+   */
   route: Route
+  /**
+   * An optional scope for this node.
+   */
   scope?: string
+  /**
+   * An optional object containing transforms to apply to this node.
+   * See {@link RouteTransform} and {@link RouterState}
+   */
   transform?: {
     [key: string]: RouteTransform<RouterState>
   }
+  /**
+   * The child nodes of this node. See {@link RouteChildren}
+   */
   children: RouteChildren
 }
 
@@ -48,12 +86,42 @@ export interface RouterNode {
  * @public
  */
 export interface Router extends RouterNode {
+  /**
+   * Indicates whether this router is a route.
+   * @internal
+   */
   _isRoute: boolean
+  /**
+   * Encodes the specified router state into a path string.
+   * See {@link RouterState}
+   *
+   */
   encode: (state: RouterState) => string
+
+  /**
+   * Decodes the specified path string into a router state.
+   * See {@link RouterState}
+   */
   decode: (path: string) => RouterState | null
+
+  /**
+   * Determines whether the specified path is not found.
+   */
   isNotFound: (path: string) => boolean
+
+  /**
+   * Gets the base path of this router.
+   */
   getBasePath: () => string
+
+  /**
+   * Gets the redirect base of this router.
+   */
   getRedirectBase: (pathname: string) => string | null
+
+  /**
+   * Determines whether the specified path is the root path.
+   */
   isRoot: (path: string) => boolean
 }
 
@@ -67,7 +135,10 @@ export interface MatchResult {
 /**
  * @public
  */
-export type NavigateOptions = {
+export interface NavigateOptions {
+  /**
+   * Indicates whether to replace the current state.
+   */
   replace?: boolean
 }
 
@@ -112,11 +183,38 @@ export type RouterState = Record<string, unknown>
 /**
  * @public
  */
-export type RouterContextValue = {
+export interface RouterContextValue {
+  /**
+   * Resolves the path from the given router state. See {@link RouterState}
+   */
   resolvePathFromState: (nextState: RouterState) => string
+
+  /**
+   * Resolves the intent link for the given intent name and parameters.
+   * See {@link IntentParameters}
+   */
   resolveIntentLink: (intentName: string, params?: IntentParameters) => string
+
+  /**
+   * Navigates to the given URL.
+   * The function requires an object that has a path and an optional replace property.
+   */
   navigateUrl: (opts: {path: string; replace?: boolean}) => void
+
+  /**
+   * Navigates to the given router state.
+   * See {@link RouterState} and {@link NavigateOptions}
+   */
   navigate: (nextState: RouterState, options?: NavigateOptions) => void
+
+  /**
+   * Navigates to the given intent.
+   * See {@link RouterState} and {@link NavigateOptions}
+   */
   navigateIntent: (intentName: string, params?: IntentParameters, options?: NavigateOptions) => void
+
+  /**
+   * The current router state. See {@link RouterState}
+   */
   state: RouterState
 }

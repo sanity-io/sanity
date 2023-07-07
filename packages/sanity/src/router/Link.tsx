@@ -2,7 +2,7 @@ import React, {forwardRef} from 'react'
 import {useLink} from './useLink'
 
 /**
- * The props for the `Link` component that creates an HTML anchor element.
+ * Props for the {@link Link} component.
  *
  * @public
  */
@@ -18,11 +18,8 @@ export interface LinkProps {
  *
  * @public
  *
- * @param props - Props to pass to the anchor element.
- *  {@link LinkProps}
- * @param ref - A ref to the anchor element.
- *
- * @returns The created anchor element.
+ * @param props - Props to pass to the `Link` component.
+ *  See {@link LinkProps}
  *
  * @example
  * ```tsx

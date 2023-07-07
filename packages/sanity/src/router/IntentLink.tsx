@@ -3,11 +3,13 @@ import {IntentParameters} from './types'
 import {useIntentLink} from './useIntentLink'
 
 /**
+ * Props for the {@link IntentLink} component.
+ *
  * @public
  */
 export interface IntentLinkProps {
   /**
-   * The name of the intent to link to.
+   * The name of the intent.
    */
   intent: string
 
@@ -26,11 +28,8 @@ export interface IntentLinkProps {
 /**
  * @public
  *
- * @param props - Props to pass to the anchor element.
- *  {@link IntentLinkProps}
- * @param ref - A ref to the anchor element.
- *
- * @returns The created anchor element.
+ * @param props - Props to pass to `IntentLink` component.
+ *  See {@link IntentLinkProps}
  *
  * @example
  * ```tsx

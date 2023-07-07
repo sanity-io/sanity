@@ -8,27 +8,87 @@ import {decodeParams, encodeParams} from './utils/paramsEncoding'
 /**
  * @public
  */
-export type RouteNodeOptions = {
+export interface RouteNodeOptions {
+  /**
+   * The path of the route node.
+   */
   path?: string
+  /**
+   * The children of the route node. See {@link RouteChildren}
+   */
   children?: RouteChildren
+  /**
+   * The transforms to apply to the route node. See {@link RouteTransform}
+   */
   transform?: {
     [key: string]: RouteTransform<any>
   }
+  /**
+   * The scope of the route node.
+   */
   scope?: string
 }
 
 /**
+ * Interface for the {@link route} object.
+ *
  * @public
  */
-export const route: {
+export interface RouteObject {
+  /**
+   * Creates a new router.
+   * Returns {@link Router}
+   * See {@link RouteNodeOptions} and {@link RouteChildren}
+   */
   create: (
     routeOrOpts: RouteNodeOptions | string,
     childrenOrOpts?: RouteNodeOptions | RouteChildren | null,
     children?: Router | RouteChildren
   ) => Router
+
+  /**
+   * Creates a new router for handling intents.
+   * Returns {@link Router}
+   */
   intents: (base: string) => Router
+
+  /**
+   * Creates a new router scope.
+   * Returns {@link Router}
+   */
   scope: (scopeName: string, ...rest: any[]) => Router
-} = {
+}
+
+/**
+ * An object containing functions for creating routers and router scopes.
+ * See {@link RouteObject}
+ *
+ * @public
+ *
+ * @example
+ * ```ts
+ * const router = route.create({
+ *   path: "/foo",
+ *   children: [
+ *     route.create({
+ *       path: "/bar",
+ *       children: [
+ *         route.create({
+ *           path: "/:baz",
+ *           transform: {
+ *             baz: {
+ *               toState: (id) => ({ id }),
+ *               toPath: (state) => state.id,
+ *             },
+ *           },
+ *         }),
+ *       ],
+ *     }),
+ *   ],
+ * });
+ * ```
+ */
+export const route: RouteObject = {
   create: (routeOrOpts, childrenOrOpts, children) =>
     createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children)),
   intents: (base: string) => {
