@@ -155,7 +155,7 @@ export default async function initSanity(
     frameworkList: frameworks as readonly Framework[],
   })
 
-  const envFilename = typeof env === 'string' ? env : '.env'
+  const envFilename = typeof env === 'string' ? env : '.env.local'
   if (!envFilename.startsWith('.env')) {
     throw new Error(`Env filename must start with .env`)
   }
@@ -1031,7 +1031,7 @@ export default async function initSanity(
       })
     } catch (err) {
       print(err)
-      throw new Error('An error occurred while creating .env', {cause: err})
+      throw new Error('An error occurred while creating .env.local', {cause: err})
     }
   }
 
