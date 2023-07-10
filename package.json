@@ -87,7 +87,7 @@
     "@playwright/test": "^1.31.2",
     "@sanity/client": "^6.1.5",
     "@sanity/pkg-utils": "^2.3.1",
-    "@sanity/tsdoc": "1.0.0-alpha.34",
+    "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/uuid": "^3.0.1",
     "@types/jest": "^27.0.3",
     "@types/mkdirp": "^1.0.2",
