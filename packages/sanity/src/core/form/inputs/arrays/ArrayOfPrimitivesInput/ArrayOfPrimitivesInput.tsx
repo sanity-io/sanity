@@ -7,6 +7,7 @@ import {PrimitiveItemProps} from '../../../types/itemProps'
 import {ArrayOfPrimitivesItem} from '../../../members'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {UploadTargetCard} from '../common/UploadTargetCard'
+import {ChangeIndicator} from '../../../../changeIndicators'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
@@ -153,6 +154,8 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
       resolveUploader,
       elementProps,
       arrayFunctions: ArrayFunctions = ArrayOfPrimitivesFunctions,
+      path,
+      changed,
     } = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
@@ -192,27 +195,33 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
                 >
                   {membersWithSortIds.map(({member, id}, index) => {
                     return (
-                      <Item
+                      <ChangeIndicator
                         key={member.key}
-                        id={id}
-                        sortable={isSortable}
-                        disableTransition={this.state.disableTransition}
+                        path={path}
+                        isChanged={changed}
+                        hasFocus={false}
                       >
-                        {member.kind === 'item' && (
-                          <ArrayOfPrimitivesItem
-                            member={member}
-                            renderItem={this.renderArrayItem}
-                            renderInput={renderInput}
-                          />
-                        )}
-                        {member.kind === 'error' && (
-                          <ErrorItem
-                            sortable={isSortable}
-                            member={member}
-                            onRemove={() => onItemRemove(index)}
-                          />
-                        )}
-                      </Item>
+                        <Item
+                          id={id}
+                          sortable={isSortable}
+                          disableTransition={this.state.disableTransition}
+                        >
+                          {member.kind === 'item' && (
+                            <ArrayOfPrimitivesItem
+                              member={member}
+                              renderItem={this.renderArrayItem}
+                              renderInput={renderInput}
+                            />
+                          )}
+                          {member.kind === 'error' && (
+                            <ErrorItem
+                              sortable={isSortable}
+                              member={member}
+                              onRemove={() => onItemRemove(index)}
+                            />
+                          )}
+                        </Item>
+                      </ChangeIndicator>
                     )
                   })}
                 </List>
