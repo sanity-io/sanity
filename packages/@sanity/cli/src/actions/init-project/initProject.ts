@@ -356,7 +356,7 @@ export default async function initSanity(
     await installNewPackages(
       {
         packageManager: chosen,
-        packages: ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1'],
+        packages: ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@5.2'],
       },
       {
         output: context.output,
