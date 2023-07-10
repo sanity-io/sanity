@@ -77,11 +77,15 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
 
+  // The templates that should be creatable from inside this document pane.
+  // For example, from the "Create new" menu in reference inputs.
   const templateItems = useMemo(() => {
     return resolveNewDocumentOptions({
-      type: 'global',
+      type: 'document',
+      documentId: options.id,
+      schemaType: options.type,
     })
-  }, [resolveNewDocumentOptions])
+  }, [options.id, options.type, resolveNewDocumentOptions])
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
