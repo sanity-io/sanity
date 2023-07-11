@@ -36,9 +36,7 @@ const fallbackEditorChild: PaneNodeResolver = (nodeId, context): DocumentPaneNod
     )
   }
 
-  let defaultDocumentBuilder = resolveDocumentNode({schemaType: type, documentId: id})
-
-  defaultDocumentBuilder = defaultDocumentBuilder.id('editor').title('Editor')
+  let defaultDocumentBuilder = resolveDocumentNode({schemaType: type, documentId: id}).id('editor')
 
   if (template) {
     defaultDocumentBuilder = defaultDocumentBuilder.initialValueTemplate(
