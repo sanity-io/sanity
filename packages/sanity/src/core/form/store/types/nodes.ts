@@ -14,6 +14,7 @@ import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './mem
 import {FormFieldGroup} from './fieldGroup'
 
 /**
+ * @hidden
  * @public
  */
 export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
