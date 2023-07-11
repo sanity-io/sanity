@@ -11,8 +11,9 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
 
   const handleConfirm = useCallback(() => {
     restore.execute(revision!)
-    navigateIntent('edit', {id, type})
     onComplete()
+    // wrapping in setTimeout gives the onComplete time to finish before navigating
+    setTimeout(() => navigateIntent('edit', {id, type}), 0)
   }, [restore, revision, navigateIntent, id, type, onComplete])
 
   const handle = useCallback(() => {
