@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-next-studio",
-  "version": "3.14.1",
+  "version": "3.14.2",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -12,7 +12,7 @@
     "next": "^13.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "3.14.1",
+    "sanity": "3.14.2",
     "styled-components": "^5.2.0"
   }
 }
