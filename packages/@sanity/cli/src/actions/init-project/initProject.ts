@@ -155,7 +155,7 @@ export default async function initSanity(
     frameworkList: frameworks as readonly Framework[],
   })
 
-  const envFilename = typeof env === 'string' ? env : '.env.local'
+  const envFilename = typeof env === 'string' ? env : '.env'
   if (!envFilename.startsWith('.env')) {
     throw new Error(`Env filename must start with .env`)
   }
@@ -1031,7 +1031,7 @@ export default async function initSanity(
       })
     } catch (err) {
       print(err)
-      throw new Error('An error occurred while creating .env.local', {cause: err})
+      throw new Error('An error occurred while creating .env', {cause: err})
     }
   }
 
@@ -1063,6 +1063,17 @@ export default async function initSanity(
     const updatedEnv = parseAndUpdateEnvVars(existingEnv, envVars, {
       log: options.log,
     })
+
+    const warningComment = `# Warning: Do not commit secrets to source control\n\n`
+    const shouldPrependWarning = !existingEnv.includes(warningComment)
+    // prepend warning comment to the env vars if one does not exist
+    if (shouldPrependWarning) {
+      await fs.writeFile(fileOutputPath, `${warningComment}${updatedEnv}`, {
+        encoding: 'utf8',
+      })
+      return
+    }
+
     await fs.writeFile(fileOutputPath, updatedEnv, {
       encoding: 'utf8',
     })
