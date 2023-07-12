@@ -65,19 +65,22 @@ export const PaneHeader = forwardRef(function PaneHeader(
               <TitleCard
                 __unstable_focusRing
                 flex={1}
-                forwardedAs="button"
+                // forwardedAs="button"
                 marginRight={actions ? 1 : 0}
-                onClick={handleTitleClick}
+                // onClick={handleTitleClick}
                 paddingLeft={backButton ? 1 : 3}
                 paddingY={3}
                 tabIndex={tabIndex}
               >
                 {loading && <TitleTextSkeleton animated radius={1} />}
-                {!loading && (
-                  <TitleText textOverflow="ellipsis" weight="semibold">
-                    {title}
-                  </TitleText>
-                )}
+                {!loading &&
+                  (typeof title === 'string' ? (
+                    <TitleText textOverflow="ellipsis" weight="semibold">
+                      {title}
+                    </TitleText>
+                  ) : (
+                    title
+                  ))}
               </TitleCard>
 
               {actions && (

@@ -8,7 +8,8 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import {BreadcrumbItem, ExpandButton, Root} from './breadcrumbs.styles'
+import {ChevronRightIcon} from '@sanity/icons'
+import {BreadcrumbItemRoot, ExpandButton, Root} from './breadcrumbs.styles'
 
 /**
  * @internal
@@ -33,7 +34,6 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
   const [open, setOpen] = useState(false)
   const [expandElement, setExpandElement] = useState<HTMLButtonElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
-
   const collapse = useCallback(() => setOpen(false), [])
   const expand = useCallback(() => setOpen(true), [])
 
@@ -68,7 +68,6 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
           ref={setPopoverElement}
         >
           <ExpandButton
-            fontSize={1}
             mode="bleed"
             onClick={open ? collapse : expand}
             padding={1}
@@ -91,10 +90,14 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
         <Fragment key={itemIndex}>
           {itemIndex > 0 && (
             <Box aria-hidden as="li" paddingX={space}>
-              {separator || <Text muted>/</Text>}
+              {separator || (
+                <Text muted size={1}>
+                  <ChevronRightIcon />
+                </Text>
+              )}
             </Box>
           )}
-          <Box as="li">{item}</Box>
+          <BreadcrumbItemRoot as="li">{item}</BreadcrumbItemRoot>
         </Fragment>
       ))}
     </Root>

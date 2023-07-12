@@ -2,7 +2,7 @@ import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
 export default defineScope({
-  name: 'desk/breadcrumbs',
+  name: 'desk/components/Breadcrumbs',
   title: 'Breadcrumbs',
   stories: [
     {

@@ -1,21 +1,29 @@
 import styled from 'styled-components'
-import {Button, Text} from '@sanity/ui'
+import {Box, Button} from '@sanity/ui'
+
+export const BREADCRUMB_ITEM_TITLE_MIN_WIDTH = 220
+export const BREADCRUMB_ITEM_MAX_WIDTH = 130
 
 export const Root = styled.ol`
   margin: 0;
   padding: 0;
-  display: flex;
+  display: inline-flex;
   list-style: none;
   align-items: center;
+  width: 100%;
   white-space: nowrap;
   line-height: 0;
 `
 
 export const ExpandButton = styled(Button)`
   appearance: none;
-  margin: -4px;
 `
 
-export const BreadcrumbItem = styled(Text)<{lastItem?: boolean}>`
-  ${(props) => (props.lastItem ? 'min-width: 220px;' : 'max-width: 130px;')}
+export const BreadcrumbItemRoot = styled(Box)`
+  max-width: ${BREADCRUMB_ITEM_MAX_WIDTH}px;
+
+  :last-child {
+    min-width: ${BREADCRUMB_ITEM_TITLE_MIN_WIDTH}px;
+    max-width: inherit;
+  }
 `

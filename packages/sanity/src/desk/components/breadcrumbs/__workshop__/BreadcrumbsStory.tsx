@@ -1,4 +1,4 @@
-import {Box, Card, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {ChevronRightIcon} from '@sanity/icons'
 import React from 'react'
 import {Breadcrumbs, BreadcrumbItem} from '../'
@@ -17,28 +17,18 @@ const items = [
 
 export default function BreadcrumbsStory() {
   return (
-    <Box padding={8}>
-      <Card padding={2} border>
-        <Breadcrumbs
-          maxLength={3}
-          separator={
-            <Text muted>
-              <ChevronRightIcon />
-            </Text>
-          }
-        >
-          {items.map((item, itemIndex) => (
-            <BreadcrumbItem
-              lastItem={itemIndex === items.length - 1}
-              textOverflow="ellipsis"
-              weight="medium"
-              key={itemIndex}
-            >
-              {item.title}
-            </BreadcrumbItem>
-          ))}
-        </Breadcrumbs>
-      </Card>
-    </Box>
+    <Breadcrumbs
+      style={{padding: '1rem'}}
+      maxLength={3}
+      separator={
+        <Text muted>
+          <ChevronRightIcon />
+        </Text>
+      }
+    >
+      {items.map((item, itemIndex) => (
+        <BreadcrumbItem key={itemIndex}>{item.title}</BreadcrumbItem>
+      ))}
+    </Breadcrumbs>
   )
 }
