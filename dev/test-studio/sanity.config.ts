@@ -41,6 +41,7 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {customInspector} from './inspectors/custom'
 import {pasteAction} from './fieldActions/pasteAction'
 import {noNBLocale} from './plugins/locale-no-nb'
+import {testStudioLocaleBundles} from './locales'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -57,6 +58,10 @@ const sharedSettings = definePlugin({
     components: {
       logo: Branding,
     },
+  },
+
+  i18n: {
+    bundles: testStudioLocaleBundles,
   },
 
   document: {
