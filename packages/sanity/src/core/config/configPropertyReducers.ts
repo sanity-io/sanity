@@ -1,5 +1,4 @@
 import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
-import type {InitOptions} from 'i18next'
 import {getPrintableType} from '../util/getPrintableType'
 import type {Template, TemplateItem} from '../templates'
 import type {I18nContext, LanguageDefinition, LanguageResourceBundle} from '../i18n'
@@ -110,20 +109,6 @@ export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigCon
     `Expected \`schema.templates\` to be an array or a function, but received ${getPrintableType(
       schemaTemplates
     )}`
-  )
-}
-
-export const i18nOptionsReducer: ConfigPropertyReducer<InitOptions, I18nContext> = (
-  prev,
-  {i18n},
-  context
-) => {
-  const initOptions = i18n?.initOptions
-  if (!initOptions) return prev
-  if (typeof initOptions === 'function') return initOptions(prev, context)
-
-  throw new Error(
-    `Expected \`i18n.initOptions\` to be a function, but received ${typeof initOptions}`
   )
 }
 
