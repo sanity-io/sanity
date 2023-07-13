@@ -1,4 +1,4 @@
-import {ExperimentalSearchPath} from '@sanity/types/src'
+import {ExperimentalSearchPath} from '@sanity/types'
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
@@ -193,12 +193,15 @@ export function createSearchQuery(
     filter ? `(${filter})` : '',
   ].filter(Boolean)
 
+  // Construct individual type selections based on __experimental_search paths,
+  // but ignore _id and _type keys (as these are included in all types)
   const selections = optimizedSpecs.map((spec) => {
     const constraint = `_type=="${spec.typeName}"=>`
-    const selection = `{${spec.paths.map((cfg, i) => `"${i}":${pathWithMapper(cfg)}`)}}`
+    const selection = `{${spec.paths
+      .filter((cfg) => !['_id', '_type'].includes(cfg.path))
+      .map((cfg, i) => `"${i}":${pathWithMapper(cfg)}`)}}`
     return `${constraint}${selection}`
   })
-
   const selection = selections.length > 0 ? `...select(${selections.join(',')})` : ''
 
   // Default to `_id asc` (GROQ default) if no search sort is provided

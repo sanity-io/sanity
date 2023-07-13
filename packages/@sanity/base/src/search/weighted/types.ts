@@ -42,7 +42,7 @@ export interface SearchSpec {
 export interface SearchHit {
   _type: string
   _id: string
-  [key: string]: unknown
+  [key: string]: string
 }
 
 /**
