@@ -15,9 +15,9 @@ import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {prepareI18nSource} from '../i18n/i18nConfig'
-import {
+import type {I18nSource} from '../i18n'
+import type {
   Config,
-  I18nSource,
   MissingConfigFile,
   PreparedConfig,
   SingleWorkspace,

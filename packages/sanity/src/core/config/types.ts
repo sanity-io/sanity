@@ -11,7 +11,6 @@ import type {
 } from '@sanity/types'
 import type {ComponentType, ReactNode} from 'react'
 import type {Observable} from 'rxjs'
-import type {i18n, InitOptions, TFunction, ResourceLanguage} from 'i18next'
 import type {
   BlockAnnotationProps,
   BlockProps,
@@ -21,13 +20,14 @@ import type {
   InputProps,
   ItemProps,
 } from '../form'
+import type {I18nPluginOptions, I18nSource} from '../i18n/types'
 import type {InitialValueTemplateItem, Template, TemplateItem} from '../templates'
 import type {PreviewProps} from '../components/previews'
 import type {AuthStore} from '../store'
 import type {StudioTheme} from '../theme'
 import type {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import type {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import {
+import type {
   DocumentActionComponent,
   DocumentBadgeComponent,
   DocumentFieldAction,
@@ -325,69 +325,6 @@ export type DocumentInspectorsResolver = ComposableOption<
   DocumentInspector[],
   DocumentInspectorContext
 >
-
-/**
- * @hidden
- * @beta
- */
-export interface I18nContext {
-  projectId: string
-  dataset: string
-}
-
-/**
- * @hidden
- * @beta
- */
-export interface LanguageBundle {
-  namespace: string
-  resources: ResourceLanguage
-  /** Should the resources be merged deeply (nested objects). Default: true */
-  deep?: boolean
-  /** Should existing resource keys for the namespace be overwritten. Default: false */
-  overwrite?: boolean
-}
-
-/** @beta @hidden */
-export type I18nLanguagesOption =
-  | ((prev: LanguageDefinition[], context: I18nContext) => LanguageDefinition[])
-  | LanguageDefinition[]
-
-/** @beta @hidden */
-export type I18nLanguageLoaderOption =
-  | ((prev: LanguageLoader[], context: I18nContext) => LanguageLoader[])
-  | LanguageLoader[]
-
-/** @beta @hidden */
-export interface I18nPluginOptions {
-  /**
-   * Defines which languages should be available for user selection.
-   * Prev is initially `[{id: 'en-US', title: 'English (US)', icon: AmericanFlag }]`
-   *
-   * Language titles and icons can be changed by transforming the LanguageDefinition array values.
-   *
-   * User selected language
-   */
-  languages?: I18nLanguagesOption
-
-  /**
-   * Allows redefining the I18next init options before they are used.
-   * Invoked when a workspace is loaded
-   */
-  initOptions?: (options: InitOptions, context: I18nContext) => InitOptions
-
-  /**
-   * Defines language bundles that will be loaded lazily.
-   *
-   * ### Example
-   *
-   * ```ts
-   *
-   * ```
-   *
-   */
-  languageLoaders?: I18nLanguageLoaderOption
-}
 
 /** @beta */
 export interface PluginOptions {
@@ -696,28 +633,6 @@ export interface Source {
     staticInitialValueTemplateItems: InitialValueTemplateItem[]
     options: SourceOptions
   }
-}
-
-/** @beta @hidden */
-export interface LanguageDefinition {
-  id: string
-  title: string
-  icon?: ComponentType
-}
-
-/** @beta @hidden */
-export type LanguageLoaderResult = Promise<LanguageBundle | {default: LanguageBundle} | undefined>
-
-/** @beta @hidden */
-export type LanguageLoader = (language: string, context: {i18n: i18n}) => LanguageLoaderResult
-
-/** @internal */
-export interface I18nSource {
-  languages: LanguageDefinition[]
-  initOptions: InitOptions
-  languageLoaders: LanguageLoader[]
-  t: TFunction
-  i18next: i18n
 }
 
 /** @internal */

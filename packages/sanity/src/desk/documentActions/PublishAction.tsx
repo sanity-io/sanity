@@ -3,7 +3,7 @@ import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
 import type {TFunction} from 'i18next'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {deskI18nNamespace, DeskTranslations} from '../i18n'
+import {deskI18nNamespace, type I18nDeskResourceKeys} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -17,7 +17,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-const DISABLED_REASON_TITLE_KEY: Record<string, keyof DeskTranslations> = {
+const DISABLED_REASON_TITLE_KEY: Record<string, I18nDeskResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.liveEdit.publishDisabled',
   ALREADY_PUBLISHED: 'action.publish.alreadyPublished.noTimeAgo.tooltip',
   NO_CHANGES: 'action.publish.tooltip.noChanges',
