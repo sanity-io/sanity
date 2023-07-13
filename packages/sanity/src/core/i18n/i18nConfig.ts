@@ -1,47 +1,10 @@
-import i18nApi, {type i18n, type InitOptions} from 'i18next'
+import i18nApi, {type i18n} from 'i18next'
 import type {SourceOptions} from '../config'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
-import {
-  i18nBundlesReducer,
-  i18nLangDefReducer,
-  i18nOptionsReducer,
-} from '../config/configPropertyReducers'
+import {i18nBundlesReducer, i18nLangDefReducer} from '../config/configPropertyReducers'
 import {defaultLanguage} from './localizedLanguages'
-import {getPreferredLang} from './languageStore'
-import {studioI18nNamespace} from './i18nNamespaces'
 import {createSanityI18nBackend} from './backend'
 import {I18nSource, LanguageDefinition, LanguageResourceBundle} from './types'
-
-export const defaultI18nOptions: InitOptions = {
-  partialBundledLanguages: true,
-  defaultNS: studioI18nNamespace,
-  lng: defaultLanguage.id,
-  fallbackLng: defaultLanguage.id,
-  debug: false,
-  initImmediate: false,
-
-  interpolation: {
-    escapeValue: false, // handled by i18next-react
-  },
-  react: {
-    bindI18nStore: 'added',
-  },
-}
-
-export function getInitialI18nOptions(
-  projectId: string,
-  sourceId: string,
-  languages: LanguageDefinition[]
-): InitOptions {
-  const langId = getPreferredLang(projectId, sourceId)
-  const preferredLang = languages.find((l) => l.id === langId)
-  const lng = preferredLang?.id ?? languages[0]?.id ?? defaultI18nOptions.lng
-  return {
-    ...defaultI18nOptions,
-    lng,
-    supportedLngs: languages.map((def) => def.id),
-  }
-}
 
 export function prepareI18nSource(source: SourceOptions): I18nSource {
   const {projectId, dataset} = source
@@ -61,18 +24,9 @@ export function prepareI18nSource(source: SourceOptions): I18nSource {
     initialValue: normalizeResourceBundles(languages),
   })
 
-  const i18nInitOptions = resolveConfigProperty({
-    propertyName: 'i18n',
-    config: source,
-    context: {projectId, dataset},
-    reducer: i18nOptionsReducer,
-    initialValue: getInitialI18nOptions(projectId, source.name, languages),
-  })
-
   const i18nSource = createI18nApi({
     languages,
     bundles,
-    initOptions: i18nInitOptions,
   })
 
   return i18nSource
@@ -81,17 +35,14 @@ export function prepareI18nSource(source: SourceOptions): I18nSource {
 function createI18nApi({
   languages,
   bundles,
-  initOptions,
 }: {
   languages: LanguageDefinition[]
   bundles: LanguageResourceBundle[]
-  initOptions: InitOptions
 }): I18nSource {
   // We start out with an uninitialized instance - the async init call happens in I18nProvider
   let i18nInstance = i18nApi.createInstance().use(createSanityI18nBackend({bundles}))
   return {
     languages,
-    initOptions,
     get t() {
       return i18nInstance.t
     },
