@@ -2,6 +2,7 @@ import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
 import type {InitOptions} from 'i18next'
 import {getPrintableType} from '../util/getPrintableType'
 import type {Template, TemplateItem} from '../templates'
+import type {I18nContext, LanguageDefinition, LanguageResourceBundle} from '../i18n'
 import type {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import type {
   AsyncConfigPropertyReducer,
@@ -12,9 +13,6 @@ import type {
   DocumentInspectorContext,
   DocumentLanguageFilterComponent,
   DocumentLanguageFilterContext,
-  I18nContext,
-  LanguageDefinition,
-  LanguageLoader,
   NewDocumentOptionsContext,
   ResolveProductionUrlContext,
   Tool,
@@ -129,21 +127,6 @@ export const i18nOptionsReducer: ConfigPropertyReducer<InitOptions, I18nContext>
   )
 }
 
-export const i18nLoaderReducer: ConfigPropertyReducer<LanguageLoader[], I18nContext> = (
-  prev,
-  {i18n},
-  context
-) => {
-  const languageLoaders = i18n?.languageLoaders
-  if (!languageLoaders) return prev
-  if (typeof languageLoaders === 'function') return languageLoaders(prev, context)
-  if (Array.isArray(languageLoaders)) return [...prev, ...languageLoaders]
-
-  throw new Error(
-    `Expected \`i18n.languageLoaders\` to be an array or a function, but received ${typeof languageLoaders}`
-  )
-}
-
 export const i18nLangDefReducer: ConfigPropertyReducer<LanguageDefinition[], I18nContext> = (
   prev,
   {i18n},
@@ -156,6 +139,21 @@ export const i18nLangDefReducer: ConfigPropertyReducer<LanguageDefinition[], I18
 
   throw new Error(
     `Expected \`i18n.languages\` to be an array or a function, but received ${typeof languages}`
+  )
+}
+
+export const i18nBundlesReducer: ConfigPropertyReducer<LanguageResourceBundle[], I18nContext> = (
+  prev,
+  {i18n},
+  context
+) => {
+  const bundles = i18n?.bundles
+  if (!bundles) return prev
+  if (Array.isArray(bundles)) return [...prev, ...bundles]
+  if (typeof bundles === 'function') return bundles(prev, context)
+
+  throw new Error(
+    `Expected \`i18n.bundles\` to be an array or a function, but received ${typeof bundles}`
   )
 }
 

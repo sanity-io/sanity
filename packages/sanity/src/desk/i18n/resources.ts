@@ -1,7 +1,9 @@
-import {deskI18nNamespace} from '../../i18nNamespaces'
-import {defineLanguageBundle} from 'sanity'
-
-export const deskI18nNamespaceStrings = {
+/**
+ * Defined i18n strings for the desk tool, in US English.
+ *
+ * @internal
+ */
+const deskI18nStrings = {
   /** Label for the "Publish" document action when there are pending changes.*/
   'action.publish.draft.label': 'Publish',
 
@@ -42,7 +44,9 @@ export const deskI18nNamespaceStrings = {
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
 }
 
-export default defineLanguageBundle({
-  namespace: deskI18nNamespace,
-  resources: deskI18nNamespaceStrings,
-})
+/**
+ * @alpha
+ */
+export type I18nDeskResourceKeys = keyof typeof deskI18nStrings
+
+export default deskI18nStrings

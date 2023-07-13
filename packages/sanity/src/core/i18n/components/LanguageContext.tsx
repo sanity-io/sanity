@@ -1,6 +1,6 @@
 import React, {createContext, PropsWithChildren, useContext, useMemo} from 'react'
 import {type i18n} from 'i18next'
-import {useSource, useWorkspace} from '../../studio'
+import {useSource} from '../../studio'
 import {storePreferredLang} from '../languageStore'
 
 /**
@@ -32,7 +32,6 @@ export function useLanguage(): LanguageContextValue {
  */
 export interface LanguageProviderProps {
   language: string
-  loadLanguage: (lang: string, instance: i18n) => Promise<void>
   setLanguage: (lang: string) => void
   i18nInstance: i18n
 }
@@ -41,7 +40,7 @@ export interface LanguageProviderProps {
  * @internal
  */
 export function LanguageProvider(props: PropsWithChildren<LanguageProviderProps>) {
-  const {i18nInstance, setLanguage, loadLanguage, language, children} = props
+  const {i18nInstance, setLanguage, language, children} = props
   const {projectId, name: sourceId} = useSource()
   const sanityContext: LanguageContextValue = useMemo(() => {
     return {
@@ -49,14 +48,13 @@ export function LanguageProvider(props: PropsWithChildren<LanguageProviderProps>
         if (!i18nInstance) {
           return
         }
-        await loadLanguage(lang, i18nInstance)
         await i18nInstance.changeLanguage(lang)
         storePreferredLang(projectId, sourceId, lang)
         setLanguage(lang)
       },
       language,
     }
-  }, [i18nInstance, loadLanguage, language, setLanguage, projectId, sourceId])
+  }, [i18nInstance, language, setLanguage, projectId, sourceId])
 
   /* Use language as key to force re-render of the whole studio, to update lazy getters*/
   return (
