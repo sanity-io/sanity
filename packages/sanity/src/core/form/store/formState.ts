@@ -791,7 +791,7 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
     schemaType: props.schemaType,
     focused: isEqual(props.path, props.focusPath),
     focusPath: trimChildPath(props.path, props.focusPath),
-    path: props.path,
+    path: props.path.concat([0]),
     id: toString(props.path),
     level: props.level,
     validation,
