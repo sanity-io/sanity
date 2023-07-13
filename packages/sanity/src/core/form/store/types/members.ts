@@ -114,7 +114,7 @@ export interface FieldSetMember {
    * @internal
    */
   _inSelectedGroup: boolean
-  /** The groups that the member belongs to. */
+  /** The names of the field groups the member belongs to. */
   groups: string[]
 
   /**

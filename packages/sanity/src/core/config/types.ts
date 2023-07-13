@@ -110,7 +110,15 @@ export interface FormBuilderComponentResolverContext extends ConfigContext {
 }
 
 /**
- * Represents a tool that can be used in the application.
+ * A tool can be thought of as a top-level "view" or "app".
+ * They are available through the global menu bar, and has a URL route associated with them.
+ *
+ * In essence, a tool is a React component that is rendered when the tool is active,
+ * along with a title, name (URL segment) and icon.
+ *
+ * Tools can handle {@link desk.Intent | intents} such as "edit" or "create" by defining a
+ * function for the `canHandleIntent` property, as well as the `getIntentState` property,
+ * which defines what an intent will be mapped to in terms of the tool's URL state.
  *
  * @public
  */
@@ -121,17 +129,17 @@ export interface Tool<Options = any> {
   component: ComponentType<{tool: Tool<Options>}>
 
   /**
-   * The icon component for the tool.
+   * React component for the icon representing the tool.
    */
   icon?: ComponentType
 
   /**
-   * The name of the tool.
+   * The name of the tool, used as part of the URL.
    */
   name: string
 
   /**
-   * The options for the tool.
+   * Options are passed through from the configuration to the component defined by the `component`
    */
   options?: Options
 
@@ -141,7 +149,7 @@ export interface Tool<Options = any> {
   router?: Router
 
   /**
-   * The title of the tool.
+   * Title of the tool - used for the navigation menu item, along with the icon.
    */
   title: string
 
@@ -194,11 +202,11 @@ export interface ConfigContext {
    */
   dataset: string
   /**
-   * The schema for the dataset.
+   * The schema for this source.
    */
   schema: Schema
   /**
-   * The current user or null
+   * The current user or `null` if not authenticated.
    */
   currentUser: CurrentUser | null
   /**
@@ -659,7 +667,12 @@ export interface WorkspaceSummary {
  */
 export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
-  /** URL base path to use, for instance `/myWorkspace` */
+  /**
+   * URL base path to use, for instance `/myWorkspace`
+   * Note that this will be prepended with any _studio_ base path, eg `/studio/myWorkspace`,
+   * and is a client-side routing feature. If you're looking to serve your studio from a subpath,
+   * you're probably looking for the `basePath` property in `sanity.cli.ts`/`sanity.cli.js`.
+   */
   basePath: string
   /** Subtitle to show under the name of the workspace */
   subtitle?: string

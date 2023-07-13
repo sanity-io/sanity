@@ -16,10 +16,11 @@ export const DRAFTS_FOLDER = 'drafts'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
 
 /**
- * @public
  *
  * Checks if the document ID `documentId` has the same ID as `equalsDocumentId`,
  * ignoring the draft prefix.
+ *
+ * @public
  *
  * @param documentId - The document ID to check
  * @param equalsDocumentId - The document ID to check against

@@ -33,7 +33,7 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
    * @hidden
    * @beta */
   presence: FormNodePresence[]
-  /** The validation errors of the node. */
+  /** The validation markers of the node. */
   validation: FormNodeValidation[]
   /** The value of the node. */
   value: T | undefined
@@ -41,7 +41,7 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
   readOnly?: boolean
   /** Whether the node is focused. */
   focused?: boolean
-  /** Whether the node has been changed. */
+  /** Whether the node has changes in a draft. */
   changed: boolean
 }
 

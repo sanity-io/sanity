@@ -72,7 +72,7 @@ export interface BaseItemProps<T> {
   /** The children of the item. */
   children: React.ReactNode
 
-  /** The validation rules for the item. */
+  /** The validation markers for the item. */
   validation: FormNodeValidation[]
 
   /**
@@ -89,7 +89,7 @@ export interface BaseItemProps<T> {
  * @public
  */
 export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends BaseItemProps<Item> {
-  /** Whether the item has changed. */
+  /** Whether the item has changes in a draft. */
   changed: boolean
   /** The schema type of the object. */
   schemaType: ObjectSchemaType
@@ -139,7 +139,7 @@ export interface PrimitiveItemProps extends BaseItemProps<string | number | bool
    */
   schemaType: NumberSchemaType | BooleanSchemaType | StringSchemaType
   /**
-   * The parent schema type of the primitive item.
+   * The schema type of the parent array containing the item.
    */
   parentSchemaType: ArraySchemaType
 }
