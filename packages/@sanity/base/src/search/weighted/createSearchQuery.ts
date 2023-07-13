@@ -35,31 +35,40 @@ interface IntermediateSearchType extends Omit<ExperimentalSearchPath, 'path'> {
 
 export const DEFAULT_LIMIT = 1000
 
-const MAX_ATTRIBUTES = 1000
+// Maximum number of unique searchable attributes to include in a single search query (across all document types)
+const MAX_UNIQUE_ATTRIBUTES = 1000
 
 const combinePaths = flow([flatten, union, compact])
 
 /**
- * Create an object containing all available document types and weighted paths, used to construct a GROQ query for search.
- * System fields `_id` and `_type` are included by default.
+ * Create search specs from supplied searchable types.
+ * Search specs contain weighted paths which are used to construct GROQ queries for search.
  *
- * If `optimizeIndexPaths` is true, this will will convert all `__experimental_search` paths containing numbers
- * into array syntax. E.g. ['cover', 0, 'cards', 0, 'title'] => "cover[].cards[].title"
+ * @param types - The searchable document types to create specs from.
+ * @param optimizedIndexPaths - If true, will will convert all `__experimental_search` paths containing numbers into array syntax.
+ *  E.g. ['cover', 0, 'cards', 0, 'title'] => "cover[].cards[].title"
  *
- * This optimization will yield more search results than may be intended, but offers better performance over arrays with indices.
- * (which are currently unoptimizable by Content Lake)
+ *  This optimization will yield more search results than may be intended, but offers better performance over arrays with indices.
+ *  (which are currently unoptimizable by Content Lake)
+ * @param maxAttributes - The maximum number of _unique_ searchable attributes to include across all types.
+ *  User-provided paths (e.g. with __experimental_search) do not count towards this limit.
+ * @returns An object containing all matching search specs and `hasIndexedPaths`, a boolean indicating whether any paths contain indices.
+ *   E.g. `['cover', 0, 'cards', 0, 'title']`
+ * @internal
  */
-function createSearchSpecs(
+export function createSearchSpecs(
   types: SearchableType[],
-  optimizeIndexedPaths
+  optimizeIndexedPaths: boolean,
+  maxAttributes: number
 ): {
   hasIndexedPaths: boolean
   specs: SearchSpec[]
 } {
   let hasIndexedPaths = false
+  const uniquePaths = []
 
   const specsByType = types
-    // Extract all paths
+    // Extract and flatten all paths
     .reduce<IntermediateSearchType[]>((acc, val) => {
       const newPaths = val.__experimental_search.map((config) => {
         const path = config.path.map((p) => {
@@ -80,7 +89,7 @@ function createSearchSpecs(
       })
       return acc.concat(newPaths)
     }, [])
-    // Sort by path length (ASC)
+    // Sort by path length, typeName, path (asc)
     .sort((a, b) => {
       if (a.pathLength === b.pathLength) {
         if (a.typeName === b.typeName) return a.path > b.path ? 1 : -1
@@ -88,26 +97,32 @@ function createSearchSpecs(
       }
       return a.pathLength > b.pathLength ? 1 : -1
     })
-    // Reduce into specs by type and conditionally add paths based on whether they either
-    // 1. fall within the MAX_ATTRIBUTES limit OR
-    // 2. have been explicitly included by the user (i.e. custom values for __experimental_search)
-    .reduce<Record<string, SearchSpec>>((acc, val, index) => {
-      const included = index < MAX_ATTRIBUTES || val.userProvided
+    // Reduce into specs (by type) and conditionally add unique paths up until the `maxAttributes` limit
+    .reduce<Record<string, SearchSpec>>((acc, val) => {
+      const existingPath = uniquePaths.includes(val.path)
+      const includeSpec = existingPath || val.userProvided || uniquePaths.length < maxAttributes
+
       const searchPath: SearchPath = {
         mapWith: val.mapWith,
         path: val.path,
         weight: val.weight,
       }
+
       acc[val.typeName] = {
         ...acc[val.typeName],
-        ...(included && {
+        ...(includeSpec && {
           paths: (acc[val.typeName]?.paths || []).concat([searchPath]),
         }),
-        ...(!included && {
+        ...(!includeSpec && {
           skippedPaths: (acc[val.typeName]?.skippedPaths || []).concat([searchPath]),
         }),
         typeName: val.typeName,
       }
+
+      if (!existingPath) {
+        uniquePaths.push(val.path)
+      }
+
       return acc
     }, {})
 
@@ -143,6 +158,10 @@ function createConstraints(terms: string[], specs: SearchSpec[]) {
  * E.g.`"the" "fantastic mr" fox fox book` => ["the", `"fantastic mr"`, "fox", "book"]
  *
  * Phrases wrapped in quotes are assigned relevance scoring differently from regular words.
+ *
+ * @param query - A string to convert into tokens.
+ * @returns An array of string tokens.
+ * @internal
  */
 export function extractTermsFromQuery(query: string): string[] {
   const quotedQueries = [] as string[]
@@ -167,6 +186,14 @@ export function extractTermsFromQuery(query: string): string[] {
   return [...quotedTerms, ...remainingTerms]
 }
 
+/**
+ * Generate search query data based off provided search terms and options.
+ *
+ * @param searchTerms - An object containing a string query and any number of searchable document types.
+ * @param searchOpts - Optional search configuration.
+ * @returns A object containing a GROQ query, params and options to be used to fetch search results.
+ * @internal
+ */
 export function createSearchQuery(
   searchTerms: SearchTerms,
   searchOpts: SearchOptions & WeightedSearchOptions = {}
@@ -183,7 +210,7 @@ export function createSearchQuery(
    * These optimized specs are used when building constraints in this search query and assigning
    * weight to search hits.
    */
-  const optimizedSpecs = createSearchSpecs(searchTerms.types, true).specs
+  const optimizedSpecs = createSearchSpecs(searchTerms.types, true, MAX_UNIQUE_ATTRIBUTES).specs
 
   // Construct search filters used in this GROQ query
   const filters = [

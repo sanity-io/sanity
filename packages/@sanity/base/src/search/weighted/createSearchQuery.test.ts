@@ -1,6 +1,11 @@
 /* eslint-disable camelcase */
-import {createSearchQuery, DEFAULT_LIMIT, extractTermsFromQuery} from './createSearchQuery'
-import {SearchableType} from './types'
+import {
+  createSearchQuery,
+  createSearchSpecs,
+  DEFAULT_LIMIT,
+  extractTermsFromQuery,
+} from './createSearchQuery'
+import {SearchPath, SearchSpec, SearchableType} from './types'
 
 const testType: SearchableType = {
   name: 'basic-schema-test',
@@ -293,6 +298,66 @@ describe('createSearchQuery', () => {
   })
 })
 
+describe('createSearchSpecs', () => {
+  const author: SearchableType = {
+    name: 'author',
+    __experimental_search: [{path: ['name'], userProvided: true, weight: 1}],
+  }
+  const book: SearchableType = {
+    name: 'book',
+    __experimental_search: [
+      {path: ['author'], weight: 1},
+      {path: ['title'], weight: 1},
+    ],
+  }
+  const country: SearchableType = {
+    name: 'country',
+    __experimental_search: [
+      {path: ['anthem'], weight: 1},
+      {path: ['currency'], weight: 1},
+      {path: ['language'], weight: 1},
+      {path: ['location', 'lat'], weight: 1},
+      {path: ['location', 'lon'], weight: 1},
+      {path: ['industries', 'energy', 'natural', 'wind'], weight: 1},
+      {path: ['name'], weight: 1},
+    ],
+  }
+  const playlist: SearchableType = {
+    name: 'playlist',
+    __experimental_search: [{path: ['name'], weight: 1}],
+  }
+  const species: SearchableType = {
+    name: 'species',
+    __experimental_search: [{path: ['name'], weight: 1}],
+  }
+
+  it('should order paths by length', () => {
+    const {specs} = createSearchSpecs([author, book, country], true, 1000)
+    const {paths} = flattenSpecs(specs)
+    expect(paths[paths.length - 1].path).toEqual('industries.energy.natural.wind')
+  })
+
+  it('should not include duplicate paths when factoring maxAttributes', () => {
+    const {specs} = createSearchSpecs([playlist, species], true, 1)
+    const {paths} = flattenSpecs(specs)
+    expect(paths).toHaveLength(2)
+  })
+
+  it('should always include user provided paths, regardless of attribute limit', () => {
+    const {specs} = createSearchSpecs([author], true, 0)
+    const {paths, skippedPaths} = flattenSpecs(specs)
+    expect(paths).toHaveLength(1)
+    expect(skippedPaths).toHaveLength(0)
+  })
+
+  it('should limit specs by a set number of attributes', () => {
+    const {specs} = createSearchSpecs([book, country], true, 1)
+    const {paths, skippedPaths} = flattenSpecs(specs)
+    expect(paths).toHaveLength(1)
+    expect(skippedPaths).toHaveLength(8)
+  })
+})
+
 describe('extractTermsFromQuery', () => {
   describe('should handle orphaned double quotes', () => {
     const tests: [string, string[]][] = [
@@ -325,3 +390,18 @@ describe('extractTermsFromQuery', () => {
     expect(terms).toEqual([`foo`])
   })
 })
+
+function flattenSpecs(
+  specs: SearchSpec[]
+): {
+  paths: SearchPath[]
+  skippedPaths: SearchPath[]
+} {
+  return specs.reduce(
+    (acc, val) => ({
+      paths: [...acc.paths, ...(val.paths || [])],
+      skippedPaths: [...acc.skippedPaths, ...(val.skippedPaths || [])],
+    }),
+    {paths: [], skippedPaths: []}
+  )
+}
