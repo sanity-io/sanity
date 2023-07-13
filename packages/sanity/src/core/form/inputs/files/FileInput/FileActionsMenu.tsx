@@ -113,6 +113,8 @@ export function FileActionsMenu(props: Props) {
 
       <Box padding={2}>
         <Flex justify="center">
+          {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
+     and break replacing an uploaded file. */}
           <Popover
             content={
               <Menu ref={setMenuElement} shouldFocus={shouldFocus}>

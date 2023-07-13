@@ -96,7 +96,8 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
           ref={setHotspotButtonElement}
         />
       )}
-
+      {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
+     and break replacing an uploaded file. */}
       <Popover
         id="image-actions-menu"
         content={
