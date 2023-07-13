@@ -21,10 +21,10 @@ describe('createSearchQuery', () => {
       })
 
       expect(query).toEqual(
-        '*[_type in $__types && (title match $t0)]' +
+        '*[_type in $__types&&(title match $t0)]' +
           '| order(_id asc)' +
           '[$__offset...$__limit]' +
-          '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
+          '{_type,_id,...select(_type=="basic-schema-test"=>{"0":title})}'
       )
 
       expect(params).toEqual({
@@ -55,7 +55,7 @@ describe('createSearchQuery', () => {
         ],
       })
 
-      expect(query).toContain('*[_type in $__types && (title match $t0 || object.field match $t0)]')
+      expect(query).toContain('*[_type in $__types&&(title match $t0||object.field match $t0)]')
     })
 
     it('should have one match filter per term', () => {
@@ -64,7 +64,7 @@ describe('createSearchQuery', () => {
         types: [testType],
       })
 
-      expect(query).toContain('*[_type in $__types && (title match $t0) && (title match $t1)]')
+      expect(query).toContain('*[_type in $__types&&(title match $t0)&&(title match $t1)]')
       expect(params.t0).toEqual('term0*')
       expect(params.t1).toEqual('term1*')
     })
@@ -120,7 +120,7 @@ describe('createSearchQuery', () => {
       )
 
       expect(query).toContain(
-        '*[_type in $__types && (title match $t0) && (randomCondition == $customParam)]'
+        '*[_type in $__types&&(title match $t0)&&(randomCondition == $customParam)]'
       )
       expect(params.customParam).toEqual('custom')
     })
@@ -165,10 +165,10 @@ describe('createSearchQuery', () => {
       )
 
       expect(query).toEqual(
-        '*[_type in $__types && (title match $t0)]' +
+        '*[_type in $__types&&(title match $t0)]' +
           '| order(exampleField desc)' +
           '[$__offset...$__limit]' +
-          '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
+          '{_type,_id,...select(_type=="basic-schema-test"=>{"0":title})}'
       )
     })
 
@@ -179,10 +179,10 @@ describe('createSearchQuery', () => {
       })
 
       expect(query).toEqual(
-        '*[_type in $__types && (title match $t0)]' +
+        '*[_type in $__types&&(title match $t0)]' +
           '| order(_id asc)' +
           '[$__offset...$__limit]' +
-          '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
+          '{_type,_id,...select(_type=="basic-schema-test"=>{"0":title})}'
       )
     })
 
@@ -261,13 +261,12 @@ describe('createSearchQuery', () => {
          * As a workaround, we replace numbers with [] array syntax, so we at least get hits when the path matches anywhere in the array.
          * This is an improvement over before, where an illegal term was used (number-as-string, ala ["0"]),
          * which lead to no hits at all. */
-
-        '*[_type in $__types && (cover[].cards[].title match $t0) && (cover[].cards[].title match $t1)]' +
+        '*[_type in $__types&&(cover[].cards[].title match $t0)&&(cover[].cards[].title match $t1)]' +
           '| order(_id asc)' +
           '[$__offset...$__limit]' +
           // at this point we could refilter using cover[0].cards[0].title.
           // This solution was discarded at it would increase the size of the query payload by up to 50%
-          '{_type, _id, ...select(_type == "numbers-in-path" => { "w0": cover[].cards[].title })}'
+          '{_type,_id,...select(_type=="numbers-in-path"=>{"0":cover[].cards[].title})}'
       )
     })
 
@@ -288,8 +287,8 @@ describe('createSearchQuery', () => {
         ],
       })
 
-      expect(query).toContain('*[_type in $__types && (pt::text(pteField) match $t0)')
-      expect(query).toContain('...select(_type == "type1" => { "w0": pt::text(pteField) })')
+      expect(query).toContain('*[_type in $__types&&(pt::text(pteField) match $t0)')
+      expect(query).toContain('...select(_type=="type1"=>{"0":pt::text(pteField)})')
     })
   })
 })

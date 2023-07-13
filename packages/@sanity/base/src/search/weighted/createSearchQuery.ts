@@ -132,7 +132,7 @@ function createConstraints(terms: string[], specs: SearchSpec[]) {
     .map((_term, i) => combinedSearchPaths.map((joinedPath) => `${joinedPath} match $t${i}`))
     .filter((constraint) => constraint.length > 0)
 
-  return constraints.map((constraint) => `(${constraint.join(' || ')})`)
+  return constraints.map((constraint) => `(${constraint.join('||')})`)
 }
 
 /**
@@ -194,24 +194,24 @@ export function createSearchQuery(
   ].filter(Boolean)
 
   const selections = optimizedSpecs.map((spec) => {
-    const constraint = `_type == "${spec.typeName}" => `
-    const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
+    const constraint = `_type=="${spec.typeName}"=>`
+    const selection = `{${spec.paths.map((cfg, i) => `"${i}":${pathWithMapper(cfg)}`)}}`
     return `${constraint}${selection}`
   })
 
-  const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
+  const selection = selections.length > 0 ? `...select(${selections.join(',')})` : ''
 
   // Default to `_id asc` (GROQ default) if no search sort is provided
   const sortDirection = searchOpts?.sort?.direction || ('asc' as SortDirection)
   const sortField = searchOpts?.sort?.field || '_id'
 
   const query =
-    `*[${filters.join(' && ')}]` +
+    `*[${filters.join('&&')}]` +
     `| order(${sortField} ${sortDirection})` +
     `[$__offset...$__limit]` +
     // the following would improve search quality for paths-with-numbers, but increases the size of the query by up to 50%
     // `${hasIndexedPaths ? `[${createConstraints(terms, exactSearchSpec).join(' && ')}]` : ''}` +
-    `{_type, _id, ${selection}}`
+    `{_type,_id,${selection}}`
 
   // Prepend optional GROQ comments to query
   const groqComments = (searchOpts?.comments || []).map((s) => `// ${s}`).join('\n')

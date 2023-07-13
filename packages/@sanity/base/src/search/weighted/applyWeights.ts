@@ -28,7 +28,7 @@ export function applyWeights(
   return hits.reduce((allHits, hit, index) => {
     const typeSpec = specByType[hit._type]
     const stories = typeSpec.paths.map((pathSpec, idx) => {
-      const pathHit = hit[`w${idx}`]
+      const pathHit = hit[idx]
       const indices = Array.isArray(pathHit) ? findMatchingIndices(terms, pathHit) : null
       // Only stringify non-falsy values so null values don't pollute search
       const value = pathHit ? stringify(pathHit) : null

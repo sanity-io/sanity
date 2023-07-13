@@ -20,8 +20,8 @@ const mockSchema = Schema.compile({
 
 const searchHits = defer(() =>
   of([
-    {_id: 'id0', _type: 'book', w0: 'id0', w1: 'book', w2: 'Harry Potter'},
-    {_id: 'id1', _type: 'book', w0: 'id1', w1: 'book', w2: 'Harry'},
+    {_id: 'id0', _type: 'book', 0: 'id0', 1: 'book', 2: 'Harry Potter'},
+    {_id: 'id1', _type: 'book', 0: 'id1', 1: 'book', 2: 'Harry'},
   ])
 )
 
