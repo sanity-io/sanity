@@ -1,4 +1,4 @@
-import type {InitOptions, TFunction, i18n} from 'i18next'
+import type {TFunction, i18n} from 'i18next'
 import type {ComponentType} from 'react'
 
 /**
@@ -85,12 +85,6 @@ export interface I18nPluginOptions {
    * Namespaces in this context usually means a specific part of the studio, like a tool or plugin.
    */
   bundles?: I18nResourceBundlesOption
-
-  /**
-   * Allows redefining the I18next init options before they are used.
-   * Invoked when a workspace is loaded
-   */
-  initOptions?: (options: InitOptions, context: I18nContext) => InitOptions
 }
 
 /** @beta @hidden */
@@ -105,8 +99,12 @@ export interface LanguageDefinition {
 /** @internal */
 export interface I18nSource {
   languages: LanguageDefinition[]
-  initOptions: InitOptions
   t: TFunction
+
+  /**
+   * @internal
+   * @todo remove/limit this
+   */
   i18next: i18n
 }
 
