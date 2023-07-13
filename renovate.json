@@ -1,9 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>sanity-io/renovate-config",
-    ":dependencyDashboardApproval"
-  ],
+  "extends": ["github>sanity-io/renovate-config", ":dependencyDashboardApproval"],
   "ignorePresets": ["github>sanity-io/renovate-config:group-non-major"],
   "packageRules": [
     {
