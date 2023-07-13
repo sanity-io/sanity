@@ -15,22 +15,6 @@ export default defineCliConfig({
   vite(viteConfig: UserConfig): UserConfig {
     return {
       ...viteConfig,
-      optimizeDeps: {
-        ...viteConfig.optimizeDeps,
-        exclude: [...(viteConfig.optimizeDeps?.exclude || []), '@sanity/tsdoc', '@sanity/assist'],
-      },
-      // server: {
-      //   ...viteConfig.server,
-      //   ...{
-      //     // Listen on all addresses, including LAN and public addresses
-      //     host: true,
-      //     // Specify server port
-      //     port: 3333,
-      //     // Exit if port is already in use,
-      //     // instead of automatically trying the next available port
-      //     strictPort: true,
-      //   },
-      // },
       build: {
         ...viteConfig.build,
         rollupOptions: {
