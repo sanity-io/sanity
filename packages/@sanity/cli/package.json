@@ -65,7 +65,7 @@
     "@vercel/frameworks": "1.4.3",
     "@vercel/fs-detectors": "3.9.3",
     "chalk": "^4.1.2",
-    "esbuild": "^0.16.5",
+    "esbuild": "^0.18.0",
     "esbuild-register": "^3.4.1",
     "get-it": "^8.0.9",
     "golden-fleece": "^1.0.9",
