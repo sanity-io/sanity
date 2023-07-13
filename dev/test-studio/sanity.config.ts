@@ -43,6 +43,7 @@ import {pasteAction} from './fieldActions/pasteAction'
 import {routerDebugTool} from './plugins/router-debug'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {noNBLocale} from './plugins/locale-no-nb'
+import {testStudioLocaleBundles} from './locales'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -59,6 +60,10 @@ const sharedSettings = definePlugin({
     components: {
       logo: Branding,
     },
+  },
+
+  i18n: {
+    bundles: testStudioLocaleBundles,
   },
 
   document: {

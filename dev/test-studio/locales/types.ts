@@ -1,11 +1,9 @@
 // eslint-disable-next-line import/no-unassigned-import
 import 'sanity'
-import {testStudioI18nNamespace, testStudioI18nNamespaceStrings} from './en-US/testStudio'
-
-export type TestStudioTranslations = typeof testStudioI18nNamespaceStrings
+import {testStudioI18nNamespace, I18nTestStudioResourceKeys} from './index'
 
 declare module 'sanity' {
   interface SanityLanguageResources {
-    [testStudioI18nNamespace]: TestStudioTranslations
+    [testStudioI18nNamespace]: I18nTestStudioResourceKeys
   }
 }
