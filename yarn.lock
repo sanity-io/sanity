@@ -5358,7 +5358,7 @@
   optionalDependencies:
     ajv "^6.0.0"
 
-"@vitejs/plugin-react@^3.0.0", "@vitejs/plugin-react@^3.1.0":
+"@vitejs/plugin-react@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-3.1.0.tgz#d1091f535eab8b83d6e74034d01e27d73c773240"
   integrity sha512-AfgcRL8ZBhAlc3BFdigClmTUMISmmzHn7sB2h9U1odvc5U/MjWXsAaz18b/WoppUTDBzxOJwo2VdClfUcItu9g==

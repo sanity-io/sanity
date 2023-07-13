@@ -160,7 +160,7 @@
     "@types/shallow-equals": "^1.0.0",
     "@types/speakingurl": "^13.0.3",
     "@types/use-sync-external-store": "^0.0.3",
-    "@vitejs/plugin-react": "^3.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "classnames": "^2.2.5",
