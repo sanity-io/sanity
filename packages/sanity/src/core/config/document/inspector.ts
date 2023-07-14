@@ -2,7 +2,6 @@ import {ButtonTone} from '@sanity/ui'
 import {ComponentType} from 'react'
 
 /** @hidden @beta */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentInspectorProps {
   documentId: string
   documentType: string

@@ -4,7 +4,11 @@ import {ColorTintKey} from '@sanity/color'
 // eslint-disable-next-line no-unused-vars
 export type LegacyThemeTints = {[key in ColorTintKey]: string}
 
-/** @public */
+/**
+ * Properties that can be used to override the default theme.
+ *
+ * @public
+ */
 export interface LegacyThemeProps {
   '--font-family-monospace': string
   '--font-family-base': string

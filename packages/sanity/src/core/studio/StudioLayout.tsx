@@ -42,7 +42,27 @@ export const NavbarContext = createContext<NavbarContextValue>({
   searchFullscreenPortalEl: null,
 })
 
-/** @public */
+/**
+ * The Studio Layout component is the root component of the Sanity Studio UI.
+ * It renders the navbar, the active tool, and the search modal as well as the error boundary.
+ *
+ * @public
+ * @returns A Studio Layout element that renders the navbar, the active tool, and the search modal as well as the error boundary
+ * @remarks This component should be used as a child component to the StudioProvider
+ * @example Rendering a Studio Layout
+ * ```ts
+ * <StudioProvider
+ *  basePath={basePath}
+ *  config={config}
+ *  onSchemeChange={onSchemeChange}
+ *  scheme={scheme}
+ *  unstable_history={unstable_history}
+ *  unstable_noAuthBoundary={unstable_noAuthBoundary}
+ * >
+ *   <StudioLayout />
+ *</StudioProvider>
+ * ```
+ */
 export function StudioLayout() {
   const {name, title, tools} = useWorkspace()
   const activeToolName = useRouterState(

@@ -110,21 +110,73 @@ export interface FormBuilderComponentResolverContext extends ConfigContext {
 }
 
 /**
+ * A tool can be thought of as a top-level "view" or "app".
+ * They are available through the global menu bar, and has a URL route associated with them.
+ *
+ * In essence, a tool is a React component that is rendered when the tool is active,
+ * along with a title, name (URL segment) and icon.
+ *
+ * Tools can handle {@link desk.Intent | intents} such as "edit" or "create" by defining a
+ * function for the `canHandleIntent` property, as well as the `getIntentState` property,
+ * which defines what an intent will be mapped to in terms of the tool's URL state.
+ *
  * @public
  */
 export interface Tool<Options = any> {
+  /**
+   * The React component that renders the tool.
+   */
   component: ComponentType<{tool: Tool<Options>}>
+
+  /**
+   * React component for the icon representing the tool.
+   */
   icon?: ComponentType
+
+  /**
+   * The name of the tool, used as part of the URL.
+   */
   name: string
+
+  /**
+   * Options are passed through from the configuration to the component defined by the `component`
+   */
   options?: Options
+
+  /**
+   * The router for the tool. See {@link router.Router}
+   */
   router?: Router
+
+  /**
+   * Title of the tool - used for the navigation menu item, along with the icon.
+   */
   title: string
+
+  /**
+   * Gets the state for the given intent.
+   *
+   * @param intent - The intent to get the state for.
+   * @param params - The parameters for the intent.
+   * @param routerState - The current router state. See {@link router.RouterState}
+   * @param payload - The payload for the intent.
+   * @returns The state for the intent.
+   */
   getIntentState?: (
     intent: string,
     params: Record<string, string>,
     routerState: RouterState | undefined,
     payload: unknown
   ) => unknown
+
+  /**
+   * Determines whether the tool can handle the given intent.
+   *
+   * @param intent - The intent to check.
+   * @param params - The parameters for the intent.
+   * @param payload - The payload for the intent.
+   * @returns `true` if the tool can handle the intent, `false` otherwise.
+   */
   canHandleIntent?: (intent: string, params: Record<string, unknown>, payload: unknown) => boolean
 }
 
@@ -141,10 +193,25 @@ export type AsyncComposableOption<TValue, TContext> = (
 
 /** @public */
 export interface ConfigContext {
+  /**
+   * The ID of the project.
+   */
   projectId: string
+  /**
+   * The name of the dataset.
+   */
   dataset: string
+  /**
+   * The schema for this source.
+   */
   schema: Schema
+  /**
+   * The current user or `null` if not authenticated.
+   */
   currentUser: CurrentUser | null
+  /**
+   * A function that returns a Sanity client with the {@link SourceClientOptions | specified options}.
+   */
   getClient: (options: SourceClientOptions) => SanityClient
 }
 
@@ -388,35 +455,62 @@ export type PartialContext<TContext extends ConfigContext> = Pick<
 
 /** @public */
 export interface SourceClientOptions {
+  /**
+   * API version to use. See {@link https://www.sanity.io/docs/api-versioning | api-versioning}
+   */
   apiVersion: string
 }
 
-/** @public */
+/**
+ * Represents a source.
+ * @public
+ */
 export interface Source {
+  /** The type of the source. */
   type: 'source'
+  /** The name of the source. */
   name: string
+  /** The title of the source. */
   title: string
+  /** The ID of the project. */
   projectId: string
+  /** The name of the dataset. */
   dataset: string
+  /** The schema of the source. */
   schema: Schema
+  /** The templates of the source. */
   templates: Template[]
+  /** The tools of the source. */
   tools: Tool[]
+  /** The current user of the source. */
   currentUser: CurrentUser | null
+  /** Whether the user is authenticated. */
   authenticated: boolean
 
   /** @internal */
   auth: AuthStore
 
+  /**
+   * Returns a client instance.
+   * @param clientOptions - Options to pass to the client. See {@link SourceClientOptions}
+   */
   getClient: (clientOptions: SourceClientOptions) => SanityClient
 
+  /**
+   * Document-related functionality.
+   * @hidden
+   * @beta
+   */
   document: {
     /**
+     * Returns an array of actions for the document.
      * @hidden
      * @beta
      */
     actions: (props: PartialContext<DocumentActionsContext>) => DocumentActionComponent[]
 
     /**
+     * Returns an array of badges for the document.
      * @hidden
      * @beta
      */
@@ -428,6 +522,7 @@ export interface Source {
     ) => DocumentFieldAction[]
 
     /**
+     * Resolves the production URL for the document.
      * @hidden
      * @beta
      */
@@ -436,6 +531,7 @@ export interface Source {
     ) => Promise<string | undefined>
 
     /**
+     * Resolves the new document options.
      * @hidden
      * @beta
      */
@@ -452,26 +548,41 @@ export interface Source {
      */
     inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
   }
+
+  /**
+   * Form-related functionality.
+   * @hidden
+   * @beta
+   */
   form: {
     /**
+     * File-related functionality.
      * @hidden
      * @beta
      */
     file: {
+      /** The asset sources. */
       assetSources: AssetSource[]
+
+      /** Whether direct uploads are enabled. */
       directUploads: boolean
     }
 
     /**
+     * Image-related functionality.
      * @hidden
      * @beta
      */
     image: {
+      /** The asset sources. */
       assetSources: AssetSource[]
+
+      /** Whether direct uploads are enabled. */
       directUploads: boolean
     }
 
     /**
+     * Components for the form.
      * @hidden
      * @beta
      */
@@ -485,7 +596,6 @@ export interface Source {
     /**
      * these have not been migrated over and are not merged by the form builder
      *
-     *
      * @hidden
      * @beta
      */
@@ -495,6 +605,10 @@ export interface Source {
     }
   }
 
+  /**
+   * @hidden
+   * @beta
+   */
   studio?: {
     /**
      * @hidden
@@ -516,7 +630,6 @@ export interface Source {
     options: SourceOptions
   }
 }
-
 /** @internal */
 export interface WorkspaceSummary {
   type: 'workspace-summary'
@@ -547,11 +660,23 @@ export interface WorkspaceSummary {
   }
 }
 
-/** @public */
+/**
+ * Definition for Workspace
+ *
+ * @public
+ */
 export interface Workspace extends Omit<Source, 'type'> {
   type: 'workspace'
+  /**
+   * URL base path to use, for instance `/myWorkspace`
+   * Note that this will be prepended with any _studio_ base path, eg `/studio/myWorkspace`,
+   * and is a client-side routing feature. If you're looking to serve your studio from a subpath,
+   * you're probably looking for the `basePath` property in `sanity.cli.ts`/`sanity.cli.js`.
+   */
   basePath: string
+  /** Subtitle to show under the name of the workspace */
   subtitle?: string
+  /** React component to use as icon for this workspace */
   icon: ReactNode
   /**
    *

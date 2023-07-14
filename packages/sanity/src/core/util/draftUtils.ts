@@ -16,8 +16,14 @@ export const DRAFTS_FOLDER = 'drafts'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
 
 /**
+ *
  * Checks if the document ID `documentId` has the same ID as `equalsDocumentId`,
- * if you discard the draft status of the given IDs. Examples:
+ * ignoring the draft prefix.
+ *
+ * @public
+ *
+ * @param documentId - The document ID to check
+ * @param equalsDocumentId - The document ID to check against
  *
  * @example
  * Draft vs published document ID, but representing the same document:
@@ -32,7 +38,7 @@ const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
  * console.log(documentIdEquals('hp-tcos', 'hp-hbp'));
  * ```
  *
- * @public
+ * @returns `true` if the document IDs are equal, `false` otherwise
  */
 export function documentIdEquals(documentId: string, equalsDocumentId: string): boolean {
   return getPublishedId(documentId) === getPublishedId(equalsDocumentId)

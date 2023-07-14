@@ -5,7 +5,9 @@ import type {CurrentUser} from '@sanity/types'
  *
  * @param user - The user to check (currently only the current user is supported)
  * @param roleId - The ID of the role to check for
- * @returns True if the user has the role, false otherwise
+ *
+ * @returns true if the user has the role, false otherwise
+ *
  * @example
  * Fetch the current user and check if they have the role "administrator":
  * ```

@@ -149,7 +149,7 @@
     "@sanity/portable-text-editor": "3.14.2",
     "@sanity/schema": "3.14.2",
     "@sanity/types": "3.14.2",
-    "@sanity/ui": "^1.6.0",
+    "@sanity/ui": "^1.7.2",
     "@sanity/util": "3.14.2",
     "@sanity/uuid": "^3.0.1",
     "@sanity/validation": "3.14.2",
@@ -229,7 +229,7 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@sanity/tsdoc": "1.0.0-alpha.34",
+    "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/ui-workshop": "^1.0.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

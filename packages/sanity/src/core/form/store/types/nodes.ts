@@ -13,12 +13,19 @@ import {FormNodePresence} from '../../../presence'
 import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
 import {FormFieldGroup} from './fieldGroup'
 
-/** @public */
+/**
+ * @hidden
+ * @public
+ */
 export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
   // constants
+  /** The unique identifier of the node. */
   id: string
+  /** The schema type of the node. */
   schemaType: S
+  /** The level of the node in the form hierarchy. */
   level: number
+  /** The path of the node in the form hierarchy. */
   path: Path
 
   // state
@@ -26,10 +33,15 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> {
    * @hidden
    * @beta */
   presence: FormNodePresence[]
+  /** The validation markers of the node. */
   validation: FormNodeValidation[]
+  /** The value of the node. */
   value: T | undefined
+  /** Whether the node is read-only. */
   readOnly?: boolean
+  /** Whether the node is focused. */
   focused?: boolean
+  /** Whether the node has changes in a draft. */
   changed: boolean
 }
 
@@ -46,6 +58,7 @@ export interface ObjectFormNode<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseFormNode<T, S> {
+  /** The focus path of the form node. */
   focusPath: Path
   /**
    * @hidden
@@ -64,6 +77,7 @@ export interface ObjectArrayFormNode<
   T extends ObjectItem = ObjectItem,
   S extends ObjectSchemaType = ObjectSchemaType
 > extends BaseFormNode<T, S> {
+  /** The focus path of the form node. */
   focusPath: Path
   value: T
 
@@ -92,6 +106,7 @@ export interface ArrayOfObjectsFormNode<
   T extends any[] = unknown[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
+  /** The focus path of the form node. */
   focusPath: Path
   /**
    * @hidden
@@ -104,6 +119,7 @@ export interface ArrayOfPrimitivesFormNode<
   T extends (string | number | boolean)[] = (string | number | boolean)[],
   S extends ArraySchemaType = ArraySchemaType
 > extends BaseFormNode<T, S> {
+  /** The focus path of the form node. */
   focusPath: Path
   /**
    * @hidden

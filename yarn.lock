@@ -4085,10 +4085,10 @@
     scroll-into-view-if-needed "^2.2.20"
     tiny-invariant "1.0.6"
 
-"@sanity/tsdoc@1.0.0-alpha.34":
-  version "1.0.0-alpha.34"
-  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-alpha.34.tgz#e5f33db7836a3d72442ff85ff48e35fc2ba31802"
-  integrity sha512-k5kuVRFeN/lang85UWBQjgZ/KwOX7tveG4qkvSvy4Dy9lV4ge3+1W2DYKnvHflMTm8LnRqBjQsEpxONJWRNHlA==
+"@sanity/tsdoc@1.0.0-alpha.38":
+  version "1.0.0-alpha.38"
+  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-alpha.38.tgz#572462d71bc167adeaae986f017dc8238df53f47"
+  integrity sha512-ZC5oMEP4Cfg9KOfPVGtf5EbbLfSkiojy46KfQ4k3nJx0NQIwVB2lmVB6ZVYYqVtQH35okrW6WMV4DXzQp2fhCQ==
   dependencies:
     "@microsoft/api-extractor" "7.35.0"
     "@microsoft/api-extractor-model" "7.27.0"
@@ -4099,7 +4099,7 @@
     "@sanity/client" "^6.1.2"
     "@sanity/color" "^2.2.5"
     "@sanity/icons" "^2.3.1"
-    "@sanity/ui" "^1.3.3"
+    "@sanity/ui" "^1.7.2"
     "@types/cpx" "^1.5.2"
     "@vitejs/plugin-react" "^4.0.0"
     cac "^6.7.14"
@@ -4140,10 +4140,22 @@
     segmented-property "^3.0.3"
     vite "^4.1.1"
 
-"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.3.3", "@sanity/ui@^1.6.0":
+"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0":
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.7.1.tgz#7656bd6da97a9b15b5e84b49e82abdb36c71fe6a"
   integrity sha512-N8X/4ZVVvSs4YmfJrfohWX1YtFq8ASnbIADw1/Ak9qQgBzJ7aazILfzxfmqy8HH5KcmXTpXFrZ5WKBIp4x3mWg==
+  dependencies:
+    "@floating-ui/react-dom" "2.0.0"
+    "@sanity/color" "^2.2.5"
+    "@sanity/icons" "^2.3.1"
+    csstype "^3.1.2"
+    framer-motion "^10.12.16"
+    react-refractor "^2.1.7"
+
+"@sanity/ui@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.7.2.tgz#edd1c00937ed1e873eb10f7b961fc034628ea2ac"
+  integrity sha512-SH87xt6NdAtBVGNyeeDX5g0cRaS4N8s9qxOCClc+1JLxei276QG7ZRFGa9o9XKeZqiqOWzAcGSMR1RN5O//hhw==
   dependencies:
     "@floating-ui/react-dom" "2.0.0"
     "@sanity/color" "^2.2.5"

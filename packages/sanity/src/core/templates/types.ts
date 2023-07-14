@@ -65,7 +65,7 @@ export interface Template<Params = any, Value = any> {
 
 /**
  * Parameter for a template. Closely resembles API used to define fields for object schema types.
- *
+ * See {@link TemplateFieldDefinition} and {@link TemplateArrayFieldDefinition}
  * @public
  */
 export type TemplateParameter = TemplateFieldDefinition | TemplateArrayFieldDefinition
@@ -80,6 +80,7 @@ export interface TypeTarget {
 /** @public */
 export interface TemplateReferenceTarget {
   type: 'reference'
+  /** Type to reference. See {@link TypeTarget} */
   to: TypeTarget | TypeTarget[]
 }
 
@@ -121,6 +122,7 @@ export interface TemplateFieldDefinition {
 /** @public */
 export type TemplateArrayFieldDefinition = TemplateFieldDefinition & {
   type: 'array'
+  /** Defines items that are definition of. See {@link TemplateReferenceTarget} and {@link TypeTarget} */
   of: (TemplateReferenceTarget | TypeTarget)[]
 }
 

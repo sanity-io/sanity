@@ -27,6 +27,8 @@ import {LegacyThemeProps} from './types'
  * })
  * ```
  *
+ * @param partialLegacyTheme - Properties to override the theme with. See {@link LegacyThemeProps}
+ *
  * @public
  */
 export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>): StudioTheme {
