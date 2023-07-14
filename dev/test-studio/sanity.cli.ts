@@ -15,6 +15,11 @@ export default defineCliConfig({
   vite(viteConfig: UserConfig): UserConfig {
     return {
       ...viteConfig,
+      optimizeDeps: {
+        ...viteConfig.optimizeDeps,
+        include: ['react/jsx-runtime'],
+        exclude: [...(viteConfig.optimizeDeps?.exclude || []), '@sanity/tsdoc', '@sanity/assist'],
+      },
       build: {
         ...viteConfig.build,
         rollupOptions: {
