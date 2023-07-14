@@ -91,7 +91,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       sourcemap: sourceMap,
     },
     server: {
-      base: basePath,
       host: server?.host,
       port: server?.port || 3333,
       strictPort: true,
