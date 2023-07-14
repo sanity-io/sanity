@@ -1,18 +1,4 @@
-const supportsLocalStorage = (() => {
-  const key = '__tmp_supports_local_storage'
-
-  try {
-    if (typeof localStorage === 'undefined') {
-      return false
-    }
-
-    localStorage.setItem(key, '---')
-    localStorage.removeItem(key)
-    return true
-  } catch (err) {
-    return false
-  }
-})()
+import {supportsLocalStorage} from '../../../util/supportsLocalStorage'
 
 const memStore: Record<string, string> = {}
 
