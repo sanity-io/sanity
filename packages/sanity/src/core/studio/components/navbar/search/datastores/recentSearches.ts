@@ -1,5 +1,6 @@
 import type {CurrentUser, ObjectSchemaType, Schema} from '@sanity/types'
 import omit from 'lodash/omit'
+import {supportsLocalStorage} from '../../../../../util/supportsLocalStorage'
 import type {SearchTerms} from '../../../../../search'
 import type {SearchFieldDefinitionDictionary} from '../definitions/fields'
 import type {SearchFilterDefinitionDictionary} from '../definitions/filters'
@@ -341,18 +342,3 @@ function sanitizeStoredSearch({
 
   return getRecentStoredSearch(lsKey, version)
 }
-
-const supportsLocalStorage = (() => {
-  const key = '__tmp__can_use'
-  try {
-    if (typeof localStorage === 'undefined') {
-      return false
-    }
-
-    localStorage.setItem(key, '---')
-    localStorage.removeItem(key)
-    return true
-  } catch (err) {
-    return false
-  }
-})()
