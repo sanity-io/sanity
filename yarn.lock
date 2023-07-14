@@ -5304,14 +5304,6 @@
   resolved "https://registry.yarnpkg.com/@vercel/error-utils/-/error-utils-1.0.10.tgz#6530e9c930d5cf4c7f96045ec3a0bccaf2e6b14c"
   integrity sha512-nsKy2sy+pjUWyKI1V/XXKspVzHMYgSalmj5+EsKWFXZbnNZicqxNtMR94J8Hs7SB4TQxh0s4KhczJtL59AVGMg==
 
-"@vercel/frameworks@1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@vercel/frameworks/-/frameworks-1.4.2.tgz#045ece9c9aa6247c4727dbf51a4ff4334f1b95e5"
-  integrity sha512-Fojv8RIhcNUbtRPa0bpw1ELQgZ2RXOn3SFQmtUnE5qtC62p1PXMTsLr2XyoHaXYXgTgEMID5I3HbokzPnmIinw==
-  dependencies:
-    "@iarna/toml" "2.2.3"
-    js-yaml "3.13.1"
-
 "@vercel/frameworks@1.4.3":
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/@vercel/frameworks/-/frameworks-1.4.3.tgz#ca10aad328aa80a06ede15ad49e8237ac75169e3"
@@ -5320,13 +5312,13 @@
     "@iarna/toml" "2.2.3"
     js-yaml "3.13.1"
 
-"@vercel/fs-detectors@3.9.3":
-  version "3.9.3"
-  resolved "https://registry.yarnpkg.com/@vercel/fs-detectors/-/fs-detectors-3.9.3.tgz#1ed69904dc1eca1f56ab9b7800d5c7a8c265b3d3"
-  integrity sha512-R6hM4Thh2dZI1oWjxTLuvLpvjUIBPTveHHUVNlcAn9JqOUXL4BYPIit6r376e/ufXnA47oNPN7C1gf4Mk5hfzA==
+"@vercel/fs-detectors@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@vercel/fs-detectors/-/fs-detectors-4.1.0.tgz#b0fb0813eb308166533aa13f8a6faab9531d9382"
+  integrity sha512-DIQ1kUZLei9lJ4n2/NyQnLoTRl4mSCUPburHjDGCMRw0aaLADpPrdE3zg3rOZ0S213K0IrTrCJEsO4oDwgVD+w==
   dependencies:
     "@vercel/error-utils" "1.0.10"
-    "@vercel/frameworks" "1.4.2"
+    "@vercel/frameworks" "1.4.3"
     "@vercel/routing-utils" "2.2.1"
     glob "8.0.3"
     js-yaml "4.1.0"
