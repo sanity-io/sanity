@@ -41,7 +41,7 @@
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.22.5.tgz#b1f6c86a02d85d2dd3368a2b67c09add8cd0c255"
   integrity sha512-4Jc/YuIaYqKnDDz892kPIledykKg12Aw1PYX5i/TY28anJtacvM1Rrr8wbieB9GfEJwlzqT0hUEao0CxEebiDA==
 
-"@babel/core@^7.1.0", "@babel/core@^7.11.1", "@babel/core@^7.12.3", "@babel/core@^7.16.0", "@babel/core@^7.19.6", "@babel/core@^7.20.12", "@babel/core@^7.22.1", "@babel/core@^7.22.5", "@babel/core@^7.7.2", "@babel/core@^7.8.0":
+"@babel/core@^7.1.0", "@babel/core@^7.11.1", "@babel/core@^7.12.3", "@babel/core@^7.16.0", "@babel/core@^7.19.6", "@babel/core@^7.22.1", "@babel/core@^7.22.5", "@babel/core@^7.7.2", "@babel/core@^7.8.0":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.22.5.tgz#d67d9747ecf26ee7ecd3ebae1ee22225fe902a89"
   integrity sha512-SBuTAjg91A3eKOvD+bPEz3LlhHZRNu1nFOVts9lzDJTXshHTjII0BAtDS3Y2DAkdZdDKWVZGVwkDfc4Clxn1dg==
@@ -888,14 +888,14 @@
   dependencies:
     "@babel/plugin-transform-react-jsx" "^7.18.6"
 
-"@babel/plugin-transform-react-jsx-self@^7.18.6", "@babel/plugin-transform-react-jsx-self@^7.22.5":
+"@babel/plugin-transform-react-jsx-self@^7.22.5":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-jsx-self/-/plugin-transform-react-jsx-self-7.22.5.tgz#ca2fdc11bc20d4d46de01137318b13d04e481d8e"
   integrity sha512-nTh2ogNUtxbiSbxaT4Ds6aXnXEipHweN9YRgOX/oNXdf0cCrGn/+2LozFa3lnPV5D90MkjhgckCPBrsoSc1a7g==
   dependencies:
     "@babel/helper-plugin-utils" "^7.22.5"
 
-"@babel/plugin-transform-react-jsx-source@^7.19.6", "@babel/plugin-transform-react-jsx-source@^7.22.5":
+"@babel/plugin-transform-react-jsx-source@^7.22.5":
   version "7.22.5"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-jsx-source/-/plugin-transform-react-jsx-source-7.22.5.tgz#49af1615bfdf6ed9d3e9e43e425e0b2b65d15b6c"
   integrity sha512-yIiRO6yobeEIaI0RTbIr8iAK9FcBHLtZq0S89ZPjDLQXBA4xvghaKqI0etp/tF3htTM0sazJKKLz9oEiGRtu7w==
@@ -4121,38 +4121,26 @@
     vite "^4.3.8"
 
 "@sanity/ui-workshop@^1.0.0":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-1.2.1.tgz#2ab3d35b9bdde99ea47f63fe8812533b37cd2356"
-  integrity sha512-ikSIRz4yG24KS5LPSrqQR47B6LuIjNPKH5jcUOL22yH1MU/AmxyqZrZ4seisWgc183fzxOeFFrBXkKB+o162qQ==
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-1.2.4.tgz#816d3ade1f7ece5f05ae54ad885ae33e9456ca47"
+  integrity sha512-cGh12ezqwys2Z49Qa5E0YQ9UmBwX6dw6wHvvhmgBNxIlz8zS6MT7ti5ZR+DSA/G15KciW+2qmGssoQqRbGC5rA==
   dependencies:
-    "@vitejs/plugin-react" "^3.1.0"
+    "@vitejs/plugin-react" "^4.0.0"
     axe-core "^4.6.3"
     cac "^6.7.14"
     chokidar "^3.5.3"
     dotenv-flow "^3.2.0"
-    esbuild "^0.17.8"
+    esbuild "^0.18.0"
     esbuild-register "^3.4.2"
     express "^4.18.2"
     globby "^11.1.0"
     lodash "^4.17.21"
-    mkdirp "^2.1.3"
+    mkdirp "^3.0.0"
     pako "^2.1.0"
     segmented-property "^3.0.3"
     vite "^4.1.1"
 
-"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0":
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.7.1.tgz#7656bd6da97a9b15b5e84b49e82abdb36c71fe6a"
-  integrity sha512-N8X/4ZVVvSs4YmfJrfohWX1YtFq8ASnbIADw1/Ak9qQgBzJ7aazILfzxfmqy8HH5KcmXTpXFrZ5WKBIp4x3mWg==
-  dependencies:
-    "@floating-ui/react-dom" "2.0.0"
-    "@sanity/color" "^2.2.5"
-    "@sanity/icons" "^2.3.1"
-    csstype "^3.1.2"
-    framer-motion "^10.12.16"
-    react-refractor "^2.1.7"
-
-"@sanity/ui@^1.7.2":
+"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.7.2.tgz#edd1c00937ed1e873eb10f7b961fc034628ea2ac"
   integrity sha512-SH87xt6NdAtBVGNyeeDX5g0cRaS4N8s9qxOCClc+1JLxei276QG7ZRFGa9o9XKeZqiqOWzAcGSMR1RN5O//hhw==
@@ -5369,17 +5357,6 @@
     path-to-regexp "6.1.0"
   optionalDependencies:
     ajv "^6.0.0"
-
-"@vitejs/plugin-react@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-3.1.0.tgz#d1091f535eab8b83d6e74034d01e27d73c773240"
-  integrity sha512-AfgcRL8ZBhAlc3BFdigClmTUMISmmzHn7sB2h9U1odvc5U/MjWXsAaz18b/WoppUTDBzxOJwo2VdClfUcItu9g==
-  dependencies:
-    "@babel/core" "^7.20.12"
-    "@babel/plugin-transform-react-jsx-self" "^7.18.6"
-    "@babel/plugin-transform-react-jsx-source" "^7.19.6"
-    magic-string "^0.27.0"
-    react-refresh "^0.14.0"
 
 "@vitejs/plugin-react@^4.0.0":
   version "4.0.1"
@@ -8787,7 +8764,7 @@ esbuild-register@^3.4.1, esbuild-register@^3.4.2:
   dependencies:
     debug "^4.3.4"
 
-esbuild@^0.17.5, esbuild@^0.17.8:
+esbuild@^0.17.5:
   version "0.17.19"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.17.19.tgz#087a727e98299f0462a3d0bcdd9cd7ff100bd955"
   integrity sha512-XQ0jAPFkK/u3LcVRcvVHQcTIqD6E2H1fvZMA5dQPSOWb3suUbWbfbRf94pjc0bNzRYLfIrDRQXr7X+LHIm5oHw==
@@ -13671,12 +13648,7 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-mkdirp@^2.1.3:
-  version "2.1.6"
-  resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-2.1.6.tgz#964fbcb12b2d8c5d6fbc62a963ac95a273e2cc19"
-  integrity sha512-+hEnITedc8LAtIP9u3HJDFIdcLV2vXP33sqLLIzkv1Db1zO/1OxbvYf0Y1OC/S/Qo5dxHXepofhmxL02PsKe+A==
-
-mkdirp@^3.0.1:
+mkdirp@^3.0.0, mkdirp@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-3.0.1.tgz#e44e4c5607fb279c168241713cc6e0fea9adcb50"
   integrity sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==
