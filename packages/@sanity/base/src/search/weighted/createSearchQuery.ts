@@ -44,17 +44,16 @@ const combinePaths = flow([flatten, union, compact])
  * Create search specs from supplied searchable types.
  * Search specs contain weighted paths which are used to construct GROQ queries for search.
  *
- * @param types - The searchable document types to create specs from.
+ * @internal
+ * @param types - Searchable document types to create specs from.
  * @param optimizedIndexPaths - If true, will will convert all `__experimental_search` paths containing numbers into array syntax.
  *  E.g. ['cover', 0, 'cards', 0, 'title'] => "cover[].cards[].title"
  *
  *  This optimization will yield more search results than may be intended, but offers better performance over arrays with indices.
  *  (which are currently unoptimizable by Content Lake)
- * @param maxAttributes - The maximum number of _unique_ searchable attributes to include across all types.
+ * @param maxAttributes - Maximum number of _unique_ searchable attributes to include across all types.
  *  User-provided paths (e.g. with __experimental_search) do not count towards this limit.
- * @returns An object containing all matching search specs and `hasIndexedPaths`, a boolean indicating whether any paths contain indices.
- *   E.g. `['cover', 0, 'cards', 0, 'title']`
- * @internal
+ * @returns All matching search specs and `hasIndexedPaths`, a boolean indicating whether any paths contain indices.
  */
 export function createSearchSpecs(
   types: SearchableType[],
@@ -159,9 +158,9 @@ function createConstraints(terms: string[], specs: SearchSpec[]) {
  *
  * Phrases wrapped in quotes are assigned relevance scoring differently from regular words.
  *
- * @param query - A string to convert into tokens.
- * @returns An array of string tokens.
  * @internal
+ * @param query - A string to convert into individual tokens
+ * @returns All extracted tokens
  */
 export function extractTermsFromQuery(query: string): string[] {
   const quotedQueries = [] as string[]
@@ -176,7 +175,7 @@ export function extractTermsFromQuery(query: string): string[] {
   // Lowercase and trim quoted queries
   const quotedTerms = quotedQueries.map((str) => trim(toLower(str)))
 
-  /**
+  /*
    * Convert (remaining) search query into an array of deduped, sanitized tokens.
    * All white space and special characters are removed.
    * e.g. "The saint of Saint-Germain-des-Prés" => ['the', 'saint', 'of', 'germain', 'des', 'pres']
@@ -189,10 +188,10 @@ export function extractTermsFromQuery(query: string): string[] {
 /**
  * Generate search query data based off provided search terms and options.
  *
- * @param searchTerms - An object containing a string query and any number of searchable document types.
- * @param searchOpts - Optional search configuration.
- * @returns A object containing a GROQ query, params and options to be used to fetch search results.
  * @internal
+ * @param searchTerms - SearchTerms containing a string query and any number of searchable document types.
+ * @param searchOpts - Optional search configuration.
+ * @returns GROQ query, params and options to be used to fetch search results.
  */
 export function createSearchQuery(
   searchTerms: SearchTerms,
@@ -203,7 +202,7 @@ export function createSearchQuery(
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
 
-  /**
+  /*
    * Create an optimized search spec which removes array indices from __experimental_search paths.
    * e.g. ["authors", 0, "title"] => "authors[].title"
    *

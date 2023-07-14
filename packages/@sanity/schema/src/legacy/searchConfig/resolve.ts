@@ -24,6 +24,7 @@ export const pathCountSymbol = Symbol('__cachedPathCount')
 const MAX_TRAVERSAL_DEPTH = Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_DEPTH) || 15
 
 // Max number of search paths to extract per root-level object
+// eslint-disable-next-line no-process-env
 const MAX_OBJECT_SEARCH_PATHS = Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_PATH_LIMIT) || 500
 
 const BASE_WEIGHTS = [
