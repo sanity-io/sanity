@@ -33,10 +33,13 @@ interface IntermediateSearchType extends Omit<ExperimentalSearchPath, 'path'> {
   typeName: string
 }
 
+// Default number of documents to fetch
 export const DEFAULT_LIMIT = 1000
 
 // Maximum number of unique searchable attributes to include in a single search query (across all document types)
-const MAX_UNIQUE_ATTRIBUTES = 1000
+const MAX_UNIQUE_ATTRIBUTES =
+  // eslint-disable-next-line no-process-env
+  Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_ATTR_LIMIT) || 1000
 
 const combinePaths = flow([flatten, union, compact])
 
@@ -64,7 +67,7 @@ export function createSearchSpecs(
   specs: SearchSpec[]
 } {
   let hasIndexedPaths = false
-  const uniquePaths = []
+  const addedPaths = []
 
   const specsByType = types
     // Extract and flatten all paths
@@ -98,8 +101,13 @@ export function createSearchSpecs(
     })
     // Reduce into specs (by type) and conditionally add unique paths up until the `maxAttributes` limit
     .reduce<Record<string, SearchSpec>>((acc, val) => {
-      const existingPath = uniquePaths.includes(val.path)
-      const includeSpec = existingPath || val.userProvided || uniquePaths.length < maxAttributes
+      const isPathAdded = addedPaths.includes(val.path)
+      // Include the current path if its already been added or within the `maxAttributes` limit.
+      // User provided paths are always included by default.
+      const includeSpec = isPathAdded || val.userProvided || addedPaths.length < maxAttributes
+      if (!isPathAdded && addedPaths.length < maxAttributes) {
+        addedPaths.push(val.path)
+      }
 
       const searchPath: SearchPath = {
         mapWith: val.mapWith,
@@ -116,10 +124,6 @@ export function createSearchSpecs(
           skippedPaths: (acc[val.typeName]?.skippedPaths || []).concat([searchPath]),
         }),
         typeName: val.typeName,
-      }
-
-      if (!existingPath) {
-        uniquePaths.push(val.path)
       }
 
       return acc

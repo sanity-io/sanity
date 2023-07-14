@@ -322,13 +322,12 @@ describe('createSearchSpecs', () => {
       {path: ['name'], weight: 1},
     ],
   }
-  const playlist: SearchableType = {
-    name: 'playlist',
-    __experimental_search: [{path: ['name'], weight: 1}],
-  }
-  const species: SearchableType = {
-    name: 'species',
-    __experimental_search: [{path: ['name'], weight: 1}],
+  const poem: SearchableType = {
+    name: 'poem',
+    __experimental_search: [
+      {path: ['author'], weight: 1},
+      {path: ['title'], weight: 1},
+    ],
   }
 
   it('should order paths by length', () => {
@@ -338,7 +337,7 @@ describe('createSearchSpecs', () => {
   })
 
   it('should not include duplicate paths when factoring maxAttributes', () => {
-    const {specs} = createSearchSpecs([playlist, species], true, 1)
+    const {specs} = createSearchSpecs([book, poem], true, 1)
     const {paths} = flattenSpecs(specs)
     expect(paths).toHaveLength(2)
   })
