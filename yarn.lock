@@ -3853,14 +3853,16 @@
   integrity sha512-uyIOtGA4Duf+68I3BSbYHY5P+WGftn3QtNJD2Pn7h9WPGYsSrWViIPebE9yRN8N0NHhYj+hDQXaMpVdjG7r+zA==
 
 "@sanity/assist@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@sanity/assist/-/assist-1.0.8.tgz#5d0ff7c6a21a53470a367e02107cf3ed4f44fa17"
-  integrity sha512-rVUPamHkN1jB5p3ReQ1TatKdnd6FNuQ3WZJRpmOKMeLBezttbHbGqYSIdhgsimDlwcxnM06rDYTrgP5lJPjQRg==
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@sanity/assist/-/assist-1.0.11.tgz#0ceb6564f6a0d4a09af735f4eb95f481a1c6fe81"
+  integrity sha512-y4GBtzdK6oLSGCtcU32PKVVy0R+fKjkBJgh7WiE38iXfA3FMFhj/i2deb5VvG6DVPEZ659SddJCrpv1S25EofQ==
   dependencies:
     "@sanity/icons" "^2.4.0"
     "@sanity/incompatible-plugin" "^1.0.4"
     "@sanity/ui" "^1.6.0"
+    date-fns "^2.30.0"
     react-fast-compare "^3.2.1"
+    react-is "^18.2.0"
     rxjs "^7.8.0"
     rxjs-exhaustmap-with-trailing "^2.1.1"
 
@@ -7940,7 +7942,7 @@ dataloader@^2.1.0:
   resolved "https://registry.yarnpkg.com/dataloader/-/dataloader-2.2.2.tgz#216dc509b5abe39d43a9b9d97e6e5e473dfbe3e0"
   integrity sha512-8YnDaaf7N3k/q5HnTJVuzSyLETjoZjVmHc4AeKAzOvKHEFQKcn64OKBfzHYtE9zGjctNM7V9I0MfnUVLpi7M5g==
 
-date-fns@^2.26.1:
+date-fns@^2.26.1, date-fns@^2.30.0:
   version "2.30.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.30.0.tgz#f367e644839ff57894ec6ac480de40cae4b0f4d0"
   integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==
