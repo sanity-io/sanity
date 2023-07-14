@@ -98,7 +98,7 @@
     "@types/yargs": "^17.0.7",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
-    "@vercel/node": "^1.12.1",
+    "@vercel/node": "^2.0.0",
     "babel-jest": "^27.4.2",
     "boxen": "^4.1.0",
     "cac": "^6.7.12",
