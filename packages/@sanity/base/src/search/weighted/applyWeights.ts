@@ -84,7 +84,7 @@ export function applyWeights(
 }
 
 /**
- * Generate a sccore on the total number of matching characters.
+ * For phrases: score on the total number of matching characters.
  * E.g. given the phrases ["the fox", "of london"] for the target value "the wily fox of london"
  *
  * - "the fox" isn't included in the target value (score: 0)
@@ -114,7 +114,7 @@ export function calculatePhraseScore(uniqueSearchPhrases: string[], value: strin
 }
 
 /**
- * Generate a score on the total number of matching characters.
+ * For words: score on the total number of matching words.
  * E.g. given the terms ["bar", "fo"] for the target value "food bar".
  *
  * - "fo" is included in the target value, and 2 out of 7 non-whitespace characters match (score: 2/7)

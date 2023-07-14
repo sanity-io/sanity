@@ -1,5 +1,5 @@
-import {ExperimentalSearchPath} from '@sanity/types'
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
+import {ExperimentalSearchPath} from '../../../../types'
 import {joinPath} from '../../util/searchUtils'
 import {tokenize} from '../common/tokenize'
 import type {
