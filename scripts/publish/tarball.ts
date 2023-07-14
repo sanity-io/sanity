@@ -3,7 +3,6 @@ import fs from 'fs/promises'
 import path from 'path'
 import chalk from 'chalk'
 import globby from 'globby'
-import mkdirp from 'mkdirp'
 
 main().catch((err) => {
   console.error(chalk.red(err))
@@ -31,7 +30,7 @@ async function main() {
       const filename = path.resolve(__dirname, '../../etc/npm/', pkg.name, `v${pkg.version}.tgz`)
       const dirname = path.dirname(filename)
 
-      await mkdirp(dirname)
+      await fs.mkdir(dirname, {recursive: true})
       await _pack({cwd, filename})
 
       versions[pkg.name] = pkg.version
@@ -47,7 +46,7 @@ async function main() {
 
   const versionsJsonPath = path.resolve(__dirname, '../../etc/npm/versions.json')
 
-  await mkdirp(path.dirname(versionsJsonPath))
+  await fs.mkdir(path.dirname(versionsJsonPath), {recursive: true})
 
   await fs.writeFile(versionsJsonPath, `${JSON.stringify(versions, null, 2)}\n`)
 }
