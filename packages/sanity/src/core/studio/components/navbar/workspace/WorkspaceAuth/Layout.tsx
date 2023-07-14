@@ -60,7 +60,7 @@ export function Layout(props: LayoutProps) {
         </Stack>
       </Card>
 
-      <Flex direction="column" gap={4} justify="center" align="center">
+      <Flex direction="column" gap={4} justify="center" align="center" paddingBottom={4}>
         <Text size={3}>
           <SanityLogo />
         </Text>
