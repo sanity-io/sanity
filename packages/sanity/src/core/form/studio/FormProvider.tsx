@@ -1,5 +1,6 @@
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React, {useCallback} from 'react'
+import React, {useCallback, useState} from 'react'
+import {Box, Button, Stack} from '@sanity/ui'
 import {useSource} from '../../studio'
 import {PatchChannel, PatchEvent} from '../patch'
 import {FormBuilderProvider} from '../FormBuilderProvider'
@@ -21,7 +22,7 @@ import {
   useItemComponent,
   usePreviewComponent,
 } from '../form-components-hooks'
-import {FormNodePresence} from '../../presence'
+import {FieldPresence, FormNodePresence} from '../../presence'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
 import {DocumentFieldAction} from '../../config'
 
@@ -56,6 +57,34 @@ export interface FormProviderProps {
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
   value: {[field in string]: unknown} | undefined
+}
+
+function FieldWrapper(props: {
+  presence: FieldProps['presence']
+  debug?: boolean
+  children: React.ReactNode
+}) {
+  const {children, presence, debug} = props
+
+  return (
+    <Stack style={debug ? {outline: '1px dashed rgba(255, 0, 255, 0.5)'} : undefined}>
+      <Box
+        padding={3}
+        style={{
+          position: 'relative',
+          background: debug ? 'rgba(255, 0, 255, 0.2)' : undefined,
+        }}
+        data-presence-wrapper
+      >
+        {presence && presence.length > 0 && (
+          <div style={{position: 'absolute', left: 0, top: 0}}>
+            <FieldPresence presence={presence} maxAvatars={4} />
+          </div>
+        )}
+      </Box>
+      {children}
+    </Stack>
+  )
 }
 
 /**
@@ -102,13 +131,40 @@ export function FormProvider(props: FormProviderProps) {
   const InlineBlock = useInlineBlockComponent()
   const Annotation = useAnnotationComponent()
 
+  const [debug, setDebug] = useState<boolean>(false)
+
   const renderInput = useCallback(
-    (inputProps: Omit<InputProps, 'renderDefault'>) => <Input {...inputProps} />,
+    (inputProps: Omit<InputProps, 'renderDefault'>) => {
+      if (inputProps.id === 'root') {
+        return (
+          <>
+            <Box marginBottom={5}>
+              <Button
+                text="Debug"
+                onClick={() => setDebug((v) => !v)}
+                fontSize={1}
+                padding={2}
+                mode="ghost"
+              />
+            </Box>
+            <Input {...inputProps} />
+          </>
+        )
+      }
+
+      return <Input {...inputProps} />
+    },
     [Input]
   )
   const renderField = useCallback(
-    (fieldProps: Omit<FieldProps, 'renderDefault'>) => <Field {...fieldProps} />,
-    [Field]
+    (fieldProps: Omit<FieldProps, 'renderDefault'>) => {
+      return (
+        <FieldWrapper presence={fieldProps.presence} debug={debug}>
+          <Field {...fieldProps} />
+        </FieldWrapper>
+      )
+    },
+    [Field, debug]
   )
   const renderItem = useCallback(
     (itemProps: Omit<ItemProps, 'renderDefault'>) => <Item {...itemProps} />,

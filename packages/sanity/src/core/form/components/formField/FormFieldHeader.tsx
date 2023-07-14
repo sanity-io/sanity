@@ -59,11 +59,11 @@ export const FormFieldHeader = memo(function FormFieldHeader(props: FormFieldHea
         />
       </Box>
 
-      {presence && presence.length > 0 && (
+      {/* {presence && presence.length > 0 && (
         <Box flex="none">
           <FieldPresence maxAvatars={4} presence={presence} />
         </Box>
-      )}
+      )} */}
 
       {actions && (
         <Box flex="none" marginLeft={3}>

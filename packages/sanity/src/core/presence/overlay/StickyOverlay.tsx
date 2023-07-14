@@ -226,10 +226,10 @@ const PresenceDock = memo(function PresenceDock(props: {
     )
   }, [dir, regionsWithIntersectionDetails])
   const [topMargin, rightMargin, bottomMargin, leftMargin] = margins
-  const leftOffset =
-    (leftMargin || 0) +
-    (allPresenceItems.length > 0 ? -closeCount * (AVATAR_SIZE + AVATAR_DISTANCE) : 0) -
-    rightMargin
+  // const leftOffset =
+  //   (leftMargin || 0) +
+  //   (allPresenceItems.length > 0 ? -closeCount * (AVATAR_SIZE + AVATAR_DISTANCE) : 0) -
+  //   rightMargin
 
   const margin = position === 'top' ? topMargin : bottomMargin
 
@@ -239,13 +239,13 @@ const PresenceDock = memo(function PresenceDock(props: {
       position: 'sticky',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'flex-end',
+      alignItems: 'flex-start',
       ...ITEM_TRANSITION,
-      transform: `translate3d(${leftOffset}px, 0px, 0px)`,
+      // transform: `translate3d(${rightOffset}px, 0px, 0px)`,
       top: AVATAR_ARROW_HEIGHT + 1 + margin,
       bottom: AVATAR_ARROW_HEIGHT + 1 + margin,
     }),
-    [leftOffset, margin]
+    [margin]
   )
 
   return (

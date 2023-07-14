@@ -64,11 +64,17 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
   const currWidth = Math.min(calcAvatarStackWidth(uniquePresence.length), maxWidth)
 
   return (
-    <FlexWrapper justify="flex-end" style={{width: maxWidth}}>
-      <div />
+    <FlexWrapper
+      // justify="flex-end"
+      style={{width: maxWidth}}
+    >
+      {/* <div /> */}
 
       <PresenceTooltip items={uniquePresence}>
-        <InnerBox direction="row-reverse" style={{width: currWidth}}>
+        <InnerBox
+          // direction="row-reverse"
+          style={{width: currWidth}}
+        >
           {avatars.map(
             (av, i) =>
               av && (
@@ -111,7 +117,7 @@ export function FieldPresenceWithOverlay(props: FieldPresenceProps) {
 
   return (
     <FlexWrapper
-      justify="flex-end"
+      // justify="flex-end"
       ref={ref}
       style={{minWidth: minWidth, minHeight: AVATAR_SIZE}}
     />
