@@ -1,27 +1,27 @@
-import {defineLanguageResourceBundle} from 'sanity'
+import {defineLocaleResourceBundle} from 'sanity'
 
-export const testStudioI18nNamespace = 'testStudio' as const
+export const testStudioLocaleNamespace = 'testStudio' as const
 
 const enUSStrings = {
   'studio.logo.title': 'English logo',
   'structure.root.title': 'Content',
 }
 
-const enUS = defineLanguageResourceBundle({
-  language: 'en-US',
-  namespace: testStudioI18nNamespace,
+const enUS = defineLocaleResourceBundle({
+  locale: 'en-US',
+  namespace: testStudioLocaleNamespace,
   resources: enUSStrings,
 })
 
-const noNB = defineLanguageResourceBundle({
-  language: 'no-NB',
-  namespace: testStudioI18nNamespace,
+const noNB = defineLocaleResourceBundle({
+  locale: 'no-NB',
+  namespace: testStudioLocaleNamespace,
   resources: {
     'studio.logo.title': 'Norsk logo',
     'structure.root.title': 'Innhold',
   },
 })
 
-export type I18nTestStudioResourceKeys = keyof typeof enUSStrings
+export type TestStudioLocaleResourceKeys = keyof typeof enUSStrings
 
 export const testStudioLocaleBundles = [enUS, noNB]

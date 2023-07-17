@@ -15,7 +15,7 @@ import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {prepareI18nSource} from '../i18n/i18nConfig'
-import type {I18nSource} from '../i18n'
+import type {LocaleSource} from '../i18n'
 import type {
   Config,
   MissingConfigFile,
@@ -216,7 +216,7 @@ interface ResolveSourceOptions {
   currentUser: CurrentUser | null
   authenticated: boolean
   auth: AuthStore
-  i18n: I18nSource
+  i18n: LocaleSource
 }
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
