@@ -57,7 +57,7 @@
     "publish:tarball": "node -r esbuild-register scripts/publish/tarball",
     "release-notes": "node scripts/printReleaseNotesTemplate.js",
     "start": "yarn dev:test-studio",
-    "test": "jest",
+    "test": "jest --forceExit",
     "test:e2e": "playwright test",
     "perf:test": "cd perf && yarn perf:test",
     "perf:studio": "cd perf && yarn studio",
