@@ -21,11 +21,11 @@ export const pathCountSymbol = Symbol('__cachedPathCount')
 
 // Max number of levels to traverse per root-level object
 // eslint-disable-next-line no-process-env
-const MAX_TRAVERSAL_DEPTH = Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_DEPTH) || 15
+const SEARCH_DEPTH_LIMIT = Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_DEPTH_LIMIT) || 15
 
 // Max number of search paths to extract per root-level object
 // eslint-disable-next-line no-process-env
-const MAX_OBJECT_SEARCH_PATHS = Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_PATH_LIMIT) || 500
+const SEARCH_PATH_LIMIT = Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_PATH_LIMIT) || 500
 
 const BASE_WEIGHTS = [
   {weight: 1, path: ['_id']},
@@ -187,5 +187,5 @@ export function resolveSearchConfigForBaseFieldPaths(type: ObjectSchemaType): Se
 }
 
 export default function resolveSearchConfig(type: ObjectSchemaType): SearchPath[] {
-  return getCachedStringFieldPaths(type, MAX_TRAVERSAL_DEPTH, MAX_OBJECT_SEARCH_PATHS)
+  return getCachedStringFieldPaths(type, SEARCH_DEPTH_LIMIT, SEARCH_PATH_LIMIT)
 }

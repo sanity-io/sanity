@@ -37,7 +37,7 @@ interface IntermediateSearchType extends Omit<ExperimentalSearchPath, 'path'> {
 export const DEFAULT_LIMIT = 1000
 
 // Maximum number of unique searchable attributes to include in a single search query (across all document types)
-const MAX_UNIQUE_ATTRIBUTES =
+const SEARCH_ATTR_LIMIT =
   // eslint-disable-next-line no-process-env
   Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_ATTR_LIMIT) || 1000
 
@@ -213,7 +213,7 @@ export function createSearchQuery(
    * These optimized specs are used when building constraints in this search query and assigning
    * weight to search hits.
    */
-  const optimizedSpecs = createSearchSpecs(searchTerms.types, true, MAX_UNIQUE_ATTRIBUTES).specs
+  const optimizedSpecs = createSearchSpecs(searchTerms.types, true, SEARCH_ATTR_LIMIT).specs
 
   // Construct search filters used in this GROQ query
   const filters = [
