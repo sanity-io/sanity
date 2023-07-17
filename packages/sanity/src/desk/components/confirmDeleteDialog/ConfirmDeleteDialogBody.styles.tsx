@@ -9,6 +9,8 @@ export const ChevronWrapper = styled(Box)`
 
 export const CrossDatasetReferencesDetails = styled.details`
   flex: none;
+  padding-left: 11px;
+  padding-right: 3px;
 
   &[open] ${ChevronWrapper} {
     transform: rotate(180deg);
@@ -66,7 +68,6 @@ export const ReferencesCard = styled(Card).attrs({
 })`
   overflow: hidden;
   overflow: clip;
-  min-height: 150px;
 `
 
 export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
