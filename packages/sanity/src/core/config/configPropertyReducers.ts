@@ -1,7 +1,7 @@
 import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
 import {getPrintableType} from '../util/getPrintableType'
 import type {Template, TemplateItem} from '../templates'
-import type {I18nContext, LocaleDefinition, LanguageResourceBundle} from '../i18n'
+import type {LocaleConfigContext, LocaleDefinition, LocaleResourceBundle} from '../i18n'
 import type {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import type {
   AsyncConfigPropertyReducer,
@@ -112,7 +112,7 @@ export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigCon
   )
 }
 
-export const i18nLocaleDefReducer: ConfigPropertyReducer<LocaleDefinition[], I18nContext> = (
+export const localeDefReducer: ConfigPropertyReducer<LocaleDefinition[], LocaleConfigContext> = (
   prev,
   {i18n},
   context,
@@ -129,11 +129,10 @@ export const i18nLocaleDefReducer: ConfigPropertyReducer<LocaleDefinition[], I18
   )
 }
 
-export const i18nBundlesReducer: ConfigPropertyReducer<LanguageResourceBundle[], I18nContext> = (
-  prev,
-  {i18n},
-  context,
-) => {
+export const localeBundlesReducer: ConfigPropertyReducer<
+  LocaleResourceBundle[],
+  LocaleConfigContext
+> = (prev, {i18n}, context) => {
   const bundles = i18n?.bundles
   if (!bundles) return prev
   if (Array.isArray(bundles)) return [...prev, ...bundles]

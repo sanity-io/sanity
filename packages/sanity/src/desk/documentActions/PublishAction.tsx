@@ -3,7 +3,7 @@ import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
 import type {TFunction} from 'i18next'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {deskI18nNamespace, type I18nDeskResourceKeys} from '../i18n'
+import {deskLocaleNamespace, type DeskLocaleResourceKeys} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -17,7 +17,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-const DISABLED_REASON_TITLE_KEY: Record<string, I18nDeskResourceKeys> = {
+const DISABLED_REASON_TITLE_KEY: Record<string, DeskLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.liveEdit.publishDisabled',
   ALREADY_PUBLISHED: 'action.publish.alreadyPublished.noTimeAgo.tooltip',
   NO_CHANGES: 'action.publish.tooltip.noChanges',
@@ -36,7 +36,7 @@ function getDisabledReason(
 }
 
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
-  const {t} = useTranslation(deskI18nNamespace)
+  const {t} = useTranslation(deskLocaleNamespace)
   const timeSincePublished = useTimeAgo(publishedAt)
   return <span>{t('action.publish.alreadyPublished.tooltip', {timeSincePublished})}</span>
 }
@@ -51,7 +51,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const syncState = useSyncState(id, type)
   const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
   const editState = useEditState(documentId, documentType)
-  const {t} = useTranslation(deskI18nNamespace)
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const revision = (editState?.draft || editState?.published || {})._rev
 

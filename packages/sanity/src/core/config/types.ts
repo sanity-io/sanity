@@ -20,7 +20,7 @@ import type {
   InputProps,
   ItemProps,
 } from '../form'
-import type {I18nPluginOptions, I18nSource} from '../i18n/types'
+import type {LocalePluginOptions, LocaleSource} from '../i18n/types'
 import type {InitialValueTemplateItem, Template, TemplateItem} from '../templates'
 import type {PreviewProps} from '../components/previews'
 import type {AuthStore} from '../store'
@@ -344,7 +344,7 @@ export interface PluginOptions {
     components?: StudioComponentsPluginOptions
   }
   /** @beta @hidden */
-  i18n?: I18nPluginOptions
+  i18n?: LocalePluginOptions
 }
 
 /** @internal */
@@ -641,7 +641,7 @@ export interface Source {
   }
 
   /** @internal */
-  i18n: I18nSource
+  i18n: LocaleSource
 
   /** @internal */
   __internal: {
@@ -664,7 +664,7 @@ export interface WorkspaceSummary {
   dataset: string
   theme: StudioTheme
   schema: Schema
-  i18n: I18nSource
+  i18n: LocaleSource
   /**
    * @internal
    * @deprecated not actually deprecated but don't use or you'll be fired
@@ -677,7 +677,7 @@ export interface WorkspaceSummary {
       title: string
       auth: AuthStore
       schema: Schema
-      i18n: I18nSource
+      i18n: LocaleSource
       source: Observable<Source>
     }>
   }
