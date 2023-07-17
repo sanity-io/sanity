@@ -14,7 +14,7 @@ import {
   ConfigContext,
   InitialValueTemplateItem,
   DocumentStore,
-  I18nSource,
+  LocaleSource,
 } from 'sanity'
 
 /** @internal */
@@ -55,7 +55,7 @@ export interface StructureResolverContext extends ConfigContext {
   documentStore: DocumentStore
 
   /** alpha */
-  i18n: I18nSource
+  i18n: LocaleSource
 }
 
 /**
@@ -126,9 +126,9 @@ export interface DeskToolOptions {
    */
   name?: string
   /**
-   * A workspace can have different "sources". These sources were meant to allow using multiple datasets within the same workspace, for instance. 
+   * A workspace can have different "sources". These sources were meant to allow using multiple datasets within the same workspace, for instance.
    * This is not supported yet, but the API is still here.
-   * 
+   *
     @hidden
     @alpha
   */

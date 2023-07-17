@@ -1,6 +1,6 @@
 import {isPlainObject} from 'lodash'
 import type {BackendModule, ReadCallback} from 'i18next'
-import type {I18nResourceKey, I18nResourceRecord, LanguageResourceBundle} from './types'
+import type {LocaleResourceKey, LocaleResourceRecord, LocaleResourceBundle} from './types'
 
 /**
  * Options for the Sanity i18next backend
@@ -8,16 +8,16 @@ import type {I18nResourceKey, I18nResourceRecord, LanguageResourceBundle} from '
  * @internal
  */
 export interface SanityI18nBackendOptions {
-  bundles: LanguageResourceBundle[]
+  bundles: LocaleResourceBundle[]
 }
 
 /**
- * Creates a "backend" for i18next that loads language resources defined in configuration/plugins.
+ * Creates a "backend" for i18next that loads locale resources defined in configuration/plugins.
  *
  * This allows us to dynamically load only the resources used. For instance, if the user requests
- * the `vision` namespace and is using the `fr` language, we skip loading all the other languages.
+ * the `vision` namespace and is using the `fr` locale, we skip loading all the other locales.
  *
- * Note that this only works if the language bundles are defined with an async function for the
+ * Note that this only works if the locale bundles are defined with an async function for the
  * `resources` key, usually by using a dynamic import (`import('some/path/en.js')`. Otherwise,
  * the resources will be loaded at once.
  *
@@ -31,7 +31,7 @@ export function createSanityI18nBackend(options: SanityI18nBackendOptions): Back
     // intentional noop - i18next requires a init function, but we don't need it
   }
 
-  function read(language: string, namespace: string, callback: ReadCallback) {
+  function read(locale: string, namespace: string, callback: ReadCallback) {
     // @todo figure out if this makes sense to keep/prevent, seems like maybe the i18next default?
     if (namespace === 'translation') {
       callback(null, undefined)
@@ -39,11 +39,11 @@ export function createSanityI18nBackend(options: SanityI18nBackendOptions): Back
     }
 
     const loadable = bundles.filter(
-      (bundle) => bundle.language === language && bundle.namespace === namespace
+      (bundle) => bundle.locale === locale && bundle.namespace === namespace
     )
 
     if (loadable.length === 0) {
-      // @todo warn? This means someone requested a namespace/language combination that there are no resources for
+      // @todo warn? This means someone requested a namespace/locale combination that there are no resources for
       callback(null, undefined)
       return
     }
@@ -61,18 +61,18 @@ export function createSanityI18nBackend(options: SanityI18nBackendOptions): Back
 }
 
 /**
- * Load the given language bundles, and return a promise for a merged resource object.
+ * Load the given locale bundles, and return a promise for a merged resource object.
  *
  * @param bundles - Array of bundles to load resources for
- * @returns An object of language resources
+ * @returns An object of locale resources
  * @remarks
- * - The bundles passed **MUST** be for the same namespace and language!
+ * - The bundles passed **MUST** be for the same namespace and locale!
  * - The algorithm differs from i18next:
  *   - in i18next, if `deep` is `false`, `overwrite` is _always_ `true`
  *   - in Sanity,  `overwrite` is always respected
  * @internal
  */
-async function loadBundles(bundles: LanguageResourceBundle[]): Promise<I18nResourceRecord> {
+async function loadBundles(bundles: LocaleResourceBundle[]): Promise<LocaleResourceRecord> {
   // Resolve resources in parallell to avoid waiting for each bundle as we extend
   // Note: we may want a queue for this if people do very dynamic loading strategies
   const resolved = await Promise.all(
@@ -82,7 +82,7 @@ async function loadBundles(bundles: LanguageResourceBundle[]): Promise<I18nResou
     }))
   )
 
-  const base: I18nResourceRecord = {}
+  const base: LocaleResourceRecord = {}
   for (const item of resolved) {
     const deep = item.deep ?? true
     const overwrite = item.overwrite ?? true
@@ -105,7 +105,7 @@ async function loadBundles(bundles: LanguageResourceBundle[]): Promise<I18nResou
  * @param bundle - Bundle to load resources for
  * @returns Record of resources
  */
-async function loadBundleResources(bundle: LanguageResourceBundle): Promise<I18nResourceRecord> {
+async function loadBundleResources(bundle: LocaleResourceBundle): Promise<LocaleResourceRecord> {
   if (typeof bundle.resources !== 'function') {
     return bundle.resources
   }
@@ -129,10 +129,10 @@ async function loadBundleResources(bundle: LanguageResourceBundle): Promise<I18n
  * @internal
  */
 function deepExtend(
-  target: I18nResourceRecord,
-  source: I18nResourceRecord,
+  target: LocaleResourceRecord,
+  source: LocaleResourceRecord,
   overwrite = false
-): I18nResourceRecord {
+): LocaleResourceRecord {
   for (const prop in source) {
     if (prop === '__proto__' || prop === 'constructor') {
       continue
@@ -186,7 +186,7 @@ function deepExtend(
  * @returns True if string/instance of string, false otherwise
  * @internal
  */
-function isStringLeaf(target: I18nResourceKey): target is string {
+function isStringLeaf(target: LocaleResourceKey): target is string {
   return typeof target === 'string' || target instanceof String
 }
 
@@ -198,8 +198,8 @@ function isStringLeaf(target: I18nResourceKey): target is string {
  * @internal
  */
 function maybeUnwrapModule(
-  maybeModule: I18nResourceRecord | {default: I18nResourceRecord}
-): I18nResourceRecord {
+  maybeModule: LocaleResourceRecord | {default: LocaleResourceRecord}
+): LocaleResourceRecord {
   return isWrappedModule(maybeModule) ? maybeModule.default : maybeModule
 }
 
@@ -211,7 +211,7 @@ function maybeUnwrapModule(
  * @internal
  */
 function isWrappedModule(
-  mod: I18nResourceRecord | {default: I18nResourceRecord}
-): mod is {default: I18nResourceRecord} {
+  mod: LocaleResourceRecord | {default: LocaleResourceRecord}
+): mod is {default: LocaleResourceRecord} {
   return 'default' in mod && typeof mod.default === 'object' && isPlainObject(mod.default)
 }

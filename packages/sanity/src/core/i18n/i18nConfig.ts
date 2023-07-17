@@ -1,31 +1,37 @@
 import i18nApi, {type i18n} from 'i18next'
 import type {SourceOptions} from '../config'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
-import {i18nBundlesReducer, i18nLangDefReducer} from '../config/configPropertyReducers'
-import {defaultLanguage} from './localizedLanguages'
+import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
+import {defaultLocale} from './locales'
 import {createSanityI18nBackend} from './backend'
-import {I18nSource, LanguageDefinition, LanguageResourceBundle} from './types'
+import {LocaleSource, LocaleDefinition, LocaleResourceBundle} from './types'
 
-export function prepareI18nSource(source: SourceOptions): I18nSource {
+/**
+ * @todo Figure out the "source" naming, why would we name it a source?
+ * @internal
+ */
+export function prepareI18nSource(source: SourceOptions): LocaleSource {
   const {projectId, dataset} = source
-  const languages = resolveConfigProperty({
+  const context = {projectId: projectId, dataset}
+
+  const locales = resolveConfigProperty({
     config: source,
-    context: {projectId: projectId, dataset},
-    propertyName: 'i18n.languages',
-    reducer: i18nLangDefReducer,
-    initialValue: [defaultLanguage],
+    context,
+    propertyName: 'i18n.locales',
+    reducer: localeDefReducer,
+    initialValue: [defaultLocale],
   })
 
   const bundles = resolveConfigProperty({
     config: source,
-    context: {projectId: projectId, dataset},
+    context,
     propertyName: 'i18n.bundles',
-    reducer: i18nBundlesReducer,
-    initialValue: normalizeResourceBundles(languages),
+    reducer: localeBundlesReducer,
+    initialValue: normalizeResourceBundles(locales),
   })
 
   const i18nSource = createI18nApi({
-    languages,
+    locales,
     bundles,
   })
 
@@ -33,16 +39,16 @@ export function prepareI18nSource(source: SourceOptions): I18nSource {
 }
 
 function createI18nApi({
-  languages,
+  locales,
   bundles,
 }: {
-  languages: LanguageDefinition[]
-  bundles: LanguageResourceBundle[]
-}): I18nSource {
-  // We start out with an uninitialized instance - the async init call happens in I18nProvider
+  locales: LocaleDefinition[]
+  bundles: LocaleResourceBundle[]
+}): LocaleSource {
+  // We start out with an uninitialized instance - the async init call happens in LocaleProvider
   let i18nInstance = i18nApi.createInstance().use(createSanityI18nBackend({bundles}))
   return {
-    languages,
+    locales,
     get t() {
       return i18nInstance.t
     },
@@ -56,18 +62,18 @@ function createI18nApi({
 }
 
 /**
- * Takes the i18n config and returns a normalized array of bundles from the defined languages.
+ * Takes the locales config and returns a normalized array of bundles from the defined locales.
  *
- * @param languages - The i18n languages defined in configuration/plugins
+ * @param locales - The locale bundles defined in configuration/plugins
  * @returns An array of normalized bundles
  * @internal
  */
-function normalizeResourceBundles(languages: LanguageDefinition[]): LanguageResourceBundle[] {
-  const normalized: LanguageResourceBundle[] = []
+function normalizeResourceBundles(locales: LocaleDefinition[]): LocaleResourceBundle[] {
+  const normalized: LocaleResourceBundle[] = []
 
-  for (const lang of languages) {
+  for (const lang of locales) {
     if (lang.bundles && !Array.isArray(lang.bundles)) {
-      throw new Error(`Language bundle for language ${lang.id} is not an array`)
+      throw new Error(`Resource bundle for locale ${lang.id} is not an array`)
     }
 
     if (!lang.bundles) {
@@ -75,16 +81,16 @@ function normalizeResourceBundles(languages: LanguageDefinition[]): LanguageReso
     }
 
     for (const bundle of lang.bundles) {
-      if ('language' in bundle && bundle.language !== lang.id) {
-        throw new Error(`Language bundle inside language ${lang.id} has mismatching language id`)
+      if ('locale' in bundle && bundle.locale !== lang.id) {
+        throw new Error(`Resource bundle inside locale ${lang.id} has mismatching locale id`)
       }
 
       const ns = bundle.namespace
       if (!ns) {
-        throw new Error(`Language bundle for language ${lang.id} is missing namespace`)
+        throw new Error(`Resource bundle for locale ${lang.id} is missing namespace`)
       }
 
-      normalized.push('language' in bundle ? bundle : {...bundle, language: lang.id})
+      normalized.push('locale' in bundle ? bundle : {...bundle, locale: lang.id})
     }
   }
 
