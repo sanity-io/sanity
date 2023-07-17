@@ -1,6 +1,6 @@
-import type {I18nStudioResourceKeys} from 'sanity'
+import type {StudioLocaleResourceKeys} from 'sanity'
 
-const studioResources: Record<I18nStudioResourceKeys, string> = {
+const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Placeholder text for the omnisearch input field */
   'navbar.search.placeholder': 'Søk',
 
