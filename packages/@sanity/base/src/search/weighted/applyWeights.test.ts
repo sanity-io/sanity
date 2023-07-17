@@ -1,6 +1,6 @@
 import {
   calculatePhraseScore,
-  calculateMatchingWordScore,
+  calculateWordScore,
   partitionAndSanitizeSearchTerms,
   calculateCharacterScore,
 } from './applyWeights'
@@ -21,30 +21,18 @@ describe('calculatePhraseScore', () => {
   })
 })
 
-describe('calculateMatchingWordScore', () => {
+describe('calculateWordScore', () => {
   it('should handle exact matches', () => {
-    expect(calculateMatchingWordScore(['foo'], 'foo')).toEqual([1, '[Word] Exact match'])
-    expect(calculateMatchingWordScore(['foo', 'foo'], 'foo foo')).toEqual([1, '[Word] Exact match'])
-    expect(calculateMatchingWordScore(['bar', 'foo'], 'foo bar')).toEqual([1, '[Word] Exact match'])
-    expect(calculateMatchingWordScore(['foo', 'bar'], 'bar, foo')).toEqual([
-      1,
-      '[Word] Exact match',
-    ])
-    expect(calculateMatchingWordScore(['foo', 'bar'], 'bar & foo')).toEqual([
-      1,
-      '[Word] Exact match',
-    ])
+    expect(calculateWordScore(['foo'], 'foo')).toEqual([1, '[Word] Exact match'])
+    expect(calculateWordScore(['foo', 'foo'], 'foo foo')).toEqual([1, '[Word] Exact match'])
+    expect(calculateWordScore(['bar', 'foo'], 'foo bar')).toEqual([1, '[Word] Exact match'])
+    expect(calculateWordScore(['foo', 'bar'], 'bar, foo')).toEqual([1, '[Word] Exact match'])
+    expect(calculateWordScore(['foo', 'bar'], 'bar & foo')).toEqual([1, '[Word] Exact match'])
   })
   it('should handle partial matches', () => {
-    expect(calculateMatchingWordScore(['foo'], 'bar foo')).toEqual([
-      0.25,
-      '[Word] 1/2 terms: [foo]',
-    ])
-    expect(calculateMatchingWordScore(['foo', 'bar'], 'foo')).toEqual([
-      0.25,
-      `[Word] 1/2 terms: [foo]`,
-    ])
-    expect(calculateMatchingWordScore(['foo', 'bar', 'baz'], 'foo foo bar')).toEqual([
+    expect(calculateWordScore(['foo'], 'bar foo')).toEqual([0.25, '[Word] 1/2 terms: [foo]'])
+    expect(calculateWordScore(['foo', 'bar'], 'foo')).toEqual([0.25, `[Word] 1/2 terms: [foo]`])
+    expect(calculateWordScore(['foo', 'bar', 'baz'], 'foo foo bar')).toEqual([
       1 / 3,
       `[Word] 2/3 terms: [foo, bar]`,
     ])

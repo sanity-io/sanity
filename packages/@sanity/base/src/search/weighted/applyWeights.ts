@@ -20,7 +20,7 @@ export const calculateScore = (searchTerms: string[], value: string): SearchScor
   // Calculate an aggregated score of words (partial + whole) and phrase matches.
   const [charScore, charWhy] = calculateCharacterScore(uniqueSearchWords, value)
   const [phraseScore, phraseWhy] = calculatePhraseScore(uniqueSearchPhrases, value)
-  const [wordScore, wordWhy] = calculateMatchingWordScore(uniqueSearchWords, value)
+  const [wordScore, wordWhy] = calculateWordScore(uniqueSearchWords, value)
   return [charScore + wordScore + phraseScore, [charWhy, wordWhy, phraseWhy].flat().join(', ')]
 }
 
@@ -156,10 +156,7 @@ export function calculateCharacterScore(uniqueSearchTerms: string[], value: stri
  * @param value - The string to match against
  * @returns SearchScore containing the search score as well as a human readable explanation
  */
-export function calculateMatchingWordScore(
-  uniqueSearchTerms: string[],
-  value: string
-): SearchScore {
+export function calculateWordScore(uniqueSearchTerms: string[], value: string): SearchScore {
   const uniqueValueTerms = uniq(compact(words(toLower(value))))
 
   const matches = intersection(uniqueSearchTerms, uniqueValueTerms)
