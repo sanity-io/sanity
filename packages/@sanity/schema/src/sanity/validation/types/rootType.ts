@@ -42,14 +42,7 @@ export default (typeDef, visitorContext) => {
 
   problems.push(...validateComponent(typeDef))
 
-  if (!('title' in typeDef)) {
-    problems.push(
-      warning(
-        "Type is missing title. It's recommended to always set a descriptive title.",
-        HELP_IDS.TYPE_TITLE_RECOMMENDED
-      )
-    )
-  } else if (typeof typeDef.title !== 'string') {
+  if ('title' in typeDef && typeof typeDef.title !== 'string') {
     problems.push(warning('Type title is not a string.', HELP_IDS.TYPE_TITLE_INVALID))
   }
   return {
