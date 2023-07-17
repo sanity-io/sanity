@@ -43,7 +43,7 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 
   const content = (
     <Stack padding={3} space={2}>
-      <Label size={1} style={{textTransform: 'uppercase'}} muted>
+      <Label size={1} style={{textTransform: 'uppercase'}}>
         {description}
       </Label>
       <Stack space={2}>

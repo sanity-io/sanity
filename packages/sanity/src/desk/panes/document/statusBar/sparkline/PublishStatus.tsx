@@ -32,7 +32,7 @@ export function PublishStatus(props: PublishStatusProps) {
         portal
         content={
           <Stack padding={3} space={3}>
-            <Text size={1} muted>
+            <Text size={1}>
               {liveEdit ? (
                 <>Last updated {lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}</>
               ) : (
