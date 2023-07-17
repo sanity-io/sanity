@@ -1,6 +1,7 @@
 import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
+import {getPrintableType} from '../util/getPrintableType'
 import type {Template, TemplateItem} from '../templates'
-import {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
+import type {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import type {
   DocumentLanguageFilterComponent,
   DocumentLanguageFilterContext,
@@ -32,7 +33,9 @@ export const schemaTypesReducer: ConfigPropertyReducer<
   if (Array.isArray(schemaTypes)) return [...prev, ...schemaTypes]
 
   throw new Error(
-    `Expected \`schema.types\` to be an array or a function, but received ${typeof schemaTypes}`
+    `Expected \`schema.types\` to be an array or a function, but received ${getPrintableType(
+      schemaTypes
+    )}`
   )
 }
 
@@ -57,7 +60,9 @@ export const toolsReducer: ConfigPropertyReducer<Tool[], ConfigContext> = (
   if (typeof tools === 'function') return tools(prev, context)
   if (Array.isArray(tools)) return [...prev, ...tools]
 
-  throw new Error(`Expected \`tools\` to be an array or a function, but received ${typeof tools}`)
+  throw new Error(
+    `Expected \`tools\` to be an array or a function, but received ${getPrintableType(tools)}`
+  )
 }
 
 // we will need this when we ressurect user config for search
@@ -85,7 +90,7 @@ export const searchOperatorsReducer: ConfigPropertyReducer<
   if (Array.isArray(operators)) return [...prev, ...operators]
 
   throw new Error(
-    `Expected \`operators\` to be be an array or a function, but received ${typeof operators}`
+    `Expected \`operators\` to be be an array or a function, but received ${getPrintableType(operators)}`
   )
 }*/
 
@@ -100,7 +105,9 @@ export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigCon
   if (Array.isArray(schemaTemplates)) return [...prev, ...schemaTemplates]
 
   throw new Error(
-    `Expected \`schema.templates\` to be an array or a function, but received ${typeof schemaTemplates}`
+    `Expected \`schema.templates\` to be an array or a function, but received ${getPrintableType(
+      schemaTemplates
+    )}`
   )
 }
 
@@ -115,7 +122,9 @@ export const documentBadgesReducer: ConfigPropertyReducer<
   if (Array.isArray(documentBadges)) return [...prev, ...documentBadges]
 
   throw new Error(
-    `Expected \`document.badges\` to be an array or a function, but received ${typeof documentBadges}`
+    `Expected \`document.badges\` to be an array or a function, but received ${getPrintableType(
+      documentBadges
+    )}`
   )
 }
 
@@ -130,7 +139,9 @@ export const documentActionsReducer: ConfigPropertyReducer<
   if (Array.isArray(documentActions)) return [...prev, ...documentActions]
 
   throw new Error(
-    `Expected \`document.actions\` to be an array or a function, but received ${typeof documentActions}`
+    `Expected \`document.actions\` to be an array or a function, but received ${getPrintableType(
+      documentActions
+    )}`
   )
 }
 
@@ -143,7 +154,9 @@ export const newDocumentOptionsResolver: ConfigPropertyReducer<
 
   if (typeof resolveNewDocumentOptions !== 'function') {
     throw new Error(
-      `Expected \`document.resolveNewDocumentOptions\` to be a function, but received ${typeof resolveNewDocumentOptions}`
+      `Expected \`document.resolveNewDocumentOptions\` to be a function, but received ${getPrintableType(
+        resolveNewDocumentOptions
+      )}`
     )
   }
 
@@ -162,7 +175,9 @@ export const fileAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Confi
   if (Array.isArray(assetSources)) return [...prev, ...assetSources]
 
   throw new Error(
-    `Expected \`form.file.assetSources\` to be an array or a function, but received ${typeof assetSources}`
+    `Expected \`form.file.assetSources\` to be an array or a function, but received ${getPrintableType(
+      assetSources
+    )}`
   )
 }
 
@@ -178,7 +193,9 @@ export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Conf
   if (Array.isArray(assetSources)) return [...prev, ...assetSources]
 
   throw new Error(
-    `Expected \`form.image.assetSources\` to be an array or a function, but received ${typeof assetSources}`
+    `Expected \`form.image.assetSources\` to be an array or a function, but received ${getPrintableType(
+      assetSources
+    )}`
   )
 }
 
@@ -199,7 +216,9 @@ export const documentLanguageFilterReducer: ConfigPropertyReducer<
     return [...prev, ...resolveDocumentLanguageFilter]
 
   throw new Error(
-    `Expected \`document.unstable_languageFilter\` to be an array or a function, but received ${typeof resolveDocumentLanguageFilter}`
+    `Expected \`document.unstable_languageFilter\` to be an array or a function, but received ${getPrintableType(
+      resolveDocumentLanguageFilter
+    )}`
   )
 }
 
@@ -215,6 +234,8 @@ export const documentInspectorsReducer: ConfigPropertyReducer<
   if (Array.isArray(resolveInspectorsFilter)) return [...prev, ...resolveInspectorsFilter]
 
   throw new Error(
-    `Expected \`document.inspectors\` to be an array or a function, but received ${typeof resolveInspectorsFilter}`
+    `Expected \`document.inspectors\` to be an array or a function, but received ${getPrintableType(
+      resolveInspectorsFilter
+    )}`
   )
 }
