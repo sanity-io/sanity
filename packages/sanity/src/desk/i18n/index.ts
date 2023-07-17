@@ -1,26 +1,26 @@
-import {defineLanguageResourceBundle} from 'sanity'
+import {defineLocaleResourceBundle} from 'sanity'
 
 /**
- * The i18n namespace for the desk tool
+ * The locale namespace for the desk tool
  *
  * @public
  */
-export const deskI18nNamespace = 'desk' as const
+export const deskLocaleNamespace = 'desk' as const
 
 /**
- * The default language bundle for the desk tool, which is US English.
+ * The default locale bundle for the desk tool, which is US English.
  *
  * @internal
  */
-export const deskUsEnglishLanguageBundle = defineLanguageResourceBundle({
-  language: 'en-US',
-  namespace: deskI18nNamespace,
+export const deskUsEnglishLocaleBundle = defineLocaleResourceBundle({
+  locale: 'en-US',
+  namespace: deskLocaleNamespace,
   resources: () => import('./resources'),
 })
 
 /**
- * The i18n resource keys for the desk tool.
+ * The locale resource keys for the desk tool.
  *
- * @public
+ * @alpha
  */
-export type {I18nDeskResourceKeys} from './resources'
+export type {DeskLocaleResourceKeys} from './resources'

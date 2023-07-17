@@ -1,9 +1,9 @@
 /**
- * Defined i18n strings for the desk tool, in US English.
+ * Defined locale strings for the desk tool, in US English.
  *
  * @internal
  */
-const deskI18nStrings = {
+const deskLocaleStrings = {
   /** Label for the "Publish" document action when there are pending changes.*/
   'action.publish.draft.label': 'Publish',
 
@@ -47,6 +47,6 @@ const deskI18nStrings = {
 /**
  * @alpha
  */
-export type I18nDeskResourceKeys = keyof typeof deskI18nStrings
+export type DeskLocaleResourceKeys = keyof typeof deskLocaleStrings
 
-export default deskI18nStrings
+export default deskLocaleStrings
