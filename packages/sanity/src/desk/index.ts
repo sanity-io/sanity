@@ -28,4 +28,4 @@ export type {
 export * from './structureBuilder'
 
 export * from './useDeskTool'
-export {deskI18nNamespace, type I18nDeskResourceKeys} from './i18n'
+export {deskLocaleNamespace, type DeskLocaleResourceKeys} from './i18n'

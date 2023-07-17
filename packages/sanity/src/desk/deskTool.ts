@@ -14,7 +14,7 @@ import {router} from './router'
 import {DeskToolOptions} from './types'
 import {comments} from './comments'
 import {changesInspector} from './panes/document/inspectors/changes'
-import {deskUsEnglishLanguageBundle} from './i18n'
+import {deskUsEnglishLocaleBundle} from './i18n'
 import {validationInspector} from './panes/document/inspectors/validation'
 import {definePlugin} from 'sanity'
 
@@ -120,6 +120,6 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
     },
   ],
   i18n: {
-    bundles: [deskUsEnglishLanguageBundle],
+    bundles: [deskUsEnglishLocaleBundle],
   },
 }))
