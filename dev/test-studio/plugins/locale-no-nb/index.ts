@@ -1,18 +1,18 @@
-import {defineLanguage, definePlugin, studioI18nNamespace} from 'sanity'
-import {deskI18nNamespace} from 'sanity/desk'
+import {defineLocale, definePlugin, studioLocaleNamespace} from 'sanity'
+import {deskLocaleNamespace} from 'sanity/desk'
 import {NorwegianFlagIcon} from './NorwegianFlagIcon'
 
-const norwegianLanguage = defineLanguage({
+const norwegianLanguage = defineLocale({
   id: 'no-NB',
   title: 'Norsk (Bokmål)',
   icon: NorwegianFlagIcon,
   bundles: [
     {
-      namespace: studioI18nNamespace,
+      namespace: studioLocaleNamespace,
       resources: () => import('./bundles/studio'),
     },
     {
-      namespace: deskI18nNamespace,
+      namespace: deskLocaleNamespace,
       resources: () => import('./bundles/desk'),
     },
   ],
@@ -21,10 +21,6 @@ const norwegianLanguage = defineLanguage({
 export const noNBLocale = definePlugin({
   name: 'locale-no-nb',
   i18n: {
-    languages: (prev) => [
-      // Prevent duplicates (move to reducer? remove?)
-      ...prev.filter((lang) => lang !== norwegianLanguage),
-      norwegianLanguage,
-    ],
+    locales: [norwegianLanguage],
   },
 })

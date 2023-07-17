@@ -1,2 +1,2 @@
 export * from './UserMenu'
-export {LanguageMenu} from './LanguageMenu'
+export {LocaleMenu as LanguageMenu} from './LocaleMenu'

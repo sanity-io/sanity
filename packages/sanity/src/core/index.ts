@@ -19,6 +19,7 @@ export * from './theme'
 export * from './user-color'
 export * from './util'
 export * from './version'
+export * from './i18n'
 export {createSearchQuery} from './search'
 export type {
   SearchableType,
@@ -27,4 +28,3 @@ export type {
   SearchSort,
   WeightedSearchOptions,
 } from './search'
-export * from './i18n'

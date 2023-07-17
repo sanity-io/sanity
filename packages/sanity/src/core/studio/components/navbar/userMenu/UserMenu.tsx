@@ -27,7 +27,7 @@ import {
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
 import {LoginProviderLogo} from './LoginProviderLogo'
-import {LanguageMenu} from './LanguageMenu'
+import {LocaleMenu} from './LocaleMenu'
 
 const AVATAR_SIZE = 1
 
@@ -138,7 +138,7 @@ export function UserMenu() {
 
           {setScheme && <AppearanceMenu setScheme={setScheme} />}
 
-          <LanguageMenu />
+          <LocaleMenu />
           <MenuDivider />
 
           <MenuItem
