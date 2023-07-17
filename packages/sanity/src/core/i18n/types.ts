@@ -2,103 +2,151 @@ import type {TFunction, i18n} from 'i18next'
 import type {ComponentType} from 'react'
 
 /**
- * An object of language resources, or a string array of resources
+ * An object of locale resources, or a string array of resources
  *
  * @public
  */
-export type I18nNestedResource = I18nResourceRecord | string[]
+export type LocaleNestedResource = LocaleResourceRecord | string[]
 
 /**
- * A language resource key, which can be a leaf string, or a nested resource
+ * A locale resource key, which can be a leaf string, or a nested resource
  *
  * @public
  */
-export type I18nResourceKey = string | I18nNestedResource
+export type LocaleResourceKey = string | LocaleNestedResource
 
 /**
- * An object of language resources.
+ * An object of locale resources.
  *
  * @public
  */
-export interface I18nResourceRecord {
-  [key: string]: I18nResourceKey
+export interface LocaleResourceRecord {
+  [key: string]: LocaleResourceKey
 }
 
 /**
  * @hidden
  * @beta
  */
-export interface I18nContext {
+export interface LocaleConfigContext {
   projectId: string
   dataset: string
 }
 
-/**
- * A language resource bundle where the language is inherited from the parent language definition.
- *
- * @beta
- */
-export type ImplicitLanguageResourceBundle = Omit<LanguageResourceBundle, 'language'>
+/** @beta @hidden */
+export type LocalesOption =
+  | ((prev: LocaleDefinition[], context: LocaleConfigContext) => LocaleDefinition[])
+  | LocaleDefinition[]
+
+/** @beta @hidden */
+export type LocalesBundlesOption =
+  | ((prev: LocaleResourceBundle[], context: LocaleConfigContext) => LocaleResourceBundle[])
+  | LocaleResourceBundle[]
 
 /**
- * A bundle of language resources for a given language and namespace.
+ * Options that defines or adds resources to existing locales
+ *
+ * @beta
+ * @hidden
+ */
+export interface LocalePluginOptions {
+  /**
+   * Locales available for user selection.
+   *
+   * Titles and icons can be changed by using a function (reducer pattern) and transforming values.
+   */
+  locales?: LocalesOption
+
+  /**
+   * Bundles contain "resources" (strings) that yields translations for different locales
+   * throughout the studio. The strings are scoped to a specific locale and namespace.
+   * Namespaces in this context usually means a specific part of the studio, like a tool or plugin.
+   */
+  bundles?: LocalesBundlesOption
+}
+
+/**
+ * A locale resource bundle where the locale is inherited from the parent locale definition.
  *
  * @beta
  */
-export interface LanguageResourceBundle {
-  language: string
+export type ImplicitLocaleResourceBundle = Omit<LocaleResourceBundle, 'locale'>
+
+/**
+ * A collection of locale resources for a given locale and namespace.
+ * In other words, an object of translated locale strings.
+ *
+ * @beta
+ */
+export interface LocaleResourceBundle {
+  /**
+   * The locale ID the resources belong to, eg `en-US`, `nb-NO`, `th-TH`…
+   */
+  locale: string
+
+  /**
+   * The namespace the resources belong to, eg `vision`, `desk`, `studio`…
+   */
   namespace: string
-  resources:
-    | I18nResourceRecord
-    | (() => Promise<I18nResourceRecord | {default: I18nResourceRecord}>)
 
-  /** Should the resources be merged deeply (nested objects). Default: true */
+  /**
+   * An object of locale resources, or a function that resolves to one.
+   * The localization framework automatically handles ESM modules with a default export,
+   * since a common use case is to dynamically load a resource file on use. This is the
+   * preferred option, since it allows for lazy loading of locale resources on use.
+   */
+  resources:
+    | LocaleResourceRecord
+    | (() => Promise<LocaleResourceRecord | {default: LocaleResourceRecord}>)
+
+  /**
+   * Whether the resources should be merged deeply (eg for nested objects). Default: true
+   */
   deep?: boolean
 
-  /** Should existing resource keys for the namespace be overwritten. Default: false */
+  /**
+   * Whether any existing resource keys for the namespace be overwritten. Default: true
+   */
   overwrite?: boolean
 }
 
-/** @beta @hidden */
-export type I18nLanguagesOption =
-  | ((prev: LanguageDefinition[], context: I18nContext) => LanguageDefinition[])
-  | LanguageDefinition[]
-
-/** @beta @hidden */
-export type I18nResourceBundlesOption =
-  | ((prev: LanguageResourceBundle[], context: I18nContext) => LanguageResourceBundle[])
-  | LanguageResourceBundle[]
-
-/** @beta @hidden */
-export interface I18nPluginOptions {
+/**
+ * A locale definition, which describes a locale and its resources.
+ *
+ * @beta
+ */
+export interface LocaleDefinition {
   /**
-   * Defines which languages should be available for user selection.
-   * Prev is initially `[{id: 'en-US', title: 'English (US)', icon: AmericanFlag }]`
-   *
-   * Language titles and icons can be changed by transforming the LanguageDefinition array values.
+   * The ID of the locale, eg `en-US`, `nb-NO`, `th-TH`…
    */
-  languages?: I18nLanguagesOption
-
-  /**
-   * Bundles contain "resources" (strings) that yields translations for different languages
-   * throughout the studio. The strings are scoped to a specific language and namespace.
-   * Namespaces in this context usually means a specific part of the studio, like a tool or plugin.
-   */
-  bundles?: I18nResourceBundlesOption
-}
-
-/** @beta @hidden */
-export interface LanguageDefinition {
   id: string
+
+  /**
+   * The title of locale, eg `English (US)`, `Norsk (bokmål)`, `ไทย`…
+   */
   title: string
+
+  /**
+   * React component representing the icon of the locale, generally a flag.
+   */
   icon?: ComponentType
-  bundles?: (ImplicitLanguageResourceBundle | LanguageResourceBundle)[]
-  // @todo allow fallback languages? eg [no-nn, no-nb, en]
+
+  /**
+   * Array of resource bundles for this locale, if any.
+   *
+   * Generally you'll want to provide some base resources, eg for the studio core namespace,
+   * as well as for common namespaces like `desk` and `vision`. You can also provide resources
+   * for other plugins/namespaces - but preferably the resources should be provided as an async
+   * function that imports the resources, in order to lazy load them on use.
+   */
+  bundles?: (ImplicitLocaleResourceBundle | LocaleResourceBundle)[]
+
+  // @todo allow fallback locales? eg [no-nn, no-nb, en]
 }
 
 /** @internal */
-export interface I18nSource {
-  languages: LanguageDefinition[]
+export interface LocaleSource {
+  locales: LocaleDefinition[]
   t: TFunction
 
   /**
@@ -108,4 +156,4 @@ export interface I18nSource {
   i18next: i18n
 }
 
-export type {I18nStudioResourceKeys} from './bundles/studio'
+export type {StudioLocaleResourceKeys} from './bundles/studio'

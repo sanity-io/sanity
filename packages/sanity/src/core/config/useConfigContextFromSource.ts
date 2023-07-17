@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import type {I18nSource} from '../i18n'
+import type {LocaleSource} from '../i18n'
 import type {Source, ConfigContext} from './types'
 
 /**
@@ -9,7 +9,7 @@ import type {Source, ConfigContext} from './types'
  * @returns A config context containing only the defined properties of that interface
  * @internal
  */
-export function useConfigContextFromSource(source: Source): ConfigContext & {i18n: I18nSource} {
+export function useConfigContextFromSource(source: Source): ConfigContext & {i18n: LocaleSource} {
   const {projectId, dataset, schema, currentUser, getClient, i18n} = source
   return useMemo(() => {
     return {projectId, dataset, schema, currentUser, getClient, i18n}
@@ -23,7 +23,7 @@ export function useConfigContextFromSource(source: Source): ConfigContext & {i18
  * @returns A config context containing only the defined properties of that interface
  * @internal
  */
-export function getConfigContextFromSource(source: Source): ConfigContext & {i18n: I18nSource} {
+export function getConfigContextFromSource(source: Source): ConfigContext & {i18n: LocaleSource} {
   const {projectId, dataset, schema, currentUser, getClient, i18n} = source
   return {projectId, dataset, schema, currentUser, getClient, i18n}
 }

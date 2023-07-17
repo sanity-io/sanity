@@ -1,7 +1,7 @@
-import {defineLanguageResourceBundle} from '../defineHelpers'
-import {studioI18nNamespace} from '../i18nNamespaces'
+import {defineLocaleResourceBundle} from '../defineHelpers'
+import {studioLocaleNamespace} from '../localeNamespaces'
 
-const studioI18nNamespaceStrings = {
+const studioLocaleStrings = {
   /** Placeholder text for the omnisearch input field */
   'navbar.search.placeholder': 'Search',
 
@@ -69,11 +69,18 @@ const studioI18nNamespaceStrings = {
  * The i18n resource keys for the studio.
  *
  * @alpha
+ * @hidden
  */
-export type I18nStudioResourceKeys = keyof typeof studioI18nNamespaceStrings
+export type StudioLocaleResourceKeys = keyof typeof studioLocaleStrings
 
-export const defaultStudioLanguageBundle = defineLanguageResourceBundle({
-  language: 'en-US',
-  namespace: studioI18nNamespace,
-  resources: studioI18nNamespaceStrings,
+/**
+ * Locale resources for the core studio namespace, eg US English locale resources.
+ *
+ * @beta
+ * @hidden
+ */
+export const studioDefaultLocaleResources = defineLocaleResourceBundle({
+  locale: 'en-US',
+  namespace: studioLocaleNamespace,
+  resources: studioLocaleStrings,
 })

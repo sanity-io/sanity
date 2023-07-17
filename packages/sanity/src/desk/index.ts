@@ -31,4 +31,4 @@ export * from './panes/document'
 
 export * from './panes/documentList'
 
-export {deskI18nNamespace, type I18nDeskResourceKeys} from './i18n'
+export {deskLocaleNamespace, type DeskLocaleResourceKeys} from './i18n'
