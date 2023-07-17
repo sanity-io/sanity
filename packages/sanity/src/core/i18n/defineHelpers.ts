@@ -1,19 +1,25 @@
-import type {LanguageDefinition, LanguageResourceBundle} from './types'
+import type {LocaleDefinition, LocaleResourceBundle} from './types'
 
 /**
- * @todo
- * @alpha
+ * Defines a resource bundle for a given locale and namespace.
+ *
+ * @param bundle - The bundle of resources to define
+ * @returns The bundle that was passed, as-is (this is an "identity function")
+ * @beta
+ * @hidden
  */
-export function defineLanguageResourceBundle(
-  bundle: LanguageResourceBundle,
-): LanguageResourceBundle {
+export function defineLocaleResourceBundle(bundle: LocaleResourceBundle): LocaleResourceBundle {
   return bundle
 }
 
 /**
- * Defines a language and makes it available for use in the studio.
- * @alpha
+ * Defines a locale and makes it available for use in the studio.
+ *
+ * @param locale - The locale to define
+ * @returns The locale that was passed, as-is (this is an "identity function")
+ * @beta
+ * @hidden
  */
-export function defineLanguage(language: LanguageDefinition): LanguageDefinition {
-  return language
+export function defineLocale(locale: LocaleDefinition): LocaleDefinition {
+  return locale
 }
