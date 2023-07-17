@@ -88,7 +88,7 @@ export function testServerCommand({
       }
 
       if (res.statusCode !== 200) {
-        proc.kill()
+        proc.kill('SIGTERM')
         reject(new Error(`HTTP server responded with HTTP ${res.statusCode}`))
         return
       }
@@ -111,14 +111,14 @@ export function testServerCommand({
         return
       }
 
-      proc.kill()
+      proc.kill('SIGTERM')
       reject(new Error(`Did not find expected <title> in HTML:\n\n${html}`))
     }
 
     function onSuccess(html: string, fileHashes: Map<string, string | null>) {
       hasSucceeded = true
       clearTimeout(timer)
-      proc.kill()
+      proc.kill('SIGTERM')
       resolve({
         html,
         fileHashes,
