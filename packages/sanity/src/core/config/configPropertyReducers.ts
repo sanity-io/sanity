@@ -1,7 +1,7 @@
 import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
 import {getPrintableType} from '../util/getPrintableType'
 import type {Template, TemplateItem} from '../templates'
-import type {I18nContext, LanguageDefinition, LanguageResourceBundle} from '../i18n'
+import type {I18nContext, LocaleDefinition, LanguageResourceBundle} from '../i18n'
 import type {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
 import type {
   AsyncConfigPropertyReducer,
@@ -112,18 +112,20 @@ export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigCon
   )
 }
 
-export const i18nLangDefReducer: ConfigPropertyReducer<LanguageDefinition[], I18nContext> = (
+export const i18nLocaleDefReducer: ConfigPropertyReducer<LocaleDefinition[], I18nContext> = (
   prev,
   {i18n},
   context
 ) => {
-  const languages = i18n?.languages
-  if (!languages) return prev
-  if (typeof languages === 'function') return languages(prev, context)
-  if (Array.isArray(languages)) return [...prev, ...languages]
+  const locales = i18n?.locales
+  if (!locales) return prev
+  if (typeof locales === 'function') return locales(prev, context)
+  if (Array.isArray(locales)) return [...prev, ...locales]
 
   throw new Error(
-    `Expected \`i18n.languages\` to be an array or a function, but received ${typeof languages}`
+    `Expected \`i18n.locales\` to be an array or a function, but received ${getPrintableType(
+      locales
+    )}`
   )
 }
 
