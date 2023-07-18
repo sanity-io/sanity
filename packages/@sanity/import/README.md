@@ -24,10 +24,63 @@ const client = sanityClient({
 
 // Input can either be a readable stream (for a `.tar.gz` or `.ndjson` file), a folder location (string), or an array of documents
 const input = fs.createReadStream('my-documents.ndjson')
-sanityImport(input, {
+
+const options = {
+  /**
+   * A Sanity client instance, preconfigured with the project ID and dataset
+   * you want to import data to, and with a token that has write access.
+   */
   client: client,
-  operation: 'create', // `create`, `createOrReplace` or `createIfNotExists`
-})
+
+  /**
+   * Which mutation type to use for creating documents:
+   * `create` (default)  - throws error if document IDs already exists
+   * `createOrReplace`   - replaces documents with same IDs
+   * `createIfNotExists` - skips document with IDs that already exists
+   *
+   * Optional.
+   */
+  operation: 'create',
+
+  /**
+   * Function called when making progress. Gets called with an object of
+   * the following shape:
+   * `step` (string) - the current step name of the import process
+   * `current` (number) - the current progress of the step, only present on some steps
+   * `total` (number) - total items before complete, only present on some steps
+   */
+  onProgress: (progress) => {
+    /* report progress */
+  },
+
+  /**
+   * Whether or not to allow assets in different datasets. This is usually
+   * an error in the export, where asset documents are part of the export.
+   *
+   * Optional, defaults to `false`.
+   */
+  allowAssetsInDifferentDataset: false,
+
+  /**
+   * Whether or not to replace any existing assets with the same hash.
+   * Setting this to `true` will regenerate image metadata on the server,
+   * but slows down the import.
+   *
+   * Optional, defaults to `false`.
+   */
+  replaceAssets: false,
+
+  /**
+   * Whether or not to skip cross-dataset references. This may be required
+   * when importing a dataset with cross-dataset references to a different
+   * project, unless a dataset with the referenced name exists.
+   *
+   * Optional, defaults to `false`.
+   */
+  skipCrossDatasetReferences: false,
+}
+
+sanityImport(input, options)
   .then(({numDocs, warnings}) => {
     console.log('Imported %d documents', numDocs)
     // Note: There might be warnings! Check `warnings`

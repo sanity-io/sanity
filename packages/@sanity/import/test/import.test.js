@@ -121,6 +121,44 @@ test('generates uuids for documents without id', async () => {
   expect(res).toMatchObject({numDocs: 3, warnings: []})
 })
 
+test('references get _type, syncs _projectId by default', async () => {
+  const match = (body) => {
+    if (body.mutations.length !== 6) {
+      return
+    }
+
+    const missingType = body.mutations.find((mut) => mut.create?._id === 'missing-type-ref')
+    const cpr = body.mutations.find((mut) => mut.create?._id === 'cpr')
+    expect(missingType.create.author).toHaveProperty('_type', 'reference')
+    expect(cpr.create.author).toHaveProperty('_projectId', 'foo')
+  }
+  const client = getSanityClient(getMockMutationHandler(match))
+  const res = await importer(getFixtureStream('references'), {client})
+  expect(res).toMatchObject({numDocs: 6, warnings: []})
+})
+
+test('can drop cross-dataset references', async () => {
+  const match = (body) => {
+    if (body.mutations.length !== 6) {
+      return
+    }
+
+    // Should still do other reference operations (eg add _type)
+    const missingType = body.mutations.find((mut) => mut.create?._id === 'missing-type-ref')
+    const cpr = body.mutations.find((mut) => mut.create?._id === 'cpr')
+    const cdr = body.mutations.find((mut) => mut.create?._id === 'cdr')
+    expect(missingType.create.author).toHaveProperty('_type', 'reference')
+    expect(cpr.create).not.toHaveProperty('author')
+    expect(cdr.create).not.toHaveProperty('deep.author')
+  }
+  const client = getSanityClient(getMockMutationHandler(match))
+  const res = await importer(getFixtureStream('references'), {
+    client,
+    skipCrossDatasetReferences: true,
+  })
+  expect(res).toMatchObject({numDocs: 6, warnings: []})
+})
+
 function getMockMutationHandler(match = 'employee creation') {
   return (req) => {
     const options = req.context.options
@@ -135,13 +173,29 @@ function getMockMutationHandler(match = 'employee creation') {
         expect(body).toMatchSnapshot(match)
       }
 
-      const results = body.mutations.map((mut) => ({
-        id: mut.create.id,
-        operation: 'create',
-      }))
+      const results = body.mutations.map((mut) => extractDetailsFromMutation(mut))
       return {body: {results}}
     }
 
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   }
+}
+
+function extractDetailsFromMutation(mut) {
+  if (mut.patch) {
+    return {operation: 'update', id: mut.patch.id}
+  }
+  if (mut.create) {
+    return {operation: 'create', id: mut.create._id}
+  }
+  if (mut.createIfNotExists) {
+    return {operation: 'create', id: mut.createIfNotExists._id}
+  }
+  if (mut.createOrReplace) {
+    return {operation: 'create', id: mut.createOrReplace._id}
+  }
+  if (mut.delete) {
+    return {operation: 'delete', id: mut.delete.id}
+  }
+  throw new Error('Unknown mutation type')
 }

@@ -1,0 +1,6 @@
+{"_id": "grrm", "_type": "author", "name": "George R. R. Martin"}
+{"_id": "no-ref", "_type": "mock", "title": "No references"}
+{"_id": "normal-ref", "_type": "mock", "title": "Normal reference", "author": {"_type": "reference", "_ref": "grrm"}}
+{"_id": "missing-type-ref", "_type": "mock", "title": "Reference missing `_type`", "author": {"_ref": "grrm"}}
+{"_id": "cpr", "_type": "mock", "title": "Rewrite project IDs", "author": {"_ref": "grrm", "_projectId":"xyz987", "_dataset": "authors"}}
+{"_id": "cdr", "_type": "mock", "title": "Optionally skip CDRs", "deep": {"author": {"_ref": "grrm", "_projectId":"abc123", "_dataset": "authors"}}}

@@ -17,8 +17,7 @@ const REQUIRED_PROPERTIES = {
 }
 
 module.exports = async function validateAssetDocuments(docs, options) {
-  const config = options.client.config()
-  const {projectId: targetProjectId, dataset: targetDataset} = config
+  const {targetProjectId, targetDataset} = options
   const concurrency = options.assetVerificationConcurrency || DEFAULT_VERIFY_CONCURRENCY
 
   const assetDocs = docs.filter((doc) => /^sanity\.[a-zA-Z]+Asset$/.test(doc._type || ''))
