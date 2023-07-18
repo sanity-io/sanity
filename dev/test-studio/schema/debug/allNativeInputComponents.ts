@@ -129,7 +129,6 @@ export const allNativeInputComponents = defineType({
     defineField({
       type: 'crossDatasetReference',
       name: 'crossDatasetReference',
-      projectId: 'ppsg7ml5',
       dataset: 'test',
       to: [
         {

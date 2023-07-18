@@ -554,7 +554,6 @@ describe('definitionExtensions', () => {
       const type = defineType({
         type: 'crossDatasetReference',
         name: 'test',
-        projectId: 'test',
         dataset: 'test',
         to: [{type: 'some-object'}],
         components: {

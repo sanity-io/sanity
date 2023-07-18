@@ -26,6 +26,7 @@ const PROJECT_ID_FIELD = {
   name: '_projectId',
   title: 'Target project ID',
   type: 'string',
+  hidden: true,
 }
 
 const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD, DATASET_FIELD, PROJECT_ID_FIELD]

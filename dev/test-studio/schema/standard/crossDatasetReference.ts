@@ -36,12 +36,12 @@ export default defineType({
     {name: 'title', type: 'string'},
     {
       name: 'bookInPlayground',
-      title: 'Reference to book in the "playground" dataset in project "ppsg7ml5"',
+      title: 'Reference to book in the "playground" dataset',
       type: 'crossDatasetReference',
       dataset: 'playground',
       studioUrl: ({id, type}) => {
         return type
-          ? `${document.location.protocol}//${document.location.host}/playground/desk/${type};${id}`
+          ? `${document.location.protocol}//${document.location.host}/playground/content/${type};${id}`
           : null
       },
       to: [
@@ -66,13 +66,13 @@ export default defineType({
       ],
     },
     {
-      title: 'Reference to book or author in the "playground" dataset in project "ppsg7ml5"',
+      title: 'Reference to book or author in the "playground" dataset',
       name: 'bookOrAuthorInPlayground',
       type: 'crossDatasetReference',
       dataset: 'playground',
       studioUrl: ({id, type}) => {
         return type
-          ? `${document.location.protocol}//${document.location.host}/playground/desk/${type};${id}`
+          ? `${document.location.protocol}//${document.location.host}/playground/content/${type};${id}`
           : null
       },
       to: [

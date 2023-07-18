@@ -17,8 +17,12 @@ export interface CrossDatasetReferenceDefinition extends BaseSchemaDefinition {
   }[]
 
   dataset: string
-  projectId: string
   studioUrl?: (document: {id: string; type?: string}) => string | null
   tokenId?: string
   options?: ReferenceOptions
+
+  /**
+   * @deprecated Cross-project references are no longer supported, only cross-dataset
+   */
+  projectId?: string
 }
