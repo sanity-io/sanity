@@ -40,31 +40,8 @@ export function FileActionsMenu(props: Props) {
   } = props
   const [menuElement, setMenuElement] = useState<HTMLDivElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-  const [shouldFocus, setShouldFocus] = useState<'first' | undefined>('first')
 
   const handleClick = useCallback(() => onMenuOpen(true), [onMenuOpen])
-
-  const setOptionsButtonRef = useCallback(
-    (el: HTMLButtonElement | null) => {
-      // Pass the button element to the parent component so that it can focus it when e.g. closing dialogs
-      setMenuButtonElement(el)
-
-      // Set focus back on the button when closing the menu
-      setButtonElement(el)
-    },
-    [setMenuButtonElement]
-  )
-
-  //Necessary to prevent focus to be on first element when hovering over MenuDivider
-  useEffect(() => {
-    if (isMenuOpen) {
-      setTimeout(() => setShouldFocus(undefined), 1)
-    }
-
-    if (!isMenuOpen) {
-      setShouldFocus('first')
-    }
-  }, [isMenuOpen])
 
   useGlobalKeyDown(
     useCallback(
@@ -79,10 +56,36 @@ export function FileActionsMenu(props: Props) {
   )
 
   // Close menu when clicking outside of it
+  // Not when clicking on the button
   useClickOutside(
-    useCallback(() => onMenuOpen(false), [onMenuOpen]),
+    useCallback(
+      (event) => {
+        if (!buttonElement?.contains(event.target as Node)) {
+          onMenuOpen(false)
+        }
+      },
+      [buttonElement, onMenuOpen]
+    ),
     [menuElement]
   )
+
+  const setOptionsButtonRef = useCallback(
+    (el: HTMLButtonElement | null) => {
+      // Pass the button element to the parent component so that it can focus it when e.g. closing dialogs
+      setMenuButtonElement(el)
+
+      // Set focus back on the button when closing the menu
+      setButtonElement(el)
+    },
+    [setMenuButtonElement]
+  )
+
+  // When the popover is open, focus the menu to enable keyboard navigation
+  useEffect(() => {
+    if (isMenuOpen) {
+      menuElement?.focus()
+    }
+  }, [isMenuOpen, menuElement])
 
   return (
     <Flex wrap="nowrap" justify="space-between" align="center">
@@ -116,15 +119,14 @@ export function FileActionsMenu(props: Props) {
           {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
      and break replacing an uploaded file. */}
           <Popover
-            content={
-              <Menu ref={setMenuElement} shouldFocus={shouldFocus}>
-                {children}
-              </Menu>
-            }
+            content={<Menu ref={setMenuElement}>{children}</Menu>}
+            id="file-actions-menu"
             portal
             open={isMenuOpen}
+            constrainSize
           >
             <Button
+              aria-label="Open file options menu"
               data-testid="options-menu-button"
               icon={EllipsisVerticalIcon}
               mode="bleed"

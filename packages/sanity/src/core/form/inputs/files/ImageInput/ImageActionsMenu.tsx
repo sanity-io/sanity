@@ -32,7 +32,6 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
   const [menuElement, setMenuElement] = useState<HTMLDivElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
-  const [shouldFocus, setShouldFocus] = useState<'first' | undefined>('first')
 
   const handleClick = useCallback(() => onMenuOpen(!isMenuOpen), [onMenuOpen, isMenuOpen])
 
@@ -47,17 +46,6 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
       [isMenuOpen, onMenuOpen, buttonElement]
     )
   )
-
-  //Necessary to prevent focus to be on first element when hovering over MenuDivider
-  useEffect(() => {
-    if (isMenuOpen) {
-      setTimeout(() => setShouldFocus(undefined), 1)
-    }
-
-    if (!isMenuOpen) {
-      setShouldFocus('first')
-    }
-  }, [isMenuOpen])
 
   // Close menu when clicking outside of it
   // Not when clicking on the button
@@ -84,6 +72,13 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
     [setMenuButtonElement]
   )
 
+  // When the popover is open, focus the menu to enable keyboard navigation
+  useEffect(() => {
+    if (isMenuOpen) {
+      menuElement?.focus()
+    }
+  }, [isMenuOpen, menuElement])
+
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
       {showEdit && (
@@ -100,11 +95,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
      and break replacing an uploaded file. */}
       <Popover
         id="image-actions-menu"
-        content={
-          <Menu ref={setMenuElement} shouldFocus={shouldFocus}>
-            {children}
-          </Menu>
-        }
+        content={<Menu ref={setMenuElement}>{children}</Menu>}
         portal
         open={isMenuOpen}
         constrainSize

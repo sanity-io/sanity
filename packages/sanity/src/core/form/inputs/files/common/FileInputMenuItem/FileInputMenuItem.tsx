@@ -1,7 +1,7 @@
 import React, {createElement, isValidElement, useId} from 'react'
 import {isValidElementType} from 'react-is'
 import {Box, ButtonProps, Flex, Text} from '@sanity/ui'
-import {FileButton} from './FileInputMenuItem.styled'
+import {FileMenuItem} from './FileInputMenuItem.styled'
 
 export interface FileInputMenuItemProps extends ButtonProps {
   accept?: string
@@ -64,20 +64,19 @@ export const FileInputMenuItem = React.forwardRef(function FileInputMenuItem(
   )
 
   return (
-    <FileButton
+    <FileMenuItem
       {...rest}
       htmlFor={id}
       padding={0}
       fontSize={2}
       disabled={disabled}
       ref={forwardedRef}
-      showFocusRing={false}
     >
       {content}
 
       {/* Visibly hidden input */}
       <input
-        data-testid="file-button-input"
+        data-testid="file-menuitem-input"
         accept={accept}
         capture={capture}
         id={id}
@@ -87,6 +86,6 @@ export const FileInputMenuItem = React.forwardRef(function FileInputMenuItem(
         value=""
         disabled={disabled}
       />
-    </FileButton>
+    </FileMenuItem>
   )
 })
