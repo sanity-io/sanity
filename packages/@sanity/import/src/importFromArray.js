@@ -3,6 +3,7 @@ const flatten = require('lodash/flatten')
 const ensureUniqueIds = require('./util/ensureUniqueIds')
 const {getAssetRefs, unsetAssetRefs, absolutifyPaths} = require('./assetRefs')
 const validateAssetDocuments = require('./validateAssetDocuments')
+const validateCdrDatasets = require('./validateCdrDatasets')
 const assignArrayKeys = require('./assignArrayKeys')
 const assignDocumentId = require('./assignDocumentId')
 const uploadAssets = require('./uploadAssets')
@@ -23,6 +24,11 @@ async function importDocuments(documents, options) {
 
   // Validate that there are no duplicate IDs in the documents
   ensureUniqueIds(documents)
+
+  // Ensure that any cross-dataset references has datasets to point to
+  if (!options.skipCrossDatasetReferences) {
+    validateCdrDatasets(documents, options)
+  }
 
   // Replace relative asset paths if one is defined
   // (file://./images/foo-bar.png -> file:///abs/olute/images/foo-bar.png)
