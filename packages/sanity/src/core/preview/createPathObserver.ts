@@ -1,6 +1,7 @@
 import {uniq} from 'lodash'
 import {Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
+import {isCrossDatasetReference, isReference} from '@sanity/types'
 import {isRecord} from '../util'
 import {ApiConfig, FieldName, PreviewPath, Previewable} from './types'
 import {props} from './utils/props'
@@ -16,12 +17,8 @@ function resolveMissingHeads(value: Record<string, unknown>, paths: string[][]) 
   return paths.filter((path) => !(path[0] in value))
 }
 
-function isReferenceLike(value: Previewable): value is {_ref: string} {
-  return '_ref' in value
-}
-
 function getDocumentId(value: Previewable) {
-  if (isReferenceLike(value)) {
+  if (isReference(value)) {
     return value._ref
   }
   return '_id' in value ? value._id : undefined
@@ -65,13 +62,9 @@ function observePaths(
 
     const nextHeads: string[] = uniq(pathsWithMissingHeads.map((path: string[]) => path[0]))
 
-    const dataset = isReferenceLike(value) ? value._dataset : undefined
-    const projectId = isReferenceLike(value) ? value._projectId : undefined
-
-    const refApiConfig =
-      // if it's a cross dataset reference we want to use it's `_projectId` + `_dataset`
-      // attributes as api config
-      dataset && projectId ? {projectId: projectId, dataset: dataset} : apiConfig
+    const refApiConfig = isCrossDatasetReference(value)
+      ? {projectId: value._projectId, dataset: value._dataset}
+      : apiConfig
 
     return observeFields(id, nextHeads, refApiConfig).pipe(
       switchMap((snapshot) => {
@@ -82,7 +75,7 @@ function observePaths(
         return observePaths(
           {
             ...createEmpty(nextHeads),
-            ...(isReferenceLike(value) ? {...value, ...refApiConfig} : value),
+            ...(isReference(value) ? {...value, ...refApiConfig} : value),
             ...snapshot,
           } as Previewable,
           paths,

@@ -13,10 +13,9 @@ export const circularCrossDatasetReferenceTest = {
       title: 'Reference to a circularCrossDatasetReference test document in the playground dataset',
       type: 'crossDatasetReference',
       dataset: 'playground',
-      projectId: 'ppsg7ml5',
       studioUrl: ({id, type}) => {
         return type
-          ? `${document.location.protocol}//${document.location.host}/playground/desk/${type};${id}`
+          ? `${document.location.protocol}//${document.location.host}/playground/content/${type};${id}`
           : null
       },
       to: [
@@ -36,10 +35,9 @@ export const circularCrossDatasetReferenceTest = {
       title: 'Reference to a circularCrossDatasetReference test document in the playground dataset',
       type: 'crossDatasetReference',
       dataset: 'test',
-      projectId: 'ppsg7ml5',
       studioUrl: ({id, type}) => {
         return type
-          ? `${document.location.protocol}//${document.location.host}/playground/desk/${type};${id}`
+          ? `${document.location.protocol}//${document.location.host}/playground/content/${type};${id}`
           : null
       },
       to: [
@@ -59,7 +57,6 @@ export const circularCrossDatasetReferenceTest = {
       name: 'docsArticle',
       type: 'crossDatasetReference',
       dataset: 'next',
-      projectId: '3do82whm',
       studioUrl: ({id, type}) => {
         return type ? `https://admin.sanity.io/desk/docs;${type};${id}` : null
       },
