@@ -47,7 +47,6 @@ const combinePaths = flow([flatten, union, compact])
  * Create search specs from supplied searchable types.
  * Search specs contain weighted paths which are used to construct GROQ queries for search.
  *
- * @internal
  * @param types - Searchable document types to create specs from.
  * @param optimizedIndexPaths - If true, will will convert all `__experimental_search` paths containing numbers into array syntax.
  *  E.g. ['cover', 0, 'cards', 0, 'title'] => "cover[].cards[].title"
@@ -57,6 +56,7 @@ const combinePaths = flow([flatten, union, compact])
  * @param maxAttributes - Maximum number of _unique_ searchable attributes to include across all types.
  *  User-provided paths (e.g. with __experimental_search) do not count towards this limit.
  * @returns All matching search specs and `hasIndexedPaths`, a boolean indicating whether any paths contain indices.
+ * @internal
  */
 export function createSearchSpecs(
   types: SearchableType[],
@@ -162,9 +162,9 @@ function createConstraints(terms: string[], specs: SearchSpec[]) {
  *
  * Phrases wrapped in quotes are assigned relevance scoring differently from regular words.
  *
- * @internal
  * @param query - A string to convert into individual tokens
  * @returns All extracted tokens
+ * @internal
  */
 export function extractTermsFromQuery(query: string): string[] {
   const quotedQueries = [] as string[]
@@ -192,10 +192,10 @@ export function extractTermsFromQuery(query: string): string[] {
 /**
  * Generate search query data based off provided search terms and options.
  *
- * @internal
  * @param searchTerms - SearchTerms containing a string query and any number of searchable document types.
  * @param searchOpts - Optional search configuration.
  * @returns GROQ query, params and options to be used to fetch search results.
+ * @internal
  */
 export function createSearchQuery(
   searchTerms: SearchTerms,

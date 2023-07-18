@@ -7,10 +7,10 @@ type SearchScore = [number, string]
  * Calculates a score (between 0 and 1) indicating general search relevance of an array of
  * search tokens within a specific string.
  *
- * @internal
  * @param searchTerms - All search terms
  * @param value - The string to match against
  * @returns A [score, story] pair containing the search score as well as a human readable explanation
+ * @internal
  */
 export const calculateScore = (searchTerms: string[], value: string): SearchScore => {
   // Separate search terms by phrases (wrapped with quotes) and words.
@@ -31,11 +31,11 @@ const stringify = (value: unknown): string =>
  * Applies path weights from a supplied SearchSpec to existing search hits to create _weighted_ hits
  * augmented with search ranking and human readable explanations.
  *
- * @internal
  * @param searchSpec - SearchSpec containing path weighting
  * @param hits - SearchHit objects to augment
  * @param terms - All search terms
  * @returns WeightedHit array containing search scores and ranking explanations
+ * @internal
  */
 export function applyWeights(
   searchSpec: SearchSpec[],
@@ -91,10 +91,10 @@ export function applyWeights(
  * - "of london" is included in the target value, and 9 out of 22 characters match (score: 9/22 = ~0.408)
  * - non-exact matches have their score divided in half (final score: ~0.204)
  *
- * @internal
  * @param uniqueSearchPhrases - All search phrases
  * @param value - The string to match against
  * @returns SearchScore containing the search score as well as a human readable explanation
+ * @internal
  */
 export function calculatePhraseScore(uniqueSearchPhrases: string[], value: string): SearchScore {
   const sanitizedValue = value.toLowerCase().trim()
@@ -121,10 +121,10 @@ export function calculatePhraseScore(uniqueSearchPhrases: string[], value: strin
  * - "bar" is included in the target value, and 3 out of 7 non-whitespace characters match (score: 3/7)
  * - all values are accumulated and have their score devidied by half (final score: ~0.357)
  *
- * @internal
  * @param uniqueSearchTerms - A string array of search terms
  * @param value - The string to match against
  * @returns SearchScore containing the search score as well as a human readable explanation
+ * @internal
  */
 export function calculateCharacterScore(uniqueSearchTerms: string[], value: string): SearchScore {
   const sanitizedValue = value.toLowerCase().trim()
@@ -151,10 +151,10 @@ export function calculateCharacterScore(uniqueSearchTerms: string[], value: stri
  * - 4 out of 5 words match (score: 4/5 = 0.8)
  * - non-exact matches have their score divided in half (final score: 0.4)
  *
- * @internal
  * @param uniqueSearchTerms - All search terms
  * @param value - The string to match against
  * @returns SearchScore containing the search score as well as a human readable explanation
+ * @internal
  */
 export function calculateWordScore(uniqueSearchTerms: string[], value: string): SearchScore {
   const uniqueValueTerms = uniq(compact(words(toLower(value))))
@@ -170,9 +170,9 @@ export function calculateWordScore(uniqueSearchTerms: string[], value: string): 
 /**
  * Partition search terms by phrases (wrapped with quotes) and words.
  *
- * @internal
  * @param searchTerms - All search terms
  * @returns Partitioned phrases and words
+ * @internal
  */
 export function partitionAndSanitizeSearchTerms(
   searchTerms: string[]
@@ -193,10 +193,10 @@ export function partitionAndSanitizeSearchTerms(
  * Returns matching array indices of `values` containing _any_ member of `uniqueSearchTerms`.
  * When comparing for matches, members of `values` are stringified, trimmed and lowercased.
  *
- * @internal
  * @param uniqueSearchTerms - All search terms
  * @param values - Values to match against (members are stringified)
  * @returns All matching indices in `values`
+ * @internal
  */
 export function findMatchingIndices(uniqueSearchTerms: string[], values: unknown[]): number[] {
   const {phrases: uniqueSearchPhrases, words: uniqueSearchWords} = partitionAndSanitizeSearchTerms(
