@@ -13,6 +13,7 @@ function validateOptions(input, opts) {
     onProgress: noop,
     allowAssetsInDifferentDataset: false,
     replaceAssets: false,
+    skipCrossDatasetReferences: false,
   })
 
   if (!isValidInput(input)) {
@@ -56,6 +57,9 @@ function validateOptions(input, opts) {
       `Tag can only contain alphanumeric characters, underscores, dashes and dots, and be between one and 75 characters long.`
     )
   }
+
+  options.targetProjectId = clientConfig.projectId
+  options.targetDataset = clientConfig.dataset
 
   return options
 }

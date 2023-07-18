@@ -23,6 +23,9 @@ npm install -g @sanity/import-cli
     --asset-concurrency <concurrency> Number of parallel asset imports
     --replace Replace documents with the same IDs
     --missing Skip documents that already exist
+    --allow-failing-assets Skip assets that cannot be fetched/uploaded
+    --replace-assets Skip reuse of existing assets
+    --skip-cross-dataset-references Skips references to other datasets
     --help Show this help
 
   Examples

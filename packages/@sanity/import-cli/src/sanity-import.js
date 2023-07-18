@@ -29,6 +29,7 @@ const cli = meow(
     --missing Skip documents that already exist
     --allow-failing-assets Skip assets that cannot be fetched/uploaded
     --replace-assets Skip reuse of existing assets
+    --skip-cross-dataset-references Skips references to other datasets
     --help Show this help
 
   Rarely used options (should generally not be used)
@@ -88,6 +89,11 @@ const cli = meow(
         default: false,
       },
 
+      skipCrossDatasetReferences: {
+        type: 'boolean',
+        default: false,
+      },
+
       assetConcurrency: {
         type: 'number',
         alias: 'c',
@@ -97,7 +103,13 @@ const cli = meow(
 )
 
 const {flags, input, showHelp} = cli
-const {dataset, allowFailingAssets, replaceAssets, allowAssetsInDifferentDataset} = flags
+const {
+  dataset,
+  allowFailingAssets,
+  replaceAssets,
+  allowAssetsInDifferentDataset,
+  skipCrossDatasetReferences,
+} = flags
 const token = flags.token || process.env.SANITY_IMPORT_TOKEN
 const projectId = flags.project
 const assetConcurrency = flags.assetConcurrency
@@ -154,6 +166,7 @@ getStream()
       onProgress,
       allowFailingAssets,
       allowAssetsInDifferentDataset,
+      skipCrossDatasetReferences,
       assetConcurrency,
       replaceAssets,
       assetsBase: getAssetsBase(),
