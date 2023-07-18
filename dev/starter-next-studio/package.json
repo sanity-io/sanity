@@ -1,6 +1,6 @@
 {
   "name": "sanity-starter-next-studio",
-  "version": "3.14.2",
+  "version": "3.14.3",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -12,7 +12,7 @@
     "next": "^12.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "3.14.2",
+    "sanity": "3.14.3",
     "styled-components": "^5.2.0"
   }
 }

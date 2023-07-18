@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "3.14.2",
+  "version": "3.14.3",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "keywords": [
     "sanity",
@@ -61,7 +61,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@sanity/types": "3.14.2",
+    "@sanity/types": "3.14.3",
     "@types/debug": "^4.1.5",
     "@types/lodash": "^4.14.149",
     "rimraf": "^3.0.2"

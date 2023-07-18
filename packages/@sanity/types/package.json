@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.14.2",
+  "version": "3.14.3",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",

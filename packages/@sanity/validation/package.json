@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "3.14.2",
+  "version": "3.14.3",
   "description": "Validation and warning infrastructure for Sanity projects",
   "keywords": [
     "sanity",
@@ -54,14 +54,14 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/types": "3.14.2",
+    "@sanity/types": "3.14.3",
     "date-fns": "^2.26.1",
     "lodash": "^4.17.21",
     "rxjs": "^7.8.0"
   },
   "devDependencies": {
     "@sanity/client": "^6.1.5",
-    "@sanity/schema": "3.14.2"
+    "@sanity/schema": "3.14.3"
   },
   "publishConfig": {
     "access": "public"
