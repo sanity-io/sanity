@@ -785,13 +785,13 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
     prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index})
   )
   return {
-    changed: members.some((m) => m.kind === 'item' && m.item.changed), // TODO: is this correct? There could be field and fieldsets here?
+    changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed), // TODO: is this correct? There could be field and fieldsets here?
     value: props.value as T,
     readOnly,
     schemaType: props.schemaType,
     focused: isEqual(props.path, props.focusPath),
     focusPath: trimChildPath(props.path, props.focusPath),
-    path: props.path.concat([0]),
+    path: props.path,
     id: toString(props.path),
     level: props.level,
     validation,
@@ -841,7 +841,7 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
   )
 
   return {
-    changed: members.some((m) => m.kind === 'item' && m.item.changed),
+    changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
     value: props.value as T,
     readOnly,
     schemaType: props.schemaType,
