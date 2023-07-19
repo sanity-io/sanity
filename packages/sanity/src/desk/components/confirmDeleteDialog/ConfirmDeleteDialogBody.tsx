@@ -186,12 +186,12 @@ export function ConfirmDeleteDialogBody({
                 </Card>
               </CrossDatasetReferencesSummary>
 
-              <Box paddingBottom={2} paddingX={2}>
+              <Box overflow="auto" paddingBottom={2} paddingX={2}>
                 <Table>
                   <thead>
                     <tr>
                       <th>
-                        <Label muted size={0}>
+                        <Label muted size={0} style={{minWidth: '5rem'}}>
                           Project ID
                         </Label>
                       </th>

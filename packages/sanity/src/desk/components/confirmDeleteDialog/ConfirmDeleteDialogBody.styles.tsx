@@ -30,14 +30,7 @@ export const Table = styled.table`
   border-collapse: collapse;
 
   th {
-    padding: ${({theme}) => `${rem(theme.sanity.space[3])} ${rem(theme.sanity.space[1])}`};
-  }
-
-  thead > tr {
-    position: sticky;
-    top: 0;
-    background: var(--card-bg-color);
-    z-index: 1;
+    padding: ${({theme}) => rem(theme.sanity.space[1])};
   }
 
   td {
