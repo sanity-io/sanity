@@ -9,8 +9,6 @@ export const ChevronWrapper = styled(Box)`
 
 export const CrossDatasetReferencesDetails = styled.details`
   flex: none;
-  padding-left: 11px;
-  padding-right: 3px;
 
   &[open] ${ChevronWrapper} {
     transform: rotate(180deg);
@@ -26,7 +24,6 @@ export const CrossDatasetReferencesSummary = styled.summary`
 `
 
 export const TableContainer = styled(Box).attrs({paddingX: 2, paddingBottom: 2})`
-  overflow: auto;
   max-height: 150px;
 `
 
@@ -38,6 +35,7 @@ export const Table = styled.table`
 
   th {
     padding: ${({theme}) => rem(theme.sanity.space[1])};
+    padding-bottom: 15px;
   }
 
   thead > tr {
@@ -58,16 +56,6 @@ export const Table = styled.table`
 
 export const DocumentIdFlex = styled(Flex)`
   min-height: 35px;
-`
-
-export const ReferencesCard = styled(Card).attrs({
-  radius: 2,
-  shadow: 1,
-  marginBottom: 4,
-  flex: 'auto',
-})`
-  overflow: hidden;
-  overflow: clip;
 `
 
 export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
