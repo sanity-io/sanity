@@ -3,9 +3,13 @@ const {extractWithPath} = require('@sanity/mutator')
 
 module.exports = async function validateCdrDatasets(docs, options) {
   const datasets = getDatasetsFromCrossDatasetReferences(docs)
+  if (datasets.length === 0) {
+    return
+  }
+
   const {client} = options
   const existing = (await client.datasets.list()).map((dataset) => dataset.name)
-  const missing = datasets.filter((dataset) => !existing.includes(dataset.name))
+  const missing = datasets.filter((dataset) => !existing.includes(dataset))
 
   if (missing.length > 1) {
     throw new Error(
