@@ -177,6 +177,10 @@ function getMockMutationHandler(match = 'employee creation') {
       return {body: {results}}
     }
 
+    if (uri.includes('/datasets')) {
+      return {body: [{name: 'foo'}, {name: 'authors'}]}
+    }
+
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   }
 }
