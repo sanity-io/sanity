@@ -7,6 +7,7 @@ export type FieldsetDefinition = {
   name: string
   title?: string
   description?: string
+  group?: string
   hidden?: ConditionalProperty
   readOnly?: ConditionalProperty
   options?: ObjectOptions
