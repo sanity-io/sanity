@@ -6,10 +6,8 @@ import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 
 /** @internal */
-export const DialogBody = styled(Flex).attrs({
+export const DialogBody = styled(Box).attrs({
   padding: 4,
-  direction: 'column',
-  height: 'fill',
 })`
   box-sizing: border-box;
 `

@@ -14,7 +14,6 @@ import {
   OtherReferenceCount,
   CrossDatasetReferencesDetails,
   CrossDatasetReferencesSummary,
-  TableContainer,
   Table,
   ChevronWrapper,
   DocumentIdFlex,
@@ -187,7 +186,7 @@ export function ConfirmDeleteDialogBody({
                 </Card>
               </CrossDatasetReferencesSummary>
 
-              <TableContainer>
+              <Box paddingBottom={2} paddingX={2}>
                 <Table>
                   <thead>
                     <tr>
@@ -257,7 +256,7 @@ export function ConfirmDeleteDialogBody({
                 <Box padding={2}>
                   <OtherReferenceCount {...crossDatasetReferences} />
                 </Box>
-              </TableContainer>
+              </Box>
             </CrossDatasetReferencesDetails>
           )}
         </Flex>

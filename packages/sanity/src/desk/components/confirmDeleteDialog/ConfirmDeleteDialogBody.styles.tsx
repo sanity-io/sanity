@@ -23,10 +23,6 @@ export const CrossDatasetReferencesSummary = styled.summary`
   }
 `
 
-export const TableContainer = styled(Box).attrs({paddingX: 2, paddingBottom: 2})`
-  overflow-x: auto;
-`
-
 export const Table = styled.table`
   width: 100%;
   text-align: left;
@@ -34,10 +30,7 @@ export const Table = styled.table`
   border-collapse: collapse;
 
   th {
-    padding-left: ${({theme}) => rem(theme.sanity.space[1])};
-    padding-right: ${({theme}) => rem(theme.sanity.space[1])};
-    padding-bottom: ${({theme}) => rem(theme.sanity.space[3])};
-    padding-top: ${({theme}) => rem(theme.sanity.space[3])};
+    padding: ${({theme}) => `${rem(theme.sanity.space[3])} ${rem(theme.sanity.space[1])}`};
   }
 
   thead > tr {
