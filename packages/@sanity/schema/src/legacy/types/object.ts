@@ -1,5 +1,5 @@
 import {castArray, flatMap, keyBy, pick, startCase} from 'lodash'
-import type {FieldGroupDefinition, ObjectDefinition, ObjectField} from '@sanity/types'
+import type {FieldGroupDefinition, ObjectDefinition, FieldGroup, ObjectField} from '@sanity/types'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import {normalizeSearchConfigs} from '../searchConfig/normalize'
@@ -144,7 +144,7 @@ export function createFieldsets(typeDef, fields) {
     .filter(Boolean)
 }
 
-function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]) {
+function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): FieldGroup[] {
   const groupsByName: Record<string, FieldGroupDefinition & {fields: ObjectField[]}> = {}
 
   let numDefaultGroups = 0
