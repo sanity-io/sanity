@@ -1,13 +1,13 @@
 import {CogIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
 
-export default {
+export default defineType({
   name: 'fieldGroupsWithValidation',
   title: 'With validation',
   type: 'document',
   groups: [
     {
       name: 'group1',
-      title: 'Group 1',
       icon: CogIcon,
     },
     {
@@ -39,4 +39,4 @@ export default {
       ],
     },
   ],
-}
+})
