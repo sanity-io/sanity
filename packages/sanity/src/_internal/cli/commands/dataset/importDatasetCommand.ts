@@ -19,6 +19,7 @@ Options
   --replace On duplicate document IDs, replace existing document with imported document
   --allow-failing-assets Skip assets that cannot be fetched/uploaded
   --replace-assets Skip reuse of existing assets
+  --skip-cross-dataset-references Skips references to other datasets
 
 Rarely used options (should generally not be used)
   --allow-assets-in-different-dataset Allow asset documents to reference different project/dataset
@@ -45,6 +46,7 @@ interface ImportFlags {
   'allow-failing-assets'?: boolean
   'asset-concurrency'?: boolean
   'replace-assets'?: boolean
+  'skip-cross-dataset-references'?: boolean
   replace?: boolean
   missing?: boolean
 }
@@ -53,6 +55,7 @@ interface ParsedImportFlags {
   allowAssetsInDifferentDataset?: boolean
   allowFailingAssets?: boolean
   assetConcurrency?: boolean
+  skipCrossDatasetReferences?: boolean
   replaceAssets?: boolean
   replace?: boolean
   missing?: boolean
@@ -78,12 +81,14 @@ function parseFlags(rawFlags: ImportFlags): ParsedImportFlags {
   const allowFailingAssets = toBoolIfSet(rawFlags['allow-failing-assets'])
   const assetConcurrency = toBoolIfSet(rawFlags['asset-concurrency'])
   const replaceAssets = toBoolIfSet(rawFlags['replace-assets'])
+  const skipCrossDatasetReferences = toBoolIfSet(rawFlags['skip-cross-dataset-references'])
   const replace = toBoolIfSet(rawFlags.replace)
   const missing = toBoolIfSet(rawFlags.missing)
   return {
     allowAssetsInDifferentDataset,
     allowFailingAssets,
     assetConcurrency,
+    skipCrossDatasetReferences,
     replaceAssets,
     replace,
     missing,
