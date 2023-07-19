@@ -1,4 +1,5 @@
 import {castArray, flatMap, keyBy, pick, startCase} from 'lodash'
+import type {FieldGroupDefinition, ObjectDefinition, ObjectField} from '@sanity/types'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import {normalizeSearchConfigs} from '../searchConfig/normalize'
@@ -143,55 +144,50 @@ export function createFieldsets(typeDef, fields) {
     .filter(Boolean)
 }
 
-function createFieldsGroups(typeDef, fields) {
-  const groupsDef = typeDef.groups || []
-  const groups = groupsDef.map((group) => {
-    const {name, title, description, icon, readOnly, hidden} = group
-    return {
-      name,
-      title,
-      description,
-      icon,
-      readOnly,
-      default: group.default,
-      hidden,
-      fields: [],
+function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]) {
+  const groupsByName: Record<string, FieldGroupDefinition & {fields: ObjectField[]}> = {}
+
+  let numDefaultGroups = 0
+  for (const group of typeDef.groups || []) {
+    if (groupsByName[group.name]) {
+      throw new Error(
+        `Duplicate group name "${group.name}" found for type '${
+          typeDef.title ? typeDef.title : startCase(typeDef.name)
+        }'`
+      )
     }
-  })
 
-  const defaultGroups = groups.filter((group) => group.default)
+    groupsByName[group.name] = {title: startCase(group.name), ...group, fields: []}
 
-  if (defaultGroups.length > 1) {
-    // Throw if you have multiple default field groups defined
-    throw new Error(
-      `You currently have ${defaultGroups.length} default field groups defined for type '${
-        typeDef.name ? startCase(typeDef.name) : typeDef.title ?? ``
-      }', but only 1 is supported`
-    )
+    if (group.default && ++numDefaultGroups > 1) {
+      // Throw if you have multiple default field groups defined
+      throw new Error(
+        `More than one field group defined as default for type '${
+          typeDef.title ? typeDef.title : startCase(typeDef.name)
+        }' - only 1 is supported`
+      )
+    }
   }
 
-  const groupsByName = keyBy(groups, 'name')
-
   fields.forEach((field) => {
-    if (field.group) {
-      const fieldGroupNames = castArray(field.group)
-
-      if (fieldGroupNames.length > 0) {
-        fieldGroupNames.forEach((fieldGroupName) => {
-          const currentGroup = groupsByName[fieldGroupName]
-
-          if (!currentGroup) {
-            throw new Error(
-              `Field group '${fieldGroupName}' is not defined in schema for type '${
-                typeDef.name ?? typeDef.title ?? ``
-              }'`
-            )
-          }
-
-          currentGroup.fields.push(field)
-        })
-      }
+    const fieldGroupNames = castArray(field.group || [])
+    if (fieldGroupNames.length === 0) {
+      return
     }
+
+    fieldGroupNames.forEach((fieldGroupName) => {
+      const currentGroup = groupsByName[fieldGroupName]
+
+      if (!currentGroup) {
+        throw new Error(
+          `Field group '${fieldGroupName}' is not defined in schema for type '${
+            typeDef.title ? typeDef.name : startCase(typeDef.name)
+          }'`
+        )
+      }
+
+      currentGroup.fields.push(field)
+    })
   })
 
   return flatMap(groupsByName).filter((group) => group.fields.length > 0)
