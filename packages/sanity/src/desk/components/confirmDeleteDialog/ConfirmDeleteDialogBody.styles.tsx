@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {rem, Flex, Text, Card, Box, Tooltip, Container, Inline} from '@sanity/ui'
+import {rem, Flex, Text, Box, Tooltip, Container, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'
 
 export const ChevronWrapper = styled(Box)`
@@ -24,7 +24,7 @@ export const CrossDatasetReferencesSummary = styled.summary`
 `
 
 export const TableContainer = styled(Box).attrs({paddingX: 2, paddingBottom: 2})`
-  max-height: 150px;
+  overflow-x: auto;
 `
 
 export const Table = styled.table`
@@ -34,8 +34,10 @@ export const Table = styled.table`
   border-collapse: collapse;
 
   th {
-    padding: ${({theme}) => rem(theme.sanity.space[1])};
-    padding-bottom: 15px;
+    padding-left: ${({theme}) => rem(theme.sanity.space[1])};
+    padding-right: ${({theme}) => rem(theme.sanity.space[1])};
+    padding-bottom: ${({theme}) => rem(theme.sanity.space[3])};
+    padding-top: ${({theme}) => rem(theme.sanity.space[3])};
   }
 
   thead > tr {

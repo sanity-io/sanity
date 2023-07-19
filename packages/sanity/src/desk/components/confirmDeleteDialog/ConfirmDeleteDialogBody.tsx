@@ -102,7 +102,7 @@ export function ConfirmDeleteDialogBody({
   }
 
   return (
-    <>
+    <Card>
       <Card padding={3} radius={2} tone="caution" marginBottom={4} flex="none">
         <Flex>
           <Text aria-hidden="true" size={1}>
@@ -129,7 +129,7 @@ export function ConfirmDeleteDialogBody({
         </Text>
       </Box>
 
-      <Card radius={2} shadow={1} marginBottom={4} flex="auto" overflow="auto">
+      <Card radius={2} shadow={1} marginBottom={4} flex="auto">
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
             <Stack as="ul" padding={2} space={3} data-testid="internal-references">
@@ -159,9 +159,9 @@ export function ConfirmDeleteDialogBody({
               }}
             >
               <CrossDatasetReferencesSummary>
-                <Card as="a" paddingY={1} margin={2}>
-                  <Flex align="center" margin={3}>
-                    <Box marginLeft={2} marginRight={4}>
+                <Card as="a" margin={2} radius={2} shadow={1} paddingY={1}>
+                  <Flex align="center" margin={2}>
+                    <Box marginLeft={3} marginRight={4}>
                       <Text size={3}>
                         <DocumentsIcon />
                       </Text>
@@ -269,6 +269,6 @@ export function ConfirmDeleteDialogBody({
           it.
         </Text>
       </Box>
-    </>
+    </Card>
   )
 }
