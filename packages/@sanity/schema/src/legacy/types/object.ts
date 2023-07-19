@@ -1,5 +1,12 @@
-import {castArray, flatMap, keyBy, pick, startCase} from 'lodash'
-import type {FieldGroupDefinition, ObjectDefinition, FieldGroup, ObjectField} from '@sanity/types'
+import {castArray, flatMap, pick, startCase} from 'lodash'
+import type {
+  FieldGroup,
+  FieldGroupDefinition,
+  Fieldset,
+  FieldsetDefinition,
+  ObjectDefinition,
+  ObjectField,
+} from '@sanity/types'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import {normalizeSearchConfigs} from '../searchConfig/normalize'
@@ -108,40 +115,43 @@ export const ObjectType = {
   },
 }
 
-export function createFieldsets(typeDef, fields) {
-  const fieldsetsDef = typeDef.fieldsets || []
-  const fieldsets = fieldsetsDef.map((fieldset) => {
-    const {name, title, description, options, group, hidden, readOnly} = fieldset
-    return {
-      name,
-      title,
-      description,
-      options,
-      group,
-      fields: [],
-      hidden,
-      readOnly,
+export function createFieldsets(typeDef: ObjectDefinition, fields: ObjectField[]): Fieldset[] {
+  const fieldsetsByName: Record<string, FieldsetDefinition & {fields: ObjectField[]}> = {}
+
+  for (const fieldset of typeDef.fieldsets || []) {
+    if (fieldsetsByName[fieldset.name]) {
+      throw new Error(
+        `Duplicate fieldset name "${fieldset.name}" found for type '${
+          typeDef.title ? typeDef.title : startCase(typeDef.name)
+        }'`
+      )
     }
-  })
 
-  const fieldsetsByName = keyBy(fieldsets, 'name')
+    fieldsetsByName[fieldset.name] = {title: startCase(fieldset.name), ...fieldset, fields: []}
+  }
 
-  return fields
-    .map((field) => {
-      if (field.fieldset) {
-        const fieldset = fieldsetsByName[field.fieldset]
-        if (!fieldset) {
-          throw new Error(
-            `Fieldset '${field.fieldset}' is not defined in schema for type '${typeDef.name}'`
-          )
-        }
-        fieldset.fields.push(field)
-        // Return the fieldset if its the first time we encounter a field in this fieldset
-        return fieldset.fields.length === 1 ? fieldset : null
-      }
-      return {single: true, field}
-    })
-    .filter(Boolean)
+  const fieldsets = new Set<Fieldset>()
+
+  for (const field of fields) {
+    if (!field.fieldset) {
+      fieldsets.add({single: true, field})
+      continue
+    }
+
+    const fieldset = fieldsetsByName[field.fieldset]
+    if (!fieldset) {
+      throw new Error(
+        `Fieldset '${field.fieldset}' is not defined in schema for type '${typeDef.name}'`
+      )
+    }
+
+    fieldset.fields.push(field)
+
+    // The Set will prevent duplicates
+    fieldsets.add(fieldset)
+  }
+
+  return Array.from(fieldsets)
 }
 
 function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): FieldGroup[] {
