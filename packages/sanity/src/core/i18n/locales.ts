@@ -1,5 +1,4 @@
 import {defineLocale} from './defineHelpers'
-import {USFlagIcon} from './icons/USFlagIcon'
 import {studioDefaultLocaleResources} from './bundles/studio'
 
 /**
@@ -10,7 +9,6 @@ import {studioDefaultLocaleResources} from './bundles/studio'
 export const usEnglishLocale = defineLocale({
   id: 'en-US',
   title: 'English (US)',
-  icon: USFlagIcon,
   bundles: [studioDefaultLocaleResources],
 })
 
