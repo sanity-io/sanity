@@ -1,10 +1,10 @@
-import {Validators, isReference} from '@sanity/types'
-import genericValidator from './genericValidator'
+import {type Validators, isReference} from '@sanity/types'
+import {genericValidators} from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']
 
-const objectValidators: Validators = {
-  ...genericValidator,
+export const objectValidators: Validators = {
+  ...genericValidators,
 
   presence: (expected, value, message) => {
     if (expected !== 'required') {
@@ -60,5 +60,3 @@ const objectValidators: Validators = {
     return true
   },
 }
-
-export default objectValidators

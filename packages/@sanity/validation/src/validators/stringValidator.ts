@@ -1,13 +1,13 @@
-import {Validators} from '@sanity/types'
-import genericValidator from './genericValidator'
+import type {Validators} from '@sanity/types'
+import {genericValidators} from './genericValidator'
 
 const DUMMY_ORIGIN = 'http://sanity'
+const isRelativeUrl = (url: string) => /^\.*\//.test(url)
 const emailRegex =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-const isRelativeUrl = (url: string) => /^\.*\//.test(url)
 
-const stringValidators: Validators = {
-  ...genericValidator,
+export const stringValidators: Validators = {
+  ...genericValidators,
 
   min: (minLength, value, message) => {
     if (!value || value.length >= minLength) {
@@ -116,5 +116,3 @@ const stringValidators: Validators = {
     return message || 'Must be a valid email address'
   },
 }
-
-export default stringValidators

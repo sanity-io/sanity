@@ -8,7 +8,7 @@
 // works when type predicate is called inline in the condition that starts the
 // control flow branch.
 // see here: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
-export default function deepEquals(a: unknown, b: unknown): boolean {
+export function deepEquals(a: unknown, b: unknown): boolean {
   if (a === b) {
     return true
   }

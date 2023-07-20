@@ -1,5 +1,19 @@
-import {Schema, SchemaType} from '@sanity/types'
-import normalizeValidationRules from './util/normalizeValidationRules'
+import type {Schema, SchemaType} from '@sanity/types'
+import {normalizeValidationRules} from './util/normalizeValidationRules'
+
+// NOTE: this overload is for TS API compatibility with a previous implementation
+export function inferFromSchemaType(
+  typeDef: SchemaType,
+  // these are intentionally unused
+  _schema: Schema,
+  _visited?: Set<SchemaType>
+): SchemaType
+// note: this seemingly redundant overload is required
+export function inferFromSchemaType(typeDef: SchemaType): SchemaType
+export function inferFromSchemaType(typeDef: SchemaType): SchemaType {
+  traverse(typeDef, new Set())
+  return typeDef
+}
 
 function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
   if (visited.has(typeDef)) {
@@ -32,19 +46,3 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
     }
   }
 }
-
-// NOTE: this overload is for TS API compatibility with a previous implementation
-function inferFromSchemaType(
-  typeDef: SchemaType,
-  // these are intentionally unused
-  _schema: Schema,
-  _visited?: Set<SchemaType>
-): SchemaType
-// note: this seemingly redundant overload is required
-function inferFromSchemaType(typeDef: SchemaType): SchemaType
-function inferFromSchemaType(typeDef: SchemaType): SchemaType {
-  traverse(typeDef, new Set())
-  return typeDef
-}
-
-export default inferFromSchemaType

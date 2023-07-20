@@ -1,4 +1,4 @@
-import typeString from './typeString'
+import {typeString} from './typeString'
 
 describe('typeString', () => {
   it('returns the a type string of built in types', () => {

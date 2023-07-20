@@ -1,22 +1,19 @@
 import {
-  SanityDocument,
-  Schema,
-  SchemaType,
-  ValidationContext,
-  ValidationMarker,
   isKeyedObject,
   isTypedObject,
-  isBlockSchemaType,
-  isSpanSchemaType,
-  isPortableTextTextBlock,
+  type SanityDocument,
+  type Schema,
+  type SchemaType,
+  type ValidationContext,
+  type ValidationMarker,
 } from '@sanity/types'
 import {concat, defer, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, toArray} from 'rxjs/operators'
 import {flatten, uniqBy} from 'lodash'
-import typeString from './util/typeString'
+import {typeString} from './util/typeString'
 import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
-import ValidationErrorClass from './ValidationError'
-import normalizeValidationRules from './util/normalizeValidationRules'
+import {ValidationError as ValidationErrorClass} from './ValidationError'
+import {normalizeValidationRules} from './util/normalizeValidationRules'
 
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
@@ -50,7 +47,17 @@ export function resolveTypeForArrayItem(
 }
 const EMPTY_MARKERS: ValidationMarker[] = []
 
-export default async function validateDocument(
+/**
+ * Validates a document against the given schema
+ *
+ * @param getClient - Function that returns a Sanity client, based on a passed configuration
+ * @param doc - Document to validate
+ * @param schema - Schema to validate against
+ * @param context - Context to use for validation
+ * @returns A promise that resolves to an array of validation markers
+ * @beta
+ */
+export function validateDocument(
   getClient: ValidateItemOptions['getClient'],
   doc: SanityDocument,
   schema: Schema,
@@ -59,6 +66,16 @@ export default async function validateDocument(
   return lastValueFrom(validateDocumentObservable(getClient, doc, schema, context))
 }
 
+/**
+ * Validates a document against the given schema, returning an Observable
+ *
+ * @param getClient - Function that returns a Sanity client, based on a passed configuration
+ * @param doc - Document to validate
+ * @param schema - Schema to validate against
+ * @param context - Context to use for validation
+ * @returns An Observable that produces an array of validation markers
+ * @beta
+ */
 export function validateDocumentObservable(
   getClient: ValidateItemOptions['getClient'],
   doc: SanityDocument,

@@ -11,7 +11,7 @@ function isBuiltIn(_constructor: unknown) {
   return false
 }
 
-export default function typeString(obj: unknown): string {
+export function typeString(obj: unknown): string {
   // [object Blah] -> Blah
   const stringType = _toString.call(obj).slice(8, -1)
   if (obj === null || obj === undefined) return stringType.toLowerCase()

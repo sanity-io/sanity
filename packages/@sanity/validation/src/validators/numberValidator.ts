@@ -1,10 +1,10 @@
 import {Validators} from '@sanity/types'
-import genericValidator from './genericValidator'
+import {genericValidators} from './genericValidator'
 
 const precisionRx = /(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/
 
-const numberValidators: Validators = {
-  ...genericValidator,
+export const numberValidators: Validators = {
+  ...genericValidators,
 
   integer: (_unused, value, message) => {
     if (!Number.isInteger(value)) {
@@ -62,5 +62,3 @@ const numberValidators: Validators = {
     return message || `Must be less than ${maxNum}`
   },
 }
-
-export default numberValidators

@@ -1,8 +1,8 @@
-import {Validators} from '@sanity/types'
-import genericValidator from './genericValidator'
+import type {Validators} from '@sanity/types'
+import {genericValidators} from './genericValidator'
 
-const booleanValidators: Validators = {
-  ...genericValidator,
+export const booleanValidators: Validators = {
+  ...genericValidators,
 
   presence: (flag, value, message) => {
     if (flag === 'required' && typeof value !== 'boolean') {
@@ -12,5 +12,3 @@ const booleanValidators: Validators = {
     return true
   },
 }
-
-export default booleanValidators
