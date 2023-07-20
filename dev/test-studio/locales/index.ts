@@ -4,7 +4,7 @@ export const testStudioLocaleNamespace = 'testStudio' as const
 
 const enUSStrings = {
   'studio.logo.title': 'English logo',
-  'structure.root.title': 'Content',
+  'structure.root.title': 'Content 🇺🇸',
 }
 
 const enUS = defineLocaleResourceBundle({
@@ -18,7 +18,7 @@ const noNB = defineLocaleResourceBundle({
   namespace: testStudioLocaleNamespace,
   resources: {
     'studio.logo.title': 'Norsk logo',
-    'structure.root.title': 'Innhold',
+    'structure.root.title': 'Innhold 🇳🇴',
   },
 })
 
