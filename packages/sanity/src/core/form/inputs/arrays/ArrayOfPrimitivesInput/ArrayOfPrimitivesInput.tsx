@@ -8,6 +8,7 @@ import {ArrayOfPrimitivesItem} from '../../../members'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {UploadTargetCard} from '../common/UploadTargetCard'
 import {ChangeIndicator} from '../../../../changeIndicators'
+import {ArrayOfPrimitivesItemMember, ArrayOfPrimitivesMember} from '../../../store/types/members'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
@@ -197,7 +198,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
                     return (
                       <ChangeIndicator
                         key={member.key}
-                        path={path}
+                        path={member.kind === 'item' ? member.item.path : path}
                         isChanged={changed}
                         hasFocus={false}
                       >

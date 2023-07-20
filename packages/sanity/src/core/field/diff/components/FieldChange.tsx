@@ -69,13 +69,22 @@ export function FieldChange(
 
   useClickOutside(handleClickOutside, [revertButtonElement])
 
+  const isArray = change.parentSchema?.jsonType === 'array'
+
+  /* this condition is required in order to avoid situations where an array change has happened
+   * but not necessarily an array item change. E.g. when adding one new item to an array, the changes pane
+   * would be able to identify that a new item was addded but not what array it belonged to (because the change path
+   * is only related to the item itself, not the array)
+   */
+  const fieldPath = isArray ? change.path.slice(0, -1) : change.path
+
   const content = useMemo(
     () =>
       hidden ? null : (
         <Stack space={1} as={FieldChangeContainer}>
           {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
 
-          <FieldWrapper path={change.path} hasHover={revertHovered}>
+          <FieldWrapper path={fieldPath} hasHover={revertHovered}>
             <DiffInspectWrapper
               change={change}
               as={DiffBorder}
@@ -148,6 +157,7 @@ export function FieldChange(
       isPermissionsLoading,
       permissions,
       revertHovered,
+      fieldPath,
     ]
   )
 
