@@ -154,7 +154,7 @@ export interface LocaleSource {
   /**
    * Array of locale definitions
    */
-  locales: LocaleDefinition[]
+  locales: Pick<LocaleDefinition, 'id' | 'title'>[]
 
   /**
    * Translation function, eg `t('some.key') => 'Some string'`
