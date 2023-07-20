@@ -412,6 +412,9 @@ function resolveSource({
           // then keep everything
           if (!schemaTypeName) return true
 
+          // If we are in a 'document' creationContext then keep everything
+          if (creationContext.type === 'document') return true
+
           // else only keep the `schemaType`s that match the creationContext
           return schemaTypeName === templateMap.get(item.templateId)?.schemaType
         })
