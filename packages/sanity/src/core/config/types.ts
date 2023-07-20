@@ -219,6 +219,10 @@ export interface ConfigContext {
    * A function that returns a Sanity client with the {@link SourceClientOptions | specified options}.
    */
   getClient: (options: SourceClientOptions) => SanityClient
+  /**
+   * Localization resources
+   */
+  i18n: LocaleSource
 }
 
 /** @public */
@@ -234,7 +238,7 @@ export interface SchemaPluginOptions {
     | SchemaTypeDefinition[]
     | ComposableOption<
         SchemaTypeDefinition[],
-        Omit<ConfigContext, 'schema' | 'currentUser' | 'getClient' | 'client'>
+        Omit<ConfigContext, 'schema' | 'currentUser' | 'getClient' | 'client' | 'i18n'>
       >
   templates?: Template[] | TemplateResolver
 }
