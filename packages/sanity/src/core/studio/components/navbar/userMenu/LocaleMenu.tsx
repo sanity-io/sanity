@@ -1,12 +1,9 @@
 import {Box, Label, MenuDivider, MenuItem} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {useSource} from '../../../source'
 import {useLocale, type LocaleDefinition} from '../../../../i18n'
 
 export function LocaleMenu() {
-  const {changeLocale, currentLocale} = useLocale()
-  const {i18n} = useSource()
-  const locales = i18n.locales
+  const {changeLocale, currentLocale, locales} = useLocale()
   if (!locales || locales.length < 2) {
     return null
   }
