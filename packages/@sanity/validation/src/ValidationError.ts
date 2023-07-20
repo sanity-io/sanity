@@ -1,4 +1,4 @@
-import {
+import type {
   Path,
   ValidationMarker,
   ValidationError as IValidationError,
@@ -7,7 +7,9 @@ import {
 } from '@sanity/types'
 
 // Follows the same pattern as Rule and RuleClass. @see Rule
-const ValidationError: ValidationErrorClass = class ValidationError implements IValidationError {
+export const ValidationError: ValidationErrorClass = class ValidationError
+  implements IValidationError
+{
   message: string
   paths: Path[]
   children: ValidationMarker[] | undefined
@@ -28,5 +30,3 @@ const ValidationError: ValidationErrorClass = class ValidationError implements I
     })
   }
 }
-
-export default ValidationError

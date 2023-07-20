@@ -1,6 +1,6 @@
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {validateSchema, groupProblems} from '@sanity/schema/_internal'
-import {Schema} from '@sanity/types'
+import type {Schema} from '@sanity/types'
 
 export function createSchema(schemaDef: {name?: string; types: any[]}): Schema {
   const validated = validateSchema(schemaDef.types).getTypes()

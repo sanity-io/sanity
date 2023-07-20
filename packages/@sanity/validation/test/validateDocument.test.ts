@@ -1,4 +1,4 @@
-import {
+import type {
   ArraySchemaType,
   PortableTextTextBlock,
   Rule,
@@ -7,15 +7,15 @@ import {
   SchemaType,
   ValidationContext,
 } from '@sanity/types'
-import {createSchema} from '../test/createSchema'
 import {createMockSanityClient} from '../test/mocks/mockSanityClient'
-import validateDocument, {resolveTypeForArrayItem, validateItem} from './validateDocument'
-import {convertToValidationMarker} from './util/convertToValidationMarker'
+import {validateDocument, resolveTypeForArrayItem, validateItem} from '../src/validateDocument'
+import {convertToValidationMarker} from '../src/util/convertToValidationMarker'
+import {createSchema} from './helpers/createSchema'
 
-jest.mock('./util/convertToValidationMarker', () => {
+jest.mock('../src/util/convertToValidationMarker', () => {
   return {
     convertToValidationMarker: jest.fn(
-      jest.requireActual('./util/convertToValidationMarker').convertToValidationMarker
+      jest.requireActual('../src/util/convertToValidationMarker').convertToValidationMarker
     ),
   }
 })

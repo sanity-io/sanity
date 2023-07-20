@@ -1,8 +1,8 @@
 import {Validators} from '@sanity/types'
 import formatDate from 'date-fns/format'
-import genericValidator from './genericValidator'
+import {genericValidators} from './genericValidator'
 
-export function isRecord(obj: unknown): obj is Record<string, unknown> {
+function isRecord(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === 'object' && obj !== null && !Array.isArray(obj)
 }
 
@@ -53,8 +53,8 @@ function parseDate(date: unknown, throwOnError = false): Date | null {
   return isInvalid ? null : parsed
 }
 
-const dateValidators: Validators = {
-  ...genericValidator,
+export const dateValidators: Validators = {
+  ...genericValidators,
 
   type: (_unused, value, message) => {
     const strVal = `${value}`
@@ -109,5 +109,3 @@ const dateValidators: Validators = {
     return message || `Must be at or before ${date}`
   },
 }
-
-export default dateValidators

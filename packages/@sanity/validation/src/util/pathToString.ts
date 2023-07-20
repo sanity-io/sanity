@@ -1,6 +1,6 @@
-import {Path, isKeyedObject} from '@sanity/types'
+import {type Path, isKeyedObject} from '@sanity/types'
 
-export default function pathToString(path: Path | undefined = []): string {
+export function pathToString(path: Path | undefined = []): string {
   return path.reduce<string>((target, segment, i) => {
     const segmentType = typeof segment
     if (segmentType === 'number') {

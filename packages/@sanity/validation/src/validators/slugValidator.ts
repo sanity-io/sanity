@@ -1,14 +1,13 @@
-import {
-  SlugIsUniqueValidator,
-  Path,
-  CustomValidator,
-  isKeyedObject,
-  SlugValidationContext,
-  SlugParent,
-  SlugSchemaType,
-} from '@sanity/types'
 import {memoize} from 'lodash'
-// import getClient from '../getClient'
+import {
+  type CustomValidator,
+  isKeyedObject,
+  type Path,
+  type SlugIsUniqueValidator,
+  type SlugParent,
+  type SlugSchemaType,
+  type SlugValidationContext,
+} from '@sanity/types'
 
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 

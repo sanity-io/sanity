@@ -1,5 +1,5 @@
-import {SchemaType, Rule, RuleTypeConstraint} from '@sanity/types'
-import RuleClass from '../Rule'
+import type {SchemaType, Rule, RuleTypeConstraint} from '@sanity/types'
+import {Rule as RuleClass} from '../Rule'
 import {slugValidator} from '../validators/slugValidator'
 
 const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
@@ -78,7 +78,7 @@ function extractValueFromListOption(option: unknown, typeDef: SchemaType): unkno
 /**
  * Takes in `SchemaValidationValue` and returns an array of `Rule` instances.
  */
-export default function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[] {
+export function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[] {
   if (!typeDef) {
     return []
   }

@@ -1,36 +1,36 @@
-import {
-  SchemaType,
+import type {
+  CustomValidator,
+  FieldRules,
   Rule as IRule,
   RuleClass,
-  CustomValidator,
-  RuleSpecConstraint,
-  FieldRules,
-  ValidationContext,
   RuleSpec,
-  ValidationMarker,
+  RuleSpecConstraint,
   RuleTypeConstraint,
+  SchemaType,
+  ValidationContext,
+  ValidationMarker,
   Validator,
 } from '@sanity/types'
 import {cloneDeep, get} from 'lodash'
-import ValidationErrorClass from './ValidationError'
-import escapeRegex from './util/escapeRegex'
+import {ValidationError as ValidationErrorClass} from './ValidationError'
+import {escapeRegex} from './util/escapeRegex'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
-import pathToString from './util/pathToString'
-import genericValidator from './validators/genericValidator'
-import booleanValidator from './validators/booleanValidator'
-import numberValidator from './validators/numberValidator'
-import stringValidator from './validators/stringValidator'
-import arrayValidator from './validators/arrayValidator'
-import objectValidator from './validators/objectValidator'
-import dateValidator from './validators/dateValidator'
+import {pathToString} from './util/pathToString'
+import {genericValidators} from './validators/genericValidator'
+import {booleanValidators} from './validators/booleanValidator'
+import {numberValidators} from './validators/numberValidator'
+import {stringValidators} from './validators/stringValidator'
+import {arrayValidators} from './validators/arrayValidator'
+import {objectValidators} from './validators/objectValidator'
+import {dateValidators} from './validators/dateValidator'
 
 const typeValidators = {
-  Boolean: booleanValidator,
-  Number: numberValidator,
-  String: stringValidator,
-  Array: arrayValidator,
-  Object: objectValidator,
-  Date: dateValidator,
+  Boolean: booleanValidators,
+  Number: numberValidators,
+  String: stringValidators,
+  Array: arrayValidators,
+  Object: objectValidators,
+  Date: dateValidators,
 }
 
 const getBaseType = (type: SchemaType | undefined): SchemaType | undefined => {
@@ -68,7 +68,7 @@ const ruleConstraintTypes: RuleTypeConstraint[] = [
 // This package exports the RuleClass as a value without implicitly exporting
 // an instance definition. This should help reminder downstream users to import
 // from the `@sanity/types` package.
-const Rule: RuleClass = class Rule implements IRule {
+export const Rule: RuleClass = class Rule implements IRule {
   static readonly FIELD_REF = FIELD_REF
   static array = (def?: SchemaType): Rule => new Rule(def).type('Array')
   static object = (def?: SchemaType): Rule => new Rule(def).type('Object')
@@ -382,7 +382,7 @@ const Rule: RuleClass = class Rule implements IRule {
         ? this._rules.filter((curr) => curr.flag === 'custom')
         : this._rules
 
-    const validators = (this._type && typeValidators[this._type]) || genericValidator
+    const validators = (this._type && typeValidators[this._type]) || genericValidators
 
     const results = await Promise.all(
       rules.map(async (curr) => {
@@ -420,5 +420,3 @@ const Rule: RuleClass = class Rule implements IRule {
     return results.flat()
   }
 }
-
-export default Rule

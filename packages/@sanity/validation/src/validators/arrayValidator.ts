@@ -1,10 +1,10 @@
-import {Path, PathSegment, Validators} from '@sanity/types'
-import deepEquals from '../util/deepEquals'
-import ValidationErrorClass from '../ValidationError'
-import genericValidator from './genericValidator'
+import type {Path, PathSegment, Validators} from '@sanity/types'
+import {deepEquals} from '../util/deepEquals'
+import {ValidationError as ValidationErrorClass} from '../ValidationError'
+import {genericValidators} from './genericValidator'
 
-const arrayValidators: Validators = {
-  ...genericValidator,
+export const arrayValidators: Validators = {
+  ...genericValidators,
 
   min: (minLength, value, message) => {
     if (!value || value.length >= minLength) {
@@ -96,5 +96,3 @@ const arrayValidators: Validators = {
       : true
   },
 }
-
-export default arrayValidators

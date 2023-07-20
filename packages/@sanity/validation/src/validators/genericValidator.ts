@@ -1,8 +1,8 @@
-import {ValidationMarker, Validators} from '@sanity/types'
-import typeString from '../util/typeString'
-import deepEquals from '../util/deepEquals'
-import pathToString from '../util/pathToString'
-import ValidationErrorClass from '../ValidationError'
+import type {ValidationMarker, Validators} from '@sanity/types'
+import {typeString} from '../util/typeString'
+import {deepEquals} from '../util/deepEquals'
+import {pathToString} from '../util/pathToString'
+import {ValidationError as ValidationErrorClass} from '../ValidationError'
 
 const SLOW_VALIDATOR_TIMEOUT = 5000
 
@@ -29,7 +29,7 @@ const formatValidationErrors = (options: {
   })
 }
 
-const genericValidators: Validators = {
+export const genericValidators: Validators = {
   type: (expected, value, message) => {
     const actualType = typeString(value)
     if (actualType !== expected && actualType !== 'undefined') {
@@ -113,5 +113,3 @@ const genericValidators: Validators = {
     return result
   },
 }
-
-export default genericValidators

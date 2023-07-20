@@ -1,6 +1,6 @@
-import {ValidationMarker, ValidationError, ValidationContext} from '@sanity/types'
-import ValidationErrorClass from '../ValidationError'
-import pathToString from '../util/pathToString'
+import type {ValidationMarker, ValidationError, ValidationContext} from '@sanity/types'
+import {ValidationError as ValidationErrorClass} from '../ValidationError'
+import {pathToString} from '../util/pathToString'
 
 type ValidationErrorLike = Pick<ValidationError, 'message'> & Partial<ValidationError>
 

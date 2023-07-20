@@ -1,8 +1,8 @@
-import {Schema} from '@sanity/types'
-import inferFromSchemaType from './inferFromSchemaType'
+import type {Schema} from '@sanity/types'
+import {inferFromSchemaType} from './inferFromSchemaType'
 
 // Note: Mutates schema. Refactor when @sanity/schema supports middlewares
-function inferFromSchema(schema: Schema): Schema {
+export function inferFromSchema(schema: Schema): Schema {
   const typeNames = schema.getTypeNames()
 
   typeNames.forEach((typeName) => {
@@ -15,5 +15,3 @@ function inferFromSchema(schema: Schema): Schema {
 
   return schema
 }
-
-export default inferFromSchema
