@@ -138,7 +138,7 @@ export interface LocaleDefinition {
   // @todo allow fallback locales? eg [no-nn, no-nb, en]
 }
 
-/** @internal */
+/** @public */
 export interface LocaleSource {
   /**
    * Current locale ID (eg `en-US`, `nb-NO`, `th-TH`…)
