@@ -785,7 +785,8 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
     prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index})
   )
   return {
-    changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed), // TODO: is this correct? There could be field and fieldsets here?
+    // checks for changes not only on the array itself, but also on any of its items
+    changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
     value: props.value as T,
     readOnly,
     schemaType: props.schemaType,
@@ -841,6 +842,7 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
   )
 
   return {
+    // checks for changes not only on the array itself, but also on any of its items
     changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
     value: props.value as T,
     readOnly,
