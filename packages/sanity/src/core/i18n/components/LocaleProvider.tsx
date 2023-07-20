@@ -14,19 +14,21 @@ export function LocaleProvider(props: PropsWithChildren<{}>) {
   const {
     projectId,
     name: sourceId,
+    i18n: {locales},
     __internal: {i18next},
   } = useSource()
 
   const currentLocale = useCurrentLocale()
   const context = useMemo<LocaleContextValue>(
     () => ({
+      locales,
       currentLocale,
       changeLocale: async (newLocale: string) => {
         storePreferredLocale(projectId, sourceId, newLocale)
         await i18next.changeLanguage(newLocale)
       },
     }),
-    [i18next, currentLocale, projectId, sourceId]
+    [currentLocale, i18next, locales, projectId, sourceId]
   )
 
   return (
