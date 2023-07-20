@@ -9,6 +9,7 @@ export const LocaleContext = createContext<LocaleContextValue | undefined>(undef
  * @internal
  */
 export interface LocaleContextValue {
+  locales: {id: string; title: string}[]
   currentLocale: string
   changeLocale: (newLocale: string) => Promise<void>
 }
