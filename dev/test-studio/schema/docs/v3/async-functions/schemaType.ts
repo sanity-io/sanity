@@ -35,6 +35,12 @@ export const validationTest = defineType({
       },
     }),
     {
+      name: 'switchTestValidation',
+      type: 'boolean',
+      title: `I'm a switch with a validation`,
+      validation: (Rule) => Rule.required(),
+    },
+    {
       type: 'array',
       name: 'testArray',
       title: 'Test array',

@@ -19,7 +19,7 @@ const ZeroLineHeightBox = styled(Box)`
  * @beta
  */
 export function BooleanInput(props: BooleanInputProps) {
-  const {id, value, schemaType, readOnly, elementProps} = props
+  const {id, value, schemaType, readOnly, elementProps, validation} = props
   const layout = schemaType.options?.layout || 'switch'
 
   const indeterminate = typeof value !== 'boolean'
@@ -46,7 +46,7 @@ export function BooleanInput(props: BooleanInputProps) {
           <FormFieldHeaderText
             description={schemaType.description}
             inputId={id}
-            // validation={validation}
+            validation={validation}
             title={schemaType.title}
           />
         </Box>
