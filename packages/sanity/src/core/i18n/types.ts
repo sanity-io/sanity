@@ -162,4 +162,6 @@ export interface LocaleSource {
   t: TFunction
 }
 
+export type {TFunction}
+
 export type {StudioLocaleResourceKeys} from './bundles/studio'
