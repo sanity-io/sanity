@@ -2,6 +2,7 @@ import {
   calculatePhraseScore,
   calculateWordScore,
   partitionAndSanitizeSearchTerms,
+  calculateCharacterScore,
 } from './applyWeights'
 
 describe('calculatePhraseScore', () => {
@@ -11,7 +12,11 @@ describe('calculatePhraseScore', () => {
   it('should handle partial matches', () => {
     expect(calculatePhraseScore(['the fox'], 'the fox of foo')).toEqual([
       0.25,
-      '[Phrase] Matched 7 of 14 characters',
+      '[Phrase] 7/14 chars',
+    ])
+    expect(calculatePhraseScore(['the fox', 'fox of'], 'the fox of foo')).toEqual([
+      0.4642857142857143,
+      '[Phrase] 13/14 chars',
     ])
   })
 })
@@ -25,17 +30,25 @@ describe('calculateWordScore', () => {
     expect(calculateWordScore(['foo', 'bar'], 'bar & foo')).toEqual([1, '[Word] Exact match'])
   })
   it('should handle partial matches', () => {
-    expect(calculateWordScore(['foo'], 'bar foo')).toEqual([
-      0.25,
-      '[Word] Matched 1 of 2 terms: [foo]',
-    ])
-    expect(calculateWordScore(['foo', 'bar'], 'foo')).toEqual([
-      0.25,
-      `[Word] Matched 1 of 2 terms: [foo]`,
-    ])
+    expect(calculateWordScore(['foo'], 'bar foo')).toEqual([0.25, '[Word] 1/2 terms: [foo]'])
+    expect(calculateWordScore(['foo', 'bar'], 'foo')).toEqual([0.25, `[Word] 1/2 terms: [foo]`])
     expect(calculateWordScore(['foo', 'bar', 'baz'], 'foo foo bar')).toEqual([
       1 / 3,
-      `[Word] Matched 2 of 3 terms: [foo, bar]`,
+      `[Word] 2/3 terms: [foo, bar]`,
+    ])
+  })
+})
+
+describe('calculateCharacterScore', () => {
+  it('should handle exact matches', () => {
+    expect(calculateCharacterScore(['bar', 'foo'], 'bar foo')).toEqual([1, '[Char] Contains all'])
+  })
+
+  it('should handle partial matches', () => {
+    expect(calculateCharacterScore(['foo'], 'bar foo')).toEqual([0.25, '[Char] 3/6 chars'])
+    expect(calculateCharacterScore(['fo', 'ba'], 'bar foo')).toEqual([
+      0.3333333333333333,
+      '[Char] 4/6 chars',
     ])
   })
 })

@@ -33,6 +33,7 @@ export interface SearchPath {
 export interface SearchSpec {
   typeName: string
   paths: SearchPath[]
+  skippedPaths: SearchPath[]
 }
 
 /**
@@ -41,13 +42,14 @@ export interface SearchSpec {
 export interface SearchHit {
   _type: string
   _id: string
-  [key: string]: unknown
+  [key: string]: string
 }
 
 /**
  * @internal
  */
 export interface SearchStory {
+  indices?: number[]
   path: string
   score: number
   why: string

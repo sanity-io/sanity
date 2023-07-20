@@ -256,6 +256,7 @@ export interface ExperimentalSearchPath {
   path: (string | number)[]
   weight: number
   mapWith?: string
+  userProvided?: boolean
 }
 
 export interface ObjectSchemaTypeWithOptions extends ObjectSchemaType {

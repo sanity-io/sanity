@@ -1,7 +1,7 @@
 import {castArray, flatMap, keyBy, pick, startCase} from 'lodash'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
-import {normalizeSearchConfigs} from '../searchConfig/normalize'
+import {normalizeUserSearchConfigs} from '../searchConfig/normalize'
 import resolveSearchConfig from '../searchConfig/resolve'
 import {lazyGetter} from './utils'
 
@@ -65,12 +65,12 @@ export const ObjectType = {
       '__experimental_search',
       () => {
         const userProvidedSearchConfig = subTypeDef.__experimental_search
-          ? normalizeSearchConfigs(subTypeDef.__experimental_search)
+          ? normalizeUserSearchConfigs(subTypeDef.__experimental_search)
           : null
 
         if (userProvidedSearchConfig) {
           return userProvidedSearchConfig.map((entry) =>
-            entry === 'defaults' ? normalizeSearchConfigs(subTypeDef) : entry
+            entry === 'defaults' ? normalizeUserSearchConfigs(subTypeDef) : entry
           )
         }
         return resolveSearchConfig(parsed)

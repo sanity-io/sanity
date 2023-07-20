@@ -1,52 +1,31 @@
 import {uniqBy} from 'lodash'
+import {
+  ArraySchemaType,
+  isArraySchemaType,
+  isObjectSchemaType,
+  isBlockSchemaType,
+  isReferenceSchemaType,
+  ObjectSchemaType,
+  SchemaType,
+} from '@sanity/types'
 import {stringsToNumbers} from './normalize'
 
-const stringFieldsSymbol = Symbol('__cachedStringFields')
-
-const isReference = (type) => type.type && type.type.name === 'reference'
-
-const portableTextFields = ['style', 'list']
-const isPortableTextBlock = (type) =>
-  type.name === 'block' || (type.type && isPortableTextBlock(type.type))
-const isPortableTextArray = (type) =>
-  type.jsonType === 'array' && Array.isArray(type.of) && type.of.some(isPortableTextBlock)
-
-function reduceType(type, reducer, acc, path = [], maxDepth) {
-  if (maxDepth < 0) {
-    return acc
-  }
-
-  const accumulator = reducer(acc, type, path)
-  if (type.jsonType === 'array' && Array.isArray(type.of)) {
-    return reduceArray(type, reducer, accumulator, path, maxDepth)
-  }
-
-  if (type.jsonType === 'object' && Array.isArray(type.fields) && !isReference(type)) {
-    return reduceObject(type, reducer, accumulator, path, maxDepth)
-  }
-
-  return accumulator
+interface SearchPath {
+  path: (string | number | [])[]
+  weight: number
+  mapWith?: string
 }
 
-function reduceArray(arrayType, reducer, accumulator, path, maxDepth) {
-  return arrayType.of.reduce(
-    (acc, ofType) => reduceType(ofType, reducer, acc, path, maxDepth - 1),
-    accumulator
-  )
-}
+export const stringFieldsSymbol = Symbol('__cachedStringFields')
+export const pathCountSymbol = Symbol('__cachedPathCount')
 
-function reduceObject(objectType, reducer, accumulator, path, maxDepth) {
-  const isPtBlock = isPortableTextBlock(objectType)
-  return objectType.fields.reduce((acc, field) => {
-    // Don't include styles and list types as searchable paths for portable text blocks
-    if (isPtBlock && portableTextFields.includes(field.name)) {
-      return acc
-    }
+// Max number of levels to traverse per root-level object
+// eslint-disable-next-line no-process-env
+const SEARCH_DEPTH_LIMIT = Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_DEPTH_LIMIT) || 15
 
-    const segment = [field.name].concat(field.type.jsonType === 'array' ? [[]] : [])
-    return reduceType(field.type, reducer, acc, path.concat(segment), maxDepth - 1)
-  }, accumulator)
-}
+// Max number of search paths to extract per root-level object
+// eslint-disable-next-line no-process-env
+const SEARCH_PATH_LIMIT = Number(process.env.SANITY_STUDIO_UNSTABLE_SEARCH_PATH_LIMIT) || 500
 
 const BASE_WEIGHTS = [
   {weight: 1, path: ['_id']},
@@ -59,12 +38,98 @@ const PREVIEW_FIELD_WEIGHT_MAP = {
   description: 1.5,
 }
 
+const PORTABLE_TEXT_FIELDS = ['style', 'list']
+
+const isPortableTextArray = (type) =>
+  isArraySchemaType(type) && Array.isArray(type.of) && type.of.some(isBlockSchemaType)
+
+type SchemaTypeReducer = (
+  acc: SearchPath[],
+  type: SchemaType,
+  path: SearchPath['path']
+) => SearchPath[]
+
+// eslint-disable-next-line max-params
+function reduceType(
+  rootType: ObjectSchemaType,
+  type: SchemaType,
+  reducer: SchemaTypeReducer,
+  acc: SearchPath[],
+  path = [],
+  maxDepth: number
+) {
+  if (maxDepth < 0 || rootType[pathCountSymbol] < 0) {
+    return acc
+  }
+
+  const accumulator = reducer(acc, type, path)
+  if (isArraySchemaType(type) && Array.isArray(type.of)) {
+    return reduceArray(rootType, type, reducer, accumulator, path, maxDepth)
+  }
+
+  if (isObjectSchemaType(type) && Array.isArray(type.fields) && !isReferenceSchemaType(type)) {
+    return reduceObject(rootType, type, reducer, accumulator, path, maxDepth)
+  }
+
+  // Store and mutate count on the root type to handle circular recursive structures
+  rootType[pathCountSymbol] -= 1
+  return accumulator
+}
+
+// eslint-disable-next-line max-params
+function reduceArray(
+  rootType: ObjectSchemaType,
+  arrayType: ArraySchemaType,
+  reducer: SchemaTypeReducer,
+  accumulator: SearchPath[],
+  path: SearchPath['path'],
+  maxDepth: number
+) {
+  return arrayType.of.reduce(
+    (acc, ofType) => reduceType(rootType, ofType, reducer, acc, path, maxDepth - 1),
+    accumulator
+  )
+}
+
+// eslint-disable-next-line max-params
+function reduceObject(
+  rootType: ObjectSchemaType,
+  objectType: ObjectSchemaType,
+  reducer: SchemaTypeReducer,
+  accumulator: SearchPath[],
+  path: SearchPath['path'],
+  maxDepth: number
+) {
+  return Array.from(objectType.fields)
+    .sort((a, b) => {
+      // Object fields with these types will be pushed to the end
+      const sortTypes = ['array', 'object']
+
+      const aIsObjectOrArray = sortTypes.includes(a.type.jsonType)
+      const bIsObjectOrArray = sortTypes.includes(b.type.jsonType)
+
+      // Sort by name when either both (or neither) comparators are objects and/or arrays
+      if (aIsObjectOrArray) {
+        return bIsObjectOrArray ? a.name.localeCompare(b.name) : 1
+      }
+      return bIsObjectOrArray ? -1 : a.name.localeCompare(b.name)
+    })
+    .reduce((acc, field) => {
+      // Don't include styles and list types as searchable paths for portable text blocks
+      if (isBlockSchemaType(objectType) && PORTABLE_TEXT_FIELDS.includes(field.name)) {
+        return acc
+      }
+      const segment = ([field.name] as SearchPath['path']).concat(
+        isArraySchemaType(field.type) ? [[]] : []
+      )
+      return reduceType(rootType, field.type, reducer, acc, path.concat(segment), maxDepth - 1)
+    }, accumulator)
+}
+
 /**
  * @internal
  */
-export function deriveFromPreview(type: {
-  preview: {select: Record<string, string>}
-}): {weight?: number; path: (string | number)[]}[] {
+export function deriveFromPreview(type: ObjectSchemaType): SearchPath[] {
   const select = type?.preview?.select
 
   if (!select) {
@@ -79,26 +144,23 @@ export function deriveFromPreview(type: {
     }))
 }
 
-function getCachedStringFieldPaths(type, maxDepth) {
+export function getCachedStringFieldPaths(
+  type: ObjectSchemaType,
+  maxDepth: number,
+  maxSearchPaths: number
+): SearchPath[] {
+  type[pathCountSymbol] = maxSearchPaths
+
   if (!type[stringFieldsSymbol]) {
     type[stringFieldsSymbol] = uniqBy(
-      [
-        ...BASE_WEIGHTS,
-        ...deriveFromPreview(type),
-        ...getStringFieldPaths(type, maxDepth).map((path) => ({weight: 1, path})),
-        ...getPortableTextFieldPaths(type, maxDepth).map((path) => ({
-          weight: 1,
-          path,
-          mapWith: 'pt::text',
-        })),
-      ],
+      [...BASE_WEIGHTS, ...deriveFromPreview(type), ...getFieldSearchPaths(type, maxDepth)],
       (spec) => spec.path.join('.')
-    )
+    ).slice(0, maxSearchPaths)
   }
   return type[stringFieldsSymbol]
 }
 
-function getCachedBaseFieldPaths(type, maxDepth) {
+function getCachedBaseFieldPaths(type: ObjectSchemaType) {
   if (!type[stringFieldsSymbol]) {
     type[stringFieldsSymbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type)], (spec) =>
       spec.path.join('.')
@@ -107,24 +169,24 @@ function getCachedBaseFieldPaths(type, maxDepth) {
   return type[stringFieldsSymbol]
 }
 
-function getStringFieldPaths(type, maxDepth) {
-  const reducer = (accumulator, childType, path) =>
-    childType.jsonType === 'string' ? [...accumulator, path] : accumulator
+function getFieldSearchPaths(type: ObjectSchemaType, maxDepth: number) {
+  const reducer: SchemaTypeReducer = (acc, childType, path) => {
+    if (childType.jsonType === 'string') {
+      return [...acc, {path, weight: 1}]
+    }
+    if (isPortableTextArray(childType)) {
+      return [...acc, {mapWith: 'pt::text', path, weight: 1}]
+    }
+    return acc
+  }
 
-  return reduceType(type, reducer, [], [], maxDepth)
+  return reduceType(type, type, reducer, [], [], maxDepth)
 }
 
-function getPortableTextFieldPaths(type, maxDepth) {
-  const reducer = (accumulator, childType, path) =>
-    isPortableTextArray(childType) ? [...accumulator, path] : accumulator
-
-  return reduceType(type, reducer, [], [], maxDepth)
+export function resolveSearchConfigForBaseFieldPaths(type: ObjectSchemaType): SearchPath[] {
+  return getCachedBaseFieldPaths(type)
 }
 
-export function resolveSearchConfigForBaseFieldPaths(type) {
-  return getCachedBaseFieldPaths(type, 4)
-}
-
-export default function resolveSearchConfig(type) {
-  return getCachedStringFieldPaths(type, 4)
+export default function resolveSearchConfig(type: ObjectSchemaType): SearchPath[] {
+  return getCachedStringFieldPaths(type, SEARCH_DEPTH_LIMIT, SEARCH_PATH_LIMIT)
 }

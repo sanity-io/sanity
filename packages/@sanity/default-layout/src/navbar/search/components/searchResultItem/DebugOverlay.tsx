@@ -39,6 +39,9 @@ export function DebugOverlay({data}: DebugScoreProps) {
                       <Code size={0} weight="semibold">
                         {story.path}
                       </Code>
+                      {!!story.indices?.length && (
+                        <Code size={0}>{JSON.stringify(story.indices)}</Code>
+                      )}
                       <Code size={0}>{story.why}</Code>
                     </Inline>
                   ))}
