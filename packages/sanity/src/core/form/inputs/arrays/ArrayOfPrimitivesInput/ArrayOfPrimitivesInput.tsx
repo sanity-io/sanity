@@ -196,33 +196,33 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
                 >
                   {membersWithSortIds.map(({member, id}, index) => {
                     return (
-                      <ChangeIndicator
+                      <Item
                         key={member.key}
-                        path={member.kind === 'item' ? member.item.path : path}
-                        isChanged={changed}
-                        hasFocus={false}
+                        id={id}
+                        sortable={isSortable}
+                        disableTransition={this.state.disableTransition}
                       >
-                        <Item
-                          id={id}
-                          sortable={isSortable}
-                          disableTransition={this.state.disableTransition}
-                        >
-                          {member.kind === 'item' && (
+                        {member.kind === 'item' && (
+                          <ChangeIndicator
+                            path={member.item.path}
+                            isChanged={changed}
+                            hasFocus={false}
+                          >
                             <ArrayOfPrimitivesItem
                               member={member}
                               renderItem={this.renderArrayItem}
                               renderInput={renderInput}
                             />
-                          )}
-                          {member.kind === 'error' && (
-                            <ErrorItem
-                              sortable={isSortable}
-                              member={member}
-                              onRemove={() => onItemRemove(index)}
-                            />
-                          )}
-                        </Item>
-                      </ChangeIndicator>
+                          </ChangeIndicator>
+                        )}
+                        {member.kind === 'error' && (
+                          <ErrorItem
+                            sortable={isSortable}
+                            member={member}
+                            onRemove={() => onItemRemove(index)}
+                          />
+                        )}
+                      </Item>
                     )
                   })}
                 </List>
