@@ -19,6 +19,7 @@ import {prepareI18n} from '../i18n/i18nConfig'
 import type {LocaleSource} from '../i18n'
 import type {
   Config,
+  ConfigContext,
   MissingConfigFile,
   PreparedConfig,
   SingleWorkspace,
@@ -248,13 +249,14 @@ function resolveSource({
     return clients[options.apiVersion]
   }
 
-  const context = {
+  const context: ConfigContext & {client: SanityClient} = {
     client,
     getClient,
     currentUser,
     dataset,
     projectId,
     schema,
+    i18n: i18n.source,
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
