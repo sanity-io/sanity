@@ -51,33 +51,34 @@ type SchemaTypeReducer = (
 
 // eslint-disable-next-line max-params
 function reduceType(
-  parentType: ObjectSchemaType,
+  rootType: ObjectSchemaType,
   type: SchemaType,
   reducer: SchemaTypeReducer,
   acc: SearchPath[],
   path = [],
   maxDepth: number
 ) {
-  if (maxDepth < 0 || parentType[pathCountSymbol] < 0) {
+  if (maxDepth < 0 || rootType[pathCountSymbol] < 0) {
     return acc
   }
 
   const accumulator = reducer(acc, type, path)
   if (isArraySchemaType(type) && Array.isArray(type.of)) {
-    return reduceArray(parentType, type, reducer, accumulator, path, maxDepth)
+    return reduceArray(rootType, type, reducer, accumulator, path, maxDepth)
   }
 
   if (isObjectSchemaType(type) && Array.isArray(type.fields) && !isReferenceSchemaType(type)) {
-    return reduceObject(parentType, type, reducer, accumulator, path, maxDepth)
+    return reduceObject(rootType, type, reducer, accumulator, path, maxDepth)
   }
 
-  parentType[pathCountSymbol] -= 1
+  // Store and mutate count on the root type to handle circular recursive structures
+  rootType[pathCountSymbol] -= 1
   return accumulator
 }
 
 // eslint-disable-next-line max-params
 function reduceArray(
-  parentType: ObjectSchemaType,
+  rootType: ObjectSchemaType,
   arrayType: ArraySchemaType,
   reducer: SchemaTypeReducer,
   accumulator: SearchPath[],
@@ -85,14 +86,14 @@ function reduceArray(
   maxDepth: number
 ) {
   return arrayType.of.reduce(
-    (acc, ofType) => reduceType(parentType, ofType, reducer, acc, path, maxDepth - 1),
+    (acc, ofType) => reduceType(rootType, ofType, reducer, acc, path, maxDepth - 1),
     accumulator
   )
 }
 
 // eslint-disable-next-line max-params
 function reduceObject(
-  parentType: ObjectSchemaType,
+  rootType: ObjectSchemaType,
   objectType: ObjectSchemaType,
   reducer: SchemaTypeReducer,
   accumulator: SearchPath[],
@@ -121,7 +122,7 @@ function reduceObject(
       const segment = ([field.name] as SearchPath['path']).concat(
         isArraySchemaType(field.type) ? [[]] : []
       )
-      return reduceType(parentType, field.type, reducer, acc, path.concat(segment), maxDepth - 1)
+      return reduceType(rootType, field.type, reducer, acc, path.concat(segment), maxDepth - 1)
     }, accumulator)
 }
 
