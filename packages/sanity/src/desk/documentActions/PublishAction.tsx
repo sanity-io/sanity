@@ -1,12 +1,12 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
-import type {TFunction} from 'i18next'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {deskLocaleNamespace, type DeskLocaleResourceKeys} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
+  TFunction,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
