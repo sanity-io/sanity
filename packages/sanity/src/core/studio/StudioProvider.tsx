@@ -9,6 +9,7 @@ import typescript from 'refractor/lang/typescript'
 import {UserColorManagerProvider} from '../user-color'
 import {ErrorLogger} from '../error/ErrorLogger'
 import {ResourceCacheProvider} from '../store'
+import {LocaleProvider} from '../i18n'
 import {AuthBoundary} from './AuthBoundary'
 import {StudioProps} from './Studio'
 import {StudioThemeProvider} from './StudioThemeProvider'
@@ -25,7 +26,6 @@ import {
 } from './screens'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
-import {I18nProvider} from '../i18n'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -54,9 +54,9 @@ export function StudioProvider({
 }: StudioProviderProps) {
   const _children = (
     <WorkspaceLoader LoadingComponent={LoadingScreen} ConfigErrorsComponent={ConfigErrorsScreen}>
-      <I18nProvider>
+      <LocaleProvider>
         <ResourceCacheProvider>{children}</ResourceCacheProvider>
-      </I18nProvider>
+      </LocaleProvider>
     </WorkspaceLoader>
   )
 
