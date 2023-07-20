@@ -6,6 +6,7 @@ import {startCase} from 'lodash'
 import {fromUrl} from '@sanity/bifur-client'
 import {createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
+import type {i18n} from 'i18next'
 import {createSchema} from '../schema'
 import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
@@ -14,7 +15,7 @@ import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
-import {prepareI18nSource} from '../i18n/i18nConfig'
+import {prepareI18n} from '../i18n/i18nConfig'
 import type {LocaleSource} from '../i18n'
 import type {
   Config,
@@ -144,9 +145,9 @@ export function prepareConfig(
         // TODO: consider using the `ConfigResolutionError`
         throw new SchemaError(schema)
       }
-      const i18n = prepareI18nSource(source, schema)
 
       const auth = getAuthStore(source)
+      const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
           return resolveSource({
@@ -169,7 +170,7 @@ export function prepareConfig(
         title: source.title || startCase(source.name),
         auth,
         schema,
-        i18n,
+        i18n: i18n.source,
         source: source$,
       }
     })
@@ -217,7 +218,7 @@ interface ResolveSourceOptions {
   currentUser: CurrentUser | null
   authenticated: boolean
   auth: AuthStore
-  i18n: LocaleSource
+  i18n: {i18next: i18n; source: LocaleSource}
 }
 
 function getBifurClient(client: SanityClient, auth: AuthStore) {
@@ -465,7 +466,7 @@ function resolveSource({
     authenticated,
     templates,
     auth,
-    i18n,
+    i18n: i18n.source,
     document: {
       actions: (partialContext) =>
         resolveConfigProperty({
@@ -578,6 +579,7 @@ function resolveSource({
 
     __internal: {
       bifur,
+      i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
     },
