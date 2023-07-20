@@ -32,12 +32,6 @@ export function createSanityI18nBackend(options: SanityI18nBackendOptions): Back
   }
 
   function read(locale: string, namespace: string, callback: ReadCallback) {
-    // @todo figure out if this makes sense to keep/prevent, seems like maybe the i18next default?
-    if (namespace === 'translation') {
-      callback(null, undefined)
-      return
-    }
-
     const loadable = bundles.filter(
       (bundle) => bundle.locale === locale && bundle.namespace === namespace
     )
