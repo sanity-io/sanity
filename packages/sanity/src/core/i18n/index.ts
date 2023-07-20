@@ -1,6 +1,6 @@
 export {useTranslation} from 'react-i18next'
-
-export * from './components/I18nProvider'
+export * from './hooks/useLocale'
+export * from './components/LocaleProvider'
 export * from './locales'
 export * from './localeNamespaces'
 export * from './defineHelpers'

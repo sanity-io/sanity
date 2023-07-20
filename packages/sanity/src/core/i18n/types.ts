@@ -1,4 +1,4 @@
-import type {TFunction, i18n} from 'i18next'
+import type {TFunction} from 'i18next'
 import type {ComponentType} from 'react'
 
 /**
@@ -146,14 +146,20 @@ export interface LocaleDefinition {
 
 /** @internal */
 export interface LocaleSource {
-  locales: LocaleDefinition[]
-  t: TFunction
+  /**
+   * Current locale ID (eg `en-US`, `nb-NO`, `th-TH`…)
+   */
+  currentLocale: string
 
   /**
-   * @internal
-   * @todo remove/limit this
+   * Array of locale definitions
    */
-  i18next: i18n
+  locales: LocaleDefinition[]
+
+  /**
+   * Translation function, eg `t('some.key') => 'Some string'`
+   */
+  t: TFunction
 }
 
 export type {StudioLocaleResourceKeys} from './bundles/studio'
