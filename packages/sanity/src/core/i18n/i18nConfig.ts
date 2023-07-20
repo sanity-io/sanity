@@ -56,13 +56,15 @@ function createI18nApi({
     console.error('Failed to initialize i18n backend: %s', err)
   })
 
+  const reducedLocales = locales.map(({id, title}) => ({id, title}))
+
   return {
     /** @public */
     source: {
       get currentLocale() {
         return i18nInstance.language
       },
-      locales,
+      locales: reducedLocales,
       t: i18nInstance.t,
     },
 
