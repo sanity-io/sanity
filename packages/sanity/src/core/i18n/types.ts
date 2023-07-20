@@ -1,5 +1,4 @@
 import type {TFunction} from 'i18next'
-import type {ComponentType} from 'react'
 
 /**
  * An object of locale resources, or a string array of resources
@@ -127,11 +126,6 @@ export interface LocaleDefinition {
   title: string
 
   /**
-   * React component representing the icon of the locale, generally a flag.
-   */
-  icon?: ComponentType
-
-  /**
    * Array of resource bundles for this locale, if any.
    *
    * Generally you'll want to provide some base resources, eg for the studio core namespace,
@@ -154,7 +148,7 @@ export interface LocaleSource {
   /**
    * Array of locale definitions
    */
-  locales: Pick<LocaleDefinition, 'id' | 'title'>[]
+  locales: {id: string; title: string}[]
 
   /**
    * Translation function, eg `t('some.key') => 'Some string'`

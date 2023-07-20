@@ -1,6 +1,6 @@
 import {Box, Label, MenuDivider, MenuItem} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {useLocale, type LocaleDefinition} from '../../../../i18n'
+import {useLocale} from '../../../../i18n'
 
 export function LocaleMenu() {
   const {changeLocale, currentLocale, locales} = useLocale()
@@ -31,7 +31,7 @@ export function LocaleMenu() {
 }
 
 function LocaleItem(props: {
-  locale: LocaleDefinition
+  locale: {id: string; title: string}
   changeLocale: (lang: string) => void
   selectedLocale: string
 }) {
@@ -42,13 +42,6 @@ function LocaleItem(props: {
     <MenuItem
       aria-label={locale.title}
       pressed={selectedLang == localeId}
-      icon={
-        locale.icon ?? (
-          <>
-            <code>{localeId}</code>
-          </>
-        )
-      }
       onClick={onClick}
       text={locale.title}
     />
