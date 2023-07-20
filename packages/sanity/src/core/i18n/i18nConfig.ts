@@ -1,17 +1,18 @@
-import i18nApi, {type i18n} from 'i18next'
+import {createInstance as createI18nInstance, type InitOptions, type i18n} from 'i18next'
 import type {SourceOptions} from '../config'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
 import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
 import {defaultLocale} from './locales'
 import {createSanityI18nBackend} from './backend'
 import {LocaleSource, LocaleDefinition, LocaleResourceBundle} from './types'
+import {studioLocaleNamespace} from './localeNamespaces'
+import {getPreferredLocale} from './localeStore'
 
 /**
- * @todo Figure out the "source" naming, why would we name it a source?
  * @internal
  */
-export function prepareI18nSource(source: SourceOptions): LocaleSource {
-  const {projectId, dataset} = source
+export function prepareI18n(source: SourceOptions): {source: LocaleSource; i18next: i18n} {
+  const {projectId, dataset, name: sourceName} = source
   const context = {projectId: projectId, dataset}
 
   const locales = resolveConfigProperty({
@@ -30,34 +31,43 @@ export function prepareI18nSource(source: SourceOptions): LocaleSource {
     initialValue: normalizeResourceBundles(locales),
   })
 
-  const i18nSource = createI18nApi({
+  return createI18nApi({
     locales,
     bundles,
+    projectId,
+    sourceName,
   })
-
-  return i18nSource
 }
 
 function createI18nApi({
   locales,
   bundles,
+  projectId,
+  sourceName,
 }: {
   locales: LocaleDefinition[]
   bundles: LocaleResourceBundle[]
-}): LocaleSource {
-  // We start out with an uninitialized instance - the async init call happens in LocaleProvider
-  let i18nInstance = i18nApi.createInstance().use(createSanityI18nBackend({bundles}))
+  projectId: string
+  sourceName: string
+}): {source: LocaleSource; i18next: i18n} {
+  const options = getI18NextOptions(projectId, sourceName, locales)
+  const i18nInstance = createI18nInstance().use(createSanityI18nBackend({bundles}))
+  i18nInstance.init(options).catch((err) => {
+    console.error('Failed to initialize i18n backend: %s', err)
+  })
+
   return {
-    locales,
-    get t() {
-      return i18nInstance.t
+    /** @public */
+    source: {
+      get currentLocale() {
+        return i18nInstance.language
+      },
+      locales,
+      t: i18nInstance.t,
     },
-    get i18next() {
-      return i18nInstance
-    },
-    set i18next(newInstance: i18n) {
-      i18nInstance = newInstance
-    },
+
+    /** @internal */
+    i18next: i18nInstance,
   }
 }
 
@@ -95,4 +105,57 @@ function normalizeResourceBundles(locales: LocaleDefinition[]): LocaleResourceBu
   }
 
   return normalized
+}
+
+const defaultOptions: InitOptions = {
+  /**
+   * Even though we're only defining the studio namespace, i18next will still load requested
+   * namespaces through the backend. The reason why we're defining the namespace at all is to
+   * prevent i18next from (trying) to load the i18next default `translation` namespace.
+   */
+  ns: [studioLocaleNamespace],
+  defaultNS: studioLocaleNamespace,
+  partialBundledLanguages: true,
+
+  // Fall back to English (US) locale
+  fallbackLng: defaultLocale.id,
+
+  // This will be overriden with the users detected/preferred locale before initing,
+  // but to satisfy the init options and prevent mistakes, we include a defualt here.
+  lng: defaultLocale.id,
+
+  // In rare cases we'll want to be able to debug i18next - there is a `debug` option
+  // in the studio i18n configuration for that, which will override this value.
+  debug: false,
+
+  // We always use our "backend" for loading translations, allowing us to handle i18n resources
+  // in a single place with a single approach. This means we shouldn't need to wait for the init,
+  // as any missing translations will be loaded async (through react suspense).
+  initImmediate: true,
+
+  // Because we use i18next-react, we do not need to escale values
+  interpolation: {
+    escapeValue: false,
+  },
+
+  // Theoretically, if the framework somehow gets new translations added, re-render.
+  // Note that this shouldn't actually happen, as we only use the Sanity backend
+  react: {
+    bindI18nStore: 'added',
+  },
+}
+
+function getI18NextOptions(
+  projectId: string,
+  sourceName: string,
+  locales: LocaleDefinition[],
+): InitOptions & {lng: string} {
+  const preferredLocaleId = getPreferredLocale(projectId, sourceName)
+  const preferredLocale = locales.find((l) => l.id === preferredLocaleId)
+  const locale = preferredLocale?.id ?? locales[0]?.id ?? defaultOptions.lng
+  return {
+    ...defaultOptions,
+    lng: locale,
+    supportedLngs: locales.map((def) => def.id),
+  }
 }

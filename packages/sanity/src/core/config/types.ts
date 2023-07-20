@@ -11,6 +11,7 @@ import type {
 } from '@sanity/types'
 import type {ComponentType, ReactNode} from 'react'
 import type {Observable} from 'rxjs'
+import type {i18n} from 'i18next'
 import type {
   BlockAnnotationProps,
   BlockProps,
@@ -645,9 +646,17 @@ export interface Source {
 
   /** @internal */
   __internal: {
+    /** @internal */
     bifur: BifurClient
+    /** @internal */
     staticInitialValueTemplateItems: InitialValueTemplateItem[]
+    /** @internal */
     options: SourceOptions
+    /**
+     * _VERY_ internal, likely to change at any point.
+     * @internal
+     */
+    i18next: i18n
   }
 }
 
