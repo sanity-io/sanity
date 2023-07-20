@@ -38,13 +38,18 @@ export function createSanityI18nBackend(options: SanityI18nBackendOptions): Back
 
     if (loadable.length === 0) {
       // @todo warn? This means someone requested a namespace/locale combination that there are no resources for
-      callback(null, undefined)
+      callback(
+        `No translations found for namespace "${namespace}", language "${locale}"`,
+        undefined, // Returning undefined here will i18next _not_ retry
+      )
       return
     }
 
     loadBundles(loadable)
       .then((resources) => callback(null, resources))
-      .catch((err) => callback(err, undefined))
+      // Returning true for second parameter will make i18next retry.
+      // It handles the retry internally, and has both max retries and timeouts.
+      .catch((err) => callback(err, true))
   }
 
   return {
