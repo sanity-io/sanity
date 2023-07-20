@@ -1,4 +1,4 @@
-export {useTranslation} from 'react-i18next'
+export * from './hooks/useTranslation'
 export * from './hooks/useLocale'
 export * from './components/LocaleProvider'
 export * from './locales'
