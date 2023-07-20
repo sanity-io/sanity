@@ -7,15 +7,20 @@ import type {
   SchemaType,
   ValidationContext,
 } from '@sanity/types'
-import {createMockSanityClient} from '../test/mocks/mockSanityClient'
-import {validateDocument, resolveTypeForArrayItem, validateItem} from '../src/validateDocument'
-import {convertToValidationMarker} from '../src/util/convertToValidationMarker'
+import {
+  validateDocument,
+  resolveTypeForArrayItem,
+  validateItem,
+} from '../../src/core/validation/validateDocument'
+import {convertToValidationMarker} from '../../src/core/validation/util/convertToValidationMarker'
 import {createSchema} from './helpers/createSchema'
+import {createMockSanityClient} from './mocks/mockSanityClient'
 
-jest.mock('../src/util/convertToValidationMarker', () => {
+jest.mock('../../src/core/validation/util/convertToValidationMarker', () => {
   return {
     convertToValidationMarker: jest.fn(
-      jest.requireActual('../src/util/convertToValidationMarker').convertToValidationMarker
+      jest.requireActual('../../src/core/validation/util/convertToValidationMarker')
+        .convertToValidationMarker
     ),
   }
 })

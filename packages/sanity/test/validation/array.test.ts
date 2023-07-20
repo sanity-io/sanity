@@ -1,4 +1,4 @@
-import {Rule} from '../src'
+import {Rule} from '../../src/core/validation'
 
 const context: any = {client: {}}
 
