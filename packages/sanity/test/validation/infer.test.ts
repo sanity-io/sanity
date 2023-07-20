@@ -1,8 +1,8 @@
 import type {SanityClient} from '@sanity/client'
 import type {ObjectSchemaType, Rule, SanityDocument} from '@sanity/types'
 import {Schema as SchemaBuilder} from '@sanity/schema'
-import {inferFromSchema} from '../src/inferFromSchema'
-import {validateDocument} from '../src/validateDocument'
+import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
+import {validateDocument} from '../../src/core/validation/validateDocument'
 import {createSchema} from './helpers/createSchema'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 

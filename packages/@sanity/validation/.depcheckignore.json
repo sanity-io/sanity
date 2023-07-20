@@ -1,3 +1,0 @@
-{
-  "ignore": ["@optimize-lodash/rollup-plugin", "@sanity/pkg-utils"]
-}

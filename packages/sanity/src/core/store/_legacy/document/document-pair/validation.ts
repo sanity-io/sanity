@@ -25,12 +25,12 @@ import {
   skip,
   throttleTime,
 } from 'rxjs/operators'
-import {validateDocumentObservable} from '@sanity/validation'
 import {isReference, Schema, ValidationContext, ValidationMarker} from '@sanity/types'
 import {reduce as reduceJSON} from 'json-reduce'
 import shallowEquals from 'shallow-equals'
 import {omit} from 'lodash'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
+import {validateDocumentObservable} from '../../../../validation'
 import {SourceClientOptions} from '../../../../config'
 import {memoize} from '../utils/createMemoizer'
 import {IdPair} from '../types'

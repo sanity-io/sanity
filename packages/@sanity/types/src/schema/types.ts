@@ -139,7 +139,7 @@ export type InitialValueProperty<Params, Value> =
  * Represents the possible values of a schema type's `validation` field.
  *
  * If the schema has not been run through `inferFromSchema` from
- * `@sanity/validation` then value could be a function.
+ * `sanity/validation` then value could be a function.
  *
  * `inferFromSchema` mutates the schema converts this value to an array of
  * `Rule` instances.

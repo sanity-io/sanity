@@ -31,7 +31,6 @@
     {"path": "../@sanity/schema/tsconfig.lib.json"},
     {"path": "../@sanity/types/tsconfig.lib.json"},
     {"path": "../@sanity/cli/tsconfig.lib.json"},
-    {"path": "../@sanity/util/tsconfig.lib.json"},
-    {"path": "../@sanity/validation/tsconfig.lib.json"}
+    {"path": "../@sanity/util/tsconfig.lib.json"}
   ]
 }

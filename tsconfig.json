@@ -15,7 +15,6 @@
     {"path": "./packages/@sanity/schema"},
     {"path": "./packages/@sanity/types"},
     {"path": "./packages/@sanity/util"},
-    {"path": "./packages/@sanity/validation"},
     {"path": "./packages/@sanity/vision"},
     {"path": "./packages/sanity"}
   ]

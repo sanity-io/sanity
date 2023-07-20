@@ -25,7 +25,6 @@ const devAliases = {
   '@sanity/types/parts': './packages/@sanity/types/parts',
   '@sanity/util/fs': './packages/@sanity/util/src/fsTools.ts',
   '@sanity/util': './packages/@sanity/util/src',
-  '@sanity/validation': './packages/@sanity/validation/src',
   '@sanity/vision': './packages/@sanity/vision/src',
   sanity: './packages/sanity/exports',
 }
