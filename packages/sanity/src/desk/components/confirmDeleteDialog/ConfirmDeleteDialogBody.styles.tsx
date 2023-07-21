@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {rem, Flex, Text, Card, Box, Tooltip, Container, Inline} from '@sanity/ui'
+import {rem, Flex, Text, Box, Tooltip, Container, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'
 
 export const ChevronWrapper = styled(Box)`
@@ -23,11 +23,6 @@ export const CrossDatasetReferencesSummary = styled.summary`
   }
 `
 
-export const TableContainer = styled(Box).attrs({paddingX: 2, paddingBottom: 2})`
-  overflow: auto;
-  max-height: 150px;
-`
-
 export const Table = styled.table`
   width: 100%;
   text-align: left;
@@ -36,13 +31,6 @@ export const Table = styled.table`
 
   th {
     padding: ${({theme}) => rem(theme.sanity.space[1])};
-  }
-
-  thead > tr {
-    position: sticky;
-    top: 0;
-    background: var(--card-bg-color);
-    z-index: 1;
   }
 
   td {
@@ -56,17 +44,6 @@ export const Table = styled.table`
 
 export const DocumentIdFlex = styled(Flex)`
   min-height: 35px;
-`
-
-export const ReferencesCard = styled(Card).attrs({
-  radius: 2,
-  shadow: 1,
-  marginBottom: 4,
-  flex: 'auto',
-})`
-  overflow: hidden;
-  overflow: clip;
-  min-height: 150px;
 `
 
 export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {

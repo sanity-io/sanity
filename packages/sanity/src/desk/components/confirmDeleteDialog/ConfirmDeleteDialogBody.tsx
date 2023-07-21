@@ -11,11 +11,9 @@ import CopyToClipboard from 'react-copy-to-clipboard'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {
-  ReferencesCard,
   OtherReferenceCount,
   CrossDatasetReferencesDetails,
   CrossDatasetReferencesSummary,
-  TableContainer,
   Table,
   ChevronWrapper,
   DocumentIdFlex,
@@ -103,7 +101,7 @@ export function ConfirmDeleteDialogBody({
   }
 
   return (
-    <>
+    <Card>
       <Card padding={3} radius={2} tone="caution" marginBottom={4} flex="none">
         <Flex>
           <Text aria-hidden="true" size={1}>
@@ -130,10 +128,10 @@ export function ConfirmDeleteDialogBody({
         </Text>
       </Box>
 
-      <ReferencesCard>
-        <Flex direction="column" height="fill">
+      <Card radius={2} shadow={1} marginBottom={4} flex="auto">
+        <Flex direction="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" padding={3} space={3} overflow="auto" data-testid="internal-references">
+            <Stack as="ul" padding={2} space={3} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box as="li" key={item._id}>
                   {renderPreviewItem(item)}
@@ -160,38 +158,40 @@ export function ConfirmDeleteDialogBody({
               }}
             >
               <CrossDatasetReferencesSummary>
-                <Flex padding={4} align="center">
-                  <Box marginRight={4}>
-                    <Text size={3}>
-                      <DocumentsIcon />
-                    </Text>
-                  </Box>
-                  <Flex marginRight={4} direction="column">
-                    <Box marginBottom={2}>
-                      <Text>
-                        {documentCount} in {datasetsCount}
+                <Card as="a" margin={2} radius={2} shadow={1} paddingY={1}>
+                  <Flex align="center" margin={2}>
+                    <Box marginLeft={3} marginRight={4}>
+                      <Text size={3}>
+                        <DocumentsIcon />
                       </Text>
                     </Box>
-                    <Box>
-                      <Text title={datasetNameList} textOverflow="ellipsis" size={1} muted>
-                        {datasetNameList}
+                    <Flex marginRight={4} direction="column">
+                      <Box marginBottom={2}>
+                        <Text>
+                          {documentCount} in {datasetsCount}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <Text title={datasetNameList} textOverflow="ellipsis" size={1} muted>
+                          {datasetNameList}
+                        </Text>
+                      </Box>
+                    </Flex>
+                    <ChevronWrapper>
+                      <Text muted>
+                        <ChevronDownIcon />
                       </Text>
-                    </Box>
+                    </ChevronWrapper>
                   </Flex>
-                  <ChevronWrapper>
-                    <Text muted>
-                      <ChevronDownIcon />
-                    </Text>
-                  </ChevronWrapper>
-                </Flex>
+                </Card>
               </CrossDatasetReferencesSummary>
 
-              <TableContainer>
+              <Box overflow="auto" paddingBottom={2} paddingX={2}>
                 <Table>
                   <thead>
                     <tr>
                       <th>
-                        <Label muted size={0}>
+                        <Label muted size={0} style={{minWidth: '5rem'}}>
                           Project ID
                         </Label>
                       </th>
@@ -252,14 +252,15 @@ export function ConfirmDeleteDialogBody({
                       ))}
                   </tbody>
                 </Table>
+
                 <Box padding={2}>
                   <OtherReferenceCount {...crossDatasetReferences} />
                 </Box>
-              </TableContainer>
+              </Box>
             </CrossDatasetReferencesDetails>
           )}
         </Flex>
-      </ReferencesCard>
+      </Card>
 
       <Box flex="none">
         <Text>
@@ -267,6 +268,6 @@ export function ConfirmDeleteDialogBody({
           it.
         </Text>
       </Box>
-    </>
+    </Card>
   )
 }
