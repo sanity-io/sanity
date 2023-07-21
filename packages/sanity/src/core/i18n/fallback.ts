@@ -42,6 +42,7 @@ function getFallbackI18nInstance() {
     lng: defaultLocale.id,
     supportedLngs: [defaultLocale.id],
     debug: false,
+    load: 'currentOnly',
     interpolation: {
       // If we're in a browser, assume this is running inside of the studio, eg a React app,
       // and that values returned will be escaped by the framework (eg React) automatically.
