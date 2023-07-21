@@ -52,9 +52,10 @@ export function ValidationInspector(props: DocumentInspectorProps) {
 
         {validation.length > 0 && (
           <Stack space={2}>
-            {validation.map((marker) => (
+            {validation.map((marker, index) => (
               <ValidationCard
-                key={pathToString(marker.path)}
+                // eslint-disable-next-line react/no-array-index-key
+                key={pathToString(marker.path) + index}
                 marker={marker}
                 onOpen={handleOpen}
                 schemaType={schemaType}
