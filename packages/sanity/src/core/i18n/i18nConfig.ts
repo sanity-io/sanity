@@ -130,6 +130,9 @@ const defaultOptions: InitOptions = {
   // in the studio i18n configuration for that, which will override this value.
   debug: false,
 
+  // When specifying language 'en-US', do not load 'en-US', 'en', 'dev' - only `en-US`.
+  load: 'currentOnly',
+
   // We always use our "backend" for loading translations, allowing us to handle i18n resources
   // in a single place with a single approach. This means we shouldn't need to wait for the init,
   // as any missing translations will be loaded async (through react suspense).
