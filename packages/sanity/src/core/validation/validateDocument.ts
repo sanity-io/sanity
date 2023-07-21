@@ -4,16 +4,17 @@ import {
   type SanityDocument,
   type Schema,
   type SchemaType,
-  type ValidationContext,
   type ValidationMarker,
 } from '@sanity/types'
 import {concat, defer, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, toArray} from 'rxjs/operators'
 import {flatten, uniqBy} from 'lodash'
+import {getFallbackLocaleSource} from '../i18n/fallback'
 import {typeString} from './util/typeString'
 import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
 import {ValidationError as ValidationErrorClass} from './ValidationError'
 import {normalizeValidationRules} from './util/normalizeValidationRules'
+import type {ValidationContext} from './types'
 
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
@@ -61,7 +62,7 @@ export function validateDocument(
   getClient: ValidateItemOptions['getClient'],
   doc: SanityDocument,
   schema: Schema,
-  context?: Pick<ValidationContext, 'getDocumentExists'>,
+  context?: Pick<ValidationContext, 'getDocumentExists' | 'i18n'>,
 ): Promise<ValidationMarker[]> {
   return lastValueFrom(validateDocumentObservable(getClient, doc, schema, context))
 }
@@ -80,7 +81,7 @@ export function validateDocumentObservable(
   getClient: ValidateItemOptions['getClient'],
   doc: SanityDocument,
   schema: Schema,
-  context?: Pick<ValidationContext, 'getDocumentExists'>,
+  context?: Pick<ValidationContext, 'getDocumentExists' | 'i18n'>,
 ): Observable<ValidationMarker[]> {
   const documentType = schema.get(doc._type)
   if (!documentType) {
@@ -96,6 +97,7 @@ export function validateDocumentObservable(
     path: [],
     document: doc,
     type: documentType,
+    i18n: context?.i18n || getFallbackLocaleSource(),
     getDocumentExists: context?.getDocumentExists,
   }
 
