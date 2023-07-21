@@ -1,6 +1,7 @@
 import type {SanityClient} from '@sanity/client'
 import type {ObjectSchemaType, Rule, SanityDocument} from '@sanity/types'
 import {Schema as SchemaBuilder} from '@sanity/schema'
+import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
 import {validateDocument} from '../../src/core/validation/validateDocument'
 import {createSchema} from './helpers/createSchema'
@@ -250,7 +251,7 @@ describe('schema validation inference', () => {
           },
 
           schema,
-          {getDocumentExists: mockGetDocumentExists}
+          {getDocumentExists: mockGetDocumentExists, i18n: getFallbackLocaleSource()}
         )
       ).resolves.toMatchObject([
         {
@@ -287,7 +288,7 @@ describe('schema validation inference', () => {
         },
 
         schema,
-        {getDocumentExists: undefined}
+        {getDocumentExists: undefined, i18n: getFallbackLocaleSource()}
       )
 
       expect(result).toHaveLength(1)
@@ -311,7 +312,7 @@ describe('schema validation inference', () => {
           },
 
           schema,
-          {getDocumentExists: mockGetDocumentExists}
+          {getDocumentExists: mockGetDocumentExists, i18n: getFallbackLocaleSource()}
         )
       ).resolves.toEqual([])
 

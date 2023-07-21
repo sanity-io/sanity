@@ -25,16 +25,17 @@ import {
   skip,
   throttleTime,
 } from 'rxjs/operators'
-import {isReference, Schema, ValidationContext, ValidationMarker} from '@sanity/types'
+import {isReference, type Schema, type ValidationMarker} from '@sanity/types'
 import {reduce as reduceJSON} from 'json-reduce'
 import shallowEquals from 'shallow-equals'
 import {omit} from 'lodash'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {validateDocumentObservable} from '../../../../validation'
-import {SourceClientOptions} from '../../../../config'
+import type {LocaleSource} from '../../../../i18n'
+import {validateDocumentObservable, type ValidationContext} from '../../../../validation'
+import type {SourceClientOptions} from '../../../../config'
+import type {IdPair} from '../types'
+import type {DraftsModelDocumentAvailability} from '../../../../preview'
 import {memoize} from '../utils/createMemoizer'
-import {IdPair} from '../types'
-import {DraftsModelDocumentAvailability} from '../../../../preview'
 import {editState} from './editState'
 
 /**
@@ -90,6 +91,7 @@ export const validation = memoize(
       getClient: (options: SourceClientOptions) => SanityClient
       observeDocumentPairAvailability: ObserveDocumentPairAvailability
       schema: Schema
+      i18n: LocaleSource
     },
     {draftId, publishedId}: IdPair,
     typeName: string
@@ -171,6 +173,7 @@ export const validation = memoize(
             of({isValidating: true, revision: document._rev}),
             validateDocumentObservable(ctx.getClient, document, ctx.schema, {
               getDocumentExists,
+              i18n: ctx.i18n,
             }).pipe(
               map((validationMarkers) => ({validation: validationMarkers, isValidating: false}))
             )
