@@ -1,4 +1,5 @@
-import type {ValidationMarker, ValidationError, ValidationContext} from '@sanity/types'
+import type {ValidationMarker, ValidationError} from '@sanity/types'
+import type {ValidationContext} from '../types'
 import {ValidationError as ValidationErrorClass} from '../ValidationError'
 import {pathToString} from '../util/pathToString'
 

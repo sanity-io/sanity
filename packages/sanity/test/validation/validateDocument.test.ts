@@ -12,6 +12,7 @@ import {
   resolveTypeForArrayItem,
   validateItem,
 } from '../../src/core/validation/validateDocument'
+import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {convertToValidationMarker} from '../../src/core/validation/util/convertToValidationMarker'
 import {createSchema} from './helpers/createSchema'
 import {createMockSanityClient} from './mocks/mockSanityClient'
@@ -189,6 +190,7 @@ describe('validateItem', () => {
         parent: undefined,
         type: schema.get('testObj'),
         getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
       }),
     ).resolves.toMatchObject([
       {
@@ -259,6 +261,7 @@ describe('validateItem', () => {
         type: schema.get('testObj'),
         value: {foo: 5},
         getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
       }),
     ).resolves.toMatchObject([
       {
@@ -426,6 +429,7 @@ describe('validateItem', () => {
       type: schema.get('blockTest'),
       value: document,
       getDocumentExists: undefined,
+      i18n: getFallbackLocaleSource(),
     })
 
     expect(result).toMatchObject([
@@ -529,6 +533,7 @@ describe('validateItem', () => {
         type: schema.get('values'),
         value: values,
         getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
       }),
     ).resolves.toEqual([
       {
@@ -628,6 +633,7 @@ describe('validateItem', () => {
         parent: document,
         path: undefined,
         getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
       }),
     ).resolves.toMatchObject([
       {
