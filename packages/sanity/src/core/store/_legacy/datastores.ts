@@ -122,7 +122,7 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
  * @hidden
  * @beta */
 export function useDocumentStore(): DocumentStore {
-  const getClient = useSource().getClient
+  const {getClient, i18n} = useSource()
   const schema = useSchema()
   const templates = useTemplates()
   const resourceCache = useResourceCache()
@@ -133,7 +133,7 @@ export function useDocumentStore(): DocumentStore {
     const documentStore =
       resourceCache.get<DocumentStore>({
         namespace: 'documentStore',
-        dependencies: [getClient, documentPreviewStore, historyStore, schema],
+        dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n],
       }) ||
       createDocumentStore({
         getClient,
@@ -141,16 +141,17 @@ export function useDocumentStore(): DocumentStore {
         historyStore,
         initialValueTemplates: templates,
         schema,
+        i18n,
       })
 
     resourceCache.set({
       namespace: 'documentStore',
-      dependencies: [getClient, documentPreviewStore, historyStore, schema],
+      dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n],
       value: documentStore,
     })
 
     return documentStore
-  }, [getClient, documentPreviewStore, historyStore, resourceCache, schema, templates])
+  }, [getClient, documentPreviewStore, historyStore, resourceCache, schema, templates, i18n])
 }
 
 /** @internal */
