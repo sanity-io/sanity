@@ -5,7 +5,7 @@ import React, {ErrorInfo, Fragment, createElement, useCallback, useMemo, useStat
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
 import {getPathTypes} from './getPathTypes'
-import {DocumentInspectorProps, pathToString} from 'sanity'
+import {DocumentInspectorProps} from 'sanity'
 
 const MARKER_ICON: Record<'error' | 'warning' | 'info', IconComponent> = {
   error: ErrorOutlineIcon,
@@ -54,6 +54,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
           <Stack space={2}>
             {validation.map((marker, i) => (
               <ValidationCard
+                // eslint-disable-next-line react/no-array-index-key
                 key={i}
                 marker={marker}
                 onOpen={handleOpen}
