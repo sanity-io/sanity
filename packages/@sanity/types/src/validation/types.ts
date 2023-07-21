@@ -231,7 +231,7 @@ export type RuleSpecConstraint<T extends RuleSpec['flag']> = ConditionalIndexAcc
  *
  * @public
  */
-export type ValidationContext = {
+export interface ValidationContext {
   getClient: (options: {apiVersion: string}) => SanityClient
   schema: Schema
   parent?: unknown
