@@ -7,7 +7,6 @@ import type {
   RuleSpecConstraint,
   RuleTypeConstraint,
   SchemaType,
-  ValidationContext,
   ValidationMarker,
   Validator,
 } from '@sanity/types'
@@ -23,6 +22,7 @@ import {stringValidators} from './validators/stringValidator'
 import {arrayValidators} from './validators/arrayValidator'
 import {objectValidators} from './validators/objectValidator'
 import {dateValidators} from './validators/dateValidator'
+import type {ValidationContext} from './types'
 
 const typeValidators = {
   Boolean: booleanValidators,
