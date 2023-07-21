@@ -82,7 +82,7 @@
     "@types/express": "^4.16.1",
     "@types/express-ws": "^3.0.1",
     "@types/jest": "^27.0.3",
-    "@types/jest-dev-server": "^4.2.1",
+    "@types/jest-dev-server": "^5.0.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^14.18.9",
     "@types/node-ipc": "^9.0.0",
