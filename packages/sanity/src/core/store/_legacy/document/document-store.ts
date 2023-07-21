@@ -20,6 +20,7 @@ import {listenQuery, ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import type {IdPair} from './types'
 import {getInitialValueStream, InitialValueMsg, InitialValueOptions} from './initialValue'
+import {LocaleSource} from '../../../i18n'
 
 /**
  * @hidden
@@ -73,6 +74,7 @@ export interface DocumentStoreOptions {
   historyStore: HistoryStore
   schema: Schema
   initialValueTemplates: Template[]
+  i18n: LocaleSource
 }
 
 /** @internal */
@@ -82,6 +84,7 @@ export function createDocumentStore({
   historyStore,
   initialValueTemplates,
   schema,
+  i18n,
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
@@ -90,7 +93,7 @@ export function createDocumentStore({
   // internal operations, and a `getClient` method that we expose to user-land
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const ctx = {client, getClient, observeDocumentPairAvailability, historyStore, schema}
+  const ctx = {client, getClient, observeDocumentPairAvailability, historyStore, schema, i18n}
 
   return {
     // Public API

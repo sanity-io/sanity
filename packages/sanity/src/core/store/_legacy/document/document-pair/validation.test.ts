@@ -1,4 +1,4 @@
-import {SanityClient} from '@sanity/client'
+import type {SanityClient} from '@sanity/client'
 import {
   concat,
   ConnectableObservable,
@@ -10,8 +10,9 @@ import {
   firstValueFrom,
   lastValueFrom,
 } from 'rxjs'
-import {buffer, takeWhile, first, publish} from 'rxjs/operators'
-import {DocumentAvailability, DraftsModelDocumentAvailability} from '../../../../preview'
+import {buffer, takeWhile, publish} from 'rxjs/operators'
+import {getFallbackLocaleSource} from '../../../../i18n/fallback'
+import type {DocumentAvailability, DraftsModelDocumentAvailability} from '../../../../preview'
 import {createSchema} from '../../../../schema'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {editState, EditStateFor} from './editState'
@@ -51,7 +52,7 @@ function createSubscription(
   const getClient = () => client
 
   const stream = validation(
-    {client, getClient, schema, observeDocumentPairAvailability},
+    {client, getClient, schema, observeDocumentPairAvailability, i18n: getFallbackLocaleSource()},
     {publishedId: 'example-id', draftId: 'drafts.example-id'},
     'movie',
   ).pipe(publish())
@@ -284,6 +285,7 @@ describe('validation', () => {
           schema,
           getClient: () => client,
           observeDocumentPairAvailability: jest.fn().mockReturnValue(EMPTY),
+          i18n: getFallbackLocaleSource(),
         },
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
         'movie',
