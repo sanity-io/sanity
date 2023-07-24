@@ -7,6 +7,7 @@ import {
   useVirtualizer,
   VirtualizerOptions,
   type Range,
+  elementScroll,
 } from '@tanstack/react-virtual'
 import type {DragStartEvent} from '@dnd-kit/core'
 import {Item, List} from '../../common/list'
@@ -146,6 +147,15 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     observeElementOffset,
     rangeExtractor,
     getItemKey: useCallback((index: number) => memberKeys[index], [memberKeys]),
+    scrollToFn: (offset, options, instance) => {
+      // If the offset is the same as the current scroll offset, don't scroll
+      // Offset gets set to 0 here https://github.com/TanStack/virtual/blob/beta/packages/virtual-core/src/index.ts#L211
+      // which causes the scroll to top
+      if (offset === instance.scrollOffset) {
+        return
+      }
+      elementScroll(offset, options, instance)
+    },
   })
 
   const items = virtualizer.getVirtualItems()
