@@ -4034,9 +4034,9 @@
     vite "^4.1.1"
 
 "@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.7.2.tgz#edd1c00937ed1e873eb10f7b961fc034628ea2ac"
-  integrity sha512-SH87xt6NdAtBVGNyeeDX5g0cRaS4N8s9qxOCClc+1JLxei276QG7ZRFGa9o9XKeZqiqOWzAcGSMR1RN5O//hhw==
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.7.3.tgz#e603cf6d68ca26e1345a76ee0f328532d794edd2"
+  integrity sha512-C+EBh7Vp0XMKE6k7sAGylc5R9RsZkKu4FnZ2SotVe5CPUTFAqTIqEn2WoaAKVMtkafxplCXd7RQsWr5nJOjqSg==
   dependencies:
     "@floating-ui/react-dom" "2.0.0"
     "@sanity/color" "^2.2.5"
