@@ -1,4 +1,4 @@
-import React, {MouseEventHandler, ReactNode, useCallback, useState} from 'react'
+import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
 import {Button, Inline, Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import styled from 'styled-components'
@@ -72,6 +72,13 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
     [setMenuButtonElement]
   )
 
+  // When the popover is open, focus the menu to enable keyboard navigation
+  useEffect(() => {
+    if (isMenuOpen) {
+      menuElement?.focus()
+    }
+  }, [isMenuOpen, menuElement])
+
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
       {showEdit && (
@@ -84,14 +91,11 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
           ref={setHotspotButtonElement}
         />
       )}
-
+      {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
+     and break replacing an uploaded file. */}
       <Popover
         id="image-actions-menu"
-        content={
-          <Menu ref={setMenuElement} shouldFocus="first">
-            {children}
-          </Menu>
-        }
+        content={<Menu ref={setMenuElement}>{children}</Menu>}
         portal
         open={isMenuOpen}
         constrainSize

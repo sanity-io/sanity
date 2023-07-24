@@ -1,5 +1,5 @@
 import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import React, {ReactNode, useCallback, useState} from 'react'
+import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import {
   Box,
   Button,
@@ -43,17 +43,6 @@ export function FileActionsMenu(props: Props) {
 
   const handleClick = useCallback(() => onMenuOpen(true), [onMenuOpen])
 
-  const setOptionsButtonRef = useCallback(
-    (el: HTMLButtonElement | null) => {
-      // Pass the button element to the parent component so that it can focus it when e.g. closing dialogs
-      setMenuButtonElement(el)
-
-      // Set focus back on the button when closing the menu
-      setButtonElement(el)
-    },
-    [setMenuButtonElement]
-  )
-
   useGlobalKeyDown(
     useCallback(
       (event) => {
@@ -67,10 +56,36 @@ export function FileActionsMenu(props: Props) {
   )
 
   // Close menu when clicking outside of it
+  // Not when clicking on the button
   useClickOutside(
-    useCallback(() => onMenuOpen(false), [onMenuOpen]),
+    useCallback(
+      (event) => {
+        if (!buttonElement?.contains(event.target as Node)) {
+          onMenuOpen(false)
+        }
+      },
+      [buttonElement, onMenuOpen]
+    ),
     [menuElement]
   )
+
+  const setOptionsButtonRef = useCallback(
+    (el: HTMLButtonElement | null) => {
+      // Pass the button element to the parent component so that it can focus it when e.g. closing dialogs
+      setMenuButtonElement(el)
+
+      // Set focus back on the button when closing the menu
+      setButtonElement(el)
+    },
+    [setMenuButtonElement]
+  )
+
+  // When the popover is open, focus the menu to enable keyboard navigation
+  useEffect(() => {
+    if (isMenuOpen) {
+      menuElement?.focus()
+    }
+  }, [isMenuOpen, menuElement])
 
   return (
     <Flex wrap="nowrap" justify="space-between" align="center">
@@ -101,16 +116,17 @@ export function FileActionsMenu(props: Props) {
 
       <Box padding={2}>
         <Flex justify="center">
+          {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
+     and break replacing an uploaded file. */}
           <Popover
-            content={
-              <Menu ref={setMenuElement} shouldFocus="first">
-                {children}
-              </Menu>
-            }
+            content={<Menu ref={setMenuElement}>{children}</Menu>}
+            id="file-actions-menu"
             portal
             open={isMenuOpen}
+            constrainSize
           >
             <Button
+              aria-label="Open file options menu"
               data-testid="options-menu-button"
               icon={EllipsisVerticalIcon}
               mode="bleed"
