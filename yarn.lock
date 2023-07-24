@@ -13095,10 +13095,10 @@ mdn-data@2.0.4:
   resolved "https://registry.yarnpkg.com/mdn-data/-/mdn-data-2.0.4.tgz#699b3c38ac6f1d728091a64650b65d388502fd5b"
   integrity sha512-iV3XNKw06j5Q7mi6h+9vbx23Tv7JkjEVgKHW4pimwyDGWm0OIQntJJ+u1C6mg6mK1EaTv42XQ7w76yuzH7M2cA==
 
-media-chrome@^0.20.0:
-  version "0.20.4"
-  resolved "https://registry.yarnpkg.com/media-chrome/-/media-chrome-0.20.4.tgz#e156804ca395ebc1e8f1535f2be2af3f015b0296"
-  integrity sha512-lORsPuwGWEZSkHgkLnTVWYKr5/QF625BFcnUiLaCvicD8WVaD+EA2DNsuuOEHC61iY9LUwy5L+YldCG19Aamdw==
+media-chrome@^0.21.0:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/media-chrome/-/media-chrome-0.21.1.tgz#a6d1c1d2ab48db7fab6ca42cc42518a64f6c4137"
+  integrity sha512-wiGKG4tucT5rYcHpaD9iV2W7xmQ8Ru/d1+zxpUpQarMJLlgKQ8/saZItFw7/UAIlss2QrLRGT/pPeg98MOI4Mg==
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -16691,9 +16691,9 @@ sanity-diff-patch@^1.0.9:
     diff-match-patch "^1.0.5"
 
 sanity-plugin-mux-input@^2.0.2:
-  version "2.0.17"
-  resolved "https://registry.yarnpkg.com/sanity-plugin-mux-input/-/sanity-plugin-mux-input-2.0.17.tgz#1a99ec7ea5ffd819d3c314464b953fb7c1779852"
-  integrity sha512-Xx1Yhr+GKRtwlhbGjzsEnqIWbS1fQq1hyCWP2vVf71iDzsCkzgIZ8TubAc13ydpI5zemCOKK/167IKAStBb7jQ==
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/sanity-plugin-mux-input/-/sanity-plugin-mux-input-2.1.1.tgz#250edddd932bda10bd5ea959902b3da42305e1e3"
+  integrity sha512-9PUQk54y03L58QatoSKxXS1dA1L5fKKSl2cnmH5go0M6Un8SWivTwpn7idmF6lVW3VMSvevXr4K7N9Qo6rp8kg==
   dependencies:
     "@mux/mux-video-react" "^0.7.7"
     "@mux/upchunk" "^3"
@@ -16703,11 +16703,11 @@ sanity-plugin-mux-input@^2.0.2:
     "@sanity/uuid" "^3"
     classnames "^2.3.2"
     jsonwebtoken-esm "^1.0.5"
-    media-chrome "^0.20.0"
+    media-chrome "^0.21.0"
     motion "^10"
     rxjs "^7"
     scroll-into-view-if-needed "^3"
-    suspend-react "^0.0.9"
+    suspend-react "^0.0.10"
     swr "^2.1.0"
     use-device-pixel-ratio "^1.1.2"
     use-error-boundary "^2.0.6"
@@ -17830,10 +17830,10 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
-suspend-react@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/suspend-react/-/suspend-react-0.0.9.tgz#329072e330be9dc5cc97d1e3a563d542460c3ee5"
-  integrity sha512-668Pxy4z54fhjpnPqw6olj3vvpV03VywFNXazyNSYSTuHaRw3NJJjO5l8R49AUk5fMTkJXGVGaaVSgdaO01S3w==
+suspend-react@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/suspend-react/-/suspend-react-0.0.10.tgz#9b1cc83d13e0ded81fd6f65a3d564bbbfa7024ab"
+  integrity sha512-7yyJ1aBr9Ap4XZQOBaYlOelNcRc42zv50C0pVNOHfhW/DwTbHGFVZKKJsVndyQvQTv/fAkIO9TAMvGiSCjT0Zw==
 
 suspend-react@^0.1.3:
   version "0.1.3"
