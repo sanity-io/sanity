@@ -3758,6 +3758,17 @@
   dependencies:
     "@sanity/uuid" "3.0.2"
 
+"@sanity/telemetry@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@sanity/telemetry/-/telemetry-0.7.0.tgz#12df09a6a1b8ae5037685755257c5f7f52c3b276"
+  integrity sha512-XyNN+bysHRVRxWXRrVkJFrcz7ZBd2jioy8L8xHm4rp5UxX2kv57LQT9JGwt3+TX37yjm/Dz8Z6LgsPi/7bN+aA==
+  dependencies:
+    lodash "^4.17.21"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+    rxjs "^7.8.1"
+    typeid-js "^0.3.0"
+
 "@sanity/test@0.0.1-alpha.1":
   version "0.0.1-alpha.1"
   resolved "https://registry.yarnpkg.com/@sanity/test/-/test-0.0.1-alpha.1.tgz#35b0847b7b10a547f281ffe4615f53a8296e0bee"
@@ -15663,6 +15674,13 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
+typeid-js@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/typeid-js/-/typeid-js-0.3.0.tgz#704dedde2382fcb4e5c15c54d285f0209d37f9cf"
+  integrity sha512-A1EmvIWG6xwYRfHuYUjPltHqteZ1EiDG+HOmbIYXeHUVztmnGrPIfU9KIK1QC30x59ko0r4JsMlwzsALCyiB3Q==
+  dependencies:
+    uuidv7 "^0.4.4"
+
 typescript@^5.1.6, typescript@^5.2.2:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
@@ -15945,6 +15963,11 @@ uuid@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
   integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
+
+uuidv7@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/uuidv7/-/uuidv7-0.4.4.tgz#e7ffd7981f590c478fb8868eff4bb3bc55fa90e6"
+  integrity sha512-jjRGChg03uGp9f6wQYSO8qXkweJwRbA5WRuEQE8xLIiehIzIIi23qZSzsyvZPCPoFqkeLtZuz7Plt1LGukAInA==
 
 v8-compile-cache-lib@^3.0.1:
   version "3.0.1"
