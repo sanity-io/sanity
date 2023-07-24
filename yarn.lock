@@ -3836,9 +3836,9 @@
     rxjs "^7.0.0"
 
 "@sanity/client@^6.1.2", "@sanity/client@^6.1.5":
-  version "6.1.6"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.1.6.tgz#8c17f29d8319324a01976a18a5dfb983a94da1ae"
-  integrity sha512-pFg9Zbp2ztNwTRr3ct5og1YL64sGUUMeoQVkp4SQgcRvcMpHNK8E3cLL8cz+VCUpp7ERE3K7M5hlyb+vnglaDA==
+  version "6.1.7"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.1.7.tgz#15e6e61ddfbf3fabb4b9f8e60c03092839317ee4"
+  integrity sha512-crleZDBic3VpmBhIuiVZNkJMxAWE/fj5v+hHBXt+2psW1CJrvBdTLX14f4cqC40W1YDDE4ZGrDkYuph6Y6/YzQ==
   dependencies:
     "@sanity/eventsource" "^5.0.0"
     get-it "^8.1.0"
