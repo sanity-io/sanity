@@ -9690,9 +9690,9 @@ fragment-cache@^0.2.1:
     map-cache "^0.2.2"
 
 framer-motion@^10.0.0, framer-motion@^10.12.16:
-  version "10.12.17"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.12.17.tgz#0e891aaddbe6049267c413449945af95585cbc87"
-  integrity sha512-IR+aAYntsyu6ofyxqQV4QYotmOqzcuKxhqNpfc3DXJjNWOPpOeSyH0A+In3IEBu49Yx/+PNht+YMeZSdCNaYbw==
+  version "10.13.1"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.13.1.tgz#f717c924ce9a8927264b41692a870d1366fe296c"
+  integrity sha512-uiKsaLEoySeln3eOPy8wUB3FkNtRRiVga5xJOkgs7C0sHVyvpJajXJFSoabt+emBojgnMQY0epnjl0ppoYPxkQ==
   dependencies:
     tslib "^2.4.0"
   optionalDependencies:
