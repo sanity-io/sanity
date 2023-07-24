@@ -85,7 +85,7 @@ export function runUpdateCheck(options: UpdateCheckOptions): {notify: () => Prom
       return
     }
 
-    const upgradeCommand = await getCliUpgradeCommand({cwd, workDir})
+    const upgradeCommand = await getCliUpgradeCommand({cwd, workDir, newVersion})
     const message = [
       'Update available ',
       chalk.dim(version),

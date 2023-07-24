@@ -1,17 +1,18 @@
 import path from 'path'
 import isInstalledGlobally from 'is-installed-globally'
-import { debug } from '../debug'
-import { getPackageManagerChoice } from './packageManagerChoice'
+import {debug} from '../debug'
+import {getPackageManagerChoice} from './packageManagerChoice'
 
 const cliPkgName = '@sanity/cli'
 
 interface Options {
   cwd?: string
   workDir?: string
+  newVersion: string
 }
 
-export async function getCliUpgradeCommand(options: Options = {}): Promise<string> {
-  let { cwd, workDir } = options
+export async function getCliUpgradeCommand(options: Options): Promise<string> {
+  let {cwd, workDir} = options
   cwd = path.resolve(cwd || process.cwd())
   workDir = path.resolve(workDir || cwd)
 
@@ -27,10 +28,10 @@ export async function getCliUpgradeCommand(options: Options = {}): Promise<strin
 
   const cmds = cwd === workDir ? [] : [`cd ${path.relative(cwd, workDir)}`]
 
-  const { chosen } = await getPackageManagerChoice(workDir, { interactive: false })
+  const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
 
   if (chosen === 'yarn') {
-    cmds.push(`yarn up ${cliPkgName}`)
+    cmds.push(`yarn add ${cliPkgName}@^${options.newVersion}`)
   } else if (chosen === 'pnpm') {
     cmds.push(`pnpm update ${cliPkgName}`)
   } else {
