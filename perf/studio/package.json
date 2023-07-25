@@ -1,6 +1,6 @@
 {
   "name": "perf-studio",
-  "version": "3.14.3",
+  "version": "3.14.4",
   "private": true,
   "description": "Sanity Studio with various test cases for tracking performance",
   "scripts": {
@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "3.14.3",
+    "sanity": "3.14.4",
     "styled-components": "^5.2.0"
   }
 }
