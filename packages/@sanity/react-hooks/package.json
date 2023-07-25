@@ -1,6 +1,6 @@
 {
   "name": "@sanity/react-hooks",
-  "version": "2.36.1",
+  "version": "2.36.2",
   "description": "Officially supported Sanity Studio API building blocks",
   "main": "./lib/index.js",
   "types": "./dist/dts",
@@ -28,12 +28,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/types": "2.35.0",
+    "@sanity/types": "2.36.2",
     "react-rx": "^1.0.0-beta.6",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/base": "2.36.1",
+    "@sanity/base": "2.36.2",
     "react": "17.0.1",
     "rimraf": "^2.7.1",
     "rxjs": "^6.5.3"

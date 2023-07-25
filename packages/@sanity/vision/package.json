@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "2.36.1",
+  "version": "2.36.2",
   "description": "React-based data management tool for Sanity projects",
   "main": "lib/SanityVision.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -35,7 +35,7 @@
     "react-split-pane": "^0.1.84"
   },
   "devDependencies": {
-    "@sanity/base": "2.36.1",
+    "@sanity/base": "2.36.2",
     "prop-types": "^15.6.0",
     "react": "17.0.1",
     "react-dom": "17.0.1"
