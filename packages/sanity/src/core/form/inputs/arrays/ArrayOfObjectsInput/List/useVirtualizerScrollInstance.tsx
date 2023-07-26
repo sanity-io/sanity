@@ -1,10 +1,11 @@
-import {createContext, useContext} from 'react'
+import {type MutableRefObject, createContext, useContext} from 'react'
 
 /**
  * @internal
  */
 export interface VirtualizerScrollInstance {
   scrollElement: HTMLElement | null
+  containerElement: MutableRefObject<HTMLElement | null>
 }
 
 /**

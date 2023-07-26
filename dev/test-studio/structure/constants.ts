@@ -77,7 +77,7 @@ export const DEBUG_INPUT_TYPES = [
   'scrollBug',
   'ptReference',
   'virtualizationInObject',
-  'virtualizationCustomComponent',
+  'virtualizationDebug',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI']

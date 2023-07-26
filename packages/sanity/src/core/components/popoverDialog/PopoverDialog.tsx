@@ -61,9 +61,9 @@ export function PopoverDialog(props: PopoverDialogProps) {
   }, [onClose, referenceElement])
 
   const content = (
-    <PopoverContainer width={width} ref={containerRef}>
+    <PopoverContainer width={width}>
       <TrapFocus autoFocus>
-        <Stack>
+        <Stack ref={containerRef}>
           <StickyLayer>
             <Box padding={2} paddingLeft={3}>
               <Flex align="center" gap={2}>

@@ -85,7 +85,7 @@ import fieldGroupsMany from './debug/fieldGroupsMany'
 import fieldGroupsWithValidation from './debug/fieldGroupsWithValidation'
 import fieldGroupsWithFieldsetsAndValidation from './debug/fieldGroupsWithFieldsetsAndValidation'
 import {virtualizationInObject} from './debug/virtualizationInObject'
-import {virtualizationCustomComponent} from './debug/virtualizationCustomComponent'
+import {virtualizationDebug} from './debug/virtualizationDebug'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -251,7 +251,8 @@ export const schemaTypes = [
   validation,
   validationArraySuperType,
   validationTest,
-  virtualizationCustomComponent,
+  virtualizationDebug,
+  virtualizationInObject,
   fieldGroups,
   fieldGroupsDefault,
   fieldGroupsMany,
@@ -261,5 +262,4 @@ export const schemaTypes = [
   allNativeInputComponents,
   ...v3docs.types,
   ...demos3d.types,
-  virtualizationInObject,
 ]

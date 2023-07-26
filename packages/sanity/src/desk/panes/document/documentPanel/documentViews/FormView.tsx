@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 
 import {Box, Container, Flex, Spinner, Text, focusFirstDescendant} from '@sanity/ui'
-import React, {useEffect, useMemo, useRef} from 'react'
+import React, {forwardRef, useEffect, useMemo, useRef, type Ref, useCallback, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
@@ -25,7 +25,7 @@ interface FormViewProps {
 
 const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 
-export function FormView(props: FormViewProps) {
+export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormView(props, ref) {
   const {hidden, margins} = props
 
   const {
@@ -105,16 +105,29 @@ export function FormView(props: FormViewProps) {
   }, [hasRev])
 
   const formRef = useRef<null | HTMLDivElement>(null)
+  // const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
 
   useEffect(() => {
     // Only focus on the first descendant if there is not already a focus path
     // This is to avoid stealing focus from intent links
-    if (ready && !formState?.focusPath.length) {
-      focusFirstDescendant(formRef.current!)
+    if (ready && !formState?.focusPath.length && formRef.current) {
+      focusFirstDescendant(formRef.current)
     }
     // We only want to run it on first mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready])
+
+  // const setRef = useCallback(
+  //   (node: HTMLDivElement | null) => {
+  //     setFormRef(node)
+  //     if (typeof ref === 'function') {
+  //       ref(node)
+  //     } else if (ref) {
+  //       ref.current = node
+  //     }
+  //   },
+  //   [ref]
+  // )
 
   // const after = useMemo(
   //   () =>
@@ -136,56 +149,57 @@ export function FormView(props: FormViewProps) {
       width={1}
     >
       <PresenceOverlay margins={margins}>
-        <Box as="form" onSubmit={preventDefault} ref={formRef}>
-          {ready ? (
-            formState === null ? (
-              <Box padding={2}>
-                <Text>This form is hidden</Text>
-              </Box>
-            ) : (
-              <FormBuilder
-                __internal_fieldActions={fieldActions}
-                __internal_patchChannel={patchChannel}
-                collapsedFieldSets={collapsedFieldSets}
-                collapsedPaths={collapsedPaths}
-                focusPath={formState.focusPath}
-                changed={formState.changed}
-                focused={formState.focused}
-                groups={formState.groups}
-                id="root"
-                members={formState.members}
-                onChange={onChange}
-                onFieldGroupSelect={onSetActiveFieldGroup}
-                onPathBlur={onBlur}
-                onPathFocus={onFocus}
-                onPathOpen={onPathOpen}
-                onSetFieldSetCollapsed={onSetCollapsedFieldSet}
-                onSetPathCollapsed={onSetCollapsedPath}
-                presence={presence}
-                readOnly={formState.readOnly}
-                schemaType={formState.schemaType}
-                validation={validation}
-                value={formState.value}
-              />
-            )
-          ) : (
-            <Delay ms={300}>
-              <Flex align="center" direction="column" height="fill" justify="center">
-                <Spinner muted />
-
-                <Box marginTop={3}>
-                  <Text align="center" muted size={1}>
-                    Loading document
-                  </Text>
+        <div ref={ref}>
+          <Box as="form" onSubmit={preventDefault} ref={formRef} style={{position: 'relative'}}>
+            {ready ? (
+              formState === null ? (
+                <Box padding={2}>
+                  <Text>This form is hidden</Text>
                 </Box>
-              </Flex>
-            </Delay>
-          )}
-        </Box>
+              ) : (
+                <FormBuilder
+                  __internal_fieldActions={fieldActions}
+                  __internal_patchChannel={patchChannel}
+                  collapsedFieldSets={collapsedFieldSets}
+                  collapsedPaths={collapsedPaths}
+                  focusPath={formState.focusPath}
+                  changed={formState.changed}
+                  focused={formState.focused}
+                  groups={formState.groups}
+                  id="root"
+                  members={formState.members}
+                  onChange={onChange}
+                  onFieldGroupSelect={onSetActiveFieldGroup}
+                  onPathBlur={onBlur}
+                  onPathFocus={onFocus}
+                  onPathOpen={onPathOpen}
+                  onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+                  onSetPathCollapsed={onSetCollapsedPath}
+                  presence={presence}
+                  readOnly={formState.readOnly}
+                  schemaType={formState.schemaType}
+                  validation={validation}
+                  value={formState.value}
+                />
+              )
+            ) : (
+              <Delay ms={300}>
+                <Flex align="center" direction="column" height="fill" justify="center">
+                  <Spinner muted />
+                  <Box marginTop={3}>
+                    <Text align="center" muted size={1}>
+                      Loading document
+                    </Text>
+                  </Box>
+                </Flex>
+              </Delay>
+            )}
+          </Box>
+        </div>
       </PresenceOverlay>
     </Container>
   )
-}
+})
 
 function prepareMutationEvent(event: DocumentMutationEvent): PatchMsg {
   const patches = event.mutations.map((mut) => mut.patch).filter(Boolean)

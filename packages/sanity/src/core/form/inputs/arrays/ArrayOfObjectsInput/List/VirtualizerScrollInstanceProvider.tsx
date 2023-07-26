@@ -16,10 +16,12 @@ interface VirtualizerScrollInstanceProviderProps extends VirtualizerScrollInstan
  * @internal
  */
 export function VirtualizerScrollInstanceProvider(props: VirtualizerScrollInstanceProviderProps) {
-  const {scrollElement} = props
+  const {scrollElement, containerElement} = props
 
   return (
-    <VirtualizerScrollInstanceContext.Provider value={{scrollElement}}>
+    <VirtualizerScrollInstanceContext.Provider
+      value={{scrollElement, containerElement: containerElement}}
+    >
       {props.children}
     </VirtualizerScrollInstanceContext.Provider>
   )
