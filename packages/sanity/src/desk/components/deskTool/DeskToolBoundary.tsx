@@ -15,7 +15,7 @@ interface DeskToolBoundaryProps {
 export function DeskToolBoundary({tool: {options}}: DeskToolBoundaryProps) {
   const {unstable_sources: sources} = useWorkspace()
   const [firstSource] = sources
-  const {source, defaultDocumentNode, structure} = options || {}
+  const {source, defaultDocumentNode, structure, name: deskConfigName} = options || {}
 
   // Set active panes to blank on mount and unmount
   useEffect(() => {
@@ -30,7 +30,11 @@ export function DeskToolBoundary({tool: {options}}: DeskToolBoundaryProps) {
   return (
     <ErrorBoundary onCatch={setError}>
       <SourceProvider name={source || firstSource.name}>
-        <DeskToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
+        <DeskToolProvider
+          deskConfigName={deskConfigName}
+          defaultDocumentNode={defaultDocumentNode}
+          structure={structure}
+        >
           <DeskTool onPaneChange={setActivePanes} />
           <IntentResolver />
         </DeskToolProvider>

@@ -9,16 +9,12 @@ import {usePaneRouter} from '../../components'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
+import {getHistoryInspectorName} from './getHistoryInspectorName'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
-import {
-  DEFAULT_MENU_ITEM_GROUPS,
-  EMPTY_PARAMS,
-  HISTORY_INSPECTOR_NAME,
-  INSPECT_ACTION_PREFIX,
-} from './constants'
+import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {DocumentInspectorMenuItemsResolver} from './DocumentInspectorMenuItemsResolver'
 import {
   DocumentInspector,
@@ -70,7 +66,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
-  const {features} = useDeskTool()
+  const {deskConfigName, features} = useDeskTool()
   const {push: pushToast} = useToast()
   const {
     options,
@@ -189,6 +185,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
   }, [params.inspect])
 
+  const HISTORY_INSPECTOR_NAME = getHistoryInspectorName(deskConfigName)
   const currentInspector = inspectors?.find((i) => i.name === inspectorName)
   const resolvedChangesInspector = inspectors.find((i) => i.name === HISTORY_INSPECTOR_NAME)
 

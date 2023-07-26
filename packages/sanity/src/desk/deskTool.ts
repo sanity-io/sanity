@@ -94,7 +94,7 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
       }
       return badges
     },
-    inspectors: [validationInspector, changesInspector],
+    inspectors: [validationInspector(options?.name), changesInspector(options?.name)],
   },
   tools: [
     {

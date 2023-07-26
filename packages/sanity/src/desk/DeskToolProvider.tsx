@@ -8,12 +8,14 @@ import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
 export interface DeskToolProviderProps {
   structure?: StructureResolver
   defaultDocumentNode?: DefaultDocumentNodeResolver
+  deskConfigName?: string
   children: React.ReactNode
 }
 
 /** @internal */
 export function DeskToolProvider({
   defaultDocumentNode,
+  deskConfigName,
   structure: resolveStructure,
   children,
 }: DeskToolProviderProps): React.ReactElement {
@@ -52,13 +54,14 @@ export function DeskToolProvider({
 
   const deskTool: DeskToolContextValue = useMemo(() => {
     return {
+      deskConfigName,
       features,
       layoutCollapsed,
       setLayoutCollapsed,
       rootPaneNode,
       structureContext: S.context,
     }
-  }, [features, layoutCollapsed, rootPaneNode, S.context])
+  }, [deskConfigName, features, layoutCollapsed, rootPaneNode, S.context])
 
   return <DeskToolContext.Provider value={deskTool}>{children}</DeskToolContext.Provider>
 }

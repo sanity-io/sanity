@@ -1,6 +1,6 @@
 import {CheckmarkCircleIcon, ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {useMemo} from 'react'
-import {VALIDATION_INSPECTOR_NAME} from '../../constants'
+import {getValidationInspectorName} from '../../getValidationInspectorName'
 import {ValidationInspector} from './ValidationInspector'
 import {
   DocumentInspector,
@@ -50,8 +50,10 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
   }
 }
 
-export const validationInspector: DocumentInspector = {
-  name: VALIDATION_INSPECTOR_NAME,
-  component: ValidationInspector,
-  useMenuItem,
+export function validationInspector(deskConfigName?: string): DocumentInspector {
+  return {
+    name: getValidationInspectorName(deskConfigName),
+    component: ValidationInspector,
+    useMenuItem,
+  }
 }

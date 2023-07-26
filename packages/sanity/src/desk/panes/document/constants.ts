@@ -12,7 +12,3 @@ export const EMPTY_PARAMS: NonNullable<PaneRouterContextValue['params']> = {}
 export const INSPECT_ACTION_PREFIX = 'inspect:'
 
 export const DEFAULT_MENU_ITEM_GROUPS: PaneMenuItemGroup[] = [{id: 'inspectors'}, {id: 'links'}]
-
-// inspectors
-export const HISTORY_INSPECTOR_NAME = 'sanity/desk/history'
-export const VALIDATION_INSPECTOR_NAME = 'sanity/desk/validation'

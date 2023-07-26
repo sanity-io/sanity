@@ -32,6 +32,7 @@ export interface DeskToolFeatures {
 
 /** @internal */
 export interface DeskToolContextValue {
+  deskConfigName?: string
   features: DeskToolFeatures
   layoutCollapsed: boolean
   setLayoutCollapsed: (layoutCollapsed: boolean) => void
@@ -122,9 +123,9 @@ export interface DeskToolOptions {
    */
   name?: string
   /**
-   * A workspace can have different "sources". These sources were meant to allow using multiple datasets within the same workspace, for instance. 
+   * A workspace can have different "sources". These sources were meant to allow using multiple datasets within the same workspace, for instance.
    * This is not supported yet, but the API is still here.
-   * 
+   *
     @hidden
     @alpha
   */
