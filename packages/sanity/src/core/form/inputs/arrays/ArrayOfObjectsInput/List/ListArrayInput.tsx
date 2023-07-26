@@ -124,6 +124,9 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         const containerElementTop = containerElement.current?.getBoundingClientRect().top ?? 0
         const parentElementTop = parentRef.current?.getBoundingClientRect().top ?? 0
 
+        // This is used to calculate the offsetTop of the parent element
+        // Instead of using the `offsetTop` which will use the nearest parent with `position: relative`
+        // We pass a component that we have more control over to avoid issues when wrapped in custom component
         const itemOffset = Math.floor(parentElementTop - containerElementTop)
 
         cb(scroll.scrollTop - itemOffset)
