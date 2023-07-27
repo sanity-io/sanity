@@ -1,4 +1,9 @@
-import type {Path, PathSegment, Validators} from '@sanity/types'
+import {
+  isArrayOfBlocksSchemaType,
+  type Path,
+  type PathSegment,
+  type Validators,
+} from '@sanity/types'
 import {deepEquals} from '../util/deepEquals'
 import {ValidationError as ValidationErrorClass} from '../ValidationError'
 import {genericValidators} from './genericValidator'
@@ -6,39 +11,42 @@ import {genericValidators} from './genericValidator'
 export const arrayValidators: Validators = {
   ...genericValidators,
 
-  min: (minLength, value, message) => {
+  min: (minLength, value, message, {i18n, type}) => {
     if (!value || value.length >= minLength) {
       return true
     }
 
-    return message || `Must have at least ${minLength} items`
+    const context = isArrayOfBlocksSchemaType(type) ? 'blocks' : undefined
+    return message || i18n.t('validation:array.minimum-length', {minLength, context})
   },
 
-  max: (maxLength, value, message) => {
+  max: (maxLength, value, message, {i18n, type}) => {
     if (!value || value.length <= maxLength) {
       return true
     }
 
-    return message || `Must have at most ${maxLength} items`
+    const context = isArrayOfBlocksSchemaType(type) ? 'blocks' : undefined
+    return message || i18n.t('validation:array.maximum-length', {maxLength, context})
   },
 
-  length: (wantedLength, value, message) => {
+  length: (wantedLength, value, message, {i18n, type}) => {
     if (!value || value.length === wantedLength) {
       return true
     }
 
-    return message || `Must have exactly ${wantedLength} items`
+    const context = isArrayOfBlocksSchemaType(type) ? 'blocks' : undefined
+    return message || i18n.t('validation:array.exact-length', {wantedLength, context})
   },
 
-  presence: (flag, value, message) => {
+  presence: (flag, value, message, {i18n}) => {
     if (flag === 'required' && !value) {
-      return message || 'Required'
+      return message || i18n.t('validation:generic.required', {context: 'array'})
     }
 
     return true
   },
 
-  valid: (allowedValues, values, message) => {
+  valid: (allowedValues, values, message, {i18n}) => {
     const valueType = typeof values
     if (valueType === 'undefined') {
       return true
@@ -57,10 +65,10 @@ export const arrayValidators: Validators = {
 
     return paths.length === 0
       ? true
-      : new ValidationErrorClass(message || 'Value did not match any allowed values', {paths})
+      : new ValidationErrorClass(message || i18n.t('validation:generic.not-allowed'), {paths})
   },
 
-  unique: (_unused, value, message) => {
+  unique: (_unused, value, message, {i18n}) => {
     const dupeIndices = []
     if (!value) {
       return true
@@ -92,7 +100,7 @@ export const arrayValidators: Validators = {
     })
 
     return dupeIndices.length > 0
-      ? new ValidationErrorClass(message || `Can't be a duplicate`, {paths})
+      ? new ValidationErrorClass(message || i18n.t('validation:array.item-duplicate'), {paths})
       : true
   },
 }

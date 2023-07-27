@@ -86,7 +86,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be less than or equal 10",
+      "message": "Must be lower than or equal to 10",
       "operation": undefined,
       "paths": Array [],
     },
@@ -105,7 +105,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be greater than or equal 10",
+      "message": "Must be greater than or equal to 10",
       "operation": undefined,
       "paths": Array [],
     },
@@ -156,7 +156,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be greater than or equal 0",
+      "message": "Must be greater than or equal to 0",
       "operation": undefined,
       "paths": Array [],
     },
@@ -194,7 +194,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Value is required",
+      "message": "Required",
       "operation": undefined,
       "paths": Array [],
     },
