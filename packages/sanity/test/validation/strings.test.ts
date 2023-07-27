@@ -1,6 +1,7 @@
+import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {Rule} from '../../src/core/validation'
 
-const context: any = {client: {}}
+const context: any = {client: {}, i18n: getFallbackLocaleSource()}
 
 describe('string', () => {
   test('required constraint', async () => {
