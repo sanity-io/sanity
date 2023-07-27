@@ -64,6 +64,10 @@ function createI18nApi({
       get currentLocale() {
         return i18nInstance.language
       },
+      loadNamespaces(namespaces: string[]): Promise<void> {
+        const missing = namespaces.filter((ns) => !i18nInstance.hasLoadedNamespace(ns))
+        return missing.length === 0 ? Promise.resolve() : i18nInstance.loadNamespaces(namespaces)
+      },
       locales: reducedLocales,
       t: i18nInstance.t,
     },

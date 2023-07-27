@@ -1,9 +1,9 @@
 import {memoize} from 'lodash'
-import {createInstance} from 'i18next'
-import {studioLocaleStrings} from './bundles/studio'
+import {type Resource, createInstance} from 'i18next'
 import type {LocaleSource} from './types'
 import {studioLocaleNamespace} from './localeNamespaces'
-import {defaultLocale} from './locales'
+import {defaultLocale, usEnglishLocale} from './locales'
+import {isStaticResourceBundle} from './defineHelpers'
 
 const shouldEscape = typeof window === 'undefined' || typeof document === 'undefined'
 const fallbackLocales: LocaleSource['locales'] = [
@@ -16,7 +16,7 @@ const fallbackLocales: LocaleSource['locales'] = [
  *
  * Memoized - only initializes the i18n instance once, and maintains the identity of the source.
  *
- * ⚠️ NOTE: This will only have the core studio strings defined - no custom bundles or plugins.
+ * ⚠️ NOTE: This will only have the base studio strings defined - no custom bundles or plugins.
  *
  * @returns The fallback source
  * @internal
@@ -24,17 +24,28 @@ const fallbackLocales: LocaleSource['locales'] = [
 export const getFallbackLocaleSource: () => LocaleSource = memoize(
   function getFallbackLocaleSource(): LocaleSource {
     const i18n = getFallbackI18nInstance()
+    i18n.init()
     return {
       currentLocale: defaultLocale.id,
       locales: fallbackLocales,
+      loadNamespaces: i18n.loadNamespaces,
       t: i18n.t,
     }
   },
 )
 
 function getFallbackI18nInstance() {
+  // Find all core locale resource bundles we can load synchronously
+  const staticResources: Resource = {[defaultLocale.id]: {}}
+  const staticBundles = usEnglishLocale.bundles?.filter(isStaticResourceBundle) || []
+  const namespaces = new Set<string>()
+  for (const bundle of staticBundles) {
+    staticResources[defaultLocale.id][bundle.namespace] = bundle.resources
+    namespaces.add(bundle.namespace)
+  }
+
   return createInstance({
-    ns: [studioLocaleNamespace],
+    ns: Array.from(namespaces),
     defaultNS: studioLocaleNamespace,
     initImmediate: true,
     partialBundledLanguages: true,
@@ -43,15 +54,11 @@ function getFallbackI18nInstance() {
     supportedLngs: [defaultLocale.id],
     debug: false,
     load: 'currentOnly',
+    resources: staticResources,
     interpolation: {
       // If we're in a browser, assume this is running inside of the studio, eg a React app,
       // and that values returned will be escaped by the framework (eg React) automatically.
       escapeValue: shouldEscape,
-    },
-    resources: {
-      [defaultLocale.id]: {
-        [studioLocaleNamespace]: studioLocaleStrings,
-      },
     },
   })
 }
