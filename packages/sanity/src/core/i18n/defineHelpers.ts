@@ -1,4 +1,9 @@
-import type {LocaleDefinition, LocaleResourceBundle} from './types'
+import type {
+  ImplicitLocaleResourceBundle,
+  LocaleDefinition,
+  LocaleResourceBundle,
+  StaticLocaleResourceBundle,
+} from './types'
 
 /**
  * Defines a resource bundle for a given locale and namespace.
@@ -22,4 +27,16 @@ export function defineLocaleResourceBundle(bundle: LocaleResourceBundle): Locale
  */
 export function defineLocale(locale: LocaleDefinition): LocaleDefinition {
   return locale
+}
+
+/**
+ * Checks whether or not the given resource bundle has static resources, eg is not lazy loaded.
+ *
+ * @param bundle - Bundle to check
+ * @returns `true` if the bundle has static resources, `false` otherwise
+ */
+export function isStaticResourceBundle(
+  bundle: LocaleResourceBundle | StaticLocaleResourceBundle | ImplicitLocaleResourceBundle,
+): bundle is StaticLocaleResourceBundle {
+  return !('then' in bundle.resources && typeof bundle.resources.then === 'function')
 }
