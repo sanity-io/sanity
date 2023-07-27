@@ -2,6 +2,7 @@ import type {
   CustomValidator,
   FieldRules,
   Rule as IRule,
+  LocalizedValidationMessages,
   RuleClass,
   RuleSpec,
   RuleSpecConstraint,
@@ -14,6 +15,7 @@ import {cloneDeep, get} from 'lodash'
 import {ValidationError as ValidationErrorClass} from './ValidationError'
 import {escapeRegex} from './util/escapeRegex'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
+import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
 import {pathToString} from './util/pathToString'
 import {genericValidators} from './validators/genericValidator'
 import {booleanValidators} from './validators/booleanValidator'
@@ -85,7 +87,7 @@ export const Rule: RuleClass = class Rule implements IRule {
   _level: 'error' | 'warning' | 'info' | undefined = undefined
   _required: 'required' | 'optional' | undefined = undefined
   _typeDef: SchemaType | undefined = undefined
-  _message: string | undefined = undefined
+  _message: string | LocalizedValidationMessages | undefined = undefined
   _rules: RuleSpec[] = []
   _fieldRules: FieldRules | undefined = undefined
 
@@ -103,21 +105,21 @@ export const Rule: RuleClass = class Rule implements IRule {
   // Alias to static method, since we often have access to an _instance_ of a rule but not the actual Rule class
   valueOfField = Rule.valueOfField.bind(Rule)
 
-  error(message?: string): Rule {
+  error(message?: string | LocalizedValidationMessages): Rule {
     const rule = this.clone()
     rule._level = 'error'
     rule._message = message || undefined
     return rule
   }
 
-  warning(message?: string): Rule {
+  warning(message?: string | LocalizedValidationMessages): Rule {
     const rule = this.clone()
     rule._level = 'warning'
     rule._message = message || undefined
     return rule
   }
 
-  info(message?: string): Rule {
+  info(message?: string | LocalizedValidationMessages): Rule {
     const rule = this.clone()
     rule._level = 'info'
     rule._message = message || undefined
@@ -401,9 +403,13 @@ export const Rule: RuleClass = class Rule implements IRule {
           specConstraint = get(context.parent, specConstraint.path)
         }
 
+        const message = isLocalizedMessages(this._message)
+          ? localizeMessage(this._message, context.i18n)
+          : this._message
+
         let result
         try {
-          result = await validator(specConstraint, value, this._message, context)
+          result = await validator(specConstraint, value, message, context)
         } catch (err) {
           const errorFromException = new ValidationErrorClass(
             `${pathToString(context.path)}: Exception occurred while validating value: ${
