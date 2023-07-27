@@ -1,4 +1,4 @@
-import type {CustomValidator, FieldReference} from '../validation'
+import type {CustomValidator, FieldReference, LocalizedValidationMessages} from '../validation'
 
 /** @public */
 export interface RuleDef<T, FieldValue = unknown> {
@@ -9,8 +9,9 @@ export interface RuleDef<T, FieldValue = unknown> {
     fn: CustomValidator<LenientFieldValue | undefined>,
   ) => T
 
-  error: (message?: string) => T
-  warning: (message?: string) => T
+  info: (message?: string | LocalizedValidationMessages) => T
+  error: (message?: string | LocalizedValidationMessages) => T
+  warning: (message?: string | LocalizedValidationMessages) => T
   valueOfField: (path: string | string[]) => FieldReference
 }
 
