@@ -6,15 +6,15 @@ const precisionRx = /(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/
 export const numberValidators: Validators = {
   ...genericValidators,
 
-  integer: (_unused, value, message) => {
+  integer: (_unused, value, message, {i18n}) => {
     if (!Number.isInteger(value)) {
-      return message || 'Must be an integer'
+      return message || i18n.t('validation:number.non-integer')
     }
 
     return true
   },
 
-  precision: (limit, value, message) => {
+  precision: (limit, value, message, {i18n}) => {
     if (value === undefined) return true
 
     const places = value.toString().match(precisionRx)
@@ -24,41 +24,41 @@ export const numberValidators: Validators = {
     )
 
     if (decimals > limit) {
-      return message || `Max precision is ${limit}`
+      return message || i18n.t('validation:number.maximum-precision', {limit})
     }
 
     return true
   },
 
-  min: (minNum, value, message) => {
-    if (value >= minNum) {
+  min: (minNumber, value, message, {i18n}) => {
+    if (value >= minNumber) {
       return true
     }
 
-    return message || `Must be greater than or equal ${minNum}`
+    return message || i18n.t('validation:number.minimum', {minNumber})
   },
 
-  max: (maxNum, value, message) => {
-    if (value <= maxNum) {
+  max: (maxNumber, value, message, {i18n}) => {
+    if (value <= maxNumber) {
       return true
     }
 
-    return message || `Must be less than or equal ${maxNum}`
+    return message || i18n.t('validation:number.maximum', {maxNumber})
   },
 
-  greaterThan: (num, value, message) => {
-    if (value > num) {
+  greaterThan: (threshold, value, message, {i18n}) => {
+    if (value > threshold) {
       return true
     }
 
-    return message || `Must be greater than ${num}`
+    return message || i18n.t('validation:number.greater-than', {threshold})
   },
 
-  lessThan: (maxNum, value, message) => {
-    if (value < maxNum) {
+  lessThan: (threshold, value, message, {i18n}) => {
+    if (value < threshold) {
       return true
     }
 
-    return message || `Must be less than ${maxNum}`
+    return message || i18n.t('validation:number.less-than', {threshold})
   },
 }

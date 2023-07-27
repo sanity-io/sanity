@@ -181,7 +181,7 @@ export type RuleSpec =
   | {flag: 'lessThan'; constraint: number}
   | {flag: 'greaterThan'; constraint: number}
   | {flag: 'stringCasing'; constraint: 'uppercase' | 'lowercase'}
-  | {flag: 'assetRequired'; constraint: {assetType: 'Asset' | 'Image' | 'File'}}
+  | {flag: 'assetRequired'; constraint: {assetType: 'asset' | 'image' | 'file'}}
   | {
       flag: 'regex'
       constraint: {
@@ -245,7 +245,7 @@ export interface ValidationContext {
  * `RuleSpec`'s constraint, the value to check, an optional override message,
  * and the validation context.
  *
- * @see Rule.validate from `sanity/validation/src/Rule`
+ * @see Rule.validate from `sanity/src/core/validation/Rule`
  *
  * @internal
  */
