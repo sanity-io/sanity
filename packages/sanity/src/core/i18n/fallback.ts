@@ -3,7 +3,7 @@ import {type Resource, createInstance} from 'i18next'
 import type {LocaleSource} from './types'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {defaultLocale, usEnglishLocale} from './locales'
-import {isStaticResourceBundle} from './defineHelpers'
+import {isStaticResourceBundle} from './helpers'
 
 const shouldEscape = typeof window === 'undefined' || typeof document === 'undefined'
 const fallbackLocales: LocaleSource['locales'] = [
