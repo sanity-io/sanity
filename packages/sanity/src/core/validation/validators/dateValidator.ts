@@ -12,6 +12,7 @@ const isoDate =
 // eslint-disable-next-line no-warning-comments
 // TODO (eventually): move these to schema type package
 interface DateTimeOptions {
+  // @todo accept object representing `Intl.DateTimeFormatOptions`? how do we localize?
   dateFormat?: string
   timeFormat?: string
 }
@@ -56,16 +57,15 @@ function parseDate(date: unknown, throwOnError = false): Date | null {
 export const dateValidators: Validators = {
   ...genericValidators,
 
-  type: (_unused, value, message) => {
-    const strVal = `${value}`
-    if (!strVal || isoDate.test(value)) {
+  type: (_unused, value, message, {i18n}) => {
+    if (typeof value === 'undefined' || isoDate.test(`${value}`)) {
       return true
     }
 
-    return message || 'Must be a valid ISO-8601 formatted date string'
+    return message || i18n.t('validation:date.invalid-format')
   },
 
-  min: (minDate, value, message, context) => {
+  min: (minDate, value, message, {type, i18n}) => {
     const dateVal = parseDate(value)
     if (!dateVal) {
       return true // `type()` should catch parse errors
@@ -74,20 +74,28 @@ export const dateValidators: Validators = {
     if (!value || dateVal >= parseDate(minDate, true)) {
       return true
     }
-    if (!context.type) {
+
+    if (!type) {
       throw new Error(`\`type\` was not provided in validation context.`)
     }
 
-    const dateTimeOptions: DateTimeOptions = isRecord(context.type.options)
-      ? (context.type.options as DateTimeOptions)
+    const dateTimeOptions: DateTimeOptions = isRecord(type.options)
+      ? (type.options as DateTimeOptions)
       : {}
 
-    const date = getFormattedDate(context.type.name, minDate, dateTimeOptions)
-
-    return message || `Must be at or after ${date}`
+    return (
+      message ||
+      // Note that the `minDate` passed here is _formatted_, while the raw value provided to the
+      // validator is available as `providedMinDate`. This because the formatted date is likely
+      // what the developer wants to present to the user
+      i18n.t('validation:date.minimum', {
+        minDate: getFormattedDate(type.name, minDate, dateTimeOptions),
+        providedMinDate: minDate,
+      })
+    )
   },
 
-  max: (maxDate, value, message, context) => {
+  max: (maxDate, value, message, {type, i18n}) => {
     const dateVal = parseDate(value)
     if (!dateVal) {
       return true // `type()` should catch parse errors
@@ -97,15 +105,23 @@ export const dateValidators: Validators = {
       return true
     }
 
-    if (!context.type) {
+    if (!type) {
       throw new Error(`\`type\` was not provided in validation context.`)
     }
 
-    const dateTimeOptions: DateTimeOptions = isRecord(context.type.options)
-      ? (context.type.options as DateTimeOptions)
+    const dateTimeOptions: DateTimeOptions = isRecord(type.options)
+      ? (type.options as DateTimeOptions)
       : {}
 
-    const date = getFormattedDate(context.type.name, maxDate, dateTimeOptions)
-    return message || `Must be at or before ${date}`
+    return (
+      message ||
+      // Note that the `maxDate` passed here is _formatted_, while the raw value provided to the
+      // validator is available as `providedMaxDate`. This because the formatted date is likely
+      // what the developer wants to present to the user
+      i18n.t('validation:date.maximum', {
+        maxDate: getFormattedDate(type.name, maxDate, dateTimeOptions),
+        providedMaxDate: maxDate,
+      })
+    )
   },
 }

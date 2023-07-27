@@ -6,8 +6,8 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {concat, defer, lastValueFrom, merge, Observable, of} from 'rxjs'
-import {catchError, map, mergeAll, mergeMap, toArray} from 'rxjs/operators'
+import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
+import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 import {flatten, uniqBy} from 'lodash'
 import {getFallbackLocaleSource} from '../i18n/fallback'
 import {typeString} from './util/typeString'
@@ -89,6 +89,7 @@ export function validateDocumentObservable(
     return of(EMPTY_MARKERS)
   }
 
+  const i18n = context?.i18n || getFallbackLocaleSource()
   const validationOptions: ValidateItemOptions = {
     getClient,
     schema,
@@ -97,11 +98,12 @@ export function validateDocumentObservable(
     path: [],
     document: doc,
     type: documentType,
-    i18n: context?.i18n || getFallbackLocaleSource(),
+    i18n,
     getDocumentExists: context?.getDocumentExists,
   }
 
-  return validateItemObservable(validationOptions).pipe(
+  return from(i18n.loadNamespaces(['validation'])).pipe(
+    switchMap(() => validateItemObservable(validationOptions)),
     catchError((err) => {
       console.error(err)
       return of([
