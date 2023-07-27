@@ -54,7 +54,7 @@ export const studioLocaleStrings = {
   'timeAgo.minutes.ago_one': '{{count}} minute ago',
   'timeAgo.minutes.ago_other': '{{count}} minutes ago',
   /* Relative time, granularity: minutes, using a minimal format*/
-  'timeAgo.minutes.minimal': '{{count}m',
+  'timeAgo.minutes.minimal': '{{count}}m',
   /* Relative time, granularity: minutes, using a minimal format, configured to show ago suffix*/
   'timeAgo.minutes.minimal.ago': '{{count}}m ago',
 
@@ -65,7 +65,7 @@ export const studioLocaleStrings = {
   'timeAgo.seconds.ago_one': '{{count}} minute ago',
   'timeAgo.seconds.ago_other': '{{count}} second ago',
   /* Relative time, granularity: seconds, using a minimal format*/
-  'timeAgo.seconds.minimal': '{{count}m',
+  'timeAgo.seconds.minimal': '{{count}}m',
   /* Relative time, granularity: seconds, using a minimal format, configured to show ago suffix*/
   'timeAgo.seconds.minimal.ago': '{{count}}m ago',
 }
