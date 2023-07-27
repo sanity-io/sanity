@@ -1,4 +1,4 @@
-import {defineLocaleResourceBundle} from '../defineHelpers'
+import {defineLocaleResourceBundle} from '../helpers'
 import {validationLocaleNamespace} from '../localeNamespaces'
 
 /**
