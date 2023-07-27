@@ -496,7 +496,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       enableChildContainerPointerEvents(true)
     }
     virtualListElement?.addEventListener('mousemove', handleMouseEvent)
-    virtualListElement?.addEventListener('wheel', handleMouseEvent)
+    virtualListElement?.addEventListener('wheel', handleMouseEvent, {passive: true})
     return () => {
       virtualListElement?.removeEventListener('mousemove', handleMouseEvent)
       virtualListElement?.removeEventListener('wheel', handleMouseEvent)
