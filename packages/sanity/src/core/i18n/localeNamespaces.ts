@@ -5,3 +5,10 @@
  * @hidden
  */
 export const studioLocaleNamespace = 'studio' as const
+
+/**
+ * The namespace for validation messages.
+ *
+ * @beta
+ */
+export const validationLocaleNamespace = 'validation' as const
