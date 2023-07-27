@@ -63,7 +63,7 @@ exports.createJestConfig = function createJestConfig(
     testEnvironmentOptions: {
       url: 'http://localhost:3333',
     },
-    testMatch: [...testMatch, '<rootDir>/**/*.{test,spec}.{js,ts,tsx}'],
+    testMatch: [...testMatch, '<rootDir>/**/*.test.{js,ts,tsx}'],
     transform: {
       ...transform,
       '\\.[jt]sx?$': [

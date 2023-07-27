@@ -1,7 +1,7 @@
 import NodeEnvironment from 'jest-environment-node'
 import {isEqual} from 'lodash'
 import ipc from 'node-ipc'
-import {chromium, Browser, Page, ElementHandle} from 'playwright'
+import {chromium, Browser, Page, ElementHandle} from '@playwright/test'
 import {PortableTextBlock} from '@sanity/types'
 import {normalizeSelection} from '../../src/utils/selection'
 import type {EditorSelection} from '../../src'

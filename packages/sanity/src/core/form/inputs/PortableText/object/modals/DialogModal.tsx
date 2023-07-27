@@ -28,6 +28,7 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
       portal="default"
       width={width}
       contentRef={setContentElement}
+      data-testid="default-edit-object-dialog"
       __unstable_autoFocus={autoFocus}
     >
       <PresenceOverlay margins={[0, 0, 1, 0]}>

@@ -1,0 +1,90 @@
+name: End-to-End Component Tests
+on:
+  # Build on pushes branches that have a PR (including drafts)
+  pull_request:
+  # Build on commits pushed to branches without a PR if it's in the allowlist
+  push:
+    branches: [next]
+jobs:
+  test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: PR comment with report
+        uses: thollander/actions-comment-pull-request@v2
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        with:
+          comment_tag: 'playwright-ct-report'
+          message: |
+            Preparing to run end-to-end component tests
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
+
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --immutable --immutable-cache --check-cache
+
+      - name: Store Playwright's Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Build CLI
+        run: yarn build:cli # Needed for CLI tests
+
+      - name: Run end-to-end tests
+        run: yarn test-ct
+
+      - name: Parse playwright report
+        id: parse-playwright-report
+        if: always()
+        run: yarn workspace sanity write:playwright-report-as-table
+        env:
+          GITHUB_WORKFLOW_URL: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          REPORT_JSON_PATH: '${{ github.workspace }}/playwright-ct-test-results.json'
+      - name: Debug step
+        if: always()
+        run: |
+          echo ${{ steps.parse-playwright-report.outputs.conclusion }}
+          echo ${{ github.event_name }}
+      - name: PR comment with report
+        uses: thollander/actions-comment-pull-request@v2
+        if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
+        with:
+          comment_tag: 'playwright-ct-report'
+          filePath: ${{ github.workspace }}/packages/sanity/playwright-report-output.md
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-ct-report
+          path: |
+            test/playwright-ct/report
+            test/playwright-ct/results
+          retention-days: 30
