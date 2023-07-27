@@ -9,33 +9,37 @@ const emailRegex =
 export const stringValidators: Validators = {
   ...genericValidators,
 
-  min: (minLength, value, message) => {
+  min: (minLength, value, message, {i18n}) => {
     if (!value || value.length >= minLength) {
       return true
     }
 
-    return message || `Must be at least ${minLength} characters long`
+    return message || i18n.t('validation:string.minimum-length', {minLength})
   },
 
-  max: (maxLength, value, message) => {
+  max: (maxLength, value, message, {i18n}) => {
     if (!value || value.length <= maxLength) {
       return true
     }
 
-    return message || `Must be at most ${maxLength} characters long`
+    return message || i18n.t('validation:string.maximum-length', {maxLength})
   },
 
-  length: (wantedLength, value, message) => {
+  length: (wantedLength, value, message, {i18n}) => {
     const strValue = value || ''
     if (strValue.length === wantedLength) {
       return true
     }
 
-    return message || `Must be exactly ${wantedLength} characters long`
+    return message || i18n.t('validation:string.exact-length', {wantedLength})
   },
 
-  uri: (constraints, value, message) => {
+  uri: (constraints, value, message, {i18n}) => {
     const strValue = value || ''
+    if (!strValue) {
+      return true // `presence()` should catch empty values
+    }
+
     const {options} = constraints
     const {allowCredentials, relativeOnly} = options
     const allowRelative = options.allowRelative || relativeOnly
@@ -46,76 +50,78 @@ export const stringValidators: Validators = {
       // to new URL(str, base), and will fail if invoked with new URL(strValue, undefined)
       url = allowRelative ? new URL(strValue, DUMMY_ORIGIN) : new URL(strValue)
     } catch (err) {
-      return message || 'Not a valid URL'
+      return message || i18n.t('validation:string.url.invalid')
     }
 
     if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
-      return message || 'Only relative URLs are allowed'
+      return message || i18n.t('validation:string.url.not-relative')
     }
 
     if (!allowRelative && url.origin === DUMMY_ORIGIN && isRelativeUrl(strValue)) {
-      return message || 'Relative URLs are not allowed'
+      return message || i18n.t('validation:string.url.not-absolute')
     }
 
     if (!allowCredentials && (url.username || url.password)) {
-      return message || `Username/password not allowed`
+      return message || i18n.t('validation:string.url.includes-credentials')
     }
 
     const urlScheme = url.protocol.replace(/:$/, '')
     const matchesAllowedScheme = options.scheme.some((scheme) => scheme.test(urlScheme))
     if (!matchesAllowedScheme) {
-      return message || 'Does not match allowed protocols/schemes'
+      return message || i18n.t('validation:string.url.disallowed-scheme', {scheme: urlScheme})
     }
 
     return true
   },
 
-  stringCasing: (casing, value, message) => {
+  stringCasing: (casing, value, message, {i18n}) => {
     const strValue = value || ''
     if (casing === 'uppercase' && strValue !== strValue.toLocaleUpperCase()) {
-      return message || `Must be all uppercase letters`
+      return message || i18n.t('validation:string.uppercase')
     }
 
     if (casing === 'lowercase' && strValue !== strValue.toLocaleLowerCase()) {
-      return message || `Must be all lowercase letters`
+      return message || i18n.t('validation:string.lowercase')
     }
 
     return true
   },
 
-  presence: (flag, value, message) => {
+  presence: (flag, value, message, {i18n}) => {
     if (flag === 'required' && !value) {
-      return message || 'Required'
+      return message || i18n.t('validation:generic.required', {context: 'string'})
     }
 
     return true
   },
 
-  regex: (options, value, message) => {
+  regex: (options, value, message, {i18n}) => {
     const {pattern, name, invert} = options
-    const regName = name || `"${pattern.toString()}"`
+    const regName = name || `${pattern.toString()}`
     const strValue = value || ''
     // Regexes with global or sticky flags are stateful (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex).
     // This resets the state stored from the previous check
     pattern.lastIndex = 0
     const matches = pattern.test(strValue)
     if ((!invert && !matches) || (invert && matches)) {
-      const defaultMessage = invert
-        ? `Should not match ${regName}-pattern`
-        : `Does not match ${regName}-pattern`
+      if (message) {
+        return message
+      }
 
-      return message || defaultMessage
+      return invert
+        ? i18n.t('validation:string.regex-match', {name: regName})
+        : i18n.t('validation:string.regex-does-not-match', {name: regName})
     }
 
     return true
   },
 
-  email: (_unused, value, message) => {
+  email: (_unused, value, message, {i18n}) => {
     const strValue = `${value || ''}`.trim()
     if (!strValue || emailRegex.test(strValue)) {
       return true
     }
 
-    return message || 'Must be a valid email address'
+    return message || i18n.t('validation:string.email')
   },
 }

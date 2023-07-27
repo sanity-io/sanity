@@ -67,7 +67,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be all lowercase letters",
+      "message": "Must be all lowercase characters",
       "operation": undefined,
       "paths": Array [],
     },
@@ -82,7 +82,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be all lowercase letters",
+      "message": "Must be all lowercase characters",
       "operation": undefined,
       "paths": Array [],
     },
@@ -97,7 +97,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be all lowercase letters",
+      "message": "Must be all lowercase characters",
       "operation": undefined,
       "paths": Array [],
     },
@@ -150,7 +150,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Does not match PascalCase-pattern",
+      "message": "Does not match \\"PascalCase\\"-pattern",
       "operation": undefined,
       "paths": Array [],
     },
@@ -167,7 +167,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Does not match PascalCase-pattern",
+      "message": "Does not match \\"PascalCase\\"-pattern",
       "operation": undefined,
       "paths": Array [],
     },
@@ -273,7 +273,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be all uppercase letters",
+      "message": "Must be all uppercase characters",
       "operation": undefined,
       "paths": Array [],
     },
@@ -288,7 +288,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be all uppercase letters",
+      "message": "Must be all uppercase characters",
       "operation": undefined,
       "paths": Array [],
     },
@@ -303,7 +303,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be all uppercase letters",
+      "message": "Must be all uppercase characters",
       "operation": undefined,
       "paths": Array [],
     },
@@ -318,7 +318,7 @@ Array [
   Object {
     "item": ValidationError {
       "children": undefined,
-      "message": "Must be all uppercase letters",
+      "message": "Must be all uppercase characters",
       "operation": undefined,
       "paths": Array [],
     },
