@@ -111,6 +111,16 @@ export interface LocaleResourceBundle {
 }
 
 /**
+ * A locale resource bundle where the resources are static, eg not lazy loaded.
+ *
+ * @beta
+ */
+export type StaticLocaleResourceBundle = Omit<ImplicitLocaleResourceBundle, 'resources'> & {
+  locale?: string
+  resources: LocaleResourceRecord
+}
+
+/**
  * A locale definition, which describes a locale and its resources.
  *
  * @beta
@@ -151,6 +161,14 @@ export interface LocaleSource {
    * Array of locale definitions
    */
   locales: {id: string; title: string}[]
+
+  /**
+   * Loads the given namespaces, if not already done.
+   *
+   * @param namespaces - Array of namespace names to load
+   * @returns Promise which resolves once loaded.
+   */
+  loadNamespaces(namespaces: string[]): Promise<void>
 
   /**
    * Translation function, eg `t('some.key') => 'Some string'`
