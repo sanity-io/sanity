@@ -1,4 +1,4 @@
-import type {ValidationMarker, Validators} from '@sanity/types'
+import type {CustomValidatorResult, ValidationMarker, Validators} from '@sanity/types'
 import type {LocaleSource} from '../../i18n'
 import {typeString} from '../util/typeString'
 import {deepEquals} from '../util/deepEquals'
@@ -127,7 +127,7 @@ export const genericValidators: Validators = {
       )
     }, SLOW_VALIDATOR_TIMEOUT)
 
-    let result
+    let result: CustomValidatorResult
     try {
       result = await fn(value, context)
     } finally {
