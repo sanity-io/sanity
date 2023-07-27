@@ -34,6 +34,7 @@ export function defineLocale(locale: LocaleDefinition): LocaleDefinition {
  *
  * @param bundle - Bundle to check
  * @returns `true` if the bundle has static resources, `false` otherwise
+ * @internal
  */
 export function isStaticResourceBundle(
   bundle: LocaleResourceBundle | StaticLocaleResourceBundle | ImplicitLocaleResourceBundle,
