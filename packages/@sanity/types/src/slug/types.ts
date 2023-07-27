@@ -5,7 +5,13 @@ import type {SanityDocument} from '../documents'
 import type {Path} from '../paths'
 import {CurrentUser} from '../user'
 
-/** @internal */
+/**
+ * A slug object, currently holding a `current` property
+ *
+ * In the future, this may be extended with a `history` property
+ *
+ * @public
+ */
 export interface Slug {
   _type: 'slug'
   current: string
