@@ -354,11 +354,11 @@ export const Rule: RuleClass = class Rule implements IRule {
 
   assetRequired(): Rule {
     const base = getBaseType(this._typeDef)
-    let assetType: 'Asset' | 'Image' | 'File'
+    let assetType: 'asset' | 'image' | 'file'
     if (base && ['image', 'file'].includes(base.name)) {
-      assetType = base.name === 'image' ? 'Image' : 'File'
+      assetType = base.name === 'image' ? 'image' : 'file'
     } else {
-      assetType = 'Asset'
+      assetType = 'asset'
     }
 
     return this.cloneWithRules([{flag: 'assetRequired', constraint: {assetType}}])

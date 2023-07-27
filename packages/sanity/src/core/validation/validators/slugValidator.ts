@@ -1,7 +1,8 @@
 import {memoize} from 'lodash'
 import {
-  type CustomValidator,
   isKeyedObject,
+  isSlug,
+  type CustomValidator,
   type Path,
   type SlugIsUniqueValidator,
   type SlugParent,
@@ -89,13 +90,15 @@ export const slugValidator: CustomValidator = async (value, context) => {
   if (!value) {
     return true
   }
-  if (typeof value !== 'object') {
-    return 'Slug must be an object'
+
+  const {i18n} = context
+
+  if (typeof value !== 'object' || Array.isArray(value)) {
+    return i18n.t('validation:slug.not-object')
   }
 
-  const slugValue = (value as {current?: string}).current
-  if (!slugValue) {
-    return 'Slug must have a value'
+  if (!isSlug(value) || value.current.trim().length === 0) {
+    return i18n.t('validation:slug.missing-current')
   }
 
   const options = context?.type?.options as {isUnique?: SlugIsUniqueValidator} | undefined
@@ -107,10 +110,11 @@ export const slugValidator: CustomValidator = async (value, context) => {
     type: context.type as SlugSchemaType,
     defaultIsUnique,
   }
-  const wasUnique = await isUnique(slugValue, slugContext)
+
+  const wasUnique = await isUnique(value.current, slugContext)
   if (wasUnique) {
     return true
   }
 
-  return 'Slug is already in use'
+  return i18n.t('validation:slug.not-unique', {slug: value.current})
 }
