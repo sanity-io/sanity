@@ -1,6 +1,6 @@
-import type {I18nDeskResourceKeys} from 'sanity/desk'
+import type {DeskLocaleResourceKeys} from 'sanity/desk'
 
-const deskResources: Record<I18nDeskResourceKeys, string> = {
+const deskResources: Record<DeskLocaleResourceKeys, string> = {
   /** Label for the "Publish" document action when there are pending changes.*/
   'action.publish.draft.label': 'Publiser',
 
@@ -15,7 +15,7 @@ const deskResources: Record<I18nDeskResourceKeys, string> = {
 
   /** Tooltip for the "Publish" document action when the document has live edit enabled.*/
   'action.publish.liveEdit.tooltip':
-    '"Live Edit" er skrudd på for denne dokumenttypen og´publisering skjer automatisk når du gjør endringer',
+    '"Live Edit" er skrudd på for denne dokumenttypen og publisering skjer automatisk når du gjør endringer',
 
   /** Fallback tooltip for the "Publish" document action when publish is invoked for a document with live edit enabled.*/
   'action.publish.liveEdit.publishDisabled':
