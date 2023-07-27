@@ -6,7 +6,7 @@ const metaKeys = ['_key', '_type', '_weak']
 export const objectValidators: Validators = {
   ...genericValidators,
 
-  presence: (expected, value, message) => {
+  presence: (expected, value, message, {i18n}) => {
     if (expected !== 'required') {
       return true
     }
@@ -14,7 +14,7 @@ export const objectValidators: Validators = {
     const keys = value && Object.keys(value).filter((key) => !metaKeys.includes(key))
 
     if (value === undefined || (keys && keys.length === 0)) {
-      return message || 'Required'
+      return message || i18n.t('validation:generic.required', {context: 'object'})
     }
 
     return true
@@ -25,11 +25,11 @@ export const objectValidators: Validators = {
       return true
     }
 
-    if (!isReference(value)) {
-      return message || 'Must be a reference to a document'
-    }
+    const {type, getDocumentExists, i18n} = context
 
-    const {type, getDocumentExists} = context
+    if (!isReference(value)) {
+      return message || i18n.t('validation:object.not-reference')
+    }
 
     if (!type) {
       throw new Error(`\`type\` was not provided in validation context`)
@@ -45,16 +45,15 @@ export const objectValidators: Validators = {
 
     const exists = await getDocumentExists({id: value._ref})
     if (!exists) {
-      return 'This reference must be published'
+      return i18n.t('validation:object.reference-not-published', {documentId: value._ref})
     }
 
     return true
   },
 
-  assetRequired: (flag, value, message) => {
+  assetRequired: (flag, value, message, {i18n}) => {
     if (!value || !value.asset || !value.asset._ref) {
-      const assetType = flag.assetType || 'Asset'
-      return message || `${assetType} required`
+      return message || i18n.t('validation:object.asset-required', {context: flag.assetType || ''})
     }
 
     return true
