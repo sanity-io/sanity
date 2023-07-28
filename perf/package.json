@@ -14,7 +14,7 @@
     "studio:dev": "SANITY_STUDIO_DATASET=dev yarn --cwd studio dev"
   },
   "dependencies": {
-    "@playwright/test": "^1.31.2",
+    "@playwright/test": "^1.36.2",
     "@sanity/client": "^6.3.0",
     "@sanity/uuid": "^3.0.1",
     "@types/lodash": "^4.14.191",
@@ -24,7 +24,6 @@
     "execa": "^2.0.0",
     "globby": "^10.0.0",
     "lodash": "^4.17.21",
-    "playwright": "^1.31.2",
     "rxjs": "^7.8.0",
     "sanity": "3.14.5",
     "ts-node": "^10.9.1",
