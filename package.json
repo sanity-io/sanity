@@ -58,7 +58,6 @@
     "release-notes": "node -r esbuild-register scripts/printReleaseNotesTemplate",
     "start": "yarn dev:test-studio",
     "test": "jest --forceExit",
-    "test-ct": "playwright test -c playwright-ct.config.ts",
     "test:e2e": "playwright test",
     "perf:test": "cd perf && yarn perf:test",
     "perf:studio": "cd perf && yarn studio",

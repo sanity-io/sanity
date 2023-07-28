@@ -59,7 +59,7 @@ jobs:
         run: yarn build:cli # Needed for CLI tests
 
       - name: Run end-to-end tests
-        run: yarn test-ct
+        run: yarn workspace sanity test:ct
 
       - name: Parse playwright report
         id: parse-playwright-report

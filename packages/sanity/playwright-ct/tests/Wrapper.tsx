@@ -1,15 +1,15 @@
 import {SanityClient} from '@sanity/client'
 import {Card, LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import React, {ReactNode, useEffect, useState} from 'react'
+import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
+import {getMockWorkspace} from '../../test/testUtils/getMockWorkspaceFromConfig'
 import {
   ResourceCacheProvider,
   SchemaTypeDefinition,
   SourceProvider,
   Workspace,
   WorkspaceProvider,
-} from '../exports'
-import {createMockSanityClient} from '../test/mocks/mockSanityClient'
-import {getMockWorkspace} from '../test/testUtils/getMockWorkspaceFromConfig'
+} from 'sanity'
 
 /**
  * @description This component is used to wrap all tests in the providers it needs to be able to run successfully.

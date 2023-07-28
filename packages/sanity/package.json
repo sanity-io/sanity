@@ -121,6 +121,7 @@
     "coverage": "jest --coverage",
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
+    "test:ct": "playwright test -c playwright-ct.config.ts",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
     "write:playwright-report-as-table": "node -r esbuild-register playwright-ct/scripts/parsePlaywrightReportJson.ts",
     "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
