@@ -120,6 +120,7 @@
     "coverage": "jest --coverage",
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
+    "test:ct": "playwright test -c playwright-ct.config.ts",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
     "write:playwright-report-as-table": "node -r esbuild-register playwright-ct/scripts/parsePlaywrightReportJson.ts",
     "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
@@ -229,6 +230,8 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
+    "@playwright/experimental-ct-react": "^1.36.2",
+    "@playwright/test": "^1.36.2",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/ui-workshop": "^1.0.0",
     "@testing-library/jest-dom": "^5.16.5",

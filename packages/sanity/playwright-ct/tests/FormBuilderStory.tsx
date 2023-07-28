@@ -11,7 +11,9 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 // import {BufferedDocument} from '@sanity/mutator'
 import {validateDocument} from '@sanity/validation'
 import {Box} from '@sanity/ui'
-import {applyAll} from '../src/core/form/patch/applyPatch'
+import {applyAll} from '../../src/core/form/patch/applyPatch'
+import {Wrapper} from './Wrapper'
+import {createMockSanityClient} from './createMockSanityClient'
 import {
   createPatchChannel,
   FormBuilder,
@@ -23,10 +25,7 @@ import {
   useFormState,
   useWorkspace,
   PreviewProps,
-  useFormValue,
-} from '../exports'
-import {Wrapper} from './Wrapper'
-import {createMockSanityClient} from './createMockSanityClient'
+} from 'sanity'
 
 const NOOP = () => null
 

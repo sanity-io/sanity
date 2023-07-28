@@ -2,9 +2,9 @@ import path from 'path'
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
 
 // Paths
-const TESTS_PATH = path.join(__dirname, 'packages', 'sanity', 'playwright-ct')
-const HTML_REPORT_PATH = path.join(__dirname, 'test', 'playwright-ct', 'report')
-const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'test', 'playwright-ct', 'results')
+const TESTS_PATH = path.join(__dirname, 'playwright-ct', 'tests')
+const HTML_REPORT_PATH = path.join(__dirname, 'playwright-ct', 'report')
+const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'playwright-ct', 'results')
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -26,7 +26,13 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['html', {outputFolder: HTML_REPORT_PATH}],
-    ['json', {outputFile: 'playwright-ct-test-results.json'}],
+    [
+      'json',
+      {
+        outputFolder: HTML_REPORT_PATH,
+        // outputFile: 'playwright-ct-test-results.json',
+      },
+    ],
   ],
 
   /* Maximum time one test can run for. */
@@ -45,6 +51,7 @@ export default defineConfig({
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
     /* Configure Playwright vite config */
+    /*
     ctViteConfig: {
       resolve: {
         alias: {
@@ -55,8 +62,9 @@ export default defineConfig({
         },
       },
     },
+    */
     /* Where to find playwright-ct template files */
-    ctTemplateDir: './test/playwright-ct/template',
+    ctTemplateDir: './playwright-ct/template',
   },
 
   /* Configure projects for major browsers */

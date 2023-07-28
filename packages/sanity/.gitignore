@@ -16,3 +16,8 @@
 /cli.js
 /desk.js
 /router.js
+
+# Playwright-ct artifacts
+/playwright-ct/report
+/playwright-ct/results
+/playwright-ct/template/.cache/
