@@ -1,8 +1,7 @@
 import {type ComponentFixtures} from '@playwright/experimental-ct-react'
 import type {PlaywrightTestArgs, Locator, TestInfo} from '@playwright/test'
 
-// export const DEFAULT_TYPE_DELAY = 150
-export const DEFAULT_TYPE_DELAY = 25
+export const DEFAULT_TYPE_DELAY = 20
 
 export type MountResult = Awaited<ReturnType<ComponentFixtures['mount']>>
 
@@ -42,6 +41,9 @@ export function testHelpers({
         return 'Meta'
       }
       return 'Control'
+    },
+    typeWithDelay: async (input: string, delay?: number) => {
+      await page.keyboard.type(input, {delay: delay || DEFAULT_TYPE_DELAY})
     },
   }
 }
