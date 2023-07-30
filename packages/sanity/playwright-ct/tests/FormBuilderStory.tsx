@@ -12,8 +12,8 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {validateDocument} from '@sanity/validation'
 import {Box} from '@sanity/ui'
 import {applyAll} from '../../src/core/form/patch/applyPatch'
+import {createMockSanityClient} from './mocks/createMockSanityClient'
 import {Wrapper} from './Wrapper'
-import {createMockSanityClient} from './createMockSanityClient'
 import {
   createPatchChannel,
   FormBuilder,
@@ -171,7 +171,7 @@ function TestForm({onRender}: {onRender?: () => void}) {
     _createdAt: new Date().toISOString(),
     _updatedAt: new Date().toISOString(),
     _rev: '123',
-    title: 'An title',
+    title: 'Test title',
   })
   const [focusPath, setFocusPath] = useState<Path>(() => ['title'])
   const patchChannel = useMemo(() => createPatchChannel(), [])
