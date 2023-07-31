@@ -29,8 +29,7 @@ export default defineConfig({
     [
       'json',
       {
-        outputFolder: HTML_REPORT_PATH,
-        // outputFile: 'playwright-ct-test-results.json',
+        outputFile: path.join(ARTIFACT_OUTPUT_PATH, 'playwright-ct-test-results.json'),
       },
     ],
   ],

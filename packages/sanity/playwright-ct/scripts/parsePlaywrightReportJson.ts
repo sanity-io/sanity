@@ -2,7 +2,7 @@
 
 import {readFileSync, writeFileSync} from 'fs'
 import type {JSONReport, JSONReportSpec, JSONReportSuite} from '@playwright/test/reporter'
-import {GroupedTests, JSONReportCustom, Spec, Suite, SummaryRow} from './types'
+import {GroupedTests, JSONReportCustom, Spec, Suite, SummaryRow} from '../tests/types'
 import _ from 'lodash'
 import {inspect} from 'node:util'
 

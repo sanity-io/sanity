@@ -60,7 +60,7 @@ test.describe('Portable Text Editor', () => {
       // Bold
       await page.keyboard.press(`${getModifierKey()}+b`)
       await typeWithDelay('bold text 123')
-      await page.keyboard.press(`${getModifierKey()}+b`, {delay: 100})
+      await page.keyboard.press(`${getModifierKey()}+b`, {delay: DEFAULT_TYPE_DELAY})
       await page.keyboard.press('Enter')
       await expect(
         $pteTextbox.locator('[data-mark="strong"]', {hasText: 'bold text'})
@@ -151,7 +151,7 @@ test.describe('Portable Text Editor', () => {
         // @todo It seems like Firefox has different focus behaviour when using keypress here
         // causing the focus assertion to fail. The insert button will stay focused even after the dialog opens.
         // .press('Enter', {delay: DEFAULT_TYPE_DELAY})
-        .click({delay: DEFAULT_TYPE_DELAY})
+        .click()
 
       // Assertion: Blocks that appear in the menu bar should always display a title
       await expect(page.getByRole('button').filter({hasText: 'Object Without Title'})).toBeVisible()
@@ -174,7 +174,7 @@ test.describe('Portable Text Editor', () => {
       await expect($closeButton.or($closeButtonSvg).first()).toBeFocused()
 
       // Tab to the input
-      await page.keyboard.press('Tab', {delay: DEFAULT_TYPE_DELAY})
+      await page.keyboard.press('Tab')
 
       // Assertion: Dialog should not be closed when you tab
       await expect($dialog).not.toBeHidden()
