@@ -4,6 +4,7 @@ import {type FallbackNs, useTranslation as useOriginalTranslation} from 'react-i
 
 /**
  * @alpha
+ * @hidden
  */
 export type UseTranslationResponse<Ns extends Namespace, KPrefix> = {
   t: TFunction<Ns, KPrefix>
@@ -11,6 +12,7 @@ export type UseTranslationResponse<Ns extends Namespace, KPrefix> = {
 
 /**
  * @alpha
+ * @hidden
  */
 export interface UseTranslationOptions<KPrefix> {
   keyPrefix?: KPrefix
@@ -25,6 +27,7 @@ const translationOptionOverrides = {
 
 /**
  * @alpha
+ * @hidden
  * @todo limit the options for `t` to something we want to support long term
  */
 export function useTranslation<
