@@ -76,6 +76,7 @@ export type ImplicitLocaleResourceBundle = Omit<LocaleResourceBundle, 'locale'>
  * In other words, an object of translated locale strings.
  *
  * @beta
+ * @hidden
  */
 export interface LocaleResourceBundle {
   /**
@@ -113,6 +114,7 @@ export interface LocaleResourceBundle {
  * A locale definition, which describes a locale and its resources.
  *
  * @beta
+ * @hidden
  */
 export interface LocaleDefinition {
   /**
