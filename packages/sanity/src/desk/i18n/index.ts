@@ -22,5 +22,6 @@ export const deskUsEnglishLocaleBundle = defineLocaleResourceBundle({
  * The locale resource keys for the desk tool.
  *
  * @alpha
+ * @hidden
  */
 export type {DeskLocaleResourceKeys} from './resources'
