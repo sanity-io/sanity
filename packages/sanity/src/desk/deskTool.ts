@@ -27,6 +27,8 @@ const documentActions = [
 
 const documentBadges = [LiveEditBadge]
 
+const inspectors = [validationInspector, changesInspector]
+
 /**
  * The deskTool is a studio plugin which adds the “desk tool” – a tool within Sanity Studio in which
  * content editors can drill down to specific documents to edit them.
@@ -79,22 +81,18 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
     actions: (prevActions) => {
       // NOTE: since it's possible to have several desk tools in one Studio,
       // we need to check whether the document actions already exist in the Studio config
-      const actions = prevActions.slice(0)
-      for (const action of documentActions) {
-        if (!actions.includes(action)) actions.push(action)
-      }
-      return actions
+      return Array.from(new Set([...prevActions, ...documentActions]))
     },
     badges: (prevBadges) => {
       // NOTE: since it's possible to have several desk tools in one Studio,
       // we need to check whether the document badges already exist in the Studio config
-      const badges = prevBadges.slice(0)
-      for (const badge of documentBadges) {
-        if (!badges.includes(badge)) badges.push(badge)
-      }
-      return badges
+      return Array.from(new Set([...prevBadges, ...documentBadges]))
     },
-    inspectors: [validationInspector, changesInspector],
+    inspectors: (prevInspectors) => {
+      // NOTE: since it's possible to have several desk tools in one Studio,
+      // we need to check whether the inspectors already exist in the Studio config
+      return Array.from(new Set([...prevInspectors, ...inspectors]))
+    },
   },
   tools: [
     {
