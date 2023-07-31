@@ -5,6 +5,7 @@ import {studioDefaultLocaleResources} from './bundles/studio'
  * The default US English locale for the studio.
  *
  * @beta
+ * @hidden
  */
 export const usEnglishLocale = defineLocale({
   id: 'en-US',
@@ -16,5 +17,6 @@ export const usEnglishLocale = defineLocale({
  * The default locale for the studio.
  *
  * @beta
+ * @hidden
  */
 export const defaultLocale = usEnglishLocale
