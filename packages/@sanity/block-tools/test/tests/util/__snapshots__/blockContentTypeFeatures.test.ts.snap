@@ -13,12 +13,13 @@ Object {
             "group": undefined,
             "name": "href",
             "type": Object {
+              "description": "A valid web, email, phone, or relative link.",
               "jsonType": "string",
               "name": "url",
               "preview": Object {
                 "prepare": [Function],
               },
-              "title": "Url",
+              "title": "Link",
               "type": Object {
                 "jsonType": "string",
                 "name": "url",
@@ -36,12 +37,13 @@ Object {
               "group": undefined,
               "name": "href",
               "type": Object {
+                "description": "A valid web, email, phone, or relative link.",
                 "jsonType": "string",
                 "name": "url",
                 "preview": Object {
                   "prepare": [Function],
                 },
-                "title": "Url",
+                "title": "Link",
                 "type": Object {
                   "jsonType": "string",
                   "name": "url",
@@ -86,7 +88,7 @@ Object {
       "value": "strong",
     },
     Object {
-      "title": "Emphasis",
+      "title": "Italic",
       "value": "em",
     },
     Object {
@@ -104,11 +106,11 @@ Object {
   ],
   "lists": Array [
     Object {
-      "title": "Bullet",
+      "title": "Bulleted list",
       "value": "bullet",
     },
     Object {
-      "title": "Numbered",
+      "title": "Numbered list",
       "value": "number",
     },
   ],
@@ -168,12 +170,13 @@ Object {
                             "group": undefined,
                             "name": "href",
                             "type": Object {
+                              "description": "A valid web, email, phone, or relative link.",
                               "jsonType": "string",
                               "name": "url",
                               "preview": Object {
                                 "prepare": [Function],
                               },
-                              "title": "Url",
+                              "title": "Link",
                               "type": Object {
                                 "jsonType": "string",
                                 "name": "url",
@@ -191,12 +194,13 @@ Object {
                               "group": undefined,
                               "name": "href",
                               "type": Object {
+                                "description": "A valid web, email, phone, or relative link.",
                                 "jsonType": "string",
                                 "name": "url",
                                 "preview": Object {
                                   "prepare": [Function],
                                 },
-                                "title": "Url",
+                                "title": "Link",
                                 "type": Object {
                                   "jsonType": "string",
                                   "name": "url",
@@ -239,7 +243,7 @@ Object {
                         "value": "strong",
                       },
                       Object {
-                        "title": "Emphasis",
+                        "title": "Italic",
                         "value": "em",
                       },
                       Object {
@@ -394,11 +398,11 @@ Object {
                 "options": Object {
                   "list": Array [
                     Object {
-                      "title": "Bullet",
+                      "title": "Bulleted list",
                       "value": "bullet",
                     },
                     Object {
-                      "title": "Numbered",
+                      "title": "Numbered list",
                       "value": "number",
                     },
                   ],
@@ -428,12 +432,13 @@ Object {
                         "group": undefined,
                         "name": "href",
                         "type": Object {
+                          "description": "A valid web, email, phone, or relative link.",
                           "jsonType": "string",
                           "name": "url",
                           "preview": Object {
                             "prepare": [Function],
                           },
-                          "title": "Url",
+                          "title": "Link",
                           "type": Object {
                             "jsonType": "string",
                             "name": "url",
@@ -451,12 +456,13 @@ Object {
                           "group": undefined,
                           "name": "href",
                           "type": Object {
+                            "description": "A valid web, email, phone, or relative link.",
                             "jsonType": "string",
                             "name": "url",
                             "preview": Object {
                               "prepare": [Function],
                             },
-                            "title": "Url",
+                            "title": "Link",
                             "type": Object {
                               "jsonType": "string",
                               "name": "url",
@@ -905,12 +911,13 @@ Object {
               "group": undefined,
               "name": "href",
               "type": Object {
+                "description": "A valid web, email, phone, or relative link.",
                 "jsonType": "string",
                 "name": "url",
                 "preview": Object {
                   "prepare": [Function],
                 },
-                "title": "Url",
+                "title": "Link",
                 "type": Object {
                   "jsonType": "string",
                   "name": "url",
@@ -928,12 +935,13 @@ Object {
                 "group": undefined,
                 "name": "href",
                 "type": Object {
+                  "description": "A valid web, email, phone, or relative link.",
                   "jsonType": "string",
                   "name": "url",
                   "preview": Object {
                     "prepare": [Function],
                   },
-                  "title": "Url",
+                  "title": "Link",
                   "type": Object {
                     "jsonType": "string",
                     "name": "url",
@@ -976,7 +984,7 @@ Object {
           "value": "strong",
         },
         Object {
-          "title": "Emphasis",
+          "title": "Italic",
           "value": "em",
         },
         Object {
