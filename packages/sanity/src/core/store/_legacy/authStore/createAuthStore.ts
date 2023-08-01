@@ -1,53 +1,25 @@
 import {
   createClient as createSanityClient,
   ClientConfig as SanityClientConfig,
-  SanityClient,
+  type SanityClient,
 } from '@sanity/client'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 import {isEqual, memoize} from 'lodash'
+import type {AuthConfig} from '../../../config'
 import {CorsOriginError} from '../cors'
 import {AuthState, AuthStore} from './types'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {createLoginComponent} from './createLoginComponent'
+import {isRecord} from '../../../util'
 
 /** @internal */
-export interface AuthProvider {
-  name: string
-  title: string
-  url: string
-  logo?: string
-}
-
-/** @internal */
-export interface AuthStoreOptions {
+export interface AuthStoreOptions extends AuthConfig {
   clientFactory?: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string
-  apiHost?: string
-  /**
-   * Login method to use for the studio the studio. Can be one of:
-   * - `dual` (default) - attempt to use cookies where possible, falling back to
-   *   storing authentication token in `localStorage` otherwise
-   * - `cookie` - explicitly disable `localStorage` method, relying only on
-   *   cookies
-   */
-  loginMethod?: 'dual' | 'cookie' | 'token'
-  /**
-   * Append the custom providers to the default providers or replace them.
-   */
-  mode?: 'append' | 'replace'
-  /**
-   * If true, don't show the choose provider logo screen, automatically redirect
-   * to the single provider login
-   */
-  redirectOnSingle?: boolean
-  /**
-   * The custom provider implementations
-   */
-  providers?: AuthProvider[]
 }
 
 const getStorageKey = (projectId: string) => {
@@ -309,3 +281,20 @@ function hash(value: unknown): string {
  * @internal
  */
 export const createAuthStore = memoize(_createAuthStore, hash)
+
+/**
+ * Duck-type check for whether or not this looks like an auth store
+ *
+ * @param maybeStore - Item to check if matches the AuthStore interface
+ * @returns True if auth store, false otherwise
+ * @internal
+ */
+export function isAuthStore(maybeStore: unknown): maybeStore is AuthStore {
+  return (
+    isRecord(maybeStore) &&
+    'state' in maybeStore &&
+    isRecord(maybeStore.state) &&
+    'subscribe' in maybeStore.state &&
+    typeof maybeStore.state.subscribe === 'function'
+  )
+}
