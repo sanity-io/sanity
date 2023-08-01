@@ -3,6 +3,7 @@ import type {LocaleSource} from '../../i18n'
 import {typeString} from '../util/typeString'
 import {deepEquals} from '../util/deepEquals'
 import {pathToString} from '../util/pathToString'
+import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {ValidationError as ValidationErrorClass} from '../ValidationError'
 
 const SLOW_VALIDATOR_TIMEOUT = 5000
@@ -134,7 +135,14 @@ export const genericValidators: Validators = {
       clearTimeout(slowTimer)
     }
 
-    if (typeof result === 'string') return message || result
+    if (isLocalizedMessages(result)) {
+      return localizeMessage(result, context.i18n)
+    }
+
+    if (typeof result === 'string') {
+      return message || result
+    }
+
     return result
   },
 }
