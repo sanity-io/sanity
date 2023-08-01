@@ -33,6 +33,8 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
     .items([
+      S.documentListItem().id('validation').schemaType('allTypes'),
+
       S.listItem()
         .title('Untitled repro')
         .child(
