@@ -113,7 +113,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const observeElementOffset = useCallback<
     VirtualizerOptions<HTMLElement, Element>['observeElementOffset']
   >(
-    (instance, cb) => {
+    (instance, callback) => {
       if (!instance.scrollElement) {
         return undefined
       }
@@ -129,7 +129,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         // We pass a component that we have more control over to avoid issues when wrapped in custom component
         const itemOffset = Math.floor(parentElementTop - containerElementTop)
 
-        cb(scroll.scrollTop - itemOffset)
+        callback(scroll.scrollTop - itemOffset)
       }
 
       handleScroll()
