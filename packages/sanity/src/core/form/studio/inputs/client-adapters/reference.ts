@@ -1,6 +1,6 @@
 import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
 import {ReferenceFilterSearchOptions, ReferenceSchemaType} from '@sanity/types'
-import {combineLatest, EMPTY, Observable, of} from 'rxjs'
+import {combineLatest, Observable, of} from 'rxjs'
 import {SanityClient} from '@sanity/client'
 import {ReferenceInfo, ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
 import {DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
@@ -74,14 +74,30 @@ export function getReferenceInfo(
             // if we get here we can't read the _type, so we're likely to be in an inconsistent state
             // waiting for an update to reach the client. Since we're in the context of a reactive stream based on
             // the _type we'll get it eventually
-            return EMPTY
+            return of({
+              id,
+              type: undefined,
+              availability: {available: true, reason: 'READABLE'},
+              preview: {
+                draft: undefined,
+                published: undefined,
+              },
+            } as const)
           }
 
           // get schema type for the referenced document
           const refSchemaType = referenceType.to.find((memberType) => memberType.name === typeName)!
 
           if (!refSchemaType) {
-            return EMPTY
+            return of({
+              id,
+              type: typeName,
+              availability: {available: true, reason: 'READABLE'},
+              preview: {
+                draft: undefined,
+                published: undefined,
+              },
+            } as const)
           }
 
           const previewPaths = [
