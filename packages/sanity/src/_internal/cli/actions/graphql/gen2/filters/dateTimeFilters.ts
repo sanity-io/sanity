@@ -36,6 +36,11 @@ export function createDateTimeFilters(): InputObjectType {
         type: 'Datetime',
         description: 'Checks if the value is lesser than or equal to the given input.',
       },
+      {
+        fieldName: 'is_defined',
+        type: 'Boolean',
+        description: 'Checks if the value is defined.',
+      },
     ],
   }
 }

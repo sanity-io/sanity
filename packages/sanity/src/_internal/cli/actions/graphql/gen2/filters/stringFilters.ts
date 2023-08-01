@@ -39,6 +39,11 @@ export function createStringFilters(): InputObjectType {
         },
         description: 'Checks if the value is not equal to one of the given values.',
       },
+      {
+        fieldName: 'is_defined',
+        type: 'Boolean',
+        description: 'Checks if the value is defined.',
+      },
     ],
   }
 }
