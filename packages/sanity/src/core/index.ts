@@ -28,3 +28,4 @@ export type {
   SearchSort,
   WeightedSearchOptions,
 } from './search'
+export type {ValidationContext} from './validation'
