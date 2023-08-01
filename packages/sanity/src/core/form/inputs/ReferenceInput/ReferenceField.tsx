@@ -121,7 +121,11 @@ export function ReferenceField(props: ReferenceFieldProps) {
     hasRef && !loadableReferenceInfo.isLoading && value?._strengthenOnPublish
 
   const showWeakRefMismatch =
-    !loadableReferenceInfo.isLoading && hasRef && weakIs !== weakShouldBe && !weakWarningOverride
+    !loadableReferenceInfo.isLoading &&
+    loadableReferenceInfo.result?.availability.available &&
+    hasRef &&
+    weakIs !== weakShouldBe &&
+    !weakWarningOverride
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
   const isEditing = !value?._ref || inputProps.focusPath[0] === '_ref'

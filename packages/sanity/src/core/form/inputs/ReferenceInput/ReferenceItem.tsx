@@ -40,8 +40,8 @@ import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {useReferenceInput} from './useReferenceInput'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
-import {IntentLink} from 'sanity/router'
 import {ReferenceItemRefProvider} from './ReferenceItemRefProvider'
+import {IntentLink} from 'sanity/router'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 
@@ -259,7 +259,11 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     hasRef && !loadableReferenceInfo.isLoading && value?._strengthenOnPublish
 
   const showWeakRefMismatch =
-    !loadableReferenceInfo.isLoading && hasRef && weakIs !== weakShouldBe && !weakWarningOverride
+    !loadableReferenceInfo.isLoading &&
+    loadableReferenceInfo.result?.availability.available &&
+    hasRef &&
+    weakIs !== weakShouldBe &&
+    !weakWarningOverride
 
   const preview =
     loadableReferenceInfo.result?.preview.draft || loadableReferenceInfo.result?.preview.published
