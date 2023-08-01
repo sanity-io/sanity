@@ -1,10 +1,17 @@
-import {createContext, useContext} from 'react'
+import {type MutableRefObject, createContext, useContext} from 'react'
 
 /**
  * @internal
  */
 export interface VirtualizerScrollInstance {
+  /**
+   * The parent that has the overflow scroll
+   */
   scrollElement: HTMLElement | null
+  /**
+   * The container that wraps the array items
+   */
+  containerElement: MutableRefObject<HTMLElement | null>
 }
 
 /**

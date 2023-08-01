@@ -2,7 +2,7 @@
 
 import {CloseIcon} from '@sanity/icons'
 import {Box, Button, Flex, PopoverProps, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
@@ -71,10 +71,14 @@ function Content(props: PopoverEditDialogProps) {
 
   // This seems to work with regular refs as well, but it might be safer to use state.
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
+  const containerElement = useRef<HTMLDivElement | null>(null)
 
   return (
-    <VirtualizerScrollInstanceProvider scrollElement={contentElement}>
-      <Flex direction="column" height="fill">
+    <VirtualizerScrollInstanceProvider
+      scrollElement={contentElement}
+      containerElement={containerElement}
+    >
+      <Flex ref={containerElement} direction="column" height="fill">
         <ContentHeaderBox flex="none" padding={1}>
           <Flex align="center">
             <Box flex={1} padding={2}>

@@ -1,4 +1,4 @@
-import React, {type ReactNode, useState} from 'react'
+import React, {type ReactNode, useState, useRef} from 'react'
 import {Box, Dialog, ResponsiveWidthProps} from '@sanity/ui'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
@@ -30,16 +30,22 @@ export function EditPortal(props: Props): React.ReactElement {
     autofocus,
   } = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const containerElement = useRef<HTMLDivElement | null>(null)
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
-      <Box padding={4}>{children}</Box>
+      <Box ref={containerElement} padding={4}>
+        {children}
+      </Box>
     </PresenceOverlay>
   )
 
   if (type === 'dialog') {
     return (
-      <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
+      <VirtualizerScrollInstanceProvider
+        scrollElement={documentScrollElement}
+        containerElement={containerElement}
+      >
         <Dialog
           header={header}
           id={id || ''}
@@ -63,7 +69,10 @@ export function EditPortal(props: Props): React.ReactElement {
       width={width}
       containerRef={setDocumentScrollElement}
     >
-      <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
+      <VirtualizerScrollInstanceProvider
+        scrollElement={documentScrollElement}
+        containerElement={containerElement}
+      >
         {contents}
       </VirtualizerScrollInstanceProvider>
     </PopoverDialog>
