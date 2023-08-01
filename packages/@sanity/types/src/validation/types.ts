@@ -341,7 +341,7 @@ export interface ValidationError {
 }
 
 /** @public */
-export type CustomValidatorResult = true | string | ValidationError
+export type CustomValidatorResult = true | string | ValidationError | LocalizedValidationMessages
 
 /** @public */
 export type CustomValidator<T = unknown> = (
