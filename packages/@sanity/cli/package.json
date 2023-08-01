@@ -63,7 +63,7 @@
   "dependencies": {
     "@babel/traverse": "^7.19.0",
     "@vercel/frameworks": "1.5.0",
-    "@vercel/fs-detectors": "4.1.0",
+    "@vercel/fs-detectors": "4.1.1",
     "chalk": "^4.1.2",
     "esbuild": "^0.18.0",
     "esbuild-register": "^3.4.1",
