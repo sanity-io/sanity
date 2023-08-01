@@ -49,6 +49,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
   }, [collapsed, expand])
 
   const showTabsOrSubActions = Boolean(!collapsed && (tabs || subActions))
+  const isTitleString = typeof title === 'string'
 
   return (
     <LayerProvider zOffset={100}>
@@ -65,16 +66,16 @@ export const PaneHeader = forwardRef(function PaneHeader(
               <TitleCard
                 __unstable_focusRing
                 flex={1}
-                // forwardedAs="button"
+                forwardedAs={isTitleString ? 'button' : undefined}
                 marginRight={actions ? 1 : 0}
-                // onClick={handleTitleClick}
+                onClick={isTitleString ? handleTitleClick : undefined}
                 paddingLeft={backButton ? 1 : 3}
                 paddingY={3}
                 tabIndex={tabIndex}
               >
                 {loading && <TitleTextSkeleton animated radius={1} />}
                 {!loading &&
-                  (typeof title === 'string' ? (
+                  (isTitleString ? (
                     <TitleText textOverflow="ellipsis" weight="semibold">
                       {title}
                     </TitleText>

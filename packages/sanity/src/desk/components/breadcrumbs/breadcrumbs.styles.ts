@@ -11,6 +11,7 @@ export const Root = styled.ol`
   list-style: none;
   align-items: center;
   width: 100%;
+  overflow: hidden;
   white-space: nowrap;
   line-height: 0;
 `
