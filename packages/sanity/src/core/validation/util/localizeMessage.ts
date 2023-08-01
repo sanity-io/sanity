@@ -1,5 +1,5 @@
 import {isPlainObject} from 'lodash'
-import type {LocalizedValidationMessages} from '@sanity/types'
+import type {CustomValidatorResult, LocalizedValidationMessages} from '@sanity/types'
 import {LocaleSource} from '../../i18n'
 
 /**
@@ -33,14 +33,20 @@ export function localizeMessage(message: LocalizedValidationMessages, i18n: Loca
 }
 
 /**
- * Check if passed message is a localized message object
+ * Check if passed message/result is a localized message object
  *
  * @param message - Message to check
  * @returns True if message is a localized message object, false otherwise
  * @internal
  */
 export function isLocalizedMessages(
-  message: string | LocalizedValidationMessages | undefined
+  message: CustomValidatorResult | undefined
 ): message is LocalizedValidationMessages {
-  return typeof message !== 'string' && isPlainObject(message)
+  return (
+    message !== true &&
+    typeof message !== 'undefined' &&
+    typeof message !== 'string' &&
+    isPlainObject(message) &&
+    !('message' in message)
+  )
 }
