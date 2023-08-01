@@ -173,7 +173,7 @@ export async function reconfigureV2Project(
   }> {
     let projects
     try {
-      projects = await apiClient({requireProject: false}).projects.list()
+      projects = await apiClient({requireProject: false}).projects.list({includeMembers: false})
     } catch (err) {
       if (unattended && flags.project) {
         return {projectId: flags.project, displayName: 'Unknown project', isFirstProject: false}
