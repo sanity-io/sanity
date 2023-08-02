@@ -412,7 +412,9 @@ export interface SourceOptions extends PluginOptions {
    */
   apiHost?: string
 
-  /** @internal */
+  /**
+   * Authentication options for this source.
+   */
   auth?: AuthConfig | AuthStore
 
   /**
