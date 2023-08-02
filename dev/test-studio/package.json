@@ -54,6 +54,6 @@
   },
   "devDependencies": {
     "chokidar": "^3.5.3",
-    "vite": "^4.4.4"
+    "vite": "^4.4.8"
   }
 }
