@@ -17,6 +17,8 @@ export interface AuthConfig {
   /**
    * Whether to append the providers specified in `providers` with the default providers from the
    * API, or replace the default providers with the ones specified.
+   *
+   * @deprecated Use the function form of `providers` instead for more control
    */
   mode?: 'append' | 'replace'
 
@@ -28,10 +30,18 @@ export interface AuthConfig {
   redirectOnSingle?: boolean
 
   /**
-   * Array of authentication providers to allow.
+   * Array of authentication providers to use, or a function that takes an array of default
+   * authentication providers (fetched from the Sanity API) and should return a new list of
+   * providers. This can be used to selectively replace, add or remove providers from the
+   * list of choices.
+   *
+   * @remarks If a static array of providers is provided, the `mode` property is taken into account
+   *   when determining what to do with it - `append` will append the providers to the default set
+   *   of providers, while `replace` will replace the default providers with the ones specified.
+   *
    * If not set, the default providers will be used.
    */
-  providers?: AuthProvider[]
+  providers?: AuthProvider[] | ((prev: AuthProvider[]) => AuthProvider[] | Promise<AuthProvider[]>)
 
   /**
    * The API hostname for requests. Should usually be left undefined,
