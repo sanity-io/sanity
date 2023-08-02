@@ -101,7 +101,7 @@
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.1",
-    "styled-components": "^5.2.0",
+    "styled-components": "^5.3.11",
     "vite": "^4.4.8"
   },
   "peerDependencies": {
