@@ -52,30 +52,36 @@ test.describe('Portable Text Editor', () => {
   test.describe('Decorators', () => {
     // @todo Test if using the keyboard shortcut for Emphasis or Bold works if you haven't typed anything yet will highlight it in the toolbar - this should currently fail
     test('Render default styles with keyboard shortcuts', async ({mount, page}, testInfo) => {
-      const {getModifierKey, focusPTE, typeWithDelay} = testHelpers({page, testInfo})
+      const {getModifierKey, focusPTE, typeWithDelay, typeInPTEWithDelay} = testHelpers({
+        page,
+        testInfo,
+      })
       await mount(<FormBuilderStory />)
       const $pteField = await focusPTE('field-body')
       const $pteTextbox = $pteField.getByRole('textbox')
 
       // Bold
       await page.keyboard.press(`${getModifierKey()}+b`)
-      await typeWithDelay('bold text 123')
+      await typeInPTEWithDelay('bold text 123', $pteTextbox)
+
       await page.keyboard.press(`${getModifierKey()}+b`, {delay: DEFAULT_TYPE_DELAY})
       await page.keyboard.press('Enter')
+
       await expect(
         $pteTextbox.locator('[data-mark="strong"]', {hasText: 'bold text'})
       ).toBeVisible()
 
       // Italic
-      await page.keyboard.press(`${getModifierKey()}+i`)
-      await typeWithDelay('italic text')
+      await page.keyboard.press(`${getModifierKey()}+i`, {delay: DEFAULT_TYPE_DELAY})
+      await typeInPTEWithDelay('italic text', $pteTextbox)
+
       await page.keyboard.press(`${getModifierKey()}+i`)
       await page.keyboard.press('Enter')
       await expect($pteTextbox.locator('[data-mark="em"]', {hasText: 'italic text'})).toBeVisible()
 
       // Underline
       await page.keyboard.press(`${getModifierKey()}+u`)
-      await typeWithDelay('underlined text')
+      await typeInPTEWithDelay('underlined text', $pteTextbox)
       await page.keyboard.press(`${getModifierKey()}+u`)
       await page.keyboard.press('Enter')
       await expect(
@@ -86,21 +92,21 @@ test.describe('Portable Text Editor', () => {
 
       // Code
       await page.keyboard.press(`${getModifierKey()}+'`)
-      await typeWithDelay('code text')
+      await typeInPTEWithDelay('code text', $pteTextbox)
+      await expect($pteTextbox.locator('[data-mark="code"]', {hasText: 'code text'})).toBeVisible()
       await page.keyboard.press(`${getModifierKey()}+'`)
       await page.keyboard.press('Enter')
-      await expect($pteTextbox.locator('[data-mark="code"]', {hasText: 'code text'})).toBeVisible()
     })
   })
 
   test.describe('Annotations', () => {
     test('Create a new link with keyboard only', async ({mount, page}, testInfo) => {
-      const {focusPTE, typeWithDelay} = testHelpers({page, testInfo})
+      const {focusPTE, typeWithDelay, typeInPTEWithDelay} = testHelpers({page, testInfo})
       await mount(<FormBuilderStory />)
       const $pteField = await focusPTE('field-body')
       const $pteTextbox = await $pteField.getByRole('textbox')
 
-      await typeWithDelay('Now we should insert a link.')
+      await typeInPTEWithDelay('Now we should insert a link.', $pteTextbox)
 
       // Assertion: Wait for the text to be rendered
       await expect(
@@ -121,13 +127,13 @@ test.describe('Portable Text Editor', () => {
       await expect($pteTextbox.locator('[data-slate-node="text"] span[data-link]')).toBeVisible()
 
       // Now we check if the edit popover shows automatically
-      await expect(page.getByLabel('Url').first()).toBeAttached({timeout: 10000})
+      await expect(page.getByLabel('Link').first()).toBeAttached({timeout: 10000})
 
       // Focus the URL input
-      await page.getByLabel('Url').first().focus()
+      await page.getByLabel('Link').first().focus()
 
       // Assertion: The URL input should be focused
-      await expect(page.getByLabel('Url').first()).toBeFocused()
+      await expect(page.getByLabel('Link').first()).toBeFocused()
 
       // Type in the URL
       await typeWithDelay('https://www.sanity.io')
@@ -138,14 +144,17 @@ test.describe('Portable Text Editor', () => {
   })
 
   test.describe('Blocks', () => {
-    test('Megastory (should be split up)', async ({mount, page}, testInfo) => {
-      const {focusPTE, typeWithDelay} = testHelpers({page, testInfo})
-      const component = await mount(<FormBuilderStory />)
+    test('Clicking a block link in the menu create a new block element', async ({
+      mount,
+      page,
+    }, testInfo) => {
+      const {focusPTE} = testHelpers({page, testInfo})
+      await mount(<FormBuilderStory />)
+
       const $pteField = await focusPTE('field-body')
       const $pteTextbox = await $pteField.getByRole('textbox')
 
-      // Insert Object into PTE - should trigger dialog to open
-      await component
+      await page
         .getByRole('button')
         .filter({hasText: /^Object$/})
         // @todo It seems like Firefox has different focus behaviour when using keypress here
@@ -153,20 +162,141 @@ test.describe('Portable Text Editor', () => {
         // .press('Enter', {delay: DEFAULT_TYPE_DELAY})
         .click()
 
-      // Assertion: Blocks that appear in the menu bar should always display a title
-      await expect(page.getByRole('button').filter({hasText: 'Object Without Title'})).toBeVisible()
+      // Assertion: Object preview should be visible
+      await expect($pteTextbox.locator('.pt-block.pt-object-block')).toBeVisible()
+    })
 
-      // Wait for the object preview to show inside of PTE
-      await page.waitForSelector('.pt-block.pt-object-block')
+    test('Custom block preview components renders correctly', async ({mount, page}, testInfo) => {
+      const {focusPTE} = testHelpers({page, testInfo})
+      await mount(<FormBuilderStory />)
+
+      const $pteField = await focusPTE('field-body')
+      const $pteTextbox = await $pteField.getByRole('textbox')
+
+      await page
+        .getByRole('button')
+        .filter({hasText: /^Inline Object$/})
+        // @todo It seems like Firefox has different focus behaviour when using keypress here
+        // causing the focus assertion to fail. The insert button will stay focused even after the dialog opens.
+        // .press('Enter', {delay: DEFAULT_TYPE_DELAY})
+        .click()
+
+      // Assertion: Object preview should be visible
+      await expect($pteTextbox.getByTestId('inline-preview')).toBeVisible()
+
+      // Assertion: Text in custom preview component should show
+      await expect($pteTextbox.getByText('Custom preview block:')).toBeVisible()
+    })
+
+    test('Double-clicking opens a block', async ({mount, page}, testInfo) => {
+      const {focusPTE} = testHelpers({page, testInfo})
+      await mount(<FormBuilderStory />)
+
+      const $pteField = await focusPTE('field-body')
+      const $pteTextbox = await $pteField.getByRole('textbox')
+
+      await page
+        .getByRole('button')
+        .filter({hasText: /^Object$/})
+        .click()
 
       // Assertion: Object preview should be visible
       await expect($pteTextbox.locator('.pt-block.pt-object-block')).toBeVisible()
 
-      // Assertion: Object edit dialog should be visible should be visible
+      const $locatorDialog = page.getByTestId('default-edit-object-dialog')
+
+      // Assertion: Object edit dialog should be visible
+      await expect($locatorDialog).toBeVisible()
+
+      // We close the dialog first so we can test that we can open it again by double clicking
+      await page.keyboard.press('Escape')
+
+      // Dialog should now be gone
+      await expect($locatorDialog).toBeHidden()
+
+      // Test that we can open dialog by double clicking
+      await $pteTextbox.getByTestId('pte-block-object').dblclick()
+
+      // Assertion: Object edit dialog should be visible
+      await expect($locatorDialog).toBeVisible()
+    })
+
+    test('Blocks should be accessible via block context menu', async ({mount, page}, testInfo) => {
+      const {focusPTE} = testHelpers({page, testInfo})
+      await mount(<FormBuilderStory />)
+
+      const $pteField = await focusPTE('field-body')
+      const $pteTextbox = await $pteField.getByRole('textbox')
+
+      await page
+        .getByRole('button')
+        .filter({hasText: /^Object$/})
+        .click()
+
+      // Assertion: Object preview should be visible
+      await expect($pteTextbox.locator('.pt-block.pt-object-block')).toBeVisible()
+
+      // Assertion: Object edit dialog should be visible
+      await expect(page.getByTestId('default-edit-object-dialog')).toBeVisible()
+
+      // We close the dialog first so we can test that we can open it again by double clicking
+      await page.keyboard.press('Escape')
+
+      // Dialog should now be gone
+      await expect(page.getByTestId('default-edit-object-dialog')).toBeHidden()
+
+      // Tab to the context menu, press enter once to open it, then enter again to press 'edit'
+      await page.keyboard.press('Tab')
+      await page.keyboard.press('Enter')
+
+      // Assertion: Context menu should be open
+      const $locatorContextMenu = page.locator('[data-ui="MenuButton__popover"] [data-ui="Menu"]')
+      await expect($locatorContextMenu.locator('*:focus', {hasText: 'Edit'})).toBeFocused()
+
+      await page.keyboard.press('Enter')
+
+      // Assertion: Object edit dialog should be visible
+      await expect(page.getByTestId('default-edit-object-dialog')).toBeVisible()
+
+      // Close dialog
+      await page.keyboard.press('Escape')
+
+      // Tab to the context menu, press enter once to open it
+      await page.keyboard.press('Tab')
+      await page.keyboard.press('Enter')
+      await expect($locatorContextMenu).toBeVisible()
+      await expect($locatorContextMenu.locator('*:focus', {hasText: 'Edit'})).toBeFocused()
+
+      // We add delay to avoid flakyness
+      await page.keyboard.press('ArrowDown')
+
+      // Check that the correct menu item is focused
+      await expect($locatorContextMenu.locator('*:focus', {hasText: 'Delete'})).toBeFocused()
+
+      await page.keyboard.press('Enter')
+
+      // Assertion: Block should now be deleted
+      await expect($pteTextbox.getByTestId('pte-block-object')).not.toBeVisible()
+    })
+
+    test('Handle focus correctly in block edit dialog', async ({page, mount}, testInfo) => {
+      const {focusPTE, typeWithDelay} = testHelpers({page, testInfo})
+      await mount(<FormBuilderStory />)
+
+      const $pteField = await focusPTE('field-body')
+      const $pteTextbox = await $pteField.getByRole('textbox')
+
+      await page
+        .getByRole('button')
+        .filter({hasText: /^Object$/})
+        .click()
+
+      // Assertion: Object preview should be visible
+      await expect($pteTextbox.locator('.pt-block.pt-object-block')).toBeVisible()
+
+      // Assertion: Object edit dialog should be visible
       const $dialog = page.getByTestId('default-edit-object-dialog')
-      await expect(page.locator(':focus')).toBeFocused()
       await expect($dialog).toBeVisible()
-      await expect($dialog.locator(':focus')).toBeFocused()
 
       // Assertion: Expect close button to be focused
       const $closeButton = $dialog.locator('button[aria-label="Close dialog"]:focus')
@@ -176,78 +306,17 @@ test.describe('Portable Text Editor', () => {
       // Tab to the input
       await page.keyboard.press('Tab')
 
-      // Assertion: Dialog should not be closed when you tab
-      await expect($dialog).not.toBeHidden()
+      const $dialogInput = await page.getByTestId('default-edit-object-dialog').locator('input')
 
-      const $dialogInput = await page.locator('[data-testid="default-edit-object-dialog"] input')
+      // Assertion: Dialog should not be closed when you tab to input
+      await expect($dialog).not.toBeHidden()
 
       // Check that we have focus on the input
       await expect($dialogInput).toBeFocused()
 
-      const TEXT_DIALOG_TITLE_INPUT = `it works to type into the dialog title input`
-
-      // Lets's type into the input
-      await typeWithDelay(TEXT_DIALOG_TITLE_INPUT)
-
-      await expect($dialogInput).toHaveValue(TEXT_DIALOG_TITLE_INPUT)
-
       // Assertion: Focus should be locked
       await page.keyboard.press('Tab+Tab')
       await expect($dialogInput).toBeFocused()
-
-      // Close dialog
-      await page.keyboard.press('Escape')
-
-      // Dialog should now be gone
-      await expect(page.getByTestId('default-edit-object-dialog')).toBeHidden()
-
-      // The object preview should now show the text we typed into the dialog title input
-      // Disabled for now, since the preview store only uses document store behind the scenes and won't update
-      // based on the hardcoded document value we use
-      await expect(page.locator('.pt-block.pt-object-block')).toHaveText('Untitled')
-
-      // Test that we can open dialog by double clicking
-      await $pteTextbox.getByTestId('pte-block-object').dblclick()
-
-      await expect($dialog).toBeVisible()
-
-      // Close dialog
-      await page.keyboard.press('Escape')
-      // Dialog should now be gone
-      await expect(page.getByTestId('default-edit-object-dialog')).toBeHidden()
-
-      // Open dialog: tab to the context menu, press enter once to open it, then enter again to press 'edit'
-      await page.keyboard.press('Tab')
-      await page.keyboard.press('Enter')
-
-      // Assertion: Context menu should be open
-      // @todo: re-enable keyboard only navigation, understand why `press()` is flaky, even with visible assertions
-      // await expect(page.locator('[data-ui="MenuButton__popover"] [data-ui="Menu"]')).toBeVisible()
-      // await page.keyboard.press('Enter')
-      await page
-        .locator('[data-ui="MenuButton__popover"] [data-ui="Menu"] [data-ui="MenuItem"]')
-        .nth(0)
-        .click()
-
-      // Assertion: Dialog should be open
-      await expect($dialog).toBeVisible()
-
-      // Close dialog
-      await page.keyboard.press('Escape')
-
-      // Open context menu -> select Delete
-      await page.keyboard.press('Tab')
-      await page.keyboard.press('Enter')
-      // @todo: re-enable keyboard only navigation, understand why `press()` is flaky, even with visible assertions
-      // await page.keyboard.press('ArrowDown')
-      // await page.keyboard.press('Enter')
-      await page
-        .locator('[data-ui="MenuButton__popover"] [data-ui="Menu"] [data-ui="MenuItem"]')
-        .nth(1)
-        .click()
-
-      // Assertion: Block should now be deleted
-      await expect($pteTextbox.getByTestId('pte-block-object')).not.toBeVisible()
     })
   })
 
@@ -294,6 +363,20 @@ test.describe('Portable Text Editor', () => {
       await expect(page.locator('[data-ui="MenuButton__popover"] [data-ui="Menu"]')).toContainText(
         'Inline Object'
       )
+    })
+
+    test('Blocks that appear in the menu bar should always display a title', async ({
+      page,
+      mount,
+    }, testInfo) => {
+      const {focusPTE} = testHelpers({page, testInfo})
+      await mount(<FormBuilderStory />)
+
+      const $pteField = await focusPTE('field-body')
+
+      await $pteField.getByRole('textbox')
+
+      await expect(page.getByRole('button').filter({hasText: 'Object Without Title'})).toBeVisible()
     })
   })
 })

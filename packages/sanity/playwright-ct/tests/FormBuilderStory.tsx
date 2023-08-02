@@ -10,7 +10,7 @@ import {
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 // import {BufferedDocument} from '@sanity/mutator'
 import {validateDocument} from '@sanity/validation'
-import {Box} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
 import {applyAll} from '../../src/core/form/patch/applyPatch'
 import {createMockSanityClient} from './mocks/createMockSanityClient'
 import {Wrapper} from './Wrapper'
@@ -33,7 +33,11 @@ const EMPTY_ARRAY: never[] = []
 
 // This is to emulate preview updates to the object without the preview store
 function CustomObjectPreview(props: PreviewProps) {
-  return <Box padding={1}>{props.renderDefault({...props})}</Box>
+  return (
+    <Box padding={1}>
+      <Text>Custom preview block:</Text> {props.renderDefault({...props})}
+    </Box>
+  )
 }
 
 const SCHEMA_TYPES = [
