@@ -71,7 +71,7 @@
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.21",
     "slate": "0.94.1",
-    "slate-react": "0.97.0"
+    "slate-react": "0.98.1"
   },
   "devDependencies": {
     "@sanity/diff-match-patch": "^3.1.1",
