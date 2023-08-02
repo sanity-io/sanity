@@ -16995,10 +16995,10 @@ slash@^4.0.0:
   resolved "https://registry.yarnpkg.com/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
   integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
 
-slate-react@0.97.0:
-  version "0.97.0"
-  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.97.0.tgz#8de8f3367fa51941044046b589f37561680e5346"
-  integrity sha512-C/e0l5hg/z+JZvGlfQJ4MDNJTjQxi4g6vUsSFmUhZXByDwsU0d0+jcbHO2KUjMe+sUKuFrcZmgzoByaeW9UjqA==
+slate-react@0.98.1:
+  version "0.98.1"
+  resolved "https://registry.npmjs.org/slate-react/-/slate-react-0.98.1.tgz#a3c2876ab6953622abeaf0c436800f07e8015000"
+  integrity sha512-ta4TAxoHE740e5EYSjAvK2bSpvrvnTkPfwMmx7rV+z/r8sng/RaJpc5cL9Rt2sfqQonSZOnQtAIaL6g97bLgzw==
   dependencies:
     "@juggle/resize-observer" "^3.4.0"
     "@types/is-hotkey" "^0.1.1"
