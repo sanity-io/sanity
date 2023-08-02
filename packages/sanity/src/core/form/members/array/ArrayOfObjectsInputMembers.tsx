@@ -14,9 +14,9 @@ import {ArrayOfObjectsInputMember} from './ArrayOfObjectsInputMember'
 /** @internal */
 export interface ArrayOfObjectsInputMembersProps {
   members: ArrayOfObjectsMember[]
-  renderAnnotation: RenderAnnotationCallback
-  renderBlock: RenderBlockCallback
-  renderInlineBlock: RenderBlockCallback
+  renderAnnotation?: RenderAnnotationCallback
+  renderBlock?: RenderBlockCallback
+  renderInlineBlock?: RenderBlockCallback
   renderInput: RenderInputCallback
   renderField: RenderFieldCallback
   renderItem: RenderArrayOfObjectsItemCallback
