@@ -96,7 +96,7 @@ export interface DocumentListOptions {
   params?: Record<string, unknown>
   /** Document list API version */
   apiVersion?: string
-  /** Document list API default ordering array. See {@link SortOrderingItem} */
+  /** Document list API default ordering array. */
   defaultOrdering?: SortOrderingItem[]
 }
 
@@ -155,7 +155,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   /** Set Document list schema type name
-   * @param type - schema type name. See {@link SchemaType}
+   * @param type - schema type name.
    * @returns document list builder based on the schema type name provided. See {@link DocumentListBuilder}
    */
   schemaType(type: SchemaType | string): DocumentListBuilder {

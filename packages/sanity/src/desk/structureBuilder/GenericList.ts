@@ -237,7 +237,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
   }
 
   /** Set generic list initial value templates
-   * @param templates - generic list initial value templates. See {@link InitialValueTemplateItem} and {@link InitialValueTemplateItemBuilder}
+   * @param templates - generic list initial value templates. See {@link InitialValueTemplateItemBuilder}
    * @returns generic list builder based on templates provided.
    */
   initialValueTemplates(
