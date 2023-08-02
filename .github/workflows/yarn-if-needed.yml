@@ -44,7 +44,7 @@ jobs:
         with:
           app_id: ${{ secrets.ECOSPARK_APP_ID }}
           private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-      - uses: peter-evans/create-pull-request@284f54f989303d2699d373481a0cfa13ad5a6666 # v5
+      - uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5
         with:
           author: github-actions <41898282+github-actions[bot]@users.noreply.github.com>
           body: I ran `npx yarn-deduplicate -- yarn.lock --strategy highest` 🧑‍💻
