@@ -3825,16 +3825,7 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.2":
-  version "6.1.7"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.1.7.tgz#15e6e61ddfbf3fabb4b9f8e60c03092839317ee4"
-  integrity sha512-crleZDBic3VpmBhIuiVZNkJMxAWE/fj5v+hHBXt+2psW1CJrvBdTLX14f4cqC40W1YDDE4ZGrDkYuph6Y6/YzQ==
-  dependencies:
-    "@sanity/eventsource" "^5.0.0"
-    get-it "^8.1.0"
-    rxjs "^7.0.0"
-
-"@sanity/client@^6.3.0":
+"@sanity/client@^6.1.2", "@sanity/client@^6.3.0":
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.3.0.tgz#61db96aa484e0db1d34c0a5676763f2579e5cf96"
   integrity sha512-SFw53wHejjBUVitSRWufMAJJKIjSIAEs2CA52KAcAUK4TxF8IpHrQTkkWKHzxbfEZWKNwxlhVMm5sQUKso1atg==
@@ -9842,23 +9833,7 @@ get-intrinsic@^1.0.2, get-intrinsic@^1.1.1, get-intrinsic@^1.1.3, get-intrinsic@
     has-proto "^1.0.1"
     has-symbols "^1.0.3"
 
-get-it@^8.0.9, get-it@^8.1.0:
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.3.0.tgz#376ab5f13a75923f737491b6665ee43674627e1f"
-  integrity sha512-R8rM45CWEI1shdTegGCs/9yy/z6DgwS5XMVIVZtSVpu0XABxPp3PA3TCl6mzVQOcHecbqD+VUFg1poAtBtO19A==
-  dependencies:
-    debug "^4.3.4"
-    decompress-response "^7.0.0"
-    follow-redirects "^1.15.2"
-    into-stream "^6.0.0"
-    is-plain-object "^5.0.0"
-    is-retry-allowed "^2.2.0"
-    is-stream "^2.0.1"
-    parse-headers "^2.0.5"
-    progress-stream "^2.0.0"
-    tunnel-agent "^0.6.0"
-
-get-it@^8.2.0:
+get-it@^8.0.9, get-it@^8.1.0, get-it@^8.2.0:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.3.1.tgz#bb92c6740a1260275ad13b31a543755b38a8b5c9"
   integrity sha512-fi5wQakZVHWRy3zP0env52PHXP9Zl/p8Q2Ow8z9SmwpYgfCaA90hCSW2twC5/cpV5M1wB6tSmLqldVMP1tS1qw==
