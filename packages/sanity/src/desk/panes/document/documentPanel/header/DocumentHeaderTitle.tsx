@@ -12,7 +12,7 @@ export function DocumentHeaderTitle(): ReactElement {
   const {error, title} = useDocumentTitle()
   const {resolvedPanes} = useResolvedPanes()
   const {navigate, state} = useRouter()
-  const titleRef = useRef<HTMLDivElement | null>(null)
+  const titleRef = useRef<HTMLButtonElement | null>(null)
   const rootRef = useRef<HTMLDivElement | null>(null)
 
   const activePaneTitle = useMemo(() => {
