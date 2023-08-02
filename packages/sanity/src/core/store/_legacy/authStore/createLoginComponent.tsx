@@ -61,7 +61,7 @@ async function getProviders({client, mode, providers: customProviders = []}: Get
 
 interface CreateLoginComponentOptions {
   getClient: () => Observable<SanityClient>
-  loginMethod: 'dual' | 'cookie'
+  loginMethod: 'dual' | 'cookie' | 'token'
   mode?: 'append' | 'replace'
   redirectOnSingle?: boolean
   providers?: Array<{
@@ -74,7 +74,7 @@ interface CreateLoginComponentOptions {
 
 interface CreateHrefForProviderOptions {
   projectId: string
-  loginMethod: 'dual' | 'cookie'
+  loginMethod: 'dual' | 'cookie' | 'token'
   url: string
   basePath: string
 }
@@ -88,7 +88,17 @@ function createHrefForProvider({
   const params = new URLSearchParams()
   params.set('origin', `${window.location.origin}${basePath}`)
   params.set('projectId', projectId)
-  params.set('type', loginMethod)
+
+  // Setting `type=token` will return the sid as part of the _query_, which may end up in
+  // server access logs and similar. Instead, use `withSid=true` to return the sid as part
+  // of the _hash_ instead, which is only accessible to the client. Other auth types will
+  // use the `type` parameter - `dual` will automatically use the hash, so do not need the
+  // additional parameter.
+  if (loginMethod === 'token') {
+    params.set('withSid', 'true')
+  } else {
+    params.set('type', loginMethod)
+  }
   return `${url}?${params}`
 }
 

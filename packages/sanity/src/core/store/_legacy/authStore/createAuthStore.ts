@@ -34,7 +34,7 @@ export interface AuthStoreOptions {
    * - `cookie` - explicitly disable `localStorage` method, relying only on
    *   cookies
    */
-  loginMethod?: 'dual' | 'cookie'
+  loginMethod?: 'dual' | 'cookie' | 'token'
   /**
    * Append the custom providers to the default providers or replace them.
    */
@@ -213,38 +213,52 @@ export function _createAuthStore({
 
   async function handleCallbackUrl() {
     const sessionId = getSessionId()
-    if (sessionId && loginMethod === 'dual') {
-      const requestClient = clientFactory({
-        projectId,
-        dataset,
-        useCdn: true,
-        withCredentials: true,
-        apiVersion: '2021-06-07',
-        requestTagPrefix: 'sanity.studio',
-        ...hostOptions,
-      })
 
-      // try to get the current user by using the cookie credentials
-      const currentUser = await getCurrentUser(requestClient, broadcast)
-
-      if (currentUser) {
-        // if that worked, then we don't need to fetch a token
-        broadcast(null)
-      } else {
-        // if that didn't work, then we need to trade the session ID for a token
-        const {token} = await requestClient.request<{token: string}>({
-          method: 'GET',
-          uri: `/auth/fetch`,
-          query: {sid: sessionId},
-          tag: 'auth.fetch-token',
-        })
-
-        saveToken({token, projectId})
-        broadcast(token)
-      }
-    } else {
-      broadcast(loginMethod === 'dual' ? getToken(projectId) : null)
+    if (!sessionId) {
+      broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
+      return
     }
+
+    const requestClient = clientFactory({
+      projectId,
+      dataset,
+      useCdn: true,
+      withCredentials: true,
+      apiVersion: '2021-06-07',
+      requestTagPrefix: 'sanity.studio',
+      ...hostOptions,
+    })
+
+    let currentUser
+    if (loginMethod === 'dual' || loginMethod === 'cookie') {
+      // try to get the current user by using the cookie credentials
+      currentUser = await getCurrentUser(requestClient, broadcast)
+    }
+
+    // If we have a user, or token authentication is explicitly disallowed (`cookie` mode),
+    // then we don't need/want to fetch a token
+    if (currentUser || loginMethod === 'cookie') {
+      // if that worked, then we don't need to fetch a token
+      broadcast(null)
+      return
+    }
+
+    // If we allow using token authentication, we should try to trade the session ID
+    // for a token and store it locally for subsequent use
+    const token = await tradeSessionForToken(requestClient, sessionId)
+    broadcast(token ?? null)
+  }
+
+  async function tradeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
+    const {token} = await client.request<{token: string}>({
+      method: 'GET',
+      uri: `/auth/fetch`,
+      query: {sid: sessionId},
+      tag: 'auth.fetch-token',
+    })
+
+    saveToken({token, projectId})
+    return token
   }
 
   async function logout() {
