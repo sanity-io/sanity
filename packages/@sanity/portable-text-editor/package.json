@@ -56,7 +56,6 @@
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
     "eslint": "eslint 'src/**/*.{ts,js,tsx}'",
-    "gen-doc": "typedoc --out docs src",
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
     "start": "cd ./test/ && ts-node serve",
     "test": "jest",
@@ -103,7 +102,6 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.0",
     "styled-components": "^5.2.0",
-    "typedoc": "^0.24.0",
     "vite": "^4.4.4"
   },
   "peerDependencies": {
