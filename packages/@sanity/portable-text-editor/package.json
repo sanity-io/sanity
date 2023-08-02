@@ -103,7 +103,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.0",
     "styled-components": "^5.2.0",
-    "typedoc": "^0.24.0",
+    "typedoc": "^0.24.8",
     "vite": "^4.4.4"
   },
   "peerDependencies": {
