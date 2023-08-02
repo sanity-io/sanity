@@ -105,7 +105,7 @@
     "dotenv": "^16.0.3",
     "dotenv-flow": "^3.2.0",
     "esbuild": "^0.18.0",
-    "esbuild-register": "^3.4.1",
+    "esbuild-register": "^3.4.2",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-sanity": "^6.0.0",
