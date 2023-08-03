@@ -28,30 +28,37 @@ export const IconWrapper = styled(Flex)(({theme}: IconWrapperProps) => {
   `
 })
 
-export const Root = styled(Button)(({$selected}: {$selected: boolean}) => {
-  return css`
-    position: relative;
-    width: 100%;
+export const Root = styled(Button)(
+  ({$selected, $disabled}: {$selected: boolean; $disabled: boolean}) => {
+    return css`
+      position: relative;
+      width: 100%;
 
-    /* Line styling */
-    &[data-first] ${IconWrapper}::before {
-      height: 50%;
-      top: unset;
-      bottom: 0;
-    }
-
-    &[data-last] ${IconWrapper}::before {
-      height: 50%;
-    }
-
-    ${$selected &&
-    css`
-      ${IconWrapper}::before {
-        background: transparent;
+      /* Line styling */
+      &[data-first] ${IconWrapper}::before {
+        height: 50%;
+        top: unset;
+        bottom: 0;
       }
-    `}
-  `
-})
+
+      &[data-last] ${IconWrapper}::before {
+        height: 50%;
+      }
+
+      ${$selected &&
+      css`
+        ${IconWrapper}::before {
+          background: transparent;
+        }
+      `}
+
+      ${$disabled &&
+      css`
+        cursor: not-allowed;
+      `}
+    `
+  }
+)
 
 export const IconBox = styled(Box)`
   background: var(--card-bg-color);
