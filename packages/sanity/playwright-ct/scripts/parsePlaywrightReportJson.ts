@@ -1,17 +1,19 @@
 #!/usr/bin/env node -r esbuild-register
 
 import {readFileSync, writeFileSync} from 'fs'
-import type {JSONReport, JSONReportSpec, JSONReportSuite} from '@playwright/test/reporter'
 import {GroupedTests, JSONReportCustom, Spec, Suite, SummaryRow} from '../tests/types'
 import _ from 'lodash'
 import {inspect} from 'node:util'
+import path from 'path'
 
-function readJsonFile(path: string): JSONReportCustom | null {
+const DEFAULT_ARTIFACT_OUTPUT_PATH = path.resolve(path.join(__dirname, '..', 'results'))
+
+function readJsonFile(filePath: string): JSONReportCustom | null {
   try {
-    const jsonData = readFileSync(path, 'utf-8')
+    const jsonData = readFileSync(filePath, 'utf-8')
     return JSON.parse(jsonData)
   } catch (error) {
-    console.error(`Failed to read or parse file at ${path}`, error)
+    console.error(`Failed to read or parse file at ${filePath}`, error)
     throw error
   }
 }
@@ -114,13 +116,19 @@ const DEBUG = Boolean(parseInt(process.env.DEBUG || '0', 2))
 // Main function
 function main() {
   const workflowUrl = process.env.GITHUB_WORKFLOW_URL || ''
-  const jsonPath = process.env.REPORT_JSON_PATH!
+  const jsonPath =
+    process.env.REPORT_JSON_PATH! ||
+    path.join(DEFAULT_ARTIFACT_OUTPUT_PATH, 'playwright-ct-test-results.json')
   const testOutput = readJsonFile(jsonPath)
 
   if (testOutput) {
     const groups = calculateStatsCustom(testOutput)
     const markdownTable = generateMarkdownTable(groups, workflowUrl)
-    writeFileSync('playwright-report-output.md', markdownTable, 'utf8')
+    writeFileSync(
+      path.join(DEFAULT_ARTIFACT_OUTPUT_PATH, 'playwright-report-output.md'),
+      markdownTable,
+      'utf8'
+    )
     if (DEBUG) {
       const result = inspect(groups, {
         depth: Infinity,
