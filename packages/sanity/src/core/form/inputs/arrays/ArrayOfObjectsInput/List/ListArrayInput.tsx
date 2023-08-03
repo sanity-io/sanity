@@ -7,6 +7,7 @@ import {
   useVirtualizer,
   VirtualizerOptions,
   type Range,
+  elementScroll,
 } from '@tanstack/react-virtual'
 import type {DragStartEvent} from '@dnd-kit/core'
 import {Item, List} from '../../common/list'
@@ -68,7 +69,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     shallowEquals
   )
 
-  const {scrollElement} = useVirtualizerScrollInstance()
+  const {scrollElement, containerElement} = useVirtualizerScrollInstance()
   const parentRef = useRef<HTMLDivElement>(null)
 
   const focusPathKey = useMemo(() => {
@@ -111,29 +112,39 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
    */
   const observeElementOffset = useCallback<
     VirtualizerOptions<HTMLElement, Element>['observeElementOffset']
-  >((instance, cb) => {
-    if (!instance.scrollElement) {
-      return undefined
-    }
+  >(
+    (instance, callback) => {
+      if (!instance.scrollElement) {
+        return undefined
+      }
 
-    const scroll = instance.scrollElement
+      const scroll = instance.scrollElement
 
-    const handleScroll = () => {
-      const itemOffset = parentRef.current?.offsetTop ?? 0
-      cb(scroll.scrollTop - itemOffset)
-    }
+      const handleScroll = () => {
+        const containerElementTop = containerElement.current?.getBoundingClientRect().top ?? 0
+        const parentElementTop = parentRef.current?.getBoundingClientRect().top ?? 0
 
-    handleScroll()
+        // This is used to calculate the offsetTop of the parent element
+        // Instead of using the `offsetTop` which will use the nearest parent with `position: relative`
+        // We pass a component that we have more control over to avoid issues when wrapped in custom component
+        const itemOffset = Math.floor(parentElementTop - containerElementTop)
 
-    instance.scrollElement.addEventListener('scroll', handleScroll, {
-      capture: false,
-      passive: true,
-    })
+        callback(scroll.scrollTop - itemOffset)
+      }
 
-    return () => {
-      scroll.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
+      handleScroll()
+
+      instance.scrollElement.addEventListener('scroll', handleScroll, {
+        capture: false,
+        passive: true,
+      })
+
+      return () => {
+        scroll.removeEventListener('scroll', handleScroll)
+      }
+    },
+    [containerElement]
+  )
 
   // This is the estimated size of an item in the list. The reason this is an estimate is because
   // custom components can have different dimensions and the library recalculate the size of the element
@@ -146,6 +157,15 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     observeElementOffset,
     rangeExtractor,
     getItemKey: useCallback((index: number) => memberKeys[index], [memberKeys]),
+    scrollToFn: (offset, options, instance) => {
+      // If the offset is the same as the current scroll offset, don't scroll
+      // Offset gets set to 0 here https://github.com/TanStack/virtual/blob/beta/packages/virtual-core/src/index.ts#L211
+      // which causes the scroll to top
+      if (offset === instance.scrollOffset) {
+        return
+      }
+      elementScroll(offset, options, instance)
+    },
   })
 
   const items = virtualizer.getVirtualItems()

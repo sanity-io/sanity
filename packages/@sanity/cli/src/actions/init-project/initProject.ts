@@ -568,7 +568,7 @@ export default async function initSanity(
     try {
       const client = apiClient({requireUser: true, requireProject: false})
       const [allProjects, allOrgs] = await Promise.all([
-        client.projects.list(),
+        client.projects.list({includeMembers: false}),
         client.request({uri: '/organizations'}),
       ])
       projects = allProjects.sort((a, b) => b.createdAt.localeCompare(a.createdAt))

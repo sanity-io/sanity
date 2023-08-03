@@ -1,4 +1,4 @@
-import type {CurrentUser} from '@sanity/types'
+import type {ConditionalPropertyCallbackContext, CurrentUser} from '@sanity/types'
 import {userHasRole} from './userHasRole'
 
 const roleLessUser: CurrentUser = {
@@ -7,6 +7,13 @@ const roleLessUser: CurrentUser = {
   name: 'Some User',
   role: '',
   roles: [],
+}
+
+const conditionalContextUser: ConditionalPropertyCallbackContext['currentUser'] = {
+  id: 'pabc123',
+  email: 'some@user.com',
+  name: 'Some User',
+  roles: [{name: 'administrator', title: 'Administrator'}],
 }
 
 const adminUser: CurrentUser = {
@@ -42,4 +49,9 @@ test('userHasRole(): match (multiple roles)', () => {
 
 test('userHasRole(): no match (multiple roles)', () => {
   expect(userHasRole(multiRoleUser, 'administrator')).toBe(false)
+})
+
+test('userHasRole(): conditional property callback context (no `role` prop)', () => {
+  expect(userHasRole(conditionalContextUser, 'administrator')).toBe(true)
+  expect(userHasRole(conditionalContextUser, 'dogwalker')).toBe(false)
 })

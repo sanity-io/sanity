@@ -1,86 +1,68 @@
-import {SanityClient} from '@sanity/client'
+import type {AuthProvider, AuthProviderResponse, SanityClient} from '@sanity/client'
 import {Button, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
-import {Observable} from 'rxjs'
+import type {Observable} from 'rxjs'
+import type {AuthConfig} from '../../../config'
 import {createHookFromObservableFactory} from '../../../util'
 import {providerLogos} from './providerLogos'
-import {LoginComponentProps} from './types'
+import type {LoginComponentProps} from './types'
 
-interface GetProvidersOptions {
+interface GetProvidersOptions extends AuthConfig {
   client: SanityClient
-  mode?: 'append' | 'replace'
-  providers?: Array<{
-    name: string
-    title: string
-    url: string
-    logo?: string
-  }>
 }
 
-interface ProvidersResponse {
-  thirdPartyLogin?: boolean
-  sso?: {
-    saml?: boolean
+async function getProviders({
+  client,
+  mode,
+  providers: customProviders = [],
+}: GetProvidersOptions): Promise<AuthProvider[]> {
+  // Short-circuit if we're in replace mode without needing the default providers
+  if (mode === 'replace' && Array.isArray(customProviders)) {
+    return customProviders
   }
-  providers: Provider[]
-}
 
-interface Provider {
-  name: string
-  title: string
-  url: string
-}
-
-async function getProviders({client, mode, providers: customProviders = []}: GetProvidersOptions) {
-  const {providers, thirdPartyLogin, sso} = await client.request<ProvidersResponse>({
+  const {providers} = await client.request<AuthProviderResponse>({
     uri: '/auth/providers',
   })
 
-  if (!customProviders.length) return providers
+  // If a custom reducer function is passed, allow it to modify the default list of providers
+  // any way it wants - eg replace, append, remove etc.
+  if (typeof customProviders === 'function') {
+    return customProviders(providers)
+  }
 
-  const custom = customProviders.map((provider) => {
-    // taken from here:
-    // https://github.com/sanity-io/sanity/blob/795637999b67c23de1657a3701091a337383f632/packages/%40sanity/default-login/src/util/getProviders.js#L19
-    // A user may want to remove certain login options (eg GitHub) and thus
-    // provide "official" login options through the config. These shouldn't be
-    // treated as custom login providers which require the third-party login
-    // feature, but as the official provider
-    const isOfficial = providers.some((official) => official.url === provider.url)
-    const isSupported = isOfficial || thirdPartyLogin || (sso && Object.values(sso).some(Boolean))
-    return {...provider, custom: !isOfficial, supported: isSupported}
-  })
+  // If no providers are specified, use the default list
+  if (customProviders.length === 0) {
+    return providers
+  }
 
-  if (mode === 'replace') return custom
+  // -- Note: Deprecated flow below: we now prefer the reducer pattern above --
+  // Replace mode: use the provided list as-is
+  if (mode === 'replace') {
+    return customProviders
+  }
 
+  // Append mode (default):
   // Append to the list of official providers, but replace any provider that has
   // the same URL with the custom one (allows customizing the title, name)
   return providers
-    .filter((official) => custom.some((provider) => provider.url !== official.url))
-    .concat(custom)
+    .filter((official) => customProviders.some((provider) => provider.url !== official.url))
+    .concat(customProviders)
 }
 
-interface CreateLoginComponentOptions {
+interface CreateLoginComponentOptions extends AuthConfig {
   getClient: () => Observable<SanityClient>
-  loginMethod: 'dual' | 'cookie'
-  mode?: 'append' | 'replace'
-  redirectOnSingle?: boolean
-  providers?: Array<{
-    name: string
-    title: string
-    url: string
-    logo?: string
-  }>
 }
 
 interface CreateHrefForProviderOptions {
-  projectId: string
-  loginMethod: 'dual' | 'cookie'
-  url: string
   basePath: string
+  loginMethod: AuthConfig['loginMethod']
+  projectId: string
+  url: string
 }
 
 function createHrefForProvider({
-  loginMethod,
+  loginMethod = 'dual',
   projectId,
   url,
   basePath,
@@ -88,7 +70,17 @@ function createHrefForProvider({
   const params = new URLSearchParams()
   params.set('origin', `${window.location.origin}${basePath}`)
   params.set('projectId', projectId)
-  params.set('type', loginMethod)
+
+  // Setting `type=token` will return the sid as part of the _query_, which may end up in
+  // server access logs and similar. Instead, use `withSid=true` to return the sid as part
+  // of the _hash_ instead, which is only accessible to the client. Other auth types will
+  // use the `type` parameter - `dual` will automatically use the hash, so do not need the
+  // additional parameter.
+  if (loginMethod === 'token') {
+    params.set('withSid', 'true')
+  } else {
+    params.set('type', loginMethod)
+  }
   return `${url}?${params}`
 }
 
@@ -101,7 +93,7 @@ export function createLoginComponent({
   const useClient = createHookFromObservableFactory(getClient)
 
   function LoginComponent({projectId, basePath}: LoginComponentProps) {
-    const [providers, setProviders] = useState<Provider[] | null>(null)
+    const [providers, setProviders] = useState<AuthProvider[] | null>(null)
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
@@ -162,9 +154,9 @@ export function createLoginComponent({
           {providers.map((provider, index) => (
             <Button
               // eslint-disable-next-line react/no-array-index-key
-              icon={providerLogos[provider.name]}
               key={`${provider.url}_${index}`}
               as="a"
+              icon={providerLogos[provider.name]}
               href={createHrefForProvider({
                 loginMethod,
                 projectId,

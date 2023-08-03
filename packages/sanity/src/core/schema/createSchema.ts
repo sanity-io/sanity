@@ -1,7 +1,7 @@
 import {Schema as SchemaBuilder, type SchemaValidationResult} from '@sanity/schema'
 import {validateSchema, groupProblems} from '@sanity/schema/_internal'
 import {Schema} from '@sanity/types'
-import {inferFromSchema as inferValidation} from '@sanity/validation'
+import {inferFromSchema as inferValidation} from '../validation'
 import slug from './types/slug'
 import geopoint from './types/geopoint'
 import imageCrop from './types/imageCrop'

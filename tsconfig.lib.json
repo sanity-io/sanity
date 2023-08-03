@@ -14,7 +14,6 @@
     {"path": "./packages/@sanity/schema/tsconfig.lib.json"},
     {"path": "./packages/@sanity/types/tsconfig.lib.json"},
     {"path": "./packages/@sanity/util/tsconfig.lib.json"},
-    {"path": "./packages/@sanity/validation/tsconfig.lib.json"},
     {"path": "./packages/@sanity/vision/tsconfig.lib.json"},
     {"path": "./packages/sanity/tsconfig.lib.json"}
   ]

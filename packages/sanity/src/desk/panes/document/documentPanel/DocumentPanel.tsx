@@ -67,6 +67,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const formContainerElement = useRef<HTMLDivElement | null>(null)
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
@@ -141,7 +142,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                 __unstable_elements={{documentScrollElement: documentScrollElement}}
               >
                 <BoundaryElementProvider element={documentScrollElement}>
-                  <VirtualizerScrollInstanceProvider scrollElement={documentScrollElement}>
+                  <VirtualizerScrollInstanceProvider
+                    scrollElement={documentScrollElement}
+                    containerElement={formContainerElement}
+                  >
                     {activeView.type === 'form' && !isPermissionsLoading && ready && (
                       <>
                         <PermissionCheckBanner
@@ -161,6 +165,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                         hidden={formViewHidden}
                         key={documentId + (ready ? '_ready' : '_pending')}
                         margins={margins}
+                        ref={formContainerElement}
                       />
                       {activeViewNode}
                     </Scroller>

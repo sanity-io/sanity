@@ -1,4 +1,5 @@
-const sidPattern = /sid=[^&]{20,}/
+// Trailing '&' included so we can replace `#sid=foo&bar=baz` with `#bar=baz`
+const sidPattern = /sid=([^&]{20,})&?/
 
 function consumeSessionId(): string | null {
   // Are we in a browser-like environment?
@@ -8,13 +9,13 @@ function consumeSessionId(): string | null {
 
   // Does the hash contain a valid session ID?
   const hash = window.location.hash
-  const [sidParam] = hash.match(sidPattern) || []
+
+  // The first element will be the entire match, including `sid=` - we only care about
+  // the first _group_, being the actual _value_ of the parameter, thus the leading comma
+  const [, sidParam] = hash.match(sidPattern) || []
   if (!sidParam) {
     return null
   }
-
-  // Extract just the sid from the hash
-  const sid = sidParam.slice(sidParam.indexOf('=') + 1)
 
   // Remove the parameter from the URL
   const newHash = hash.replace(sidPattern, '')
@@ -22,7 +23,7 @@ function consumeSessionId(): string | null {
   newUrl.hash = newHash.length > 1 ? newHash : ''
   history.replaceState(null, '', newUrl)
 
-  return sid
+  return sidParam
 }
 
 // this module consumes the session ID as a side-effect as soon as its loaded

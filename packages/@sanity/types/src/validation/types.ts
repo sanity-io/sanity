@@ -246,7 +246,7 @@ export type ValidationContext = {
  * `RuleSpec`'s constraint, the value to check, an optional override message,
  * and the validation context.
  *
- * @see Rule.validate from `@sanity/validation/src/Rule`
+ * @see Rule.validate from `sanity/validation/src/Rule`
  *
  * @internal
  */

@@ -158,6 +158,9 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/staging',
     apiHost: 'https://api.sanity.work',
+    auth: {
+      loginMethod: 'token',
+    },
   },
   {
     name: 'custom-components',

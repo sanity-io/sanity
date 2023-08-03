@@ -84,6 +84,8 @@ import fieldGroupsDefault from './debug/fieldGroupsDefault'
 import fieldGroupsMany from './debug/fieldGroupsMany'
 import fieldGroupsWithValidation from './debug/fieldGroupsWithValidation'
 import fieldGroupsWithFieldsetsAndValidation from './debug/fieldGroupsWithFieldsetsAndValidation'
+import {virtualizationInObject} from './debug/virtualizationInObject'
+import {virtualizationDebug} from './debug/virtualizationDebug'
 
 // Test documents with official plugin inputs
 import code from './plugins/code'
@@ -249,6 +251,8 @@ export const schemaTypes = [
   validation,
   validationArraySuperType,
   validationTest,
+  virtualizationDebug,
+  virtualizationInObject,
   fieldGroups,
   fieldGroupsDefault,
   fieldGroupsMany,

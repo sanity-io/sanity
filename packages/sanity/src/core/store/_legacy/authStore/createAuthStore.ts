@@ -1,53 +1,25 @@
 import {
   createClient as createSanityClient,
   ClientConfig as SanityClientConfig,
-  SanityClient,
+  type SanityClient,
 } from '@sanity/client'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 import {isEqual, memoize} from 'lodash'
+import type {AuthConfig} from '../../../config'
 import {CorsOriginError} from '../cors'
 import {AuthState, AuthStore} from './types'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {createLoginComponent} from './createLoginComponent'
+import {isRecord} from '../../../util'
 
 /** @internal */
-export interface AuthProvider {
-  name: string
-  title: string
-  url: string
-  logo?: string
-}
-
-/** @internal */
-export interface AuthStoreOptions {
+export interface AuthStoreOptions extends AuthConfig {
   clientFactory?: (options: SanityClientConfig) => SanityClient
   projectId: string
   dataset: string
-  apiHost?: string
-  /**
-   * Login method to use for the studio the studio. Can be one of:
-   * - `dual` (default) - attempt to use cookies where possible, falling back to
-   *   storing authentication token in `localStorage` otherwise
-   * - `cookie` - explicitly disable `localStorage` method, relying only on
-   *   cookies
-   */
-  loginMethod?: 'dual' | 'cookie'
-  /**
-   * Append the custom providers to the default providers or replace them.
-   */
-  mode?: 'append' | 'replace'
-  /**
-   * If true, don't show the choose provider logo screen, automatically redirect
-   * to the single provider login
-   */
-  redirectOnSingle?: boolean
-  /**
-   * The custom provider implementations
-   */
-  providers?: AuthProvider[]
 }
 
 const getStorageKey = (projectId: string) => {
@@ -213,38 +185,52 @@ export function _createAuthStore({
 
   async function handleCallbackUrl() {
     const sessionId = getSessionId()
-    if (sessionId && loginMethod === 'dual') {
-      const requestClient = clientFactory({
-        projectId,
-        dataset,
-        useCdn: true,
-        withCredentials: true,
-        apiVersion: '2021-06-07',
-        requestTagPrefix: 'sanity.studio',
-        ...hostOptions,
-      })
 
-      // try to get the current user by using the cookie credentials
-      const currentUser = await getCurrentUser(requestClient, broadcast)
-
-      if (currentUser) {
-        // if that worked, then we don't need to fetch a token
-        broadcast(null)
-      } else {
-        // if that didn't work, then we need to trade the session ID for a token
-        const {token} = await requestClient.request<{token: string}>({
-          method: 'GET',
-          uri: `/auth/fetch`,
-          query: {sid: sessionId},
-          tag: 'auth.fetch-token',
-        })
-
-        saveToken({token, projectId})
-        broadcast(token)
-      }
-    } else {
-      broadcast(loginMethod === 'dual' ? getToken(projectId) : null)
+    if (!sessionId) {
+      broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
+      return
     }
+
+    const requestClient = clientFactory({
+      projectId,
+      dataset,
+      useCdn: true,
+      withCredentials: true,
+      apiVersion: '2021-06-07',
+      requestTagPrefix: 'sanity.studio',
+      ...hostOptions,
+    })
+
+    let currentUser
+    if (loginMethod === 'dual' || loginMethod === 'cookie') {
+      // try to get the current user by using the cookie credentials
+      currentUser = await getCurrentUser(requestClient, broadcast)
+    }
+
+    // If we have a user, or token authentication is explicitly disallowed (`cookie` mode),
+    // then we don't need/want to fetch a token
+    if (currentUser || loginMethod === 'cookie') {
+      // if that worked, then we don't need to fetch a token
+      broadcast(null)
+      return
+    }
+
+    // If we allow using token authentication, we should try to trade the session ID
+    // for a token and store it locally for subsequent use
+    const token = await tradeSessionForToken(requestClient, sessionId)
+    broadcast(token ?? null)
+  }
+
+  async function tradeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
+    const {token} = await client.request<{token: string}>({
+      method: 'GET',
+      uri: `/auth/fetch`,
+      query: {sid: sessionId},
+      tag: 'auth.fetch-token',
+    })
+
+    saveToken({token, projectId})
+    return token
   }
 
   async function logout() {
@@ -295,3 +281,20 @@ function hash(value: unknown): string {
  * @internal
  */
 export const createAuthStore = memoize(_createAuthStore, hash)
+
+/**
+ * Duck-type check for whether or not this looks like an auth store
+ *
+ * @param maybeStore - Item to check if matches the AuthStore interface
+ * @returns True if auth store, false otherwise
+ * @internal
+ */
+export function isAuthStore(maybeStore: unknown): maybeStore is AuthStore {
+  return (
+    isRecord(maybeStore) &&
+    'state' in maybeStore &&
+    isRecord(maybeStore.state) &&
+    'subscribe' in maybeStore.state &&
+    typeof maybeStore.state.subscribe === 'function'
+  )
+}

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.14.4",
+  "version": "3.14.5",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -75,10 +75,10 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@sanity/client": "^6.1.5",
+    "@sanity/client": "^6.3.0",
     "react": "^18.2.0",
-    "sanity": "3.14.4",
-    "styled-components": "^5.2.0"
+    "sanity": "3.14.5",
+    "styled-components": "^5.3.11"
   },
   "peerDependencies": {
     "react": "^18",
