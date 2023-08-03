@@ -81,6 +81,7 @@ export interface DocumentPaneContextValue {
   formState: DocumentFormNode | null
   permissions?: PermissionCheckResult | null
   isDeleting: boolean
+  isDeleted: boolean
   isPermissionsLoading: boolean
   unstable_languageFilter: DocumentLanguageFilterComponent[]
 }

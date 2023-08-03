@@ -29,6 +29,8 @@ interface TimelineItemProps {
   type: ChunkType
 }
 
+const NOT_SELECTABLE_TYPES = ['delete', 'discardDraft']
+
 export function TimelineItem({
   chunk,
   isFirst,
@@ -41,6 +43,9 @@ export function TimelineItem({
 }: TimelineItemProps) {
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
+  const isSelectable = useMemo(() => {
+    return !NOT_SELECTABLE_TYPES.includes(type)
+  }, [type])
   const formattedTimestamp = useMemo(() => {
     const parsedDate = new Date(timestamp)
     const formattedDate = format(parsedDate, 'MMM d, yyyy, hh:mm a')
@@ -52,14 +57,18 @@ export function TimelineItem({
     (evt: React.MouseEvent<HTMLButtonElement>) => {
       evt.preventDefault()
       evt.stopPropagation()
-      onSelect(chunk)
+
+      if (isSelectable) {
+        onSelect(chunk)
+      }
     },
-    [onSelect, chunk]
+    [onSelect, chunk, isSelectable]
   )
 
   return (
     <Root
       $selected={isSelected}
+      $disabled={!isSelectable}
       data-chunk-id={chunk.id}
       data-first={isFirst ? true : undefined}
       data-last={isLast ? true : undefined}

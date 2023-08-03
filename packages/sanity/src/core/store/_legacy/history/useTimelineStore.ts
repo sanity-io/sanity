@@ -19,7 +19,8 @@ interface UseTimelineControllerOpts {
 export interface TimelineState {
   chunks: Chunk[]
   diff: ObjectDiff<Annotation, Record<string, any>> | null
-  hasMoreChunks: boolean
+  /** null is used here when the chunks hasn't loaded / is not known */
+  hasMoreChunks: boolean | null
   isLoading: boolean
   onOlderRevision: boolean
   realRevChunk: Chunk | null
@@ -34,7 +35,7 @@ export interface TimelineState {
 const INITIAL_TIMELINE_STATE: TimelineState = {
   chunks: [],
   diff: null,
-  hasMoreChunks: false,
+  hasMoreChunks: null,
   isLoading: false,
   onOlderRevision: false,
   realRevChunk: null,

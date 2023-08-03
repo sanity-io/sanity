@@ -52,6 +52,7 @@ import {
   DocumentFieldActionNode,
   FieldActionsProvider,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 
 /**
  * @internal
@@ -70,6 +71,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = useSource().document
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
+  const {navigateIntent} = useRouter()
   const setPaneParams = paneRouter.setParams
   const {features} = useDeskTool()
   const {push: pushToast} = useToast()
@@ -110,10 +112,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
   const [isDeleting, setIsDeleting] = useState(false)
-  const isDeleted = useMemo(
-    () => Boolean(!editState?.draft && !editState?.published),
-    [editState?.draft, editState?.published]
-  )
 
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
 
@@ -164,6 +162,31 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
   const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
   const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
+  const isPristine = useTimelineSelector(
+    timelineStore,
+    (state) => !state.isLoading && state.chunks.length === 0 && state.hasMoreChunks === false
+  )
+  /**
+   * This checks if there is no document pair, but the document still has history
+   * We have to check it this way because the document value will always have atleast
+   * an _id/_type
+   */
+  const isDeleted = useMemo(
+    () => Boolean(!editState?.draft && !editState?.published) && !isPristine,
+    [editState?.draft, editState?.published, isPristine]
+  )
+
+  /**
+   * This covers the edge case when a person have the document open and is viewing
+   * another revision while it was being deleted remotely. Without removing the
+   * rev param, the timeline and document action will be in the wrong state
+   */
+  useEffect(() => {
+    if (!isDeleting && isDeleted && params?.rev) {
+      navigateIntent('edit', {id: documentId, type: documentType}, {replace: true})
+      setTimelineError(null)
+    }
+  }, [documentId, documentType, isDeleted, isDeleting, navigateIntent, params?.rev])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -608,6 +631,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     setTimelineRange,
     setIsDeleting,
     isDeleting,
+    isDeleted,
     timelineError,
     timelineMode,
     timelineStore,

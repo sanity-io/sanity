@@ -60,6 +60,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     permissions,
     isPermissionsLoading,
     isDeleting,
+    isDeleted,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -94,10 +95,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const formViewHidden = activeView.type !== 'form'
 
-  const isDeleted = useMemo(
-    () => Boolean(!editState?.draft && !editState?.published),
-    [editState?.draft, editState?.published]
-  )
   const activeViewNode = useMemo(
     () =>
       activeView.type === 'component' &&
