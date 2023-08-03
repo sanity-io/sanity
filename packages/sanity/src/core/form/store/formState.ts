@@ -109,6 +109,17 @@ function everyItemHasKey<T extends object>(array: T[]): array is (T & {_key: str
 }
 
 function isChangedValue(value: any, comparisonValue: any) {
+  // changes panel is not being able to identify changes in array of objects
+  // (especially when it comes to unpublished changes)
+  // the main issue it fixes is in instances where the array removes a last item but instead of turning
+  // "undefined" it returns an empty array (and so the change indicator remains active when it shouldn't)
+  if (
+    (Array.isArray(value) && typeof comparisonValue === 'undefined') ||
+    (Array.isArray(comparisonValue) && typeof value === 'undefined')
+  ) {
+    return false
+  }
+
   if (value && !comparisonValue) {
     return true
   }
