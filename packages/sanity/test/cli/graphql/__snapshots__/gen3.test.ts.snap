@@ -663,6 +663,11 @@ Object {
           "type": "Boolean",
         },
         Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        Object {
           "description": "Checks if the value is not equal to the given input.",
           "fieldName": "neq",
           "type": "Boolean",
@@ -1010,6 +1015,11 @@ Object {
           "type": "Date",
         },
         Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        Object {
           "description": "Checks if the value is lesser than the given input.",
           "fieldName": "lt",
           "type": "Date",
@@ -1045,6 +1055,11 @@ Object {
           "description": "Checks if the value is greater than or equal to the given input.",
           "fieldName": "gte",
           "type": "Datetime",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
         },
         Object {
           "description": "Checks if the value is lesser than the given input.",
@@ -1336,6 +1351,11 @@ Object {
           "description": "Checks if the value is greater than or equal to the given input.",
           "fieldName": "gte",
           "type": "Float",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
         },
         Object {
           "description": "Checks if the value is lesser than the given input.",
@@ -1800,6 +1820,11 @@ Object {
           "description": "Checks if the value is greater than or equal to the given input.",
           "fieldName": "gte",
           "type": "Int",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
         },
         Object {
           "description": "Checks if the value is lesser than the given input.",
@@ -4169,6 +4194,11 @@ Object {
           "description": "Checks if the value is equal to one of the given values.",
           "fieldName": "in",
           "kind": "List",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
         },
         Object {
           "description": "Checks if the value matches the given word/words.",

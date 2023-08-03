@@ -80,6 +80,18 @@ function getDocumentFilters(): InputFilterField[] {
   ]
 }
 
+function createIsDefinedFilter(field: ConvertedFieldDefinition): InputFilterField {
+  return {
+    fieldName: getFieldName(field, 'is_defined'),
+    type: 'Boolean',
+    description: 'All documents that have a value for this field',
+    constraint: {
+      field: field.fieldName,
+      comparator: 'IS_DEFINED',
+    },
+  }
+}
+
 function createEqualityFilter(field: ConvertedFieldDefinition): InputFilterField {
   return {
     fieldName: getFieldName(field),
@@ -105,7 +117,7 @@ function createInequalityFilter(field: ConvertedFieldDefinition): InputFilterFie
 }
 
 function createDefaultFilters(field: ConvertedFieldDefinition): InputFilterField[] {
-  return [createEqualityFilter(field), createInequalityFilter(field)]
+  return [createEqualityFilter(field), createInequalityFilter(field), createIsDefinedFilter(field)]
 }
 
 function createGtLtFilters(field: ConvertedFieldDefinition): InputFilterField[] {
