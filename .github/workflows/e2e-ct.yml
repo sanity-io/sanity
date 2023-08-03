@@ -60,6 +60,8 @@ jobs:
 
       - name: Run end-to-end tests
         run: yarn workspace sanity test:ct
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
 
       - name: Parse playwright report
         id: parse-playwright-report
