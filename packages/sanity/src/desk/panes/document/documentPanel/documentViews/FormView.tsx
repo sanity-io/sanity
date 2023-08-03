@@ -18,6 +18,7 @@ import {
   useDocumentPresence,
   useDocumentStore,
 } from 'sanity'
+import {Title} from './styles'
 
 interface FormViewProps {
   hidden: boolean
@@ -152,9 +153,9 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
           <Box marginBottom={4}>
-            <Heading muted={!title} size={5}>
+            <Title forwardedAs="h6" muted={!title} size={5}>
               {title ?? 'Untitled'}
-            </Heading>
+            </Title>
           </Box>
           {ready ? (
             formState === null ? (
