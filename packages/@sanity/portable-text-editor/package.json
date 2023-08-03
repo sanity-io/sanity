@@ -90,7 +90,6 @@
     "@types/react-dom": "^18.0.9",
     "@types/ws": "~8.5.3",
     "@vitejs/plugin-react": "^4.0.4",
-    "diff-match-patch": "^1.0.4",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
     "jest-dev-server": "^5.0.3",
