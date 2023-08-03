@@ -66,7 +66,7 @@ export default async function deployGraphQLApiAction(
     // Don't throw if we do not have a project ID defined, as we will infer it from the
     // source/ workspace of each configured API later
     requireProject: false,
-  })
+  }).config({apiVersion: '2023-08-01'})
 
   const apiDefs = await getGraphQLAPIs(context)
   const hasMultipleApis = apiDefs.length > 1 || (flags.api && flags.api.length > 1)

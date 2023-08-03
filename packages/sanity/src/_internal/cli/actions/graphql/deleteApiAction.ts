@@ -66,7 +66,7 @@ export default async function deleteGraphQLApi(
     client = apiClient({
       requireUser: true,
       requireProject: true,
-    }).config({apiVersion: '1'})
+    }).config({apiVersion: '2023-08-01'})
 
     projectId = projectId || client.config().projectId
     dataset = dataset || client.config().dataset
