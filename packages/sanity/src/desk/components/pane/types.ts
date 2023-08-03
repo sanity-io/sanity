@@ -1,5 +1,6 @@
 import {ComponentType, ReactNode} from 'react'
 import {Intent} from '../../structureBuilder'
+import {ButtonTone} from '@sanity/ui'
 
 /**
  * @internal
@@ -84,7 +85,7 @@ export interface _PaneMenuItem {
   renderAsButton: boolean
   selected?: boolean
   title: string
-  tone?: 'primary' | 'critical' | 'caution' | 'positive'
+  tone?: ButtonTone
 }
 
 export interface _PaneMenuGroup {
