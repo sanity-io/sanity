@@ -95,6 +95,9 @@ export const stringValidators: Validators = {
     const {pattern, name, invert} = options
     const regName = name || `"${pattern.toString()}"`
     const strValue = value || ''
+    // Regexes with global or sticky flags are stateful (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex).
+    // This resets the state stored from the previous check
+    pattern.lastIndex = 0
     const matches = pattern.test(strValue)
     if ((!invert && !matches) || (invert && matches)) {
       const defaultMessage = invert
