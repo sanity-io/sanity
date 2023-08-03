@@ -27,6 +27,7 @@ import type {StudioTheme} from '../theme'
 import type {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import type {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import type {StudioComponents, StudioComponentsPluginOptions} from './studio'
+import type {AuthConfig} from './auth/types'
 import type {
   DocumentActionComponent,
   DocumentBadgeComponent,
@@ -38,24 +39,9 @@ import type {
 import type {Router, RouterState} from 'sanity/router'
 
 /**
- *
  * @hidden
  * @beta
  */
-export interface SanityAuthConfig {
-  mode?: 'append' | 'replace'
-  redirectOnSingle?: boolean
-  providers?: {
-    name: string
-    title: string
-    url: string
-    logo?: string
-  }[]
-}
-
-/**
- * @hidden
- * @beta */
 export type AssetSourceResolver = ComposableOption<AssetSource[], ConfigContext>
 
 /**
@@ -75,7 +61,8 @@ export interface SanityFormConfig {
   }
   /**
    * @hidden
-   * @beta */
+   * @beta
+   */
   components?: {
     input?: ComponentType<InputProps>
     field?: ComponentType<FieldProps>
@@ -96,7 +83,8 @@ export interface SanityFormConfig {
   }
   /**
    * @hidden
-   * @beta */
+   * @beta
+   */
   image?: {
     assetSources?: AssetSource[] | AssetSourceResolver
     // TODO: this option needs more thought on composition and availability
@@ -185,7 +173,8 @@ export type ComposableOption<TValue, TContext> = (prev: TValue, context: TContex
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export type AsyncComposableOption<TValue, TContext> = (
   prev: TValue,
   context: TContext
@@ -220,7 +209,8 @@ export type TemplateResolver = ComposableOption<Template[], ConfigContext>
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface SchemaPluginOptions {
   name?: string
   types?:
@@ -234,19 +224,22 @@ export interface SchemaPluginOptions {
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export type NewDocumentOptionsResolver = ComposableOption<TemplateItem[], NewDocumentOptionsContext>
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface NewDocumentOptionsContext extends ConfigContext {
   creationContext: NewDocumentCreationContext
 }
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export type NewDocumentCreationContext =
   | {type: 'global'; documentId?: undefined; schemaType?: undefined}
   | {type: 'document'; documentId: string; schemaType: string}
@@ -254,7 +247,8 @@ export type NewDocumentCreationContext =
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
@@ -264,15 +258,18 @@ export interface DocumentPluginOptions {
   inspectors?: DocumentInspector[] | DocumentInspectorsResolver
   /**
    * @hidden
-   * @beta */
+   * @beta
+   */
   productionUrl?: AsyncComposableOption<string | undefined, ResolveProductionUrlContext>
   /**
    * @hidden
-   * @beta */
+   * @beta
+   */
   unstable_languageFilter?: DocumentLanguageFilterResolver
   /**
    * @hidden
-   * @beta */
+   * @beta
+   */
   newDocumentOptions?: NewDocumentOptionsResolver
 }
 
@@ -305,7 +302,8 @@ export type DocumentLanguageFilterResolver = ComposableOption<
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export type DocumentActionsResolver = ComposableOption<
   DocumentActionComponent[],
   DocumentActionsContext
@@ -313,7 +311,8 @@ export type DocumentActionsResolver = ComposableOption<
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export type DocumentBadgesResolver = ComposableOption<
   DocumentBadgeComponent[],
   DocumentBadgesContext
@@ -327,7 +326,8 @@ export type DocumentInspectorsResolver = ComposableOption<
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface PluginOptions {
   name: string
   plugins?: PluginOptions[]
@@ -358,12 +358,14 @@ export type AsyncConfigPropertyReducer<TValue, TContext> = (
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
@@ -372,18 +374,21 @@ export interface WorkspaceOptions extends SourceOptions {
 
   /**
    * @hidden
-   * @beta */
+   * @beta
+   */
   theme?: StudioTheme
 
   /**
    * @hidden
-   * @beta */
+   * @beta
+   */
   unstable_sources?: SourceOptions[]
 }
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface SourceOptions extends PluginOptions {
   title?: string
 
@@ -407,25 +412,30 @@ export interface SourceOptions extends PluginOptions {
    */
   apiHost?: string
 
-  /** @internal */
-  auth?: AuthStore
+  /**
+   * Authentication options for this source.
+   */
+  auth?: AuthConfig | AuthStore
 
   /**
    * @hidden
-   * @beta */
+   * @beta
+   */
   unstable_clientFactory?: (options: SanityClientConfig) => SanityClient
 }
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface ResolveProductionUrlContext extends ConfigContext {
   document: SanityDocumentLike
 }
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface DocumentActionsContext extends ConfigContext {
   documentId?: string
   schemaType: string
@@ -433,7 +443,8 @@ export interface DocumentActionsContext extends ConfigContext {
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface DocumentBadgesContext extends ConfigContext {
   documentId?: string
   schemaType: string
@@ -447,7 +458,8 @@ export interface DocumentInspectorContext extends ConfigContext {
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export type PartialContext<TContext extends ConfigContext> = Pick<
   TContext,
   Exclude<keyof TContext, keyof ConfigContext>
@@ -700,12 +712,14 @@ export type SingleWorkspace = Omit<WorkspaceOptions, 'name' | 'basePath'> & {
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export type Config = SingleWorkspace | WorkspaceOptions[]
 
 /**
  * @hidden
- * @beta */
+ * @beta
+ */
 export interface MissingConfigFile {
   missingConfigFile: true
 }
@@ -715,3 +729,5 @@ export interface PreparedConfig {
   type: 'prepared-config'
   workspaces: WorkspaceSummary[]
 }
+
+export type {AuthConfig, AuthProvider} from './auth/types'

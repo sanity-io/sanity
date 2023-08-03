@@ -1,20 +1,20 @@
-import {createClient, SanityClient} from '@sanity/client'
+import {createClient, type SanityClient} from '@sanity/client'
 import {map, shareReplay} from 'rxjs/operators'
-import {CurrentUser, Schema, SchemaValidationProblem} from '@sanity/types'
+import type {CurrentUser, Schema, SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {fromUrl} from '@sanity/bifur-client'
 import {createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {createSchema} from '../schema'
-import {AuthStore, createAuthStore} from '../store/_legacy'
+import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
-import {InitialValueTemplateItem, Template, TemplateItem} from '../templates'
+import type {InitialValueTemplateItem, Template, TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
-import {
+import type {
   Config,
   MissingConfigFile,
   PreparedConfig,
@@ -103,11 +103,7 @@ export function prepareConfig(
       const sources = [rootSource as SourceOptions, ...nestedSources]
 
       const resolvedSources = sources.map((source): InternalSource => {
-        const clientFactory = source.unstable_clientFactory || createClient
-
-        const {projectId, dataset, apiHost} = source
-
-        const auth = source.auth || createAuthStore({clientFactory, dataset, projectId, apiHost})
+        const {projectId, dataset} = source
 
         let schemaTypes
         try {
@@ -141,6 +137,7 @@ export function prepareConfig(
           throw new SchemaError(schema)
         }
 
+        const auth = getAuthStore(source)
         const source$ = auth.state.pipe(
           map(({client, authenticated, currentUser}) => {
             return resolveSource({
@@ -194,6 +191,16 @@ export function prepareConfig(
   )
 
   return {type: 'prepared-config', workspaces}
+}
+
+function getAuthStore(source: SourceOptions): AuthStore {
+  if (isAuthStore(source.auth)) {
+    return source.auth
+  }
+
+  const clientFactory = source.unstable_clientFactory || createClient
+  const {projectId, dataset, apiHost} = source
+  return createAuthStore({apiHost, ...source.auth, clientFactory, dataset, projectId})
 }
 
 interface ResolveSourceOptions {
