@@ -8,8 +8,7 @@ import {
   ValidationMarker,
 } from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-// import {BufferedDocument} from '@sanity/mutator'
-import {validateDocument} from '@sanity/validation'
+import {validateDocument} from '../../src/core/validation'
 import {Box, Text} from '@sanity/ui'
 import {applyAll} from '../../src/core/form/patch/applyPatch'
 import {createMockSanityClient} from './mocks/createMockSanityClient'
@@ -242,10 +241,6 @@ function TestForm({onRender}: {onRender?: () => void}) {
 
   patchRef.current = (event: PatchEvent) => {
     setDocument((currentDocumentValue) => applyAll(currentDocumentValue, event.patches))
-    // @todo applyAll works, but is BufferedDocument better somehow?
-    // const patcher = new BufferedDocument(document)
-    // patcher.arrive(toMutationPatches(event.patches))
-    // patch.execute(toMutationPatches(event.patches), initialValue.value)
   }
 
   const handleChange = useCallback((event: any) => patchRef.current(event), [])
