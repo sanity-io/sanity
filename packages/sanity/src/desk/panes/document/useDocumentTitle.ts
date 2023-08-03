@@ -18,7 +18,7 @@ interface UseDocumentTitle {
  * @beta
  * @hidden
  *
- * @returns The document title
+ * @returns The document title or error. See {@link UseDocumentTitle}
  */
 export function useDocumentTitle(): UseDocumentTitle {
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
