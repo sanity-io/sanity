@@ -69,7 +69,6 @@ jobs:
         run: yarn workspace sanity write:playwright-report-as-table
         env:
           GITHUB_WORKFLOW_URL: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          REPORT_JSON_PATH: '${{ github.workspace }}/playwright-ct-test-results.json'
       - name: Debug step
         if: always()
         run: |
@@ -80,7 +79,7 @@ jobs:
         if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
         with:
           comment_tag: 'playwright-ct-report'
-          filePath: ${{ github.workspace }}/playwright-report-output.md
+          filePath: ${{ github.workspace }}/packages/sanity/playwright-ct/results/playwright-report-output.md
 
       - uses: actions/upload-artifact@v3
         if: always()
