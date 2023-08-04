@@ -101,13 +101,13 @@
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.1",
-    "styled-components": "^5.3.11",
+    "styled-components": "^6.0.7",
     "vite": "^4.4.8"
   },
   "peerDependencies": {
     "react": "^16.9 || ^17 || ^18",
     "rxjs": "^7",
-    "styled-components": "^5.2"
+    "styled-components": "^5.2 || ^6.0.0"
   },
   "engines": {
     "node": ">=14.18.0"

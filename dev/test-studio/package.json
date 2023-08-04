@@ -48,7 +48,7 @@
     "rxjs": "^7.8.0",
     "sanity": "3.14.5",
     "sanity-plugin-mux-input": "^2.0.2",
-    "styled-components": "^5.2.0",
+    "styled-components": "^6.0.0",
     "three": "^0.153.0",
     "three-stdlib": "^2.17.3"
   },

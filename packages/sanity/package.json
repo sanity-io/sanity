@@ -244,12 +244,12 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
-    "styled-components": "^5.3.11"
+    "styled-components": "^6.0.7"
   },
   "peerDependencies": {
     "react": "^18",
     "react-dom": "^18",
-    "styled-components": "^5.2"
+    "styled-components": "^5.2 || ^6.0.0"
   },
   "engines": {
     "node": ">=14.18.0"
