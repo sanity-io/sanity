@@ -342,6 +342,104 @@ describe('undo/redo', () => {
     expect(selectionB).toEqual(startSelectionB)
   })
 
+  it("will undo correctly for editorB when editor A writes something before editor B's edits", async () => {
+    const val: PortableTextBlock[] = [
+      {
+        _key: 'randomKey0',
+        _type: 'block',
+        markDefs: [],
+        style: 'normal',
+        children: [
+          {
+            _key: 'randomKey1',
+            _type: 'span',
+            text: 'Hello world there!',
+            marks: [],
+          },
+        ],
+      },
+    ]
+    await setDocumentValue(val)
+    const [editorA, editorB] = await getEditors()
+    const startSelectionA = {
+      anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
+      focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
+    }
+    await editorA.setSelection(startSelectionA)
+    const startSelectionB = {
+      anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
+      focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
+    }
+    await editorB.setSelection(startSelectionB)
+    await editorB.pressKey('Backspace')
+    await editorA.insertText('123')
+    let valA = await editorA.getValue()
+    let valB = await editorB.getValue()
+    expect(valA).toEqual(valB)
+    expect(valA).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "randomKey0",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "randomKey1",
+              "_type": "span",
+              "marks": Array [],
+              "text": "Hello123 world there",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
+    await editorB.undo()
+    valA = await editorA.getValue()
+    valB = await editorB.getValue()
+    expect(valA).toEqual(valB)
+    expect(valA).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "randomKey0",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "randomKey1",
+              "_type": "span",
+              "marks": Array [],
+              "text": "Hello123 world there!",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
+    await editorA.undo()
+    valA = await editorA.getValue()
+    valB = await editorB.getValue()
+    expect(valA).toEqual(valB)
+    expect(valA).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "_key": "randomKey0",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "randomKey1",
+              "_type": "span",
+              "marks": Array [],
+              "text": "Hello world there!",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+      ]
+    `)
+  })
+
   it("will let editor A undo all changes after B pressed Enter and wrote something in between A's changes", async () => {
     await setDocumentValue(initialValue)
     const [editorA, editorB] = await getEditors()
