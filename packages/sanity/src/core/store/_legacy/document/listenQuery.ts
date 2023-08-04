@@ -1,5 +1,5 @@
 import {SanityClient} from '@sanity/client'
-import {asyncScheduler, defer, merge, Observable, of, partition, throwError} from 'rxjs'
+import {asyncScheduler, defer, merge, Observable, of, partition, throwError, timer} from 'rxjs'
 import {filter, mergeMap, share, take, throttleTime} from 'rxjs/operators'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {MutationEvent, ReconnectEvent, WelcomeEvent} from './types'
@@ -92,11 +92,23 @@ export function listenQuery(
     return options.transitions.includes(event.transition)
   }
 
+  const doFetch = () => fetch(client, fetchQuery, params, options)
+
   return merge(
     welcome$.pipe(take(1)),
     mutationAndReconnect$.pipe(
       filter(isRelevantEvent),
       throttleTime(options.throttleTime || 1000, asyncScheduler, {leading: true, trailing: true})
     )
-  ).pipe(exhaustMapWithTrailing(() => fetch(client, fetchQuery, params, options)))
+  ).pipe(
+    exhaustMapWithTrailing((event) => {
+      if (event.type === 'mutation' && event.visibility !== 'query') {
+        // Even though the listener request specifies visibility=query, the events are not guaranteed to be delivered with visibility=query
+        // If the event we are responding to arrives with visibility != query, we add a little delay to allow for the updated document to be available for queries
+        // See https://www.sanity.io/docs/listening#visibility-c4786e55c3ff
+        return timer(1200).pipe(mergeMap(doFetch))
+      }
+      return doFetch()
+    })
+  )
 }

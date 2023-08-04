@@ -15,6 +15,7 @@ export interface MutationEvent {
 
   transactionTotalEvents: number
   transactionCurrentEvent: number
+  visibility: 'transaction' | 'query'
 
   transition: 'update' | 'appear' | 'disappear'
 }
