@@ -314,7 +314,7 @@ function transformOperation(
       // Adjust accordingly if someone removed text in the same node before us
       if (transformedOperation.type === 'remove_text') {
         if (changedOffset <= transformedOperation.offset - transformedOperation.text.length) {
-          transformedOperation.offset -= adjustOffsetBy
+          transformedOperation.offset += adjustOffsetBy
         }
       }
       // Adjust set_selection operation's points to new offset
