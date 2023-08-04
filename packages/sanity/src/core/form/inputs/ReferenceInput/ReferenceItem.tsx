@@ -307,13 +307,16 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             <Text as="p" muted size={1}>
               {schemaType.weak ? (
                 <>
-                  It will not be possible to delete the "{preview?.title}"-document without first
-                  removing this reference.
+                  It will not be possible to delete the{' '}
+                  {preview?.title ? <>"{preview?.title}"-document</> : <>referenced document</>}{' '}
+                  without first removing this reference.
                 </>
               ) : (
                 <>
-                  This makes it possible to delete the "{preview?.title}"-document without first
-                  deleting this reference, leaving this field referencing a nonexisting document.
+                  This makes it possible to delete the{' '}
+                  {preview?.title ? <>"{preview?.title}"-document</> : <>referenced document</>}{' '}
+                  without first deleting this reference, leaving this field referencing a
+                  nonexisting document.
                 </>
               )}
             </Text>
