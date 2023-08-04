@@ -3825,13 +3825,13 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.2", "@sanity/client@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.3.0.tgz#61db96aa484e0db1d34c0a5676763f2579e5cf96"
-  integrity sha512-SFw53wHejjBUVitSRWufMAJJKIjSIAEs2CA52KAcAUK4TxF8IpHrQTkkWKHzxbfEZWKNwxlhVMm5sQUKso1atg==
+"@sanity/client@^6.1.2", "@sanity/client@^6.3.0", "@sanity/client@^6.4.0":
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.4.0.tgz#35a7c9324f01454cd2c909a4a1a9cbea0289cba0"
+  integrity sha512-nmu9/gtKPruR6CROvKAqvK/vYfEMMi/La8k/w/leQpRtKySivOIsWX+BT7S5xvK+9wBn0Q8dj9L64no3SEa5vg==
   dependencies:
     "@sanity/eventsource" "^5.0.0"
-    get-it "^8.2.0"
+    get-it "^8.3.0"
     rxjs "^7.0.0"
 
 "@sanity/color@^2.1.20", "@sanity/color@^2.2.5":
@@ -9833,7 +9833,7 @@ get-intrinsic@^1.0.2, get-intrinsic@^1.1.1, get-intrinsic@^1.1.3, get-intrinsic@
     has-proto "^1.0.1"
     has-symbols "^1.0.3"
 
-get-it@^8.0.9, get-it@^8.2.0:
+get-it@^8.0.9, get-it@^8.3.0:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.3.1.tgz#bb92c6740a1260275ad13b31a543755b38a8b5c9"
   integrity sha512-fi5wQakZVHWRy3zP0env52PHXP9Zl/p8Q2Ow8z9SmwpYgfCaA90hCSW2twC5/cpV5M1wB6tSmLqldVMP1tS1qw==
