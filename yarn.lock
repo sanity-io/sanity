@@ -4004,24 +4004,24 @@
     vite "^4.3.8"
 
 "@sanity/ui-workshop@^1.0.0":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-1.2.4.tgz#816d3ade1f7ece5f05ae54ad885ae33e9456ca47"
-  integrity sha512-cGh12ezqwys2Z49Qa5E0YQ9UmBwX6dw6wHvvhmgBNxIlz8zS6MT7ti5ZR+DSA/G15KciW+2qmGssoQqRbGC5rA==
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-1.2.9.tgz#92fb4e80dd4bf336bad501a11e6eadcfea63cdc8"
+  integrity sha512-i4GdDdFw/soG77JlHRJyBGzn+XLCKVQfyad2qaOGMpKBdpkcdnr9imYQVlNvwxpJ9W86ZOImg+ppR/e9LoNmtA==
   dependencies:
-    "@vitejs/plugin-react" "^4.0.0"
-    axe-core "^4.6.3"
+    "@vitejs/plugin-react" "^4.0.3"
+    axe-core "^4.7.2"
     cac "^6.7.14"
     chokidar "^3.5.3"
     dotenv-flow "^3.2.0"
-    esbuild "^0.18.0"
+    esbuild "^0.18.16"
     esbuild-register "^3.4.2"
     express "^4.18.2"
     globby "^11.1.0"
     lodash "^4.17.21"
-    mkdirp "^3.0.0"
+    mkdirp "^2.1.6"
     pako "^2.1.0"
     segmented-property "^3.0.3"
-    vite "^4.1.1"
+    vite "^4.4.7"
 
 "@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
   version "1.7.3"
@@ -5266,7 +5266,7 @@
   optionalDependencies:
     ajv "^6.0.0"
 
-"@vitejs/plugin-react@^4.0.0", "@vitejs/plugin-react@^4.0.4":
+"@vitejs/plugin-react@^4.0.0", "@vitejs/plugin-react@^4.0.3", "@vitejs/plugin-react@^4.0.4":
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-4.0.4.tgz#31c3f779dc534e045c4b134e7cf7b150af0a7646"
   integrity sha512-7wU921ABnNYkETiMaZy7XqpueMnpu5VxvVps13MjmCo+utBdD79sZzrApHawHtVX66cCJQQTXFcjH0y9dSUK8g==
@@ -6029,10 +6029,10 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
-axe-core@^4.6.2, axe-core@^4.6.3:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.7.0.tgz#34ba5a48a8b564f67e103f0aa5768d76e15bbbbf"
-  integrity sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==
+axe-core@^4.6.2, axe-core@^4.7.2:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.7.2.tgz#040a7342b20765cb18bb50b628394c21bccc17a0"
+  integrity sha512-zIURGIS1E1Q4pcrMjp+nnEh+16G56eG/MUllJH8yEvw7asDo7Ac9uhC9KIH5jzpITueEZolfYglnCGIuSBz39g==
 
 axios@^0.21.1:
   version "0.21.4"
@@ -8634,7 +8634,7 @@ esbuild-register@^3.4.1, esbuild-register@^3.4.2:
   dependencies:
     debug "^4.3.4"
 
-esbuild@^0.18.0, esbuild@^0.18.10, esbuild@^0.18.17:
+esbuild@^0.18.0, esbuild@^0.18.10, esbuild@^0.18.16, esbuild@^0.18.17:
   version "0.18.17"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.18.17.tgz#2aaf6bc6759b0c605777fdc435fea3969e091cad"
   integrity sha512-1GJtYnUxsJreHYA0Y+iQz2UEykonY66HNWOb0yXYZi9/kNrORUEHVg87eQsCtqh59PEJ5YVZJO98JHznMJSWjg==
@@ -9833,7 +9833,7 @@ get-intrinsic@^1.0.2, get-intrinsic@^1.1.1, get-intrinsic@^1.1.3, get-intrinsic@
     has-proto "^1.0.1"
     has-symbols "^1.0.3"
 
-get-it@^8.0.9, get-it@^8.1.0, get-it@^8.2.0:
+get-it@^8.0.9, get-it@^8.2.0:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.3.1.tgz#bb92c6740a1260275ad13b31a543755b38a8b5c9"
   integrity sha512-fi5wQakZVHWRy3zP0env52PHXP9Zl/p8Q2Ow8z9SmwpYgfCaA90hCSW2twC5/cpV5M1wB6tSmLqldVMP1tS1qw==
@@ -13447,7 +13447,12 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-mkdirp@^3.0.0, mkdirp@^3.0.1:
+mkdirp@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-2.1.6.tgz#964fbcb12b2d8c5d6fbc62a963ac95a273e2cc19"
+  integrity sha512-+hEnITedc8LAtIP9u3HJDFIdcLV2vXP33sqLLIzkv1Db1zO/1OxbvYf0Y1OC/S/Qo5dxHXepofhmxL02PsKe+A==
+
+mkdirp@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-3.0.1.tgz#e44e4c5607fb279c168241713cc6e0fea9adcb50"
   integrity sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==
@@ -18817,7 +18822,7 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vite@^4.1.1, vite@^4.3.8, vite@^4.4.4, vite@^4.4.8:
+vite@^4.3.8, vite@^4.4.4, vite@^4.4.7, vite@^4.4.8:
   version "4.4.8"
   resolved "https://registry.yarnpkg.com/vite/-/vite-4.4.8.tgz#31e4a438f8748695c68bd57ffd262ba93540fdf7"
   integrity sha512-LONawOUUjxQridNWGQlNizfKH89qPigK36XhMI7COMGztz8KNY0JHim7/xDd71CZwGT4HtSRgI7Hy+RlhG0Gvg==
