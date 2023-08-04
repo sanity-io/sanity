@@ -88,7 +88,7 @@
     "@sanity/client": "^6.3.0",
     "@sanity/pkg-utils": "^2.3.1",
     "@sanity/tsdoc": "1.0.0-alpha.38",
-    "@sanity/uuid": "^3.0.1",
+    "@sanity/uuid": "^3.0.2",
     "@types/jest": "^27.0.3",
     "@types/mkdirp": "^1.0.2",
     "@types/node": "^14.18.9",
