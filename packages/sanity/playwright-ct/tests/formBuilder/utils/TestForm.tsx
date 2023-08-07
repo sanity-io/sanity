@@ -1,20 +1,11 @@
-import {
-  defineArrayMember,
-  defineField,
-  defineType,
-  Path,
-  SanityDocument,
-  ValidationContext,
-  ValidationMarker,
-} from '@sanity/types'
+import {Path, SanityDocument, ValidationContext, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {validateDocument} from '../../src/core/validation'
-import {Box, Text} from '@sanity/ui'
-import {applyAll} from '../../src/core/form/patch/applyPatch'
-import {createMockSanityClient} from './mocks/createMockSanityClient'
-import {Wrapper} from './Wrapper'
+import {validateDocument} from '../../../../src/core/validation'
+import {applyAll} from '../../../../src/core/form/patch/applyPatch'
+import {createMockSanityClient} from '../../mocks/createMockSanityClient'
 import {
   createPatchChannel,
+  EMPTY_ARRAY,
   FormBuilder,
   FormBuilderProps,
   getExpandOperations,
@@ -23,146 +14,11 @@ import {
   StateTree,
   useFormState,
   useWorkspace,
-  PreviewProps,
 } from 'sanity'
 
 const NOOP = () => null
 
-const EMPTY_ARRAY: never[] = []
-
-// This is to emulate preview updates to the object without the preview store
-function CustomObjectPreview(props: PreviewProps) {
-  return (
-    <Box padding={1}>
-      <Text>Custom preview block:</Text> {props.renderDefault({...props})}
-    </Box>
-  )
-}
-
-const SCHEMA_TYPES = [
-  defineType({
-    type: 'document',
-    name: 'test',
-    title: 'Test',
-    fields: [
-      defineField({
-        type: 'string',
-        name: 'title',
-        title: 'Title',
-      }),
-      defineField({
-        type: 'string',
-        name: 'requiredSubtitle',
-        title: 'Required Subtitle',
-        validation: (Rule) => Rule.required(),
-      }),
-      defineField({
-        type: 'array',
-        name: 'body',
-        of: [
-          defineArrayMember({
-            type: 'block',
-            of: [
-              defineArrayMember({
-                type: 'object',
-                title: 'Inline Object',
-                components: {
-                  preview: CustomObjectPreview,
-                },
-                fields: [
-                  defineField({
-                    type: 'string',
-                    name: 'title',
-                    title: 'Title',
-                  }),
-                ],
-              }),
-            ],
-          }),
-          defineArrayMember({
-            name: 'object',
-            type: 'object',
-            title: 'Object',
-            fields: [{type: 'string', name: 'title', title: 'Title'}],
-            preview: {
-              select: {
-                title: 'title',
-              },
-            },
-            components: {
-              preview: CustomObjectPreview,
-            },
-          }),
-          defineArrayMember({
-            name: 'objectWithoutTitle',
-            type: 'object',
-            fields: [{type: 'string', name: 'title', title: 'Title'}],
-            preview: {
-              select: {
-                title: 'title',
-              },
-            },
-          }),
-        ],
-      }),
-      defineField({
-        type: 'string',
-        name: 'genre',
-        title: 'Genre',
-        options: {
-          list: [
-            {title: 'Sci-Fi', value: 'sci-fi'},
-            {title: 'Western', value: 'western'},
-          ],
-        },
-      }),
-      defineField({
-        type: 'array',
-        name: 'bodyStyles',
-        of: [
-          defineArrayMember({
-            type: 'block',
-            styles: [{title: 'Normal', value: 'normal'}],
-          }),
-          defineArrayMember({
-            name: 'object',
-            type: 'object',
-            title: 'Object',
-            fields: [{type: 'string', name: 'title', title: 'Title'}],
-            preview: {
-              select: {
-                title: 'title',
-              },
-            },
-          }),
-        ],
-      }),
-    ],
-  }),
-]
-
-export function FormBuilderStory({onRender}: {onRender?: () => void}) {
-  return (
-    <Wrapper schemaTypes={SCHEMA_TYPES}>
-      <TestForm onRender={onRender} />
-    </Wrapper>
-  )
-}
-
-const client = createMockSanityClient() as any as ReturnType<ValidationContext['getClient']>
-const getClient = (options: {apiVersion: string}) => client
-
-async function validateStaticDocument(
-  document: any,
-  schema: any,
-  setCallback: (result: ValidationMarker[]) => void
-) {
-  const result = await validateDocument(getClient, document, schema)
-
-  setCallback(result)
-}
-
-function TestForm({onRender}: {onRender?: () => void}) {
+export function TestForm() {
   const [validation, setValidation] = useState<ValidationMarker[]>([])
   const [openPath, onSetOpenPath] = useState<Path>([])
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
@@ -174,14 +30,9 @@ function TestForm({onRender}: {onRender?: () => void}) {
     _createdAt: new Date().toISOString(),
     _updatedAt: new Date().toISOString(),
     _rev: '123',
-    title: 'Test title',
   })
   const [focusPath, setFocusPath] = useState<Path>(() => ['title'])
   const patchChannel = useMemo(() => createPatchChannel(), [])
-
-  useEffect(() => {
-    onRender?.()
-  })
 
   useEffect(() => {
     patchChannel.publish({
@@ -228,12 +79,9 @@ function TestForm({onRender}: {onRender?: () => void}) {
     [setFocusPath]
   )
 
-  const handleBlur = useCallback(
-    (blurredPath: Path) => {
-      setFocusPath([])
-    },
-    [setFocusPath]
-  )
+  const handleBlur = useCallback(() => {
+    setFocusPath([])
+  }, [setFocusPath])
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error('Nope')
@@ -331,4 +179,14 @@ function TestForm({onRender}: {onRender?: () => void}) {
   return <FormBuilder {...formBuilderProps} />
 }
 
-export default FormBuilderStory
+async function validateStaticDocument(
+  document: any,
+  schema: any,
+  setCallback: (result: ValidationMarker[]) => void
+) {
+  const result = await validateDocument(getClient, document, schema)
+  setCallback(result)
+}
+
+const client = createMockSanityClient() as any as ReturnType<ValidationContext['getClient']>
+const getClient = (options: {apiVersion: string}) => client

@@ -1,5 +1,5 @@
 {
-    "rules": {
-        "tsdoc/syntax": "off"
-    }
+  "rules": {
+    "tsdoc/syntax": "off"
+  }
 }

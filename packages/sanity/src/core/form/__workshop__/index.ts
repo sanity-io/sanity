@@ -18,7 +18,9 @@ export default defineScope({
     {
       name: 'form-builder-playwright',
       title: 'Form builder (playwright)',
-      component: lazy(() => import('../../../../playwright-ct/tests/FormBuilderStory')),
+      component: lazy(
+        () => import('../../../../playwright-ct/tests/formBuilder/PortableTextInputStory')
+      ),
     },
   ],
 })
