@@ -15,38 +15,20 @@ export function DocumentHeaderTitle(): ReactElement {
   const titleRef = useRef<HTMLButtonElement | null>(null)
   const rootRef = useRef<HTMLDivElement | null>(null)
 
-  const activePaneTitle = useMemo(() => {
+  const activePaneTitle: string = useMemo(() => {
     if (connectionState !== 'connected') {
       return ''
     }
 
     if (error) {
-      return <>{error}</>
+      return error
     }
 
     return title || 'Untitled'
   }, [connectionState, error, title])
 
-  // TODO: This logic is brittle needs to be refactored
-  // const maxLength = useMemo(() => {
-  //   const titleWidth = titleSize?.content.width
-  //   const rootWidth = rootSize?.content.width
-
-  //   if (!titleWidth || !rootWidth) {
-  //     return 4
-  //   }
-
-  //   if (titleWidth > BREADCRUMB_ITEM_TITLE_MIN_WIDTH && titleWidth < rootWidth) {
-  //     return 1
-  //   }
-
-  //   return titleWidth > BREADCRUMB_ITEM_TITLE_MIN_WIDTH ? 2 : 4
-  // }, [rootSize?.content.width, titleSize?.content.width])
-
   const handleClick = useCallback(
     (index: number) => {
-      // console.log('Clicked', pane, state)
-
       navigate({
         panes: (state as any)?.panes.slice(0, index),
       })
@@ -56,14 +38,15 @@ export function DocumentHeaderTitle(): ReactElement {
 
   return (
     <Box ref={rootRef}>
-      <Breadcrumbs maxLength={4}>
+      {/* TODO: Dynamically calculate max content */}
+      <Breadcrumbs maxLength={3}>
         {resolvedPanes.map((pane, i) => {
           // If It's loading pane, we don't want to show it in the breadcrumb
           if (pane === LOADING_PANE) {
             return null
           }
 
-          // If it's a document, use the the value instead
+          // Document titles are treated specially so ignoring them here
           if (pane.type === 'document') {
             return null
           }
@@ -76,7 +59,9 @@ export function DocumentHeaderTitle(): ReactElement {
           )
         })}
 
-        <BreadcrumbItem ref={titleRef}>{activePaneTitle}</BreadcrumbItem>
+        <BreadcrumbItem isTitle ref={titleRef}>
+          {activePaneTitle}
+        </BreadcrumbItem>
       </Breadcrumbs>
     </Box>
   )

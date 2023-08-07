@@ -1,5 +1,6 @@
-import styled from 'styled-components'
-import {Box, Button} from '@sanity/ui'
+import styled, {css} from 'styled-components'
+import {Box, Button, Theme} from '@sanity/ui'
+import {BreadcrumbItemProps} from './BreadcrumbItem'
 
 export const BREADCRUMB_ITEM_TITLE_MIN_WIDTH = 220
 export const BREADCRUMB_ITEM_MAX_WIDTH = 130
@@ -7,7 +8,7 @@ export const BREADCRUMB_ITEM_MAX_WIDTH = 130
 export const Root = styled.ol`
   margin: 0;
   padding: 0;
-  display: inline-flex;
+  display: flex;
   list-style: none;
   align-items: center;
   width: 100%;
@@ -28,3 +29,20 @@ export const BreadcrumbItemRoot = styled(Box)`
     max-width: inherit;
   }
 `
+export const BreadcrumbButtonRoot = styled(Button)<BreadcrumbItemProps>`
+  ${({isTitle}) => !isTitle && `max-width: ${BREADCRUMB_ITEM_MAX_WIDTH}px`};
+`
+
+export const BreadcrumbItemSpan = styled.span(({theme}: {theme: Theme}) => {
+  const {fg} = theme.sanity.color.card.enabled
+  const {lineHeight, fontSize} = theme.sanity.fonts.text.sizes[1]
+
+  return css`
+    display: block;
+    line-height: calc(${lineHeight} / ${fontSize});
+    text-overflow: ellipsis;
+    overflow: clip;
+    white-space: nowrap;
+    color: ${fg};
+  `
+})

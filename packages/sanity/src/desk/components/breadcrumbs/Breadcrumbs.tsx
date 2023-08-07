@@ -1,4 +1,4 @@
-import {Box, Text, useArrayProp, useClickOutside, Popover, Stack} from '@sanity/ui'
+import {Box, Text, useClickOutside, Popover, Stack} from '@sanity/ui'
 import React, {
   Children,
   Fragment,
@@ -17,8 +17,6 @@ import {BreadcrumbItemRoot, ExpandButton, Root} from './breadcrumbs.styles'
  */
 export interface BreadcrumbsProps {
   maxLength?: number
-  separator?: React.ReactNode
-  space?: number | number[]
 }
 
 /**
@@ -29,8 +27,7 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
   props: BreadcrumbsProps & Omit<React.HTMLProps<HTMLOListElement>, 'as' | 'ref' | 'type'>,
   ref: React.ForwardedRef<HTMLOListElement>
 ) {
-  const {children, maxLength, separator, space: spaceRaw = 2, ...restProps} = props
-  const space = useArrayProp(spaceRaw)
+  const {children, maxLength, ...restProps} = props
   const [open, setOpen] = useState(false)
   const [expandElement, setExpandElement] = useState<HTMLButtonElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
@@ -57,7 +54,7 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
         <Popover
           constrainSize
           content={
-            <Stack as="ol" overflow="auto" padding={space} space={space}>
+            <Stack as="ol" overflow="auto" padding={2} space={2}>
               {rawItems.slice(0, len - maxLength)}
             </Stack>
           }
@@ -70,7 +67,7 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
           <ExpandButton
             mode="bleed"
             onClick={open ? collapse : expand}
-            padding={1}
+            padding={2}
             ref={setExpandElement}
             selected={open}
             text="…"
@@ -82,19 +79,18 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
     }
 
     return rawItems
-  }, [collapse, expand, maxLength, open, rawItems, space])
+  }, [collapse, expand, maxLength, open, rawItems])
 
   return (
     <Root data-ui="Breadcrumbs" {...restProps} ref={ref}>
       {items.map((item, itemIndex) => (
+        // eslint-disable-next-line react/no-array-index-key
         <Fragment key={itemIndex}>
           {itemIndex > 0 && (
-            <Box aria-hidden as="li" paddingX={space}>
-              {separator || (
-                <Text muted size={1}>
-                  <ChevronRightIcon />
-                </Text>
-              )}
+            <Box aria-hidden as="li" paddingX={1}>
+              <Text data-ui="TextChevronRight" muted>
+                <ChevronRightIcon />
+              </Text>
             </Box>
           )}
           <BreadcrumbItemRoot as="li">{item}</BreadcrumbItemRoot>
