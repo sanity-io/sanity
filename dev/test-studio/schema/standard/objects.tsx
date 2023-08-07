@@ -3,6 +3,7 @@
 
 import {defineType, FormPatch, set, TransformPatches} from 'sanity'
 import React, {useCallback} from 'react'
+import {defineField} from '@sanity/types'
 
 export const myObject = defineType({
   type: 'object',
@@ -11,26 +12,26 @@ export const myObject = defineType({
   // icon,
   // readOnly: true,
   fields: [
-    {
+    defineField({
       name: 'first',
       type: 'string',
       title: 'First',
-    },
-    {
+    }),
+    defineField({
       name: 'second',
       type: 'string',
       title: 'Second',
-    },
-    {
+    }),
+    defineField({
       name: 'third',
       type: 'image',
       title: 'Image',
-    },
-    {
+    }),
+    defineField({
       name: 'fourth',
       type: 'file',
       title: 'File',
-    },
+    }),
   ],
 })
 
@@ -61,7 +62,7 @@ export default defineType({
   },
   fieldsets: [{name: 'recursive', title: 'Recursive', options: {collapsible: true}}],
   fields: [
-    {
+    defineField({
       type: 'object',
       name: 'objectWithColumns',
       title: 'Object with columns',
@@ -69,45 +70,45 @@ export default defineType({
         columns: [1, 2, 3, 4],
       },
       fields: [
-        {
+        defineField({
           type: 'string',
           title: 'String 1',
           name: 'string1',
-        },
-        {
+        }),
+        defineField({
           type: 'string',
           title: 'String 2',
           name: 'string2',
-        },
-        {
+        }),
+        defineField({
           type: 'number',
           title: 'Number 1',
           name: 'number1',
-        },
-        {
+        }),
+        defineField({
           type: 'number',
           title: 'Number 2',
           name: 'number2',
-        },
-        {
+        }),
+        defineField({
           type: 'image',
           title: 'Image 1',
           name: 'image1',
-        },
-        {
-          name: 'file',
+        }),
+        defineField({
           type: 'file',
           title: 'File',
-        },
+          name: 'file',
+        }),
       ],
-    },
-    {
+    }),
+    defineField({
       name: 'myObject',
       type: 'myObject',
       title: 'MyObject',
       description: 'The first field here should be the title',
-    },
-    {
+    }),
+    defineField({
       name: 'fieldWithObjectType',
       title: 'Field of object type',
       type: 'object',
@@ -138,14 +139,14 @@ export default defineType({
           hidden: ({parent}) => parent?.field1 === 'hide-field-3',
         },
       ],
-    },
-    {
+    }),
+    defineField({
       name: 'recursive',
       title: 'This field is of type objectsTest',
       type: 'objectsTest',
       fieldset: 'recursive',
-    },
-    {
+    }),
+    defineField({
       name: 'collapsibleObject',
       title: 'Collapsible object',
       type: 'object',
@@ -173,8 +174,8 @@ export default defineType({
           ],
         },
       ],
-    },
-    {
+    }),
+    defineField({
       name: 'events',
       title: 'Events',
       type: 'array',
@@ -214,6 +215,6 @@ export default defineType({
           ],
         },
       ],
-    },
+    }),
   ],
 })
