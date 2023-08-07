@@ -83,7 +83,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
       <StyledPaneLayout
         flex={1}
         height={layoutCollapsed ? undefined : 'fill'}
-        minWidth={512}
+        minWidth={600}
         onCollapse={handleRootCollapse}
         onExpand={handleRootExpand}
       >

@@ -72,7 +72,7 @@ export default function ChangeConnectorsStory() {
             >
               <PaneLayout
                 height="fill"
-                minWidth={512}
+                minWidth={600}
                 onCollapse={handleLayoutCollapse}
                 onExpand={handleLayoutExpand}
               >

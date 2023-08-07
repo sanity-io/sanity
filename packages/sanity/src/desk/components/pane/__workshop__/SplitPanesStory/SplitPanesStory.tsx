@@ -54,7 +54,7 @@ function DeskTool(props: {
     <PaneLayout
       flex={1}
       height={collapsed ? undefined : 'fill'}
-      minWidth={512}
+      minWidth={600}
       onCollapse={onCollapse}
       onExpand={onExpand}
     >
