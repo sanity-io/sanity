@@ -14,7 +14,6 @@ export const Root = styled.ol`
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
-  line-height: 0;
 `
 
 export const ExpandButton = styled(Button)`
@@ -30,7 +29,7 @@ export const BreadcrumbItemRoot = styled(Box)`
   }
 `
 export const BreadcrumbButtonRoot = styled(Button)<BreadcrumbItemProps>`
-  ${({isTitle}) => !isTitle && `max-width: ${BREADCRUMB_ITEM_MAX_WIDTH}px`};
+  ${({isTitle}) => (isTitle ? `max-width: 100%;` : `max-width: ${BREADCRUMB_ITEM_MAX_WIDTH}px`)};
 `
 
 export const BreadcrumbItemSpan = styled.span(({theme}: {theme: Theme}) => {
