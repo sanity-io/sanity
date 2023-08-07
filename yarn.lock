@@ -3836,7 +3836,7 @@
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.10.tgz#df934a94ae6669fe6b15515d800afb221cba0498"
   integrity sha512-5wVG/vIiGuGrSmq+Bl3PY7XDgQrGv0fyHdJI64FSulnr2wH3NMqZ6C59UFxnrZ93sr7kOt0zQFoNv2lkPBi0Cg==
 
-"@sanity/icons@^2", "@sanity/icons@^2.0.0", "@sanity/icons@^2.3.1", "@sanity/icons@^2.4.0":
+"@sanity/icons@^2", "@sanity/icons@^2.0.0", "@sanity/icons@^2.3.1", "@sanity/icons@^2.4.0", "@sanity/icons@^2.4.1":
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-2.4.1.tgz#34ce2c5b58f53c7369ff926b651ea57c4e3c0a8c"
   integrity sha512-/yxcIT0k1RxStI/pP/oHM44fHI6Oxiygf0jPcdV06Ce0xfFo+51UEqJSfE8hQ3fh+uFkat8ZZObZjq5v1ceJzw==
@@ -3973,16 +3973,16 @@
     segmented-property "^3.0.3"
     vite "^4.4.7"
 
-"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
-  version "1.7.3"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.7.3.tgz#e603cf6d68ca26e1345a76ee0f328532d794edd2"
-  integrity sha512-C+EBh7Vp0XMKE6k7sAGylc5R9RsZkKu4FnZ2SotVe5CPUTFAqTIqEn2WoaAKVMtkafxplCXd7RQsWr5nJOjqSg==
+"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2", "@sanity/ui@^1.7.4":
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.7.4.tgz#c2b94342c264b8a5c9d9cc56f1c7e4327a820b47"
+  integrity sha512-HOOVHkhkBiRCjsFOhs81+Q+orWRwRREJj+e+Q7YZ6QZyxpWxBZuwsDWIrjWdb4IsecaV7P2hSbFWrk7e3EGaJw==
   dependencies:
     "@floating-ui/react-dom" "2.0.0"
     "@sanity/color" "^2.2.5"
-    "@sanity/icons" "^2.3.1"
+    "@sanity/icons" "^2.4.1"
     csstype "^3.1.2"
-    framer-motion "^10.12.16"
+    framer-motion "^10.13.1"
     react-refractor "^2.1.7"
 
 "@sanity/uuid@^3", "@sanity/uuid@^3.0.1", "@sanity/uuid@^3.0.2":
@@ -9634,10 +9634,10 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^10.0.0, framer-motion@^10.12.16:
-  version "10.13.1"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.13.1.tgz#f717c924ce9a8927264b41692a870d1366fe296c"
-  integrity sha512-uiKsaLEoySeln3eOPy8wUB3FkNtRRiVga5xJOkgs7C0sHVyvpJajXJFSoabt+emBojgnMQY0epnjl0ppoYPxkQ==
+framer-motion@^10.0.0, framer-motion@^10.13.1:
+  version "10.15.0"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.15.0.tgz#5f043fdd4edb2c29a0a5e86cce1f67b88dcdc768"
+  integrity sha512-HDjWrYWgbO5orKuhnXETLFzk7UUvwWur2HFs2elAZ8lVpI49ClHql31DNTVvVBcOrSHfAOS4eBDBedIvOx634w==
   dependencies:
     tslib "^2.4.0"
   optionalDependencies:
