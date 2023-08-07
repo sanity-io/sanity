@@ -16,11 +16,16 @@ export default defineScope({
       component: lazy(() => import('./FormBuilderStory')),
     },
     {
-      name: 'form-builder-playwright',
-      title: 'Form builder (playwright)',
+      name: 'form-builder-pte-input',
+      title: 'Form builder: Portable Text Input',
       component: lazy(
         () => import('../../../../playwright-ct/tests/formBuilder/PortableTextInputStory')
       ),
+    },
+    {
+      name: 'form-builder-array-input',
+      title: 'Form builder: Array Input',
+      component: lazy(() => import('../../../../playwright-ct/tests/formBuilder/ArrayInputStory')),
     },
   ],
 })

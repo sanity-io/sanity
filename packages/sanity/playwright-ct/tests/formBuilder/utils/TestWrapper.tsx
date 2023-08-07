@@ -1,9 +1,10 @@
 import {SanityClient} from '@sanity/client'
 import {Card, LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import React, {ReactNode, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Pane, PaneContent, PaneLayout} from '../../../../src/desk/components'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
+import {TestForm} from './TestForm'
 import {
   ResourceCacheProvider,
   SchemaTypeDefinition,
@@ -16,13 +17,7 @@ import {
  * @description This component is used to wrap all tests in the providers it needs to be able to run successfully.
  * It provides a mock Sanity client and a mock workspace.
  */
-export const TestProvider = ({
-  children,
-  schemaTypes,
-}: {
-  children: ReactNode
-  schemaTypes: SchemaTypeDefinition[]
-}) => {
+export const TestWrapper = ({schemaTypes}: {schemaTypes: SchemaTypeDefinition[]}) => {
   const [mockWorkspace, setMockWorkspace] = useState<Workspace | null>(null)
 
   useEffect(() => {
@@ -58,7 +53,9 @@ export const TestProvider = ({
                 <PaneLayout height="fill">
                   <Pane id="test-pane">
                     <PaneContent>
-                      <Card padding={3}>{children}</Card>
+                      <Card padding={3}>
+                        <TestForm />
+                      </Card>
                     </PaneContent>
                   </Pane>
                 </PaneLayout>

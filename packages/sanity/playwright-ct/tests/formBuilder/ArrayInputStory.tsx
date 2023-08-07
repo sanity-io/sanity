@@ -1,7 +1,6 @@
 import {defineField, defineType} from '@sanity/types'
 import React from 'react'
-import {TestProvider} from './utils/TestProvider'
-import {TestForm} from './utils/TestForm'
+import {TestWrapper} from './utils/TestWrapper'
 
 const SCHEMA_TYPES = [
   defineType({
@@ -21,11 +20,7 @@ const SCHEMA_TYPES = [
 ]
 
 export function ArrayInputStory() {
-  return (
-    <TestProvider schemaTypes={SCHEMA_TYPES}>
-      <TestForm />
-    </TestProvider>
-  )
+  return <TestWrapper schemaTypes={SCHEMA_TYPES} />
 }
 
 export default ArrayInputStory

@@ -1,8 +1,7 @@
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {Box, Text} from '@sanity/ui'
 import React from 'react'
-import {TestProvider} from './utils/TestProvider'
-import {TestForm} from './utils/TestForm'
+import {TestWrapper} from './utils/TestWrapper'
 import {PreviewProps} from 'sanity'
 
 // This is to emulate preview updates to the object without the preview store
@@ -117,11 +116,7 @@ const SCHEMA_TYPES = [
 ]
 
 export function PortableTextInputStory() {
-  return (
-    <TestProvider schemaTypes={SCHEMA_TYPES}>
-      <TestForm />
-    </TestProvider>
-  )
+  return <TestWrapper schemaTypes={SCHEMA_TYPES} />
 }
 
 export default PortableTextInputStory
