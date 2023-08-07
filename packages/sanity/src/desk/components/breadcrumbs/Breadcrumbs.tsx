@@ -54,7 +54,7 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
         <Popover
           constrainSize
           content={
-            <Stack as="ol" overflow="auto" padding={2} space={2}>
+            <Stack as="ol" overflow="auto" padding={2}>
               {rawItems.slice(0, len - maxLength)}
             </Stack>
           }

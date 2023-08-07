@@ -70,10 +70,10 @@ export const PaneHeader = forwardRef(function PaneHeader(
                 marginRight={actions ? 1 : 0}
                 onClick={isTitleString ? handleTitleClick : undefined}
                 paddingLeft={backButton ? 1 : 3}
-                paddingY={3}
+                paddingY={isTitleString ? 3 : undefined}
                 tabIndex={tabIndex}
               >
-                {loading && <TitleTextSkeleton animated radius={1} />}
+                {loading && <TitleTextSkeleton marginY={3} animated radius={1} />}
                 {!loading &&
                   (isTitleString ? (
                     <TitleText textOverflow="ellipsis" weight="semibold">
