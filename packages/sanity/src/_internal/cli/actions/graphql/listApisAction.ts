@@ -18,7 +18,7 @@ export default async function listGraphQLApis(
   const client = apiClient({
     requireUser: true,
     requireProject: true,
-  }).config({apiVersion: '1'})
+  }).config({apiVersion: '2023-08-01'})
 
   let endpoints: ListApisResponse | undefined
   try {

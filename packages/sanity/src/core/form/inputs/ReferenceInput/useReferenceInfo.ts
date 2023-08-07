@@ -1,5 +1,5 @@
 import {useCallback, useMemo} from 'react'
-import {catchError, concatMap, map, startWith} from 'rxjs/operators'
+import {catchError, concatMap, map, startWith, tap} from 'rxjs/operators'
 import {concat, Observable, of, Subject} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
 import {usePrevious} from '../../hooks/usePrevious'

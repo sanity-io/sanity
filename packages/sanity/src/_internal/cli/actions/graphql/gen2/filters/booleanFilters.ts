@@ -16,6 +16,11 @@ export function createBooleanFilters(): InputObjectType {
         type: 'Boolean',
         description: 'Checks if the value is not equal to the given input.',
       },
+      {
+        fieldName: 'is_defined',
+        type: 'Boolean',
+        description: 'Checks if the value is defined.',
+      },
     ],
   }
 }

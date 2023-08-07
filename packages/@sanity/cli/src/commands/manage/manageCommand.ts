@@ -12,8 +12,8 @@ const manageCommand: CliCommandDefinition = {
     const projectId = cliConfig?.api?.projectId
 
     const url = projectId
-      ? `https://manage.sanity.io/projects/${projectId}`
-      : 'https://manage.sanity.io/'
+      ? `https://www.sanity.io/manage/project/${projectId}`
+      : 'https://www.sanity.io/manage/'
 
     print(`Opening ${url}`)
     await open(url)
