@@ -66,7 +66,7 @@ export default defineType({
       name: 'objectWithColumns',
       title: 'Object with columns',
       options: {
-        columns: 4,
+        columns: [1, 2, 3, 4],
       },
       fields: [
         {

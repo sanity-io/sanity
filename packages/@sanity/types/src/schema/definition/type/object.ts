@@ -8,7 +8,7 @@ import {BaseSchemaDefinition, FieldGroupDefinition, FieldsetDefinition} from './
 export interface ObjectOptions {
   collapsible?: boolean
   collapsed?: boolean
-  columns?: number
+  columns?: number | number[]
   modal?: {
     type?: 'dialog' | 'popover'
     width?: number | number[] | 'auto'
