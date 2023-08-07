@@ -1,10 +1,10 @@
 #!/usr/bin/env node -r esbuild-register
 
 import {readFileSync, writeFileSync} from 'fs'
-import {GroupedTests, JSONReportCustom, Spec, Suite, SummaryRow} from '../tests/types'
-import _ from 'lodash'
 import {inspect} from 'node:util'
 import path from 'path'
+import _ from 'lodash'
+import {GroupedTests, JSONReportCustom, Spec, Suite, SummaryRow} from './types'
 
 const DEFAULT_ARTIFACT_OUTPUT_PATH = path.resolve(path.join(__dirname, '..', 'results'))
 
@@ -21,6 +21,7 @@ function readJsonFile(filePath: string): JSONReportCustom | null {
 function flattenSuites(suites: Suite[]): Spec[] {
   return _.flatMap(suites, (suite) => (suite.suites ? flattenSuites(suite.suites) : suite.specs))
 }
+
 function groupTests(report: JSONReportCustom): GroupedTests {
   const flatSpecs = flattenSuites(report.suites)
 
@@ -50,15 +51,6 @@ function groupTests(report: JSONReportCustom): GroupedTests {
 
 function calculateStatsCustom(input: JSONReportCustom) {
   return groupTests(input)
-}
-
-export interface TableRow {
-  file: string
-  spec: string
-  totalDuration: number
-  totalPassed: number
-  totalSkipped: number
-  totalFailed: number
 }
 
 function formatDuration(ms: number): string {
