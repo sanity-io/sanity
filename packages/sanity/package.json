@@ -190,7 +190,7 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "log-symbols": "^2.2.0",
-    "mendoza": "^2.1.1",
+    "mendoza": "^3.0.0",
     "module-alias": "^2.2.2",
     "nano-pubsub": "^2.0.1",
     "nanoid": "^3.1.30",
