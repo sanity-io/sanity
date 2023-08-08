@@ -7,6 +7,8 @@ import {PrimitiveItemProps} from '../../../types/itemProps'
 import {ArrayOfPrimitivesItem} from '../../../members'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {UploadTargetCard} from '../common/UploadTargetCard'
+import {ChangeIndicator} from '../../../../changeIndicators'
+import {ArrayOfPrimitivesItemMember, ArrayOfPrimitivesMember} from '../../../store/types/members'
 import {getEmptyValue} from './getEmptyValue'
 
 import {PrimitiveValue} from './types'
@@ -153,6 +155,8 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
       resolveUploader,
       elementProps,
       arrayFunctions: ArrayFunctions = ArrayOfPrimitivesFunctions,
+      path,
+      changed,
     } = this.props
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
@@ -199,11 +203,17 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
                         disableTransition={this.state.disableTransition}
                       >
                         {member.kind === 'item' && (
-                          <ArrayOfPrimitivesItem
-                            member={member}
-                            renderItem={this.renderArrayItem}
-                            renderInput={renderInput}
-                          />
+                          <ChangeIndicator
+                            path={member.item.path}
+                            isChanged={changed}
+                            hasFocus={false}
+                          >
+                            <ArrayOfPrimitivesItem
+                              member={member}
+                              renderItem={this.renderArrayItem}
+                              renderInput={renderInput}
+                            />
+                          </ChangeIndicator>
                         )}
                         {member.kind === 'error' && (
                           <ErrorItem

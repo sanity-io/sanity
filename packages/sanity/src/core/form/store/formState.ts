@@ -109,6 +109,17 @@ function everyItemHasKey<T extends object>(array: T[]): array is (T & {_key: str
 }
 
 function isChangedValue(value: any, comparisonValue: any) {
+  // changes panel is not being able to identify changes in array of objects
+  // (especially when it comes to unpublished changes)
+  // the main issue it fixes is in instances where the array removes a last item but instead of turning
+  // "undefined" it returns an empty array (and so the change indicator remains active when it shouldn't)
+  if (
+    (Array.isArray(value) && typeof comparisonValue === 'undefined') ||
+    (Array.isArray(comparisonValue) && typeof value === 'undefined')
+  ) {
+    return false
+  }
+
   if (value && !comparisonValue) {
     return true
   }
@@ -785,7 +796,8 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
     prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index})
   )
   return {
-    changed: members.some((m) => m.kind === 'item' && m.item.changed), // TODO: is this correct? There could be field and fieldsets here?
+    // checks for changes not only on the array itself, but also on any of its items
+    changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
     value: props.value as T,
     readOnly,
     schemaType: props.schemaType,
@@ -841,7 +853,8 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
   )
 
   return {
-    changed: members.some((m) => m.kind === 'item' && m.item.changed),
+    // checks for changes not only on the array itself, but also on any of its items
+    changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
     value: props.value as T,
     readOnly,
     schemaType: props.schemaType,

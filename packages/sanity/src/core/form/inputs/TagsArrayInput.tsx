@@ -2,6 +2,7 @@ import React, {useCallback, useMemo} from 'react'
 import {set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
 import {ArrayOfPrimitivesInputProps} from '../types'
+import {ChangeIndicator} from '../../changeIndicators'
 
 /**
  *
@@ -16,7 +17,7 @@ export type TagsArrayInputProps = ArrayOfPrimitivesInputProps<string>
  * @beta
  */
 export function TagsArrayInput(props: TagsArrayInputProps) {
-  const {onChange, readOnly, value = [], elementProps} = props
+  const {onChange, readOnly, value = [], elementProps, path, changed} = props
   const tagInputValue = useMemo(() => value?.map((v) => ({value: v})), [value])
 
   const handleChange = useCallback(
@@ -27,6 +28,13 @@ export function TagsArrayInput(props: TagsArrayInputProps) {
   )
 
   return (
-    <TagInput onChange={handleChange} readOnly={readOnly} value={tagInputValue} {...elementProps} />
+    <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
+      <TagInput
+        onChange={handleChange}
+        readOnly={readOnly}
+        value={tagInputValue}
+        {...elementProps}
+      />
+    </ChangeIndicator>
   )
 }
