@@ -77,6 +77,15 @@ export const studioLocaleStrings = {
   /** No Changes description in the Review Changes pane */
   'core.review-changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
+
+  /** Prompt for reverting all changes in document in Review Changes pane */
+  'core.review-changes.revert-all-button-prompt': `Are you sure you want to revert all {{count}} changes?`,
+
+  /** Cancel label for revert button prompt action */
+  'core.review-changes.revert-button-cancel': `Cancel`,
+
+  /** Revert all label for revert button action - used on prompt button + review changes pane */
+  'core.review-changes.revert-button-revert-all': `Revert all`,
 }
 
 /**
