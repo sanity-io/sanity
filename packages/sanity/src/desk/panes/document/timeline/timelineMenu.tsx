@@ -5,10 +5,11 @@ import {upperFirst} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
+import {deskLocaleNamespace} from '../../../i18n'
 import {TimelineError} from './TimelineError'
 import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
-import {Chunk, useTimelineSelector} from 'sanity'
+import {Chunk, useTimelineSelector, useTranslation} from 'sanity'
 
 interface TimelineMenuProps {
   chunk: Chunk | null
@@ -22,8 +23,7 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore, isDeleted} =
-    useDocumentPane()
+  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)
@@ -34,6 +34,8 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const hasMoreChunks = useTimelineSelector(timelineStore, (state) => state.hasMoreChunks)
   const realRevChunk = useTimelineSelector(timelineStore, (state) => state.realRevChunk)
   const sinceTime = useTimelineSelector(timelineStore, (state) => state.sinceTime)
+
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const handleOpen = useCallback(() => {
     setTimelineMode(mode)
@@ -75,11 +77,11 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
           closable: true,
           description: err.message,
           status: 'error',
-          title: 'Unable to load revision',
+          title: t('desk.timeline.unable-to-load-rev'),
         })
       }
     },
-    [setTimelineMode, setTimelineRange, timelineStore, toast],
+    [setTimelineMode, setTimelineRange, t, timelineStore, toast],
   )
 
   const selectSince = useCallback(
@@ -93,11 +95,11 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
           closable: true,
           description: err.message,
           status: 'error',
-          title: 'Unable to load revision',
+          title: t('desk.timeline.unable-to-load-rev'),
         })
       }
     },
-    [setTimelineMode, setTimelineRange, timelineStore, toast],
+    [setTimelineMode, setTimelineRange, t, timelineStore, toast],
   )
 
   const handleLoadMore = useCallback(() => {
@@ -138,9 +140,11 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   const revLabel = chunk
     ? `${upperFirst(formatTimelineEventLabel(chunk.type))}: ${timeLabel}`
-    : 'Latest version'
+    : t('desk.timeline.latest-version')
 
-  const sinceLabel = chunk ? `Since: ${timeLabel}` : 'Since: unknown version'
+  const sinceLabel = chunk
+    ? t('desk.timeline.since', {timeLabel: timeLabel})
+    : t('desk.timeline.since-version-missing')
 
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
 
@@ -164,7 +168,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         ref={setButton}
         selected={open}
         style={{maxWidth: '100%'}}
-        text={ready ? buttonLabel : 'Loading history'}
+        text={ready ? buttonLabel : t('desk.timeline.loading-history')}
       />
     </Root>
   )
