@@ -50,6 +50,9 @@ const deskLocaleStrings = {
 
   /** Label for the close button label in Review Changes pane */
   'desk.review-changes.close-label': 'Close review changes',
+
+  /** Loading changes in Review Changes Pane */
+  'desk.review-changes.loading-changes': 'Loading changes',
 }
 
 /**
