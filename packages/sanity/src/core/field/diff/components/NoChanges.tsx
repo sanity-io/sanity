@@ -1,16 +1,17 @@
 import {Stack, Text} from '@sanity/ui'
 import React from 'react'
+import {useTranslation} from '../../../i18n'
 
 /** @internal */
 export function NoChanges() {
+  const {t} = useTranslation()
   return (
     <Stack space={3}>
       <Text size={1} weight="semibold" as="h3">
-        There are no changes
+        {t('core.review-changes.no-changes-title')}
       </Text>
       <Text as="p" size={1} muted>
-        Edit the document or select an older version in the timeline to see a list of changes appear
-        in this panel.
+        {t('core.review-changes.no-changes-description')}
       </Text>
     </Stack>
   )
