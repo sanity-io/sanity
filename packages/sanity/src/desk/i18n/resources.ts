@@ -75,6 +75,12 @@ const deskLocaleStrings = {
 
   /** Label for missing change version for timeline menu dropdown are showing */
   'desk.timeline.since-version-missing': 'Since: unknown version',
+
+  /** Title for error when the timeline for the given document can't be loaded */
+  'desk.timeline.error-title': 'An error occurred whilst retrieving document changes.',
+
+  /** Description for error when the timeline for the given document can't be loaded */
+  'desk.timeline.error-description': 'Document history transactions have not been affected.',
 }
 
 /**
