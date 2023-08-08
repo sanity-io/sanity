@@ -1,9 +1,12 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Flex, Stack} from '@sanity/ui'
 import React from 'react'
-import {TextWithTone} from 'sanity'
+import {deskLocaleNamespace} from '../../../i18n'
+import {TextWithTone, useTranslation} from 'sanity'
 
 export function TimelineError() {
+  const {t} = useTranslation(deskLocaleNamespace)
+
   return (
     <Flex align="flex-start" gap={3} padding={4}>
       <TextWithTone tone="critical">
@@ -11,10 +14,10 @@ export function TimelineError() {
       </TextWithTone>
       <Stack space={4}>
         <TextWithTone size={1} tone="critical" weight="semibold">
-          An error occurred whilst retrieving document changes.
+          {t('desk.timeline.error-title')}
         </TextWithTone>
         <TextWithTone size={1} tone="critical">
-          Document history transactions have not been affected.
+          {t('desk.timeline.error-description')}
         </TextWithTone>
       </Stack>
     </Flex>
