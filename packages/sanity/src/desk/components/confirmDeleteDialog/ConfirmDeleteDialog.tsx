@@ -1,9 +1,10 @@
-import React, {useMemo, useId} from 'react'
+import React, {useMemo, useId, useState} from 'react'
 import styled from 'styled-components'
 import {Box, Dialog, Button, Text, Spinner, Grid, Flex} from '@sanity/ui'
 import {DocTitle} from '../DocTitle'
 import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
+import {useScrollLock} from 'sanity'
 
 /** @internal */
 export const DialogBody = styled(Box).attrs({
@@ -67,14 +68,17 @@ export function ConfirmDeleteDialog({
     hasUnknownDatasetNames,
   } = useReferringDocuments(id)
   const capitalizedAction = `${action.substring(0, 1).toUpperCase()}${action.substring(1)}`
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   const documentTitle = <DocTitle document={useMemo(() => ({_id: id, _type: type}), [id, type])} />
   const showConfirmButton = !isLoading
+  useScrollLock(documentScrollElement)
 
   return (
     <Dialog
       width={1}
       id={dialogId}
+      contentRef={setDocumentScrollElement}
       header={`${capitalizedAction} document?`}
       footer={
         <Grid columns={showConfirmButton ? 2 : 1} gap={2} paddingX={4} paddingY={3}>
