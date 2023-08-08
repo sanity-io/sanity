@@ -56,6 +56,25 @@ const deskLocaleStrings = {
 
   /** Loading changes in Review Changes Pane */
   'desk.review-changes.loading-changes': 'Loading changes',
+
+  /** --- Timeline --- */
+
+  /** Error prompt when revision cannot be loaded */
+  'desk.timeline.unable-to-load-rev': 'Unable to load revision',
+
+  /** Label for latest version for timeline menu dropdown */
+  'desk.timeline.latest-version': 'Latest version',
+
+  /** Label for loading history */
+  'desk.timeline.loading-history': 'Loading history',
+
+  /** Label for determining since which version the changes for timeline menu dropdown are showing.
+   * Receives the time label as a parameter.
+   */
+  'desk.timeline.since': 'Since: {{timeLabel}}',
+
+  /** Label for missing change version for timeline menu dropdown are showing */
+  'desk.timeline.since-version-missing': 'Since: unknown version',
 }
 
 /**
