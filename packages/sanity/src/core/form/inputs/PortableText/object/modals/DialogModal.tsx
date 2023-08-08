@@ -1,8 +1,9 @@
-import React, {useId, useRef, useState} from 'react'
+import React, {useEffect, useId, useRef, useState} from 'react'
 import {Box, Dialog} from '@sanity/ui'
 import {PresenceOverlay} from '../../../../../presence'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ModalWidth} from './types'
+import {useScrollLock} from '../../../../../hooks'
 
 interface DefaultEditDialogProps {
   children: React.ReactNode
@@ -18,6 +19,8 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
   // This seems to work with regular refs as well, but it might be safer to use state.
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
+
+  useScrollLock(contentElement)
 
   return (
     <Dialog

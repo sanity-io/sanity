@@ -1,8 +1,9 @@
-import React, {type ReactNode, useState, useRef} from 'react'
+import React, {type ReactNode, useState, useRef, useEffect} from 'react'
 import {Box, Dialog, ResponsiveWidthProps} from '@sanity/ui'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {useScrollLock} from '../../hooks'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -31,6 +32,13 @@ export function EditPortal(props: Props): React.ReactElement {
   } = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
+  const {enable} = useScrollLock(documentScrollElement, {lockOnMount: false})
+
+  useEffect(() => {
+    if (type === 'dialog') {
+      enable()
+    }
+  })
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
