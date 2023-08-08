@@ -7,6 +7,7 @@ import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
 import {useDocumentChange} from '../hooks'
 import {useDocumentPairPermissions} from '../../../store'
+import {useTranslation} from '../../../i18n'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {DiffErrorBoundary} from './DiffErrorBoundary'
 import {DiffInspectWrapper} from './DiffInspectWrapper'
@@ -36,6 +37,7 @@ export function FieldChange(
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
   const [revertButtonElement, setRevertButtonElement] = useState<HTMLDivElement | null>(null)
+  const {t} = useTranslation()
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
@@ -107,13 +109,17 @@ export function FieldChange(
                 <PopoverWrapper
                   content={
                     <Box padding={3} sizing="border">
-                      Are you sure you want to revert the changes?
+                      {t('core.review-changes.revert-button-prompt')}
                       <Grid columns={2} gap={2} marginTop={2}>
                         <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                          <Text align="center">Cancel</Text>
+                          <Text align="center">
+                            {t('core.review-changes.revert-button-cancel')}
+                          </Text>
                         </Button>
                         <Button tone="critical" onClick={handleRevertChanges}>
-                          <Text align="center">Revert change</Text>
+                          <Text align="center">
+                            {t('core.review-changes.revert-button-change')}
+                          </Text>
                         </Button>
                       </Grid>
                     </Box>
@@ -142,20 +148,21 @@ export function FieldChange(
     [
       change,
       closeRevertChangesConfirmDialog,
-      readOnly,
       confirmRevertOpen,
+      fieldPath,
+      readOnly,
       DiffComponent,
       FieldWrapper,
-      hidden,
       handleRevertButtonMouseEnter,
       handleRevertButtonMouseLeave,
       handleRevertChanges,
       handleRevertChangesConfirm,
+      hidden,
       isComparingCurrent,
       isPermissionsLoading,
-      permissions,
+      permissions?.granted,
       revertHovered,
-      fieldPath,
+      t,
     ],
   )
 
