@@ -389,7 +389,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
 /** @internal */
 export interface ObjectSchemaTypeWithOptions extends Omit<ObjectSchemaType, 'options'> {
   options?: CollapseOptions & {
-    columns?: number
+    columns?: number | number[]
   }
 }
 
@@ -410,7 +410,7 @@ export interface MultiFieldSet {
   single?: false
   group?: string | string[]
   options?: CollapseOptions & {
-    columns?: number
+    columns?: number | number[]
   }
   fields: ObjectField[]
   hidden?: ConditionalProperty
