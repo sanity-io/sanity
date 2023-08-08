@@ -68,6 +68,15 @@ export const studioLocaleStrings = {
   'timeAgo.seconds.minimal': '{{count}}m',
   /* Relative time, granularity: seconds, using a minimal format, configured to show ago suffix*/
   'timeAgo.seconds.minimal.ago': '{{count}}m ago',
+
+  /** --- Review Changes --- */
+
+  /** No Changes title in the Review Changes pane */
+  'core.review-changes.no-changes-title': 'There are no changes',
+
+  /** No Changes description in the Review Changes pane */
+  'core.review-changes.no-changes-description':
+    'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
 }
 
 /**
