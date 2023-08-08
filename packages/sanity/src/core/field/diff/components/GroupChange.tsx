@@ -10,6 +10,7 @@ import {pathsAreEqual} from '../../paths'
 import {DiffContext} from '../contexts/DiffContext'
 import {useDocumentChange} from '../hooks'
 import {useDocumentPairPermissions} from '../../../store'
+import {useTranslation} from '../../../i18n'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {RevertChangesButton} from './RevertChangesButton'
@@ -33,6 +34,7 @@ export function GroupChange(
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
   const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useDocumentChange()
+  const {t} = useTranslation()
 
   const isPortableText = changes.every(
     (change) => isFieldChange(change) && isPTSchemaType(change.schemaType)
@@ -92,13 +94,13 @@ export function GroupChange(
             <PopoverWrapper
               content={
                 <Box>
-                  Are you sure you want to revert the changes?
+                  {t('core.review-changes.revert-button-prompt')}
                   <Grid columns={2} gap={2} marginTop={2}>
                     <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                      <Text align="center">Cancel</Text>
+                      <Text align="center"> {t('core.review-changes.revert-button-cancel')}</Text>
                     </Button>
                     <Button tone="critical" onClick={handleRevertChanges}>
-                      <Text align="center">Revert change</Text>
+                      <Text align="center">{t('core.review-changes.revert-button-change')}</Text>
                     </Button>
                   </Grid>
                 </Box>
@@ -123,20 +125,21 @@ export function GroupChange(
         </Stack>
       ),
     [
+      hidden,
+      isRevertButtonHovered,
+      isPortableText,
       changes,
+      isComparingCurrent,
+      isPermissionsLoading,
+      permissions?.granted,
+      t,
       closeRevertChangesConfirmDialog,
+      handleRevertChanges,
       confirmRevertOpen,
+      handleRevertChangesConfirm,
+      revertButtonRef,
       readOnly,
       group.fieldsetName,
-      handleRevertChanges,
-      handleRevertChangesConfirm,
-      hidden,
-      isComparingCurrent,
-      isRevertButtonHovered,
-      isPermissionsLoading,
-      isPortableText,
-      permissions,
-      revertButtonRef,
     ]
   )
 

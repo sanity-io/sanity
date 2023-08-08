@@ -82,7 +82,7 @@ const studioLocaleStrings = {
   /** Revert all label for revert button action - used on prompt button + review changes pane */
   'core.review-changes.revert-button-revert-all': `Revert all`,
 
-  /** --- Review Changes: Field --- */
+  /** --- Review Changes: Field + Group --- */
 
   /** Revert changes prompt for field change */
   'core.review-changes.revert-button-prompt': `Are you sure you want to revert the changes?`,
