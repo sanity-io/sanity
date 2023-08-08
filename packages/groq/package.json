@@ -1,6 +1,6 @@
 {
   "name": "groq",
-  "version": "3.14.5",
+  "version": "3.15.0",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "keywords": [
     "sanity",
