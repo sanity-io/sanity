@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
+import {deskLocaleNamespace} from '../../../../i18n'
 import {LoadingContent} from './LoadingContent'
 import {collectLatestAuthorAnnotations} from './helpers'
 import {
@@ -19,6 +20,7 @@ import {
   ScrollContainer,
   UserAvatar,
   useTimelineSelector,
+  useTranslation,
 } from 'sanity'
 
 const Scroller = styled(ScrollContainer)`
@@ -41,6 +43,8 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
   const loading = selectionState === 'loading'
   const isComparingCurrent = !onOlderRevision
 
+  const {t} = useTranslation(deskLocaleNamespace)
+
   const documentContext: DocumentChangeContextInstance = React.useMemo(
     () => ({
       documentId,
@@ -62,10 +66,10 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
-        closeButtonLabel="Close review changes"
+        closeButtonLabel={t('desk.review-changes.close-label')}
         flex="none"
         onClose={onClose}
-        title="Review changes"
+        title={t('desk.review-changes.title')}
       >
         <Flex gap={1} padding={3} paddingTop={0} paddingBottom={2}>
           <Box flex={1}>
@@ -73,8 +77,12 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
           </Box>
 
           <Box flex="none">
-            <DiffTooltip annotations={changeAnnotations} description="Changes by" portal>
-              <AvatarStack maxLength={4} aria-label="Changes by">
+            <DiffTooltip
+              annotations={changeAnnotations}
+              description={t('desk.review-changes.changes-by-author')}
+              portal
+            >
+              <AvatarStack maxLength={4} aria-label={t('desk.review-changes.changes-by-author')}>
                 {changeAnnotations.map(({author}) => (
                   <UserAvatar key={author} user={author} />
                 ))}
