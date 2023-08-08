@@ -11,6 +11,7 @@ import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks/useDocumentChange'
 import {useDocumentPairPermissions} from '../../../store'
 import {useDocumentOperation} from '../../../hooks'
+import {useTranslation} from '../../../i18n'
 import {ChangeResolver} from './ChangeResolver'
 import {NoChanges} from './NoChanges'
 import {ChangeListWrapper, PopoverWrapper} from './ChangeList.styled'
@@ -30,6 +31,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = useState(false)
   const [confirmRevertAllHover, setConfirmRevertAllHover] = useState(false)
+  const {t} = useTranslation()
 
   const isReadOnly = useConditionalProperty({
     document: value as SanityDocument,
@@ -116,10 +118,18 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
           <PopoverWrapper
             content={
               <Box>
-                Are you sure you want to revert all {changes.length} changes?
+                {t('core.review-changes.revert-all-button-prompt', {count: changes.length})}
                 <Grid columns={2} gap={2} marginTop={2}>
-                  <Button mode="ghost" text="Cancel" onClick={closeRevertAllChangesConfirmDialog} />
-                  <Button tone="critical" text="Revert all" onClick={revertAllChanges} />
+                  <Button
+                    mode="ghost"
+                    text={t('core.review-changes.revert-button-cancel')}
+                    onClick={closeRevertAllChangesConfirmDialog}
+                  />
+                  <Button
+                    tone="critical"
+                    text={t('core.review-changes.revert-button-revert-all')}
+                    onClick={revertAllChanges}
+                  />
                 </Grid>
               </Box>
             }
@@ -133,7 +143,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
               <Button
                 tone="critical"
                 mode="ghost"
-                text="Revert all changes"
+                text={t('core.review-changes.revert-button-revert-all')}
                 icon={RevertIcon}
                 onClick={handleRevertAllChangesClick}
                 onMouseEnter={handleRevertAllChangesMouseEnter}
