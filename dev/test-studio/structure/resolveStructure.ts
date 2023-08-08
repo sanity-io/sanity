@@ -7,6 +7,7 @@ import {
   TerminalIcon,
   UsersIcon,
   JoystickIcon,
+  CodeIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {DocumentStore, SanityDocument, Schema} from 'sanity'
@@ -24,6 +25,7 @@ import {
   PLUGIN_INPUT_TYPES,
   STANDARD_INPUT_TYPES,
   STANDARD_PORTABLE_TEXT_INPUT_TYPES,
+  TS_DOC_TYPES,
 } from './constants'
 import {delayValue} from './_helpers'
 import {typesInOptionGroup} from './groupByOption'
@@ -396,6 +398,15 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
 
       S.divider(),
 
+      _buildTypeGroup(S, schema, {
+        icon: CodeIcon,
+        id: 'tsdoc',
+        title: 'TS doc',
+        types: TS_DOC_TYPES,
+      }),
+
+      S.divider(),
+
       ...S.documentTypeListItems().filter((listItem) => {
         const id = listItem.getId()
 
@@ -409,7 +420,8 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
           !EXTERNAL_PLUGIN_INPUT_TYPES.includes(id) &&
           !DEBUG_FIELD_GROUP_TYPES.includes(id) &&
           !typesInOptionGroup(S, schema, 'v3').includes(id) &&
-          !typesInOptionGroup(S, schema, '3d').includes(id)
+          !typesInOptionGroup(S, schema, '3d').includes(id) &&
+          !TS_DOC_TYPES.includes(id)
         )
       }),
     ])
