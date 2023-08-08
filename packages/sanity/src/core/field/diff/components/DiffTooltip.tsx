@@ -6,6 +6,7 @@ import {useTimeAgo} from '../../../hooks'
 import {useUser} from '../../../store'
 import {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
+import {useTranslation} from '../../../i18n'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
@@ -68,6 +69,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   const [user] = useUser(author)
   const color = useAnnotationColor(annotation)
   const timeAgo = useTimeAgo(timestamp, {minimal: true})
+  const {t} = useTranslation()
 
   return (
     <Inline space={2}>
@@ -83,7 +85,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
         <UserAvatar user={author} />
         <Inline paddingLeft={2}>
           <Text muted size={1} style={{color: color.text}}>
-            {user ? user.displayName : 'Loading…'}
+            {user ? user.displayName : t('desk.review-changes.loading-author')}
           </Text>
         </Inline>
       </Flex>
