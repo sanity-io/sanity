@@ -53,6 +53,9 @@ const deskLocaleStrings = {
 
   /** Label and text for differences tooltip that indicates the authors of the changes */
   'desk.review-changes.changes-by-author': 'Changes by',
+
+  /** Loading changes in Review Changes Pane */
+  'desk.review-changes.loading-changes': 'Loading changes',
 }
 
 /**
