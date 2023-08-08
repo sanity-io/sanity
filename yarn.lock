@@ -3789,7 +3789,12 @@
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.5.tgz#6b28578573859495ed1ffd5491322cb8e90b3e07"
   integrity sha512-tTi22KoKuER3sldXYl4c1Dq2zU7tMLDkljFiaUKVkBbu4PBvRGCFw75kXZnD2b4Bsp6vin+7sI+AKdCKRhfRuw==
 
-"@sanity/diff-match-patch@^3.0.0", "@sanity/diff-match-patch@^3.1.1":
+"@sanity/diff-match-patch@^2.0.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@sanity/diff-match-patch/-/diff-match-patch-2.1.0.tgz#91cb131cde722ac8d7f68943a6bc0fa1a0e1c2bb"
+  integrity sha512-llo3Ss4Dy39Z+vDBVPIdAhfQfFUuHMX6Ztm4kBbVKGLN3c9QshQml0ZgV82qQgCfyOAQnro07jfbQKD8VFI4Ig==
+
+"@sanity/diff-match-patch@^3.0.0":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@sanity/diff-match-patch/-/diff-match-patch-3.1.1.tgz#16514d3a550d880bae1f59cc3ffe6865f5a4b58a"
   integrity sha512-dSZqGeYjHKGIkqAzGqLcG92LZyJGX+nYbs/FWawhBbTBDWi21kvQ0hsL3DJThuFVWtZMWTQijN3z6Cnd44Pf2g==

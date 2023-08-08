@@ -288,7 +288,7 @@ function transformOperation(
     const diffPatches = parsePatch(patch.value)
     diffPatches.forEach((diffPatch) => {
       let adjustOffsetBy = 0
-      let changedOffset = diffPatch.utf8Start1
+      let changedOffset = diffPatch.start1
       const {diffs} = diffPatch
       diffs.forEach((diff, index) => {
         const [diffType, text] = diff

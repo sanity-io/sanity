@@ -46,12 +46,12 @@ export function adjustIndiciesToUcs2(patches: Patch[], base: string): Patch[] {
       diffs: patch.diffs.map((diff) => [...diff]),
       start1: advanceTo(patch.start1),
       start2: advanceTo(patch.start2),
-      utf8Start1: patch.utf8Start1,
-      utf8Start2: patch.utf8Start2,
+      // utf8Start1: patch.start1,
+      // utf8Start2: patch.utf8Start2,
       length1: patch.length1,
       length2: patch.length2,
-      utf8Length1: patch.utf8Length1,
-      utf8Length2: patch.utf8Length2,
+      // utf8Length1: patch.utf8Length1,
+      // utf8Length2: patch.utf8Length2,
     })
   }
 

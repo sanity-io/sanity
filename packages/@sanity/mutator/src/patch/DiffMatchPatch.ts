@@ -5,7 +5,7 @@ import {ImmutableAccessor} from './ImmutableAccessor'
 function applyPatch(patch: Patch[], oldValue: unknown) {
   // Silently avoid patching if the value type is not string
   if (typeof oldValue !== 'string') return oldValue
-  const [result] = applyPatches(patch, oldValue, {allowExceedingIndices: true})
+  const [result] = applyPatches(patch, oldValue)
   return result
 }
 

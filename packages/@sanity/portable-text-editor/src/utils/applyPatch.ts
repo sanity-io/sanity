@@ -105,7 +105,7 @@ export function diffMatchPatch(
   }
 
   const patches = parsePatch(patch.value)
-  const [newValue] = diffMatchPatchApplyPatches(patches, child.text, {allowExceedingIndices: true})
+  const [newValue] = diffMatchPatchApplyPatches(patches, child.text)
   const diff = cleanupEfficiency(makeDiff(child.text, newValue), 5)
 
   debugState(editor, 'before')

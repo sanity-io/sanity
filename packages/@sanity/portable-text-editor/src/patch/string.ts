@@ -15,9 +15,7 @@ const OPERATIONS: Record<string, fn> = {
     return undefined
   },
   diffMatchPatch(currentValue: string, nextValue: string): string {
-    const [result] = applyPatches(parsePatch(nextValue), currentValue, {
-      allowExceedingIndices: true,
-    })
+    const [result] = applyPatches(parsePatch(nextValue), currentValue)
     return result
   },
 }

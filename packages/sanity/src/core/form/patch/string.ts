@@ -16,7 +16,7 @@ const OPERATIONS = {
     return undefined
   },
   diffMatchPatch(currentValue: string, dmpPatch: string) {
-    const [result] = applyPatches(parsePatch(dmpPatch), currentValue, {allowExceedingIndices: true})
+    const [result] = applyPatches(parsePatch(dmpPatch), currentValue)
     return result
   },
 }
