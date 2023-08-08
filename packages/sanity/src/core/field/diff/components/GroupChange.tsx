@@ -10,6 +10,7 @@ import {pathsAreEqual} from '../../paths'
 import {DiffContext} from '../contexts/DiffContext'
 import {useDocumentChange} from '../hooks'
 import {useDocumentPairPermissions} from '../../../store'
+import {useTranslation} from '../../../i18n'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {RevertChangesButton} from './RevertChangesButton'
@@ -23,16 +24,11 @@ export function GroupChange(
     hidden?: boolean
   } & React.HTMLAttributes<HTMLDivElement>,
 ): React.ReactElement | null {
-  const {
-    change: group,
-    readOnly,
-    hidden,
-    // 'data-revert-all-changes-hover': dataRevertAllChangesHover,
-    ...restProps
-  } = props
+  const {change: group, readOnly, hidden, ...restProps} = props
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
   const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useDocumentChange()
+  const {t} = useTranslation()
 
   const isPortableText = changes.every(
     (change) => isFieldChange(change) && isPTSchemaType(change.schemaType),
@@ -74,9 +70,6 @@ export function GroupChange(
           as={GroupChangeContainer}
           data-revert-group-hover={isRevertButtonHovered ? '' : undefined}
           data-portable-text={isPortableText ? '' : undefined}
-          // data-revert-all-groups-hover={
-          //   restProps[] === '' ? '' : undefined
-          // }
         >
           <Stack as={ChangeListWrapper} space={5}>
             {changes.map((change) => (
@@ -92,13 +85,13 @@ export function GroupChange(
             <PopoverWrapper
               content={
                 <Box>
-                  Are you sure you want to revert the changes?
+                  {t('core.review-changes.revert-button-prompt')}
                   <Grid columns={2} gap={2} marginTop={2}>
                     <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                      <Text align="center">Cancel</Text>
+                      <Text align="center"> {t('core.review-changes.revert-button-cancel')}</Text>
                     </Button>
                     <Button tone="critical" onClick={handleRevertChanges}>
-                      <Text align="center">Revert change</Text>
+                      <Text align="center">{t('core.review-changes.revert-button-change')}</Text>
                     </Button>
                   </Grid>
                 </Box>
@@ -126,17 +119,18 @@ export function GroupChange(
       changes,
       closeRevertChangesConfirmDialog,
       confirmRevertOpen,
-      readOnly,
       group.fieldsetName,
       handleRevertChanges,
       handleRevertChangesConfirm,
       hidden,
       isComparingCurrent,
-      isRevertButtonHovered,
       isPermissionsLoading,
       isPortableText,
-      permissions,
+      isRevertButtonHovered,
+      permissions?.granted,
+      readOnly,
       revertButtonRef,
+      t,
     ],
   )
 
