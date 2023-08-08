@@ -42,6 +42,14 @@ const deskLocaleStrings = {
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
+
+  /** --- Review Changes --- */
+
+  /** Title for the Review Changes pane */
+  'desk.review-changes.title': 'Review changes',
+
+  /** Label for the close button label in Review Changes pane */
+  'desk.review-changes.close-label': 'Close review changes',
 }
 
 /**
