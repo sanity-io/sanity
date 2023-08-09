@@ -17,7 +17,7 @@ import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelHeader} from './header'
-import {ScrollContainer, VirtualizerScrollInstanceProvider} from 'sanity'
+import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 import {DeletedDocumentBanner} from './DeletedDocumentBanner'
 
 interface DocumentPanelProps {
@@ -61,6 +61,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     isPermissionsLoading,
     isDeleting,
     isDeleted,
+    timelineStore,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -113,6 +114,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value]
   )
 
+  const lastNonDeletedRevId = useTimelineSelector(
+    timelineStore,
+    (state) => state.lastNonDeletedRevId
+  )
+
   // Scroll to top as `documentId` changes
   useEffect(() => {
     if (!documentScrollElement?.scrollTo) return
@@ -155,7 +161,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                           granted={Boolean(permissions?.granted)}
                           requiredPermission={requiredPermission}
                         />
-                        {!isDeleting && isDeleted && <DeletedDocumentBanner />}
+                        {!isDeleting && isDeleted && (
+                          <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
+                        )}
                         <ReferenceChangedBanner />
                       </>
                     )}

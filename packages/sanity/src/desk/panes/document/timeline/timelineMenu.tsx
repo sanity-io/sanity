@@ -2,7 +2,7 @@ import {SelectIcon} from '@sanity/icons'
 import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {TimelineError} from './TimelineError'
@@ -44,12 +44,6 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     setTimelineMode('closed')
     setOpen(false)
   }, [setTimelineMode])
-
-  useEffect(() => {
-    if (open && isDeleted) {
-      handleClose()
-    }
-  }, [open, isDeleted, handleClose])
 
   const handleClickOutside = useCallback(() => {
     if (open) {
@@ -161,7 +155,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
       ref={setPopover}
     >
       <Button
-        disabled={!ready || isDeleted}
+        disabled={!ready}
         mode="bleed"
         fontSize={1}
         padding={2}
