@@ -1,8 +1,9 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Box, Flex, Spinner, Text} from '@sanity/ui'
+import {deskLocaleNamespace} from '../../../i18n'
 import {TimelineItem} from './timelineItem'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
-import {Chunk, CommandList, CommandListRenderItemCallback} from 'sanity'
+import {Chunk, CommandList, CommandListRenderItemCallback, useTranslation} from 'sanity'
 
 interface TimelineProps {
   chunks: Chunk[]
@@ -24,6 +25,7 @@ export const Timeline = ({
   firstChunk,
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const filteredChunks = useMemo(() => {
     return chunks.filter((c) => {
@@ -84,11 +86,10 @@ export const Timeline = ({
       {filteredChunks.length === 0 && (
         <StackWrapper padding={3} space={3}>
           <Text size={1} weight="semibold">
-            No document history
+            {t('desk.timeline.no-document-history-title')}
           </Text>
           <Text muted size={1}>
-            When changing the content of the document, the document versions will appear in this
-            menu.
+            {t('desk.timeline.no-document-history-description')}
           </Text>
         </StackWrapper>
       )}
