@@ -88,6 +88,21 @@ const deskLocaleStrings = {
   /** Error description for when the document doesn't have history */
   'desk.timeline.no-document-history-description':
     'When changing the content of the document, the document versions will appear in this menu.',
+
+  /** --- Timeline constants --- */
+
+  /** Label for when the timeline item is the latest in the history */
+  'desk.timeline.latest': 'Latest',
+
+  /** Consts used in the timeline item component (dropdown menu) - helpers */
+  'desk.timeline.create': 'created',
+  'desk.timeline.delete': 'deleted',
+  'desk.timeline.discardDraft': 'discarded draft',
+  'desk.timeline.initial': 'created',
+  'desk.timeline.editDraft': 'edited',
+  'desk.timeline.editLive': 'live edited',
+  'desk.timeline.publish': 'published',
+  'desk.timeline.unpublish': 'unpublished',
 }
 
 /**
