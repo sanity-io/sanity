@@ -1,10 +1,11 @@
 import React, {useCallback, createElement, useMemo} from 'react'
 import {Box, ButtonTone, Card, Flex, Label, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
-import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
+import {deskLocaleNamespace} from '../../../i18n'
+import {getTimelineEventIconComponent} from './helpers'
 import {UserAvatarStack} from './userAvatarStack'
 import {EventLabel, IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
-import {ChunkType, Chunk} from 'sanity'
+import {ChunkType, Chunk, useTranslation} from 'sanity'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone> = {
   initial: 'primary',
@@ -39,6 +40,8 @@ export function TimelineItem({
   timestamp,
   type,
 }: TimelineItemProps) {
+  const {t} = useTranslation(deskLocaleNamespace)
+
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
   const formattedTimestamp = useMemo(() => {
@@ -88,14 +91,14 @@ export function TimelineItem({
                   tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
                 >
                   <Label muted size={0}>
-                    Latest
+                    {t('desk.timeline.latest')}
                   </Label>
                 </Card>
               </Flex>
             )}
             <Box>
               <EventLabel size={1} weight="medium">
-                {formatTimelineEventLabel(type) || <code>{type}</code>}
+                {t(`desk.timeline.${type}`) || <code>{type}</code>}
               </EventLabel>
             </Box>
             <TimestampBox paddingX={1}>
