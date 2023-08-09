@@ -12,6 +12,9 @@ jobs:
     timeout-minutes: 60
     name: Test (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
+    env:
+      TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TURBO_TEAM: sanity-io
     continue-on-error: ${{ matrix.experimental }}
 
     strategy:

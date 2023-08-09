@@ -83,6 +83,5 @@
   "peerDependencies": {
     "react": "^18",
     "styled-components": "^5.2"
-  },
-  "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
+  }
 }

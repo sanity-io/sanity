@@ -62,6 +62,5 @@
   "devDependencies": {
     "react": "^18.2.0",
     "rimraf": "^3.0.2"
-  },
-  "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
+  }
 }

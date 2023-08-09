@@ -46,9 +46,6 @@ jspm_packages
 # VS Code settings
 /.vscode
 
-# Lockfiles
-/package-lock.json
-
 # Environment files
 # ignore all local .env files
 *.local
@@ -78,3 +75,4 @@ etc
 # Temporary files made by yarn when running canary releases
 .yarn
 .yarnrc
+.turbo

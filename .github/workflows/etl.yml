@@ -10,6 +10,9 @@ on:
 jobs:
   etl:
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TURBO_TEAM: sanity-io
 
     steps:
       - name: Checkout

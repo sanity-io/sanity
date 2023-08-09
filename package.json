@@ -12,14 +12,15 @@
     "packages/groq",
     "packages/sanity"
   ],
+  "packageManager": "yarn@1.22.17",
   "scripts": {
     "bootstrap": "yarn install && yarn build:dts && yarn build:cli",
-    "build": "lerna run --scope '{@sanity/*,groq,sanity}' build",
+    "build": "turbo run --filter=@sanity/* --filter=groq --filter=sanity build",
     "build:cli": "run-s build",
     "build:dts": "tsc --build tsconfig.lib.json",
     "check:format": "pretty-quick --check --branch origin/next",
     "check:packages": "lerna run check:package",
-    "clean": "lerna run clean",
+    "clean": "lerna run clean && rm -f package-lock.json",
     "clean:deps": "rimraf packages/@sanity/*/node_modules packages/*/node_modules node_modules",
     "check:deps-updates": "npx npm-check-updates --workspaces --root -m",
     "check:versions": "node scripts/normalizeDependencyVersions.js",
@@ -66,8 +67,8 @@
     "tsdoc:dev": "sanity-tsdoc dev",
     "type-check": "tsc --build",
     "updated": "lerna updated",
-    "build:test-studio": "yarn build:cli && (cd dev/test-studio && yarn build)",
-    "build:performance-studio": "yarn build:cli && (cd perf/studio && yarn build)",
+    "build:test-studio": "yarn build --filter=sanity-test-studio",
+    "build:performance-studio": "yarn build --filter=perf-studio",
     "watch": "lerna run --parallel --scope '{@sanity/*,sanity}' watch"
   },
   "lint-staged": {
@@ -133,6 +134,7 @@
     "pretty-quick": "^3.1.3",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
+    "turbo": "^1.10.12",
     "typescript": "^5.1.6",
     "yargs": "^17.3.0"
   },
