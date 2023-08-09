@@ -1,20 +1,10 @@
-enum ExpectedStatusEnum {
+enum ExpectedStatus {
   Passed = 'passed',
   Skipped = 'skipped',
   Failed = 'failed',
 }
 
-enum File {
-  FormBuilderSpecTsx = 'FormBuilder.spec.tsx',
-}
-
-enum ID {
-  ChromeLatestWindows11 = 'chrome@latest:Windows 11',
-  PlaywrightFirefoxWindows11 = 'playwright-firefox:Windows 11',
-  PlaywrightWebkitLatestOSXVentura = 'playwright-webkit@latest:OSX Ventura',
-}
-
-enum PurpleStatus {
+enum TestStatus {
   Expected = 'expected',
   Skipped = 'skipped',
   Failed = 'failed',
@@ -49,7 +39,7 @@ interface Config {
   webServer: null
 }
 
-type GroupedSpec = {
+export type GroupedSpec = {
   summary: SpecSummary
   projects: {
     [project: string]: GroupedTest[]
@@ -59,7 +49,7 @@ type GroupedSpec = {
 type GroupedTest = {
   test: Test
   duration: number
-  status: ExpectedStatusEnum | 'failed'
+  status: ExpectedStatus | 'failed'
   error: string // the first error
 }
 
@@ -83,8 +73,8 @@ interface Project {
   outputDir: string
   repeatEach: number
   retries: number
-  id: ID
-  name: ID
+  id: string
+  name: string
   testDir: string
   testIgnore: any[]
   testMatch: string[]
@@ -103,7 +93,7 @@ interface ReportSlowTests {
 
 interface Result {
   workerIndex: number
-  status: ExpectedStatusEnum
+  status: ExpectedStatus
   duration: number
   errors: any[]
   stdout: any[]
@@ -119,7 +109,7 @@ export interface Spec {
   tags: any[]
   tests: Test[]
   id: string
-  file: File
+  file: string
   line: number
   column: number
 }
@@ -127,17 +117,13 @@ export interface Spec {
 export interface SummaryRow {
   file: string
   totalDuration: number
-  totalPassed: number
-  totalSkipped: number
   totalFailed: number
+  totalSkipped: number
+  totalPassed: number
   status: string
 }
 
-type SpecSummary = {
-  totalDuration: number
-  totalSkipped: number
-  totalFailed: number
-  totalPassed: number
+type SpecSummary = Omit<SummaryRow, 'file' | 'status'> & {
   totalTests: number
 }
 
@@ -153,9 +139,9 @@ export interface Suite {
 interface Test {
   timeout: number
   annotations: Annotation[]
-  expectedStatus: ExpectedStatusEnum
-  projectId: ID
-  projectName: ID
+  expectedStatus: ExpectedStatus
+  projectId: string
+  projectName: string
   results: Result[]
-  status: PurpleStatus
+  status: TestStatus
 }

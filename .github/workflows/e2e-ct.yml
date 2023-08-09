@@ -14,13 +14,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: PR comment with report
-        uses: thollander/actions-comment-pull-request@v2
-        if: ${{ always() && github.event_name == 'pull_request' }}
-        with:
-          comment_tag: 'playwright-ct-report'
-          message: |
-            Preparing to run end-to-end component tests
       - name: Cache node modules
         id: cache-node-modules
         uses: actions/cache@v3
@@ -54,32 +47,31 @@ jobs:
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
-
       - name: Build CLI
         run: yarn build:cli # Needed for CLI tests
-
       - name: Run end-to-end tests
         run: yarn workspace sanity test:ct
         env:
           NODE_OPTIONS: --max_old_space_size=8192
-
+      - name: Get Current Job Log URL
+        uses: Tiryoh/gha-jobid-action@v0
+        id: job_html_url
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          job_name: "test"
       - name: Parse playwright report
         id: parse-playwright-report
         if: always()
-        run: yarn workspace sanity write:playwright-report-as-table
+        run: yarn workspace sanity write:playwright-report-as-pr-comment
         env:
-          GITHUB_WORKFLOW_URL: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-      - name: Debug step
-        if: always()
-        run: |
-          echo ${{ steps.parse-playwright-report.outputs.conclusion }}
-          echo ${{ github.event_name }}
+          GITHUB_WORKFLOW_URL: "${{ steps.job_html_url.outputs.html_url }}"
       - name: PR comment with report
         uses: thollander/actions-comment-pull-request@v2
         if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
         with:
           comment_tag: 'playwright-ct-report'
-          filePath: ${{ github.workspace }}/packages/sanity/playwright-ct/results/playwright-report-output.md
+          filePath: ${{ github.workspace }}/packages/sanity/playwright-ct/results/playwright-report-pr-comment.md
 
       - uses: actions/upload-artifact@v3
         if: always()
