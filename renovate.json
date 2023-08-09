@@ -8,6 +8,12 @@
       "matchFileNames": ["package.json", "dev/**/package.json", "examples/**/package.json"],
       "extends": [":semanticCommitTypeAll(chore)"],
       "groupSlug": "dev"
+    },
+    {
+      "matchDepTypes": ["dependencies"],
+      "matchPackageNames": ["get-it", "@sanity/client"],
+      "rangeStrategy": "bump",
+      "semanticCommitType": "fix"
     }
   ],
   "ignorePaths": ["packages/@sanity/cli/test/__fixtures__/v2/package.json"],

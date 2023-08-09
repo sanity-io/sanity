@@ -31,9 +31,9 @@
     "src"
   ],
   "dependencies": {
-    "@sanity/client": "^6.3.0",
+    "@sanity/client": "^6.4.5",
     "@sanity/import": "3.15.0",
-    "get-it": "^8.0.9",
+    "get-it": "^8.4.2",
     "meow": "^9.0.0",
     "ora": "^5.4.1",
     "pretty-ms": "^7.0.1"
