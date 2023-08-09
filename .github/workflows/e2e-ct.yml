@@ -54,7 +54,7 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=8192
       - name: Get Current Job Log URL
-        uses: Tiryoh/gha-jobid-action@v0
+        uses: Tiryoh/gha-jobid-action@603885a199c331cc2f828bcebeb1c4a275f4d6e1 # v0
         id: job_html_url
         if: always()
         with:
@@ -67,7 +67,7 @@ jobs:
         env:
           GITHUB_WORKFLOW_URL: "${{ steps.job_html_url.outputs.html_url }}"
       - name: PR comment with report
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f # v2
         if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
         with:
           comment_tag: 'playwright-ct-report'
