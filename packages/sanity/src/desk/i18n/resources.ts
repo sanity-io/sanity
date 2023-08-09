@@ -81,6 +81,13 @@ const deskLocaleStrings = {
 
   /** Description for error when the timeline for the given document can't be loaded */
   'desk.timeline.error-description': 'Document history transactions have not been affected.',
+
+  /** Error title for when the document doesn't have history */
+  'desk.timeline.no-document-history-title': 'No document history',
+
+  /** Error description for when the document doesn't have history */
+  'desk.timeline.no-document-history-description':
+    'When changing the content of the document, the document versions will appear in this menu.',
 }
 
 /**
