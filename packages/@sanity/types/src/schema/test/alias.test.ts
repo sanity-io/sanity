@@ -88,6 +88,7 @@ describe('alias type test', () => {
   })
 
   it('should support alias with preview', () => {
+    //@ts-expect-error {error: any} has no properties in common with PreviewValue
     defineType({
       type: 'custom-object',
       name: 'redefined',
@@ -98,6 +99,7 @@ describe('alias type test', () => {
       },
     })
 
+    //@ts-expect-error {error: any} has no properties in common with PreviewValue
     defineField({
       type: 'custom-object',
       name: 'redefined',
@@ -108,6 +110,7 @@ describe('alias type test', () => {
       },
     })
 
+    //@ts-expect-error {error: any} has no properties in common with PreviewValue
     defineArrayMember({
       type: 'custom-object',
       name: 'redefined',

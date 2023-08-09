@@ -3,8 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {defineField, defineType} from '../types'
 import {FileDefinition, StringDefinition} from '_self_'
+import {defineField, defineType} from '../types'
 
 describe('file types', () => {
   describe('defineType', () => {
@@ -67,6 +67,7 @@ describe('file types', () => {
           hidden: false,
           fieldset: 'test',
           group: 'test',
+          //@ts-expect-error fields is not a known property for string types
           fields: [],
           validation: (Rule) => Rule.max(45),
           initialValue: 'string',

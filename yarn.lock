@@ -4555,10 +4555,10 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest-dev-server@^4.2.1":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@types/jest-dev-server/-/jest-dev-server-4.2.1.tgz#0fd8923c400abfad48144fa5b5b74f17447bf357"
-  integrity sha512-hZYqCfhk9o9zOrTGeaFUaG4WTZsyoEzO4wd0U4/D8uz/gCRQNptHwRRw14hSksn0wFCgC1ZpzCQTagNwqdV5bg==
+"@types/jest-dev-server@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@types/jest-dev-server/-/jest-dev-server-5.0.0.tgz#1c89fb8b2c6ceae75b73d7bb9bab6207c07ac101"
+  integrity sha512-2o5mY2c/WTXO0j+FrtWMxDt0NBi0o6R6aNx4xaym/OfVP8owAeZa582eFxQEqZ7KzHDqvkEEJ9YZ9O3Zw/MpPw==
   dependencies:
     "@types/node" "*"
     "@types/wait-on" "*"
@@ -18409,10 +18409,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-typescript@^4.9.4, typescript@^4.9.5:
-  version "4.9.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
-  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+typescript@^5.1.6:
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.1.6.tgz#02f8ac202b6dad2c0dd5e0913745b47a37998274"
+  integrity sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==
 
 typescript@~5.0.4:
   version "5.0.4"
