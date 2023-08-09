@@ -7,7 +7,6 @@ import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {deskLocaleNamespace} from '../../../i18n'
 import {TimelineError} from './TimelineError'
-import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
 import {Chunk, useTimelineSelector, useTranslation} from 'sanity'
 
@@ -139,7 +138,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const timeLabel = useFormattedTimestamp(chunk?.endTimestamp || '')
 
   const revLabel = chunk
-    ? `${upperFirst(formatTimelineEventLabel(chunk.type))}: ${timeLabel}`
+    ? `${upperFirst(t(`desk.timeline.${chunk.type}`))}: ${timeLabel}`
     : t('desk.timeline.latest-version')
 
   const sinceLabel = chunk
