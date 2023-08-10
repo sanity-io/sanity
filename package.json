@@ -85,7 +85,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@optimize-lodash/rollup-plugin": "^4.0.1",
     "@playwright/test": "^1.31.2",
-    "@sanity/client": "^6.4.0",
+    "@sanity/client": "^6.4.5",
     "@sanity/pkg-utils": "^2.3.10",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/uuid": "^3.0.2",
