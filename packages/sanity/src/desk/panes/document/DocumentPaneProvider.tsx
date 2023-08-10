@@ -176,18 +176,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [editState?.draft, editState?.published, isPristine]
   )
 
-  /**
-   * This covers the edge case when a person have the document open and is viewing
-   * another revision while it was being deleted remotely. Without removing the
-   * rev param, the timeline and document action will be in the wrong state
-   */
-  useEffect(() => {
-    if (!isDeleting && isDeleted && params?.rev) {
-      navigateIntent('edit', {id: documentId, type: documentType}, {replace: true})
-      setTimelineError(null)
-    }
-  }, [documentId, documentType, isDeleted, isDeleting, navigateIntent, params?.rev])
-
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
   const previewUrl = usePreviewUrl(value)
