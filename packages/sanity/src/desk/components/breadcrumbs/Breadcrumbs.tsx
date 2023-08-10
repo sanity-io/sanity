@@ -47,9 +47,8 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
   const items = useMemo(() => {
     const len = rawItems.length
 
+    // If maxLength is provided and the number of items exceeds it, truncate the array and add an ellipsis button.
     if (maxLength && len > maxLength) {
-      const afterLength = Math.floor(maxLength / 2)
-
       return [
         <Popover
           constrainSize
@@ -73,11 +72,12 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
             text="…"
           />
         </Popover>,
-        ...rawItems.slice(len - maxLength, len - afterLength),
-        ...rawItems.slice(len - afterLength),
+        // Show the items after the ellipsis button
+        ...rawItems.slice(len - maxLength),
       ]
     }
 
+    // If maxLength is not provided or the number of items does not exceed it, return the rawItems array
     return rawItems
   }, [collapse, expand, maxLength, open, rawItems])
 

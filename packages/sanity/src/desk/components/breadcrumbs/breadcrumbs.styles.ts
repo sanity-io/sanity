@@ -45,3 +45,7 @@ export const BreadcrumbItemSpan = styled.span(({theme}: {theme: Theme}) => {
     color: ${fg};
   `
 })
+
+export const TooltipRoot = styled(Box)`
+  max-width: 500px;
+`

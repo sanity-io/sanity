@@ -1,6 +1,6 @@
 import {Text, Tooltip, Box, type ButtonProps} from '@sanity/ui'
 import React, {forwardRef, type HTMLProps, type ReactNode, type ForwardedRef, useRef} from 'react'
-import {BreadcrumbButtonRoot, BreadcrumbItemSpan} from './breadcrumbs.styles'
+import {BreadcrumbButtonRoot, BreadcrumbItemSpan, TooltipRoot} from './breadcrumbs.styles'
 
 type ParentTextProps = ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'ref' | 'as'>
 
@@ -37,9 +37,9 @@ export const BreadcrumbItem = forwardRef(function BreadcrumbItem(
     >
       <Tooltip
         content={
-          <Box padding={2} style={{maxWidth: '500px'}}>
+          <TooltipRoot padding={2}>
             <Text size={1}>{children}</Text>
-          </Box>
+          </TooltipRoot>
         }
         padding={1}
         placement="bottom"
