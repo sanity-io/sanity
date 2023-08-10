@@ -13,12 +13,12 @@ import {useDocumentPane} from '../useDocumentPane'
 import {useDeskTool} from '../../../useDeskTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
+import {DeletedDocumentBanner} from './DeletedDocumentBanner'
 import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelHeader} from './header'
 import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
-import {DeletedDocumentBanner} from './DeletedDocumentBanner'
 
 interface DocumentPanelProps {
   footerHeight: number | null
