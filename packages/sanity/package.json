@@ -178,7 +178,7 @@
     "framer-motion": "^10.0.0",
     "get-it": "^8.4.2",
     "get-random-values-esm": "^1.0.0",
-    "groq-js": "^1.0.0",
+    "groq-js": "^1.1.12",
     "hashlru": "^2.3.0",
     "history": "^5.3.0",
     "import-fresh": "^3.3.0",
