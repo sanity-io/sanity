@@ -18,7 +18,7 @@ const cancelIdleCallbackShim: Window['cancelIdleCallback'] = (handle: unknown) =
 const _requestIdleCallback =
   typeof requestIdleCallback === 'undefined' ? requestIdleCallbackShim : requestIdleCallback
 const _cancelIdleCallback =
-  typeof cancelIdleCallback === 'undefined' ? cancelIdleCallbackShim : cancelIdleCallbackShim
+  typeof cancelIdleCallback === 'undefined' ? cancelIdleCallbackShim : cancelIdleCallback
 
 export {_requestIdleCallback as requestIdleCallback}
 export {_cancelIdleCallback as cancelIdleCallback}
