@@ -19,6 +19,7 @@ import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
+import {useScrollLock} from '../../../../hooks'
 import {NewDocumentList, NewDocumentListProps} from './NewDocumentList'
 import {ModalType, NewDocumentOption} from './types'
 import {filterOptions} from './filter'
@@ -183,6 +184,8 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     }),
     [loading, open, scheme, tooltipContent],
   )
+  //Avoid background of dialog being scrollable on mobile
+  useScrollLock(document.getElementById('create-new-document-dialog'))
 
   // Dialog
   if (modal === 'dialog') {

@@ -72,6 +72,8 @@ export function ConfirmDeleteDialog({
 
   const documentTitle = <DocTitle document={useMemo(() => ({_id: id, _type: type}), [id, type])} />
   const showConfirmButton = !isLoading
+
+  //Avoid background of dialog being scrollable on mobile
   useScrollLock(documentScrollElement)
 
   return (

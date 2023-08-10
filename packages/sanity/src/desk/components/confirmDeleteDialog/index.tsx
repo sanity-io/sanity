@@ -1,6 +1,7 @@
 import React, {useCallback, useState, useId} from 'react'
 import {Box, Flex, Button, Dialog, Text, ErrorBoundary} from '@sanity/ui'
 import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
+import {useScrollLock} from 'sanity'
 
 export type {ConfirmDeleteDialogProps}
 
@@ -12,12 +13,17 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
   const id = useId()
   const [error, setError] = useState<ErrorInfo | null>(null)
   const handleRetry = useCallback(() => setError(null), [])
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+
+  //Avoid background of dialog being scrollable on mobile
+  useScrollLock(documentScrollElement)
 
   return error ? (
     <Dialog
       id={`dialog-error-${id}`}
       data-testid="confirm-delete-error-dialog"
       header="Error"
+      contentRef={setDocumentScrollElement}
       footer={
         <Flex paddingX={4} paddingY={3} direction="column">
           <Button mode="ghost" text="Retry" onClick={handleRetry} />

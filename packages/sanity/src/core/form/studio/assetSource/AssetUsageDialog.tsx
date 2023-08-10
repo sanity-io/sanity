@@ -3,6 +3,7 @@ import {TrashIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Grid, Stack} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {SpinnerWithText} from '../../components/SpinnerWithText'
+import {useScrollLock} from '../../../hooks'
 import {useReferringDocuments} from '../../../hooks/useReferringDocuments'
 import {DocumentList} from './DocumentList'
 import {ConfirmMessage} from './ConfirmMessage'
@@ -63,6 +64,9 @@ export function AssetUsageDialog({
     setCanDelete(documentsWithoutDrafts.length === 0 && !assetIsLoading)
     setIsLoadingParent(assetIsLoading)
   }, [assetIsLoading, referringDocuments])
+
+  //Avoid background of dialog being scrollable on mobile
+  useScrollLock(document.getElementById('asset-dialog'))
 
   return (
     <Dialog

@@ -1,6 +1,6 @@
 import {SanityDocument} from '@sanity/types'
 import {Card, Code, Dialog, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import React, {useCallback, useState} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
 import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
@@ -9,6 +9,7 @@ import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
+import {useScrollLock} from 'sanity'
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null
@@ -39,6 +40,11 @@ export function InspectDialog(props: InspectDialogProps) {
     onViewModeChange(VIEW_MODE_RAW.id)
   }, [onViewModeChange])
 
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+
+  //Avoid background of dialog being scrollable on mobile
+  useScrollLock(documentScrollElement)
+
   return (
     <Dialog
       id={`${dialogIdPrefix}dialog`}
@@ -54,6 +60,7 @@ export function InspectDialog(props: InspectDialogProps) {
           <em>No value</em>
         )
       }
+      contentRef={setDocumentScrollElement}
       onClose={onInspectClose}
       onClickOutside={onInspectClose}
       width={3}

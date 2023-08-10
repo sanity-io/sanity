@@ -51,6 +51,7 @@ import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {PresenceOverlay} from '../../../../presence'
 import {FIXME} from '../../../../FIXME'
 import {ImperativeToast} from '../../../../components'
+import {useScrollLock} from '../../../../hooks'
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
@@ -400,6 +401,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     const withImageTool = this.isImageToolEnabled() && value && value.asset
 
     return (
+      //Todo: add scroll lock to this dialog
       <Dialog
         __unstable_autoFocus={false}
         header="Edit hotspot and crop"

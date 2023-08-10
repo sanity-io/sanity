@@ -3,6 +3,7 @@ import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
 import {getProviderTitle} from '../../store'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
+import {useScrollLock} from '../../hooks'
 
 export function NotAuthenticatedScreen() {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
@@ -31,6 +32,9 @@ export function NotAuthenticatedScreen() {
 
   const providerTitle = getProviderTitle(currentUser?.provider)
   const providerHelp = providerTitle ? ` through ${providerTitle}` : ''
+
+  //Avoid background of dialog being scrollable on mobile
+  useScrollLock(document.getElementById('not-authorized-dialog'))
 
   return (
     <Card height="fill">
