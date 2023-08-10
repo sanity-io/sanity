@@ -19,6 +19,7 @@ export * from './theme'
 export * from './user-color'
 export * from './util'
 export * from './version'
+export * from './languageFilter'
 export {createSearchQuery} from './search'
 export type {
   SearchableType,

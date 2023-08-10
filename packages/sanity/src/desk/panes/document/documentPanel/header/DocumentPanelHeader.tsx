@@ -12,9 +12,10 @@ import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
+
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {useFieldActions, useTimelineSelector} from 'sanity'
+import {useFieldActions, useTimelineSelector, useLanguageFilter} from 'sanity'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentPanelHeaderProps {}
@@ -34,8 +35,8 @@ export const DocumentPanelHeader = memo(
       timelineStore,
       ready,
       views,
-      unstable_languageFilter,
     } = useDocumentPane()
+    const languageFilterComponents = useLanguageFilter()
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {actions: fieldActions} = useFieldActions()
@@ -91,9 +92,9 @@ export const DocumentPanelHeader = memo(
         subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}
         actions={
           <Flex align="center" gap={1}>
-            {unstable_languageFilter.length > 0 && (
+            {languageFilterComponents.length > 0 && (
               <>
-                {unstable_languageFilter.map((languageFilterComponent, idx) => {
+                {languageFilterComponents.map((languageFilterComponent, idx) => {
                   return createElement(languageFilterComponent, {
                     // eslint-disable-next-line react/no-array-index-key
                     key: `language-filter-${idx}`,

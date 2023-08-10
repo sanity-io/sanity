@@ -123,12 +123,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [documentBadges, documentId, documentType]
   )
 
-  // Resolve document language filter
-  const languageFilter = useMemo(
-    () => languageFilterResolver({schemaType: documentType, documentId}),
-    [documentId, documentType, languageFilterResolver]
-  )
-
   const validation = useUnique(validationRaw)
   const views = useUnique(viewsProp)
 
@@ -603,7 +597,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     value,
     views,
     formState,
-    unstable_languageFilter: languageFilter,
   }
 
   useEffect(() => {
