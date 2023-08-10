@@ -16,7 +16,6 @@ import {
   DocumentFormNode,
   DocumentInspector,
   DocumentLanguageFilterComponent,
-  DocumentPermission,
   EditStateFor,
   PatchEvent,
   PermissionCheckResult,
@@ -26,61 +25,87 @@ import {
 
 /** @internal */
 export interface DocumentPaneContextValue {
-  actions: DocumentActionComponent[] | null
+  // Primitive params
+  documentType: string
+  documentId: string
+  documentIdRaw: string
+  source?: string
+
+  // Document metadata
+  schemaType: ObjectSchemaType
+
+  // View
   activeViewId: string | null
+
+  // Document actions and document badges
+  actions: DocumentActionComponent[] | null
   badges: DocumentBadgeComponent[] | null
+
+  // field actions
+  fieldActions: DocumentFieldAction[]
+
+  // Review changes & history
   changesOpen: boolean
-  closeInspector: (inspectorName?: string) => void
+  setTimelineMode: (mode: TimelineMode) => void
+  setTimelineRange(since: string | null, rev: string | null): void
+  timelineError: Error | null
+  timelineMode: TimelineMode
+  timelineStore: TimelineStore
+  onHistoryOpen: () => void
+  onHistoryClose: () => void
+
+  // Document edit state & permissions
+  value: SanityDocumentLike // is this same as displayed?
+  editState: EditStateFor | null
+  ready: boolean
+  connectionState: 'connecting' | 'reconnecting' | 'connected'
+  isPermissionsLoading: boolean
+  permissions?: PermissionCheckResult | null
+
+  // Form state / focus handling
+  formState: DocumentFormNode | null
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
   compareValue: Partial<SanityDocument> | null
-  connectionState: 'connecting' | 'reconnecting' | 'connected'
-  displayed: Partial<SanityDocument> | null
-  documentId: string
-  documentIdRaw: string
-  documentType: string
-  editState: EditStateFor | null
-  fieldActions: DocumentFieldAction[]
-  focusPath: Path
-  index: number
-  inspectOpen: boolean
-  inspector: DocumentInspector | null
-  inspectors: DocumentInspector[]
-  menuItemGroups: PaneMenuItemGroup[]
-  menuItems: PaneMenuItem[]
-  onBlur: (blurredPath: Path) => void
+  onBlur: (path: Path) => void
   onChange: (event: PatchEvent) => void
-  onFocus: (pathOrEvent: Path) => void
-  onHistoryClose: () => void
-  onHistoryOpen: () => void
-  onInspectClose: () => void
-  onKeyUp: (event: React.KeyboardEvent<HTMLDivElement>) => void
-  onMenuAction: (item: PaneMenuItem) => void
-  onPaneClose: () => void
-  onPaneSplit?: () => void
+  onFocus: (path: Path) => void
+  focusPath: Path
   onPathOpen: (path: Path) => void
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
   onSetCollapsedFieldSet: (path: Path, expanded: boolean) => void
-  openInspector: (inspectorName: string, paneParams?: Record<string, string>) => void
-  paneKey: string
-  previewUrl?: string | null
-  ready: boolean
-  schemaType: ObjectSchemaType
-  setTimelineMode: (mode: TimelineMode) => void
-  setTimelineRange(since: string | null, rev: string | null): void
-  source?: string
-  timelineError: Error | null
-  timelineMode: TimelineMode
-  timelineStore: TimelineStore
-  title: string | null
+
+  // Validation
   validation: ValidationMarker[]
-  value: SanityDocumentLike
+
+  // Pane stuff
+  displayed: Partial<SanityDocument> | null // can this be removed?
+  title: string | null
+  paneKey: string
+  index: number
+  onPaneClose: () => void
+  onPaneSplit?: () => void
   views: View[]
-  formState: DocumentFormNode | null
-  permissions?: PermissionCheckResult | null
-  isPermissionsLoading: boolean
-  unstable_languageFilter: DocumentLanguageFilterComponent[]
+
+  // Inspector
+  closeInspector: (inspectorName?: string) => void
+  inspectOpen: boolean
+  inspector: DocumentInspector | null
+  inspectors: DocumentInspector[]
+  onInspectClose: () => void
+  openInspector: (inspectorName: string, paneParams?: Record<string, string>) => void
+
+  // Menu
+  menuItemGroups: PaneMenuItemGroup[]
+  menuItems: PaneMenuItem[]
+  onMenuAction: (item: PaneMenuItem) => void
+
+  onKeyUp: (event: React.KeyboardEvent<HTMLDivElement>) => void
+  previewUrl?: string | null
+
+  // Language filter
+  // unstable_languageFilter: DocumentLanguageFilterComponent[]
 }
 
 /** @internal */
