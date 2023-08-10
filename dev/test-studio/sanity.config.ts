@@ -225,7 +225,10 @@ export default defineConfig([
     title: 'Sanity AI Assist',
     projectId: 'ppsg7ml5',
     dataset: 'test',
-    plugins: [sharedSettings(), assist()],
+    plugins: [
+      sharedSettings(),
+      // assist() // Disabled because its using a deprecated API
+    ],
     basePath: '/ai-assist',
   },
 ])

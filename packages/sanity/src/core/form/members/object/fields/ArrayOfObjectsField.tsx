@@ -34,7 +34,6 @@ import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 import {applyAll} from '../../../patch/applyPatch'
 import {useFormPublishedId} from '../../../useFormPublishedId'
 import {DocumentFieldActionNode} from '../../../../config'
-import {FieldActionMenu, FieldActionsProvider, FieldActionsResolver} from '../../../field'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -75,8 +74,6 @@ export function ArrayOfObjectsField(props: {
   const {
     field: {actions: fieldActions},
   } = useFormBuilder().__internal
-  const documentId = useFormPublishedId()
-  const [fieldActionNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
   const focusRef = useRef<Element & {focus: () => void}>()
   const uploadSubscriptions = useRef<Record<string, Subscription>>({})
@@ -433,10 +430,7 @@ export function ArrayOfObjectsField(props: {
 
   const fieldProps = useMemo((): Omit<ArrayFieldProps, 'renderDefault'> => {
     return {
-      actions:
-        fieldActionNodes.length > 0 ? (
-          <FieldActionMenu focused={member.field.focused} nodes={fieldActionNodes} />
-        ) : undefined,
+      actions: fieldActions,
       name: member.name,
       index: member.index,
       level: member.field.level,
@@ -457,17 +451,16 @@ export function ArrayOfObjectsField(props: {
       inputProps: inputProps as ArrayOfObjectsInputProps,
     }
   }, [
-    fieldActionNodes,
+    fieldActions,
     member.name,
     member.index,
-    member.field.focused,
     member.field.level,
     member.field.value,
     member.field.schemaType,
+    member.field.changed,
     member.field.id,
     member.field.path,
     member.field.presence,
-    member.field.changed,
     member.field.validation,
     member.collapsible,
     member.collapsed,
@@ -487,20 +480,7 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {documentId && fieldActions.length > 0 && (
-        <FieldActionsResolver
-          actions={fieldActions}
-          documentId={documentId}
-          documentType={member.field.schemaType.name}
-          onActions={setFieldActionNodes}
-          path={member.field.path}
-          schemaType={member.field.schemaType}
-        />
-      )}
-
-      <FieldActionsProvider actions={fieldActionNodes} path={member.field.path}>
-        {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
-      </FieldActionsProvider>
+      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )
 }

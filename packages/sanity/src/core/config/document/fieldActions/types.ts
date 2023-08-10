@@ -2,18 +2,24 @@ import {Path, SchemaType} from '@sanity/types'
 import {ComponentType, ReactNode} from 'react'
 import {ComposableOption, ConfigContext} from '../../types'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentFieldAction {
   name: string
   useAction: DocumentFieldActionHook
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentFieldActionHook {
   (props: DocumentFieldActionProps): DocumentFieldActionItem | DocumentFieldActionGroup
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentFieldActionProps {
   documentId: string
   documentType: string
@@ -21,13 +27,19 @@ export interface DocumentFieldActionProps {
   schemaType: SchemaType
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export type DocumentFieldActionStatus = 'info' | 'success' | 'warning' | 'error'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export type DocumentFieldActionTone = 'primary' | 'positive' | 'caution' | 'critical'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentFieldActionItem {
   type: 'action'
   disabled?: boolean | {reason: ReactNode}
@@ -42,12 +54,16 @@ export interface DocumentFieldActionItem {
   tone?: DocumentFieldActionTone
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentFieldActionDivider {
   type: 'divider'
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentFieldActionGroup {
   type: 'group'
   children: DocumentFieldActionNode[]
@@ -61,20 +77,26 @@ export interface DocumentFieldActionGroup {
   tone?: DocumentFieldActionTone
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export type DocumentFieldActionNode =
   | DocumentFieldActionItem
   | DocumentFieldActionGroup
   | DocumentFieldActionDivider
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export interface DocumentFieldActionsResolverContext extends ConfigContext {
   documentId: string
   documentType: string
   schemaType: SchemaType
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export type DocumentFieldActionsResolver = ComposableOption<
   DocumentFieldAction[],
   DocumentFieldActionsResolverContext

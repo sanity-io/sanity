@@ -6,14 +6,15 @@ import {supportsTouch} from '../../../util'
 import {useHoveredField} from '../useHoveredField'
 import {FieldActionsContext, FieldActionsContextValue} from './FieldActionsContext'
 
+type FieldActionsProviderProps = PropsWithChildren<{
+  actions: DocumentFieldActionNode[]
+  focused?: boolean
+  path: Path
+}>
+
 /** @internal */
-export function FieldActionsProvider(
-  props: PropsWithChildren<{
-    actions: DocumentFieldActionNode[]
-    path: Path
-  }>
-) {
-  const {actions, children, path} = props
+export function FieldActionsProvider(props: FieldActionsProviderProps) {
+  const {actions, children, path, focused} = props
   const {onMouseEnter: onFieldMouseEnter, onMouseLeave: onFieldMouseLeave} = useHoveredField()
 
   const hoveredPath = useHoveredField().hoveredStack[0]
@@ -30,11 +31,12 @@ export function FieldActionsProvider(
   const context: FieldActionsContextValue = useMemo(
     () => ({
       actions,
+      focused,
       hovered,
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
     }),
-    [actions, handleMouseEnter, handleMouseLeave, hovered]
+    [actions, focused, handleMouseEnter, handleMouseLeave, hovered]
   )
 
   return <FieldActionsContext.Provider value={context}>{children}</FieldActionsContext.Provider>

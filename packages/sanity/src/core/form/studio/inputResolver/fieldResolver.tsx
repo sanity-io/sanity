@@ -1,24 +1,24 @@
 /* eslint-disable react/jsx-handler-names */
 import {isBooleanSchemaType, isReferenceSchemaType, SchemaType} from '@sanity/types'
-import React from 'react'
+import React, {useState} from 'react'
 import {ArrayFieldProps, FieldProps, ObjectFieldProps} from '../../types'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
 import {FieldMember} from '../../store'
 import {FormField, FormFieldSet} from '../../components'
 import {ChangeIndicator} from '../../../changeIndicators'
-import {useFieldActions} from '../../field'
+import {FieldActionsProvider, FieldActionsResolver} from '../../field'
+import {useFormPublishedId} from '../../useFormPublishedId'
+import {DocumentFieldActionNode} from '../../../config'
 import {getTypeChain} from './helpers'
 
-function BooleanField(field: FieldProps) {
-  const {onMouseEnter, onMouseLeave} = useFieldActions()
+const EMPTY_ARRAY: never[] = []
 
+function BooleanField(field: FieldProps) {
   return (
     <ChangeIndicator
-      path={field.path}
       hasFocus={Boolean(field.inputProps.focused)}
       isChanged={field.inputProps.changed}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      path={field.path}
     >
       {field.children}
     </ChangeIndicator>
@@ -26,58 +26,90 @@ function BooleanField(field: FieldProps) {
 }
 
 function PrimitiveField(field: FieldProps) {
-  const {onMouseEnter, onMouseLeave} = useFieldActions()
+  const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
+  const documentId = useFormPublishedId()
+  const focused = Boolean(field.inputProps.focused)
 
   return (
-    <FormField
-      __unstable_headerActions={field.actions}
-      __unstable_presence={field.presence}
-      data-testid={`field-${field.inputId}`}
-      description={field.description}
-      inputId={field.inputId}
-      level={field.level}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      title={field.title}
-      validation={field.validation}
-    >
-      <ChangeIndicator
-        path={field.path}
-        hasFocus={Boolean(field.inputProps.focused)}
-        isChanged={field.inputProps.changed}
-      >
-        {field.children}
-      </ChangeIndicator>
-    </FormField>
+    <>
+      {documentId && field.actions && field.actions.length > 0 && (
+        <FieldActionsResolver
+          actions={field.actions}
+          documentId={documentId}
+          documentType={field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={field.path}
+          schemaType={field.schemaType}
+        />
+      )}
+
+      <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
+        <FormField
+          __unstable_presence={field.presence}
+          __unstable_headerActions={fieldActionsNodes}
+          data-testid={`field-${field.inputId}`}
+          description={field.description}
+          inputId={field.inputId}
+          level={field.level}
+          title={field.title}
+          validation={field.validation}
+        >
+          <ChangeIndicator
+            hasFocus={focused}
+            isChanged={field.inputProps.changed}
+            path={field.path}
+          >
+            {field.children}
+          </ChangeIndicator>
+        </FormField>
+      </FieldActionsProvider>
+    </>
   )
 }
 
 function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
-  const {onMouseEnter, onMouseLeave} = useFieldActions()
+  const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
+  const documentId = useFormPublishedId()
+  const focused = Boolean(field.inputProps.focused)
 
   return (
-    <FormFieldSet
-      __unstable_headerActions={field.actions}
-      data-testid={`field-${field.inputId}`}
-      level={field.level}
-      title={field.title}
-      description={field.description}
-      collapsed={field.collapsed}
-      collapsible={field.collapsible}
-      onCollapse={field.onCollapse}
-      onExpand={field.onExpand}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      validation={field.validation}
-      __unstable_presence={field.presence}
-    >
-      {field.children}
-    </FormFieldSet>
+    <>
+      {documentId && field.actions && field.actions.length > 0 && (
+        <FieldActionsResolver
+          actions={field.actions}
+          documentId={documentId}
+          documentType={field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={field.path}
+          schemaType={field.schemaType}
+        />
+      )}
+
+      <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
+        <FormFieldSet
+          __unstable_headerActions={fieldActionsNodes}
+          __unstable_presence={field.presence}
+          collapsed={field.collapsed}
+          collapsible={field.collapsible}
+          data-testid={`field-${field.inputId}`}
+          description={field.description}
+          level={field.level}
+          onCollapse={field.onCollapse}
+          onExpand={field.onExpand}
+          title={field.title}
+          validation={field.validation}
+        >
+          {field.children}
+        </FormFieldSet>
+      </FieldActionsProvider>
+    </>
   )
 }
 
 function ImageOrFileField(field: ObjectFieldProps) {
-  const {onMouseEnter, onMouseLeave} = useFieldActions()
+  const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
+  const documentId = useFormPublishedId()
+  const focused = Boolean(field.inputProps.focused)
 
   // unless the hotspot tool dialog is open we want to show whoever is in there as the field presence
   const hotspotField = field.inputProps.members.find(
@@ -85,25 +117,38 @@ function ImageOrFileField(field: ObjectFieldProps) {
   )
   const presence = hotspotField?.open
     ? field.presence
-    : field.presence.concat(hotspotField?.field.presence || [])
+    : field.presence.concat(hotspotField?.field.presence || EMPTY_ARRAY)
 
   return (
-    <FormFieldSet
-      __unstable_headerActions={field.actions}
-      level={field.level}
-      title={field.title}
-      description={field.description}
-      collapsed={field.collapsed}
-      collapsible={field.collapsible}
-      onCollapse={field.onCollapse}
-      onExpand={field.onExpand}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      validation={field.validation}
-      __unstable_presence={presence}
-    >
-      {field.children}
-    </FormFieldSet>
+    <>
+      {documentId && field.actions && field.actions.length > 0 && (
+        <FieldActionsResolver
+          actions={field.actions}
+          documentId={documentId}
+          documentType={field.schemaType.name}
+          onActions={setFieldActionNodes}
+          path={field.path}
+          schemaType={field.schemaType}
+        />
+      )}
+
+      <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
+        <FormFieldSet
+          __unstable_headerActions={fieldActionsNodes}
+          __unstable_presence={presence}
+          collapsed={field.collapsed}
+          collapsible={field.collapsible}
+          description={field.description}
+          level={field.level}
+          onCollapse={field.onCollapse}
+          onExpand={field.onExpand}
+          title={field.title}
+          validation={field.validation}
+        >
+          {field.children}
+        </FormFieldSet>
+      </FieldActionsProvider>
+    </>
   )
 }
 

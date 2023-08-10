@@ -1,11 +1,12 @@
 /* eslint-disable camelcase */
-
 import React, {memo} from 'react'
-import {Box, Flex} from '@sanity/ui'
 import {FormNodeValidation} from '@sanity/types'
-import styled from 'styled-components'
-import {FieldPresence, FormNodePresence} from '../../../presence'
+import {FormNodePresence} from '../../../presence'
+import {DocumentFieldActionNode} from '../../../config'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
+import {FormFieldBaseHeader} from './FormFieldBaseHeader'
+
+const EMPTY_ARRAY: never[] = []
 
 export interface FormFieldHeaderProps {
   /**
@@ -13,63 +14,56 @@ export interface FormFieldHeaderProps {
    * @hidden
    * @beta
    */
-  __unstable_actions?: React.ReactNode
-  /**
-   * @beta
-   */
-  validation?: FormNodeValidation[]
+  __unstable_actions?: DocumentFieldActionNode[]
   /**
    *
    * @hidden
    * @beta
    */
   __unstable_presence?: FormNodePresence[]
+  /**
+   * @beta
+   */
+  validation?: FormNodeValidation[]
   description?: React.ReactNode
   /**
    * The unique ID used to target the actual input element
    */
   inputId?: string
   title?: React.ReactNode
-}
 
-const Root = styled(Flex)({
-  // This prevents the buttons from taking up extra vertical space in the flex layout,
-  // due to their default vertical alignment being baseline.
-  lineHeight: 1,
-})
+  /** @hidden */
+  fieldHovered: boolean
+  /** @hidden */
+  fieldFocused: boolean
+}
 
 export const FormFieldHeader = memo(function FormFieldHeader(props: FormFieldHeaderProps) {
   const {
-    __unstable_actions: actions,
-    __unstable_presence: presence,
+    __unstable_actions: actions = EMPTY_ARRAY,
+    __unstable_presence: presence = EMPTY_ARRAY,
     description,
+    fieldFocused,
+    fieldHovered,
     inputId,
     title,
     validation,
   } = props
 
   return (
-    <Root align="flex-end">
-      <Box flex={1} paddingY={2}>
+    <FormFieldBaseHeader
+      actions={actions}
+      fieldFocused={fieldFocused}
+      fieldHovered={fieldHovered}
+      presence={presence}
+      content={
         <FormFieldHeaderText
           validation={validation}
           description={description}
           inputId={inputId}
           title={title}
         />
-      </Box>
-
-      {presence && presence.length > 0 && (
-        <Box flex="none">
-          <FieldPresence maxAvatars={4} presence={presence} />
-        </Box>
-      )}
-
-      {actions && (
-        <Box flex="none" marginLeft={3}>
-          {actions}
-        </Box>
-      )}
-    </Root>
+      }
+    />
   )
 })
