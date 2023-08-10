@@ -44,6 +44,8 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   useEffect(() => {
     if (!event || event === prevEvent.current) return
 
+    let cleanupId: number | undefined
+
     if (event.type === 'error') {
       pushToast({
         closable: true,
@@ -69,13 +71,16 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
 
     /**
      * If the document was deleted successfully, close the pane.
-     * This lives here instead of in the DocumentPaneProvider to avoid race conditions.
      */
     if (event.type === 'success' && event.op === 'delete') {
-      paneRouter.closeCurrentAndAfter()
+      // Wait until next tick to allow deletion toasts to appear first
+      cleanupId = setTimeout(() => paneRouter.closeCurrentAndAfter(), 0) as any as number
     }
 
     prevEvent.current = event
+
+    // eslint-disable-next-line consistent-return
+    return () => clearTimeout(cleanupId)
   }, [event, paneRouter, pushToast])
 
   return null

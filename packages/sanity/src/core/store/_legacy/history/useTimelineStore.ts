@@ -22,6 +22,11 @@ export interface TimelineState {
   /** null is used here when the chunks hasn't loaded / is not known */
   hasMoreChunks: boolean | null
   isLoading: boolean
+  /**
+   * Whether this timeline is fully loaded and completely empty (true for new documents)
+   * It can be `null` when the chunks hasn't loaded / is not known
+   */
+  isPristine: boolean | null
   lastNonDeletedRevId: string | null
   onOlderRevision: boolean
   realRevChunk: Chunk | null
@@ -38,6 +43,7 @@ const INITIAL_TIMELINE_STATE: TimelineState = {
   diff: null,
   hasMoreChunks: null,
   isLoading: false,
+  isPristine: null,
   lastNonDeletedRevId: null,
   onOlderRevision: false,
   realRevChunk: null,
@@ -177,10 +183,13 @@ export function useTimelineStore({
               const lastNonDeletedChunk = chunks.filter(
                 (chunk) => !['delete', 'initial'].includes(chunk.type)
               )
+              const hasMoreChunks = !innerController.timeline.reachedEarliestEntry
+              const timelineReady = !['invalid', 'loading'].includes(innerController.selectionState)
               return {
                 chunks,
                 diff: innerController.sinceTime ? innerController.currentObjectDiff() : null,
                 isLoading: false,
+                isPristine: timelineReady ? chunks.length === 0 && hasMoreChunks === false : null,
                 hasMoreChunks: !innerController.timeline.reachedEarliestEntry,
                 lastNonDeletedRevId: lastNonDeletedChunk?.[0]?.id,
                 onOlderRevision: innerController.onOlderRevision(),
@@ -190,7 +199,7 @@ export function useTimelineStore({
                 sinceAttributes: innerController.sinceAttributes(),
                 sinceTime: innerController.sinceTime,
                 timelineDisplayed: innerController.displayed(),
-                timelineReady: !['invalid', 'loading'].includes(innerController.selectionState),
+                timelineReady,
               }
             }),
             // Only emit (and in turn, re-render) when values have changed

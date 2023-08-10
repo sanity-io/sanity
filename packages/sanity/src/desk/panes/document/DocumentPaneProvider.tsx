@@ -44,7 +44,6 @@ import {
   useDocumentValuePermissions,
   useTimelineStore,
   useTimelineSelector,
-  useDocumentOperationEvent,
   DocumentFieldAction,
   DocumentInspectorMenuItem,
   FieldActionsResolver,
@@ -52,7 +51,6 @@ import {
   DocumentFieldActionNode,
   FieldActionsProvider,
 } from 'sanity'
-import {useRouter} from 'sanity/router'
 
 /**
  * @internal
@@ -71,7 +69,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = useSource().document
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
-  const {navigateIntent} = useRouter()
   const setPaneParams = paneRouter.setParams
   const {features} = useDeskTool()
   const {push: pushToast} = useToast()
@@ -162,19 +159,26 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
   const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
   const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
-  const isPristine = useTimelineSelector(
-    timelineStore,
-    (state) => !state.isLoading && state.chunks.length === 0 && state.hasMoreChunks === false
-  )
+  const isPristine = useTimelineSelector(timelineStore, (state) => state.isPristine)
+
   /**
-   * This checks if there is no document pair, but the document still has history
-   * We have to check it this way because the document value will always have atleast
-   * an _id/_type
+   * Determine if the current document is deleted.
+   *
+   * When the timeline is available – we check for the absence of an editable document pair
+   * (both draft + published versions) as well as a non 'pristine' timeline (i.e. a timeline that consists
+   * of at least one chunk).
+   *
+   * In the _very rare_ case where the timeline cannot be loaded – we skip this check and always assume
+   * the document is NOT deleted. Since we can't accurately determine document deleted status without history,
+   * skipping this check means that in these cases, users will at least be able to create new documents
+   * without them being incorrectly marked as deleted.
    */
-  const isDeleted = useMemo(
-    () => Boolean(!editState?.draft && !editState?.published) && !isPristine,
-    [editState?.draft, editState?.published, isPristine]
-  )
+  const isDeleted = useMemo(() => {
+    if (!timelineReady) {
+      return false
+    }
+    return Boolean(!editState?.draft && !editState?.published) && !isPristine
+  }, [editState?.draft, editState?.published, isPristine, timelineReady])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
