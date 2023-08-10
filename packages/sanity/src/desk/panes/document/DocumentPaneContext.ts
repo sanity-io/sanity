@@ -15,7 +15,6 @@ import {
   DocumentFieldAction,
   DocumentFormNode,
   DocumentInspector,
-  DocumentLanguageFilterComponent,
   EditStateFor,
   PatchEvent,
   PermissionCheckResult,
@@ -105,6 +104,7 @@ export interface DocumentPaneContextValue {
   previewUrl?: string | null
 
   // Language filter
+  // @todo remove
   // unstable_languageFilter: DocumentLanguageFilterComponent[]
 }
 

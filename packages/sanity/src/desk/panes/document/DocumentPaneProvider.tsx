@@ -64,7 +64,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     actions: documentActions,
     badges: documentBadges,
     unstable_fieldActions: fieldActionsResolver,
-    unstable_languageFilter: languageFilterResolver,
     inspectors: inspectorsResolver,
   } = useSource().document
   const presenceStore = usePresenceStore()
