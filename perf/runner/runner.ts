@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
-import {chromium, Page} from 'playwright'
+import {chromium, BrowserContext, Page} from '@playwright/test'
 import {concatMap, from, lastValueFrom, range} from 'rxjs'
 import {tap, toArray} from 'rxjs/operators'
 import {SanityClient} from '@sanity/client'
-import {BrowserContext} from '@playwright/test'
 import {capitalize} from 'lodash'
 import {Deployment, PerformanceTestProps} from './types'
 import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
