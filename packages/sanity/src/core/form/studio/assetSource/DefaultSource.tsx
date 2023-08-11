@@ -118,6 +118,7 @@ const DefaultAssetSource = function DefaultAssetSource(
     : ''
   const showAcceptMessage = !isLoading && accept && accept.length > 0
   const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   const fetchPage = useCallback(
     (pageNumber: number) => {
@@ -258,7 +259,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   }, [isLoading, assets, selectedAssets, handleItemClick, handleItemKeyPress, handleDeleteFinished])
 
   //Avoid background of dialog being scrollable on mobile
-  useScrollLock(document.getElementById(_elementId.current), {lockOnMount: true})
+  useScrollLock(documentScrollElement)
 
   return (
     <Dialog
@@ -269,6 +270,7 @@ const DefaultAssetSource = function DefaultAssetSource(
       onClose={handleClose}
       ref={ref}
       width={2}
+      contentRef={setDocumentScrollElement}
     >
       {showAcceptMessage && !isImageOnlyWildCard && (
         <Card tone="primary" marginTop={4} marginX={4} padding={[3, 3, 4]} border radius={2}>

@@ -55,6 +55,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const [dialogElement, setDialogElement] = useState<HTMLDivElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   const {scheme} = useColorScheme()
   const currentUser = useCurrentUser()
@@ -185,7 +186,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     [loading, open, scheme, tooltipContent],
   )
   //Avoid background of dialog being scrollable on mobile
-  useScrollLock(document.getElementById('create-new-document-dialog'))
+  useScrollLock(documentScrollElement)
 
   // Dialog
   if (modal === 'dialog') {
@@ -206,6 +207,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
             ref={setDialogElement}
             scheme={scheme}
             width={1}
+            contentRef={setDocumentScrollElement}
           >
             <RootFlex direction="column" flex={1} height="fill">
               <DialogHeaderCard padding={2} borderBottom>
