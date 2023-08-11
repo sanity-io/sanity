@@ -8,7 +8,7 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import {ChevronRightIcon} from '@sanity/icons'
+import {ChevronRightIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import {BreadcrumbItemRoot, ExpandButton, Root} from './breadcrumbs.styles'
 
 /**
@@ -64,9 +64,10 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
           ref={setPopoverElement}
         >
           <ExpandButton
+            fontSize={1}
             mode="bleed"
             onClick={open ? collapse : expand}
-            padding={2}
+            padding={1}
             ref={setExpandElement}
             selected={open}
             text="…"

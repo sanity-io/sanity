@@ -30,7 +30,7 @@ export const BreadcrumbItem = forwardRef(function BreadcrumbItem(
       isTitle={isTitle}
       ref={ref}
       mode="bleed"
-      padding={2}
+      padding={1}
       textAlign="left"
       justify="flex-start"
       {...restProps}

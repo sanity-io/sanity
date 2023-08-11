@@ -18,6 +18,12 @@ export const Root = styled.ol`
 
 export const ExpandButton = styled(Button)`
   appearance: none;
+  width: 23px;
+  height: 27px;
+
+  [data-ui='Text'] {
+    font-weight: 500;
+  }
 `
 
 export const BreadcrumbItemRoot = styled(Box)`
@@ -43,6 +49,7 @@ export const BreadcrumbItemSpan = styled.span(({theme}: {theme: Theme}) => {
     overflow: clip;
     white-space: nowrap;
     color: ${fg};
+    font-weight: 500;
   `
 })
 
