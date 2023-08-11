@@ -2,9 +2,10 @@ import path from 'path'
 import fs from 'fs/promises'
 import cac from 'cac'
 import ora from 'ora'
-import {createClient} from '@sanity/client'
+import {createClient, SanityClient} from '@sanity/client'
 import {SanityTSDocConfigOptions, _loadConfig, extract, load, transform} from '@sanity/tsdoc'
 import chalk from 'chalk'
+import {deburr} from 'lodash'
 
 const cli = cac('yarn etl')
 
@@ -21,6 +22,12 @@ cli
 cli.help()
 cli.parse()
 
+export function sanityIdify(input: string) {
+  return deburr(input)
+    .replace(/[^a-zA-Z0-9_-]+/g, '_')
+    .replace(/^-/, '')
+}
+
 async function main(options: {packageName: string; releaseVersion?: string}): Promise<void> {
   const {packageName, releaseVersion} = options
 
@@ -33,19 +40,10 @@ async function main(options: {packageName: string; releaseVersion?: string}): Pr
   await etl({cwd: process.cwd(), packageName, packagePath, releaseVersion})
 }
 
-function _fetchCurrentPackage(
-  sanity: NonNullable<NonNullable<SanityTSDocConfigOptions['output']>['sanity']>,
-  params: {name: string}
-) {
+function _fetchCurrentPackage(client: SanityClient, params: {name: string}) {
   const parts = params.name.split('/')
   const scope = parts.length > 1 ? parts[0] : null
   const name = parts.length > 1 ? parts[1] : parts[0]
-
-  const client = createClient({
-    ...sanity,
-    apiVersion: '2023-06-01',
-    useCdn: false,
-  })
 
   return client.fetch(`*[_type == "api.package" && scope == $scope && name == $name][0]`, {
     scope,
@@ -71,43 +69,53 @@ async function etl(options: {
     )
   }
 
+  const client = createClient({
+    ...sanityConfig,
+    apiVersion: '2023-06-01',
+    useCdn: false,
+  })
+
   let timer = startTimer(`Extracting API documents from \`${packageName}\``)
   const {pkg, results} = await extract({
     packagePath,
   })
   timer.end()
 
-  const report = results.map((result) => {
-    return {
-      packageName: `${result.apiPackage?.name}/${result.exportPath}`,
-      properties: result.apiPackage?.members[0]?.members.map((member) => {
-        return {
-          name: member.displayName,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          isExported: member.isExported,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          isCommented: member.tsdocComment !== undefined,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          modifierTags: member?.tsdocComment?.modifierTagSet?.nodes
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            ?.map((tag) => tag.tagName)
-            .join(', '),
-        }
-      }),
-    }
-  })
-
-  const reportPath = path.resolve(cwd, `etc/docs-report.json`)
-  fs.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf8')
-
   const releaseVersion = releaseVersionOption || pkg.version
 
+  const report = {
+    _id: `apidocs-report-${`${sanityIdify(releaseVersion)}-${sanityIdify(packageName)}`}`,
+    _type: 'api.report',
+    packages: results.map((result) => {
+      return {
+        _key: result.apiPackage?.name,
+        _type: 'api.report.package',
+        packageName: `${result.apiPackage?.name}/${result.exportPath}`,
+        properties: result.apiPackage?.members[0]?.members.map((member) => {
+          return {
+            name: member.displayName,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            isExported: member.isExported,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            isCommented: member.tsdocComment !== undefined,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            modifierTags: member?.tsdocComment?.modifierTagSet?.nodes
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              ?.map((tag) => tag.tagName),
+          }
+        }),
+      }
+    }),
+  }
+
+  await client.createOrReplace(report)
+
   timer = startTimer('Fetching current package info from Sanity')
-  const currPackageDoc = await _fetchCurrentPackage(sanityConfig, {name: pkg.name})
+  const currPackageDoc = await _fetchCurrentPackage(client, {name: pkg.name})
   timer.end()
 
   timer = startTimer(`Transforming API documents from \`${packageName}\``)
