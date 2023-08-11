@@ -171,7 +171,7 @@
     "date-fns": "^2.26.1",
     "debug": "^3.2.7",
     "diff-match-patch": "^1.0.4",
-    "esbuild": "^0.18.0",
+    "esbuild": "^0.19.0",
     "esbuild-register": "^3.4.1",
     "execa": "^2.0.0",
     "exif-component": "^1.0.1",
