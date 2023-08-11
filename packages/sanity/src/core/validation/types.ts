@@ -16,6 +16,11 @@ declare module '@sanity/types' {
    * @public
    */
   interface ValidationContext {
+    /**
+     * Internationalization utilities, for translation of validation messages
+     *
+     * See {@link LocaleSource} for details.
+     */
     i18n: LocaleSource
   }
 }
