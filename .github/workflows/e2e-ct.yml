@@ -56,13 +56,13 @@ jobs:
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          job_name: "test"
+          job_name: 'test'
       - name: Parse playwright report
         id: parse-playwright-report
         if: always()
         run: yarn workspace sanity write:playwright-report-as-pr-comment
         env:
-          GITHUB_WORKFLOW_URL: "${{ steps.job_html_url.outputs.html_url }}"
+          GITHUB_WORKFLOW_URL: '${{ steps.job_html_url.outputs.html_url }}'
       - name: PR comment with report
         uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f # v2
         if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
@@ -75,6 +75,6 @@ jobs:
         with:
           name: playwright-ct-report
           path: |
-            test/playwright-ct/report
-            test/playwright-ct/results
+            ${{ github.workspace }}/packages/sanity/playwright-ct/report
+            ${{ github.workspace }}/packages/sanity/playwright-ct/results
           retention-days: 30
