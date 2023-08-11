@@ -38,6 +38,7 @@
     "example:example-studio": "yarn --cwd dev/example-studio start",
     "example:movies-studio": "yarn --cwd examples/movies-studio start",
     "etl": "node -r dotenv-flow/config -r esbuild-register scripts/etl",
+    "docs": "node -r dotenv-flow/config -r esbuild-register scripts/docReport",
     "init": "lerna clean --yes && run-s bootstrap build",
     "lerna:clean": "lerna clean",
     "lint": "eslint --cache .",
