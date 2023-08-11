@@ -10,6 +10,7 @@ import {View} from '../../structureBuilder'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {TimelineMode} from './types'
 import {
+  ConnectionState,
   DocumentActionComponent,
   DocumentBadgeComponent,
   DocumentFieldAction,
@@ -34,7 +35,7 @@ export interface DocumentPaneContextValue {
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
   compareValue: Partial<SanityDocument> | null
-  connectionState: 'connecting' | 'reconnecting' | 'connected'
+  connectionState: ConnectionState
   displayed: Partial<SanityDocument> | null
   documentId: string
   documentIdRaw: string
@@ -46,6 +47,7 @@ export interface DocumentPaneContextValue {
   inspectOpen: boolean
   inspector: DocumentInspector | null
   inspectors: DocumentInspector[]
+  isOffline: boolean
   menuItemGroups: PaneMenuItemGroup[]
   menuItems: PaneMenuItem[]
   onBlur: (blurredPath: Path) => void

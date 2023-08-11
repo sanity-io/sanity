@@ -17,6 +17,7 @@ import {
   useDocumentPresence,
   useDocumentStore,
 } from 'sanity'
+import {WarningOutlineIcon} from '@sanity/icons'
 
 interface FormViewProps {
   hidden: boolean
@@ -39,6 +40,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onChange,
     validation,
     ready,
+    isOffline,
     formState,
     onFocus,
     onBlur,
@@ -183,10 +185,16 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
           ) : (
             <Delay ms={300}>
               <Flex align="center" direction="column" height="fill" justify="center">
-                <Spinner muted />
+                {isOffline ? (
+                  <Text muted>
+                    <WarningOutlineIcon fontSize={2} />
+                  </Text>
+                ) : (
+                  <Spinner muted />
+                )}
                 <Box marginTop={3}>
                   <Text align="center" muted size={1}>
-                    Loading document
+                    {isOffline ? `Browser is offline` : `Loading document`}
                   </Text>
                 </Box>
               </Flex>

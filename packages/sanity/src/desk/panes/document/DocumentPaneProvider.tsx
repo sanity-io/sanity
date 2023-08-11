@@ -232,6 +232,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const ready =
     connectionState === 'connected' && editState.ready && (timelineReady || !!timelineError)
 
+  const isOffline = connectionState === 'offline'
+
   const displayed: Partial<SanityDocument> | undefined = useMemo(
     () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
     [onOlderRevision, timelineDisplayed, value]
@@ -592,6 +594,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     previewUrl,
     ready,
     schemaType: schemaType!,
+    isOffline,
     isPermissionsLoading,
     permissions,
     setTimelineMode,
