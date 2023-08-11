@@ -1,4 +1,5 @@
 import path from 'path'
+import fs from 'fs/promises'
 import cac from 'cac'
 import ora from 'ora'
 import {createClient} from '@sanity/client'
@@ -75,6 +76,33 @@ async function etl(options: {
     packagePath,
   })
   timer.end()
+
+  const report = results.map((result) => {
+    return {
+      packageName: `${result.apiPackage?.name}/${result.exportPath}`,
+      properties: result.apiPackage?.members[0]?.members.map((member) => {
+        return {
+          name: member.displayName,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          isExported: member.isExported,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          isCommented: member.tsdocComment !== undefined,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          modifierTags: member?.tsdocComment?.modifierTagSet?.nodes
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            ?.map((tag) => tag.tagName)
+            .join(', '),
+        }
+      }),
+    }
+  })
+
+  const reportPath = path.resolve(cwd, `etc/docs-report.json`)
+  fs.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf8')
 
   const releaseVersion = releaseVersionOption || pkg.version
 
