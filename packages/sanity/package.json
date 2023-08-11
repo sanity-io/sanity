@@ -20,6 +20,7 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./lib/exports/index.d.ts",
