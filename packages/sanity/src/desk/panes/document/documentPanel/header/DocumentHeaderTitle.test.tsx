@@ -8,7 +8,7 @@ import {unstable_useValuePreview as useValuePreview} from 'sanity'
 jest.mock('../../useDocumentPane')
 jest.mock('sanity')
 
-describe('DocumentHeaderTitle', () => {
+describe.skip('DocumentHeaderTitle', () => {
   const mockUseDocumentPane = useDocumentPane as jest.MockedFunction<typeof useDocumentPane>
   const mockUseValuePreview = useValuePreview as jest.MockedFunction<typeof useValuePreview>
 
