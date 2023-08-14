@@ -118,16 +118,16 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
           <PopoverWrapper
             content={
               <Box>
-                {t('core.review-changes.revert-all-button-prompt', {count: changes.length})}
+                {t('review-changes.revert-all-button-prompt', {count: changes.length})}
                 <Grid columns={2} gap={2} marginTop={2}>
                   <Button
                     mode="ghost"
-                    text={t('core.review-changes.revert-button-cancel')}
+                    text={t('review-changes.revert-button-cancel')}
                     onClick={closeRevertAllChangesConfirmDialog}
                   />
                   <Button
                     tone="critical"
-                    text={t('core.review-changes.revert-button-revert-all')}
+                    text={t('review-changes.revert-button-revert-all')}
                     onClick={revertAllChanges}
                   />
                 </Grid>
@@ -143,7 +143,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
               <Button
                 tone="critical"
                 mode="ghost"
-                text={t('core.review-changes.revert-button-revert-all')}
+                text={t('review-changes.revert-button-revert-all')}
                 icon={RevertIcon}
                 onClick={handleRevertAllChangesClick}
                 onMouseEnter={handleRevertAllChangesMouseEnter}
