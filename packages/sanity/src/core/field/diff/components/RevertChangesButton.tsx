@@ -38,8 +38,8 @@ export const RevertChangesButton = forwardRef(function RevertChangesButton(
       icon={RevertIcon}
       selected={selected}
       // kept at "count: 2" as a const because this component will always have plurals (and never a singular)
-      // the value itself is not used in translation (check the i18n file "review-changes.revert-button-change_other")
-      text={t('review-changes.revert-button-change', {count: 2})}
+      // the value itself is not used in translation (check the i18n file "studio.ts" for the actual translation)")
+      text={t('review-changes.action.revert-changes-confirm-change', {count: 2})}
       mode="bleed"
       padding={1}
       fontSize={1}
