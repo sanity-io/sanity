@@ -46,63 +46,63 @@ const deskLocaleStrings = {
   /** --- Review Changes --- */
 
   /** Title for the Review Changes pane */
-  'desk.review-changes.title': 'Review changes',
+  'review-changes.title': 'Review changes',
 
   /** Label for the close button label in Review Changes pane */
-  'desk.review-changes.close-label': 'Close review changes',
+  'review-changes.close-label': 'Close review changes',
 
   /** Label and text for differences tooltip that indicates the authors of the changes */
-  'desk.review-changes.changes-by-author': 'Changes by',
+  'review-changes.changes-by-author': 'Changes by',
 
   /** Loading changes in Review Changes Pane */
-  'desk.review-changes.loading-changes': 'Loading changes',
+  'review-changes.loading-changes': 'Loading changes',
 
   /** --- Timeline --- */
 
   /** Error prompt when revision cannot be loaded */
-  'desk.timeline.unable-to-load-rev': 'Unable to load revision',
+  'timeline.unable-to-load-rev': 'Unable to load revision',
 
   /** Label for latest version for timeline menu dropdown */
-  'desk.timeline.latest-version': 'Latest version',
+  'timeline.latest-version': 'Latest version',
 
   /** Label for loading history */
-  'desk.timeline.loading-history': 'Loading history',
+  'timeline.loading-history': 'Loading history',
 
   /** Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter.
    */
-  'desk.timeline.since': 'Since: {{timestamp, datetime}}',
+  'timeline.since': 'Since: {{timestamp, datetime}}',
 
   /** Label for missing change version for timeline menu dropdown are showing */
-  'desk.timeline.since-version-missing': 'Since: unknown version',
+  'timeline.since-version-missing': 'Since: unknown version',
 
   /** Title for error when the timeline for the given document can't be loaded */
-  'desk.timeline.error-title': 'An error occurred whilst retrieving document changes.',
+  'timeline.error-title': 'An error occurred whilst retrieving document changes.',
 
   /** Description for error when the timeline for the given document can't be loaded */
-  'desk.timeline.error-description': 'Document history transactions have not been affected.',
+  'timeline.error-description': 'Document history transactions have not been affected.',
 
   /** Error title for when the document doesn't have history */
-  'desk.timeline.no-document-history-title': 'No document history',
+  'timeline.no-document-history-title': 'No document history',
 
   /** Error description for when the document doesn't have history */
-  'desk.timeline.no-document-history-description':
+  'timeline.no-document-history-description':
     'When changing the content of the document, the document versions will appear in this menu.',
 
   /** --- Timeline constants --- */
 
   /** Label for when the timeline item is the latest in the history */
-  'desk.timeline.latest': 'Latest',
+  'timeline.latest': 'Latest',
 
   /** Consts used in the timeline item component (dropdown menu) - helpers */
-  'desk.timeline.create': 'Created',
-  'desk.timeline.delete': 'Deleted',
-  'desk.timeline.discardDraft': 'Discarded draft',
-  'desk.timeline.initial': 'Created',
-  'desk.timeline.editDraft': 'Edited',
-  'desk.timeline.editLive': 'Live edited',
-  'desk.timeline.publish': 'Published',
-  'desk.timeline.unpublish': 'Unpublished',
+  'timeline.create': 'Created',
+  'timeline.delete': 'Deleted',
+  'timeline.discardDraft': 'Discarded draft',
+  'timeline.initial': 'Created',
+  'timeline.editDraft': 'Edited',
+  'timeline.editLive': 'Live edited',
+  'timeline.publish': 'Published',
+  'timeline.unpublish': 'Unpublished',
 }
 
 /**
