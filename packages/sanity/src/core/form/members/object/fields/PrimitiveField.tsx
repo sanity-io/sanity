@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {isBooleanSchemaType, isNumberSchemaType, SchemaType} from '@sanity/types'
+import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {FieldMember} from '../../../store'
 import {
   PrimitiveFieldProps,
@@ -10,7 +10,6 @@ import {
 import {FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
-import {FieldActionMenu, FieldActionsProvider, FieldActionsResolver} from '../../../field'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {useFormPublishedId} from '../../../useFormPublishedId'
 import {DocumentFieldActionNode} from '../../../../config'
@@ -31,8 +30,6 @@ export function PrimitiveField(props: {
   const {
     field: {actions: fieldActions},
   } = useFormBuilder().__internal
-  const documentId = useFormPublishedId()
-  const [fieldActionNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
   const focusRef = useRef<{focus: () => void}>()
 
@@ -159,28 +156,24 @@ export function PrimitiveField(props: {
 
   const fieldProps = useMemo((): Omit<PrimitiveFieldProps, 'renderDefault'> => {
     return {
-      actions:
-        fieldActionNodes.length > 0 ? (
-          <FieldActionMenu focused={member.field.focused} nodes={fieldActionNodes} />
-        ) : undefined,
-      name: member.name,
+      actions: fieldActions,
+      changed: member.field.changed,
+      children: renderedInput,
+      description: member.field.schemaType.description,
       index: member.index,
+      inputId: member.field.id,
+      inputProps: inputProps as any,
       level: member.field.level,
-      value: member.field.value as any,
+      name: member.name,
+      path: member.field.path,
+      presence: member.field.presence,
       schemaType: member.field.schemaType as any,
       title: member.field.schemaType.title,
-      description: member.field.schemaType.description,
-      inputId: member.field.id,
-      path: member.field.path,
       validation: member.field.validation,
-      presence: member.field.presence,
-      children: renderedInput,
-      changed: member.field.changed,
-      inputProps: inputProps as any,
+      value: member.field.value as any,
     }
   }, [
-    fieldActionNodes,
-    member.field.focused,
+    fieldActions,
     member.field.level,
     member.field.value,
     member.field.schemaType,
@@ -195,22 +188,5 @@ export function PrimitiveField(props: {
     inputProps,
   ])
 
-  return (
-    <>
-      {documentId && fieldActions.length > 0 && (
-        <FieldActionsResolver
-          actions={fieldActions}
-          documentId={documentId}
-          documentType={member.field.schemaType.name}
-          onActions={setFieldActionNodes}
-          path={member.field.path}
-          schemaType={member.field.schemaType}
-        />
-      )}
-
-      <FieldActionsProvider actions={fieldActionNodes} path={member.field.path}>
-        {renderField(fieldProps)}
-      </FieldActionsProvider>
-    </>
-  )
+  return <>{renderField(fieldProps)}</>
 }
