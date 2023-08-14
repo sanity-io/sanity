@@ -91,14 +91,14 @@ export function TimelineItem({
                   tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
                 >
                   <Label muted size={0}>
-                    {t('desk.timeline.latest')}
+                    {t('timeline.latest')}
                   </Label>
                 </Card>
               </Flex>
             )}
             <Box>
               <EventLabel size={1} weight="medium">
-                {t(`desk.timeline.${type}`) || <code>{type}</code>}
+                {t(`timeline.${type}`) || <code>{type}</code>}
               </EventLabel>
             </Box>
             <TimestampBox paddingX={1}>

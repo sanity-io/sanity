@@ -13,7 +13,7 @@ export function LoadingContent() {
         <Spinner muted />
         <Box marginTop={3}>
           <Text align="center" muted size={1}>
-            {t('desk.review-changes.loading-changes')}
+            {t('review-changes.loading-changes')}
           </Text>
         </Box>
       </Flex>
