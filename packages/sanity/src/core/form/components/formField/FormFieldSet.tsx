@@ -1,13 +1,15 @@
 /* eslint-disable camelcase */
-
 import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {FormNodeValidation} from '@sanity/types'
-import {FieldPresence, FormNodePresence} from '../../../presence'
+import {FormNodePresence} from '../../../presence'
+import {DocumentFieldActionNode} from '../../../config'
+import {useFieldActions} from '../../field'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
+import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 
 /** @internal */
 export interface FormFieldSetProps {
@@ -16,7 +18,7 @@ export interface FormFieldSetProps {
    * @hidden
    * @beta
    */
-  __unstable_headerActions?: React.ReactNode
+  __unstable_headerActions?: DocumentFieldActionNode[]
   /**
    * @beta
    */
@@ -54,12 +56,6 @@ const Root = styled(Box).attrs({forwardedAs: 'fieldset'})`
   }
 `
 
-const Header = styled(Flex)({
-  // This prevents the buttons from taking up extra vertical space in the flex layout,
-  // due to their default vertical alignment being baseline.
-  lineHeight: 1,
-})
-
 const Content = styled(Box)<{
   /*
    * @note: The dollar sign ($) prefix is a `styled-components` convention for
@@ -96,22 +92,24 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {
-    __unstable_headerActions: headerActions,
-    validation = EMPTY_ARRAY,
+    __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
     children,
+    collapsed,
     collapsible,
     columns,
     description,
     level = 0,
-    onFocus,
     onCollapse,
     onExpand,
-    collapsed,
+    onFocus,
     tabIndex,
     title,
+    validation = EMPTY_ARRAY,
     ...restProps
   } = props
+
+  const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
 
   const hasValidationMarkers = validation.length > 0
   const forwardedRef = useForwardedRef(ref)
@@ -144,47 +142,37 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   }, [children, collapsed, columns])
 
   return (
-    <Root data-level={level} {...restProps}>
-      {title && (
-        <Header align="flex-end">
-          <Box flex={1} paddingY={2}>
-            <Stack space={2}>
-              <Flex>
-                <FormFieldSetLegend
-                  collapsed={Boolean(collapsed)}
-                  collapsible={collapsible}
-                  onClick={collapsible ? handleToggle : undefined}
-                  title={title}
-                />
+    <Root data-level={level} {...restProps} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <FormFieldBaseHeader
+        actions={actions}
+        fieldFocused={Boolean(focused)}
+        fieldHovered={hovered}
+        presence={presence}
+        content={
+          <Stack space={2}>
+            <Flex>
+              <FormFieldSetLegend
+                collapsed={Boolean(collapsed)}
+                collapsible={collapsible}
+                onClick={collapsible ? handleToggle : undefined}
+                title={title}
+              />
 
-                {hasValidationMarkers && (
-                  <Box marginLeft={2}>
-                    <FormFieldValidationStatus fontSize={1} validation={validation} />
-                  </Box>
-                )}
-              </Flex>
-
-              {description && (
-                <Text muted size={1}>
-                  {description}
-                </Text>
+              {hasValidationMarkers && (
+                <Box marginLeft={2}>
+                  <FormFieldValidationStatus fontSize={1} validation={validation} />
+                </Box>
               )}
-            </Stack>
-          </Box>
+            </Flex>
 
-          {presence.length > 0 && (
-            <Box flex="none">
-              <FieldPresence maxAvatars={4} presence={presence} />
-            </Box>
-          )}
-
-          {headerActions && (
-            <Box flex="none" marginLeft={1}>
-              {headerActions}
-            </Box>
-          )}
-        </Header>
-      )}
+            {description && (
+              <Text muted size={1}>
+                {description}
+              </Text>
+            )}
+          </Stack>
+        }
+      />
 
       <Content
         $borderLeft={level > 0}
