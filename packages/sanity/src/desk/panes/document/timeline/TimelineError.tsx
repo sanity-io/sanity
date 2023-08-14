@@ -14,10 +14,10 @@ export function TimelineError() {
       </TextWithTone>
       <Stack space={4}>
         <TextWithTone size={1} tone="critical" weight="semibold">
-          {t('timeline.error-title')}
+          {t('timeline.error.load-document-changes-title')}
         </TextWithTone>
         <TextWithTone size={1} tone="critical">
-          {t('timeline.error-description')}
+          {t('timeline.error.load-document-changes-description')}
         </TextWithTone>
       </Stack>
     </Flex>
