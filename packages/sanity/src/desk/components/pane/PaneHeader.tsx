@@ -49,13 +49,20 @@ export const PaneHeader = forwardRef(function PaneHeader(
   }, [collapsed, expand])
 
   const showTabsOrSubActions = Boolean(!collapsed && (tabs || subActions))
+  const isTitleString = typeof title === 'string'
 
   return (
     <LayerProvider zOffset={100}>
       <Root data-collapsed={collapsed ? '' : undefined} data-testid="pane-header" ref={ref}>
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
-            <Layout onClick={handleLayoutClick} padding={2} sizing="border" style={layoutStyle}>
+            <Layout
+              align="center"
+              onClick={handleLayoutClick}
+              padding={2}
+              sizing="border"
+              style={layoutStyle}
+            >
               {backButton && (
                 <Box flex="none" padding={1}>
                   {backButton}
@@ -65,19 +72,23 @@ export const PaneHeader = forwardRef(function PaneHeader(
               <TitleCard
                 __unstable_focusRing
                 flex={1}
-                forwardedAs="button"
+                forwardedAs={isTitleString ? 'button' : undefined}
                 marginRight={actions ? 1 : 0}
-                onClick={handleTitleClick}
-                paddingLeft={backButton ? 1 : 3}
-                paddingY={3}
+                onClick={isTitleString ? handleTitleClick : undefined}
+                paddingY={isTitleString ? 3 : undefined}
                 tabIndex={tabIndex}
               >
-                {loading && <TitleTextSkeleton animated radius={1} />}
-                {!loading && (
-                  <TitleText textOverflow="ellipsis" weight="semibold">
-                    {title}
-                  </TitleText>
-                )}
+                {loading && <TitleTextSkeleton marginY={3} animated radius={1} />}
+                {!loading &&
+                  (isTitleString ? (
+                    <Box paddingLeft={3}>
+                      <TitleText textOverflow="ellipsis" weight="medium">
+                        {title}
+                      </TitleText>
+                    </Box>
+                  ) : (
+                    title
+                  ))}
               </TitleCard>
 
               {actions && (
