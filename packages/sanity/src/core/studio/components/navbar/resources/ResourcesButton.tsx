@@ -1,6 +1,7 @@
+/* eslint-disable react/jsx-no-bind */
 import {HelpCircleIcon} from '@sanity/icons'
 import {Box, Button, Flex, Menu, MenuButton, Text, Tooltip} from '@sanity/ui'
-import React from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
 import {useGetHelpResources} from './helper-functions/hooks'
@@ -13,6 +14,7 @@ const StyledMenu = styled(Menu)`
 
 export function ResourcesButton() {
   const {scheme} = useColorScheme()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const {value, error, isLoading} = useGetHelpResources()
 
@@ -27,6 +29,7 @@ export function ResourcesButton() {
         scheme={scheme}
         placement="bottom"
         portal
+        disabled={menuOpen}
       >
         <div>
           <MenuButton
@@ -45,6 +48,8 @@ export function ResourcesButton() {
               </StyledMenu>
             }
             popover={{constrainSize: true, placement: 'bottom', portal: true, scheme}}
+            onClose={() => setMenuOpen(false)}
+            onOpen={() => setMenuOpen(true)}
           />
         </div>
       </Tooltip>

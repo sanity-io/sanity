@@ -23,7 +23,11 @@ const StyledMenu = styled(Menu)`
   min-width: 250px;
 `
 
-export function WorkspaceMenuButton(props: ButtonProps) {
+interface Props extends ButtonProps {
+  setIsMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export function WorkspaceMenuButton(props: Props) {
   const {scheme} = useColorScheme()
   const workspaces = useWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
@@ -89,6 +93,8 @@ export function WorkspaceMenuButton(props: ButtonProps) {
             })}
         </StyledMenu>
       }
+      onClose={() => props.setIsMenuOpen && props.setIsMenuOpen(false)}
+      onOpen={() => props.setIsMenuOpen && props.setIsMenuOpen(true)}
       popover={popoverProps}
     />
   )

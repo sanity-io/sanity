@@ -137,6 +137,8 @@ export function StudioNavbar() {
     setDrawerOpen(true)
   }, [])
 
+  const [isWorkspaceMenuOpen, setIsWorkspaceMenuOpen] = useState(false)
+
   return (
     <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
       <RootCard
@@ -179,9 +181,10 @@ export function StudioNavbar() {
                   placement="bottom"
                   portal
                   scheme={scheme}
+                  disabled={isWorkspaceMenuOpen}
                 >
                   <Box>
-                    <WorkspaceMenuButton />
+                    <WorkspaceMenuButton setIsMenuOpen={setIsWorkspaceMenuOpen} />
                   </Box>
                 </Tooltip>
               </Box>
