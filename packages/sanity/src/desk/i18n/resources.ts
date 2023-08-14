@@ -60,7 +60,7 @@ const deskLocaleStrings = {
   /** --- Timeline --- */
 
   /** Error prompt when revision cannot be loaded */
-  'timeline.unable-to-load-rev': 'Unable to load revision',
+  'timeline.error.unable-to-load-rev': 'Unable to load revision',
 
   /** Label for latest version for timeline menu dropdown */
   'timeline.latest-version': 'Latest version',
@@ -77,16 +77,18 @@ const deskLocaleStrings = {
   'timeline.since-version-missing': 'Since: unknown version',
 
   /** Title for error when the timeline for the given document can't be loaded */
-  'timeline.error-title': 'An error occurred whilst retrieving document changes.',
+  'timeline.error.load-document-changes-title':
+    'An error occurred whilst retrieving document changes.',
 
   /** Description for error when the timeline for the given document can't be loaded */
-  'timeline.error-description': 'Document history transactions have not been affected.',
+  'timeline.error.load-document-changes-description':
+    'Document history transactions have not been affected.',
 
   /** Error title for when the document doesn't have history */
-  'timeline.no-document-history-title': 'No document history',
+  'timeline.error.no-document-history-title': 'No document history',
 
   /** Error description for when the document doesn't have history */
-  'timeline.no-document-history-description':
+  'timeline.error.no-document-history-description':
     'When changing the content of the document, the document versions will appear in this menu.',
 
   /** --- Timeline constants --- */
