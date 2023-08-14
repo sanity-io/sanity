@@ -8,10 +8,10 @@ export function NoChanges() {
   return (
     <Stack space={3}>
       <Text size={1} weight="semibold" as="h3">
-        {t('core.review-changes.no-changes-title')}
+        {t('review-changes.no-changes-title')}
       </Text>
       <Text as="p" size={1} muted>
-        {t('core.review-changes.no-changes-description')}
+        {t('review-changes.no-changes-description')}
       </Text>
     </Stack>
   )
