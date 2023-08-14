@@ -74,7 +74,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
           closable: true,
           description: err.message,
           status: 'error',
-          title: t('desk.timeline.unable-to-load-rev'),
+          title: t('timeline.unable-to-load-rev'),
         })
       }
     },
@@ -92,7 +92,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
           closable: true,
           description: err.message,
           status: 'error',
-          title: t('desk.timeline.unable-to-load-rev'),
+          title: t('timeline.unable-to-load-rev'),
         })
       }
     },
@@ -133,16 +133,16 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     </>
   )
 
-  const revLabel = chunk ? t(`desk.timeline.${chunk.type}`) : t('desk.timeline.latest-version')
+  const revLabel = chunk ? t(`timeline.${chunk.type}`) : t('timeline.latest-version')
 
   const sinceLabel = chunk
-    ? t('desk.timeline.since', {
+    ? t('timeline.since', {
         timestamp: new Date(chunk?.endTimestamp),
         formatParams: {
           timestamp: {dateStyle: 'medium', timeStyle: 'short'},
         },
       })
-    : t('desk.timeline.since-version-missing')
+    : t('timeline.since-version-missing')
 
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
 
@@ -166,7 +166,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         ref={setButton}
         selected={open}
         style={{maxWidth: '100%'}}
-        text={ready ? buttonLabel : t('desk.timeline.loading-history')}
+        text={ready ? buttonLabel : t('timeline.loading-history')}
       />
     </Root>
   )

@@ -66,10 +66,10 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
-        closeButtonLabel={t('desk.review-changes.close-label')}
+        closeButtonLabel={t('review-changes.close-label')}
         flex="none"
         onClose={onClose}
-        title={t('desk.review-changes.title')}
+        title={t('review-changes.title')}
       >
         <Flex gap={1} padding={3} paddingTop={0} paddingBottom={2}>
           <Box flex={1}>
@@ -79,10 +79,10 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
           <Box flex="none">
             <DiffTooltip
               annotations={changeAnnotations}
-              description={t('desk.review-changes.changes-by-author')}
+              description={t('review-changes.changes-by-author')}
               portal
             >
-              <AvatarStack maxLength={4} aria-label={t('desk.review-changes.changes-by-author')}>
+              <AvatarStack maxLength={4} aria-label={t('review-changes.changes-by-author')}>
                 {changeAnnotations.map(({author}) => (
                   <UserAvatar key={author} user={author} />
                 ))}

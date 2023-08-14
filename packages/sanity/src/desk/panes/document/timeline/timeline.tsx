@@ -86,10 +86,10 @@ export const Timeline = ({
       {filteredChunks.length === 0 && (
         <StackWrapper padding={3} space={3}>
           <Text size={1} weight="semibold">
-            {t('desk.timeline.no-document-history-title')}
+            {t('timeline.no-document-history-title')}
           </Text>
           <Text muted size={1}>
-            {t('desk.timeline.no-document-history-description')}
+            {t('timeline.no-document-history-description')}
           </Text>
         </StackWrapper>
       )}
