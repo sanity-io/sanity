@@ -1,7 +1,5 @@
 import {SelectIcon} from '@sanity/icons'
 import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
-import {format} from 'date-fns'
-import {upperFirst} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
@@ -135,12 +133,15 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     </>
   )
 
-  const timeLabel = useFormattedTimestamp(chunk?.endTimestamp || '')
-
   const revLabel = chunk ? t(`desk.timeline.${chunk.type}`) : t('desk.timeline.latest-version')
 
   const sinceLabel = chunk
-    ? t('desk.timeline.since', {timeLabel: timeLabel})
+    ? t('desk.timeline.since', {
+        timestamp: new Date(chunk?.endTimestamp),
+        formatParams: {
+          timestamp: {dateStyle: 'medium', timeStyle: 'short'},
+        },
+      })
     : t('desk.timeline.since-version-missing')
 
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
@@ -169,14 +170,4 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
       />
     </Root>
   )
-}
-
-export function useFormattedTimestamp(time: string): string {
-  const formatted = useMemo(() => {
-    const parsedDate = time ? new Date(time) : new Date()
-    const formattedDate = format(parsedDate, 'MMM d, yyyy, hh:mm a')
-    return formattedDate
-  }, [time])
-
-  return formatted
 }
