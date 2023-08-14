@@ -72,31 +72,31 @@ export const studioLocaleStrings = {
   /** --- Review Changes --- */
 
   /** No Changes title in the Review Changes pane */
-  'core.review-changes.no-changes-title': 'There are no changes',
+  'review-changes.no-changes-title': 'There are no changes',
 
   /** No Changes description in the Review Changes pane */
-  'core.review-changes.no-changes-description':
+  'review-changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
 
   /** Prompt for reverting all changes in document in Review Changes pane */
-  'core.review-changes.revert-all-button-prompt': `Are you sure you want to revert all {{count}} changes?`,
+  'review-changes.revert-all-button-prompt': `Are you sure you want to revert all {{count}} changes?`,
 
   /** Cancel label for revert button prompt action */
-  'core.review-changes.revert-button-cancel': `Cancel`,
+  'review-changes.revert-button-cancel': `Cancel`,
 
   /** Revert all label for revert button action - used on prompt button + review changes pane */
-  'core.review-changes.revert-button-revert-all': `Revert all`,
+  'review-changes.revert-button-revert-all': `Revert all`,
 
   /** Loading author of change in the differences tooltip in the review changes pane */
-  'desk.review-changes.loading-author': 'Loading…',
+  'review-changes.loading-author': 'Loading…',
 
   /** --- Review Changes: Field + Group --- */
 
   /** Revert changes prompt for field change */
-  'core.review-changes.revert-button-prompt': `Are you sure you want to revert the changes?`,
+  'review-changes.revert-button-prompt': `Are you sure you want to revert the changes?`,
 
   /** Revert changes label for button for field change */
-  'core.review-changes.revert-button-change': `Revert change`,
+  'review-changes.revert-button-change': `Revert change`,
 }
 
 /**
