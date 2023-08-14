@@ -78,28 +78,28 @@ export const studioLocaleStrings = {
   'review-changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
 
-  /** Prompt for reverting all changes in document in Review Changes pane */
-  'review-changes.revert-all-button-prompt': `Are you sure you want to revert all {{count}} changes?`,
+  /** Prompt for reverting all changes in document in Review Changes pane. Includes a count of changes. */
+  'review-changes.action.revert-all-description': `Are you sure you want to revert all {{count}} changes?`,
 
   /** Cancel label for revert button prompt action */
-  'review-changes.revert-button-cancel': `Cancel`,
+  'review-changes.action.revert-all-cancel': `Cancel`,
 
-  /** Revert all label for revert button action - used on prompt button + review changes pane */
-  'review-changes.revert-button-revert-all': `Revert all`,
+  /** Revert all confirm label for revert button action - used on prompt button + review changes pane */
+  'review-changes.action.revert-all-confirm': `Revert all`,
 
   /** Loading author of change in the differences tooltip in the review changes pane */
   'review-changes.loading-author': 'Loading…',
 
   /** --- Review Changes: Field + Group --- */
 
-  /** Revert changes prompt for field change */
-  'review-changes.revert-button-prompt': `Are you sure you want to revert the changes?`,
+  /** Prompt for reverting changes for a field change */
+  'review-changes.action.revert-changes-description': `Are you sure you want to revert the changes?`,
 
-  /** Revert change (singular) label for field change action */
-  'review-changes.revert-button-change_one': `Revert change`,
+  /** Prompt for confirming revert change (singular) label for field change action */
+  'review-changes.action.revert-changes-confirm-change_one': `Revert change`,
 
-  /** Revert changes (plural) label for field change action */
-  'review-changes.revert-button-change_other': `Revert changes`,
+  /** Revert for confirming revert (plural) label for field change action */
+  'review-changes.action.revert-changes-confirm-change_other': `Revert changes`,
 }
 
 /**
