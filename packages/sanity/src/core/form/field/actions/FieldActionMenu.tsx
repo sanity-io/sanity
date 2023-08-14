@@ -3,21 +3,30 @@
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import React, {memo, useCallback, useId, useMemo, useState} from 'react'
+import styled, {css} from 'styled-components'
 import {StatusButton, StatusButtonProps} from '../../../components'
 import {DocumentFieldActionGroup, DocumentFieldActionNode} from '../../../config'
-import {supportsTouch} from '../../../util'
-import {useFieldActions} from './useFieldActions'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
 
 /** @internal */
 export interface FieldActionMenuProps {
-  focused: boolean | undefined
   nodes: DocumentFieldActionNode[]
+  onMenuOpenChange: (open: boolean) => void
 }
 
 const STATUS_BUTTON_TOOLTIP_PROPS: StatusButtonProps['tooltip'] = {
   placement: 'top',
 }
+
+const RootFlex = styled(Flex)(({theme}) => {
+  const {space} = theme.sanity
+
+  return css`
+    height: 25;
+    line-height: 0;
+    gap: ${space[1] / 2}px;
+  `
+})
 
 function renderAsButton(node: DocumentFieldActionNode) {
   return 'renderAsButton' in node && node.renderAsButton
@@ -25,13 +34,17 @@ function renderAsButton(node: DocumentFieldActionNode) {
 
 /** @internal */
 export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionMenuProps) {
-  const {focused, nodes} = props
-  const {hovered} = useFieldActions()
-
+  const {nodes, onMenuOpenChange} = props
   const [open, setOpen] = useState(false)
 
-  const handleOpen = useCallback(() => setOpen(true), [])
-  const handleClose = useCallback(() => setOpen(false), [])
+  const handleOpen = useCallback(() => {
+    onMenuOpenChange(true)
+    setOpen(true)
+  }, [onMenuOpenChange])
+  const handleClose = useCallback(() => {
+    onMenuOpenChange(false)
+    setOpen(false)
+  }, [onMenuOpenChange])
 
   const buttonNodes = useMemo(() => nodes.filter(renderAsButton), [nodes])
   const menuNodesProp = useMemo(() => nodes.filter((node) => !renderAsButton(node)), [nodes])
@@ -53,7 +66,6 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
 
   const rootNodes: DocumentFieldActionNode[] = useMemo(
     () => [
-      ...buttonNodes,
       ...(menuNodes.length
         ? ([
             {
@@ -64,17 +76,13 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
             },
           ] satisfies DocumentFieldActionNode[])
         : []),
+      ...buttonNodes,
     ],
     [buttonNodes, menuNodes]
   )
 
-  const rootStyle = useMemo(
-    () => ({height: 25, lineHeight: 0, display: open || focused || hovered ? undefined : 'none'}),
-    [focused, hovered, open]
-  )
-
   return (
-    <Flex gap={1} style={rootStyle}>
+    <RootFlex>
       {rootNodes.map((node, idx) => (
         <RootFieldActionMenuNode
           // eslint-disable-next-line react/no-array-index-key
@@ -85,7 +93,7 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
           open={open}
         />
       ))}
-    </Flex>
+    </RootFlex>
   )
 })
 
@@ -108,7 +116,7 @@ const RootFieldActionMenuNode = memo(function RootFieldActionMenuNode(props: {
         icon={node.icon}
         // Do not show tooltip if menu is open
         label={open ? undefined : node.title}
-        mode={supportsTouch ? 'bleed' : 'ghost'}
+        mode="bleed"
         onClick={node.onAction}
         padding={2}
         tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
@@ -141,7 +149,7 @@ function RootFieldActionMenuGroup(props: {
           fontSize={1}
           icon={node.icon}
           label={open ? undefined : node.title}
-          mode={supportsTouch ? 'bleed' : 'ghost'}
+          mode="bleed"
           padding={2}
           tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
         />

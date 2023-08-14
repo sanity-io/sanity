@@ -283,7 +283,6 @@ function PresenceInside(props: {
               style={{
                 zIndex: 2,
                 position: 'absolute',
-                pointerEvents: 'all',
                 ...ITEM_TRANSITION,
                 left: originalLeft,
                 transform: `translate3d(${nearTop || nearBottom ? diffRight : 0}px, 0px, 0px)`,

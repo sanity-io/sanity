@@ -2,22 +2,21 @@ import {FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
 import {FormNodePresence} from '../../../presence'
-import {FormFieldHeader} from './FormFieldHeader'
+import {DocumentFieldActionNode} from '../../../config'
+import {useFieldActions} from '../../field'
+import {FormFieldBaseHeader} from './FormFieldBaseHeader'
+import {FormFieldHeaderText} from './FormFieldHeaderText'
+
+const EMPTY_ARRAY: never[] = []
 
 /** @internal */
 export interface FormFieldProps {
   /**
-   *
    * @hidden
    * @beta
    */
-  __unstable_headerActions?: React.ReactNode
+  __unstable_headerActions?: DocumentFieldActionNode[]
   /**
-   * @beta
-   */
-  validation?: FormNodeValidation[]
-  /**
-   *
    * @hidden
    * @beta
    */
@@ -33,6 +32,10 @@ export interface FormFieldProps {
    */
   level?: number
   title?: React.ReactNode
+  /**
+   * @beta
+   */
+  validation?: FormNodeValidation[]
 }
 
 /** @internal */
@@ -40,30 +43,44 @@ export const FormField = memo(function FormField(
   props: FormFieldProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>
 ) {
   const {
-    validation,
-    __unstable_headerActions: headerActions,
-    __unstable_presence: presence,
+    __unstable_headerActions: actions = EMPTY_ARRAY,
+    __unstable_presence: presence = EMPTY_ARRAY,
     children,
     description,
     inputId,
     level,
     title,
+    validation,
     ...restProps
   } = props
+  const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
+
   return (
-    <Stack {...restProps} data-level={level} space={1}>
+    <Stack
+      {...restProps}
+      data-level={level}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      space={1}
+    >
       {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.
         So we might want to separate the concerns of input vs formfield components later on.
       */}
       {title && (
-        <FormFieldHeader
-          __unstable_actions={headerActions}
-          validation={validation}
-          __unstable_presence={presence}
-          description={description}
-          inputId={inputId}
-          title={title}
+        <FormFieldBaseHeader
+          actions={actions}
+          fieldFocused={Boolean(focused)}
+          fieldHovered={hovered}
+          presence={presence}
+          content={
+            <FormFieldHeaderText
+              description={description}
+              inputId={inputId}
+              title={title}
+              validation={validation}
+            />
+          }
         />
       )}
 
