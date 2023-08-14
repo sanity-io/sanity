@@ -71,7 +71,7 @@ const deskLocaleStrings = {
   /** Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter.
    */
-  'desk.timeline.since': 'Since: {{timeLabel}}',
+  'desk.timeline.since': 'Since: {{timestamp, datetime}}',
 
   /** Label for missing change version for timeline menu dropdown are showing */
   'desk.timeline.since-version-missing': 'Since: unknown version',
