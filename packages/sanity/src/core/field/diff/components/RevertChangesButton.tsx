@@ -1,6 +1,7 @@
 import {RevertIcon} from '@sanity/icons'
 import {Button, ButtonProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
+import {useTranslation} from 'react-i18next'
 import styled from 'styled-components'
 
 const Root = styled(Button)`
@@ -30,12 +31,15 @@ export const RevertChangesButton = forwardRef(function RevertChangesButton(
   ref: React.ForwardedRef<HTMLButtonElement>,
 ): React.ReactElement {
   const {selected, ...restProps} = props
+  const {t} = useTranslation()
 
   return (
     <Root
       icon={RevertIcon}
       selected={selected}
-      text="Revert changes"
+      // kept at "count: 2" as a const because this component will always have plurals (and never a singular)
+      // the value itself is not used in translation (check the i18n file "review-changes.revert-button-change_other")
+      text={t('review-changes.revert-button-change', {count: 2})}
       mode="bleed"
       padding={1}
       fontSize={1}
