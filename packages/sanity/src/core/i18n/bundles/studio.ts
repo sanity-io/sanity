@@ -1,7 +1,12 @@
-import {defineLocaleResourceBundle} from '../defineHelpers'
+import {defineLocaleResourceBundle} from '../helpers'
 import {studioLocaleNamespace} from '../localeNamespaces'
 
-const studioLocaleStrings = {
+/**
+ * The string resources for the studio core.
+ *
+ * @internal
+ */
+export const studioLocaleStrings = {
   /** Placeholder text for the omnisearch input field */
   'navbar.search.placeholder': 'Search',
 

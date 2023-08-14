@@ -1,7 +1,9 @@
-import type {ValidationMarker, Validators} from '@sanity/types'
+import type {CustomValidatorResult, ValidationMarker, Validators} from '@sanity/types'
+import type {LocaleSource} from '../../i18n'
 import {typeString} from '../util/typeString'
 import {deepEquals} from '../util/deepEquals'
 import {pathToString} from '../util/pathToString'
+import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {ValidationError as ValidationErrorClass} from '../ValidationError'
 
 const SLOW_VALIDATOR_TIMEOUT = 5000
@@ -10,17 +12,35 @@ const formatValidationErrors = (options: {
   message: string | undefined
   results: ValidationMarker[]
   operation: 'AND' | 'OR'
+  i18n: LocaleSource
 }) => {
-  let message
+  let message: string
 
   if (options.message) {
     message = options.message
   } else if (options.results.length === 1) {
     message = options.results[0]?.item.message
   } else {
-    message = `[${options.results
-      .map((err) => err.item.message)
-      .join(` - ${options.operation} - `)}]`
+    const messages = options.results.map((err) => err.item.message)
+    const type = options.operation === 'AND' ? 'conjunction' : 'disjunction'
+
+    /**
+     * Intentionally not i18n overridable (but still uses locale conjuction/disjunctions):
+     * We have not really documented the use of the `.either()` and `.all()` validators, and while
+     * they technically can be useful, we have not figured out a good way of displaying the errors
+     * in a way that indicates their grouping. Once we've figured out how to do so, this string is
+     * likely to be only for "fallback"/non-UI purposes.
+     */
+    const key = '{{messages, list}}'
+    message = options.i18n.t(key, {
+      messages,
+      formatParams: {
+        messages: {
+          style: 'long',
+          type,
+        },
+      },
+    })
   }
 
   return new ValidationErrorClass(message, {
@@ -30,18 +50,18 @@ const formatValidationErrors = (options: {
 }
 
 export const genericValidators: Validators = {
-  type: (expected, value, message) => {
+  type: (expectedType, value, message, {i18n}) => {
     const actualType = typeString(value)
-    if (actualType !== expected && actualType !== 'undefined') {
-      return message || `Expected type "${expected}", got "${actualType}"`
+    if (actualType !== expectedType && actualType !== 'undefined') {
+      return message || i18n.t('validation:generic.incorrect-type', {actualType, expectedType})
     }
 
     return true
   },
 
-  presence: (expected, value, message) => {
+  presence: (expected, value, message, {i18n}) => {
     if (value === undefined && expected === 'required') {
-      return message || 'Value is required'
+      return message || i18n.t('validation:generic.required')
     }
 
     return true
@@ -51,12 +71,15 @@ export const genericValidators: Validators = {
     const resolved = await Promise.all(children.map((child) => child.validate(value, context)))
     const results = resolved.flat()
 
-    if (!results.length) return true
+    if (results.length === 0) {
+      return true
+    }
 
     return formatValidationErrors({
       message,
       results,
       operation: 'AND',
+      i18n: context.i18n,
     })
   },
 
@@ -65,16 +88,19 @@ export const genericValidators: Validators = {
     const results = resolved.flat()
 
     // Read: There is at least one rule that matched
-    if (results.length < children.length) return true
+    if (results.length < children.length) {
+      return true
+    }
 
     return formatValidationErrors({
       message,
       results,
       operation: 'OR',
+      i18n: context.i18n,
     })
   },
 
-  valid: (allowedValues, actual, message) => {
+  valid: (allowedValues, actual, message, {i18n}) => {
     const valueType = typeof actual
     if (valueType === 'undefined') {
       return true
@@ -83,13 +109,13 @@ export const genericValidators: Validators = {
     const value = (valueType === 'number' || valueType === 'string') && `${actual}`
     const strValue = value && value.length > 30 ? `${value.slice(0, 30)}…` : value
 
-    const defaultMessage = value
-      ? `Value "${strValue}" did not match any allowed values`
-      : 'Value did not match any allowed values'
-
     return allowedValues.some((expected) => deepEquals(expected, actual))
       ? true
-      : message || defaultMessage
+      : message ||
+          i18n.t(
+            'validation:generic.not-allowed',
+            value ? {context: 'hint', replace: {hint: strValue}} : {}
+          )
   },
 
   custom: async (fn, value, message, context) => {
@@ -102,14 +128,21 @@ export const genericValidators: Validators = {
       )
     }, SLOW_VALIDATOR_TIMEOUT)
 
-    let result
+    let result: CustomValidatorResult
     try {
       result = await fn(value, context)
     } finally {
       clearTimeout(slowTimer)
     }
 
-    if (typeof result === 'string') return message || result
+    if (isLocalizedMessages(result)) {
+      return localizeMessage(result, context.i18n)
+    }
+
+    if (typeof result === 'string') {
+      return message || result
+    }
+
     return result
   },
 }

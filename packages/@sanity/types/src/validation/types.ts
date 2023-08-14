@@ -13,6 +13,22 @@ export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Obje
 export type FieldRules = {[fieldKey: string]: SchemaValidationValue}
 
 /**
+ * Holds localized validation messages for a given field.
+ *
+ * @example Custom message for English (US) and Norwegian (Bokmål):
+ * ```
+ * {
+ *   'en-US': 'Needs to start with a capital letter',
+ *   'no-NB': 'Må starte med stor bokstav',
+ * }
+ * ```
+ * @public
+ */
+export interface LocalizedValidationMessages {
+  [locale: string]: string
+}
+
+/**
  * Note: `RuleClass` and `Rule` are split to fit the current `@sanity/types`
  * setup. Classes are a bit weird in the `@sanity/types` package because classes
  * create an actual javascript class while simultaneously creating a type
@@ -89,7 +105,7 @@ export interface Rule {
    * @internal
    * @deprecated internal use only
    */
-  _message: string | undefined
+  _message: string | LocalizedValidationMessages | undefined
   /**
    * @internal
    * @deprecated internal use only
@@ -124,9 +140,9 @@ export interface Rule {
    * ```
    */
   valueOfField: (path: string | string[]) => FieldReference
-  error(message?: string): Rule
-  warning(message?: string): Rule
-  info(message?: string): Rule
+  error(message?: string | LocalizedValidationMessages): Rule
+  warning(message?: string | LocalizedValidationMessages): Rule
+  info(message?: string | LocalizedValidationMessages): Rule
   reset(): this
   isRequired(): boolean
   clone(): Rule
@@ -182,7 +198,7 @@ export type RuleSpec =
   | {flag: 'lessThan'; constraint: number}
   | {flag: 'greaterThan'; constraint: number}
   | {flag: 'stringCasing'; constraint: 'uppercase' | 'lowercase'}
-  | {flag: 'assetRequired'; constraint: {assetType: 'Asset' | 'Image' | 'File'}}
+  | {flag: 'assetRequired'; constraint: {assetType: 'asset' | 'image' | 'file'}}
   | {
       flag: 'regex'
       constraint: {
@@ -231,7 +247,7 @@ export type RuleSpecConstraint<T extends RuleSpec['flag']> = ConditionalIndexAcc
  *
  * @public
  */
-export type ValidationContext = {
+export interface ValidationContext {
   getClient: (options: {apiVersion: string}) => SanityClient
   schema: Schema
   parent?: unknown
@@ -246,7 +262,7 @@ export type ValidationContext = {
  * `RuleSpec`'s constraint, the value to check, an optional override message,
  * and the validation context.
  *
- * @see Rule.validate from `sanity/validation/src/Rule`
+ * @see Rule.validate from `sanity/src/core/validation/Rule`
  *
  * @internal
  */
@@ -325,7 +341,7 @@ export interface ValidationError {
 }
 
 /** @public */
-export type CustomValidatorResult = true | string | ValidationError
+export type CustomValidatorResult = true | string | ValidationError | LocalizedValidationMessages
 
 /** @public */
 export type CustomValidator<T = unknown> = (

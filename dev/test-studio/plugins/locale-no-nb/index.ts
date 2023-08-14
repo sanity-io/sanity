@@ -1,17 +1,20 @@
-import {defineLocale, definePlugin, studioLocaleNamespace} from 'sanity'
-import {deskLocaleNamespace} from 'sanity/desk'
+import {defineLocale, definePlugin} from 'sanity'
 
 const norwegianLanguage = defineLocale({
   id: 'no-NB',
   title: 'Norsk (Bokmål)',
   bundles: [
     {
-      namespace: studioLocaleNamespace,
+      namespace: 'studio',
       resources: () => import('./bundles/studio'),
     },
     {
-      namespace: deskLocaleNamespace,
+      namespace: 'desk',
       resources: () => import('./bundles/desk'),
+    },
+    {
+      namespace: 'validation',
+      resources: () => import('./bundles/validation'),
     },
   ],
 })

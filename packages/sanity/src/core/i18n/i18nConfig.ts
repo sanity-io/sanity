@@ -64,6 +64,10 @@ function createI18nApi({
       get currentLocale() {
         return i18nInstance.language
       },
+      loadNamespaces(namespaces: string[]): Promise<void> {
+        const missing = namespaces.filter((ns) => !i18nInstance.hasLoadedNamespace(ns))
+        return missing.length === 0 ? Promise.resolve() : i18nInstance.loadNamespaces(namespaces)
+      },
       locales: reducedLocales,
       t: i18nInstance.t,
     },
@@ -129,6 +133,9 @@ const defaultOptions: InitOptions = {
   // In rare cases we'll want to be able to debug i18next - there is a `debug` option
   // in the studio i18n configuration for that, which will override this value.
   debug: false,
+
+  // When specifying language 'en-US', do not load 'en-US', 'en', 'dev' - only `en-US`.
+  load: 'currentOnly',
 
   // We always use our "backend" for loading translations, allowing us to handle i18n resources
   // in a single place with a single approach. This means we shouldn't need to wait for the init,

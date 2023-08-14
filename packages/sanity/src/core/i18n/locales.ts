@@ -1,5 +1,6 @@
-import {defineLocale} from './defineHelpers'
+import {defineLocale} from './helpers'
 import {studioDefaultLocaleResources} from './bundles/studio'
+import {validationLocaleResources} from './bundles/validation'
 
 /**
  * The default US English locale for the studio.
@@ -10,7 +11,7 @@ import {studioDefaultLocaleResources} from './bundles/studio'
 export const usEnglishLocale = defineLocale({
   id: 'en-US',
   title: 'English (US)',
-  bundles: [studioDefaultLocaleResources],
+  bundles: [studioDefaultLocaleResources, validationLocaleResources],
 })
 
 /**
