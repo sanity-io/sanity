@@ -95,14 +95,14 @@ const deskLocaleStrings = {
   'desk.timeline.latest': 'Latest',
 
   /** Consts used in the timeline item component (dropdown menu) - helpers */
-  'desk.timeline.create': 'created',
-  'desk.timeline.delete': 'deleted',
-  'desk.timeline.discardDraft': 'discarded draft',
-  'desk.timeline.initial': 'created',
-  'desk.timeline.editDraft': 'edited',
-  'desk.timeline.editLive': 'live edited',
-  'desk.timeline.publish': 'published',
-  'desk.timeline.unpublish': 'unpublished',
+  'desk.timeline.create': 'Created',
+  'desk.timeline.delete': 'Deleted',
+  'desk.timeline.discardDraft': 'Discarded draft',
+  'desk.timeline.initial': 'Created',
+  'desk.timeline.editDraft': 'Edited',
+  'desk.timeline.editLive': 'Live edited',
+  'desk.timeline.publish': 'Published',
+  'desk.timeline.unpublish': 'Unpublished',
 }
 
 /**
