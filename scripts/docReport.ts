@@ -1,27 +1,108 @@
 import path from 'path'
 import fs from 'fs'
-import {cwd} from 'process'
-import ts from 'typescript'
+import ts, {JSDoc, JSDocComment, SyntaxKind} from 'typescript'
+import {createClient} from '@sanity/client'
+import {
+  at,
+  createIfNotExists,
+  type Mutation,
+  patch,
+  SanityEncoder,
+  set,
+  setIfMissing,
+  upsert,
+} from '@bjoerge/mutiny'
+import {deburr} from 'lodash'
+import {filter, map, mergeMap, of, tap} from 'rxjs'
+import readPackages from './utils/readPackages'
+import {PackageManifest} from './types'
+import {readEnv} from 'sanity-perf-tests/config/envVars'
 
 const ALLOWED_TAGS = ['public', 'alpha', 'beta', 'internal', 'experimental', 'deprecated']
-
+interface Package {
+  path: string
+  dirname: string
+  manifest: PackageManifest
+}
 function getTags(node: ts.Node) {
   const tags = ts.getJSDocTags(node).map((tag) => tag.tagName.getText())
   return tags.filter((tag) => ALLOWED_TAGS.includes(tag))
 }
 
-function getDocReport(exportPath: string) {
+export function sanityIdify(input: string) {
+  return deburr(input)
+    .replace(/[^a-zA-Z0-9_-]+/g, '_')
+    .replace(/^-/, '')
+}
+
+type SyntaxType = 'function' | 'class' | 'interface' | 'variable' | 'typeAlias' | 'enum' | 'module'
+
+function getComment(comment: string | ts.NodeArray<JSDocComment>) {
+  // eslint-disable-next-line no-nested-ternary
+  return typeof comment === 'string' ? [comment] : comment.flatMap((c) => c.text)
+}
+
+function getCommentFromJSDoc(t: ts.JSDoc) {
+  return t.comment ? getComment(t.comment) : []
+}
+
+function getName(node: ts.Node) {
+  if (node.kind === ts.SyntaxKind.VariableStatement) {
+    return (node as ts.VariableStatement).declarationList.declarations[0].name.getText()
+  }
+  return (
+    node as ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration
+  ).name?.getText()
+}
+
+function getNodeType(node: ts.Node): SyntaxType {
+  if (node.kind === ts.SyntaxKind.VariableStatement) {
+    return 'variable'
+  }
+  if (node.kind === ts.SyntaxKind.InterfaceDeclaration) {
+    return 'interface'
+  }
+  if (node.kind === ts.SyntaxKind.FunctionDeclaration) {
+    return 'function'
+  }
+  if (node.kind === ts.SyntaxKind.ClassDeclaration) {
+    return 'class'
+  }
+  if (node.kind === ts.SyntaxKind.TypeAliasDeclaration) {
+    return 'typeAlias'
+  }
+  if (node.kind === ts.SyntaxKind.EnumDeclaration) {
+    return 'enum'
+  }
+  if (node.kind === ts.SyntaxKind.ModuleDeclaration) {
+    return 'module'
+  }
+  throw new Error(`Unsupported syntax kind for node: ${ts.SyntaxKind[node.kind]}`)
+}
+
+type ExportedSymbol = {
+  name: string
+  type: SyntaxType
+  tags: string[]
+  comment?: string | undefined
+}
+
+type ResolvedExport = {
+  exportName: string
+  normalized: string
+  dtsExport: string
+  dtsFilePath: string
+}
+function getExportedSymbols(exp: ResolvedExport): ExportedSymbol[] {
+  const exportedSymbols: ExportedSymbol[] = []
   // Read the .d.ts file
   const sourceFile = ts.createSourceFile(
-    exportPath,
-    fs.readFileSync(path.resolve(cwd(), `packages/sanity/lib/exports/${exportPath}`)).toString(),
+    exp.dtsExport!,
+    fs.readFileSync(exp.dtsFilePath!).toString('utf-8'),
     // from tsconfig.settings.json
     ts.ScriptTarget.ES2017,
-    true
+    true,
   )
-
-  const exportNames: {name?: string; tags: string[]}[] = []
-
   sourceFile.forEachChild((node) => {
     // Get all the export items that are named or default export
     const exportedItem = ts
@@ -29,45 +110,114 @@ function getDocReport(exportPath: string) {
       ?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
 
     if (exportedItem) {
-      let name
+      const comment = ts
+        .getJSDocCommentsAndTags(node)
+        .filter((t): t is JSDoc => t.kind === SyntaxKind.JSDoc)
+        .flatMap((t) => getCommentFromJSDoc(t))
 
-      if (node.kind === ts.SyntaxKind.VariableStatement) {
-        name = (node as ts.VariableStatement).declarationList.declarations[0].name.getText()
-      } else {
-        name = (
-          node as ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration
-        ).name?.getText()
+      const name = getName(node)
+      if (!name) {
+        return
       }
-
       const tags = getTags(node)
+      const type = getNodeType(node)
 
-      exportNames.push({name, tags})
+      exportedSymbols.push({
+        name,
+        type,
+        comment: comment.length > 0 ? comment.join('\n') : undefined,
+        tags,
+      })
     }
   })
-
-  return exportNames
+  return exportedSymbols
 }
 
-// todo: make it work for different packages
-fs.readdir(path.resolve(cwd(), 'packages/sanity/lib/exports'), (err, files) => {
-  if (err) {
-    console.error(err)
-    return
-  }
-
-  const result = files
-    .map((file) => {
-      if (file.endsWith('.d.ts')) {
-        return {
-          packageName: `sanity${file === 'index.d.ts' ? '' : `/${file.replace('.d.ts', '')}`}`,
-          properties: getDocReport(file),
+function getResolvedExports(pkg: Package): ResolvedExport[] {
+  const manifest = pkg.manifest
+  return Object.entries(manifest.exports || {}).flatMap(([exportName, exportDefinition]) => {
+    return exportDefinition.types
+      ? {
+          exportName,
+          normalized: path.join(manifest.name, exportName),
+          dtsExport: exportDefinition.types,
+          dtsFilePath: exportDefinition.types && path.join(pkg.dirname, exportDefinition.types),
         }
-      }
+      : []
+  })
+}
 
-      return undefined
-    })
-    .filter(Boolean)
+function getPackageMutations(pkg: Package): Mutation[] {
+  const exports = getResolvedExports(pkg)
+  return exports.flatMap((exp) => {
+    const exportsDocId = `package-exports-${sanityIdify(exp.normalized)}`
+    const symbols = getExportedSymbols(exp)
+    return [
+      createIfNotExists({
+        _id: exportsDocId,
+        _type: 'packageExports',
+      }),
+      patch(exportsDocId, [
+        at('name', set(exp.exportName)),
+        at('normalized', set(exp.normalized)),
+        at('package', set(pkg.manifest.name)),
+      ]),
+      ...symbols.flatMap((symbol) => {
+        const symbolDocumentId = `symbol-${sanityIdify(symbol.name)}`
+        return [
+          createIfNotExists({
+            _id: symbolDocumentId,
+            _type: 'exportSymbol',
+          }),
+          patch(symbolDocumentId, [
+            at('exportedBy', setIfMissing({_type: 'ref', _ref: exportsDocId})),
+          ]),
+          patch(symbolDocumentId, [
+            at('name', set(symbol.name)),
+            at('versions', setIfMissing([])),
+            at(
+              'versions',
+              upsert(
+                [
+                  {
+                    _key: pkg.manifest.version,
+                    version: pkg.manifest.version,
+                    type: symbol.type,
+                    comment: symbol.comment,
+                    tags: symbol.tags,
+                    updatedAt: new Date().toISOString(),
+                  },
+                ],
+                'before',
+                0,
+              ),
+            ),
+          ]),
+        ]
+      }),
+    ]
+  })
+}
 
-  // TODO: Store this in studio
-  console.log(result)
+const studioMetricsClient = createClient({
+  projectId: 'c1zuxvqn',
+  dataset: 'production',
+  token: readEnv('PERF_TEST_METRICS_TOKEN'),
+  apiVersion: '2023-02-03',
+  useCdn: false,
 })
+
+of(readPackages())
+  .pipe(
+    tap((packages) => console.log(`Updating docs for ${packages.length} packages`)),
+    mergeMap((packages) => packages),
+    map((pkg) => {
+      return {pkg, mutations: getPackageMutations(pkg)}
+    }),
+    filter(({mutations}) => mutations.length > 0),
+    mergeMap(({pkg, mutations}) => {
+      console.log(`Submitting ${mutations.length} mutations for ${pkg.manifest.name}`)
+      return studioMetricsClient.observable.transaction(SanityEncoder.encode(mutations)).commit()
+    }, 2),
+  )
+  .subscribe()
