@@ -90,8 +90,11 @@ const studioLocaleStrings = {
   /** Revert changes prompt for field change */
   'review-changes.revert-button-prompt': `Are you sure you want to revert the changes?`,
 
-  /** Revert changes label for button for field change */
-  'review-changes.revert-button-change': `Revert change`,
+  /** Revert change (singular) label for field change action */
+  'review-changes.revert-button-change_one': `Revert change`,
+
+  /** Revert changes (plural) label for field change action */
+  'review-changes.revert-button-change_other': `Revert changes`,
 }
 
 /**
