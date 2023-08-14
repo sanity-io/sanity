@@ -49,7 +49,7 @@ const deskLocaleStrings = {
   'review-changes.title': 'Review changes',
 
   /** Label for the close button label in Review Changes pane */
-  'review-changes.close-label': 'Close review changes',
+  'review-changes.action.close-label': 'Close review changes',
 
   /** Label and text for differences tooltip that indicates the authors of the changes */
   'review-changes.changes-by-author': 'Changes by',
