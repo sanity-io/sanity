@@ -66,7 +66,7 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
-        closeButtonLabel={t('review-changes.close-label')}
+        closeButtonLabel={t('review-changes.action.close-label')}
         flex="none"
         onClose={onClose}
         title={t('review-changes.title')}
