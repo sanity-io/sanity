@@ -137,9 +137,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   const timeLabel = useFormattedTimestamp(chunk?.endTimestamp || '')
 
-  const revLabel = chunk
-    ? `${upperFirst(t(`desk.timeline.${chunk.type}`))}: ${timeLabel}`
-    : t('desk.timeline.latest-version')
+  const revLabel = chunk ? t(`desk.timeline.${chunk.type}`) : t('desk.timeline.latest-version')
 
   const sinceLabel = chunk
     ? t('desk.timeline.since', {timeLabel: timeLabel})
