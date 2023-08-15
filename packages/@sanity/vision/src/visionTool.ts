@@ -2,6 +2,7 @@ import {lazy} from 'react'
 import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'
 import {EyeOpenIcon} from '@sanity/icons'
+import {visionUsEnglishLocaleBundle} from '../i18n'
 import {VisionToolConfig} from './types'
 
 export const visionTool = definePlugin<VisionToolConfig | void>((options) => {
@@ -18,5 +19,8 @@ export const visionTool = definePlugin<VisionToolConfig | void>((options) => {
         router: route.create('/*'),
       },
     ],
+    i18n: {
+      bundles: [visionUsEnglishLocaleBundle],
+    },
   }
 })
