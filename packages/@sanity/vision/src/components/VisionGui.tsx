@@ -19,6 +19,7 @@ import {
   ToastContextValue,
   Inline,
 } from '@sanity/ui'
+import {TFunction} from 'sanity'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {getLocalStorage, LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
@@ -94,6 +95,7 @@ interface Subscription {
 interface VisionGuiProps extends VisionProps {
   toast: ToastContextValue
   datasets: string[]
+  t: TFunction<'vision', undefined>
 }
 
 interface VisionGuiState {
@@ -629,7 +631,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
   }
 
   render() {
-    const {datasets} = this.props
+    const {datasets, t} = this.props
     const {
       error,
       queryResult,
@@ -664,7 +666,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
             <Box padding={1} column={2}>
               <Stack>
                 <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>Dataset</StyledLabel>
+                  <StyledLabel>{t('header.dataset-label')}</StyledLabel>
                 </Card>
                 <Select value={dataset} onChange={this.handleChangeDataset}>
                   {datasets.map((ds) => (
