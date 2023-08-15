@@ -9,7 +9,7 @@ import {
   Box,
   Label,
 } from '@sanity/ui'
-import React, {useMemo} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
@@ -22,22 +22,30 @@ const StyledMenu = styled(Menu)`
   max-width: 350px;
   min-width: 250px;
 `
-
-interface Props extends ButtonProps {
-  setIsMenuOpen?: React.Dispatch<React.SetStateAction<boolean>>
+interface WorkspaceMenuButtonProps extends ButtonProps {
+  onMenuOpenChange?: (open: boolean) => void
 }
 
-export function WorkspaceMenuButton(props: Props) {
+export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
   const {scheme} = useColorScheme()
   const workspaces = useWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {navigateUrl} = useRouter()
+  const {onMenuOpenChange} = props
 
   const popoverProps: MenuButtonProps['popover'] = useMemo(
     () => ({constrainSize: true, scheme, portal: true}),
     [scheme],
   )
+
+  const handleOnOpen = useCallback(() => {
+    onMenuOpenChange?.(true)
+  }, [onMenuOpenChange])
+
+  const handleOnClose = useCallback(() => {
+    onMenuOpenChange?.(false)
+  }, [onMenuOpenChange])
 
   return (
     <MenuButton
@@ -93,8 +101,8 @@ export function WorkspaceMenuButton(props: Props) {
             })}
         </StyledMenu>
       }
-      onClose={() => props.setIsMenuOpen && props.setIsMenuOpen(false)}
-      onOpen={() => props.setIsMenuOpen && props.setIsMenuOpen(true)}
+      onClose={handleOnClose}
+      onOpen={handleOnOpen}
       popover={popoverProps}
     />
   )

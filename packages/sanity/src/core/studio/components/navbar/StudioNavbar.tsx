@@ -184,7 +184,7 @@ export function StudioNavbar() {
                   disabled={isWorkspaceMenuOpen}
                 >
                   <Box>
-                    <WorkspaceMenuButton setIsMenuOpen={setIsWorkspaceMenuOpen} />
+                    <WorkspaceMenuButton onMenuOpenChange={setIsWorkspaceMenuOpen} />
                   </Box>
                 </Tooltip>
               </Box>
