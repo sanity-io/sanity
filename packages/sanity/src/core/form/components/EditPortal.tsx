@@ -1,9 +1,9 @@
-import React, {type ReactNode, useState, useRef, useEffect} from 'react'
+import React, {type ReactNode, useState, useRef, useEffect, useCallback} from 'react'
 import {Box, Dialog, ResponsiveWidthProps} from '@sanity/ui'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {useScrollLock} from '../../hooks'
+import {disableBodyScroll, clearAllBodyScrollLocks, enableBodyScroll} from '../../hooks'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -32,13 +32,20 @@ export function EditPortal(props: Props): React.ReactElement {
   } = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
-  const {enable} = useScrollLock(documentScrollElement, {lockOnMount: false})
 
+  //Avoid background of dialog being scrollable on mobile
   useEffect(() => {
-    if (type === 'dialog') {
-      enable()
+    if (type === 'dialog' && documentScrollElement) {
+      disableBodyScroll(documentScrollElement)
     }
   })
+
+  const handleOnClose = useCallback(() => {
+    if (type === 'dialog' && documentScrollElement) {
+      onClose()
+      clearAllBodyScrollLocks()
+    }
+  }, [onClose, type, documentScrollElement])
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
@@ -57,8 +64,8 @@ export function EditPortal(props: Props): React.ReactElement {
         <Dialog
           header={header}
           id={id || ''}
-          onClickOutside={onClose}
-          onClose={onClose}
+          onClickOutside={handleOnClose}
+          onClose={handleOnClose}
           width={width}
           contentRef={setDocumentScrollElement}
           __unstable_autoFocus={autofocus}

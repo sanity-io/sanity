@@ -1,10 +1,10 @@
-import React, {useMemo, useId, useState} from 'react'
+import React, {useMemo, useId, useState, useCallback} from 'react'
 import styled from 'styled-components'
 import {Box, Dialog, Button, Text, Spinner, Grid, Flex} from '@sanity/ui'
 import {DocTitle} from '../DocTitle'
 import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
-import {useScrollLock} from 'sanity'
+import {clearAllBodyScrollLocks, disableBodyScroll} from 'sanity'
 
 /** @internal */
 export const DialogBody = styled(Box).attrs({
@@ -74,7 +74,14 @@ export function ConfirmDeleteDialog({
   const showConfirmButton = !isLoading
 
   //Avoid background of dialog being scrollable on mobile
-  useScrollLock(documentScrollElement)
+  if (documentScrollElement) {
+    disableBodyScroll(documentScrollElement)
+  }
+
+  const onHandleClose = useCallback(() => {
+    onCancel()
+    clearAllBodyScrollLocks()
+  }, [onCancel])
 
   return (
     <Dialog
@@ -84,7 +91,7 @@ export function ConfirmDeleteDialog({
       header={`${capitalizedAction} document?`}
       footer={
         <Grid columns={showConfirmButton ? 2 : 1} gap={2} paddingX={4} paddingY={3}>
-          <Button mode="ghost" onClick={onCancel} text="Cancel" />
+          <Button mode="ghost" onClick={onHandleClose} text="Cancel" />
 
           {showConfirmButton && (
             <Button
@@ -96,8 +103,8 @@ export function ConfirmDeleteDialog({
           )}
         </Grid>
       }
-      onClose={onCancel}
-      onClickOutside={onCancel}
+      onClose={onHandleClose}
+      onClickOutside={onHandleClose}
     >
       <DialogBody>
         {crossDatasetReferences && internalReferences && !isLoading ? (

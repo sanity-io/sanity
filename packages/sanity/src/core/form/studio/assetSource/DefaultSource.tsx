@@ -5,7 +5,7 @@ import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
-import {useClient, useScrollLock} from '../../../hooks'
+import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {AssetThumb} from './AssetThumb'
 import {TableList} from './TableList'
@@ -257,9 +257,6 @@ const DefaultAssetSource = function DefaultAssetSource(
       />
     )
   }, [isLoading, assets, selectedAssets, handleItemClick, handleItemKeyPress, handleDeleteFinished])
-
-  //Avoid background of dialog being scrollable on mobile
-  useScrollLock(documentScrollElement)
 
   return (
     <Dialog

@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {TrashIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Grid, Stack} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {SpinnerWithText} from '../../components/SpinnerWithText'
-import {useScrollLock} from '../../../hooks'
+import {clearAllBodyScrollLocks, disableBodyScroll, enableBodyScroll} from '../../../hooks'
 import {useReferringDocuments} from '../../../hooks/useReferringDocuments'
 import {DocumentList} from './DocumentList'
 import {ConfirmMessage} from './ConfirmMessage'
@@ -35,13 +35,27 @@ export function AssetUsageDialog({
   const [canDelete, setCanDelete] = useState(false)
   const [isLoadingParent, setIsLoadingParent] = useState(true)
   const [publishedDocuments, setPublishedDocuments] = useState<SanityDocument[]>([])
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const showActionFooter = mode === MODE_CONFIRM_DELETE
   const hasResults = publishedDocuments.length > 0
   const showDocumentList = mode === MODE_LIST_USAGE || hasResults
   const noPaddingOnStack = mode === MODE_CONFIRM_DELETE && !hasResults
+
+  //Avoid background of dialog being scrollable on mobile
+  if (documentScrollElement) {
+    disableBodyScroll(documentScrollElement)
+  }
+  //TODO: fix scrolling when closing the dialog
+  const handleOnClose = useCallback(() => {
+    onClose()
+    if (documentScrollElement) {
+      enableBodyScroll(documentScrollElement)
+    }
+  }, [onClose, documentScrollElement])
+
   const footer = showActionFooter ? (
     <Grid padding={2} gap={2} columns={2}>
-      <Button mode="bleed" text="Cancel" onClick={onClose} />
+      <Button mode="bleed" text="Cancel" onClick={handleOnClose} />
       <Button
         text="Delete"
         tone="critical"
@@ -65,18 +79,16 @@ export function AssetUsageDialog({
     setIsLoadingParent(assetIsLoading)
   }, [assetIsLoading, referringDocuments])
 
-  //Avoid background of dialog being scrollable on mobile
-  useScrollLock(document.getElementById('asset-dialog'))
-
   return (
     <Dialog
       __unstable_autoFocus={!isLoadingParent}
       footer={footer}
       header={defaultHeaderTitle}
       id="asset-dialog"
-      onClickOutside={onClose}
-      onClose={onClose}
+      onClickOutside={handleOnClose}
+      onClose={handleOnClose}
       width={1}
+      contentRef={setDocumentScrollElement}
     >
       {isLoadingParent && (
         <Box padding={4}>

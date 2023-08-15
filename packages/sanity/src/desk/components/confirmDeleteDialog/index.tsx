@@ -1,7 +1,7 @@
-import React, {useCallback, useState, useId} from 'react'
+import React, {useCallback, useState, useId, useEffect} from 'react'
 import {Box, Flex, Button, Dialog, Text, ErrorBoundary} from '@sanity/ui'
 import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
-import {useScrollLock} from 'sanity'
+import {clearAllBodyScrollLocks, disableBodyScroll} from 'sanity'
 
 export type {ConfirmDeleteDialogProps}
 
@@ -10,13 +10,23 @@ type ErrorInfo = ArgType<React.ComponentProps<typeof ErrorBoundary>['onCatch']>
 
 /** @internal */
 function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
+  const {onCancel} = props
   const id = useId()
   const [error, setError] = useState<ErrorInfo | null>(null)
   const handleRetry = useCallback(() => setError(null), [])
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   //Avoid background of dialog being scrollable on mobile
-  useScrollLock(documentScrollElement)
+  useEffect(() => {
+    if (documentScrollElement) {
+      disableBodyScroll(documentScrollElement)
+    }
+  })
+
+  const onHandleClose = useCallback(() => {
+    onCancel()
+    clearAllBodyScrollLocks()
+  }, [onCancel])
 
   return error ? (
     <Dialog
@@ -29,7 +39,8 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
           <Button mode="ghost" text="Retry" onClick={handleRetry} />
         </Flex>
       }
-      onClose={props.onCancel}
+      onClose={onHandleClose}
+      onClickOutside={onHandleClose}
     >
       <Box padding={4}>
         <Text>An error occurred while loading referencing documents.</Text>

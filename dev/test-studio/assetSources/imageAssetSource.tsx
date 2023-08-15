@@ -1,21 +1,29 @@
 import {ImagesIcon} from '@sanity/icons'
 import {AssetSource, AssetSourceComponentProps} from '@sanity/types'
 import {Box, Dialog, Text} from '@sanity/ui'
-import React, {useState} from 'react'
-import {useScrollLock} from 'sanity'
+import React, {useCallback, useState} from 'react'
+import {clearAllBodyScrollLocks, disableBodyScroll} from 'sanity'
 
 function ImageAssetSource(props: AssetSourceComponentProps) {
   const {dialogHeaderTitle, onClose, ...restProps} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   //Avoid background of dialog being scrollable on mobile
-  useScrollLock(documentScrollElement)
+  if (documentScrollElement) {
+    disableBodyScroll(documentScrollElement)
+  }
+
+  const handleOnClose = useCallback(() => {
+    onClose()
+    clearAllBodyScrollLocks()
+  }, [onClose])
 
   return (
     <Dialog
       header={dialogHeaderTitle || 'Custom: browse images'}
       id="test"
-      onClose={onClose}
+      onClose={handleOnClose}
+      onClickOutside={handleOnClose}
       width={1}
       contentRef={setDocumentScrollElement}
     >

@@ -1,9 +1,9 @@
-import React, {useEffect, useId, useRef, useState} from 'react'
+import React, {useCallback, useId, useRef, useState} from 'react'
 import {Box, Dialog} from '@sanity/ui'
+import {clearAllBodyScrollLocks, disableBodyScroll} from '../../../../../hooks'
 import {PresenceOverlay} from '../../../../../presence'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ModalWidth} from './types'
-import {useScrollLock} from '../../../../../hooks'
 
 interface DefaultEditDialogProps {
   children: React.ReactNode
@@ -20,14 +20,22 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
 
-  useScrollLock(contentElement)
+  //Avoid background of dialog being scrollable on mobile
+  if (contentElement) {
+    disableBodyScroll(contentElement)
+  }
+
+  const handleOnClose = useCallback(() => {
+    onClose()
+    clearAllBodyScrollLocks()
+  }, [onClose])
 
   return (
     <Dialog
       header={title}
       id={dialogId}
-      onClickOutside={onClose}
-      onClose={onClose}
+      onClickOutside={handleOnClose}
+      onClose={handleOnClose}
       portal="default"
       width={width}
       contentRef={setContentElement}

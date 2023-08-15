@@ -1,6 +1,6 @@
 import {SanityDocument} from '@sanity/types'
 import {Card, Code, Dialog, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
 import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
@@ -9,7 +9,7 @@ import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
-import {useScrollLock} from 'sanity'
+import {clearAllBodyScrollLocks, disableBodyScroll, enableBodyScroll} from 'sanity'
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null
@@ -43,7 +43,17 @@ export function InspectDialog(props: InspectDialogProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   //Avoid background of dialog being scrollable on mobile
-  useScrollLock(documentScrollElement)
+  //TODO: Won't scroll on close
+  if (documentScrollElement) {
+    disableBodyScroll(documentScrollElement)
+  }
+
+  const onHandleClose = useCallback(() => {
+    onInspectClose()
+    if (documentScrollElement) {
+      enableBodyScroll(documentScrollElement)
+    }
+  }, [onInspectClose, documentScrollElement])
 
   return (
     <Dialog
@@ -61,8 +71,8 @@ export function InspectDialog(props: InspectDialogProps) {
         )
       }
       contentRef={setDocumentScrollElement}
-      onClose={onInspectClose}
-      onClickOutside={onInspectClose}
+      onClose={onHandleClose}
+      onClickOutside={onHandleClose}
       width={3}
     >
       <Flex direction="column" height="fill">

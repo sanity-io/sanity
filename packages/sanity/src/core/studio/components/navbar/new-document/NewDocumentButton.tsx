@@ -19,7 +19,7 @@ import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
-import {useScrollLock} from '../../../../hooks'
+import {clearAllBodyScrollLocks, disableBodyScroll} from '../../../../hooks'
 import {NewDocumentList, NewDocumentListProps} from './NewDocumentList'
 import {ModalType, NewDocumentOption} from './types'
 import {filterOptions} from './filter'
@@ -78,6 +78,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     setOpen(false)
     setSearchQuery('')
     buttonElement?.focus()
+    clearAllBodyScrollLocks()
   }, [buttonElement])
 
   // Open popover on arrow down
@@ -185,8 +186,12 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     }),
     [loading, open, scheme, tooltipContent],
   )
+
   //Avoid background of dialog being scrollable on mobile
-  useScrollLock(documentScrollElement)
+  //TODO: fix scroll when closed
+  if (documentScrollElement) {
+    disableBodyScroll(documentScrollElement)
+  }
 
   // Dialog
   if (modal === 'dialog') {

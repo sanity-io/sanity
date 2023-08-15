@@ -2,7 +2,6 @@ import {Card, Dialog, Stack, Button, Text, TextInput, Flex} from '@sanity/ui'
 import React, {useEffect, useMemo} from 'react'
 import {LaunchIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {useScrollLock} from '../../hooks'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string
@@ -41,9 +40,6 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
       window.removeEventListener('focus', handleFocus)
     }
   }, [])
-
-  //Avoid background of dialog being scrollable on mobile
-  useScrollLock(document.getElementById('cors-error-dialog'))
 
   return (
     <Card height="fill">
