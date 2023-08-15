@@ -1,6 +1,5 @@
 import {SchemaType} from '@sanity/types'
 import {Observable} from 'rxjs'
-import {ButtonTone} from '@sanity/ui'
 import {
   DefaultDocumentNodeResolver,
   MenuItem as DeskToolMenuItem,
@@ -251,7 +250,7 @@ export interface PaneMenuItem extends DeskToolMenuItem {
   isDisabled?: boolean
   shortcut?: string
   selected?: boolean
-  tone?: ButtonTone
+  tone?: 'primary' | 'positive' | 'caution' | 'critical'
 }
 
 /** @internal */
