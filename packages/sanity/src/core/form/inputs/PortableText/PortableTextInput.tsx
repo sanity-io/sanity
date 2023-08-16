@@ -65,7 +65,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onPaste,
     onPathFocus,
     path,
-    readOnly: readOnlyFromProps,
+    readOnly,
     renderBlockActions,
     renderCustomMarkers,
     schemaType,
@@ -89,7 +89,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isActive, setIsActive] = useState(false)
-  const [readOnly, setReadOnly] = useState(readOnlyFromProps)
+  const [isOffline, setIsOffline] = useState(false)
 
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
@@ -108,11 +108,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
       setIsFullscreen((v) => !v)
     }
   }, [])
-
-  // Keep readOnly state in sync with props.readOnly
-  useEffect(() => {
-    setReadOnly(readOnlyFromProps)
-  }, [readOnlyFromProps])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -241,9 +236,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
           break
         case 'connection':
           if (change.value === 'offline') {
-            setReadOnly(true)
+            setIsOffline(true)
           } else if (change.value === 'online') {
-            setReadOnly(readOnlyFromProps)
+            setIsOffline(false)
           }
           break
         case 'selection':
@@ -277,7 +272,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onBlur, onChange, onPathFocus, readOnlyFromProps, toast]
+    [onBlur, onChange, onPathFocus, toast]
   )
 
   useEffect(() => {
@@ -296,13 +291,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
             onChange={handleEditorChange}
             onIgnore={handleIgnoreInvalidValue}
             resolution={invalidValue.resolution}
-            readOnly={readOnly}
+            readOnly={isOffline || readOnly}
           />
         </Box>
       )
     }
     return null
-  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, readOnly])
+  }, [handleEditorChange, handleIgnoreInvalidValue, invalidValue, isOffline, readOnly])
 
   const handleActivate = useCallback((): void => {
     if (!isActive) {
@@ -324,7 +319,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
               patches$={patches$}
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
-              readOnly={readOnly}
+              readOnly={isOffline || readOnly}
               schemaType={schemaType}
               value={value}
             >
