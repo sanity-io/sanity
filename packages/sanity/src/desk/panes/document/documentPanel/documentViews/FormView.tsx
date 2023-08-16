@@ -1,12 +1,13 @@
 /* eslint-disable no-nested-ternary */
 
-import {Box, Container, Flex, Heading, Spinner, Text, focusFirstDescendant} from '@sanity/ui'
+import {Box, Container, Flex, Spinner, Text, focusFirstDescendant} from '@sanity/ui'
 import React, {forwardRef, useEffect, useMemo, useCallback, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {useConditionalToast} from './useConditionalToast'
+import {FormTitle} from './FormTitle'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
@@ -18,7 +19,6 @@ import {
   useDocumentPresence,
   useDocumentStore,
 } from 'sanity'
-import {Title} from './styles'
 
 interface FormViewProps {
   hidden: boolean
@@ -131,6 +131,8 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     [ref],
   )
 
+  const isEditingForm = !!formState?.focusPath?.length
+
   // const after = useMemo(
   //   () =>
   //     Array.isArray(afterEditorComponents) &&
@@ -152,11 +154,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     >
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
-          <Box marginBottom={4}>
-            <Title forwardedAs="h6" muted={!title} size={5}>
-              {title ?? 'Untitled'}
-            </Title>
-          </Box>
+          <FormTitle title={title} isEditingForm={isEditingForm} />
           {ready ? (
             formState === null ? (
               <Box padding={2}>
