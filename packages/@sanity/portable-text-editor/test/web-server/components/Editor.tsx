@@ -71,7 +71,8 @@ export const Editor = ({
   const selectionString = useMemo(() => JSON.stringify(selectionValue), [selectionValue])
   const editor = useRef<PortableTextEditor>(null)
   const keyGenFn = useMemo(() => createKeyGenerator(editorId.substring(0, 1)), [editorId])
-  const [readOnly, setReadOnly] = useState(!window.navigator.onLine)
+  const [isOffline, setIsOffline] = useState(!window.navigator.onLine)
+  const [readOnly, setReadOnly] = useState(false)
 
   const renderBlock: RenderBlockFunction = useCallback((props) => {
     const {value: block, schemaType, children} = props
@@ -143,9 +144,9 @@ export const Editor = ({
           break
         case 'connection':
           if (change.value === 'offline') {
-            setReadOnly(true)
+            setIsOffline(true)
           } else if (change.value === 'online') {
-            setReadOnly(false)
+            setIsOffline(false)
           }
           break
         case 'blur':
@@ -211,7 +212,7 @@ export const Editor = ({
       patches$={patches$}
       value={value}
       keyGenerator={keyGenFn}
-      readOnly={readOnly}
+      readOnly={isOffline || readOnly}
     >
       <Box padding={4} style={{outline: '1px solid #999'}}>
         {editable}
