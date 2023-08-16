@@ -1,17 +1,18 @@
 import React from 'react'
-import {FieldProps, SanityClient, defineField, defineType} from 'sanity'
+import {FieldProps, PreviewProps, SanityClient, defineField, defineType} from 'sanity'
 
 interface Author {
   _id: string
   title: string
 }
 
-export function MyField(props: FieldProps) {
+export function MyField(props: PreviewProps) {
   return (
     <div
-      data-testid="my-field-relative"
+      data-testid="my-field-custom"
       style={{
-        position: 'relative',
+        backgroundColor: 'red',
+        // position: 'relative',
       }}
     >
       {props.renderDefault(props)}
@@ -29,6 +30,14 @@ export const virtualizationDebug = defineType({
   name: 'virtualizationDebug',
   title: 'Virtualization Debug',
   type: 'document',
+  components: {
+    preview: MyField,
+  },
+  preview: {
+    select: {
+      title: 'title',
+    },
+  },
   groups: [
     {
       name: 'array',
@@ -45,6 +54,21 @@ export const virtualizationDebug = defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
+    }),
+    defineField({
+      name: 'array',
+      title: 'Array',
+      type: 'array',
+      group: 'array',
+      components: {
+        preview: MyField,
+      },
+      of: [
+        {
+          name: 'author',
+          type: 'author',
+        },
+      ],
     }),
     defineField({
       name: 'pte',
@@ -106,7 +130,7 @@ export const virtualizationDebug = defineType({
         }))
       },
       components: {
-        field: MyField,
+        preview: MyField,
       },
     }),
     defineField({
