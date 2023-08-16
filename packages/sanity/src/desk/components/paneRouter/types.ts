@@ -129,6 +129,11 @@ export interface PaneRouterContextValue {
   closeCurrent: () => void
 
   /**
+   * Removes all panes to the right including current pane
+   */
+  closeCurrentAndAfter: (expandLast?: boolean) => void
+
+  /**
    * Duplicate the current pane, with optional overrides for item ID and parameters
    */
   duplicateCurrent: (pane?: {payload?: unknown; params?: Record<string, string>}) => void

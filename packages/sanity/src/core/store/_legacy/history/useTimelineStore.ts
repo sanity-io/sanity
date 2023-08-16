@@ -19,8 +19,15 @@ interface UseTimelineControllerOpts {
 export interface TimelineState {
   chunks: Chunk[]
   diff: ObjectDiff<Annotation, Record<string, any>> | null
-  hasMoreChunks: boolean
+  /** null is used here when the chunks hasn't loaded / is not known */
+  hasMoreChunks: boolean | null
   isLoading: boolean
+  /**
+   * Whether this timeline is fully loaded and completely empty (true for new documents)
+   * It can be `null` when the chunks hasn't loaded / is not known
+   */
+  isPristine: boolean | null
+  lastNonDeletedRevId: string | null
   onOlderRevision: boolean
   realRevChunk: Chunk | null
   revTime: Chunk | null
@@ -34,8 +41,10 @@ export interface TimelineState {
 const INITIAL_TIMELINE_STATE: TimelineState = {
   chunks: [],
   diff: null,
-  hasMoreChunks: false,
+  hasMoreChunks: null,
   isLoading: false,
+  isPristine: null,
+  lastNonDeletedRevId: null,
   onOlderRevision: false,
   realRevChunk: null,
   revTime: null,
@@ -169,20 +178,30 @@ export function useTimelineStore({
             // Manually stop loading transactions in TimelineController, otherwise transaction history
             // will continue to be fetched – even if unwanted.
             tap((innerController) => innerController.setLoadMore(false)),
-            map((innerController) => ({
-              chunks: innerController.timeline.mapChunks((c) => c),
-              diff: innerController.sinceTime ? innerController.currentObjectDiff() : null,
-              isLoading: false,
-              hasMoreChunks: !innerController.timeline.reachedEarliestEntry,
-              onOlderRevision: innerController.onOlderRevision(),
-              realRevChunk: innerController.realRevChunk,
-              revTime: innerController.revTime,
-              selectionState: innerController.selectionState,
-              sinceAttributes: innerController.sinceAttributes(),
-              sinceTime: innerController.sinceTime,
-              timelineDisplayed: innerController.displayed(),
-              timelineReady: !['invalid', 'loading'].includes(innerController.selectionState),
-            })),
+            map((innerController) => {
+              const chunks = innerController.timeline.mapChunks((c) => c)
+              const lastNonDeletedChunk = chunks.filter(
+                (chunk) => !['delete', 'initial'].includes(chunk.type)
+              )
+              const hasMoreChunks = !innerController.timeline.reachedEarliestEntry
+              const timelineReady = !['invalid', 'loading'].includes(innerController.selectionState)
+              return {
+                chunks,
+                diff: innerController.sinceTime ? innerController.currentObjectDiff() : null,
+                isLoading: false,
+                isPristine: timelineReady ? chunks.length === 0 && hasMoreChunks === false : null,
+                hasMoreChunks: !innerController.timeline.reachedEarliestEntry,
+                lastNonDeletedRevId: lastNonDeletedChunk?.[0]?.id,
+                onOlderRevision: innerController.onOlderRevision(),
+                realRevChunk: innerController.realRevChunk,
+                revTime: innerController.revTime,
+                selectionState: innerController.selectionState,
+                sinceAttributes: innerController.sinceAttributes(),
+                sinceTime: innerController.sinceTime,
+                timelineDisplayed: innerController.displayed(),
+                timelineReady,
+              }
+            }),
             // Only emit (and in turn, re-render) when values have changed
             distinctUntilChanged(deepEquals),
             // Emit initial timeline state whenever we encounter an error in TimelineController's `handler` callback.

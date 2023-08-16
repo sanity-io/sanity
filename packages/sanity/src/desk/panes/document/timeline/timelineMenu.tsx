@@ -22,7 +22,8 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore} = useDocumentPane()
+  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore, isDeleted} =
+    useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)

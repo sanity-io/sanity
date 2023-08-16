@@ -2,6 +2,7 @@ import {useToast} from '@sanity/ui'
 import React, {memo, useEffect, useRef} from 'react'
 import {useDocumentPane} from './useDocumentPane'
 import {useDocumentOperationEvent} from 'sanity'
+import {usePaneRouter} from '../../components'
 
 function getOpErrorTitle(op: string): string {
   if (op === 'delete') {
@@ -38,9 +39,12 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   const {documentId, documentType} = useDocumentPane()
   const event: any = useDocumentOperationEvent(documentId, documentType)
   const prevEvent = useRef(event)
+  const paneRouter = usePaneRouter()
 
   useEffect(() => {
     if (!event || event === prevEvent.current) return
+
+    let cleanupId: number | undefined
 
     if (event.type === 'error') {
       pushToast({
@@ -65,8 +69,19 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
       })
     }
 
+    /**
+     * If the document was deleted successfully, close the pane.
+     */
+    if (event.type === 'success' && event.op === 'delete') {
+      // Wait until next tick to allow deletion toasts to appear first
+      cleanupId = setTimeout(() => paneRouter.closeCurrentAndAfter(), 0) as any as number
+    }
+
     prevEvent.current = event
-  }, [event, pushToast])
+
+    // eslint-disable-next-line consistent-return
+    return () => clearTimeout(cleanupId)
+  }, [event, paneRouter, pushToast])
 
   return null
 })

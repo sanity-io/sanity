@@ -1,6 +1,5 @@
 import {SchemaType} from '@sanity/types'
 import {Observable} from 'rxjs'
-import {ButtonTone} from '@sanity/ui'
 import {
   DefaultDocumentNodeResolver,
   MenuItem as DeskToolMenuItem,

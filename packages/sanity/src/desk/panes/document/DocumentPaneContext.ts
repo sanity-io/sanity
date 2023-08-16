@@ -69,6 +69,7 @@ export interface DocumentPaneContextValue {
   schemaType: ObjectSchemaType
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
+  setIsDeleting: (state: boolean) => void
   source?: string
   timelineError: Error | null
   timelineMode: TimelineMode
@@ -79,6 +80,8 @@ export interface DocumentPaneContextValue {
   views: View[]
   formState: DocumentFormNode | null
   permissions?: PermissionCheckResult | null
+  isDeleting: boolean
+  isDeleted: boolean
   isPermissionsLoading: boolean
   unstable_languageFilter: DocumentLanguageFilterComponent[]
 }

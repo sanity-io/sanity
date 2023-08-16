@@ -13,11 +13,12 @@ import {useDocumentPane} from '../useDocumentPane'
 import {useDeskTool} from '../../../useDeskTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
+import {DeletedDocumentBanner} from './DeletedDocumentBanner'
 import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelHeader} from './header'
-import {ScrollContainer, VirtualizerScrollInstanceProvider} from 'sanity'
+import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -58,6 +59,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
+    isDeleting,
+    isDeleted,
+    timelineStore,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -110,6 +114,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value]
   )
 
+  const lastNonDeletedRevId = useTimelineSelector(
+    timelineStore,
+    (state) => state.lastNonDeletedRevId
+  )
+
   // Scroll to top as `documentId` changes
   useEffect(() => {
     if (!documentScrollElement?.scrollTo) return
@@ -152,6 +161,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                           granted={Boolean(permissions?.granted)}
                           requiredPermission={requiredPermission}
                         />
+                        {!isDeleting && isDeleted && (
+                          <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
+                        )}
                         <ReferenceChangedBanner />
                       </>
                     )}

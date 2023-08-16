@@ -8,7 +8,7 @@ interface TimelineProps {
   chunks: Chunk[]
   disabledBeforeFirstChunk?: boolean
   firstChunk?: Chunk | null
-  hasMoreChunks: boolean
+  hasMoreChunks: boolean | null
   lastChunk?: Chunk | null
   onLoadMore: () => void
   onSelect: (chunk: Chunk) => void

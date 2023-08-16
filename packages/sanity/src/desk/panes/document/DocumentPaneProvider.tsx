@@ -108,6 +108,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const connectionState = useConnectionState(documentId, documentType)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
 
@@ -158,6 +159,26 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const sinceAttributes = useTimelineSelector(timelineStore, (state) => state.sinceAttributes)
   const timelineDisplayed = useTimelineSelector(timelineStore, (state) => state.timelineDisplayed)
   const timelineReady = useTimelineSelector(timelineStore, (state) => state.timelineReady)
+  const isPristine = useTimelineSelector(timelineStore, (state) => state.isPristine)
+
+  /**
+   * Determine if the current document is deleted.
+   *
+   * When the timeline is available – we check for the absence of an editable document pair
+   * (both draft + published versions) as well as a non 'pristine' timeline (i.e. a timeline that consists
+   * of at least one chunk).
+   *
+   * In the _very rare_ case where the timeline cannot be loaded – we skip this check and always assume
+   * the document is NOT deleted. Since we can't accurately determine document deleted status without history,
+   * skipping this check means that in these cases, users will at least be able to create new documents
+   * without them being incorrectly marked as deleted.
+   */
+  const isDeleted = useMemo(() => {
+    if (!timelineReady) {
+      return false
+    }
+    return Boolean(!editState?.draft && !editState?.published) && !isPristine
+  }, [editState?.draft, editState?.published, isPristine, timelineReady])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
@@ -500,17 +521,21 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       updateActionDisabled ||
       createActionDisabled ||
       reconnecting ||
-      isLocked
+      isLocked ||
+      isDeleting ||
+      isDeleted
     )
   }, [
     connectionState,
+    editState.transactionSyncLock,
     isNonExistent,
+    isDeleted,
+    isDeleting,
     isPermissionsLoading,
     permissions?.granted,
     ready,
     revTime,
     schemaType,
-    editState.transactionSyncLock,
   ])
 
   const formState = useFormState(schemaType!, {
@@ -596,6 +621,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permissions,
     setTimelineMode,
     setTimelineRange,
+    setIsDeleting,
+    isDeleting,
+    isDeleted,
     timelineError,
     timelineMode,
     timelineStore,
