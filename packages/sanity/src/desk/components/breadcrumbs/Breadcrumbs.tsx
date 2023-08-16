@@ -8,8 +8,8 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import {ChevronRightIcon, EllipsisHorizontalIcon} from '@sanity/icons'
-import {BreadcrumbItemRoot, ExpandButton, Root} from './breadcrumbs.styles'
+import {ChevronRightIcon} from '@sanity/icons'
+import {BreadcrumbItemRoot, ExpandButton, MobileTitleText, Root} from './breadcrumbs.styles'
 
 /**
  * @internal
@@ -83,20 +83,23 @@ export const Breadcrumbs = forwardRef(function Breadcrumbs(
   }, [collapse, expand, maxLength, open, rawItems])
 
   return (
-    <Root data-ui="Breadcrumbs" {...restProps} ref={ref}>
-      {items.map((item, itemIndex) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <Fragment key={itemIndex}>
-          {itemIndex > 0 && (
-            <Box aria-hidden as="li" paddingX={1}>
-              <Text data-ui="TextChevronRight" muted>
-                <ChevronRightIcon />
-              </Text>
-            </Box>
-          )}
-          <BreadcrumbItemRoot as="li">{item}</BreadcrumbItemRoot>
-        </Fragment>
-      ))}
-    </Root>
+    <>
+      <Root data-ui="Breadcrumbs" {...restProps} ref={ref}>
+        {items.map((item, itemIndex) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <Fragment key={itemIndex}>
+            {itemIndex > 0 && (
+              <Box aria-hidden as="li" paddingX={1}>
+                <Text data-ui="TextChevronRight" muted>
+                  <ChevronRightIcon />
+                </Text>
+              </Box>
+            )}
+            <BreadcrumbItemRoot as="li">{item}</BreadcrumbItemRoot>
+          </Fragment>
+        ))}
+      </Root>
+      <MobileTitleText>{items[items.length - 1]}</MobileTitleText>
+    </>
   )
 })

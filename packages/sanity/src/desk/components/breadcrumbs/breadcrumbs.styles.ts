@@ -1,5 +1,6 @@
 import styled, {css} from 'styled-components'
 import {Box, Button, Theme} from '@sanity/ui'
+import {TitleText} from '../pane/PaneHeader.styles'
 import {BreadcrumbItemProps} from './BreadcrumbItem'
 
 export const BREADCRUMB_ITEM_TITLE_MIN_WIDTH = 220
@@ -14,6 +15,16 @@ export const Root = styled.ol`
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
+
+  @media (max-width: 512px) {
+    display: none;
+  }
+`
+
+export const MobileTitleText = styled(TitleText)`
+  @media (min-width: 512px) {
+    display: none !important;
+  }
 `
 
 export const ExpandButton = styled(Button)`
