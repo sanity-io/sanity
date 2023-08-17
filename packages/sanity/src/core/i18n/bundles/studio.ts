@@ -210,6 +210,9 @@ export const studioLocaleStrings = {
 
   /** Accessibility label for Search Input for when there are recent searches */
   'navbar.search.recent-searches-label': 'Recent searches',
+
+  /** Action label for clearing search filters */
+  'navbar.search.action.clear-filters': 'Clear filters',
 }
 
 /**
