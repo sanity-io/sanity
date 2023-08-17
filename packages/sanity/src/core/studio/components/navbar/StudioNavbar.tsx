@@ -8,8 +8,6 @@ import {
   Layer,
   LayerProvider,
   PortalProvider,
-  Text,
-  Tooltip,
   useMediaIndex,
   useRootTheme,
 } from '@sanity/ui'
@@ -23,6 +21,7 @@ import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
 import {useLogoComponent, useToolMenuComponent} from '../../studio-components-hooks'
 import {StudioTheme} from '../../../theme'
+import {useTranslation} from '../../../i18n'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
@@ -78,6 +77,8 @@ export function StudioNavbar() {
 
   const routerStateRef = useRef<RouterState>(routerState)
   const workspaceNameRef = useRef<string>(name)
+
+  const {t} = useTranslation()
 
   // Close the NavDrawer when changing tool or workspace
   useEffect(() => {
@@ -235,7 +236,7 @@ export function StudioNavbar() {
               {shouldRender.tools && <UserMenu />}
               {shouldRender.searchFullscreen && (
                 <Button
-                  aria-label="Open search"
+                  aria-label={t('navbar.action.open-search')}
                   icon={SearchIcon}
                   mode="bleed"
                   onClick={handleOpenSearchFullscreen}
