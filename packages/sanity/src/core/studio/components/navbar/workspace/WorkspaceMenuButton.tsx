@@ -56,7 +56,7 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
     <Tooltip
       content={
         <Box padding={2}>
-          <Text size={1}>Select workspace</Text>
+          <Text size={1}>{t('navbar.workplace-menu.title')}</Text>
         </Box>
       }
       disabled={tooltipDisabled}
