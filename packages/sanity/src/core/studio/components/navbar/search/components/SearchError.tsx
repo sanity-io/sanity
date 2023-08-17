@@ -2,8 +2,11 @@ import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
 import React from 'react'
 import {TextWithTone} from '../../../../../components/textWithTone/TextWithTone'
+import {useTranslation} from '../../../../../i18n'
 
 export function SearchError() {
+  const {t} = useTranslation()
+
   return (
     <Flex
       align="center"
@@ -20,10 +23,10 @@ export function SearchError() {
         </TextWithTone>
       </Box>
       <TextWithTone size={2} tone="critical" weight="semibold">
-        Something went wrong while searching
+        {t('navbar.search.error.something-went-wrong-title')}
       </TextWithTone>
       <TextWithTone size={1} tone="critical">
-        Please try again or check your connection
+        {t('navbar.search.error.something-went-wrong-description')}
       </TextWithTone>
     </Flex>
   )
