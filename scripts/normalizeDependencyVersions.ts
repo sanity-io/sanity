@@ -1,15 +1,16 @@
 /* eslint-disable no-sync, no-console, id-length */
-const fs = require('fs')
-const path = require('path')
-const glob = require('glob')
-const chalk = require('chalk')
-const semver = require('semver')
-const config = require('../lerna.json')
-const corePkg = require('../package.json')
+import fs from 'fs'
+
+import path from 'path'
+import semver from 'semver'
+import chalk from 'chalk'
+import glob from 'glob'
+import corePkg from '../package.json'
+import config from '../lerna.json'
 
 const rootPath = path.join(__dirname, '..')
-const stripRange = (version) => version.replace(/^[~^]/, '')
-const sortRanges = (ranges) =>
+const stripRange = (version: string) => version.replace(/^[~^]/, '')
+const sortRanges = (ranges: string[]) =>
   ranges.sort((a, b) => {
     try {
       return semver.compare(stripRange(a), stripRange(b))
@@ -18,10 +19,9 @@ const sortRanges = (ranges) =>
     }
   })
 const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
-const flatten = (target, item) => target.concat(item)
-const globFlatten = (files, pattern) => glob.sync(pattern).reduce(flatten, files)
+
 const pkgs = patterns
-  .reduce(globFlatten, [])
+  .flatMap((pattern) => glob.sync(pattern))
   .map((file) => path.join(rootPath, file))
   .map((file) => ({contents: fs.readFileSync(file, 'utf8'), file}))
   .map(({contents, file}) => ({file, pkg: JSON.parse(contents)}))
@@ -34,11 +34,14 @@ const pkgs = patterns
   .map(({file, pkg}) => ({
     file,
     name: pkg.name,
-    deps: Object.assign({}, pkg.dependencies || {}, pkg.devDependencies || {}),
+    deps: Object.assign({}, pkg.dependencies || {}, pkg.devDependencies || {}) as Record<
+      string,
+      string
+    >,
   }))
 
-const versionRanges = {}
-const fixable = {}
+const versionRanges: Record<string, Record<string, string[]>> = {}
+const fixable: Record<string, {depName: string; version: string}[]> = {}
 
 pkgs.forEach((pkg) => {
   if (!pkg.name) {
@@ -89,11 +92,11 @@ Object.keys(versionRanges).forEach((depName) => {
       `    ${sign} ${packages
         .map((pkgName) => {
           // eslint-disable-next-line max-nested-callbacks
-          const pkg = pkgs.find((p) => p.name === pkgName)
+          const pkg = pkgs.find((p) => p.name === pkgName)!
 
           return `${pkgName} ${chalk.gray(path.relative(rootPath, pkg.file))}`
         })
-        .join(`\n    ${sign} `)}`,
+        .join(`\n    ${sign} `)}`
     )
 
     if (range === greatestRange || !isFixable) {
@@ -114,9 +117,13 @@ fixablePackages.forEach((pkg) => {
   const manifestPath =
     pkg === corePkg.name
       ? path.join(rootPath, 'package.json')
-      : pkgs.find((mod) => mod.name === pkg).file
+      : pkgs.find((mod) => mod.name === pkg)?.file
 
-  let manifest
+  if (!manifestPath) {
+    return
+  }
+
+  let manifest: {dependencies: Record<string, string>; devDependencies: Record<string, string>}
   try {
     // eslint-disable-next-line import/no-dynamic-require
     manifest = require(manifestPath)
@@ -145,7 +152,7 @@ if (fixablePackages.length > 0) {
       'you might want to run "yarn bootstrap"',
       'and run some tests before pushing changes',
     ].join(' '),
-    fixablePackages.length,
+    fixablePackages.length
   )
   console.log('')
 }

@@ -1,10 +1,12 @@
-const uniq = require('lodash/uniq')
-const transformPkgs = require('./utils/transformPkgs')
+import uniq from 'lodash/uniq'
+import {PackageManifest} from './types'
+
+import transformPkgs from './utils/transformPkgs'
 
 const COMMON_KEYWORDS = ['sanity', 'cms', 'headless', 'realtime', 'content']
 const supportedNodeVersionRange = '>=14.0.0'
 
-transformPkgs((pkgManifest) => {
+transformPkgs((pkgManifest: PackageManifest) => {
   const name = pkgManifest.name.split('/').slice(-1)[0]
 
   const engines = pkgManifest.engines

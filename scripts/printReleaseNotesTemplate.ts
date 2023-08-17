@@ -1,8 +1,8 @@
-const execa = require('execa')
-const yargs = require('yargs')
-const {hideBin} = require('yargs/helpers')
+import execa from 'execa'
+import yargs from 'yargs'
+import {hideBin} from 'yargs/helpers'
 
-const flags = yargs(hideBin(process.argv)).argv
+const flags = yargs(hideBin(process.argv)).argv as Record<string, any>
 
 const revParsed = execa.commandSync('git rev-parse --abbrev-ref HEAD', {shell: true}).stdout.trim()
 const isFromV3 = revParsed === 'v3' || revParsed === 'v3-current'
