@@ -7,6 +7,7 @@
 /dev/*/node_modules
 /dev/*/public
 /dev/*/static
+/dev/test-studio/sanity.theme.mjs
 
 /etc
 
@@ -28,3 +29,6 @@
 /packages/@sanity/cli/templates
 
 /test/v2-studio/dist
+/turbo.json
+/packages/*/turbo.json
+/packages/@sanity/*/turbo.json

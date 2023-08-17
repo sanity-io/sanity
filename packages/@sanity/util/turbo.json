@@ -1,0 +1,9 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "build": {
+      "outputs": ["lib/**", "index.js", "content.js", "fs.js", "legacyDateFormat.js", "paths.js"]
+    }
+  }
+}

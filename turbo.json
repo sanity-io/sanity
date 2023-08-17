@@ -1,0 +1,21 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+   // This is probably overkill, this will segment between GH actions and everything else for now.
+  "globalEnv": ["OS", "RUNNER_OS"],
+  // These root workspace files are reused in workspaces and may affect their build output
+  "globalDependencies": [
+    ".babelrc",
+    "babel.config.cjs",
+    "lerna.json", // some tools, like babel, reads from this file to identify other roots
+    "package.config.ts",
+    "tsconfig.json",
+    "tsconfig.lib.json",
+    "tsconfig.settings.json"
+  ],
+  "pipeline": {
+    "build": {
+      "outputs": ["lib/**", "index.js"],
+      "dependsOn": ["^build"]
+    }
+  }
+}

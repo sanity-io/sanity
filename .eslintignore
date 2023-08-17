@@ -5,6 +5,7 @@
 /dev/*/node_modules
 /dev/*/public
 /dev/*/static
+/dev/test-studio/sanity.theme.mjs
 
 /etc
 
