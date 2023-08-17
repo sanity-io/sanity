@@ -13,6 +13,7 @@ import {
 } from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
@@ -24,8 +25,6 @@ const StyledMenu = styled(Menu)`
   max-width: 350px;
   min-width: 250px;
 `
-
-const TITLE = 'Select workspace'
 
 interface WorkspaceMenuButtonProps {
   collapsed?: boolean
@@ -39,6 +38,7 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {navigateUrl} = useRouter()
+  const {t} = useTranslation()
 
   const handleOnOpen = useCallback(() => setMenuOpen(true), [])
   const handleOnClose = useCallback(() => setMenuOpen(false), [])
@@ -47,10 +47,10 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
     () => ({constrainSize: true, scheme, portal: true}),
     [scheme],
   )
-  //Tooltip should be disabled in the Navdrawer
+  // Tooltip should be disabled in the Navdrawer
   const tooltipDisabled = menuOpen || !collapsed
-  const ariaLabel = collapsed ? TITLE : undefined
-  const buttonText = collapsed ? undefined : TITLE
+  const ariaLabel = collapsed ? t('navbar.action.select-workspace') : undefined
+  const buttonText = collapsed ? undefined : t('navbar.action.select-workspace')
 
   return (
     <Tooltip
