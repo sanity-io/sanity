@@ -5,6 +5,7 @@ import {SchemaValidationProblemGroup} from '@sanity/types'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {capitalize} from 'lodash'
+import {useTranslation} from '../../../i18n'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',
@@ -24,6 +25,7 @@ const ErrorMessageText = styled(Text)`
 
 export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
+  const {t} = useTranslation()
 
   const items = useMemo(() => {
     const ret = []
@@ -57,7 +59,8 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                 <Text size={1} weight="semibold">
                   {schemaType ? (
                     <>
-                      {capitalize(schemaType.type)} type "{schemaType.name}"
+                      {capitalize(schemaType.type)} {t('navbar.configuration.type-label')} "
+                      {schemaType.name}"
                     </>
                   ) : null}
                 </Text>
@@ -110,7 +113,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        View documentation &rarr;
+                        {t('navbar.configuration.action.view-documentation')} &rarr;
                       </a>
                     </Text>
                   )}
