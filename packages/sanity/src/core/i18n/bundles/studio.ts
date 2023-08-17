@@ -202,6 +202,14 @@ export const studioLocaleStrings = {
 
   /** Label for "Create new document" action */
   'navbar.new-document.action.create-new-document': 'New document...',
+
+  /** --- Search --- */
+
+  /** Accessibility label for Search Input for when there are no recent searches */
+  'navbar.search.search-results-label': 'Search results',
+
+  /** Accessibility label for Search Input for when there are recent searches */
+  'navbar.search.recent-searches-label': 'Recent searches',
 }
 
 /**
