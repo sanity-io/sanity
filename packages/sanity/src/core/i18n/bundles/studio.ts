@@ -283,6 +283,11 @@ export const studioLocaleStrings = {
 
   /** Prompt to view documentation about the schema problems */
   'navbar.configuration.action.view-documentation': 'View documentation',
+
+  /** --- Help & Resources Menu --- */
+
+  /** Title for help and resources menus */
+  'navbar.helpResources.title': 'Help and resources',
 }
 
 /**
