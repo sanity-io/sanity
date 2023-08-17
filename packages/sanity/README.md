@@ -3,6 +3,11 @@
     <img src="https://cdn.sanity.io/images/3do82whm/next/1dfce9dde7a62ccaa8e8377254a1e919f6c07ad3-128x128.svg" />
   </a>
   <h1 align="center">Sanity</h1>
+  <h4 align="center">
+    <a href="https://www.sanity.io/get-started?ref=gh">Get Started</a> |
+    <a href="https://www.sanity.io/docs">Docs</a> |
+    <a href="https://www.sanity.io">Website</a>
+  </h4>
 </p>
 
 <p align="center">
@@ -21,7 +26,7 @@
 
 > The Sanity Composable Content Cloud lets teams create remarkable digital experiences at scale. Sanity Studio is an open-source, single-page application that is fast to set up and quick to configure. The Studio comes with a complete studio customization framework that lets you tailor the workspace as your needs grow.
 >
-> Sanity hosts your content in a real-time, hosted data store called Content Lake. [Get started](https://www.sanity.io/get-started) with the free plan with generous bandwidth and hosting included and pay-as-you-go for overages.
+> Sanity hosts your content in a real-time, hosted data store called Content Lake. [Get started](https://www.sanity.io/get-started?ref=gh) with the free plan with generous bandwidth and hosting included and pay-as-you-go for overages.
 
 ## Quickstart
 
