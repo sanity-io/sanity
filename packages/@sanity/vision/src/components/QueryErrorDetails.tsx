@@ -1,5 +1,7 @@
 import React from 'react'
 import {Box} from '@sanity/ui'
+import {useTranslation} from 'sanity'
+import {visionLocaleNamespace} from '../../i18n'
 import {ErrorCode} from './QueryErrorDialog.styled'
 
 interface ContentLakeQueryError {
@@ -14,6 +16,8 @@ interface ContentLakeQueryError {
 }
 
 export function QueryErrorDetails({error}: {error: ContentLakeQueryError | Error}) {
+  const {t} = useTranslation(visionLocaleNamespace)
+
   if (!('details' in error)) {
     return null
   }
@@ -30,7 +34,9 @@ export function QueryErrorDetails({error}: {error: ContentLakeQueryError | Error
         details.columnEnd,
       )}`}</ErrorCode>
       <Box marginTop={4}>
-        <ErrorCode size={1}>{`Line:   ${details.lineNumber}\nColumn: ${details.column}`}</ErrorCode>
+        <ErrorCode size={1}>{`${t('query.error.line')}:   ${details.lineNumber}\n${t(
+          'query.error.column',
+        )}: ${details.column}`}</ErrorCode>
       </Box>
     </div>
   )
