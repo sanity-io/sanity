@@ -30,6 +30,21 @@ const visionLocaleStrings = {
   /** Label for action "Copy to clipboard" for the "Query URL" input. Also used for accessibility purposes on button */
   'header.action.copy-to-clipboard': 'Copy to clipboard',
 
+  /** --- Perspectives --- */
+
+  /** Title for popover that explains what "Perspectives" are */
+  'perspectives.title': 'Perspectives',
+
+  /** "New label" for Perspectives feature */
+  'perspectives.new-label': 'New',
+
+  /** Description for popover that explains what "Perspectives" are */
+  'perspectives.description':
+    'Perspectives allow your query to run against different "views" of the content in your dataset',
+
+  /** Call to action to read the docs related to "Perspectives" */
+  'perspectives.action.docs-link': 'Read docs',
+
   /** --- Query Pane --- */
 
   /** Label for "Query" input in the panel in vision */
