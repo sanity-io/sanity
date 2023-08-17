@@ -3,6 +3,7 @@ import {Box, Button, Flex, Menu, MenuButton, Text, Tooltip} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
+import {useTranslation} from '../../../../i18n'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 
@@ -14,6 +15,7 @@ const StyledMenu = styled(Menu)`
 export function ResourcesButton() {
   const {scheme} = useColorScheme()
   const [menuOpen, setMenuOpen] = useState(false)
+  const {t} = useTranslation()
 
   const {value, error, isLoading} = useGetHelpResources()
 
@@ -25,7 +27,7 @@ export function ResourcesButton() {
       <Tooltip
         content={
           <Box padding={2}>
-            <Text size={1}>Help and resources </Text>
+            <Text size={1}>{t('navbar.helpResources.title')}</Text>
           </Box>
         }
         scheme={scheme}
@@ -37,7 +39,7 @@ export function ResourcesButton() {
           <MenuButton
             button={
               <Button
-                aria-label="Help and resources"
+                aria-label={t('navbar.helpResources.title')}
                 icon={HelpCircleIcon}
                 mode="bleed"
                 fontSize={2}
