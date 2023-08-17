@@ -183,6 +183,11 @@ export const studioLocaleStrings = {
 
   /** Label to open search action when the search is on full screen */
   'navbar.action.open-search': 'Open search',
+
+  /** --- Workplace menu --- */
+
+  /** Title for Workplaces dropdown menu */
+  'navbar.workplace-menu.title': 'Workspaces',
 }
 
 /**
