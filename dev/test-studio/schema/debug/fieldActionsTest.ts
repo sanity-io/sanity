@@ -1,4 +1,5 @@
 import {defineType} from 'sanity'
+import {CustomTitleField} from './components/CustomTitleField'
 
 export const fieldActionsTest = defineType({
   type: 'document',
@@ -8,7 +9,10 @@ export const fieldActionsTest = defineType({
     {
       type: 'string',
       name: 'title',
-      title: 'Title',
+      title: 'Title!',
+      components: {
+        field: CustomTitleField,
+      },
     },
     {
       type: 'slug',

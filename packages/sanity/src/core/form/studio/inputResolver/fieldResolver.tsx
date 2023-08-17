@@ -47,6 +47,7 @@ function PrimitiveField(field: FieldProps) {
         <FormField
           __unstable_presence={field.presence}
           __unstable_headerActions={fieldActionsNodes}
+          internal_renderActions={field.internal_renderActions}
           data-testid={`field-${field.inputId}`}
           description={field.description}
           inputId={field.inputId}
@@ -89,6 +90,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
         <FormFieldSet
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={field.presence}
+          internal_renderActions={field.internal_renderActions}
           collapsed={field.collapsed}
           collapsible={field.collapsible}
           data-testid={`field-${field.inputId}`}
@@ -136,6 +138,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
         <FormFieldSet
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={presence}
+          internal_renderActions={field.internal_renderActions}
           collapsed={field.collapsed}
           collapsible={field.collapsible}
           description={field.description}

@@ -6,6 +6,7 @@ import {FormNodeValidation} from '@sanity/types'
 import {FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFieldActions} from '../../field'
+import {FieldProps} from '../../types'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
@@ -23,6 +24,8 @@ export interface FormFieldSetProps {
    * @beta
    */
   __unstable_presence?: FormNodePresence[]
+  /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
+  internal_renderActions?: FieldProps['internal_renderActions'] | undefined
   children: React.ReactNode | (() => React.ReactNode)
   collapsed?: boolean
   collapsible?: boolean
@@ -94,6 +97,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   const {
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
+    internal_renderActions: renderActions,
     children,
     collapsed,
     collapsible,
@@ -144,6 +148,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   return (
     <Root data-level={level} {...restProps} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <FormFieldBaseHeader
+        internal_renderActions={renderActions}
         actions={actions}
         fieldFocused={Boolean(focused)}
         fieldHovered={hovered}

@@ -295,6 +295,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       <FormField
         __unstable_headerActions={fieldActionsNodes}
         __unstable_presence={props.presence}
+        internal_renderActions={props.internal_renderActions}
         description={props.description}
         level={props.level}
         title={props.title}

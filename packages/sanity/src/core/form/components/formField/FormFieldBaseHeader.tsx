@@ -1,10 +1,11 @@
 import {Box, Card, Flex, Theme} from '@sanity/ui'
-import React, {useEffect, useState} from 'react'
+import React, {ReactNode, useEffect, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {FieldPresence, FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field'
+import {FieldProps} from '../../types'
 
 const Root = styled(Flex)({
   // This prevents the buttons from taking up extra vertical space in the flex layout,
@@ -52,6 +53,8 @@ const FieldActionsFloatingCard = styled(Card)(({theme}) => {
 const MAX_AVATARS = 4
 
 interface FormFieldBaseHeaderProps {
+  /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
+  internal_renderActions?: FieldProps['internal_renderActions']
   actions?: DocumentFieldActionNode[]
   content: React.ReactNode
   fieldFocused: boolean
@@ -61,7 +64,14 @@ interface FormFieldBaseHeaderProps {
 
 /** @internal */
 export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
-  const {actions, content, presence, fieldFocused, fieldHovered} = props
+  const {
+    internal_renderActions: renderActions,
+    actions,
+    content,
+    presence,
+    fieldFocused,
+    fieldHovered,
+  } = props
 
   // The state refers to if a group field action menu is open
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
@@ -84,6 +94,22 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
     }
   }, [floatingCardElement, showFieldActions])
 
+  let actionsNode: ReactNode = showFieldActions ? (
+    <FieldActionsFloatingCard
+      display="flex"
+      radius={2}
+      ref={setFloatingCardElement}
+      shadow={2}
+      sizing="border"
+    >
+      <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
+    </FieldActionsFloatingCard>
+  ) : null
+
+  if (renderActions) {
+    actionsNode = renderActions({children: actionsNode})
+  }
+
   return (
     <Root align="flex-end">
       <ContentBox flex={1} paddingY={2} $presenceMaxWidth={presenceMaxWidth}>
@@ -96,17 +122,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
         </PresenceBox>
       )}
 
-      {showFieldActions && (
-        <FieldActionsFloatingCard
-          display="flex"
-          radius={2}
-          ref={setFloatingCardElement}
-          shadow={2}
-          sizing="border"
-        >
-          <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
-        </FieldActionsFloatingCard>
-      )}
+      {actionsNode}
     </Root>
   )
 }

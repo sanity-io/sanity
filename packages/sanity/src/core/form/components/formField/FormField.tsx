@@ -4,6 +4,7 @@ import React, {memo} from 'react'
 import {FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFieldActions} from '../../field'
+import {FieldProps} from '../../types'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 
@@ -21,6 +22,8 @@ export interface FormFieldProps {
    * @beta
    */
   __unstable_presence?: FormNodePresence[]
+  /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
+  internal_renderActions?: FieldProps['internal_renderActions'] | undefined
   children: React.ReactNode
   description?: React.ReactNode
   /**
@@ -45,6 +48,7 @@ export const FormField = memo(function FormField(
   const {
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
+    internal_renderActions: renderActions,
     children,
     description,
     inputId,
@@ -54,6 +58,8 @@ export const FormField = memo(function FormField(
     ...restProps
   } = props
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
+
+  console.log('renderActions', renderActions)
 
   return (
     <Stack
@@ -72,6 +78,7 @@ export const FormField = memo(function FormField(
           actions={actions}
           fieldFocused={Boolean(focused)}
           fieldHovered={hovered}
+          internal_renderActions={renderActions}
           presence={presence}
           content={
             <FormFieldHeaderText
