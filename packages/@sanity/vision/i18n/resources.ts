@@ -45,6 +45,16 @@ const visionLocaleStrings = {
   /** Call to action to read the docs related to "Perspectives" */
   'perspectives.action.docs-link': 'Read docs',
 
+  /** --- Perspectives consts --- */
+  /** Label for 'raw' option in "Perspectives" dropdown */
+  'perspectives.raw': 'raw',
+
+  /** Label for 'previewDrafts' option in "Perspectives" dropdown */
+  'perspectives.previewDrafts': 'previewDrafts',
+
+  /** Label for 'published' option in "Perspectives" dropdown */
+  'perspectives.published': 'published',
+
   /** --- Query Pane --- */
 
   /** Label for "Query" input in the panel in vision */
