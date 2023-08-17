@@ -231,6 +231,9 @@ export const studioLocaleStrings = {
 
   /** Clear action label for clearing document type filters */
   'navbar.search.action.clear-type-label': 'Clear',
+
+  /** Accessibility action label for deleting filter */
+  'navbar.search.action.delete-filter': 'Delete filter',
 }
 
 /**
