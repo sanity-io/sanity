@@ -69,6 +69,12 @@ const visionLocaleStrings = {
   /** Label for "Result" input in the Result panel in vision */
   'query.result-label': 'Result',
 
+  /** Label for 'Line' indicator when there is an error within the query */
+  'query.error.line': 'Line',
+
+  /** Label for 'Column' indicator when there is an error within the query */
+  'query.error.column': 'Column',
+
   /** --- Footer -- */
 
   /** Label for "Cancel" action when fetching the query */
