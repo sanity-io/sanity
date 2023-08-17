@@ -4,6 +4,7 @@ import React, {forwardRef} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
+import {useTranslation} from '../../../../../../../i18n'
 
 interface FilterPopoverContentHeaderProps {
   ariaInputLabel: string
@@ -28,6 +29,7 @@ export const FilterPopoverContentHeader = forwardRef<
   const {
     state: {fullscreen},
   } = useSearchState()
+  const {t} = useTranslation()
 
   return (
     <SearchHeaderBox>
@@ -42,7 +44,7 @@ export const FilterPopoverContentHeader = forwardRef<
           muted
           onChange={onChange}
           onClear={onClear}
-          placeholder="Filter"
+          placeholder={t('navbar.search.filter-label')}
           ref={ref}
           smallClearButton
           spellCheck={false}
