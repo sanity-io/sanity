@@ -4,11 +4,13 @@ import React, {useCallback, useState} from 'react'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
+import {useTranslation} from '../../../../../../../i18n'
 import {AddFilterPopoverContent} from './AddFilterPopoverContent'
 
 export function AddFilterButton() {
   const [open, setOpen] = useState(false)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
+  const {t} = useTranslation()
 
   const {
     state: {fullscreen},
@@ -39,7 +41,7 @@ export function AddFilterButton() {
         ref={setButtonElement}
         selected={open}
         space={2}
-        text="Add filter"
+        text={t('navbar.search.action.add-filter')}
       />
     </Popover>
   )
