@@ -12,6 +12,7 @@ import {
 } from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
+import {useTranslation} from '../../../../../i18n'
 import {SearchWrapper} from './common/SearchWrapper'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
@@ -70,6 +71,7 @@ export function SearchPopover({
 
   const {isTopLayer, zIndex} = useLayer()
   const {scheme} = useColorScheme()
+  const {t} = useTranslation()
 
   const {
     onClose: onSearchClose,
@@ -105,7 +107,11 @@ export function SearchPopover({
             style={{zIndex}}
           >
             <SearchHeader
-              ariaInputLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
+              ariaInputLabel={
+                hasValidTerms
+                  ? t('navbar.search.search-results-label')
+                  : t('navbar.search.recent-searches-label')
+              }
               onClose={onClose}
               ref={setInputElement}
             />
