@@ -3,6 +3,7 @@ import React, {useCallback, useEffect, useRef} from 'react'
 import {DEBUG_MODE} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getFilterKey} from '../../utils/filterUtils'
+import {useTranslation} from '../../../../../../i18n'
 import {AddFilterButton} from './addFilter/AddFilterButton'
 import {DebugDocumentTypesNarrowed} from './debug/_DebugDocumentTypesNarrowed'
 import {DebugFilterQuery} from './debug/_DebugFilterQuery'
@@ -19,6 +20,7 @@ export function Filters() {
       terms: {types},
     },
   } = useSearchState()
+  const {t} = useTranslation()
 
   const isMounted = useRef(false)
 
@@ -41,7 +43,7 @@ export function Filters() {
       mode="bleed"
       onClick={handleClear}
       padding={fullscreen ? 3 : 2}
-      text="Clear filters"
+      text={t('navbar.search.action.clear-filters')}
       tone="critical"
     />
   )
