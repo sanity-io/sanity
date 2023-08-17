@@ -8,6 +8,7 @@ import {useSearchState} from '../../contexts/search/useSearchState'
 import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
+import {useTranslation} from '../../../../../../i18n'
 import {DebugOverlay} from './item/DebugOverlay'
 import {SearchResultItem} from './item/SearchResultItem'
 
@@ -35,6 +36,7 @@ export function SearchResults({inputElement}: SearchResultsProps) {
     setSearchCommandList,
     state: {debug, filters, fullscreen, lastActiveIndex, result, terms},
   } = useSearchState()
+  const {t} = useTranslation()
 
   const hasSearchResults = !!result.hits.length
   const hasNoSearchResults = !result.hits.length && result.loaded
@@ -87,7 +89,7 @@ export function SearchResults({inputElement}: SearchResultsProps) {
                 {hasSearchResults && (
                   <CommandList
                     activeItemDataAttr="data-hovered"
-                    ariaLabel="Search results"
+                    ariaLabel={t('navbar.search.search-results-label')}
                     fixedHeight
                     initialIndex={lastActiveIndex}
                     inputElement={inputElement}
