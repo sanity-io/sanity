@@ -259,6 +259,9 @@ export const studioLocaleStrings = {
 
   /** Label for action to clear recent searches */
   'navbar.search.action.clear-recent-searches': 'Clear recent searches',
+
+  /** Label for instructions on how to use the search when no recent searches are available */
+  'navbar.search.instructions': 'Use the following icon to refine your search',
 }
 
 /**
