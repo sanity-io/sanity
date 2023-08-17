@@ -256,6 +256,9 @@ export const studioLocaleStrings = {
   /** Description label for when the search has found an error */
   'navbar.search.error.something-went-wrong-description':
     'Please try again or check your connection',
+
+  /** Label for action to clear recent searches */
+  'navbar.search.action.clear-recent-searches': 'Clear recent searches',
 }
 
 /**
