@@ -8,6 +8,7 @@ import type {SearchFilter} from '../../../types'
 import {getFilterKey, validateFilter} from '../../../utils/filterUtils'
 import {FilterLabel} from '../../common/FilterLabel'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
+import {useTranslation} from '../../../../../../../i18n'
 import {FilterPopoverContent} from './FilterPopoverContent'
 
 interface FilterButtonProps {
@@ -44,6 +45,8 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
     dispatch,
     state: {definitions, fullscreen},
   } = useSearchState()
+
+  const {t} = useTranslation()
 
   const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])
@@ -113,7 +116,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
             tone={isValid ? 'primary' : 'transparent'}
           >
             <CloseButton
-              aria-label="Delete filter"
+              aria-label={t('navbar.search.action.delete-filter')}
               fontSize={1}
               icon={CloseIcon}
               mode="bleed"
