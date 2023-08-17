@@ -198,7 +198,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
         ? document.body.getBoundingClientRect().height - 60
         : 0
 
-    const params = lastParams ? tryParseParams(lastParams) : undefined
+    const params = lastParams ? tryParseParams(lastParams, this.props.t) : undefined
 
     this.state = {
       // Selected options
