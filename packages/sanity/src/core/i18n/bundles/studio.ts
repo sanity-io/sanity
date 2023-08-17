@@ -262,6 +262,21 @@ export const studioLocaleStrings = {
 
   /** Label for instructions on how to use the search when no recent searches are available */
   'navbar.search.instructions': 'Use the following icon to refine your search',
+
+  /** --- Configuration Issues --- */
+
+  /** label for when when there are configuration issues */
+  'navbar.configuration.error.found-configuration-issues-status': 'Found configuration issues',
+
+  /** Error title for when there are configuration issues */
+  'navbar.configuration.error.configuration-issues-title': 'Configuration issues',
+
+  /** Error description for when there are configuration issues, explaining that the checks are only performed during development */
+  'navbar.configuration.error.configuration-issues-description':
+    'Configuration checks are only performed during development and will not be visible in production builds',
+
+  /** Warning label that tells the user how many warnings were found */
+  'navbar.configuration.found-number-schema-warning': `Found {{count}} schema warnings`,
 }
 
 /**
