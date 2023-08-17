@@ -288,6 +288,21 @@ export const studioLocaleStrings = {
 
   /** Title for help and resources menus */
   'navbar.helpResources.title': 'Help and resources',
+
+  /** Information for what studio version the current studio is running */
+  'navbar.helpResources.studio-version': `Sanity Studio version {{studioVersion}}`,
+
+  /** Information for what the latest sanity version is */
+  'navbar.helpResources.latest-sanity-version': `Latest version is {{latestVersion}}`,
+
+  /** Label for "join our community" call to action */
+  'navbar.helpResources.action.join-our-community': `Join our community`,
+
+  /** Label for "help and support" call to action */
+  'navbar.helpResources.action.help-and-support': `Help and support`,
+
+  /** Label for "contact sales" call to action */
+  'navbar.helpResources.action.contact-sales': `Contact sales`,
 }
 
 /**
