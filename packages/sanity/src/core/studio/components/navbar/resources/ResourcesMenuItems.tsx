@@ -1,6 +1,7 @@
 import {Box, Card, Flex, Label, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
 import React from 'react'
 import {SANITY_VERSION} from '../../../../version'
+import {useTranslation} from '../../../../i18n'
 import {ResourcesResponse, Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
@@ -12,6 +13,7 @@ interface ResourcesMenuItemProps {
 export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
   const latestStudioVersion = value?.latestVersion
+  const {t} = useTranslation()
 
   if (isLoading) {
     return (
@@ -20,6 +22,36 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
       </Flex>
     )
   }
+
+  const fallbackLinks = (
+    <>
+      <MenuItem
+        as="a"
+        text={t('navbar.helpResources.action.join-our-community')}
+        size={0}
+        href="https://www.sanity.io/exchange/community"
+        target="_blank"
+        muted={false}
+      />
+      <MenuItem
+        as="a"
+        text={t('navbar.helpResources.action.help-and-support')}
+        size={0}
+        href="https://www.sanity.io/contact/support"
+        target="_blank"
+        muted={false}
+      />
+      <MenuItem
+        as="a"
+        text={t('navbar.helpResources.action.contact-sales')}
+        size={0}
+        href="https://www.sanity.io/contact/sales?ref=studio"
+        target="_blank"
+        muted={false}
+      />
+      <MenuDivider />
+    </>
+  )
 
   return (
     <>
@@ -35,12 +67,14 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
       {/* Studio version information */}
       <Box padding={3}>
         <Text size={1} muted weight="medium" textOverflow="ellipsis">
-          Sanity Studio version {SANITY_VERSION}
+          {t('navbar.helpResources.studio-version', {studioVersion: SANITY_VERSION})}
         </Text>
         {!error && latestStudioVersion && (
           <Box paddingTop={2}>
             <Text size={1} muted textOverflow="ellipsis">
-              Latest version is {latestStudioVersion}
+              {t('navbar.helpResources.latest-sanity-version', {
+                latestVersion: latestStudioVersion,
+              })}
             </Text>
           </Box>
         )}
@@ -48,36 +82,6 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
     </>
   )
 }
-
-const fallbackLinks = (
-  <>
-    <MenuItem
-      as="a"
-      text="Join our community"
-      size={0}
-      href="https://www.sanity.io/exchange/community"
-      target="_blank"
-      muted={false}
-    />
-    <MenuItem
-      as="a"
-      text="Help and support"
-      size={0}
-      href="https://www.sanity.io/contact/support"
-      target="_blank"
-      muted={false}
-    />
-    <MenuItem
-      as="a"
-      text="Contact sales"
-      size={0}
-      href="https://www.sanity.io/contact/sales?ref=studio"
-      target="_blank"
-      muted={false}
-    />
-    <MenuDivider />
-  </>
-)
 
 function SubSection({subSection}: {subSection: Section}) {
   return (
