@@ -188,6 +188,20 @@ export const studioLocaleStrings = {
 
   /** Title for Workplaces dropdown menu */
   'navbar.workplace-menu.title': 'Workspaces',
+
+  /** --- New Document --- */
+
+  /** Placeholder for the "search" input within the new document menu */
+  'navbar.new-document.search': 'Search',
+
+  /** Title for "Create new document" Also used for accessibility */
+  'navbar.new-document.title': 'Create new document',
+
+  /** Label for when no document types are found when searching them in the new document menu */
+  'navbar.new-document.no-document-types': 'No document types',
+
+  /** Label for "Create new document" action */
+  'navbar.new-document.action.create-new-document': 'New document...',
 }
 
 /**
