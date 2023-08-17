@@ -1,10 +1,10 @@
-import React, {useMemo, useId, useState, useCallback} from 'react'
+import React, {useMemo, useId, useState, useCallback, useEffect} from 'react'
 import styled from 'styled-components'
 import {Box, Dialog, Button, Text, Spinner, Grid, Flex} from '@sanity/ui'
 import {DocTitle} from '../DocTitle'
 import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
-import {clearAllBodyScrollLocks, disableBodyScroll} from 'sanity'
+import {disableBodyScroll, enableBodyScroll} from 'sanity'
 
 /** @internal */
 export const DialogBody = styled(Box).attrs({
@@ -74,14 +74,18 @@ export function ConfirmDeleteDialog({
   const showConfirmButton = !isLoading
 
   //Avoid background of dialog being scrollable on mobile
-  if (documentScrollElement) {
-    disableBodyScroll(documentScrollElement)
-  }
+  useEffect(() => {
+    if (documentScrollElement) {
+      disableBodyScroll(documentScrollElement)
+    }
+  }, [documentScrollElement])
 
   const onHandleClose = useCallback(() => {
     onCancel()
-    clearAllBodyScrollLocks()
-  }, [onCancel])
+    if (documentScrollElement) {
+      enableBodyScroll(documentScrollElement)
+    }
+  }, [onCancel, documentScrollElement])
 
   return (
     <Dialog

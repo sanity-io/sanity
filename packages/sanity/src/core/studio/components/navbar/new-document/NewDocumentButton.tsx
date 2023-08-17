@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   Box,
   Tooltip,
@@ -19,7 +19,7 @@ import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
-import {clearAllBodyScrollLocks, disableBodyScroll} from '../../../../hooks'
+import {clearAllBodyScrollLocks, disableBodyScroll, enableBodyScroll} from '../../../../hooks'
 import {NewDocumentList, NewDocumentListProps} from './NewDocumentList'
 import {ModalType, NewDocumentOption} from './types'
 import {filterOptions} from './filter'
@@ -77,9 +77,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const handleClose = useCallback(() => {
     setOpen(false)
     setSearchQuery('')
+    if (documentScrollElement) {
+      enableBodyScroll(documentScrollElement)
+    }
     buttonElement?.focus()
-    clearAllBodyScrollLocks()
-  }, [buttonElement])
+  }, [buttonElement, documentScrollElement])
 
   // Open popover on arrow down
   const handleOpenButtonKeyDown = useCallback(
@@ -188,10 +190,14 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   )
 
   //Avoid background of dialog being scrollable on mobile
-  //TODO: fix scroll when closed
-  if (documentScrollElement) {
-    disableBodyScroll(documentScrollElement)
-  }
+  //TODO: the dialog content is scrollable, but it's buggy.
+  //Another bug  - the background does not fill the entire screen
+  //if you are not in a document, but eg in documentList
+  useEffect(() => {
+    if (documentScrollElement) {
+      disableBodyScroll(documentScrollElement)
+    }
+  }, [documentScrollElement])
 
   // Dialog
   if (modal === 'dialog') {

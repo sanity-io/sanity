@@ -1,7 +1,7 @@
 import {ImagesIcon} from '@sanity/icons'
 import {AssetSource, AssetSourceComponentProps} from '@sanity/types'
 import {Box, Dialog, Text} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {clearAllBodyScrollLocks, disableBodyScroll} from 'sanity'
 
 function ImageAssetSource(props: AssetSourceComponentProps) {
@@ -9,9 +9,11 @@ function ImageAssetSource(props: AssetSourceComponentProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
 
   //Avoid background of dialog being scrollable on mobile
-  if (documentScrollElement) {
-    disableBodyScroll(documentScrollElement)
-  }
+  useEffect(() => {
+    if (documentScrollElement) {
+      disableBodyScroll(documentScrollElement)
+    }
+  }, [documentScrollElement])
 
   const handleOnClose = useCallback(() => {
     onClose()

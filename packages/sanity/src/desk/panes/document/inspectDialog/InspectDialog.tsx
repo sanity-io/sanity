@@ -9,7 +9,7 @@ import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
-import {clearAllBodyScrollLocks, disableBodyScroll, enableBodyScroll} from 'sanity'
+import {disableBodyScroll, enableBodyScroll} from 'sanity'
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null
@@ -40,13 +40,15 @@ export function InspectDialog(props: InspectDialogProps) {
     onViewModeChange(VIEW_MODE_RAW.id)
   }, [onViewModeChange])
 
-  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLElement | null>()
 
   //Avoid background of dialog being scrollable on mobile
-  //TODO: Won't scroll on close
-  if (documentScrollElement) {
-    disableBodyScroll(documentScrollElement)
-  }
+  //TODO: Bug - The dialog content is not scrollable
+  useEffect(() => {
+    if (documentScrollElement) {
+      disableBodyScroll(documentScrollElement)
+    }
+  }, [documentScrollElement])
 
   const onHandleClose = useCallback(() => {
     onInspectClose()
@@ -70,10 +72,10 @@ export function InspectDialog(props: InspectDialogProps) {
           <em>No value</em>
         )
       }
-      contentRef={setDocumentScrollElement}
       onClose={onHandleClose}
       onClickOutside={onHandleClose}
       width={3}
+      contentRef={setDocumentScrollElement}
     >
       <Flex direction="column" height="fill">
         <Card padding={3} shadow={1} style={{position: 'sticky', bottom: 0, zIndex: 3}}>

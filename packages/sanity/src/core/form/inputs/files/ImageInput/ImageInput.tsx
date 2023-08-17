@@ -25,7 +25,7 @@ import {
   Path,
   UploadState,
 } from '@sanity/types'
-import React, {ReactNode} from 'react'
+import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import {SanityClient} from '@sanity/client'
 import {isImageSource} from '@sanity/asset-utils'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
@@ -55,6 +55,7 @@ import {ChangeIndicator} from '../../../../changeIndicators'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
+import {disableBodyScroll, enableBodyScroll} from '../../../../hooks'
 
 /**
  * @hidden
@@ -396,18 +397,37 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
   renderHotspotInput = (hotspotInputProps: Omit<InputProps, 'renderDefault'>) => {
     const {value, changed, id, imageUrlBuilder} = this.props
+    const [documentScrollElement, setDocumentScrollElement] = useState<HTMLElement | null>()
+    const closeDialog = this.handleCloseDialog
 
     const withImageTool = this.isImageToolEnabled() && value && value.asset
 
+    //TODO: fix the scrolling of the background for this dialog.
+    //Issue: it crashes currently, unsure the reason behind it
+    // useEffect(() => {
+    //   if (documentScrollElement) {
+    //     disableBodyScroll(documentScrollElement)
+    //   }
+    // }, [documentScrollElement])
+
+    // const handleClose = useCallback(() => {
+    //   closeDialog()
+    //   if (documentScrollElement) {
+    //     enableBodyScroll(documentScrollElement)
+    //   }
+    // }, [closeDialog, documentScrollElement])
+
     return (
-      //Todo: add scroll lock to this dialog
       <Dialog
         __unstable_autoFocus={false}
         header="Edit hotspot and crop"
         id={`${id}_dialog`}
+        // onClickOutside={handleClose}
+        // onClose={handleClose}
         onClickOutside={this.handleCloseDialog}
         onClose={this.handleCloseDialog}
         width={1}
+        // contentRef={setDocumentScrollElement}
       >
         <PresenceOverlay>
           <Box padding={4}>

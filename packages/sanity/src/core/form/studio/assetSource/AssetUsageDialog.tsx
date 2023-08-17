@@ -3,7 +3,7 @@ import {TrashIcon} from '@sanity/icons'
 import {Box, Button, Dialog, Grid, Stack} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {SpinnerWithText} from '../../components/SpinnerWithText'
-import {clearAllBodyScrollLocks, disableBodyScroll, enableBodyScroll} from '../../../hooks'
+import {disableBodyScroll, enableBodyScroll} from '../../../hooks'
 import {useReferringDocuments} from '../../../hooks/useReferringDocuments'
 import {DocumentList} from './DocumentList'
 import {ConfirmMessage} from './ConfirmMessage'
@@ -42,10 +42,12 @@ export function AssetUsageDialog({
   const noPaddingOnStack = mode === MODE_CONFIRM_DELETE && !hasResults
 
   //Avoid background of dialog being scrollable on mobile
-  if (documentScrollElement) {
-    disableBodyScroll(documentScrollElement)
-  }
-  //TODO: fix scrolling when closing the dialog
+  useEffect(() => {
+    if (documentScrollElement) {
+      disableBodyScroll(documentScrollElement)
+    }
+  }, [documentScrollElement])
+
   const handleOnClose = useCallback(() => {
     onClose()
     if (documentScrollElement) {

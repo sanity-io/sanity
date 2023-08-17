@@ -1,4 +1,4 @@
-import React, {useCallback, useId, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useId, useRef, useState} from 'react'
 import {Box, Dialog} from '@sanity/ui'
 import {clearAllBodyScrollLocks, disableBodyScroll} from '../../../../../hooks'
 import {PresenceOverlay} from '../../../../../presence'
@@ -21,9 +21,13 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
   const containerElement = useRef<HTMLDivElement | null>(null)
 
   //Avoid background of dialog being scrollable on mobile
-  if (contentElement) {
-    disableBodyScroll(contentElement)
-  }
+  //TODO: fix issue where when this dialog is open, the background is cropped
+  //(localhost:3333/test/content/input-standard;portable-text;blocksTest;3f244990-7675-4623-b835-039b06af8dd3)
+  useEffect(() => {
+    if (contentElement) {
+      disableBodyScroll(contentElement)
+    }
+  }, [contentElement])
 
   const handleOnClose = useCallback(() => {
     onClose()
