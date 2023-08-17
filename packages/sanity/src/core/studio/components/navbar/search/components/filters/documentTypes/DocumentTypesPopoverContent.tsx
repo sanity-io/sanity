@@ -155,7 +155,7 @@ export function DocumentTypesPopoverContent() {
         {!documentTypeItems.length && (
           <Box padding={3}>
             <Text muted size={1} textOverflow="ellipsis">
-              {t('navbar.search.no-document-type-matches', {typeFilter})}
+              {t('navbar.search.no-matches-found', {filter: typeFilter})}
             </Text>
           </Box>
         )}
