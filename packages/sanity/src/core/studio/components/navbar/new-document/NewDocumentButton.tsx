@@ -32,6 +32,7 @@ import {
   PopoverListFlex,
 } from './NewDocumentButton.style'
 import {INLINE_PREVIEW_HEIGHT} from './NewDocumentListOption'
+import {useTranslation} from '../../../../i18n'
 
 const MAX_DISPLAYED_ITEMS = 10
 
@@ -54,14 +55,15 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const [dialogElement, setDialogElement] = useState<HTMLDivElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
+  const {t} = useTranslation()
 
   const {scheme} = useColorScheme()
   const currentUser = useCurrentUser()
 
   const hasNewDocumentOptions = options.length > 0
   const disabled = !canCreateDocument || !hasNewDocumentOptions
-  const placeholder = `Search`
-  const title = `Create new document`
+  const placeholder = t('navbar.new-document.search')
+  const title = t('navbar.new-document.title')
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => filterOptions(options, searchQuery), [options, searchQuery])
@@ -157,11 +159,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   // Tooltip content for the open button
   const tooltipContent: TooltipProps['content'] = useMemo(() => {
     if (!hasNewDocumentOptions) {
-      return <Text size={1}>No document types</Text>
+      return <Text size={1}>{t('navbar.new-document.no-document-types')}</Text>
     }
 
     if (canCreateDocument) {
-      return <Text size={1}>New document...</Text>
+      return <Text size={1}>{t('navbar.new-document.action.create-new-document')}</Text>
     }
 
     return (
@@ -170,7 +172,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
         operationLabel="create any document"
       />
     )
-  }, [canCreateDocument, currentUser, hasNewDocumentOptions])
+  }, [canCreateDocument, currentUser, hasNewDocumentOptions, t])
 
   // Shared tooltip props for the popover and dialog
   const sharedTooltipProps: TooltipProps = useMemo(
