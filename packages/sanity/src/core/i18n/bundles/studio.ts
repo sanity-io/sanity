@@ -217,14 +217,17 @@ export const studioLocaleStrings = {
   /** Accessibility label for filtering by document type */
   'navbar.search.action.filter-by-document-type': 'Filter by document type',
 
-  /** Label for placeholder for Filter by document type */
-  'navbar.search.filter-label': 'Filter',
+  /** Label for placeholder for Filter (singular) */
+  'navbar.search.filter-label_one': 'Filter',
+
+  /** Label for placeholder for Filters (plural) */
+  'navbar.search.filter-label_other': 'Filters',
 
   /** Accessibility label for command list for Document types */
   'navbar.search.document-types-label': 'Document types',
 
-  /** Label for when no documents are found for a specific types (provided) are found */
-  'navbar.search.no-document-type-matches': `No matches for {{typeFilter}}`,
+  /** Label for when no documents are found for a filter are found */
+  'navbar.search.no-matches-found': `No matches for {{filter}}`,
 
   /** Accessibility action label for clearing document type filters */
   'navbar.search.action.clear-type-filters': 'Clear checked filters',
@@ -237,6 +240,9 @@ export const studioLocaleStrings = {
 
   /** Action label for adding a search filter */
   'navbar.search.action.add-filter': 'Add filter',
+
+  /** Accessibility Label for filter search input in the filtering section of search */
+  'navbar.search.filter-by-title-label': 'Filter by title',
 }
 
 /**

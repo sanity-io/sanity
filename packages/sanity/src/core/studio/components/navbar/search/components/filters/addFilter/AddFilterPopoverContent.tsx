@@ -10,6 +10,7 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
+import {useTranslation} from '../../../../../../../i18n'
 import {createFilterMenuItems} from './createFilterMenuItems'
 import {MenuItemFilter} from './items/MenuItemFilter'
 import {MenuItemHeader} from './items/MenuItemHeader'
@@ -21,6 +22,7 @@ interface AddFilterPopoverContentProps {
 export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
+  const {t} = useTranslation()
 
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTitleFilter(e.currentTarget.value),
@@ -98,7 +100,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
     <Flex direction="column" style={{width: '300px'}}>
       {/* Filter header */}
       <FilterPopoverContentHeader
-        ariaInputLabel="Filter by title"
+        ariaInputLabel={t('navbar.search.filter-by-title-label')}
         onChange={handleFilterChange}
         onClear={handleFilterClear}
         ref={setInputElement}
@@ -109,7 +111,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         {filteredMenuItems.length > 0 && (
           <CommandList
             activeItemDataAttr="data-hovered"
-            ariaLabel="Filters"
+            ariaLabel={t('navbar.search.filter-label', {count: filteredMenuItems.length})}
             autoFocus="input"
             getItemDisabled={getItemDisabled}
             getItemKey={getItemKey}
@@ -127,7 +129,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         {filteredMenuItems.length == 0 && (
           <Box padding={3}>
             <Text muted size={1} textOverflow="ellipsis">
-              No matches for '{titleFilter}'
+              {t('navbar.search.no-matches-found', {filter: titleFilter})}
             </Text>
           </Box>
         )}
