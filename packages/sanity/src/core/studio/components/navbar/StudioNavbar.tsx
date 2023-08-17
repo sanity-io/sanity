@@ -137,8 +137,6 @@ export function StudioNavbar() {
     setDrawerOpen(true)
   }, [])
 
-  const [isWorkspaceMenuOpen, setIsWorkspaceMenuOpen] = useState(false)
-
   return (
     <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
       <RootCard
@@ -172,21 +170,7 @@ export function StudioNavbar() {
 
             {shouldRender.workspaces && (
               <Box marginRight={2}>
-                <Tooltip
-                  content={
-                    <Box padding={2}>
-                      <Text size={1}>Select workspace</Text>
-                    </Box>
-                  }
-                  placement="bottom"
-                  portal
-                  scheme={scheme}
-                  disabled={isWorkspaceMenuOpen}
-                >
-                  <Box>
-                    <WorkspaceMenuButton onMenuOpenChange={setIsWorkspaceMenuOpen} />
-                  </Box>
-                </Tooltip>
+                <WorkspaceMenuButton collapsed />
               </Box>
             )}
 
