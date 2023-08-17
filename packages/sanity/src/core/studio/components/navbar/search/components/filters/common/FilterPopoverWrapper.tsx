@@ -38,7 +38,7 @@ export function FilterPopoverWrapper({
         onClose()
       }
     },
-    [isTopLayer, onClose]
+    [isTopLayer, onClose],
   )
 
   useGlobalKeyDown(handleGlobalKeyDown)

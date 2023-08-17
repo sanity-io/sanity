@@ -27,25 +27,25 @@ export default (typeDef, visitorContext) => {
     problems.push(
       error(
         `Invalid type for image \`metadata\` field - must be an array of strings`,
-        HELP_IDS.ASSET_METADATA_FIELD_INVALID
-      )
+        HELP_IDS.ASSET_METADATA_FIELD_INVALID,
+      ),
     )
   } else if (superfluousMeta.length > 0) {
     problems.push(
       warning(
         `Image \`metadata\` field contains superfluous properties (they are always included): ${superfluousMeta.join(
-          ', '
-        )}`
-      )
+          ', ',
+        )}`,
+      ),
     )
     options = {...options, metadata: metadata.filter((meta) => !autoMeta.includes(meta))}
   } else if (fieldsWithInvalidName.length > 0) {
     problems.push(
       error(
         `The names \`${invalidFieldNames.join(
-          '`, `'
-        )}\` are invalid field names for type \`image\`.`
-      )
+          '`, `',
+        )}\` are invalid field names for type \`image\`.`,
+      ),
     )
   }
 

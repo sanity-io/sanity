@@ -16,7 +16,7 @@ function remove<T>(array: Array<T>, item: T): Array<T> {
 
 export function withMaxConcurrency<Args extends any[], Ret>(
   func: (...args: Args) => Observable<Ret>,
-  concurrency: number = DEFAULT_CONCURRENCY
+  concurrency: number = DEFAULT_CONCURRENCY,
 ) {
   const throttler = createThrottler(concurrency)
   return (...args: Args) => observableFrom(throttler(func(...args))) as Observable<Ret>

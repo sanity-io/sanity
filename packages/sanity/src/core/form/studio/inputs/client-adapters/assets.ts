@@ -14,7 +14,7 @@ function uploadSanityAsset(
   client: SanityClient,
   assetType: 'file' | 'image',
   file: File | Blob,
-  options: UploadOptions = {}
+  options: UploadOptions = {},
 ): Observable<UploadEvent> {
   const extract = options.metadata
   const preserveFilename = options.storeOriginalFilename
@@ -22,12 +22,12 @@ function uploadSanityAsset(
   return hashFile(file).pipe(
     catchError(() =>
       // ignore if hashing fails for some reason
-      observableOf(null)
+      observableOf(null),
     ),
 
     mergeMap((hash) =>
       // note: the sanity api will still dedupe unique files, but this saves us from uploading the asset file entirely
-      hash ? fetchExisting(client, `sanity.${assetType}Asset`, hash) : observableOf(null)
+      hash ? fetchExisting(client, `sanity.${assetType}Asset`, hash) : observableOf(null),
     ),
 
     mergeMap((existing: SanityAssetDocument | null) => {
@@ -59,10 +59,10 @@ function uploadSanityAsset(
                   id: event.body.document._id,
                   asset: event.body.document,
                 }
-              : event
-          )
+              : event,
+          ),
         )
-    })
+    }),
   )
 }
 
@@ -71,7 +71,7 @@ const uploadAsset = withMaxConcurrency(uploadSanityAsset, MAX_CONCURRENT_UPLOADS
 export const uploadImageAsset = (
   client: SanityClient,
   file: File | Blob,
-  options?: UploadOptions
+  options?: UploadOptions,
 ) => uploadAsset(client, 'image', file, options)
 
 export const uploadFileAsset = (client: SanityClient, file: File | Blob, options?: UploadOptions) =>
@@ -103,12 +103,12 @@ export function observeFileAsset(documentPreviewStore: DocumentPreviewStore, id:
 function fetchExisting(
   client: SanityClient,
   type: string,
-  hash: string
+  hash: string,
 ): Observable<ImageAsset | FileAsset | null> {
   return client.observable.fetch(
     '*[_type == $documentType && sha1hash == $hash][0]',
     {documentType: type, hash},
-    {tag: 'asset.find-duplicate'}
+    {tag: 'asset.find-duplicate'},
   )
 }
 
@@ -135,7 +135,7 @@ function hashFile(file: File | Blob): Observable<string | null> {
   }
   return readFile(file).pipe(
     mergeMap((arrayBuffer) => crypto.subtle.digest('SHA-1', arrayBuffer)),
-    map(hexFromBuffer)
+    map(hexFromBuffer),
   )
 }
 

@@ -21,7 +21,7 @@ function withSnapshots(pair: DocumentVersion): DocumentVersionSnapshots {
       filter(isSnapshotEvent),
       map((event) => event.document),
       publishReplay(1),
-      refCount()
+      refCount(),
     ),
 
     patch: pair.patch,
@@ -69,12 +69,12 @@ export const snapshotPair = memoize(
         }
       }),
       publishReplay(1),
-      refCount()
+      refCount(),
     )
   },
   (client, idPair, typeName) => {
     const config = client.config()
 
     return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
-  }
+  },
 )

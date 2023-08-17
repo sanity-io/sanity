@@ -41,7 +41,7 @@ async function resolveUserDefinedFilter(
   options: ReferenceOptions | undefined,
   document: SanityDocument,
   valuePath: Path,
-  getClient: Source['getClient']
+  getClient: Source['getClient'],
 ): Promise<ReferenceFilterSearchOptions> {
   if (!options) {
     return {}
@@ -96,7 +96,7 @@ export function useReferenceInput(options: Options) {
             filter,
             params,
             tag: 'search.reference',
-          })
+          }),
         ),
 
         catchError((err: SearchError) => {
@@ -105,10 +105,10 @@ export function useReferenceInput(options: Options) {
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
           return throwError(err)
-        })
+        }),
       ),
 
-    [documentRef, path, searchClient, schemaType, getClient]
+    [documentRef, path, searchClient, schemaType, getClient],
   )
 
   const template = options.value?._strengthenOnPublish?.template
@@ -116,7 +116,7 @@ export function useReferenceInput(options: Options) {
     () =>
       forwardRef(function EditReferenceLink_(
         _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>>,
-        forwardedRef: ForwardedRef<'a'>
+        forwardedRef: ForwardedRef<'a'>,
       ) {
         return EditReferenceLinkComponent ? (
           <EditReferenceLinkComponent
@@ -127,7 +127,7 @@ export function useReferenceInput(options: Options) {
           />
         ) : null
       }),
-    [EditReferenceLinkComponent, path, template]
+    [EditReferenceLinkComponent, path, template],
   )
 
   const handleEditReference = useCallback(
@@ -139,7 +139,7 @@ export function useReferenceInput(options: Options) {
         template: event.template,
       })
     },
-    [onEditReference, path]
+    [onEditReference, path],
   )
 
   const selectedState = PathUtils.startsWith(path, activePath?.path || [])
@@ -169,7 +169,7 @@ export function useReferenceInput(options: Options) {
 
                 permission: {granted: item.granted, reason: item.reason},
               }
-            : undefined
+            : undefined,
         )
         .filter(isNonNullable)
     )
@@ -177,7 +177,7 @@ export function useReferenceInput(options: Options) {
 
   const getReferenceInfo = useCallback(
     (id: string) => adapter.getReferenceInfo(documentPreviewStore, id, schemaType),
-    [documentPreviewStore, schemaType]
+    [documentPreviewStore, schemaType],
   )
 
   return {

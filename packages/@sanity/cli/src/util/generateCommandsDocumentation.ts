@@ -7,7 +7,7 @@ import {getNoSuchCommandText} from './noSuchCommandText'
  */
 export function generateCommandsDocumentation(
   commandGroups: Record<string, (CliCommandDefinition | CliCommandGroupDefinition)[]>,
-  group = 'default'
+  group = 'default',
 ): string {
   const commandGroup = commandGroups[group]
   const commands = commandGroup && commandGroup.filter((cmd) => !cmd.hideFromHelp)
@@ -37,13 +37,13 @@ export function generateCommandsDocumentation(
 export function generateCommandDocumentation(
   command: CliCommandDefinition,
   group?: string | null,
-  subCommand?: string
+  subCommand?: string,
 ): string {
   if (!command) {
     throw new Error(
       subCommand
         ? `"${subCommand}" is not a subcommand of "${group}". See 'sanity help ${group}'`
-        : getNoSuchCommandText(group || command)
+        : getNoSuchCommandText(group || command),
     )
   }
 

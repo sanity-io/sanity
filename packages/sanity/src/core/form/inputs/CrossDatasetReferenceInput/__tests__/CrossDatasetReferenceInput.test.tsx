@@ -87,7 +87,7 @@ describe('render states', () => {
         preview: {
           published: {title: `Foo`},
         },
-      })
+      }),
     )
 
     const value = {
@@ -138,7 +138,7 @@ describe('render states', () => {
         preview: {
           published: {title: `Foo`},
         },
-      })
+      }),
     )
 
     const value = {
@@ -191,7 +191,7 @@ describe('render states', () => {
         preview: {
           published: {title: `Foo`},
         },
-      })
+      }),
     )
 
     const value = {
@@ -241,7 +241,7 @@ describe('user interaction happy paths', () => {
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
         {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},
-      ])
+      ]),
     )
 
     const getReferenceInfo = ({_id: id, _type: type}: {_id: string; _type?: string}) =>
@@ -329,7 +329,7 @@ describe('user interaction happy paths', () => {
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
         {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},
-      ])
+      ]),
     )
 
     const getReferenceInfo = ({_id: id}: {_id: string}) =>

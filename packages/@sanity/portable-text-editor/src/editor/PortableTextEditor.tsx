@@ -113,7 +113,9 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
     this.change$.next({type: 'loading', isLoading: true})
 
     this.schemaTypes = getPortableTextMemberSchemaTypes(
-      props.schemaType.hasOwnProperty('jsonType') ? props.schemaType : compileType(props.schemaType)
+      props.schemaType.hasOwnProperty('jsonType')
+        ? props.schemaType
+        : compileType(props.schemaType),
     )
   }
 
@@ -123,7 +125,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
       this.schemaTypes = getPortableTextMemberSchemaTypes(
         this.props.schemaType.hasOwnProperty('jsonType')
           ? this.props.schemaType
-          : compileType(this.props.schemaType)
+          : compileType(this.props.schemaType),
       )
     }
   }
@@ -173,7 +175,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
   static addAnnotation = (
     editor: PortableTextEditor,
     type: ObjectSchemaType,
-    value?: {[prop: string]: unknown}
+    value?: {[prop: string]: unknown},
   ): {spanPath: Path; markDefPath: Path} | undefined => editor.editable?.addAnnotation(type, value)
   static blur = (editor: PortableTextEditor): void => {
     debug('Host blurred')
@@ -182,11 +184,11 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
   static delete = (
     editor: PortableTextEditor,
     selection: EditorSelection,
-    options?: EditableAPIDeleteOptions
+    options?: EditableAPIDeleteOptions,
   ) => editor.editable?.delete(selection, options)
   static findDOMNode = (
     editor: PortableTextEditor,
-    element: PortableTextBlock | PortableTextChild
+    element: PortableTextBlock | PortableTextChild,
   ) => {
     // eslint-disable-next-line react/no-find-dom-node
     return editor.editable?.findDOMNode(element)
@@ -225,7 +227,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
   static insertChild = (
     editor: PortableTextEditor,
     type: SpanSchemaType | ObjectSchemaType,
-    value?: {[prop: string]: unknown}
+    value?: {[prop: string]: unknown},
   ): Path | undefined => {
     debug(`Host inserting child`)
     return editor.editable?.insertChild(type, value)
@@ -233,7 +235,7 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
   static insertBlock = (
     editor: PortableTextEditor,
     type: BlockSchemaType | ObjectSchemaType,
-    value?: {[prop: string]: unknown}
+    value?: {[prop: string]: unknown},
   ): Path | undefined => {
     return editor.editable?.insertBlock(type, value)
   }

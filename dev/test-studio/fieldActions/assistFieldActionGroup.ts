@@ -45,7 +45,7 @@ export const assistFieldActionGroup = defineDocumentFieldAction({
           selected: true,
         }),
       ],
-      [path]
+      [path],
     )
 
     return defineActionGroup({

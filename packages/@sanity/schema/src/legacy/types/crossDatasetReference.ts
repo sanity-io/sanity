@@ -55,7 +55,7 @@ function buildTitle(type) {
   }
   return `Cross dataset reference to ${humanize(
     arrify(type.to).map((toType) => toType.title || capitalize(toType.type)),
-    'or'
+    'or',
   ).toLowerCase()}`
 }
 
@@ -66,7 +66,7 @@ export const CrossDatasetReferenceType = {
   extend(subTypeDef, createMemberType) {
     if (!subTypeDef.to) {
       throw new Error(
-        `Missing "to" field in cross dataset reference definition. Check the type ${subTypeDef.name}`
+        `Missing "to" field in cross dataset reference definition. Check the type ${subTypeDef.name}`,
       )
     }
     const parsed = Object.assign(
@@ -74,7 +74,7 @@ export const CrossDatasetReferenceType = {
       subTypeDef,
       {
         type: CROSS_DATASET_REFERENCE_CORE,
-      }
+      },
     )
 
     lazyGetter(parsed, 'fields', () => {

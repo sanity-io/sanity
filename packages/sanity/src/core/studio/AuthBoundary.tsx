@@ -19,7 +19,7 @@ export function AuthBoundary({
   if (error) throw error
 
   const [loggedIn, setLoggedIn] = useState<'logged-in' | 'logged-out' | 'loading' | 'unauthorized'>(
-    'loading'
+    'loading',
   )
   const {activeWorkspace} = useActiveWorkspace()
 

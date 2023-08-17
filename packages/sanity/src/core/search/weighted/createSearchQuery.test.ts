@@ -26,7 +26,7 @@ describe('createSearchQuery', () => {
           '*[_type in $__types && (title match $t0)]' +
           '| order(_id asc)' +
           '[$__offset...$__limit]' +
-          '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
+          '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
       )
 
       expect(params).toEqual({
@@ -90,7 +90,7 @@ describe('createSearchQuery', () => {
         },
         {
           __unstable_extendedProjection: 'object{field}',
-        }
+        },
       )
 
       const result = [
@@ -111,7 +111,7 @@ describe('createSearchQuery', () => {
           query: 'term0',
           types: [testType],
         },
-        {includeDrafts: false}
+        {includeDrafts: false},
       )
 
       expect(query).toContain("!(_id in path('drafts.**'))")
@@ -126,7 +126,7 @@ describe('createSearchQuery', () => {
         {
           offset: 10,
           limit: 30,
-        }
+        },
       )
 
       expect(params.__limit).toEqual(40) // provided offset + limit
@@ -139,11 +139,11 @@ describe('createSearchQuery', () => {
           query: 'term',
           types: [testType],
         },
-        {filter: 'randomCondition == $customParam', params: {customParam: 'custom'}}
+        {filter: 'randomCondition == $customParam', params: {customParam: 'custom'}},
       )
 
       expect(query).toContain(
-        '*[_type in $__types && (title match $t0) && (randomCondition == $customParam)]'
+        '*[_type in $__types && (title match $t0) && (randomCondition == $customParam)]',
       )
       expect(params.customParam).toEqual('custom')
     })
@@ -154,7 +154,7 @@ describe('createSearchQuery', () => {
           query: 'term',
           types: [testType],
         },
-        {limit: 50}
+        {limit: 50},
       )
 
       expect(params.__limit).toEqual(50)
@@ -167,7 +167,7 @@ describe('createSearchQuery', () => {
           types: [testType],
         },
 
-        {tag: 'customTag'}
+        {tag: 'customTag'},
       )
 
       expect(options.tag).toEqual('customTag')
@@ -186,7 +186,7 @@ describe('createSearchQuery', () => {
               field: 'exampleField',
             },
           ],
-        }
+        },
       )
 
       expect(query).toEqual(
@@ -194,7 +194,7 @@ describe('createSearchQuery', () => {
           '*[_type in $__types && (title match $t0)]' +
           '| order(exampleField desc)' +
           '[$__offset...$__limit]' +
-          '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
+          '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
       )
     })
 
@@ -220,7 +220,7 @@ describe('createSearchQuery', () => {
               mapWith: 'lower',
             },
           ],
-        }
+        },
       )
 
       const result = [
@@ -244,7 +244,7 @@ describe('createSearchQuery', () => {
           '*[_type in $__types && (title match $t0)]' +
           '| order(_id asc)' +
           '[$__offset...$__limit]' +
-          '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}'
+          '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
       )
     })
 
@@ -256,7 +256,7 @@ describe('createSearchQuery', () => {
         },
         {
           comments: ['foo=1', 'bar'], //'],
-        }
+        },
       )
       const splitQuery = query.split('\n')
       expect(splitQuery[0]).toEqual(`// findability-mvi:${FINDABILITY_MVI}`)
@@ -284,7 +284,7 @@ describe('createSearchQuery', () => {
           ],
         },
 
-        {tag: 'customTag'}
+        {tag: 'customTag'},
       )
 
       expect(searchSpec).toEqual([
@@ -332,7 +332,7 @@ describe('createSearchQuery', () => {
           // This solution was discarded at it would increase the size of the query payload by up to 50%
 
           // we still map out the path with number
-          '{_type, _id, ...select(_type == "numbers-in-path" => { "w0": cover[0].cards[0].title })}'
+          '{_type, _id, ...select(_type == "numbers-in-path" => { "w0": cover[0].cards[0].title })}',
       )
     })
 

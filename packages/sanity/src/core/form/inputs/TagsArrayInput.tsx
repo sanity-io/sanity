@@ -24,7 +24,7 @@ export function TagsArrayInput(props: TagsArrayInputProps) {
     (nextValue: {value: string}[]) => {
       onChange(nextValue.length === 0 ? unset() : set(nextValue.map((v) => v.value)))
     },
-    [onChange]
+    [onChange],
   )
 
   return (

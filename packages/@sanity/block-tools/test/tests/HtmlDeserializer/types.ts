@@ -10,5 +10,5 @@ interface BlockContentFunctions {
 export type BlockTestFn = (
   input: string,
   blockTools: BlockContentFunctions,
-  commonOptions: {parseHtml: (html: string) => Document}
+  commonOptions: {parseHtml: (html: string) => Document},
 ) => TypedObject[]

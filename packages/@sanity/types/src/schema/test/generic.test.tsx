@@ -68,7 +68,7 @@ describe('common type test', () => {
         //@ts-expect-error we are in strict mode, so this is not allowed
         doc18n: true,
       },
-      {strict: true}
+      {strict: true},
     )
     defineType(
       {
@@ -77,7 +77,7 @@ describe('common type test', () => {
         // strict mode disabled so unknown props are types as any
         doc18n: true,
       },
-      {strict: false}
+      {strict: false},
     )
 
     defineType(
@@ -88,7 +88,7 @@ describe('common type test', () => {
           custom: true,
         },
       },
-      {strict: false}
+      {strict: false},
     )
   })
 

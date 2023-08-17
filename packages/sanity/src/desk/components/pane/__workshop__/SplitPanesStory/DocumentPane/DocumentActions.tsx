@@ -21,7 +21,7 @@ export function DocumentActions() {
 
   const publish = useCallback(
     () => pushToast({status: 'success', title: 'Successfully published'}),
-    [pushToast]
+    [pushToast],
   )
 
   return (

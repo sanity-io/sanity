@@ -10,7 +10,7 @@ import type {InitialValueProperty, SchemaValidationValue} from './types'
 /** @beta */
 export interface DefineSchemaOptions<
   TStrict extends StrictDefinition,
-  TAlias extends IntrinsicTypeName | undefined
+  TAlias extends IntrinsicTypeName | undefined,
 > {
   /**
    * `strict: false` allows unknown properties in the schema.
@@ -41,13 +41,13 @@ export type IntrinsicArrayOfBase = {
 /** @beta */
 export type DefineSchemaBase<
   TType extends string,
-  TAlias extends IntrinsicTypeName | undefined
+  TAlias extends IntrinsicTypeName | undefined,
 > = TType extends IntrinsicTypeName ? IntrinsicBase[TType] : TypeAliasDefinition<TType, TAlias>
 
 /** @beta */
 export type DefineSchemaType<
   TType extends string,
-  TAlias extends IntrinsicTypeName | undefined
+  TAlias extends IntrinsicTypeName | undefined,
 > = TType extends IntrinsicTypeName
   ? IntrinsicDefinitions[TType]
   : TypeAliasDefinition<TType, TAlias>
@@ -55,7 +55,7 @@ export type DefineSchemaType<
 /** @beta */
 export type DefineArrayMemberBase<
   TType extends string,
-  TAlias extends IntrinsicTypeName | undefined
+  TAlias extends IntrinsicTypeName | undefined,
 > = TType extends IntrinsicTypeName
   ? IntrinsicArrayOfBase[TType]
   : ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
@@ -74,7 +74,7 @@ export type MaybeAllowUnknownProps<TStrict extends StrictDefinition> = TStrict e
 /** @beta */
 export type MaybePreview<
   Select extends Record<string, string> | undefined,
-  PrepareValue extends Record<keyof Select, any> | undefined
+  PrepareValue extends Record<keyof Select, any> | undefined,
 > = Select extends Record<string, string>
   ? PrepareValue extends Record<keyof Select, any>
     ? PreviewConfig<Select, PrepareValue>
@@ -86,7 +86,7 @@ export type NarrowPreview<
   TType extends string,
   TAlias extends IntrinsicTypeName | undefined,
   TSelect extends Record<string, string> | undefined,
-  TPrepareValue extends Record<keyof TSelect, any> | undefined
+  TPrepareValue extends Record<keyof TSelect, any> | undefined,
 > = DefineSchemaType<TType, TAlias> extends {preview?: Record<string, any>}
   ? {
       preview?: MaybePreview<TSelect, TPrepareValue>

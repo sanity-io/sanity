@@ -21,7 +21,7 @@ export function arrayToJSONMatchPath(pathArray: Path): string {
 // Converts an array of simple values (strings, numbers only) to a jsonmatch path string.
 function stringifySegment(
   segment: PathSegment | Record<string, unknown>,
-  hasLeading: boolean
+  hasLeading: boolean,
 ): string {
   if (typeof segment === 'number') {
     return `[${segment}]`

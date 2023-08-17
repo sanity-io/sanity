@@ -13,7 +13,7 @@ export function SearchFilterStringInput({
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => onChange(event.currentTarget.value || null),
-    [onChange]
+    [onChange],
   )
 
   return (

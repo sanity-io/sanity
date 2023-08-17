@@ -255,7 +255,7 @@ export type Validator<T = any, Value = any> = (
   constraint: T,
   value: Value,
   message: string | undefined,
-  context: ValidationContext
+  context: ValidationContext,
 ) =>
   | ValidationError[]
   | ValidationError
@@ -330,7 +330,7 @@ export type CustomValidatorResult = true | string | ValidationError
 /** @public */
 export type CustomValidator<T = unknown> = (
   value: T,
-  context: ValidationContext
+  context: ValidationContext,
 ) => CustomValidatorResult | Promise<CustomValidatorResult>
 
 /** @public */
@@ -343,7 +343,7 @@ export interface SlugValidationContext extends ValidationContext {
 /** @public */
 export type SlugIsUniqueValidator = (
   slug: string,
-  context: SlugValidationContext
+  context: SlugValidationContext,
 ) => boolean | Promise<boolean>
 
 /** @public */

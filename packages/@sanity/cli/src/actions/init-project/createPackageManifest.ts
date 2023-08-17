@@ -16,7 +16,7 @@ const manifestPropOrder = [
 ]
 
 export function createPackageManifest(
-  data: Omit<PackageJson, 'version'> & {gitRemote?: string}
+  data: Omit<PackageJson, 'version'> & {gitRemote?: string},
 ): string {
   const dependencies = data.dependencies ? {dependencies: sortObject(data.dependencies)} : {}
   const devDependencies = data.devDependencies
@@ -76,14 +76,17 @@ function getCommonManifest(data: Omit<PackageJson, 'version'> & {gitRemote?: str
 
 function serializeManifest(src: PackageJson | SanityJson): string {
   const props = manifestPropOrder.concat(Object.keys(src))
-  const ordered = props.reduce((target, prop) => {
-    const source = src as any
-    if (typeof source[prop] !== 'undefined' && typeof target[prop] === 'undefined') {
-      target[prop] = source[prop]
-    }
+  const ordered = props.reduce(
+    (target, prop) => {
+      const source = src as any
+      if (typeof source[prop] !== 'undefined' && typeof target[prop] === 'undefined') {
+        target[prop] = source[prop]
+      }
 
-    return target
-  }, {} as Record<string, any>)
+      return target
+    },
+    {} as Record<string, any>,
+  )
 
   return `${JSON.stringify(ordered, null, 2)}\n`
 }

@@ -28,7 +28,7 @@ it("doesn't merge arrays", () => {
 
 it('merges deep', () => {
   expect(
-    deepAssign({some: {deep: {object: true}}}, {some: {deep: {array: ['foo']}}})
+    deepAssign({some: {deep: {object: true}}}, {some: {deep: {array: ['foo']}}}),
   ).toStrictEqual({
     some: {
       deep: {

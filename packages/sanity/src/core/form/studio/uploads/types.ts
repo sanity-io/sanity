@@ -55,7 +55,7 @@ export type Uploader<S extends SchemaType = SchemaType> = {
     client: SanityClient,
     file: File,
     type: S,
-    options?: UploadOptions
+    options?: UploadOptions,
   ) => Observable<UploadProgressEvent>
   priority: number
 }
@@ -79,5 +79,5 @@ export interface FileLike {
  */
 export type UploaderResolver<S extends SchemaType = SchemaType> = (
   type: S,
-  file: FileLike
+  file: FileLike,
 ) => Uploader<S> | null

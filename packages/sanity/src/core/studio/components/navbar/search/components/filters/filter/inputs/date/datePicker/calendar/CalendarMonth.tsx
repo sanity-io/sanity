@@ -39,7 +39,7 @@ export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
                 onSelect={onSelect}
               />
             )
-          })
+          }),
         )}
       </CustomGrid>
     </Box>

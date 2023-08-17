@@ -25,12 +25,12 @@ import {CustomIcon} from './CustomIcon'
 function getPTEFormatActions(
   editor: PortableTextEditor,
   disabled: boolean,
-  hotkeyOpts: HotkeyOptions
+  hotkeyOpts: HotkeyOptions,
 ): PTEToolbarAction[] {
   const types = editor.schemaTypes
   return types.decorators.map((decorator) => {
     const shortCutKey = Object.keys(hotkeyOpts.marks || {}).find(
-      (key) => hotkeyOpts.marks?.[key] === decorator.value
+      (key) => hotkeyOpts.marks?.[key] === decorator.value,
     )
 
     let hotkeys: string[] = []
@@ -81,7 +81,7 @@ function getAnnotationIcon(type: ObjectSchemaType): React.ComponentType | string
 function getPTEAnnotationActions(
   editor: PortableTextEditor,
   disabled: boolean,
-  onInsert: (type: ObjectSchemaType) => void
+  onInsert: (type: ObjectSchemaType) => void,
 ): PTEToolbarAction[] {
   const types = editor.schemaTypes
   const focusChild = PortableTextEditor.focusChild(editor)
@@ -109,7 +109,7 @@ export function getPTEToolbarActionGroups(
   editor: PortableTextEditor,
   disabled: boolean,
   onInsertAnnotation: (type: ObjectSchemaType) => void,
-  hotkeyOpts: HotkeyOptions
+  hotkeyOpts: HotkeyOptions,
 ): PTEToolbarActionGroup[] {
   return [
     {name: 'format', actions: getPTEFormatActions(editor, disabled, hotkeyOpts)},
@@ -131,7 +131,7 @@ export function getBlockStyles(types: PortableTextMemberSchemaTypes): BlockStyle
 
 function getInsertMenuIcon(
   type: ObjectSchemaType,
-  fallbackIcon: React.ComponentType
+  fallbackIcon: React.ComponentType,
 ): React.ComponentType {
   const referenceIcon = get(type, 'to[0].icon')
 
@@ -142,7 +142,7 @@ export function getInsertMenuItems(
   types: PortableTextMemberSchemaTypes,
   disabled: boolean,
   onInsertBlock: (type: ObjectSchemaType) => void,
-  onInsertInline: (type: ObjectSchemaType) => void
+  onInsertInline: (type: ObjectSchemaType) => void,
 ): BlockItem[] {
   const blockItems = types.blockObjects.map(
     (type, index): BlockItem => ({
@@ -151,7 +151,7 @@ export function getInsertMenuItems(
       inline: false,
       key: `block-${index}`,
       type,
-    })
+    }),
   )
 
   const inlineItems = types.inlineObjects.map(
@@ -161,7 +161,7 @@ export function getInsertMenuItems(
       inline: true,
       key: `inline-${index}`,
       type,
-    })
+    }),
   )
 
   // Do not include items that are supposed to be hidden

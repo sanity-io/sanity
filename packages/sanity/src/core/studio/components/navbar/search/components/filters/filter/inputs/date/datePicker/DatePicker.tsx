@@ -19,7 +19,7 @@ export function DatePicker({date, endDate, onChange, selectRange, selectTime}: D
     (dates: {date: Date | null; endDate?: Date | null}) => {
       onChange(dates)
     },
-    [onChange]
+    [onChange],
   )
 
   return (

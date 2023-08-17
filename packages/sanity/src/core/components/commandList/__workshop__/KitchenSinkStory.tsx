@@ -64,7 +64,7 @@ export default function KitchenSinkStory() {
         commandListRef?.current?.scrollToIndex(0)
       }
     },
-    [filteredValues]
+    [filteredValues],
   )
 
   const handleChildClick = useCallback(
@@ -72,7 +72,7 @@ export default function KitchenSinkStory() {
       setMessage(msg)
       toggleSelect(index)
     },
-    [toggleSelect]
+    [toggleSelect],
   )
 
   /**
@@ -99,7 +99,7 @@ export default function KitchenSinkStory() {
     (virtualIndex) => {
       return !!items[filteredValues[virtualIndex].index].disabled
     },
-    [filteredValues, items]
+    [filteredValues, items],
   )
 
   const getItemSelected = useCallback<CommandListGetItemSelectedCallback>(
@@ -107,7 +107,7 @@ export default function KitchenSinkStory() {
       const canonicalIndex = filteredValues[virtualIndex].index
       return !!selected[canonicalIndex]
     },
-    [filteredValues, selected]
+    [filteredValues, selected],
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<Item>>(
@@ -133,7 +133,7 @@ export default function KitchenSinkStory() {
         />
       )
     },
-    [handleChildClick]
+    [handleChildClick],
   )
 
   const selectedIndices = Object.entries(selected)

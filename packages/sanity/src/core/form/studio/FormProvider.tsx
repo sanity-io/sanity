@@ -104,35 +104,35 @@ export function FormProvider(props: FormProviderProps) {
 
   const renderInput = useCallback(
     (inputProps: Omit<InputProps, 'renderDefault'>) => <Input {...inputProps} />,
-    [Input]
+    [Input],
   )
   const renderField = useCallback(
     (fieldProps: Omit<FieldProps, 'renderDefault'>) => <Field {...fieldProps} />,
-    [Field]
+    [Field],
   )
   const renderItem = useCallback(
     (itemProps: Omit<ItemProps, 'renderDefault'>) => <Item {...itemProps} />,
-    [Item]
+    [Item],
   )
   const renderPreview = useCallback(
     (previewProps: RenderPreviewCallbackProps) => (
       <PreviewLoader component={Preview} {...previewProps} />
     ),
-    [Preview]
+    [Preview],
   )
   const renderBlock = useCallback(
     (blockProps: Omit<BlockProps, 'renderDefault'>) => <Block {...blockProps} />,
-    [Block]
+    [Block],
   )
   const renderInlineBlock = useCallback(
     (blockProps: Omit<BlockProps, 'renderDefault'>) => <InlineBlock {...blockProps} />,
-    [InlineBlock]
+    [InlineBlock],
   )
   const renderAnnotation = useCallback(
     (annotationProps: Omit<BlockAnnotationProps, 'renderDefault'>) => (
       <Annotation {...annotationProps} />
     ),
-    [Annotation]
+    [Annotation],
   )
 
   return (

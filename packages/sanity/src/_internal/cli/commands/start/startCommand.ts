@@ -23,7 +23,7 @@ const startCommand: CliCommandDefinition = {
   description: 'Alias of `sanity preview`',
   action: async (
     args: CliCommandArguments<StartPreviewServerCommandFlags>,
-    context: CliCommandContext
+    context: CliCommandContext,
   ) => {
     const {output, chalk, prompt} = context
     const previewAction = await getPreviewAction()

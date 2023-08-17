@@ -11,7 +11,7 @@ const datasetNameError =
 export function promptForDatasetName(
   prompt: CliPrompter,
   options: {message?: string} = {},
-  existingDatasets: string[] = []
+  existingDatasets: string[] = [],
 ): Promise<string> {
   return prompt.single({
     type: 'input',
@@ -58,7 +58,7 @@ export function promptForDatasetName(
 function formatInvalid(name: string, invalid: string[]): string {
   return invalid.reduce(
     (acc, char) => acc.replace(new RegExp(escapeRegex(char), 'g'), chalk.red.bold(char)),
-    name
+    name,
   )
 }
 

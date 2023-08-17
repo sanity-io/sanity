@@ -41,7 +41,7 @@ interface TokenDetails {
 
 export async function login(
   args: CliCommandArguments<LoginFlags>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const {prompt, output, apiClient} = context
   const {sso, experimental, open: openFlag, provider: specifiedProvider} = args.extOptions
@@ -307,7 +307,7 @@ async function getSSOProvider({
 
 async function promptProviders(
   prompt: CliPrompter,
-  providers: LoginProvider[]
+  providers: LoginProvider[],
 ): Promise<LoginProvider> {
   if (providers.length === 1) {
     return providers[0]

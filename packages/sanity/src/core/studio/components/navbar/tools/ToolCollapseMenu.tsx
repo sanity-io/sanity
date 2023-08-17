@@ -30,7 +30,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
         scheme: scheme,
       },
     }),
-    [scheme]
+    [scheme],
   )
 
   const children = useMemo(
@@ -40,7 +40,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
 
         const Link = forwardRef(function Link(
           linkProps: ToolLinkProps,
-          ref: React.Ref<HTMLAnchorElement>
+          ref: React.Ref<HTMLAnchorElement>,
         ) {
           return <ToolLink {...linkProps} ref={ref} name={tool.name} />
         })
@@ -60,7 +60,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
           />
         )
       }),
-    [activeToolName, scheme, tools]
+    [activeToolName, scheme, tools],
   )
 
   return (

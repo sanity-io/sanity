@@ -27,7 +27,7 @@ interface ReferenceLinkCardProps extends CardProps {
 
 export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
   props: ReferenceLinkCardProps & React.HTMLProps<HTMLElement>,
-  ref: React.ForwardedRef<HTMLElement>
+  ref: React.ForwardedRef<HTMLElement>,
 ) {
   const {documentType, as: asProp, ...restProps} = props
   const dataAs = documentType ? 'a' : undefined

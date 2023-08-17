@@ -74,7 +74,7 @@ export type PortableTextEditableProps = {
  */
 export const PortableTextEditable = forwardRef(function PortableTextEditable(
   props: PortableTextEditableProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'onPaste'>,
-  forwardedRef: React.ForwardedRef<HTMLDivElement>
+  forwardedRef: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {
     hotkeys,
@@ -108,11 +108,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   // React/UI-specific plugins
   const withInsertData = useMemo(
     () => createWithInsertData(change$, schemaTypes, keyGenerator),
-    [change$, keyGenerator, schemaTypes]
+    [change$, keyGenerator, schemaTypes],
   )
   const withHotKeys = useMemo(
     () => createWithHotkeys(schemaTypes, keyGenerator, portableTextEditor, hotkeys),
-    [hotkeys, keyGenerator, portableTextEditor, schemaTypes]
+    [hotkeys, keyGenerator, portableTextEditor, schemaTypes],
   )
 
   // Output a minimal React editor inside Editable when in readOnly mode.
@@ -140,7 +140,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         spellCheck={spellCheck}
       />
     ),
-    [schemaTypes, spellCheck, readOnly, renderBlock, renderChild, renderListItem, renderStyle]
+    [schemaTypes, spellCheck, readOnly, renderBlock, renderChild, renderListItem, renderStyle],
   )
 
   const renderLeaf = useCallback(
@@ -167,7 +167,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
       return rendered
     },
-    [readOnly, renderAnnotation, renderChild, renderDecorator, renderPlaceholder, schemaTypes]
+    [readOnly, renderAnnotation, renderChild, renderDecorator, renderPlaceholder, schemaTypes],
   )
 
   const restoreSelectionFromProps = useCallback(() => {
@@ -175,7 +175,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       debug(`Selection from props ${JSON.stringify(propsSelection)}`)
       const normalizedSelection = normalizeSelection(
         propsSelection,
-        fromSlateValue(slateEditor.children, blockTypeName)
+        fromSlateValue(slateEditor.children, blockTypeName),
       )
       if (normalizedSelection !== null) {
         debug(`Normalized selection from props ${JSON.stringify(normalizedSelection)}`)
@@ -234,7 +234,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         }
       }
     },
-    [onCopy]
+    [onCopy],
   )
 
   // Handle incoming pasting events in the editor
@@ -260,7 +260,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             value,
             path,
             schemaTypes,
-          })
+          }),
         )
       })
         .then((result) => {
@@ -273,7 +273,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           }
           if (result && result.insert) {
             slateEditor.insertFragment(
-              toSlateValue(result.insert as PortableTextBlock[], {schemaTypes})
+              toSlateValue(result.insert as PortableTextBlock[], {schemaTypes}),
             )
             change$.next({type: 'loading', isLoading: false})
             return
@@ -286,7 +286,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           return error
         })
     },
-    [change$, onPaste, portableTextEditor, schemaTypes, slateEditor]
+    [change$, onPaste, portableTextEditor, schemaTypes, slateEditor],
   )
 
   const handleOnFocus: React.FocusEventHandler<HTMLDivElement> = useCallback(
@@ -302,14 +302,14 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         })
       }
     },
-    [change$, portableTextEditor]
+    [change$, portableTextEditor],
   )
 
   const handleOnBlur: React.FocusEventHandler<HTMLDivElement> = useCallback(
     (event) => {
       change$.next({type: 'blur', event})
     },
-    [change$]
+    [change$],
   )
 
   const handleOnBeforeInput = useCallback(
@@ -318,7 +318,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         onBeforeInput(event)
       }
     },
-    [onBeforeInput]
+    [onBeforeInput],
   )
 
   const handleDOMChange = useCallback(() => {
@@ -420,7 +420,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       renderElement,
       renderLeaf,
       scrollSelectionIntoViewToSlate,
-    ]
+    ],
   )
 
   if (!portableTextEditor) {

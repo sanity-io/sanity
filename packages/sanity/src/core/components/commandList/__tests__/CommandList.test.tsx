@@ -25,7 +25,7 @@ function TestComponent(props: TestComponentProps) {
 
       return item % 2 === 0
     },
-    [withDisabledItems]
+    [withDisabledItems],
   )
 
   const renderItem = useCallback((item: Item) => {

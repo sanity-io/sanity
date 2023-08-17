@@ -88,7 +88,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
 
 async function getCoreModulePath(
   workDir: string,
-  cliConfig: CliConfigResult | null
+  cliConfig: CliConfigResult | null,
 ): Promise<string | undefined> {
   const corePath = resolveFrom.silent(workDir, '@sanity/core')
   const sanityPath = resolveFrom.silent(workDir, 'sanity/_internal')
@@ -99,8 +99,8 @@ async function getCoreModulePath(
 
     console.warn(
       chalk.yellow(
-        `Both \`@sanity/core\` AND \`sanity\` installed - assuming Sanity ${assumedVersion} project.`
-      )
+        `Both \`@sanity/core\` AND \`sanity\` installed - assuming Sanity ${assumedVersion} project.`,
+      ),
     )
 
     return closest
@@ -125,8 +125,8 @@ async function getCoreModulePath(
         [
           'The `@sanity/core` module is not installed in current project',
           `Project-specific commands not available until you run \`${installCmd}\``,
-        ].join('\n')
-      )
+        ].join('\n'),
+      ),
     )
   }
 
@@ -137,8 +137,8 @@ async function getCoreModulePath(
         [
           'The `sanity` module is not installed in current project',
           `Project-specific commands not available until you run \`${installCmd}\``,
-        ].join('\n')
-      )
+        ].join('\n'),
+      ),
     )
   }
 
@@ -176,7 +176,7 @@ function installUnhandledRejectionsHandler() {
 }
 
 function rejectionHasStack(
-  reason: Record<string, unknown> | null | undefined
+  reason: Record<string, unknown> | null | undefined,
 ): reason is {stack: string} {
   return Boolean(reason && 'stack' in reason && typeof reason.stack === 'string')
 }
@@ -198,8 +198,8 @@ function warnOnNonProductionEnvironment(): void {
     chalk.yellow(
       knownEnvs.includes(sanityEnv)
         ? `[WARN] Running in ${sanityEnv} environment mode\n`
-        : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`
-    )
+        : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`,
+    ),
   )
 }
 

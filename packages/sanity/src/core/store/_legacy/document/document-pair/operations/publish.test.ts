@@ -16,21 +16,21 @@ describe('publish', () => {
     it('returns with LIVE_EDIT_ENABLED if isLiveEditEnabled', () => {
       ;(isLiveEditEnabled as jest.Mock).mockImplementation(
         // eslint-disable-next-line max-nested-callbacks
-        () => true
+        () => true,
       )
 
       expect(
         publish.disabled(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          {} as any
-        )
+          {} as any,
+        ),
       ).toBe('LIVE_EDIT_ENABLED')
     })
 
     it('returns ALREADY_PUBLISHED if there is no draft and there is a published version', () => {
       ;(isLiveEditEnabled as jest.Mock).mockImplementation(
         // eslint-disable-next-line max-nested-callbacks
-        () => false
+        () => false,
       )
 
       expect(
@@ -40,14 +40,14 @@ describe('publish', () => {
             draft: undefined,
             published: {} as SanityDocument,
           },
-        } as unknown as OperationArgs)
+        } as unknown as OperationArgs),
       ).toBe('ALREADY_PUBLISHED')
     })
 
     it('returns NO_CHANGES if there is no draft and there is no published version', () => {
       ;(isLiveEditEnabled as jest.Mock).mockImplementation(
         // eslint-disable-next-line max-nested-callbacks
-        () => false
+        () => false,
       )
 
       expect(
@@ -57,14 +57,14 @@ describe('publish', () => {
             draft: undefined,
             published: undefined,
           },
-        } as unknown as OperationArgs)
+        } as unknown as OperationArgs),
       ).toBe('NO_CHANGES')
     })
 
     it("otherwise the operation isn't disabled", () => {
       ;(isLiveEditEnabled as jest.Mock).mockImplementation(
         // eslint-disable-next-line max-nested-callbacks
-        () => false
+        () => false,
       )
 
       expect(
@@ -74,7 +74,7 @@ describe('publish', () => {
             draft: {} as SanityDocument,
             published: {} as SanityDocument,
           },
-        } as unknown as OperationArgs)
+        } as unknown as OperationArgs),
       ).toBe(false)
     })
   })

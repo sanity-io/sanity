@@ -36,7 +36,7 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
         />
       )
     },
-    [ReferenceChildLink, type?.name, value?._id]
+    [ReferenceChildLink, type?.name, value?._id],
   )
 
   return (

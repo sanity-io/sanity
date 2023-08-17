@@ -74,7 +74,7 @@ export function getTemplatePermissions({
           schema,
           template,
           item.parameters,
-          context
+          context,
         )
 
         return {template, item, resolvedInitialValue}
@@ -114,11 +114,11 @@ export function getTemplatePermissions({
                 }
 
                 return result
-              })
+              }),
             )
-          })
-        )
-      )
+          }),
+        ),
+      ),
   )
 }
 

@@ -67,7 +67,7 @@ depcheck(cwd, options).then((unused) => {
         chalk.bold('Unused dependencies'),
         ...unused.dependencies.map((dep) => `- ${dep}`),
         ...unused.devDependencies.map((dep) => `- ${dep} (dev)`),
-      ].join('\n')
+      ].join('\n'),
     )
   }
   if (hasMissingDeps) {
@@ -79,17 +79,17 @@ depcheck(cwd, options).then((unused) => {
           '  used by',
           ...dep.usages.map((u) => `    -- ${path.relative(cwd, u)}`),
         ]),
-      ].join('\n')
+      ].join('\n'),
     )
   }
   if (hasInvalidFiles) {
     console.error(
-      [chalk.bold('Invalid files'), ...unused.invalidFiles.map((file) => `- ${file}`)].join('\n')
+      [chalk.bold('Invalid files'), ...unused.invalidFiles.map((file) => `- ${file}`)].join('\n'),
     )
   }
   if (hasInvalidDirs) {
     console.error(
-      [chalk.bold('Invalid dirs'), ...unused.invalidDirs.map((file) => `- ${file}`)].join('\n')
+      [chalk.bold('Invalid dirs'), ...unused.invalidDirs.map((file) => `- ${file}`)].join('\n'),
     )
   }
   if (hasMissingDeps || hasUnusedDeps || hasInvalidFiles) {
@@ -127,12 +127,12 @@ function sanityJSONParser(filePath, deps) {
   if (filename === 'sanity.json') {
     const sanityConfig = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
     const allPlugins = sanityConfig.plugins.concat(
-      Object.keys(sanityConfig.env || {}).flatMap((env) => sanityConfig.env[env].plugins || [])
+      Object.keys(sanityConfig.env || {}).flatMap((env) => sanityConfig.env[env].plugins || []),
     )
     return deps
       .concat(allPlugins.filter(isLocalPlugin(filePath)))
       .filter((dep) =>
-        allPlugins.some((plugin) => plugin === dep || dep === `sanity-plugin-${plugin}`)
+        allPlugins.some((plugin) => plugin === dep || dep === `sanity-plugin-${plugin}`),
       )
   }
   return []

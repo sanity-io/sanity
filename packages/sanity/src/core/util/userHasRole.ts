@@ -24,7 +24,7 @@ import type {CurrentUser} from '@sanity/types'
  */
 export function userHasRole(
   user: (Omit<CurrentUser, 'role'> & {role?: string}) | null,
-  roleId: string
+  roleId: string,
 ): boolean {
   return user !== null && user.roles.some((role) => role.name === roleId)
 }

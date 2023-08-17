@@ -33,18 +33,18 @@ export function StudioFileInput(props: FileInputProps) {
       }
       return defaultResolveUploader(type, file)
     },
-    [fileConfig.directUploads]
+    [fileConfig.directUploads],
   )
   // NOTE: type.options.sources may be an empty array and in that case we're
   // disabling selecting images from asset source  (it's a feature, not a bug)
   const assetSources = useMemo(
     () => sourcesFromSchema || fileConfig.assetSources,
-    [fileConfig, sourcesFromSchema]
+    [fileConfig, sourcesFromSchema],
   )
 
   const observeAsset = useCallback(
     (id: string) => observeFileAsset(documentPreviewStore, id),
-    [documentPreviewStore]
+    [documentPreviewStore],
   )
 
   return (

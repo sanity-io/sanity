@@ -40,7 +40,7 @@ const PASTE_INPUT_STYLE = {opacity: 0, position: 'absolute'} as const
 export function fileTarget<ComponentProps>(Component: React.ComponentType<ComponentProps>) {
   return React.forwardRef(function FileTarget(
     props: Omit<ComponentProps, ManagedProps> & Props,
-    ref: React.ForwardedRef<HTMLElement>
+    ref: React.ForwardedRef<HTMLElement>,
   ) {
     const {onFiles, onFilesOver, onFilesOut, disabled, ...rest} = props
 
@@ -55,7 +55,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
       (files: File[]) => {
         onFiles?.(files)
       },
-      [onFiles]
+      [onFiles],
     )
 
     const handleKeyDown = useCallback(
@@ -68,7 +68,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
           setShowPasteInput(true)
         }
       },
-      [forwardedRef]
+      [forwardedRef],
     )
     const handlePaste = useCallback(
       (event: React.ClipboardEvent) => {
@@ -88,7 +88,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
             forwardedRef.current?.focus()
           })
       },
-      [emitFiles, forwardedRef]
+      [emitFiles, forwardedRef],
     )
     const handleDrop = useCallback(
       (event: React.DragEvent) => {
@@ -105,7 +105,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
         }
         onFilesOut?.()
       },
-      [emitFiles, onFiles, onFilesOut]
+      [emitFiles, onFiles, onFilesOut],
     )
 
     const handleDragOver = useCallback(
@@ -115,7 +115,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
           event.stopPropagation()
         }
       },
-      [onFiles]
+      [onFiles],
     )
 
     const handleDragEnter = useCallback(
@@ -136,7 +136,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
           onFilesOver(fileTypes)
         }
       },
-      [onFilesOver, forwardedRef]
+      [onFilesOver, forwardedRef],
     )
 
     const handleDragLeave = useCallback(
@@ -150,7 +150,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
           onFilesOut?.()
         }
       },
-      [onFilesOut]
+      [onFilesOut],
     )
 
     const prevShowPasteInput = React.useRef(false)
@@ -186,13 +186,13 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
 // this is a hack for Safari that reads pasted image(s) from an ContentEditable div instead of the onpaste event
 function convertImagesToFilesAndClearContentEditable(
   element: HTMLElement,
-  targetFormat = 'image/jpeg'
+  targetFormat = 'image/jpeg',
 ): Promise<File[]> {
   if (!element.isContentEditable) {
     return Promise.reject(
       new Error(
-        `Expected element to be contentEditable="true". Instead found a non contenteditable ${element.tagName}`
-      )
+        `Expected element to be contentEditable="true". Instead found a non contenteditable ${element.tagName}`,
+      ),
     )
   }
   return new Promise((resolve) => setTimeout(resolve, 10)) // add a delay so the paste event can finish
@@ -203,7 +203,7 @@ function convertImagesToFilesAndClearContentEditable(
     })
     .then((images) => Promise.all(images.map((img) => imageUrlToBlob(img.src))))
     .then((imageBlobs) =>
-      imageBlobs.map((blob) => new File([blob!], 'pasted-image.jpg', {type: targetFormat}))
+      imageBlobs.map((blob) => new File([blob!], 'pasted-image.jpg', {type: targetFormat})),
     )
 }
 

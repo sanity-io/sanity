@@ -55,15 +55,15 @@ export const Leaf = (props: LeafProps) => {
   const block = children.props.parent as PortableTextTextBlock | undefined
   const path: Path = useMemo(
     () => (block ? [{_key: block?._key}, 'children', {_key: leaf._key}] : []),
-    [block, leaf._key]
+    [block, leaf._key],
   )
   const decoratorValues = useMemo(
     () => schemaTypes.decorators.map((dec) => dec.value),
-    [schemaTypes.decorators]
+    [schemaTypes.decorators],
   )
   const marks: string[] = useMemo(
     () => uniq((leaf.marks || EMPTY_MARKS).filter((mark) => decoratorValues.includes(mark))),
-    [decoratorValues, leaf.marks]
+    [decoratorValues, leaf.marks],
   )
   const annotationMarks = Array.isArray(leaf.marks) ? leaf.marks : EMPTY_MARKS
   const annotations = useMemo(
@@ -71,10 +71,10 @@ export const Leaf = (props: LeafProps) => {
       annotationMarks
         .map(
           (mark) =>
-            !decoratorValues.includes(mark) && block?.markDefs?.find((def) => def._key === mark)
+            !decoratorValues.includes(mark) && block?.markDefs?.find((def) => def._key === mark),
         )
         .filter(Boolean) as PortableTextObject[],
-    [annotationMarks, block, decoratorValues]
+    [annotationMarks, block, decoratorValues],
   )
 
   const shouldTrackSelectionAndFocus = annotations.length > 0 && blockSelected
@@ -185,7 +185,7 @@ export const Leaf = (props: LeafProps) => {
                 console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
                 return schemaType
               },
-            }
+            },
           )
           returnedChildren = renderDecorator(_props as BlockDecoratorRenderProps)
         }
@@ -214,7 +214,7 @@ export const Leaf = (props: LeafProps) => {
                     console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
                     return schemaType
                   },
-                }
+                },
               )
 
               returnedChildren = (
@@ -252,7 +252,7 @@ export const Leaf = (props: LeafProps) => {
                 console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
                 return schemaTypes.span
               },
-            }
+            },
           )
           returnedChildren = renderChild(_props as BlockChildRenderProps)
         }
@@ -281,6 +281,6 @@ export const Leaf = (props: LeafProps) => {
         {content}
       </span>
     ),
-    [leaf, attributes, content]
+    [leaf, attributes, content],
   )
 }

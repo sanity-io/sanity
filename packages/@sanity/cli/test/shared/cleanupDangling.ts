@@ -32,8 +32,8 @@ async function deleteAliases() {
     toDelete.map((alias) =>
       testClient
         .request({method: 'DELETE', uri: `/aliases/${alias.name}`})
-        .catch(getErrorWarner('dataset alias', alias.name))
-    )
+        .catch(getErrorWarner('dataset alias', alias.name)),
+    ),
   )
 }
 
@@ -44,22 +44,22 @@ async function deleteGraphQLAPIs() {
     toDelete.map(({dataset, tag}) =>
       testClient
         .request({url: `/apis/graphql/${dataset}/${tag}`, method: 'DELETE'})
-        .catch(getErrorWarner('graphql api', `${dataset}/${tag}`))
-    )
+        .catch(getErrorWarner('graphql api', `${dataset}/${tag}`)),
+    ),
   )
 }
 
 async function deleteCorsOrigins() {
   const origins = await testClient.request<{id: number; origin: string}[]>({url: '/cors'})
   const toDelete = origins.filter(({origin}) =>
-    isTestEntityOlderThanThreshold(origin.replace(/^https:\/\//, ''))
+    isTestEntityOlderThanThreshold(origin.replace(/^https:\/\//, '')),
   )
   await Promise.all(
     toDelete.map((origin) =>
       testClient
         .request({method: 'DELETE', uri: `/cors/${origin.id}`})
-        .catch(getErrorWarner('cors origin', origin.origin))
-    )
+        .catch(getErrorWarner('cors origin', origin.origin)),
+    ),
   )
 }
 
@@ -68,8 +68,8 @@ async function deleteDatasets() {
   const toDelete = datasets.filter(({name}) => isTestEntityOlderThanThreshold(name))
   await Promise.all(
     toDelete.map((ds) =>
-      testClient.datasets.delete(ds.name).catch(getErrorWarner('dataset', ds.name))
-    )
+      testClient.datasets.delete(ds.name).catch(getErrorWarner('dataset', ds.name)),
+    ),
   )
 }
 

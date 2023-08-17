@@ -22,7 +22,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     hasFocus: boolean
     isChanged?: boolean
     withHoverEffect?: boolean
-  }
+  },
 ) {
   const {
     children,
@@ -42,14 +42,14 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
       onMouseEnterProp?.(event)
       setHover(true)
     },
-    [onMouseEnterProp]
+    [onMouseEnterProp],
   )
   const onMouseLeave = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       onMouseLeaveProp?.(event)
       setHover(false)
     },
-    [onMouseLeaveProp]
+    [onMouseLeaveProp],
   )
   const ref = useRef<HTMLDivElement | null>(null)
   useReporter(
@@ -62,7 +62,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
       hasHover: hasHover,
       zIndex: layer.zIndex,
     }),
-    deepCompare // note: deepCompare should be ok here since we're not comparing deep values
+    deepCompare, // note: deepCompare should be ok here since we're not comparing deep values
   )
 
   return (
@@ -89,7 +89,7 @@ export interface ChangeIndicatorProps {
 
 /** @internal */
 export function ChangeIndicator(
-  props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>
+  props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {children, hasFocus, isChanged, path, withHoverEffect, ...restProps} = props
 

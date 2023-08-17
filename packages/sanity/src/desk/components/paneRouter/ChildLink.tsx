@@ -8,7 +8,7 @@ import {StateLink} from 'sanity/router'
  */
 export const ChildLink = forwardRef(function ChildLink(
   props: ChildLinkProps,
-  ref: React.ForwardedRef<HTMLAnchorElement>
+  ref: React.ForwardedRef<HTMLAnchorElement>,
 ) {
   const {childId, childPayload, childParameters, ...rest} = props
   const {routerPanesState, groupIndex} = useContext(PaneRouterContext)

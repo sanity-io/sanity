@@ -56,7 +56,7 @@ export class CommandRunner {
   async runCommand(
     commandOrGroup: string,
     args: CliCommandArguments,
-    options: CommandRunnerOptions
+    options: CommandRunnerOptions,
   ): Promise<unknown> {
     if (!commandOrGroup) {
       this.handlers.outputter.print(generateCommandsDocumentation(this.commandGroups))
@@ -84,7 +84,7 @@ export class CommandRunner {
     const {cliConfig, ...commandOptions} = options
     const apiClient = getClientWrapper(
       cliConfig?.config?.api || null,
-      cliConfig?.path || (cliConfig?.version === 2 ? 'sanity.json' : 'sanity.cli.js')
+      cliConfig?.path || (cliConfig?.version === 2 ? 'sanity.json' : 'sanity.cli.js'),
     )
 
     const context: CliCommandContext = {
@@ -122,13 +122,13 @@ export class CommandRunner {
       const subCommand = this.resolveSubcommand(
         this.commandGroups[commandOrGroup],
         subCommandName,
-        commandOrGroup
+        commandOrGroup,
       )
 
       debug(
         subCommand
           ? `Subcommand resolved to "${subCommand.commandName}"`
-          : `Subcommand with name "${subCommandName}" not found`
+          : `Subcommand with name "${subCommandName}" not found`,
       )
 
       return subCommand
@@ -155,7 +155,7 @@ export class CommandRunner {
   resolveSubcommand(
     group: (CliCommandDefinition | CliCommandGroupDefinition)[],
     subCommandName: string,
-    parentGroupName: string
+    parentGroupName: string,
   ): ResolvedCliCommand | null {
     if (!subCommandName) {
       return null
@@ -196,12 +196,12 @@ export function getCliRunner(commands: CommandOrGroup[]): CommandRunner {
       outputter: cliOutputter,
       prompter: cliPrompter,
     },
-    commands
+    commands,
   )
 }
 
 function getVersionedContextParams(
-  cliConfig: CliConfigResult | null
+  cliConfig: CliConfigResult | null,
 ):
   | {sanityMajorVersion: 2; cliConfig?: SanityJson; cliConfigPath?: string}
   | {sanityMajorVersion: 3; cliConfig?: CliConfig; cliConfigPath?: string} {

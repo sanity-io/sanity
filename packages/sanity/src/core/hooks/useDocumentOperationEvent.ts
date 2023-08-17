@@ -7,6 +7,6 @@ export function useDocumentOperationEvent(publishedDocId: string, docTypeName: s
 
   return useMemoObservable(
     () => documentStore.pair.operationEvents(publishedDocId, docTypeName),
-    [documentStore.pair, publishedDocId, docTypeName]
+    [documentStore.pair, publishedDocId, docTypeName],
   )
 }

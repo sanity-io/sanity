@@ -41,21 +41,21 @@ export function StudioImageInput(props: ImageInputProps) {
       }
       return defaultResolveUploader(type, file)
     },
-    [supportsImageUploads]
+    [supportsImageUploads],
   )
 
   // note: type.options.sources may be an empty array and in that case we're
   // disabling selecting images from asset source  (it's a feature, not a bug)
   const assetSources = React.useMemo(
     () => sourcesFromSchema || image.assetSources,
-    [image, sourcesFromSchema]
+    [image, sourcesFromSchema],
   )
 
   const builder = React.useMemo(() => imageUrlBuilder(client), [client])
 
   const observeAsset = useCallback(
     (id: string) => observeImageAsset(documentPreviewStore, id),
-    [documentPreviewStore]
+    [documentPreviewStore],
   )
 
   return (

@@ -20,7 +20,7 @@ const devCommand: CliCommandDefinition = {
   description: 'Starts a development server for the Sanity Studio',
   action: async (
     args: CliCommandArguments<StartDevServerCommandFlags>,
-    context: CliCommandContext
+    context: CliCommandContext,
   ) => {
     const devAction = await getDevAction()
 
@@ -32,7 +32,7 @@ const devCommand: CliCommandDefinition = {
 export async function getDevAction(): Promise<
   (
     args: CliCommandArguments<StartDevServerCommandFlags>,
-    context: CliCommandContext
+    context: CliCommandContext,
   ) => Promise<void>
 > {
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension

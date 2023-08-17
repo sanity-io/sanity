@@ -30,7 +30,7 @@ export default function ExampleStory() {
             },
           ]
         : [],
-    [user]
+    [user],
   )
 
   const validation: ValidationMarker[] = useMemo(
@@ -50,7 +50,7 @@ export default function ExampleStory() {
             },
           ]
         : [],
-    [validationErrors]
+    [validationErrors],
   )
 
   const handleBlur = useCallback(() => setFocused(false), [])

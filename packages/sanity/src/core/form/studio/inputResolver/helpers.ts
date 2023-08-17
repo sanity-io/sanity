@@ -63,7 +63,7 @@ function getArrayFieldLevel(schemaType: SchemaType, currentLevel: number): numbe
 
 function asType(
   schemaType: SchemaType | undefined,
-  asOneOfTypes: string[]
+  asOneOfTypes: string[],
 ): SchemaType | undefined {
   if (schemaType?.name && asOneOfTypes.includes(schemaType?.name)) {
     return schemaType

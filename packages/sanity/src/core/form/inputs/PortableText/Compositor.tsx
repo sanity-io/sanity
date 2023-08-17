@@ -92,7 +92,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       },
     }),
 
-    [hotkeys, onToggleFullscreen]
+    [hotkeys, onToggleFullscreen],
   )
 
   const editorHotkeys = useHotkeys(hotkeysWithFullscreenToggle)
@@ -160,7 +160,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
-    ]
+    ],
   )
 
   const renderObjectBlock = useCallback(
@@ -219,7 +219,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
-    ]
+    ],
   )
 
   // This is the function that is sent to PortableTextEditor's renderBlock callback
@@ -232,7 +232,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
       return renderObjectBlock(blockProps)
     },
-    [editor.schemaTypes.block.name, renderObjectBlock, renderTextBlock]
+    [editor.schemaTypes.block.name, renderObjectBlock, renderTextBlock],
   )
 
   // This is the function that is sent to PortableTextEditor's renderChild callback
@@ -292,7 +292,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
-    ]
+    ],
   )
 
   const editorRenderAnnotation = useCallback(
@@ -349,7 +349,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
-    ]
+    ],
   )
 
   const editorNode = useMemo(
@@ -390,7 +390,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       onPaste,
       path,
       readOnly,
-    ]
+    ],
   )
 
   const portal = usePortal()
@@ -402,7 +402,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       expanded: portal.element,
     }),
 
-    [portal.element, portalElement, wrapperElement]
+    [portal.element, portalElement, wrapperElement],
   )
 
   // Scroll to the DOM element of the "opened" portable text member when relevant.

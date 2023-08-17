@@ -30,7 +30,7 @@ const debugVerbose = debug.enabled && true
  * Creates a function that can apply a patch onto a PortableTextSlateEditor.
  */
 export function createApplyPatch(
-  schemaTypes: PortableTextMemberSchemaTypes
+  schemaTypes: PortableTextMemberSchemaTypes,
 ): (editor: PortableTextSlateEditor, patch: Patch) => boolean {
   let previousPatch: Patch | undefined
 
@@ -82,7 +82,7 @@ export function diffMatchPatch(
     PortableTextSlateEditor,
     'children' | 'isTextBlock' | 'apply' | 'selection' | 'onChange'
   >,
-  patch: DiffMatchPatch
+  patch: DiffMatchPatch,
 ): boolean {
   const {block, child, childPath} = findBlockAndChildFromPath(editor, patch.path)
   if (!block) {
@@ -128,7 +128,7 @@ export function diffMatchPatch(
 function insertPatch(
   editor: PortableTextSlateEditor,
   patch: InsertPatch,
-  schemaTypes: PortableTextMemberSchemaTypes
+  schemaTypes: PortableTextMemberSchemaTypes,
 ) {
   const {
     block: targetBlock,
@@ -150,7 +150,7 @@ function insertPatch(
     const blocksToInsert = toSlateValue(
       items as PortableTextBlock[],
       {schemaTypes},
-      KEY_TO_SLATE_ELEMENT.get(editor)
+      KEY_TO_SLATE_ELEMENT.get(editor),
     ) as Descendant[]
     const targetBlockIndex = targetBlockPath[0]
     const normalizedIdx = position === 'after' ? targetBlockIndex + 1 : targetBlockIndex
@@ -171,7 +171,7 @@ function insertPatch(
     toSlateValue(
       [{...targetBlock, children: items as PortableTextChild[]}],
       {schemaTypes},
-      KEY_TO_SLATE_ELEMENT.get(editor)
+      KEY_TO_SLATE_ELEMENT.get(editor),
     )
   const targetChildIndex = targetChildPath[1]
   const normalizedIdx = position === 'after' ? targetChildIndex + 1 : targetChildIndex
@@ -339,7 +339,7 @@ function isKeyedSegment(segment: PathSegment): segment is KeyedSegment {
 
 function debugState(
   editor: Pick<PortableTextSlateEditor, 'children' | 'isTextBlock' | 'apply' | 'selection'>,
-  stateName: string
+  stateName: string,
 ) {
   if (!debugVerbose) {
     return
@@ -354,7 +354,7 @@ function findBlockFromPath(
     PortableTextSlateEditor,
     'children' | 'isTextBlock' | 'apply' | 'selection' | 'onChange'
   >,
-  path: Path
+  path: Path,
 ): {block?: Descendant; path?: SlatePath} {
   let blockIndex = -1
   const block = editor.children.find((node: Descendant, index: number) => {
@@ -375,7 +375,7 @@ function findBlockAndChildFromPath(
     PortableTextSlateEditor,
     'children' | 'isTextBlock' | 'apply' | 'selection' | 'onChange'
   >,
-  path: Path
+  path: Path,
 ): {child?: Descendant; childPath?: SlatePath; block?: Descendant; blockPath?: SlatePath} {
   const {block, path: blockPath} = findBlockFromPath(editor, path)
   if (!(Element.isElement(block) && path[1] === 'children')) {

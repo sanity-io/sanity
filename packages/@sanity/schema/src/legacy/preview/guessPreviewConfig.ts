@@ -21,7 +21,7 @@ function resolveImageAssetPath(typeDef) {
     return imageAssetField.name
   }
   const fieldWithImageAsset = fields.find((fieldDef) =>
-    (fieldDef.fields || []).some(isImageAssetField)
+    (fieldDef.fields || []).some(isImageAssetField),
   )
 
   return fieldWithImageAsset ? `${fieldWithImageAsset.name}.asset` : undefined
@@ -38,7 +38,7 @@ function resolveFileAssetPath(typeDef) {
     return assetField.name
   }
   const fieldWithFileAsset = fields.find((fieldDef) =>
-    (fieldDef.fields || []).some(isFileAssetField)
+    (fieldDef.fields || []).some(isFileAssetField),
   )
   return fieldWithFileAsset ? `${fieldWithFileAsset.name}.asset` : undefined
 }
@@ -54,13 +54,13 @@ export default function guessPreviewFields(rawObjectTypeDef) {
 
   // Check if we have fields with names that is listed in candidate fields
   let titleField = TITLE_CANDIDATES.find(
-    (candidate) => stringFieldNames.includes(candidate) || blockFieldNames.includes(candidate)
+    (candidate) => stringFieldNames.includes(candidate) || blockFieldNames.includes(candidate),
   )
 
   let descField = DESCRIPTION_CANDIDATES.find(
     (candidate) =>
       candidate !== titleField &&
-      (stringFieldNames.includes(candidate) || blockFieldNames.includes(candidate))
+      (stringFieldNames.includes(candidate) || blockFieldNames.includes(candidate)),
   )
 
   if (!titleField) {
@@ -104,7 +104,7 @@ export default function guessPreviewFields(rawObjectTypeDef) {
       description: descField,
       media: mediaField ? mediaField.name : imageAssetPath,
     },
-    isUndefined
+    isUndefined,
   )
 
   return {

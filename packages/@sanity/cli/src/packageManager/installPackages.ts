@@ -10,7 +10,7 @@ export interface InstallOptions {
 export async function installDeclaredPackages(
   cwd: string,
   packageManager: PackageManager,
-  context: Pick<CliCommandContext, 'output'>
+  context: Pick<CliCommandContext, 'output'>,
 ): Promise<void> {
   const {output} = context
   const execOptions: CommonOptions<'utf8'> = {
@@ -44,7 +44,7 @@ export async function installDeclaredPackages(
 
 export async function installNewPackages(
   options: InstallOptions,
-  context: Pick<CliCommandContext, 'output' | 'workDir'>
+  context: Pick<CliCommandContext, 'output' | 'workDir'>,
 ): Promise<void> {
   const {packageManager, packages} = options
   const {output, workDir} = context

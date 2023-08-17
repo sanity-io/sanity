@@ -15,7 +15,7 @@ export const YearInput = ({onChange, ...props}: Props) => {
         onChange(numericValue)
       }
     },
-    [onChange]
+    [onChange],
   )
 
   return <LazyTextInput {...props} onChange={handleChange} inputMode="numeric" />

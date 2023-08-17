@@ -66,7 +66,7 @@ export const mock$ = defer(() => timer(0, 10000)).pipe(
           path: sample(PATHS),
         },
       ] as any,
-    })
+    }),
   ),
-  shareReplay()
+  shareReplay(),
 )

@@ -28,7 +28,7 @@ export function createPreviewObserver(context: {
   value: Previewable,
   type: PreviewableType,
   viewOptions?: PrepareViewOptions,
-  apiConfig?: ApiConfig
+  apiConfig?: ApiConfig,
 ) => Observable<PreparedSnapshot> {
   const {observeDocumentTypeFromId, observePaths} = context
 
@@ -36,7 +36,7 @@ export function createPreviewObserver(context: {
     value: Previewable,
     type: PreviewableType,
     viewOptions?: PrepareViewOptions,
-    apiConfig?: ApiConfig
+    apiConfig?: ApiConfig,
   ): Observable<PreparedSnapshot> {
     if (isCrossDatasetReferenceSchemaType(type)) {
       // if the value is of type crossDatasetReference, but has no _ref property, we cannot prepare any value for the preview
@@ -54,7 +54,7 @@ export function createPreviewObserver(context: {
             return observeForPreview(value, refType as any, {}, refApiConfig)
           }
           return observableOf({snapshot: undefined})
-        })
+        }),
       )
     }
     if (isReferenceSchemaType(type)) {
@@ -77,7 +77,7 @@ export function createPreviewObserver(context: {
           //  We can use the "observeDocumentAvailability" function
           //  for this, but currently not sure if needed
           return observableOf({snapshot: undefined})
-        })
+        }),
       )
     }
     const paths = getPreviewPaths(type.preview)
@@ -86,7 +86,7 @@ export function createPreviewObserver(context: {
         map((snapshot) => ({
           type: type,
           snapshot: snapshot && prepareForPreview(snapshot, type as any, viewOptions),
-        }))
+        })),
       )
     }
 

@@ -15,9 +15,9 @@ export function validateComponent(typeDef: any): SchemaValidationResult[] {
     warnings.push(
       warning(
         `The \`components.input\` property is set but does not appear to be a valid React component (expected a function, but saw ${inspect(
-          components.input
-        )}). If you have imported a custom input component, please verify that you have imported the correct named/default export.`
-      )
+          components.input,
+        )}). If you have imported a custom input component, please verify that you have imported the correct named/default export.`,
+      ),
     )
   }
 
@@ -25,9 +25,9 @@ export function validateComponent(typeDef: any): SchemaValidationResult[] {
     warnings.push(
       warning(
         `The \`components.field\` property is set but does not appear to be a valid React component (expected a function, but saw ${inspect(
-          components.field
-        )}). If you have imported a custom field component, please verify that you have imported the correct named/default export.`
-      )
+          components.field,
+        )}). If you have imported a custom field component, please verify that you have imported the correct named/default export.`,
+      ),
     )
   }
 
@@ -35,9 +35,9 @@ export function validateComponent(typeDef: any): SchemaValidationResult[] {
     warnings.push(
       warning(
         `The \`components.item\` property is set but does not appear to be a valid React component (expected a function, but saw ${inspect(
-          components.item
-        )}). If you have imported a custom item component, please verify that you have imported the correct named/default export.`
-      )
+          components.item,
+        )}). If you have imported a custom item component, please verify that you have imported the correct named/default export.`,
+      ),
     )
   }
 
@@ -45,9 +45,9 @@ export function validateComponent(typeDef: any): SchemaValidationResult[] {
     warnings.push(
       warning(
         `The \`components.preview\` property is set but does not appear to be a valid React component (expected a function, but saw ${inspect(
-          components.preview
-        )}). If you have imported a custom preview component, please verify that you have imported the correct named/default export.`
-      )
+          components.preview,
+        )}). If you have imported a custom preview component, please verify that you have imported the correct named/default export.`,
+      ),
     )
   }
 

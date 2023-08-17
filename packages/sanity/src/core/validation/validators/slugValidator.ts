@@ -63,7 +63,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
       published,
       slug,
     },
-    {tag: 'validation.slug-is-unique'}
+    {tag: 'validation.slug-is-unique'},
   )
 }
 
@@ -74,7 +74,7 @@ function warnOnArraySlug(serializedPath: string) {
       `Slug field at path ${serializedPath} is within an array and cannot be automatically checked for uniqueness`,
       `If you need to check for uniqueness, provide your own "isUnique" method`,
       `To disable this message, set \`disableArrayWarning: true\` on the slug \`options\` field`,
-    ].join('\n')
+    ].join('\n'),
   )
   /* eslint-enable no-console */
 }

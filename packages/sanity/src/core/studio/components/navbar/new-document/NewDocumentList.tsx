@@ -36,7 +36,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
 
   const getItemDisabled = useCallback(
     (index: number) => options[index]?.hasPermission === false,
-    [options]
+    [options],
   )
 
   const renderItem = useCallback(
@@ -51,7 +51,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
         />
       )
     },
-    [currentUser, handleDocumentClick, preview]
+    [currentUser, handleDocumentClick, preview],
   )
 
   // Render loading state

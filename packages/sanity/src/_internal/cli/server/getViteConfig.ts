@@ -146,13 +146,13 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
 export function finalizeViteConfig(config: InlineConfig): InlineConfig {
   if (typeof config.build?.rollupOptions?.input !== 'object') {
     throw new Error(
-      'Vite config must contain `build.rollupOptions.input`, and it must be an object'
+      'Vite config must contain `build.rollupOptions.input`, and it must be an object',
     )
   }
 
   if (!config.root) {
     throw new Error(
-      'Vite config must contain `root` property, and must point to the Sanity root directory'
+      'Vite config must contain `root` property, and must point to the Sanity root directory',
     )
   }
 
@@ -178,7 +178,7 @@ export function finalizeViteConfig(config: InlineConfig): InlineConfig {
 export async function extendViteConfigWithUserConfig(
   env: ConfigEnv,
   defaultConfig: InlineConfig,
-  userConfig: UserViteConfig
+  userConfig: UserViteConfig,
 ): Promise<InlineConfig> {
   let config = defaultConfig
 

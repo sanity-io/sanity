@@ -23,7 +23,7 @@ export function getPathTypes(options: {
 
       if (s.jsonType !== 'object') {
         throw new Error(
-          `Parent type is not an object schema type, cannot get path segment: .${segment}`
+          `Parent type is not an object schema type, cannot get path segment: .${segment}`,
         )
       }
 
@@ -50,7 +50,7 @@ export function getPathTypes(options: {
 
       if (s.jsonType !== 'array') {
         throw new Error(
-          `Parent type is not an array schema type, cannot get path segment: [${segment}]`
+          `Parent type is not an array schema type, cannot get path segment: [${segment}]`,
         )
       }
 
@@ -91,13 +91,13 @@ export function getPathTypes(options: {
     if (isRecord(segment) && segment._key) {
       if (!isArray(v)) {
         throw new Error(
-          `Parent value is not an anrray, cannot get path segment: [_key == ${segment}]`
+          `Parent value is not an anrray, cannot get path segment: [_key == ${segment}]`,
         )
       }
 
       if (s.jsonType !== 'array') {
         throw new Error(
-          `Parent type is not an array schema type, cannot get path segment: .${segment}`
+          `Parent type is not an array schema type, cannot get path segment: .${segment}`,
         )
       }
 

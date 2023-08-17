@@ -71,7 +71,7 @@ export function SortMenu() {
   const menuButtonId = useId()
 
   const currentMenuItem = MENU_ORDERINGS.find(
-    (item): item is SearchOrdering => isEqual(ordering, item) && !isSearchDivider(item)
+    (item): item is SearchOrdering => isEqual(ordering, item) && !isSearchDivider(item),
   )
 
   if (!currentMenuItem) {

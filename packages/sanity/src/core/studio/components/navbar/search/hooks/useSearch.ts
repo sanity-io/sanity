@@ -80,7 +80,7 @@ export function useSearch({
         tag: 'search.global',
         unique: true,
       }),
-    [client, schema]
+    [client, schema],
   )
 
   const handleQueryChange = useObservableCallback(
@@ -124,29 +124,29 @@ export function useSearch({
                     options: request.options,
                     terms: request.terms,
                   })
-                })
+                }),
               ),
               // If there is no valid search, emit an empty observable and trigger `onComplete` event
-              of(EMPTY).pipe(tap(() => onComplete?.([])))
+              of(EMPTY).pipe(tap(() => onComplete?.([]))),
             ),
             // Emit loading completed
-            of({loading: false})
+            of({loading: false}),
           )
         }),
         scan((prevState, nextState): SearchState => {
           return {...prevState, ...nextState}
         }, INITIAL_SEARCH_STATE),
         // Update local search state
-        tap(setSearchState)
+        tap(setSearchState),
       )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- @todo: add onComplete, onError and onStart to the deps list when it's verified that it's safe to do so
-    [allowEmptyQueries, searchWeighted]
+    [allowEmptyQueries, searchWeighted],
   )
 
   const handleSearch = useCallback(
     (searchRequest: SearchRequest) => handleQueryChange(searchRequest),
-    [handleQueryChange]
+    [handleQueryChange],
   )
 
   return {handleSearch, searchState}

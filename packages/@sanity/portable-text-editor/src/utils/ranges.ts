@@ -11,7 +11,7 @@ export interface ObjectWithKeyAndType {
 export function toPortableTextRange(
   value: ObjectWithKeyAndType[] | undefined,
   range: BaseRange | Partial<BaseRange> | null,
-  types: PortableTextMemberSchemaTypes
+  types: PortableTextMemberSchemaTypes,
 ): EditorSelection {
   if (!range) {
     return null

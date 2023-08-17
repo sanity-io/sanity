@@ -26,7 +26,7 @@ export const getWeeksOfMonth = (date: Date): Week[] =>
     (days): Week => ({
       number: getWeek(days[0]),
       days,
-    })
+    }),
   )
 
 export const formatTime = (hours: number, minutes: number): string =>

@@ -40,14 +40,14 @@ const listProjectsCommand: CliCommandDefinition = {
         const studio = studioHost ? `https://${studioHost}.sanity.studio` : 'Not deployed'
         return [id, members.length, displayName, studio, createdAt].map(String)
       }),
-      [headings.indexOf(flags.sort)]
+      [headings.indexOf(flags.sort)],
     )
 
     const rows = flags.order === 'asc' ? ordered : ordered.reverse()
 
     const maxWidths = rows.reduce(
       (max, row) => row.map((current, index) => Math.max(size(current), max[index])),
-      headings.map((str) => size(str))
+      headings.map((str) => size(str)),
     )
 
     const printRow = (row: string[]) =>

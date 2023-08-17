@@ -13,7 +13,7 @@ const arrowComponents = {
 /** @internal */
 export function FromToArrow(
   props: {direction?: FromToArrowDirection} & TextProps &
-    Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'ref'>
+    Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'ref'>,
 ) {
   const {direction = 'right', ...restProps} = props
   const arrowComponent = arrowComponents[direction]

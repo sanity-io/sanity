@@ -21,21 +21,21 @@ const fetch = (
   client: SanityClient,
   query: string,
   params: ListenQueryParams,
-  options: ListenQueryOptions
+  options: ListenQueryOptions,
 ) =>
   defer(() =>
     // getVersionedClient(options.apiVersion)
     client.observable.fetch(query, params, {
       tag: options.tag,
       filterResponse: true,
-    })
+    }),
   )
 
 const listen = (
   client: SanityClient,
   query: string,
   params: ListenQueryParams,
-  options: ListenQueryOptions
+  options: ListenQueryOptions,
 ) =>
   defer(() =>
     // getVersionedClient(options.apiVersion)
@@ -44,11 +44,11 @@ const listen = (
       includeResult: false,
       visibility: 'query',
       tag: options.tag,
-    })
+    }),
   ) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
 
 function isWelcomeEvent(
-  event: MutationEvent | ReconnectEvent | WelcomeEvent
+  event: MutationEvent | ReconnectEvent | WelcomeEvent,
 ): event is WelcomeEvent {
   return event.type === 'welcome'
 }
@@ -58,7 +58,7 @@ export function listenQuery(
   client: SanityClient,
   query: string | {fetch: string; listen: string},
   params: ListenQueryParams = {},
-  options: ListenQueryOptions = {}
+  options: ListenQueryOptions = {},
 ): Observable<any> {
   const fetchQuery = typeof query === 'string' ? query : query.fetch
   const listenerQuery = typeof query === 'string' ? query : query.listen
@@ -74,13 +74,13 @@ export function listenQuery(
             new Error(
               ev.type === 'reconnect'
                 ? 'Could not establish EventSource connection'
-                : `Received unexpected type of first event "${ev.type}"`
-            )
+                : `Received unexpected type of first event "${ev.type}"`,
+            ),
         )
       }
       return of(ev)
     }),
-    share()
+    share(),
   )
 
   const [welcome$, mutationAndReconnect$] = partition(events$, isWelcomeEvent)
@@ -98,8 +98,8 @@ export function listenQuery(
     welcome$.pipe(take(1)),
     mutationAndReconnect$.pipe(
       filter(isRelevantEvent),
-      throttleTime(options.throttleTime || 1000, asyncScheduler, {leading: true, trailing: true})
-    )
+      throttleTime(options.throttleTime || 1000, asyncScheduler, {leading: true, trailing: true}),
+    ),
   ).pipe(
     exhaustMapWithTrailing((event) => {
       if (event.type === 'mutation' && event.visibility !== 'query') {
@@ -109,6 +109,6 @@ export function listenQuery(
         return timer(1200).pipe(mergeMap(doFetch))
       }
       return doFetch()
-    })
+    }),
   )
 }

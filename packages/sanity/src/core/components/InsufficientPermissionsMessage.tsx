@@ -38,7 +38,7 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
               Your role{plural && 's'}{' '}
               {join(
                 roles.map((r) => <code key={r.name}>{r.title}</code>),
-                <>, </>
+                <>, </>,
               )}{' '}
               do{plural || 'es'} not have permissions to {operationLabel}
             </>
@@ -52,6 +52,6 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
 function join(array: React.ReactElement[], sep: React.ReactElement) {
   return array.reduce<React.ReactElement[] | null>(
     (result, item) => (result === null ? [item] : [...result, sep, item]),
-    null
+    null,
   )
 }

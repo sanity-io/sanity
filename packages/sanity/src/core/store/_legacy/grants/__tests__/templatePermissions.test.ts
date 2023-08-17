@@ -71,7 +71,7 @@ describe('getTemplatePermissions', () => {
           },
         ],
         context: {} as InitialValueResolverContext,
-      })
+      }),
     )
 
     await expect(permissions).resolves.toEqual([

@@ -158,37 +158,37 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     return {
       left: cropHandle.setTopLeft(
         inner.left - halfCropHandleSize,
-        inner.center.y - halfCropHandleSize
+        inner.center.y - halfCropHandleSize,
       ),
       right: cropHandle.setTopLeft(
         inner.right - halfCropHandleSize,
-        inner.center.y - halfCropHandleSize
+        inner.center.y - halfCropHandleSize,
       ),
 
       top: cropHandle.setTopLeft(
         inner.center.x - halfCropHandleSize,
-        inner.top - halfCropHandleSize
+        inner.top - halfCropHandleSize,
       ),
       topLeft: cropHandle.setTopLeft(
         inner.left - halfCropHandleSize,
-        inner.top - halfCropHandleSize
+        inner.top - halfCropHandleSize,
       ),
       topRight: cropHandle.setTopLeft(
         inner.right - halfCropHandleSize,
-        inner.top - halfCropHandleSize
+        inner.top - halfCropHandleSize,
       ),
 
       bottom: cropHandle.setTopLeft(
         inner.center.x - halfCropHandleSize,
-        inner.bottom - halfCropHandleSize
+        inner.bottom - halfCropHandleSize,
       ),
       bottomLeft: cropHandle.setTopLeft(
         inner.left - halfCropHandleSize,
-        inner.bottom - halfCropHandleSize
+        inner.bottom - halfCropHandleSize,
       ),
       bottomRight: cropHandle.setTopLeft(
         inner.right - halfCropHandleSize,
-        inner.bottom - halfCropHandleSize
+        inner.bottom - halfCropHandleSize,
       ),
     }
   }
@@ -316,7 +316,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
         Math.abs(dest.width / 2),
         0,
         2 * Math.PI,
-        false
+        false,
       )
       context.strokeStyle = 'white'
       context.lineWidth = 1.5 * scale
@@ -335,7 +335,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
       destLeft: number,
       destTop: number,
       destWidth: number,
-      destHeight: number
+      destHeight: number,
     ) {
       context.save()
       context.drawImage(
@@ -347,7 +347,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
         destLeft,
         destTop,
         destWidth,
-        destHeight
+        destHeight,
       )
       context.restore()
     }
@@ -365,7 +365,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
         dest.left,
         dest.top,
         dest.width,
-        dest.height
+        dest.height,
       )
     }
 
@@ -383,7 +383,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
         dest.left,
         dest.top,
         dest.width,
-        dest.height
+        dest.height,
       )
       context.globalAlpha = 0.5
       context.fillStyle = 'black'
@@ -750,7 +750,7 @@ function applyHotspotMoveBy(value: Partial<CropAndHotspot>, delta: Coordinate): 
 
 function applyHotspotResizeBy(
   value: Partial<CropAndHotspot>,
-  delta: Dimensions
+  delta: Dimensions,
 ): {hotspot: Hotspot} {
   const currentHotspot = (value && value.hotspot) || DEFAULT_HOTSPOT
   return {

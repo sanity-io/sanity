@@ -11,7 +11,7 @@ export function useLazyFrameloop(ref: React.RefObject<any>): 'always' | 'demand'
       ([{isIntersecting}]) => {
         startTransition(() => setFrameloop(isIntersecting ? 'always' : 'never'))
       },
-      {rootMargin: '0px', threshold: 0}
+      {rootMargin: '0px', threshold: 0},
     )
 
     observer.observe(ref.current)

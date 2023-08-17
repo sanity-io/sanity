@@ -64,7 +64,7 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
         />
       )
     },
-    [maxVisibleTypePillChars]
+    [maxVisibleTypePillChars],
   )
 
   const hasRecentSearches = !!recentSearches.length

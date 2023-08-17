@@ -21,7 +21,7 @@ export function GroupChange(
     change: GroupChangeNode
     readOnly?: boolean
     hidden?: boolean
-  } & React.HTMLAttributes<HTMLDivElement>
+  } & React.HTMLAttributes<HTMLDivElement>,
 ): React.ReactElement | null {
   const {
     change: group,
@@ -35,7 +35,7 @@ export function GroupChange(
   const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useDocumentChange()
 
   const isPortableText = changes.every(
-    (change) => isFieldChange(change) && isPTSchemaType(change.schemaType)
+    (change) => isFieldChange(change) && isPTSchemaType(change.schemaType),
   )
 
   const isNestedInDiff = pathsAreEqual(diffPath, groupPath)
@@ -53,7 +53,7 @@ export function GroupChange(
 
   const handleRevertChanges = useCallback(
     () => undoChange(group, rootDiff, docOperations),
-    [group, rootDiff, docOperations]
+    [group, rootDiff, docOperations],
   )
 
   const handleRevertChangesConfirm = useCallback(() => {
@@ -137,7 +137,7 @@ export function GroupChange(
       isPortableText,
       permissions,
       revertButtonRef,
-    ]
+    ],
   )
 
   return hidden ? null : (

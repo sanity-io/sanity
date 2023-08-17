@@ -55,7 +55,7 @@ export default function ExampleStory() {
           <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
         </TabList>
       ),
-    [manyTabs]
+    [manyTabs],
   )
 
   return (

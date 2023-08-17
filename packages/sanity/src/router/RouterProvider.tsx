@@ -77,28 +77,28 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
       const [params, payload] = Array.isArray(parameters) ? parameters : [parameters]
       return routerProp.encode({intent: intentName, params, payload})
     },
-    [routerProp]
+    [routerProp],
   )
 
   const resolvePathFromState = useCallback(
     (nextState: Record<string, unknown>): string => {
       return routerProp.encode(nextState)
     },
-    [routerProp]
+    [routerProp],
   )
 
   const navigate = useCallback(
     (nextState: Record<string, unknown>, options: NavigateOptions = {}) => {
       onNavigate({path: resolvePathFromState(nextState), replace: options.replace})
     },
-    [onNavigate, resolvePathFromState]
+    [onNavigate, resolvePathFromState],
   )
 
   const navigateIntent = useCallback(
     (intentName: string, params?: IntentParameters, options: NavigateOptions = {}) => {
       onNavigate({path: resolveIntentLink(intentName, params), replace: options.replace})
     },
-    [onNavigate, resolveIntentLink]
+    [onNavigate, resolveIntentLink],
   )
 
   const router: RouterContextValue = useMemo(
@@ -110,7 +110,7 @@ export function RouterProvider(props: RouterProviderProps): React.ReactElement {
       resolvePathFromState,
       state,
     }),
-    [navigate, navigateIntent, onNavigate, resolveIntentLink, resolvePathFromState, state]
+    [navigate, navigateIntent, onNavigate, resolveIntentLink, resolvePathFromState, state],
   )
 
   return <RouterContext.Provider value={router}>{props.children}</RouterContext.Provider>

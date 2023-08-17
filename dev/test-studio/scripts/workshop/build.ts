@@ -43,7 +43,7 @@ function compileModule(pathSet: Set<string>) {
     .join('\n')
   const exports = sortedPaths.map((_p, idx) => `  _${idx}`).join(',\n')
   const code = `${[imports, `// prettier-ignore\nexport const scopes = [\n${exports},\n]`].join(
-    '\n\n'
+    '\n\n',
   )}\n`
 
   return code

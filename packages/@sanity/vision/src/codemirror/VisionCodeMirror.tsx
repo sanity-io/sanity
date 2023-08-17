@@ -6,7 +6,7 @@ import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {EditorRoot} from './VisionCodeMirror.styled'
 
 export function VisionCodeMirror(
-  props: Omit<ReactCodeMirrorProps, 'basicSetup' | 'theme' | 'extensions'>
+  props: Omit<ReactCodeMirrorProps, 'basicSetup' | 'theme' | 'extensions'>,
 ) {
   const sanityTheme = useTheme()
   const theme = useCodemirrorTheme(sanityTheme)

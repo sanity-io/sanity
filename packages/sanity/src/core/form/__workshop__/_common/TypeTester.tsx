@@ -49,7 +49,7 @@ export function TypeTester({readOnly}: TypeTesterProps) {
         setFocusedInput(e.target)
       }
     },
-    [textAreaRef]
+    [textAreaRef],
   )
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export function TypeTester({readOnly}: TypeTesterProps) {
         focusedInput!.classList.remove(HIGHLIGHT_CLASSNAME)
       }
     },
-    [focusedInput]
+    [focusedInput],
   )
 
   const handleHighlightClick = useCallback(() => {

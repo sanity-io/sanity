@@ -79,14 +79,14 @@ export const ObjectType = {
 
         if (userProvidedSearchConfig) {
           return userProvidedSearchConfig.map((entry) =>
-            entry === 'defaults' ? normalizeSearchConfigs(subTypeDef) : entry
+            entry === 'defaults' ? normalizeSearchConfigs(subTypeDef) : entry,
           )
         }
         return resolveSearchConfig(parsed)
       },
       {
         enumerable: false,
-      }
+      },
     )
 
     return subtype(parsed)
@@ -123,7 +123,7 @@ export function createFieldsets(typeDef: ObjectDefinition, fields: ObjectField[]
       throw new Error(
         `Duplicate fieldset name "${fieldset.name}" found for type '${
           typeDef.title ? typeDef.title : startCase(typeDef.name)
-        }'`
+        }'`,
       )
     }
 
@@ -141,7 +141,7 @@ export function createFieldsets(typeDef: ObjectDefinition, fields: ObjectField[]
     const fieldset = fieldsetsByName[field.fieldset]
     if (!fieldset) {
       throw new Error(
-        `Fieldset '${field.fieldset}' is not defined in schema for type '${typeDef.name}'`
+        `Fieldset '${field.fieldset}' is not defined in schema for type '${typeDef.name}'`,
       )
     }
 
@@ -163,7 +163,7 @@ function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): F
       throw new Error(
         `Duplicate group name "${group.name}" found for type '${
           typeDef.title ? typeDef.title : startCase(typeDef.name)
-        }'`
+        }'`,
       )
     }
 
@@ -174,7 +174,7 @@ function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): F
       throw new Error(
         `More than one field group defined as default for type '${
           typeDef.title ? typeDef.title : startCase(typeDef.name)
-        }' - only 1 is supported`
+        }' - only 1 is supported`,
       )
     }
   }
@@ -192,7 +192,7 @@ function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): F
         throw new Error(
           `Field group '${fieldGroupName}' is not defined in schema for type '${
             typeDef.title ? typeDef.name : startCase(typeDef.name)
-          }'`
+          }'`,
         )
       }
 

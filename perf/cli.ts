@@ -43,7 +43,7 @@ async function main(args: {
       branch,
       headless,
       count: Number(args.count),
-    }
+    },
   )
   let localDeployment
 
@@ -84,7 +84,7 @@ async function main(args: {
   console.log(
     `Running tests on ${remoteDeployments.length} deployments${
       localDeployment ? ` (including local deployment at ${localDeployment.url})` : ''
-    }`
+    }`,
   )
 
   const perfStudioClient = createClient({
@@ -171,5 +171,5 @@ main(args).then(
     // eslint-disable-next-line no-console
     console.error(err)
     process.exit(1)
-  }
+  },
 )

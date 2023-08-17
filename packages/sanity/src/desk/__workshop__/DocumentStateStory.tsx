@@ -30,7 +30,7 @@ export default function InitialValueStory() {
       type: 'document',
       title: 'Workshop',
     }),
-    [documentId, documentType]
+    [documentId, documentType],
   )
 
   return (
@@ -78,7 +78,7 @@ function Debug(props: {documentId: string; documentType: string}) {
             value,
           },
           null,
-          2
+          2,
         )}
       </Code>
 
@@ -99,7 +99,7 @@ function Debug(props: {documentId: string; documentType: string}) {
                     tone={actionItem.tone}
                     text={actionItem.label}
                   />
-                )
+                ),
             )}
           </Stack>
 
@@ -131,10 +131,10 @@ function useDocumentActions(documentId: string, schemaType: string, editState: E
   const {document} = useSource()
   const actions = useMemo(
     () => document.actions({schemaType, documentId}),
-    [document, documentId, schemaType]
+    [document, documentId, schemaType],
   )
   const [descriptions, setDescriptions] = useState<Array<DocumentActionDescription | null> | null>(
-    null
+    null,
   )
 
   const node = (
@@ -205,7 +205,7 @@ function DocumentActionHook(props: {
       // @todo
       revision: undefined,
     }),
-    [editState, onComplete]
+    [editState, onComplete],
   )
 
   const actionDescription = useUnique(useActionDescription(actionProps))

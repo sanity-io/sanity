@@ -7,7 +7,7 @@ export function isObjectFormNode(formNode: BaseFormNode): formNode is ObjectForm
 }
 /** @internal */
 export function isArrayOfObjectsFormNode(
-  formNode: BaseFormNode
+  formNode: BaseFormNode,
 ): formNode is ArrayOfObjectsFormNode {
   return isArrayOfObjectsSchemaType(formNode.schemaType)
 }

@@ -14,7 +14,7 @@ import {
 /** @internal */
 export function getAnnotationColor(
   colorManager: UserColorManager,
-  annotation?: Annotation | null
+  annotation?: Annotation | null,
 ): UserColor {
   return colorManager.get(annotation?.author || null)
 }
@@ -68,7 +68,7 @@ function getDiffAt(diff: Diff, path: Path, parentPath: Path = []): Diff | undefi
     const itemDiff = diff.items.find(
       isIndexSegment(segment)
         ? (item) => item.toIndex === segment
-        : (item) => itemMatchesKey(item, segment)
+        : (item) => itemMatchesKey(item, segment),
     )
 
     if (!itemDiff) {
@@ -87,7 +87,7 @@ function getDiffAt(diff: Diff, path: Path, parentPath: Path = []): Diff | undefi
   const fieldDiff = diff.fields[segment]
   if (typeof fieldDiff === 'undefined') {
     warn(
-      `Failed to get property ${segment} at path ${pathToString(parentPath)} (field did not exist)`
+      `Failed to get property ${segment} at path ${pathToString(parentPath)} (field did not exist)`,
     )
     return undefined
   }
@@ -120,7 +120,7 @@ export type DiffVisitor = (diff: Diff | StringDiffSegment, path: Path) => boolea
 export function visitDiff(
   diff: Diff | StringDiffSegment,
   visitor: DiffVisitor,
-  path: Path = []
+  path: Path = [],
 ): void {
   if (!visitor(diff, path)) {
     return

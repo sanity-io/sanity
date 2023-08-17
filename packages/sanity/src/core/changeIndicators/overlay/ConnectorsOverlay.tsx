@@ -42,7 +42,7 @@ function getState(
   allReportedValues: Reported<TrackedChange | TrackedArea>[],
   hovered: string | null,
   byId: Map<string, TrackedChange | TrackedArea>,
-  rootElement: HTMLElement
+  rootElement: HTMLElement,
 ): State {
   const changeBarsWithHover: Reported<TrackedChange>[] = []
   const changeBarsWithFocus: Reported<TrackedChange>[] = []
@@ -102,16 +102,16 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   const allReportedValues = useReportedValues()
   const byId: Map<string, TrackedChange | TrackedArea> = useMemo(
     () => new Map(allReportedValues),
-    [allReportedValues]
+    [allReportedValues],
   )
 
   const [{connectors}, setState] = useState<State>(() =>
-    getState(allReportedValues, hovered, byId, rootElement)
+    getState(allReportedValues, hovered, byId, rootElement),
   )
 
   const visibleConnectors = useMemo(
     () => sortBy(connectors, (c) => 0 - c.field.path.length).slice(0, 1),
-    [connectors]
+    [connectors],
   )
 
   const handleScrollOrResize = useCallback(() => {
@@ -172,12 +172,12 @@ function ConnectorGroup(props: ConnectorGroupProps) {
       },
       bounds: field.bounds,
     }),
-    [field.bounds, field.rect]
+    [field.bounds, field.rect],
   )
 
   const to = useMemo(
     () => ({rect: change.rect, bounds: change.bounds}),
-    [change.bounds, change.rect]
+    [change.bounds, change.rect],
   )
 
   return (

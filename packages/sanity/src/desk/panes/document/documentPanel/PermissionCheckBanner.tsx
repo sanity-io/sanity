@@ -20,7 +20,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
 
   const roles = join(
     currentUser?.roles?.map((r) => <code key={r.name}>{r.title}</code>) || [],
-    ', '
+    ', ',
   )
 
   if (granted) return null

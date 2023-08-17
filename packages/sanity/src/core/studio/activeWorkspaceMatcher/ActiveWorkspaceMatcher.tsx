@@ -33,7 +33,7 @@ export function ActiveWorkspaceMatcher({
         history.push(foundWorkspace.basePath)
       }
     },
-    [history, workspaces]
+    [history, workspaces],
   )
   const handleNavigateToDefaultWorkspace = useCallback(() => {
     setActiveWorkspaceName(workspaces[0].name)

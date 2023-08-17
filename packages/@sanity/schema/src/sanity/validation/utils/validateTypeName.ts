@@ -11,7 +11,7 @@ export function validateTypeName(typeName: string, visitorContext) {
     return [
       error(
         `Type is missing a type. Valid types are: ${humanize(possibleTypeNames)}`,
-        HELP_IDS.TYPE_MISSING_TYPE
+        HELP_IDS.TYPE_MISSING_TYPE,
       ),
     ]
   }
@@ -20,9 +20,9 @@ export function validateTypeName(typeName: string, visitorContext) {
     return [
       error(
         `Type has an invalid "type"-property - should be a string. Valid types are: ${humanize(
-          possibleTypeNames
+          possibleTypeNames,
         )}`,
-        HELP_IDS.TYPE_MISSING_TYPE
+        HELP_IDS.TYPE_MISSING_TYPE,
       ),
     ]
   }
@@ -44,7 +44,9 @@ export function validateTypeName(typeName: string, visitorContext) {
 
     return [
       error(
-        `Unknown type: ${typeName}.${suggestion}\n\nValid types are: ${humanize(possibleTypeNames)}`
+        `Unknown type: ${typeName}.${suggestion}\n\nValid types are: ${humanize(
+          possibleTypeNames,
+        )}`,
       ),
     ]
   }

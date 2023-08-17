@@ -5,7 +5,7 @@ export function ClampedRect(
   props: {top: number; left: number; height: number; width: number; bounds: Rect} & Omit<
     React.ComponentProps<'rect'>,
     'top' | 'left' | 'height' | 'width'
-  >
+  >,
 ) {
   const {bounds, ...rest} = props
   const x = Math.max(bounds.left, props.left)

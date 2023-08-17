@@ -38,7 +38,7 @@ const Root = styled.div<IconBadgeRootStyleProps>(
         color: inherit;
       }
     `
-  }
+  },
 )
 
 export const IconBadge = memo(function IconBadge(props: {

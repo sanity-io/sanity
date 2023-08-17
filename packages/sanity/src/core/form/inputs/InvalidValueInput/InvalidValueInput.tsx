@@ -52,12 +52,12 @@ export const InvalidValueInput = forwardRef(
       (converted: any) => {
         onChange(PatchEvent.from(set(converted)))
       },
-      [onChange]
+      [onChange],
     )
 
     const converters = useMemo(
       () => getConverters(value, actualType, validTypes),
-      [value, actualType, validTypes]
+      [value, actualType, validTypes],
     )
 
     if (isPlainObject(value) && !('_type' in (value as object))) {
@@ -141,7 +141,7 @@ export const InvalidValueInput = forwardRef(
         </Details>
       </Alert>
     )
-  }
+  },
 )
 
 InvalidValueInput.displayName = 'InvalidValueInput'
@@ -157,7 +157,7 @@ function ConvertButton({
 }) {
   const handleClick = useCallback(
     () => onConvert(converter.convert(value)),
-    [converter, onConvert, value]
+    [converter, onConvert, value],
   )
 
   return (

@@ -25,7 +25,7 @@ function SetMissingTypeButton({
 
   const handleClick = useCallback(
     () => onChange(PatchEvent.from(setIfMissing(targetType, ['_type'])), itemValue),
-    [itemValue, onChange, targetType]
+    [itemValue, onChange, targetType],
   )
 
   return (
@@ -54,7 +54,7 @@ function UnsetItemButton({
 
   const handleClick = useCallback(
     () => onChange(PatchEvent.from(unset()), itemValue),
-    [itemValue, onChange]
+    [itemValue, onChange],
   )
 
   return <Button onClick={handleClick} tone="critical" text="Unset value" />

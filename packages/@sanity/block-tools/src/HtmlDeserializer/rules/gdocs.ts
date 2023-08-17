@@ -73,7 +73,7 @@ function getBlockStyle(el: Node, enabledBlockStyles: string[]): string {
 
 export default function createGDocsRules(
   _blockContentType: ArraySchemaType,
-  options: BlockEnabledFeatures
+  options: BlockEnabledFeatures,
 ): DeserializerRule[] {
   return [
     {

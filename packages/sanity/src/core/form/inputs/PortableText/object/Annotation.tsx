@@ -78,7 +78,7 @@ export function Annotation(props: AnnotationProps) {
   const editor = usePortableTextEditor()
   const markDefPath: Path = useMemo(
     () => path.slice(0, path.length - 2).concat(['markDefs', {_key: value._key}]),
-    [path, value._key]
+    [path, value._key],
   )
   const [spanElement, setSpanElement] = useState<HTMLSpanElement | null>(null)
   const spanPath: Path = useMemo(() => path.slice(path.length - 3, path.length), [path])
@@ -134,13 +134,13 @@ export function Annotation(props: AnnotationProps) {
           {text}
         </Tooltip>
       ) : undefined,
-    [Markers, markers, renderCustomMarkers, text, validation]
+    [Markers, markers, renderCustomMarkers, text, validation],
   )
 
   const presence = useChildPresence(path, true)
   const rootPresence = useMemo(
     () => presence.filter((p) => isEqual(p.path, path)),
-    [path, presence]
+    [path, presence],
   )
 
   const isOpen = Boolean(memberItem?.member.open)
@@ -210,7 +210,7 @@ export function Annotation(props: AnnotationProps) {
       text,
       validation,
       value,
-    ]
+    ],
   )
 
   const CustomComponent = schemaType.components?.annotation as
@@ -224,7 +224,7 @@ export function Annotation(props: AnnotationProps) {
       }
       setSpanElement(elm) // update state here so the reference element is available on first render
     },
-    [memberItem]
+    [memberItem],
   )
 
   return useMemo(
@@ -237,7 +237,7 @@ export function Annotation(props: AnnotationProps) {
         )}
       </span>
     ),
-    [CustomComponent, componentProps, setRef]
+    [CustomComponent, componentProps, setRef],
   )
 }
 

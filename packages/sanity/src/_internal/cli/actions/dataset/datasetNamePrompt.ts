@@ -3,7 +3,7 @@ import {validateDatasetName} from './validateDatasetName'
 
 export function promptForDatasetName(
   prompt: CliPrompter,
-  options: {message?: string; default?: string} = {}
+  options: {message?: string; default?: string} = {},
 ): Promise<string> {
   return prompt.single({
     type: 'input',

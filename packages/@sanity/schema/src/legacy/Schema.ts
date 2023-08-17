@@ -83,7 +83,7 @@ export class DeprecatedDefaultSchema extends Schema {
     super(schemaDef)
 
     const stack = new Error(
-      'The default export of `@sanity/schema` is deprecated. Use `import {Schema} from "@sanity/schema"` instead.'
+      'The default export of `@sanity/schema` is deprecated. Use `import {Schema} from "@sanity/schema"` instead.',
     ).stack.replace(/^Error/, 'Warning')
 
     // eslint-disable-next-line no-console

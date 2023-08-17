@@ -24,7 +24,7 @@ export interface PaneLayoutProps {
 export function PaneLayout(
   props: PaneLayoutProps &
     CardProps &
-    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'wrap'>
+    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'wrap'>,
 ) {
   const {children, minWidth, onCollapse, onExpand, ...restProps} = props
   const controller = useMemo(() => createPaneLayoutController(), [])
@@ -66,7 +66,7 @@ export function PaneLayout(
       resize: controller.resize,
       resizing: state.resizing,
     }),
-    [collapsed, controller, state.expandedElement, state.panes, state.resizing]
+    [collapsed, controller, state.expandedElement, state.panes, state.resizing],
   )
 
   return (

@@ -65,7 +65,7 @@ export const Element: FunctionComponent<ElementProps> = ({
 
   const value = useMemo(
     () => fromSlateValue([element], schemaTypes.block.name, KEY_TO_VALUE_ELEMENT.get(editor))[0],
-    [editor, element, schemaTypes.block.name]
+    [editor, element, schemaTypes.block.name],
   )
 
   let renderedBlock = children
@@ -202,7 +202,7 @@ export const Element: FunctionComponent<ElementProps> = ({
           console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
           return schemaTypes.block
         },
-      }
+      },
     )
 
     const propsOrDefaultRendered = renderBlock
@@ -227,7 +227,7 @@ export const Element: FunctionComponent<ElementProps> = ({
   const block = fromSlateValue(
     [element],
     schemaTypes.block.name,
-    KEY_TO_VALUE_ELEMENT.get(editor)
+    KEY_TO_VALUE_ELEMENT.get(editor),
   )[0]
   let renderedBlockFromProps
   if (renderBlock) {
@@ -248,7 +248,7 @@ export const Element: FunctionComponent<ElementProps> = ({
           console.warn("Property 'type' is deprecated, use 'schemaType' instead.")
           return schemaType
         },
-      }
+      },
     )
     renderedBlockFromProps = renderBlock(_props as BlockRenderProps)
   }

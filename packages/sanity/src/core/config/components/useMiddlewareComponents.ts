@@ -8,7 +8,7 @@ const emptyRender = () => createElement(Fragment)
 
 function _createMiddlewareComponent<T extends {}>(
   defaultComponent: ComponentType<T>,
-  middlewareComponents: ComponentType<T>[]
+  middlewareComponents: ComponentType<T>[],
 ): ComponentType<T> {
   return (outerProps: T) => {
     // This is the inner "layer" of the middleware chain

@@ -84,7 +84,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
       showingRevision,
       status,
       collapsed,
-    ]
+    ],
   )
 
   const publishStatus = useMemo(
@@ -100,7 +100,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
           />
         </Box>
       ),
-    [collapsed, lastPublished, lastUpdated, liveEdit, published, showingRevision]
+    [collapsed, lastPublished, lastUpdated, liveEdit, published, showingRevision],
   )
 
   return (

@@ -52,7 +52,7 @@ const DocumentLink = ({document}: {document: SanityDocument}) => {
       <IntentLink {...linkProps} params={{id: document._id, type: document._type}} intent="edit" />
     ),
 
-    [document]
+    [document],
   )
 
   return (

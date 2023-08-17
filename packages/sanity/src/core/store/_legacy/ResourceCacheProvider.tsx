@@ -26,7 +26,7 @@ export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
     return {
       get: ({namespace, dependencies}) => {
         const dependenciesWithoutNull = dependencies.map((dep) =>
-          dep === null ? nullReplacer : dep
+          dep === null ? nullReplacer : dep,
         )
         const namespaceMap = namespaces.get(namespace)
         return namespaceMap?.get(dependenciesWithoutNull)
@@ -35,7 +35,7 @@ export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
       set: ({namespace, dependencies, value}) => {
         const namespaceMap = namespaces.get(namespace) || createMultiKeyWeakMap()
         const dependenciesWithoutNull = dependencies.map((dep) =>
-          dep === null ? nullReplacer : dep
+          dep === null ? nullReplacer : dep,
         )
         namespaces.set(namespace, namespaceMap)
         namespaceMap.set(dependenciesWithoutNull, value)

@@ -64,7 +64,7 @@ export const DocumentListPaneHeader = memo(
         title={title}
       />
     )
-  }
+  },
 )
 
 DocumentListPaneHeader.displayName = 'DocumentListPaneHeader'

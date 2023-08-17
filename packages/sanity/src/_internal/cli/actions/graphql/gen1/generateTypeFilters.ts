@@ -27,7 +27,7 @@ export function generateTypeFilters(types: (ConvertedType | ConvertedUnion)[]): 
   const queryable = types
     .filter(isNonUnion)
     .filter(
-      (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
+      (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document'),
     )
 
   return queryable.map((type) => {

@@ -26,7 +26,7 @@ export function combineSelections(selections: Selection[]): CombinedSelection[] 
       output[key].ids[idx] = id
       output[key].map[idx] = index
       return output
-    }, {})
+    }, {}),
   )
 }
 
@@ -50,7 +50,7 @@ export function toQuery(combinedSelections: CombinedSelection[]): string {
 
 export function reassemble(
   queryResult: Result[],
-  combinedSelections: CombinedSelection[]
+  combinedSelections: CombinedSelection[],
 ): (Doc | null)[] {
   return queryResult.reduce((reprojected: (Doc | null)[], subResult, index) => {
     const map = combinedSelections[index].map

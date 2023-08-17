@@ -108,7 +108,7 @@ export interface DeserializerRule {
     createBlock: (props: ArbitraryTypedObject) => {
       _type: string
       block: ArbitraryTypedObject
-    }
+    },
   ) => TypedObject | TypedObject[] | undefined
 }
 

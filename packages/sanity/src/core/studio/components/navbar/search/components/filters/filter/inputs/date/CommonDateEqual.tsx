@@ -31,7 +31,7 @@ export function CommonDateEqualInput({
         onChange(null)
       }
     },
-    [isDateTime, onChange, value?.includeTime]
+    [isDateTime, onChange, value?.includeTime],
   )
 
   const handleIncludeTimeChange = useCallback(() => {
@@ -55,7 +55,7 @@ export function CommonDateEqualInput({
         date: date || null,
       })
     },
-    [onChange, value?.includeTime]
+    [onChange, value?.includeTime],
   )
 
   return (

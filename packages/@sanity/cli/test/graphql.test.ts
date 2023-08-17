@@ -7,7 +7,7 @@ describeCliTest('CLI: `sanity graphql`', () => {
     const testRunArgs = getTestRunArgs(version)
     const graphqlDataset = testRunArgs.graphqlDataset
     const deployFlags = ['--force', '--dataset', graphqlDataset].concat(
-      version === 'v2' ? ['--no-playground'] : []
+      version === 'v2' ? ['--no-playground'] : [],
     )
     const client = testClient.withConfig({dataset: graphqlDataset})
 
@@ -18,7 +18,7 @@ describeCliTest('CLI: `sanity graphql`', () => {
           _type: 'person',
           name: 'James Cameron',
         },
-        {visibility: 'async'}
+        {visibility: 'async'},
       )
 
       const result = await runSanityCmdCommand(version, ['graphql', 'deploy', ...deployFlags])
@@ -36,14 +36,14 @@ describeCliTest('CLI: `sanity graphql`', () => {
         (res) =>
           JSON.parse(res.body.toString('utf8')) as Promise<{
             data: {allPerson: {_id: string; name?: string}[]}
-          }>
+          }>,
       )
 
       expect(response).toHaveProperty('data.allPerson')
       expect(response.data.allPerson.length).toBeGreaterThanOrEqual(1)
 
       const cameron = response.data.allPerson.find(
-        (person) => person._id === 'person_james-cameron'
+        (person) => person._id === 'person_james-cameron',
       )
 
       expect(cameron).toBeDefined()

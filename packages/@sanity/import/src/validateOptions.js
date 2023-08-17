@@ -18,7 +18,7 @@ function validateOptions(input, opts) {
 
   if (!isValidInput(input)) {
     throw new Error(
-      'Stream does not seem to be a readable stream, an array or a path to a directory'
+      'Stream does not seem to be a readable stream, an array or a path to a directory',
     )
   }
 
@@ -30,7 +30,7 @@ function validateOptions(input, opts) {
 
   if (missing) {
     throw new Error(
-      `\`options.client\` is not a valid @sanity/client instance - no "${missing}" method found`
+      `\`options.client\` is not a valid @sanity/client instance - no "${missing}" method found`,
     )
   }
 
@@ -54,7 +54,7 @@ function validateOptions(input, opts) {
 
   if (typeof options.tag !== 'string' || !/^[a-z0-9._-]{1,75}$/i.test(options.tag)) {
     throw new Error(
-      `Tag can only contain alphanumeric characters, underscores, dashes and dots, and be between one and 75 characters long.`
+      `Tag can only contain alphanumeric characters, underscores, dashes and dots, and be between one and 75 characters long.`,
     )
   }
 

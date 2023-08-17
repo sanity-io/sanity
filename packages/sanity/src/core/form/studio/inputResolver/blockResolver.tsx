@@ -9,7 +9,7 @@ import {isBlockType} from '../../inputs/PortableText/_helpers'
 import {DefaultAnnotationComponent} from '../../inputs/PortableText/object/Annotation'
 
 export function defaultResolveBlockComponent(
-  schemaType: SchemaType
+  schemaType: SchemaType,
 ): React.ComponentType<Omit<BlockProps, 'renderDefault'>> {
   if (schemaType.components?.block) return schemaType.components.block
   if (isBlockType(schemaType)) {
@@ -19,14 +19,14 @@ export function defaultResolveBlockComponent(
 }
 
 export function defaultResolveInlineBlockComponent(
-  schemaType: SchemaType
+  schemaType: SchemaType,
 ): React.ComponentType<Omit<BlockProps, 'renderDefault'>> {
   if (schemaType.components?.inlineBlock) return schemaType.components.inlineBlock
   return DefaultInlineObjectComponent as FIXME
 }
 
 export function defaultResolveAnnotationComponent(
-  schemaType: SchemaType
+  schemaType: SchemaType,
 ): React.ComponentType<Omit<BlockAnnotationProps, 'renderDefault'>> {
   if (schemaType.components?.annotation) return schemaType.components.annotation
   return DefaultAnnotationComponent as FIXME

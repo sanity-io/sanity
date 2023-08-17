@@ -9,7 +9,7 @@ type Workaround = any
 type Props = Workaround &
   Omit<TextInputProps, 'onChange'> & {
     onChange?: (
-      event: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>
+      event: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>,
     ) => void
   }
 
@@ -20,7 +20,7 @@ type Props = Workaround &
  */
 export const LazyTextInput = React.forwardRef(function LazyTextInput(
   {onChange, onBlur, onKeyPress, value, ...rest}: Props,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
+  forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ) {
   const [inputValue, setInputValue] = React.useState<string>()
 
@@ -38,7 +38,7 @@ export const LazyTextInput = React.forwardRef(function LazyTextInput(
       }
       setInputValue(undefined)
     },
-    [onChange, value]
+    [onChange, value],
   )
 
   const handleBlur = React.useCallback(
@@ -48,7 +48,7 @@ export const LazyTextInput = React.forwardRef(function LazyTextInput(
         onBlur(e)
       }
     },
-    [checkEvent, onBlur]
+    [checkEvent, onBlur],
   )
 
   const handleKeyPress = React.useCallback(
@@ -60,7 +60,7 @@ export const LazyTextInput = React.forwardRef(function LazyTextInput(
         onKeyPress(e)
       }
     },
-    [checkEvent, onKeyPress]
+    [checkEvent, onKeyPress],
   )
 
   return (

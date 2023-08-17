@@ -91,7 +91,7 @@ export const ELEMENT_MAP = {
 export const DEFAULT_SUPPORTED_STYLES = uniq(
   Object.values(ELEMENT_MAP)
     .filter((tag): tag is PartialBlock => 'style' in tag)
-    .map((tag) => tag.style)
+    .map((tag) => tag.style),
 )
 
 export const DEFAULT_SUPPORTED_DECORATORS = uniq(Object.values(HTML_DECORATOR_TAGS))

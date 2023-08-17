@@ -14,7 +14,7 @@ import type {SearchFilter} from '../types'
 
 export function buildSearchFilter(
   filterDefinition: SearchFilterDefinition,
-  fieldId?: string
+  fieldId?: string,
 ): SearchFilter {
   return {
     fieldId,
@@ -44,7 +44,7 @@ export function generateFilterQuery({
         filterDefinitions,
         fieldDefinitions,
         operatorDefinitions,
-      })
+      }),
     )
     .map((filter) => {
       return getOperatorDefinition(operatorDefinitions, filter.operatorType)?.groqFilter({
@@ -59,7 +59,7 @@ export function generateFilterQuery({
 
 export function getFieldFromFilter(
   fields: SearchFieldDefinitionDictionary,
-  filter: SearchFilter
+  filter: SearchFilter,
 ): SearchFieldDefinition | undefined {
   return filter?.fieldId ? fields[filter.fieldId] : undefined
 }

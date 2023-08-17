@@ -12,7 +12,7 @@ type MaybeStructureOptions = StructureGroupOption | undefined
 export function typesInOptionGroup(
   S: StructureBuilder,
   schema: Schema,
-  groupName: StructureGroup
+  groupName: StructureGroup,
 ): string[] {
   return S.documentTypeListItems()
     .map((item) => item.getId())
@@ -24,7 +24,7 @@ export function typesInOptionGroup(
 }
 
 export function structureGroupOptions<O extends Required<StructureGroupOption> & ObjectOptions>(
-  options: O
+  options: O,
 ): O & ObjectOptions {
   return options
 }

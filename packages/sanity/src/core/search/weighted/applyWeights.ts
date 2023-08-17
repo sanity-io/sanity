@@ -28,7 +28,7 @@ const stringify = (value: unknown): string =>
 export function applyWeights(
   searchSpec: SearchSpec[],
   hits: SearchHit[],
-  terms: string[] = []
+  terms: string[] = [],
 ): WeightedHit[] {
   const specByType = keyBy(searchSpec, (spec) => spec.typeName)
   return hits.map((hit, index) => {

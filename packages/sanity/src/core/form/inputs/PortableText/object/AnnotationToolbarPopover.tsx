@@ -67,8 +67,8 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
           setPopoverOpen(false)
         }
       },
-      [popoverOpen]
-    )
+      [popoverOpen],
+    ),
   )
 
   const handleSelectionChange = useCallback(() => {
@@ -83,7 +83,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         anchorOffset,
         focusNode,
         focusOffset,
-      })
+      }),
     )
   }, [])
 

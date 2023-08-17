@@ -61,7 +61,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
       popover: MENU_POPOVER_PROPS,
     }),
 
-    [disabled]
+    [disabled],
   )
 
   return (

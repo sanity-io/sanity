@@ -23,7 +23,7 @@ const DISABLED_REASON_TITLE = {
 
 function getDisabledReason(
   reason: keyof typeof DISABLED_REASON_TITLE,
-  publishedAt: string | undefined
+  publishedAt: string | undefined,
 ) {
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return (
@@ -165,7 +165,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       publishState === 'publishing' ||
       publishState === 'published' ||
       hasValidationErrors ||
-      publish.disabled
+      publish.disabled,
   )
 
   return {

@@ -104,7 +104,7 @@ export interface TypeReference {
  */
 export interface TypeAliasDefinition<
   TType extends string,
-  TAlias extends IntrinsicTypeName | undefined
+  TAlias extends IntrinsicTypeName | undefined,
 > extends BaseSchemaDefinition {
   type: TType
   options?: TAlias extends IntrinsicTypeName ? IntrinsicDefinitions[TAlias]['options'] : unknown
@@ -157,5 +157,5 @@ export type InlineFieldDefinition = {
  */
 export type FieldDefinition<
   TType extends IntrinsicTypeName = IntrinsicTypeName,
-  TAlias extends IntrinsicTypeName | undefined = undefined
+  TAlias extends IntrinsicTypeName | undefined = undefined,
 > = (InlineFieldDefinition[TType] | TypeAliasDefinition<string, TAlias>) & FieldDefinitionBase

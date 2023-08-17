@@ -13,12 +13,12 @@ export type ReactHook<TArgs, TResult> = (args: TArgs) => TResult
 // overloads to handle types where an initial value is passed
 export function createHookFromObservableFactory<T, TArg = void>(
   observableFactory: (arg: TArg) => Observable<T>,
-  initialValue: T
+  initialValue: T,
 ): ReactHook<TArg, LoadingTuple<T>>
 /** @internal */
 export function createHookFromObservableFactory<T, TArg = void>(
   observableFactory: (arg: TArg) => Observable<T>,
-  initialValue?: T
+  initialValue?: T,
 ): ReactHook<TArg, LoadingTuple<T | undefined>>
 
 /**
@@ -36,7 +36,7 @@ export function createHookFromObservableFactory<T, TArg = void>(
  */
 export function createHookFromObservableFactory<T, TArg = void>(
   observableFactory: (arg: TArg) => Observable<T>,
-  initialValue?: T
+  initialValue?: T,
 ): ReactHook<TArg, LoadingTuple<T | undefined>> {
   const initialLoadingTuple: LoadingTuple<T | undefined> = [initialValue, true]
   const initialResult = {type: 'tuple', tuple: initialLoadingTuple} as const
@@ -50,8 +50,8 @@ export function createHookFromObservableFactory<T, TArg = void>(
           switchMap((arg) =>
             concat(
               of({type: 'loading'} as const),
-              observableFactory(arg).pipe(map((value) => ({type: 'value', value} as const)))
-            )
+              observableFactory(arg).pipe(map((value) => ({type: 'value', value}) as const)),
+            ),
           ),
           scan(([prevValue], next): LoadingTuple<T | undefined> => {
             if (next.type === 'loading') return [prevValue, true]
@@ -62,11 +62,11 @@ export function createHookFromObservableFactory<T, TArg = void>(
             if (prevIsLoading !== nextIsLoading) return false
             return true
           }),
-          map((tuple) => ({type: 'tuple', tuple} as const)),
-          catchError((error) => of({type: 'error', error} as const))
+          map((tuple) => ({type: 'tuple', tuple}) as const),
+          catchError((error) => of({type: 'error', error} as const)),
         ),
       [memoArg],
-      initialResult
+      initialResult,
     )
 
     if (result.type === 'error') throw result.error

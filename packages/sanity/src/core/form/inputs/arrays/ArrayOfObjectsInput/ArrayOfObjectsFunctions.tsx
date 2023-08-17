@@ -21,7 +21,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {constrainSize: true, portal: 
  * @beta */
 export function ArrayOfObjectsFunctions<
   Item extends ObjectItem,
-  SchemaType extends ArraySchemaType
+  SchemaType extends ArraySchemaType,
 >(props: ArrayInputFunctionsProps<Item, SchemaType>) {
   const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
@@ -32,7 +32,7 @@ export function ArrayOfObjectsFunctions<
 
       onItemAppend(item)
     },
-    [onValueCreate, onItemAppend]
+    [onValueCreate, onItemAppend],
   )
 
   const handleAddBtnClick = React.useCallback(() => {

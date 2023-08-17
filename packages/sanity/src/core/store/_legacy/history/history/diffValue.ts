@@ -25,7 +25,7 @@ class ArrayContentWrapper implements ArrayInput<Annotation> {
     content: incremental.ArrayContent<Meta>,
     value: unknown[],
     annotation: Annotation,
-    extractor: AnnotationExtractor
+    extractor: AnnotationExtractor,
   ) {
     this.content = content
     this.value = value
@@ -43,7 +43,7 @@ class ArrayContentWrapper implements ArrayInput<Annotation> {
     return (this.elements[idx] = wrapValue(
       this.content.elements[idx],
       this.value[idx],
-      this.extractor
+      this.extractor,
     ))
   }
 
@@ -67,7 +67,7 @@ class ObjectContentWrapper implements ObjectInput<Annotation> {
     content: incremental.ObjectContent<Meta>,
     value: Record<string, unknown>,
     annotation: Annotation,
-    extractor: AnnotationExtractor
+    extractor: AnnotationExtractor,
   ) {
     this.content = content
     this.value = value
@@ -99,7 +99,7 @@ class StringContentWrapper implements StringInput<Annotation> {
     content: incremental.StringContent<Meta>,
     value: string,
     annotation: Annotation,
-    extractor: AnnotationExtractor
+    extractor: AnnotationExtractor,
   ) {
     this.content = content
     this.value = value
@@ -150,7 +150,7 @@ class StringContentWrapper implements StringInput<Annotation> {
 function wrapValue(
   value: incremental.Value<Meta>,
   raw: unknown,
-  extractor: AnnotationExtractor
+  extractor: AnnotationExtractor,
 ): Input<Annotation> {
   const annotation = extractor.fromValue(value)
 
@@ -163,7 +163,7 @@ function wrapValue(
           value.content,
           raw as Record<string, unknown>,
           annotation,
-          extractor
+          extractor,
         )
       case 'string':
         return new StringContentWrapper(value.content, raw as string, annotation, extractor)
@@ -178,7 +178,7 @@ function wrapValue(
 function extractAnnotationForFromInput(
   timeline: Timeline,
   firstChunk: Chunk | null,
-  meta: Meta
+  meta: Meta,
 ): Annotation {
   if (meta) {
     // The next transaction is where it disappeared:
@@ -219,7 +219,7 @@ export function diffValue(
   from: incremental.Value<Meta>,
   fromRaw: unknown,
   to: incremental.Value<Meta>,
-  toRaw: unknown
+  toRaw: unknown,
 ): Diff<Annotation> {
   const fromInput = wrapValue(from, fromRaw, {
     fromValue(value) {

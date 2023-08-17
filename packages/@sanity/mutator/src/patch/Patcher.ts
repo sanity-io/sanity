@@ -109,6 +109,6 @@ function isPatcher(payload: unknown): payload is PatchTypes {
       typeof payload === 'object' &&
       payload !== null &&
       'apply' in payload &&
-      typeof (payload as PatchTypes).apply === 'function'
+      typeof (payload as PatchTypes).apply === 'function',
   )
 }

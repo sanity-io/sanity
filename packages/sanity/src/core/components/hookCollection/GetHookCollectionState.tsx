@@ -42,7 +42,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
   const handleRequestUpdateThrottled = useThrottledCallback(
     handleRequestUpdate,
     60,
-    throttleOptions
+    throttleOptions,
   )
 
   const handleNext = useCallback((id: any, hookState: any) => {
@@ -62,7 +62,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
         onReset()
       }
     },
-    [onReset]
+    [onReset],
   )
 
   const hookIds = useMemo(() => hooks.map((hook) => getHookId(hook)), [hooks])
@@ -70,7 +70,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
   const states = useMemo(
     () => hookIds.map((id) => statesRef.current[id]?.value).filter(isNonNullable),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- tickId is used to refresh the memo, before it can be removed it needs to be investigated what impact it has
-    [hookIds, tickId]
+    [hookIds, tickId],
   )
 
   return (

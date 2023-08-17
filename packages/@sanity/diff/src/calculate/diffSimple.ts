@@ -3,7 +3,7 @@ import type {DiffOptions, NumberInput, BooleanInput, NumberDiff, BooleanDiff} fr
 export function diffNumber<A>(
   fromInput: NumberInput<A>,
   toInput: NumberInput<A>,
-  options: DiffOptions
+  options: DiffOptions,
 ): NumberDiff<A> {
   const fromValue = fromInput.value
   const toValue = toInput.value
@@ -31,7 +31,7 @@ export function diffNumber<A>(
 export function diffBoolean<A>(
   fromInput: BooleanInput<A>,
   toInput: BooleanInput<A>,
-  options: DiffOptions
+  options: DiffOptions,
 ): BooleanDiff<A> {
   const fromValue = fromInput.value
   const toValue = toInput.value

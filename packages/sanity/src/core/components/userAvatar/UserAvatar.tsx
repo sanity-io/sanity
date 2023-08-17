@@ -78,7 +78,7 @@ function TooltipUserAvatar(props: Omit<UserAvatarProps, 'user'> & {user: User}) 
 
 const StaticUserAvatar = forwardRef(function StaticUserAvatar(
   props: Omit<UserAvatarProps, 'user'> & {user: User},
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {user, animateArrowFrom, position, size, status, tone} = props
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)

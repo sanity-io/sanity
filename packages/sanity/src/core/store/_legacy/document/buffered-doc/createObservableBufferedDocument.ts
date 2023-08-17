@@ -153,18 +153,18 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
         // eslint-disable-next-line no-console
         console.warn(
           'Ignoring event of type "%s" since buffered document has not yet been set up with snapshot',
-          listenerEvent.type
+          listenerEvent.type,
         )
         return null
       }
       return bufferedDocument
     }, null),
     filter(
-      <T>(bufferedDocument: T): bufferedDocument is NonNullable<T> => bufferedDocument !== null
+      <T>(bufferedDocument: T): bufferedDocument is NonNullable<T> => bufferedDocument !== null,
     ),
     distinctUntilChanged(),
     publishReplay(1),
-    refCount()
+    refCount(),
   )
 
   // this is a stream of document snapshots where each new snapshot are emitted after listener mutations
@@ -176,7 +176,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     map(([mutationEvent, bufferedDocument]) => {
       bufferedDocument!.arrive(new Mutation(mutationEvent))
       return getUpdatedSnapshot(bufferedDocument!)
-    })
+    }),
   )
 
   // this is where the side effects mandated by local actions actually happens
@@ -192,7 +192,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     }),
     // We subscribe to this only for the side effects
     mergeMapTo(EMPTY),
-    share()
+    share(),
   )
 
   const emitAction = (action: any) => actions$.next(action)
@@ -204,7 +204,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     currentBufferedDocument$
       .pipe(
         take(1),
-        tap((bufferedDocument) => bufferedDocument!.commit())
+        tap((bufferedDocument) => bufferedDocument!.commit()),
       )
       .subscribe()
   }
@@ -214,15 +214,15 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     currentBufferedDocument$.pipe(map((bufferedDocument) => bufferedDocument!.LOCAL)),
     mutations$.pipe(map(getDocument)),
     rebase$.pipe(map(getDocument)),
-    snapshotAfterSync$
+    snapshotAfterSync$,
   ).pipe(map(toSnapshotEvent), publishReplay(1), refCount())
 
   const remoteSnapshot$: Observable<RemoteSnapshotEvent> = merge(
     currentBufferedDocument$.pipe(
       map((bufferedDocument) => bufferedDocument!.document.HEAD as any),
-      map(toSnapshotEvent)
+      map(toSnapshotEvent),
     ),
-    remoteMutations
+    remoteMutations,
   ).pipe(publishReplay(1), refCount())
 
   return {

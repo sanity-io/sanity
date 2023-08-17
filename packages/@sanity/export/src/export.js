@@ -112,7 +112,7 @@ function exportDataset(opts) {
       filterDocumentTypes(options.types),
       options.drafts ? miss.through.obj() : filterDrafts(),
       stringifyStream(),
-      miss.through(reportDocumentCount)
+      miss.through(reportDocumentCount),
     )
 
     miss.finished(jsonStream, async (err) => {

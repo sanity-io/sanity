@@ -28,7 +28,7 @@ interface TemplateManifest {
 
 export async function bootstrapFromTemplate(
   context: CliCommandContext,
-  url: string
+  url: string,
 ): Promise<{
   name: string
   outputPath: string
@@ -59,7 +59,7 @@ export async function bootstrapFromTemplate(
 
   debug('Looking up template manifest from zip')
   const manifest = zip.find(
-    (file) => path.basename(file.path) === 'package.json' && !file.path.includes('node_modules')
+    (file) => path.basename(file.path) === 'package.json' && !file.path.includes('node_modules'),
   )
 
   if (!manifest) {
@@ -72,7 +72,7 @@ export async function bootstrapFromTemplate(
   debug('Base directory resolved to %s', baseDir)
 
   const templateFiles = zip.filter(
-    (file) => file.type === 'file' && file.path.indexOf(baseDir) === 0
+    (file) => file.type === 'file' && file.path.indexOf(baseDir) === 0,
   )
   debug('%d files found in template', templateFiles.length)
 
@@ -87,7 +87,7 @@ export async function bootstrapFromTemplate(
 
     if (semver.lt(installed, minimumBaseVersion)) {
       throw new Error(
-        `Template requires Sanity at version ${minimumBaseVersion}, installed is ${installed}`
+        `Template requires Sanity at version ${minimumBaseVersion}, installed is ${installed}`,
       )
     }
   }
@@ -98,7 +98,7 @@ export async function bootstrapFromTemplate(
 
     if (semver.lt(cliVersion, minimumCliVersion)) {
       throw new Error(
-        `Template requires @sanity/cli at version ${minimumCliVersion}, installed is ${cliVersion}`
+        `Template requires @sanity/cli at version ${minimumCliVersion}, installed is ${cliVersion}`,
       )
     }
   }
@@ -155,7 +155,7 @@ export async function bootstrapFromTemplate(
 
       debug('Writing template file "%s" to "%s"', filename, outputPath)
       return fs.writeFile(path.join(outputPath, filename), file.data)
-    })
+    }),
   )
 
   return {name, outputPath, inPluginsPath: inProjectContext, dependencies: tplVars.dependencies}
@@ -175,7 +175,7 @@ function getZip(url: string): Promise<decompress.File[]> {
       }
 
       return decompress(res.body)
-    }
+    },
   )
 }
 

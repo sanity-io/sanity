@@ -20,7 +20,7 @@ export function createMultiKeyWeakMap(): MultiKeyWeakMap {
       .map(() =>
         Math.floor(Math.random() * 255)
           .toString(16)
-          .padStart(2, '0')
+          .padStart(2, '0'),
       )
       .join('')
   }
@@ -53,7 +53,7 @@ export function createMultiKeyWeakMap(): MultiKeyWeakMap {
   function setDeep(
     keys: object[],
     map: WeakMap<object, MultiKeyWeakMapNode>,
-    value: unknown
+    value: unknown,
   ): void {
     if (!keys.length) return
 

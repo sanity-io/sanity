@@ -24,7 +24,7 @@ export type FormInputAbsolutePathArg = {absolutePath: Path}
 export type FormInputRelativePathArg = {relativePath: Path}
 
 function hasAbsolutePath(
-  a: FormInputAbsolutePathArg | FormInputRelativePathArg
+  a: FormInputAbsolutePathArg | FormInputRelativePathArg,
 ): a is FormInputAbsolutePathArg {
   return 'absolutePath' in a
 }
@@ -37,7 +37,7 @@ export const FormInput = memo(function FormInput(
        * Whether to include the field around the input. Defaults to false
        */
       includeField?: boolean
-    }
+    },
 ) {
   const absolutePath = useMemo(() => {
     return hasAbsolutePath(props) ? props.absolutePath : props.path.concat(props.relativePath)
@@ -81,7 +81,7 @@ const FormInputInner = memo(function FormInputInner(
     destinationRenderInput: RenderInputCallback
     destinationRenderItem: RenderArrayOfObjectsItemCallback
     destinationRenderPreview: RenderPreviewCallback
-  }
+  },
 ) {
   const {
     absolutePath,
@@ -105,8 +105,8 @@ const FormInputInner = memo(function FormInputInner(
       if (!isObjectInputProps(inputProps) && !isArrayInputProps(inputProps)) {
         throw new Error(
           `Expected either object input props or array input props for: ${JSON.stringify(
-            inputProps.path
-          )}`
+            inputProps.path,
+          )}`,
         )
       }
       // we have not yet reached the destination path, so we'll continue recurse until we get there
@@ -133,7 +133,7 @@ const FormInputInner = memo(function FormInputInner(
       destinationRenderInput,
       destinationRenderItem,
       destinationRenderPreview,
-    ]
+    ],
   )
 
   const renderField: RenderFieldCallback = useCallback(
@@ -146,7 +146,7 @@ const FormInputInner = memo(function FormInputInner(
         (props.includeField || !isEqual(absolutePath, fieldProps.path))
       return shouldRenderField ? destinationRenderField(fieldProps) : pass(fieldProps)
     },
-    [absolutePath, destinationRenderField, props.includeField]
+    [absolutePath, destinationRenderField, props.includeField],
   )
 
   const renderItem: RenderArrayOfObjectsItemCallback = useCallback(
@@ -159,7 +159,7 @@ const FormInputInner = memo(function FormInputInner(
         (props.includeItem || !isEqual(absolutePath, itemProps.path))
       return shouldRenderField ? destinationRenderItem(itemProps) : pass(itemProps)
     },
-    [absolutePath, destinationRenderItem, props.includeItem]
+    [absolutePath, destinationRenderItem, props.includeItem],
   )
 
   const renderBlock: RenderBlockCallback = useCallback(
@@ -169,7 +169,7 @@ const FormInputInner = memo(function FormInputInner(
         (props.includeItem || !isEqual(absolutePath, blockProps.path))
       return shouldRenderBlock ? destinationRenderBlock(blockProps) : pass(blockProps)
     },
-    [absolutePath, destinationRenderBlock, props.includeItem]
+    [absolutePath, destinationRenderBlock, props.includeItem],
   )
 
   const renderInlineBlock: RenderBlockCallback = useCallback(
@@ -179,7 +179,7 @@ const FormInputInner = memo(function FormInputInner(
         (props.includeItem || !isEqual(absolutePath, blockProps.path))
       return shouldRenderInlineBlock ? destinationRenderInlineBlock(blockProps) : pass(blockProps)
     },
-    [absolutePath, destinationRenderInlineBlock, props.includeItem]
+    [absolutePath, destinationRenderInlineBlock, props.includeItem],
   )
 
   const renderAnnotation: RenderAnnotationCallback = useCallback(
@@ -191,7 +191,7 @@ const FormInputInner = memo(function FormInputInner(
         ? destinationRenderAnnotation(annotationProps)
         : pass(annotationProps)
     },
-    [absolutePath, destinationRenderAnnotation, props.includeItem]
+    [absolutePath, destinationRenderAnnotation, props.includeItem],
   )
 
   if (isArrayInputProps(props)) {
@@ -199,7 +199,7 @@ const FormInputInner = memo(function FormInputInner(
 
     const itemMember = props.members.find(
       (member) =>
-        member.kind == 'item' && isKeySegment(childPath[0]) && member.key === childPath[0]._key
+        member.kind == 'item' && isKeySegment(childPath[0]) && member.key === childPath[0]._key,
     )
 
     if (!itemMember) {
@@ -231,7 +231,7 @@ const FormInputInner = memo(function FormInputInner(
   if (isObjectInputProps(props)) {
     const childPath = trimLeft(props.path, absolutePath)
     const fieldMember = props.members.find(
-      (member): member is FieldMember => member.kind == 'field' && childPath[0] === member.name
+      (member): member is FieldMember => member.kind == 'field' && childPath[0] === member.name,
     )
 
     if (!fieldMember) {

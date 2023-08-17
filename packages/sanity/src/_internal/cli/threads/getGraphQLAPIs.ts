@@ -29,7 +29,7 @@ async function resolveGraphQLApis({
   const workspaces = await getStudioConfig({basePath: workDir})
   const numSources = workspaces.reduce(
     (count, workspace) => count + workspace.unstable_sources.length,
-    0
+    0,
   )
   const multiSource = numSources > 1
   const multiWorkspace = workspaces.length > 1
@@ -65,7 +65,7 @@ async function resolveGraphQLApis({
 
 function resolveGraphQLAPIsFromConfig(
   apiDefs: GraphQLAPIConfig[],
-  workspaces: Workspace[]
+  workspaces: Workspace[],
 ): TypeResolvedGraphQLAPI[] {
   const resolvedApis: TypeResolvedGraphQLAPI[] = []
 
@@ -73,7 +73,7 @@ function resolveGraphQLAPIsFromConfig(
     const {workspace: workspaceName, source: sourceName} = apiDef
     if (!workspaceName && workspaces.length > 1) {
       throw new Error(
-        'Must define `workspace` name in GraphQL API config when multiple workspaces are defined'
+        'Must define `workspace` name in GraphQL API config when multiple workspaces are defined',
       )
     }
 
@@ -97,7 +97,9 @@ function resolveGraphQLAPIsFromConfig(
 
     if (!source) {
       throw new Error(
-        `Source "${sourceName || 'default'}" not found in workspace "${workspaceName || 'default'}"`
+        `Source "${sourceName || 'default'}" not found in workspace "${
+          workspaceName || 'default'
+        }"`,
       )
     }
 
@@ -114,7 +116,7 @@ function resolveGraphQLAPIsFromConfig(
 
 function validateCliConfig(
   config: GraphQLAPIConfig[],
-  configPath = 'sanity.cli.js'
+  configPath = 'sanity.cli.js',
 ): GraphQLAPIConfig[] {
   if (!Array.isArray(config)) {
     throw new Error(`"graphql" key in "${configPath}" must be an array if defined`)
@@ -142,10 +144,13 @@ function strip(input: unknown): unknown {
   }
 
   if (isPlainishObject(input)) {
-    return Object.keys(input).reduce((stripped, key) => {
-      stripped[key] = strip(input[key])
-      return stripped
-    }, {} as Record<string, unknown>)
+    return Object.keys(input).reduce(
+      (stripped, key) => {
+        stripped[key] = strip(input[key])
+        return stripped
+      },
+      {} as Record<string, unknown>,
+    )
   }
 
   return isBasicType(input) ? input : undefined

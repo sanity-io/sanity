@@ -11,9 +11,9 @@ const useUserViaUserStore = createHookFromObservableFactory(
       userStore.getUser(userId).catch((err) => {
         console.error(err)
         return null
-      })
+      }),
     )
-  }
+  },
 )
 
 /** @internal */

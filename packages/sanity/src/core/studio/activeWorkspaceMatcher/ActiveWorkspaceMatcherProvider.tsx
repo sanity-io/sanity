@@ -24,8 +24,8 @@ export const ActiveWorkspaceMatcherProvider = memo(function ActiveWorkspaceMatch
       ({
         activeWorkspace,
         setActiveWorkspace,
-      } satisfies ActiveWorkspaceMatcherContextValue),
-    [activeWorkspace, setActiveWorkspace]
+      }) satisfies ActiveWorkspaceMatcherContextValue,
+    [activeWorkspace, setActiveWorkspace],
   )
 
   return (

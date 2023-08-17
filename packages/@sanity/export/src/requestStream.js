@@ -33,7 +33,7 @@ module.exports = async (options) => {
         socketsWithTimeout.add(response.connection)
         response.connection.setTimeout(READ_TIMEOUT, () => {
           response.destroy(
-            new Error(`Read timeout: No data received on socket for ${READ_TIMEOUT} ms`)
+            new Error(`Read timeout: No data received on socket for ${READ_TIMEOUT} ms`),
           )
         })
       }

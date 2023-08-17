@@ -147,7 +147,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           }
           // Inline objects
           const childrenField = member.item.members.find(
-            (f) => f.kind === 'field' && f.name === 'children'
+            (f) => f.kind === 'field' && f.name === 'children',
           )
           if (
             childrenField &&
@@ -272,7 +272,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onBlur, onChange, onPathFocus, toast]
+    [onBlur, onChange, onPathFocus, toast],
   )
 
   useEffect(() => {

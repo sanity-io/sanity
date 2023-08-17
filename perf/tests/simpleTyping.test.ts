@@ -29,7 +29,7 @@ export default {
     const input = page.locator('[data-testid="field-simple"] [data-testid="string-input"]')
 
     const samples = await input.evaluate((el: HTMLInputElement) =>
-      window.perf.typingTest(el, {samples: 2})
+      window.perf.typingTest(el, {samples: 2}),
     )
 
     await new Promise((resolve) => setTimeout(resolve, 1000))

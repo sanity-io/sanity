@@ -17,7 +17,7 @@ export function createInsertCallback(options: {
     toInsert = toInsert.map((blk) =>
       normalizeBlock(blk, {
         allowedDecorators,
-      })
+      }),
     )
 
     const patches = [insert(toInsert, 'after', [{_key: block._key}])]

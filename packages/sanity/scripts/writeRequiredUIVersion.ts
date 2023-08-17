@@ -37,7 +37,7 @@ import pkg from '../package.json'
 
 const rawVersion = pkg.dependencies['@sanity/ui']
 const v = semver.parse(
-  rawVersion.startsWith('^') || rawVersion.startsWith('~') ? rawVersion.slice(1) : rawVersion
+  rawVersion.startsWith('^') || rawVersion.startsWith('~') ? rawVersion.slice(1) : rawVersion,
 )
 
 if (!v) {
@@ -58,7 +58,7 @@ globby([
       buf
         .toString()
         .replace('REQUIRED_UI_VERSION="0.0.0-development"', `REQUIRED_UI_VERSION="${version}"`),
-      'utf8'
+      'utf8',
     )
   }
 })

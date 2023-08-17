@@ -44,9 +44,9 @@ const getVisiblePoll$ = () => {
         visible
           ? // using timer instead of interval since timer will emit on creation
             timer(0, POLL_INTERVAL)
-          : EMPTY
+          : EMPTY,
       ),
-      shareReplay({refCount: true, bufferSize: 1})
+      shareReplay({refCount: true, bufferSize: 1}),
     )
   }
   return visiblePoll$
@@ -90,7 +90,7 @@ export type ReferringDocuments = {
 
 function getDocumentExistence(
   documentId: string,
-  {versionedClient}: {versionedClient: SanityClient}
+  {versionedClient}: {versionedClient: SanityClient},
 ): Observable<string | undefined> {
   const draftId = getDraftId(documentId)
   const publishedId = getPublishedId(documentId)
@@ -115,7 +115,7 @@ function getDocumentExistence(
 
       // If the draft does not exist, use the published ID, and vice versa
       return nonExistant.some((doc) => doc.id === draftId) ? publishedId : draftId
-    })
+    }),
   )
 }
 
@@ -125,7 +125,7 @@ function getDocumentExistence(
  */
 function fetchCrossDatasetReferences(
   documentId: string,
-  context: {versionedClient: SanityClient}
+  context: {versionedClient: SanityClient},
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
   const {versionedClient} = context
 
@@ -153,9 +153,9 @@ function fetchCrossDatasetReferences(
             }
 
             throw e
-          })
+          }),
         )
-    })
+    }),
   )
 }
 
@@ -169,9 +169,9 @@ const useInternalReferences = createHookFromObservableFactory(
     return documentStore.listenQuery(
       {fetch: fetchQuery, listen: listenQuery},
       {documentId},
-      {tag: 'use-referring-documents', transitions: ['appear', 'disappear'], throttleTime: 5000}
+      {tag: 'use-referring-documents', transitions: ['appear', 'disappear'], throttleTime: 5000},
     ) as Observable<ReferringDocuments['internalReferences']>
-  }
+  },
 )
 
 const useCrossDatasetReferences = createHookFromObservableFactory(
@@ -181,10 +181,10 @@ const useCrossDatasetReferences = createHookFromObservableFactory(
       switchMap(() =>
         fetchCrossDatasetReferences(documentId, {
           versionedClient,
-        })
-      )
+        }),
+      ),
     )
-  }
+  },
 )
 
 export function useReferringDocuments(documentId: string): ReferringDocuments {
@@ -194,11 +194,11 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
   const publishedId = getPublishedId(documentId)
 
   const [internalReferences, isInternalReferencesLoading] = useInternalReferences(
-    useMemo(() => [publishedId, documentStore], [documentStore, publishedId])
+    useMemo(() => [publishedId, documentStore], [documentStore, publishedId]),
   )
 
   const [crossDatasetReferences, isCrossDatasetReferencesLoading] = useCrossDatasetReferences(
-    useMemo(() => [publishedId, versionedClient], [publishedId, versionedClient])
+    useMemo(() => [publishedId, versionedClient], [publishedId, versionedClient]),
   )
 
   const projectIds = useMemo(() => {
@@ -206,8 +206,8 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
       new Set(
         crossDatasetReferences?.references
           .map((crossDatasetReference) => crossDatasetReference.projectId)
-          .filter(Boolean)
-      )
+          .filter(Boolean),
+      ),
     ).sort()
   }, [crossDatasetReferences?.references])
 
@@ -217,16 +217,16 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
         crossDatasetReferences?.references
           // .filter((name) => typeof name === 'string')
           .map((crossDatasetReference) => crossDatasetReference?.datasetName || '')
-          .filter((datasetName) => Boolean(datasetName) && datasetName !== '')
-      )
+          .filter((datasetName) => Boolean(datasetName) && datasetName !== ''),
+      ),
     ).sort()
   }, [crossDatasetReferences?.references])
 
   const hasUnknownDatasetNames = useMemo(() => {
     return Boolean(
       crossDatasetReferences?.references.some(
-        (crossDatasetReference) => typeof crossDatasetReference.datasetName !== 'string'
-      )
+        (crossDatasetReference) => typeof crossDatasetReference.datasetName !== 'string',
+      ),
     )
   }, [crossDatasetReferences?.references])
 

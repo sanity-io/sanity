@@ -16,7 +16,7 @@ let objectSelectInputIdx = 0
 
 export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSelectInput(
   props: CustomObjectSelectInputProps,
-  forwardedRef: React.ForwardedRef<HTMLSelectElement>
+  forwardedRef: React.ForwardedRef<HTMLSelectElement>,
 ) {
   const {value, schemaType, onChange, readOnly, validation} = props
 
@@ -27,10 +27,10 @@ export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSel
   const handleChange = useCallback(
     (evt: any) => {
       onChange(
-        evt.target.value ? set(items.find((item) => item.value === evt.target.value)) : unset()
+        evt.target.value ? set(items.find((item) => item.value === evt.target.value)) : unset(),
       )
     },
-    [onChange, items]
+    [onChange, items],
   )
 
   return (

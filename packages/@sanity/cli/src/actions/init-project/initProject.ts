@@ -97,7 +97,7 @@ export interface ProjectOrganization {
 // eslint-disable-next-line max-statements, complexity
 export default async function initSanity(
   args: CliCommandArguments<InitFlags>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const {output, prompt, workDir, apiClient, chalk, sanityMajorVersion} = context
   const cliFlags = args.extOptions
@@ -122,14 +122,14 @@ export default async function initSanity(
   // Only allow either --project-plan or --coupon
   if (intendedCoupon && intendedPlan) {
     throw new Error(
-      'Error! --project-plan and --coupon cannot be used together; please select only one flag'
+      'Error! --project-plan and --coupon cannot be used together; please select only one flag',
     )
   }
 
   // Don't allow --coupon and --project
   if (intendedCoupon && cliFlags.project) {
     throw new Error(
-      'Error! --project and --coupon cannot be used together; coupons can only be applied to new projects'
+      'Error! --project and --coupon cannot be used together; coupons can only be applied to new projects',
     )
   }
 
@@ -213,7 +213,7 @@ export default async function initSanity(
     print(`Project ID: ${chalk.cyan(projectId)}`)
     print(`Dataset: ${chalk.cyan(datasetName)}`)
     print(
-      `\nYou can find your project on Sanity Manage — https://www.sanity.io/manage/project/${projectId}\n`
+      `\nYou can find your project on Sanity Manage — https://www.sanity.io/manage/project/${projectId}\n`,
     )
     return
   }
@@ -273,7 +273,7 @@ export default async function initSanity(
       const embeddedStudioRouteFilePath = path.join(
         srcPath,
         `${studioPath}/`,
-        useAppDir ? `[[...index]]/page.${fileExtension}x` : `[[...index]].${fileExtension}x`
+        useAppDir ? `[[...index]]/page.${fileExtension}x` : `[[...index]].${fileExtension}x`,
       )
 
       // this selects the correct template string based on whether the user is using the app or pages directory and
@@ -286,8 +286,8 @@ export default async function initSanity(
           ':configPath:',
           new Array(countNestedFolders(embeddedStudioRouteFilePath.slice(workDir.length)))
             .join('../')
-            .concat('sanity.config')
-        )
+            .concat('sanity.config'),
+        ),
       )
 
       const sanityConfigPath = path.join(workDir, `sanity.config.${fileExtension}`)
@@ -295,7 +295,7 @@ export default async function initSanity(
         sanityConfigPath,
         sanityConfigTemplate
           .replace(':route:', embeddedStudioRouteFilePath.slice(workDir.length).replace('src/', ''))
-          .replace(':basePath:', studioPath)
+          .replace(':basePath:', studioPath),
       )
     }
 
@@ -305,14 +305,14 @@ export default async function initSanity(
     // write sanity folder files
     const writeSourceFiles = async (
       files: Record<string, string | Record<string, string>>,
-      folderPath?: string
+      folderPath?: string,
     ) => {
       for (const [filePath, content] of Object.entries(files)) {
         // check if file ends with full stop to indicate it's file and not directory (this only works with our template tree structure)
         if (filePath.includes('.') && typeof content === 'string') {
           await writeOrOverwrite(
             path.join(workDir, 'sanity', folderPath || '', `${filePath}${fileExtension}`),
-            content
+            content,
           )
         } else {
           await fs.mkdir(path.join(workDir, 'sanity', filePath), {recursive: true})
@@ -361,7 +361,7 @@ export default async function initSanity(
       {
         output: context.output,
         workDir,
-      }
+      },
     )
 
     // will refactor this later
@@ -381,7 +381,7 @@ export default async function initSanity(
     }
 
     print(
-      `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`
+      `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`,
     )
 
     // eslint-disable-next-line no-process-exit
@@ -401,7 +401,7 @@ export default async function initSanity(
       const overwrite = await prompt.single({
         type: 'confirm',
         message: `File ${chalk.yellow(
-          filePath.replace(workDir, '')
+          filePath.replace(workDir, ''),
         )} already exists. Do you want to overwrite it?`,
         default: false,
       })
@@ -592,7 +592,7 @@ export default async function initSanity(
       const project = projects.find((proj) => proj.id === flags.project)
       if (!project && !unattended) {
         throw new Error(
-          `Given project ID (${flags.project}) not found, or you do not have access to it`
+          `Given project ID (${flags.project}) not found, or you do not have access to it`,
         )
       }
 
@@ -610,13 +610,13 @@ export default async function initSanity(
 
       if (!organization) {
         throw new Error(
-          `Given organization ID (${flags.organization}) not found, or you do not have access to it`
+          `Given organization ID (${flags.organization}) not found, or you do not have access to it`,
         )
       }
 
       if (!(await hasProjectAttachGrant(flags.organization))) {
         throw new Error(
-          'You lack the necessary permissions to attach a project to this organization'
+          'You lack the necessary permissions to attach a project to this organization',
         )
       }
     }
@@ -628,7 +628,7 @@ export default async function initSanity(
       debug(
         isUsersFirstProject
           ? 'No projects found for user, prompting for name'
-          : 'Using a coupon - skipping project selection'
+          : 'Using a coupon - skipping project selection',
       )
 
       const projectName = await prompt.single({type: 'input', message: 'Project name:'})
@@ -791,7 +791,7 @@ export default async function initSanity(
             {
               message: 'Dataset name:',
             },
-            existingDatasetNames
+            existingDatasetNames,
           )
       const aclMode = await getAclMode()
       const spinner = context.output.spinner('Creating dataset').start()
@@ -876,13 +876,13 @@ export default async function initSanity(
 
     if (cliFlags.project && createProjectName) {
       throw new Error(
-        'Both `--project` and `--create-project` specified, only a single is supported'
+        'Both `--project` and `--create-project` specified, only a single is supported',
       )
     }
 
     if (cliFlags.project && cliFlags.organization) {
       throw new Error(
-        'You have specified both a project and an organization. To move a project to an organization please visit https://www.sanity.io/manage'
+        'You have specified both a project and an organization. To move a project to an organization please visit https://www.sanity.io/manage',
       )
     }
 
@@ -905,7 +905,7 @@ export default async function initSanity(
 
       if (!cliFlags.project && !createProjectName) {
         throw new Error(
-          '`--project <id>` or `--create-project <name>` must be specified in unattended mode'
+          '`--project <id>` or `--create-project <name>` must be specified in unattended mode',
         )
       }
     }
@@ -996,7 +996,8 @@ export default async function initSanity(
     const grants = await client.request({uri: `organizations/${organizationId}/grants`})
     const group: {grants: {name: string}[]}[] = grants[requiredGrantGroup] || []
     return group.some(
-      (resource) => resource.grants && resource.grants.some((grant) => grant.name === requiredGrant)
+      (resource) =>
+        resource.grants && resource.grants.some((grant) => grant.name === requiredGrant),
     )
   }
 
@@ -1007,7 +1008,7 @@ export default async function initSanity(
   async function createOrAppendEnvVars(
     filename: string,
     framework: Framework | null,
-    options?: {log?: boolean}
+    options?: {log?: boolean},
   ) {
     // we will prepend SANITY_ to these variables later, together with the prefix
     const envVars = {
@@ -1020,7 +1021,7 @@ export default async function initSanity(
         print(
           `\nDetected framework ${chalk.blue(framework?.name)}, using prefix '${
             framework.envPrefix
-          }'`
+          }'`,
         )
       }
 
@@ -1038,7 +1039,7 @@ export default async function initSanity(
   async function writeEnvVarsToFile(
     filename: string,
     envVars: Record<string, string>,
-    options: {framework: Framework | null; outputPath: string; log?: boolean}
+    options: {framework: Framework | null; outputPath: string; log?: boolean},
   ) {
     const envPrefix = options.framework?.envPrefix || ''
     const keyPrefix = envPrefix.includes('SANITY') ? envPrefix : `${envPrefix}SANITY_`
@@ -1091,7 +1092,7 @@ export default async function initSanity(
     envVars: Record<string, string>,
     options?: {
       log?: boolean
-    }
+    },
   ): string {
     const existingKeys = dotenv.parse(fileContents) // this will contain all vars
     const updatedKeys: Record<string, string> = {} // this will only contain our vars
@@ -1200,7 +1201,7 @@ async function getPlanFromCoupon(apiClient: CliApiClient, couponCode: string): P
 
 function getImportCommand(
   outputPath: string,
-  studioVersion: 2 | 3
+  studioVersion: 2 | 3,
 ): CliCommandDefinition | undefined {
   if (studioVersion === 3) {
     const pkgPath = resolveFrom.silent(outputPath, 'sanity/_internal')
@@ -1216,14 +1217,14 @@ function getImportCommand(
 
     return cliInternals.cliProjectCommands.commands.find(
       (cmd): cmd is CliCommandDefinition =>
-        !isCommandGroup(cmd) && cmd.name === 'import' && cmd.group === 'dataset'
+        !isCommandGroup(cmd) && cmd.name === 'import' && cmd.group === 'dataset',
     )
   }
 
   const pkgPath = resolveFrom.silent(outputPath, '@sanity/core')
   if (!pkgPath) {
     throw new Error(
-      'Failed to resolve `@sanity/core` module - problem with dependency installation?'
+      'Failed to resolve `@sanity/core` module - problem with dependency installation?',
     )
   }
 
@@ -1237,7 +1238,7 @@ function getImportCommand(
 
   return coreCommands.find(
     (cmd): cmd is CliCommandDefinition =>
-      !isCommandGroup(cmd) && cmd.name === 'import' && cmd.group === 'dataset'
+      !isCommandGroup(cmd) && cmd.name === 'import' && cmd.group === 'dataset',
   )
 }
 

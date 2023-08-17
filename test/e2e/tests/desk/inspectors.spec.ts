@@ -12,11 +12,11 @@ test.describe.skip('sanity/desk: document inspectors', () => {
 
     // Expect button to be selected and inspector to be visible
     await expect(
-      page.locator('[data-ui="StatusButton"][aria-label="Custom inspector"][data-selected]')
+      page.locator('[data-ui="StatusButton"][aria-label="Custom inspector"][data-selected]'),
     ).toBeVisible()
     await expect(page.locator('aside[data-ui="DocumentInspectorPanel"]')).toBeVisible()
     await expect(page.locator('aside[data-ui="DocumentInspectorPanel"] h1')).toContainText(
-      'Custom inspector'
+      'Custom inspector',
     )
 
     // Click to close inspector
@@ -25,7 +25,7 @@ test.describe.skip('sanity/desk: document inspectors', () => {
     expect(
       await page
         .locator('[data-ui="StatusButton"][aria-label="Custom inspector"]')
-        .evaluate((el) => el.getAttribute('data-selected'))
+        .evaluate((el) => el.getAttribute('data-selected')),
     ).toBe(null)
   })
 
@@ -48,11 +48,11 @@ test.describe.skip('sanity/desk: document inspectors', () => {
 
     // Expect button to be selected and inspector to be visible
     await expect(
-      page.locator('[data-ui="StatusButton"][aria-label="Validation"][data-selected]')
+      page.locator('[data-ui="StatusButton"][aria-label="Validation"][data-selected]'),
     ).toBeVisible()
     await expect(page.locator('aside[data-ui="DocumentInspectorPanel"]')).toBeVisible()
     await expect(page.locator('aside[data-ui="DocumentInspectorPanel"] h1')).toContainText(
-      'Validation'
+      'Validation',
     )
   })
 
@@ -77,7 +77,7 @@ test.describe.skip('sanity/desk: document inspectors', () => {
     await expect(page.locator('[data-testid="review-changes-button"][data-selected]')).toBeVisible()
     await expect(page.locator('aside[data-ui="DocumentInspectorPanel"]')).toBeVisible()
     await expect(page.locator('aside[data-ui="DocumentInspectorPanel"] h1')).toContainText(
-      'Review changes'
+      'Review changes',
     )
 
     await testSanityClient.delete(id)

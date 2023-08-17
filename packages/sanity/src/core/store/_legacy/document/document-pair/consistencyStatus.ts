@@ -10,24 +10,24 @@ import {memoizedPair} from './memoizedPair'
 export const consistencyStatus: (
   client: SanityClient,
   idPair: IdPair,
-  typeName: string
+  typeName: string,
 ) => Observable<boolean> = memoize(
   (client: SanityClient, idPair: IdPair, typeName: string) => {
     return memoizedPair(client, idPair, typeName).pipe(
       switchMap(({draft, published}) =>
-        combineLatest([draft.consistency$, published.consistency$])
+        combineLatest([draft.consistency$, published.consistency$]),
       ),
       map(
-        ([draftIsConsistent, publishedIsConsistent]) => draftIsConsistent && publishedIsConsistent
+        ([draftIsConsistent, publishedIsConsistent]) => draftIsConsistent && publishedIsConsistent,
       ),
       distinctUntilChanged(),
       publishReplay(1),
-      refCount()
+      refCount(),
     )
   },
   (client, idPair, typeName) => {
     const config = client.config()
 
     return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
-  }
+  },
 )

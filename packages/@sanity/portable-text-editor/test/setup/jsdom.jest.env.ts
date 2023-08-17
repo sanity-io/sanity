@@ -24,7 +24,7 @@ export default class JSDOMEnvironmentWithDomRange extends JSDOMEnvironment {
         ({
           item: () => null,
           length: 0,
-        } as unknown)) as () => DOMRectList
+        }) as unknown) as () => DOMRectList
 
       return range
     }

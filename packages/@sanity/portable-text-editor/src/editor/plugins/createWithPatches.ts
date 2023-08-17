@@ -39,42 +39,42 @@ export interface PatchFunctions {
   insertNodePatch: (
     editor: PortableTextSlateEditor,
     operation: InsertNodeOperation,
-    previousChildren: Descendant[]
+    previousChildren: Descendant[],
   ) => Patch[]
   insertTextPatch: (
     editor: PortableTextSlateEditor,
     operation: InsertTextOperation,
-    previousChildren: Descendant[]
+    previousChildren: Descendant[],
   ) => Patch[]
   mergeNodePatch: (
     editor: PortableTextSlateEditor,
     operation: MergeNodeOperation,
-    previousChildren: Descendant[]
+    previousChildren: Descendant[],
   ) => Patch[]
   moveNodePatch: (
     editor: PortableTextSlateEditor,
     operation: MoveNodeOperation,
-    previousChildren: Descendant[]
+    previousChildren: Descendant[],
   ) => Patch[]
   removeNodePatch: (
     editor: PortableTextSlateEditor,
     operation: RemoveNodeOperation,
-    previousChildren: Descendant[]
+    previousChildren: Descendant[],
   ) => Patch[]
   removeTextPatch: (
     editor: PortableTextSlateEditor,
     operation: RemoveTextOperation,
-    previousChildren: Descendant[]
+    previousChildren: Descendant[],
   ) => Patch[]
   setNodePatch: (
     editor: PortableTextSlateEditor,
     operation: SetNodeOperation,
-    previousChildren: Descendant[]
+    previousChildren: Descendant[],
   ) => Patch[]
   splitNodePatch: (
     editor: PortableTextSlateEditor,
     operation: SplitNodeOperation,
-    previousChildren: Descendant[]
+    previousChildren: Descendant[],
   ) => Patch[]
 }
 
@@ -252,7 +252,7 @@ export function createWithPatches({
           previousValue: fromSlateValue(
             previousChildren,
             schemaTypes.block.name,
-            KEY_TO_VALUE_ELEMENT.get(editor)
+            KEY_TO_VALUE_ELEMENT.get(editor),
           ),
         })
       }

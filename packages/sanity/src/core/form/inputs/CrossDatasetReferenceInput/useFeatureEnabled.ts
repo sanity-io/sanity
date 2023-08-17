@@ -48,10 +48,10 @@ export function useFeatureEnabled(featureKey: string): Features {
         catchError((err: Error) => {
           console.error(err)
           return of({isLoading: false, enabled: true, features: []})
-        })
+        }),
       ),
     [featureKey],
-    INITIAL_LOADING_STATE
+    INITIAL_LOADING_STATE,
   )
 
   return featureInfo

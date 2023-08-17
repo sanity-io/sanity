@@ -13,7 +13,7 @@ const defaultSlugify = (value: FIXME, type: SlugSchemaType): string => {
 export async function slugify(
   sourceValue: FIXME,
   type: SlugSchemaType,
-  context: SlugSourceContext
+  context: SlugSourceContext,
 ): Promise<string> {
   if (!sourceValue) {
     return sourceValue

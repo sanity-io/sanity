@@ -82,12 +82,12 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
       operatorDefinitions,
       projectId,
       schema,
-    ]
+    ],
   )
 
   const recentSearches = useMemo(
     () => recentSearchesStore?.getRecentSearches(),
-    [recentSearchesStore]
+    [recentSearchesStore],
   )
 
   const initialState = useMemo(
@@ -109,7 +109,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
       fullscreen,
       operatorDefinitions,
       recentSearches,
-    ]
+    ],
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
@@ -132,7 +132,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
 
   // Get a narrowed list of document types to search on based on any current active filters.
   const documentTypes = documentTypesNarrowed.map(
-    (documentType) => schema.get(documentType) as SearchableType
+    (documentType) => schema.get(documentType) as SearchableType,
   )
 
   // Get a list of 'complete' filters (filters that return valid values)
@@ -142,7 +142,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
       filter,
       filterDefinitions,
       operatorDefinitions,
-    })
+    }),
   )
 
   const handleSetOnClose = useCallback((onClose: () => void) => {

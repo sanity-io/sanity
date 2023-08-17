@@ -38,7 +38,7 @@ export function HoveredFieldProvider(props: PropsWithChildren) {
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
     }),
-    [handleMouseEnter, handleMouseLeave, hoveredStack]
+    [handleMouseEnter, handleMouseLeave, hoveredStack],
   )
 
   return <HoveredFieldContext.Provider value={context}>{children}</HoveredFieldContext.Provider>

@@ -6,7 +6,7 @@ import {getLongestCommonSubsequence} from './lcs'
 export function diffArray<A>(
   fromInput: ArrayInput<A>,
   toInput: ArrayInput<A>,
-  options: DiffOptions
+  options: DiffOptions,
 ): ArrayDiff<A> {
   if (fromInput === toInput) {
     const fromValue = fromInput.value
@@ -46,7 +46,7 @@ function buildArrayDiff<A>(
   fromInput: ArrayInput<A>,
   toInput: ArrayInput<A>,
   items: ItemDiff<A>[],
-  isChanged: boolean
+  isChanged: boolean,
 ): ArrayDiff<A> {
   const fromValue = fromInput.value
   const toValue = toInput.value
@@ -78,7 +78,7 @@ function buildArrayDiff<A>(
 function diffExactByPosition<A>(
   fromInput: ArrayInput<A>,
   toInput: ArrayInput<A>,
-  options: DiffOptions
+  options: DiffOptions,
 ): ItemDiff<A>[] | undefined {
   if (fromInput.length !== toInput.length) {
     return undefined
@@ -107,7 +107,7 @@ function diffExactByPosition<A>(
 function diffArrayByReinsert<A>(
   fromInput: ArrayInput<A>,
   toInput: ArrayInput<A>,
-  options: DiffOptions
+  options: DiffOptions,
 ): ArrayDiff<A> {
   const items: ItemDiff<A>[] = []
 
@@ -148,7 +148,7 @@ function diffArrayByKey<A>(
   fromKeyIndex: KeyIndex,
   toArray: ArrayInput<A>,
   toKeyIndex: KeyIndex,
-  options: DiffOptions
+  options: DiffOptions,
 ): ArrayDiff<A> {
   const items: ItemDiff<A>[] = []
   let isChanged = false
@@ -333,7 +333,7 @@ function indexByKey<A>(arr: ArrayInput<A>): KeyIndex | undefined {
 export function removedArray<A>(
   input: ArrayInput<A>,
   toValue: null | undefined,
-  options: DiffOptions
+  options: DiffOptions,
 ): ArrayDiff<A> & {action: 'removed'} {
   return {
     type: 'array',
@@ -364,7 +364,7 @@ export function removedArray<A>(
 export function addedArray<A>(
   input: ArrayInput<A>,
   fromValue: null | undefined,
-  options: DiffOptions
+  options: DiffOptions,
 ): ArrayDiff<A> & {action: 'added'} {
   return {
     type: 'array',

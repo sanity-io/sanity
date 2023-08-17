@@ -7,7 +7,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
   execute: (
     {schema, snapshots, idPair, draft, published, typeName},
     patches = [],
-    initialDocument
+    initialDocument,
   ): void => {
     if (isLiveEditEnabled(schema, typeName)) {
       // No drafting, so patch and commit the published document

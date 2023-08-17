@@ -9,7 +9,7 @@ export default (typeDefinition, visitorContext) => {
   const hasInitialValue = typeof initialValue !== 'undefined'
   if (hasInitialValue && !isPlainObject(initialValue) && typeof initialValue !== 'function') {
     typeDef._problems.push(
-      error(`The "initialValue" property must be either a plain object or a function`)
+      error(`The "initialValue" property must be either a plain object or a function`),
     )
   }
 

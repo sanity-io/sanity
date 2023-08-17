@@ -21,7 +21,7 @@ const previewCommand: CliCommandDefinition = {
   description: 'Starts a local web server for previewing production build',
   action: async (
     args: CliCommandArguments<StartPreviewServerCommandFlags>,
-    context: CliCommandContext
+    context: CliCommandContext,
   ) => {
     const previewAction = await getPreviewAction()
 

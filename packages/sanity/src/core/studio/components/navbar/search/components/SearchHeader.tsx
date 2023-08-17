@@ -39,7 +39,7 @@ interface SearchHeaderProps {
 
 export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(function SearchHeader(
   {ariaInputLabel, onClose},
-  ref
+  ref,
 ) {
   const isMountedRef = useRef(false)
 
@@ -56,12 +56,12 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
 
   const handleFiltersToggle = useCallback(
     () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
-    [dispatch, filtersVisible]
+    [dispatch, filtersVisible],
   )
   const handleQueryChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) =>
       dispatch({type: 'TERMS_QUERY_SET', query: e.currentTarget.value}),
-    [dispatch]
+    [dispatch],
   )
   const handleQueryClear = useCallback(() => {
     dispatch({type: 'TERMS_QUERY_SET', query: ''})

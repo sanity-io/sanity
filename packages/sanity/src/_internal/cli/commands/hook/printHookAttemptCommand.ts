@@ -40,7 +40,7 @@ export default printHookAttemptCommand
 
 export function formatFailure(
   attempt: DeliveryAttempt,
-  options: {includeHelp?: boolean} = {}
+  options: {includeHelp?: boolean} = {},
 ): string {
   const {includeHelp} = options
   const {id, failureReason, resultCode} = attempt

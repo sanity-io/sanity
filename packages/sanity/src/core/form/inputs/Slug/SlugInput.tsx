@@ -27,7 +27,7 @@ export type SlugInputProps = ObjectInputProps<SlugValue, SlugSchemaType>
 function getSlugSourceContext(
   valuePath: Path,
   document: SanityDocument,
-  context: SlugContext
+  context: SlugContext,
 ): SlugSourceContext {
   const parentPath = valuePath.slice(0, -1)
   const parent = PathUtils.get(document, parentPath) as SlugParent
@@ -38,7 +38,7 @@ function getSlugSourceContext(
 async function getNewFromSource(
   source: string | Path | SlugSourceFn,
   document: SanityDocument,
-  context: SlugSourceContext
+  context: SlugSourceContext,
 ): Promise<string | undefined> {
   return typeof source === 'function'
     ? source(document, context)
@@ -66,16 +66,16 @@ export function SlugInput(props: SlugInputProps) {
       }
 
       onChange(
-        PatchEvent.from([setIfMissing({_type: schemaType.name}), set(nextSlug, ['current'])])
+        PatchEvent.from([setIfMissing({_type: schemaType.name}), set(nextSlug, ['current'])]),
       )
     },
-    [onChange, schemaType.name]
+    [onChange, schemaType.name],
   )
 
   const [generateState, handleGenerateSlug] = useAsync(() => {
     if (!sourceField) {
       return Promise.reject(
-        new Error(`Source is missing. Check source on type "${schemaType.name}" in schema`)
+        new Error(`Source is missing. Check source on type "${schemaType.name}" in schema`),
       )
     }
 
@@ -90,7 +90,7 @@ export function SlugInput(props: SlugInputProps) {
 
   const handleChange = React.useCallback(
     (event: any) => updateSlug(event.currentTarget.value),
-    [updateSlug]
+    [updateSlug],
   )
 
   return (

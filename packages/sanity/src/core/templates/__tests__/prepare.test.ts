@@ -36,7 +36,7 @@ describe('getTemplates', () => {
           schemaType: 'author',
           value: {title: 'here'},
         },
-      ] as any)
+      ] as any),
     ).toThrow('Template "Author" is missing required properties: id')
   })
 
@@ -48,7 +48,7 @@ describe('getTemplates', () => {
           schemaType: 'author',
           value: {title: 'here'},
         },
-      ] as any)
+      ] as any),
     ).toThrow('Template "author" is missing required properties: title')
   })
 
@@ -60,7 +60,7 @@ describe('getTemplates', () => {
           title: 'Author',
           value: {title: 'here'},
         },
-      ] as any)
+      ] as any),
     ).toThrow('Template "author" is missing required properties: schemaType')
   })
 
@@ -72,13 +72,13 @@ describe('getTemplates', () => {
           title: 'Author',
           schemaType: 'author',
         },
-      ] as any)
+      ] as any),
     ).toThrow('Template "author" is missing required properties: value')
   })
 
   test('validates that templates has id, title, schemaType, value', () => {
     expect(() => prepareTemplates(schema, [{}] as any)).toThrow(
-      'Template at index 0 is missing required properties: id, title, schemaType, value'
+      'Template at index 0 is missing required properties: id, title, schemaType, value',
     )
   })
 
@@ -97,9 +97,9 @@ describe('getTemplates', () => {
           schemaType: 'person',
           value: [],
         },
-      ] as any)
+      ] as any),
     ).toThrow(
-      'Template "author" has an invalid "value" property; should be a function or an object'
+      'Template "author" has an invalid "value" property; should be a function or an object',
     )
   })
 
@@ -117,7 +117,7 @@ describe('getTemplates', () => {
           title: 'Person',
           schemaType: 'person',
         },
-      ] as any)
+      ] as any),
     ).toThrow('Template "person" is missing required properties: value')
   })
 })

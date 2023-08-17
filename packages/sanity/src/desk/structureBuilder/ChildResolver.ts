@@ -47,10 +47,8 @@ export interface ChildObservable {
  * @public */
 // TODO: unify with PaneNodeResolver in desk-tool
 export interface ChildResolver {
-  (itemId: string, options: ChildResolverOptions):
-    | ItemChild
-    | Promise<ItemChild>
-    | ChildObservable
-    | Observable<ItemChild>
-    | undefined
+  (
+    itemId: string,
+    options: ChildResolverOptions,
+  ): ItemChild | Promise<ItemChild> | ChildObservable | Observable<ItemChild> | undefined
 }

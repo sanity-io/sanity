@@ -10,7 +10,7 @@ import {ArrayInputFunctionsProps} from '../../../types'
  * @beta */
 export function ArrayOfPrimitivesFunctions<
   MemberType extends string | boolean | number,
-  SchemaType extends ArraySchemaType
+  SchemaType extends ArraySchemaType,
 >(props: ArrayInputFunctionsProps<MemberType, SchemaType>) {
   const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
@@ -19,7 +19,7 @@ export function ArrayOfPrimitivesFunctions<
     (itemType: any) => {
       onItemAppend(onValueCreate(itemType))
     },
-    [onValueCreate, onItemAppend]
+    [onValueCreate, onItemAppend],
   )
 
   const handleAddBtnClick = React.useCallback(() => {

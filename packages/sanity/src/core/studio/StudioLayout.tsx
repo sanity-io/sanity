@@ -68,16 +68,16 @@ export function StudioLayout() {
   const activeToolName = useRouterState(
     useCallback(
       (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
-      []
-    )
+      [],
+    ),
   )
   const activeTool = useMemo(
     () => tools.find((tool) => tool.name === activeToolName),
-    [activeToolName, tools]
+    [activeToolName, tools],
   )
   const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
-    null
+    null,
   )
 
   const documentTitle = useMemo(() => {
@@ -104,7 +104,7 @@ export function StudioLayout() {
       searchFullscreenPortalEl,
       onSearchFullscreenOpenChange: handleSearchFullscreenOpenChange,
     }),
-    [searchFullscreenOpen, searchFullscreenPortalEl, handleSearchFullscreenOpenChange]
+    [searchFullscreenOpen, searchFullscreenPortalEl, handleSearchFullscreenOpenChange],
   )
 
   const Navbar = useNavbarComponent()

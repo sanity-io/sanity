@@ -25,7 +25,7 @@ export type CommandListItemContext = {
 /** @internal */
 export type CommandListRenderItemCallback<T> = (
   item: T,
-  context: CommandListItemContext
+  context: CommandListItemContext,
 ) => ReactNode
 
 /** @internal */

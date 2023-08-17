@@ -10,7 +10,7 @@ declare module '@sanity/import' {
 
   const sanityImport: (
     stream: any,
-    options: any
+    options: any,
   ) => Promise<{numDocs: number; warnings: ImportWarning[]}>
   export = sanityImport
 }

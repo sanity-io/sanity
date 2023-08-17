@@ -22,7 +22,7 @@ export function FieldChange(
     change: FieldChangeNode
     readOnly?: boolean
     hidden?: boolean
-  } & React.HTMLAttributes<HTMLDivElement>
+  } & React.HTMLAttributes<HTMLDivElement>,
 ) {
   const {change, hidden, readOnly} = props
   const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
@@ -158,7 +158,7 @@ export function FieldChange(
       permissions,
       revertHovered,
       fieldPath,
-    ]
+    ],
   )
 
   return content

@@ -5,11 +5,11 @@ import {debugWithName} from '../../utils/debug'
 const debug = debugWithName('plugin:withPortableTextBlockStyle')
 
 export function createWithPortableTextBlockStyle(
-  types: PortableTextMemberSchemaTypes
+  types: PortableTextMemberSchemaTypes,
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   const defaultStyle = types.styles[0].value
   return function withPortableTextBlockStyle(
-    editor: PortableTextSlateEditor
+    editor: PortableTextSlateEditor,
   ): PortableTextSlateEditor {
     // Extend Slate's default normalization to reset split node to normal style
     // if there is no text at the right end of the split.
@@ -79,7 +79,7 @@ export function createWithPortableTextBlockStyle(
               ...node,
               style: blockStyle || defaultStyle,
             } as Partial<Node>,
-            {at: path}
+            {at: path},
           )
         }
       })

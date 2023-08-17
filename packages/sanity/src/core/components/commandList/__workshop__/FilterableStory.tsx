@@ -48,7 +48,7 @@ export default function FilterableStory() {
         commandListRef?.current?.scrollToIndex(0)
       }
     },
-    [filteredValues]
+    [filteredValues],
   )
 
   const handleChildClick = useCallback((msg: string) => setMessage(msg), [])
@@ -75,7 +75,7 @@ export default function FilterableStory() {
         </StyledLink>
       )
     },
-    [handleChildClick]
+    [handleChildClick],
   )
 
   return (

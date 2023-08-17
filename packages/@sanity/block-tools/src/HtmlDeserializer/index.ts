@@ -75,7 +75,7 @@ export default class HtmlDeserializer {
     const children = Array.from(fragment.childNodes) as HTMLElement[]
     // Ensure that there are no blocks within blocks, and trim whitespace
     const blocks = trimWhitespace(
-      flattenNestedBlocks(ensureRootIsBlocks(this.deserializeElements(children)))
+      flattenNestedBlocks(ensureRootIsBlocks(this.deserializeElements(children))),
     )
 
     if (this._markDefs.length > 0) {
@@ -86,7 +86,7 @@ export default class HtmlDeserializer {
           block.markDefs = block.markDefs.concat(
             this._markDefs.filter((def) => {
               return flatten(block.children.map((child) => child.marks || [])).includes(def._key)
-            })
+            }),
           )
         })
     }

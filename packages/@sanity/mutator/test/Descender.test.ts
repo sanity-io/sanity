@@ -25,7 +25,7 @@ test('Match attribute constraint on array', () => {
       {
         a: 7,
       },
-    ])
+    ]),
   )
   expectDescendants(iterated, ['<[1]|[b,c].d>'])
 })

@@ -53,7 +53,7 @@ describe('useSyncValue', () => {
         ref={editorRef}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     rerender(
       <PortableTextEditorTester
@@ -61,7 +61,7 @@ describe('useSyncValue', () => {
         ref={editorRef}
         schemaType={schemaType}
         value={syncedValue}
-      />
+      />,
     )
     await waitFor(() => {
       if (editorRef.current) {
@@ -94,7 +94,7 @@ describe('useSyncValue', () => {
         ref={editorRef}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     rerender(
       <PortableTextEditorTester
@@ -102,7 +102,7 @@ describe('useSyncValue', () => {
         ref={editorRef}
         schemaType={schemaType}
         value={syncedValue}
-      />
+      />,
     )
     await waitFor(() => {
       if (editorRef.current) {

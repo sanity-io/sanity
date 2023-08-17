@@ -116,9 +116,9 @@ describe('resolveIntent', () => {
                           .title('Settings')
                           .schemaType('settings')
                           .child(S.document().documentId('settings').schemaType('settings')),
-                      ])
+                      ]),
                   ),
-              ])
+              ]),
           ),
       ]) as unknown as UnresolvedPaneNode
 
@@ -160,9 +160,9 @@ describe('resolveIntent', () => {
                           .title('Settings')
                           .schemaType('settings')
                           .child(S.document().documentId('settings').schemaType('settings')),
-                      ])
+                      ]),
                   ),
-              ])
+              ]),
           ),
         S.listItem()
           .title('Not so deep')
@@ -174,7 +174,7 @@ describe('resolveIntent', () => {
                   .title('Settings')
                   .schemaType('settings')
                   .child(S.document().documentId('settings').schemaType('settings')),
-              ])
+              ]),
           ),
       ]) as unknown as UnresolvedPaneNode
 

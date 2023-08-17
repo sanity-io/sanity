@@ -8,7 +8,7 @@ export function useLocationStore(props: {baseUrl?: string} = {}): WorkshopLocati
   const {navigateUrl, state: routerState} = useRouter()
 
   const segmentsRef = useRef(
-    typeof routerState.path === 'string' ? routerState.path?.split(';') : []
+    typeof routerState.path === 'string' ? routerState.path?.split(';') : [],
   )
 
   const subscribersRef = useRef<((nextLocation: WorkshopLocation) => void)[]>([])
@@ -38,7 +38,7 @@ export function useLocationStore(props: {baseUrl?: string} = {}): WorkshopLocati
         subscriber({type: 'push', ...nextLocation})
       }
     },
-    [baseUrl, navigateUrl]
+    [baseUrl, navigateUrl],
   )
 
   const replace = useCallback(
@@ -60,7 +60,7 @@ export function useLocationStore(props: {baseUrl?: string} = {}): WorkshopLocati
         subscriber({type: 'replace', ...nextLocation})
       }
     },
-    [baseUrl, navigateUrl]
+    [baseUrl, navigateUrl],
   )
 
   const subscribe = useCallback((subscriber: any) => {

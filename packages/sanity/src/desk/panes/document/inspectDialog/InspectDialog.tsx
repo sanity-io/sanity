@@ -25,7 +25,7 @@ export function InspectDialog(props: InspectDialogProps) {
   const [viewModeId, onViewModeChange] = useDeskToolSetting(
     'desk-tool',
     `inspect-view-preferred-view-mode-${paneKey}`,
-    'parsed'
+    'parsed',
   )
 
   /* based on the view mode it shows the right tab content */

@@ -21,7 +21,7 @@ export function isPointInEllipse(point: Coordinate, ellipse: Rect): boolean {
 
 export function isPointInCircle(
   {x, y}: Coordinate,
-  circle: Coordinate & {radius: number}
+  circle: Coordinate & {radius: number},
 ): boolean {
   return Math.pow(x - circle.x, 2) + Math.pow(y - circle.y, 2) < Math.pow(circle.radius, 2)
 }

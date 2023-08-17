@@ -22,18 +22,18 @@ export function useReferringDocuments(id: string): ReferringDocumentsState {
         .listenQuery(
           '*[references($docId)] [0...101]',
           {docId: id},
-          {tag: 'use-referring-documents'}
+          {tag: 'use-referring-documents'},
         )
         .pipe(
           map(
             (docs: SanityDocument[]): ReferringDocumentsState => ({
               referringDocuments: docs,
               isLoading: false,
-            })
+            }),
           ),
-          startWith(INITIAL_STATE)
+          startWith(INITIAL_STATE),
         ),
     [documentStore, id],
-    INITIAL_STATE
+    INITIAL_STATE,
   )
 }

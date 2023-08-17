@@ -43,7 +43,7 @@ export interface RouteObject {
   create: (
     routeOrOpts: RouteNodeOptions | string,
     childrenOrOpts?: RouteNodeOptions | RouteChildren | null,
-    children?: Router | RouteChildren
+    children?: Router | RouteChildren,
   ) => Router
 
   /**
@@ -114,7 +114,7 @@ export const route: RouteObject = {
               },
             },
           }),
-        ]
+        ],
       ),
     ])
   },
@@ -143,7 +143,7 @@ function normalizeArgs(...args: any[]): RouteNodeOptions
 function normalizeArgs(
   path: string | RouteNodeOptions,
   childrenOrOpts?: RouteNodeOptions | Router | RouteChildren,
-  children?: Router | RouteChildren
+  children?: Router | RouteChildren,
 ): RouteNodeOptions {
   if (typeof path === 'object') {
     return path

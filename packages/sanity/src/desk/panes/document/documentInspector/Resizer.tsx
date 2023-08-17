@@ -68,7 +68,7 @@ export function Resizer(props: {onResize: (delta: number) => void; onResizeStart
       window.addEventListener('mousemove', handleMouseMove)
       window.addEventListener('mouseup', handleMouseUp)
     },
-    [onResize, onResizeStart]
+    [onResize, onResizeStart],
   )
 
   return (

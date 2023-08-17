@@ -43,8 +43,8 @@ export function TextWithDiff({diff, childDiff, children, path, segment, ...restP
   const prefix = fullPath.slice(
     0,
     fullPath.findIndex(
-      (seg) => isKeySegment(seg) && isKeySegment(spanSegment) && seg._key === spanSegment._key
-    )
+      (seg) => isKeySegment(seg) && isKeySegment(spanSegment) && seg._key === spanSegment._key,
+    ),
   )
   const focusPath = prefix.concat(path)
 
@@ -56,7 +56,7 @@ export function TextWithDiff({diff, childDiff, children, path, segment, ...restP
         onSetFocus(focusPath)
       }
     },
-    [focusPath, isRemoved, onSetFocus]
+    [focusPath, isRemoved, onSetFocus],
   )
   const realSeg = diff && diff.segments.find((rSeg: any) => rSeg.text === segment.text)
 

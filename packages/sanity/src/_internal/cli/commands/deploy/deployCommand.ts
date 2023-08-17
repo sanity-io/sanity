@@ -18,7 +18,7 @@ const deployCommand: CliCommandDefinition = {
   description: 'Deploys a statically built Sanity studio',
   action: async (
     args: CliCommandArguments<DeployStudioActionFlags>,
-    context: CliCommandContext
+    context: CliCommandContext,
   ) => {
     const mod = await import('../../actions/deploy/deployAction')
 

@@ -27,14 +27,14 @@ function getDocumentId(value: Previewable) {
 type ObserveFieldsFn = (
   id: string,
   fields: FieldName[],
-  apiConfig?: ApiConfig
+  apiConfig?: ApiConfig,
 ) => Observable<Record<string, unknown> | null>
 
 function observePaths(
   value: Previewable,
   paths: PreviewPath[],
   observeFields: ObserveFieldsFn,
-  apiConfig?: ApiConfig
+  apiConfig?: ApiConfig,
 ): Observable<Record<string, unknown> | null> {
   if (!value || typeof value !== 'object') {
     // Reached a leaf. Return as is
@@ -80,9 +80,9 @@ function observePaths(
           } as Previewable,
           paths,
           observeFields,
-          refApiConfig
+          refApiConfig,
         )
-      })
+      }),
     )
   }
 
@@ -114,7 +114,7 @@ function observePaths(
 // - [['propA', 'propB'], ['propA', 'propC']]
 function normalizePaths(path: (FieldName | PreviewPath)[]): PreviewPath[] {
   return path.map((segment: FieldName | PreviewPath) =>
-    typeof segment === 'string' ? segment.split('.') : segment
+    typeof segment === 'string' ? segment.split('.') : segment,
   )
 }
 
@@ -125,7 +125,7 @@ export function createPathObserver(context: {observeFields: ObserveFieldsFn}) {
     observePaths(
       value: Previewable,
       paths: (FieldName | PreviewPath)[],
-      apiConfig?: ApiConfig
+      apiConfig?: ApiConfig,
     ): Observable<Record<string, unknown> | null> {
       return observePaths(value, normalizePaths(paths), observeFields, apiConfig)
     },

@@ -63,8 +63,8 @@ function Content(props: PopoverEditDialogProps) {
           onClose()
         }
       },
-      [onClose]
-    )
+      [onClose],
+    ),
   )
 
   useClickOutside(onClose, referenceElement ? [referenceElement] : [], referenceBoundary)

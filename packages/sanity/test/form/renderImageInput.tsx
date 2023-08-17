@@ -9,7 +9,7 @@ import {TestRenderInputContext} from './renderInput'
 
 export type TestRenderImageInputCallback = (
   inputProps: BaseImageInputProps,
-  context: TestRenderInputContext
+  context: TestRenderInputContext,
 ) => React.ReactElement
 
 export async function renderImageInput(options: {
@@ -26,7 +26,7 @@ export async function renderImageInput(options: {
 
   function transformProps(
     inputProps: ObjectInputProps,
-    context: TestRenderInputContext
+    context: TestRenderInputContext,
   ): BaseImageInputProps {
     const {schemaType, value, ...restProps} = inputProps
     const {client} = context
@@ -51,7 +51,7 @@ export async function renderImageInput(options: {
 
   function rerender(subsequentRender: TestRenderImageInputCallback) {
     result.rerender((inputProps, context) =>
-      subsequentRender(transformProps(inputProps, context), context)
+      subsequentRender(transformProps(inputProps, context), context),
     )
   }
 

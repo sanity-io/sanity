@@ -30,7 +30,7 @@ export function PaneRouterProvider(props: {
   const {panes, expand} = usePaneLayout()
   const routerPaneGroups: RouterPaneGroup[] = useMemo(
     () => (routerState?.panes || emptyArray) as RouterPanes,
-    [routerState?.panes]
+    [routerState?.panes],
   )
   const lastPane = useMemo(() => panes?.[panes.length - 2], [panes])
 
@@ -52,7 +52,7 @@ export function PaneRouterProvider(props: {
 
       return nextRouterState
     },
-    [groupIndex, navigate, routerPaneGroups, routerState, siblingIndex]
+    [groupIndex, navigate, routerPaneGroups, routerState, siblingIndex],
   )
 
   const setPayload: PaneRouterContextValue['setPayload'] = useCallback(
@@ -63,7 +63,7 @@ export function PaneRouterProvider(props: {
         ...siblings.slice(siblingIndex + 1),
       ])
     },
-    [modifyCurrentGroup, siblingIndex]
+    [modifyCurrentGroup, siblingIndex],
   )
 
   const setParams: PaneRouterContextValue['setParams'] = useCallback(
@@ -74,7 +74,7 @@ export function PaneRouterProvider(props: {
         ...siblings.slice(siblingIndex + 1),
       ])
     },
-    [modifyCurrentGroup, siblingIndex]
+    [modifyCurrentGroup, siblingIndex],
   )
 
   const handleEditReference: PaneRouterContextValue['handleEditReference'] = useCallback(
@@ -92,7 +92,7 @@ export function PaneRouterProvider(props: {
         ],
       })
     },
-    [groupIndex, navigate, routerPaneGroups]
+    [groupIndex, navigate, routerPaneGroups],
   )
 
   const ctx: PaneRouterContextValue = useMemo(
@@ -149,7 +149,7 @@ export function PaneRouterProvider(props: {
       // Removes the current pane from the group
       closeCurrent: (): void => {
         modifyCurrentGroup((siblings, item) =>
-          siblings.length > 1 ? siblings.filter((sibling) => sibling !== item) : siblings
+          siblings.length > 1 ? siblings.filter((sibling) => sibling !== item) : siblings,
         )
       },
 
@@ -162,7 +162,7 @@ export function PaneRouterProvider(props: {
           {
             panes: [...routerPaneGroups.slice(0, groupIndex)],
           },
-          {replace: true}
+          {replace: true},
         )
       },
 
@@ -213,7 +213,7 @@ export function PaneRouterProvider(props: {
       lastPane,
       navigate,
       expand,
-    ]
+    ],
   )
 
   return <PaneRouterContext.Provider value={ctx}>{children}</PaneRouterContext.Provider>

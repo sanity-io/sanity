@@ -147,7 +147,7 @@ export const TimingsTextContainer = styled(Flex)`
       theme.sanity.space[3] * 2 +
         theme.sanity.fonts.text.sizes[2].lineHeight -
         theme.sanity.fonts.text.sizes[2].ascenderHeight -
-        theme.sanity.fonts.text.sizes[2].descenderHeight
+        theme.sanity.fonts.text.sizes[2].descenderHeight,
     )};
 `
 

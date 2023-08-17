@@ -18,7 +18,7 @@ const MENU_BUTTON_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
 export const ItemRow = React.forwardRef(function ItemRow(
   props: DefaultItemProps,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {
     sortable,
@@ -41,7 +41,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
     (pos: 'before' | 'after', insertType: SchemaType) => {
       onInsert({position: pos, items: [getEmptyValue(insertType)]})
     },
-    [onInsert]
+    [onInsert],
   )
 
   const handleDuplicate = useCallback(() => {

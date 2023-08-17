@@ -58,7 +58,7 @@ export function PrimitiveField(props: {
     (event: FormPatch | FormPatch[] | PatchEvent) => {
       onChange(PatchEvent.from(event).prefixAll(member.name))
     },
-    [onChange, member.name]
+    [onChange, member.name],
   )
 
   const handleNativeChange = useCallback(
@@ -87,7 +87,7 @@ export function PrimitiveField(props: {
 
       onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.name))
     },
-    [member.name, member.field.schemaType, onChange]
+    [member.name, member.field.schemaType, onChange],
   )
 
   const validationError =
@@ -97,7 +97,7 @@ export function PrimitiveField(props: {
           .filter((item) => item.level === 'error')
           .map((item) => item.message)
           .join('\n'),
-      [member.field.validation]
+      [member.field.validation],
     ) || undefined
 
   const elementProps = useMemo(
@@ -120,7 +120,7 @@ export function PrimitiveField(props: {
       member.field.schemaType,
       member.field.value,
       localValue,
-    ]
+    ],
   )
 
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {

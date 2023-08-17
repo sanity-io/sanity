@@ -30,7 +30,7 @@ function reduceType(type, reducer, acc, path = [], maxDepth) {
 function reduceArray(arrayType, reducer, accumulator, path, maxDepth) {
   return arrayType.of.reduce(
     (acc, ofType) => reduceType(ofType, reducer, acc, path, maxDepth - 1),
-    accumulator
+    accumulator,
   )
 }
 
@@ -91,7 +91,7 @@ function getCachedStringFieldPaths(type, maxDepth) {
           mapWith: 'pt::text',
         })),
       ],
-      (spec) => spec.path.join('.')
+      (spec) => spec.path.join('.'),
     )
   }
   return type[stringFieldsSymbol]
@@ -100,7 +100,7 @@ function getCachedStringFieldPaths(type, maxDepth) {
 function getCachedBaseFieldPaths(type) {
   if (!type[stringFieldsSymbol]) {
     type[stringFieldsSymbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type)], (spec) =>
-      spec.path.join('.')
+      spec.path.join('.'),
     )
   }
   return type[stringFieldsSymbol]

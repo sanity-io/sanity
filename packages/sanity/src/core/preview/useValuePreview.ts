@@ -37,10 +37,10 @@ function useDocumentPreview(props: {
 
       return observeForPreview(previewValue as Previewable, schemaType, {ordering}).pipe(
         map((event) => ({isLoading: false, value: event.snapshot || undefined})),
-        catchError((error) => of({isLoading: false, error}))
+        catchError((error) => of({isLoading: false, error})),
       )
     },
     [enabled, observeForPreview, ordering, schemaType, previewValue],
-    INITIAL_STATE
+    INITIAL_STATE,
   )
 }

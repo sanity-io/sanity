@@ -40,7 +40,7 @@ export interface IntentLinkProps {
  */
 export const IntentLink = forwardRef(function IntentLink(
   props: IntentLinkProps & React.HTMLProps<HTMLAnchorElement>,
-  ref: ForwardedRef<HTMLAnchorElement>
+  ref: ForwardedRef<HTMLAnchorElement>,
 ) {
   const {intent, params, target, ...restProps} = props
   const {onClick, href} = useIntentLink({

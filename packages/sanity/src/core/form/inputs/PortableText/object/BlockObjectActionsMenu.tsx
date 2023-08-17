@@ -49,12 +49,12 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
       isReference(value)
         ? forwardRef(function ReferenceLink(
             linkProps,
-            ref: React.Ref<HTMLAnchorElement> | undefined
+            ref: React.Ref<HTMLAnchorElement> | undefined,
           ) {
             return <IntentLink {...linkProps} intent="edit" params={{id: value._ref}} ref={ref} />
           })
         : undefined,
-    [value]
+    [value],
   )
 
   useEffect(() => {
@@ -79,8 +79,8 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
           }
         }
       },
-      [focused, isOpen]
-    )
+      [focused, isOpen],
+    ),
   )
 
   const handleDelete = useCallback(
@@ -89,7 +89,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
       event.stopPropagation()
       onRemove()
     },
-    [onRemove]
+    [onRemove],
   )
 
   return (

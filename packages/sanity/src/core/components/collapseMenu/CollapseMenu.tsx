@@ -68,7 +68,7 @@ function _isReactElement(node: unknown): node is React.ReactElement {
 /** @internal */
 export const CollapseMenu = forwardRef(function CollapseMenu(
   props: CollapseMenuProps,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {
     children: childrenProp,
@@ -94,7 +94,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
 
   const menuButton = useMemo(
     () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
-    [menuButtonProps]
+    [menuButtonProps],
   )
 
   const intersectionOptions = useMemo(
@@ -103,28 +103,28 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
       threshold: 1,
       rootMargin: '2px',
     }),
-    [rootEl]
+    [rootEl],
   )
 
   const children = useMemo(
     () => React.Children.toArray(childrenProp).filter(_isReactElement),
-    [childrenProp]
+    [childrenProp],
   )
 
   const menuOptionsArray = useMemo(
     // eslint-disable-next-line max-nested-callbacks
     () => children.filter(({key}) => menuOptions.find((o: React.ReactElement) => o.key === key)),
-    [children, menuOptions]
+    [children, menuOptions],
   )
 
   const menuIsVisible = useMemo(
     () => collapsed || menuOptionsArray.length > 0,
-    [collapsed, menuOptionsArray.length]
+    [collapsed, menuOptionsArray.length],
   )
 
   const isInMenu = useCallback(
     (childKey: any) => menuOptionsArray.some((o) => o.key === childKey),
-    [menuOptionsArray]
+    [menuOptionsArray],
   )
 
   const handleIntersection = useCallback(
@@ -141,7 +141,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
         setMenuOptions(updatedOptions)
       }
     },
-    [isInMenu, menuOptionsArray]
+    [isInMenu, menuOptionsArray],
   )
 
   const items = useMemo(
@@ -156,7 +156,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
           text: text,
         })
       }),
-    [children, collapseText, hasOverflow]
+    [children, collapseText, hasOverflow],
   )
 
   if (collapsed) {

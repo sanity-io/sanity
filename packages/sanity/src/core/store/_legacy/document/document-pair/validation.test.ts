@@ -45,15 +45,15 @@ const NOT_FOUND: DocumentAvailability = {available: false, reason: 'NOT_FOUND'}
 function createSubscription(
   client: SanityClient,
   observeDocumentPairAvailability: (
-    id: string
-  ) => Observable<DraftsModelDocumentAvailability> = jest.fn().mockReturnValue(EMPTY)
+    id: string,
+  ) => Observable<DraftsModelDocumentAvailability> = jest.fn().mockReturnValue(EMPTY),
 ) {
   const getClient = () => client
 
   const stream = validation(
     {client, getClient, schema, observeDocumentPairAvailability},
     {publishedId: 'example-id', draftId: 'drafts.example-id'},
-    'movie'
+    'movie',
   ).pipe(publish())
 
   // Publish and connect this for the tests
@@ -207,18 +207,18 @@ describe('validation', () => {
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const observeDocumentPairAvailability = (
-      id: string
+      id: string,
     ): Observable<DraftsModelDocumentAvailability> =>
       id === 'example-ref-id'
         ? concat(of({published: AVAILABLE, draft: AVAILABLE}), subject)
         : concat(
             of({published: AVAILABLE, draft: AVAILABLE}),
-            of({published: AVAILABLE, draft: AVAILABLE})
+            of({published: AVAILABLE, draft: AVAILABLE}),
           )
 
     const {subscription, closeSubscription, doneValidating} = createSubscription(
       client,
-      observeDocumentPairAvailability
+      observeDocumentPairAvailability,
     )
 
     // simulate first emission from validation listener
@@ -286,8 +286,8 @@ describe('validation', () => {
           observeDocumentPairAvailability: jest.fn().mockReturnValue(EMPTY),
         },
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
-        'movie'
-      ).pipe(buffer(timer(500)))
+        'movie',
+      ).pipe(buffer(timer(500))),
     )
 
     // simulate first emission from validation listener
@@ -331,16 +331,16 @@ describe('validation', () => {
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
-        'movie'
-      )
+        'movie',
+      ),
     )
 
     const immediatePlaybackAgain = await firstValueFrom(
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
-        'movie'
-      )
+        'movie',
+      ),
     )
 
     expect(result[result.length - 1]).toEqual(immediatePlayback)

@@ -32,7 +32,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
   }: OperatorInputComponentProps<ReferenceValue>) {
     const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
     const [selectedAssetFromSource, setSelectedAssetFromSource] = useState<AssetFromSource | null>(
-      null
+      null,
     )
 
     const {
@@ -73,12 +73,12 @@ export function SearchFilterAssetInput(type?: AssetType) {
         setSelectedAssetFromSource(firstAsset)
         handleCloseAssetSource()
       },
-      [handleCloseAssetSource]
+      [handleCloseAssetSource],
     )
 
     const handleSelectAssetSource = useCallback(
       (source: AssetSource) => setSelectedAssetSource(source),
-      []
+      [],
     )
 
     useEffect(() => {

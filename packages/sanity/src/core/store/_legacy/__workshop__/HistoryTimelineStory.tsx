@@ -62,7 +62,7 @@ export default function HistoryTimelineStory() {
 
   const displayed: Partial<SanityDocument> | null = useMemo(
     () => (isPreviousVersion ? timelineDisplayed : value),
-    [isPreviousVersion, timelineDisplayed, value]
+    [isPreviousVersion, timelineDisplayed, value],
   )
 
   const handleHistoryOpen = useCallback(() => {
@@ -92,7 +92,7 @@ export default function HistoryTimelineStory() {
       isComparingCurrent,
       value,
     }),
-    [diff, documentId, isComparingCurrent, schemaType, value]
+    [diff, documentId, isComparingCurrent, schemaType, value],
   )
 
   const handleRevClick = useCallback(
@@ -100,7 +100,7 @@ export default function HistoryTimelineStory() {
       const [sinceId, revId] = timelineStore.findRangeForRev(chunk)
       setTimelineRange(sinceId, revId)
     },
-    [setTimelineRange, timelineStore]
+    [setTimelineRange, timelineStore],
   )
 
   const handleSinceClick = useCallback(
@@ -108,7 +108,7 @@ export default function HistoryTimelineStory() {
       const [sinceId, revId] = timelineStore.findRangeForSince(chunk)
       setTimelineRange(sinceId, revId)
     },
-    [setTimelineRange, timelineStore]
+    [setTimelineRange, timelineStore],
   )
 
   return (
@@ -206,7 +206,7 @@ export default function HistoryTimelineStory() {
                 viewOlderVersion: isPreviousVersion,
               },
               null,
-              2
+              2,
             )}
           </Code>
         </Card>

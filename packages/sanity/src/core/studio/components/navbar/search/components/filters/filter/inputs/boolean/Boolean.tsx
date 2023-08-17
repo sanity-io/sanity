@@ -12,7 +12,7 @@ export function SearchFilterBooleanInput({onChange, value}: OperatorInputCompone
     (event: ChangeEvent<HTMLSelectElement>) => {
       onChange(event.currentTarget.value === 'true')
     },
-    [onChange]
+    [onChange],
   )
 
   return (

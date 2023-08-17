@@ -41,7 +41,7 @@ export function useSearchHotkeys({
         handleClose()
       }
     },
-    [handleClose, isTopLayer, open, onOpen]
+    [handleClose, isTopLayer, open, onOpen],
   )
 
   useGlobalKeyDown(handleGlobalKeyDown)

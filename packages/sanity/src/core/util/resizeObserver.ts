@@ -11,7 +11,7 @@ export interface SharedResizeObserver {
   observe: (
     element: Element,
     observer: Subscriber<ResizeObserverEntry>,
-    options?: ResizeObserverOptions
+    options?: ResizeObserverOptions,
   ) => () => void
 }
 
@@ -20,14 +20,14 @@ export const createSharedResizeObserver = (): SharedResizeObserver => {
   const event = createPubSub<ResizeObserverEntry[]>()
 
   const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) =>
-    event.publish(entries)
+    event.publish(entries),
   )
 
   return {
     observe: (
       element: Element,
       observer: Subscriber<ResizeObserverEntry>,
-      options?: ResizeObserverOptions
+      options?: ResizeObserverOptions,
     ) => {
       const unsubscribe = event.subscribe((entries) => {
         const entry = entries.find((e) => e.target === element)

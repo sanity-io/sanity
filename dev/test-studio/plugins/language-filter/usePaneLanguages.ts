@@ -15,7 +15,7 @@ export function usePaneLanguages(props: {options: LanguageFilterPluginOptions}):
   const {options} = props
   const {params, setParams} = usePaneRouter()
   const selectableLanguages = options.supportedLanguages.filter(
-    (lang) => !options.defaultLanguages?.includes(lang.id)
+    (lang) => !options.defaultLanguages?.includes(lang.id),
   )
 
   const selectedLanguages: string[] = useMemo(() => {
@@ -60,7 +60,7 @@ export function usePaneLanguages(props: {options: LanguageFilterPluginOptions}):
 
       setParams({...params, langs: lang.join(LANG_ID_SEPARATOR)})
     },
-    [params, selectableLanguages, selectedLanguages, setParams]
+    [params, selectableLanguages, selectedLanguages, setParams],
   )
 
   return {selectableLanguages, selectedLanguages, selectAll, selectNone, toggleLanguage}

@@ -14,11 +14,11 @@ describe('resolveConfig', () => {
           dataset: 'production',
           // @ts-expect-error should be an array
           tools: {},
-        })
+        }),
       )
     } catch (err) {
       expect(err.message).toMatch(
-        'Expected `tools` to be an array or a function, but received object'
+        'Expected `tools` to be an array or a function, but received object',
       )
     }
   })
@@ -39,7 +39,7 @@ describe('resolveConfig', () => {
         dataset,
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
-      })
+      }),
     )
 
     expect(workspace).toMatchObject({
@@ -85,12 +85,12 @@ describe('resolveConfig', () => {
                 role: '',
                 roles: [],
               },
-            }
+            },
           ),
         },
       })
         // this will buffer the results emitted in the observable into an array
-        .pipe(bufferTime(50))
+        .pipe(bufferTime(50)),
     )
 
     expect(results).toHaveLength(2)

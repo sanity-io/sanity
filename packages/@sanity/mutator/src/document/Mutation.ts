@@ -93,7 +93,7 @@ export class Mutation {
     const firstMut = this.mutations[0]
     if (firstMut) {
       this._appliesToMissingDocument = Boolean(
-        firstMut.create || firstMut.createIfNotExists || firstMut.createOrReplace
+        firstMut.create || firstMut.createIfNotExists || firstMut.createOrReplace,
       )
     } else {
       this._appliesToMissingDocument = true
@@ -129,7 +129,7 @@ export class Mutation {
             ? Object.assign(createIfNotExists, {
                 _createdAt: createIfNotExists._createdAt || this.params.timestamp,
               })
-            : doc
+            : doc,
         )
         return
       }
@@ -139,7 +139,7 @@ export class Mutation {
         operations.push(() =>
           Object.assign(createOrReplace, {
             _createdAt: createOrReplace._createdAt || this.params.timestamp,
-          })
+          }),
         )
         return
       }
@@ -175,7 +175,7 @@ export class Mutation {
     this.compiled = (doc: Doc | null) => {
       if (prevRev && doc && prevRev !== doc._rev) {
         throw new Error(
-          `Previous revision for this mutation was ${prevRev}, but the document revision is ${doc._rev}`
+          `Previous revision for this mutation was ${prevRev}, but the document revision is ${doc._rev}`,
         )
       }
 
@@ -219,7 +219,7 @@ export class Mutation {
   static squash(document: Doc | null, mutations: Mutation[]): Mutation {
     const squashed = mutations.reduce(
       (result, mutation) => result.concat(...mutation.mutations),
-      [] as Mut[]
+      [] as Mut[],
     )
     return new Mutation({mutations: squashed})
   }

@@ -114,7 +114,7 @@ function filterGroup({
         group: id,
         tone: tone || 'default',
         type: 'filter',
-      } as FilterMenuItemFilter)
+      }) as FilterMenuItemFilter,
   )
 
   return filterItems.length > 0
@@ -236,7 +236,7 @@ function buildPinnedMenuItems({
         headerTitle: groupTitle,
         id: groupTitle,
         tone: 'primary',
-      })
+      }),
     ),
   ]
 }
@@ -252,19 +252,19 @@ function includesTitleInFieldDefinition(field: SearchFieldDefinition, currentTit
 
 function includesTitleInPinnedFilterDefinition(
   filter: SearchFilterPinnedDefinition,
-  currentTitle: string
+  currentTitle: string,
 ) {
   return filter.title.toLowerCase().includes(currentTitle.toLowerCase())
 }
 
 function isPinnedFilterDefWithGroup(
-  filterDef: SearchFilterDefinition
+  filterDef: SearchFilterDefinition,
 ): filterDef is SearchFilterPinnedDefinition & {group: string} {
   return filterDef.type === 'pinned' && typeof filterDef?.group !== 'undefined'
 }
 
 function isPinnedFilterDefWithoutGroup(
-  filterDef: SearchFilterDefinition
+  filterDef: SearchFilterDefinition,
 ): filterDef is SearchFilterPinnedDefinition {
   return filterDef.type === 'pinned' && typeof filterDef?.group === 'undefined'
 }

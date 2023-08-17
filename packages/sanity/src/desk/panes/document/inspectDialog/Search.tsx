@@ -7,7 +7,7 @@ export function Search(props: {onChange: (q: string) => void; query: string}) {
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => onChange(event.target.value),
-    [onChange]
+    [onChange],
   )
 
   return (

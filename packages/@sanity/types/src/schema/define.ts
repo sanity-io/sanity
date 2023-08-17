@@ -175,7 +175,7 @@ export function defineType<
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition
+  TStrict extends StrictDefinition,
 >(
   schemaDefinition: {
     type: TType
@@ -185,7 +185,7 @@ export function defineType<
     MaybeAllowUnknownProps<TStrict>,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof schemaDefinition {
   return schemaDefinition
 }
@@ -216,7 +216,7 @@ export function defineField<
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition
+  TStrict extends StrictDefinition,
 >(
   schemaField: {
     type: TType
@@ -227,7 +227,7 @@ export function defineField<
     FieldDefinitionBase,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof schemaField & WidenValidation & WidenInitialValue {
   return schemaField
 }
@@ -258,7 +258,7 @@ export function defineArrayMember<
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends IntrinsicTypeName | undefined,
-  TStrict extends StrictDefinition
+  TStrict extends StrictDefinition,
 >(
   arrayOfSchema: {
     type: TType
@@ -274,7 +274,7 @@ export function defineArrayMember<
     MaybeAllowUnknownProps<TStrict>,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>
+  defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof arrayOfSchema & WidenValidation & WidenInitialValue {
   return arrayOfSchema
 }

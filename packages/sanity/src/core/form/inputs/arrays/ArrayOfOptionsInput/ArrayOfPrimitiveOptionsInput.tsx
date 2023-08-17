@@ -58,7 +58,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
 
   const options = useMemo(
     () => normalizeOptions(schemaType.options?.list || []),
-    [schemaType.options?.list]
+    [schemaType.options?.list],
   )
 
   const handleChange = (isChecked: boolean, changedValue: string | boolean | number) => {
@@ -66,7 +66,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
       .map((option) => option.value)
       .filter((optionValue) =>
         // note: sparse arrays are not supported here, so multiple options with same value will all be checked
-        optionValue === changedValue ? isChecked : value.includes(optionValue)
+        optionValue === changedValue ? isChecked : value.includes(optionValue),
       )
 
     onChange(nextValue.length > 0 ? set(nextValue) : unset())

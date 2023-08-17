@@ -31,7 +31,7 @@ interface PopoverContainerProps extends ContainerProps {
 
 export const PopoverContainer = React.forwardRef(function PopoverContainer(
   props: PopoverContainerProps,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLDivElement>,
 ) {
   const {width, ...restProps} = props
   const widthArr = useArrayProp(width)

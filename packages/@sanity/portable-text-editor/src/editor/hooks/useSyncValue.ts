@@ -41,7 +41,7 @@ const CURRENT_VALUE = new WeakMap<PortableTextEditor, PortableTextBlock[] | unde
  * @internal
  */
 export function useSyncValue(
-  props: UseSyncValueProps
+  props: UseSyncValueProps,
 ): (value: PortableTextBlock[] | undefined, userCallbackFn?: () => void) => void {
   const {portableTextEditor, readOnly, keyGenerator} = props
   const {change$, schemaTypes} = portableTextEditor
@@ -64,7 +64,7 @@ export function useSyncValue(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateValueDebounced = useCallback(
     debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false}),
-    [updateFromCurrentValue]
+    [updateFromCurrentValue],
   )
 
   return useMemo(() => {
@@ -165,7 +165,7 @@ export function useSyncValue(
                     if (debug.enabled)
                       debug(
                         'Validating and inserting new block in the end of the value',
-                        currentBlock
+                        currentBlock,
                       )
                     if (validation.valid) {
                       withPreserveKeys(slateEditor, () => {
@@ -240,7 +240,7 @@ export function useSyncValue(
 function _replaceBlock(
   slateEditor: PortableTextSlateEditor,
   currentBlock: Descendant,
-  currentBlockIndex: number
+  currentBlockIndex: number,
 ) {
   // While replacing the block and the current selection focus is on the replaced block,
   // temporarily deselect the editor then optimistically try to restore the selection afterwards.
@@ -267,7 +267,7 @@ function _updateBlock(
   slateEditor: PortableTextSlateEditor,
   currentBlock: Descendant,
   oldBlock: Descendant,
-  currentBlockIndex: number
+  currentBlockIndex: number,
 ) {
   // Update the root props on the block
   Transforms.setNodes(slateEditor, currentBlock as Partial<Node>, {
@@ -287,7 +287,7 @@ function _updateBlock(
               at: [currentBlockIndex, childIndex],
             })
           }
-        }
+        },
       )
     }
     currentBlock.children.forEach((currentBlockChild, currentBlockChildIndex) => {
@@ -324,7 +324,7 @@ function _updateBlock(
               {
                 at: [...path, 0],
                 voids: true,
-              }
+              },
             )
           }
           // Replace the child if _key's are different

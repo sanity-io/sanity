@@ -32,7 +32,7 @@ export interface EditableAPI {
   activeAnnotations: () => PortableTextObject[]
   addAnnotation: (
     type: ObjectSchemaType,
-    value?: {[prop: string]: unknown}
+    value?: {[prop: string]: unknown},
   ) => {spanPath: Path; markDefPath: Path} | undefined
   blur: () => void
   delete: (selection: EditorSelection, options?: EditableAPIDeleteOptions) => void
@@ -366,7 +366,7 @@ export type OnBeforeInputFn = (event: Event) => void
 
 /** @beta */
 export type OnCopyFn = (
-  event: React.ClipboardEvent<HTMLDivElement | HTMLSpanElement>
+  event: React.ClipboardEvent<HTMLDivElement | HTMLSpanElement>,
 ) => undefined | unknown
 
 /** @beta */
@@ -478,7 +478,7 @@ export type RenderDecoratorFunction = (props: BlockDecoratorRenderProps) => JSX.
 /** @beta */
 export type ScrollSelectionIntoViewFunction = (
   editor: PortableTextEditor,
-  domRange: globalThis.Range
+  domRange: globalThis.Range,
 ) => void
 
 /** @internal */

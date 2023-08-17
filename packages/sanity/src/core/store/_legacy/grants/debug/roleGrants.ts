@@ -29,5 +29,5 @@ export const debugGrants$ = debugRolesParam$.pipe(
     return roles
       .filter((value) => Boolean(value) && value in DEBUG_ROLE_GRANTS_MAP)
       .flatMap((roleName: ExampleRoleName) => DEBUG_ROLE_GRANTS_MAP[roleName] || [])
-  })
+  }),
 )

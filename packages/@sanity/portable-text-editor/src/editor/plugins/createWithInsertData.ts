@@ -21,7 +21,7 @@ const debug = debugWithName('plugin:withInsertData')
 export function createWithInsertData(
   change$: EditorChanges,
   schemaTypes: PortableTextMemberSchemaTypes,
-  keyGenerator: () => string
+  keyGenerator: () => string,
 ) {
   return function withInsertData(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     const blockTypeName = schemaTypes.block.name
@@ -135,7 +135,7 @@ export function createWithInsertData(
             editor,
             toSlateValue(parsed, {schemaTypes}),
             keyGenerator,
-            spanTypeName
+            spanTypeName,
           )
           // Validate the result
           const validation = validateValue(parsed, schemaTypes, keyGenerator)
@@ -175,7 +175,7 @@ export function createWithInsertData(
 
         if (html) {
           portableText = htmlToBlocks(html, schemaTypes.portableText).map((block) =>
-            normalizeBlock(block, {blockTypeName})
+            normalizeBlock(block, {blockTypeName}),
           ) as PortableTextBlock[]
           fragment = toSlateValue(portableText, {schemaTypes})
           insertedType = 'HTML'
@@ -184,12 +184,12 @@ export function createWithInsertData(
           const blocks = escapeHtml(text)
             .split(/\n{2,}/)
             .map((line) =>
-              line ? `<p>${line.replace(/(?:\r\n|\r|\n)/g, '<br/>')}</p>` : '<p></p>'
+              line ? `<p>${line.replace(/(?:\r\n|\r|\n)/g, '<br/>')}</p>` : '<p></p>',
             )
             .join('')
           const textToHtml = `<html><body>${blocks}</body></html>`
           portableText = htmlToBlocks(textToHtml, schemaTypes.portableText).map((block) =>
-            normalizeBlock(block, {blockTypeName})
+            normalizeBlock(block, {blockTypeName}),
           ) as PortableTextBlock[]
           fragment = toSlateValue(portableText, {
             schemaTypes,
@@ -265,7 +265,7 @@ function _regenerateKeys(
   editor: PortableTextSlateEditor,
   fragment: Descendant[],
   keyGenerator: () => string,
-  spanTypeName: string
+  spanTypeName: string,
 ): Descendant[] {
   return fragment.map((node) => {
     const newNode: Descendant = {...node}
@@ -284,7 +284,7 @@ function _regenerateKeys(
                       [...child.marks].filter((mark) => mark !== oldKey).concat(newKey)
                     : child.marks,
               }
-            : child
+            : child,
         )
         return {...def, _key: newKey}
       })
@@ -308,7 +308,7 @@ function _regenerateKeys(
 function _insertFragment(
   editor: PortableTextSlateEditor,
   fragment: Descendant[],
-  schemaTypes: PortableTextMemberSchemaTypes
+  schemaTypes: PortableTextMemberSchemaTypes,
 ) {
   if (!editor.selection) {
     return
@@ -325,7 +325,7 @@ function _insertFragment(
         {
           markDefs: uniq([...(fragment[0].markDefs || []), ...(markDefs || [])]),
         },
-        {at: focusPath, mode: 'lowest', voids: false}
+        {at: focusPath, mode: 'lowest', voids: false},
       )
     }
   }

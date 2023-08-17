@@ -30,7 +30,7 @@ export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'manual'
  */
 export async function getPackageManagerChoice(
   workDir: string,
-  options: {interactive: false} | {interactive?: true; prompt: CliPrompter}
+  options: {interactive: false} | {interactive?: true; prompt: CliPrompter},
 ): Promise<{chosen: PackageManager; mostOptimal?: PackageManager}> {
   const rootDir = workDir || process.cwd()
   const preferred = (await preferredPM(rootDir))?.name
@@ -149,7 +149,7 @@ function hasCommand(cmd: string, cwd?: string): Promise<boolean> {
 }
 
 async function getMostLikelyInstalledPackageManager(
-  rootDir: string
+  rootDir: string,
 ): Promise<PackageManager | undefined> {
   const installed = await getAvailablePackageManagers(rootDir)
   const running = getRunningPackageManager()

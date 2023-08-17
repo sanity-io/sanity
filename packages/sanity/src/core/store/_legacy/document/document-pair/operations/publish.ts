@@ -8,7 +8,7 @@ function strengthenOnPublish<T = any>(obj: T): T {
     if (obj._strengthenOnPublish) {
       return omit(
         obj,
-        ['_strengthenOnPublish'].concat(obj._strengthenOnPublish.weak ? [] : ['_weak'])
+        ['_strengthenOnPublish'].concat(obj._strengthenOnPublish.weak ? [] : ['_weak']),
       ) as T
     }
     return obj
@@ -16,7 +16,7 @@ function strengthenOnPublish<T = any>(obj: T): T {
   if (typeof obj !== 'object' || !obj) return obj
   if (Array.isArray(obj)) return obj.map(strengthenOnPublish) as T
   return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => [key, strengthenOnPublish(value)] as const)
+    Object.entries(obj).map(([key, value]) => [key, strengthenOnPublish(value)] as const),
   ) as T
 }
 

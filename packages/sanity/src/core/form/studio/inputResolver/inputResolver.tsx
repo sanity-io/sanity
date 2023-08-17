@@ -14,7 +14,7 @@ import {defaultInputs} from './defaultInputs'
 import {getTypeChain} from './helpers'
 
 function resolveComponentFromTypeVariants(
-  type: SchemaType
+  type: SchemaType,
 ): React.ComponentType<FIXME> | undefined {
   if (is.type('array', type)) {
     return resolveArrayInput(type as ArraySchemaType)
@@ -37,7 +37,7 @@ function resolveComponentFromTypeVariants(
 }
 
 export function defaultResolveInputComponent(
-  schemaType: SchemaType
+  schemaType: SchemaType,
 ): React.ComponentType<Omit<InputProps, 'renderDefault'>> {
   if (schemaType.components?.input) return schemaType.components.input
 
@@ -47,10 +47,13 @@ export function defaultResolveInputComponent(
   }
 
   const typeChain = getTypeChain(schemaType, new Set())
-  const deduped = typeChain.reduce((acc, type) => {
-    acc[type.name] = type
-    return acc
-  }, {} as Record<string, SchemaType>)
+  const deduped = typeChain.reduce(
+    (acc, type) => {
+      acc[type.name] = type
+      return acc
+    },
+    {} as Record<string, SchemaType>,
+  )
 
   // using an object + Object.values to de-dupe the type chain by type name
   const subType = Object.values(deduped).find((t) => defaultInputs[t.name])
@@ -63,7 +66,7 @@ export function defaultResolveInputComponent(
 }
 
 export function defaultResolvePreviewComponent(
-  schemaType: SchemaType
+  schemaType: SchemaType,
 ): React.ComponentType<Omit<PreviewProps, 'renderDefault'>> {
   if (schemaType.components?.preview) return schemaType.components.preview
 

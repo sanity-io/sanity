@@ -26,7 +26,7 @@ export async function getSanityStudioConfigPath(studioRootPath: string): Promise
     configPaths.map(async (configPath) => ({
       path: configPath,
       exists: await fileExists(configPath),
-    }))
+    })),
   )
 
   const availableConfigs = configs.filter((config) => config.exists)
@@ -55,6 +55,6 @@ export async function getSanityStudioConfigPath(studioRootPath: string): Promise
 function fileExists(filePath: string): Promise<boolean> {
   return fs.stat(filePath).then(
     () => true,
-    () => false
+    () => false,
   )
 }

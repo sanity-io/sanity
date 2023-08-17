@@ -39,7 +39,7 @@ export function SearchResultItem({
       }
       onClick?.()
     },
-    [disableIntentLink, onClick, onIntentClick]
+    [disableIntentLink, onClick, onIntentClick],
   )
 
   if (!type) return null

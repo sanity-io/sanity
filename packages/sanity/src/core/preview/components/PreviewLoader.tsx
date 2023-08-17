@@ -25,7 +25,7 @@ import {_HIDE_DELAY} from './_constants'
 export function PreviewLoader(
   props: RenderPreviewCallbackProps & {
     component: ComponentType<Omit<PreviewProps, 'renderDefault'>>
-  }
+  },
 ): ReactElement {
   const {
     layout,
@@ -58,7 +58,7 @@ export function PreviewLoader(
       minWidth: styleProp?.minWidth || 1,
       minHeight: styleProp?.minHeight || 1,
     }),
-    [styleProp]
+    [styleProp],
   )
 
   const uploadState = useMemo(() => _extractUploadState(value), [value])

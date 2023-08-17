@@ -20,7 +20,7 @@ const STUB_RESOLVE_UPLOADER = () => ({
 
 export type TestRenderFileInputCallback = (
   inputProps: BaseFileInputProps,
-  context: TestRenderInputContext
+  context: TestRenderInputContext,
 ) => React.ReactElement
 
 export async function renderFileInput(options: {
@@ -42,7 +42,7 @@ export async function renderFileInput(options: {
 
   function transformProps(
     inputProps: ObjectInputProps,
-    context: TestRenderInputContext
+    context: TestRenderInputContext,
   ): BaseFileInputProps {
     const {schemaType, value, ...restProps} = inputProps
     const {client} = context
@@ -67,7 +67,7 @@ export async function renderFileInput(options: {
 
   function rerender(subsequentRender: TestRenderFileInputCallback) {
     result.rerender((inputProps, context) =>
-      subsequentRender(transformProps(inputProps, context), context)
+      subsequentRender(transformProps(inputProps, context), context),
     )
   }
 

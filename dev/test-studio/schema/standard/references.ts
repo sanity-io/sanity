@@ -65,7 +65,7 @@ export default defineType({
       type: 'object',
       validation: (Rule) =>
         Rule.custom<{decade?: number}>((val) =>
-          !val || val.decade ? true : 'Must have decade defined'
+          !val || val.decade ? true : 'Must have decade defined',
         ),
       fields: [
         {
@@ -181,7 +181,7 @@ export default defineType({
       options: {
         filter: async ({getClient}: ReferenceFilterResolverContext) => {
           const latestAuthorId = await getClient({apiVersion: '2023-01-01'}).fetch<string>(
-            '*[_type == "author" && _id in path("*")] | order(_createdAt desc) [0]._id'
+            '*[_type == "author" && _id in path("*")] | order(_createdAt desc) [0]._id',
           )
 
           return Promise.resolve({

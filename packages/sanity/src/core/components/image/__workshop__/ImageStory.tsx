@@ -23,7 +23,7 @@ export default function ImageStory() {
         width: 0.6557057605650974,
       },
     }),
-    [assetId]
+    [assetId],
   )
 
   return (

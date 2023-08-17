@@ -5,7 +5,7 @@ import {useDocumentPreviewStore} from '../../../store'
 
 export function useRefPreview(
   value: Reference | undefined | null,
-  schemaType: SchemaType
+  schemaType: SchemaType,
 ): PreviewValue | null | undefined {
   const documentPreviewStore = useDocumentPreviewStore()
 

@@ -22,7 +22,7 @@ export function SearchFilterReferenceInput({
 
   const handleChange = useCallback(
     (referenceValue: ReferenceValue | null) => onChange(referenceValue),
-    [onChange]
+    [onChange],
   )
 
   // Extract all searchable types

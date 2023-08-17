@@ -27,7 +27,7 @@ const installCommand: CliCommandDefinition = {
     if (packages.length > 0) {
       await installNewPackages(
         {packageManager: pkgManager.chosen, packages: args.argsWithoutOptions},
-        context
+        context,
       )
     } else {
       await installDeclaredPackages(workDir, pkgManager.chosen, context)

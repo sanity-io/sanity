@@ -39,7 +39,7 @@ describe('asset handler', () => {
       expect(docById(newDocs, 'doc3')).toMatchSnapshot('Rewritten asset for doc3')
       expect(docById(newDocs, 'plain')).toMatchSnapshot('Nothing rewritten in assetless doc')
       expect(docById(newDocs, 'refsDatMuxAsset')).toMatchSnapshot(
-        'Nothing rewritten if pattern doesnt match Sanity asset'
+        'Nothing rewritten if pattern doesnt match Sanity asset',
       )
 
       await assetHandler.finish()

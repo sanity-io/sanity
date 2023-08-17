@@ -78,7 +78,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
           if (event.type === 'rebase') {
             patchChannel.publish(prepareRebaseEvent(event))
           }
-        })
+        }),
       )
       .subscribe()
 
@@ -125,7 +125,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
         ref.current = node
       }
     },
-    [ref]
+    [ref],
   )
 
   // const after = useMemo(
@@ -216,7 +216,7 @@ function prepareRebaseEvent(event: DocumentRebaseEvent): PatchMsg {
     type: 'rebase',
     snapshot: event.document,
     patches: fromMutationPatches('remote', remotePatches).concat(
-      fromMutationPatches('local', localPatches)
+      fromMutationPatches('local', localPatches),
     ),
   }
 }

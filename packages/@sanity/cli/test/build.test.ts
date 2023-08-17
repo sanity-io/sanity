@@ -28,7 +28,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
           const builtHtml = await readFile(path.join(studioPath, 'out/index.html'), 'utf8')
           const builtJs = await readFile(
             path.join(studioPath, 'out/static/js/app.bundle.js'),
-            'utf8'
+            'utf8',
           )
           const builtCss = await readFile(path.join(studioPath, 'out/static/css/main.css'), 'utf8')
           expect(builtHtml).toContain('id="sanityBody"')
@@ -55,7 +55,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
 
           // Ensure favicons + web manifest
           expect(
-            await stat(path.join(studioPath, 'out/favicon.ico')).catch(() => null)
+            await stat(path.join(studioPath, 'out/favicon.ico')).catch(() => null),
           ).toBeTruthy()
           const favicons = files.filter((file) => /^favicon|^apple-touch-icon/.test(file))
           expect(favicons).toHaveLength(5)
@@ -94,7 +94,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
           expect(envFile).toContain('⏧ production')
         }
       },
-      version === 'v3' ? 120 * 1000 : 240 * 1000
+      version === 'v3' ? 120 * 1000 : 240 * 1000,
     )
 
     testConcurrentV3(
@@ -110,7 +110,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         const files = await readdir(path.join(studioPath, 'out-basepath', 'static'))
         const builtHtml = await readFile(
           path.join(studioPath, 'out-basepath', 'index.html'),
-          'utf8'
+          'utf8',
         )
         const cssPath = files.find((file) => file.endsWith('.css'))
 
@@ -118,7 +118,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         expect(builtHtml).toContain('src="/custom-base-path/static/sanity')
         expect(builtHtml).toContain(`href="/custom-base-path/static/${cssPath}"`)
       },
-      120 * 1000
+      120 * 1000,
     )
 
     testConcurrentV3(
@@ -131,7 +131,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         expect(builtHtml).toContain('id="sanity"')
         expect(builtHtml).toContain('src="/config-base-path/static/sanity')
       },
-      120 * 1000
+      120 * 1000,
     )
 
     testConcurrentV3(
@@ -147,10 +147,10 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         expect(builtHtml).toContain('src="/env-base-path/static/sanity')
 
         expect(result.stderr).toContain(
-          `Overriding configured base path (/config-base-path) with value from environment variable (/env-base-path)`
+          `Overriding configured base path (/config-base-path) with value from environment variable (/env-base-path)`,
         )
       },
-      120 * 1000
+      120 * 1000,
     )
 
     testConcurrentV3(
@@ -164,7 +164,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
 
         const builtHtml = await readFile(
           path.join(customDocStudioPath, 'dist', 'index.html'),
-          'utf8'
+          'utf8',
         )
         expect(builtHtml).toContain('id="sanity"')
         expect(builtHtml).toContain('src="/env-base-path/static/sanity')
@@ -175,10 +175,10 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         expect(builtHtml).toContain('data-studio-dataset="ds-production"')
 
         expect(result.stderr).toContain(
-          `Overriding configured base path (/config-base-path) with value from environment variable (/env-base-path)`
+          `Overriding configured base path (/config-base-path) with value from environment variable (/env-base-path)`,
         )
       },
-      120 * 1000
+      120 * 1000,
     )
 
     test.skip(
@@ -189,7 +189,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         expect(result.stdout).toContain('deployed to')
         expect(result.code).toBe(0)
       },
-      120 * 1000
+      120 * 1000,
     )
   })
 })

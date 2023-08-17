@@ -35,7 +35,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
   // We handle that here, so if there are only 1 pane (the root structure), and there's an intent state in the router, we need to show a placeholder LoadingPane until
   // the structure is resolved and we know what panes to load/display
   const isResolvingIntent = useRouterState(
-    useCallback((routerState) => typeof routerState.intent === 'string', [])
+    useCallback((routerState) => typeof routerState.intent === 'string', []),
   )
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -122,7 +122,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
                 />
               )}
             </Fragment>
-          )
+          ),
         )}
         {/* If there's just 1 pane (the root), or less, and we're resolving an intent then it's necessary to show */}
         {/* a loading indicator as the intent resolving is async, could take a while and can also be interrupted/redirected */}

@@ -5,7 +5,7 @@ import {StateTree} from './types'
 export function setAtPath<T>(
   currentTree: StateTree<T> | undefined,
   path: Path,
-  value: T
+  value: T,
 ): StateTree<T> {
   if (path.length === 0) {
     return {...(currentTree || {}), value}

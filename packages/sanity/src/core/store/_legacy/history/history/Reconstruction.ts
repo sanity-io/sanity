@@ -52,7 +52,7 @@ export class Reconstruction {
       this._startDocument = this.timeline.replayBackwardsBetween(
         this.start.end,
         this.end.end - 1,
-        this.endDocument()
+        this.endDocument(),
       )
     }
 
@@ -67,7 +67,7 @@ export class Reconstruction {
         this.startDocument(),
         this.endDocument(),
         this.start.index + 1,
-        this.end.index
+        this.end.index,
       )
     }
 

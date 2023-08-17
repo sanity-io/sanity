@@ -35,7 +35,7 @@ const DebugInput = forwardRef(function DebugInput(props: InputProps, ref) {
 
 export function inputResolver(
   input: SchemaType,
-  form: SanityFormConfig
+  form: SanityFormConfig,
 ): React.ComponentType<Omit<InputProps, 'renderDefault'>> {
   if (!input.type) {
     throw new Error('inputResolver: missing subtype')

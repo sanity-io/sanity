@@ -10,7 +10,7 @@ import {extractAccessors} from './extractAccessors'
  */
 export function extractWithPath(
   path: string,
-  value: unknown
+  value: unknown,
 ): {path: (string | number)[]; value: unknown}[] {
   const accessors = extractAccessors(path, value)
   return accessors.map((acc) => ({path: acc.path, value: acc.get()}))

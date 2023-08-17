@@ -4,7 +4,7 @@ import {promptForDatasetName} from './datasetNamePrompt'
 
 export async function chooseDatasetPrompt(
   context: CliCommandContext,
-  options: {message?: string; allowCreation?: boolean} = {}
+  options: {message?: string; allowCreation?: boolean} = {},
 ): Promise<string> {
   const {apiClient, prompt} = context
   const {message, allowCreation} = options

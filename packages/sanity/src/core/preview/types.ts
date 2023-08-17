@@ -121,7 +121,9 @@ export type ObserveDocumentTypeFromIdFn = (id: string) => Observable<string | un
  * @hidden
  * @beta */
 export interface ObservePathsFn {
-  (value: Previewable, paths: (string | PreviewPath)[], apiConfig?: ApiConfig): Observable<
-    PreviewValue | SanityDocumentLike | Reference | string | null
-  >
+  (
+    value: Previewable,
+    paths: (string | PreviewPath)[],
+    apiConfig?: ApiConfig,
+  ): Observable<PreviewValue | SanityDocumentLike | Reference | string | null>
 }

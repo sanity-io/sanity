@@ -81,7 +81,7 @@ function ResolvePanesStory() {
                     <code>{paneData.path}</code>
                   </Text>
                   <Code language="json" size={1}>{`${JSON.stringify(
-                    resolvedPane.items?.length
+                    resolvedPane.items?.length,
                   )} items`}</Code>
                 </Stack>
               </Card>

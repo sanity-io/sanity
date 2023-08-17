@@ -49,7 +49,7 @@ export default (html: string, doc: Document): Document => {
       return null
     },
     _XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
-    null
+    null,
   )
 
   for (let i = unwantedNodes.snapshotLength - 1; i >= 0; i--) {
@@ -65,7 +65,7 @@ export default (html: string, doc: Document): Document => {
     doc,
     null,
     _XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
-    null
+    null,
   )
   for (let i = mappedElements.snapshotLength - 1; i >= 0; i--) {
     const mappedElm = mappedElements.snapshotItem(i) as HTMLElement

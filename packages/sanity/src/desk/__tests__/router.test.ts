@@ -14,11 +14,11 @@ describe('toPath', () => {
     const path = toPath(input)
     expect(path).toBe(
       'level1%7Clevel1SplitPane%7Clevel1WithParams%2Ca%3Db;' +
-        'level2%7Clevel2SplitPane%7Clevel2WithPayload%2CeyJmb28iOiJiYXIifQ%3D%3D'
+        'level2%7Clevel2SplitPane%7Clevel2WithPayload%2CeyJmb28iOiJiYXIifQ%3D%3D',
     )
     expect(decodeURIComponent(path)).toBe(
       'level1|level1SplitPane|level1WithParams,a=b;' +
-        'level2|level2SplitPane|level2WithPayload,eyJmb28iOiJiYXIifQ=='
+        'level2|level2SplitPane|level2WithPayload,eyJmb28iOiJiYXIifQ==',
     )
   })
 
@@ -50,10 +50,10 @@ describe('toPath', () => {
     const path = toPath(input)
 
     expect(path).toBe(
-      'level1%2Ca%3D1%2Cb%3D2%2Cview%3Dpreview%7C%2Ca%3DdifferentParams%7C%2Cview%3Dmobile;level2'
+      'level1%2Ca%3D1%2Cb%3D2%2Cview%3Dpreview%7C%2Ca%3DdifferentParams%7C%2Cview%3Dmobile;level2',
     )
     expect(decodeURIComponent(path)).toBe(
-      'level1,a=1,b=2,view=preview|,a=differentParams|,view=mobile;level2'
+      'level1,a=1,b=2,view=preview|,a=differentParams|,view=mobile;level2',
     )
   })
 

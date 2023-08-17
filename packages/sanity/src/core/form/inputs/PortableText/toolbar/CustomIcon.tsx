@@ -25,7 +25,7 @@ export function CustomIcon(props: Props) {
       backgroundImage: `url(${icon})`,
       filter: active ? 'invert(100%)' : 'invert(0%)',
     }),
-    [active, icon]
+    [active, icon],
   )
 
   return <CustomIconDiv style={inlineStyle} />

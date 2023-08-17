@@ -7,7 +7,7 @@ import {ObjectWithKeyAndType} from './ranges'
 export function createKeyedPath(
   point: Point,
   value: ObjectWithKeyAndType[] | undefined,
-  types: PortableTextMemberSchemaTypes
+  types: PortableTextMemberSchemaTypes,
 ): Path | null {
   const blockPath = [point.path[0]]
   if (!value) {
@@ -38,7 +38,7 @@ export function createArrayedPath(point: EditorSelectionPoint, editor: Editor): 
     Editor.nodes(editor, {
       at: [],
       match: (n) => isKeySegment(point.path[0]) && (n as Descendant)._key === point.path[0]._key,
-    })
+    }),
   )[0] || [undefined, undefined]
   if (!block || !Element.isElement(block)) {
     return []

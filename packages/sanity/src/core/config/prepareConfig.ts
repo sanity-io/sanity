@@ -54,7 +54,7 @@ const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 function normalizeIcon(
   icon: React.ComponentType | React.ElementType | undefined,
   title: string,
-  subtitle = ''
+  subtitle = '',
 ): JSX.Element {
   if (isValidElementType(icon)) return createElement(icon)
   if (isValidElement(icon)) return icon
@@ -73,7 +73,7 @@ function normalizeIcon(
  */
 export function prepareConfig(
   config: Config | MissingConfigFile,
-  options?: {basePath?: string}
+  options?: {basePath?: string},
 ): PreparedConfig {
   if (!Array.isArray(config) && 'missingConfigFile' in config) {
     throw new ConfigResolutionError({
@@ -129,7 +129,7 @@ export function prepareConfig(
 
         const schemaValidationProblemGroups = schema._validation
         const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
-          msg.problems.some(isError)
+          msg.problems.some(isError),
         )
 
         if (schemaValidationProblemGroups && schemaErrors?.length) {
@@ -149,7 +149,7 @@ export function prepareConfig(
               auth,
             })
           }),
-          shareReplay(1)
+          shareReplay(1),
         )
 
         return {
@@ -174,7 +174,7 @@ export function prepareConfig(
         icon: normalizeIcon(
           rootSource.icon,
           title,
-          `${rootSource.projectId} ${rootSource.dataset}`
+          `${rootSource.projectId} ${rootSource.dataset}`,
         ),
         name: rootSource.name || 'default',
         projectId: rootSource.projectId,
@@ -187,7 +187,7 @@ export function prepareConfig(
       }
 
       return workspaceSummary
-    }
+    },
   )
 
   return {type: 'prepared-config', workspaces}
@@ -267,13 +267,13 @@ function resolveSource({
       return Object.defineProperty(acc, key, {
         get() {
           console.warn(
-            '`configContext.client` is deprecated and will be removed in the next release! Use `context.getClient({apiVersion: "2021-06-07"})` instead'
+            '`configContext.client` is deprecated and will be removed in the next release! Use `context.getClient({apiVersion: "2021-06-07"})` instead',
           )
           return original
         },
       })
     },
-    {}
+    {},
   ) as any as SanityClient
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
@@ -345,7 +345,7 @@ function resolveSource({
         description: template.description,
         icon: template.icon,
         title: template.title,
-      })
+      }),
     )
 
   const templateMap = templates.reduce((acc, template) => {
@@ -355,7 +355,7 @@ function resolveSource({
 
   // TODO: extract this function
   const resolveNewDocumentOptions: Source['document']['resolveNewDocumentOptions'] = (
-    creationContext
+    creationContext,
   ) => {
     const {schemaType: schemaTypeName} = creationContext
 
@@ -393,7 +393,7 @@ function resolveSource({
 
           if (!schemaType) {
             throw new Error(
-              `Could not find matching schema type \`${template.schemaType}\` for template \`${template.id}\``
+              `Could not find matching schema type \`${template.schemaType}\` for template \`${template.id}\``,
             )
           }
 

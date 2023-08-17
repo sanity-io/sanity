@@ -16,7 +16,7 @@ function createSegment(segment: string): RouteSegment | null {
         : ''
       // eslint-disable-next-line no-console
       console.error(
-        new Error(`Warning: Param segments "${segment}" includes invalid characters.${addendum}`)
+        new Error(`Warning: Param segments "${segment}" includes invalid characters.${addendum}`),
       )
     }
 

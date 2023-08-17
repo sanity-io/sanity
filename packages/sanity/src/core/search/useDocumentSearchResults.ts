@@ -75,13 +75,13 @@ export function useDocumentSearchResults(props: {
                     map((results) => ({loading: false, error: null, value: results})),
                     catchError((error) => {
                       return of({loading: false, error, value: []})
-                    })
-                  )
+                    }),
+                  ),
                 )
-              : of(EMPTY_STATE)
-        )
+              : of(EMPTY_STATE),
+        ),
       ),
-    [paramsSubject, search]
+    [paramsSubject, search],
   )
 
   useEffect(() => {

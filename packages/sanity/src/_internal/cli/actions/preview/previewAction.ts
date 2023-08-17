@@ -10,7 +10,7 @@ export interface StartPreviewServerCommandFlags {
 
 export default async function startSanityPreviewServer(
   args: CliCommandArguments<StartPreviewServerCommandFlags>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
   const {workDir, cliConfig} = context

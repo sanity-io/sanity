@@ -46,7 +46,7 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
         onActivate()
       }
     },
-    [isOverlayActive, onActivate]
+    [isOverlayActive, onActivate],
   )
 
   const handleOnFocus = useCallback(() => {

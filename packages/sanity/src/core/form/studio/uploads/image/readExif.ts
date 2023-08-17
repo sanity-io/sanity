@@ -4,7 +4,7 @@ import exif from 'exif-component'
 
 function readFileAsArrayBuffer(
   file: File,
-  length: number
+  length: number,
 ): Observable<string | ArrayBuffer | null> {
   return new Observable((observer) => {
     const reader = new window.FileReader()
@@ -32,6 +32,6 @@ export function readExif(file: File) {
         console.warn(`Exif read failed, continuing anyway: ${error.message}`) // eslint-disable-line no-console
       }
       return observableOf({})
-    })
+    }),
   )
 }

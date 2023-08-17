@@ -8,7 +8,7 @@ type PatchTransformer = (patches: FormPatch[]) => FormPatch[]
  * @hidden
  * @beta */
 export const TransformPatches = memo(function OnChangeProvider(
-  props: {transform: PatchTransformer} & {children: React.ReactNode}
+  props: {transform: PatchTransformer} & {children: React.ReactNode},
 ) {
   const {transform} = props
   const callbacks = useFormCallbacks()
@@ -19,12 +19,12 @@ export const TransformPatches = memo(function OnChangeProvider(
       const transformedPatches = transform(patches)
       callbacks.onChange(PatchEvent.from(transformedPatches))
     },
-    [callbacks, transform]
+    [callbacks, transform],
   )
 
   const contextValue = useMemo(
     () => ({...callbacks, onChange: handleChange}),
-    [callbacks, handleChange]
+    [callbacks, handleChange],
   )
   return (
     <FormCallbacksContext.Provider value={contextValue}>

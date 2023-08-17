@@ -103,13 +103,13 @@ function unsetWeakBatch(client, progress, tag, batch) {
           err.step = 'strengthen-references'
           throw err
         }),
-    {isRetriable: (err) => !err.statusCode || err.statusCode !== 409}
+    {isRetriable: (err) => !err.statusCode || err.statusCode !== 409},
   )
 }
 
 function reducePatch(trx, task) {
   return trx.patch(task.documentId, (patch) =>
-    patch.unset(task.references.map((path) => `${path}._weak`))
+    patch.unset(task.references.map((path) => `${path}._weak`)),
   )
 }
 

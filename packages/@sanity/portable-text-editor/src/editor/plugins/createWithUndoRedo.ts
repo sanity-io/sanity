@@ -47,14 +47,14 @@ const getRemotePatches = (editor: Editor) => {
 }
 
 export function createWithUndoRedo(
-  options: Options
+  options: Options,
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   const {readOnly, patches$, blockSchemaType} = options
 
   return (editor: PortableTextSlateEditor) => {
     let previousSnapshot: PortableTextBlock[] | undefined = fromSlateValue(
       editor.children,
-      blockSchemaType.name
+      blockSchemaType.name,
     )
     const remotePatches = getRemotePatches(editor)
     if (patches$) {
@@ -141,8 +141,8 @@ export function createWithUndoRedo(
           otherPatches.forEach((item) => {
             transformedOperations = flatten(
               transformedOperations.map((op) =>
-                transformOperation(editor, item.patch, op, item.snapshot, item.previousSnapshot)
-              )
+                transformOperation(editor, item.patch, op, item.snapshot, item.previousSnapshot),
+              ),
             )
           })
           removeAllDocumentSelectionRanges(!!editor.selection)
@@ -188,8 +188,8 @@ export function createWithUndoRedo(
           otherPatches.forEach((item) => {
             transformedOperations = flatten(
               transformedOperations.map((op) =>
-                transformOperation(editor, item.patch, op, item.snapshot, item.previousSnapshot)
-              )
+                transformOperation(editor, item.patch, op, item.snapshot, item.previousSnapshot),
+              ),
             )
           })
           removeAllDocumentSelectionRanges(!!editor.selection)
@@ -232,7 +232,7 @@ function transformOperation(
   patch: Patch,
   operation: Operation,
   snapshot: PortableTextBlock[] | undefined,
-  previousSnapshot: PortableTextBlock[] | undefined
+  previousSnapshot: PortableTextBlock[] | undefined,
 ): Operation[] {
   if (debugVerbose) {
     debug(`Adjusting '${operation.type}' operation paths for '${patch.type}' patch`)
@@ -244,17 +244,17 @@ function transformOperation(
 
   if (patch.type === 'insert' && patch.path.length === 1) {
     const insertBlockIndex = (snapshot || []).findIndex((blk) =>
-      isEqual({_key: blk._key}, patch.path[0])
+      isEqual({_key: blk._key}, patch.path[0]),
     )
     debug(
-      `Adjusting block path (+${patch.items.length}) for '${transformedOperation.type}' operation and patch '${patch.type}'`
+      `Adjusting block path (+${patch.items.length}) for '${transformedOperation.type}' operation and patch '${patch.type}'`,
     )
     return [adjustBlockPath(transformedOperation, patch.items.length, insertBlockIndex)]
   }
 
   if (patch.type === 'unset' && patch.path.length === 1) {
     const unsetBlockIndex = (previousSnapshot || []).findIndex((blk) =>
-      isEqual({_key: blk._key}, patch.path[0])
+      isEqual({_key: blk._key}, patch.path[0]),
     )
     // If this operation is targeting the same block that got removed, return empty
     if (
@@ -268,7 +268,7 @@ function transformOperation(
     if (debugVerbose) {
       debug(`Selection ${JSON.stringify(editor.selection)}`)
       debug(
-        `Adjusting block path (-1) for '${transformedOperation.type}' operation and patch '${patch.type}'`
+        `Adjusting block path (-1) for '${transformedOperation.type}' operation and patch '${patch.type}'`,
       )
     }
     return [adjustBlockPath(transformedOperation, -1, unsetBlockIndex)]
@@ -477,7 +477,7 @@ function createSelectOperation(editor: Editor): SelectionOperation {
 
 function findOperationTargetBlock(
   editor: PortableTextSlateEditor,
-  operation: Operation
+  operation: Operation,
 ): Descendant | undefined {
   let block: Descendant | undefined
   if (operation.type === 'set_selection' && editor.selection) {

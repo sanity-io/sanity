@@ -79,7 +79,7 @@ export function defineSearchOperator<
   TValue extends unknown | never,
   TOperatorSnippet extends
     | {type: TType; inputComponent?: never}
-    | {type: TType; inputComponent: SearchOperatorInput<TValue>}
+    | {type: TType; inputComponent: SearchOperatorInput<TValue>},
 >(
   definition: (TOperatorSnippet extends {
     type: TType
@@ -87,7 +87,7 @@ export function defineSearchOperator<
   }
     ? SearchOperatorBuilder<TType, TValue>
     : ValuelessSearchOperatorBuilder<TType>) &
-    TOperatorSnippet
+    TOperatorSnippet,
 ): typeof definition {
   return definition
 }

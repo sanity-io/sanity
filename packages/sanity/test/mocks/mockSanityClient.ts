@@ -24,7 +24,7 @@ export interface MockClientLog {
 
 export function createMockSanityClient(
   data: {requests?: Record<string, any>} = {},
-  options: {apiVersion?: string} = {}
+  options: {apiVersion?: string} = {},
 ) {
   const requests: Record<string, any> = {
     '/auth/providers': {

@@ -16,7 +16,7 @@ export async function renderBooleanInput(options: {
   const {fieldDefinition, props, render: initialRender} = options
 
   function transformProps(
-    inputProps: TestRenderInputProps<PrimitiveInputElementProps>
+    inputProps: TestRenderInputProps<PrimitiveInputElementProps>,
   ): BooleanInputProps {
     const {schemaType, value, ...restProps} = inputProps
 

@@ -66,7 +66,7 @@ test('Expression constraints', () => {
 test('Expression toIndicies', () => {
   const range = new Expression(parseAsPath('[2:5]').nodes[0])
   expect([2, 3, 4]).toEqual(
-    range.toIndicies(new PlainProbe(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a']))
+    range.toIndicies(new PlainProbe(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'])),
   )
   const index = new Expression(parseAsPath('[2]').nodes[0])
   expect([2]).toEqual(index.toIndicies(new PlainProbe(['a', 'a', 'a', 'a', 'a', 'a', 'a', 'a'])))

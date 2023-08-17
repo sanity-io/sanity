@@ -70,7 +70,7 @@ test('will reuse an existing asset if it exists', () => {
   })
 
   return expect(
-    uploadAssets([fileAsset], {client, onProgress: noop, tag: 'my.import'})
+    uploadAssets([fileAsset], {client, onProgress: noop, tag: 'my.import'}),
   ).resolves.toMatchObject({
     batches: 1,
     failures: [],
@@ -113,7 +113,7 @@ test('will upload an asset if asset doc exists but file does not', () => {
   })
 
   return expect(
-    uploadAssets([fileAsset], {client, onProgress: noop, tag: 'my.import'})
+    uploadAssets([fileAsset], {client, onProgress: noop, tag: 'my.import'}),
   ).resolves.toMatchObject({
     batches: 1,
     failures: [],
@@ -146,7 +146,7 @@ test('will upload asset that do not already exist', () => {
   })
 
   return expect(
-    uploadAssets([fileAsset], {client, onProgress: noop, tag: 'my.import'})
+    uploadAssets([fileAsset], {client, onProgress: noop, tag: 'my.import'}),
   ).resolves.toMatchObject({
     batches: 1,
     failures: [],

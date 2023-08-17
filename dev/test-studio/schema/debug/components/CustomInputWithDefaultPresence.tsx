@@ -5,7 +5,7 @@ import {FieldPresence, ObjectInputProps, PresenceScope, set, setIfMissing} from 
 export const CustomInputWithDefaultPresence = React.forwardRef(
   function CustomInputWithDefaultPresence(
     props: ObjectInputProps<Record<string, any>>,
-    ref: React.ForwardedRef<HTMLDivElement>
+    ref: React.ForwardedRef<HTMLDivElement>,
   ) {
     const {elementProps, onPathFocus, value, onChange, presence, readOnly, schemaType} = props
 
@@ -15,7 +15,7 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
       (event: any) => {
         if (event.currentTarget.element === ref) onFocus(event)
       },
-      [onFocus, ref]
+      [onFocus, ref],
     )
 
     return (
@@ -59,11 +59,11 @@ export const CustomInputWithDefaultPresence = React.forwardRef(
                     </div>
                   </div>
                 )
-              })
+              }),
             )}
           </div>
         </div>
       </>
     )
-  }
+  },
 )

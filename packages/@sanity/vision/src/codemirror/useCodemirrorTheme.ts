@@ -44,7 +44,7 @@ function createTheme(theme: Theme) {
       '.cm-panels.cm-panels-top': {borderBottom: `2px solid ${card.border}`},
       '.cm-panels.cm-panels-bottom': {borderTop: `2px solid ${card.border}`},
     },
-    {dark: color.dark}
+    {dark: color.dark},
   )
 }
 

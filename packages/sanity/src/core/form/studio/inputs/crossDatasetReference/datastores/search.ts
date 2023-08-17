@@ -15,7 +15,7 @@ export function search(
   client: SanityClient,
   textTerm: string,
   type: CrossDatasetReferenceSchemaType,
-  options: ReferenceFilterSearchOptions
+  options: ReferenceFilterSearchOptions,
 ): Observable<SearchHit[]> {
   const searchWeighted = createWeightedSearch(
     type.to.map((crossDatasetType) => ({
@@ -25,7 +25,7 @@ export function search(
     })),
 
     client,
-    options
+    options,
   )
 
   return searchWeighted(textTerm, {includeDrafts: false}).pipe(
@@ -37,7 +37,7 @@ export function search(
         id: entry.id,
         type: entry.type,
         published: entry.published,
-      }))
-    )
+      })),
+    ),
   )
 }

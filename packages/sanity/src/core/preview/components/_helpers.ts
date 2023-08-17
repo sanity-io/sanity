@@ -15,8 +15,8 @@ export function _memoizeBy<T>(isActive$: Observable<boolean>) {
       distinctUntilChanged(),
       switchMap(
         (isActive): Observable<T> =>
-          isActive ? producer$.pipe(tap((v) => (memo = v))) : of(memo).pipe(filter(isNonNullable))
-      )
+          isActive ? producer$.pipe(tap((v) => (memo = v))) : of(memo).pipe(filter(isNonNullable)),
+      ),
     )
   }
 }

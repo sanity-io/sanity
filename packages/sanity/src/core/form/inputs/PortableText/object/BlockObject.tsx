@@ -107,7 +107,7 @@ export function BlockObject(props: BlockObjectProps) {
       anchor: {path: relativePath, offset: 0},
       focus: {path: relativePath, offset: 0},
     }),
-    [relativePath]
+    [relativePath],
   )
 
   const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
@@ -150,7 +150,7 @@ export function BlockObject(props: BlockObjectProps) {
         PortableTextEditor.focus(editor)
       }
     },
-    [editor]
+    [editor],
   )
 
   const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
@@ -179,7 +179,7 @@ export function BlockObject(props: BlockObjectProps) {
   const presence = useChildPresence(path, true)
   const rootPresence = useMemo(
     () => presence.filter((p) => isEqual(p.path, path)),
-    [path, presence]
+    [path, presence],
   )
 
   // Tooltip indicating validation errors, warnings, info and markers
@@ -196,7 +196,7 @@ export function BlockObject(props: BlockObjectProps) {
         </TooltipBox>
       )) ||
       null,
-    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
+    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
   )
 
   const isOpen = Boolean(memberItem?.member.open)
@@ -261,7 +261,7 @@ export function BlockObject(props: BlockObjectProps) {
       selected,
       validation,
       value,
-    ]
+    ],
   )
 
   return useMemo(
@@ -330,7 +330,7 @@ export function BlockObject(props: BlockObjectProps) {
       toolTipContent,
       tooltipEnabled,
       value,
-    ]
+    ],
   )
 }
 
@@ -366,7 +366,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
       e.stopPropagation()
       onOpen()
     },
-    [onOpen]
+    [onOpen],
   )
 
   return (

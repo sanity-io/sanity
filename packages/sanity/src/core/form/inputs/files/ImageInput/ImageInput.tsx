@@ -237,7 +237,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     // the array logic will check for an "empty" value and remove it for us
     const allKeys = Object.keys(value || {})
     const remainingKeys = allKeys.filter(
-      (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key)
+      (key) => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key),
     )
 
     const isEmpty = remainingKeys.length === 0
@@ -272,8 +272,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
       event.prepend(
         setIfMissing({
           _type: schemaType.name,
-        })
-      ).patches
+        }),
+      ).patches,
     )
   }
 
@@ -285,7 +285,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     const allKeys = Object.keys(this.props.value || {})
     const remainingKeys = allKeys.filter(
-      (key) => !['_type', '_key', 'crop', 'hotspot'].includes(key)
+      (key) => !['_type', '_key', 'crop', 'hotspot'].includes(key),
     )
 
     const isEmpty =
@@ -801,7 +801,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     // we use the hotspot field as the "owner" of both hotspot and crop
     const hotspotField = members.find(
-      (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot'
+      (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot',
     )
 
     return (

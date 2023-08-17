@@ -18,7 +18,7 @@ export const operationArgs = memoize(
       schema: Schema
     },
     idPair: IdPair,
-    typeName: string
+    typeName: string,
   ): Observable<OperationArgs> => {
     return snapshotPair(ctx.client, idPair, typeName).pipe(
       switchMap((versions) =>
@@ -31,17 +31,17 @@ export const operationArgs = memoize(
               snapshots: {draft, published},
               draft: versions.draft,
               published: versions.published,
-            })
-          )
-        )
+            }),
+          ),
+        ),
       ),
       publishReplay(1),
-      refCount()
+      refCount(),
     )
   },
   (ctx, idPair, typeName) => {
     const config = ctx.client.config()
 
     return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
-  }
+  },
 )

@@ -58,7 +58,7 @@ export function TimelineItem({
         onSelect(chunk)
       }
     },
-    [onSelect, chunk, isSelectable]
+    [onSelect, chunk, isSelectable],
   )
 
   return (

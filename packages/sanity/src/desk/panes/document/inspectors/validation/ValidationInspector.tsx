@@ -28,7 +28,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
       onPathOpen(path)
       onFocus(path)
     },
-    [onFocus, onPathOpen]
+    [onFocus, onPathOpen],
   )
 
   return (
@@ -127,7 +127,7 @@ function DocumentNodePathBreadcrumbs(props: {
 
   const pathTypes = useMemo(
     () => getPathTypes({path, schemaType, value}),
-    [path, schemaType, value]
+    [path, schemaType, value],
   )
 
   return (

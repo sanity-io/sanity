@@ -6,7 +6,7 @@
  */
 const requestIdleCallbackShim: typeof window.requestIdleCallback = function requestIdleCallbackShim(
   callback,
-  options?
+  options?,
 ): number {
   const start = Date.now()
   return window.setTimeout(() => {
@@ -20,7 +20,7 @@ const requestIdleCallbackShim: typeof window.requestIdleCallback = function requ
 }
 
 const cancelIdleCallbackShim: typeof window.cancelIdleCallback = function cancelIdleCallbackShim(
-  handle: number
+  handle: number,
 ): void {
   return window.clearTimeout(handle)
 }

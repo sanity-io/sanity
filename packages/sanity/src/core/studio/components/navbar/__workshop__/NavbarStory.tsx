@@ -54,12 +54,12 @@ export default function NavbarStory() {
         title: projectName,
         tools,
       }),
-    [projectName, tools]
+    [projectName, tools],
   )
 
   const navbarContextValue = useMemo(
     () => ({fullscreenSearchPortalEl: portalEl, onSearchOpenChange: noop}),
-    [portalEl]
+    [portalEl],
   )
 
   return (
@@ -137,6 +137,6 @@ function useTools(): Tool[] {
       toggledTools.schema,
       toggledTools.settings,
       toggledTools.vision,
-    ]
+    ],
   )
 }

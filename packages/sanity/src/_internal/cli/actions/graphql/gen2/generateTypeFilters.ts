@@ -38,14 +38,14 @@ export function generateTypeFilters(types: (ConvertedType | ConvertedUnion)[]): 
         type.type === 'Object' &&
         !['Block', 'Span'].includes(type.name) &&
         !type.interfaces &&
-        !builtInTypeKeys.includes(type.type)
+        !builtInTypeKeys.includes(type.type),
     )
 
   const unionTypes = types.filter(isUnion).map((type) => type.name)
   const documentTypes = types
     .filter(isNonUnion)
     .filter(
-      (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
+      (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document'),
     )
 
   const builtinTypeFilters = createBuiltinTypeFilters(builtinTypeValues)
@@ -61,7 +61,7 @@ function createBuiltinTypeFilters(builtinTypeValues: FilterCreator[]): InputObje
 
 function createObjectTypeFilters(
   objectTypes: ConvertedType[],
-  options: {unionTypes: string[]}
+  options: {unionTypes: string[]},
 ): InputObjectType[] {
   return objectTypes.map((objectType) => ({
     name: `${objectType.name}Filter`,
@@ -72,7 +72,7 @@ function createObjectTypeFilters(
 
 function createDocumentTypeFilters(
   documentTypes: ConvertedType[],
-  options: {unionTypes: string[]}
+  options: {unionTypes: string[]},
 ): InputObjectType[] {
   return documentTypes.map((documentType) => ({
     name: `${documentType.name}Filter`,
@@ -85,7 +85,7 @@ function createFieldFilters(objectType: ConvertedType, options: {unionTypes: str
   const {unionTypes} = options
   return objectType.fields
     .filter(
-      (field) => field.type !== 'JSON' && field.kind !== 'List' && !unionTypes.includes(field.type)
+      (field) => field.type !== 'JSON' && field.kind !== 'List' && !unionTypes.includes(field.type),
     )
     .map((field) => ({
       fieldName: field.fieldName,

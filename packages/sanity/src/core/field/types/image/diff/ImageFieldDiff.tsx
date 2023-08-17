@@ -21,12 +21,12 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
 
   // Get all the changed fields within this image field
   const changedFields = Object.keys(fields).filter(
-    (name) => fields[name].isChanged && name !== '_type'
+    (name) => fields[name].isChanged && name !== '_type',
   )
 
   const nestedFields = schemaType.fields
     .filter(
-      (field) => !BASE_IMAGE_FIELDS.includes(field.name) && changedFields.includes(field.name)
+      (field) => !BASE_IMAGE_FIELDS.includes(field.name) && changedFields.includes(field.name),
     )
     .map((field) => field.name)
 

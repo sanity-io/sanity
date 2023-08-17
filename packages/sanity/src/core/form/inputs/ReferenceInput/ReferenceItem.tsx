@@ -79,7 +79,7 @@ const INITIAL_VALUE_CARD_STYLE = {
 } as const
 
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
-  props: ReferenceItemProps<Item>
+  props: ReferenceItemProps<Item>,
 ) {
   const {
     schemaType,
@@ -141,7 +141,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
         position: pos,
       })
     },
-    [onInsert]
+    [onInsert],
   )
   const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfo)
 
@@ -170,7 +170,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function OpenLink(
         restProps: ComponentProps<typeof IntentLink>,
-        _ref: ForwardedRef<HTMLAnchorElement>
+        _ref: ForwardedRef<HTMLAnchorElement>,
       ) {
         return (
           <IntentLink
@@ -183,7 +183,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
           />
         )
       }),
-    [refType?.name, value?._ref]
+    [refType?.name, value?._ref],
   )
 
   const handleReplace = useCallback(() => {
@@ -242,7 +242,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       handleInsert,
       insertableTypes,
       OpenLink,
-    ]
+    ],
   )
 
   const handleFixStrengthMismatch = useCallback(() => {

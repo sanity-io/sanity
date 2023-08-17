@@ -46,8 +46,8 @@ async function deleteAliases(baseAlias: string) {
     created.map((alias) =>
       testClient
         .request({method: 'DELETE', uri: `/aliases/${alias.name}`})
-        .catch(getErrorWarner('dataset alias', alias.name))
-    )
+        .catch(getErrorWarner('dataset alias', alias.name)),
+    ),
   )
 }
 
@@ -58,8 +58,8 @@ async function deleteGraphQLAPIs(graphqlDataset: string) {
     created.map(({dataset, tag}) =>
       testClient
         .request({url: `/apis/graphql/${dataset}/${tag}`, method: 'DELETE'})
-        .catch(getErrorWarner('graphql api', `${dataset}/${tag}`))
-    )
+        .catch(getErrorWarner('graphql api', `${dataset}/${tag}`)),
+    ),
   )
 }
 
@@ -70,8 +70,8 @@ async function deleteCorsOrigins(baseOrigin: string) {
     created.map((origin) =>
       testClient
         .request({method: 'DELETE', uri: `/cors/${origin.id}`})
-        .catch(getErrorWarner('cors origin', origin.origin))
-    )
+        .catch(getErrorWarner('cors origin', origin.origin)),
+    ),
   )
 }
 
@@ -85,6 +85,6 @@ async function deleteDatasets(args: ReturnType<typeof getTestRunArgs>) {
   ]
 
   await Promise.all(
-    datasets.map((ds) => testClient.datasets.delete(ds).catch(getErrorWarner('dataset', ds)))
+    datasets.map((ds) => testClient.datasets.delete(ds).catch(getErrorWarner('dataset', ds))),
   )
 }

@@ -22,7 +22,7 @@ function parseCliFlags(args: {argv?: string[]}) {
 
 export default async function deleteGraphQLApi(
   args: CliCommandArguments<DeleteGraphQLApiFlags>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   // Reparsing CLI flags for better control of binary flags
   const flags = await parseCliFlags(args)

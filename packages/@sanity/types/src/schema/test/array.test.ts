@@ -26,7 +26,7 @@ describe('array types', () => {
             // That seemed less ideal than having to type custom value here,
             // so the implementation was dropped
             .custom((value?: string[]) =>
-              value?.length === 2 && value[0].toLowerCase() == 'yolo' ? 'Error' : true
+              value?.length === 2 && value[0].toLowerCase() == 'yolo' ? 'Error' : true,
             )
             .warning(),
           // @ts-expect-error greaterThan does not exist on ArrayRule

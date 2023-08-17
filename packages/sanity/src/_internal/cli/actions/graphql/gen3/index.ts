@@ -23,7 +23,7 @@ export default (extracted: ApiSpecification): GeneratedApiSpecification => {
   const sortings = generateTypeSortings(types)
   const queries = generateTypeQueries(
     types,
-    sortings.filter((node): node is InputObjectType => node.kind === 'InputObject')
+    sortings.filter((node): node is InputObjectType => node.kind === 'InputObject'),
   )
   const graphqlTypes = [...extracted.types, ...filters, ...sortings]
 

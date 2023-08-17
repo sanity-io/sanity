@@ -16,7 +16,7 @@ export default function DocumentActionsStory() {
         id: 'grrm',
       },
     }),
-    []
+    [],
   )
 
   return (

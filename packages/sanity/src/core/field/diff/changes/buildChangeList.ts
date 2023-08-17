@@ -35,7 +35,7 @@ export function buildChangeList(
   diff: Diff,
   path: Path = [],
   titlePath: ChangeTitlePath = [],
-  context: DiffContext = {}
+  context: DiffContext = {},
 ): ChangeNode[] {
   const diffComponent = resolveDiffComponent(schemaType, context.parentSchema)
 
@@ -57,7 +57,7 @@ export function buildObjectChangeList(
   diff: ObjectDiff,
   path: Path = [],
   titlePath: ChangeTitlePath = [],
-  diffContext: DiffContext = {}
+  diffContext: DiffContext = {},
 ): ChangeNode[] {
   const changes: ChangeNode[] = []
 
@@ -69,7 +69,7 @@ export function buildObjectChangeList(
       changes.push(...buildFieldChange(fieldSet.field, diff, path, titlePath, childContext))
     } else {
       changes.push(
-        ...buildFieldsetChangeList(fieldSet as MultiFieldSet, diff, path, titlePath, childContext)
+        ...buildFieldsetChangeList(fieldSet as MultiFieldSet, diff, path, titlePath, childContext),
       )
     }
   }
@@ -95,7 +95,7 @@ export function buildFieldChange(
   diff: ObjectDiff,
   path: Path,
   titlePath: ChangeTitlePath,
-  diffContext: DiffContext & {fieldFilter?: string[]} = {}
+  diffContext: DiffContext & {fieldFilter?: string[]} = {},
 ): ChangeNode[] {
   const {fieldFilter, ...context} = diffContext
   const fieldDiff = diff.fields[field.name]
@@ -113,7 +113,7 @@ export function buildFieldsetChangeList(
   diff: ObjectDiff,
   path: Path,
   titlePath: ChangeTitlePath,
-  diffContext: DiffContext & {fieldFilter?: string[]} = {}
+  diffContext: DiffContext & {fieldFilter?: string[]} = {},
 ): ChangeNode[] {
   const {fields, name, title, readOnly, hidden} = fieldSet
   const {fieldFilter, ...context} = diffContext
@@ -142,8 +142,8 @@ export function buildFieldsetChangeList(
         fieldDiff,
         fieldPath,
         fieldTitlePath,
-        context
-      )
+        context,
+      ),
     )
   }
 
@@ -169,10 +169,11 @@ export function buildArrayChangeList(
   schemaType: ArraySchemaType,
   diff: ArrayDiff,
   path: Path = [],
-  titlePath: ChangeTitlePath = []
+  titlePath: ChangeTitlePath = [],
 ): ChangeNode[] {
   const changedOrMoved = diff.items.filter(
-    (item) => (item.hasMoved && item.fromIndex !== item.toIndex) || item.diff.action !== 'unchanged'
+    (item) =>
+      (item.hasMoved && item.fromIndex !== item.toIndex) || item.diff.action !== 'unchanged',
   )
 
   if (changedOrMoved.length === 0) {
@@ -218,7 +219,7 @@ export function buildArrayChangeList(
       itemDiff.diff,
       itemPath,
       itemTitlePath,
-      itemContext
+      itemContext,
     ).map(attachItemDiff)
 
     if (isPortableText) {
@@ -259,7 +260,7 @@ function getFieldChange(
   diff: Diff,
   path: Path,
   titlePath: ChangeTitlePath,
-  {itemDiff, parentDiff, parentSchema}: DiffContext = {}
+  {itemDiff, parentDiff, parentSchema}: DiffContext = {},
 ): FieldChangeNode[] {
   const {fromValue, toValue, type} = diff
 

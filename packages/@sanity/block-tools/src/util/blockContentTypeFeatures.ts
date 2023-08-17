@@ -17,7 +17,7 @@ import {findBlockType} from './findBlockType'
 
 // Helper method for describing a blockContentType's feature set
 export default function blockContentFeatures(
-  blockContentType: ArraySchemaType
+  blockContentType: ArraySchemaType,
 ): BlockContentFeatures {
   if (!blockContentType) {
     throw new Error("Parameter 'blockContentType' required")
@@ -40,12 +40,12 @@ export default function blockContentFeatures(
 
   const inlineObjectTypes = ofType.filter(
     (inlineType): inlineType is ObjectSchemaType =>
-      inlineType.name !== 'span' && isObjectSchemaType(inlineType)
+      inlineType.name !== 'span' && isObjectSchemaType(inlineType),
   )
 
   const blockObjectTypes = blockContentType.of.filter(
     (memberType): memberType is ObjectSchemaType =>
-      memberType.name !== blockType.name && isObjectSchemaType(memberType)
+      memberType.name !== blockType.name && isObjectSchemaType(memberType),
   )
 
   return {
@@ -72,7 +72,7 @@ function resolveEnabledStyles(blockType: BlockSchemaType): TitledListValue<strin
   if (textStyles.length === 0) {
     throw new Error(
       'The style fields need at least one style ' +
-        "defined. I.e: {title: 'Normal', value: 'normal'}."
+        "defined. I.e: {title: 'Normal', value: 'normal'}.",
     )
   }
 
@@ -107,7 +107,7 @@ function resolveEnabledListItems(blockType: BlockSchemaType): TitledListValue<st
 }
 
 function getTitledListValuesFromEnumListOptions(
-  options: EnumListProps<string> | undefined
+  options: EnumListProps<string> | undefined,
 ): TitledListValue<string>[] {
   const list = options ? options.list : undefined
   if (!Array.isArray(list)) {

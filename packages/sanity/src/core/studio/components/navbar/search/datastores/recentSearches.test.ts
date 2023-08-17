@@ -74,7 +74,7 @@ const recentSearchesStoreDefinition = {
   version: RECENT_SEARCH_VERSION,
 }
 const recentSearchesStore = createRecentSearchesStore(
-  recentSearchesStoreDefinition
+  recentSearchesStoreDefinition,
 ) as RecentSearchesStore
 
 afterEach(() => {
@@ -245,7 +245,7 @@ describe('search-store', () => {
         recentSearchesStore.addSearch({
           query: `${i}`,
           types: [],
-        })
+        }),
       )
 
       const recentSearches = recentSearchesStore.getRecentSearches()

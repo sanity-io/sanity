@@ -57,7 +57,7 @@ export function parseDecoratedRefs(refs: string) {
     .map((s) =>
       s.startsWith(TAG_PREFIX)
         ? {type: 'tag', name: s.substring(TAG_PREFIX.length)}
-        : {type: 'branch', name: stripOrigin(s)}
+        : {type: 'branch', name: stripOrigin(s)},
     )
   const [branches, tags] = partition(parsedRefs, (ref) => ref.type === 'branch')
   return {
@@ -81,7 +81,7 @@ function getGitArgs(format: string) {
 }
 
 export async function getGitInfo<Field extends GitField>(
-  fields: Field[]
+  fields: Field[],
 ): Promise<{[K in Field]: string}> {
   const output = execa('git', getGitArgs(createFormat(fields)))
   return parseOutput(fields, (await output).stdout)

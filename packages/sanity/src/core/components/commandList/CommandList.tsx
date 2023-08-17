@@ -120,7 +120,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     wrapAround = true,
     ...responsivePaddingProps
   },
-  ref
+  ref,
 ) {
   const isMountedRef = useRef(false)
   const commandListId = useRef(useId())
@@ -146,7 +146,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         onEndReached()
       }
     },
-    [onEndReached, items.length, onEndReachedIndexOffset]
+    [onEndReached, items.length, onEndReachedIndexOffset],
   )
 
   // This will trigger a re-render whenever its internal state changes
@@ -198,7 +198,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
 
   const activeItemCount = useMemo(
     () => itemIndices.filter((v) => !v.disabled).length,
-    [itemIndices]
+    [itemIndices],
   )
 
   /**
@@ -207,12 +207,12 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   const enableChildContainerPointerEvents = useCallback(
     (enabled: boolean) =>
       pointerOverlayElement?.setAttribute('data-enabled', (!enabled).toString()),
-    [pointerOverlayElement]
+    [pointerOverlayElement],
   )
 
   const getChildDescendantId = useCallback(
     (index: number) => `${commandListId.current}-item-${index}`,
-    []
+    [],
   )
 
   const getCommandListChildrenId = useCallback(() => `${commandListId.current}-children`, [])
@@ -316,7 +316,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         }
       }
     },
-    [handleUpdateActiveDescendant, itemIndices, showChildrenActiveState, virtualizer]
+    [handleUpdateActiveDescendant, itemIndices, showChildrenActiveState, virtualizer],
   )
 
   /**
@@ -341,7 +341,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       setActiveIndex({index: nextIndex, scrollIntoView: true})
       enableChildContainerPointerEvents(false)
     },
-    [activeItemCount, enableChildContainerPointerEvents, setActiveIndex, wrapAround]
+    [activeItemCount, enableChildContainerPointerEvents, setActiveIndex, wrapAround],
   )
 
   const focusElement = useCallback(
@@ -357,7 +357,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
           break
       }
     },
-    [inputElement, virtualListElement]
+    [inputElement, virtualListElement],
   )
 
   const focusInputElement = useCallback(() => {
@@ -375,7 +375,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     (index: number) => () => {
       setActiveIndex({index, scrollIntoView: false})
     },
-    [setActiveIndex]
+    [setActiveIndex],
   )
 
   const handleFocus = useCallback(() => {
@@ -411,26 +411,26 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
         const currentElement = childElements.find(
           (el) =>
             Number(el.dataset.index) ===
-            itemIndices.findIndex((i) => i.activeIndex === activeIndexRef.current)
+            itemIndices.findIndex((i) => i.activeIndex === activeIndexRef.current),
         )
 
         if (currentElement) {
           const clickableElement = currentElement?.querySelector<HTMLElement>(
-            LIST_ITEM_INTERACTIVE_SELECTOR
+            LIST_ITEM_INTERACTIVE_SELECTOR,
           )
           clickableElement?.click()
         }
       }
     },
-    [childContainerElement?.children, focusElement, itemIndices, selectAdjacentItemIndex]
+    [childContainerElement?.children, focusElement, itemIndices, selectAdjacentItemIndex],
   )
   const handleKeyDownInput = useCallback(
     (event: KeyboardEvent) => handleKeyDown('input')(event),
-    [handleKeyDown]
+    [handleKeyDown],
   )
   const handleKeyDownList = useCallback(
     (event: KeyboardEvent) => handleKeyDown('list')(event),
-    [handleKeyDown]
+    [handleKeyDown],
   )
 
   const handleVirtualListMouseEnter = useCallback(() => {
@@ -471,7 +471,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       focusListElement,
       handleGetTopIndex,
       setActiveIndex,
-    ]
+    ],
   )
 
   /**

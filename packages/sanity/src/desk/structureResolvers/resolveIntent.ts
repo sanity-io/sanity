@@ -165,7 +165,7 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
               levelIndex: nextLevelIndex,
               structureContext,
             })
-          })
+          }),
         )
       ).flat()
     }

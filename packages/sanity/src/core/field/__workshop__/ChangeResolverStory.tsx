@@ -36,7 +36,7 @@ export default function ChangeResolverStory() {
       },
       segments: [],
     }),
-    []
+    [],
   )
 
   // export interface FieldChangeNode {
@@ -68,7 +68,7 @@ export default function ChangeResolverStory() {
       showIndex: true,
       showHeader: true,
     }),
-    [nameDiff, schemaType]
+    [nameDiff, schemaType],
   )
 
   const FieldWrapper = useCallback((_props: any) => {
@@ -107,7 +107,7 @@ export default function ChangeResolverStory() {
         author: 'p27ewL8aM',
       },
     }),
-    [nameDiff]
+    [nameDiff],
   )
 
   const documentContext: DocumentChangeContextInstance = useMemo(
@@ -119,7 +119,7 @@ export default function ChangeResolverStory() {
       schemaType,
       value: {name: 'Test'},
     }),
-    [diff, documentId, FieldWrapper, schemaType]
+    [diff, documentId, FieldWrapper, schemaType],
   )
 
   return (

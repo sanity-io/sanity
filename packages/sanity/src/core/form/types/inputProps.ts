@@ -53,7 +53,7 @@ export interface BaseInputProps {
  * @beta */
 export interface ObjectInputProps<
   T = Record<string, any>,
-  S extends ObjectSchemaType = ObjectSchemaType
+  S extends ObjectSchemaType = ObjectSchemaType,
 > extends BaseInputProps,
     Omit<ObjectFormNode<T, S>, '_allMembers'> {
   /**
@@ -152,7 +152,7 @@ export interface ObjectInputProps<
  * @beta */
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
-  S extends ArraySchemaType = ArraySchemaType
+  S extends ArraySchemaType = ArraySchemaType,
 > extends BaseInputProps,
     ArrayOfObjectsFormNode<T[], S> {
   /**
@@ -288,7 +288,7 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
  * @beta */
 export interface ArrayOfPrimitivesInputProps<
   T extends string | boolean | number = string | boolean | number,
-  S extends ArraySchemaType = ArraySchemaType
+  S extends ArraySchemaType = ArraySchemaType,
 > extends BaseInputProps,
     ArrayOfPrimitivesFormNode<T[], S> {
   /**

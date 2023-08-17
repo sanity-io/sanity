@@ -42,7 +42,7 @@ export type IntrinsicArrayOfDefinition = {
 /** @public */
 export type ArrayOfType<
   TType extends IntrinsicTypeName = IntrinsicTypeName,
-  TAlias extends IntrinsicTypeName | undefined = undefined
+  TAlias extends IntrinsicTypeName | undefined = undefined,
 > = IntrinsicArrayOfDefinition[TType] | ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
 
 /** @public */

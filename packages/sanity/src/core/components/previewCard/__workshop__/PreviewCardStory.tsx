@@ -24,7 +24,7 @@ export default function PreviewCardStory() {
                       imageUrl: 'https://source.unsplash.com/96x96/?face',
                       id: num,
                     },
-                  } as any)
+                  }) as any,
               )}
             />
             <TextWithTone tone="positive">

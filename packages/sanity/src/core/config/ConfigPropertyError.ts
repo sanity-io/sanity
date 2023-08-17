@@ -18,7 +18,7 @@ export class ConfigPropertyError extends Error {
       isRecord(cause) && typeof cause?.message === 'string' ? `: ${cause.message}` : ''
 
     super(
-      `An error occurred while resolving \`${propertyName}\` from ${path.join(' > ')}${message}`
+      `An error occurred while resolving \`${propertyName}\` from ${path.join(' > ')}${message}`,
     )
 
     this.propertyName = propertyName

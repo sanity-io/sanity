@@ -116,7 +116,7 @@ const progress = (url: string) => {
 const followProgress = (
   jobId: string,
   client: SanityClient,
-  output: CliOutputter
+  output: CliOutputter,
 ): Promise<void> => {
   let currentProgress = 0
 
@@ -215,12 +215,12 @@ const copyDatasetCommand: CliCommandDefinition<CopyDatasetFlags> = {
       })
 
       output.print(
-        `Copying dataset ${chalk.green(sourceDatasetName)} to ${chalk.green(targetDatasetName)}...`
+        `Copying dataset ${chalk.green(sourceDatasetName)} to ${chalk.green(targetDatasetName)}...`,
       )
 
       if (!shouldSkipHistory) {
         output.print(
-          `Note: You can run this command with flag '--skip-history'. The flag will reduce copy time in larger datasets.`
+          `Note: You can run this command with flag '--skip-history'. The flag will reduce copy time in larger datasets.`,
         )
       }
 

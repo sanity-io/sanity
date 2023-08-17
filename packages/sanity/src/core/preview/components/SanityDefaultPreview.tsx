@@ -55,7 +55,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
           src={
             imageBuilder
               .image(
-                mediaProp as SanityImageSource /*will only enter this code path if it's compatible*/
+                mediaProp as SanityImageSource /*will only enter this code path if it's compatible*/,
               )
               .width(dimensions.width || 100)
               .height(dimensions.height || 100)
@@ -66,7 +66,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
         />
       )
     },
-    [imageBuilder, mediaProp, title]
+    [imageBuilder, mediaProp, title],
   )
 
   const renderIcon = useCallback(() => {
@@ -113,13 +113,13 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
       media: media as any,
       title,
     }),
-    [media, restProps, title]
+    [media, restProps, title],
   )
 
   const layoutComponent = _previewComponents[layout || 'default']
 
   return createElement(
     layoutComponent as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
-    previewProps
+    previewProps,
   )
 }

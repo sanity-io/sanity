@@ -10,7 +10,7 @@ export const objectWithNestedArray = {
     ...range(20).map((n) =>
       n % 2 === 0
         ? {type: 'string', name: `fieldNo${n}`}
-        : {type: 'array', name: `arrayNo${n}`, of: [{type: 'objectWithNestedArray'}]}
+        : {type: 'array', name: `arrayNo${n}`, of: [{type: 'objectWithNestedArray'}]},
     ),
   ],
 }
@@ -22,7 +22,7 @@ export const collapsibleObject = {
     ...range(4).map((n) =>
       n % 2 === 0
         ? {type: 'string', name: `fieldNo${n}`}
-        : {type: 'nestedCollapsibleObject', name: `nestedCollapsibleObject${n}`}
+        : {type: 'nestedCollapsibleObject', name: `nestedCollapsibleObject${n}`},
     ),
   ],
 }

@@ -8,7 +8,7 @@ const noopRenderDefault = () => <></>
 
 export type TestRenderStringInputCallback = (
   inputProps: StringInputProps,
-  context: TestRenderInputContext
+  context: TestRenderInputContext,
 ) => React.ReactElement
 
 export async function renderStringInput(options: {
@@ -19,7 +19,7 @@ export async function renderStringInput(options: {
   const {fieldDefinition, props, render} = options
 
   function transformProps(
-    inputProps: TestRenderInputProps<PrimitiveInputElementProps>
+    inputProps: TestRenderInputProps<PrimitiveInputElementProps>,
   ): StringInputProps {
     const {schemaType, value, elementProps, ...restProps} = inputProps
 

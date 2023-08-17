@@ -24,7 +24,7 @@ export function useDocumentType(documentId: string, specifiedType = '*'): Docume
   // that we won't be returning it in that case, eg: `{documentType: '*', isResolved: true}
   const SYNC_RESOLVED_STATE = useMemo(
     () => ({documentType: specifiedType, isLoaded: true}),
-    [specifiedType]
+    [specifiedType],
   )
 
   // Set up our state that we'll only use when we need to reach out to the API to find
@@ -32,7 +32,7 @@ export function useDocumentType(documentId: string, specifiedType = '*'): Docume
   // For consistency (between different document ids/types), we're setting the sync resolved
   // state here as well, but it isn't strictly necessary for correct rendering.
   const [resolvedState, setDocumentType] = useState<DocumentTypeResolveState>(
-    isResolved ? SYNC_RESOLVED_STATE : LOADING_STATE
+    isResolved ? SYNC_RESOLVED_STATE : LOADING_STATE,
   )
 
   // Reset documentType when documentId changes. Note that we're using the referentially

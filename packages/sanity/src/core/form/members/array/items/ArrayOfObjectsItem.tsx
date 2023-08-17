@@ -84,7 +84,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathOpen(path)
       onSetPathCollapsed(path, false)
     },
-    [onPathOpen, onSetPathCollapsed]
+    [onPathOpen, onSetPathCollapsed],
   )
   const toast = useToast()
 
@@ -123,7 +123,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
                   status: 'error',
                 })
               }
-            })
+            }),
           )
           .subscribe({
             complete: () => {
@@ -143,7 +143,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathFocus,
       resolveInitialValue,
       toast,
-    ]
+    ],
   )
 
   const handleBlur = useCallback(() => {
@@ -158,7 +158,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     (path: Path) => {
       onPathFocus(member.item.path.concat(path))
     },
-    [member.item.path, onPathFocus]
+    [member.item.path, onPathFocus],
   )
 
   const handleChange = useCallback(
@@ -166,10 +166,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onChange(
         PatchEvent.from(event)
           .prepend(setIfMissing(createProtoValue(member.item.schemaType)))
-          .prefixAll({_key: member.key})
+          .prefixAll({_key: member.key}),
       )
     },
-    [onChange, member.item.schemaType, member.key]
+    [onChange, member.item.schemaType, member.key],
   )
   const handleCollapse = useCallback(() => {
     onSetPathCollapsed(member.item.path, true)
@@ -183,13 +183,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     (fieldName: string) => {
       onSetPathCollapsed(member.item.path.concat(fieldName), true)
     },
-    [onSetPathCollapsed, member.item.path]
+    [onSetPathCollapsed, member.item.path],
   )
   const handleExpandField = useCallback(
     (fieldName: string) => {
       onSetPathCollapsed(member.item.path.concat(fieldName), false)
     },
-    [onSetPathCollapsed, member.item.path]
+    [onSetPathCollapsed, member.item.path],
   )
   const handleCloseField = useCallback(() => {
     onPathOpen(member.item.path)
@@ -198,19 +198,19 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     (fieldName: string) => {
       onPathOpen(member.item.path.concat(fieldName))
     },
-    [onPathOpen, member.item.path]
+    [onPathOpen, member.item.path],
   )
   const handleExpandFieldSet = useCallback(
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.item.path.concat(fieldsetName), false)
     },
-    [onSetFieldSetCollapsed, member.item.path]
+    [onSetFieldSetCollapsed, member.item.path],
   )
   const handleCollapseFieldSet = useCallback(
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.item.path.concat(fieldsetName), true)
     },
-    [onSetFieldSetCollapsed, member.item.path]
+    [onSetFieldSetCollapsed, member.item.path],
   )
 
   const handleOpen = useCallback(() => {
@@ -233,7 +233,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     (groupName: string) => {
       onFieldGroupSelect(member.item.path, groupName)
     },
-    [onFieldGroupSelect, member.item.path]
+    [onFieldGroupSelect, member.item.path],
   )
 
   const elementProps = useMemo(
@@ -243,7 +243,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       id: member.item.id,
       ref: focusRef,
     }),
-    [handleBlur, handleFocus, member.item.id]
+    [handleBlur, handleFocus, member.item.id],
   )
 
   const inputProps = useMemo((): Omit<ObjectInputProps, 'renderDefault'> => {

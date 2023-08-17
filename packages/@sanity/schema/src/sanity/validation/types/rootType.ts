@@ -10,7 +10,7 @@ export default (typeDef, visitorContext) => {
       _problems: [
         error(
           'Invalid/undefined type declaration, check declaration or the import/export of the schema type.',
-          HELP_IDS.TYPE_INVALID
+          HELP_IDS.TYPE_INVALID,
         ),
       ],
     }
@@ -21,22 +21,25 @@ export default (typeDef, visitorContext) => {
     problems.push(
       error(
         'Type appears to be an ES6 module imported through CommonJS require - use an import statement or access the `.default` property',
-        HELP_IDS.TYPE_IS_ESM_MODULE
-      )
+        HELP_IDS.TYPE_IS_ESM_MODULE,
+      ),
     )
   } else if (!hasName) {
     problems.push(error('Missing type name', HELP_IDS.TYPE_MISSING_NAME))
   } else if (visitorContext.isReserved(typeDef.name)) {
     problems.push(
-      error(`Invalid type name: "${typeDef.name}" is a reserved name.`, HELP_IDS.TYPE_NAME_RESERVED)
+      error(
+        `Invalid type name: "${typeDef.name}" is a reserved name.`,
+        HELP_IDS.TYPE_NAME_RESERVED,
+      ),
     )
   }
 
   if (visitorContext.isDuplicate(typeDef.name)) {
     problems.push(
       error(
-        `Invalid type name: A type with name "${typeDef.name}" is already defined in the schema.`
-      )
+        `Invalid type name: A type with name "${typeDef.name}" is already defined in the schema.`,
+      ),
     )
   }
 

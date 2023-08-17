@@ -41,7 +41,7 @@ const createEmitter =
 function wrap<ExtraArgs extends any[], DisabledReason extends string>(
   opName: keyof OperationsAPI,
   op: OperationImpl<ExtraArgs, DisabledReason>,
-  operationArgs: OperationArgs
+  operationArgs: OperationArgs,
 ): Operation<ExtraArgs, DisabledReason> {
   const disabled = op.disabled(operationArgs)
   return {

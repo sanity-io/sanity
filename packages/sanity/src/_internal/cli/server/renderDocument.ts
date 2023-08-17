@@ -67,7 +67,7 @@ export function renderDocument(options: {
 
         if (Array.isArray(msg.message)) {
           msg.message.forEach((warning: string) =>
-            console.warn(`${chalk.yellow('[warn]')} ${warning}`)
+            console.warn(`${chalk.yellow('[warn]')} ${warning}`),
           )
         } else {
           console.warn(`${chalk.yellow('[warn]')} ${msg.message}`)

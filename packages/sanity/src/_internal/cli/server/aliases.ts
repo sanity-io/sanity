@@ -24,7 +24,7 @@ export function getAliases(opts: {monorepo?: SanityMonorepo}): Record<string, st
   const monorepoAliases = Object.fromEntries(
     Object.entries(devAliases).map(([key, modulePath]) => {
       return [key, path.resolve(monorepo.path, modulePath)]
-    })
+    }),
   )
 
   return monorepoAliases

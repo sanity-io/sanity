@@ -8,7 +8,7 @@ import {isPreservingKeys, PRESERVE_KEYS} from '../../utils/withPreserveKeys'
  */
 export function createWithObjectKeys(
   schemaTypes: PortableTextMemberSchemaTypes,
-  keyGenerator: () => string
+  keyGenerator: () => string,
 ) {
   return function withKeys(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     PRESERVE_KEYS.set(editor, false)

@@ -10,7 +10,7 @@ export function ConfigIssuesButton() {
   const schema = useSchema()
   const groupsWithWarnings =
     schema._validation?.filter((group) =>
-      group.problems.some((problem) => problem.severity === 'warning')
+      group.problems.some((problem) => problem.severity === 'warning'),
     ) || []
 
   // get root scheme

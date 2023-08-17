@@ -36,7 +36,7 @@ interface PaneItemProps {
 export function getIconWithFallback(
   icon: React.ComponentType<any> | false | undefined,
   schemaType: SchemaType | undefined,
-  defaultIcon: React.ComponentType<any>
+  defaultIcon: React.ComponentType<any>,
 ): React.ComponentType<any> | false {
   if (icon === false) {
     return false
@@ -112,7 +112,7 @@ export function PaneItem(props: PaneItemProps) {
       function LinkComponent(linkProps: {children: ReactNode}) {
         return <ChildLink {...linkProps} childId={id} />
       },
-    [ChildLink, id]
+    [ChildLink, id],
   )
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {

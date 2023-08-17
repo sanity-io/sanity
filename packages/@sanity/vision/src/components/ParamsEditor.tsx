@@ -41,7 +41,7 @@ export function ParamsEditor(props: ParamsEditorProps) {
       setValid(event.valid)
       onChange(event)
     },
-    [onChange]
+    [onChange],
   )
 
   const handleChange = useMemo(() => debounce(handleChangeRaw, 333), [handleChangeRaw])

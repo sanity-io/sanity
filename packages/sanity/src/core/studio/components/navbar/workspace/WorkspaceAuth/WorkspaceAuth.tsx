@@ -15,7 +15,7 @@ export function WorkspaceAuth() {
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const [selectedWorkspaceName, setSelectedWorkspaceName] = useState<string | null>(
-    activeWorkspace?.name || null
+    activeWorkspace?.name || null,
   )
   const selectedWorkspace =
     workspaces.length === 1

@@ -11,7 +11,7 @@ interface ReviewChangesButtonProps extends React.HTMLProps<HTMLButtonElement> {
 
 const ReviewButton = React.forwardRef(function ReviewButton(
   props: ReviewChangesButtonProps & ButtonProps,
-  ref: React.ForwardedRef<HTMLButtonElement>
+  ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
   const {collapsed, status, lastUpdated, ...rest} = props
   const lastUpdatedTime = useTimeAgo(lastUpdated || '', {minimal: true})

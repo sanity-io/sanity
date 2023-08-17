@@ -13,6 +13,6 @@ export const documentFieldActionsReducer: ConfigPropertyReducer<
   if (Array.isArray(documentFieldActions)) return [...prev, ...documentFieldActions]
 
   throw new Error(
-    `Expected \`document.unstable_fieldActions\` to be an array or a function, but received ${typeof documentFieldActions}`
+    `Expected \`document.unstable_fieldActions\` to be an array or a function, but received ${typeof documentFieldActions}`,
   )
 }

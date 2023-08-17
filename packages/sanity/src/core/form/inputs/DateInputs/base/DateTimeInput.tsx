@@ -20,7 +20,7 @@ export interface DateTimeInputProps {
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
   props: DateTimeInputProps,
-  ref: React.ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>,
 ) {
   const {value, inputValue, onInputChange, onChange, selectTime, timeStep, ...rest} = props
   const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)

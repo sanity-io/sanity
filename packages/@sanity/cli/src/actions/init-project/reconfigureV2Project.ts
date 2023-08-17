@@ -20,7 +20,7 @@ const isCI = process.env.CI
 // eslint-disable-next-line max-statements, complexity
 export async function reconfigureV2Project(
   args: CliCommandArguments<InitFlags>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const {output, prompt, workDir, apiClient, yarn, chalk} = context
   const cliFlags = args.extOptions
@@ -190,7 +190,7 @@ export async function reconfigureV2Project(
       const project = projects.find((proj) => proj.id === flags.project)
       if (!project && !unattended) {
         throw new Error(
-          `Given project ID (${flags.project}) not found, or you do not have access to it`
+          `Given project ID (${flags.project}) not found, or you do not have access to it`,
         )
       }
 
@@ -363,7 +363,7 @@ export async function reconfigureV2Project(
             {
               message: 'Dataset name:',
             },
-            existingDatasetNames
+            existingDatasetNames,
           )
       const aclMode = await getAclMode()
       const spinner = context.output.spinner('Creating dataset').start()
@@ -384,7 +384,7 @@ export async function reconfigureV2Project(
 
     if (cliFlags.project && createProjectName) {
       throw new Error(
-        'Both `--project` and `--create-project` specified, only a single is supported'
+        'Both `--project` and `--create-project` specified, only a single is supported',
       )
     }
 
@@ -407,7 +407,7 @@ export async function reconfigureV2Project(
 
       if (!cliFlags.project && !createProjectName) {
         throw new Error(
-          '`--project <id>` or `--create-project <name>` must be specified in unattended mode'
+          '`--project <id>` or `--create-project <name>` must be specified in unattended mode',
         )
       }
     }

@@ -8,7 +8,7 @@ import {
 
 export async function resolveTypeForDocument(
   getClient: (options: SourceClientOptions) => SanityClient,
-  id: string
+  id: string,
 ): Promise<string | undefined> {
   const query = '*[_id in [$documentId, $draftId]]._type'
   const documentId = getPublishedId(id)
@@ -17,7 +17,7 @@ export async function resolveTypeForDocument(
   const types = await getClient(DEFAULT_STUDIO_CLIENT_OPTIONS).fetch(
     query,
     {documentId, draftId},
-    {tag: 'structure.resolve-type'}
+    {tag: 'structure.resolve-type'},
   )
 
   return types[0]

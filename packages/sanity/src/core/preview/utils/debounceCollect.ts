@@ -12,7 +12,7 @@ interface QueueItem {
 // When wait period is over, calls the original function with the collected arguments
 export function debounceCollect<Fn extends (...args: any[]) => Observable<any[]>>(
   fn: Fn,
-  wait: number
+  wait: number,
 ): Fn extends (collectedArgs: [...infer TArgs][]) => Observable<(infer TReturnValue)[]>
   ? (...args: TArgs) => Observable<TReturnValue>
   : never

@@ -47,7 +47,7 @@ export function sanityBuildEntries(options: {
         (file) =>
           file.type === 'chunk' &&
           file.name === 'sanity' &&
-          file.facadeModuleId?.endsWith(entryChunkId)
+          file.facadeModuleId?.endsWith(entryChunkId),
       )
 
       if (!entryFile) {

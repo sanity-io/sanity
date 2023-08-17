@@ -27,7 +27,7 @@ function validateOptions(opts) {
   const missing = clientMethods.find((key) => typeof options.client[key] !== 'function')
   if (missing) {
     throw new Error(
-      `\`options.client\` is not a valid @sanity/client instance - no "${missing}" method found`
+      `\`options.client\` is not a valid @sanity/client instance - no "${missing}" method found`,
     )
   }
 

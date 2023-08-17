@@ -23,7 +23,7 @@ export function useInitialValue(props: {
 
   const defaultValue: SanityDocumentLike = useMemo(
     () => ({_id: documentId, _type: documentType}),
-    [documentId, documentType]
+    [documentId, documentType],
   )
 
   const [state, setState] = useState<InitialValueState>({

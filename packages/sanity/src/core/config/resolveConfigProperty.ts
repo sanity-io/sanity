@@ -18,10 +18,10 @@ interface AsyncResolveConfigPropertyOptions<TValue, TContext> {
 }
 
 export function resolveConfigProperty<TValue, TContext>(
-  options: ResolveConfigPropertyOptions<TValue, TContext>
+  options: ResolveConfigPropertyOptions<TValue, TContext>,
 ): TValue
 export function resolveConfigProperty<TValue, TContext>(
-  options: AsyncResolveConfigPropertyOptions<TValue, TContext>
+  options: AsyncResolveConfigPropertyOptions<TValue, TContext>,
 ): Promise<TValue>
 export function resolveConfigProperty<TValue, TContext>({
   config: inputConfig,

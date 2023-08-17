@@ -172,7 +172,7 @@ async function getOutputPath(
   destination: string,
   dataset: string,
   prompt: CliPrompter,
-  flags: ParsedExportFlags
+  flags: ParsedExportFlags,
 ) {
   if (destination === '-') {
     return '-'

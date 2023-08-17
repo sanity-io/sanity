@@ -43,7 +43,7 @@ export async function promptForAclMode(prompt: CliPrompter, output: CliOutputter
 
   if (mode === 'private') {
     output.print(
-      'Please note that while documents are private, assets (files and images) are still public\n'
+      'Please note that while documents are private, assets (files and images) are still public\n',
     )
   }
 

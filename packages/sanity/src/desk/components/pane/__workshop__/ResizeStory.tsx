@@ -35,7 +35,7 @@ export default function ResizeStory() {
       resize: controller.resize,
       resizing: state.resizing,
     }),
-    [collapsed, controller, state.expandedElement, state.panes, state.resizing]
+    [collapsed, controller, state.expandedElement, state.panes, state.resizing],
   )
 
   useEffect(() => controller.subscribe(setState), [controller])
@@ -249,7 +249,7 @@ const PaneView = memo(function PaneView(props: PaneViewProps) {
       minWidth,
       maxWidth: maxWidth === Infinity ? undefined : maxWidth,
     }),
-    [flex, minWidth, maxWidth]
+    [flex, minWidth, maxWidth],
   )
 
   const handleClick = useCallback(() => {

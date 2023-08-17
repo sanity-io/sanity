@@ -3,7 +3,7 @@ import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 
 export function useRefValue<T extends Record<string, any> = Record<string, any>>(
-  refId: string | undefined | null
+  refId: string | undefined | null,
 ): T | undefined {
   const [value, setValue] = useState<T | undefined>(undefined)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

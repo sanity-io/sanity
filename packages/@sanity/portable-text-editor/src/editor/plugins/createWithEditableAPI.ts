@@ -28,7 +28,7 @@ const debug = debugWithName('API:editable')
 export function createWithEditableAPI(
   portableTextEditor: PortableTextEditor,
   types: PortableTextMemberSchemaTypes,
-  keyGenerator: () => string
+  keyGenerator: () => string,
 ) {
   return function withEditableAPI(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     portableTextEditor.setEditable({
@@ -97,7 +97,7 @@ export function createWithEditableAPI(
             const ptBlock = fromSlateValue(
               [block],
               types.block.name,
-              KEY_TO_VALUE_ELEMENT.get(editor)
+              KEY_TO_VALUE_ELEMENT.get(editor),
             )[0] as PortableTextTextBlock
             return ptBlock.children[editor.selection.focus.path[1]]
           }
@@ -111,7 +111,7 @@ export function createWithEditableAPI(
         const [focusBlock] = Array.from(
           Editor.nodes(editor, {
             at: editor.selection.focus.path.slice(0, 1),
-          })
+          }),
         )[0] || [undefined]
         if (!focusBlock) {
           throw new Error('No focus block')
@@ -130,7 +130,7 @@ export function createWithEditableAPI(
               ],
             },
           ],
-          portableTextEditor
+          portableTextEditor,
         )[0] as unknown as SlateElement
         const child = block.children[0]
         Editor.insertNode(editor, child as Node)
@@ -139,7 +139,7 @@ export function createWithEditableAPI(
           toPortableTextRange(
             fromSlateValue(editor.children, types.block.name, KEY_TO_VALUE_ELEMENT.get(editor)),
             editor.selection,
-            types
+            types,
           )?.focus.path || []
         )
       },
@@ -155,7 +155,7 @@ export function createWithEditableAPI(
               ...(value ? value : {}),
             },
           ],
-          portableTextEditor
+          portableTextEditor,
         )[0] as unknown as Node
         Editor.insertNode(editor, block)
         editor.onChange()
@@ -163,7 +163,7 @@ export function createWithEditableAPI(
           toPortableTextRange(
             fromSlateValue(editor.children, types.block.name, KEY_TO_VALUE_ELEMENT.get(editor)),
             editor.selection,
-            types
+            types,
           )?.focus.path || []
         )
       },
@@ -189,11 +189,11 @@ export function createWithEditableAPI(
         return ![types.block.name, types.span.name].includes(element._type)
       },
       findByPath: (
-        path: Path
+        path: Path,
       ): [PortableTextBlock | PortableTextChild | undefined, Path | undefined] => {
         const slatePath = toSlateRange(
           {focus: {path, offset: 0}, anchor: {path, offset: 0}},
-          editor
+          editor,
         )
         if (slatePath) {
           const [block, blockPath] = Editor.node(editor, slatePath.focus.path.slice(0, 1))
@@ -204,7 +204,7 @@ export function createWithEditableAPI(
             const ptBlock = fromSlateValue(
               [block],
               types.block.name,
-              KEY_TO_VALUE_ELEMENT.get(editor)
+              KEY_TO_VALUE_ELEMENT.get(editor),
             )[0]
             if (editor.isTextBlock(ptBlock)) {
               const ptChild = ptBlock.children[slatePath.focus.path[1]]
@@ -223,7 +223,7 @@ export function createWithEditableAPI(
             Editor.nodes(editor, {
               at: [],
               match: (n) => n._key === element._key,
-            }) || []
+            }) || [],
           )[0] || [undefined]
           node = ReactEditor.toDOMNode(editor, item)
         } catch (err) {
@@ -267,7 +267,7 @@ export function createWithEditableAPI(
       },
       addAnnotation: (
         type: ObjectSchemaType,
-        value?: {[prop: string]: unknown}
+        value?: {[prop: string]: unknown},
       ): {spanPath: Path; markDefPath: Path} | undefined => {
         const {selection} = editor
         if (selection) {
@@ -283,7 +283,7 @@ export function createWithEditableAPI(
                     {_type: type.name, _key: annotationKey, ...value} as PortableTextObject,
                   ],
                 },
-                {at: selection.focus}
+                {at: selection.focus},
               )
               editor.onChange()
               if (Range.isCollapsed(selection)) {
@@ -304,7 +304,7 @@ export function createWithEditableAPI(
                       {
                         at: editor.selection,
                         match: (n) => n._type === types.span.name,
-                      }
+                      },
                     )
                     editor.onChange()
                   }
@@ -315,10 +315,10 @@ export function createWithEditableAPI(
                   fromSlateValue(
                     editor.children,
                     types.block.name,
-                    KEY_TO_VALUE_ELEMENT.get(editor)
+                    KEY_TO_VALUE_ELEMENT.get(editor),
                   ),
                   editor.selection,
-                  types
+                  types,
                 )
                 // eslint-disable-next-line max-depth
                 if (newSelection && typeof block._key === 'string') {
@@ -330,7 +330,7 @@ export function createWithEditableAPI(
                         [{_type: 'span', text: '', marks: [], _key: keyGenerator()}],
                         {
                           at: Range.end(editor.selection),
-                        }
+                        },
                       )
                       editor.onChange()
                     }
@@ -443,7 +443,7 @@ export function createWithEditableAPI(
                           {
                             marks: newMarks,
                           },
-                          {at: path, voids: false, split: false}
+                          {at: path, voids: false, split: false},
                         )
                       }
                     })
@@ -465,7 +465,7 @@ export function createWithEditableAPI(
           ptRange = toPortableTextRange(
             fromSlateValue(editor.children, types.block.name, KEY_TO_VALUE_ELEMENT.get(editor)),
             editor.selection,
-            types
+            types,
           )
           SLATE_TO_PORTABLE_TEXT_RANGE.set(editor.selection, ptRange)
         }

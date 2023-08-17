@@ -28,7 +28,7 @@ export default function DiffCardStory() {
         author: 'p27ewL8aM',
       },
     }),
-    []
+    [],
   )
 
   return (

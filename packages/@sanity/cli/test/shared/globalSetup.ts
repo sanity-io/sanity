@@ -96,12 +96,12 @@ function prepareStudios() {
         await copy(`${sourceStudioPath}/**/{*,.*}`, customDocStudioPath, {dereference: true})
         await copyFile(
           `${customDocStudioPath}/components/EnvDocument.tsx`,
-          `${customDocStudioPath}/_document.tsx`
+          `${customDocStudioPath}/_document.tsx`,
         )
         await exec(npmPath, ['install', '--no-package-lock'], {cwd: customDocStudioPath})
         await exec(nodePath, [SYMLINK_SCRIPT, customDocStudioPath], {cwd: customDocStudioPath})
       }
-    })
+    }),
   )
 }
 
@@ -147,7 +147,7 @@ async function prepareDatasets() {
           err.message = `Failed to create dataset "${ds}":\n${err.message}`
           throw err
         })
-      })
+      }),
     )
   }
 }
@@ -211,6 +211,6 @@ async function packCli(): Promise<string> {
 
 function copy(src: string, dest: string, options: {dereference?: boolean}): Promise<void> {
   return new Promise((resolve, reject) =>
-    copyCb(src, dest, options, (err) => (err ? reject(err) : resolve()))
+    copyCb(src, dest, options, (err) => (err ? reject(err) : resolve())),
   )
 }

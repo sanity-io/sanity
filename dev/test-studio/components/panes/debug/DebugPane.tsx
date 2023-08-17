@@ -139,7 +139,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
               },
             },
             null,
-            2
+            2,
           )}
         </Code>
       </Card>

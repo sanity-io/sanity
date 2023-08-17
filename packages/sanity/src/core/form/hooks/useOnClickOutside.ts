@@ -6,7 +6,7 @@ import {RefObject, useEffect} from 'react'
 // which adds quite a bit of cruft and isn't always feasible
 export function useOnClickOutside(
   refs: RefObject<HTMLElement>[],
-  handler: (event: Event) => void
+  handler: (event: Event) => void,
 ): void {
   useEffect(() => {
     const listener = (event: Event) => {

@@ -3,7 +3,7 @@ import {hasOverflowScroll} from './scrollUtils'
 
 export const getOffsetsTo = (
   source: HTMLElement,
-  target: HTMLElement
+  target: HTMLElement,
 ): {rect: Rect; bounds: Rect} => {
   const bounds: Rect = {
     top: 0,

@@ -10,7 +10,7 @@ describe('createHookFromObservableFactory', () => {
     const observableFactory = (value: string) =>
       Rx.concat(
         Rx.from(tick().then(() => `hello, ${value}`)),
-        Rx.from(tick().then(() => `hi, ${value}`))
+        Rx.from(tick().then(() => `hi, ${value}`)),
       )
     const useHook = createHookFromObservableFactory(observableFactory)
     const phasesTimeline: any[] = []
@@ -41,7 +41,7 @@ describe('createHookFromObservableFactory', () => {
 
   it('flips the loading state if the hook argument changes', async () => {
     const observableFactory = jest.fn((value: string) =>
-      Rx.from(tick().then(() => ({value: `hello, ${value}`})))
+      Rx.from(tick().then(() => ({value: `hello, ${value}`}))),
     )
     const useHook = createHookFromObservableFactory(observableFactory)
     const phasesTimeline: any[] = []
@@ -89,7 +89,7 @@ describe('createHookFromObservableFactory', () => {
   // And this test demonstrates how to do that.
   it('Using React.memo + useDeferrableValue should interrupt and reduce re-renders down the tree similar to startTransition + Suspense', async () => {
     const observableFactory = jest.fn((value: string) =>
-      Rx.from(tick().then(() => ({value: `hello, ${value}`})))
+      Rx.from(tick().then(() => ({value: `hello, ${value}`}))),
     )
     const useHook = createHookFromObservableFactory(observableFactory)
     const phasesTimeline: [id: string, phase: string][] = []
@@ -157,7 +157,7 @@ describe('createHookFromObservableFactory', () => {
 
   it('accepts an initial value and will return that immediately', async () => {
     const observableFactory = jest.fn((value: string) =>
-      Rx.from(tick().then(() => `hello, ${value}`))
+      Rx.from(tick().then(() => `hello, ${value}`)),
     )
 
     const useHook = createHookFromObservableFactory(observableFactory, 'factory initial')
@@ -193,7 +193,7 @@ describe('createHookFromObservableFactory', () => {
       Rx.from(
         tick().then(() => {
           throw new Error('test error')
-        })
+        }),
       )
 
     let error: Error | undefined

@@ -18,7 +18,7 @@ export function ReferencePreviewTitle({
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {draft, published, isLoading} = useMemoObservable(
     () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId, ''),
-    [documentId, documentPreviewStore, schemaType]
+    [documentId, documentPreviewStore, schemaType],
   )!
 
   const sanityDocument = useMemo(() => {

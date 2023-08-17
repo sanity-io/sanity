@@ -9,12 +9,12 @@ import {TimelineState, TimelineStore} from './useTimelineStore'
  */
 export function useTimelineSelector<ReturnValue>(
   timelineStore: TimelineStore,
-  selector: (timelineState: TimelineState) => ReturnValue
+  selector: (timelineState: TimelineState) => ReturnValue,
 ): ReturnValue {
   return useSyncExternalStoreWithSelector(
     timelineStore.subscribe,
     timelineStore.getSnapshot,
     null,
-    selector
+    selector,
   )
 }

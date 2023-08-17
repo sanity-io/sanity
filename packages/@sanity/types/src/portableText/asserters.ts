@@ -14,7 +14,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * @alpha
  */
 export function isPortableTextTextBlock<T = PortableTextSpan | PortableTextObject>(
-  value: unknown
+  value: unknown,
 ): value is PortableTextTextBlock<T> {
   return (
     isRecord(value) &&
@@ -58,7 +58,7 @@ export function isPortableTextSpan(value: unknown): value is PortableTextSpan {
  * @alpha
  */
 export function isPortableTextListBlock<T = PortableTextSpan | PortableTextObject>(
-  value: unknown
+  value: unknown,
 ): value is PortableTextTextBlock<T> {
   return (
     isPortableTextTextBlock(value) &&

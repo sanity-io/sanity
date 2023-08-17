@@ -6,12 +6,12 @@ import {useEffect, useRef} from 'react'
  */
 export function usePrevious<T>(
   /** The value to track. Will return undefined for first render*/
-  value: T
+  value: T,
 ): T | undefined
 export function usePrevious<T>(
   /** The value to track. Will return undefined for first render */
   value: T,
-  initial: T
+  initial: T,
 ): T
 export function usePrevious<T>(value: T, initial?: T): T | null {
   const ref = useRef<T | null>(initial || null)

@@ -12,7 +12,7 @@ export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
 
 export default async function deployStudio(
   args: CliCommandArguments<DeployStudioActionFlags>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const {apiClient, workDir, chalk, output, prompt} = context
   const flags = {build: true, ...args.extOptions}
@@ -77,7 +77,7 @@ export default async function deployStudio(
     const {didCompile} = await buildSanityStudio(
       {...args, extOptions: flags, argsWithoutOptions: buildArgs},
       context,
-      {basePath: '/'}
+      {basePath: '/'},
     )
 
     if (!didCompile) {
@@ -159,7 +159,7 @@ async function checkDir(sourceDir: string) {
               `"${sourceDir}/index.html" does not exist -`,
               '[SOURCE_DIR] must be a directory containing',
               'a Sanity studio built using "sanity build"',
-            ].join(' ')
+            ].join(' '),
           )
         : err
 

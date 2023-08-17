@@ -53,7 +53,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
         filterKey: getFilterKey(filter),
         type: 'TERMS_FILTERS_REMOVE',
       }),
-    [dispatch, filter]
+    [dispatch, filter],
   )
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -61,7 +61,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
         handleRemove()
       }
     },
-    [handleRemove]
+    [handleRemove],
   )
 
   const isValid = validateFilter({

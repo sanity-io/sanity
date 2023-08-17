@@ -73,9 +73,9 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
   const options = useMemo(
     () =>
       ((schemaType.options?.list || EMPTY_ARRAY) as ObjectOption[]).map((option, index) =>
-        isKeyedObject(option) ? option : {...option, _key: `auto-generated-${index}`}
+        isKeyedObject(option) ? option : {...option, _key: `auto-generated-${index}`},
       ),
-    [schemaType.options?.list]
+    [schemaType.options?.list],
   )
 
   const handleChange = useCallback(
@@ -87,19 +87,19 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
       }
 
       const nextValue = options.filter((option) =>
-        isEqual(changedOption, option) ? isChecked : inArray(value, option)
+        isEqual(changedOption, option) ? isChecked : inArray(value, option),
       )
 
       onChange(nextValue.length > 0 ? set(nextValue) : unset())
     },
-    [onChange, options, value]
+    [onChange, options, value],
   )
 
   const handleItemFocus = useCallback(
     (index: number) => {
       onPathFocus([index])
     },
-    [onPathFocus]
+    [onPathFocus],
   )
 
   const isGrid = schemaType.options?.layout === 'grid'

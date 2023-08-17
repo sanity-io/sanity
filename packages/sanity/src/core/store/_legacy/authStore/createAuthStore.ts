@@ -56,7 +56,7 @@ const saveToken = ({token, projectId}: {token: string; projectId: string}): void
   try {
     storage.setItem(
       getStorageKey(projectId),
-      JSON.stringify({token, time: new Date().toISOString()})
+      JSON.stringify({token, time: new Date().toISOString()}),
     )
   } catch (err) {
     console.error(err)
@@ -65,7 +65,7 @@ const saveToken = ({token, projectId}: {token: string; projectId: string}): void
 
 const getCurrentUser = async (
   client: SanityClient,
-  broadcastToken: (token: string | null) => void
+  broadcastToken: (token: string | null) => void,
 ) => {
   try {
     const user = await client.request({
@@ -92,7 +92,7 @@ const getCurrentUser = async (
       .request({uri: '/ping', withCredentials: false, tag: 'cors-check'})
       .then(
         () => true, // Request succeeded, so likely the CORS origin is disallowed
-        () => false // Request failed, so likely a network error of some kind
+        () => false, // Request failed, so likely a network error of some kind
       )
 
     if (invalidCorsConfig) {
@@ -162,7 +162,7 @@ export function _createAuthStore({
         ignoreBrowserTokenWarning: true,
         allowReconfigure: false,
         ...hostOptions,
-      })
+      }),
     ),
     switchMap((client) =>
       defer(async (): Promise<AuthState> => {
@@ -173,14 +173,14 @@ export function _createAuthStore({
           client,
           authenticated: !!currentUser,
         }
-      })
+      }),
     ),
     distinctUntilChanged((prev, next) =>
       // Only notify subscribers if the the currentUser object has changed.
       // Using isEqual is OK since the currentUser object being a small data structure.
-      isEqual(prev.currentUser, next.currentUser)
+      isEqual(prev.currentUser, next.currentUser),
     ),
-    shareReplay(1)
+    shareReplay(1),
   )
 
   async function handleCallbackUrl() {
@@ -272,8 +272,8 @@ function hash(value: unknown): string {
     Object.fromEntries(
       Object.entries(value)
         .sort(([a], [b]) => a.localeCompare(b, 'en'))
-        .map(([k, v]) => [k, hash(v)])
-    )
+        .map(([k, v]) => [k, hash(v)]),
+    ),
   )
 }
 

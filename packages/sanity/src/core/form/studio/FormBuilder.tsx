@@ -137,12 +137,12 @@ function RootInput() {
 
   const handleCollapseField = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], true),
-    [onSetPathCollapsed]
+    [onSetPathCollapsed],
   )
 
   const handleExpandField = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], false),
-    [onSetPathCollapsed]
+    [onSetPathCollapsed],
   )
 
   const handleBlur = useCallback(() => onPathBlur(EMPTY_ARRAY), [onPathBlur])
@@ -151,14 +151,14 @@ function RootInput() {
 
   const handleChange = useCallback(
     (patch: FormPatch | FormPatch[] | PatchEvent) => onChange(PatchEvent.from(patch)),
-    [onChange]
+    [onChange],
   )
 
   const focusRef = useRef(null)
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => onFieldGroupSelect(EMPTY_ARRAY, groupName),
-    [onFieldGroupSelect]
+    [onFieldGroupSelect],
   )
 
   const handleOpenField = useCallback((fieldName: string) => onPathOpen([fieldName]), [onPathOpen])
@@ -167,12 +167,12 @@ function RootInput() {
 
   const handleCollapseFieldSet = useCallback(
     (fieldSetName: string) => onSetFieldSetCollapsed([fieldSetName], true),
-    [onSetFieldSetCollapsed]
+    [onSetFieldSetCollapsed],
   )
 
   const handleExpandFieldSet = useCallback(
     (fieldSetName: string) => onSetFieldSetCollapsed([fieldSetName], false),
-    [onSetFieldSetCollapsed]
+    [onSetFieldSetCollapsed],
   )
 
   const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = {

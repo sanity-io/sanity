@@ -17,12 +17,12 @@ import {expand} from 'dotenv-expand'
 export function loadEnv(
   mode: string,
   envDir: string,
-  prefixes: string[] = ['VITE_']
+  prefixes: string[] = ['VITE_'],
 ): Record<string, string> {
   if (mode === 'local') {
     throw new Error(
       `"local" cannot be used as a mode name because it conflicts with ` +
-        `the .local postfix for .env files.`
+        `the .local postfix for .env files.`,
     )
   }
 
@@ -41,7 +41,7 @@ export function loadEnv(
       })
       if (!envPath) return []
       return Object.entries(parse(fs.readFileSync(envPath)))
-    })
+    }),
   )
 
   // test NODE_ENV override before expand as otherwise process.env.NODE_ENV would override this
@@ -91,7 +91,7 @@ function lookupFile(
   formats: string[],
   options?: {
     rootDir?: string
-  }
+  },
 ): string | undefined {
   for (const format of formats) {
     const fullPath = path.join(dir, format)

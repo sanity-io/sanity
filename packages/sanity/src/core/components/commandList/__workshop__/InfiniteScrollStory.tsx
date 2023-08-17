@@ -52,7 +52,7 @@ export default function InfiniteScrollStory() {
         commandListRef?.current?.scrollToIndex(0)
       }
     },
-    [filteredValues]
+    [filteredValues],
   )
 
   const handleChildClick = useCallback((msg: string) => setMessage(msg), [])
@@ -93,7 +93,7 @@ export default function InfiniteScrollStory() {
         </StyledLink>
       )
     },
-    [handleChildClick]
+    [handleChildClick],
   )
 
   return (

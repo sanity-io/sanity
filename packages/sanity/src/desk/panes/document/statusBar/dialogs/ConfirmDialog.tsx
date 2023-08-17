@@ -56,7 +56,7 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
     (event: any) => {
       if (event.key === 'Escape' && isTopLayer) onCancel()
     },
-    [isTopLayer, onCancel]
+    [isTopLayer, onCancel],
   )
 
   useClickOutside(handleClickOutside, [element])

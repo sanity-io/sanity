@@ -97,7 +97,7 @@ export function ArrayOfObjectsField(props: {
         onPathFocus(member.field.path)
       }
     },
-    [member.field.path, onPathFocus]
+    [member.field.path, onPathFocus],
   )
 
   const handleBlur = useCallback(
@@ -110,7 +110,7 @@ export function ArrayOfObjectsField(props: {
         onPathBlur(member.field.path)
       }
     },
-    [member.field.path, onPathBlur]
+    [member.field.path, onPathBlur],
   )
 
   const valueRef = useRef(member.field.value)
@@ -123,7 +123,7 @@ export function ArrayOfObjectsField(props: {
       const patches = PatchEvent.from(event).patches
       // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
       const isRemovingLastItem = patches.some(
-        (patch) => patch.type === 'unset' && patch.path.length === 1
+        (patch) => patch.type === 'unset' && patch.path.length === 1,
       )
 
       if (isRemovingLastItem) {
@@ -140,7 +140,7 @@ export function ArrayOfObjectsField(props: {
       // otherwise apply the patch
       onChange(PatchEvent.from(event).prepend(setIfMissing([])).prefixAll(member.name))
     },
-    [onChange, member.name, valueRef]
+    [onChange, member.name, valueRef],
   )
   const resolveInitialValue = useResolveInitialValueForType()
 
@@ -158,14 +158,14 @@ export function ArrayOfObjectsField(props: {
     (itemKey: string) => {
       onSetPathCollapsed(member.field.path.concat({_key: itemKey}), true)
     },
-    [onSetPathCollapsed, member.field.path]
+    [onSetPathCollapsed, member.field.path],
   )
 
   const handleExpandItem = useCallback(
     (itemKey: string) => {
       onSetPathCollapsed(member.field.path.concat({_key: itemKey}), false)
     },
-    [onSetPathCollapsed, member.field.path]
+    [onSetPathCollapsed, member.field.path],
   )
 
   const handleOpenItem = useCallback(
@@ -173,7 +173,7 @@ export function ArrayOfObjectsField(props: {
       onPathOpen(path)
       onSetPathCollapsed(path, false)
     },
-    [onPathOpen, onSetPathCollapsed]
+    [onPathOpen, onSetPathCollapsed],
   )
 
   const handleCloseItem = useCallback(() => {
@@ -214,7 +214,7 @@ export function ArrayOfObjectsField(props: {
                   status: 'error',
                 })
               }
-            })
+            }),
           )
           .subscribe({
             complete: () => {
@@ -233,7 +233,7 @@ export function ArrayOfObjectsField(props: {
       onPathFocus,
       resolveInitialValue,
       toast,
-    ]
+    ],
   )
 
   const handleMoveItem = useCallback(
@@ -248,7 +248,7 @@ export function ArrayOfObjectsField(props: {
       if (!(item as any)?._key || !(refItem as any)?._key) {
         // eslint-disable-next-line no-console
         console.error(
-          'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.'
+          'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.',
         )
 
         return
@@ -261,20 +261,20 @@ export function ArrayOfObjectsField(props: {
         ]),
       ])
     },
-    [handleChange, member.field.value]
+    [handleChange, member.field.value],
   )
 
   const handlePrependItem = useCallback(
     (item: any) => {
       handleChange([setIfMissing([]), insert([ensureKey(item)], 'before', [0])])
     },
-    [handleChange]
+    [handleChange],
   )
   const handleAppendItem = useCallback(
     (item: any) => {
       handleChange([setIfMissing([]), insert([ensureKey(item)], 'after', [-1])])
     },
-    [handleChange]
+    [handleChange],
   )
 
   const handleRemoveItem = useCallback(
@@ -285,14 +285,14 @@ export function ArrayOfObjectsField(props: {
       }
       handleChange([unset([{_key: itemKey}])])
     },
-    [handleChange]
+    [handleChange],
   )
 
   const handleFocusChildPath = useCallback(
     (path: Path) => {
       onPathFocus(member.field.path.concat(path))
     },
-    [member.field.path, onPathFocus]
+    [member.field.path, onPathFocus],
   )
 
   const elementProps = useMemo(
@@ -302,7 +302,7 @@ export function ArrayOfObjectsField(props: {
       id: member.field.id,
       ref: focusRef,
     }),
-    [handleBlur, handleFocus, member.field.id]
+    [handleBlur, handleFocus, member.field.id],
   )
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -322,7 +322,7 @@ export function ArrayOfObjectsField(props: {
 
       return defaultResolveUploader(type, file)
     },
-    [supportsFileUploads, supportsImageUploads]
+    [supportsFileUploads, supportsImageUploads],
   )
 
   const handleUpload = useCallback(
@@ -339,9 +339,9 @@ export function ArrayOfObjectsField(props: {
 
       const events$ = uploader.upload(client, file, schemaType).pipe(
         map((uploadProgressEvent: UploadProgressEvent) =>
-          PatchEvent.from(uploadProgressEvent.patches || []).prefixAll({_key: key})
+          PatchEvent.from(uploadProgressEvent.patches || []).prefixAll({_key: key}),
         ),
-        tap((event) => handleChange(event.patches))
+        tap((event) => handleChange(event.patches)),
       )
 
       uploadSubscriptions.current = {
@@ -349,7 +349,7 @@ export function ArrayOfObjectsField(props: {
         [key]: events$.subscribe(),
       }
     },
-    [client, handleChange, handleInsert]
+    [client, handleChange, handleInsert],
   )
 
   const inputProps = useMemo((): Omit<ArrayOfObjectsInputProps, 'renderDefault'> => {

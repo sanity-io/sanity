@@ -29,7 +29,7 @@ const Root = styled.div`
 function getUploadCandidates(
   types: SchemaType[],
   resolveUploader: UploaderResolver,
-  file: FileLike
+  file: FileLike,
 ) {
   return types
     .map((memberType) => ({
@@ -43,7 +43,7 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
 
   return React.forwardRef(function UploadTarget(
     props: UploadTargetProps & Props,
-    forwardedRef: React.ForwardedRef<HTMLElement>
+    forwardedRef: React.ForwardedRef<HTMLElement>,
   ) {
     const {children, resolveUploader, onUpload, types, ...rest} = props
     const {push: pushToast} = useToast()
@@ -53,7 +53,7 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
         const {type, uploader} = resolvedUploader
         onUpload?.({file, schemaType: type, uploader})
       },
-      [onUpload]
+      [onUpload],
     )
 
     const handleFiles = React.useCallback(
@@ -99,11 +99,11 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
           uploadFile(
             task.file,
             // eslint-disable-next-line max-nested-callbacks
-            sortBy(task.uploaderCandidates, (candidate) => candidate.uploader.priority)[0]
+            sortBy(task.uploaderCandidates, (candidate) => candidate.uploader.priority)[0],
           )
         })
       },
-      [pushToast, resolveUploader, types, uploadFile]
+      [pushToast, resolveUploader, types, uploadFile],
     )
 
     const [hoveringFiles, setHoveringFiles] = React.useState<FileInfo[]>([])

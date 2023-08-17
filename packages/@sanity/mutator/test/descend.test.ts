@@ -16,7 +16,7 @@ function descentStateToStr(descentState: [Expr | null, PathExpr | null][]): stri
 }
 
 function descendAll(
-  descentState: [Expr | null, PathExpr | null][]
+  descentState: [Expr | null, PathExpr | null][],
 ): [Expr | null, PathExpr | null][] {
   const result: [Expr | null, PathExpr | null][] = []
   descentState.forEach((ht) => {

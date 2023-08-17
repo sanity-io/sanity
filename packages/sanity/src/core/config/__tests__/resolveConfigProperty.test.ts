@@ -166,9 +166,9 @@ describe('resolveConfigProperty', () => {
           if (config.name === 'deepest') throw new Error('example error')
           return prev
         },
-      })
+      }),
     ).rejects.toMatchInlineSnapshot(
-      `"An error occurred while resolving \`example\` from plugin \`config\` > plugin \`deep\` > plugin \`deeper\` > plugin \`deepest\`: example error"`
+      `"An error occurred while resolving \`example\` from plugin \`config\` > plugin \`deep\` > plugin \`deeper\` > plugin \`deepest\`: example error"`,
     )
   })
 })

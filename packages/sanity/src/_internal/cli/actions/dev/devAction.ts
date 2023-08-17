@@ -13,7 +13,7 @@ export interface StartDevServerCommandFlags {
 
 export default async function startSanityDevServer(
   args: CliCommandArguments<StartDevServerCommandFlags>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const timers = getTimer()
   const flags = args.extOptions
@@ -61,7 +61,7 @@ function getDevServerConfig({
 
   if (env.SANITY_STUDIO_BASEPATH && cliConfig?.project?.basePath) {
     output.warn(
-      `Overriding configured base path (${cliConfig.project.basePath}) with value from environment variable (${env.SANITY_STUDIO_BASEPATH})`
+      `Overriding configured base path (${cliConfig.project.basePath}) with value from environment variable (${env.SANITY_STUDIO_BASEPATH})`,
     )
   }
 

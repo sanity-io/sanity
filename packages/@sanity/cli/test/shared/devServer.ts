@@ -53,7 +53,7 @@ export function testServerCommand({
         const stderrStr = buffersToString(stderr)
         const stdoutStr = buffersToString(stdout)
         reject(
-          new Error(`'sanity ${command}' failed with code ${code}:\n${stderrStr}\n${stdoutStr}`)
+          new Error(`'sanity ${command}' failed with code ${code}:\n${stderrStr}\n${stdoutStr}`),
         )
       }
     })
@@ -79,7 +79,7 @@ export function testServerCommand({
         res = await Promise.race([
           request(`http://localhost:${port}/`),
           new Promise<ResponseData>((_, rejectTimeout) =>
-            setTimeout(rejectTimeout, 500, new Error('Timed out trying to connect'))
+            setTimeout(rejectTimeout, 500, new Error('Timed out trying to connect')),
           ),
         ])
       } catch (err) {
@@ -99,9 +99,9 @@ export function testServerCommand({
           file,
           await request(`http://localhost:${port}/${file}`)
             .then(({body, statusCode}) =>
-              statusCode === 200 ? createHash('sha256').update(body).digest('hex') : null
+              statusCode === 200 ? createHash('sha256').update(body).digest('hex') : null,
             )
-            .catch(() => null)
+            .catch(() => null),
         )
       }
 

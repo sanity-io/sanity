@@ -19,7 +19,7 @@ const buildCommand: CliCommandDefinition = {
   action: async (
     args: CliCommandArguments<BuildSanityStudioCommandFlags>,
     context: CliCommandContext,
-    overrides?: {basePath?: string}
+    overrides?: {basePath?: string},
   ) => {
     const buildAction = await getBuildAction()
 

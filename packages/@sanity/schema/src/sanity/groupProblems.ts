@@ -8,13 +8,13 @@ import type {ProblemPath, ProblemPathPropertySegment, TypeWithProblems} from './
  */
 export function groupProblems(types: SchemaTypeDefinition[]): TypeWithProblems[] {
   return flatten<TypeWithProblems>(types.map((type) => getTypeProblems(type))).filter(
-    (type) => type.problems.length > 0
+    (type) => type.problems.length > 0,
   )
 }
 
 function createTypeWithMembersProblemsAccessor(
   memberPropertyName: string,
-  getMembers = (type: SchemaType) => get(type, memberPropertyName)
+  getMembers = (type: SchemaType) => get(type, memberPropertyName),
 ) {
   return function getProblems(type, parentPath: ProblemPath): TypeWithProblems[] {
     const currentPath: ProblemPath = [
@@ -59,7 +59,7 @@ const getImageProblems = createTypeWithMembersProblemsAccessor('fields')
 const getFileProblems = createTypeWithMembersProblemsAccessor('fields')
 const getArrayProblems = createTypeWithMembersProblemsAccessor('of')
 const getReferenceProblems = createTypeWithMembersProblemsAccessor('to', (type) =>
-  'to' in type ? arrify(type.to) : []
+  'to' in type ? arrify(type.to) : [],
 )
 const getBlockAnnotationProblems = createTypeWithMembersProblemsAccessor('marks.annotations')
 const getBlockMemberProblems = createTypeWithMembersProblemsAccessor('of')

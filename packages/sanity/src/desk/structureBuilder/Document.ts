@@ -26,7 +26,7 @@ const createDocumentChildResolver =
       throw new SerializeError(
         `Failed to resolve document, and no type provided in parameters.`,
         parentPath,
-        currentSegment
+        currentSegment,
       )
     }
 
@@ -82,7 +82,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
      * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
-    spec?: PartialDocumentNode
+    spec?: PartialDocumentNode,
   ) {
     this.spec = spec ? spec : {}
   }
@@ -241,7 +241,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
         '`id` is required for document nodes',
         path,
         index,
-        hint
+        hint,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
@@ -250,7 +250,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
         'document id (`id`) is required for document nodes',
         path,
         id,
-        hint
+        hint,
       ).withHelpUrl(HELP_URL.DOCUMENT_ID_REQUIRED)
     }
 
@@ -259,12 +259,12 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
         'document type (`schemaType`) is required for document nodes',
         path,
         id,
-        hint
+        hint,
       )
     }
 
     const views = (this.spec.views && this.spec.views.length > 0 ? this.spec.views : [form()]).map(
-      (item, i) => maybeSerializeView(item, i, path)
+      (item, i) => maybeSerializeView(item, i, path),
     )
 
     const viewIds = views.map((view) => view.id)
@@ -274,7 +274,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
         `document node has views with duplicate IDs: ${dupes.join(',  ')}`,
         path,
         id,
-        hint
+        hint,
       )
     }
 
@@ -347,7 +347,7 @@ export function documentFromEditor(context: StructureContext, spec?: EditorNode)
 export function documentFromEditorWithInitialValue(
   {resolveDocumentNode, templates}: StructureContext,
   templateId: string,
-  parameters?: Record<string, unknown>
+  parameters?: Record<string, unknown>,
 ): DocumentBuilder {
   const template = templates.find((t) => t.id === templateId)
 
@@ -357,6 +357,6 @@ export function documentFromEditorWithInitialValue(
 
   return resolveDocumentNode({schemaType: template.schemaType}).initialValueTemplate(
     templateId,
-    parameters
+    parameters,
   )
 }

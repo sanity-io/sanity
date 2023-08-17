@@ -13,7 +13,7 @@ export function App() {
         patches: Patch[]
         snapshot: PortableTextBlock[] | undefined
       }>(),
-    []
+    [],
   )
   const [value, setValue] = useState<PortableTextBlock[] | undefined | null>(null)
   const [revId, setRevId] = useState<string | undefined>(undefined)
@@ -27,7 +27,7 @@ export function App() {
   }, [])
   const webSocket = useMemo(() => {
     const socket = new WebSocket(
-      `ws://${window.location.hostname}:3001/?editorId=${editorId}&testId=${testId}`
+      `ws://${window.location.hostname}:3001/?editorId=${editorId}&testId=${testId}`,
     )
     socket.addEventListener('open', () => {
       socket.send(JSON.stringify({type: 'hello', editorId, testId}))
@@ -69,7 +69,7 @@ export function App() {
         webSocket.send(JSON.stringify({type: 'mutation', patches, editorId, testId}))
       }
     },
-    [editorId, testId, webSocket]
+    [editorId, testId, webSocket],
   )
   return (
     <ThemeProvider theme={studioTheme}>

@@ -30,14 +30,14 @@ const StubComponent = forwardRef(
   ({documentId, documentType}: {documentId: string; documentType: string}, ref) => {
     useImperativeHandle(ref, () => infinityNoop, [])
     return null
-  }
+  },
 )
 
 StubComponent.displayName = 'StubComponent'
 type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
 function ReferenceInputTester(
-  props: PartialExcept<ReferenceInputProps, 'schemaType' | 'getReferenceInfo'>
+  props: PartialExcept<ReferenceInputProps, 'schemaType' | 'getReferenceInfo'>,
 ) {
   const onFocus = jest.fn()
   const onChange = jest.fn()
@@ -74,7 +74,7 @@ function ReferenceInfoTester(
     typeIsWeakRef?: boolean
     isEditing?: boolean
     value: Reference
-  }
+  },
 ) {
   const schema = Schema.compile({
     types: [
@@ -116,7 +116,7 @@ describe.skip('if schema type is a strong reference', () => {
             draft: DRAFT_PREVIEW as any,
           },
         }}
-      />
+      />,
     )
 
     expect(queryByTestId('alert-nonexistent-document')).toBe(null)
@@ -135,7 +135,7 @@ describe.skip('if schema type is a strong reference', () => {
             draft: DRAFT_PREVIEW as any,
           },
         }}
-      />
+      />,
     )
 
     expect(queryByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
@@ -157,7 +157,7 @@ describe.skip('if schema type is a weak reference', () => {
             draft: DRAFT_PREVIEW as any,
           },
         }}
-      />
+      />,
     )
 
     expect(getByTestId('alert-nonexistent-document')).toBeInTheDocument()
@@ -177,7 +177,7 @@ describe.skip('if schema type is a weak reference', () => {
             draft: DRAFT_PREVIEW as any,
           },
         }}
-      />
+      />,
     )
 
     expect(getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()

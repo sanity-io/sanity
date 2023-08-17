@@ -42,7 +42,7 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
       const parentTypeResolvedComponent = componentResolver(restSchemaType)
       return createElement(parentTypeResolvedComponent, parentTypeProps)
     },
-    [componentResolver]
+    [componentResolver],
   )
 
   return createElement(defaultResolvedComponent, {
@@ -115,7 +115,7 @@ export function DefaultInlineBlock(props: Omit<BlockProps, 'renderDefault'>): Re
  * @internal
  */
 export function DefaultAnnotation(
-  props: Omit<BlockAnnotationProps, 'renderDefault'>
+  props: Omit<BlockAnnotationProps, 'renderDefault'>,
 ): React.ReactElement {
   return useResolveDefaultComponent<Omit<BlockAnnotationProps, 'renderDefault'>>({
     componentProps: props,

@@ -32,7 +32,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
     (itemIndex: number) => {
       return items?.find((_, i) => i === itemIndex)?.type === 'divider'
     },
-    [items]
+    [items],
   )
 
   const shouldShowIconForItem = useCallback(
@@ -47,7 +47,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
       // If no item setting is defined, defer to the pane settings
       return showIcons !== false // Boolean(item.icon)
     },
-    [showIcons]
+    [showIcons],
   )
 
   const renderItem = useCallback(
@@ -87,7 +87,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
         />
       )
     },
-    [childItemId, isActive, layout, shouldShowIconForItem]
+    [childItemId, isActive, layout, shouldShowIconForItem],
   )
 
   return (

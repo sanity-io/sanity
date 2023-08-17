@@ -15,7 +15,7 @@ function validatePlugin(pluginResult: PluginOptions) {
 
   if (messages.length)
     throw new Error(
-      `Invalid plugin configuration:\n${messages.map((message) => `\t${message}`).join('\n')}`
+      `Invalid plugin configuration:\n${messages.map((message) => `\t${message}`).join('\n')}`,
     )
 }
 
@@ -23,7 +23,7 @@ function validatePlugin(pluginResult: PluginOptions) {
  * @hidden
  * @beta */
 export function definePlugin<TOptions = void>(
-  arg: PluginFactory<TOptions> | PluginOptions
+  arg: PluginFactory<TOptions> | PluginOptions,
 ): Plugin<TOptions> {
   if (typeof arg === 'function') {
     const pluginFactory = arg
@@ -49,7 +49,7 @@ export function definePlugin<TOptions = void>(
  * @beta
  */
 export function createPlugin<TOptions = void>(
-  arg: PluginFactory<TOptions> | PluginOptions
+  arg: PluginFactory<TOptions> | PluginOptions,
 ): Plugin<TOptions> {
   return definePlugin(arg)
 }

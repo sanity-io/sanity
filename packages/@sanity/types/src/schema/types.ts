@@ -126,7 +126,7 @@ export interface InitialValueResolverContext {
 /** @public */
 export type InitialValueResolver<Params, Value> = (
   params: Params | undefined,
-  context: InitialValueResolverContext
+  context: InitialValueResolverContext,
 ) => Promise<Value> | Value
 
 /** @public */
@@ -321,7 +321,7 @@ export interface BlockSchemaType extends ObjectSchemaType {
     BlockStyleObjectField,
     BlockListObjectField,
     // then it could be any additional fields the user could add
-    ...ObjectField[]
+    ...ObjectField[],
   ]
   options?: BlockOptions
 }

@@ -50,7 +50,7 @@ export interface TestRenderInputProps<ElementProps> {
 
 export type TestRenderInputCallback<ElementProps> = (
   inputProps: TestRenderInputProps<ElementProps>,
-  context: TestRenderInputContext
+  context: TestRenderInputContext,
 ) => React.ReactElement
 
 export async function renderInput(props: {
@@ -183,7 +183,7 @@ export async function renderInput(props: {
               onChange: onDOMChange,
             },
           },
-          {client, formState}
+          {client, formState},
         )}
       </FormProvider>
     )
@@ -194,7 +194,7 @@ export async function renderInput(props: {
       <div id="__test_container__">
         <TestForm {...initialTestProps} render={initialRender} />
       </div>
-    </TestProvider>
+    </TestProvider>,
   )
 
   function rerender(subsequentRender: TestRenderInputCallback<any>) {
@@ -203,7 +203,7 @@ export async function renderInput(props: {
         <div id="__test_container__">
           <TestForm {...initialTestProps} render={subsequentRender} />
         </div>
-      </TestProvider>
+      </TestProvider>,
     )
   }
 

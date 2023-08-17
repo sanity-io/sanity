@@ -32,13 +32,13 @@ export function props<K extends keyof any, T>(options: {wait?: boolean} = {}) {
 
         return options.wait
           ? combineLatest(keyObservables).pipe(
-              map((pairs) => pairs.reduce((acc, [key, value]) => setKey(acc, key, value), {}))
+              map((pairs) => pairs.reduce((acc, [key, value]) => setKey(acc, key, value), {})),
             )
           : observableFrom(keyObservables).pipe(
               mergeAll(),
-              scan((acc, [key, value]) => setKey(acc, key, value), {})
+              scan((acc, [key, value]) => setKey(acc, key, value), {}),
             )
-      })
+      }),
     )
   }
 }

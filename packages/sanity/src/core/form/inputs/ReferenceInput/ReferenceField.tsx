@@ -215,7 +215,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function OpenLink(
         restProps: ComponentProps<typeof IntentLink>,
-        _ref: ForwardedRef<HTMLAnchorElement>
+        _ref: ForwardedRef<HTMLAnchorElement>,
       ) {
         return (
           <IntentLink
@@ -228,7 +228,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           />
         )
       }),
-    [refType?.name, value?._ref]
+    [refType?.name, value?._ref],
   )
 
   const menu = useMemo(
@@ -262,7 +262,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           />
         </Box>
       ),
-    [handleClear, handleReplace, inputId, OpenLink, readOnly, value?._ref]
+    [handleClear, handleReplace, inputId, OpenLink, readOnly, value?._ref],
   )
 
   return (

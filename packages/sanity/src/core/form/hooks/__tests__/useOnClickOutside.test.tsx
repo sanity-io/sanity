@@ -12,7 +12,7 @@ describe('useOnClickOutside', () => {
       <div>
         <div ref={ref1} />
         <div ref={ref2} />
-      </div>
+      </div>,
     )
 
     renderHook(() => {
@@ -43,7 +43,7 @@ describe('useOnClickOutside', () => {
       <div>
         <div ref={ref1} />
         <div ref={ref2} />
-      </div>
+      </div>,
     )
 
     const {result} = renderHook(() => {

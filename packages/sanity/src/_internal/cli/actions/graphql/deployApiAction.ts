@@ -42,7 +42,7 @@ interface DeployTask {
 // eslint-disable-next-line complexity
 export default async function deployGraphQLApiAction(
   args: {argv?: string[]},
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   // Reparsing CLI flags for better control of binary flags
   const flags = await parseCliFlags(args)
@@ -110,7 +110,7 @@ export default async function deployGraphQLApiAction(
     if (apiDef.id) {
       if (typeof apiDef.id !== 'string' || !apiIdRegex.test(apiDef.id)) {
         throw new Error(
-          `Invalid GraphQL API id "${apiDef.id}" - only a-z, 0-9, underscore and dashes are allowed`
+          `Invalid GraphQL API id "${apiDef.id}" - only a-z, 0-9, underscore and dashes are allowed`,
         )
       }
 
@@ -156,7 +156,7 @@ export default async function deployGraphQLApiAction(
     const {currentGeneration, playgroundEnabled} = await getCurrentSchemaProps(
       projectClient,
       dataset,
-      tag
+      tag,
     )
 
     // CLI flag trumps configuration
@@ -241,7 +241,7 @@ export default async function deployGraphQLApiAction(
         spinner.fail()
         renderBreakingChanges(valid, output)
         throw new Error(
-          'Dangerous changes found - falling back. Re-run the command with the `--force` flag to force deployment.'
+          'Dangerous changes found - falling back. Re-run the command with the `--force` flag to force deployment.',
         )
       }
 
@@ -298,7 +298,7 @@ export default async function deployGraphQLApiAction(
       spinner.stop()
       const apiUrl = getClientUrl(
         projectClient,
-        response.location.replace(/^\/(v1|v\d{4}-\d{2}-\d{2})\//, '/')
+        response.location.replace(/^\/(v1|v\d{4}-\d{2}-\d{2})\//, '/'),
       )
       output.print(`URL:     ${apiUrl}`)
       spinner.start('Deployed!').succeed()
@@ -371,7 +371,7 @@ async function shouldEnablePlayground({
 async function getCurrentSchemaProps(
   client: SanityClient,
   dataset: string,
-  tag: string
+  tag: string,
 ): Promise<{
   currentGeneration?: string
   playgroundEnabled?: boolean
@@ -409,7 +409,7 @@ function parseCliFlags(args: {argv?: string[]}) {
 
 function isResultValid(
   valid: ValidationResponse,
-  {spinner, force}: {spinner: any; force?: boolean}
+  {spinner, force}: {spinner: any; force?: boolean},
 ) {
   const {validationError, breakingChanges: breaking, dangerousChanges: dangerous} = valid
   if (validationError) {
@@ -479,7 +479,7 @@ async function resolveApiGeneration({
     debug(
       'There is no current generation deployed, using %s (%s)',
       generation,
-      specifiedGeneration ? 'specified' : 'default'
+      specifiedGeneration ? 'specified' : 'default',
     )
     return generation
   }
@@ -493,7 +493,7 @@ async function resolveApiGeneration({
     }
 
     output.warn(
-      `Specified generation (${specifiedGeneration}) for API at index ${index} differs from the one currently deployed (${currentGeneration}).`
+      `Specified generation (${specifiedGeneration}) for API at index ${index} differs from the one currently deployed (${currentGeneration}).`,
     )
 
     const confirmDeploy =

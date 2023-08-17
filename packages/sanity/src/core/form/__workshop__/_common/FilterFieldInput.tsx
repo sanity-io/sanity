@@ -16,7 +16,7 @@ interface FilterFieldInputOptions {
 
 export const FilterFieldInput = React.forwardRef(function FilterFieldInput(
   props: FilterFieldInputOptions,
-  ref: React.ForwardedRef<HTMLTextAreaElement>
+  ref: React.ForwardedRef<HTMLTextAreaElement>,
 ) {
   const {value, onChange, onFilter} = props
 
@@ -24,7 +24,7 @@ export const FilterFieldInput = React.forwardRef(function FilterFieldInput(
     (event: any) => {
       onChange(event.target.value)
     },
-    [onChange]
+    [onChange],
   )
 
   const handleFilterExample = useCallback(() => {

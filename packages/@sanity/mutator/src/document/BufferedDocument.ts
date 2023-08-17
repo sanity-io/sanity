@@ -29,7 +29,7 @@ class Commit {
 
   constructor(
     mutations: Mutation[],
-    {resolve, reject}: {resolve: () => void; reject: (error: Error) => void}
+    {resolve, reject}: {resolve: () => void; reject: (error: Error) => void},
   ) {
     this.mutations = mutations
     this.tries = 0
@@ -164,7 +164,7 @@ export class BufferedDocument {
     debug('Remote mutation arrived %s -> %s', mutation.previousRev, mutation.resultRev)
     if (mutation.previousRev === mutation.resultRev) {
       throw new Error(
-        `Mutation ${mutation.transactionId} has previousRev === resultRev (${mutation.previousRev})`
+        `Mutation ${mutation.transactionId} has previousRev === resultRev (${mutation.previousRev})`,
       )
     }
     return this.document.arrive(mutation)
@@ -329,7 +329,7 @@ export class BufferedDocument {
       this.onRebase(
         this.LOCAL,
         remoteMutations.reduce(mutReducerFn, []),
-        localMutations.reduce(mutReducerFn, [])
+        localMutations.reduce(mutReducerFn, []),
       )
     }
   }

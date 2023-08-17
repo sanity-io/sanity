@@ -23,7 +23,7 @@ import {useRouter} from './useRouter'
  * ```
  */
 export function withRouter<Props extends {router: RouterContextValue}>(
-  Component: ComponentType<Props>
+  Component: ComponentType<Props>,
 ): FunctionComponent<Omit<Props, 'router'>> {
   function WithRouter(props: Omit<Props, 'router'>) {
     const router = useRouter()

@@ -15,7 +15,7 @@ export function ConditionalReadOnlyContextProvider(props: {
     () => ({
       readOnly,
     }),
-    [readOnly]
+    [readOnly],
   )
 
   return (

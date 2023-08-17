@@ -86,7 +86,7 @@ export function Synchronizer(props: SynchronizerProps) {
       // If it's not normalizing, it's probably in the middle of something. Retry until normalizing again.
       flushFn()
     },
-    [onFlushPendingPatches, slateEditor]
+    [onFlushPendingPatches, slateEditor],
   )
 
   const onFlushPendingPatchesThrottled = useMemo(() => {
@@ -98,7 +98,7 @@ export function Synchronizer(props: SynchronizerProps) {
       {
         leading: false,
         trailing: true,
-      }
+      },
     )
   }, [flush])
 

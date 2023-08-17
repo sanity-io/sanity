@@ -2,7 +2,7 @@ import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
 export default async function undeployStudio(
   args: CliCommandArguments<Record<string, unknown>>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const {apiClient, chalk, output, prompt} = context
 
@@ -52,6 +52,6 @@ export default async function undeployStudio(
   }
 
   output.print(
-    `Studio undeploy scheduled. It might take a few minutes before ${url} is unavailable.`
+    `Studio undeploy scheduled. It might take a few minutes before ${url} is unavailable.`,
   )
 }

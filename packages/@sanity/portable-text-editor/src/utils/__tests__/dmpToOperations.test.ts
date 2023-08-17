@@ -95,7 +95,7 @@ describe('operationToPatches: diffMatchPatch', () => {
 
 function getPteDmpPatch(
   value: string,
-  path: Path = [{_key: 'bA'}, 'children', {_key: 's1'}, 'text']
+  path: Path = [{_key: 'bA'}, 'children', {_key: 's1'}, 'text'],
 ): DiffMatchPatch {
   return {
     type: 'diffMatchPatch',
@@ -133,7 +133,7 @@ function getMockEditor(options: MockEditorOptions): Pick<
         block.children
           .filter((span) => isPortableTextSpan(span))
           .map((span) => span.text)
-          .join('')
+          .join(''),
       )
       .join('\n\n')
   }

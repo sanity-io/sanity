@@ -6,7 +6,7 @@ import {ItemProps} from '../../types'
 import {FIXME} from '../../../FIXME'
 
 export function defaultResolveItemComponent(
-  schemaType: SchemaType
+  schemaType: SchemaType,
 ): React.ComponentType<Omit<ItemProps, 'renderDefault'>> {
   if (schemaType.components?.item) return schemaType.components.item
 

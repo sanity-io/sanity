@@ -23,7 +23,7 @@ describe('toSlateValue', () => {
           _key: '123',
         },
       ],
-      {schemaTypes}
+      {schemaTypes},
     )
 
     expect(result).toMatchObject([
@@ -55,7 +55,7 @@ describe('toSlateValue', () => {
           ],
         },
       ],
-      {schemaTypes}
+      {schemaTypes},
     )
     expect(result).toMatchInlineSnapshot(`
       Array [
@@ -98,7 +98,7 @@ describe('toSlateValue', () => {
           ],
         },
       ],
-      {schemaTypes}
+      {schemaTypes},
     )
     expect(result).toMatchInlineSnapshot(`
       Array [
@@ -183,7 +183,7 @@ describe('fromSlateValue', () => {
           },
         },
       ],
-      'block'
+      'block',
     )
     expect(ptValue).toEqual([
       {

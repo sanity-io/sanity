@@ -71,7 +71,7 @@ const EMPTY_PATH: Path = []
 /** @internal */
 export const DiffCard = forwardRef(function DiffCard(
   props: DiffCardProps & Omit<React.HTMLProps<HTMLElement>, 'as' | 'height'>,
-  ref
+  ref,
 ) {
   const {
     annotation: annotationProp,
@@ -88,7 +88,7 @@ export const DiffCard = forwardRef(function DiffCard(
 
   const annotation = useMemo(
     () => annotationProp || getAnnotationAtPath(diff!, path),
-    [annotationProp, diff, path]
+    [annotationProp, diff, path],
   )
 
   const color = useAnnotationColor(annotation)

@@ -26,7 +26,7 @@ const SUPPORTED_PATCH_TYPES = Object.keys(OPERATIONS)
 export function _primitiveApply(value: FIXME, patch: FIXME) {
   if (!SUPPORTED_PATCH_TYPES.includes(patch.type)) {
     throw new Error(
-      `Received patch of unsupported type "${patch.type}" for primitives. This is most likely a bug.`
+      `Received patch of unsupported type "${patch.type}" for primitives. This is most likely a bug.`,
     )
   }
 
@@ -36,7 +36,7 @@ export function _primitiveApply(value: FIXME, patch: FIXME) {
         patch.type
       }" and path "${patch.path
         .map((path: FIXME) => JSON.stringify(path))
-        .join('.')} that targeted the value "${JSON.stringify(value)}"`
+        .join('.')} that targeted the value "${JSON.stringify(value)}"`,
     )
   }
 

@@ -11,11 +11,11 @@ export function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaTy
 
 export function getPrimitiveItemType(
   arrayType: ArraySchemaType,
-  item: unknown
+  item: unknown,
 ): SchemaType | undefined {
   const itemTypeName = resolveTypeName(item)
 
   return arrayType?.of.find(
-    (memberType) => memberType.name === itemTypeName || memberType.jsonType === itemTypeName
+    (memberType) => memberType.name === itemTypeName || memberType.jsonType === itemTypeName,
   )
 }

@@ -31,6 +31,6 @@ function formatDateTime(value: string, schemaType: StringSchemaType): string {
 
   return legacyDateFormat.format(
     new Date(value),
-    name === 'date' ? dateFormat : `${dateFormat} ${timeFormat}`
+    name === 'date' ? dateFormat : `${dateFormat} ${timeFormat}`,
   )
 }

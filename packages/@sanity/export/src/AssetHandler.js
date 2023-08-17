@@ -200,7 +200,7 @@ class AssetHandler {
       this.queue.clear()
 
       const error = new Error(
-        `Failed to download asset at ${assetDoc.url}, giving up. ${detailsString}`
+        `Failed to download asset at ${assetDoc.url}, giving up. ${detailsString}`,
       )
 
       this.reject(error)
@@ -218,7 +218,7 @@ class AssetHandler {
 
     this.downloading.splice(
       this.downloading.findIndex((datUrl) => datUrl === url),
-      1
+      1,
     )
 
     this.filesWritten++
@@ -318,7 +318,7 @@ function writeHashedStream(filePath, stream) {
         sha1: sha1.digest('hex'),
         md5: md5.digest('hex'),
       })
-    })
+    }),
   )
 }
 

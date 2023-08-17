@@ -11,7 +11,7 @@ const EMPTY_SEARCH = () => of([])
 
 export type TestRenderCrossDatasetReferenceInputCallback = (
   inputProps: CrossDatasetReferenceInputProps,
-  context: TestRenderInputContext
+  context: TestRenderInputContext,
 ) => React.ReactElement
 
 export async function renderCrossDatasetReferenceInput(options: {
@@ -50,7 +50,7 @@ export async function renderCrossDatasetReferenceInput(options: {
 
   function rerender(subsequentRender: TestRenderCrossDatasetReferenceInputCallback) {
     result.rerender((baseProps, context) =>
-      subsequentRender(transformProps(baseProps, context), context)
+      subsequentRender(transformProps(baseProps, context), context),
     )
   }
 

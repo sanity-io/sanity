@@ -31,7 +31,7 @@ export function isBuilder(template: unknown): template is Serializeable<Template
 export async function resolveValue<Params, InitialValue>(
   initialValueOpt: InitialValueProperty<Params, InitialValue>,
   params: Params | undefined,
-  context: InitialValueResolverContext
+  context: InitialValueResolverContext,
 ): Promise<InitialValue | undefined> {
   return typeof initialValueOpt === 'function'
     ? (initialValueOpt as InitialValueResolver<Params, InitialValue>)(params, context)
@@ -43,7 +43,7 @@ export async function resolveInitialValue(
   schema: Schema,
   template: Template,
   params: {[key: string]: any} = {},
-  context: InitialValueResolverContext
+  context: InitialValueResolverContext,
 ): Promise<{[key: string]: any}> {
   // Template builder?
   if (isBuilder(template)) {
@@ -59,7 +59,7 @@ export async function resolveInitialValue(
 
   if (!isRecord(resolvedValue)) {
     throw new Error(
-      `Template "${id}" has invalid "value" property - must be a plain object or a resolver function returning a plain object`
+      `Template "${id}" has invalid "value" property - must be a plain object or a resolver function returning a plain object`,
     )
   }
 
@@ -80,7 +80,7 @@ export async function resolveInitialValue(
   const newValue = deepAssign(
     (await resolveInitialValueForType(schemaType, params, DEFAULT_MAX_RECURSION_DEPTH, context)) ||
       {},
-    resolvedValue as Record<string, unknown>
+    resolvedValue as Record<string, unknown>,
   )
 
   // revalidate and return new initial values
@@ -118,7 +118,7 @@ export function resolveInitialValueForType<Params extends Record<string, unknown
    * Maximum recursion depth (default 9).
    */
   maxDepth = DEFAULT_MAX_RECURSION_DEPTH,
-  context: InitialValueResolverContext
+  context: InitialValueResolverContext,
 ): Promise<any> {
   if (maxDepth <= 0) {
     return Promise.resolve(undefined)
@@ -139,7 +139,7 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
   type: SchemaType,
   params: Params,
   maxDepth: number,
-  context: InitialValueResolverContext
+  context: InitialValueResolverContext,
 ): Promise<any> {
   const initialArray = await resolveValue(type.initialValue, undefined, context)
 
@@ -157,7 +157,7 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
             _key: randomKey(),
           }
         : initialItem
-    })
+    }),
   )
 }
 
@@ -166,7 +166,7 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
   type: ObjectSchemaType,
   params: Params,
   maxDepth: number,
-  context: InitialValueResolverContext
+  context: InitialValueResolverContext,
 ): Promise<any> {
   const initialObject: Record<string, unknown> = {
     ...((await resolveValue(type.initialValue, params, context)) || {}),
@@ -179,12 +179,12 @@ export async function resolveInitialObjectValue<Params extends Record<string, un
         field.type,
         params,
         maxDepth - 1,
-        context
+        context,
       )
       if (initialFieldValue !== undefined && initialFieldValue !== null) {
         fieldValues[field.name] = initialFieldValue
       }
-    })
+    }),
   )
 
   const merged = deepAssign(fieldValues, initialObject)

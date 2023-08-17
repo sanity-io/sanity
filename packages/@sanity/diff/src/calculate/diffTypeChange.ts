@@ -4,7 +4,7 @@ import {removedInput, addedInput} from './diffInput'
 export function diffTypeChange<A>(
   fromInput: Input<A>,
   toInput: Input<A>,
-  options: DiffOptions
+  options: DiffOptions,
 ): TypeChangeDiff<A> {
   return {
     type: 'typeChange',

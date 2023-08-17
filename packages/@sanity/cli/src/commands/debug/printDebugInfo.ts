@@ -31,7 +31,7 @@ export const printDebugInfo: CliCommandAction = async (args, context) => {
         Email: user.email,
         Roles: project ? project.userRoles : undefined,
       },
-      context
+      context,
     )
   }
 
@@ -44,7 +44,7 @@ export const printDebugInfo: CliCommandAction = async (args, context) => {
         'Display name': project.displayName,
         'Studio URL': project.studioHostname,
       },
-      context
+      context,
     )
   }
 
@@ -58,7 +58,7 @@ export const printDebugInfo: CliCommandAction = async (args, context) => {
         'User type': globalConfig.authType || 'normal',
         'Auth token': flags.secrets ? authToken : `<redacted>`,
       },
-      context
+      context,
     )
 
     if (!flags.secrets) {
@@ -187,7 +187,7 @@ function gatherProjectConfigInfo(context: CliCommandContext): SanityJson | {erro
 
 async function gatherProjectInfo(
   context: CliCommandContext,
-  baseInfo: ConfigsWithUser
+  baseInfo: ConfigsWithUser,
 ): Promise<ProjectInfo | null | Error> {
   const projectClient = context.apiClient({requireUser: false, requireProject: false})
   const projectId = projectClient.config().projectId
@@ -219,7 +219,7 @@ async function gatherProjectInfo(
 
 async function gatherUserInfo(
   context: CliCommandContext,
-  options: {projectBased: boolean}
+  options: {projectBased: boolean},
 ): Promise<UserInfo | Error> {
   const hasToken = Boolean(getCliToken())
   if (!hasToken) {

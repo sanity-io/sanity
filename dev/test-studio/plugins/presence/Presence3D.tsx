@@ -56,7 +56,7 @@ function Clump({
         .at(i)
         .applyForce(
           vec.setFromMatrixPosition(mat).normalize().multiplyScalar(-50).toArray(),
-          [0, 0, 0]
+          [0, 0, 0],
         )
     }
   })
@@ -92,7 +92,7 @@ function UserClump({
         envMapIntensity: 0.2,
         // emissive: presence?.color?.text,
         emissive: color?.text,
-      })
+      }),
   )
 
   // TODO: error recovery if image fails  to load
@@ -114,7 +114,7 @@ function UserClump({
       .at(0)
       .applyForce(
         vec.setFromMatrixPosition(mat).normalize().multiplyScalar(-50).toArray(),
-        [0, 0, 0]
+        [0, 0, 0],
       )
   })
   return (
@@ -134,7 +134,11 @@ function Pointer() {
   const viewport = useThree((state) => state.viewport)
   const [, api] = useSphere(() => ({type: 'Kinematic', args: [3], position: [0, 0, 0]}))
   return useFrame((state) =>
-    api.position.set((state.mouse.x * viewport.width) / 2, (state.mouse.y * viewport.height) / 2, 0)
+    api.position.set(
+      (state.mouse.x * viewport.width) / 2,
+      (state.mouse.y * viewport.height) / 2,
+      0,
+    ),
   )
 }
 

@@ -37,7 +37,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
 
   useEffect(
     () => setBlockElement(blockRef ? blockRef.current : ReactEditor.toDOMNode(editor, element)),
-    [editor, element, blockRef]
+    [editor, element, blockRef],
   )
 
   // Note: this is called not for the dragging block, but for the targets when the block is dragged over them
@@ -72,7 +72,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
       }
       setIsDragOver(true)
     },
-    [blockElement, editor, element]
+    [blockElement, editor, element],
   )
 
   // Note: this is called not for the dragging block, but for the targets when the block is dragged over them
@@ -108,8 +108,8 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
           targetPath = Path.next(targetPath)
           debug(
             `Adjusting targetPath from ${JSON.stringify(originalPath)} to ${JSON.stringify(
-              targetPath
-            )}`
+              targetPath,
+            )}`,
           )
         }
         if (dragPosition === 'top' && isBefore && targetPath[0] !== editor.children.length - 1) {
@@ -117,8 +117,8 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
           targetPath = Path.previous(targetPath)
           debug(
             `Adjusting targetPath from ${JSON.stringify(originalPath)} to ${JSON.stringify(
-              targetPath
-            )}`
+              targetPath,
+            )}`,
           )
         }
         if (Path.equals(targetPath, myPath)) {
@@ -128,8 +128,8 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
         }
         debug(
           `Moving element ${element._key} from path ${JSON.stringify(myPath)} to ${JSON.stringify(
-            targetPath
-          )} (${dragPosition})`
+            targetPath,
+          )} (${dragPosition})`,
         )
         Transforms.moveNodes(editor, {at: myPath, to: targetPath})
         editor.onChange()
@@ -137,7 +137,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
       }
       debug('No target element, not doing anything')
     },
-    [editor, element]
+    [editor, element],
   )
   // Note: this is called not for the dragging block, but for the drop target
   const handleDrop = useCallback(
@@ -149,7 +149,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
         setIsDragOver(false)
       }
     },
-    [editor, element]
+    [editor, element],
   )
   // Note: this is called for the dragging block
   const handleDrag = useCallback(
@@ -168,7 +168,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
         target.style.opacity = '1'
       }
     },
-    [editor, element, isVoid]
+    [editor, element, isVoid],
   )
 
   // Note: this is called for the dragging block
@@ -215,7 +215,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
       }
       handleDrag(event)
     },
-    [blockElement, editor, handleDrag, isInline, isVoid]
+    [blockElement, editor, handleDrag, isInline, isVoid],
   )
 
   const isDraggingOverFirstBlock =
@@ -248,7 +248,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
         }}
       />
     ),
-    []
+    [],
   )
 
   if (readOnly) {

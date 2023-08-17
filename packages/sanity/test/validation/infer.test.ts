@@ -44,7 +44,7 @@ describe('schema validation inference', () => {
       await expectError(
         type.validation as Rule[],
         {value: '#ccc', title: 'Gray'},
-        'Value did not match any allowed value'
+        'Value did not match any allowed value',
       )
     })
   })
@@ -76,18 +76,18 @@ describe('schema validation inference', () => {
 
     test('field validations defined on an object type does not affect the field type validation', () => {
       const documentType = inferFromSchema(schema).get(
-        'fieldValidationInferReproDoc'
+        'fieldValidationInferReproDoc',
       ) as ObjectSchemaType
       const fieldWithoutValidation = documentType.fields.find(
-        (field) => field.name === 'stringField'
+        (field) => field.name === 'stringField',
       )
 
       // The first field should only have the validation rules that comes with its type
       expect(
         (fieldWithoutValidation?.type.validation as Rule[]).flatMap(
           // eslint-disable-next-line dot-notation
-          (validation) => validation['_rules']
-        )
+          (validation) => validation['_rules'],
+        ),
       ).toEqual([{flag: 'type', constraint: 'String'}])
     })
   })
@@ -126,8 +126,8 @@ describe('schema validation inference', () => {
       client.fetch.mockImplementation(() =>
         Promise.resolve(
           // return true to mock a unique result (valid)
-          true
-        )
+          true,
+        ),
       )
 
       await expect(validateDocument(getClient, mockDocument, schema)).resolves.toEqual([])
@@ -152,8 +152,8 @@ describe('schema validation inference', () => {
       client.fetch.mockImplementation(() =>
         Promise.resolve(
           // return false to mock a non-unique result (invalid)
-          false
-        )
+          false,
+        ),
       )
 
       await expect(validateDocument(getClient, mockDocument, schema)).resolves.toMatchObject([
@@ -226,8 +226,8 @@ describe('schema validation inference', () => {
               _type: 'not-a-reference',
             },
           },
-          schema
-        )
+          schema,
+        ),
       ).resolves.toMatchObject([
         {
           item: {message: 'Must be a reference to a document'},
@@ -250,8 +250,8 @@ describe('schema validation inference', () => {
           },
 
           schema,
-          {getDocumentExists: mockGetDocumentExists}
-        )
+          {getDocumentExists: mockGetDocumentExists},
+        ),
       ).resolves.toMatchObject([
         {
           item: {message: /.+/},
@@ -271,8 +271,8 @@ describe('schema validation inference', () => {
             ...mockDocument,
             referenceFieldWeak: {_ref: 'example-id'},
           },
-          schema
-        )
+          schema,
+        ),
       ).resolves.toEqual([])
     })
 
@@ -287,14 +287,14 @@ describe('schema validation inference', () => {
         },
 
         schema,
-        {getDocumentExists: undefined}
+        {getDocumentExists: undefined},
       )
 
       expect(result).toHaveLength(1)
       expect(
         result[0].item.message.includes(
-          '`getDocumentExists` was not provided in validation context'
-        )
+          '`getDocumentExists` was not provided in validation context',
+        ),
       ).toBe(true)
     })
 
@@ -311,8 +311,8 @@ describe('schema validation inference', () => {
           },
 
           schema,
-          {getDocumentExists: mockGetDocumentExists}
-        )
+          {getDocumentExists: mockGetDocumentExists},
+        ),
       ).resolves.toEqual([])
 
       expect(mockGetDocumentExists.mock.calls).toMatchObject([[{id: 'example-id'}]])
@@ -323,7 +323,7 @@ describe('schema validation inference', () => {
 async function expectNoError(validations: Rule[], value: unknown) {
   const errors = (
     await Promise.all(
-      validations.map((rule) => rule.validate(value, {getClient, schema: {} as any}))
+      validations.map((rule) => rule.validate(value, {getClient, schema: {} as any})),
     )
   ).flat()
   if (errors.length === 0) {
@@ -340,11 +340,11 @@ async function expectError(
   validations: Rule[],
   value: unknown,
   message: string | undefined,
-  level = 'error'
+  level = 'error',
 ) {
   const errors = (
     await Promise.all(
-      validations.map((rule) => rule.validate(value, {getClient, schema: {} as any}))
+      validations.map((rule) => rule.validate(value, {getClient, schema: {} as any})),
     )
   ).flat()
   if (!errors.length) {

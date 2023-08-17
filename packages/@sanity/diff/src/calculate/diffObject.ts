@@ -7,7 +7,7 @@ const ignoredFields = new Set(['_id', '_type', '_createdAt', '_updatedAt', '_rev
 export function diffObject<A>(
   fromInput: ObjectInput<A>,
   toInput: ObjectInput<A>,
-  options: DiffOptions
+  options: DiffOptions,
 ): ObjectDiff<A> {
   const fields: ObjectDiff<A>['fields'] = {}
   let isChanged = false
@@ -67,7 +67,7 @@ export function diffObject<A>(
 export function removedObject<A>(
   input: ObjectInput<A>,
   toValue: null | undefined,
-  options: DiffOptions
+  options: DiffOptions,
 ): ObjectDiff<A> & {action: 'removed'} {
   return {
     type: 'object',
@@ -91,7 +91,7 @@ export function removedObject<A>(
 export function addedObject<A>(
   input: ObjectInput<A>,
   fromValue: null | undefined,
-  options: DiffOptions
+  options: DiffOptions,
 ): ObjectDiff<A> & {action: 'added'} {
   return {
     type: 'object',

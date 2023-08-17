@@ -107,7 +107,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
   componentDidUpdate(
     prevProps: ArrayOfPrimitivesInputProps,
     prevState: Record<string, unknown>,
-    snapshot?: {restoreSelection: {start: number; end: number}; prevFocusedIndex: number}
+    snapshot?: {restoreSelection: {start: number; end: number}; prevFocusedIndex: number},
   ) {
     const {onIndexFocus} = this.props
     if (snapshot?.restoreSelection && prevProps.value) {
@@ -116,14 +116,14 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
       const nearestIndex = nearestIndexOf(
         this.props.value || [],
         snapshot.prevFocusedIndex,
-        prevFocusedValue
+        prevFocusedValue,
       )
 
       if (nearestIndex === -1) {
         return
       }
       const newInput = this._element?.querySelector(
-        `[data-item-index='${nearestIndex}'] input,textarea`
+        `[data-item-index='${nearestIndex}'] input,textarea`,
       )
 
       if (newInput instanceof HTMLInputElement) {

@@ -43,7 +43,7 @@ export default {
     await input.click()
 
     const samples = await input.evaluate((el: HTMLInputElement) =>
-      window.perf.typingTest(el, {samples: 2})
+      window.perf.typingTest(el, {samples: 2}),
     )
 
     await new Promise((resolve) => setTimeout(resolve, 1000))

@@ -31,7 +31,7 @@ export function setIfMissing(value: any, path: Path = []): FormSetIfMissingPatch
 export function insert(
   items: any[],
   position: FormInsertPatchPosition,
-  path: Path = []
+  path: Path = [],
 ): FormInsertPatch {
   return {
     patchType: SANITY_PATCH_TYPE,

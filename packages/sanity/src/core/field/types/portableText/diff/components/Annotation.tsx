@@ -92,22 +92,22 @@ function AnnnotationWithDiff({
   const color = useDiffAnnotationColor(diff, [])
   const style = useMemo(
     () => (color ? {background: color.background, color: color.text} : {}),
-    [color]
+    [color],
   )
   const isRemoved = diff.action === 'removed'
   const [open, setOpen] = useState(false)
   const emptyObject = object && isEmptyObject(object)
   const markDefPath = useMemo(
     () => [path[0]].concat(['markDefs', {_key: object._key}]),
-    [object._key, path]
+    [object._key, path],
   )
   const prefix = useMemo(
     () =>
       fullPath.slice(
         0,
-        fullPath.findIndex((seg) => isKeySegment(seg) && seg._key === object._key)
+        fullPath.findIndex((seg) => isKeySegment(seg) && seg._key === object._key),
       ),
-    [fullPath, object._key]
+    [fullPath, object._key],
   )
   const annotationPath = useMemo(() => prefix.concat(path), [path, prefix])
   const myPath = useMemo(() => prefix.concat(markDefPath), [markDefPath, prefix])
@@ -115,7 +115,7 @@ function AnnnotationWithDiff({
   const values = useReportedValues()
   const isEditing = useMemo(
     () => values.filter(([p]) => p.startsWith(myValue)).length > 0,
-    [myValue, values]
+    [myValue, values],
   )
 
   useEffect(() => {
@@ -135,7 +135,7 @@ function AnnnotationWithDiff({
         setTimeout(() => onSetFocus(myPath), 10) // Open edit object interface
       }
     },
-    [annotationPath, isRemoved, myPath, onSetFocus]
+    [annotationPath, isRemoved, myPath, onSetFocus],
   )
 
   const handleClickOutside = useCallback(() => {

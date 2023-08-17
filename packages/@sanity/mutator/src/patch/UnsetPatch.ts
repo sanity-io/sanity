@@ -26,7 +26,7 @@ export class UnsetPatch {
         break
       default:
         throw new Error(
-          'Target value is neither indexable or an object. This error should potentially just be silently ignored?'
+          'Target value is neither indexable or an object. This error should potentially just be silently ignored?',
         )
     }
     return result

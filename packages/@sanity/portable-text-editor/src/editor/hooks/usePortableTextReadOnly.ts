@@ -13,7 +13,7 @@ export const usePortableTextEditorReadOnlyStatus = (): boolean => {
 
   if (readOnly === undefined) {
     throw new Error(
-      `The \`usePortableTextEditorReadOnly\` hook must be used inside the <PortableTextEditor> component's context.`
+      `The \`usePortableTextEditorReadOnly\` hook must be used inside the <PortableTextEditor> component's context.`,
     )
   }
   return readOnly

@@ -7,7 +7,7 @@ export function resolveTypeName(value: unknown): string {
 
 export function getArrayDiffItemType(
   diff: Diff,
-  schemaType: ArraySchemaType
+  schemaType: ArraySchemaType,
 ): {fromType?: SchemaType; toType?: SchemaType} {
   if (diff.action === 'added') {
     return {
@@ -36,7 +36,7 @@ export function getArrayDiffItemType(
 
 function resolveArrayMemberType(
   schemaType: ArraySchemaType,
-  value: unknown
+  value: unknown,
 ): SchemaType | undefined {
   const typeName = resolveTypeName(value)
   const declared = schemaType.of.find((candidate) => candidate.name === typeName)

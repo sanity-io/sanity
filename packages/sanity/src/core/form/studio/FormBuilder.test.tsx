@@ -106,7 +106,7 @@ describe('FormBuilder', () => {
           validation: EMPTY_ARRAY,
           value: formState?.value,
         }),
-        [formState, patchChannel, schemaType]
+        [formState, patchChannel, schemaType],
       )
 
       return <FormBuilder {...formBuilderProps} />
@@ -115,7 +115,7 @@ describe('FormBuilder', () => {
     const result = render(
       <TestProvider>
         <TestForm />
-      </TestProvider>
+      </TestProvider>,
     )
 
     const titleField = await result.findByTestId('field-title')

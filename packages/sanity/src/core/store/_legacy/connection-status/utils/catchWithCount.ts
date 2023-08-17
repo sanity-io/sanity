@@ -17,7 +17,7 @@ export function catchWithCount<T, K = T>(selector: Selector<T, K>) {
       tap(() => {
         errors = []
       }),
-      errorOp
+      errorOp,
     )
   }
 }

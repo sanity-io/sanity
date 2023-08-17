@@ -47,7 +47,7 @@ export function getDocumentTypeListItems(context: StructureContext): ListItemBui
 
 export function getDocumentTypeListItem(
   context: StructureContext,
-  typeName: string
+  typeName: string,
 ): ListItemBuilder {
   const {schema} = context
 
@@ -79,7 +79,7 @@ export function getDocumentTypeListItem(
 
 export function getDocumentTypeList(
   context: StructureContext,
-  typeNameOrSpec: string | DocumentTypeListInput
+  typeNameOrSpec: string | DocumentTypeListInput,
 ): DocumentListBuilder {
   const {schema, resolveDocumentNode} = context
 
@@ -109,11 +109,11 @@ export function getDocumentTypeList(
         {id: 'sorting', title: 'Sort'},
         {id: 'layout', title: 'Layout'},
         {id: 'actions', title: 'Actions'},
-      ]
+      ],
     )
     .child(
       spec.child ||
-        ((documentId: string) => resolveDocumentNode({schemaType: typeName, documentId}))
+        ((documentId: string) => resolveDocumentNode({schemaType: typeName, documentId})),
     )
     .canHandleIntent(spec.canHandleIntent || defaultIntentChecker)
     .menuItems(
@@ -139,6 +139,6 @@ export function getDocumentTypeList(
           .params({layout: 'detail'}),
 
         // Create new (from menu) will be added in serialization step of GenericList
-      ]
+      ],
     )
 }

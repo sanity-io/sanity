@@ -99,7 +99,7 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
         visibility: hidden;
       }
     `
-  }
+  },
 )
 
 export const InnerFlex = styled(Flex)`

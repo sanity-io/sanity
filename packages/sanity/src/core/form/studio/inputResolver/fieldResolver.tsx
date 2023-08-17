@@ -81,7 +81,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
 
   // unless the hotspot tool dialog is open we want to show whoever is in there as the field presence
   const hotspotField = field.inputProps.members.find(
-    (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot'
+    (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot',
   )
   const presence = hotspotField?.open
     ? field.presence
@@ -108,7 +108,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
 }
 
 export function defaultResolveFieldComponent(
-  schemaType: SchemaType
+  schemaType: SchemaType,
 ): React.ComponentType<Omit<FieldProps, 'renderDefault'>> {
   if (schemaType.components?.field) return schemaType.components.field
 

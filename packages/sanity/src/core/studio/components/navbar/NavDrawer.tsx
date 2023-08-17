@@ -128,7 +128,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
         onClose()
       }
     },
-    [onClose]
+    [onClose],
   )
 
   return (

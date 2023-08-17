@@ -4,7 +4,7 @@ import type {OperatorInputComponentProps} from '../../../../../definitions/opera
 import {CommonDateDirectionInput} from './CommonDateDirection'
 
 export function SearchFilterDateTimeBeforeInput(
-  props: OperatorInputComponentProps<OperatorDateDirectionValue>
+  props: OperatorInputComponentProps<OperatorDateDirectionValue>,
 ) {
   return <CommonDateDirectionInput {...props} direction="before" isDateTime />
 }

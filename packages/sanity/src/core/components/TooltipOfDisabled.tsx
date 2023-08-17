@@ -4,7 +4,7 @@ import React, {ForwardedRef, forwardRef} from 'react'
 /** @internal */
 export const TooltipOfDisabled = forwardRef(function DisabledTooltip(
   props: TooltipProps,
-  ref: ForwardedRef<HTMLDivElement>
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {children, content, disabled, ...restProps} = props
 

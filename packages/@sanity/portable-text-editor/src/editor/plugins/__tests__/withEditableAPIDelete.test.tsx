@@ -57,7 +57,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
         ref={editorRef}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     await waitFor(() => {
       if (editorRef.current) {
@@ -66,7 +66,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
         PortableTextEditor.delete(
           editorRef.current,
           PortableTextEditor.getSelection(editorRef.current),
-          {mode: 'blocks'}
+          {mode: 'blocks'},
         )
         expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
           Array [
@@ -98,7 +98,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
         ref={editorRef}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
 
     await waitFor(() => {
@@ -108,7 +108,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
         PortableTextEditor.delete(
           editorRef.current,
           PortableTextEditor.getSelection(editorRef.current),
-          {mode: 'children'}
+          {mode: 'children'},
         )
         expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
                   Array [

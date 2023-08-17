@@ -25,7 +25,7 @@ test('rejects on invalid input type (null/undefined)', async () => {
   expect.assertions(1)
   await expect(importer(null, importOptions)).rejects.toHaveProperty(
     'message',
-    'Stream does not seem to be a readable stream, an array or a path to a directory'
+    'Stream does not seem to be a readable stream, an array or a path to a directory',
   )
 })
 
@@ -33,7 +33,7 @@ test('rejects on invalid input type (non-array)', async () => {
   expect.assertions(1)
   await expect(importer({}, importOptions)).rejects.toHaveProperty(
     'message',
-    'Stream does not seem to be a readable stream, an array or a path to a directory'
+    'Stream does not seem to be a readable stream, an array or a path to a directory',
   )
 })
 
@@ -41,7 +41,7 @@ test('rejects on invalid JSON', async () => {
   expect.assertions(1)
   await expect(importer(getFixtureStream('invalid-json'), importOptions)).rejects.toHaveProperty(
     'message',
-    'Failed to parse line #3: Unexpected token _ in JSON at position 1'
+    'Failed to parse line #3: Unexpected token _ in JSON at position 1',
   )
 })
 
@@ -49,17 +49,17 @@ test('rejects on invalid `_id` property', async () => {
   expect.assertions(1)
   await expect(importer(getFixtureStream('invalid-id'), importOptions)).rejects.toHaveProperty(
     'message',
-    'Failed to parse line #2: Document contained an invalid "_id" property - must be a string'
+    'Failed to parse line #2: Document contained an invalid "_id" property - must be a string',
   )
 })
 
 test('rejects on invalid `_id` property format', async () => {
   expect.assertions(1)
   await expect(
-    importer(getFixtureStream('invalid-id-format'), importOptions)
+    importer(getFixtureStream('invalid-id-format'), importOptions),
   ).rejects.toHaveProperty(
     'message',
-    'Failed to parse line #2: Document ID "pk#123" is not valid: Please use alphanumeric document IDs. Dashes (-) and underscores (_) are also allowed.'
+    'Failed to parse line #2: Document ID "pk#123" is not valid: Please use alphanumeric document IDs. Dashes (-) and underscores (_) are also allowed.',
   )
 })
 
@@ -67,7 +67,7 @@ test('rejects on missing `_type` property', async () => {
   expect.assertions(1)
   await expect(importer(getFixtureStream('missing-type'), importOptions)).rejects.toHaveProperty(
     'message',
-    'Failed to parse line #3: Document did not contain required "_type" property of type string'
+    'Failed to parse line #3: Document did not contain required "_type" property of type string',
   )
 })
 
@@ -75,7 +75,7 @@ test('rejects on missing `_type` property (from array)', async () => {
   expect.assertions(1)
   await expect(importer(getFixtureArray('missing-type'), importOptions)).rejects.toHaveProperty(
     'message',
-    'Failed to parse document at index #2: Document did not contain required "_type" property of type string'
+    'Failed to parse document at index #2: Document did not contain required "_type" property of type string',
   )
 })
 
@@ -83,7 +83,7 @@ test('rejects on duplicate IDs', async () => {
   expect.assertions(1)
   await expect(importer(getFixtureStream('duplicate-ids'), importOptions)).rejects.toHaveProperty(
     'message',
-    'Found 2 duplicate IDs in the source file:\n- pk\n- espen'
+    'Found 2 duplicate IDs in the source file:\n- pk\n- espen',
   )
 })
 

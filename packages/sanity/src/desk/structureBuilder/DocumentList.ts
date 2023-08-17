@@ -22,7 +22,7 @@ const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) =>
       `\`filter\` cannot start with \`${filter[0]}\` - looks like you are providing a query, not a filter`,
       options.path,
       spec.id,
-      spec.title
+      spec.title,
     ).withHelpUrl(HELP_URL.QUERY_PROVIDED_FOR_FILTER)
   }
 
@@ -43,7 +43,7 @@ const createDocumentChildResolverForItem =
     return Promise.resolve(type).then((schemaType) =>
       schemaType
         ? context.resolveDocumentNode({schemaType, documentId: itemId})
-        : new DocumentBuilder(context).id('editor').documentId(itemId).schemaType('')
+        : new DocumentBuilder(context).id('editor').documentId(itemId).schemaType(''),
     )
   }
 
@@ -117,7 +117,7 @@ export class DocumentListBuilder extends GenericListBuilder<
      * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
-    spec?: DocumentListInput
+    spec?: DocumentListInput,
   ) {
     super()
     this.spec = spec || {}
@@ -218,7 +218,7 @@ export class DocumentListBuilder extends GenericListBuilder<
         '`id` is required for document lists',
         options.path,
         options.index,
-        this.spec.title
+        this.spec.title,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
@@ -227,7 +227,7 @@ export class DocumentListBuilder extends GenericListBuilder<
         '`filter` is required for document lists',
         options.path,
         this.spec.id,
-        this.spec.title
+        this.spec.title,
       ).withHelpUrl(HELP_URL.FILTER_REQUIRED)
     }
 
@@ -276,7 +276,7 @@ export class DocumentListBuilder extends GenericListBuilder<
 
 function inferInitialValueTemplates(
   context: StructureContext,
-  spec: PartialDocumentList
+  spec: PartialDocumentList,
 ): InitialValueTemplateItem[] | undefined {
   const {document} = context
   const {schemaTypeName, options} = spec
@@ -294,7 +294,7 @@ function inferInitialValueTemplates(
       document.resolveNewDocumentOptions({
         type: 'structure',
         schemaType,
-      })
+      }),
     )
     .map((option) => ({...option, icon: ComposeIcon}))
 }
@@ -309,7 +309,7 @@ function inferTypeName(spec: PartialDocumentList): string | undefined {
 /** @internal */
 export function getTypeNamesFromFilter(
   filter: string,
-  params: Record<string, unknown> = {}
+  params: Record<string, unknown> = {},
 ): string[] {
   let typeNames = getTypeNamesFromEqualityFilter(filter, params)
 
@@ -323,7 +323,7 @@ export function getTypeNamesFromFilter(
 // From _type == "movie" || _type == $otherType
 function getTypeNamesFromEqualityFilter(
   filter: string,
-  params: Record<string, unknown> = {}
+  params: Record<string, unknown> = {},
 ): string[] {
   const pattern =
     /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type/g
@@ -345,7 +345,7 @@ function getTypeNamesFromEqualityFilter(
 // From _type in ["dog", "cat", $otherSpecies]
 function getTypeNamesFromInTypesFilter(
   filter: string,
-  params: Record<string, unknown> = {}
+  params: Record<string, unknown> = {},
 ): string[] {
   const pattern = /\b_type\s+in\s+\[(.*?)\]/
   const matches = filter.match(pattern)

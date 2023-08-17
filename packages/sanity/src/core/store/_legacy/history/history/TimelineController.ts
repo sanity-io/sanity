@@ -201,7 +201,7 @@ export class TimelineController {
       this.timeline,
       this._aligner.currentDocument,
       since,
-      rev
+      rev,
     )
   }
 
@@ -284,7 +284,7 @@ export class TimelineController {
     }
 
     const transactionsUrl = this.client.getUrl(
-      `/data/history/${clientConfig.dataset}/transactions/${publishedId},${draftId}?${queryParams}`
+      `/data/history/${clientConfig.dataset}/transactions/${publishedId},${draftId}?${queryParams}`,
     )
     const stream = await getJsonStream(transactionsUrl, clientConfig.token)
     const reader = stream.getReader()

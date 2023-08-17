@@ -48,7 +48,7 @@ export function usePatches(props: {path: Path}): {
         }
       })
     },
-    [path, patchChannel]
+    [path, patchChannel],
   )
 
   return {subscribe}
@@ -89,7 +89,7 @@ function _isAncestor(path1: Path, path2: Path) {
 
 function _shouldReset(path: Path, patches: FormPatch[]) {
   return patches.some(
-    (patch) => _isAncestor(patch.path, path) && (patch.type === 'set' || patch.type === 'unset')
+    (patch) => _isAncestor(patch.path, path) && (patch.type === 'set' || patch.type === 'unset'),
   )
 }
 

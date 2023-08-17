@@ -48,7 +48,7 @@ export function createGetReferenceInfo(context: {
    */
   return function getReferenceInfo(
     doc: {_id: string; _type?: string}, // pass {_id, _type} instead and we can skip the `fetchType`
-    referenceType: CrossDatasetReferenceSchemaType
+    referenceType: CrossDatasetReferenceSchemaType,
   ): Observable<CrossDatasetReferenceInfo> {
     return (
       doc._type
@@ -67,11 +67,11 @@ export function createGetReferenceInfo(context: {
               type: undefined,
               availability,
               preview: {published: undefined},
-            }))
+            })),
           )
         }
         const refSchemaType = referenceType.to.find(
-          (candidate) => candidate.type === resolvedDoc._type
+          (candidate) => candidate.type === resolvedDoc._type,
         )
 
         const previewPaths = [
@@ -83,7 +83,7 @@ export function createGetReferenceInfo(context: {
         const publishedPreview$ = documentPreviewStore
           .observePaths(doc as Previewable, previewPaths, apiConfig)
           .pipe(
-            map((result) => (result ? prepareForPreview(result, refSchemaType as FIXME) : result))
+            map((result) => (result ? prepareForPreview(result, refSchemaType as FIXME) : result)),
           )
 
         return combineLatest([publishedPreview$]).pipe(
@@ -96,16 +96,16 @@ export function createGetReferenceInfo(context: {
                 published: isRecord(publishedPreview) ? publishedPreview : undefined,
               },
             }
-          })
+          }),
         )
-      })
+      }),
     )
   }
 }
 
 function fetchDocumentAvailability(
   client: SanityClient,
-  id: string
+  id: string,
 ): Observable<DocumentAvailability | null> {
   const requestOptions = {
     uri: client.getDataUrl('doc', id),
@@ -131,6 +131,6 @@ function fetchDocumentAvailability(
         return AVAILABILITY_PERMISSION_DENIED
       }
       return null
-    })
+    }),
   )
 }

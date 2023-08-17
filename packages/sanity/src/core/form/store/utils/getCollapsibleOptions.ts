@@ -22,7 +22,7 @@ interface CollapsibleOptions {
  */
 export function getCollapsedWithDefaults(
   options: ObjectSchemaTypeWithOptions['options'] = {},
-  level: number
+  level: number,
 ): CollapsibleOptions {
   if (options?.collapsible === false || options?.collapsable === false) {
     return {collapsible: false, collapsed: false}

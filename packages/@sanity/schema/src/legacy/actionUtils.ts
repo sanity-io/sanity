@@ -14,7 +14,7 @@ const hasWarned = {}
 const readActions = (schemaType: SchemaType): string[] => {
   if (DEPRECATE_EXPERIMENTAL_ACTIONS && !(schemaType.name in hasWarned)) {
     console.warn(`Heads up! Experimental actions is now deprecated and replaced by Document Actions. Read more about how to migrate on ${generateHelpUrl(
-      'experimental-actions-replaced-by-document-actions'
+      'experimental-actions-replaced-by-document-actions',
     )}".
 `)
     hasWarned[schemaType.name] = true
@@ -27,8 +27,8 @@ const validateActions = (typeName: string, actions: string[]) => {
   if (!Array.isArray(actions)) {
     throw new Error(
       `The value of <type>.${ACTIONS_FLAG} should be an array with any of the actions ${VALID_ACTIONS.join(
-        ', '
-      )}`
+        ', ',
+      )}`,
     )
   }
 
@@ -39,8 +39,8 @@ const validateActions = (typeName: string, actions: string[]) => {
       `Invalid action${
         invalid.length > 1 ? 's' : ''
       } configured for schema type "${typeName}": ${invalid.join(
-        ', '
-      )}. Valid actions are: ${VALID_ACTIONS.join(', ')}`
+        ', ',
+      )}. Valid actions are: ${VALID_ACTIONS.join(', ')}`,
     )
   }
 

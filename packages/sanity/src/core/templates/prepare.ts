@@ -39,6 +39,6 @@ export function defaultTemplatesForSchema(schema: Schema): Template[] {
 
   return prepareTemplates(
     schema,
-    schemaTypes.map((schemaType) => defaultTemplateForType(schemaType))
+    schemaTypes.map((schemaType) => defaultTemplateForType(schemaType)),
   )
 }

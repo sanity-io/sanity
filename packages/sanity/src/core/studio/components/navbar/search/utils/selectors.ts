@@ -18,7 +18,7 @@ export function getSelectableOmnisearchTypes(schema: Schema, typeFilter: string)
  */
 export function getSearchableOmnisearchTypes(schema: Schema): ObjectSchemaType[] {
   return getSearchableTypes(schema).filter(
-    (type) => !(type.__experimental_omnisearch_visibility === false)
+    (type) => !(type.__experimental_omnisearch_visibility === false),
   )
 }
 

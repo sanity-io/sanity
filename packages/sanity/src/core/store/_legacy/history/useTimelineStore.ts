@@ -96,7 +96,7 @@ export function useTimelineStore({
         documentId,
         documentType,
       }),
-    [client, documentId, documentType, historyStore]
+    [client, documentId, documentType, historyStore],
   )
 
   /**
@@ -105,7 +105,7 @@ export function useTimelineStore({
    */
   const timelineController$ = useMemo(
     () => new BehaviorSubject<TimelineController>(controller),
-    [controller]
+    [controller],
   )
 
   /**
@@ -150,7 +150,7 @@ export function useTimelineStore({
       snapshotsSubscriptionRef.current = remoteSnapshots(
         client,
         {draftId: `drafts.${documentId}`, publishedId: documentId},
-        documentType
+        documentType,
       ).subscribe((ev: RemoteSnapshotVersionEvent) => {
         controller.handleRemoteMutation(ev)
       })
@@ -181,7 +181,7 @@ export function useTimelineStore({
             map((innerController) => {
               const chunks = innerController.timeline.mapChunks((c) => c)
               const lastNonDeletedChunk = chunks.filter(
-                (chunk) => !['delete', 'initial'].includes(chunk.type)
+                (chunk) => !['delete', 'initial'].includes(chunk.type),
               )
               const hasMoreChunks = !innerController.timeline.reachedEarliestEntry
               const timelineReady = !['invalid', 'loading'].includes(innerController.selectionState)
@@ -215,7 +215,7 @@ export function useTimelineStore({
               timelineStateRef.current = timelineState
             }),
             // Trigger callback function required by `useSyncExternalStore` to denote when to re-render
-            tap(callback)
+            tap(callback),
           )
           .subscribe()
 

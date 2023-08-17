@@ -5,7 +5,7 @@ import {ReferenceChildLinkProps} from './types'
 
 export const ReferenceChildLink = forwardRef(function ReferenceChildLink(
   {documentId, documentType, parentRefPath, children, template, ...rest}: ReferenceChildLinkProps,
-  ref: React.ForwardedRef<HTMLAnchorElement>
+  ref: React.ForwardedRef<HTMLAnchorElement>,
 ) {
   return (
     <ChildLink

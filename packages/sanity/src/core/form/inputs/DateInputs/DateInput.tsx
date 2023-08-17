@@ -45,14 +45,14 @@ export function DateInput(props: DateInputProps) {
     (nextDate: string | null) => {
       onChange(nextDate === null ? unset() : set(nextDate))
     },
-    [onChange]
+    [onChange],
   )
 
   const formatInputValue = useCallback((date: Date) => format(date, dateFormat), [dateFormat])
 
   const parseInputValue = useCallback(
     (inputValue: string) => parse(inputValue, dateFormat),
-    [dateFormat]
+    [dateFormat],
   )
 
   return (

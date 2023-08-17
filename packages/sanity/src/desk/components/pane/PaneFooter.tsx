@@ -16,7 +16,7 @@ interface PaneFooterProps {
  */
 export const PaneFooter = forwardRef(function PaneFooter(
   props: PaneFooterProps,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {children, padding} = props
   const {collapsed} = usePane()

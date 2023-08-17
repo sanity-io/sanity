@@ -11,7 +11,7 @@ const undeployCommand: CliCommandDefinition = {
   description: 'Removes the deployed studio from <hostname>.sanity.studio',
   action: async (
     args: CliCommandArguments<Record<string, unknown>>,
-    context: CliCommandContext
+    context: CliCommandContext,
   ) => {
     const mod = await import('../../actions/deploy/undeployAction')
 

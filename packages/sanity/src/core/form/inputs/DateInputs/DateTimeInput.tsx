@@ -83,17 +83,17 @@ export function DateTimeInput(props: DateTimeInputProps) {
 
       onChange(date === null ? unset() : set(date))
     },
-    [onChange, timeStep]
+    [onChange, timeStep],
   )
 
   const formatInputValue = React.useCallback(
     (date: Date) => format(date, `${dateFormat} ${timeFormat}`),
-    [dateFormat, timeFormat]
+    [dateFormat, timeFormat],
   )
 
   const parseInputValue = React.useCallback(
     (inputValue: string) => parse(inputValue, `${dateFormat} ${timeFormat}`),
-    [dateFormat, timeFormat]
+    [dateFormat, timeFormat],
   )
 
   return (

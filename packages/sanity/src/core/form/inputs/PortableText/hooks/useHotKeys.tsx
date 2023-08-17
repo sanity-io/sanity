@@ -10,7 +10,7 @@ export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
   const [initialHotkeys] = useState(() => hotkeys)
   if (initialHotkeys !== hotkeys) {
     console.warn(
-      'Make sure that hotkeys are a stable object across renders, or there will be issues with key handling in the Portable Text Editor.'
+      'Make sure that hotkeys are a stable object across renders, or there will be issues with key handling in the Portable Text Editor.',
     )
   }
   return useMemo(() => {

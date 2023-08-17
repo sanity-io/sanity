@@ -13,7 +13,7 @@ import {Subscription} from 'rxjs'
 
 export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
   props: {itemId: string},
-  ref: React.ForwardedRef<{actionHandlers: Record<string, () => void>}>
+  ref: React.ForwardedRef<{actionHandlers: Record<string, () => void>}>,
 ) {
   const {itemId} = props
   const client = useClient({apiVersion: '2022-09-09'})
@@ -35,7 +35,7 @@ export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
     sub1Ref.current = client.observable
       .fetch(`${query} | order(_updatedAt desc) [0]`, params)
       .subscribe((nextDocument) =>
-        setState({document: nextDocument || undefined, isLoading: false})
+        setState({document: nextDocument || undefined, isLoading: false}),
       )
 
     sub2Ref.current = client.observable
@@ -58,7 +58,7 @@ export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
         },
       },
     }),
-    [setup, teardown]
+    [setup, teardown],
   )
 
   useEffect(() => {

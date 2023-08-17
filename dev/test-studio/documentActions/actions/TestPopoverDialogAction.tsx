@@ -33,7 +33,7 @@ export const TestPopoverDialogAction: DocumentActionComponent = (props) => {
         ),
         onClose: handleClose,
       },
-    [dialogOpen, handleClose]
+    [dialogOpen, handleClose],
   )
 
   return {

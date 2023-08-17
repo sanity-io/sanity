@@ -73,7 +73,7 @@ export function Calendar(props: CalendarProps) {
         onSelect({date: selectedDate})
       }
     },
-    [date, endDate, onSelect, selectEndValue, selectRange]
+    [date, endDate, onSelect, selectEndValue, selectRange],
   )
 
   const handleNowClick = useCallback(() => {
@@ -110,12 +110,12 @@ export function Calendar(props: CalendarProps) {
       // set focus temporarily on this element to make sure focus is still inside the calendar-grid after re-render
       calendarElement?.querySelector<HTMLElement>('[data-preserve-focus]')?.focus()
     },
-    [calendarElement, focusCurrentWeekDay, focusedDate, setFocusedDate]
+    [calendarElement, focusCurrentWeekDay, focusedDate, setFocusedDate],
   )
 
   const moveFocusedDate = useCallback(
     (by: number) => setFocusedDate(addMonths(focusedDate, by)),
-    [focusedDate, setFocusedDate]
+    [focusedDate, setFocusedDate],
   )
 
   useEffect(() => {
@@ -124,7 +124,7 @@ export function Calendar(props: CalendarProps) {
 
   useEffect(() => {
     const currentFocusInCalendarGrid = document.activeElement?.matches(
-      '[data-calendar-grid], [data-calendar-grid] [data-preserve-focus]'
+      '[data-calendar-grid], [data-calendar-grid] [data-preserve-focus]',
     )
     if (
       // Only move focus if it's currently in the calendar grid

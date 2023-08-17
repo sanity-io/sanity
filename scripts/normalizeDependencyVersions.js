@@ -93,7 +93,7 @@ Object.keys(versionRanges).forEach((depName) => {
 
           return `${pkgName} ${chalk.gray(path.relative(rootPath, pkg.file))}`
         })
-        .join(`\n    ${sign} `)}`
+        .join(`\n    ${sign} `)}`,
     )
 
     if (range === greatestRange || !isFixable) {
@@ -145,7 +145,7 @@ if (fixablePackages.length > 0) {
       'you might want to run "yarn bootstrap"',
       'and run some tests before pushing changes',
     ].join(' '),
-    fixablePackages.length
+    fixablePackages.length,
   )
   console.log('')
 }

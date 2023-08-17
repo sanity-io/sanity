@@ -4,7 +4,7 @@ import {Skeleton, Stack, TextSkeleton} from '@sanity/ui'
 const TorusKnotPreview = lazy(() => import('./TorusKnotPreview'))
 
 export const LazyPreviewMedia = memo(function LazyPreviewMedia(
-  props: React.ComponentProps<typeof TorusKnotPreview>
+  props: React.ComponentProps<typeof TorusKnotPreview>,
 ) {
   return (
     <Suspense fallback={<Skeleton padding={4} radius={1} animated />}>
@@ -16,7 +16,7 @@ export const LazyPreviewMedia = memo(function LazyPreviewMedia(
 const ColorInput = lazy(() => import('./ColorInput'))
 
 export const LazyColorInput = memo(function LazyColorInput(
-  props: React.ComponentProps<typeof ColorInput>
+  props: React.ComponentProps<typeof ColorInput>,
 ) {
   return (
     <Suspense

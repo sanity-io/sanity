@@ -46,13 +46,13 @@ export function generateConnectorPath(line: ConnectorLine): string {
     cmds.push(
       moveTo(fromX + ARROW_MARGIN_X, fromY - ARROW_THRESHOLD + ARROW_MARGIN_Y),
       lineTo(fromX + ARROW_MARGIN_X, fromY - CORNER_RADIUS),
-      quadCurve(fromX + ARROW_MARGIN_X, fromY, fromX + ARROW_MARGIN_X + CORNER_RADIUS, fromY)
+      quadCurve(fromX + ARROW_MARGIN_X, fromY, fromX + ARROW_MARGIN_X + CORNER_RADIUS, fromY),
     )
   } else if (from.isBelow) {
     cmds.push(
       moveTo(fromX + ARROW_MARGIN_X, fromY + ARROW_THRESHOLD - ARROW_MARGIN_Y),
       lineTo(fromX + ARROW_MARGIN_X, fromY + CORNER_RADIUS),
-      quadCurve(fromX + ARROW_MARGIN_X, fromY, fromX + ARROW_MARGIN_X + CORNER_RADIUS, fromY)
+      quadCurve(fromX + ARROW_MARGIN_X, fromY, fromX + ARROW_MARGIN_X + CORNER_RADIUS, fromY),
     )
   } else {
     cmds.push(moveTo(fromX, fromY))
@@ -71,9 +71,9 @@ export function generateConnectorPath(line: ConnectorLine): string {
           to.bounds.left + ARROW_MARGIN_X,
           toY,
           to.bounds.left + ARROW_MARGIN_X,
-          toY - CORNER_RADIUS
+          toY - CORNER_RADIUS,
         ),
-        lineTo(to.bounds.left + ARROW_MARGIN_X, toY - ARROW_THRESHOLD + ARROW_MARGIN_Y)
+        lineTo(to.bounds.left + ARROW_MARGIN_X, toY - ARROW_THRESHOLD + ARROW_MARGIN_Y),
       )
     } else {
       cmds.push(
@@ -82,9 +82,9 @@ export function generateConnectorPath(line: ConnectorLine): string {
           to.bounds.left + ARROW_MARGIN_X,
           fromY,
           to.bounds.left + ARROW_MARGIN_X,
-          fromY - CORNER_RADIUS
+          fromY - CORNER_RADIUS,
         ),
-        lineTo(to.bounds.left + ARROW_MARGIN_X, toY - ARROW_THRESHOLD + ARROW_MARGIN_Y)
+        lineTo(to.bounds.left + ARROW_MARGIN_X, toY - ARROW_THRESHOLD + ARROW_MARGIN_Y),
       )
     }
   } else if (to.isBelow) {
@@ -96,7 +96,7 @@ export function generateConnectorPath(line: ConnectorLine): string {
           to.bounds.left - ARROW_MARGIN_X,
           fromY,
           to.bounds.left - ARROW_MARGIN_X,
-          fromY - r1
+          fromY - r1,
         ),
         lineTo(to.bounds.left - ARROW_MARGIN_X, toY + r1),
         quadCurve(to.bounds.left - ARROW_MARGIN_X, toY, to.bounds.left - ARROW_MARGIN_X + r1, toY),
@@ -105,9 +105,9 @@ export function generateConnectorPath(line: ConnectorLine): string {
           to.bounds.left + ARROW_MARGIN_X,
           toY,
           to.bounds.left + ARROW_MARGIN_X,
-          toY + CORNER_RADIUS
+          toY + CORNER_RADIUS,
         ),
-        lineTo(to.bounds.left + ARROW_MARGIN_X, toY + ARROW_THRESHOLD - ARROW_MARGIN_Y)
+        lineTo(to.bounds.left + ARROW_MARGIN_X, toY + ARROW_THRESHOLD - ARROW_MARGIN_Y),
       )
     } else {
       cmds.push(
@@ -116,9 +116,9 @@ export function generateConnectorPath(line: ConnectorLine): string {
           to.bounds.left + ARROW_MARGIN_X,
           fromY,
           to.bounds.left + ARROW_MARGIN_X,
-          fromY + CORNER_RADIUS
+          fromY + CORNER_RADIUS,
         ),
-        lineTo(to.bounds.left + ARROW_MARGIN_X, toY + ARROW_THRESHOLD - ARROW_MARGIN_Y)
+        lineTo(to.bounds.left + ARROW_MARGIN_X, toY + ARROW_THRESHOLD - ARROW_MARGIN_Y),
       )
     }
   } else if (fromY < toY) {
@@ -128,11 +128,11 @@ export function generateConnectorPath(line: ConnectorLine): string {
         to.bounds.left + ARROW_MARGIN_X,
         fromY,
         to.bounds.left + ARROW_MARGIN_X,
-        fromY + r1
+        fromY + r1,
       ),
       lineTo(to.bounds.left + ARROW_MARGIN_X, toY - r1),
       quadCurve(to.bounds.left + ARROW_MARGIN_X, toY, to.bounds.left + ARROW_MARGIN_X + r1, toY),
-      lineTo(toX, toY)
+      lineTo(toX, toY),
     )
   } else {
     cmds.push(
@@ -141,11 +141,11 @@ export function generateConnectorPath(line: ConnectorLine): string {
         to.bounds.left + ARROW_MARGIN_X,
         fromY,
         to.bounds.left + ARROW_MARGIN_X,
-        fromY - r1
+        fromY - r1,
       ),
       lineTo(to.bounds.left + ARROW_MARGIN_X, toY + r1),
       quadCurve(to.bounds.left + ARROW_MARGIN_X, toY, to.bounds.left + ARROW_MARGIN_X + r1, toY),
-      lineTo(toX, toY)
+      lineTo(toX, toY),
     )
   }
 

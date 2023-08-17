@@ -48,7 +48,7 @@ const Dot = styled.div({
 /** @hidden @beta */
 export const StatusButton = forwardRef(function StatusButton(
   props: StatusButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref'>,
-  ref: ForwardedRef<HTMLButtonElement>
+  ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const {
     disabled: disabledProp,

@@ -36,7 +36,7 @@ export default function ChangeListStory() {
       },
       segments: [],
     }),
-    []
+    [],
   )
 
   const diff: ObjectDiff = useMemo(
@@ -70,7 +70,7 @@ export default function ChangeListStory() {
         author: 'p27ewL8aM',
       },
     }),
-    [nameDiff]
+    [nameDiff],
   )
 
   const FieldWrapper = useCallback((_props: any) => {
@@ -87,7 +87,7 @@ export default function ChangeListStory() {
       schemaType,
       value: {name: 'Test'},
     }),
-    [diff, documentId, FieldWrapper, schemaType]
+    [diff, documentId, FieldWrapper, schemaType],
   )
 
   return (

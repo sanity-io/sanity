@@ -60,7 +60,7 @@ export class DocumentListItemBuilder extends ListItemBuilder {
      * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
-    spec?: DocumentListItemInput
+    spec?: DocumentListItemInput,
   ) {
     super(_context, spec)
     this.spec = spec ? spec : {}
@@ -78,7 +78,7 @@ export class DocumentListItemBuilder extends ListItemBuilder {
       throw new SerializeError(
         '`schemaType` is required for document list items',
         options.path,
-        options.index
+        options.index,
       ).withHelpUrl(HELP_URL.SCHEMA_TYPE_REQUIRED)
     }
 

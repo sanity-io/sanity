@@ -92,7 +92,7 @@ export const ObjectField = function ObjectField(props: {
     (path: Path) => {
       onPathFocus(member.field.path.concat(path))
     },
-    [member.field.path, onPathFocus]
+    [member.field.path, onPathFocus],
   )
 
   const handleChange = useCallback(
@@ -119,10 +119,10 @@ export const ObjectField = function ObjectField(props: {
       onChange(
         PatchEvent.from(event)
           .prepend(setIfMissing(createProtoValue(member.field.schemaType)))
-          .prefixAll(member.name)
+          .prefixAll(member.name),
       )
     },
-    [onChange, member, pendingValue]
+    [onChange, member, pendingValue],
   )
 
   const handleCollapse = useCallback(() => {
@@ -137,19 +137,19 @@ export const ObjectField = function ObjectField(props: {
     (fieldName: string) => {
       onSetPathCollapsed(member.field.path.concat(fieldName), true)
     },
-    [onSetPathCollapsed, member.field.path]
+    [onSetPathCollapsed, member.field.path],
   )
   const handleExpandField = useCallback(
     (fieldName: string) => {
       onSetPathCollapsed(member.field.path.concat(fieldName), false)
     },
-    [onSetPathCollapsed, member.field.path]
+    [onSetPathCollapsed, member.field.path],
   )
   const handleOpenField = useCallback(
     (fieldName: string) => {
       onPathOpen(member.field.path.concat(fieldName))
     },
-    [onPathOpen, member.field.path]
+    [onPathOpen, member.field.path],
   )
   const handleCloseField = useCallback(() => {
     onPathOpen(member.field.path)
@@ -158,13 +158,13 @@ export const ObjectField = function ObjectField(props: {
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.field.path.concat(fieldsetName), false)
     },
-    [onSetFieldSetCollapsed, member.field.path]
+    [onSetFieldSetCollapsed, member.field.path],
   )
   const handleCollapseFieldSet = useCallback(
     (fieldsetName: string) => {
       onSetFieldSetCollapsed(member.field.path.concat(fieldsetName), true)
     },
-    [onSetFieldSetCollapsed, member.field.path]
+    [onSetFieldSetCollapsed, member.field.path],
   )
 
   const handleOpen = useCallback(() => {
@@ -179,7 +179,7 @@ export const ObjectField = function ObjectField(props: {
     (groupName: string) => {
       onFieldGroupSelect(member.field.path, groupName)
     },
-    [onFieldGroupSelect, member.field.path]
+    [onFieldGroupSelect, member.field.path],
   )
 
   const elementProps = useMemo(
@@ -189,7 +189,7 @@ export const ObjectField = function ObjectField(props: {
       id: member.field.id,
       ref: focusRef,
     }),
-    [handleBlur, handleFocus, member.field.id]
+    [handleBlur, handleFocus, member.field.id],
   )
 
   const inputProps = useMemo((): Omit<ObjectInputProps, 'renderDefault'> => {

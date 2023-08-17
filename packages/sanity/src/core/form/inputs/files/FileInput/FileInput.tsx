@@ -115,7 +115,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     // value and remove it for us
     const allKeys = Object.keys(value || {})
     const remainingKeys = allKeys.filter(
-      (key) => !['_type', '_key', '_upload', 'asset'].includes(key)
+      (key) => !['_type', '_key', '_upload', 'asset'].includes(key),
     )
 
     const isEmpty = remainingKeys.length === 0
@@ -199,7 +199,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
   uploadWith = (
     uploader: Uploader,
     file: globalThis.File,
-    assetDocumentProps: UploadOptions = {}
+    assetDocumentProps: UploadOptions = {},
   ) => {
     const {schemaType, onChange, client} = this.props
     const {source} = assetDocumentProps

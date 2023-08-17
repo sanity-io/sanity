@@ -8,7 +8,7 @@ import {pluginTemplates} from './pluginTemplates'
 
 export default async function initPlugin(
   args: CliCommandArguments<InitFlags>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const {output, prompt} = context
   const [, specifiedTemplateUrl] = args.argsWithoutOptions
@@ -32,7 +32,7 @@ export default async function initPlugin(
     debug(
       'User wanted template "%s", match found at %s',
       specifiedTemplateUrl,
-      specifiedTemplate.url
+      specifiedTemplate.url,
     )
 
     return bootstrapFromUrl(context, specifiedTemplate.url)

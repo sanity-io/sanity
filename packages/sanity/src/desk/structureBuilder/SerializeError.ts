@@ -9,7 +9,7 @@ export class SerializeError extends Error {
     message: string,
     parentPath: SerializePath,
     pathSegment: string | number | undefined,
-    hint?: string
+    hint?: string,
   ) {
     super(message)
     const segment = typeof pathSegment === 'undefined' ? '<unknown>' : `${pathSegment}`

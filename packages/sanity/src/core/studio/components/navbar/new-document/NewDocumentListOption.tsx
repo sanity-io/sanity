@@ -27,7 +27,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   const {option, currentUser, onClick, preview} = props
   const params = useMemo(
     () => ({template: option.templateId, type: option.schemaType}),
-    [option.schemaType, option.templateId]
+    [option.schemaType, option.templateId],
   )
   const {onClick: onIntentClick, href} = useIntentLink({
     intent: 'create',
@@ -39,7 +39,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
       onIntentClick(event)
       onClick(option)
     },
-    [onIntentClick, onClick, option]
+    [onIntentClick, onClick, option],
   )
 
   return (

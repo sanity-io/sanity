@@ -14,7 +14,7 @@ import {usePaneLanguages} from './usePaneLanguages'
 import {_isPathCollapsed} from './_helpers'
 
 export function LanguageFilterObjectInput(
-  props: {options: LanguageFilterPluginOptions} & ObjectInputProps
+  props: {options: LanguageFilterPluginOptions} & ObjectInputProps,
 ) {
   const {members: membersProp, level, options, path, ...restProps} = props
   const {collapsedFieldSets} = useFormBuilder()
@@ -22,15 +22,15 @@ export function LanguageFilterObjectInput(
   const translationsFieldSetPath = pathFor(path.concat(['translationsFieldSet']))
   const translationsFieldSetCollapsed = _isPathCollapsed(
     translationsFieldSetPath,
-    collapsedFieldSets
+    collapsedFieldSets,
   )
 
   const defaultMembers = useMemo(
     () =>
       membersProp.filter(
-        (member) => member.kind === 'field' && options.defaultLanguages?.includes(member.name)
+        (member) => member.kind === 'field' && options.defaultLanguages?.includes(member.name),
       ),
-    [membersProp, options]
+    [membersProp, options],
   )
 
   const members: ObjectMember[] = useMemo(() => {
@@ -39,7 +39,7 @@ export function LanguageFilterObjectInput(
         (member) =>
           member.kind === 'field' &&
           selectedLanguages.includes(member.name) &&
-          !options.defaultLanguages?.includes(member.name)
+          !options.defaultLanguages?.includes(member.name),
       )
       .map((member): FieldMember | FieldError => {
         if (member.kind === 'fieldSet') {

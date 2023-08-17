@@ -9,7 +9,7 @@ const NEUTRAL_TONES = ['default', 'transparent']
 
 export function buildColor(
   legacyPalette: LegacyPalette,
-  legacyTones: LegacyTones
+  legacyTones: LegacyTones,
 ): ThemeColorSchemes {
   return createColorTheme({
     base: ({dark: navbar, name}) => {

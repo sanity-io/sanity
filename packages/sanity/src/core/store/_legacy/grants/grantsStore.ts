@@ -17,7 +17,7 @@ import {
 async function getDatasetGrants(
   client: SanityClient,
   projectId: string,
-  dataset: string
+  dataset: string,
 ): Promise<Grant[]> {
   // `acl` stands for access control list and returns a list of grants
   const grants: Grant[] = await client.request({
@@ -43,7 +43,7 @@ const PARSED_FILTERS_MEMO = new Map()
 async function matchesFilter(
   currentUser: CurrentUser | null,
   filter: string,
-  document: SanityDocument
+  document: SanityDocument,
 ) {
   if (!PARSED_FILTERS_MEMO.has(filter)) {
     // note: it might be tempting to also memoize the result of the evaluation here,
@@ -78,20 +78,20 @@ export function createGrantsStore({client, currentUser}: GrantsStoreOptions): Gr
         throw new Error('Missing projectId or dataset')
       }
       return getDatasetGrants(versionedClient, projectId, dataset)
-    })
+    }),
   )
 
   const currentUserDatasetGrants = debugGrants$.pipe(
     switchMap((debugGrants) => (debugGrants ? of(debugGrants) : datasetGrants$)),
     publishReplay(1),
-    refCountDelay(1000)
+    refCountDelay(1000),
   )
 
   return {
     checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocument) {
       return currentUserDatasetGrants.pipe(
         switchMap((grants) => grantsPermissionOn(currentUser, grants, permission, document)),
-        distinctUntilChanged(shallowEquals)
+        distinctUntilChanged(shallowEquals),
       )
     },
   }
@@ -105,7 +105,7 @@ async function grantsPermissionOn(
   currentUser: CurrentUser | null,
   grants: Grant[],
   permission: DocumentValuePermission,
-  document: SanityDocument | null
+  document: SanityDocument | null,
 ): Promise<PermissionCheckResult> {
   if (!document) {
     // we say it's granted if null due to initial states

@@ -29,7 +29,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
      * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
-    spec?: DocumentListInput
+    spec?: DocumentListInput,
   ) {
     super(_context)
     this.spec = spec ? spec : {}

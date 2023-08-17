@@ -16,7 +16,7 @@ export function SearchFilterNumberInput({value, onChange}: OperatorInputComponen
       const numValue = parseFloat(event.currentTarget.value)
       onChange(Number.isFinite(numValue) ? numValue : null)
     },
-    [onChange]
+    [onChange],
   )
 
   return (

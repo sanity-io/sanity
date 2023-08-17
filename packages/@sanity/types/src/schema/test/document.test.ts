@@ -222,7 +222,7 @@ describe('document types', () => {
             initialValue: {something: 'false'},
             validation: (Rule) =>
               Rule.custom((value?: Record<string, string>) =>
-                value?.something === 'false' ? true : 'Error'
+                value?.something === 'false' ? true : 'Error',
               ),
           },
           {
@@ -282,7 +282,7 @@ describe('document types', () => {
                     unknownProp: 'strict: false so it is allowed',
                   },
                 },
-                {strict: false}
+                {strict: false},
               ),
             ],
           }),

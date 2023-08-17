@@ -43,7 +43,7 @@ function InsertMenuGroup(
     pos: 'before' | 'after'
     text: ComponentProps<typeof MenuItem>['text']
     icon: ComponentProps<typeof MenuItem>['icon']
-  }
+  },
 ) {
   const {types, onInsert, pos, text, icon} = props
 

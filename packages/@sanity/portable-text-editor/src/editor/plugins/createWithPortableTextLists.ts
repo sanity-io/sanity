@@ -62,7 +62,7 @@ export function createWithPortableTextLists(types: PortableTextMemberSchemaTypes
             level: 1,
             listItem: listItemStyle || (types.lists[0] && types.lists[0].value),
           } as Partial<Node>,
-          {at: path}
+          {at: path},
         )
       })
     }
@@ -95,7 +95,7 @@ export function createWithPortableTextLists(types: PortableTextMemberSchemaTypes
               level: undefined,
               listItem: undefined,
             },
-            {at: path}
+            {at: path},
           )
         }
       })
@@ -128,7 +128,7 @@ export function createWithPortableTextLists(types: PortableTextMemberSchemaTypes
           Transforms.setNodes(
             editor,
             {level: Math.min(MAX_LIST_LEVEL, Math.max(1, level))},
-            {at: path}
+            {at: path},
           )
         }
       })

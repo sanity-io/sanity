@@ -34,7 +34,7 @@ export interface StaticBuildOptions {
 }
 
 export async function buildStaticFiles(
-  options: StaticBuildOptions
+  options: StaticBuildOptions,
 ): Promise<{chunks: ChunkStats[]}> {
   const {
     cwd,
@@ -64,7 +64,7 @@ export async function buildStaticFiles(
     viteConfig = await extendViteConfigWithUserConfig(
       {command: 'build', mode},
       viteConfig,
-      extendViteConfig
+      extendViteConfig,
     )
     viteConfig = finalizeViteConfig(viteConfig)
   }

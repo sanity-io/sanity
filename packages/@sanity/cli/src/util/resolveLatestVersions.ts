@@ -8,7 +8,7 @@ import promiseProps from 'promise-props-recursive'
  * @returns Object of resolved version numbers
  */
 export function resolveLatestVersions(
-  pkgs: Record<string, string>
+  pkgs: Record<string, string>,
 ): Promise<Record<string, string>> {
   const lookups: Record<string, Promise<string> | string> = {}
   for (const [packageName, range] of Object.entries(pkgs)) {
