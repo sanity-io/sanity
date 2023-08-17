@@ -13,6 +13,7 @@ export default function readPackages(): Package[] {
     return {
       path: filePath,
       dirname: dirname,
+      relativeDir: path.relative(rootPath, dirname),
       manifest: JSON.parse(fs.readFileSync(filePath, 'utf8')),
     }
   })

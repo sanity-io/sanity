@@ -1,14 +1,32 @@
 /* eslint-disable no-sync */
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import glob from 'glob'
-import config from '../../lerna.json'
+
+interface LernaConfig {
+  packages: string[]
+}
+
+const config: LernaConfig = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', '..', 'lerna.json'), 'utf8')
+)
+
+if (!('packages' in config) || !Array.isArray(config.packages)) {
+  throw new Error('Lerna config is missing "packages" array')
+}
 
 const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
 
-export function getManifestPaths() {
+/**
+ * @internal
+ */
+export function getManifestPaths(): string[] {
   return patterns.flatMap((pattern) => glob.sync(pattern))
 }
 
-export function getPackagePaths() {
+/**
+ * @internal
+ */
+export function getPackagePaths(): string[] {
   return getManifestPaths().map((p) => path.dirname(p))
 }
