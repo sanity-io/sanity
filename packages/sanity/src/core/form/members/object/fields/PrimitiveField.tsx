@@ -11,8 +11,6 @@ import {FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {useFormPublishedId} from '../../../useFormPublishedId'
-import {DocumentFieldActionNode} from '../../../../config'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input

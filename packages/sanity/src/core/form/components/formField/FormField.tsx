@@ -21,6 +21,8 @@ export interface FormFieldProps {
    * @beta
    */
   __unstable_presence?: FormNodePresence[]
+  /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
+  __internal_slot?: React.ReactNode
   children: React.ReactNode
   description?: React.ReactNode
   /**
@@ -45,6 +47,7 @@ export const FormField = memo(function FormField(
   const {
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
+    __internal_slot: slot = null,
     children,
     description,
     inputId,
@@ -69,6 +72,8 @@ export const FormField = memo(function FormField(
       */}
       {title && (
         <FormFieldBaseHeader
+          // eslint-disable-next-line camelcase
+          __internal_slot={slot}
           actions={actions}
           fieldFocused={Boolean(focused)}
           fieldHovered={hovered}

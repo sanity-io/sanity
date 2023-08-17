@@ -68,7 +68,7 @@ const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
 export function ReferenceField(props: ReferenceFieldProps) {
   const elementRef = useRef<HTMLDivElement | null>(null)
-  const {schemaType, path, open, inputId, children, inputProps} = props
+  const {schemaType, path, open, inputId, children, inputProps, __internal_slot: slot} = props
   const {readOnly, focused, renderPreview, onChange} = props.inputProps
 
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
@@ -293,6 +293,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       )}
 
       <FormField
+        __internal_slot={slot}
         __unstable_headerActions={fieldActionsNodes}
         __unstable_presence={props.presence}
         description={props.description}

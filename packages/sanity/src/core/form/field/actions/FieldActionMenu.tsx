@@ -78,7 +78,7 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
         : []),
       ...buttonNodes,
     ],
-    [buttonNodes, menuNodes]
+    [buttonNodes, menuNodes],
   )
 
   return (

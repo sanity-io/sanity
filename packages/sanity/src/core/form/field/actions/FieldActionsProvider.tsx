@@ -36,7 +36,7 @@ export function FieldActionsProvider(props: FieldActionsProviderProps) {
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
     }),
-    [actions, focused, handleMouseEnter, handleMouseLeave, hovered]
+    [actions, focused, handleMouseEnter, handleMouseLeave, hovered],
   )
 
   return <FieldActionsContext.Provider value={context}>{children}</FieldActionsContext.Provider>
