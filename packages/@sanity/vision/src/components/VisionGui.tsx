@@ -738,7 +738,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
                 <Select value={perspective} onChange={this.handleChangePerspective}>
                   {PERSPECTIVES.map((p) => (
-                    <option key={p}>{p}</option>
+                    <option key={p}>{t(`perspectives.${p}`)}</option>
                   ))}
                 </Select>
               </Stack>
