@@ -2,6 +2,8 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {debounce} from 'lodash'
 import {tryParseParams} from '../util/tryParseParams'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
+import {visionLocaleNamespace} from '../../i18n'
+import {TFunction, useTranslation} from 'sanity'
 
 const defaultValue = `{\n  \n}`
 
@@ -23,7 +25,8 @@ export interface ParamsEditorChange {
 
 export function ParamsEditor(props: ParamsEditorProps) {
   const {onChange} = props
-  const {raw: value, error, parsed, valid} = eventFromValue(props.value)
+  const {t} = useTranslation(visionLocaleNamespace)
+  const {raw: value, error, parsed, valid} = eventFromValue(props.value, t)
   const [isValid, setValid] = useState(valid)
   const [init, setInit] = useState(false)
 
@@ -37,19 +40,19 @@ export function ParamsEditor(props: ParamsEditorProps) {
 
   const handleChangeRaw = useCallback(
     (newValue: string) => {
-      const event = eventFromValue(newValue)
+      const event = eventFromValue(newValue, t)
       setValid(event.valid)
       onChange(event)
     },
-    [onChange]
+    [onChange, t]
   )
 
   const handleChange = useMemo(() => debounce(handleChangeRaw, 333), [handleChangeRaw])
   return <VisionCodeMirror value={props.value || defaultValue} onChange={handleChange} />
 }
 
-function eventFromValue(value: string): ParamsEditorChangeEvent {
-  const parsedParams = tryParseParams(value)
+function eventFromValue(value: string, t: TFunction<'vision', undefined>): ParamsEditorChangeEvent {
+  const parsedParams = tryParseParams(value, t)
   const params = parsedParams instanceof Error ? {} : parsedParams
   const validationError = parsedParams instanceof Error ? parsedParams.message : undefined
   const isValid = !validationError
