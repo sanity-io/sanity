@@ -15,6 +15,7 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
+import {useTranslation} from '../../../../../../../i18n'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
 const ClearButtonBox = styled(Box)`
@@ -26,6 +27,7 @@ export function DocumentTypesPopoverContent() {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
   const commandListRef = useRef<CommandListHandle | null>(null)
+  const {t} = useTranslation()
 
   const schema = useSchema()
 
@@ -121,7 +123,7 @@ export function DocumentTypesPopoverContent() {
     <Flex direction="column" style={{width: '250px'}}>
       {/* Search header */}
       <FilterPopoverContentHeader
-        ariaInputLabel="Filter by document type"
+        ariaInputLabel={t('navbar.search.action.filter-by-document-type')}
         onChange={handleFilterChange}
         onClear={handleFilterClear}
         ref={setInputElement}
@@ -132,7 +134,7 @@ export function DocumentTypesPopoverContent() {
         {documentTypeItems.length > 0 && (
           <CommandList
             activeItemDataAttr="data-hovered"
-            ariaLabel="Document types"
+            ariaLabel={t('navbar.search.document-types-label')}
             ariaMultiselectable
             autoFocus="input"
             getItemDisabled={getItemDisabled}
@@ -153,7 +155,7 @@ export function DocumentTypesPopoverContent() {
         {!documentTypeItems.length && (
           <Box padding={3}>
             <Text muted size={1} textOverflow="ellipsis">
-              No matches for '{typeFilter}'
+              {t('navbar.search.no-document-type-matches', {typeFilter})}
             </Text>
           </Box>
         )}
@@ -174,18 +176,20 @@ function ClearButton({
   onClick: () => void
   selectedTypes: SearchableType[]
 }) {
+  const {t} = useTranslation()
+
   return (
     <ClearButtonBox padding={1}>
       <Stack>
         <Button
-          aria-label="Clear checked filters"
+          aria-label={t('navbar.search.action.clear-type-filters')}
           data-name="type-filter-button"
           disabled={selectedTypes.length === 0}
           fontSize={1}
           mode="bleed"
           onClick={onClick}
           padding={3}
-          text="Clear"
+          text={t('navbar.search.action.clear-type-label')}
           tone="primary"
         />
       </Stack>
