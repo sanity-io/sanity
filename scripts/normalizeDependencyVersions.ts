@@ -1,12 +1,32 @@
 /* eslint-disable no-sync, no-console, id-length */
-import fs from 'fs'
-
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import semver from 'semver'
 import chalk from 'chalk'
 import glob from 'glob'
-import corePkg from '../package.json'
-import config from '../lerna.json'
+
+interface LernaConfig {
+  packages: string[]
+}
+
+interface PackageJson {
+  name: string
+}
+
+const corePkg: PackageJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8')
+)
+const config: LernaConfig = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'lerna.json'), 'utf8')
+)
+
+if (!('packages' in config) || !Array.isArray(config.packages)) {
+  throw new Error('Lerna config is missing "packages" array')
+}
+
+if (!('name' in corePkg) || typeof corePkg.name !== 'string') {
+  throw new Error('Core package.json is missing "name" string')
+}
 
 const rootPath = path.join(__dirname, '..')
 const stripRange = (version: string) => version.replace(/^[~^]/, '')
