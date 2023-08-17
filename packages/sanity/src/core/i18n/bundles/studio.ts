@@ -213,6 +213,24 @@ export const studioLocaleStrings = {
 
   /** Action label for clearing search filters */
   'navbar.search.action.clear-filters': 'Clear filters',
+
+  /** Accessibility label for filtering by document type */
+  'navbar.search.action.filter-by-document-type': 'Filter by document type',
+
+  /** Label for placeholder for Filter by document type */
+  'navbar.search.filter-label': 'Filter',
+
+  /** Accessibility label for command list for Document types */
+  'navbar.search.document-types-label': 'Document types',
+
+  /** Label for when no documents are found for a specific types (provided) are found */
+  'navbar.search.no-document-type-matches': `No matches for {{typeFilter}}`,
+
+  /** Accessibility action label for clearing document type filters */
+  'navbar.search.action.clear-type-filters': 'Clear checked filters',
+
+  /** Clear action label for clearing document type filters */
+  'navbar.search.action.clear-type-label': 'Clear',
 }
 
 /**
