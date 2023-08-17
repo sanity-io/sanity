@@ -175,6 +175,14 @@ export const studioLocaleStrings = {
 
   /** Action message for generating the slug */
   'inputs.slug.action.generate': `Generate`,
+
+  /** --- Nav bar --- */
+
+  /** Label for workspace picker */
+  'navbar.action.select-workspace': 'Select workspace',
+
+  /** Label to open search action when the search is on full screen */
+  'navbar.action.open-search': 'Open search',
 }
 
 /**
