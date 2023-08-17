@@ -1,6 +1,8 @@
 import React, {useCallback, useState} from 'react'
 import {Popover, Stack, Inline, Text, Card, Badge, Button, useClickOutside} from '@sanity/ui'
 import {HelpCircleIcon} from '@sanity/icons'
+import {useTranslation} from 'sanity'
+import {visionLocaleNamespace} from '../../i18n'
 import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 
 export function PerspectivePopover() {
@@ -11,6 +13,8 @@ export function PerspectivePopover() {
   const handleClick = useCallback(() => setOpen((o) => !o), [])
   const handleClickOutside = useCallback(() => setOpen(false), [])
 
+  const {t} = useTranslation(visionLocaleNamespace)
+
   useClickOutside(handleClickOutside, [buttonEl, popoverEl])
 
   return (
@@ -19,21 +23,18 @@ export function PerspectivePopover() {
         <PerspectivePopoverContent>
           <Stack space={4}>
             <Inline space={2}>
-              <Text weight="medium">Perspectives</Text>
-              <Badge tone="primary">New</Badge>
+              <Text weight="medium">{t('perspectives.title')}</Text>
+              <Badge tone="primary">{t('perspectives.new-label')}</Badge>
             </Inline>
 
             <Card>
-              <Text muted>
-                Perspectives allow your query to run against different "views" of the content in
-                your dataset
-              </Text>
+              <Text muted>{t('perspectives.description')}</Text>
             </Card>
 
             <Card>
               <Text>
                 <PerspectivePopoverLink href="https://sanity.io/docs/perspectives" target="_blank">
-                  Read docs &rarr;
+                  {t('perspectives.action.docs-link')} &rarr;
                 </PerspectivePopoverLink>
               </Text>
             </Card>
