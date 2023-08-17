@@ -249,6 +249,13 @@ export const studioLocaleStrings = {
 
   /** Description for when no search results are found */
   'navbar.search.no-results-description': 'Try another keyword or adjust your filters',
+
+  /** Title label for when the search has found an error */
+  'navbar.search.error.something-went-wrong-title': 'Something went wrong while searching',
+
+  /** Description label for when the search has found an error */
+  'navbar.search.error.something-went-wrong-description':
+    'Please try again or check your connection',
 }
 
 /**
