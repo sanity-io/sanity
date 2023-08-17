@@ -243,6 +243,12 @@ export const studioLocaleStrings = {
 
   /** Accessibility Label for filter search input in the filtering section of search */
   'navbar.search.filter-by-title-label': 'Filter by title',
+
+  /** Title label for when no search results are found */
+  'navbar.search.no-results-title': 'No results found',
+
+  /** Description for when no search results are found */
+  'navbar.search.no-results-description': 'Try another keyword or adjust your filters',
 }
 
 /**
