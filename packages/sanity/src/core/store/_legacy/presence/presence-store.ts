@@ -124,7 +124,7 @@ export function __tmp_wrap_presenceStore(context: {
   const rollCallRequests$ = presenceEvents$.pipe(
     filter((event: TransportEvent): event is RollCallEvent => event.type === 'rollCall'),
     // do not respond to my own rollcall requests
-    filter((event: RollCallEvent) => event.sessionId !== SESSION_ID)
+    filter((event: RollCallEvent) => event.sessionId !== SESSION_ID),
   )
 
   const REPORT_MIN_INTERVAL = 30000
@@ -139,7 +139,7 @@ export function __tmp_wrap_presenceStore(context: {
     auditTime(200),
     switchMap((locations) => reportLocations(locations)),
     mergeMapTo(EMPTY),
-    share()
+    share(),
   )
 
   // This represents my rollcall request to other clients
@@ -149,7 +149,7 @@ export function __tmp_wrap_presenceStore(context: {
   const connectionChange$ = connectionStatusStore.connectionStatus$.pipe(
     map((status) => status.type),
     filter((statusType) => statusType === 'connected' || statusType === 'error'),
-    distinctUntilChanged()
+    distinctUntilChanged(),
   )
 
   // export
@@ -160,8 +160,8 @@ export function __tmp_wrap_presenceStore(context: {
         arg
           ?.split('presence=')[1]
           .split(',')
-          .map((r) => r.trim()) || []
-    )
+          .map((r) => r.trim()) || [],
+    ),
   )
 
   const useMock$ = debugPresenceParam$.pipe(
@@ -169,10 +169,10 @@ export function __tmp_wrap_presenceStore(context: {
     tap(() => {
       // eslint-disable-next-line no-console
       console.log(
-        'Faking other users present in the studio. They will hang out in the document with _type: "presence" and _id: "presence-debug"'
+        'Faking other users present in the studio. They will hang out in the document with _type: "presence" and _id: "presence-debug"',
       )
     }),
-    switchMapTo(mock$)
+    switchMapTo(mock$),
   )
 
   const debugIntrospect$ = debugPresenceParam$.pipe(map((args) => args.includes('show_own')))
@@ -180,8 +180,8 @@ export function __tmp_wrap_presenceStore(context: {
   const syncEvent$ = merge(myRollCall$, presenceEvents$).pipe(
     filter(
       (event: TransportEvent): event is StateEvent | DisconnectEvent =>
-        event.type === 'state' || event.type === 'disconnect'
-    )
+        event.type === 'state' || event.type === 'disconnect',
+    ),
   )
 
   const stateEventToSession = (stateEvent: StateEvent): Session => {
@@ -199,8 +199,8 @@ export function __tmp_wrap_presenceStore(context: {
         event.type === 'disconnect'
           ? omit(keyed, event.sessionId)
           : {...keyed, [event.sessionId]: stateEventToSession(event)},
-      {}
-    )
+      {},
+    ),
   )
 
   const allSessions$: Observable<UserSessionPair[]> = connectionChange$.pipe(
@@ -217,14 +217,14 @@ export function __tmp_wrap_presenceStore(context: {
               session: session,
             }))
             // If we failed to find a user profile for a session, remove it
-            .filter(userSessionPairHasUser)
-        )
+            .filter(userSessionPairHasUser),
+        ),
       )
     }),
     takeUntil(
-      fromEvent(window, 'beforeunload').pipe(switchMap(() => sendMessage({type: 'disconnect'})))
+      fromEvent(window, 'beforeunload').pipe(switchMap(() => sendMessage({type: 'disconnect'}))),
     ),
-    shareReplay({refCount: true, bufferSize: 1})
+    shareReplay({refCount: true, bufferSize: 1}),
   )
 
   function userSessionPairHasUser(pair: Partial<UserSessionPair>): pair is UserSessionPair {
@@ -236,7 +236,7 @@ export function __tmp_wrap_presenceStore(context: {
     map((sessions): {user: User; sessions: Session[]}[] => {
       const grouped = groupBy(
         sessions.map((s) => s.session),
-        (e) => e.userId
+        (e) => e.userId,
       )
 
       return Object.keys(grouped).map((userId): {user: User; sessions: Session[]} => ({
@@ -254,7 +254,7 @@ export function __tmp_wrap_presenceStore(context: {
         const isCurrent = userAndSession.sessions.some((sess) => sess.sessionId === SESSION_ID)
 
         return !isCurrent
-      })
+      }),
     ),
     map((userAndSessions) =>
       userAndSessions.map((userAndSession) => ({
@@ -262,7 +262,7 @@ export function __tmp_wrap_presenceStore(context: {
         status: 'online',
         lastActiveAt: userAndSession.sessions.sort()[0]?.lastActiveAt,
         locations: flatten(
-          (userAndSession.sessions || []).map((session) => session.locations || [])
+          (userAndSession.sessions || []).map((session) => session.locations || []),
         )
           .map((location) => ({
             type: location.type,
@@ -271,8 +271,8 @@ export function __tmp_wrap_presenceStore(context: {
             lastActiveAt: location.lastActiveAt,
           }))
           .reduce((prev, curr) => prev.concat(curr), [] as PresenceLocation[]),
-      }))
-    )
+      })),
+    ),
   )
 
   // export
@@ -282,7 +282,7 @@ export function __tmp_wrap_presenceStore(context: {
       switchMap(([userAndSessions, debugIntrospect]) =>
         from(userAndSessions).pipe(
           filter(
-            (userAndSession) => debugIntrospect || userAndSession.session.sessionId !== SESSION_ID
+            (userAndSession) => debugIntrospect || userAndSession.session.sessionId !== SESSION_ID,
           ),
           flatMap((userAndSession) =>
             (userAndSession.session.locations || [])
@@ -292,11 +292,11 @@ export function __tmp_wrap_presenceStore(context: {
                 lastActiveAt: userAndSession.session.lastActiveAt,
                 path: location.path || [],
                 sessionId: userAndSession.session.sessionId,
-              }))
+              })),
           ),
-          toArray()
-        )
-      )
+          toArray(),
+        ),
+      ),
     )
   }
 

@@ -52,7 +52,7 @@ export const structure: StructureResolver = (S) => {
 
   // The default root list items (except custom ones)
   const defaultListItems = S.documentTypeListItems().filter(
-    (listItem: any) => !STRUCTURE_CUSTOM_TYPES.includes(listItem.getId())
+    (listItem: any) => !STRUCTURE_CUSTOM_TYPES.includes(listItem.getId()),
   )
 
   const listExample = S.listItem()
@@ -78,7 +78,7 @@ export const structure: StructureResolver = (S) => {
               },
             }),
           // S.menuItem().title('No action'),
-        ])
+        ]),
     )
 
   const customPaneExample = S.listItem()
@@ -90,7 +90,7 @@ export const structure: StructureResolver = (S) => {
         .title('Custom')
         .child((ctx, id) => {
           return S.list().id(String(id)).title(String(id))
-        })
+        }),
     )
 
   const languages = [
@@ -132,13 +132,13 @@ export const structure: StructureResolver = (S) => {
                             .id(dt.type)
                             .title(dt.name)
                             .schemaType(dt.type)
-                            .filter(`_type == "${dt.type}"`)
-                        )
-                    )
-                  )
-              )
-          )
-        )
+                            .filter(`_type == "${dt.type}"`),
+                        ),
+                    ),
+                  ),
+              ),
+          ),
+        ),
     )
 
   return S.list()

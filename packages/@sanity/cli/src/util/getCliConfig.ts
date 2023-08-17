@@ -29,7 +29,7 @@ export type CliConfigResult =
 
 export async function getCliConfig(
   cwd: string,
-  {forked}: {forked?: boolean} = {}
+  {forked}: {forked?: boolean} = {},
 ): Promise<CliConfigResult | null> {
   if (forked) {
     try {

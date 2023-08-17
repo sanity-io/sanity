@@ -26,7 +26,7 @@ describe('string', () => {
   test('exact length constraint', async () => {
     const rule = Rule.string().length(5)
     await expect(rule.validate('abcdefgh', context)).resolves.toMatchSnapshot(
-      'exact length: too long'
+      'exact length: too long',
     )
     await expect(rule.validate('abc', context)).resolves.toMatchSnapshot('exact length: too short')
     await expect(rule.validate('abcde', context)).resolves.toMatchSnapshot('exact length: valid')
@@ -35,16 +35,16 @@ describe('string', () => {
   test('uppercase constraint', async () => {
     const rule = Rule.string().uppercase()
     await expect(rule.validate('sanity', context)).resolves.toMatchSnapshot(
-      'uppercase: all lowercase'
+      'uppercase: all lowercase',
     )
     await expect(rule.validate('Sanity', context)).resolves.toMatchSnapshot(
-      'uppercase: some lowercase'
+      'uppercase: some lowercase',
     )
     await expect(rule.validate('Sanity', context)).resolves.toMatchSnapshot(
-      'uppercase: some lowercase'
+      'uppercase: some lowercase',
     )
     await expect(rule.validate('SäNITY', context)).resolves.toMatchSnapshot(
-      'uppercase: locale characters'
+      'uppercase: locale characters',
     )
     await expect(rule.validate('SANITY', context)).resolves.toMatchSnapshot('uppercase: valid')
   })
@@ -52,13 +52,13 @@ describe('string', () => {
   test('lowercase constraint', async () => {
     const rule = Rule.string().lowercase()
     await expect(rule.validate('SANITY', context)).resolves.toMatchSnapshot(
-      'lowercase: all uppercase'
+      'lowercase: all uppercase',
     )
     await expect(rule.validate('Sanity', context)).resolves.toMatchSnapshot(
-      'lowercase: some uppercase'
+      'lowercase: some uppercase',
     )
     await expect(rule.validate('sÄnity', context)).resolves.toMatchSnapshot(
-      'lowercase: locale characters'
+      'lowercase: locale characters',
     )
     await expect(rule.validate('sanity', context)).resolves.toMatchSnapshot('lowercase: valid')
   })
@@ -72,7 +72,7 @@ describe('string', () => {
   test('regex constraint (inverted)', async () => {
     const rule = Rule.string().regex(/^[A-Z][a-z]+$/, {invert: true})
     await expect(rule.validate('SANITY', context)).resolves.toMatchSnapshot(
-      'regex: inverted non-match'
+      'regex: inverted non-match',
     )
     await expect(rule.validate('Sanity', context)).resolves.toMatchSnapshot('regex: inverted match')
   })
@@ -80,20 +80,20 @@ describe('string', () => {
   test('regex constraint (custom pattern name)', async () => {
     const rule = Rule.string().regex(/^[A-Z][a-z]+$/, 'PascalCase')
     await expect(rule.validate('SANITY', context)).resolves.toMatchSnapshot(
-      'regex: non-match w/ custom pattern name'
+      'regex: non-match w/ custom pattern name',
     )
     await expect(rule.validate('Sanity', context)).resolves.toMatchSnapshot(
-      'regex: match w/ custom pattern name'
+      'regex: match w/ custom pattern name',
     )
   })
 
   test('regex constraint (custom pattern name, as options)', async () => {
     const rule = Rule.string().regex(/^[A-Z][a-z]+$/, {name: 'PascalCase'})
     await expect(rule.validate('SANITY', context)).resolves.toMatchSnapshot(
-      'regex: non-match w/ custom pattern name (opt)'
+      'regex: non-match w/ custom pattern name (opt)',
     )
     await expect(rule.validate('Sanity', context)).resolves.toMatchSnapshot(
-      'regex: match w/ custom pattern name (opt)'
+      'regex: match w/ custom pattern name (opt)',
     )
   })
 
@@ -106,16 +106,16 @@ describe('string', () => {
   test('uri constraint (with unicode chars)', async () => {
     const rule = Rule.string().uri()
     await expect(rule.validate('Blåbærsyltetøy', context)).resolves.toMatchSnapshot(
-      'uri: non-match'
+      'uri: non-match',
     )
     await expect(
-      rule.validate('https://en.wikipedia.org/wiki/San_&_Søn', context)
+      rule.validate('https://en.wikipedia.org/wiki/San_&_Søn', context),
     ).resolves.toHaveLength(0)
     await expect(
-      rule.validate('https://zh.wikipedia.org/wiki/心形符號', context)
+      rule.validate('https://zh.wikipedia.org/wiki/心形符號', context),
     ).resolves.toHaveLength(0)
     await expect(
-      rule.validate('https://ru.wikipedia.org/wiki/Зонтичные', context)
+      rule.validate('https://ru.wikipedia.org/wiki/Зонтичные', context),
     ).resolves.toHaveLength(0)
     await expect(rule.validate('https://påtapp.no/oslo', context)).resolves.toHaveLength(0)
   })
@@ -123,7 +123,7 @@ describe('string', () => {
   test('uri constraint (invalid protocol)', async () => {
     const rule = Rule.string().uri({scheme: ['http', 'ftp']})
     await expect(rule.validate('https://sanity.io/', context)).resolves.toMatchSnapshot(
-      'uri: protocol non-match'
+      'uri: protocol non-match',
     )
     await expect(rule.validate('ftp://code.sanity.io/', context)).resolves.toHaveLength(0)
   })
@@ -136,16 +136,16 @@ describe('string', () => {
     rule = Rule.string().uri({allowCredentials: false})
     await expect(rule.validate('http://sanity.io/', context)).resolves.toHaveLength(0)
     await expect(rule.validate('http://foo:bar@sanity.io/', context)).resolves.toMatchSnapshot(
-      'uri: credentials specified but not allowed'
+      'uri: credentials specified but not allowed',
     )
     await expect(rule.validate('http://espen@sanity.io/', context)).resolves.toMatchSnapshot(
-      'uri: username specified but not allowed'
+      'uri: username specified but not allowed',
     )
   })
 
   test('custom rule with string', async () => {
     const rule = Rule.string().custom<string>((val) =>
-      val.split('').reverse().join('') === val ? true : 'Must be a palindrome!'
+      val.split('').reverse().join('') === val ? true : 'Must be a palindrome!',
     )
 
     await expect(rule.validate('hei', context)).resolves.toMatchSnapshot('not a palindrome')
@@ -159,9 +159,9 @@ describe('string', () => {
           setTimeout(
             () =>
               resolve(val.split('').reverse().join('') === val ? true : 'Must be a palindrome!'),
-            50
-          )
-        )
+            50,
+          ),
+        ),
     )
 
     await expect(rule.validate('hei', context)).resolves.toMatchSnapshot('not a palindrome')

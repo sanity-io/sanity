@@ -53,7 +53,7 @@ type FieldDef =
 function nestFields(
   levels: number,
   fieldName: string,
-  collapsibleOptions?: CollapsibleOptions
+  collapsibleOptions?: CollapsibleOptions,
 ): FieldDef {
   if (levels === 0) {
     return {name: fieldName, type: 'string'}

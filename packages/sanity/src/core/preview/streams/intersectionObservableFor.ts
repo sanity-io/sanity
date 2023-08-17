@@ -50,7 +50,7 @@ function createIntersectionObserverBased(): IntersectionObservableFor {
     {
       threshold: 0,
       rootMargin: `${ROOT_MARGIN_PX}px`,
-    }
+    },
   )
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -64,7 +64,7 @@ function createIntersectionObserverBased(): IntersectionObservableFor {
       filter((entry: IntersectionObserverEntry) => entry.target === element),
       map((ev) => ({
         isIntersecting: ev.isIntersecting,
-      }))
+      })),
     )
   }
 }
@@ -83,7 +83,7 @@ function createLegacyBased() {
   function intersects(
     rect: DOMRect,
     viewport: {left: number; right: number; top: number; bottom: number},
-    margin: number
+    margin: number,
   ) {
     return (
       rect.left <= viewport.right + margin &&
@@ -103,7 +103,7 @@ function createLegacyBased() {
     return merge(observableOf(isElementInViewport()), resize$, scroll$, orientationChange$).pipe(
       // @todo: consider "faking" more of the IntersectionObserverEntry api if possible
       map(isElementInViewport),
-      map((isIntersecting) => ({isIntersecting}))
+      map((isIntersecting) => ({isIntersecting})),
     )
   }
 }

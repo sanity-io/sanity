@@ -7,7 +7,7 @@ import {defaultComponents} from './defaultComponents'
 /** @internal */
 export function resolveDiffComponent<D extends Diff = any>(
   type: SchemaType,
-  parentSchemaType?: ArraySchemaType | ObjectSchemaType
+  parentSchemaType?: ArraySchemaType | ObjectSchemaType,
 ): DiffComponent<D> | DiffComponentOptions | undefined {
   let itType: SchemaType | undefined = type
 
@@ -36,7 +36,7 @@ export function resolveDiffComponent<D extends Diff = any>(
 
 function tryResolve(
   schemaType: SchemaType,
-  parentSchemaType?: ArraySchemaType | ObjectSchemaType
+  parentSchemaType?: ArraySchemaType | ObjectSchemaType,
 ): DiffComponent<any> | DiffComponentOptions | undefined {
   const resolvers = diffResolvers
 

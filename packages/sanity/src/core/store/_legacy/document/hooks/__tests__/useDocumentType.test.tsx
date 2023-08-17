@@ -162,7 +162,7 @@ test('should cancel ongoing requests when transitioning document ID', async () =
 
   const hasResolvedFirst = jest.fn()
   const responseDelayedGrrm = defer(() =>
-    of(['person']).pipe(observeOn(asyncScheduler), delay(5000), tap(hasResolvedFirst))
+    of(['person']).pipe(observeOn(asyncScheduler), delay(5000), tap(hasResolvedFirst)),
   )
   const responseGot = defer(() => of(['book']).pipe(observeOn(asyncScheduler)))
 

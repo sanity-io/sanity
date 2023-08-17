@@ -65,7 +65,7 @@ export function SearchResults({inputElement}: SearchResultsProps) {
         </>
       )
     },
-    [debug, handleSearchResultClick]
+    [debug, handleSearchResultClick],
   )
 
   return (

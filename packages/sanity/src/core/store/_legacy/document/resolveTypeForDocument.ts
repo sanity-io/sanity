@@ -7,7 +7,7 @@ import {getDraftId, getPublishedId} from '../../../util'
 export function resolveTypeForDocument(
   client: SanityClient,
   id: string,
-  specifiedType = '*'
+  specifiedType = '*',
 ): Observable<string> {
   // if is resolved document type
   if (specifiedType && specifiedType !== '*') {

@@ -6,7 +6,7 @@ import {StructureContext} from './types'
 export function maybeSerializeMenuItemGroup(
   item: MenuItemGroup | MenuItemGroupBuilder,
   index: number,
-  path: SerializePath
+  path: SerializePath,
 ): MenuItemGroup {
   return item instanceof MenuItemGroupBuilder ? item.serialize({path, index}) : item
 }
@@ -38,7 +38,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
      * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
-    spec?: MenuItemGroup
+    spec?: MenuItemGroup,
   ) {
     this._id = spec ? spec.id : ''
     this._title = spec ? spec.title : ''
@@ -90,7 +90,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
         '`id` is required for a menu item group',
         options.path,
         options.index,
-        _title
+        _title,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
@@ -98,7 +98,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
       throw new SerializeError(
         '`title` is required for a menu item group',
         options.path,
-        _id
+        _id,
       ).withHelpUrl(HELP_URL.TITLE_REQUIRED)
     }
 

@@ -14,7 +14,7 @@ export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInpu
     schemaType: ObjectSchemaType
     value?: any
   },
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {focusPath, level = 0, onBlur, onChange, onFocus, presence, schemaType, value} = props
 
@@ -25,10 +25,10 @@ export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInpu
       // {path: [], set: <nextvalue>} to {path: [<fieldName>], set: <nextValue>}
       // and ensure this input's value exists
       onChange(
-        fieldPatchEvent.prefixAll(field.name).prepend(setIfMissing({_type: schemaType.name}))
+        fieldPatchEvent.prefixAll(field.name).prepend(setIfMissing({_type: schemaType.name})),
       )
     },
-    [onChange, schemaType.name]
+    [onChange, schemaType.name],
   )
 
   const [isOpen, setIsOpen] = React.useState(false)

@@ -44,7 +44,7 @@ export function CalendarMonth(props: CalendarMonthProps) {
                 selected={selected}
               />
             )
-          })
+          }),
         )}
       </Grid>
     </Box>

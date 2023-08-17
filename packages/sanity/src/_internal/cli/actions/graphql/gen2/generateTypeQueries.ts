@@ -4,7 +4,7 @@ import type {ConvertedType, ConvertedUnion, InputObjectType, QueryDefinition} fr
 
 export function generateTypeQueries(
   types: (ConvertedType | ConvertedUnion)[],
-  sortings: InputObjectType[]
+  sortings: InputObjectType[],
 ): QueryDefinition[] {
   const queries: QueryDefinition[] = []
   const queryable = types.filter(isDocumentType)

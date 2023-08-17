@@ -26,10 +26,10 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
             ...sources[0],
             unstable_sources: sources,
             type: 'workspace',
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   )
 }
 
@@ -54,7 +54,7 @@ export type CreateWorkspaceFromConfigOptions =
  * @internal
  */
 export async function createWorkspaceFromConfig(
-  options: CreateWorkspaceFromConfigOptions
+  options: CreateWorkspaceFromConfigOptions,
 ): Promise<Workspace> {
   const client = 'getClient' in options ? options.getClient({apiVersion: '2022-09-09'}) : undefined
   const [workspace] = await firstValueFrom(
@@ -64,7 +64,7 @@ export async function createWorkspaceFromConfig(
         'currentUser' in options && {
           auth: createMockAuthStore({...options, client}),
         }),
-    })
+    }),
   )
 
   return workspace
@@ -81,7 +81,7 @@ export async function createWorkspaceFromConfig(
  * @internal
  */
 export async function createSourceFromConfig(
-  options: CreateWorkspaceFromConfigOptions
+  options: CreateWorkspaceFromConfigOptions,
 ): Promise<Source> {
   const workspace = await createWorkspaceFromConfig(options)
   return workspace.unstable_sources[0]

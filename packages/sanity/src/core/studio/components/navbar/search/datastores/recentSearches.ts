@@ -84,7 +84,7 @@ export function createRecentSearchesStore({
           filterName: filter.filterName,
           operatorType: filter.operatorType,
           value: filter.value,
-        })
+        }),
       )
 
       // Remove any filters in 'incomplete' states prior to writing to local storage.
@@ -94,7 +94,7 @@ export function createRecentSearchesStore({
           filter,
           filterDefinitions,
           operatorDefinitions,
-        })
+        }),
       )
 
       const newSearchItem: StoredSearchItem = {
@@ -317,7 +317,7 @@ function sanitizeStoredSearch({
   // Obtain all 'searchable' type names – defined as a type that exists in
   // the current schema and also visible to omnisearch.
   const searchableTypeNames = getSearchableOmnisearchTypes(studioSchema).map(
-    (schema) => schema.name
+    (schema) => schema.name,
   )
 
   const filteredSearch = storedSearch.recentSearches.filter((recentSearch) => {
@@ -325,7 +325,7 @@ function sanitizeStoredSearch({
       // Has valid searchable types (not hidden by omnisearch)
       recentSearch.terms.typeNames.every((typeName) => searchableTypeNames.includes(typeName)) &&
       recentSearch.filters.every((filter) =>
-        validateFilter({fieldDefinitions, filter, filterDefinitions, operatorDefinitions})
+        validateFilter({fieldDefinitions, filter, filterDefinitions, operatorDefinitions}),
       )
     )
   })

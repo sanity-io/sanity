@@ -89,7 +89,7 @@ export function EditObjectsStory() {
         _key: '2',
       },
     ],
-    []
+    [],
   )
 
   const objectEditData: ObjectEditData = useMemo(
@@ -99,7 +99,7 @@ export function EditObjectsStory() {
       kind: kind as FIXME,
       returnToSelection: null,
     }),
-    [editorPath, focusPath, kind]
+    [editorPath, focusPath, kind],
   )
 
   const handleBlur = useAction('onBlur')
@@ -123,7 +123,7 @@ export function EditObjectsStory() {
                 schemaErrors: schema._validation,
               },
               null,
-              2
+              2,
             )}
           </Code>
         </Stack>

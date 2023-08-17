@@ -128,7 +128,7 @@ describe('fieldExtendsType()', () => {
   /* eslint-disable @typescript-eslint/no-non-null-assertion */
   test('correctly identifies string fields', () => {
     const field = (mockSchema.get('category') as ObjectSchemaType).fields.find(
-      (current) => current.name === 'title'
+      (current) => current.name === 'title',
     )!
 
     expect(fieldExtendsType(field, 'string')).toBe(true)
@@ -136,7 +136,7 @@ describe('fieldExtendsType()', () => {
 
   test('correctly identifies text fields as string', () => {
     const field = (mockSchema.get('article') as ObjectSchemaType).fields.find(
-      (current) => current.name === 'description'
+      (current) => current.name === 'description',
     )!
 
     expect(fieldExtendsType(field, 'string')).toBe(true)
@@ -144,7 +144,7 @@ describe('fieldExtendsType()', () => {
 
   test('correctly identifies datetime fields', () => {
     const field = (mockSchema.get('article') as ObjectSchemaType).fields.find(
-      (current) => current.name === 'publishDate'
+      (current) => current.name === 'publishDate',
     )!
 
     expect(fieldExtendsType(field, 'datetime')).toBe(true)
@@ -152,7 +152,7 @@ describe('fieldExtendsType()', () => {
 
   test('correctly identifies aliased datetime fields as datetime', () => {
     const field = (mockSchema.get('article') as ObjectSchemaType).fields.find(
-      (current) => current.name === 'relevantUntil'
+      (current) => current.name === 'relevantUntil',
     )!
 
     expect(fieldExtendsType(field, 'datetime')).toBe(true)
@@ -160,7 +160,7 @@ describe('fieldExtendsType()', () => {
 
   test('correctly identifies aliased datetime fields as not a number', () => {
     const field = (mockSchema.get('article') as ObjectSchemaType).fields.find(
-      (current) => current.name === 'relevantUntil'
+      (current) => current.name === 'relevantUntil',
     )!
 
     expect(fieldExtendsType(field, 'number')).toBe(false)

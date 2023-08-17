@@ -47,7 +47,7 @@ export function DeskToolProvider({
       splitPanes: !layoutCollapsed,
       splitViews: !layoutCollapsed,
     }),
-    [layoutCollapsed]
+    [layoutCollapsed],
   )
 
   const deskTool: DeskToolContextValue = useMemo(() => {

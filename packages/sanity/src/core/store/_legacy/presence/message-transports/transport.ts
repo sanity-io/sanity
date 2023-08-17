@@ -47,5 +47,5 @@ export type TransportEvent = StateEvent | RollCallEvent | DisconnectEvent
 // This is the interface a transport must implement
 export type Transport = [
   Observable<TransportEvent>,
-  (message: TransportMessage) => Observable<void>
+  (message: TransportMessage) => Observable<void>,
 ]

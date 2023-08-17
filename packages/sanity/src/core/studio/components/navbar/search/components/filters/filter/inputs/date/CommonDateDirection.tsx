@@ -47,7 +47,7 @@ export function CommonDateDirectionInput({
         date: dateISOString,
       })
     },
-    [isDateTime, onChange, roundDay, value?.includeTime]
+    [isDateTime, onChange, roundDay, value?.includeTime],
   )
 
   const handleIncludeTimeChange = useCallback(() => {
@@ -72,7 +72,7 @@ export function CommonDateDirectionInput({
         date: date || null,
       })
     },
-    [onChange, value?.includeTime]
+    [onChange, value?.includeTime],
   )
 
   return (

@@ -10,6 +10,6 @@ export function useValidationStatus(publishedDocId: string, docTypeName: string)
   return useMemoObservable(
     () => documentStore.pair.validation(publishedDocId, docTypeName),
     [documentStore.pair, publishedDocId, docTypeName],
-    INITIAL
+    INITIAL,
   )
 }

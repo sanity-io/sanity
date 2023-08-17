@@ -120,7 +120,7 @@ export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps)
           y: alignY,
         },
       }),
-    [alignX, alignY, crop, hotspot, srcAspectRatio, targetAspect]
+    [alignX, alignY, crop, hotspot, srcAspectRatio, targetAspect],
   )
 
   return (

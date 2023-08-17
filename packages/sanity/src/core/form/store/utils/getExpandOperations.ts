@@ -68,7 +68,7 @@ function getFieldsetAndFieldGroupOperations(node: BaseFormNode, path: Path) {
 
 function getObjectFieldsetAndFieldGroupOperations(
   node: ObjectFormNode,
-  path: Path
+  path: Path,
 ): (ExpandFieldSetOperation | SetActiveGroupOperation)[] {
   if (path.length === 0) {
     return []
@@ -80,8 +80,8 @@ function getObjectFieldsetAndFieldGroupOperations(
     (member): member is FieldSetMember =>
       member.kind === 'fieldSet' &&
       member.fieldSet.members.some(
-        (field): field is FieldMember => field.kind === 'field' && field.name === fieldName
-      )
+        (field): field is FieldMember => field.kind === 'field' && field.name === fieldName,
+      ),
   )
 
   // if we found the field in a fieldset we need to recurse into this fieldset's members, otherwise we can use the node's members
@@ -93,7 +93,7 @@ function getObjectFieldsetAndFieldGroupOperations(
   // look for the field inside the members array
   const fieldMember = members.find(
     (member): member is FieldMember =>
-      member !== null && member.kind === 'field' && member.name === fieldName
+      member !== null && member.kind === 'field' && member.name === fieldName,
   )
 
   // Group handling
@@ -133,7 +133,7 @@ function getObjectFieldsetAndFieldGroupOperations(
 
 function getArrayFieldsetAndFieldGroupOperations(
   state: ArrayOfObjectsFormNode,
-  path: Path
+  path: Path,
 ): (ExpandFieldSetOperation | SetActiveGroupOperation)[] {
   if (path.length === 0) {
     return []
@@ -146,7 +146,7 @@ function getArrayFieldsetAndFieldGroupOperations(
   }
 
   const foundMember = state.members.find(
-    (member): member is ArrayOfObjectsItemMember => member.key === segment._key
+    (member): member is ArrayOfObjectsItemMember => member.key === segment._key,
   )
 
   if (!foundMember) {

@@ -50,7 +50,7 @@ export async function writeSanityRuntime({
           entryPath: `/${path.relative(cwd, path.join(runtimeDir, 'app.js'))}`,
           basePath: basePath || '/',
         },
-      })
+      }),
     )
 
     debug('Writing index.html to runtime directory')
@@ -73,6 +73,6 @@ export async function writeSanityRuntime({
 
   await fs.writeFile(
     path.join(runtimeDir, 'app.js'),
-    getEntryModule({reactStrictMode, relativeConfigLocation, basePath})
+    getEntryModule({reactStrictMode, relativeConfigLocation, basePath}),
   )
 }

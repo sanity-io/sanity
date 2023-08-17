@@ -77,7 +77,7 @@ function PaneHeaderActionIntentButton(props: {
       intentLink.onClick(event)
       node.onAction()
     },
-    [intentLink, node]
+    [intentLink, node],
   )
 
   return (

@@ -50,7 +50,7 @@ const showHelpAction: CliCommandDefinition['action'] = async (args, context) => 
   debug('Subcommand "%s" for group "%s" found, showing help', subCommandName, commandName)
   if (!isCommandGroup(subCommand.command)) {
     context.output.print(
-      generateCommandDocumentation(subCommand.command, commandName, subCommandName)
+      generateCommandDocumentation(subCommand.command, commandName, subCommandName),
     )
   }
 }

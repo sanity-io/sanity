@@ -28,7 +28,7 @@ function _stringify(value, options, depth) {
   }
   if (typeof value === 'object' && value !== null) {
     const keys = Object.keys(value).filter(
-      (key) => !options.ignoreKeys.includes(key) && typeof value[key] !== 'undefined'
+      (key) => !options.ignoreKeys.includes(key) && typeof value[key] !== 'undefined',
     )
 
     if (isEmpty(pick(value, keys))) {
@@ -48,7 +48,7 @@ function _stringify(value, options, depth) {
 
 export default function stringify(
   value,
-  options: {maxDepth?: number; maxBreadth?: number; ignoreKeys?: string[]} = {}
+  options: {maxDepth?: number; maxBreadth?: number; ignoreKeys?: string[]} = {},
 ) {
   const opts = {
     maxDepth: 'maxDepth' in options ? options.maxDepth : 2,

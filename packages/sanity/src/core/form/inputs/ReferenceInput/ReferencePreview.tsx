@@ -41,7 +41,7 @@ export function ReferencePreview(props: {
   // resolve the preview value it needs (this is cached in the runtime, so not likely to cause any fetch overhead)
   const previewStub = useMemo(
     () => ({_id: previewId, _type: refType.name}),
-    [previewId, refType.name]
+    [previewId, refType.name],
   )
 
   const previewProps = useMemo(
@@ -50,7 +50,7 @@ export function ReferencePreview(props: {
       schemaType: refType,
       value: previewStub,
     }),
-    [layout, previewStub, refType]
+    [layout, previewStub, refType],
   )
 
   return (

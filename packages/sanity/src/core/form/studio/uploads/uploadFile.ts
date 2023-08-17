@@ -10,7 +10,7 @@ import {createUploadEvent, createInitialUploadEvent, CLEANUP_EVENT} from './util
 export function uploadFile(
   client: SanityClient,
   file: File,
-  options?: UploadOptions
+  options?: UploadOptions,
 ): Observable<UploadProgressEvent> {
   const upload$ = uploadFileAsset(client, file, options).pipe(
     map((event) => {
@@ -25,7 +25,7 @@ export function uploadFile(
         set(event.percent, [UPLOAD_STATUS_KEY, 'progress']),
         set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updated']),
       ])
-    })
+    }),
   )
 
   return concat(of(createInitialUploadEvent(file)), upload$, of(CLEANUP_EVENT))

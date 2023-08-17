@@ -43,7 +43,11 @@ const ImageWrapper = styled.div`
     linear-gradient(45deg, transparent 75%, ${hues.gray[50].hex} 75%),
     linear-gradient(-45deg, transparent 75%, ${hues.gray[50].hex} 75%);
   background-size: 16px 16px;
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
 
   &::after {
     content: '';

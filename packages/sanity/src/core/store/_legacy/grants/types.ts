@@ -36,7 +36,7 @@ export interface GrantsStore {
    */
   checkDocumentPermission(
     checkPermissionName: DocumentValuePermission,
-    document: Partial<SanityDocument> | null
+    document: Partial<SanityDocument> | null,
   ): Observable<PermissionCheckResult>
 }
 

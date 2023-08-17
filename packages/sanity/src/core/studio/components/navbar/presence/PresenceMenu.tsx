@@ -86,7 +86,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
       portal: true,
       scheme: scheme,
     }),
-    [scheme]
+    [scheme],
   )
 
   return (

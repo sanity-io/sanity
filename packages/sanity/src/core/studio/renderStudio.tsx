@@ -15,7 +15,7 @@ interface RenderStudioOptions {
 export function renderStudio(
   rootElement: HTMLElement | null,
   config: Config,
-  options: boolean
+  options: boolean,
 ): () => void
 
 /** @internal */
@@ -25,14 +25,14 @@ export function renderStudio(rootElement: HTMLElement | null, config: Config): (
 export function renderStudio(
   rootElement: HTMLElement | null,
   config: Config,
-  options: RenderStudioOptions
+  options: RenderStudioOptions,
 ): () => void
 
 /** @internal */
 export function renderStudio(
   rootElement: HTMLElement | null,
   config: Config,
-  options: RenderStudioOptions | boolean = false
+  options: RenderStudioOptions | boolean = false,
 ): () => void {
   if (!rootElement) {
     throw new Error('Missing root element to mount application into')
@@ -50,7 +50,7 @@ export function renderStudio(
       </StrictMode>
     ) : (
       <Studio config={config} basePath={basePath} unstable_globalStyles />
-    )
+    ),
   )
 
   return () => root.unmount()

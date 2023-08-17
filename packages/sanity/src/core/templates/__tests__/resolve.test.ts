@@ -32,7 +32,7 @@ describe('resolveInitialValue', () => {
 
   test('throws on missing template `value` prop', () => {
     expect(
-      resolveInitialValue(schema, omit(example, ['value']) as Template, {}, mockConfigContext)
+      resolveInitialValue(schema, omit(example, ['value']) as Template, {}, mockConfigContext),
     ).rejects.toMatchObject({
       message: 'Template "author" has invalid "value" property',
     })
@@ -40,7 +40,7 @@ describe('resolveInitialValue', () => {
 
   test('throws on non-function/non-object template `value` prop', () => {
     expect(
-      resolveInitialValue(schema, {...example, value: []}, {}, mockConfigContext)
+      resolveInitialValue(schema, {...example, value: []}, {}, mockConfigContext),
     ).rejects.toMatchObject({
       message:
         'Template "author" has invalid "value" property - must be a plain object or a resolver function returning a plain object',
@@ -49,7 +49,7 @@ describe('resolveInitialValue', () => {
 
   test('throws on wrong `_type`  prop', () => {
     expect(
-      resolveInitialValue(schema, {...example, value: {_type: 'foo'}}, {}, mockConfigContext)
+      resolveInitialValue(schema, {...example, value: {_type: 'foo'}}, {}, mockConfigContext),
     ).rejects.toMatchObject({
       message:
         'Template "author" initial value: includes "_type"-property (foo) that does not match template (author)',
@@ -58,7 +58,7 @@ describe('resolveInitialValue', () => {
 
   test('should call sync value resolvers', () => {
     expect(
-      resolveInitialValue(schema, {...example, value: () => example.value}, {}, mockConfigContext)
+      resolveInitialValue(schema, {...example, value: () => example.value}, {}, mockConfigContext),
     ).resolves.toMatchObject({
       title: 'here',
     })
@@ -73,8 +73,8 @@ describe('resolveInitialValue', () => {
           value: () => Promise.resolve(example.value),
         },
         {},
-        mockConfigContext
-      )
+        mockConfigContext,
+      ),
     ).resolves.toMatchObject({
       title: 'here',
     })
@@ -82,7 +82,7 @@ describe('resolveInitialValue', () => {
 
   test('throws on wrong value type resolved', () => {
     expect(
-      resolveInitialValue(schema, {...example, value: () => null}, {}, mockConfigContext)
+      resolveInitialValue(schema, {...example, value: () => null}, {}, mockConfigContext),
     ).rejects.toMatchObject({
       message:
         'Template "author" has invalid "value" property - must be a plain object or a resolver function returning a plain object',
@@ -101,8 +101,8 @@ describe('resolveInitialValue', () => {
           value: {image: {_type: 'image', meta: {foo: 'foo'}}},
         },
         {},
-        mockConfigContext
-      )
+        mockConfigContext,
+      ),
     ).rejects.toMatchObject({
       message: 'Template "author" initial value: missing "_type" property at path "image.meta"',
     })
@@ -117,8 +117,8 @@ describe('resolveInitialValue', () => {
           value: {image: {_type: 'image', asset: {_ref: 'foo'}}},
         },
         {},
-        mockConfigContext
-      )
+        mockConfigContext,
+      ),
     ).resolves.toMatchObject({image: {_type: 'image', asset: {_ref: 'foo', _type: 'reference'}}})
   })
 
@@ -130,7 +130,7 @@ describe('resolveInitialValue', () => {
         value: {categories: [{_ref: 'php'}, {_ref: 'js'}]},
       },
       {},
-      mockConfigContext
+      mockConfigContext,
     )
 
     expect(result).toMatchObject({
@@ -154,7 +154,7 @@ describe('resolveInitialValue', () => {
         value: {meta: [{_type: 'holder', categories: [{_ref: 'php'}, {_ref: 'js'}]}]},
       },
       {},
-      mockConfigContext
+      mockConfigContext,
     )
 
     expect(result).toMatchObject({
@@ -207,7 +207,7 @@ describe('resolveInitialValue', () => {
           value: {},
         },
         {},
-        mockConfigContext
+        mockConfigContext,
       )
 
       expect(result).toMatchObject({
@@ -223,7 +223,7 @@ describe('resolveInitialValue', () => {
           value: {},
         },
         {},
-        mockConfigContext
+        mockConfigContext,
       )
 
       expect(result).toMatchObject({
@@ -239,7 +239,7 @@ describe('resolveInitialValue', () => {
           value: {},
         },
         {},
-        mockConfigContext
+        mockConfigContext,
       )
 
       expect(result).toMatchObject({

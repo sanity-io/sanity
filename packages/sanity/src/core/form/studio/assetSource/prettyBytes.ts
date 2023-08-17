@@ -12,7 +12,7 @@ const BIBIT_UNITS = ['b', 'kibit', 'Mibit', 'Gibit', 'Tibit', 'Pibit', 'Eibit', 
 const toLocaleString = (
   number: string | number,
   locale: string | string[] | undefined | boolean,
-  options: Intl.NumberFormatOptions | undefined
+  options: Intl.NumberFormatOptions | undefined,
 ) => {
   let result = number
   if (typeof locale === 'string' || Array.isArray(locale)) {
@@ -74,7 +74,7 @@ export function prettyBytes(
     minimumFractionDigits,
     maximumFractionDigits,
     locale,
-  }: PrettyBytesOptions = {}
+  }: PrettyBytesOptions = {},
 ): string {
   let number: string | number = input
 
@@ -114,7 +114,7 @@ export function prettyBytes(
 
   const exponent = Math.min(
     Math.floor(binary ? Math.log(number) / Math.log(1024) : Math.log10(number) / 3),
-    UNITS.length - 1
+    UNITS.length - 1,
   )
   number /= (binary ? 1024 : 1000) ** exponent
 

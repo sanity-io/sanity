@@ -14,7 +14,7 @@ export interface FileInputButtonProps extends ButtonProps {
 export const FileInputButton = React.forwardRef(function FileInputButton(
   props: FileInputButtonProps &
     Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
+  forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ) {
   const {
     icon,
@@ -40,7 +40,7 @@ export const FileInputButton = React.forwardRef(function FileInputButton(
         onSelect(Array.from(event.target.files))
       }
     },
-    [onSelect]
+    [onSelect],
   )
 
   const content = (

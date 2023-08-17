@@ -31,7 +31,7 @@ describe('useScrollIntoViewOnFocusWithin', () => {
       (props) => useScrollIntoViewOnFocusWithin(elementRef, props.hasFocusWithin),
       {
         initialProps: {hasFocusWithin},
-      }
+      },
     )
 
     expect(useDidUpdateSpy).toHaveBeenCalledTimes(1)
@@ -58,7 +58,7 @@ describe('useScrollIntoViewOnFocusWithin', () => {
       (props) => useScrollIntoViewOnFocusWithin(elementRef, props.hasFocusWithin),
       {
         initialProps: {hasFocusWithin},
-      }
+      },
     )
 
     expect(useDidUpdateSpy).toHaveBeenCalledTimes(1)
@@ -83,7 +83,7 @@ describe('useScrollIntoViewOnFocusWithin', () => {
       (props) => useScrollIntoViewOnFocusWithin(elementRef, props.hasFocusWithin),
       {
         initialProps: {hasFocusWithin},
-      }
+      },
     )
 
     expect(useDidUpdateSpy).toHaveBeenCalledTimes(1)

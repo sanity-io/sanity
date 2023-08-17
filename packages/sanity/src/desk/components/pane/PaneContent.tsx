@@ -17,7 +17,7 @@ interface PaneContentProps {
  */
 export const PaneContent = forwardRef(function PaneContent(
   props: PaneContentProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {as, children, overflow, padding, ...restProps} = props
   const {collapsed} = usePane()

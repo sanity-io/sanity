@@ -31,7 +31,7 @@ const RE_TYPE_NAME_IN_FILTER =
   /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type\b/
 export function getTypeNameFromSingleTypeFilter(
   filter: string,
-  params: Record<string, unknown> = {}
+  params: Record<string, unknown> = {},
 ): string | null {
   const matches = filter.match(RE_TYPE_NAME_IN_FILTER)
 

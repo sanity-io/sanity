@@ -37,7 +37,7 @@ export interface BlockNormalizationOptions {
  */
 export function normalizeBlock(
   node: TypedObject,
-  options: BlockNormalizationOptions = {}
+  options: BlockNormalizationOptions = {},
 ): Omit<TypedObject | PortableTextTextBlock<TypedObject | PortableTextSpan>, '_key'> & {
   _key: string
 } {
@@ -73,24 +73,27 @@ export function normalizeBlock(
       : false
 
   block.children = block.children
-    .reduce((acc, child) => {
-      const previousChild = acc[acc.length - 1]
-      if (
-        previousChild &&
-        isPortableTextSpan(child) &&
-        isPortableTextSpan(previousChild) &&
-        isEqual(previousChild.marks, child.marks)
-      ) {
-        if (lastChild && lastChild === child && child.text === '' && block.children.length > 1) {
+    .reduce(
+      (acc, child) => {
+        const previousChild = acc[acc.length - 1]
+        if (
+          previousChild &&
+          isPortableTextSpan(child) &&
+          isPortableTextSpan(previousChild) &&
+          isEqual(previousChild.marks, child.marks)
+        ) {
+          if (lastChild && lastChild === child && child.text === '' && block.children.length > 1) {
+            return acc
+          }
+
+          previousChild.text += child.text
           return acc
         }
-
-        previousChild.text += child.text
+        acc.push(child)
         return acc
-      }
-      acc.push(child)
-      return acc
-    }, [] as (TypedObject | PortableTextSpan)[])
+      },
+      [] as (TypedObject | PortableTextSpan)[],
+    )
     .map((child, index) => {
       if (!child) {
         throw new Error('missing child')

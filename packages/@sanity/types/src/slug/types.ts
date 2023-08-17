@@ -34,12 +34,12 @@ export interface SlugSourceContext {
 /** @public */
 export type SlugSourceFn = (
   document: SanityDocument,
-  context: SlugSourceContext
+  context: SlugSourceContext,
 ) => string | Promise<string>
 
 /** @public */
 export type SlugifierFn = (
   source: string,
   schemaType: SlugSchemaType,
-  context: SlugSourceContext
+  context: SlugSourceContext,
 ) => string | Promise<string>

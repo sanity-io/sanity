@@ -68,7 +68,7 @@ function mutConcat<T>(array: T[], chunks: T[]) {
 
 export function create_preview_availability(
   versionedClient: SanityClient,
-  observePaths: ObservePathsFn
+  observePaths: ObservePathsFn,
 ): {
   observeDocumentPairAvailability(id: string): Observable<DraftsModelDocumentAvailability>
 } {
@@ -76,7 +76,7 @@ export function create_preview_availability(
    * Returns an observable of metadata for a given drafts model document
    */
   function observeDocumentPairAvailability(
-    id: string
+    id: string,
   ): Observable<DraftsModelDocumentAvailability> {
     const draftId = getDraftId(id)
     const publishedId = getPublishedId(id)
@@ -90,7 +90,7 @@ export function create_preview_availability(
           draft: draftReadability,
           published: publishedReadability,
         }
-      })
+      }),
     )
   }
 
@@ -111,21 +111,20 @@ export function create_preview_availability(
             of(AVAILABILITY_READABLE)
           : // we can't read the _rev field for two possible reasons: 1) the document isn't readable or 2) the document doesn't exist
             fetchDocumentReadability(id)
-      })
+      }),
     )
   }
 
   const fetchDocumentReadability = debounceCollect(function fetchDocumentReadability(
-    args: string[][]
+    args: string[][],
   ): Observable<DocumentAvailability[]> {
     const uniqueIds = [...new Set(flatten(args))]
     return from(chunkDocumentIds(uniqueIds)).pipe(
       mergeMap(fetchDocumentReadabilityChunked, 10),
       reduce<DocumentAvailability[], DocumentAvailability[]>(mutConcat, []),
-      map((res) => args.map(([id]) => res[uniqueIds.indexOf(id)]))
+      map((res) => args.map(([id]) => res[uniqueIds.indexOf(id)])),
     )
-  },
-  1)
+  }, 1)
 
   function fetchDocumentReadabilityChunked(ids: string[]): Observable<DocumentAvailability[]> {
     return defer(() => {
@@ -153,7 +152,7 @@ export function create_preview_availability(
             }
             throw new Error(`Unexpected reason for omission: "${omittedEntry.reason}"`)
           })
-        })
+        }),
       )
     })
   }

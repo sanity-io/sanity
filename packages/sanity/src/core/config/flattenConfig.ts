@@ -7,14 +7,14 @@ import {PluginOptions} from './types'
  */
 export const flattenConfig = (
   {plugins = [], ...currentConfig}: PluginOptions,
-  path: string[]
+  path: string[],
 ): Array<{config: PluginOptions; path: string[]}> => {
   // The APIs used at the root config level
   const rootConfig = {config: currentConfig, path: [...path, currentConfig.name]}
 
   // An array with the APIs used in plugins
   const allPlugins = plugins.flatMap((plugin) =>
-    flattenConfig(plugin, [...path, currentConfig.name])
+    flattenConfig(plugin, [...path, currentConfig.name]),
   )
 
   const resolved = [...allPlugins, rootConfig]

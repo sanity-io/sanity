@@ -21,8 +21,8 @@ export default (typeDef, visitorContext) => {
     problems.push(
       error(
         `Invalid type for file \`metadata\` field - must be an array of strings`,
-        HELP_IDS.ASSET_METADATA_FIELD_INVALID
-      )
+        HELP_IDS.ASSET_METADATA_FIELD_INVALID,
+      ),
     )
   } else if (invalidFieldNames.length > 0) {
     problems.push(error('The name `asset` is not a valid field name for type `file`.'))

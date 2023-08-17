@@ -40,7 +40,7 @@ const originalFnMap = new WeakMap<PortableTextSlateEditor, OriginalEditorFunctio
 
 export const withPlugins = <T extends Editor>(
   editor: T,
-  options: createEditorOptions
+  options: createEditorOptions,
 ): {editor: PortableTextSlateEditor; subscribe: () => () => void} => {
   const e = editor as T & PortableTextSlateEditor
   const {keyGenerator, portableTextEditor, patches$, readOnly, maxBlocks} = options
@@ -105,12 +105,12 @@ export const withPlugins = <T extends Editor>(
             withPortableTextBlockStyle(
               withUtils(
                 withPlaceholderBlock(
-                  withPortableTextLists(withPortableTextSelections(withEditableAPI(e)))
-                )
-              )
-            )
-          )
-        )
+                  withPortableTextLists(withPortableTextSelections(withEditableAPI(e))),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
       subscribe: () => noop,
     }
@@ -126,14 +126,14 @@ export const withPlugins = <T extends Editor>(
               withPlaceholderBlock(
                 withUtils(
                   withMaxBlocks(
-                    withUndoRedo(withPatches(withPortableTextSelections(withEditableAPI(e))))
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
+                    withUndoRedo(withPatches(withPortableTextSelections(withEditableAPI(e)))),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     ),
     subscribe: () => {
       const unsubscribes: (() => void)[] = []

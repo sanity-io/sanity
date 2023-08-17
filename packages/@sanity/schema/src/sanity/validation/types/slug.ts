@@ -7,8 +7,8 @@ export default (typeDef, visitorContext) => {
     problems.push(
       warning(
         'Heads up! The "slugifyFn" option has been renamed to "slugify".',
-        HELP_IDS.SLUG_SLUGIFY_FN_RENAMED
-      )
+        HELP_IDS.SLUG_SLUGIFY_FN_RENAMED,
+      ),
     )
 
     typeDef.options.slugify = typeDef.options.slugifyFn

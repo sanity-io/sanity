@@ -90,7 +90,7 @@ function printSeparator(context: CliCommandContext, skip: boolean) {
 function printMessage(
   message: HookMessage & {attempts: DeliveryAttempt[]},
   context: CliCommandContext,
-  options: {detailed?: boolean}
+  options: {detailed?: boolean},
 ) {
   const {detailed} = options
   const {output, chalk} = context

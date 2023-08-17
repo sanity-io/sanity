@@ -36,7 +36,7 @@ export const Pane = forwardRef(function Pane(
   props: PaneProps &
     Omit<CardProps, 'as' | 'overflow'> &
     Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {
     children,
@@ -75,7 +75,7 @@ export const Pane = forwardRef(function Pane(
       setRootElement(refValue)
       forwardedRef.current = refValue
     },
-    [forwardedRef]
+    [forwardedRef],
   )
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export const Pane = forwardRef(function Pane(
       isLast,
       rootElement,
     }),
-    [collapsed, handleCollapse, handleExpand, isLast, layoutCollapsed, paneIndex, rootElement]
+    [collapsed, handleCollapse, handleExpand, isLast, layoutCollapsed, paneIndex, rootElement],
   )
 
   const minWidth = useMemo(() => {
@@ -167,7 +167,7 @@ export const Pane = forwardRef(function Pane(
           <PaneDivider disabled={collapsed || nextCollapsed} element={rootElement} />
         </LegacyLayerProvider>
       ),
-    [collapsed, isLast, layoutCollapsed, nextCollapsed, rootElement]
+    [collapsed, isLast, layoutCollapsed, nextCollapsed, rootElement],
   )
 
   const style = useMemo(
@@ -176,7 +176,7 @@ export const Pane = forwardRef(function Pane(
       minWidth,
       maxWidth: maxWidth === Infinity ? undefined : maxWidth,
     }),
-    [flex, minWidth, maxWidth]
+    [flex, minWidth, maxWidth],
   )
 
   return (

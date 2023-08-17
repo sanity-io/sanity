@@ -11,7 +11,7 @@ export function createSubscriptionManager(...keys: string[]) {
     validate(key)
     if (registry[key]) {
       throw new Error(
-        `Subscription already exists for key: ${key}. Did you mean to call .replace instead?`
+        `Subscription already exists for key: ${key}. Did you mean to call .replace instead?`,
       )
     }
     registry[key] = subscription

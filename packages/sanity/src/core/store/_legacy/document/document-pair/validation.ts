@@ -60,7 +60,7 @@ function findReferenceIds(obj: any): Set<string> {
       }
       return acc
     },
-    new Set<string>()
+    new Set<string>(),
   )
 }
 
@@ -72,7 +72,7 @@ type ObserveDocumentPairAvailability = (id: string) => Observable<DraftsModelDoc
 
 const listenDocumentExists = (
   observeDocumentAvailability: ObserveDocumentPairAvailability,
-  id: string
+  id: string,
 ): Observable<boolean> =>
   observeDocumentAvailability(id).pipe(map(({published}) => published.available))
 
@@ -92,7 +92,7 @@ export const validation = memoize(
       schema: Schema
     },
     {draftId, publishedId}: IdPair,
-    typeName: string
+    typeName: string,
   ): Observable<ValidationStatus> => {
     const document$ = editState(ctx, {draftId, publishedId}, typeName).pipe(
       map(({draft, published}) => draft || published),
@@ -105,12 +105,12 @@ export const validation = memoize(
         // so only pass on documents if _other_ attributes changes
         return shallowEquals(omit(prev, '_rev', '_updatedAt'), omit(next, '_rev', '_updatedAt'))
       }),
-      share()
+      share(),
     )
 
     const referenceIds$ = document$.pipe(
       map((document) => findReferenceIds(document)),
-      mergeMap((ids) => from(ids))
+      mergeMap((ids) => from(ids)),
     )
 
     // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
@@ -118,7 +118,7 @@ export const validation = memoize(
       groupBy(
         (id) => id,
         undefined,
-        () => timer(1000 * 60 * 30)
+        () => timer(1000 * 60 * 30),
       ),
       mergeMap((id$) =>
         id$.pipe(
@@ -127,11 +127,11 @@ export const validation = memoize(
             listenDocumentExists(ctx.observeDocumentPairAvailability, id).pipe(
               map(
                 // eslint-disable-next-line max-nested-callbacks
-                (result) => [id, result] as const
-              )
-            )
-          )
-        )
+                (result) => [id, result] as const,
+              ),
+            ),
+          ),
+        ),
       ),
       scan((acc: Record<string, boolean>, [id, result]): Record<string, boolean> => {
         if (Boolean(acc[id]) === result) {
@@ -140,7 +140,7 @@ export const validation = memoize(
         return result ? {...acc, [id]: result} : omit(acc, id)
       }, {}),
       distinctUntilChanged(shallowEquals),
-      shareReplay({refCount: true, bufferSize: 1})
+      shareReplay({refCount: true, bufferSize: 1}),
     )
 
     // Provided to individual validation functions to support using existence of a weakly referenced document
@@ -149,15 +149,15 @@ export const validation = memoize(
       lastValueFrom(
         referenceExistence$.pipe(
           first(),
-          map((referenceExistence) => referenceExistence[id])
-        )
+          map((referenceExistence) => referenceExistence[id]),
+        ),
       )
 
     const referenceDocumentUpdates$ = referenceExistence$.pipe(
       // we'll skip the first emission since the document already gets an initial validation pass
       // we're only interested in updates in referenced documents after that
       skip(1),
-      throttleTime(REF_UPDATE_DELAY, asyncScheduler, {leading: true, trailing: true})
+      throttleTime(REF_UPDATE_DELAY, asyncScheduler, {leading: true, trailing: true}),
     )
 
     return combineLatest([document$, concat(of(null), referenceDocumentUpdates$)]).pipe(
@@ -172,19 +172,19 @@ export const validation = memoize(
             validateDocumentObservable(ctx.getClient, document, ctx.schema, {
               getDocumentExists,
             }).pipe(
-              map((validationMarkers) => ({validation: validationMarkers, isValidating: false}))
-            )
+              map((validationMarkers) => ({validation: validationMarkers, isValidating: false})),
+            ),
           )
         })
       }),
       scan((acc, next) => ({...acc, ...next}), INITIAL_VALIDATION_STATUS),
       publishReplay(1),
-      refCount()
+      refCount(),
     )
   },
   (ctx, idPair, typeName) => {
     const config = ctx.client.config()
 
     return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
-  }
+  },
 )

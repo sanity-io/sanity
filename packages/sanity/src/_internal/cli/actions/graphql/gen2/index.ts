@@ -8,7 +8,7 @@ export default (extracted: ApiSpecification): GeneratedApiSpecification => {
   const sortings = generateTypeSortings(extracted.types)
   const queries = generateTypeQueries(
     extracted.types,
-    sortings.filter((node): node is InputObjectType => node.kind === 'InputObject')
+    sortings.filter((node): node is InputObjectType => node.kind === 'InputObject'),
   )
   const types = [...extracted.types, ...filters, ...sortings]
 

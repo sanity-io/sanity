@@ -4,11 +4,11 @@ import {ErrorMessageProps} from './ErrorMessage'
 
 export function flattenErrors(
   error: unknown,
-  path: Array<{name: string; type: string}>
+  path: Array<{name: string; type: string}>,
 ): ErrorMessageProps[] {
   if (error instanceof ConfigResolutionError) {
     return error.causes.flatMap((cause) =>
-      flattenErrors(cause, [...path, {name: error.name, type: error.type}])
+      flattenErrors(cause, [...path, {name: error.name, type: error.type}]),
     )
   }
 

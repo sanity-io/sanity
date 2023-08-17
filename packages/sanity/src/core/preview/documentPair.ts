@@ -8,16 +8,16 @@ import {create_preview_availability} from './availability'
 
 export function create_preview_documentPair(
   versionedClient: SanityClient,
-  observePaths: ObservePathsFn
+  observePaths: ObservePathsFn,
 ): {
   observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
     id: string,
-    paths: PreviewPath[]
+    paths: PreviewPath[],
   ) => Observable<DraftsModelDocument<T>>
 } {
   const {observeDocumentPairAvailability} = create_preview_availability(
     versionedClient,
-    observePaths
+    observePaths,
   )
 
   const ALWAYS_INCLUDED_SNAPSHOT_PATHS: PreviewPath[] = [['_updatedAt'], ['_createdAt'], ['_type']]
@@ -26,7 +26,7 @@ export function create_preview_documentPair(
 
   function observePathsDocumentPair<T extends SanityDocument = SanityDocument>(
     id: string,
-    paths: PreviewPath[]
+    paths: PreviewPath[],
   ): Observable<DraftsModelDocument<T>> {
     const {draftId, publishedId} = getIdPair(id)
 
@@ -75,9 +75,9 @@ export function create_preview_documentPair(
                 snapshot: publishedSnapshot as T,
               },
             }
-          })
+          }),
         )
-      })
+      }),
     )
   }
 }

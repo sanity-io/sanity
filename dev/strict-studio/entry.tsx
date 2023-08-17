@@ -10,5 +10,5 @@ const root = createRoot(document.getElementById('sanity'))
 root.render(
   <StrictMode>
     <Studio config={config} />
-  </StrictMode>
+  </StrictMode>,
 )

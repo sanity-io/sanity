@@ -112,7 +112,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
-      'true'
+      'true',
     )
   })
 
@@ -144,7 +144,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
-      'true'
+      'true',
     )
   })
 
@@ -160,7 +160,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(result.queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe(
-      'true'
+      'true',
     )
   })
 
@@ -304,7 +304,7 @@ describe('FileInput with asset', () => {
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
-        ''
+        '',
       )
     })
   })
@@ -326,7 +326,7 @@ describe('FileInput with asset', () => {
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
-        ''
+        '',
       )
     })
   })
@@ -371,10 +371,10 @@ describe('FileInput with asset', () => {
 
     await waitFor(() => {
       expect(
-        result.queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled')
+        result.queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled'),
       )
       expect(
-        result.queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled')
+        result.queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled'),
       )
     })
   })

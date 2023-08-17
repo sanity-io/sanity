@@ -29,7 +29,7 @@ export function documentTypesTruncated({
         return acc
       }
     })(),
-    []
+    [],
   )
 
   const remainingCount = types.length - visibleTypes.length

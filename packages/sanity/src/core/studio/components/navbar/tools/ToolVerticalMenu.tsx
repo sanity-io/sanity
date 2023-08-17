@@ -22,7 +22,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
 
           const Link = forwardRef(function Link(
             linkProps: ToolLinkProps,
-            ref: React.Ref<HTMLAnchorElement>
+            ref: React.Ref<HTMLAnchorElement>,
           ) {
             return <ToolLink {...linkProps} ref={ref} name={tool.name} />
           })
@@ -43,6 +43,6 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
         })}
       </Stack>
     ),
-    [activeToolName, isVisible, tools]
+    [activeToolName, isVisible, tools],
   )
 }

@@ -11,7 +11,7 @@ export function isMemberObject(member: FieldMember): member is FieldMember<Objec
 }
 
 export function isMemberArrayOfPrimitives(
-  member: FieldMember
+  member: FieldMember,
 ): member is FieldMember<ArrayOfPrimitivesFormNode> {
   return (
     isArraySchemaType(member.field.schemaType) &&
@@ -20,7 +20,7 @@ export function isMemberArrayOfPrimitives(
 }
 
 export function isMemberArrayOfObjects(
-  member: FieldMember
+  member: FieldMember,
 ): member is FieldMember<ArrayOfObjectsFormNode> {
   return (
     isArraySchemaType(member.field.schemaType) &&

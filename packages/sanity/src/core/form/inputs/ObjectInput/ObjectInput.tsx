@@ -37,7 +37,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
 
     const knownFieldNames = schemaType.fields.map((field) => field.name)
     const unknownFields = Object.keys(value || {}).filter(
-      (key) => !key.startsWith('_') && !knownFieldNames.includes(key)
+      (key) => !key.startsWith('_') && !knownFieldNames.includes(key),
     )
 
     if (unknownFields.length === 0) {
@@ -69,7 +69,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       renderInput,
       renderItem,
       renderPreview,
-    ]
+    ],
   )
 
   if (members.length === 0) {

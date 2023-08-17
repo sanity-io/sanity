@@ -43,7 +43,7 @@ describe('checkDocumentPermission', () => {
     const {checkDocumentPermission} = createGrantsStore({client, currentUser: null})
 
     await expect(
-      firstValueFrom(checkDocumentPermission('create', {_id: 'example-id', _type: 'book'}))
+      firstValueFrom(checkDocumentPermission('create', {_id: 'example-id', _type: 'book'})),
     ).resolves.toEqual({
       granted: false,
       reason: 'No matching grants found',
@@ -51,8 +51,8 @@ describe('checkDocumentPermission', () => {
 
     await expect(
       lastValueFrom(
-        checkDocumentPermission('read', {_id: 'example-id', _type: 'book'}).pipe(first())
-      )
+        checkDocumentPermission('read', {_id: 'example-id', _type: 'book'}).pipe(first()),
+      ),
     ).resolves.toEqual({
       granted: true,
       reason: 'Matching grant',

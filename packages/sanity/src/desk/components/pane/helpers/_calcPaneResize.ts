@@ -5,7 +5,7 @@ export function _calcPaneResize(
   cache: PaneResizeCache,
   left: PaneConfigOpts,
   right: PaneConfigOpts,
-  deltaX: number
+  deltaX: number,
 ): {leftFlex: number; leftW: number; rightFlex: number; rightW: number} {
   const sum = {
     flex: cache.left.flex + cache.right.flex,

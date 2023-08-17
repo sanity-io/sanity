@@ -48,7 +48,7 @@ export interface CrossDatasetReferenceInputProps
   extends ObjectInputProps<CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType> {
   getReferenceInfo: (
     doc: {_id: string; _type?: string},
-    type: CrossDatasetReferenceSchemaType
+    type: CrossDatasetReferenceSchemaType,
   ) => Observable<CrossDatasetReferenceInfo>
   onSearch: (query: string) => Observable<CrossDatasetSearchHit[]>
 }
@@ -103,7 +103,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
           _weak: schemaType.weak,
           // persist _key between mutations if the value is in an array
           _key: value?._key,
-        })
+        }),
       )
 
       onPathFocus([])
@@ -117,7 +117,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
       projectId,
       onChange,
       onPathFocus,
-    ]
+    ],
   )
 
   const handleClear = useCallback(() => {
@@ -131,12 +131,12 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         onPathFocus?.([])
       }
     },
-    [onPathFocus]
+    [onPathFocus],
   )
 
   const getReferenceInfoMemo: GetReferenceInfoFn = useCallback(
     (doc) => getReferenceInfo(doc, schemaType),
-    [getReferenceInfo, schemaType]
+    [getReferenceInfo, schemaType],
   )
 
   const refDoc = useMemo(() => ({_id: value?._ref}), [value?._ref])
@@ -180,7 +180,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         onPathFocus?.([FOCUS_TERMINATOR])
       }
     },
-    [elementProps.ref, onPathFocus]
+    [elementProps.ref, onPathFocus],
   )
 
   const handleAutocompleteFocus = useCallback(
@@ -189,7 +189,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         onPathFocus?.(REF_PATH)
       }
     },
-    [elementProps.ref, onPathFocus]
+    [elementProps.ref, onPathFocus],
   )
   const handleReplace = useCallback(() => {
     onPathFocus?.(REF_PATH)
@@ -217,20 +217,20 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
                 console.error(error)
                 return of({hits: []})
-              })
-            )
-          )
+              }),
+            ),
+          ),
         ),
 
         scan(
           (prevState, nextState): SearchState => ({...prevState, ...nextState}),
-          INITIAL_SEARCH_STATE
+          INITIAL_SEARCH_STATE,
         ),
 
-        tap(setSearchState)
+        tap(setSearchState),
       )
     },
-    [inputId, onSearch, push]
+    [inputId, onSearch, push],
   )
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
@@ -261,7 +261,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         </PreviewCard>
       )
     },
-    [schemaType, getReferenceInfoMemo]
+    [schemaType, getReferenceInfoMemo],
   )
 
   const preview = loadableReferenceInfo.result?.preview.published
@@ -278,7 +278,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
       if (hasFocusAtRef) {
         onPathFocus([])
       }
-    }
+    },
   )
 
   return (

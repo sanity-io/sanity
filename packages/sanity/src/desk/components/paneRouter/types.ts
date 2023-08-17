@@ -159,6 +159,6 @@ export interface PaneRouterContextValue {
   navigateIntent: (
     intentName: string,
     params: Record<string, string>,
-    options?: {replace?: boolean}
+    options?: {replace?: boolean},
   ) => void
 }

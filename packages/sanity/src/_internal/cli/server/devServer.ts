@@ -43,7 +43,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     viteConfig = await extendViteConfigWithUserConfig(
       {command: 'serve', mode},
       viteConfig,
-      extendViteConfig
+      extendViteConfig,
     )
   }
 
@@ -60,7 +60,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     `Sanity Studio ` +
       `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
       `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
-      `and running at ${chalk.cyan(url)}`
+      `and running at ${chalk.cyan(url)}`,
   )
 
   return {close: () => server.close()}

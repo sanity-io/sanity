@@ -17,9 +17,9 @@ export function createSettingsStore(): SettingsStore {
         map((nextValue) => ({
           key: event.key,
           value: nextValue,
-        }))
-      )
-    )
+        })),
+      ),
+    ),
   )
 
   const listen = (key: string, defValue: unknown): Observable<unknown> => {
@@ -27,8 +27,8 @@ export function createSettingsStore(): SettingsStore {
       storageBackend.get(key, defValue),
       updates$.pipe(
         filter((update) => update.key === key),
-        map((update) => update.value)
-      )
+        map((update) => update.value),
+      ),
     )
   }
 

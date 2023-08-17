@@ -20,7 +20,7 @@ export interface MergeOptions {
 export async function mergeCommands(
   baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[],
   corePath: string | undefined,
-  options: MergeOptions
+  options: MergeOptions,
 ): Promise<(CliCommandDefinition | CliCommandGroupDefinition)[]> {
   if (!corePath) {
     return baseCommands
@@ -56,17 +56,20 @@ export async function mergeCommands(
 
   // Remove duplicate commands when within the same group,
   // the last defined commands with the given name wins
-  return merged.reverse().reduce((cmds, cmd) => {
-    const group = isCommandGroup(cmd) ? undefined : cmd.group
-    if (!find(cmds, {name: cmd.name, group})) {
-      cmds.push(cmd)
-    }
-    return cmds
-  }, [] as (CliCommandDefinition | CliCommandGroupDefinition)[])
+  return merged.reverse().reduce(
+    (cmds, cmd) => {
+      const group = isCommandGroup(cmd) ? undefined : cmd.group
+      if (!find(cmds, {name: cmd.name, group})) {
+        cmds.push(cmd)
+      }
+      return cmds
+    },
+    [] as (CliCommandDefinition | CliCommandGroupDefinition)[],
+  )
 }
 
 function addDefaultGroup(
-  cmd: CliCommandDefinition | CliCommandGroupDefinition
+  cmd: CliCommandDefinition | CliCommandGroupDefinition,
 ): CliCommandDefinition | CliCommandGroupDefinition {
   if (!isCommandGroup(cmd) && !cmd.group) {
     cmd.group = 'default'

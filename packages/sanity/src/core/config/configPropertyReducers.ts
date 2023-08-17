@@ -34,8 +34,8 @@ export const schemaTypesReducer: ConfigPropertyReducer<
 
   throw new Error(
     `Expected \`schema.types\` to be an array or a function, but received ${getPrintableType(
-      schemaTypes
-    )}`
+      schemaTypes,
+    )}`,
   )
 }
 
@@ -54,14 +54,14 @@ export const resolveProductionUrlReducer: AsyncConfigPropertyReducer<
 export const toolsReducer: ConfigPropertyReducer<Tool[], ConfigContext> = (
   prev,
   {tools},
-  context
+  context,
 ) => {
   if (!tools) return prev
   if (typeof tools === 'function') return tools(prev, context)
   if (Array.isArray(tools)) return [...prev, ...tools]
 
   throw new Error(
-    `Expected \`tools\` to be an array or a function, but received ${getPrintableType(tools)}`
+    `Expected \`tools\` to be an array or a function, but received ${getPrintableType(tools)}`,
   )
 }
 
@@ -97,7 +97,7 @@ export const searchOperatorsReducer: ConfigPropertyReducer<
 export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigContext> = (
   prev,
   {schema},
-  context
+  context,
 ) => {
   const schemaTemplates = schema?.templates
   if (!schemaTemplates) return prev
@@ -106,8 +106,8 @@ export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigCon
 
   throw new Error(
     `Expected \`schema.templates\` to be an array or a function, but received ${getPrintableType(
-      schemaTemplates
-    )}`
+      schemaTemplates,
+    )}`,
   )
 }
 
@@ -123,8 +123,8 @@ export const documentBadgesReducer: ConfigPropertyReducer<
 
   throw new Error(
     `Expected \`document.badges\` to be an array or a function, but received ${getPrintableType(
-      documentBadges
-    )}`
+      documentBadges,
+    )}`,
   )
 }
 
@@ -140,8 +140,8 @@ export const documentActionsReducer: ConfigPropertyReducer<
 
   throw new Error(
     `Expected \`document.actions\` to be an array or a function, but received ${getPrintableType(
-      documentActions
-    )}`
+      documentActions,
+    )}`,
   )
 }
 
@@ -155,8 +155,8 @@ export const newDocumentOptionsResolver: ConfigPropertyReducer<
   if (typeof resolveNewDocumentOptions !== 'function') {
     throw new Error(
       `Expected \`document.resolveNewDocumentOptions\` to be a function, but received ${getPrintableType(
-        resolveNewDocumentOptions
-      )}`
+        resolveNewDocumentOptions,
+      )}`,
     )
   }
 
@@ -166,7 +166,7 @@ export const newDocumentOptionsResolver: ConfigPropertyReducer<
 export const fileAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
   prev,
   {form},
-  context
+  context,
 ) => {
   const assetSources = form?.file?.assetSources
   if (!assetSources) return prev
@@ -176,15 +176,15 @@ export const fileAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Confi
 
   throw new Error(
     `Expected \`form.file.assetSources\` to be an array or a function, but received ${getPrintableType(
-      assetSources
-    )}`
+      assetSources,
+    )}`,
   )
 }
 
 export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
   prev,
   {form},
-  context
+  context,
 ) => {
   const assetSources = form?.image?.assetSources
   if (!assetSources) return prev
@@ -194,8 +194,8 @@ export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Conf
 
   throw new Error(
     `Expected \`form.image.assetSources\` to be an array or a function, but received ${getPrintableType(
-      assetSources
-    )}`
+      assetSources,
+    )}`,
   )
 }
 
@@ -217,8 +217,8 @@ export const documentLanguageFilterReducer: ConfigPropertyReducer<
 
   throw new Error(
     `Expected \`document.unstable_languageFilter\` to be an array or a function, but received ${getPrintableType(
-      resolveDocumentLanguageFilter
-    )}`
+      resolveDocumentLanguageFilter,
+    )}`,
   )
 }
 
@@ -235,7 +235,7 @@ export const documentInspectorsReducer: ConfigPropertyReducer<
 
   throw new Error(
     `Expected \`document.inspectors\` to be an array or a function, but received ${getPrintableType(
-      resolveInspectorsFilter
-    )}`
+      resolveInspectorsFilter,
+    )}`,
   )
 }

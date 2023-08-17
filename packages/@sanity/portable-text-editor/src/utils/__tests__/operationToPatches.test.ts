@@ -55,8 +55,8 @@ describe('operationToPatches', () => {
           properties: {_type: 'span', _key: 'c130395c640c', marks: []},
         },
 
-        createDefaultValue()
-      )
+        createDefaultValue(),
+      ),
     ).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -112,8 +112,8 @@ describe('operationToPatches', () => {
             children: [{_key: '1', _type: 'span', text: '', marks: []}],
           },
         },
-        createDefaultValue()
-      )
+        createDefaultValue(),
+      ),
     ).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -154,8 +154,8 @@ describe('operationToPatches', () => {
           },
         },
 
-        []
-      )
+        [],
+      ),
     ).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -196,8 +196,8 @@ describe('operationToPatches', () => {
           },
         },
 
-        createDefaultValue()
-      )
+        createDefaultValue(),
+      ),
     ).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -237,8 +237,8 @@ describe('operationToPatches', () => {
           offset: 0,
         },
 
-        createDefaultValue()
-      )
+        createDefaultValue(),
+      ),
     ).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -274,8 +274,8 @@ describe('operationToPatches', () => {
           offset: 1,
         },
 
-        before
-      )
+        before,
+      ),
     ).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -314,8 +314,8 @@ describe('operationToPatches', () => {
           },
         },
 
-        createDefaultValue()
-      )
+        createDefaultValue(),
+      ),
     ).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -345,8 +345,8 @@ describe('operationToPatches', () => {
           node: val[0],
         },
 
-        val
-      )
+        val,
+      ),
     ).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -383,8 +383,8 @@ describe('operationToPatches', () => {
           properties: {text: '1234'},
         },
 
-        val
-      )
+        val,
+      ),
     ).toMatchInlineSnapshot(`
       Array [
         Object {

@@ -30,7 +30,7 @@ const Root = styled(Card)({
 
 /** @internal */
 export function DocumentInspectorHeader(
-  props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>
+  props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {
   const {as: forwardedAs, children, closeButtonLabel, onClose, title, ...restProps} = props
 

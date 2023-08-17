@@ -22,7 +22,7 @@ import {ItemProps, ObjectItemProps} from './itemProps'
  * @hidden
  * @beta */
 export function isObjectItemProps(
-  item: ItemProps | Omit<ItemProps, 'renderDefault'>
+  item: ItemProps | Omit<ItemProps, 'renderDefault'>,
 ): item is ObjectItemProps {
   return isObjectSchemaType(item.schemaType)
 }
@@ -31,7 +31,7 @@ export function isObjectItemProps(
  * @hidden
  * @beta */
 export function isObjectInputProps(
-  inputProps: InputProps | Omit<InputProps, 'renderDefault'>
+  inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is ObjectInputProps {
   return isObjectSchemaType(inputProps.schemaType)
 }
@@ -40,7 +40,7 @@ export function isObjectInputProps(
  * @hidden
  * @beta */
 export function isStringInputProps(
-  inputProps: InputProps | Omit<InputProps, 'renderDefault'>
+  inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is StringInputProps {
   return isStringSchemaType(inputProps.schemaType)
 }
@@ -49,7 +49,7 @@ export function isStringInputProps(
  * @hidden
  * @beta */
 export function isNumberInputProps(
-  inputProps: InputProps | Omit<InputProps, 'renderDefault'>
+  inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is NumberInputProps {
   return isNumberSchemaType(inputProps.schemaType)
 }
@@ -58,7 +58,7 @@ export function isNumberInputProps(
  * @hidden
  * @beta */
 export function isBooleanInputProps(
-  inputProps: InputProps | Omit<InputProps, 'renderDefault'>
+  inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is BooleanInputProps {
   return isBooleanSchemaType(inputProps.schemaType)
 }
@@ -67,7 +67,7 @@ export function isBooleanInputProps(
  * @hidden
  * @beta */
 export function isArrayOfObjectsInputProps(
-  inputProps: InputProps | Omit<InputProps, 'renderDefault'>
+  inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is ArrayOfObjectsInputProps {
   return isArrayOfObjectsSchemaType(inputProps.schemaType)
 }
@@ -76,7 +76,7 @@ export function isArrayOfObjectsInputProps(
  * @hidden
  * @beta */
 export function isArrayOfBlocksInputProps(
-  inputProps: InputProps | Omit<InputProps, 'renderDefault'>
+  inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is ArrayOfObjectsInputProps {
   return isArrayOfBlocksSchemaType(inputProps.schemaType)
 }
@@ -85,7 +85,7 @@ export function isArrayOfBlocksInputProps(
  * @hidden
  * @beta */
 export function isArrayOfPrimitivesInputProps(
-  inputProps: InputProps | Omit<InputProps, 'renderDefault'>
+  inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is ArrayOfPrimitivesInputProps {
   return isArrayOfPrimitivesSchemaType(inputProps.schemaType)
 }

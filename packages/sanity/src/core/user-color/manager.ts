@@ -20,7 +20,7 @@ const DEFAULT_CURRENT_USER_HUE: ColorHueKey = 'purple'
 const USER_COLOR_EXCLUDE_HUES = ['green', 'red', 'gray']
 
 const defaultHues: ColorHueKey[] = COLOR_HUES.filter(
-  (hue) => !USER_COLOR_EXCLUDE_HUES.includes(hue)
+  (hue) => !USER_COLOR_EXCLUDE_HUES.includes(hue),
 )
 
 const getTints = (scheme: ThemeColorSchemeKey): Record<string, ColorTintKey> => {
@@ -36,16 +36,19 @@ const getTints = (scheme: ThemeColorSchemeKey): Record<string, ColorTintKey> => 
 const getDefaultColors = (scheme: ThemeColorSchemeKey): Record<string, UserColor> => {
   const {background, border, text} = getTints(scheme)
 
-  return defaultHues.reduce((colors, hue) => {
-    colors[hue] = {
-      name: hue,
-      background: hues[hue][background].hex,
-      border: hues[hue][border].hex,
-      text: hues[hue][text].hex,
-      tints: hues[hue],
-    }
-    return colors
-  }, {} as Record<ColorHueKey, UserColor>)
+  return defaultHues.reduce(
+    (colors, hue) => {
+      colors[hue] = {
+        name: hue,
+        background: hues[hue][background].hex,
+        border: hues[hue][border].hex,
+        text: hues[hue][text].hex,
+        tints: hues[hue],
+      }
+      return colors
+    },
+    {} as Record<ColorHueKey, UserColor>,
+  )
 }
 
 const getAnonymousColor = (scheme: ThemeColorSchemeKey): UserColor => {
@@ -80,10 +83,13 @@ export function createUserColorManager(options: UserColorManagerOptions): UserCo
   const userColorKeys: UserColorHue[] = Object.keys(userColors)
   const subscriptions = new Map<UserId, Observable<UserColor>>()
   const previouslyAssigned = new Map<UserId, UserColorHue>()
-  const assignedCounts: Record<UserColorHue, number> = userColorKeys.reduce((counts, color) => {
-    counts[color] = 0
-    return counts
-  }, {} as Record<UserColorHue, number>)
+  const assignedCounts: Record<UserColorHue, number> = userColorKeys.reduce(
+    (counts, color) => {
+      counts[color] = 0
+      return counts
+    },
+    {} as Record<UserColorHue, number>,
+  )
 
   // This isn't really needed because we're reusing subscriptions,
   // but is useful for debugging and poses a minimal overhead

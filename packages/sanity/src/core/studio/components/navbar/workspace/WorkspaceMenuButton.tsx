@@ -32,7 +32,7 @@ export function WorkspaceMenuButton(props: ButtonProps) {
 
   const popoverProps: MenuButtonProps['popover'] = useMemo(
     () => ({constrainSize: true, scheme, portal: true}),
-    [scheme]
+    [scheme],
   )
 
   return (

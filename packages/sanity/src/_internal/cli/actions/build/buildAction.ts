@@ -23,7 +23,7 @@ export interface BuildSanityStudioCommandFlags {
 export default async function buildSanityStudio(
   args: CliCommandArguments<BuildSanityStudioCommandFlags>,
   context: CliCommandContext,
-  overrides?: {basePath?: string}
+  overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
   const {output, prompt, workDir, cliConfig} = context
@@ -49,7 +49,7 @@ export default async function buildSanityStudio(
   const envVarKeys = getSanityEnvVars()
   if (envVarKeys.length > 0) {
     output.print(
-      '\nIncluding the following environment variables as part of the JavaScript bundle:'
+      '\nIncluding the following environment variables as part of the JavaScript bundle:',
     )
     envVarKeys.forEach((key) => output.print(`- ${key}`))
     output.print('')
@@ -82,7 +82,7 @@ export default async function buildSanityStudio(
 
   if (envBasePath && configBasePath) {
     output.warn(
-      `Overriding configured base path (${configBasePath}) with value from environment variable (${envBasePath})`
+      `Overriding configured base path (${configBasePath}) with value from environment variable (${envBasePath})`,
     )
   }
 

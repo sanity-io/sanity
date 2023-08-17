@@ -2,7 +2,7 @@ import {Path, StateTree, isArray} from 'sanity'
 
 export function _isPathCollapsed(
   path: Path,
-  state: StateTree<boolean> | undefined
+  state: StateTree<boolean> | undefined,
 ): boolean | undefined {
   if (!state) return undefined
 

@@ -23,7 +23,7 @@ export function UnknownFields(props: Props) {
     (fieldName: any) => {
       onChange(unset([fieldName]))
     },
-    [onChange]
+    [onChange],
   )
 
   return (

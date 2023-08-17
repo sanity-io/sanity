@@ -51,7 +51,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
         onConfirm: handleConfirm,
         message: <>Are you sure you want to discard all changes since last published?</>,
       },
-    [handleConfirm, isConfirmDialogOpen, onComplete]
+    [handleConfirm, isConfirmDialogOpen, onComplete],
   )
 
   if (!published || liveEdit) {

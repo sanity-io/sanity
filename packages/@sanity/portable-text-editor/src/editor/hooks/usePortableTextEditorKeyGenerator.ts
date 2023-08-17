@@ -17,7 +17,7 @@ export const usePortableTextEditorKeyGenerator = (): (() => string) => {
 
   if (keyGenerator === undefined) {
     throw new Error(
-      `The \`usePortableTextEditorKeyGenerator\` hook must be used inside the <PortableTextEditor> component's context.`
+      `The \`usePortableTextEditorKeyGenerator\` hook must be used inside the <PortableTextEditor> component's context.`,
     )
   }
   return keyGenerator

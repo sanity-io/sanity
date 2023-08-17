@@ -24,7 +24,7 @@ const defaultModuleNameMapper = resolveAliasPaths({
  */
 exports.createJestConfig = function createJestConfig(
   /** @type {import('@jest/types').Config.InitialOptions */
-  config = {}
+  config = {},
 ) {
   const {
     testMatch = [],
@@ -83,7 +83,7 @@ exports.createJestConfig = function createJestConfig(
  */
 function aliasesToModuleNameWrapper(
   /** @type Record<string, string | string[]> */
-  aliases
+  aliases,
 ) {
   /** @type Record<string, string | string[]> */
   const moduleNameMapper = {}
@@ -102,7 +102,7 @@ function aliasesToModuleNameWrapper(
 
 function resolveAliasPaths(
   /** @type Record<string, string> */
-  aliases
+  aliases,
 ) {
   const result = {}
 

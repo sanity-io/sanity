@@ -169,5 +169,5 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
         display: none;
       `}
     `
-  }
+  },
 )

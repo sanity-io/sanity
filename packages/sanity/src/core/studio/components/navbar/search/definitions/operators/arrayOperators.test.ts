@@ -48,7 +48,7 @@ describe('arrayOperators', () => {
     }
     const filter = arrayOperators.arrayCountRange.groqFilter({fieldPath, value})
     expect(filter).toEqual(
-      `count(${fieldPath}) > ${value.min} && count(${fieldPath}) < ${value.max}`
+      `count(${fieldPath}) > ${value.min} && count(${fieldPath}) < ${value.max}`,
     )
   })
 

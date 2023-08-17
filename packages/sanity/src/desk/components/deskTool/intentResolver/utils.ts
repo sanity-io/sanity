@@ -11,7 +11,7 @@ export function removeDraftPrefix(documentId: string): string {
     console.warn(
       'Removed unexpected draft id in document link: All links to documents should have the ' +
         '`drafts.`-prefix removed and something appears to have made an intent link to `%s`',
-      documentId
+      documentId,
     )
   }
 
@@ -21,13 +21,13 @@ export function removeDraftPrefix(documentId: string): string {
 export async function ensureDocumentIdAndType(
   documentStore: DocumentStore,
   id: string | undefined,
-  type: string | undefined
+  type: string | undefined,
 ): Promise<{id: string; type: string}> {
   if (id && type) return {id, type}
   if (!id && type) return {id: uuid(), type}
   if (id && !type) {
     const resolvedType = await firstValueFrom(
-      documentStore.resolveTypeForDocument(id) as Observable<string>
+      documentStore.resolveTypeForDocument(id) as Observable<string>,
     )
 
     return {id, type: resolvedType}

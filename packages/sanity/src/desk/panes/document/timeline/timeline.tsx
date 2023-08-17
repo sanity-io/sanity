@@ -36,7 +36,7 @@ export const Timeline = ({
 
   const selectedIndex = useMemo(
     () => (lastChunk?.id ? filteredChunks.findIndex((c) => c.id === lastChunk.id) : -1),
-    [lastChunk?.id, filteredChunks]
+    [lastChunk?.id, filteredChunks],
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<Chunk>>(
@@ -63,7 +63,7 @@ export const Timeline = ({
         </Box>
       )
     },
-    [disabledBeforeFirstChunk, filteredChunks, hasMoreChunks, onSelect, selectedIndex]
+    [disabledBeforeFirstChunk, filteredChunks, hasMoreChunks, onSelect, selectedIndex],
   )
 
   useEffect(() => setMounted(true), [])

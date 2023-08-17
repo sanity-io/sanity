@@ -22,7 +22,7 @@ export const FormCallbacksContext = React.createContext<FormCallbacksValue | nul
 
 /** @internal */
 export const FormCallbacksProvider = memo(function FormCallbacksProvider(
-  props: FormCallbacksValue & {children: React.ReactNode}
+  props: FormCallbacksValue & {children: React.ReactNode},
 ) {
   const ref = useRef<FormCallbacksValue>(props)
   ref.current = props
@@ -31,7 +31,7 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
     (patches: FormPatch[]) => {
       return ref.current?.transformPatches?.(patches) ?? []
     },
-    [ref]
+    [ref],
   )
 
   const onChange = useCallback((patchEvent: PatchEvent) => {
@@ -77,7 +77,7 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
       onSetFieldSetCollapsed,
       onSetPathCollapsed,
       transformPatches,
-    ]
+    ],
   )
 
   return (

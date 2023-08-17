@@ -23,12 +23,12 @@ export function usePreviewUrl(value: Partial<SanityDocument> | undefined): strin
         // this so that the preview URL isn't fetched on every keystroke
         debounceTime(500),
         switchMap((document) =>
-          isSanityDocument(document) ? from(resolveProductionUrl({document})) : of(undefined)
+          isSanityDocument(document) ? from(resolveProductionUrl({document})) : of(undefined),
         ),
         catchError((e) => {
           const message = isRecord(e) && typeof e.message === 'string' ? e.message : 'Unknown error'
           throw new Error(`An error was thrown while trying to get your preview url: ${message}`)
-        })
+        }),
       )
       .subscribe({
         next: setPreviewUrl,

@@ -17,7 +17,7 @@ export function MemberFieldError(props: {member: FieldError}) {
     (event: PatchEvent) => {
       onChange(PatchEvent.from(event).prefixAll(member.fieldName))
     },
-    [onChange, member.fieldName]
+    [onChange, member.fieldName],
   )
   if (member.error.type === 'INCOMPATIBLE_TYPE') {
     return (

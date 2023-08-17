@@ -23,7 +23,7 @@ function findTargetIndex(array: any[], pathSegment: PathSegment) {
 
 export default function apply(
   value: any,
-  patch: {type: any; path: any; value: any; position: any; items: any}
+  patch: {type: any; path: any; value: any; position: any; items: any},
 ) {
   const nextValue = value.slice() // make a copy for internal mutation
 
@@ -48,8 +48,8 @@ export default function apply(
         // eslint-disable-line max-depth
         throw new Error(
           `Invalid value of 'move' patch. Expected a value with "from" and "to" indexes, instead got: ${JSON.stringify(
-            patch.value
-          )}`
+            patch.value,
+          )}`,
         )
       }
       return move(nextValue, patch.value.from, patch.value.to)

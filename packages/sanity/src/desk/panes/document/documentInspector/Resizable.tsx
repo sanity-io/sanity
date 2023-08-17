@@ -15,7 +15,7 @@ const Root = styled(Box)`
 `
 
 export function Resizable(
-  props: ResizableProps & BoxProps & Omit<HTMLProps<HTMLDivElement>, 'as'>
+  props: ResizableProps & BoxProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {as: forwardedAs, children, minWidth, maxWidth, ...restProps} = props
   const [element, setElement] = useState<HTMLDivElement | null>(null)
@@ -34,12 +34,12 @@ export function Resizable(
 
       setTargetWidth(Math.min(Math.max(w - deltaX, minWidth), maxWidth))
     },
-    [minWidth, maxWidth]
+    [minWidth, maxWidth],
   )
 
   const style = useMemo(
     () => (targetWidth ? {flex: 'none', width: targetWidth} : {minWidth, maxWidth}),
-    [minWidth, maxWidth, targetWidth]
+    [minWidth, maxWidth, targetWidth],
   )
 
   return (

@@ -104,7 +104,7 @@ function getPairPermissions({
           'create draft document from published version',
           checkDocumentPermission(
             'create',
-            published && {...published, _id: getDraftId(published._id)}
+            published && {...published, _id: getDraftId(published._id)},
           ),
         ],
       ]
@@ -197,12 +197,12 @@ export function getDocumentPairPermissions({
   return snapshotPair(
     client,
     {draftId: getDraftId(id), publishedId: getPublishedId(id)},
-    type
+    type,
   ).pipe(
     switchMap((pair) =>
       combineLatest([pair.draft.snapshots$, pair.published.snapshots$]).pipe(
-        map(([draft, published]) => ({draft, published}))
-      )
+        map(([draft, published]) => ({draft, published})),
+      ),
     ),
     switchMap(({draft, published}) => {
       const pairPermissions = getPairPermissions({
@@ -218,8 +218,8 @@ export function getDocumentPairPermissions({
             reason: granted ? '' : `not allowed to ${label}: ${reason}`,
             label,
             permission,
-          }))
-        )
+          })),
+        ),
       )
 
       if (!pairPermissions.length) return of({granted: true, reason: ''})
@@ -235,9 +235,9 @@ export function getDocumentPairPermissions({
                 .join('\n\t')}`
 
           return {granted, reason}
-        })
+        }),
       )
-    })
+    }),
   )
 }
 
@@ -266,7 +266,7 @@ export function getDocumentPairPermissions({
  * @internal
  */
 export const useDocumentPairPermissionsFromHookFactory = createHookFromObservableFactory(
-  getDocumentPairPermissions
+  getDocumentPairPermissions,
 )
 
 /** @internal */
@@ -288,13 +288,13 @@ export function useDocumentPairPermissions({
   const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])
   const grantsStore = useMemo(
     () => overrideGrantsStore || defaultGrantsStore,
-    [defaultGrantsStore, overrideGrantsStore]
+    [defaultGrantsStore, overrideGrantsStore],
   )
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
       () => ({client, schema, grantsStore, id, permission, type}),
-      [client, grantsStore, id, permission, schema, type]
-    )
+      [client, grantsStore, id, permission, schema, type],
+    ),
   )
 }

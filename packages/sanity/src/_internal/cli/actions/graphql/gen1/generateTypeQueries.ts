@@ -15,13 +15,13 @@ function pluralizeTypeName(name: string): string {
 
 export function generateTypeQueries(
   types: (ConvertedType | ConvertedUnion)[],
-  filters: InputObjectType[]
+  filters: InputObjectType[],
 ): QueryDefinition[] {
   const queries: QueryDefinition[] = []
   const queryable = types
     .filter(isNonUnion)
     .filter(
-      (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
+      (type) => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document'),
     )
 
   // Single ID-based result lookup queries

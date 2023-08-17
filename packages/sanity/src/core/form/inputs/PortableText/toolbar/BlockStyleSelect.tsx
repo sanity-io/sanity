@@ -65,7 +65,7 @@ const emptyStyle: BlockStyleItem = {
 }
 
 export const BlockStyleSelect = memo(function BlockStyleSelect(
-  props: BlockStyleSelectProps
+  props: BlockStyleSelectProps,
 ): JSX.Element {
   const {disabled, items: itemsProp} = props
   const editor = usePortableTextEditor()
@@ -106,7 +106,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         })
       }
     },
-    [editor, focusBlock]
+    [editor, focusBlock],
   )
 
   const renderOption = useCallback((style: string, title: string) => {
@@ -131,7 +131,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         text={menuButtonText}
       />
     ),
-    [_disabled, menuButtonText]
+    [_disabled, menuButtonText],
   )
 
   const menu = useMemo(
@@ -151,7 +151,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         })}
       </Menu>
     ),
-    [_disabled, activeItems, handleChange, items, renderOption]
+    [_disabled, activeItems, handleChange, items, renderOption],
   )
 
   return (

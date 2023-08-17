@@ -50,7 +50,7 @@ function DelegateBorder({children}: {children?: ReactNode | undefined}) {
 }
 
 export function DelegatedUniversalArrayInput(
-  props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps
+  props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps,
 ) {
   return (
     <DelegateBorder>
@@ -60,7 +60,7 @@ export function DelegatedUniversalArrayInput(
 }
 
 export function DelegatedArrayOfOptionsInput(
-  props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps
+  props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps,
 ) {
   return (
     <DelegateBorder>

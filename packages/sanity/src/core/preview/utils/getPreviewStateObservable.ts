@@ -22,18 +22,18 @@ export function getPreviewStateObservable(
   documentPreviewStore: DocumentPreviewStore,
   schemaType: SchemaType,
   documentId: string,
-  title: React.ReactNode
+  title: React.ReactNode,
 ): Observable<PreviewState> {
   const draft$ = isLiveEditEnabled(schemaType)
     ? of({snapshot: null})
     : documentPreviewStore.observeForPreview(
         {_type: 'reference', _ref: getDraftId(documentId)},
-        schemaType
+        schemaType,
       )
 
   const published$ = documentPreviewStore.observeForPreview(
     {_type: 'reference', _ref: getPublishedId(documentId)},
-    schemaType
+    schemaType,
   )
 
   return combineLatest([draft$, published$]).pipe(
@@ -42,6 +42,6 @@ export function getPreviewStateObservable(
       isLoading: false,
       published: published.snapshot ? {title, ...(published.snapshot || {})} : null,
     })),
-    startWith({draft: null, isLoading: true, published: null})
+    startWith({draft: null, isLoading: true, published: null}),
   )
 }

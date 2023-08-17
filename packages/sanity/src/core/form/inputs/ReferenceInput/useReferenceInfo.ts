@@ -30,7 +30,7 @@ type GetReferenceInfo = (id: string) => Observable<ReferenceInfo>
 
 export function useReferenceInfo(
   id: string | undefined,
-  getReferenceInfo: GetReferenceInfo
+  getReferenceInfo: GetReferenceInfo,
 ): Loadable<ReferenceInfo> {
   // NOTE: this is a small message queue to handle retries
   const msgSubject = useMemo(() => new Subject<{type: 'retry'}>(), [])
@@ -59,13 +59,13 @@ export function useReferenceInfo(
                 catchError((err: Error) => {
                   console.error(err)
                   return of({isLoading: false, result: undefined, error: err, retry} as const)
-                })
+                }),
               )
-            : of(EMPTY_STATE)
-        )
+            : of(EMPTY_STATE),
+        ),
       ),
     [getReferenceInfo, id, msg$, retry],
-    INITIAL_LOADING_STATE
+    INITIAL_LOADING_STATE,
   )
 
   // @todo test and see if this were fixed in `react-rx@2.1.x`

@@ -28,7 +28,7 @@ export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<Res
     ({schemaTypes, ...api}): ResolvedSourceProperties => ({
       schema: createSchema({name: 'default', types: schemaTypes.filter(isCustomType)}),
       ...api,
-    })
+    }),
   )
 
   return resolved

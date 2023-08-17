@@ -7,5 +7,5 @@ client
   .users.getById('me')
   .then(
     (user) => console.log(JSON.stringify({user, env: process.env}, null, 2)),
-    (err) => console.error(err)
+    (err) => console.error(err),
   )

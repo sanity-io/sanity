@@ -16,7 +16,7 @@ export function isBlockType(type: SchemaType): boolean {
  * @internal
  */
 export function isObjectFieldMember(
-  member: ObjectMember
+  member: ObjectMember,
 ): member is FieldMember<ArrayOfObjectsFormNode> {
   return member.kind === 'field' && member.field.schemaType.jsonType === 'object'
 }
@@ -25,7 +25,7 @@ export function isObjectFieldMember(
  * @internal
  */
 export function isArrayOfObjectsFieldMember(
-  member: ObjectMember
+  member: ObjectMember,
 ): member is FieldMember<ArrayOfObjectsFormNode> {
   return member.kind === 'field' && member.field.schemaType.jsonType === 'array'
 }

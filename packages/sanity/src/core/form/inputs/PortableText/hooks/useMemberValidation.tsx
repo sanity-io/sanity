@@ -20,7 +20,7 @@ export function useMemberValidation(member: BaseFormNode | undefined) {
       member?.schemaType && isBlockType(member?.schemaType)
         ? memberValidation
         : memberValidation.concat(childValidation),
-    [childValidation, member, memberValidation]
+    [childValidation, member, memberValidation],
   )
 
   const [hasError, hasWarning, hasInfo] = useMemo(
@@ -29,7 +29,7 @@ export function useMemberValidation(member: BaseFormNode | undefined) {
       validation.filter((v) => v.level === 'warning').length > 0,
       validation.filter((v) => v.level === 'info').length > 0,
     ],
-    [validation]
+    [validation],
   )
 
   const reconciled = immutableReconcile(prev.current, validation)

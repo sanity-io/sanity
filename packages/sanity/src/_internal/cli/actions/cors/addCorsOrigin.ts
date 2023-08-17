@@ -13,7 +13,7 @@ interface AddCorsOriginFlags {
 export async function addCorsOrigin(
   givenOrigin: string,
   flags: AddCorsOriginFlags,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<boolean> {
   const {apiClient, prompt, output} = context
   const origin = await (givenOrigin
@@ -84,7 +84,7 @@ function promptForCredentials(hasWildcard: boolean, context: CliCommandContext):
 
 function promptForWildcardConfirmation(
   origin: string,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<boolean> {
   const {prompt, output, chalk} = context
 

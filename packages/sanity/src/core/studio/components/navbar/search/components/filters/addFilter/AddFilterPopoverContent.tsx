@@ -24,7 +24,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
 
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTitleFilter(e.currentTarget.value),
-    [setTitleFilter]
+    [setTitleFilter],
   )
   const handleFilterClear = useCallback(() => setTitleFilter(''), [])
 
@@ -49,7 +49,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         titleFilter,
         types,
       }),
-    [documentTypesNarrowed, definitions.fields, definitions.filters, schema, titleFilter, types]
+    [documentTypesNarrowed, definitions.fields, definitions.filters, schema, titleFilter, types],
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<FilterMenuItem>>(
@@ -62,7 +62,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
       }
       return null
     },
-    [onClose]
+    [onClose],
   )
 
   const getItemDisabled = useCallback<CommandListGetItemDisabledCallback>(
@@ -73,7 +73,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         !!filters.find((f) => getFilterKey(f) === getFilterKey(filterItem.filter))
       )
     },
-    [filteredMenuItems, filters]
+    [filteredMenuItems, filters],
   )
 
   const getItemKey = useCallback(
@@ -91,7 +91,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
           return index
       }
     },
-    [filteredMenuItems]
+    [filteredMenuItems],
   )
 
   return (

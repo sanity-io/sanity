@@ -28,7 +28,7 @@ const NOT_FOUND = {
 export function getReferenceInfo(
   documentPreviewStore: DocumentPreviewStore,
   id: string,
-  referenceType: ReferenceSchemaType
+  referenceType: ReferenceSchemaType,
 ): Observable<ReferenceInfo> {
   const {publishedId, draftId} = getIdPair(id)
 
@@ -64,7 +64,7 @@ export function getReferenceInfo(
         documentPreviewStore.observeDocumentTypeFromId(publishedId),
       ]).pipe(
         // assume draft + published are always same type
-        map(([draftTypeName, publishedTypeName]) => draftTypeName || publishedTypeName)
+        map(([draftTypeName, publishedTypeName]) => draftTypeName || publishedTypeName),
       )
 
       return typeName$.pipe(
@@ -113,9 +113,9 @@ export function getReferenceInfo(
                     _id: draftId,
                     ...prepareForPreview(result, refSchemaType),
                   }
-                : undefined
+                : undefined,
             ),
-            startWith(undefined)
+            startWith(undefined),
           )
 
           const publishedPreview$ = documentPreviewStore
@@ -127,13 +127,13 @@ export function getReferenceInfo(
                       _id: publishedId,
                       ...prepareForPreview(result, refSchemaType),
                     }
-                  : undefined
+                  : undefined,
               ),
-              startWith(undefined)
+              startWith(undefined),
             )
 
           const value$ = combineLatest([draftPreview$, publishedPreview$]).pipe(
-            map(([draft, published]) => ({draft, published}))
+            map(([draft, published]) => ({draft, published})),
           )
 
           return value$.pipe(
@@ -156,11 +156,11 @@ export function getReferenceInfo(
                   published: isRecord(value.published) ? value.published : undefined,
                 },
               }
-            })
+            }),
           )
-        })
+        }),
       )
-    })
+    }),
   )
 }
 
@@ -175,11 +175,11 @@ function getCounterpartIds(collatedHits: CollatedHit[]): string[] {
     .filter(
       (collatedHit) =>
         // we're interested in hits where either draft or published is missing
-        !collatedHit.draft || !collatedHit.published
+        !collatedHit.draft || !collatedHit.published,
     )
     .map((collatedHit) =>
       // if we have the draft, return the published id or vice versa
-      collatedHit.draft ? collatedHit.id : getDraftId(collatedHit.id)
+      collatedHit.draft ? collatedHit.id : getDraftId(collatedHit.id),
     )
 }
 
@@ -193,7 +193,7 @@ export function referenceSearch(
   client: SanityClient,
   textTerm: string,
   type: ReferenceSchemaType,
-  options: ReferenceFilterSearchOptions
+  options: ReferenceFilterSearchOptions,
 ): Observable<ReferenceSearchHit[]> {
   const searchWeighted = createWeightedSearch(type.to, client, options)
   return searchWeighted(textTerm, {includeDrafts: true}).pipe(
@@ -228,8 +228,8 @@ export function referenceSearch(
                   : undefined,
             }
           })
-        })
+        }),
       )
-    })
+    }),
   )
 }

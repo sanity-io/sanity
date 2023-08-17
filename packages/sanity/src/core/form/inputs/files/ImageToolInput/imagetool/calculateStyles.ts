@@ -50,7 +50,7 @@ export function calculateStyles(options: Options = {}): CalculatedStyles {
   const result = calculateHotSpotCrop(
     imageAspect,
     {hotspot, crop},
-    {aspect: containerAspect, align}
+    {aspect: containerAspect, align},
   )
 
   const containerHeight = styleFormat(round(100 / containerAspect))
@@ -115,7 +115,7 @@ function round(num: number, decimals = 2): number {
 function calculateHotSpotCrop(
   sourceAspect: number,
   descriptor: CropAndHotspot,
-  spec: {aspect: number; align: CropAlignment}
+  spec: {aspect: number; align: CropAlignment},
 ): HotspotCropStyleResult {
   const crop = descriptor.crop
   const viewportAspect = spec.aspect
@@ -210,7 +210,7 @@ function calculateHotSpotCrop(
         break
       default:
         throw new Error(
-          `Invalid x alignment: '${alignment.x}'. Must be either 'left', 'right' or 'center'`
+          `Invalid x alignment: '${alignment.x}'. Must be either 'left', 'right' or 'center'`,
         )
     }
     const hotspotTop = hotspot.y * outCrop.height - (hotspot.height * outCrop.height) / 2
@@ -227,7 +227,7 @@ function calculateHotSpotCrop(
         break
       default:
         throw new Error(
-          `Invalid y alignment: '${alignment.y}'. Must be either 'top', 'bottom' or 'center'`
+          `Invalid y alignment: '${alignment.y}'. Must be either 'top', 'bottom' or 'center'`,
         )
     }
   } else if (cropIsTaller) {

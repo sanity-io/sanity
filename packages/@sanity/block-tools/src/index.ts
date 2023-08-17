@@ -16,7 +16,7 @@ import {BlockContentFeatures, HtmlDeserializerOptions, TypedObject} from './type
 export function htmlToBlocks(
   html: string,
   blockContentType: ArraySchemaType,
-  options: HtmlDeserializerOptions = {}
+  options: HtmlDeserializerOptions = {},
 ): (TypedObject | PortableTextTextBlock)[] {
   const deserializer = new HtmlDeserializer(blockContentType, options)
   return deserializer.deserialize(html).map((block) => normalizeBlock(block))

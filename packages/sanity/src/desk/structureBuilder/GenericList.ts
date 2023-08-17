@@ -244,7 +244,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
     templates:
       | InitialValueTemplateItem
       | InitialValueTemplateItemBuilder
-      | Array<InitialValueTemplateItem | InitialValueTemplateItemBuilder>
+      | Array<InitialValueTemplateItem | InitialValueTemplateItemBuilder>,
   ): ConcreteImpl {
     this.initialValueTemplatesSpecified = true
     return this.clone({initialValueTemplates: Array.isArray(templates) ? templates : [templates]})
@@ -271,12 +271,12 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
         `\`layout\` must be one of ${layoutOptions.map((item) => `"${item}"`).join(', ')}`,
         path,
         id || options.index,
-        this.spec.title
+        this.spec.title,
       )
     }
 
     const initialValueTemplates = (this.spec.initialValueTemplates || []).map((item, i) =>
-      maybeSerializeInitialValueTemplateItem(item, i, path)
+      maybeSerializeInitialValueTemplateItem(item, i, path),
     )
 
     return {
@@ -289,10 +289,10 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
       displayOptions: this.spec.displayOptions,
       initialValueTemplates,
       menuItems: (this.spec.menuItems || []).map((item, i) =>
-        maybeSerializeMenuItem(item, i, path)
+        maybeSerializeMenuItem(item, i, path),
       ),
       menuItemGroups: (this.spec.menuItemGroups || []).map((item, i) =>
-        maybeSerializeMenuItemGroup(item, i, path)
+        maybeSerializeMenuItemGroup(item, i, path),
       ),
     }
   }

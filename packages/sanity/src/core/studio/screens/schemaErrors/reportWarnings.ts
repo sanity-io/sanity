@@ -6,7 +6,7 @@ export function reportWarnings(schema: Schema) {
   const problemGroups = schema._validation
 
   const groupsWithWarnings = problemGroups?.filter((group) =>
-    group.problems.some((problem) => problem.severity === 'warning')
+    group.problems.some((problem) => problem.severity === 'warning'),
   )
   if (groupsWithWarnings?.length === 0) {
     return

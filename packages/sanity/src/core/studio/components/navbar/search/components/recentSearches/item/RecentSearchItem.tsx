@@ -82,7 +82,7 @@ export function RecentSearchItem({
         dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
       }
     },
-    [dispatch, index, recentSearchesStore]
+    [dispatch, index, recentSearchesStore],
   )
 
   return (

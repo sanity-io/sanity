@@ -110,7 +110,7 @@ export function TextBlock(props: TextBlockProps) {
     return presence.filter(
       (p) =>
         isEqual(p.path, path) ||
-        (p.path.slice(-3)[1] === 'children' && p.path.length - path.length === 2)
+        (p.path.slice(-3)[1] === 'children' && p.path.length - path.length === 2),
     )
   }, [path, presence])
 
@@ -240,7 +240,7 @@ export function TextBlock(props: TextBlockProps) {
       textPresence,
       validation,
       value,
-    ]
+    ],
   )
 
   const toolTipContent = useMemo(
@@ -255,7 +255,7 @@ export function TextBlock(props: TextBlockProps) {
         </TooltipBox>
       )) ||
       null,
-    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
+    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
   )
 
   return useMemo(
@@ -344,7 +344,7 @@ export function TextBlock(props: TextBlockProps) {
       toolTipContent,
       tooltipEnabled,
       value,
-    ]
+    ],
   )
 }
 

@@ -42,7 +42,7 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
   const getFieldValidation = useCallback(
     (fieldName: any) =>
       validation.filter((marker) => PathUtils.startsWith([fieldName], marker.path)),
-    [validation]
+    [validation],
   )
   const handleFieldChange = useCallback(
     (field: any, fieldPatchEvent: any) => {
@@ -51,7 +51,7 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
         .prepend(setIfMissing({_type: type.name}))
       onChange(patchEvent)
     },
-    [onChange, type]
+    [onChange, type],
   )
   const handleReferenceChange = useCallback(
     async (patchEvent: PartialPatchEvent) => {
@@ -80,7 +80,7 @@ export const LinkAnnotationInput = (props: LinkAnnotationInputProps) => {
         }
       }
     },
-    [handleFieldChange, onChange, referenceArticleField, versionedClient]
+    [handleFieldChange, onChange, referenceArticleField, versionedClient],
   )
 
   return (

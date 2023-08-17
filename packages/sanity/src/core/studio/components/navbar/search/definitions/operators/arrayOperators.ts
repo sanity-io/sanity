@@ -91,7 +91,7 @@ export const arrayOperators = {
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value?.max) && Number.isFinite(value?.min) && fieldPath
         ? `count(${fieldPath}) > ${toJSON(value?.min)} && count(${fieldPath}) < ${toJSON(
-            value?.max
+            value?.max,
           )}`
         : '',
     initialValue: null,

@@ -34,7 +34,7 @@ export type GetReferenceInfoFn = (doc: {
 
 export function useReferenceInfo(
   doc: {_id: string; _type?: string},
-  getReferenceInfo: GetReferenceInfoFn
+  getReferenceInfo: GetReferenceInfoFn,
 ): Loadable<CrossDatasetReferenceInfo> {
   const [retryAttempt, setRetryAttempt] = useState<number>(0)
 
@@ -55,7 +55,7 @@ export function useReferenceInfo(
                   error: undefined,
                   retry,
                   retryAttempt,
-                } as const)
+                }) as const,
             ),
             startWith(INITIAL_LOADING_STATE),
             catchError((err: Error) => {
@@ -67,11 +67,11 @@ export function useReferenceInfo(
                 retry,
                 retryAttempt,
               } as const)
-            })
+            }),
           )
         : of(EMPTY_STATE),
     [docInfo, getReferenceInfo, retry, retryAttempt],
-    INITIAL_LOADING_STATE
+    INITIAL_LOADING_STATE,
   )
 
   // workaround for a "bug" with useMemoObservable that doesn't

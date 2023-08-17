@@ -71,7 +71,7 @@ const missingPatchChannel: PatchChannel = {
   publish: () => undefined,
   subscribe: () => {
     console.warn(
-      'No patch channel provided to form-builder. If you need input based patch updates, please provide one'
+      'No patch channel provided to form-builder. If you need input based patch updates, please provide one',
     )
 
     return () => undefined
@@ -157,7 +157,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       patchChannel,
       unstable?.CustomMarkers,
       unstable?.Markers,
-    ]
+    ],
   )
 
   const formBuilder: FormBuilderContextValue = useMemo(
@@ -204,7 +204,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       renderItem,
       renderPreview,
       schemaType,
-    ]
+    ],
   )
 
   return (

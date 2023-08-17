@@ -19,7 +19,7 @@ import {TestRenderProps} from './types'
 const noopRenderDefault = () => <></>
 
 export type TestRenderArrayOfObjectInputCallback = (
-  inputProps: ArrayOfObjectsInputProps
+  inputProps: ArrayOfObjectsInputProps,
 ) => React.ReactElement
 
 export async function renderArrayOfObjectsInput(options: {
@@ -48,12 +48,12 @@ export async function renderArrayOfObjectsInput(options: {
 
   function transformProps(
     baseProps: TestRenderInputProps<ComplexElementProps>,
-    context: TestRenderInputContext
+    context: TestRenderInputContext,
   ): ArrayOfObjectsInputProps {
     const {focusPath, path, schemaType, value, ...restProps} = baseProps
     const {formState} = context
     const fieldMember = formState.members?.find(
-      (member) => member.kind === 'field' && member.name === fieldDefinition.name
+      (member) => member.kind === 'field' && member.name === fieldDefinition.name,
     ) as FieldMember<ArrayOfObjectsFormNode> | undefined
     const field = fieldMember?.field
 

@@ -8,7 +8,7 @@ const noopRenderDefault = () => <></>
 
 export type TestRenderNumberInputCallback = (
   inputProps: NumberInputProps,
-  context: TestRenderInputContext
+  context: TestRenderInputContext,
 ) => ReactElement
 
 export async function renderNumberInput(options: {
@@ -19,7 +19,7 @@ export async function renderNumberInput(options: {
   const {fieldDefinition, props, render: initialRender} = options
 
   function transformProps(
-    inputProps: TestRenderInputProps<PrimitiveInputElementProps>
+    inputProps: TestRenderInputProps<PrimitiveInputElementProps>,
   ): NumberInputProps {
     const {schemaType, value, ...restProps} = inputProps
 

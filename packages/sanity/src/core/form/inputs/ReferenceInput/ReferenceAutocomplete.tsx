@@ -19,7 +19,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
     searchString?: string
     portalRef?: React.RefObject<HTMLDivElement>
   },
-  ref: React.ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>,
 ) {
   const hasResults = props.options && props.options.length > 0
   const renderPopover = useCallback(
@@ -37,7 +37,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         onMouseEnter: () => void
         onMouseLeave: () => void
       },
-      contentRef: React.Ref<HTMLDivElement>
+      contentRef: React.Ref<HTMLDivElement>,
     ) => (
       <StyledPopover
         placement="bottom-start"
@@ -70,7 +70,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         matchReferenceWidth
       />
     ),
-    [hasResults, props.searchString, props.loading, props.portalRef, props.referenceElement]
+    [hasResults, props.searchString, props.loading, props.portalRef, props.referenceElement],
   )
   return <Autocomplete {...props} ref={ref} renderPopover={renderPopover} />
 })

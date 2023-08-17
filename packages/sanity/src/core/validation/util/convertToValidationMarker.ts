@@ -19,7 +19,7 @@ export function convertToValidationMarker(
     | ValidationErrorLike
     | ValidationErrorLike[],
   level: 'error' | 'warning' | 'info' | undefined,
-  context: ValidationContext
+  context: ValidationContext,
 ): ValidationMarker[] {
   if (!context) {
     throw new Error('missing context')
@@ -43,8 +43,8 @@ export function convertToValidationMarker(
     if (typeof validatorResult?.message !== 'string') {
       throw new Error(
         `${pathToString(
-          context.path
-        )}: Validator must return 'true' if valid or an error message as a string on errors`
+          context.path,
+        )}: Validator must return 'true' if valid or an error message as a string on errors`,
       )
     }
 
@@ -53,7 +53,7 @@ export function convertToValidationMarker(
     return convertToValidationMarker(
       new ValidationErrorClass(validatorResult.message, validatorResult),
       level,
-      context
+      context,
     )
   }
 
@@ -79,6 +79,6 @@ export function convertToValidationMarker(
       path: (context.path || []).concat(path),
       level: level || 'error',
       item: validatorResult,
-    }))
+    })),
   )
 }

@@ -9,7 +9,7 @@ import {useRouter} from './useRouter'
 function addScope(
   routerState: Record<string, any>,
   scope: string,
-  scopedState: Record<string, any>
+  scopedState: Record<string, any>,
 ) {
   return (
     scopedState && {
@@ -69,7 +69,7 @@ export function RouteScope(props: RouteScopeProps): React.ReactElement {
 
       return parent_resolvePathFromState(nextStateScoped)
     },
-    [parent_resolvePathFromState, parent.state, scope]
+    [parent_resolvePathFromState, parent.state, scope],
   )
 
   const navigate = useCallback(
@@ -77,7 +77,7 @@ export function RouteScope(props: RouteScopeProps): React.ReactElement {
       const nextScopedState = addScope(parent.state, scope, nextState)
       parent_navigate(nextScopedState, options)
     },
-    [parent_navigate, parent.state, scope]
+    [parent_navigate, parent.state, scope],
   )
 
   const scopedRouter: RouterContextValue = useMemo(
@@ -87,7 +87,7 @@ export function RouteScope(props: RouteScopeProps): React.ReactElement {
       resolvePathFromState,
       state: parent.state[scope] as any,
     }),
-    [navigate, parent, resolvePathFromState, scope]
+    [navigate, parent, resolvePathFromState, scope],
   )
 
   return <RouterContext.Provider value={scopedRouter}>{children}</RouterContext.Provider>

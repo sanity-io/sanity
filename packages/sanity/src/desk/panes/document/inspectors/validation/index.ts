@@ -23,7 +23,7 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
         message: item.item.message,
         path: item.path,
       })),
-    [validationMarkers]
+    [validationMarkers],
   )
 
   const hasErrors = validation.some(isValidationError)

@@ -145,7 +145,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         </>
       )
     },
-    [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading]
+    [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading],
   )
 
   const noDocumentsContent = useMemo(() => {

@@ -65,12 +65,12 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
           ] satisfies DocumentFieldActionNode[])
         : []),
     ],
-    [buttonNodes, menuNodes]
+    [buttonNodes, menuNodes],
   )
 
   const rootStyle = useMemo(
     () => ({height: 25, lineHeight: 0, display: open || focused || hovered ? undefined : 'none'}),
-    [focused, hovered, open]
+    [focused, hovered, open],
   )
 
   return (

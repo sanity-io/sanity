@@ -66,7 +66,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
 
       return false
     },
-    [actionHandlers]
+    [actionHandlers],
   )
 
   const menuNodes = useMemo(
@@ -79,7 +79,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
           // into one action button (see `initialValueTemplateItemFromMenuItems`)
           .filter((item) => item.intent?.type !== 'create'),
       }),
-    [handleAction, menuItemGroups, menuItems]
+    [handleAction, menuItemGroups, menuItems],
   )
 
   const actionNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
@@ -139,7 +139,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
     // this de-dupes create actions
     return uniqBy(
       [...initialValueTemplateItemFromMenuItems, ...initialValueTemplateItemsFromStructure],
-      (item) => hashObject([item.initialDocumentId, item.templateId, item.parameters])
+      (item) => hashObject([item.initialDocumentId, item.templateId, item.parameters]),
     )
   }, [initialValueTemplateItemFromMenuItems, initialValueTemplateItemsFromStructure])
 

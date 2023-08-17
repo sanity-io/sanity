@@ -32,8 +32,8 @@ function fixIcons(fileInfo, api) {
       j(path).replaceWith(
         j.importDeclaration(
           [j.importSpecifier(j.identifier(icon.name), j.identifier(oldName))],
-          j.literal(`react-icons/${icon.pack}`)
-        )
+          j.literal(`react-icons/${icon.pack}`),
+        ),
       )
     })
 
@@ -61,8 +61,8 @@ function fixIcons(fileInfo, api) {
       j(path).replaceWith(
         j.variableDeclarator(
           j.objectPattern([prop]),
-          j.callExpression(j.identifier('require'), [j.stringLiteral(`react-icons/${icon.pack}`)])
-        )
+          j.callExpression(j.identifier('require'), [j.stringLiteral(`react-icons/${icon.pack}`)]),
+        ),
       )
     })
 
@@ -101,6 +101,6 @@ function iconSpecFromPath(path) {
 
 function isLegacyPath(path) {
   return /^react-icons\/(lib\/)?(ai|bi|bs|cg|di|fa|fc|fi|gi|go|gr|hi|im|io|md|ri|si|src|ti|vsc|wi)/.test(
-    path
+    path,
   )
 }

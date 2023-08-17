@@ -12,7 +12,7 @@ export function useResolveInitialValueForType<Params extends Record<string, unkn
   /**
    * Params is a sanity context object passed to every initial value function.
    */
-  params: Params
+  params: Params,
 ) => Promise<any> {
   const initialValueContext = useInitialValueResolverContext()
 
@@ -22,9 +22,9 @@ export function useResolveInitialValueForType<Params extends Record<string, unkn
         type,
         params,
         DEFAULT_MAX_RECURSION_DEPTH,
-        initialValueContext
+        initialValueContext,
       )
     },
-    [initialValueContext]
+    [initialValueContext],
   )
 }

@@ -20,7 +20,7 @@ export function getIntentState(
   intent: string,
   params: Record<string, string>,
   routerState: {panes?: RouterPanes} | undefined,
-  payload: unknown
+  payload: unknown,
 ): {panes: RouterPanes} | {intent: string; params: Record<string, string>; payload: unknown} {
   const panes = routerState?.panes || []
   const activePanes = state.activePanes || []

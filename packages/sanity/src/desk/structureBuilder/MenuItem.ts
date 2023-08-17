@@ -11,7 +11,7 @@ import {StructureContext} from './types'
 export function maybeSerializeMenuItem(
   item: MenuItem | MenuItemBuilder,
   index: number,
-  path: SerializePath
+  path: SerializePath,
 ): MenuItem {
   return item instanceof MenuItemBuilder ? item.serialize({path, index}) : item
 }
@@ -70,7 +70,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
      * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
-    spec?: MenuItem
+    spec?: MenuItem,
   ) {
     this.spec = spec ? spec : {}
   }
@@ -206,7 +206,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
         '`title` is required for menu item',
         options.path,
         options.index,
-        hint
+        hint,
       ).withHelpUrl(HELP_URL.TITLE_REQUIRED)
     }
 
@@ -215,7 +215,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
         `\`action\` or \`intent\` required for menu item with title ${this.spec.title}`,
         options.path,
         options.index,
-        `"${title}"`
+        `"${title}"`,
       ).withHelpUrl(HELP_URL.ACTION_OR_INTENT_REQUIRED)
     }
 
@@ -224,7 +224,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
         'cannot set both `action` AND `intent`',
         options.path,
         options.index,
-        `"${title}"`
+        `"${title}"`,
       ).withHelpUrl(HELP_URL.ACTION_AND_INTENT_MUTUALLY_EXCLUSIVE)
     }
 
@@ -253,7 +253,7 @@ export interface SortMenuItem extends MenuItem {
 export function getOrderingMenuItem(
   context: StructureContext,
   ordering: SortOrdering,
-  extendedProjection?: string
+  extendedProjection?: string,
 ): MenuItemBuilder {
   return new MenuItemBuilder(context)
     .group('sorting')
@@ -266,7 +266,7 @@ export function getOrderingMenuItem(
 /** @internal */
 export function getOrderingMenuItemsForSchemaType(
   context: StructureContext,
-  typeName: SchemaType | string
+  typeName: SchemaType | string,
 ): MenuItemBuilder[] {
   const {schema} = context
   const type = typeof typeName === 'string' ? schema.get(typeName) : typeName
@@ -277,6 +277,6 @@ export function getOrderingMenuItemsForSchemaType(
   return (
     type.orderings ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS) : DEFAULT_ORDERING_OPTIONS
   ).map((ordering: SortOrdering) =>
-    getOrderingMenuItem(context, ordering, getExtendedProjection(type, ordering.by))
+    getOrderingMenuItem(context, ordering, getExtendedProjection(type, ordering.by)),
   )
 }

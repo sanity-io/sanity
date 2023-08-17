@@ -28,7 +28,7 @@ const UPLOAD_TEXT: UploaderDef = {
       map((content) => ({
         type: 'uploadProgress',
         patches: [set(content)],
-      }))
+      })),
     ),
 
   // Todo: promote this to a "first-class" form-builder abstraction
@@ -39,5 +39,5 @@ export const uploaders: Array<Uploader> = [UPLOAD_IMAGE, UPLOAD_TEXT, UPLOAD_FIL
   (uploader, i) => ({
     ...uploader,
     priority: i,
-  })
+  }),
 )

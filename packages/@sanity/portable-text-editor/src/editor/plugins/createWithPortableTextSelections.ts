@@ -16,11 +16,11 @@ const debugVerbose = debug.enabled && false
 // This plugin will make sure that we emit a PT selection whenever the editor has changed.
 export function createWithPortableTextSelections(
   change$: Subject<EditorChange>,
-  types: PortableTextMemberSchemaTypes
+  types: PortableTextMemberSchemaTypes,
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   let prevSelection: BaseRange | null = null
   return function withPortableTextSelections(
-    editor: PortableTextSlateEditor
+    editor: PortableTextSlateEditor,
   ): PortableTextSlateEditor {
     const emitPortableTextSelection = () => {
       if (prevSelection !== editor.selection) {
@@ -38,8 +38,8 @@ export function createWithPortableTextSelections(
         if (debugVerbose) {
           debug(
             `Emitting selection ${JSON.stringify(ptRange || null)} (${JSON.stringify(
-              editor.selection
-            )})`
+              editor.selection,
+            )})`,
           )
         }
         if (ptRange) {

@@ -62,7 +62,7 @@ export default defineType({
                         name: 'internal url',
                         invert: true,
                       }).warning(
-                        `This is not an external link. Consider using internal links instead.`
+                        `This is not an external link. Consider using internal links instead.`,
                       ),
                   },
                 ],

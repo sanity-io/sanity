@@ -19,7 +19,7 @@ export interface VirtualizerScrollInstance {
  * @internal
  */
 export const VirtualizerScrollInstanceContext = createContext<VirtualizerScrollInstance | null>(
-  null
+  null,
 )
 
 /**

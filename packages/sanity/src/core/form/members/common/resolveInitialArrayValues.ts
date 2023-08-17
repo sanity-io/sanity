@@ -23,7 +23,7 @@ function assign(values: Record<string, unknown>, path: Path) {
 export function resolveInitialArrayValues<T extends ObjectItem>(
   items: T[],
   schemaType: ArraySchemaType,
-  resolver: (type: SchemaType, params: Record<string, unknown>) => Promise<T>
+  resolver: (type: SchemaType, params: Record<string, unknown>) => Promise<T>,
 ): Observable<
   | {type: 'patch'; patches: FormPatch[]}
   | {type: 'error'; error: Error; item: T; schemaType: SchemaType}
@@ -49,16 +49,16 @@ export function resolveInitialArrayValues<T extends ObjectItem>(
                 patches: assign(initial, [itemPathSegment]),
               })),
               catchError((error) =>
-                of({type: 'error' as const, error, item, schemaType: memberType})
-              )
+                of({type: 'error' as const, error, item, schemaType: memberType}),
+              ),
             ),
             of({
               type: 'patch' as const,
               patches: [unset([itemPathSegment, '_resolvingInitialValue'])],
-            })
+            }),
           )
-        })
+        }),
       )
-    })
+    }),
   )
 }

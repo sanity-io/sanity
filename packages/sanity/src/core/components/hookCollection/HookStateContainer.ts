@@ -39,5 +39,5 @@ export const HookStateContainer = memo(
 
     return null
   },
-  (prev, next) => prev.args === next.args
+  (prev, next) => prev.args === next.args,
 )

@@ -50,12 +50,12 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
       isComparingCurrent,
       value,
     }),
-    [documentId, diff, isComparingCurrent, schemaType, value]
+    [documentId, diff, isComparingCurrent, schemaType, value],
   )
 
   const changeAnnotations = React.useMemo(
     () => (diff ? collectLatestAuthorAnnotations(diff) : []),
-    [diff]
+    [diff],
   )
 
   return (

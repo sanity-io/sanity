@@ -1,7 +1,7 @@
 export function imageUrlToBlob(
   imageUrl: string,
   format = 'image/jpeg',
-  quality = 1
+  quality = 1,
 ): Promise<Blob | null> {
   if (imageUrl.match(/^webkit-fake-url:\/\//)) {
     return Promise.reject(new Error('Cannot read image contents from webkit fake url'))

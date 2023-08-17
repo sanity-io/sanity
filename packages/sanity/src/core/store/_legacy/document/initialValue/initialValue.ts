@@ -40,21 +40,21 @@ export function getInitialValueStream(
   initialValueTemplates: Template[],
   documentPreviewStore: DocumentPreviewStore,
   opts: InitialValueOptions,
-  context: InitialValueResolverContext
+  context: InitialValueResolverContext,
 ): Observable<InitialValueMsg> {
   const draft$ = documentPreviewStore.observePaths(
     {_type: 'reference', _ref: getDraftId(opts.documentId)},
-    ['_type']
+    ['_type'],
   )
 
   const published$ = documentPreviewStore.observePaths(
     {_type: 'reference', _ref: getPublishedId(opts.documentId)},
-    ['_type']
+    ['_type'],
   )
 
   const value$ = merge(
     draft$.pipe(map((draft) => ({draft}))),
-    published$.pipe(map((published) => ({published})))
+    published$.pipe(map((published) => ({published}))),
   ).pipe(
     scan((prev, res) => ({...prev, ...res}), {}),
     // Wait until we know the state of both draft and published
@@ -63,7 +63,7 @@ export function getInitialValueStream(
     // Only update if we didn't previously have a document but we now do
     distinctUntilChanged((prev, next) => Boolean(prev) !== Boolean(next)),
     // Prevent rapid re-resolving when transitioning between different templates
-    debounceTime(25)
+    debounceTime(25),
   )
 
   return value$.pipe(
@@ -87,7 +87,7 @@ export function getInitialValueStream(
       }
 
       const initialValueWithParams$ = from(
-        resolveInitialValue(schema, template, opts.templateParams, context)
+        resolveInitialValue(schema, template, opts.templateParams, context),
       )
         .pipe(map((initialValue) => ({isResolving: false, initialValue})))
         .pipe(
@@ -103,7 +103,7 @@ export function getInitialValueStream(
             const msg: InitialValueErrorMsg = {type: 'error', error: resolveError}
 
             return of(msg)
-          })
+          }),
         )
 
       return merge(of({isResolving: true}), initialValueWithParams$).pipe(
@@ -119,11 +119,11 @@ export function getInitialValueStream(
           const msg: InitialValueSuccessMsg = {type: 'success', value: initialValue}
 
           return of(msg)
-        })
+        }),
       )
     }),
 
     startWith(LOADING_MSG),
-    distinctUntilChanged()
+    distinctUntilChanged(),
   ) as Observable<InitialValueMsg>
 }

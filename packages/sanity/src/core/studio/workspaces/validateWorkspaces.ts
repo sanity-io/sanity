@@ -43,7 +43,7 @@ export function validateNames(workspaces: WorkspaceLike[]): void {
       throw new WorkspaceValidationError(
         'All workspaces must have a `name`, unless only a single workspace is defined. ' +
           `Workspace ${thisIdentifier} did not define a \`name\`.`,
-        {workspace, index}
+        {workspace, index},
       )
     }
 
@@ -52,7 +52,7 @@ export function validateNames(workspaces: WorkspaceLike[]): void {
     if (typeof name !== 'string') {
       throw new WorkspaceValidationError(
         `Workspace at index ${index} defined an invalid \`name\` - must be a string.`,
-        {workspace, index}
+        {workspace, index},
       )
     }
 
@@ -62,12 +62,12 @@ export function validateNames(workspaces: WorkspaceLike[]): void {
     if (existingWorkspace) {
       const prevIdentifier = getNamelessWorkspaceIdentifier(
         existingWorkspace.workspace.title,
-        existingWorkspace.index
+        existingWorkspace.index,
       )
       throw new WorkspaceValidationError(
         `\`name\`s must be unique. Workspace ${prevIdentifier} and ` +
           `workspace ${thisIdentifier} both have the \`name\` \`${name}\``,
-        {workspace, index}
+        {workspace, index},
       )
     }
 
@@ -78,7 +78,7 @@ export function validateNames(workspaces: WorkspaceLike[]): void {
         `All workspace \`name\`s must consist of only a-z, 0-9, underscore and dashes, ` +
           `and cannot begin with an underscore or dash. ` +
           `Workspace ${thisIdentifier} has the invalid name \`${name}\``,
-        {workspace, index}
+        {workspace, index},
       )
     }
   })
@@ -116,16 +116,16 @@ export function validateBasePaths(workspaces: WorkspaceLike[]): void {
       throw new WorkspaceValidationError(
         `All workspace \`basePath\`s must have the same amount of segments. Workspace \`${getWorkspaceIdentifier(
           firstWorkspace,
-          index
+          index,
         )}\` had ${firstWorkspaceSegmentCount} segment${
           firstWorkspaceSegmentCount === 1 ? '' : 's'
         } \`${firstWorkspace.basePath}\` but workspace \`${getWorkspaceIdentifier(
           workspace,
-          index
+          index,
         )}\` had ${workspaceSegmentCount} segment${workspaceSegmentCount === 1 ? '' : 's'} \`${
           workspace.basePath
         }\``,
-        {workspace, index}
+        {workspace, index},
       )
     }
   })
@@ -140,9 +140,9 @@ export function validateBasePaths(workspaces: WorkspaceLike[]): void {
         `\`basePath\`s must be unique. Workspaces \`${existingWorkspace}\` and ` +
           `\`${getWorkspaceIdentifier(
             workspace,
-            index
+            index,
           )}\` both have the \`basePath\` \`${basePath}\``,
-        {workspace, index}
+        {workspace, index},
       )
     }
 
@@ -160,14 +160,14 @@ function hasBasePath(workspace: WorkspaceLike, index: number) {
     throw new WorkspaceValidationError(
       `If more than one workspace is defined, every workspace must have a \`basePath\` defined. ` +
         `Workspace \`${name}\` is missing a \`basePath\``,
-      {workspace, index}
+      {workspace, index},
     )
   }
 
   throw new WorkspaceValidationError(
     `If more than one workspace is defined, every workspace must have a \`basePath\` defined. ` +
       `Workspace \`${name}\` has an invalid \`basePath\` (must be a non-empty string)`,
-    {workspace, index}
+    {workspace, index},
   )
 }
 
@@ -186,7 +186,7 @@ function validateBasePath(workspace: WorkspaceLike, index: number) {
         `consist of only URL safe characters, ` +
         `and cannot end with a trailing \`/\`. ` +
         `Workspace \`${name}\`'s basePath is \`${basePath}\``,
-      {workspace, index}
+      {workspace, index},
     )
   }
 }

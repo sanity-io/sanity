@@ -6,7 +6,7 @@ import {useDocumentPreviewStore} from '../../datastores'
 /** @internal */
 export function useDocumentValues<T = Record<string, unknown>>(
   documentId: string,
-  paths: string[]
+  paths: string[],
 ): LoadableState<T | undefined> {
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -15,10 +15,10 @@ export function useDocumentValues<T = Record<string, unknown>>(
       documentId
         ? (documentPreviewStore.observePaths(
             {_type: 'reference', _ref: documentId},
-            paths
+            paths,
           ) as Observable<T>)
         : of(undefined),
-    [documentId, documentPreviewStore, paths]
+    [documentId, documentPreviewStore, paths],
   )
 
   return useLoadable(documentValues$)

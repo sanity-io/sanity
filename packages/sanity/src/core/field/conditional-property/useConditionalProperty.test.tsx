@@ -50,7 +50,7 @@ describe('Conditional property resolver', () => {
           checkProperty: callbackFn,
           ...DEFAULT_PROPS,
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
 
     expect(callbackFn).toBeCalled()
@@ -66,7 +66,7 @@ describe('Conditional property resolver', () => {
           checkProperty: jest.fn(() => true),
           ...DEFAULT_PROPS,
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBeTruthy()
   })
@@ -79,7 +79,7 @@ describe('Conditional property resolver', () => {
           checkProperty: jest.fn(() => false),
           ...DEFAULT_PROPS,
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBe(false)
   })
@@ -92,7 +92,7 @@ describe('Conditional property resolver', () => {
           checkProperty: jest.fn(({document}) => document?.title !== 'Hello world'),
           ...DEFAULT_PROPS,
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBeFalsy()
   })
@@ -105,7 +105,7 @@ describe('Conditional property resolver', () => {
           checkProperty: jest.fn(({document}) => Boolean(document?.isPublished)),
           ...DEFAULT_PROPS,
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBeTruthy()
   })
@@ -119,11 +119,11 @@ describe('Conditional property resolver', () => {
           checkProperty: jest.fn(() => undefined) as any,
           ...DEFAULT_PROPS,
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBe(undefined)
     expect(consoleSpy).toHaveBeenCalledWith(
-      'The `testKey` option is or returned `undefined`. `testKey` should return a boolean.'
+      'The `testKey` option is or returned `undefined`. `testKey` should return a boolean.',
     )
   })
 
@@ -136,7 +136,7 @@ describe('Conditional property resolver', () => {
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBeTruthy()
   })
@@ -150,7 +150,7 @@ describe('Conditional property resolver', () => {
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBeFalsy()
   })
@@ -161,12 +161,12 @@ describe('Conditional property resolver', () => {
       () =>
         useConditionalProperty({
           checkProperty: jest.fn(
-            ({currentUser}) => !currentUser?.roles.some((role) => role.name === 'developer')
+            ({currentUser}) => !currentUser?.roles.some((role) => role.name === 'developer'),
           ),
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBeTruthy()
   })
@@ -177,12 +177,12 @@ describe('Conditional property resolver', () => {
       () =>
         useConditionalProperty({
           checkProperty: jest.fn(({currentUser}) =>
-            Boolean(currentUser?.roles.some((role) => role.name === 'administrator'))
+            Boolean(currentUser?.roles.some((role) => role.name === 'administrator')),
           ),
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBeTruthy()
   })
@@ -198,7 +198,7 @@ describe('Conditional property resolver', () => {
           parent: dummyDocument.venue,
           checkProperty: jest.fn(({parent}) => Boolean(parent.location)),
         }),
-      {wrapper: TestWrapper}
+      {wrapper: TestWrapper},
     )
     expect(result.current).toBeTruthy()
   })

@@ -36,7 +36,7 @@ function PopoverDialogContent(props: {dialog: DocumentActionPopoverDialogProps})
     (event: any) => {
       if (event.key === 'Escape' && isTopLayer) onClose()
     },
-    [isTopLayer, onClose]
+    [isTopLayer, onClose],
   )
 
   useClickOutside(handleClickOutside, [element])

@@ -11,7 +11,7 @@ interface TypePillsProps {
 export function DocumentTypesPill({availableCharacters, types}: TypePillsProps) {
   const title = useMemo(
     () => documentTypesTruncated({availableCharacters, types}),
-    [availableCharacters, types]
+    [availableCharacters, types],
   )
 
   return (

@@ -30,7 +30,7 @@ export function SourceProvider({children, ...props}: SourceProviderProps) {
   }
 
   throw new Error(
-    'Invalid props passed into SourceProvider. A `name` or a `source` object is required.'
+    'Invalid props passed into SourceProvider. A `name` or a `source` object is required.',
   )
 }
 

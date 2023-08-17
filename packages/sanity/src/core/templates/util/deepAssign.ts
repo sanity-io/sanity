@@ -4,7 +4,7 @@ import {isRecord} from './isRecord'
 // note: doesn't mutate target
 export default function deepAssign(
   target: Record<string, unknown>,
-  source: Record<string, unknown>
+  source: Record<string, unknown>,
 ): Record<string, unknown> {
   const result = {...target, ...source}
 

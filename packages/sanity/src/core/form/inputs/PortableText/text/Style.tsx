@@ -9,7 +9,7 @@ export const Style = (props: BlockStyleRenderProps) => {
     () =>
       (block.style && TEXT_STYLES[block.style] ? TEXT_STYLES[block.style] : TEXT_STYLES[0]) ||
       FallbackComponent,
-    [block.style]
+    [block.style],
   )
 
   const DefaultComponent = useCallback(
@@ -22,7 +22,7 @@ export const Style = (props: BlockStyleRenderProps) => {
         </DefaultComponentWithFallback>
       )
     },
-    [DefaultComponentWithFallback, block.style]
+    [DefaultComponentWithFallback, block.style],
   )
 
   return useMemo(() => {

@@ -116,7 +116,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
         description: error.message,
       })
     },
-    [toast]
+    [toast],
   )
 
   const handleDeleteSuccess = useCallback(() => {
@@ -161,7 +161,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
         handleToggleUsageDialog()
       }
     },
-    [handleConfirmDelete, handleToggleUsageDialog]
+    [handleConfirmDelete, handleToggleUsageDialog],
   )
 
   // const {asset, onClick, onKeyPress, isSelected} = props

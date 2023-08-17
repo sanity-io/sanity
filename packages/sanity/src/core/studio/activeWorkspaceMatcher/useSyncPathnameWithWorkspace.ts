@@ -12,7 +12,7 @@ import {useNormalizedWorkspaces} from './useNormalizedWorkspaces'
  */
 export function useSyncPathnameWithWorkspace(
   history: RouterHistory,
-  _workspaces: WorkspacesContextValue
+  _workspaces: WorkspacesContextValue,
 ): MatchWorkspaceResult {
   // Workspaces changes infrequently, but router matching can fire a lot. And so there's value in memoizing the normalized
   // to avoid creating new arrays on every render.
@@ -53,6 +53,6 @@ export function useSyncPathnameWithWorkspace(
     store.getSnapshot,
     store.getServerSnapshot,
     store.selector,
-    store.isEqual
+    store.isEqual,
   )
 }

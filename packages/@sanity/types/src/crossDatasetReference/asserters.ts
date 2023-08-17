@@ -3,7 +3,7 @@ import type {CrossDatasetReferenceValue} from './types'
 
 /** @beta */
 export function isCrossDatasetReference(
-  reference: unknown
+  reference: unknown,
 ): reference is CrossDatasetReferenceValue {
   return (
     isObject(reference) &&

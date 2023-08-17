@@ -58,7 +58,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         button?.focus()
       }
     },
-    [button, handleClose, open]
+    [button, handleClose, open],
   )
 
   useClickOutside(handleClickOutside, [button, popover])
@@ -79,7 +79,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         })
       }
     },
-    [setTimelineMode, setTimelineRange, timelineStore, toast]
+    [setTimelineMode, setTimelineRange, timelineStore, toast],
   )
 
   const selectSince = useCallback(
@@ -97,7 +97,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         })
       }
     },
-    [setTimelineMode, setTimelineRange, timelineStore, toast]
+    [setTimelineMode, setTimelineRange, timelineStore, toast],
   )
 
   const handleLoadMore = useCallback(() => {

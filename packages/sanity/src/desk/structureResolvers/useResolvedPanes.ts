@@ -35,7 +35,7 @@ function useRouterPanesStream() {
       routerStateSubject
         .asObservable()
         .pipe(map((_routerState) => (_routerState?.panes || []) as RouterPanes)),
-    [routerStateSubject]
+    [routerStateSubject],
   )
   const {state: routerState} = useRouter()
   useEffect(() => {
@@ -108,7 +108,7 @@ export function useResolvedPanes(): Panes {
           routerPanes,
           resolvedPanes: paneDataItems.map((pane) => pane.pane),
         }
-      })
+      }),
     )
 
     const subscription = resolvedPanes$.subscribe({

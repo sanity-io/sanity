@@ -21,6 +21,6 @@ export function useScrollSelectionIntoView(scrollElement: HTMLElement | null) {
           })
         }
       },
-    [scrollElement]
+    [scrollElement],
   )
 }

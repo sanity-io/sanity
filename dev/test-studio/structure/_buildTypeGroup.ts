@@ -21,7 +21,7 @@ const TYPE_GROUP_SUPPORTED_INTENTS = ['create', 'edit', 'setLayout']
 export function _buildTypeGroup(
   S: StructureBuilder,
   schema: Schema,
-  opts: TypeGroupOpts
+  opts: TypeGroupOpts,
 ): ListItemBuilder {
   const {groups = [], icon, id, title, types, defaultLayout} = opts
 
@@ -66,10 +66,10 @@ export function _buildTypeGroup(
                         .title(schemaType.title || typeName)
                         .schemaType(schemaType)
                         .filter(`_type == $type`)
-                        .params({type: typeName})
+                        .params({type: typeName}),
                     )
-                })
-            )
-        )
+                }),
+            ),
+        ),
     )
 }

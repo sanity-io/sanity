@@ -36,7 +36,7 @@ export type SearchFieldDefinitionDictionary = Record<
 
 export function createFieldDefinitions(
   schema: Schema,
-  filterDefinitions: SearchFilterDefinition[]
+  filterDefinitions: SearchFilterDefinition[],
 ): SearchFieldDefinition[] {
   // Get allowed document types (`__experimental_omnisearch_visibility !== false`)
   const searchableDocumentTypeNames = getSearchableOmnisearchTypes(schema).map((s) => s.name)
@@ -45,7 +45,7 @@ export function createFieldDefinitions(
   const {documentTypes, objectTypes} = (schema._original?.types || [])
     // Ignore document types hidden by omnisearch
     .filter((t) =>
-      isDocumentObjectDefinition(t) ? searchableDocumentTypeNames.includes(t.name) : true
+      isDocumentObjectDefinition(t) ? searchableDocumentTypeNames.includes(t.name) : true,
     )
     // Ignore the 'slug' object to prevent surfacing 'current' and (deprecated) 'source field' fields.
     .filter((schemaType) => schemaType.name !== 'slug')
@@ -65,7 +65,7 @@ export function createFieldDefinitions(
         }
         return acc
       },
-      {documentTypes: {}, objectTypes: {}}
+      {documentTypes: {}, objectTypes: {}},
     ) || {documentTypes: {}, objectTypes: {}}
 
   // Get supported filter field types that have corresponding filters defined
@@ -75,7 +75,7 @@ export function createFieldDefinitions(
 }
 
 export function createFieldDefinitionDictionary(
-  fieldDefinitions: SearchFieldDefinition[]
+  fieldDefinitions: SearchFieldDefinition[],
 ): SearchFieldDefinitionDictionary {
   return fieldDefinitions.reduce<SearchFieldDefinitionDictionary>((acc, val) => {
     acc[val.id] = val
@@ -90,7 +90,7 @@ export function generateFieldId(field: SearchFieldDefinition): string {
 function getDocumentFieldDefinitions(
   supportedFieldTypes: string[],
   documentTypes: Record<string, ObjectDefinition>,
-  objectTypes: Record<string, ObjectDefinition>
+  objectTypes: Record<string, ObjectDefinition>,
 ) {
   // Recursively iterate through all documents and resolve objects
   function addFieldDefinitionRecursive({
@@ -132,7 +132,7 @@ function getDocumentFieldDefinitions(
           documentType,
           prevFieldPath: fieldPath,
           prevTitlePath: titlePath,
-        })
+        }),
       )
       return
     }
@@ -165,7 +165,7 @@ function getDocumentFieldDefinitions(
     }, [])
     .reduce<SearchFieldDefinition[]>((acc, val) => {
       const prevIndex = acc.findIndex(
-        (v) => v.fieldPath === val.fieldPath && v.title === val.title && v.type === val.type
+        (v) => v.fieldPath === val.fieldPath && v.title === val.title && v.type === val.type,
       )
       if (prevIndex > -1) {
         acc[prevIndex] = {
@@ -208,7 +208,7 @@ function isArrayDefinition(schemaType: SchemaTypeDefinition): schemaType is Arra
 }
 
 function isDocumentObjectDefinition(
-  schemaType: SchemaTypeDefinition
+  schemaType: SchemaTypeDefinition,
 ): schemaType is ObjectDefinition {
   return schemaType.type === 'document'
 }

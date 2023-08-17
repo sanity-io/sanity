@@ -102,8 +102,8 @@ export function Editor(props: EditorProps) {
           onToggleFullscreen()
         }
       },
-      [onToggleFullscreen, isFullscreen, isTopLayer]
-    )
+      [onToggleFullscreen, isFullscreen, isTopLayer],
+    ),
   )
 
   const renderPlaceholder = useCallback(() => <>Empty</>, [])
@@ -158,14 +158,14 @@ export function Editor(props: EditorProps) {
       renderPlaceholder,
       scrollSelectionIntoView,
       spellcheck,
-    ]
+    ],
   )
 
   const handleToolBarOnMemberOpen = useCallback(
     (relativePath: Path) => {
       onItemOpen(path.concat(relativePath))
     },
-    [onItemOpen, path]
+    [onItemOpen, path],
   )
 
   return (

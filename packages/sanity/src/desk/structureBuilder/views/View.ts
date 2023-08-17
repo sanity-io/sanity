@@ -84,7 +84,7 @@ export abstract class GenericViewBuilder<TView extends Partial<BaseView>, Concre
       throw new SerializeError(
         '`id` is required for view item',
         options.path,
-        options.index
+        options.index,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
@@ -92,7 +92,7 @@ export abstract class GenericViewBuilder<TView extends Partial<BaseView>, Concre
       throw new SerializeError(
         '`title` is required for view item',
         options.path,
-        options.index
+        options.index,
       ).withHelpUrl(HELP_URL.TITLE_REQUIRED)
     }
 
@@ -118,7 +118,7 @@ function isSerializable(view: BaseView | Serializable<BaseView>): view is Serial
 export function maybeSerializeView(
   item: View | Serializable<View>,
   index: number,
-  path: SerializePath
+  path: SerializePath,
 ): View {
   return isSerializable(item) ? item.serialize({path, index}) : item
 }

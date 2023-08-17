@@ -17,7 +17,7 @@ type Exif = {
 export function uploadImage(
   client: SanityClient,
   file: File,
-  options?: UploadOptions
+  options?: UploadOptions,
 ): Observable<UploadProgressEvent> {
   const upload$ = uploadImageAsset(client, file, options).pipe(
     filter((event: any) => event.stage !== 'download'),
@@ -38,31 +38,31 @@ export function uploadImage(
         set(event.percent, [UPLOAD_STATUS_KEY, 'progress']),
         set(new Date().toISOString(), [UPLOAD_STATUS_KEY, 'updatedAt']),
       ])
-    })
+    }),
   )
 
   const setPreviewUrl$ = readExif(file).pipe(
     mergeMap((exifData: unknown) =>
-      rotateImage(file, (exifData as Exif).orientation || DEFAULT_ORIENTATION)
+      rotateImage(file, (exifData as Exif).orientation || DEFAULT_ORIENTATION),
     ),
     catchError((error) => {
       // eslint-disable-next-line no-console
       console.warn(
         'Image preprocessing failed for "%s" with the error: %s',
         file.name,
-        error.message
+        error.message,
       )
 
       // something went wrong, but continue still
       return of(null)
     }),
     filter(Boolean),
-    map((imageUrl) => createUploadEvent([set(imageUrl, [UPLOAD_STATUS_KEY, 'previewImage'])]))
+    map((imageUrl) => createUploadEvent([set(imageUrl, [UPLOAD_STATUS_KEY, 'previewImage'])])),
   )
 
   return concat(
     of(createInitialUploadEvent(file)),
     merge(upload$, setPreviewUrl$),
-    of(CLEANUP_EVENT)
+    of(CLEANUP_EVENT),
   )
 }

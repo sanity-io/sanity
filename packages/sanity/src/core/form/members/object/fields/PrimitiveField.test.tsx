@@ -30,7 +30,7 @@ describe('PrimitiveField', () => {
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
         />,
-        {wrapper: TestWrapper}
+        {wrapper: TestWrapper},
       )
 
       // Then
@@ -50,7 +50,7 @@ describe('PrimitiveField', () => {
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
         />,
-        {wrapper: TestWrapper}
+        {wrapper: TestWrapper},
       )
 
       // Then
@@ -70,7 +70,7 @@ describe('PrimitiveField', () => {
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
         />,
-        {wrapper: TestWrapper}
+        {wrapper: TestWrapper},
       )
 
       // Then
@@ -89,7 +89,7 @@ describe('PrimitiveField', () => {
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
         />,
-        {wrapper: TestWrapper}
+        {wrapper: TestWrapper},
       )
 
       // When
@@ -98,15 +98,15 @@ describe('PrimitiveField', () => {
       // Then
       expect(formCallbacks.onChange).toHaveBeenNthCalledWith(
         1,
-        PatchEvent.from(set(1)).prefixAll(member.name)
+        PatchEvent.from(set(1)).prefixAll(member.name),
       )
       expect(formCallbacks.onChange).toHaveBeenNthCalledWith(
         2,
-        PatchEvent.from(set(1)).prefixAll(member.name)
+        PatchEvent.from(set(1)).prefixAll(member.name),
       )
       expect(formCallbacks.onChange).toHaveBeenNthCalledWith(
         3,
-        PatchEvent.from(set(1.01)).prefixAll(member.name)
+        PatchEvent.from(set(1.01)).prefixAll(member.name),
       )
     })
 
@@ -120,7 +120,7 @@ describe('PrimitiveField', () => {
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
         />,
-        {wrapper: TestWrapper}
+        {wrapper: TestWrapper},
       )
 
       // When
@@ -131,7 +131,7 @@ describe('PrimitiveField', () => {
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
-        />
+        />,
       )
 
       // Then
@@ -150,7 +150,7 @@ describe('PrimitiveField', () => {
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
         />,
-        {wrapper: TestWrapper}
+        {wrapper: TestWrapper},
       )
 
       // When
@@ -162,7 +162,7 @@ describe('PrimitiveField', () => {
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
-        />
+        />,
       )
 
       // Then
@@ -181,7 +181,7 @@ describe('PrimitiveField', () => {
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
         />,
-        {wrapper: TestWrapper}
+        {wrapper: TestWrapper},
       )
 
       // When

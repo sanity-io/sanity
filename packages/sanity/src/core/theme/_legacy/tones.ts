@@ -70,32 +70,32 @@ export function buildLegacyTones(legacyPalette: LegacyPalette): LegacyTones {
         default: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.gray.base,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         transparent: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.gray.base,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         primary: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.state.info.fg,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         positive: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.state.success.fg,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         caution: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.state.warning.fg,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         critical: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.state.danger.fg,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
       },
       navbar: {
@@ -106,32 +106,32 @@ export function buildLegacyTones(legacyPalette: LegacyPalette): LegacyTones {
         default: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.gray.base,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         transparent: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.gray.base,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         primary: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.state.info.fg,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         positive: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.state.success.fg,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         caution: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.state.warning.fg,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         critical: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.state.danger.fg,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
       },
     },
@@ -144,32 +144,32 @@ export function buildLegacyTones(legacyPalette: LegacyPalette): LegacyTones {
         default: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.defaultButton.default.base,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         transparent: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.defaultButton.default.base,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         primary: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.defaultButton.primary.base,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         positive: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.defaultButton.success.base,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         caution: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.defaultButton.warning.base,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
         critical: _buildTints(
           legacyPalette.component.bg,
           legacyPalette.defaultButton.danger.base,
-          legacyPalette.component.fg
+          legacyPalette.component.fg,
         ),
       },
       navbar: {
@@ -180,32 +180,32 @@ export function buildLegacyTones(legacyPalette: LegacyPalette): LegacyTones {
         default: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.defaultButton.default.base,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         transparent: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.defaultButton.default.base,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         primary: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.defaultButton.primary.base,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         positive: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.defaultButton.success.base,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         caution: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.defaultButton.warning.base,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
         critical: _buildTints(
           legacyPalette.mainNavigation.bg,
           legacyPalette.defaultButton.danger.base,
-          legacyPalette.mainNavigation.fg
+          legacyPalette.mainNavigation.fg,
         ),
       },
     },

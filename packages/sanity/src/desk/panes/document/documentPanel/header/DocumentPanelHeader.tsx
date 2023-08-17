@@ -22,7 +22,7 @@ export interface DocumentPanelHeaderProps {}
 export const DocumentPanelHeader = memo(
   forwardRef(function DocumentPanelHeader(
     _props: DocumentPanelHeaderProps,
-    ref: React.ForwardedRef<HTMLDivElement>
+    ref: React.ForwardedRef<HTMLDivElement>,
   ) {
     const {
       onMenuAction,
@@ -42,7 +42,7 @@ export const DocumentPanelHeader = memo(
     const menuNodes = useMemo(
       () =>
         resolveMenuNodes({actionHandler: onMenuAction, fieldActions, menuItems, menuItemGroups}),
-      [onMenuAction, fieldActions, menuItemGroups, menuItems]
+      [onMenuAction, fieldActions, menuItemGroups, menuItems],
     )
     const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
     const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
@@ -153,5 +153,5 @@ export const DocumentPanelHeader = memo(
         }
       />
     )
-  })
+  }),
 )

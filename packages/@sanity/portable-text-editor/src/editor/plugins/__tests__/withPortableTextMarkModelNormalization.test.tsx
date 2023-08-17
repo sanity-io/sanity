@@ -85,7 +85,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
         ref={editorRef}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     await waitFor(() => {
       if (editorRef.current) {
@@ -189,7 +189,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
           ref={editorRef}
           schemaType={schemaType}
           value={initialValue}
-        />
+        />,
       )
     })
     await waitFor(() => {
@@ -273,7 +273,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
           ref={editorRef}
           schemaType={schemaType}
           value={initialValue}
-        />
+        />,
       )
     })
     if (!editorRef.current) {
@@ -418,7 +418,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
           ref={editorRef}
           schemaType={schemaType}
           value={initialValue}
-        />
+        />,
       )
     })
     await waitFor(() => {
@@ -536,7 +536,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
           ref={editorRef}
           schemaType={schemaType}
           value={initialValue}
-        />
+        />,
       )
     })
     await waitFor(() => {
@@ -648,7 +648,7 @@ describe('plugin:withPortableTextMarksModel: normalization', () => {
           ref={editorRef}
           schemaType={schemaType}
           value={initialValue}
-        />
+        />,
       )
     })
     await waitFor(() => {

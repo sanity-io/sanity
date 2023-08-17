@@ -43,12 +43,12 @@ export function DocumentTypesPopoverContent() {
     schema,
     selectedTypes,
     selectedTypesSnapshot,
-    typeFilter
+    typeFilter,
   )
 
   const handleFilterChange = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
-    [setTypeFilter]
+    [setTypeFilter],
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])
 
@@ -75,7 +75,7 @@ export function DocumentTypesPopoverContent() {
           return index
       }
     },
-    [documentTypeItems]
+    [documentTypeItems],
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<DocumentTypeMenuItem>>((item) => {
@@ -106,7 +106,7 @@ export function DocumentTypesPopoverContent() {
       const item = documentTypeItems[index]
       return item.type !== 'item'
     },
-    [documentTypeItems]
+    [documentTypeItems],
   )
 
   const getItemSelected = useCallback<CommandListGetItemSelectedCallback>(
@@ -114,7 +114,7 @@ export function DocumentTypesPopoverContent() {
       const item = documentTypeItems[index]
       return item.type === 'item' && item.selected
     },
-    [documentTypeItems]
+    [documentTypeItems],
   )
 
   return (
@@ -197,12 +197,12 @@ function useGetDocumentTypeItems(
   schema: Schema,
   selectedTypes: SearchableType[],
   selectedTypesSnapshot: SearchableType[],
-  typeFilter: string
+  typeFilter: string,
 ) {
   return useMemo(() => {
     const [itemsSelected, itemsUnselected] = partition(
       getSelectableOmnisearchTypes(schema, typeFilter),
-      (type) => selectedTypesSnapshot.includes(type)
+      (type) => selectedTypesSnapshot.includes(type),
     )
 
     const hasSelectedItems = itemsSelected.length > 0
@@ -213,13 +213,13 @@ function useGetDocumentTypeItems(
       items.push({title: 'Selected', type: 'header'})
     }
     itemsSelected.forEach((item) =>
-      items.push({item, selected: selectedTypes.includes(item), type: 'item'})
+      items.push({item, selected: selectedTypes.includes(item), type: 'item'}),
     )
     if (hasSelectedItems && hasUnselectedItems) {
       items.push({type: 'divider'})
     }
     itemsUnselected.forEach((item) =>
-      items.push({item, selected: selectedTypes.includes(item), type: 'item'})
+      items.push({item, selected: selectedTypes.includes(item), type: 'item'}),
     )
 
     return items

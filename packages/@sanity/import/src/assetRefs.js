@@ -68,7 +68,7 @@ function validateAssetImportKey(path, doc) {
         'Asset type is not specified.',
         '`_sanityAsset` values must be prefixed with a type, eg image@url or file@url.',
         `See document with ID "${doc._id}", path: ${serializePath({path})}`,
-      ].join('\n')
+      ].join('\n'),
     )
   }
 

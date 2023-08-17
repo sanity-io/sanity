@@ -19,7 +19,7 @@ import {ArrayOfObjectsInput} from './ArrayOfObjectsInput'
 export function UniversalArrayInput(props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps) {
   const isArrayOfOptionsInput = useMemo(
     () => Array.isArray(props.schemaType.options?.list),
-    [props.schemaType]
+    [props.schemaType],
   )
 
   if (isArrayOfOptionsInput) {

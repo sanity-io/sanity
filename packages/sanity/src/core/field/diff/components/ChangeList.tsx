@@ -50,12 +50,12 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
 
   const allChanges = useMemo(
     () => buildObjectChangeList(schemaType, diff, path, [], {fieldFilter: fields}),
-    [schemaType, fields, path, diff]
+    [schemaType, fields, path, diff],
   )
 
   const changes = useMemo(
     () => (fields && fields.length === 0 ? [] : maybeFlatten(allChanges)),
-    [allChanges, fields]
+    [allChanges, fields],
   )
 
   const rootChange = allChanges[0]
@@ -82,7 +82,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
   }, [])
 
   const [revertAllContainerElement, setRevertAllContainerElement] = useState<HTMLDivElement | null>(
-    null
+    null,
   )
 
   const handleClickOutside = useCallback(() => setConfirmRevertAllOpen(false), [])

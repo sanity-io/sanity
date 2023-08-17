@@ -15,7 +15,7 @@ globby([
     fs.writeFileSync(
       file,
       buf.toString().replace('SANITY_VERSION="0.0.0-development"', `SANITY_VERSION="${version}"`),
-      'utf8'
+      'utf8',
     )
   }
 })

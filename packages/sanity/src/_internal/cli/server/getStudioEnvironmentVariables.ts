@@ -43,7 +43,7 @@ export interface StudioEnvVariablesOptions {
  * @public
  */
 export function getStudioEnvironmentVariables(
-  options: StudioEnvVariablesOptions = {}
+  options: StudioEnvVariablesOptions = {},
 ): Record<string, string> {
   const {prefix = '', envFile = false, jsonEncode = false} = options
   const fullEnv = envFile

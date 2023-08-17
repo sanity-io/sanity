@@ -1,5 +1,5 @@
 const testProperties = ['', 'webkit', 'moz', 'ms', 'o'].map(
-  (prefix) => `${prefix}backingStoreRatio`
+  (prefix) => `${prefix}backingStoreRatio`,
 )
 let foundProperty: number | string | undefined = -1
 

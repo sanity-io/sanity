@@ -26,7 +26,7 @@ export type ObserveForPreviewFn = (
   value: Previewable,
   type: PreviewableType,
   viewOptions?: PrepareViewOptions,
-  apiConfig?: ApiConfig
+  apiConfig?: ApiConfig,
 ) => Observable<PreparedSnapshot>
 
 /**
@@ -43,12 +43,12 @@ export interface DocumentPreviewStore {
    * @beta
    */
   unstable_observeDocumentPairAvailability: (
-    id: string
+    id: string,
   ) => Observable<DraftsModelDocumentAvailability>
 
   unstable_observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
     id: string,
-    paths: PreviewPath[]
+    paths: PreviewPath[],
   ) => Observable<DraftsModelDocument<T>>
 }
 
@@ -79,11 +79,11 @@ export function createDocumentPreviewStore({
 
   function observeDocumentTypeFromId(
     id: string,
-    apiConfig?: ApiConfig
+    apiConfig?: ApiConfig,
   ): Observable<string | undefined> {
     return observePaths({_type: 'reference', _ref: id}, ['_type'], apiConfig).pipe(
       map((res) => (isRecord(res) && typeof res._type === 'string' ? res._type : undefined)),
-      distinctUntilChanged()
+      distinctUntilChanged(),
     )
   }
 
@@ -91,7 +91,7 @@ export function createDocumentPreviewStore({
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
   const {observeDocumentPairAvailability} = create_preview_availability(
     versionedClient,
-    observePaths
+    observePaths,
   )
   const {observePathsDocumentPair} = create_preview_documentPair(versionedClient, observePaths)
 

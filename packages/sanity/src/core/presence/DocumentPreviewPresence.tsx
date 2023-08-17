@@ -54,7 +54,7 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
           return presence.find((a) => a.user.id === id)
         })
         .filter(isNonNullable),
-    [presence]
+    [presence],
   )
 
   const tooltipContent = useMemo(() => {

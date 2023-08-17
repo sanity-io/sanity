@@ -4,7 +4,7 @@ import type {OperatorInputComponentProps} from '../../../../../definitions/opera
 import {CommonDateEqualInput} from './CommonDateEqual'
 
 export function SearchFilterDateTimeEqualInput(
-  props: OperatorInputComponentProps<OperatorDateEqualValue>
+  props: OperatorInputComponentProps<OperatorDateEqualValue>,
 ) {
   return <CommonDateEqualInput {...props} isDateTime />
 }

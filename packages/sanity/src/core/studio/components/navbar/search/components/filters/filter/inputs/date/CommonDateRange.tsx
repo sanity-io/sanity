@@ -37,10 +37,10 @@ export function CommonDateRangeInput({
           endDate,
           includeTime: value?.includeTime,
           isDateTime,
-        })
+        }),
       )
     },
-    [isDateTime, onChange, value?.includeTime]
+    [isDateTime, onChange, value?.includeTime],
   )
 
   const handleIncludeTimeChange = useCallback(() => {
@@ -51,7 +51,7 @@ export function CommonDateRangeInput({
         endDate: value?.dateMax ? new Date(value.dateMax) : null,
         includeTime,
         isDateTime,
-      })
+      }),
     )
   }, [isDateTime, onChange, value])
 
@@ -63,7 +63,7 @@ export function CommonDateRangeInput({
         dateMin: value?.dateMin || null,
       })
     },
-    [onChange, value]
+    [onChange, value],
   )
 
   const handleTextStartDateChange = useCallback(
@@ -74,7 +74,7 @@ export function CommonDateRangeInput({
         dateMin: date || null,
       })
     },
-    [onChange, value]
+    [onChange, value],
   )
 
   return (

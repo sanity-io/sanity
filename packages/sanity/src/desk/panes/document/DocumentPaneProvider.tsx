@@ -93,7 +93,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         panePayload,
         urlTemplate: params.template,
       }),
-    [documentType, paneOptions, params, panePayload, templates]
+    [documentType, paneOptions, params, panePayload, templates],
   )
   const initialValueRaw = useInitialValue({
     documentId,
@@ -115,26 +115,26 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   // Resolve document actions
   const actions = useMemo(
     () => documentActions({schemaType: documentType, documentId}),
-    [documentActions, documentId, documentType]
+    [documentActions, documentId, documentType],
   )
 
   // Resolve document badges
   const badges = useMemo(
     () => documentBadges({schemaType: documentType, documentId}),
-    [documentBadges, documentId, documentType]
+    [documentBadges, documentId, documentType],
   )
 
   // Resolve document language filter
   const languageFilter = useMemo(
     () => languageFilterResolver({schemaType: documentType, documentId}),
-    [documentId, documentType, languageFilterResolver]
+    [documentId, documentType, languageFilterResolver],
   )
 
   const validation = useUnique(validationRaw)
   const views = useUnique(viewsProp)
 
   const [focusPath, setFocusPath] = useState<Path>(() =>
-    params.path ? pathFromString(params.path) : []
+    params.path ? pathFromString(params.path) : [],
   )
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
@@ -196,7 +196,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const inspectors: DocumentInspector[] = useMemo(
     () => inspectorsResolver({documentId, documentType}),
-    [documentId, documentType, inspectorsResolver]
+    [documentId, documentType, inspectorsResolver],
   )
 
   const [inspectorName, setInspectorName] = useState<string | null>(() => params.inspect || null)
@@ -226,7 +226,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         inspectors,
         previewUrl,
       }),
-    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl]
+    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl],
   )
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
@@ -235,7 +235,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const fieldActions: DocumentFieldAction[] = useMemo(
     () => (schemaType ? fieldActionsResolver({documentId, documentType, schemaType}) : []),
-    [documentId, documentType, fieldActionsResolver, schemaType]
+    [documentId, documentType, fieldActionsResolver, schemaType],
   )
 
   /**
@@ -255,7 +255,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
     () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
-    [onOlderRevision, timelineDisplayed, value]
+    [onOlderRevision, timelineDisplayed, value],
   )
 
   const setTimelineRange = useCallback(
@@ -266,7 +266,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         rev: newRev || undefined,
       })
     },
-    [params, setPaneParams]
+    [params, setPaneParams],
   )
 
   const handleFocus = useCallback(
@@ -281,7 +281,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         },
       ])
     },
-    [documentId, presenceStore, setFocusPath]
+    [documentId, presenceStore, setFocusPath],
   )
 
   const handleBlur = useCallback(
@@ -290,7 +290,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
       // user clicks outside a field without focusing another one
     },
-    [setFocusPath]
+    [setFocusPath],
   )
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
@@ -337,7 +337,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         setPaneParams({...result.params, inspect: undefined})
       }
     },
-    [currentInspector, inspectors, params, setPaneParams]
+    [currentInspector, inspectors, params, setPaneParams],
   )
 
   const openInspector = useCallback(
@@ -372,7 +372,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
       setPaneParams({...result.params, ...paneParams, inspect: nextInspector.name})
     },
-    [currentInspector, inspectors, params, setPaneParams]
+    [currentInspector, inspectors, params, setPaneParams],
   )
 
   const handleHistoryClose = useCallback(() => {
@@ -403,7 +403,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         setPaneParams(omit(params, 'inspect'))
       }
     },
-    [inspectOpen, params, setPaneParams]
+    [inspectOpen, params, setPaneParams],
   )
 
   const handleMenuAction = useCallback(
@@ -447,7 +447,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       openInspector,
       previewUrl,
       toggleLegacyInspect,
-    ]
+    ],
   )
 
   const handleKeyUp = useCallback(
@@ -463,12 +463,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         }
       }
     },
-    [handleMenuAction, menuItems]
+    [handleMenuAction, menuItems],
   )
 
   const handleLegacyInspectClose = useCallback(
     () => toggleLegacyInspect(false),
-    [toggleLegacyInspect]
+    [toggleLegacyInspect],
   )
 
   const [openPath, onSetOpenPath] = useState<Path>([])
@@ -487,7 +487,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handleSetActiveFieldGroup = useCallback(
     (path: Path, groupName: string) =>
       onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName)),
-    []
+    [],
   )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
@@ -571,7 +571,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       })
       onSetOpenPath(path)
     },
-    [formStateRef]
+    [formStateRef],
   )
 
   const documentPane: DocumentPaneContextValue = {

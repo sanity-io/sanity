@@ -24,7 +24,7 @@ export function Decorator(props: BlockDecoratorRenderProps) {
         </Root>
       )
     },
-    [tag, value]
+    [tag, value],
   )
   return useMemo(() => {
     const componentProps = {

@@ -17,7 +17,7 @@ export function MissingKeysAlert(props: Props) {
   const {error, onChange} = props
   const handleFixMissingKeys = useCallback(() => {
     onChange(
-      PatchEvent.from((error.value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key'])))
+      PatchEvent.from((error.value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key']))),
     )
   }, [error.value, onChange])
 

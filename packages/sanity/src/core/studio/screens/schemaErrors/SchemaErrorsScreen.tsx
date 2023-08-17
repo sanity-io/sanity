@@ -11,7 +11,7 @@ interface SchemaErrorsScreenProps {
 export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
   const groupsWithErrors =
     schema._validation?.filter((group) =>
-      group.problems.some((problem) => problem.severity === 'error')
+      group.problems.some((problem) => problem.severity === 'error'),
     ) || []
 
   useEffect(() => reportWarnings(schema), [schema])

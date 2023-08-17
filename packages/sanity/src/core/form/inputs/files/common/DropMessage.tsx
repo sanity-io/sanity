@@ -13,7 +13,7 @@ interface Props {
 export function DropMessage(props: Props) {
   const {hoveringFiles, types, resolveUploader} = props
   const acceptedFiles = hoveringFiles.filter((file) =>
-    types.some((type) => resolveUploader(type, file))
+    types.some((type) => resolveUploader(type, file)),
   )
   const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
   const multiple = types.length > 1

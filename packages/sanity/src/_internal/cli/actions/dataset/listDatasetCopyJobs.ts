@@ -19,7 +19,7 @@ type CopyDatasetListResponse = {
 
 export async function listDatasetCopyJobs(
   flags: ListFlags,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const {apiClient, output, chalk} = context
   const client = apiClient()
@@ -100,7 +100,7 @@ export async function listDatasetCopyJobs(
           sourceDataset,
           targetDataset,
         },
-        {color}
+        {color},
       )
     })
 

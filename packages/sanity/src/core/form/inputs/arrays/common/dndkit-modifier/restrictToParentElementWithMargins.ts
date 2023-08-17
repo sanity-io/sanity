@@ -5,7 +5,7 @@ function restrictToBoundingRect(
   transform: Transform,
   rect: ClientRect,
   boundingRect: ClientRect,
-  margins: Margins
+  margins: Margins,
 ): Transform {
   const value = {
     ...transform,

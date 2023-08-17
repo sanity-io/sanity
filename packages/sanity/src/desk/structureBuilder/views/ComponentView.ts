@@ -35,7 +35,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
      * Component view component or spec
      * @param componentOrSpec - user view component or partial component view. See {@link UserViewComponent} and {@link ComponentView}
      */
-    componentOrSpec?: UserViewComponent | Partial<ComponentView>
+    componentOrSpec?: UserViewComponent | Partial<ComponentView>,
   ) {
     const spec = isComponentSpec(componentOrSpec) ? {...componentOrSpec} : {options: {}}
 
@@ -94,7 +94,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
       throw new SerializeError(
         '`component` is required and must be a function for `component()` view item',
         options.path,
-        options.index
+        options.index,
       ).withHelpUrl(HELP_URL.COMPONENT_REQUIRED)
     }
 

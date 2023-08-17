@@ -116,7 +116,7 @@ function mapFieldActionToPaneMenuNode(a: DocumentFieldActionNode, key: string): 
       key,
 
       children: a.children.map((child, childIdx) =>
-        mapFieldActionToPaneMenuNode(child, `${key}-${childIdx}-${child.type}`)
+        mapFieldActionToPaneMenuNode(child, `${key}-${childIdx}-${child.type}`),
       ),
       disabled: a.disabled,
       expanded: a.expanded ?? true,

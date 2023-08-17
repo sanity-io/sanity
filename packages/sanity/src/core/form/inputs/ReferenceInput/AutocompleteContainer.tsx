@@ -11,14 +11,14 @@ const WIDE_LAYOUT = css`
 `
 
 const Root = styled(Grid)<{$narrow: boolean}>((props: {$narrow: boolean}) =>
-  props.$narrow ? NARROW_LAYOUT : WIDE_LAYOUT
+  props.$narrow ? NARROW_LAYOUT : WIDE_LAYOUT,
 )
 
 export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
   props: {
     children: ReactNode
   },
-  forwardedRef: ForwardedRef<HTMLDivElement>
+  forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
@@ -29,7 +29,7 @@ export const AutocompleteContainer = forwardRef(function AutocompleteContainer(
       setForwardedRef(forwardedRef, element)
       setRootElement(element)
     },
-    [forwardedRef]
+    [forwardedRef],
   )
 
   const inputWrapperRect = useElementRect(rootElement)

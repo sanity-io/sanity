@@ -14,7 +14,7 @@ const parseModalType = (value: unknown): 'popover' | 'dialog' | undefined => {
 }
 
 export function _getModalOption(
-  schemaType: ObjectSchemaType
+  schemaType: ObjectSchemaType,
 ): {type?: 'dialog' | 'popover'; width: (number | 'auto')[]} | undefined {
   const raw = schemaType.options?.modal
   return typeof raw === 'object' && raw !== null

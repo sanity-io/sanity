@@ -82,14 +82,14 @@ function InlineObjectWithDiff({
   const color = useDiffAnnotationColor(diff, [])
   const style = useMemo(
     () => (color ? {background: color.background, color: color.text} : {}),
-    [color]
+    [color],
   )
   const [open, setOpen] = useState(false)
   const emptyObject = object && isEmptyObject(object)
   const isRemoved = diff.action === 'removed'
   const prefix = fullPath.slice(
     0,
-    fullPath.findIndex((seg) => isKeySegment(seg) && seg._key === object._key)
+    fullPath.findIndex((seg) => isKeySegment(seg) && seg._key === object._key),
   )
   const myPath = prefix.concat(path)
   const myValue = `field-${toString(myPath)}`
@@ -115,7 +115,7 @@ function InlineObjectWithDiff({
       }
       event.preventDefault()
     },
-    [focusPath, isRemoved, onSetFocus]
+    [focusPath, isRemoved, onSetFocus],
   )
 
   const handleClose = useCallback(() => {

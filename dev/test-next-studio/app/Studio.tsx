@@ -39,7 +39,7 @@ export default function StudioRoot({
           ],
         },
       }),
-    [basePath]
+    [basePath],
   )
 
   return (

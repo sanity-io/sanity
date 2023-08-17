@@ -199,7 +199,7 @@ export function Toolbar(props: ToolbarProps) {
         })
         .finally(() => clearTimeout(slowTimer))
     },
-    [push, resolveInitialValueForType]
+    [push, resolveInitialValueForType],
   )
 
   const handleInsertBlock = useCallback(
@@ -210,7 +210,7 @@ export function Toolbar(props: ToolbarProps) {
         onMemberOpen(path)
       }
     },
-    [editor, onMemberOpen, resolveInitialValue]
+    [editor, onMemberOpen, resolveInitialValue],
   )
 
   const handleInsertInline = useCallback(
@@ -221,7 +221,7 @@ export function Toolbar(props: ToolbarProps) {
         onMemberOpen(path)
       }
     },
-    [editor, onMemberOpen, resolveInitialValue]
+    [editor, onMemberOpen, resolveInitialValue],
   )
 
   const actionGroups = useActionGroups({
@@ -235,7 +235,7 @@ export function Toolbar(props: ToolbarProps) {
 
   const insertMenuItems = useMemo(
     () => getInsertMenuItems(editor.schemaTypes, disabled, handleInsertBlock, handleInsertInline),
-    [disabled, editor, handleInsertBlock, handleInsertInline]
+    [disabled, editor, handleInsertBlock, handleInsertInline],
   )
 
   return (

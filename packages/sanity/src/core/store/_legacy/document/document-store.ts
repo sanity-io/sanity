@@ -42,12 +42,12 @@ export interface DocumentStore {
   checkoutPair: (idPair: IdPair) => Pair
   initialValue: (
     opts: InitialValueOptions,
-    context: InitialValueResolverContext
+    context: InitialValueResolverContext,
   ) => Observable<InitialValueMsg>
   listenQuery: (
     query: string | {fetch: string; listen: string},
     params: QueryParams,
-    options: ListenQueryOptions
+    options: ListenQueryOptions,
   ) => Observable<any>
   resolveTypeForDocument: (id: string, specifiedType?: string) => Observable<string>
 
@@ -60,7 +60,7 @@ export interface DocumentStore {
     editState: (publishedId: string, type: string) => Observable<EditStateFor>
     operationEvents: (
       publishedId: string,
-      type: string
+      type: string,
     ) => Observable<OperationSuccess | OperationError>
     validation: (publishedId: string, type: string) => Observable<ValidationStatus>
   }
@@ -103,7 +103,7 @@ export function createDocumentStore({
         initialValueTemplates,
         documentPreviewStore,
         opts,
-        context
+        context,
       )
     },
     listenQuery(query, params, options) {
@@ -129,14 +129,14 @@ export function createDocumentStore({
         return operationEvents({client, historyStore, schema}).pipe(
           filter(
             (result) =>
-              result.args.idPair.publishedId === publishedId && result.args.typeName === type
+              result.args.idPair.publishedId === publishedId && result.args.typeName === type,
           ),
           map((result): OperationSuccess | OperationError => {
             const {operationName, idPair: documentIds} = result.args
             return result.type === 'success'
               ? {type: 'success', op: operationName, id: documentIds.publishedId}
               : {type: 'error', op: operationName, id: documentIds.publishedId, error: result.error}
-          })
+          }),
         )
       },
       validation(publishedId, type) {

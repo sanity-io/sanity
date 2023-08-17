@@ -26,7 +26,7 @@ const TextWithToneStyle = styled(Text)(({$tone, theme}: {$tone: ButtonTone; them
 /** @internal */
 export const TextWithTone = React.forwardRef(function TextWithTone(
   props: TextWithToneProps,
-  ref: React.Ref<HTMLDivElement>
+  ref: React.Ref<HTMLDivElement>,
 ) {
   const {tone, dimmed, muted, ...rest} = props
 

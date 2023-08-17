@@ -61,8 +61,8 @@ export function create_preview_observeFields(context: {
             includeResult: false,
             visibility: 'query',
             tag: 'preview.global',
-          }
-        )
+          },
+        ),
       ).pipe(share())
 
       // This is a stream of welcome events from the server, each telling us that we have established listener connection
@@ -70,7 +70,7 @@ export function create_preview_observeFields(context: {
       // events that happens in the time period after initial fetch and before the listener is established.
       const welcome$ = allEvents$.pipe(
         filter((event: any) => event.type === 'welcome'),
-        shareReplay({refCount: true, bufferSize: 1})
+        shareReplay({refCount: true, bufferSize: 1}),
       )
 
       // This will keep the listener active forever and in turn reduce the number of initial fetches
@@ -93,7 +93,7 @@ export function create_preview_observeFields(context: {
     const globalEvents = getGlobalEvents()
     return merge(
       globalEvents.welcome$,
-      globalEvents.mutations$.pipe(filter((event: any) => event.documentId === id))
+      globalEvents.mutations$.pipe(filter((event: any) => event.documentId === id)),
     )
   }
 
@@ -121,13 +121,13 @@ export function create_preview_observeFields(context: {
                   ? // just been created and is not yet indexed. We therefore need to wait a bit
                     // and then re-fetch.
                     fetchDocumentPathsSlow(id, fields as any)
-                  : []
+                  : [],
               )
-            })
+            }),
           )
         }
         return fetchDocumentPathsSlow(id, fields as any)
-      })
+      }),
     )
   }
 
@@ -145,7 +145,7 @@ export function create_preview_observeFields(context: {
       const fetchAll = fetchAllDocumentPathsWith(client)
       return debounceCollect(fetchAll, 10)
     },
-    (apiConfig) => apiConfig.dataset + apiConfig.projectId
+    (apiConfig) => apiConfig.dataset + apiConfig.projectId,
   )
 
   const CROSS_DATASET_PREVIEW_POLL_INTERVAL = 10000
@@ -156,7 +156,7 @@ export function create_preview_observeFields(context: {
     startWith(0),
     map(() => document.visibilityState === 'visible'),
     switchMap((visible) => (visible ? timer(0, CROSS_DATASET_PREVIEW_POLL_INTERVAL) : EMPTY)),
-    share()
+    share(),
   )
 
   function crossDatasetListenFields(id: Id, fields: PreviewPath[], apiConfig: ApiConfig) {
@@ -164,24 +164,24 @@ export function create_preview_observeFields(context: {
       switchMap(() => {
         const batchFetcher = getBatchFetcherForDataset(apiConfig)
         return batchFetcher(id, fields as any)
-      })
+      }),
     )
   }
 
   function createCachedFieldObserver<T>(
     id: any,
     fields: any,
-    apiConfig: ApiConfig
+    apiConfig: ApiConfig,
   ): CachedFieldObserver {
     let latest: T | null = null
     const changes$ = merge(
       defer(() => (latest === null ? EMPTY : observableOf(latest))),
       (apiConfig
         ? (crossDatasetListenFields(id, fields, apiConfig) as any)
-        : currentDatasetListenFields(id, fields)) as Observable<T>
+        : currentDatasetListenFields(id, fields)) as Observable<T>,
     ).pipe(
       tap((v: T | null) => (latest = v)),
-      shareReplay({refCount: true, bufferSize: 1})
+      shareReplay({refCount: true, bufferSize: 1}),
     )
 
     return {id, fields, changes$}
@@ -199,7 +199,7 @@ export function create_preview_observeFields(context: {
     const existingObservers = CACHE[cacheKey]
     const missingFields = difference(
       fields,
-      flatten(existingObservers.map((cachedFieldObserver) => cachedFieldObserver.fields))
+      flatten(existingObservers.map((cachedFieldObserver) => cachedFieldObserver.fields)),
     )
 
     if (missingFields.length > 0) {
@@ -216,7 +216,7 @@ export function create_preview_observeFields(context: {
       map((snapshots) => snapshots.filter(Boolean)), // make sure all snapshots agree on same revision
       filter((snapshots) => isUniqueBy(snapshots, (snapshot) => snapshot._rev)), // pass on value with the requested fields (or null if value is deleted)
       map((snapshots) => (snapshots.length === 0 ? null : pickFrom(snapshots, fields))), // emit values only if changed
-      distinctUntilChanged(hasEqualFields(fields))
+      distinctUntilChanged(hasEqualFields(fields)),
     )
   }
 

@@ -56,7 +56,7 @@ export interface HiddenField {
 /** @public */
 export interface ObjectFormNode<
   T = {[key in string]: unknown},
-  S extends ObjectSchemaType = ObjectSchemaType
+  S extends ObjectSchemaType = ObjectSchemaType,
 > extends BaseFormNode<T, S> {
   /** The focus path of the form node. */
   focusPath: Path
@@ -75,7 +75,7 @@ export interface ObjectFormNode<
 /** @public */
 export interface ObjectArrayFormNode<
   T extends ObjectItem = ObjectItem,
-  S extends ObjectSchemaType = ObjectSchemaType
+  S extends ObjectSchemaType = ObjectSchemaType,
 > extends BaseFormNode<T, S> {
   /** The focus path of the form node. */
   focusPath: Path
@@ -98,13 +98,13 @@ export interface ObjectArrayFormNode<
 /** @internal */
 export type DocumentFormNode<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
-  S extends ObjectSchemaType = ObjectSchemaType
+  S extends ObjectSchemaType = ObjectSchemaType,
 > = ObjectFormNode<T, S>
 
 /** @public */
 export interface ArrayOfObjectsFormNode<
   T extends any[] = unknown[],
-  S extends ArraySchemaType = ArraySchemaType
+  S extends ArraySchemaType = ArraySchemaType,
 > extends BaseFormNode<T, S> {
   /** The focus path of the form node. */
   focusPath: Path
@@ -117,7 +117,7 @@ export interface ArrayOfObjectsFormNode<
 /** @public */
 export interface ArrayOfPrimitivesFormNode<
   T extends (string | number | boolean)[] = (string | number | boolean)[],
-  S extends ArraySchemaType = ArraySchemaType
+  S extends ArraySchemaType = ArraySchemaType,
 > extends BaseFormNode<T, S> {
   /** The focus path of the form node. */
   focusPath: Path

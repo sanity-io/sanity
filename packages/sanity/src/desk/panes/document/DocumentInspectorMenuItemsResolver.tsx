@@ -16,7 +16,7 @@ const InspectorMenuItem = memo(function InspectorMenuItem(props: InspectorMenuIt
     useMenuItem({
       documentId,
       documentType,
-    })
+    }),
   )
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
   const lenRef = useRef(len)
 
   const [menuItems, setMenuItems] = useState<DocumentInspectorMenuItem[]>(() =>
-    Array.from(new Array(len))
+    Array.from(new Array(len)),
   )
 
   const menuItemsRef = useRef(menuItems)
@@ -94,7 +94,7 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
               setMenuItem={setMenuItem}
               useMenuItem={inspector.useMenuItem}
             />
-          )
+          ),
       )}
     </>
   )

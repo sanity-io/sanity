@@ -34,7 +34,7 @@ export function checkStudioDependencyVersions(workDir: string): void {
 
     const manifestPath = resolveFrom.silent(workDir, path.join(pkg.name, 'package.json'))
     const installed = semver.coerce(
-      manifestPath ? readPackageJson(manifestPath).version : dependency.replace(/[\D.]/g, '')
+      manifestPath ? readPackageJson(manifestPath).version : dependency.replace(/[\D.]/g, ''),
     )
 
     if (!installed) {
@@ -116,7 +116,7 @@ function listPackages(pkgs: PackageInfo[]) {
       (pkg) =>
         `${pkg.name} (installed: ${pkg.installed}, want: ${
           pkg.deprecatedBelow || pkg.supported.join(' || ')
-        })`
+        })`,
     )
     .join('\n  ')
 }

@@ -19,9 +19,9 @@ export function DuplicateKeysAlert(props: Props) {
     onChange(
       PatchEvent.from(
         (error.duplicates || []).map(([index, key]) =>
-          set(`${key}_deduped_${index}`, [index, '_key'])
-        )
-      )
+          set(`${key}_deduped_${index}`, [index, '_key']),
+        ),
+      ),
     )
   }, [error.duplicates, onChange])
 

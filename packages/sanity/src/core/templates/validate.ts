@@ -32,7 +32,7 @@ export function validateTemplates(schema: Schema, templates: Template[]): Templa
 
     if (typeof template.value !== 'function' && !isRecord(template.value)) {
       throw new Error(
-        `Template ${id} has an invalid "value" property; should be a function or an object`
+        `Template ${id} has an invalid "value" property; should be a function or an object`,
       )
     }
 
@@ -48,7 +48,7 @@ export function validateTemplates(schema: Schema, templates: Template[]): Templa
       const dupeIndex = idMap.get(template.id)
       const dupe = `${quote(templates[dupeIndex].title)} at index ${dupeIndex}`
       throw new Error(
-        `Template "${template.title}" at index ${i} has the same ID ("${template.id}") as template ${dupe}`
+        `Template "${template.title}" at index ${i} has the same ID ("${template.id}") as template ${dupe}`,
       )
     }
 
@@ -60,7 +60,7 @@ export function validateTemplates(schema: Schema, templates: Template[]): Templa
 
 export function validateInitialObjectValue<T extends Record<string, unknown>>(
   value: T,
-  template: Template
+  template: Template,
 ): T {
   const contextError = (msg: string) => `Template "${template.id}" initial value: ${msg}`
 
@@ -71,8 +71,8 @@ export function validateInitialObjectValue<T extends Record<string, unknown>>(
   if (value._type && template.schemaType !== value._type) {
     throw new Error(
       contextError(
-        `includes "_type"-property (${value._type}) that does not match template (${template.schemaType})`
-      )
+        `includes "_type"-property (${value._type}) that does not match template (${template.schemaType})`,
+      ),
     )
   }
 
@@ -89,7 +89,7 @@ function validateValue(value: unknown, path: (string | number)[] = [], parentIsA
     return value.map((item, i) => {
       if (Array.isArray(item)) {
         throw new Error(
-          `multidimensional arrays are not supported (at path "${pathToString(path)}")`
+          `multidimensional arrays are not supported (at path "${pathToString(path)}")`,
         )
       }
 
@@ -130,37 +130,37 @@ function validateParameter(
   schema: Schema,
   parameter: TemplateParameter,
   template: Template,
-  index: number
+  index: number,
 ) {
   // const schema = getDefaultSchema()
 
   if (!parameter.name) {
     throw new Error(
-      `Template ${template.id} has a parameter at index ${index} that is missing its "name"-property`
+      `Template ${template.id} has a parameter at index ${index} that is missing its "name"-property`,
     )
   }
 
   // I know, this is a weird one
   if (parameter.name === 'template') {
     throw new Error(
-      `Template parameters cannot be named "template", see parameter #${index} for template ${template.id}`
+      `Template parameters cannot be named "template", see parameter #${index} for template ${template.id}`,
     )
   }
 
   if (!schema.get(parameter.type)) {
     throw new Error(
-      `Template parameter "${parameter.name}" has an invalid/unknown type: "${parameter.type}"`
+      `Template parameter "${parameter.name}" has an invalid/unknown type: "${parameter.type}"`,
     )
   }
 }
 
 function validateReference(
   value: {_type?: unknown; type?: unknown},
-  path: (string | number)[] = []
+  path: (string | number)[] = [],
 ) {
   if (!value._type && value.type) {
     throw new Error(
-      `Reference is missing "_type", but has a "type" property at path "${pathToString(path)}"`
+      `Reference is missing "_type", but has a "type" property at path "${pathToString(path)}"`,
     )
   }
 
@@ -170,7 +170,7 @@ function validateReference(
     throw new Error(
       `Disallowed ${plural} found in reference: ${disallowed
         .map(quote)
-        .join(', ')} at path "${pathToString(path)}"`
+        .join(', ')} at path "${pathToString(path)}"`,
     )
   }
 }

@@ -57,11 +57,11 @@ const operationImpls = {
 const execute = (
   operationName: keyof typeof operationImpls,
   operationArguments: OperationArgs,
-  extraArgs: any[]
+  extraArgs: any[],
 ): Observable<any> => {
   const operation = operationImpls[operationName]
   return defer(() =>
-    merge(of(null), maybeObservable(operation.execute(operationArguments, ...extraArgs)))
+    merge(of(null), maybeObservable(operation.execute(operationArguments, ...extraArgs))),
   ).pipe(last())
 }
 
@@ -72,7 +72,7 @@ export function emitOperation(
   operationName: keyof OperationsAPI,
   idPair: IdPair,
   typeName: string,
-  extraArgs: any[]
+  extraArgs: any[],
 ): void {
   operationCalls$.next({operationName, idPair, typeName, extraArgs})
 }
@@ -134,22 +134,22 @@ export const operationEvents = memoize(
                 const isConsistent$ = consistencyStatus(
                   ctx.client,
                   args.idPair,
-                  args.typeName
+                  args.typeName,
                 ).pipe(filter(Boolean))
                 const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
                 return ready$.pipe(
-                  switchMap(() => execute(args.operationName, operationArguments, args.extraArgs))
+                  switchMap(() => execute(args.operationName, operationArguments, args.extraArgs)),
                 )
               }),
               map((): IntermediarySuccess => ({type: 'success', args})),
               catchError(
-                (err): Observable<IntermediaryError> => of({type: 'error', args, error: err})
-              )
-            )
-          )
-        )
+                (err): Observable<IntermediaryError> => of({type: 'error', args, error: err}),
+              ),
+            ),
+          ),
+        ),
       ),
-      share()
+      share(),
     )
 
     // this enables autocommit after patch operations
@@ -159,7 +159,7 @@ export const operationEvents = memoize(
       throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
       tap((result) => {
         emitOperation('commit', result.args.idPair, result.args.typeName, [])
-      })
+      }),
     )
 
     return merge(result$, autoCommit$.pipe(mergeMapTo(EMPTY)))
@@ -168,5 +168,5 @@ export const operationEvents = memoize(
     const config = ctx.client.config()
     // we only want one of these per dataset+projectid
     return `${config.dataset ?? ''}-${config.projectId ?? ''}`
-  }
+  },
 )

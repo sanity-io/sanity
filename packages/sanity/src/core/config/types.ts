@@ -154,7 +154,7 @@ export interface Tool<Options = any> {
     intent: string,
     params: Record<string, string>,
     routerState: RouterState | undefined,
-    payload: unknown
+    payload: unknown,
   ) => unknown
 
   /**
@@ -177,7 +177,7 @@ export type ComposableOption<TValue, TContext> = (prev: TValue, context: TContex
  */
 export type AsyncComposableOption<TValue, TContext> = (
   prev: TValue,
-  context: TContext
+  context: TContext,
 ) => Promise<TValue>
 
 /** @public */
@@ -346,14 +346,14 @@ export interface PluginOptions {
 export type ConfigPropertyReducer<TValue, TContext> = (
   prev: TValue,
   config: PluginOptions,
-  context: TContext
+  context: TContext,
 ) => TValue
 
 /** @internal */
 export type AsyncConfigPropertyReducer<TValue, TContext> = (
   prev: TValue,
   config: PluginOptions,
-  context: TContext
+  context: TContext,
 ) => TValue | Promise<TValue>
 
 /**
@@ -530,7 +530,7 @@ export interface Source {
 
     /** @internal */
     unstable_fieldActions: (
-      props: PartialContext<DocumentFieldActionsResolverContext>
+      props: PartialContext<DocumentFieldActionsResolverContext>,
     ) => DocumentFieldAction[]
 
     /**
@@ -539,7 +539,7 @@ export interface Source {
      * @beta
      */
     resolveProductionUrl: (
-      context: PartialContext<ResolveProductionUrlContext>
+      context: PartialContext<ResolveProductionUrlContext>,
     ) => Promise<string | undefined>
 
     /**
@@ -551,7 +551,7 @@ export interface Source {
 
     /** @alpha */
     unstable_languageFilter: (
-      props: PartialContext<DocumentLanguageFilterContext>
+      props: PartialContext<DocumentLanguageFilterContext>,
     ) => DocumentLanguageFilterComponent[]
 
     /**

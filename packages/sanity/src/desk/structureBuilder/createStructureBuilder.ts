@@ -109,7 +109,7 @@ export function createStructureBuilder({
 
     initialValueTemplateItem: (
       templateId: string,
-      parameters?: Record<string, unknown>
+      parameters?: Record<string, unknown>,
     ): InitialValueTemplateItemBuilder =>
       new InitialValueTemplateItemBuilder(context, {
         id: templateId,

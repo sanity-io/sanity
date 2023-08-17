@@ -16,5 +16,5 @@ export const CustomTextInput = forwardRef<HTMLInputElement, CustomTextInputProps
         <TextInput {...rest} ref={ref} />
       </CustomTextInputBox>
     )
-  }
+  },
 )

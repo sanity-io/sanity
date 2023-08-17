@@ -350,7 +350,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
           status: 'info',
           title: 'Parsed URL to query',
         })
-      }
+      },
     )
   }
 
@@ -419,7 +419,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
         this._localStorage.set('apiVersion', this.state.customApiVersion)
         this._client.config({apiVersion: this.state.customApiVersion})
-      }
+      },
     )
   }
 
@@ -563,7 +563,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     }
 
     const url = this._client.getUrl(
-      this._client.getDataUrl('query', encodeQueryString(query, params, urlQueryOpts))
+      this._client.getDataUrl('query', encodeQueryString(query, params, urlQueryOpts)),
     )
     this.setState({url})
 
@@ -603,7 +603,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
         hasValidParams: valid,
         paramsError: error,
       },
-      () => this._localStorage.set('params', raw)
+      () => this._localStorage.set('params', raw),
     )
   }
 

@@ -128,7 +128,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
      * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
-    spec?: ListItemInput
+    spec?: ListItemInput,
   ) {
     this.spec = spec ? spec : {}
   }
@@ -249,13 +249,13 @@ export class ListItemBuilder implements Serializable<ListItem> {
       throw new SerializeError(
         '`id` is required for list items',
         options.path,
-        options.index
+        options.index,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
     if (!options.titleIsOptional && (typeof title !== 'string' || !title)) {
       throw new SerializeError('`title` is required for list items', options.path, id).withHelpUrl(
-        HELP_URL.TITLE_REQUIRED
+        HELP_URL.TITLE_REQUIRED,
       )
     }
 
@@ -266,7 +266,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
         throw new SerializeError(
           `Could not find type "${schemaType}" in schema`,
           options.path,
-          id
+          id,
         ).withHelpUrl(HELP_URL.SCHEMA_TYPE_NOT_FOUND)
       }
 

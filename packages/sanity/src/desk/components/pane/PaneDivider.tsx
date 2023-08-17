@@ -98,7 +98,7 @@ export function PaneDivider({
       window.addEventListener('mousemove', handleMouseMove)
       window.addEventListener('mouseup', handleMouseUp)
     },
-    [element, resize]
+    [element, resize],
   )
 
   return (

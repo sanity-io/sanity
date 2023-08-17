@@ -125,7 +125,7 @@ async function readModuleVersion(studioPath: string, moduleName: string): Promis
  */
 async function readPackageManifest(
   packageJsonPath: string,
-  defaults: Partial<PartialPackageManifest> = {}
+  defaults: Partial<PartialPackageManifest> = {},
 ): Promise<PackageManifest> {
   let manifest: unknown
   try {
@@ -152,7 +152,7 @@ async function readPackageManifest(
  */
 async function installDependencies(
   dependencies: Record<string, string>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const {output, prompt, workDir, cliPackageManager} = context
   const packages: string[] = []
@@ -166,7 +166,7 @@ async function installDependencies(
 
   if (!cliPackageManager) {
     output.error(
-      'ERROR: Could not determine package manager choice - run `npm install` or equivalent'
+      'ERROR: Could not determine package manager choice - run `npm install` or equivalent',
     )
     return
   }
@@ -175,7 +175,7 @@ async function installDependencies(
   const {mostOptimal, chosen: pkgManager} = await getPackageManagerChoice(workDir, {prompt})
   if (mostOptimal && pkgManager !== mostOptimal) {
     output.warn(
-      `WARN: This project appears to be installed with or using ${mostOptimal} - using a different package manager _may_ result in errors.`
+      `WARN: This project appears to be installed with or using ${mostOptimal} - using a different package manager _may_ result in errors.`,
     )
   }
 

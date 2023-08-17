@@ -37,7 +37,7 @@ export interface FormFieldProps {
 
 /** @internal */
 export const FormField = memo(function FormField(
-  props: FormFieldProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>
+  props: FormFieldProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {
   const {
     validation,

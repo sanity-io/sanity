@@ -112,7 +112,7 @@ export class Matcher {
           new Expression({
             type: 'alias',
             target: 'self',
-          })
+          }),
         )
         return
       }

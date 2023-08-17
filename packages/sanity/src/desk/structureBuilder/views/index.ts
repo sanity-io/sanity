@@ -11,5 +11,5 @@ export const form = (spec?: Partial<FormView>): FormViewBuilder => new FormViewB
 
 /** @internal */
 export const component = (
-  componentOrSpec?: UserViewComponent | Partial<ComponentView>
+  componentOrSpec?: UserViewComponent | Partial<ComponentView>,
 ): ComponentViewBuilder => new ComponentViewBuilder(componentOrSpec)

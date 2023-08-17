@@ -14,11 +14,11 @@ export interface LanguageFilterMenuButtonProps {
 
 export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
   const {options} = props
-  const defaultLanguages = options.supportedLanguages.filter((l) =>
-    options.defaultLanguages?.includes(l.id)
+  const defaultLanguages = options.supportedLanguages.filter(
+    (l) => options.defaultLanguages?.includes(l.id),
   )
   const languageOptions = options.supportedLanguages.filter(
-    (l) => !options.defaultLanguages?.includes(l.id)
+    (l) => !options.defaultLanguages?.includes(l.id),
   )
   const [open, setOpen] = useState(false)
   const {selectableLanguages, selectedLanguages, selectAll, selectNone, toggleLanguage} =
@@ -36,7 +36,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
         selectNone()
       }
     },
-    [selectAll, selectNone]
+    [selectAll, selectNone],
   )
 
   const handleClick = useCallback(() => setOpen((o) => !o), [])

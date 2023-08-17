@@ -109,7 +109,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         position: pos,
       })
     },
-    [onInsert]
+    [onInsert],
   )
 
   const childPresence = useChildPresence(path, true)
@@ -147,7 +147,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           popover={MENU_POPOVER_PROPS}
         />
       ),
-    [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly]
+    [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly],
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})

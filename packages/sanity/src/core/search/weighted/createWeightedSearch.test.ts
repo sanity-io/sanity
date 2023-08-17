@@ -22,7 +22,7 @@ const searchHits = defer(() =>
   of([
     {_id: 'id0', _type: 'book', w0: 'id0', w1: 'book', w2: 'Harry Potter'},
     {_id: 'id1', _type: 'book', w0: 'id1', w1: 'book', w2: 'Harry'},
-  ])
+  ]),
 )
 
 const {
@@ -47,7 +47,7 @@ describe('createWeightedSearch', () => {
     const result = await lastValueFrom(
       search({query: 'harry', types: []} as SearchTerms, {
         skipSortByScore: true,
-      })
+      }),
     )
 
     expect(result[0].score).toEqual(2.5)

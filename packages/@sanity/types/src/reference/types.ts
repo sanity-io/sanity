@@ -37,7 +37,7 @@ export interface ReferenceFilterResolverContext {
 
 /** @public */
 export type ReferenceFilterResolver = (
-  context: ReferenceFilterResolverContext
+  context: ReferenceFilterResolverContext,
 ) => ReferenceFilterSearchOptions | Promise<ReferenceFilterSearchOptions>
 
 /** @public */

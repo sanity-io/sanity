@@ -32,7 +32,7 @@ async function tryCatch<T>(fn: () => Promise<T>): Promise<Result<T>> {
 
 async function runAgainstUrl(
   url: string,
-  options: Omit<RunCompareOptions, 'deployments' | 'iterations'>
+  options: Omit<RunCompareOptions, 'deployments' | 'iterations'>,
 ) {
   console.info(`Running "${options.test.name}" against ${url}`)
   const {context, test, client, page, token} = options
@@ -85,11 +85,11 @@ function runCompare(options: RunCompareOptions) {
                 value: value,
               })),
             }
-          })
+          }),
         )
       }),
-      toArray()
-    )
+      toArray(),
+    ),
   )
 }
 export async function run({
@@ -117,8 +117,8 @@ export async function run({
 }) {
   const testModules = await Promise.all(
     testFiles.map((testModule) =>
-      import(testModule).then((module) => module.default as PerformanceTestProps)
-    )
+      import(testModule).then((module) => module.default as PerformanceTestProps),
+    ),
   )
 
   const givenIds = [...(testIds || []), ...(excludeTestIds || [])]
@@ -127,14 +127,14 @@ export async function run({
     givenIds.forEach((testId) => {
       if (!testModules.some((testModule) => testModule.id === testId)) {
         throw new Error(
-          `Invalid test id: "${testId}". Use yarn perf:test --list to see all tests ids`
+          `Invalid test id: "${testId}". Use yarn perf:test --list to see all tests ids`,
         )
       }
     })
   }
   const tests = testModules.filter(
     (testModule) =>
-      (!testIds || testIds.includes(testModule.id)) && !excludeTestIds?.includes(testModule.id)
+      (!testIds || testIds.includes(testModule.id)) && !excludeTestIds?.includes(testModule.id),
   )
   // Start by syncing test documents
   await Promise.all(
@@ -151,8 +151,8 @@ export async function run({
         })),
         version: test.version,
         description: test.description,
-      })
-    )
+      }),
+    ),
   )
   const browser = await chromium.launch({
     headless,
@@ -182,8 +182,8 @@ export async function run({
         }
       }),
       toArray(),
-      tap(console.log)
-    )
+      tap(console.log),
+    ),
   )
 
   // Save the results in metrics studio

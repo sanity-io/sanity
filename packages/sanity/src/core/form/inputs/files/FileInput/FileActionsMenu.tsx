@@ -51,8 +51,8 @@ export function FileActionsMenu(props: Props) {
           buttonElement?.focus()
         }
       },
-      [isMenuOpen, onMenuOpen, buttonElement]
-    )
+      [isMenuOpen, onMenuOpen, buttonElement],
+    ),
   )
 
   // Close menu when clicking outside of it
@@ -64,9 +64,9 @@ export function FileActionsMenu(props: Props) {
           onMenuOpen(false)
         }
       },
-      [buttonElement, onMenuOpen]
+      [buttonElement, onMenuOpen],
     ),
-    [menuElement]
+    [menuElement],
   )
 
   const setOptionsButtonRef = useCallback(
@@ -77,7 +77,7 @@ export function FileActionsMenu(props: Props) {
       // Set focus back on the button when closing the menu
       setButtonElement(el)
     },
-    [setMenuButtonElement]
+    [setMenuButtonElement],
   )
 
   // When the popover is open, focus the menu to enable keyboard navigation

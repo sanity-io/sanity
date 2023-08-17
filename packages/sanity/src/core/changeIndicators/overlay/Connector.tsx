@@ -45,7 +45,7 @@ export const Connector = memo(function Connector({from, to}: Props) {
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
-            -1
+            -1,
           )}
           strokeWidth={STROKE_WIDTH}
         />
@@ -56,7 +56,7 @@ export const Connector = memo(function Connector({from, to}: Props) {
           d={arrowPath(
             line.from.left + ARROW_MARGIN_X,
             line.from.bounds.top + line.from.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,
-            1
+            1,
           )}
           strokeWidth={STROKE_WIDTH}
         />
@@ -67,7 +67,7 @@ export const Connector = memo(function Connector({from, to}: Props) {
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top - ARROW_THRESHOLD + ARROW_MARGIN_Y,
-            -1
+            -1,
           )}
           strokeWidth={STROKE_WIDTH}
         />
@@ -78,7 +78,7 @@ export const Connector = memo(function Connector({from, to}: Props) {
           d={arrowPath(
             line.to.bounds.left + ARROW_MARGIN_X,
             line.to.bounds.top + line.to.bounds.height + ARROW_THRESHOLD - ARROW_MARGIN_Y,
-            1
+            1,
           )}
           strokeWidth={STROKE_WIDTH}
         />

@@ -32,7 +32,7 @@ function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
   const router = useRouter()
   const intent = useMemo(
     () => ({action: 'edit', params: {id: document._id, type: document._type}}),
-    [document]
+    [document],
   )
   const href = router.resolveIntentLink(intent.action, intent.params)
   const schemaType = schema.get(document._type)
@@ -43,7 +43,7 @@ function DocumentPreviewLink(props: DocumentPreviewLinkProps) {
       event.preventDefault()
       router.navigateIntent(intent.action, intent.params)
     },
-    [intent, router]
+    [intent, router],
   )
 
   if (!schemaType) {

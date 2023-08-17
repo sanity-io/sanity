@@ -21,7 +21,7 @@ function Item({id}: {id: string}) {
 
   const Link = useCallback(
     (linkProps: any) => <ChildLink {...linkProps} childId={id} />,
-    [ChildLink, id]
+    [ChildLink, id],
   )
 
   return (

@@ -37,12 +37,12 @@ export function TextBlocksStory() {
   const hasMarkers = useBoolean('Has markers', false)
   const markers: PortableTextMarker[] = useMemo(
     () => (hasMarkers ? [customMarker] : []),
-    [hasMarkers]
+    [hasMarkers],
   )
 
   const validation: ValidationMarker[] = useMemo(
     () => (hasErrors ? [errorMarker] : []),
-    [hasErrors]
+    [hasErrors],
   )
 
   const onChange = useAction('onChange')

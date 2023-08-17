@@ -13,7 +13,7 @@ export const SortableItemIdContext = React.createContext<string | null>(null)
 export const DragHandle = function DragHandle(
   props: {
     grid?: boolean
-  } & ButtonProps
+  } & ButtonProps,
 ) {
   const id = useContext(SortableItemIdContext)!
   const {listeners, attributes} = useSortable({id})

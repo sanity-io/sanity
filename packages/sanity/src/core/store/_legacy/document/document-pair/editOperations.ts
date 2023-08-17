@@ -19,7 +19,7 @@ export const editOperations = memoize(
       schema: Schema
     },
     idPair: IdPair,
-    typeName: string
+    typeName: string,
   ): Observable<OperationsAPI> => {
     const operationEvents$ = operationEvents(ctx)
 
@@ -29,8 +29,8 @@ export const editOperations = memoize(
     // To makes sure we connect the stream that actually performs the operations
     return concat(
       of(GUARDED),
-      merge(operationEvents$.pipe(mergeMap(() => EMPTY)), operations$)
+      merge(operationEvents$.pipe(mergeMap(() => EMPTY)), operations$),
     ).pipe(shareReplay({refCount: true, bufferSize: 1}))
   },
-  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName)
+  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName),
 )

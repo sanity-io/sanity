@@ -11,7 +11,7 @@ export default function FormBuilderStory() {
   // @todo: there should be a hook for this
   const initialValue = useMemo(
     () => ({loaded: true, value: {_id: documentId, _type: documentType}}),
-    []
+    [],
   )
 
   const schema = useSchema()
@@ -38,7 +38,7 @@ export default function FormBuilderStory() {
     (patches: any) => {
       patch.execute(patches, initialValue.value)
     },
-    [patch, initialValue.value]
+    [patch, initialValue.value],
   )
 
   const handleFocus = useCallback((nextFocusPath?: Path | React.FocusEvent<any>) => {

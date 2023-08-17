@@ -67,7 +67,7 @@ function wrap(document: DocumentVersion) {
         ...currentEvent,
         deletedSnapshot,
       }
-    }, null)
+    }, null),
   )
 
   return {
@@ -84,7 +84,7 @@ export function checkoutPair(documentStore: DocumentStore, idPair: IdPair) {
   if (!hasWarned) {
     // eslint-disable-next-line no-console
     console.warn(
-      '[deprecation] The checkout() function has been deprecated in favor of checkoutPair()'
+      '[deprecation] The checkout() function has been deprecated in favor of checkoutPair()',
     )
 
     hasWarned = true

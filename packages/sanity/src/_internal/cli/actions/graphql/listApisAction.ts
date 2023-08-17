@@ -11,7 +11,7 @@ type ListApisResponse = {
 
 export default async function listGraphQLApis(
   args: CliCommandArguments<Record<string, unknown>>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<void> {
   const {apiClient, output, chalk} = context
 

@@ -14,7 +14,7 @@ function _immutableReconcile<T>(
   /**
    * Keep track of visited nodes to prevent infinite recursion in case of circular structures
    */
-  parents: WeakSet<any>
+  parents: WeakSet<any>,
 ): T {
   if (previous === next) return previous as T
 

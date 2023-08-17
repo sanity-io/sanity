@@ -4,13 +4,13 @@ import type {ConvertedType, ConvertedUnion, InputObjectType, QueryDefinition} fr
 
 export function generateTypeQueries(
   types: (ConvertedType | ConvertedUnion)[],
-  sortings: InputObjectType[]
+  sortings: InputObjectType[],
 ): QueryDefinition[] {
   const queries: QueryDefinition[] = []
   const documentTypes = types.filter(isDocumentType)
 
   const documentTypeNames = documentTypes.map((docType) =>
-    JSON.stringify(docType.originalName || docType.name)
+    JSON.stringify(docType.originalName || docType.name),
   )
   const documentsFilter = `_type in [${documentTypeNames.join(', ')}]`
 

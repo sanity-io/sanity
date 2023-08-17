@@ -9,12 +9,12 @@ import {memoizeKeyGen} from './memoizeKeyGen'
 export const memoizedPair: (
   client: SanityClient,
   idPair: IdPair,
-  typeName: string
+  typeName: string,
 ) => Observable<Pair> = memoize(
   (client: SanityClient, idPair: IdPair, _typeName: string): Observable<Pair> => {
     return new Observable<Pair>((subscriber) => {
       subscriber.next(checkoutPair(client, idPair))
     }).pipe(publishReplay(1), refCount())
   },
-  memoizeKeyGen
+  memoizeKeyGen,
 )

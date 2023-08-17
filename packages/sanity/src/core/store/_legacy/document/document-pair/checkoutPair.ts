@@ -16,7 +16,7 @@ import {IdPair, PendingMutationsEvent, ReconnectEvent} from '../types'
 const isMutationEventForDocId =
   (id: string) =>
   (
-    event: ListenerEvent
+    event: ListenerEvent,
   ): event is Exclude<ListenerEvent, ReconnectEvent | PendingMutationsEvent> => {
     return event.type !== 'reconnect' && event.type !== 'pending' && event.documentId === id
   }
@@ -96,7 +96,7 @@ function submitCommitRequest(client: SanityClient, request: CommitRequest) {
         }
       },
       next: () => request.success(),
-    })
+    }),
   )
 }
 
@@ -107,28 +107,28 @@ export function checkoutPair(client: SanityClient, idPair: IdPair): Pair {
   const listenerEvents$ = getPairListener(client, idPair).pipe(share())
 
   const reconnect$ = listenerEvents$.pipe(
-    filter((ev) => ev.type === 'reconnect')
+    filter((ev) => ev.type === 'reconnect'),
   ) as Observable<ReconnectEvent>
 
   const draft = createBufferedDocument(
     draftId,
-    listenerEvents$.pipe(filter(isMutationEventForDocId(draftId)))
+    listenerEvents$.pipe(filter(isMutationEventForDocId(draftId))),
   )
 
   const published = createBufferedDocument(
     publishedId,
-    listenerEvents$.pipe(filter(isMutationEventForDocId(publishedId)))
+    listenerEvents$.pipe(filter(isMutationEventForDocId(publishedId))),
   )
 
   // share commit handling between draft and published
   const transactionsPendingEvents$ = listenerEvents$.pipe(
-    filter((ev): ev is PendingMutationsEvent => ev.type === 'pending')
+    filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     mergeMap((commitRequest) => submitCommitRequest(client, commitRequest)),
     mergeMapTo(EMPTY),
-    share()
+    share(),
   )
 
   return {

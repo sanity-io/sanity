@@ -31,7 +31,7 @@ export default function SanityPreviewStory() {
   const schemaType = useMemo(() => {
     if (type === 'image') {
       return (schema.get('imagesTest') as ObjectSchemaType).fields.find(
-        (f) => f.name === 'mainImage'
+        (f) => f.name === 'mainImage',
       )!.type
     }
 

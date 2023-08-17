@@ -48,13 +48,13 @@ export function useActionGroups({
         onMemberOpen(paths.markDefPath)
       }
     },
-    [editor, onMemberOpen, resolveInitialValue]
+    [editor, onMemberOpen, resolveInitialValue],
   )
 
   return useMemo(
     () =>
       editor ? getPTEToolbarActionGroups(editor, disabled, handleInsertAnnotation, hotkeys) : [],
-    [disabled, editor, handleInsertAnnotation, hotkeys]
+    [disabled, editor, handleInsertAnnotation, hotkeys],
   )
 }
 
@@ -70,7 +70,7 @@ export function useActiveActionKeys({
     useMemo(
       () => {
         const activeAnnotationKeys = PortableTextEditor.activeAnnotations(editor).map(
-          (a) => a._type
+          (a) => a._type,
         )
 
         return actions
@@ -92,8 +92,8 @@ export function useActiveActionKeys({
         editor,
         // This is needed so that active actions update as `selection` changes
         selection,
-      ]
-    )
+      ],
+    ),
   )
 }
 
@@ -111,7 +111,7 @@ export function useActiveStyleKeys({items}: {items: BlockStyleItem[]}): string[]
         focusBlock,
         // This is needed so that active styles update as `selection` changes
         selection,
-      ]
-    )
+      ],
+    ),
   )
 }

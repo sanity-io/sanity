@@ -5,11 +5,11 @@ export function gracefulServerDeath(
   command: 'start' | 'dev' | 'preview',
   httpHost: string | undefined,
   httpPort: number,
-  err: Error & {code?: string}
+  err: Error & {code?: string},
 ): void {
   if (err.code === 'EADDRINUSE') {
     throw new Error(
-      `Port number is already in use, configure \`server.port\` in \`sanity.cli.js\` or pass \`--port <somePort>\` to \`sanity ${command}\``
+      `Port number is already in use, configure \`server.port\` in \`sanity.cli.js\` or pass \`--port <somePort>\` to \`sanity ${command}\``,
     )
   }
 
@@ -56,11 +56,11 @@ export function getSharedServerConfig({
 
   const httpPort = toInt(
     flags.port || env.SANITY_STUDIO_SERVER_PORT || cliConfig?.server?.port,
-    3333
+    3333,
   )
 
   const basePath = ensureTrailingSlash(
-    env.SANITY_STUDIO_BASEPATH ?? (cliConfig?.project?.basePath || '/')
+    env.SANITY_STUDIO_BASEPATH ?? (cliConfig?.project?.basePath || '/'),
   )
 
   return {

@@ -6,7 +6,7 @@ export interface RuleDef<T, FieldValue = unknown> {
 
   // this generic allows callees to provide a type override
   custom: <LenientFieldValue extends FieldValue>(
-    fn: CustomValidator<LenientFieldValue | undefined>
+    fn: CustomValidator<LenientFieldValue | undefined>,
   ) => T
 
   error: (message?: string) => T
@@ -19,5 +19,5 @@ export type RuleBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> 
 
 /** @public */
 export type ValidationBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> = (
-  rule: T
+  rule: T,
 ) => RuleBuilder<T, FieldValue>

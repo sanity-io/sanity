@@ -34,9 +34,9 @@ function WorkspaceLoader({
           catchError((err) => {
             if (err instanceof ConfigResolutionError) return of(err)
             throw err
-          })
-        )
-      )
+          }),
+        ),
+      ),
     )
       .pipe(
         map((results): Source[] => {
@@ -57,8 +57,8 @@ function WorkspaceLoader({
             ...rootSource,
             unstable_sources: [rootSource, ...restOfSources],
             type: 'workspace',
-          })
-        )
+          }),
+        ),
       )
       .subscribe({
         next: setWorkspace,

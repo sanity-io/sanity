@@ -28,7 +28,7 @@ export function SearchFilterDateLastInput({
       dateUnit.current = event.currentTarget.value as OperatorDateLastValue['unit']
       handleChange()
     },
-    [handleChange]
+    [handleChange],
   )
   const handleValueChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +37,7 @@ export function SearchFilterDateLastInput({
       dateValue.current = Number.isFinite(numValue) ? numValue : null
       handleChange()
     },
-    [handleChange]
+    [handleChange],
   )
 
   return (

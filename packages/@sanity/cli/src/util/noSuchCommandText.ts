@@ -30,7 +30,7 @@ is installed as a dependency.`
 export function getNoSuchCommandText(
   cmdName: string,
   parentGroupName?: string | null,
-  groups?: Record<string, (CliCommandDefinition | CliCommandGroupDefinition)[]>
+  groups?: Record<string, (CliCommandDefinition | CliCommandGroupDefinition)[]>,
 ): string {
   if (parentGroupName && groups && groups[parentGroupName]) {
     return suggestCommand(cmdName, groups[parentGroupName], parentGroupName)
@@ -47,7 +47,7 @@ export function getNoSuchCommandText(
 function suggestCommand(
   cmdName: string,
   group: (CliCommandDefinition | CliCommandGroupDefinition)[],
-  parentGroupName: string | null = null
+  parentGroupName: string | null = null,
 ) {
   // Try to find something similar
   const closest = group
@@ -55,7 +55,7 @@ function suggestCommand(
     .reduce(
       (current: {index: number; distance: number}, distance: number, index: number) =>
         distance < current.distance ? {index, distance} : current,
-      {index: 0, distance: +Infinity}
+      {index: 0, distance: +Infinity},
     )
 
   // Given we are within our target threshold, suggest the command

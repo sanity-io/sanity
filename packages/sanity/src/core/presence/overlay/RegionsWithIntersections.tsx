@@ -21,7 +21,7 @@ interface RegionsWithIntersectionsProps {
   regions: ReportedRegionWithRect<FieldPresenceData>[]
   render: (
     regionsWithIntersectionDetails: RegionWithIntersectionDetails[],
-    containerWidth: number
+    containerWidth: number,
   ) => React.ReactNode | null
   children: React.ReactNode
   margins: [number, number, number, number]
@@ -32,7 +32,7 @@ const negate = (num: number) => 0 - num
 
 export const RegionsWithIntersections = forwardRef(function RegionsWithIntersections(
   props: RegionsWithIntersectionsProps,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {regions, render, children, margins: marginsProp} = props
 
@@ -48,7 +48,7 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
         rootMargin: margins.map(negate).map(toPx).join(' '),
         threshold: INTERSECTION_THRESHOLDS,
       }),
-    [margins]
+    [margins],
   )
 
   const [intersections, setIntersections] = useState<
@@ -121,7 +121,7 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
             })
             .filter(Boolean)
         : []) as RegionWithIntersectionDetails[],
-    [bottom, intersections, regions, top]
+    [bottom, intersections, regions, top],
   )
 
   return (

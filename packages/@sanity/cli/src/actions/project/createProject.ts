@@ -9,7 +9,7 @@ export interface CreateProjectOptions {
 
 export function createProject(
   apiClient: CliApiClient,
-  options: CreateProjectOptions
+  options: CreateProjectOptions,
 ): Promise<{projectId: string; displayName: string}> {
   return apiClient({
     requireUser: true,

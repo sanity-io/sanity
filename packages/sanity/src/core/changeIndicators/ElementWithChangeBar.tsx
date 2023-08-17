@@ -52,7 +52,7 @@ export function ElementWithChangeBar(props: {
       handleMouseEnter,
       handleMouseLeave,
       withHoverEffect,
-    ]
+    ],
   )
 
   return (

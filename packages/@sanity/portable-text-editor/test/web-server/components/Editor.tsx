@@ -162,7 +162,7 @@ export const Editor = ({
           throw new Error(`Unhandled editor change ${JSON.stringify(change)}`)
       }
     },
-    [onMutation]
+    [onMutation],
   )
 
   const renderListItem = useCallback((props: BlockListItemRenderProps) => {
@@ -186,7 +186,7 @@ export const Editor = ({
         spellCheck
       />
     ),
-    [renderBlock, renderChild, renderDecorator, renderListItem, renderStyle, selection]
+    [renderBlock, renderChild, renderDecorator, renderListItem, renderStyle, selection],
   )
 
   // Make sure that the test editor is focused and out of "readOnly mode".

@@ -20,7 +20,7 @@ const noopRenderDefault = () => <></>
 
 export type TestRenderObjectInputCallback = (
   inputProps: ObjectInputProps,
-  context: TestRenderInputContext
+  context: TestRenderInputContext,
 ) => React.ReactElement
 
 export async function renderObjectInput(options: {
@@ -40,12 +40,12 @@ export async function renderObjectInput(options: {
 
   function transformProps(
     inputProps: TestRenderInputProps<ComplexElementProps>,
-    context: TestRenderInputContext
+    context: TestRenderInputContext,
   ): ObjectInputProps {
     const {formState} = context
     const {onPathFocus, path, schemaType, value, ...restProps} = inputProps
     const fieldMember = formState.members?.find(
-      (member) => member.kind === 'field' && member.name === fieldDefinition.name
+      (member) => member.kind === 'field' && member.name === fieldDefinition.name,
     ) as FieldMember<ObjectFormNode> | undefined
     const field = fieldMember?.field
 
@@ -84,7 +84,7 @@ export async function renderObjectInput(options: {
 
   function rerender(subsequentRender: TestRenderObjectInputCallback) {
     result.rerender((inputProps, context) =>
-      subsequentRender(transformProps(inputProps, context), context)
+      subsequentRender(transformProps(inputProps, context), context),
     )
   }
 

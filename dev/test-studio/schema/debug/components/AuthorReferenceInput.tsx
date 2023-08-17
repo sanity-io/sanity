@@ -15,7 +15,7 @@ interface AuthorReference {
 
 export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   props: ObjectInputProps<Reference, ReferenceSchemaType>,
-  ref: React.ForwardedRef<any>
+  ref: React.ForwardedRef<any>,
 ) {
   // @todo fix
   const {inputProps, type, value} = props
@@ -37,7 +37,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
     const sub = client.observable
       .fetch(
         // Select authors, with a defined image, which are published
-        '*[_type == "author" && defined(image) && _id in path("*")][0...10] {_id, image, name}'
+        '*[_type == "author" && defined(image) && _id in path("*")][0...10] {_id, image, name}',
       )
       .subscribe(handleAuthorsReceived)
 
@@ -65,7 +65,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
       type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
 
       // Set the actual reference value
-      set(item._id, ['_ref'])
+      set(item._id, ['_ref']),
     )
   }
 

@@ -5,7 +5,7 @@ import {PreviewLayoutKey, PreviewMediaDimensions} from './types'
 export function renderPreviewMedia<Layout = PreviewLayoutKey>(
   value: React.ReactNode | React.ElementType<{layout: Layout; dimensions: PreviewMediaDimensions}>,
   layout: Layout,
-  dimensions: PreviewMediaDimensions
+  dimensions: PreviewMediaDimensions,
 ): React.ReactNode {
   if (isValidElementType(value)) {
     return createElement(value, {layout, dimensions})
@@ -22,7 +22,7 @@ export function renderPreviewMedia<Layout = PreviewLayoutKey>(
 export function renderPreviewNode<Layout = PreviewLayoutKey>(
   value: React.ReactNode | React.ElementType<{layout: Layout}>,
   layout: Layout,
-  fallbackNode?: React.ReactNode
+  fallbackNode?: React.ReactNode,
 ): React.ReactNode {
   if (typeof value === 'string') {
     return value

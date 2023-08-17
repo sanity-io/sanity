@@ -34,7 +34,7 @@ async function main(options: {packageName: string; releaseVersion?: string}): Pr
 
 function _fetchCurrentPackage(
   sanity: NonNullable<NonNullable<SanityTSDocConfigOptions['output']>['sanity']>,
-  params: {name: string}
+  params: {name: string},
 ) {
   const parts = params.name.split('/')
   const scope = parts.length > 1 ? parts[0] : null
@@ -66,7 +66,10 @@ async function etl(options: {
 
   if (!sanityConfig) {
     throw new Error(
-      `Missing sanity config in ${path.relative(cwd, path.resolve(packagePath, 'tsdoc.config.ts'))}`
+      `Missing sanity config in ${path.relative(
+        cwd,
+        path.resolve(packagePath, 'tsdoc.config.ts'),
+      )}`,
     )
   }
 
@@ -103,7 +106,7 @@ async function etl(options: {
 
   if (sanityConfig.token) {
     timer = startTimer(
-      `Loading ${documents.length} API documents to ${sanityConfig.projectId}:${sanityConfig.dataset}`
+      `Loading ${documents.length} API documents to ${sanityConfig.projectId}:${sanityConfig.dataset}`,
     )
 
     await load(documents, {

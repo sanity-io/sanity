@@ -19,7 +19,7 @@ function resolveUrlStateWithDefaultTool(tools: Tool[], state: Record<string, unk
 
 function makeBackwardsCompatible(
   tools: Tool[],
-  state: Record<string, unknown> | null
+  state: Record<string, unknown> | null,
 ): Record<string, unknown> | null {
   if (!state) {
     return state
@@ -34,11 +34,11 @@ function makeBackwardsCompatible(
 
 export function resolveDefaultState(
   tools: Tool[],
-  state: Record<string, unknown> | null
+  state: Record<string, unknown> | null,
 ): RouterState | null {
   const urlStateWithDefaultTool = resolveUrlStateWithDefaultTool(
     tools,
-    makeBackwardsCompatible(tools, state)
+    makeBackwardsCompatible(tools, state),
   )
 
   return urlStateWithDefaultTool
@@ -47,7 +47,7 @@ export function resolveDefaultState(
 export function resolveIntentState(
   tools: Tool[],
   prevState: RouterState | null,
-  nextState: RouterState
+  nextState: RouterState,
 ): RouterEvent {
   const {intent, params, payload} = nextState
 
@@ -70,7 +70,7 @@ export function resolveIntentState(
     (tool) =>
       tool &&
       typeof tool.canHandleIntent === 'function' &&
-      tool.canHandleIntent(intent, params, prevState && prevState[tool.name])
+      tool.canHandleIntent(intent, params, prevState && prevState[tool.name]),
   )
 
   if (matchingTool?.getIntentState) {
@@ -78,7 +78,7 @@ export function resolveIntentState(
       intent,
       params as any,
       prevState && (prevState[matchingTool.name] as any),
-      payload
+      payload,
     )
 
     return {

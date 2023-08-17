@@ -86,7 +86,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       anchor: {path: relativePath, offset: 0},
       focus: {path: relativePath, offset: 0},
     }),
-    [relativePath]
+    [relativePath],
   )
 
   const onRemove = useCallback(() => {
@@ -116,7 +116,7 @@ export const InlineObject = (props: InlineObjectProps) => {
   const presence = useChildPresence(path, true)
   const rootPresence = useMemo(
     () => presence.filter((p) => isEqual(p.path, path)),
-    [path, presence]
+    [path, presence],
   )
 
   const componentProps: BlockProps = useMemo(
@@ -178,7 +178,7 @@ export const InlineObject = (props: InlineObjectProps) => {
       selected,
       validation,
       value,
-    ]
+    ],
   )
 
   // Tooltip indicating validation errors, warnings, info and markers
@@ -195,7 +195,7 @@ export const InlineObject = (props: InlineObjectProps) => {
         </TooltipBox>
       )) ||
       null,
-    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation]
+    [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
   )
 
   return useMemo(
@@ -214,7 +214,7 @@ export const InlineObject = (props: InlineObjectProps) => {
         </Tooltip>
       </span>
     ),
-    [componentProps, memberItem?.elementRef, renderInlineBlock, toolTipContent, tooltipEnabled]
+    [componentProps, memberItem?.elementRef, renderInlineBlock, toolTipContent, tooltipEnabled],
   )
 }
 

@@ -19,7 +19,7 @@ export interface PreviewValue {
 /** @public */
 export interface PreviewConfig<
   Select extends Record<string, string> = Record<string, string>,
-  PrepareValue extends Record<keyof Select, any> = Record<keyof Select, any>
+  PrepareValue extends Record<keyof Select, any> = Record<keyof Select, any>,
 > {
   select?: Select
   prepare?: (value: PrepareValue, viewOptions?: PrepareViewOptions) => PreviewValue

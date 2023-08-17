@@ -9,7 +9,7 @@ export interface UninstallOptions {
 
 export async function uninstallPackages(
   options: UninstallOptions,
-  context: Pick<CliCommandContext, 'output' | 'workDir'>
+  context: Pick<CliCommandContext, 'output' | 'workDir'>,
 ): Promise<void> {
   const {packageManager, packages} = options
   const {output, workDir} = context

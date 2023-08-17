@@ -16,18 +16,18 @@ export function useVisibility(props: {element: HTMLElement | null; hideDelay?: n
     const isDocumentVisible$ = concat(
       of(!document.hidden),
       visibilityChange$.pipe(
-        map((event) => (event.target instanceof Document ? !event?.target?.hidden : false))
-      )
+        map((event) => (event.target instanceof Document ? !event?.target?.hidden : false)),
+      ),
     ).pipe(distinctUntilChanged())
 
     const inViewport$ = intersectionObservableFor(element).pipe(
-      map((event) => event.isIntersecting)
+      map((event) => event.isIntersecting),
     )
 
     const visible$ = isDocumentVisible$.pipe(
       switchMap((isDocumentVisible) => (isDocumentVisible ? inViewport$ : of(false))),
       switchMap((isVisible) => (isVisible ? of(true) : of(false).pipe(delay(hideDelay)))),
-      distinctUntilChanged()
+      distinctUntilChanged(),
     )
 
     const sub = visible$.subscribe(setVisible)

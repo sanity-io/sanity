@@ -25,7 +25,7 @@ const isSerializable = (thing: unknown): thing is Serializable => {
 export type PaneResolver = (
   unresolvedPane: UnresolvedPaneNode | undefined,
   context: RouterPaneSiblingContext,
-  flatIndex: number
+  flatIndex: number,
 ) => Observable<PaneNode>
 
 export type PaneResolverMiddleware = (paneResolveFn: PaneResolver) => PaneResolver
@@ -58,7 +58,7 @@ const wrapWithPublishReplay: PaneResolverMiddleware =
       // get an emission. without this, memoized observables may get stuck
       // waiting for their first emissions resulting in a loading pane
       publishReplay(1),
-      refCount()
+      refCount(),
     )
   }
 
@@ -80,7 +80,7 @@ export function createPaneResolver(middleware: PaneResolverMiddleware): PaneReso
 
         if (isPromise(unresolvedPane) || isObservable(unresolvedPane)) {
           return from(unresolvedPane).pipe(
-            switchMap((result) => resolvePane(result, context, flatIndex))
+            switchMap((result) => resolvePane(result, context, flatIndex)),
           )
         }
 
@@ -93,8 +93,8 @@ export function createPaneResolver(middleware: PaneResolverMiddleware): PaneReso
         }
 
         return observableOf(unresolvedPane)
-      })
-    )
+      }),
+    ),
   )
 
   return resolvePane

@@ -103,7 +103,7 @@ export function StudioNavbar() {
       workspaces: mediaIndex >= 3 && workspaces.length > 1,
       tools: mediaIndex >= 3,
     }),
-    [mediaIndex, workspaces.length]
+    [mediaIndex, workspaces.length],
   )
   const formattedName = typeof name === 'string' && name !== 'root' ? startCase(name) : null
   const title = workspace.title || formattedName || 'Studio'

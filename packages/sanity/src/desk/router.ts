@@ -108,7 +108,7 @@ function parseChunks(chunks: string[], initial: RouterPaneSibling): RouterPaneSi
 
       return pane
     },
-    {...initial, params: EMPTY_PARAMS, payload: undefined}
+    {...initial, params: EMPTY_PARAMS, payload: undefined},
   )
 }
 

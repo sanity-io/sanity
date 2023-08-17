@@ -48,7 +48,7 @@ export function FilterForm({filter}: FilterFormProps) {
         value,
       })
     },
-    [dispatch, filterKey]
+    [dispatch, filterKey],
   )
 
   const handleCatchError = useCallback((params: ErrorParams) => {

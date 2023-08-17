@@ -86,11 +86,11 @@ export function ImageToolInput(props: ImageToolInputProps) {
       }
       // For backwards compatibility, where hotspot/crop might not have a named type yet
       const cropField = schemaType.fields.find(
-        (field) => field.name === 'crop' && field.type.name !== 'object'
+        (field) => field.name === 'crop' && field.type.name !== 'object',
       )
 
       const hotspotField = schemaType.fields.find(
-        (field) => field.type.name !== 'object' && field.name === 'hotspot'
+        (field) => field.type.name !== 'object' && field.name === 'hotspot',
       )
 
       // Note: when either hotspot or crop change we fill in the default if the other is missing
@@ -105,7 +105,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
       onChange([set(crop, ['crop']), set(hotspot, ['hotspot'])])
     },
-    [onChange, readOnly, schemaType.fields]
+    [onChange, readOnly, schemaType.fields],
   )
 
   return (

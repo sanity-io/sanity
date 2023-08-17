@@ -153,7 +153,7 @@ function registerUnlinkOnSigInt(tmpFile: string) {
 function writeDocuments(
   documents: {_id?: string; _type: string} | {_id?: string; _type: string}[],
   operation: MutationOperationName,
-  client: SanityClient
+  client: SanityClient,
 ) {
   const docs = Array.isArray(documents) ? documents : [documents]
   if (docs.length === 0) {
@@ -219,7 +219,7 @@ function getErrorMessage(message: string, index: number, isSingle: boolean): str
 
 function getResultMessage(
   result: MultipleMutationResult,
-  operation: MutationOperationName
+  operation: MutationOperationName,
 ): string {
   const joiner = '\n  - '
   if (operation === 'createOrReplace') {

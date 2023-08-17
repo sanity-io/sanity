@@ -20,7 +20,7 @@ export interface CollapseMenuButtonProps extends CommonProps {
 /** @internal */
 export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
   props: CollapseMenuButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as'>,
-  ref: React.ForwardedRef<HTMLButtonElement>
+  ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -77,7 +77,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const activeView = useMemo(
     () => views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'},
-    [activeViewId, views]
+    [activeViewId, views],
   )
 
   // Use a local portal container when split panes is supported
@@ -111,12 +111,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         options: activeView.options,
         schemaType,
       }),
-    [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value]
+    [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value],
   )
 
   const lastNonDeletedRevId = useTimelineSelector(
     timelineStore,
-    (state) => state.lastNonDeletedRevId
+    (state) => state.lastNonDeletedRevId,
   )
 
   // Scroll to top as `documentId` changes

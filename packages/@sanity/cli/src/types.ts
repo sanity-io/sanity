@@ -54,7 +54,7 @@ export interface ResolvedCliCommand {
 
 export type CliCommandAction<F = Record<string, unknown>> = (
   args: CliCommandArguments<F>,
-  context: CliCommandContext
+  context: CliCommandContext,
 ) => Promise<unknown>
 
 export interface CliCommandDefinition<F = Record<string, unknown>> {
@@ -110,13 +110,13 @@ export interface CliCommandRunner {
   runCommand(
     commandOrGroup: string,
     args: CliCommandArguments,
-    options: CommandRunnerOptions
+    options: CommandRunnerOptions,
   ): Promise<unknown>
 
   resolveSubcommand(
     group: (CliCommandDefinition | CliCommandGroupDefinition)[],
     subCommandName: string,
-    parentGroupName: string
+    parentGroupName: string,
   ): ResolvedCliCommand | null
 }
 
@@ -148,7 +148,7 @@ export type SinglePrompt =
   | (Omit<DistinctQuestion, 'name'> & {type: 'input'})
 
 export type CliPrompter = (<T extends Answers = Answers>(
-  questions: DistinctQuestion<T>[]
+  questions: DistinctQuestion<T>[],
 ) => Promise<T>) & {
   Separator: typeof Separator
   single: <T = string>(question: SinglePrompt) => Promise<T>

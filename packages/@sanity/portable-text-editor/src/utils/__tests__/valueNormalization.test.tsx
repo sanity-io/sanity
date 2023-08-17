@@ -35,7 +35,7 @@ describe('values: normalization', () => {
         ref={editorRef}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     await waitFor(() => {
       if (editorRef.current) {

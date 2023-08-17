@@ -21,7 +21,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
      * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
-    spec?: Partial<InitialValueTemplateItem>
+    spec?: Partial<InitialValueTemplateItem>,
   ) {
     this.spec = spec ? spec : {}
   }
@@ -119,7 +119,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
         '`id` is required for initial value template item nodes',
         path,
         index,
-        hint
+        hint,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
@@ -128,7 +128,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
         'template id (`templateId`) is required for initial value template item nodes',
         path,
         spec.id,
-        hint
+        hint,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
@@ -139,7 +139,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
         'template id (`templateId`) is required for initial value template item nodes',
         path,
         spec.id,
-        hint
+        hint,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
@@ -170,7 +170,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
 
 /** @internal */
 export function defaultInitialValueTemplateItems(
-  context: StructureContext
+  context: StructureContext,
 ): InitialValueTemplateItemBuilder[] {
   const {schema, getStructureBuilder, templates} = context
 
@@ -190,7 +190,7 @@ export function defaultInitialValueTemplateItems(
 export function maybeSerializeInitialValueTemplateItem(
   item: InitialValueTemplateItem | InitialValueTemplateItemBuilder,
   index: number,
-  path: SerializePath
+  path: SerializePath,
 ): InitialValueTemplateItem {
   return item instanceof InitialValueTemplateItemBuilder ? item.serialize({path, index}) : item
 }
@@ -198,7 +198,7 @@ export function maybeSerializeInitialValueTemplateItem(
 /** @internal */
 export function menuItemsFromInitialValueTemplateItems(
   context: StructureContext,
-  templateItems: InitialValueTemplateItem[]
+  templateItems: InitialValueTemplateItem[],
 ): MenuItem[] {
   const {schema, templates} = context
   return templateItems.map((item) => {
@@ -206,7 +206,7 @@ export function menuItemsFromInitialValueTemplateItems(
     const title = item.title || template?.title || 'Create new'
     const params = pickBy(
       {type: template && template.schemaType, template: item.templateId},
-      Boolean
+      Boolean,
     )
     const intentParams: IntentParams = item.parameters ? [params, item.parameters] : params
     const schemaType = template && schema.get(template.schemaType)

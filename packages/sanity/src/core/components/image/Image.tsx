@@ -40,7 +40,7 @@ export interface ImageProps {
 
 export const Image = forwardRef(function Image(
   props: ImageProps & Omit<React.HTMLAttributes<HTMLImageElement>, 'height' | 'src' | 'width'>,
-  ref: React.ForwardedRef<HTMLImageElement>
+  ref: React.ForwardedRef<HTMLImageElement>,
 ) {
   const {dpr, fit, height, source, width, ...restProps} = props
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

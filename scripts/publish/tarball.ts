@@ -39,7 +39,7 @@ async function main() {
         chalk.green('packed'),
         pkg.name,
         chalk.gray('→'),
-        path.relative(process.cwd(), filename)
+        path.relative(process.cwd(), filename),
       )
     }
   }

@@ -45,7 +45,7 @@ export type SearchFilterDefinition<TOperators = string> =
  * @internal
  */
 export function createFilterDefinitionDictionary(
-  filterDefinitions: SearchFilterDefinition[]
+  filterDefinitions: SearchFilterDefinition[],
 ): SearchFilterDefinitionDictionary {
   return filterDefinitions.reduce<SearchFilterDefinitionDictionary>((acc, val) => {
     acc[val.name] = val
@@ -57,7 +57,7 @@ export function createFilterDefinitionDictionary(
  * @alpha
  */
 export function defineSearchFilter<TOperators = SearchOperatorType>(
-  filterDef: SearchFilterDefinition<TOperators>
+  filterDef: SearchFilterDefinition<TOperators>,
 ): typeof filterDef {
   return filterDef
 }
@@ -66,14 +66,14 @@ export function defineSearchFilter<TOperators = SearchOperatorType>(
  * @alpha
  */
 export function defineSearchFilterOperators<TOperators = SearchOperatorType>(
-  operators: Operator<TOperators>[]
+  operators: Operator<TOperators>[],
 ): typeof operators {
   return operators
 }
 
 export function getFilterDefinition(
   definitions: SearchFilterDefinitionDictionary,
-  filterName: string
+  filterName: string,
 ): SearchFilterDefinition | undefined {
   return definitions[filterName]
 }

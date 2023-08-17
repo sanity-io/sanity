@@ -7,7 +7,7 @@ export default function DocumentPairStory() {
   const documentStore = useDocumentStore()
   const [draftSnapshot, setDraftSnapshot] = useState<RemoteSnapshotVersionEvent | null>(null)
   const [publishedSnapshot, setPublishedSnapshot] = useState<RemoteSnapshotVersionEvent | null>(
-    null
+    null,
   )
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function DocumentPairStory() {
           {JSON.stringify(
             {draft: {snapshot: draftSnapshot}, published: {snapshot: publishedSnapshot}},
             null,
-            2
+            2,
           )}
         </Code>
       </Box>

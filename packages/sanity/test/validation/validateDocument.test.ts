@@ -20,7 +20,7 @@ jest.mock('../../src/core/validation/util/convertToValidationMarker', () => {
   return {
     convertToValidationMarker: jest.fn(
       jest.requireActual('../../src/core/validation/util/convertToValidationMarker')
-        .convertToValidationMarker
+        .convertToValidationMarker,
     ),
   }
 })
@@ -59,7 +59,7 @@ describe('resolveTypeForArrayItem', () => {
         _key: 'exampleKey',
         title: 5,
       },
-      [fooType!, barType!]
+      [fooType!, barType!],
     )
 
     expect(resolved).toBe(barType)
@@ -72,7 +72,7 @@ describe('resolveTypeForArrayItem', () => {
         _key: 'exampleKey',
         title: 5,
       },
-      [fooType!]
+      [fooType!],
     )
 
     expect(resolved).toBe(fooType)
@@ -189,7 +189,7 @@ describe('validateItem', () => {
         parent: undefined,
         type: schema.get('testObj'),
         getDocumentExists: undefined,
-      })
+      }),
     ).resolves.toMatchObject([
       {
         level: 'error',
@@ -259,7 +259,7 @@ describe('validateItem', () => {
         type: schema.get('testObj'),
         value: {foo: 5},
         getDocumentExists: undefined,
-      })
+      }),
     ).resolves.toMatchObject([
       {
         item: {message: 'Expected type "String", got "Number"'},
@@ -529,7 +529,7 @@ describe('validateItem', () => {
         type: schema.get('values'),
         value: values,
         getDocumentExists: undefined,
-      })
+      }),
     ).resolves.toEqual([
       {
         level: 'error',
@@ -628,7 +628,7 @@ describe('validateItem', () => {
         parent: document,
         path: undefined,
         getDocumentExists: undefined,
-      })
+      }),
     ).resolves.toMatchObject([
       {
         item: {message: 'from root'},

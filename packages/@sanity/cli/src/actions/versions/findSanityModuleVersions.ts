@@ -58,7 +58,7 @@ export interface FindModuleVersionOptions {
 
 export async function findSanityModuleVersions(
   context: CliCommandContext,
-  options: FindModuleVersionOptions = {}
+  options: FindModuleVersionOptions = {},
 ): Promise<ModuleVersionResult[]> {
   const {spinner} = context.output
   const {target, includeCli} = {...defaultOptions, ...options}
@@ -71,7 +71,7 @@ export async function findSanityModuleVersions(
   const resolveOpts = {includeCli, target}
   const spin = spinner('Resolving latest versions').start()
   const versions = await promiseProps<ModuleVersionInfo[]>(
-    buildPackageArray(sanityModules, context.workDir, resolveOpts, cliVersion)
+    buildPackageArray(sanityModules, context.workDir, resolveOpts, cliVersion),
   )
 
   const packages = Object.values(versions)
@@ -106,17 +106,20 @@ function filterSanityModules(manifest: Partial<PackageJson>): Record<string, str
     .filter((mod) => mod.startsWith('@sanity/') || mod === 'sanity')
     .filter((mod) => !PACKAGES_TO_EXCLUDE.includes(mod))
     .sort()
-    .reduce((versions, dependency) => {
-      versions[dependency] = dependencies[dependency]
-      return versions
-    }, {} as Record<string, string>)
+    .reduce(
+      (versions, dependency) => {
+        versions[dependency] = dependencies[dependency]
+        return versions
+      },
+      {} as Record<string, string>,
+    )
 }
 
 function buildPackageArray(
   packages: Record<string, string>,
   workDir: string,
   options: FindModuleVersionOptions = {},
-  cliVersion: string
+  cliVersion: string,
 ): PromisedModuleVersionInfo[] {
   const {includeCli, target} = options
 

@@ -21,10 +21,10 @@ export const validationTest = defineType({
                 resolve(
                   `Always async error for. From context client->projectId: ${
                     context.getClient({apiVersion: '2022-09-09'}).config().projectId
-                  }`
+                  }`,
                 )
               }, 1000)
-            })
+            }),
         ),
       initialValue: async (params: undefined, context: ConfigContext) => {
         return new Promise((resolve) => {

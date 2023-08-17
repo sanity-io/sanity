@@ -186,7 +186,7 @@ function InvalidType(props: {documentId: string; actualType: string; declaredTyp
                 According to the schema, referenced documents can only be of type{' '}
                 {humanizeList(
                   props.declaredTypes.map((typeName) => <code key={typeName}>{typeName}</code>),
-                  'or'
+                  'or',
                 )}
                 .
               </Text>

@@ -20,7 +20,7 @@ export function createCommonBasePathRegex(workspaces: NormalizedWorkspace[]): Re
     workspace.basePath
       // removes the leading `/`
       .substring(1)
-      .split('/')
+      .split('/'),
   )
 
   // this common base path is used to check if we should redirect. it's the base

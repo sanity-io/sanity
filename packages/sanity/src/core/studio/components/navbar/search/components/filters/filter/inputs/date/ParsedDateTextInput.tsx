@@ -70,7 +70,7 @@ export function ParsedDateTextInput({
 }: ParsedDateTextInputProps) {
   const dateFormat = useMemo(
     () => (isDateTimeFormat ? FORMAT.datetime.pattern : FORMAT.date.pattern),
-    [isDateTimeFormat]
+    [isDateTimeFormat],
   )
 
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
@@ -112,7 +112,7 @@ export function ParsedDateTextInput({
       }
       setCustomValidity(validDate ? undefined : `Invalid ${isDateTime ? 'datetime' : 'date'}`)
     },
-    [dateFormat, isDateTime, onChange]
+    [dateFormat, isDateTime, onChange],
   )
 
   /**
@@ -144,7 +144,7 @@ export function ParsedDateTextInput({
         processInputString({dateString: inputValue, triggerOnChange: true})
       }
     },
-    [inputValue, processInputString]
+    [inputValue, processInputString],
   )
 
   /**

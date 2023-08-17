@@ -24,7 +24,7 @@ export const duplicate: OperationImpl<[baseDocumentId: string], 'NOTHING_TO_DUPL
       },
       {
         tag: 'document.duplicate',
-      }
+      },
     )
   },
 }

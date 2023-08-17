@@ -6,7 +6,7 @@ export function inferFromSchemaType(
   typeDef: SchemaType,
   // these are intentionally unused
   _schema: Schema,
-  _visited?: Set<SchemaType>
+  _visited?: Set<SchemaType>,
 ): SchemaType
 // note: this seemingly redundant overload is required
 export function inferFromSchemaType(typeDef: SchemaType): SchemaType

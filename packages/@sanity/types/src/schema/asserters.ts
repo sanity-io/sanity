@@ -58,14 +58,14 @@ export function isArraySchemaType(type: unknown): type is ArraySchemaType {
 
 /** @internal */
 export function isArrayOfBlocksSchemaType(
-  type: unknown
+  type: unknown,
 ): type is ArraySchemaType<ObjectSchemaType> {
   return isArraySchemaType(type) && type.of.some((memberType) => isBlockSchemaType(memberType))
 }
 
 /** @internal */
 export function isArrayOfObjectsSchemaType(
-  type: unknown
+  type: unknown,
 ): type is ArraySchemaType<ObjectSchemaType> {
   return isArraySchemaType(type) && type.of.every((memberType) => isObjectSchemaType(memberType))
 }
@@ -95,7 +95,7 @@ export function isNumberSchemaType(type: unknown): type is NumberSchemaType {
 
 /** @internal */
 export function isPrimitiveSchemaType(
-  type: unknown
+  type: unknown,
 ): type is BooleanSchemaType | StringSchemaType | NumberSchemaType {
   return isBooleanSchemaType(type) || isStringSchemaType(type) || isNumberSchemaType(type)
 }
@@ -107,7 +107,7 @@ export function isReferenceSchemaType(type: unknown): type is ReferenceSchemaTyp
 
 /** @internal */
 export function isCrossDatasetReferenceSchemaType(
-  type: unknown
+  type: unknown,
 ): type is CrossDatasetReferenceSchemaType {
   return (
     isRecord(type) &&

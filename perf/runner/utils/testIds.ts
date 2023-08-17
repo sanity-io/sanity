@@ -9,7 +9,7 @@ function isValidSanityId(id: string) {
 function defineId<T extends string>(testId: T) {
   if (!isValidSanityId(testId)) {
     throw new Error(
-      `"${testId}" is not a valid test ID. A test ID must be all lowercase and a valid Sanity document ID`
+      `"${testId}" is not a valid test ID. A test ID must be all lowercase and a valid Sanity document ID`,
     )
   }
 

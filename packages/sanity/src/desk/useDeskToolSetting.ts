@@ -7,7 +7,7 @@ import {useSettingsStore} from 'sanity'
 export function useDeskToolSetting<ValueType>(
   namespace: string | null,
   key: string,
-  defaultValue?: ValueType
+  defaultValue?: ValueType,
 ): [ValueType | undefined, (_value: ValueType) => void] {
   const settingsStore = useSettingsStore()
   const [value, setValue] = useState<ValueType | undefined>(defaultValue)
@@ -35,7 +35,7 @@ export function useDeskToolSetting<ValueType>(
       setValue(newValue)
       settings.set(newValue as any)
     },
-    [settings]
+    [settings],
   )
 
   return useMemo(() => [value, set], [set, value])

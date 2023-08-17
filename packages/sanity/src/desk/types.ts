@@ -100,7 +100,7 @@ export type StructureResolver = (
    * An object containing pane and index information for the current desk tool.
    * See {@link StructureResolverContext}
    */
-  context: StructureResolverContext
+  context: StructureResolverContext,
 ) => unknown
 
 /** @internal */
@@ -269,7 +269,7 @@ export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
   canHandleIntent?: (
     intentName: string,
     params: Record<string, string | undefined>,
-    options: {pane: PaneNode; index: number}
+    options: {pane: PaneNode; index: number},
   ) => boolean
   child?: UnresolvedPaneNode
 }

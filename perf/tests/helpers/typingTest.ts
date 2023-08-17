@@ -7,7 +7,7 @@ interface Sample {
 }
 export async function typingTest(
   inputElement: HTMLElement,
-  options: {samples?: number; gracePeriod?: number; chars?: string} = {}
+  options: {samples?: number; gracePeriod?: number; chars?: string} = {},
 ): Promise<Sample[]> {
   const {
     samples: sampleCount = 10,
@@ -24,7 +24,7 @@ export async function typingTest(
 async function sample(
   inputElement: HTMLElement,
   gracePeriod = 100,
-  chars = 'abcdefghijklmnopqrstuvwxyz'
+  chars = 'abcdefghijklmnopqrstuvwxyz',
 ): Promise<Sample> {
   let totalLag = 0
   let totalDuration = 0

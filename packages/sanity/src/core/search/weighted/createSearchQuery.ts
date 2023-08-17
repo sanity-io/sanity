@@ -78,7 +78,7 @@ const pathWithMapper = ({mapWith, path}: SearchPath): string =>
  */
 function createConstraints(terms: string[], specs: SearchSpec[]) {
   const combinedSearchPaths = combinePaths(
-    specs.map((configForType) => (configForType.paths || []).map((opt) => pathWithMapper(opt)))
+    specs.map((configForType) => (configForType.paths || []).map((opt) => pathWithMapper(opt))),
   )
 
   const constraints = terms
@@ -132,7 +132,7 @@ function toOrderClause(orderBy: SearchSort[]): string {
       [wrapFieldWithFn(ordering), (ordering.direction || '').toLowerCase()]
         .map((str) => str.trim())
         .filter(Boolean)
-        .join(' ')
+        .join(' '),
     )
     .join(',')
 }
@@ -142,7 +142,7 @@ function toOrderClause(orderBy: SearchSort[]): string {
  */
 export function createSearchQuery(
   searchTerms: SearchTerms,
-  searchOpts: SearchOptions & WeightedSearchOptions = {}
+  searchOpts: SearchOptions & WeightedSearchOptions = {},
 ): SearchQuery {
   const {filter, params, tag} = searchOpts
 

@@ -31,7 +31,7 @@ describe('initialization', () => {
         ref={editorRef}
         schemaType={schemaType}
         value={undefined}
-      />
+      />,
     )
 
     await waitFor(() => {
@@ -96,7 +96,7 @@ describe('initialization', () => {
     const initialValue = [helloBlock]
     const onChange = jest.fn()
     render(
-      <PortableTextEditorTester onChange={onChange} schemaType={schemaType} value={initialValue} />
+      <PortableTextEditorTester onChange={onChange} schemaType={schemaType} value={initialValue} />,
     )
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
@@ -118,7 +118,7 @@ describe('initialization', () => {
         selection={initialSelection}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     await waitFor(() => {
       if (editorRef.current) {
@@ -147,7 +147,7 @@ describe('initialization', () => {
         selection={initialSelection}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     await waitFor(() => {
       if (editorRef.current) {
@@ -169,7 +169,7 @@ describe('initialization', () => {
         selection={newSelection}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     waitFor(() => {
       if (editorRef.current) {
@@ -193,7 +193,7 @@ describe('initialization', () => {
         selection={initialSelection}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     await waitFor(() => {
       if (editorRef.current) {
@@ -234,7 +234,7 @@ describe('initialization', () => {
           selection={initialSelection}
           schemaType={schemaType}
           value={value}
-        />
+        />,
       )
       _rerender = render
     })
@@ -265,7 +265,7 @@ describe('initialization', () => {
         selection={initialSelection}
         schemaType={schemaType}
         value={value}
-      />
+      />,
     )
     await waitFor(() => {
       expect(newOnChange).toHaveBeenCalledWith({
@@ -308,7 +308,7 @@ describe('initialization', () => {
         selection={initialSelection}
         schemaType={schemaType}
         value={initialValue}
-      />
+      />,
     )
     await waitFor(() => {
       if (editorRef.current) {

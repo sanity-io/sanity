@@ -68,7 +68,7 @@ const GroupSelect = ({
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       onSelect(event.currentTarget.value)
     },
-    [onSelect]
+    [onSelect],
   )
 
   return (
@@ -108,7 +108,7 @@ export const FieldGroupTabs = React.memo(function FieldGroupTabs({
     (groupName: any) => {
       onClick?.(groupName)
     },
-    [onClick]
+    [onClick],
   )
 
   return (

@@ -6,7 +6,7 @@ import {ObjectItem} from '../../../types'
 export function createProtoArrayValue<Item extends ObjectItem>(type: SchemaType): Item {
   if (!isObjectSchemaType(type)) {
     throw new Error(
-      `Invalid item type: "${type.type}". Default array input can only contain objects (for now)`
+      `Invalid item type: "${type.type}". Default array input can only contain objects (for now)`,
     )
   }
 

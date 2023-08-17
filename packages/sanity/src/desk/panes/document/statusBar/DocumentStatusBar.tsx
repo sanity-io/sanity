@@ -34,6 +34,6 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
         </Flex>
       </Box>
     ),
-    [actionsBoxRef, badges, showingRevision]
+    [actionsBoxRef, badges, showingRevision],
   )
 }

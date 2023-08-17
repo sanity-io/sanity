@@ -77,7 +77,7 @@ export default function GeneralPreviewStory() {
       title,
       subtitle,
     }),
-    [description, isPlaceholder, media, progress, status, subtitle, title]
+    [description, isPlaceholder, media, progress, status, subtitle, title],
   )
 
   const component = layout && previewComponents[layout]
@@ -103,7 +103,7 @@ export default function GeneralPreviewStory() {
           >
             {createElement(
               component as React.ComponentType<Omit<PreviewProps, 'renderDefault'>>,
-              previewProps
+              previewProps,
             )}
           </Card>
         </Container>

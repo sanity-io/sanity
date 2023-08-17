@@ -35,7 +35,7 @@ export function ImageReferencePreview({reference}: ImageReferencePreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const observeAsset = useCallback(
     (id: string) => observeImageAsset(documentPreviewStore, id),
-    [documentPreviewStore]
+    [documentPreviewStore],
   )
   return (
     <WithReferencedAsset observeAsset={observeAsset} reference={reference}>

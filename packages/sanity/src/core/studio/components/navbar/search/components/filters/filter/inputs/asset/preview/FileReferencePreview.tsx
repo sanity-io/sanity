@@ -15,7 +15,7 @@ export function FileReferencePreview({reference}: FileReferencePreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const observeAsset = useCallback(
     (id: string) => observeFileAsset(documentPreviewStore, id),
-    [documentPreviewStore]
+    [documentPreviewStore],
   )
   return (
     <WithReferencedAsset

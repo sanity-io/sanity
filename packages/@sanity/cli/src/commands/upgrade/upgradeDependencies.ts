@@ -73,7 +73,7 @@ const upgradeDependencies: CliCommandAction<UpgradeCommandFlags> =
     if (needsUpdate.length === 0) {
       const specified = modules.length === 0 ? 'All' : 'All *specified*'
       context.output.print(
-        `${chalk.green('✔')} ${specified} Sanity modules are at latest compatible versions`
+        `${chalk.green('✔')} ${specified} Sanity modules are at latest compatible versions`,
       )
       return
     }
@@ -85,8 +85,8 @@ const upgradeDependencies: CliCommandAction<UpgradeCommandFlags> =
     if (nonPinned.length === 0) {
       context.output.warn(
         `${chalk.yellow(
-          '⚠'
-        )} All modules are pinned to specific versions, not upgrading:\n - ${pinnedNames}`
+          '⚠',
+        )} All modules are pinned to specific versions, not upgrading:\n - ${pinnedNames}`,
       )
       return
     }
@@ -94,8 +94,8 @@ const upgradeDependencies: CliCommandAction<UpgradeCommandFlags> =
     if (pinned.length > 0) {
       context.output.warn(
         `${chalk.yellow(
-          '⚠'
-        )} The follow modules are pinned to specific versions, not upgrading:\n - ${pinnedNames}`
+          '⚠',
+        )} The follow modules are pinned to specific versions, not upgrading:\n - ${pinnedNames}`,
       )
     }
 
@@ -106,9 +106,9 @@ const upgradeDependencies: CliCommandAction<UpgradeCommandFlags> =
     await Promise.all(
       nonPinned.map((mod) =>
         deleteIfNotSymlink(
-          path.join(context.workDir, 'node_modules', mod.name.replace(/\//g, path.sep))
-        )
-      )
+          path.join(context.workDir, 'node_modules', mod.name.replace(/\//g, path.sep)),
+        ),
+      ),
     )
 
     // Replace versions in `package.json`
@@ -176,7 +176,7 @@ function hasSemverBreakingUpgrade(mod: ModuleVersionResult): boolean {
 
 function getMajorUpgradeText(
   mods: ModuleVersionResult[],
-  chalk: CliCommandContext['chalk']
+  chalk: CliCommandContext['chalk'],
 ): string {
   const modNames = mods.map((mod) => `${mod.name} (v${semver.major(mod.latest)})`).join('\n - ')
 
@@ -192,7 +192,7 @@ function getMajorUpgradeText(
 
 function getMajorStudioUpgradeText(
   mod: ModuleVersionResult,
-  chalk: CliCommandContext['chalk']
+  chalk: CliCommandContext['chalk'],
 ): string {
   const prev = semver.major(mod.installed || semver.minVersion(mod.declared)?.toString() || '')
   const next = semver.major(mod.latest)
@@ -209,7 +209,7 @@ function schedulePrintMajorUpgrades(
     baseMajorUpgrade,
     majorUpgrades,
   }: {baseMajorUpgrade?: ModuleVersionResult; majorUpgrades: ModuleVersionResult[]},
-  {chalk, output}: CliCommandContext
+  {chalk, output}: CliCommandContext,
 ): void {
   if (majorUpgrades.length === 0 && !baseMajorUpgrade) {
     return
@@ -223,7 +223,7 @@ function schedulePrintMajorUpgrades(
         boxen(getMajorStudioUpgradeText(baseMajorUpgrade, chalk), {
           borderColor: 'green',
           padding: 1,
-        })
+        }),
       )
       return
     }
@@ -232,7 +232,7 @@ function schedulePrintMajorUpgrades(
       boxen(getMajorUpgradeText(majorUpgrades, chalk), {
         borderColor: 'yellow',
         padding: 1,
-      })
+      }),
     )
   })
 }

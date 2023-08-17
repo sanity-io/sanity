@@ -63,7 +63,7 @@ export function ObjectInputMembers(props: ObjectMembersProps) {
       renderInput,
       renderItem,
       renderPreview,
-    ]
+    ],
   )
 
   return <>{renderMembers}</>

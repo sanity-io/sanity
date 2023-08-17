@@ -43,15 +43,18 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
         tag: 'users.get',
       })
       const response = Array.isArray(value) ? value : [value]
-      const users = response.reduce((acc, next) => {
-        if (next?.id) {
-          acc[next.id] = next
-        }
-        return acc
-      }, {} as Record<string, User | null>)
+      const users = response.reduce(
+        (acc, next) => {
+          if (next?.id) {
+            acc[next.id] = next
+          }
+          return acc
+        },
+        {} as Record<string, User | null>,
+      )
       return userIds.map((id) => users[id] || null)
     },
-    {batchScheduleFn: (cb) => raf(cb)}
+    {batchScheduleFn: (cb) => raf(cb)},
   )
 
   const userFromCurrentUser: User | null = currentUser && {
@@ -92,7 +95,7 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
        * Here, we remove all Errors (or more specifically, only include records with valid IDs).
        */
       return results.filter(
-        (result): result is User => isRecord(result) && typeof result.id === 'string'
+        (result): result is User => isRecord(result) && typeof result.id === 'string',
       )
     },
   }

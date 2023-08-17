@@ -15,7 +15,7 @@ module.exports = function EnvDocument(props) {
         name: 'viewport',
         content: 'width=device-width, initial-scale=1, viewport-fit=cover',
       }),
-      h('title', null, 'Sanity Studio w/ custom document')
+      h('title', null, 'Sanity Studio w/ custom document'),
     ),
 
     h(
@@ -25,7 +25,7 @@ module.exports = function EnvDocument(props) {
         'data-studio-dataset': process.env.SANITY_STUDIO_DATASET,
       },
       h('div', {id: 'sanity'}),
-      h('script', {type: 'module', src: props.entryPath})
-    )
+      h('script', {type: 'module', src: props.entryPath}),
+    ),
   )
 }

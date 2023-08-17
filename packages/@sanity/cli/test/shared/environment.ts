@@ -104,7 +104,7 @@ export const getTestRunArgs = (version: string) => {
 export async function runSanityCmdCommand(
   version: string,
   args: string[],
-  options: {env?: Record<string, string | undefined>; expectFailure?: boolean} = {}
+  options: {env?: Record<string, string | undefined>; expectFailure?: boolean} = {},
 ): Promise<{
   code: number | null
   stdout: string
@@ -125,7 +125,7 @@ export async function runSanityCmdCommand(
 export function exec(
   command: string,
   args: string[],
-  options: Omit<SpawnOptions, 'stdio'>
+  options: Omit<SpawnOptions, 'stdio'>,
 ): Promise<{
   code: number | null
   stdout: string

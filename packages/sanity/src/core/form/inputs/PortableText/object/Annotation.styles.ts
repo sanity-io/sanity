@@ -29,7 +29,7 @@ export const Root = styled.span<{$toneKey?: Exclude<ThemeColorToneKey, 'transpar
         background-color: ${theme.sanity.color.muted.critical.hovered.bg};
       }
     `
-  }
+  },
 )
 
 export const TooltipBox = styled(Box).attrs({forwardedAs: 'span'})`

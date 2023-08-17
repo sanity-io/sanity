@@ -39,7 +39,7 @@ const buildFilterQuery = (acceptParam: string) => {
       // all that remains is then the mime types, so we build that part
       return {...acceptTypes, mimes: `'${acceptValue}', ${acceptTypes.mimes}`}
     },
-    {mimes: '', extensions: '', wildcards: ''}
+    {mimes: '', extensions: '', wildcards: ''},
   )
 
   /* when no accept filter is set, we don't need to add the filter condition
@@ -58,7 +58,7 @@ const buildQuery = (
   start = 0,
   end = PER_PAGE,
   assetType = ASSET_TYPE_IMAGE,
-  acceptParam: string
+  acceptParam: string,
 ) => {
   const hasAccept = acceptParam.length > 0
   const filterCondition = hasAccept ? buildFilterQuery(acceptParam) : ''
@@ -91,7 +91,7 @@ const CardLoadMore = styled(Card)`
 
 const DefaultAssetSource = function DefaultAssetSource(
   props: AssetSourceComponentProps,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '2023-02-14'}), [client])
@@ -140,7 +140,7 @@ const DefaultAssetSource = function DefaultAssetSource(
           })
       }
     },
-    [assetType, accept, versionedClient]
+    [assetType, accept, versionedClient],
   )
 
   const handleDeleteFinished = useCallback(
@@ -148,7 +148,7 @@ const DefaultAssetSource = function DefaultAssetSource(
       // eslint-disable-next-line max-nested-callbacks
       setAssets((prevState) => prevState.filter((asset) => asset._id !== id))
     },
-    [setAssets]
+    [setAssets],
   )
 
   const select = useCallback(
@@ -161,7 +161,7 @@ const DefaultAssetSource = function DefaultAssetSource(
         onSelect(selectedSource)
       }
     },
-    [assets, onSelect]
+    [assets, onSelect],
   )
 
   const handleItemClick = useCallback(
@@ -170,7 +170,7 @@ const DefaultAssetSource = function DefaultAssetSource(
 
       select(event.currentTarget.getAttribute('data-id'))
     },
-    [select]
+    [select],
   )
 
   const handleItemKeyPress = useCallback(
@@ -180,7 +180,7 @@ const DefaultAssetSource = function DefaultAssetSource(
         select(event.currentTarget.getAttribute('data-id'))
       }
     },
-    [select]
+    [select],
   )
 
   const handleClose = useCallback(() => {
@@ -194,7 +194,7 @@ const DefaultAssetSource = function DefaultAssetSource(
       event.preventDefault()
       fetchPage(++currentPageNumber.current)
     },
-    [fetchPage]
+    [fetchPage],
   )
 
   useEffect(() => {

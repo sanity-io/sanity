@@ -35,7 +35,7 @@ export const editState = memoize(
       schema: Schema
     },
     idPair: IdPair,
-    typeName: string
+    typeName: string,
   ): Observable<EditStateFor> => {
     const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
     return snapshotPair(ctx.client, idPair, typeName).pipe(
@@ -45,9 +45,9 @@ export const editState = memoize(
           versions.published.snapshots$,
           versions.transactionsPendingEvents$.pipe(
             map((ev: PendingMutationsEvent) => (ev.phase === 'begin' ? LOCKED : NOT_LOCKED)),
-            startWith(NOT_LOCKED)
+            startWith(NOT_LOCKED),
           ),
-        ])
+        ]),
       ),
       map(([draftSnapshot, publishedSnapshot, transactionSyncLock]) => ({
         id: idPair.publishedId,
@@ -68,8 +68,8 @@ export const editState = memoize(
         transactionSyncLock: null,
       }),
       publishReplay(1),
-      refCount()
+      refCount(),
     )
   },
-  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName)
+  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName),
 )

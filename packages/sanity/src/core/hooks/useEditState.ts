@@ -7,7 +7,7 @@ import {EditStateFor, useDocumentStore} from '../store'
 export function useEditState(
   publishedDocId: string,
   docTypeName: string,
-  priority: 'default' | 'low' = 'default'
+  priority: 'default' | 'low' = 'default',
 ): EditStateFor {
   const documentStore = useDocumentStore()
 
@@ -18,8 +18,8 @@ export function useEditState(
         base.pipe(take(1)),
         base.pipe(
           skip(1),
-          debounce(() => timer(1000))
-        )
+          debounce(() => timer(1000)),
+        ),
       )
     }
     return documentStore.pair.editState(publishedDocId, docTypeName)

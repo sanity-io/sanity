@@ -7,7 +7,7 @@ import type {NormalizedWorkspace} from './types'
 export function useNormalizedWorkspaces(workspaces: WorkspacesContextValue): NormalizedWorkspace[] {
   return useMemo(
     () => normalizedWorkspaces(workspaces) satisfies NormalizedWorkspace[],
-    [workspaces]
+    [workspaces],
   )
 }
 

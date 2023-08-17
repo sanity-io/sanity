@@ -7,7 +7,7 @@ import {PatchEvent, set, unset} from '../patch'
 import {StringInputProps} from '../types'
 
 function toSelectItem(
-  option: TitledListValue<string | number> | string | number
+  option: TitledListValue<string | number> | string | number,
 ): TitledListValue<string | number> {
   return isTitledListValue(option) ? option : {title: capitalize(`${option}`), value: option}
 }
@@ -33,7 +33,7 @@ export function SelectInput(props: StringInputProps) {
   } = props
   const items = useMemo(
     () => (schemaType.options?.list || []).map(toSelectItem),
-    [schemaType.options?.list]
+    [schemaType.options?.list],
   )
   const currentItem = items.find((item) => item.value === value)
   const isRadio = schemaType.options && schemaType.options.layout === 'radio'
@@ -44,14 +44,14 @@ export function SelectInput(props: StringInputProps) {
 
       return items[index]
     },
-    [items]
+    [items],
   )
 
   const optionValueFromItem = useCallback(
     (item: any) => {
       return String(items.indexOf(item))
     },
-    [items]
+    [items],
   )
 
   const inputId = useId()
@@ -59,10 +59,10 @@ export function SelectInput(props: StringInputProps) {
   const handleChange = React.useCallback(
     (nextItem: TitledListValue<string | number> | null) => {
       onChange(
-        PatchEvent.from(typeof nextItem?.value === 'undefined' ? unset() : set(nextItem.value))
+        PatchEvent.from(typeof nextItem?.value === 'undefined' ? unset() : set(nextItem.value)),
       )
     },
-    [onChange]
+    [onChange],
   )
 
   const handleSelectChange = useCallback(
@@ -76,7 +76,7 @@ export function SelectInput(props: StringInputProps) {
 
       handleChange(nextItem)
     },
-    [handleChange, itemFromOptionValue]
+    [handleChange, itemFromOptionValue],
   )
 
   const content = isRadio ? (
@@ -124,7 +124,7 @@ const RadioSelect = forwardRef(function RadioSelect(
     inputId?: string
   },
 
-  ref: React.ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>,
 ) {
   const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId} = props
 
@@ -161,7 +161,7 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
     value?: TitledListValue<string | number>
   },
 
-  ref: React.ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>,
 ) {
   const {customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
 

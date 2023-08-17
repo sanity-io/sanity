@@ -58,8 +58,8 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
           onClosePopover()
         }
       },
-      [onClosePopover]
-    )
+      [onClosePopover],
+    ),
   )
 
   const handleDelete = useCallback(
@@ -79,7 +79,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
         }
       }
     },
-    [onDelete]
+    [onDelete],
   )
 
   const popoverContent = useMemo(
@@ -111,7 +111,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
         </Inline>
       </Box>
     ),
-    [handleDelete, onEdit, title]
+    [handleDelete, onEdit, title],
   )
 
   return (

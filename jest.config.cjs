@@ -5,7 +5,7 @@ const globby = require('globby')
 const pkg = require('./package.json')
 
 const jestConfigFiles = globby.sync(
-  pkg.workspaces.map((workspace) => path.join(__dirname, workspace, '/jest.config.cjs'))
+  pkg.workspaces.map((workspace) => path.join(__dirname, workspace, '/jest.config.cjs')),
 )
 
 const IGNORE_PROJECTS = []

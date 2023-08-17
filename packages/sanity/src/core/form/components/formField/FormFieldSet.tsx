@@ -93,7 +93,7 @@ const EMPTY_ARRAY: never[] = []
 /** @internal */
 export const FormFieldSet = forwardRef(function FormFieldSet(
   props: FormFieldSetProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-  ref: React.ForwardedRef<HTMLDivElement>
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {
     __unstable_headerActions: headerActions,
@@ -124,12 +124,12 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         if (onFocus) onFocus(event)
       }
     },
-    [forwardedRef, onFocus]
+    [forwardedRef, onFocus],
   )
 
   const handleToggle = useCallback(
     () => (collapsed ? onExpand?.() : onCollapse?.()),
-    [collapsed, onCollapse, onExpand]
+    [collapsed, onCollapse, onExpand],
   )
 
   const content = useMemo(() => {

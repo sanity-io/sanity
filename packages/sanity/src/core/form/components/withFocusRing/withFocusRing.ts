@@ -23,6 +23,6 @@ export function withFocusRing<Props>(component: ComponentType<Props>) {
           })};
         }
       `
-    }
+    },
   )
 }

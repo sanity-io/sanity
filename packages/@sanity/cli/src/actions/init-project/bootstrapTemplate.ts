@@ -22,7 +22,7 @@ export interface BootstrapOptions {
 
 export async function bootstrapTemplate(
   opts: BootstrapOptions,
-  context: CliCommandContext
+  context: CliCommandContext,
 ): Promise<ProjectTemplate> {
   const {apiClient, cliRoot, output} = context
   const templatesDir = path.join(cliRoot, 'templates')
@@ -66,18 +66,24 @@ export async function bootstrapTemplate(
   const dependencies = Object.keys({
     ...studioDependencies.dependencies,
     ...template.dependencies,
-  }).reduce((deps, dependency) => {
-    deps[dependency] = dependencyVersions[dependency]
-    return deps
-  }, {} as Record<string, string>)
+  }).reduce(
+    (deps, dependency) => {
+      deps[dependency] = dependencyVersions[dependency]
+      return deps
+    },
+    {} as Record<string, string>,
+  )
 
   const devDependencies = Object.keys({
     ...studioDependencies.devDependencies,
     ...template.devDependencies,
-  }).reduce((deps, dependency) => {
-    deps[dependency] = dependencyVersions[dependency]
-    return deps
-  }, {} as Record<string, string>)
+  }).reduce(
+    (deps, dependency) => {
+      deps[dependency] = dependencyVersions[dependency]
+      return deps
+    },
+    {} as Record<string, string>,
+  )
 
   // Now create a package manifest (`package.json`) with the merged dependencies
   spinner = output.spinner('Creating default project files').start()
@@ -107,7 +113,7 @@ export async function bootstrapTemplate(
     writeFileIfNotExists('package.json', packageManifest),
     writeFileIfNotExists(
       '.eslintrc',
-      `${JSON.stringify({extends: '@sanity/eslint-config-studio'}, null, 2)}\n`
+      `${JSON.stringify({extends: '@sanity/eslint-config-studio'}, null, 2)}\n`,
     ),
   ])
 

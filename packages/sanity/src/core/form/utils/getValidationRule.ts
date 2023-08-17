@@ -2,13 +2,13 @@ import type {SchemaType, RuleSpec, SchemaValidationValue, Rule} from '@sanity/ty
 
 const normalizeRules = (
   validation: SchemaValidationValue | undefined,
-  type?: SchemaType
+  type?: SchemaType,
 ): Rule[] => {
   if (typeof validation === 'function') {
     throw new Error(
       `Schema type "${
         type?.name || '<not-found>'
-      }"'s \`validation\` was not run though \`inferFromSchema\``
+      }"'s \`validation\` was not run though \`inferFromSchema\``,
     )
   }
   if (!validation) return []
@@ -24,7 +24,7 @@ const normalizeRules = (
  */
 export function getValidationRule<RuleFlag extends RuleSpec['flag']>(
   type: SchemaType | undefined,
-  ruleName: RuleFlag
+  ruleName: RuleFlag,
 ): Extract<RuleSpec, {flag: RuleFlag}> | null {
   for (const rule of normalizeRules(type?.validation, type)) {
     for (const ruleSpec of rule._rules) {

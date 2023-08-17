@@ -16,7 +16,7 @@ export interface ProjectDefaults {
 
 export function getProjectDefaults(
   workDir: string,
-  {isPlugin, context}: {isPlugin: boolean; context: CliCommandContext}
+  {isPlugin, context}: {isPlugin: boolean; context: CliCommandContext},
 ): Promise<ProjectDefaults> {
   const cwd = process.cwd()
   const isSanityRoot = workDir === cwd

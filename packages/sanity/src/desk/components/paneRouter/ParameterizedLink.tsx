@@ -14,7 +14,7 @@ interface ParameterizedLinkProps {
  */
 export const ParameterizedLink = forwardRef(function ParameterizedLink(
   props: ParameterizedLinkProps,
-  ref: React.ForwardedRef<HTMLAnchorElement>
+  ref: React.ForwardedRef<HTMLAnchorElement>,
 ) {
   const {routerPanesState: currentPanes, groupIndex, siblingIndex} = useContext(PaneRouterContext)
   const {params, payload, ...rest} = props

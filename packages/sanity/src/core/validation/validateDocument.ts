@@ -26,7 +26,7 @@ const isNonNullable = <T>(value: T): value is NonNullable<T> =>
  */
 export function resolveTypeForArrayItem(
   item: unknown,
-  candidates: SchemaType[]
+  candidates: SchemaType[],
 ): SchemaType | undefined {
   // if there is only one type available, assume that it's the correct one
   if (candidates.length === 1) return candidates[0]
@@ -61,7 +61,7 @@ export function validateDocument(
   getClient: ValidateItemOptions['getClient'],
   doc: SanityDocument,
   schema: Schema,
-  context?: Pick<ValidationContext, 'getDocumentExists'>
+  context?: Pick<ValidationContext, 'getDocumentExists'>,
 ): Promise<ValidationMarker[]> {
   return lastValueFrom(validateDocumentObservable(getClient, doc, schema, context))
 }
@@ -80,7 +80,7 @@ export function validateDocumentObservable(
   getClient: ValidateItemOptions['getClient'],
   doc: SanityDocument,
   schema: Schema,
-  context?: Pick<ValidationContext, 'getDocumentExists'>
+  context?: Pick<ValidationContext, 'getDocumentExists'>,
 ): Observable<ValidationMarker[]> {
   const documentType = schema.get(doc._type)
   if (!documentType) {
@@ -110,7 +110,7 @@ export function validateDocumentObservable(
           item: new ValidationErrorClass(err?.message),
         },
       ])
-    })
+    }),
   )
 }
 
@@ -149,8 +149,8 @@ function validateItemObservable({
         parent,
         path,
         type,
-      })
-    )
+      }),
+    ),
   )
 
   // run validation for nested values (conditionally)
@@ -187,10 +187,10 @@ function validateItemObservable({
                 parent: value,
                 path: path.concat(name),
                 type: fieldType,
-              })
+              }),
             )
           })
-        })
+        }),
     )
 
     // Validation from each field's schema `validation: Rule => {/* ... */}` function
@@ -202,8 +202,8 @@ function validateItemObservable({
           value: isRecord(value) ? value[field.name] : undefined,
           path: path.concat(field.name),
           type: field.type,
-        })
-      )
+        }),
+      ),
     )
   }
 
@@ -222,8 +222,8 @@ function validateItemObservable({
           value: item,
           path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
           type: resolveTypeForArrayItem(item, type.of),
-        })
-      )
+        }),
+      ),
     )
   }
 
@@ -239,7 +239,7 @@ function validateItemObservable({
         return uniqBy(results, (rule) => JSON.stringify(rule))
       }
       return results
-    })
+    }),
   )
 }
 
@@ -249,7 +249,7 @@ function idle(timeout?: number): Observable<never> {
       () => {
         observer.complete()
       },
-      timeout ? {timeout} : undefined
+      timeout ? {timeout} : undefined,
     )
 
     return () => cancelIdleCallback(handle)

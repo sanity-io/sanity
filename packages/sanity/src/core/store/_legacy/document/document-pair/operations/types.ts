@@ -7,7 +7,7 @@ import {HistoryStore} from '../../../history'
 /** @internal */
 export interface OperationImpl<
   ExtraArgs extends any[] = [],
-  DisabledReason extends string = string
+  DisabledReason extends string = string,
 > {
   disabled: (args: OperationArgs) => DisabledReason | 'NOT_READY' | false
   execute(args: OperationArgs, ...extra: ExtraArgs): void

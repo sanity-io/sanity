@@ -18,7 +18,7 @@ export default function globalSetup(): void {
   const previousTZ = execSync('tzutil /g').toString()
   execSync(`tzutil /s "${wantedWindowsTZ}"`)
   console.warn(
-    `timezone changed, if process is killed, run manually to restore: tzutil /s "${previousTZ}"`
+    `timezone changed, if process is killed, run manually to restore: tzutil /s "${previousTZ}"`,
   )
 
   process.on('exit', () => {

@@ -22,7 +22,7 @@ const noop = () => undefined
  * @internal
  */
 export const ScrollContainer = React.forwardRef(function ScrollContainer<
-  T extends React.ElementType = 'div'
+  T extends React.ElementType = 'div',
 >(props: ScrollContainerProps<T>, ref: React.ForwardedRef<HTMLDivElement>) {
   const {as = 'div', onScroll, ...rest} = props
   const forwardedRef = useForwardedRef(ref)

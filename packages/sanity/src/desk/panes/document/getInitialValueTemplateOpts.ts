@@ -13,7 +13,7 @@ interface InitialValueOptions {
  */
 export function getInitialValueTemplateOpts(
   templates: Template[],
-  opts: InitialValueOptions
+  opts: InitialValueOptions,
 ): {templateName: string; templateParams: Record<string, unknown>} {
   const payload = opts.panePayload || {}
   const structureNodeTemplate = opts.templateName
@@ -21,7 +21,7 @@ export function getInitialValueTemplateOpts(
   if (opts.urlTemplate && structureNodeTemplate && structureNodeTemplate !== opts.urlTemplate) {
     // eslint-disable-next-line no-console
     console.warn(
-      `Conflicting templates: URL says "${opts.urlTemplate}", structure node says "${structureNodeTemplate}". Using "${structureNodeTemplate}".`
+      `Conflicting templates: URL says "${opts.urlTemplate}", structure node says "${structureNodeTemplate}". Using "${structureNodeTemplate}".`,
     )
   }
 

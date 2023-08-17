@@ -83,11 +83,11 @@ const SortableList = memo(function SortableList(props: ListProps) {
 
       onItemMoveEnd?.()
     },
-    [onItemMove, onItemMoveEnd]
+    [onItemMove, onItemMoveEnd],
   )
   const modifiers = useMemo(
     () => [restrictToParentElementWithMargins({y: 4}), ...(axis ? [restrictToAxis(axis)] : [])],
-    [axis]
+    [axis],
   )
 
   return (
@@ -106,53 +106,52 @@ const SortableList = memo(function SortableList(props: ListProps) {
   )
 })
 
-const SortableListItem = forwardRef<HTMLDivElement, ItemProps>(function SortableListItem(
-  props,
-  ref
-) {
-  const {id, children, disableTransition} = props
-  const {setNodeRef, transform, transition, active} = useSortable({
-    id,
-    transition: disableTransition ? null : TRANSITION,
-  })
+const SortableListItem = forwardRef<HTMLDivElement, ItemProps>(
+  function SortableListItem(props, ref) {
+    const {id, children, disableTransition} = props
+    const {setNodeRef, transform, transition, active} = useSortable({
+      id,
+      transition: disableTransition ? null : TRANSITION,
+    })
 
-  const isActive = id === active?.id
+    const isActive = id === active?.id
 
-  const style = useMemo(
-    () =>
-      ({
-        transform: CSS.Translate.toString(transform),
-        transition,
-        pointerEvents: active ? 'none' : undefined,
-      } as const),
-    [transform, transition, active]
-  )
+    const style = useMemo(
+      () =>
+        ({
+          transform: CSS.Translate.toString(transform),
+          transition,
+          pointerEvents: active ? 'none' : undefined,
+        }) as const,
+      [transform, transition, active],
+    )
 
-  // This sets the ref on the component for both sorting and for virtualizer
-  const setRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      setNodeRef(node)
-      if (typeof ref === 'function') {
-        ref(node)
-      } else if (ref) {
-        ref.current = node
-      }
-    },
-    [ref, setNodeRef]
-  )
+    // This sets the ref on the component for both sorting and for virtualizer
+    const setRef = useCallback(
+      (node: HTMLDivElement | null) => {
+        setNodeRef(node)
+        if (typeof ref === 'function') {
+          ref(node)
+        } else if (ref) {
+          ref.current = node
+        }
+      },
+      [ref, setNodeRef],
+    )
 
-  return (
-    <ListItem
-      ref={setRef}
-      style={style}
-      $moving={isActive}
-      className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
-      data-index={props['data-index']}
-    >
-      {children}
-    </ListItem>
-  )
-})
+    return (
+      <ListItem
+        ref={setRef}
+        style={style}
+        $moving={isActive}
+        className={isActive ? MOVING_ITEM_CLASS_NAME : ''}
+        data-index={props['data-index']}
+      >
+        {children}
+      </ListItem>
+    )
+  },
+)
 
 interface ListProps extends ComponentProps<typeof Grid> {
   sortable?: boolean
@@ -172,7 +171,7 @@ export function List(props: ListProps) {
     (event: {fromIndex: number; toIndex: number}) => {
       onItemMove?.(event)
     },
-    [onItemMove]
+    [onItemMove],
   )
 
   return sortable ? (
@@ -200,7 +199,7 @@ interface ItemProps {
 
 export const Item = forwardRef(function Item(
   props: ItemProps & ComponentProps<typeof Card>,
-  ref: ForwardedRef<HTMLDivElement>
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {sortable, ...rest} = props
   return (

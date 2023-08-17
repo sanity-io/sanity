@@ -43,7 +43,7 @@ function baseRuleReducer(inputRule: Rule, type: SchemaType) {
 
   if (Array.isArray(typeOptionsList)) {
     baseRule = baseRule.valid(
-      typeOptionsList.map((option) => extractValueFromListOption(option, type))
+      typeOptionsList.map((option) => extractValueFromListOption(option, type)),
     )
   }
 
@@ -90,7 +90,7 @@ export function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[
       normalizeValidationRules({
         ...typeDef,
         validation: i,
-      })
+      }),
     )
   }
 
@@ -104,7 +104,7 @@ export function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[
       getTypeChain(typeDef, new Set()).reduce<Record<string, SchemaType>>((acc, type) => {
         acc[type.name] = type
         return acc
-      }, {})
+      }, {}),
     ).reduce(baseRuleReducer, new RuleClass(typeDef))
 
   if (!validation) {

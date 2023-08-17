@@ -24,7 +24,7 @@ const DEFAULT_PLACEHOLDER_TIME = new Date()
 
 export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput(
   props: CommonDateTimeInputProps,
-  ref: React.ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>,
 ) {
   const {
     id,
@@ -66,14 +66,14 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
         setLocalValue(nextInputValue)
       }
     },
-    [parseInputValue, onChange, value, localValue, serialize]
+    [parseInputValue, onChange, value, localValue, serialize],
   )
 
   const handleDatePickerChange = React.useCallback(
     (nextDate: Date | null) => {
       onChange(nextDate ? serialize(nextDate) : null)
     },
-    [serialize, onChange]
+    [serialize, onChange],
   )
 
   const forwardedRef = useForwardedRef(ref)

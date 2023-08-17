@@ -32,14 +32,14 @@ const builtInSortingEnum: ConvertedEnum = {
 }
 
 export function generateTypeSortings(
-  types: (ConvertedType | ConvertedUnion)[]
+  types: (ConvertedType | ConvertedUnion)[],
 ): (InputObjectType | ConvertedEnum)[] {
   const objectTypes = types.filter(isNonUnion).filter(
     (type) =>
       type.type === 'Object' &&
       !['Block', 'Span'].includes(type.name) && // TODO: What do we do with blocks?
       !type.interfaces &&
-      !builtInTypes.includes(type.name)
+      !builtInTypes.includes(type.name),
   )
 
   const documentTypes = types.filter(isDocumentType)

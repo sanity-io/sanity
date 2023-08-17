@@ -37,14 +37,14 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     (item: Item) => {
       onInsert({items: [item], position: 'before', referenceItem: 0})
     },
-    [onInsert]
+    [onInsert],
   )
 
   const handleAppend = useCallback(
     (item: Item) => {
       onInsert({items: [item], position: 'after', referenceItem: -1})
     },
-    [onInsert]
+    [onInsert],
   )
 
   const sortable = schemaType.options?.sortable !== false

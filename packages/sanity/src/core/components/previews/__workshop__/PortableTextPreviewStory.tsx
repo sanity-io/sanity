@@ -84,7 +84,7 @@ export default function PortableTextPreviewStory() {
       title,
       subtitle,
     }),
-    [isPlaceholder, media, status, subtitle, title, withActions]
+    [isPlaceholder, media, status, subtitle, title, withActions],
   )
 
   const component = layout && previewComponents[layout]
@@ -104,7 +104,7 @@ export default function PortableTextPreviewStory() {
           <Card border padding={padding[layout]} radius={1} style={{lineHeight: 0}}>
             {createElement(
               component as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
-              previewProps
+              previewProps,
             )}
           </Card>
         </Container>

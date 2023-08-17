@@ -7,13 +7,13 @@ const defaults = {}
 const config = new ConfigStore(
   sanityEnv && sanityEnv !== 'production' ? `sanity-${sanityEnv}` : 'sanity',
   defaults,
-  {globalConfigPath: true}
+  {globalConfigPath: true},
 )
 
 const token = config.get('authToken')
 if (!token) {
   throw new Error(
-    '--with-user-token specified, but no auth token could be found. Run `sanity login`'
+    '--with-user-token specified, but no auth token could be found. Run `sanity login`',
   )
 }
 

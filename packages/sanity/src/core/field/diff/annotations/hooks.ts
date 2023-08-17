@@ -18,6 +18,6 @@ export function useDiffAnnotationColor(diff: Diff, path: string | Path = []): Us
 
   return useMemo(
     () => getAnnotationColor(userColorManager, annotation),
-    [annotation, userColorManager]
+    [annotation, userColorManager],
   )
 }

@@ -24,7 +24,7 @@ export function SearchFilterNumberRangeInput({
         min: value?.min ?? null,
       })
     },
-    [value?.min, onChange]
+    [value?.min, onChange],
   )
   const handleMinChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +35,7 @@ export function SearchFilterNumberRangeInput({
         min: Number.isFinite(numValue) ? numValue : null,
       })
     },
-    [value?.max, onChange]
+    [value?.max, onChange],
   )
 
   return (

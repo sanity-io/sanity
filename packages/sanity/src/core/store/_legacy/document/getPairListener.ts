@@ -49,11 +49,11 @@ function isMultiTransactionEvent(msg: MutationEvent) {
 function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
   const groupedMutations = groupBy(
     listenerEvents.filter((ev): ev is MutationEvent => ev.type === 'mutation'),
-    (e) => e.transactionId
+    (e) => e.transactionId,
   )
   // Note: we can't assume that the events come in order, so instead of checking the counter attributes we check that we have actually received all
   return Object.values(groupedMutations).every(
-    (mutations) => mutations.length === mutations[0].transactionTotalEvents
+    (mutations) => mutations.length === mutations[0].transactionTotalEvents,
   )
 }
 
@@ -61,7 +61,7 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
 export function getPairListener(
   client: SanityClient,
   idPair: IdPair,
-  options: PairListenerOptions = {}
+  options: PairListenerOptions = {},
 ): Observable<ListenerEvent> {
   const {publishedId, draftId} = idPair
   return defer(
@@ -77,8 +77,8 @@ export function getPairListener(
           events: ['welcome', 'mutation', 'reconnect'],
           effectFormat: 'mendoza',
           tag: options.tag || 'document.pair-listener',
-        }
-      ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
+        },
+      ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>,
   ).pipe(
     concatMap((event) =>
       event.type === 'welcome'
@@ -86,9 +86,9 @@ export function getPairListener(
             concatMap((snapshots) => [
               createSnapshotEvent(draftId, snapshots.draft),
               createSnapshotEvent(publishedId, snapshots.published),
-            ])
+            ]),
           )
-        : observableOf(event)
+        : observableOf(event),
     ),
     scan(
       (acc: {next: ListenerEvent[]; buffer: ListenerEvent[]}, msg) => {
@@ -119,10 +119,10 @@ export function getPairListener(
         // if nextBuffer only has one element, we know we just started buffering
         return {next: nextBuffer.length === 1 ? [PENDING_START] : [], buffer: nextBuffer}
       },
-      {next: [], buffer: []}
+      {next: [], buffer: []},
     ),
     // note: this flattens the array, and in the case of an empty array, no event will be pushed downstream
-    mergeMap((v) => v.next)
+    mergeMap((v) => v.next),
   )
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
@@ -132,14 +132,14 @@ export function getPairListener(
         map(([draft, published]) => ({
           draft,
           published,
-        }))
+        })),
       )
   }
 }
 
 function createSnapshotEvent(
   documentId: string,
-  document: null | SanityDocument
+  document: null | SanityDocument,
 ): InitialSnapshotEvent {
   return {
     type: 'snapshot',

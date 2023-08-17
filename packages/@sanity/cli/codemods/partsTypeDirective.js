@@ -13,7 +13,7 @@ function partsTypeDirective(fileInfo, api) {
   }
   const partImports = root.find(api.jscodeshift.ImportDeclaration, (node) =>
     // eslint-disable-next-line no-use-before-define
-    isSanityPart(node.source.value)
+    isSanityPart(node.source.value),
   )
   if (partImports.length === 0) {
     return fileInfo.source
@@ -21,7 +21,7 @@ function partsTypeDirective(fileInfo, api) {
 
   const existingDirectives = root.find(api.jscodeshift.Comment, (node) =>
     // eslint-disable-next-line no-use-before-define
-    isSanityTypesReferenceDirective(node)
+    isSanityTypesReferenceDirective(node),
   )
   if (existingDirectives.length > 0) {
     // already added

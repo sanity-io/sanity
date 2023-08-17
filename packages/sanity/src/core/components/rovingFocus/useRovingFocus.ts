@@ -8,7 +8,7 @@ const FOCUSABLE =
 
 function getFocusableElements(element: HTMLElement) {
   return [...(element.querySelectorAll(FOCUSABLE) as any)].filter(
-    (el) => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true'
+    (el) => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true',
   ) as HTMLElement[]
 }
 
@@ -132,7 +132,7 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
         }
       }
     },
-    [pause, prevKey, navigation, nextKey, lastFocusableIndex, focusableLen, loop]
+    [pause, prevKey, navigation, nextKey, lastFocusableIndex, focusableLen, loop],
   )
 
   /**

@@ -9,7 +9,7 @@ const bindCache = new WeakMap<object, Map<string, Function>>()
  */
 export function memoBind<
   T extends object,
-  K extends keyof {[P in keyof T]: T[P] extends Function ? T[P] : never}
+  K extends keyof {[P in keyof T]: T[P] extends Function ? T[P] : never},
 >(obj: T, methodKey: K): T[K]
 export function memoBind(obj: Record<string, unknown>, methodKey: string): Function {
   const boundMethods = bindCache.get(obj) || new Map<string, Function>()
@@ -22,7 +22,7 @@ export function memoBind(obj: Record<string, unknown>, methodKey: string): Funct
 
   if (typeof method !== 'function') {
     throw new Error(
-      `Expected property \`${methodKey}\` to be a function but got ${typeof method} instead.`
+      `Expected property \`${methodKey}\` to be a function but got ${typeof method} instead.`,
     )
   }
 

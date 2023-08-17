@@ -28,7 +28,7 @@ function importBatch(options, progress, batch) {
         .commit({visibility: 'async', tag: suffixTag(tag, 'doc.create')})
         .then(progress)
         .then((res) => res.results.length),
-    {maxRetries, isRetriable}
+    {maxRetries, isRetriable},
   )
 }
 

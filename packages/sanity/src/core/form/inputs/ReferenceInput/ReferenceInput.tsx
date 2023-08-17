@@ -93,7 +93,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       onEditReference({id: newDocumentId, type: option.type, template: option.template})
       onPathFocus([])
     },
-    [onChange, onEditReference, onPathFocus, schemaType]
+    [onChange, onEditReference, onPathFocus, schemaType],
   )
 
   const handleChange = useCallback(
@@ -125,7 +125,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       // Move focus away from _ref and one level up
       onPathFocus([])
     },
-    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits]
+    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits],
   )
 
   const handleClear = useCallback(() => {
@@ -144,7 +144,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
         onPathFocus([])
       }
     },
-    [onPathFocus]
+    [onPathFocus],
   )
 
   const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfo)
@@ -172,20 +172,20 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
                 console.error(error)
                 return of({hits: []})
-              })
-            )
-          )
+              }),
+            ),
+          ),
         ),
 
         scan(
           (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
-          INITIAL_SEARCH_STATE
+          INITIAL_SEARCH_STATE,
         ),
 
-        tap(setSearchState)
+        tap(setSearchState),
       )
     },
-    [id, onSearch, push]
+    [id, onSearch, push],
   )
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
@@ -198,7 +198,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
         onPathFocus([])
       }
     },
-    [onPathFocus]
+    [onPathFocus],
   )
 
   const renderOption = useCallback(
@@ -218,7 +218,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
         </StyledPreviewCard>
       )
     },
-    [schemaType, getReferenceInfo, renderPreview]
+    [schemaType, getReferenceInfo, renderPreview],
   )
 
   const renderValue = useCallback(() => {
@@ -239,7 +239,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
         props.elementProps.onBlur(event)
       }
     },
-    [props.elementProps]
+    [props.elementProps],
   )
 
   const isWeakRefToNonexistent =
@@ -258,7 +258,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
         value: hit.id,
         hit: hit,
       })),
-    [searchState.hits]
+    [searchState.hits],
   )
 
   const isEditing = focusPath.length === 1 && focusPath[0] === '_ref'
@@ -280,7 +280,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       if (isEditing) {
         handleCancelEdit()
       }
-    }
+    },
   )
 
   return (

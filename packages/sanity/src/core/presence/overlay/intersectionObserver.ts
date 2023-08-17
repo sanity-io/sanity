@@ -6,7 +6,7 @@ export interface ObservableIntersectionObserver {
 }
 
 export const createIntersectionObserver = (
-  options?: IntersectionObserverInit
+  options?: IntersectionObserverInit,
 ): ObservableIntersectionObserver => {
   const entries$ = new Subject<IntersectionObserverEntry>()
   const intersectionObserver = new IntersectionObserver((entries) => {

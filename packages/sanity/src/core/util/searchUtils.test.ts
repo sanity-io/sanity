@@ -34,6 +34,6 @@ test('joinPath', () => {
   expect(joinPath(['array', [], 'bar'])).toBe('array[].bar')
   expect(joinPath(['foo', [], 'asc', 'bar'])).toBe('foo[]["asc"].bar')
   expect(joinPath(['match', 'in', 'asc', 'desc', 'true', 'false', 'null'])).toBe(
-    '@["match"]["in"]["asc"]["desc"]["true"]["false"]["null"]'
+    '@["match"]["in"]["asc"]["desc"]["true"]["false"]["null"]',
   )
 })

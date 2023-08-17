@@ -21,7 +21,7 @@ export function setIfMissing(value: any, path: Path = []): SetIfMissingPatch {
 export function diffMatchPatch(
   currentValue: string,
   nextValue: string,
-  path: Path = []
+  path: Path = [],
 ): DiffMatchPatch {
   const patches = makePatches(currentValue, nextValue)
   const patch = stringifyPatches(patches)

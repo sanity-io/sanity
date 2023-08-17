@@ -31,7 +31,7 @@ export default function Block(props: {
         onSetFocus(fullPath)
       }
     },
-    [fullPath, isRemoved, onSetFocus]
+    [fullPath, isRemoved, onSetFocus],
   )
 
   if (block.style === 'blockquote') {

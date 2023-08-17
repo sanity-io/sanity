@@ -6,7 +6,7 @@ describe('typeString', () => {
     expect(
       typeString(function () {
         // intentionally blank
-      })
+      }),
     ).toBe('Function')
     expect(typeString(['hey'])).toBe('Array')
     expect(typeString('some string')).toBe('String')

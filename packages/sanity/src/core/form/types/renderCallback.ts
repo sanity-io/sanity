@@ -10,49 +10,49 @@ import {BlockAnnotationProps, BlockProps} from './blockProps'
  * @hidden
  * @beta  */
 export type RenderArrayOfObjectsItemCallback = (
-  itemProps: Omit<ObjectItemProps, 'renderDefault'>
+  itemProps: Omit<ObjectItemProps, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
  * @beta */
 export type RenderArrayOfPrimitivesItemCallback = (
-  itemProps: Omit<PrimitiveItemProps, 'renderDefault'>
+  itemProps: Omit<PrimitiveItemProps, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
  * @beta */
 export type RenderItemCallback = (
-  itemProps: Omit<ObjectItemProps, 'renderDefault'> | Omit<PrimitiveItemProps, 'renderDefault'>
+  itemProps: Omit<ObjectItemProps, 'renderDefault'> | Omit<PrimitiveItemProps, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
  * @beta */
 export type RenderFieldCallback<T extends FieldProps = FieldProps> = (
-  fieldProps: Omit<T, 'renderDefault'>
+  fieldProps: Omit<T, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
  * @beta */
 export type RenderInputCallback<T extends InputProps = InputProps> = (
-  inputProps: Omit<T, 'renderDefault'>
+  inputProps: Omit<T, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
  * @beta */
 export type RenderBlockCallback<T extends BlockProps = BlockProps> = (
-  blockProps: Omit<T, 'renderDefault'>
+  blockProps: Omit<T, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
  * @beta */
 export type RenderAnnotationCallback<T extends BlockAnnotationProps = BlockAnnotationProps> = (
-  annotationProps: Omit<T, 'renderDefault'>
+  annotationProps: Omit<T, 'renderDefault'>,
 ) => ReactNode
 
 /**

@@ -39,7 +39,7 @@ export function useLoadable<T>(value$: Observable<T>, initialValue: T): Loadable
 /** @internal */
 export function useLoadable<T>(
   value$: Observable<T>,
-  initialValue?: T
+  initialValue?: T,
 ): LoadableState<T | undefined> {
   const initial: LoadableState<T> =
     typeof initialValue === 'undefined'
@@ -53,7 +53,9 @@ export function useLoadable<T>(
 export function asLoadable<T>(): OperatorFunction<T, LoadableState<T>> {
   return (value$: Observable<T>) =>
     value$.pipe(
-      map((value) => ({isLoading: false, value, error: null} as const)),
-      catchError((error): Observable<ErrorState> => of({isLoading: false, value: undefined, error}))
+      map((value) => ({isLoading: false, value, error: null}) as const),
+      catchError(
+        (error): Observable<ErrorState> => of({isLoading: false, value: undefined, error}),
+      ),
     )
 }

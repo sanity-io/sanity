@@ -31,7 +31,7 @@ describeCliTest('CLI: `sanity documents`', () => {
           _type: 'person',
           name: 'Erling Haaland',
         },
-        {visibility: 'async'}
+        {visibility: 'async'},
       )
 
       const result = await runSanityCmdCommand(version, [
@@ -72,7 +72,7 @@ describeCliTest('CLI: `sanity documents`', () => {
           _type: 'person',
           name: 'Joshua King',
         },
-        {visibility: 'async'}
+        {visibility: 'async'},
       )
 
       const result = await runSanityCmdCommand(version, [

@@ -26,7 +26,7 @@ export default function PopoverStory() {
   const initialSelectedScrollAlign = useSelect(
     'Initial scroll align',
     SCROLL_ALIGN_OPTIONS,
-    'center'
+    'center',
   )
 
   const [selectedIndex, setSelectedIndex] = useState(100)
@@ -48,7 +48,7 @@ export default function PopoverStory() {
         button?.focus()
       }
     },
-    [button, handleClose, open]
+    [button, handleClose, open],
   )
   const handleOpen = useCallback(() => setOpen(true), [])
   const handlePopoverButtonClick = useCallback(() => {
@@ -75,7 +75,7 @@ export default function PopoverStory() {
         />
       )
     },
-    [handleChildClick]
+    [handleChildClick],
   )
 
   return (

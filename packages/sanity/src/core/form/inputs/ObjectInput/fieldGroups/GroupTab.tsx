@@ -14,7 +14,7 @@ interface GroupType {
 
 export const GroupTab = forwardRef(function GroupTab(
   props: GroupType,
-  ref: React.Ref<HTMLButtonElement>
+  ref: React.Ref<HTMLButtonElement>,
 ) {
   // Separate props for resolving conditional hidden groups
   const {onClick} = props

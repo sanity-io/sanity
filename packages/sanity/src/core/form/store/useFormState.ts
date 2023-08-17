@@ -13,13 +13,13 @@ import {DocumentFormNode} from './types/nodes'
 /** @internal */
 export type FormState<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
-  S extends ObjectSchemaType = ObjectSchemaType
+  S extends ObjectSchemaType = ObjectSchemaType,
 > = ObjectFormNode<T, S>
 
 /** @internal */
 export function useFormState<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
-  S extends ObjectSchemaType = ObjectSchemaType
+  S extends ObjectSchemaType = ObjectSchemaType,
 >(
   schemaType: ObjectSchemaType,
   {
@@ -46,7 +46,7 @@ export function useFormState<
     validation: ValidationMarker[]
     changesOpen?: boolean
     readOnly?: boolean
-  }
+  },
 ): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()

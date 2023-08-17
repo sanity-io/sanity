@@ -21,7 +21,7 @@ export function toMutationPatches(patches: FormPatch[]): MutationPatch[] {
  */
 export function fromMutationPatches(
   origin: FormPatchOrigin,
-  patches: MutationPatch[]
+  patches: MutationPatch[],
 ): FormPatch[] {
   return flatten(patches.map((patch) => toFormBuilderPatches(origin, patch)))
 }
@@ -91,18 +91,18 @@ function toFormBuilderPatches(origin: FormPatchOrigin, patch: MutationPatch): Fo
             return null
           })
           .filter(Boolean)
-      })
+      }),
   )
 }
 
 function toMutationPatch(patch: FormPatch): MutationPatch {
   if (patch.patchType !== SANITY_PATCH_TYPE && patch.type) {
     throw new Error(
-      `Patch is missing "patchType" - import and use "${patch.type}()" from "sanity/form"`
+      `Patch is missing "patchType" - import and use "${patch.type}()" from "sanity/form"`,
     )
   } else if (patch.patchType !== SANITY_PATCH_TYPE) {
     throw new Error(
-      `Patch is missing "patchType" - import and use the patch method helpers from "sanity/form"`
+      `Patch is missing "patchType" - import and use the patch method helpers from "sanity/form"`,
     )
   }
 

@@ -8,14 +8,14 @@ function triggerInsertTextEvent(element: HTMLElement, nextValue: string) {
       cancelable: true,
       inputType: 'insertText',
       data: nextValue,
-    })
+    }),
   )
 }
 
 function triggerInputEvent(input: HTMLInputElement, nextValue: string) {
   const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
     input.constructor.prototype,
-    'value'
+    'value',
   )!.set!
 
   nativeInputValueSetter.call(input, nextValue)

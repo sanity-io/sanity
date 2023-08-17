@@ -37,7 +37,7 @@ const StyledText = styled(Text)`
 
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   {onSelect, types = [], value}: ReferenceAutocompleteProps,
-  ref: React.ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>,
 ) {
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
@@ -63,7 +63,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         weightedHits.map((weightedHit) => ({
           hit: weightedHit,
           value: weightedHit.hit._id,
-        }))
+        })),
       )
     },
     schema,
@@ -101,7 +101,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         })
       }
     },
-    [handleSearch, types]
+    [handleSearch, types],
   )
 
   const handleSelect = useCallback(
@@ -114,7 +114,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         })
       }
     },
-    [hits, onSelect]
+    [hits, onSelect],
   )
   const placeholderText = useMemo(() => {
     const documentTypes = documentTypesTruncated({types})
@@ -170,7 +170,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         />
       )
     },
-    [hits, searchState.loading, searchState.terms.query]
+    [hits, searchState.loading, searchState.terms.query],
   )
 
   return (

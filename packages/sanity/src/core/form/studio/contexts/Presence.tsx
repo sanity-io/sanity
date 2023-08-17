@@ -32,8 +32,8 @@ export function useChildPresence(path: Path, inclusive?: boolean): FormNodePrese
   const next = immutableReconcile(
     prev.current,
     presence.filter(
-      (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path))
-    )
+      (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path)),
+    ),
   )
   prev.current = next
   return next

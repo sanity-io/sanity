@@ -10,7 +10,7 @@ export interface ConditionalPropertyCallbackContext {
 
 export function resolveConditionalProperty(
   property: ConditionalProperty,
-  context: ConditionalPropertyCallbackContext
+  context: ConditionalPropertyCallbackContext,
 ) {
   const {currentUser, document, parent, value} = context
 

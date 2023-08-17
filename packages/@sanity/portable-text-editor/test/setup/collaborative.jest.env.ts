@@ -58,11 +58,11 @@ export default class CollaborationEnvironment extends NodeEnvironment {
       }, DEBUG)
       this._pageA.on('console', (message) =>
         // eslint-disable-next-line no-console
-        console.log(`A:${message.type().substring(0, 3).toUpperCase()} ${message.text()}`)
+        console.log(`A:${message.type().substring(0, 3).toUpperCase()} ${message.text()}`),
       )
       this._pageB.on('console', (message) =>
         // eslint-disable-next-line no-console
-        console.log(`B:${message.type().substring(0, 3).toUpperCase()} ${message.text()}`)
+        console.log(`B:${message.type().substring(0, 3).toUpperCase()} ${message.text()}`),
       )
     }
     this._pageA.on('pageerror', (err) => {
@@ -98,7 +98,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
     await this._pageA?.goto(`${WEB_SERVER_ROOT_URL}?editorId=A${testId}&testId=${testId}`)
     await this._pageB?.goto(`${WEB_SERVER_ROOT_URL}?editorId=B${testId}&testId=${testId}`)
     this.global.setDocumentValue = async (
-      value: PortableTextBlock[] | undefined
+      value: PortableTextBlock[] | undefined,
     ): Promise<void> => {
       ipc.of.socketServer.emit('payload', JSON.stringify({type: 'value', value, testId}))
       const [valueHandleA, valueHandleB] = await Promise.all([
@@ -147,7 +147,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             const revId = (Math.random() + 1).toString(36).substring(7)
             ipc.of.socketServer.emit(
               'payload',
-              JSON.stringify({type: 'revId', revId, testId, editorId})
+              JSON.stringify({type: 'revId', revId, testId, editorId}),
             )
             await page.waitForSelector(`code[data-rev-id="${revId}"]`, {
               timeout: REVISION_TIMEOUT_MS,
@@ -155,7 +155,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           }
           const getSelection = async (): Promise<EditorSelection | null> => {
             const selection = await selectionHandle.evaluate((node) =>
-              node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : null
+              node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : null,
             )
             return selection
           }
@@ -170,7 +170,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
 
           const waitForSelection = async (selection: EditorSelection) => {
             const value = await valueHandle.evaluate((node): PortableTextBlock[] | undefined =>
-              node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : undefined
+              node instanceof HTMLElement && node.innerText
+                ? JSON.parse(node.innerText)
+                : undefined,
             )
             const normalized = normalizeSelection(selection, value)
             const dataVal = JSON.stringify(normalized)
@@ -193,10 +195,10 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                           cancelable: true,
                           inputType: 'insertText',
                           data: args[0],
-                        })
+                        }),
                       )
                     },
-                    [text]
+                    [text],
                   )
                 }),
               ])
@@ -222,7 +224,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   const data = [new ClipboardItem({[_type]: blob})]
                   await navigator.clipboard.write(data)
                 },
-                {string, type}
+                {string, type},
               )
               // Simulate paste key command
               await page.keyboard.down(metaKey)
@@ -273,7 +275,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               await page.keyboard.up('b')
               await page.keyboard.up(metaKey)
               const selection = await selectionHandle.evaluate((node) =>
-                node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : null
+                node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : null,
               )
               // Don't wait for a new revision unless something was actually selected
               if (selection && !isEqual(selection.anchor, selection.focus)) {
@@ -291,7 +293,7 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   selection,
                   testId,
                   editorId,
-                })
+                }),
               )
               await delay(200)
               await waitForSelection(selection)
@@ -300,13 +302,13 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               const value = await valueHandle.evaluate((node): PortableTextBlock[] | undefined =>
                 node instanceof HTMLElement && node.innerText
                   ? JSON.parse(node.innerText)
-                  : undefined
+                  : undefined,
               )
               return value
             },
             getSelection,
           }
-        })
+        }),
       )
   }
 }

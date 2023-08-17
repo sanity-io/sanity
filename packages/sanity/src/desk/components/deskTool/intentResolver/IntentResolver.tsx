@@ -23,7 +23,7 @@ export const IntentResolver = memo(function IntentResolver() {
             payload: routerState.payload,
           }
         : undefined
-    }, [])
+    }, []),
   )
   const {rootPaneNode, structureContext} = useDeskTool()
   const documentStore = useDocumentStore()
@@ -43,7 +43,7 @@ export const IntentResolver = memo(function IntentResolver() {
         const {id, type} = await ensureDocumentIdAndType(
           documentStore,
           typeof params.id === 'string' ? params.id : undefined,
-          typeof params.type === 'string' ? params.type : undefined
+          typeof params.type === 'string' ? params.type : undefined,
         )
 
         if (cancelled) return

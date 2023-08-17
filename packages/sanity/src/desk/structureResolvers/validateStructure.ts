@@ -27,7 +27,7 @@ export function validateStructure(structure: any): UnresolvedPaneNode {
 
   if (!isStructure(structure)) {
     throw new Error(
-      `Structure needs to export a function, an observable, a promise or a structure builder, got ${typeof structure}`
+      `Structure needs to export a function, an observable, a promise or a structure builder, got ${typeof structure}`,
     )
   }
 
@@ -66,7 +66,7 @@ function warnOnUnknownExports(mod: Record<string, unknown>) {
         const distance = leven(current, key)
         return distance < 3 && distance < acc.distance ? {closest: current, distance} : acc
       },
-      {closest: null, distance: +Infinity}
+      {closest: null, distance: +Infinity},
     )
 
     const hint = closest ? ` - did you mean "${closest}"` : ''

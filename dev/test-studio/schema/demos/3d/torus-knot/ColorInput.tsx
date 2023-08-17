@@ -48,7 +48,7 @@ export default function ColorInput(props: StringInputProps) {
     (event) => {
       onChange(set(event.target.value))
     },
-    [onChange]
+    [onChange],
   )
 
   return (

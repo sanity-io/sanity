@@ -104,7 +104,7 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
         return Boolean(
           (intent === 'edit' && params.id) ||
             (intent === 'create' && params.type) ||
-            (intent === 'create' && params.template)
+            (intent === 'create' && params.template),
         )
       },
       getIntentState,

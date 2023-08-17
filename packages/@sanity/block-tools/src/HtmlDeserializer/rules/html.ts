@@ -31,7 +31,7 @@ export function resolveListItem(listNodeTagName: string): string {
 
 export default function createHTMLRules(
   blockContentType: ArraySchemaType,
-  options: BlockEnabledFeatures
+  options: BlockEnabledFeatures,
 ): DeserializerRule[] {
   return [
     // Text nodes

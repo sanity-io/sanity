@@ -15,7 +15,7 @@ export function nearestIndexOf<T>(array: T[], startIdx: number, searchElement: T
 export function nearestIndex<T>(
   array: T[],
   startIdx: number,
-  predicate: (element: T, index: number) => boolean
+  predicate: (element: T, index: number) => boolean,
 ) {
   let lowerIdx = startIdx - 1
   let upperIdx = startIdx

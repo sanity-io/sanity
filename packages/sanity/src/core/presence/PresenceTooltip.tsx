@@ -31,7 +31,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
         ))}
       </Stack>
     ),
-    [items]
+    [items],
   )
 
   return (

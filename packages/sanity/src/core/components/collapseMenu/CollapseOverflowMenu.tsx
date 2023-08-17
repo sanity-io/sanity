@@ -11,7 +11,7 @@ export function CollapseOverflowMenu(
   props: Pick<
     CollapseMenuProps,
     'disableRestoreFocusOnClose' | 'menuButtonProps' | 'onMenuClose'
-  > & {menuOptionsArray: React.ReactElement[]; menuButton: React.ReactElement}
+  > & {menuOptionsArray: React.ReactElement[]; menuButton: React.ReactElement},
 ) {
   const {disableRestoreFocusOnClose, menuButton, menuButtonProps, menuOptionsArray, onMenuClose} =
     props

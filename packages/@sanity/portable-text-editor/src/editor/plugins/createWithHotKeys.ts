@@ -31,7 +31,7 @@ export function createWithHotkeys(
   types: PortableTextMemberSchemaTypes,
   keyGenerator: () => string,
   portableTextEditor: PortableTextEditor,
-  hotkeysFromOptions?: HotkeyOptions
+  hotkeysFromOptions?: HotkeyOptions,
 ): (editor: PortableTextSlateEditor & ReactEditor) => any {
   const reservedHotkeys = ['enter', 'tab', 'shift', 'delete', 'end']
   const activeHotkeys = hotkeysFromOptions || DEFAULT_HOTKEYS // TODO: Merge where possible? A union?
@@ -53,7 +53,7 @@ export function createWithHotkeys(
           ],
         },
       ],
-      portableTextEditor
+      portableTextEditor,
     )[0]
   return function withHotKeys(editor: PortableTextSlateEditor & ReactEditor) {
     editor.pteWithHotKeys = (event: React.KeyboardEvent<HTMLDivElement>): void => {
@@ -136,7 +136,7 @@ export function createWithHotkeys(
       ) {
         const nextBlock = Node.descendant(
           editor,
-          Path.next(editor.selection.focus.path.slice(0, 1))
+          Path.next(editor.selection.focus.path.slice(0, 1)),
         ) as SlateTextBlock | VoidElement
         const focusBlockPath = editor.selection.focus.path.slice(0, 1)
         const focusBlock = Node.descendant(editor, focusBlockPath) as SlateTextBlock | VoidElement
@@ -170,7 +170,7 @@ export function createWithHotkeys(
           isPortableTextTextBlock(focusBlock) &&
           isPortableTextSpan(focusChild) &&
           (focusChild.marks || ([] as string[])).filter((m) =>
-            (focusBlock.markDefs || []).map((def) => def._key).includes(m)
+            (focusBlock.markDefs || []).map((def) => def._key).includes(m),
           ).length > 0
         const [start] = Range.edges(editor.selection)
         const atStartOfNode = Editor.isStart(editor, start, start.path)

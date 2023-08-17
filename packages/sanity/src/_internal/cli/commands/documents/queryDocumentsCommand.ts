@@ -46,7 +46,7 @@ export default {
   description: 'Query for documents',
   action: async (
     args: CliCommandArguments<CliQueryCommandFlags>,
-    context: CliCommandContext
+    context: CliCommandContext,
   ): Promise<void> => {
     // Reparsing arguments for improved control of flags
     const {
@@ -73,13 +73,13 @@ export default {
 
     if (requireProject && !cliConfig?.api?.projectId) {
       throw new Error(
-        'No project configured in CLI config - either configure one, or use `--project` flag'
+        'No project configured in CLI config - either configure one, or use `--project` flag',
       )
     }
 
     if (requireDataset && !cliConfig?.api?.dataset) {
       throw new Error(
-        'No dataset configured in CLI config - either configure one, or use `--dataset` flag'
+        'No dataset configured in CLI config - either configure one, or use `--dataset` flag',
       )
     }
 

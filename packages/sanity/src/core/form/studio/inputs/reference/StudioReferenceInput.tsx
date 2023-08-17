@@ -29,7 +29,7 @@ async function resolveUserDefinedFilter(
   options: ReferenceOptions | undefined,
   document: SanityDocument,
   valuePath: Path,
-  getClient: Source['getClient']
+  getClient: Source['getClient'],
 ): Promise<ReferenceFilterSearchOptions> {
   if (!options) {
     return {}
@@ -102,7 +102,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
             filter,
             params,
             tag: 'search.reference',
-          })
+          }),
         ),
 
         catchError((err: SearchError) => {
@@ -111,10 +111,10 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
           return throwError(err)
-        })
+        }),
       ),
 
-    [documentRef, path, searchClient, schemaType, getClient]
+    [documentRef, path, searchClient, schemaType, getClient],
   )
 
   const template = props.value?._strengthenOnPublish?.template
@@ -122,7 +122,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
     () =>
       forwardRef(function EditReferenceLink_(
         _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>>,
-        forwardedRef: ForwardedRef<'a'>
+        forwardedRef: ForwardedRef<'a'>,
       ) {
         return EditReferenceLinkComponent ? (
           <EditReferenceLinkComponent
@@ -133,7 +133,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
           />
         ) : null
       }),
-    [EditReferenceLinkComponent, path, template]
+    [EditReferenceLinkComponent, path, template],
   )
 
   const handleEditReference = useCallback(
@@ -145,7 +145,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         template: event.template,
       })
     },
-    [onEditReference, path]
+    [onEditReference, path],
   )
 
   const selectedState = PathUtils.startsWith(path, activePath?.path || [])
@@ -179,7 +179,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
 
                 permission: {granted: item.granted, reason: item.reason},
               }
-            : undefined
+            : undefined,
         )
         .filter(isNonNullable)
     )
@@ -188,7 +188,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const getReferenceInfo = useCallback(
     (id: string, _type: ReferenceSchemaType) =>
       adapter.getReferenceInfo(documentPreviewStore, id, _type),
-    [documentPreviewStore]
+    [documentPreviewStore],
   )
 
   return (

@@ -55,7 +55,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
         type: 'TERMS_FILTERS_SET_OPERATOR',
       })
     },
-    [dispatch, filter]
+    [dispatch, filter],
   )
 
   if (!operator || !operatorItems || operatorItems.length <= 1) {

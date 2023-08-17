@@ -9,7 +9,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function createMatchResult(
   nodes: RouterNode[],
   missing: string[],
-  remaining: string[]
+  remaining: string[],
 ): MatchResult {
   return {nodes, missing, remaining}
 }
@@ -17,7 +17,7 @@ function createMatchResult(
 /** @internal */
 export function _findMatchingRoutes(
   node: RouterNode,
-  _state?: Record<string, unknown>
+  _state?: Record<string, unknown>,
 ): MatchResult {
   if (!_state) {
     return createMatchResult([], [], [])
@@ -46,7 +46,7 @@ export function _findMatchingRoutes(
   const children = arrayify(
     (typeof node.children === 'function'
       ? node.children(isRecord(state) ? state : {})
-      : node.children) || []
+      : node.children) || [],
   )
 
   if (remainingParams.length > 0 && children.length === 0) {
@@ -69,6 +69,6 @@ export function _findMatchingRoutes(
   return createMatchResult(
     [node, ...matchingChild.nodes],
     matchingChild.missing,
-    matchingChild.remaining
+    matchingChild.remaining,
   )
 }

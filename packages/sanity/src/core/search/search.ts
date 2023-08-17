@@ -8,7 +8,7 @@ import {SearchOptions, WeightedHit} from './weighted/types'
 /** @internal */
 export function createSearch(
   client: SanityClient,
-  schema: Schema
+  schema: Schema,
 ): (query: string, opts?: SearchOptions) => Observable<WeightedHit[]> {
   const searchClient = client.withConfig({
     // Use >= 2021-03-25 for pt::text() support

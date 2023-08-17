@@ -209,7 +209,7 @@ export const dateOperators = {
       const dateStart = (value?.includeTime ? startOfMinute(date) : startOfDay(date)).toISOString()
       const dateEnd = (value?.includeTime ? endOfMinute(date) : endOfDay(date)).toISOString()
       return `dateTime(${fieldPath}) > dateTime(${toJSON(
-        dateStart
+        dateStart,
       )}) && dateTime(${fieldPath}) < dateTime(${toJSON(dateEnd)})`
     },
     inputComponent: SearchFilterDateTimeEqualInput as SearchOperatorInput<OperatorDateEqualValue>,
@@ -248,7 +248,7 @@ export const dateOperators = {
       const dateStart = (value?.includeTime ? startOfMinute(date) : startOfDay(date)).toISOString()
       const dateEnd = (value?.includeTime ? endOfMinute(date) : endOfDay(date)).toISOString()
       return `dateTime(${fieldPath}) < dateTime(${toJSON(
-        dateStart
+        dateStart,
       )}) || dateTime(${fieldPath}) > dateTime(${toJSON(dateEnd)})`
     },
     inputComponent: SearchFilterDateTimeEqualInput as SearchOperatorInput<OperatorDateEqualValue>,
@@ -262,7 +262,7 @@ export const dateOperators = {
     groqFilter: ({fieldPath, value}: SearchOperatorParams<OperatorDateRangeValue>) => {
       return value?.dateMax && value?.dateMin && fieldPath
         ? `dateTime(${fieldPath}) >= dateTime(${toJSON(
-            value.dateMin
+            value.dateMin,
           )}) && dateTime(${fieldPath}) <= dateTime(${toJSON(value.dateMax)})`
         : null
     },

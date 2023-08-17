@@ -10,7 +10,7 @@ import {useDidUpdate} from './useDidUpdate'
  */
 export function useScrollIntoViewOnFocusWithin(
   elementRef: {current: HTMLElement | null},
-  hasFocusWithin: boolean
+  hasFocusWithin: boolean,
 ): void {
   return useDidUpdate(
     hasFocusWithin,
@@ -20,7 +20,7 @@ export function useScrollIntoViewOnFocusWithin(
           scrollIntoView(elementRef.current, {scrollMode: 'always'})
         }
       },
-      [elementRef]
-    )
+      [elementRef],
+    ),
   )
 }

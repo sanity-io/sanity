@@ -22,11 +22,11 @@ import {useMemo} from 'react'
 export function useThrottledCallback(
   callback: (...args: any[]) => any,
   wait: number,
-  options: ThrottleSettings
+  options: ThrottleSettings,
 ): (...args: any[]) => any {
   const throttledCallback = useMemo(
     () => throttle(callback, wait, options),
-    [callback, options, wait]
+    [callback, options, wait],
   )
 
   return throttledCallback

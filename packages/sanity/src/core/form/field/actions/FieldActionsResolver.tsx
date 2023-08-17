@@ -40,7 +40,7 @@ export const FieldActionsResolver = memo(function FieldActions(props: FieldActio
   const lenRef = useRef(len)
 
   const [fieldActions, setFieldActions] = useState<DocumentFieldActionNode[]>(() =>
-    Array.from(new Array(len))
+    Array.from(new Array(len)),
   )
 
   const fieldActionsRef = useRef(fieldActions)
@@ -113,7 +113,7 @@ const FieldAction = memo(function FieldAction(props: FieldActionProps) {
       documentType,
       path,
       schemaType,
-    })
+    }),
   )
 
   useEffect(() => {

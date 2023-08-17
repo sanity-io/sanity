@@ -46,7 +46,7 @@ export interface BufferedDocumentWrapper {
 export const createBufferedDocument = (
   documentId: string,
   // consider naming it remoteEvent$
-  listenerEvent$: Observable<ListenerEvent>
+  listenerEvent$: Observable<ListenerEvent>,
 ): BufferedDocumentWrapper => {
   const bufferedDocument = createObservableBufferedDocument(listenerEvent$)
 

@@ -34,7 +34,7 @@ export function getFormatters(versions: ModuleVersionResult[]): {
   const nameLength = versions.reduce((max, mod) => Math.max(max, getDisplayName(mod).length), 0)
   const versionLength = versions.reduce(
     (max, mod) => Math.max(max, (mod.installed || '<missing>').length),
-    0
+    0,
   )
 
   const formatName = (name: string): string =>

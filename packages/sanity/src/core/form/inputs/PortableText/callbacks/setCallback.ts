@@ -17,7 +17,7 @@ export function createSetCallback(options: {
           allowedDecorators,
         }),
 
-        [{_key: block._key}]
+        [{_key: block._key}],
       ),
     ]
 

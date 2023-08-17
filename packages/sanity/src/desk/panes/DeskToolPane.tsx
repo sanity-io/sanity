@@ -77,7 +77,7 @@ export const DeskToolPane = memo(
   },
   (
     {params: prevParams = {}, payload: prevPayload = null, ...prev},
-    {params: nextParams = {}, payload: nextPayload = null, ...next}
+    {params: nextParams = {}, payload: nextPayload = null, ...next},
   ) => {
     // deeply compare these objects (it's okay, they're small)
     if (!isEqual(prevParams, nextParams)) return false
@@ -93,5 +93,5 @@ export const DeskToolPane = memo(
     }
 
     return true
-  }
+  },
 )

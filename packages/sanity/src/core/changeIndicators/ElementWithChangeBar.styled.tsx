@@ -139,5 +139,5 @@ export const ChangeBarButton = styled.button(
         }
       `}
     `
-  }
+  },
 )

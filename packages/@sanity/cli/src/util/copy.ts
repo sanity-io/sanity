@@ -9,7 +9,7 @@ interface CopyOptions {
 export async function copy(
   srcPath: string,
   dstPath: string,
-  options?: CopyOptions
+  options?: CopyOptions,
 ): Promise<number> {
   const rename = options?.rename
   const content = (await fs.stat(srcPath)).isDirectory()

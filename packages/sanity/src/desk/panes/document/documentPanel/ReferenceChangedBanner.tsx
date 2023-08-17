@@ -70,7 +70,7 @@ export const ReferenceChangedBanner = memo(() => {
 
       // note: observePaths doesn't support keyed path segments, so we need to select the nearest parent
       const keyedSegmentIndex = path.findIndex(
-        (p): p is KeyedSegment => typeof p == 'object' && '_key' in p
+        (p): p is KeyedSegment => typeof p == 'object' && '_key' in p,
       )
 
       return concat(
@@ -80,7 +80,7 @@ export const ReferenceChangedBanner = memo(() => {
         documentPreviewStore
           .unstable_observePathsDocumentPair(
             publishedId,
-            (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][]
+            (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][],
           )
           .pipe(
             // this debounce time is needed to prevent flashing banners due to
@@ -99,13 +99,13 @@ export const ReferenceChangedBanner = memo(() => {
                   refValue: pathGet<Reference>(draft.snapshot || published.snapshot, parentRefPath)
                     ?._ref,
                 },
-              })
-            )
-          )
+              }),
+            ),
+          ),
       )
     },
     [documentPreviewStore, parentId, parentRefPath],
-    {loading: true}
+    {loading: true},
   )
 
   const handleReloadReference = useCallback(() => {

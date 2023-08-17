@@ -57,7 +57,7 @@ const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolv
 function maybeSerializeListItem(
   item: ListItem | ListItemBuilder | Divider,
   index: number,
-  path: SerializePath
+  path: SerializePath,
 ): ListItem | Divider {
   if (item instanceof ListItemBuilder) {
     return item.serialize({path, index})
@@ -74,7 +74,7 @@ function maybeSerializeListItem(
     throw new SerializeError(
       `List items must be of type "listItem", got "${gotWhat}"${helpText}`,
       path,
-      index
+      index,
     ).withHelpUrl(HELP_URL.INVALID_LIST_ITEM)
   }
 
@@ -129,7 +129,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
      * Desk structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
-    spec?: ListInput
+    spec?: ListInput,
   ) {
     super()
     this.spec = spec ? spec : {}
@@ -162,7 +162,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       throw new SerializeError(
         '`id` is required for lists',
         options.path,
-        options.index
+        options.index,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
@@ -171,7 +171,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       throw new SerializeError(
         '`items` must be an array of items',
         options.path,
-        options.index
+        options.index,
       ).withHelpUrl(HELP_URL.LIST_ITEMS_MUST_BE_ARRAY)
     }
 
@@ -185,7 +185,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       throw new SerializeError(
         `List items with same ID found (${dupeDesc})`,
         options.path,
-        options.index
+        options.index,
       ).withHelpUrl(HELP_URL.LIST_ITEM_IDS_MUST_BE_UNIQUE)
     }
 

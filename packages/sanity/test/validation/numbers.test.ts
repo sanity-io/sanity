@@ -46,13 +46,13 @@ describe('number', () => {
   test('precision constraint', async () => {
     const rule = Rule.number().precision(3)
     await expect(rule.validate(Math.PI, context)).resolves.toMatchSnapshot(
-      'precision: invalid (pi)'
+      'precision: invalid (pi)',
     )
     await expect(rule.validate(31.133, context)).resolves.toMatchSnapshot(
-      'precision: valid (at limit)'
+      'precision: valid (at limit)',
     )
     await expect(rule.validate(31.3, context)).resolves.toMatchSnapshot(
-      'precision: valid (below limit)'
+      'precision: valid (below limit)',
     )
   })
 

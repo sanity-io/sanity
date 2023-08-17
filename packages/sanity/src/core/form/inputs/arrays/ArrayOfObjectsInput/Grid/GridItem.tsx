@@ -125,7 +125,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         position: pos,
       })
     },
-    [onInsert]
+    [onInsert],
   )
 
   const childPresence = useChildPresence(path, true)
@@ -163,7 +163,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           popover={MENU_POPOVER_PROPS}
         />
       ),
-    [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly]
+    [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly],
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})

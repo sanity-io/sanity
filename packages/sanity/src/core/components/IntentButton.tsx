@@ -8,7 +8,7 @@ import {IntentLink, IntentLinkProps} from 'sanity/router'
  * @beta
  */
 export function IntentButton(
-  props: IntentLinkProps & ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'href' | 'ref'>
+  props: IntentLinkProps & ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'href' | 'ref'>,
 ) {
   return props.disabled ? (
     <Button {...props} as="a" role="link" aria-disabled="true" />

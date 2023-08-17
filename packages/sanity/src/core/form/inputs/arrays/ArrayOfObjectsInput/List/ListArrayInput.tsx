@@ -54,19 +54,19 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     (item: Item) => {
       onInsert({items: [item], position: 'before', referenceItem: 0})
     },
-    [onInsert]
+    [onInsert],
   )
 
   const handleAppend = useCallback(
     (item: Item) => {
       onInsert({items: [item], position: 'after', referenceItem: -1})
     },
-    [onInsert]
+    [onInsert],
   )
 
   const memberKeys = useMemoCompare(
     useMemo(() => members.map((member) => member.key), [members]),
-    shallowEquals
+    shallowEquals,
   )
 
   const {scrollElement, containerElement} = useVirtualizerScrollInstance()
@@ -102,7 +102,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
       return defaultRangeExtractor(newRange)
     },
-    [activeDragItemIndex, focusPathKey, memberKeys]
+    [activeDragItemIndex, focusPathKey, memberKeys],
   )
 
   /**
@@ -143,7 +143,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         scroll.removeEventListener('scroll', handleScroll)
       }
     },
-    [containerElement]
+    [containerElement],
   )
 
   // This is the estimated size of an item in the list. The reason this is an estimate is because

@@ -28,7 +28,7 @@ const PlaceholderTextInput = styled(TextInput)`
 
 export const PlaceholderSearchInput = forwardRef(function DummyInput(
   {onOpen}: {onOpen: () => void},
-  ref: Ref<HTMLInputElement>
+  ref: Ref<HTMLInputElement>,
 ) {
   const {
     dispatch,
@@ -40,7 +40,7 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
       dispatch({type: 'TERMS_QUERY_SET', query: event.currentTarget.value})
       onOpen()
     },
-    [dispatch, onOpen]
+    [dispatch, onOpen],
   )
 
   const handleKeyDown = useCallback(
@@ -49,7 +49,7 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
         onOpen()
       }
     },
-    [onOpen]
+    [onOpen],
   )
 
   return (

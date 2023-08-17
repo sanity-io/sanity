@@ -18,7 +18,7 @@ type FieldDef =
 function nestFields(
   levels: number,
   fieldName: string,
-  collapsibleOptions?: CollapsibleOptions
+  collapsibleOptions?: CollapsibleOptions,
 ): FieldDef {
   if (levels === 0) {
     return {name: fieldName, type: 'string'}
@@ -103,7 +103,7 @@ test("doesn't make primitive fields collapsed even if they are configured to be"
       member.kind === 'field' &&
       (member.name === 'stringField' ||
         member.name === 'booleanField' ||
-        member.name === 'numberField')
+        member.name === 'numberField'),
   )
   primitiveFields.forEach((field) => {
     expect(field.collapsible).toBe(false)
@@ -127,7 +127,7 @@ describe('collapsible object fields', () => {
       throw new Error('should not be hidden')
     }
     const objectField = result.members.find(
-      (member): member is FieldMember => member.kind === 'field' && member.name === 'objectField'
+      (member): member is FieldMember => member.kind === 'field' && member.name === 'objectField',
     )
     expect(objectField?.collapsible).toBe(true)
     expect(objectField?.collapsed).toBe(true)
@@ -147,7 +147,7 @@ describe('collapsible object fields', () => {
       throw new Error('should not be hidden')
     }
     const objectField = result.members.find(
-      (member): member is FieldMember => member.kind === 'field' && member.name === 'objectField'
+      (member): member is FieldMember => member.kind === 'field' && member.name === 'objectField',
     )
     expect(objectField?.collapsible).toBe(true)
     expect(objectField?.collapsed).toBe(false)
@@ -210,13 +210,13 @@ function getDeepFieldMember(objectFormNode: ObjectFormNode, path: Path): FieldMe
   const [head, ...tail] = path
 
   const nextField = objectFormNode.members.find(
-    (member): member is FieldMember => member.kind === 'field' && member.name === head
+    (member): member is FieldMember => member.kind === 'field' && member.name === head,
   )
   if (!nextField) {
     throw new Error(
       `Field with name "${head}" not found for object node at path "${pathToString(
-        objectFormNode.path
-      )}"`
+        objectFormNode.path,
+      )}"`,
     )
   }
   if (tail.length === 0) {

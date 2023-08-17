@@ -17,13 +17,13 @@ export class ConfigResolutionError extends Error {
     const messages = causes
       .filter(Boolean)
       .map((cause) =>
-        isRecord(cause) && typeof cause?.message === 'string' ? cause.message : String(cause)
+        isRecord(cause) && typeof cause?.message === 'string' ? cause.message : String(cause),
       )
 
     super(
       `Could not resolve ${type}${name ? ` \`${name}\`` : ''}:\n${messages
         .map((message) => `\t- ${message}`)
-        .join('\n')}\n\n`
+        .join('\n')}\n\n`,
     )
 
     this.name = name

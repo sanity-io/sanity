@@ -314,11 +314,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       // Compare input components between current and target operators, and update
       // target filter value if it has changed.
       const matchedFilter = state.filters.find(
-        (filter) => getFilterKey(filter) === action.filterKey
+        (filter) => getFilterKey(filter) === action.filterKey,
       )
       const currentOperator = getOperatorDefinition(
         state.definitions.operators,
-        matchedFilter?.operatorType
+        matchedFilter?.operatorType,
       )
       const nextOperator = getOperatorDefinition(state.definitions.operators, action.operatorType)
       const nextInitialValue = nextOperator?.initialValue
@@ -442,7 +442,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             return true
           }
           return documentTypesNarrowed.every(
-            (type) => fieldDefinition.documentTypes.findIndex((t) => t === type) > -1
+            (type) => fieldDefinition.documentTypes.findIndex((t) => t === type) > -1,
           )
         }
         return true

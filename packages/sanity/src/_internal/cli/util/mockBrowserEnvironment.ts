@@ -25,7 +25,7 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     {
       ignoreNodeModules: false,
       exts: getFileExtensions(),
-    }
+    },
   )
 
   const {unregister: unregisterESBuild} = registerESBuild({

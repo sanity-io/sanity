@@ -14,7 +14,7 @@ export interface CodeModFlags {
 
 export const codemodAction: CliCommandAction<CodeModFlags> = async function codemodAction(
   args,
-  context
+  context,
 ) {
   const {output, cliRoot, workDir} = context
   const [name] = args.argsWithoutOptions
@@ -102,7 +102,7 @@ function ensureNpx() {
     }
   } catch (err) {
     throw new Error(
-      `Failed to run "npx" - required to run codemods. Do you have a recent version of npm installed?`
+      `Failed to run "npx" - required to run codemods. Do you have a recent version of npm installed?`,
     )
   }
 }

@@ -14,7 +14,7 @@ export const usePortableTextEditorSelection = (): EditorSelection => {
 
   if (selection === undefined) {
     throw new Error(
-      `The \`usePortableTextEditorSelection\` hook must be used inside the <PortableTextEditor> component's context.`
+      `The \`usePortableTextEditorSelection\` hook must be used inside the <PortableTextEditor> component's context.`,
     )
   }
   return selection

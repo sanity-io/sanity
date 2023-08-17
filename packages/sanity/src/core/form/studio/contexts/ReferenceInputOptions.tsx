@@ -65,7 +65,7 @@ export function useReferenceInputOptions() {
  * @internal
  */
 export function ReferenceInputOptionsProvider(
-  props: ReferenceInputOptions & {children: React.ReactNode}
+  props: ReferenceInputOptions & {children: React.ReactNode},
 ) {
   const {
     children,
@@ -82,7 +82,7 @@ export function ReferenceInputOptionsProvider(
       onEditReference,
       initialValueTemplateItems,
     }),
-    [activePath, EditReferenceLinkComponent, onEditReference, initialValueTemplateItems]
+    [activePath, EditReferenceLinkComponent, onEditReference, initialValueTemplateItems],
   )
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>

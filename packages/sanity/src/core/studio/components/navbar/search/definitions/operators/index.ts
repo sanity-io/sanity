@@ -15,7 +15,7 @@ export interface SearchOperatorDefinition<TValue = any> extends SearchOperatorBa
 }
 
 export function createOperatorDefinitionDictionary(
-  operatorDefinitions: SearchOperatorDefinition[]
+  operatorDefinitions: SearchOperatorDefinition[],
 ): SearchOperatorDefinitionDictionary {
   return operatorDefinitions.reduce<SearchOperatorDefinitionDictionary>((acc, val) => {
     acc[val.type] = val
@@ -25,14 +25,14 @@ export function createOperatorDefinitionDictionary(
 
 export function getOperatorDefinition(
   operators: SearchOperatorDefinitionDictionary,
-  operatorType?: string
+  operatorType?: string,
 ): SearchOperatorDefinition | undefined {
   return operatorType ? operators[operatorType] : undefined
 }
 
 export function getOperatorInitialValue(
   operators: SearchOperatorDefinitionDictionary,
-  operatorType: string
+  operatorType: string,
 ): SearchOperatorDefinition['initialValue'] | undefined {
   return getOperatorDefinition(operators, operatorType)?.initialValue
 }

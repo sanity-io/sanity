@@ -25,7 +25,7 @@ const POPOVER_PROPS: PopoverProps = {
 const getIntent = (
   schema: Schema,
   templates: Template[],
-  item: InitialValueTemplateItem
+  item: InitialValueTemplateItem,
 ): PaneHeaderIntentProps | null => {
   const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
   if (!typeName) return null
@@ -68,7 +68,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         acc[permission.id] = permission
         return acc
       },
-      {}
+      {},
     )
   }, [templatePermissions])
 
@@ -137,7 +137,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                   params={intent.params}
                   ref={linkRef}
                 />
-              )
+              ),
             )
 
             Link.displayName = 'Link'

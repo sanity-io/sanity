@@ -11,7 +11,7 @@ export function listAliases(client: SanityClient): Promise<DatasetAliasDefinitio
 export function createAlias(
   client: SanityClient,
   aliasName: string,
-  datasetName: string | null
+  datasetName: string | null,
 ): Promise<DatasetModificationResponse> {
   return modify(client, 'PUT', aliasName, datasetName ? {datasetName} : undefined)
 }
@@ -19,14 +19,14 @@ export function createAlias(
 export function updateAlias(
   client: SanityClient,
   aliasName: string,
-  datasetName: string | null
+  datasetName: string | null,
 ): Promise<DatasetModificationResponse> {
   return modify(client, 'PATCH', aliasName, datasetName ? {datasetName} : undefined)
 }
 
 export function unlinkAlias(
   client: SanityClient,
-  aliasName: string
+  aliasName: string,
 ): Promise<DatasetModificationResponse> {
   validateDatasetAliasName(aliasName)
   return modify(client, 'PATCH', `${aliasName}/unlink`, {})
@@ -40,7 +40,7 @@ function modify(
   client: SanityClient,
   method: string,
   aliasName: string,
-  body?: {datasetName?: string}
+  body?: {datasetName?: string},
 ) {
   return client.request({method, uri: `/aliases/${aliasName}`, body})
 }

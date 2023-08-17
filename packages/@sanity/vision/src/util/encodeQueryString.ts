@@ -1,7 +1,7 @@
 export function encodeQueryString(
   query: string,
   params: Record<string, unknown> = {},
-  options: Record<string, string> = {}
+  options: Record<string, string> = {},
 ): string {
   const searchParams = new URLSearchParams()
   searchParams.set('query', query)

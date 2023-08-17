@@ -27,11 +27,11 @@ export function createBroadcastChannel<T>(namespace: string): BroadcastChannel<T
       filter((event) => event.key === storageKey),
       map((event) => event.newValue),
       filter(isNonNullable),
-      map((newValue) => JSON.parse(newValue))
-    )
+      map((newValue) => JSON.parse(newValue)),
+    ),
   ).pipe(
     // this is important to ensure all new subscribers get a message on subscribe
-    shareReplay(1)
+    shareReplay(1),
   )
 
   function broadcast(message: T) {

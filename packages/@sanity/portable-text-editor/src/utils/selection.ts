@@ -4,7 +4,7 @@ import {EditorSelection, EditorSelectionPoint} from '../types/editor'
 
 export function normalizePoint(
   point: EditorSelectionPoint,
-  value: PortableTextBlock[]
+  value: PortableTextBlock[],
 ): EditorSelectionPoint | null {
   if (!point || !value) {
     return null
@@ -43,7 +43,7 @@ export function normalizePoint(
 
 export function normalizeSelection(
   selection: EditorSelection,
-  value: PortableTextBlock[] | undefined
+  value: PortableTextBlock[] | undefined,
 ): EditorSelection | null {
   if (!selection || !value || value.length === 0) {
     return null

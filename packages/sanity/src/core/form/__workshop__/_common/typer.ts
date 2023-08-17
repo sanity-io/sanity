@@ -1,7 +1,7 @@
 const triggerInputEvent = (input: HTMLElement, nextValue: unknown) => {
   const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
     input.constructor.prototype,
-    'value'
+    'value',
   )!.set
   nativeInputValueSetter!.call(input, nextValue)
   input.dispatchEvent(new Event('input', {bubbles: true}))
@@ -65,15 +65,15 @@ export function runTest(props: TestOptions): () => boolean {
         'Sample #{0}: {1}ms, avg: {2}ms',
         sampleNo,
         duration.toPrecision(4),
-        (total / sampleNo).toPrecision(4)
-      )
+        (total / sampleNo).toPrecision(4),
+      ),
     )
     if (remainingSamples > 0) {
       timer = setTimeout(sampleNext, gracePeriod)
     } else {
       // eslint-disable-next-line callback-return
       handleRun(
-        format('Average of {0} samples: {1}ms', sampleNo, (total / sampleNo).toPrecision(4))
+        format('Average of {0} samples: {1}ms', sampleNo, (total / sampleNo).toPrecision(4)),
       )
       onFinished()
       triggerInputEvent(inputElement, originalValue)

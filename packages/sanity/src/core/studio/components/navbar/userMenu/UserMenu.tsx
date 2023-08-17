@@ -86,7 +86,7 @@ export function UserMenu() {
       scheme: scheme,
       constrainSize: true,
     }),
-    [scheme]
+    [scheme],
   )
 
   return (

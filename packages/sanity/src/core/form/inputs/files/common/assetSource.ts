@@ -53,7 +53,7 @@ export function handleSelectAssetFromSource({
             _ref: firstAsset.value,
           },
 
-          ['asset']
+          ['asset'],
         ),
       ])
 

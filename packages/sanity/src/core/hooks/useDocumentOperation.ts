@@ -6,6 +6,6 @@ export function useDocumentOperation(publishedDocId: string, docTypeName: string
   const documentStore = useDocumentStore()
   return useMemoObservable(
     () => documentStore.pair.editOperations(publishedDocId, docTypeName),
-    [docTypeName, documentStore.pair, publishedDocId]
+    [docTypeName, documentStore.pair, publishedDocId],
   )!
 }

@@ -8,7 +8,7 @@ export const useWorkspaceAuthStates = createHookFromObservableFactory(
     combineLatest(
       workspaces.map((workspace) =>
         // eslint-disable-next-line max-nested-callbacks
-        workspace.auth.state.pipe(map((state) => [workspace.name, state] as const))
-      )
-    ).pipe(map((entries) => Object.fromEntries(entries)))
+        workspace.auth.state.pipe(map((state) => [workspace.name, state] as const)),
+      ),
+    ).pipe(map((entries) => Object.fromEntries(entries))),
 )

@@ -97,8 +97,8 @@ export const genericValidators: Validators = {
       // eslint-disable-next-line no-console
       console.warn(
         `Custom validator at ${pathToString(
-          context.path
-        )} has taken more than ${SLOW_VALIDATOR_TIMEOUT}ms to respond`
+          context.path,
+        )} has taken more than ${SLOW_VALIDATOR_TIMEOUT}ms to respond`,
       )
     }, SLOW_VALIDATOR_TIMEOUT)
 

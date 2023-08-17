@@ -121,7 +121,7 @@ const createBodyField = (title, name, size = 1) => {
           },
           myStringType,
         ],
-      })
+      }),
     )
   }
   return fields

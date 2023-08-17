@@ -18,7 +18,7 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
         'The current ordering config targeted the nonexistent field "%s" on schema type "%s". It should be one of %o',
         head,
         schemaType.name,
-        schemaType.fields.map((field) => field.name)
+        schemaType.fields.map((field) => field.name),
       )
     }
     return ''

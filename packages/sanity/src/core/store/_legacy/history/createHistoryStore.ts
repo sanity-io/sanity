@@ -18,12 +18,12 @@ import {Timeline, TimelineController} from './history'
 export interface HistoryStore {
   getDocumentAtRevision: (
     documentId: string,
-    revision: string
+    revision: string,
   ) => Promise<SanityDocument | undefined>
 
   getHistory: (
     documentIds: string[],
-    options?: {time?: string; revision?: string}
+    options?: {time?: string; revision?: string},
   ) => Promise<{documents: SanityDocument[]}>
 
   getTransactions: (documentIds: string[]) => Promise<TransactionLogEventWithMutations[]>
@@ -44,7 +44,7 @@ const documentRevisionCache: Record<string, Promise<SanityDocument | undefined> 
 const getHistory = (
   client: SanityClient,
   documentIds: string[],
-  options: {time?: string; revision?: string} = {}
+  options: {time?: string; revision?: string} = {},
 ): Promise<{documents: SanityDocument[]}> => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
   const {time, revision} = options
@@ -70,7 +70,7 @@ const getHistory = (
 const getDocumentAtRevision = (
   client: SanityClient,
   documentId: string,
-  revision: string
+  revision: string,
 ): Promise<SanityDocument | undefined> => {
   const publishedId = getPublishedId(documentId)
   const draftId = getDraftId(documentId)
@@ -117,7 +117,7 @@ const getTimelineController = ({
 
 const getTransactions = async (
   client: SanityClient,
-  documentIds: string | string[]
+  documentIds: string | string[],
 ): Promise<TransactionLogEventWithMutations[]> => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
   const dataset = client.config().dataset
@@ -137,13 +137,13 @@ const getAllRefIds = (doc: SanityDocument): string[] =>
   jsonReduce(
     doc as any,
     (acc: any, node) => (isReference(node) && !acc.includes(node._ref) ? [...acc, node._ref] : acc),
-    []
+    [],
   )
 
 function jsonMap(value: unknown, mapFn: any): any {
   if (Array.isArray(value)) {
     return mapFn(
-      value.map((item) => jsonMap(item, mapFn)).filter((item) => typeof item !== 'undefined')
+      value.map((item) => jsonMap(item, mapFn)).filter((item) => typeof item !== 'undefined'),
     )
   }
 
@@ -156,7 +156,7 @@ function jsonMap(value: unknown, mapFn: any): any {
         }
 
         return res
-      }, {})
+      }, {}),
     )
   }
 
@@ -169,7 +169,7 @@ const mapRefNodes = (doc: SanityDocument, mapFn: (node: Reference) => Reference 
 /** @internal */
 export const removeMissingReferences = (
   doc: SanityDocument,
-  existingIds: Record<string, boolean | undefined>
+  existingIds: Record<string, boolean | undefined>,
 ): SanityDocument =>
   mapRefNodes(doc, (refNode) => {
     const documentExists = existingIds[refNode._ref]
@@ -197,8 +197,8 @@ function restore(client: SanityClient, documentId: string, targetDocumentId: str
       return {...document, _id: targetDocumentId}
     }),
     mergeMap((restoredDraft) =>
-      client.observable.createOrReplace(restoredDraft, {visibility: 'async'})
-    )
+      client.observable.createOrReplace(restoredDraft, {visibility: 'async'}),
+    ),
   )
 }
 

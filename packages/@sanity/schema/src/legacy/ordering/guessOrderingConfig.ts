@@ -8,7 +8,7 @@ const isPrimitive = (field) => PRIMITIVES.includes(field.type)
 
 export default function guessOrderingConfig(objectTypeDef) {
   let candidates = CANDIDATES.filter((candidate) =>
-    objectTypeDef.fields.some((field) => isPrimitive(field) && field.name === candidate)
+    objectTypeDef.fields.some((field) => isPrimitive(field) && field.name === candidate),
   )
 
   // None of the candidates were found, fallback to all fields

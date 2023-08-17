@@ -14,7 +14,7 @@ interface HotspotCropSVGProps {
 }
 
 export function HotspotCropSVG(
-  props: HotspotCropSVGProps & Omit<React.SVGProps<SVGElement>, 'ref' | 'width' | 'height'>
+  props: HotspotCropSVGProps & Omit<React.SVGProps<SVGElement>, 'ref' | 'width' | 'height'>,
 ) {
   const {crop, diff, hash, hotspot, width = 100, height = 100, ...restProps} = props
   const cropColor = useDiffAnnotationColor(diff, 'crop')

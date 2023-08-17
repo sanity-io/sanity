@@ -15,14 +15,14 @@ describe('array', () => {
     const rule = Rule.array().min(2)
     await expect(rule.validate(['a'], context)).resolves.toMatchSnapshot('min length: too short')
     await expect(rule.validate(['a', 'b', 'c'], context)).resolves.toMatchSnapshot(
-      'min length: valid'
+      'min length: valid',
     )
   })
 
   test('max length constraint', async () => {
     const rule = Rule.array().max(2)
     await expect(rule.validate(['a', 'b', 'c', 'd'], context)).resolves.toMatchSnapshot(
-      'max length: too long'
+      'max length: too long',
     )
     await expect(rule.validate(['a'], context)).resolves.toMatchSnapshot('max length: valid')
   })
@@ -30,7 +30,7 @@ describe('array', () => {
   test('exact length constraint', async () => {
     const rule = Rule.array().length(2)
     await expect(rule.validate(['a', 'b', 'c'], context)).resolves.toMatchSnapshot(
-      'exact length: too long'
+      'exact length: too long',
     )
     await expect(rule.validate(['a'], context)).resolves.toMatchSnapshot('exact length: too short')
     await expect(rule.validate(['a', 'b'], context)).resolves.toMatchSnapshot('exact length: valid')
@@ -39,10 +39,10 @@ describe('array', () => {
   test('unique constraint (default, simple values)', async () => {
     const rule = Rule.array().unique()
     await expect(rule.validate(['a', 'b', 'c', 'd'], context)).resolves.toMatchSnapshot(
-      'simple unique: valid'
+      'simple unique: valid',
     )
     await expect(rule.validate(['a', 'b', 'c', 'a'], context)).resolves.toMatchSnapshot(
-      'simple unique: duplicates'
+      'simple unique: duplicates',
     )
   })
 
@@ -50,10 +50,10 @@ describe('array', () => {
     const rule = Rule.array().unique()
     const ref = (id: string) => ({_ref: id, _type: 'reference'})
     await expect(rule.validate(['a', 'b', 'c', 'd'].map(ref), context)).resolves.toMatchSnapshot(
-      'object unique: valid'
+      'object unique: valid',
     )
     await expect(rule.validate(['a', 'b', 'c', 'a'].map(ref), context)).resolves.toMatchSnapshot(
-      'object unique: duplicates'
+      'object unique: duplicates',
     )
   })
 
@@ -61,20 +61,20 @@ describe('array', () => {
     const rule = Rule.array().unique()
     const refArr = (id: string) => [{_ref: id, _type: 'reference'}]
     await expect(rule.validate(['a', 'b', 'c', 'd'].map(refArr), context)).resolves.toMatchSnapshot(
-      'array unique: valid'
+      'array unique: valid',
     )
     await expect(rule.validate(['a', 'a', 'c', 'd'].map(refArr), context)).resolves.toMatchSnapshot(
-      'array unique: duplicates'
+      'array unique: duplicates',
     )
   })
 
   test('unique constraint (default, bool values)', async () => {
     const rule = Rule.array().unique()
     await expect(rule.validate([true, false], context)).resolves.toMatchSnapshot(
-      'boolean unique: valid'
+      'boolean unique: valid',
     )
     await expect(rule.validate([false, true, false], context)).resolves.toMatchSnapshot(
-      'boolean unique: duplicates'
+      'boolean unique: duplicates',
     )
   })
 
@@ -82,7 +82,7 @@ describe('array', () => {
     const rule = Rule.array().unique()
     await expect(rule.validate([1, 3], context)).resolves.toMatchSnapshot('numeric unique: valid')
     await expect(rule.validate([3, 1, 3], context)).resolves.toMatchSnapshot(
-      'numeric unique: duplicates'
+      'numeric unique: duplicates',
     )
   })
 })

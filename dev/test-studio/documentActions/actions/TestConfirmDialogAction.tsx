@@ -54,7 +54,7 @@ export const TestConfirmDialogAction: DocumentActionComponent = (props) => {
         confirmButtonIcon: CheckmarkCircleIcon,
         confirmButtonText: 'Yes',
       },
-    [dialogOpen, handleCancel, handleClose, handleConfirm]
+    [dialogOpen, handleCancel, handleClose, handleConfirm],
   )
 
   return {

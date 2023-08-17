@@ -8,7 +8,7 @@ import {StateLink} from 'sanity/router'
  */
 export const BackLink = forwardRef(function BackLink(
   props: BackLinkProps,
-  ref: React.ForwardedRef<HTMLAnchorElement>
+  ref: React.ForwardedRef<HTMLAnchorElement>,
 ) {
   const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
   const panes = useMemo(() => routerPanesState.slice(0, groupIndex), [groupIndex, routerPanesState])

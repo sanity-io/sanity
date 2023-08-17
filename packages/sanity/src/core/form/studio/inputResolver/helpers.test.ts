@@ -120,7 +120,7 @@ function setupTest() {
   ] as const
 
   const aliasTypes = [...noIndentationFields, ...onlyIndentationFields].map((field) =>
-    defineType({...field, name: `${field.name}-alias`})
+    defineType({...field, name: `${field.name}-alias`}),
   )
 
   function aliasTypeClone<T extends {name: string; type: string}>(field: T) {
@@ -165,11 +165,11 @@ function setupTest() {
   const testSchema = createSchema(schemaDef)
 
   const noIndentationObject: ObjectSchemaType = testSchema.get(
-    'noIndentationFields'
+    'noIndentationFields',
   ) as ObjectSchemaType
 
   const onlyIndentationObject: ObjectSchemaType = testSchema.get(
-    'onlyIndentationFields'
+    'onlyIndentationFields',
   ) as ObjectSchemaType
 
   return {

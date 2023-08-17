@@ -27,7 +27,7 @@ export function QueryErrorDetails({error}: {error: ContentLakeQueryError | Error
     <div>
       <ErrorCode size={1}>{`${details.line}\n${dashLine(
         details.column,
-        details.columnEnd
+        details.columnEnd,
       )}`}</ErrorCode>
       <Box marginTop={4}>
         <ErrorCode size={1}>{`Line:   ${details.lineNumber}\nColumn: ${details.column}`}</ErrorCode>

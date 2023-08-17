@@ -13,7 +13,7 @@ Promise.all(
     const targetPath = path.join(pkg.dirname, 'LICENSE')
     await fs.writeFile(targetPath, licenseTxt)
     return targetPath
-  })
+  }),
 ).then((targetPaths) => {
   console.log('Copied the ./LICENSE file to %s to packages.', targetPaths.length)
 })

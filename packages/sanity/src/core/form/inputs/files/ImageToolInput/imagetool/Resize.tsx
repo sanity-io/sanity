@@ -43,7 +43,7 @@ export function Resize(props: ResizeProps): any {
 
       return canvas
     },
-    [canvas]
+    [canvas],
   )
 
   return children(resize(image, maxHeight, maxWidth))

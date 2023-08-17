@@ -11,7 +11,7 @@ export function FieldActionsProvider(
   props: PropsWithChildren<{
     actions: DocumentFieldActionNode[]
     path: Path
-  }>
+  }>,
 ) {
   const {actions, children, path} = props
   const {onMouseEnter: onFieldMouseEnter, onMouseLeave: onFieldMouseLeave} = useHoveredField()
@@ -34,7 +34,7 @@ export function FieldActionsProvider(
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
     }),
-    [actions, handleMouseEnter, handleMouseLeave, hovered]
+    [actions, handleMouseEnter, handleMouseLeave, hovered],
   )
 
   return <FieldActionsContext.Provider value={context}>{children}</FieldActionsContext.Provider>

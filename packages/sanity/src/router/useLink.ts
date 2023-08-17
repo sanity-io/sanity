@@ -83,7 +83,7 @@ export function useLink(options: UseLinkOptions): {onClick: React.MouseEventHand
 
       navigateUrl({path: href, replace})
     },
-    [href, navigateUrl, onClickProp, replace, target]
+    [href, navigateUrl, onClickProp, replace, target],
   )
 
   return {onClick: onClick}

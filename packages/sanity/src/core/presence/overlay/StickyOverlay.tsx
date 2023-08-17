@@ -35,14 +35,14 @@ type RegionWithSpacerHeight = RegionWithIntersectionDetails & {
 }
 
 function withSpacerHeight(
-  regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
+  regionsWithIntersectionDetails: RegionWithIntersectionDetails[],
 ): RegionWithSpacerHeight[] {
   return regionsWithIntersectionDetails.map(
     (withIntersection, idx, _regionsWithIntersectionDetails) => {
       const prevRect = _regionsWithIntersectionDetails[idx - 1]?.region.rect
       const prevBottom = prevRect ? bottom(prevRect) : 0
       return {...withIntersection, spacerHeight: withIntersection.region.rect.top - prevBottom}
-    }
+    },
   )
 }
 
@@ -79,13 +79,13 @@ function group(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]):
         indent: grp
           .slice(i + 1)
           .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0),
-      })
+      }),
     ),
     inside: orderByTop(grouped.inside).map(
       (withIntersection): RegionWithSpacerHeightAndIndent => ({
         ...(withIntersection as RegionWithSpacerHeight),
         indent: 0,
-      })
+      }),
     ),
     bottom: orderByTop(grouped.bottom).map(
       (withIntersection, i, grp): RegionWithSpacerHeightAndIndent => ({
@@ -93,7 +93,7 @@ function group(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]):
         indent: grp
           .slice(0, i)
           .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0),
-      })
+      }),
     ),
   }
 }
@@ -126,7 +126,7 @@ function getRelativeRect(element: HTMLElement, parent: HTMLElement): Rect {
 
 function regionsWithComputedRects(
   regions: ReportedPresenceData[],
-  parent: HTMLElement
+  parent: HTMLElement,
 ): ReportedRegionWithRect<FieldPresenceData>[] {
   return regions.map(([id, region]) => ({
     ...region,
@@ -142,17 +142,17 @@ export function StickyOverlay(props: Props) {
   const ref = React.useRef<HTMLDivElement | null>(null)
   const regions = React.useMemo(
     () => (ref.current ? regionsWithComputedRects(reportedValues, ref.current) : EMPTY_ARRAY),
-    [reportedValues]
+    [reportedValues],
   )
 
   const renderCallback = React.useCallback(
     (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth: any) => {
       const grouped = group(
-        regionsWithIntersectionDetails.filter((item) => item.region.presence.length > 0)
+        regionsWithIntersectionDetails.filter((item) => item.region.presence.length > 0),
       )
       const topSpacing = sum(grouped.top.map((n) => n.region.rect.height + n.spacerHeight))
       const bottomSpacing = sum(
-        [...grouped.inside, ...grouped.bottom].map((n) => n.region.rect.height + n.spacerHeight)
+        [...grouped.inside, ...grouped.bottom].map((n) => n.region.rect.height + n.spacerHeight),
       )
 
       // todo: this needs cleaning up, should process all the needed layout data in one go
@@ -168,7 +168,7 @@ export function StickyOverlay(props: Props) {
               _counts.nearBottom + (nearBottom ? withIntersection.region.presence.length : 0),
           }
         },
-        {nearTop: 0, nearBottom: 0}
+        {nearTop: 0, nearBottom: 0},
       )
 
       return (
@@ -194,7 +194,7 @@ export function StickyOverlay(props: Props) {
         </>
       )
     },
-    [margins]
+    [margins],
   )
 
   return (
@@ -221,8 +221,8 @@ const PresenceDock = memo(function PresenceDock(props: {
 
     return flatten(
       sortBy(regionsWithIntersectionDetails, (r) => r.region.rect.top * dir).map(
-        (withIntersection) => withIntersection.region.presence || EMPTY_ARRAY
-      )
+        (withIntersection) => withIntersection.region.presence || EMPTY_ARRAY,
+      ),
     )
   }, [dir, regionsWithIntersectionDetails])
   const [topMargin, rightMargin, bottomMargin, leftMargin] = margins
@@ -245,7 +245,7 @@ const PresenceDock = memo(function PresenceDock(props: {
       top: AVATAR_ARROW_HEIGHT + 1 + margin,
       bottom: AVATAR_ARROW_HEIGHT + 1 + margin,
     }),
-    [leftOffset, margin]
+    [leftOffset, margin],
   )
 
   return (

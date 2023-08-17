@@ -49,7 +49,7 @@ export function getDocumentValuePermissions({
  * @internal
  */
 export const useDocumentValuePermissionsFromHookFactory = createHookFromObservableFactory(
-  getDocumentValuePermissions
+  getDocumentValuePermissions,
 )
 
 /** @internal */

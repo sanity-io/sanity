@@ -101,7 +101,7 @@ export function SearchFilterStringListInput({
     (v: number | string) => {
       onChange(v)
     },
-    [onChange]
+    [onChange],
   )
 
   return (
@@ -146,7 +146,7 @@ export function SearchFilterStringListInput({
 }
 
 function toSelectItem(
-  option: TitledListValue<string | number> | string | number
+  option: TitledListValue<string | number> | string | number,
 ): TitledListValue<string | number> {
   return isTitledListValue(option) ? option : {title: capitalize(`${option}`), value: option}
 }

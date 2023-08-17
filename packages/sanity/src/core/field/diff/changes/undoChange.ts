@@ -38,7 +38,7 @@ const diffOptions: DiffOptions = {
 export function undoChange(
   change: ChangeNode,
   rootDiff: ObjectDiff | null,
-  documentOperations: FieldOperationsAPI
+  documentOperations: FieldOperationsAPI,
 ): void {
   if (!rootDiff) {
     return
@@ -58,8 +58,8 @@ export function undoChange(
     patches.push(
       ...buildUnsetPatches(
         rootDiff,
-        unsetChanges.map((unsetChange) => unsetChange.path)
-      )
+        unsetChanges.map((unsetChange) => unsetChange.path),
+      ),
     )
   } else if (change.diff.action === 'added') {
     // The reverse of an add operation is an unset -
@@ -126,7 +126,7 @@ function furthestEmptyAncestor(
   /**
    * Same as the first value of currentPath.
    */
-  initialPath?: Path
+  initialPath?: Path,
 ): Path {
   if (currentPath.length <= 0) {
     /*
@@ -170,7 +170,7 @@ function furthestEmptyAncestor(
 function buildMovePatches(
   itemDiff: ItemDiff,
   parentDiff: ArrayDiff,
-  path: Path
+  path: Path,
 ): PatchOperations[] {
   const basePath = path.slice(0, -1)
   const {parentValue, fromIndex, fromValue} = getFromItem(parentDiff, itemDiff)
@@ -202,7 +202,7 @@ function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOp
 
   const inserts = patches
     .filter((patch): patch is InsertAfterPatch => patch.op === 'insert')
-    .map(({after, items}) => ({insert: {after: pathToString(after), items}} as any))
+    .map(({after, items}) => ({insert: {after: pathToString(after), items}}) as any)
 
   const unsets = patches
     .filter((patch): patch is UnsetPatch => patch.op === 'unset')
@@ -214,12 +214,15 @@ function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOp
   let hasSets = false
   const sets = patches
     .filter((patch): patch is SetPatch => patch.op === 'set')
-    .reduce((acc, patch) => {
-      hasSets = true
-      stubs.push(...getParentStubs(patch.path, rootDiff, stubbedPaths))
-      acc[pathToString(patch.path)] = patch.value
-      return acc
-    }, {} as Record<string, unknown>)
+    .reduce(
+      (acc, patch) => {
+        hasSets = true
+        stubs.push(...getParentStubs(patch.path, rootDiff, stubbedPaths))
+        acc[pathToString(patch.path)] = patch.value
+        return acc
+      },
+      {} as Record<string, unknown>,
+    )
 
   return [
     ...stubs,
@@ -289,7 +292,7 @@ function onlyContainsStubs(
   /**
    * An optional list of path to forcefully mark as a stub regardless of what it actually is.
    */
-  ignorePaths?: Path[]
+  ignorePaths?: Path[],
 ): boolean {
   /*
    * If we're trying to check for stubs inside something which isn't an object
@@ -325,7 +328,7 @@ function onlyContainsStubs(
 
 function isStub(item: unknown, path: Path, ignorePaths?: Path[]): boolean {
   const isIgnoredPath = ignorePaths?.some(
-    (ignorePath) => pathToString(ignorePath) === pathToString(path)
+    (ignorePath) => pathToString(ignorePath) === pathToString(path),
   )
 
   const isEmptyArray = Array.isArray(item) && item.length <= 0

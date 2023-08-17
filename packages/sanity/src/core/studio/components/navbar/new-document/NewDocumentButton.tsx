@@ -85,7 +85,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
         setOpen(true)
       }
     },
-    [open]
+    [open],
   )
 
   // Close popover on escape or tab
@@ -95,7 +95,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
         handleClose()
       }
     },
-    [handleClose, open]
+    [handleClose, open],
   )
 
   // Close popover on click outside
@@ -123,7 +123,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       modal,
       searchInputElement,
       searchQuery,
-    ]
+    ],
   )
 
   // Shared text input props for the popover and dialog
@@ -137,7 +137,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       placeholder: placeholder,
       ref: setSearchInputElement,
     }),
-    [handleSearchChange, loading, placeholder, searchQuery]
+    [handleSearchChange, loading, placeholder, searchQuery],
   )
 
   // Shared open button props for the popover and dialog
@@ -151,7 +151,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       ref: setButtonElement,
       selected: open,
     }),
-    [disabled, handleToggleOpen, loading, open, title]
+    [disabled, handleToggleOpen, loading, open, title],
   )
 
   // Tooltip content for the open button
@@ -181,7 +181,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       portal: true,
       scheme: scheme,
     }),
-    [loading, open, scheme, tooltipContent]
+    [loading, open, scheme, tooltipContent],
   )
 
   // Dialog

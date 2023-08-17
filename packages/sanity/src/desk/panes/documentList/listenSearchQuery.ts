@@ -60,20 +60,20 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
             new Error(
               ev.type === 'reconnect'
                 ? 'Could not establish EventSource connection'
-                : `Received unexpected type of first event "${ev.type}"`
-            )
+                : `Received unexpected type of first event "${ev.type}"`,
+            ),
         )
       }
       return of(ev)
     }),
-    share()
+    share(),
   )
 
   const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
 
   return merge(
     welcome$.pipe(take(1)),
-    mutationAndReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true}))
+    mutationAndReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true})),
   ).pipe(
     exhaustMapWithTrailing((event) => {
       // Get the types names to use for searching.
@@ -103,7 +103,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
 
           const {query: createdQuery, params: createdParams} = createSearchQuery(
             searchTerms,
-            searchOptions
+            searchOptions,
           )
           const doFetch = () => client.observable.fetch(createdQuery, createdParams)
 
@@ -114,8 +114,8 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
             return timer(1200).pipe(mergeMap(doFetch))
           }
           return doFetch()
-        })
+        }),
       )
-    })
+    }),
   )
 }

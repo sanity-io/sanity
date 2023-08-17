@@ -23,7 +23,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
   const [menuItemElement, setMenuItemElement] = useState<HTMLElement | null>(null)
 
   const lastActiveLocation = orderBy(presence.locations || [], ['lastActiveAt'], ['desc']).find(
-    (location) => location.documentId
+    (location) => location.documentId,
   )
   const hasLink = Boolean(lastActiveLocation?.documentId)
 
@@ -64,7 +64,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
           />
         )
       }),
-    [lastActiveLocation]
+    [lastActiveLocation],
   )
 
   return (

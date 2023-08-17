@@ -59,8 +59,8 @@ export default (typeDef, visitorContext) => {
           return errs.concat(
             error(
               `Found array member declaration with the same type name as a built-in type ("${def.name}"). Array members can not be given the same name as a built-in type.`,
-              HELP_IDS.ARRAY_OF_TYPE_BUILTIN_TYPE_CONFLICT
-            )
+              HELP_IDS.ARRAY_OF_TYPE_BUILTIN_TYPE_CONFLICT,
+            ),
           )
         }
       }
@@ -69,16 +69,16 @@ export default (typeDef, visitorContext) => {
         return errs.concat(
           warning(
             `Found array member declaration with the same name as the global schema type "${def.name}". It's recommended to use a unique name to avoid possibly incompatible data types that shares the same name.`,
-            HELP_IDS.ARRAY_OF_TYPE_GLOBAL_TYPE_CONFLICT
-          )
+            HELP_IDS.ARRAY_OF_TYPE_GLOBAL_TYPE_CONFLICT,
+          ),
         )
       }
       if (def.type === 'array') {
         return errs.concat(
           error(
             `Found array member declaration of type "array" - multidimensional arrays are not currently supported by Sanity`,
-            HELP_IDS.ARRAY_OF_ARRAY
-          )
+            HELP_IDS.ARRAY_OF_ARRAY,
+          ),
         )
       }
 
@@ -90,8 +90,8 @@ export default (typeDef, visitorContext) => {
       return errs.concat(
         error(
           `Found invalid type member declaration in array at index ${idx}: ${err}`,
-          HELP_IDS.ARRAY_OF_INVALID
-        )
+          HELP_IDS.ARRAY_OF_INVALID,
+        ),
       )
     }, [])
 
@@ -109,27 +109,27 @@ export default (typeDef, visitorContext) => {
       ? getDupes(typeDef.of, (t) => `${t.name};${t.type}`).map((dupes) =>
           error(
             `Found ${dupes.length} members with same type, but not unique names "${dupes[0].type}" in array. This makes it impossible to tell their values apart and you should consider naming them`,
-            HELP_IDS.ARRAY_OF_NOT_UNIQUE
-          )
+            HELP_IDS.ARRAY_OF_NOT_UNIQUE,
+          ),
         )
       : error(
           'The array type is missing or having an invalid value for the required "of" property',
-          HELP_IDS.ARRAY_OF_INVALID
+          HELP_IDS.ARRAY_OF_INVALID,
         ),
   ])
   const of = ofIsArray ? typeDef.of : []
 
   // Don't allow object types without a name in block arrays
   const hasObjectTypesWithoutName = of.some(
-    (type) => type.type === 'object' && typeof type.name === 'undefined'
+    (type) => type.type === 'object' && typeof type.name === 'undefined',
   )
   const hasBlockType = of.some((ofType) => ofType.type === 'block')
   if (hasBlockType && hasObjectTypesWithoutName) {
     problems.push(
       error(
         "The array type's 'of' property can't have an object type without a 'name' property as member, when the 'block' type is also a member of that array.",
-        HELP_IDS.ARRAY_OF_INVALID
-      )
+        HELP_IDS.ARRAY_OF_INVALID,
+      ),
     )
   }
 
@@ -137,7 +137,7 @@ export default (typeDef, visitorContext) => {
     of,
     (ofType) =>
       isPrimitiveTypeName(ofType.type) ||
-      isPrimitiveTypeName(visitorContext.getType(ofType.type)?.jsonType)
+      isPrimitiveTypeName(visitorContext.getType(ofType.type)?.jsonType),
   )
 
   const isMixedArray = primitiveTypes.length > 0 && objectTypes.length > 0
@@ -148,12 +148,12 @@ export default (typeDef, visitorContext) => {
     problems.push(
       error(
         `The array type's 'of' property can't have both object types and primitive types (found primitive type ${pluralize(
-          primitiveTypeNames
+          primitiveTypeNames,
         )} ${humanizeList(primitiveTypeNames.map(quote))} and object type${pluralize(
-          objectTypeNames
+          objectTypeNames,
         )} ${humanizeList(objectTypeNames.map(quote))})`,
-        HELP_IDS.ARRAY_OF_INVALID
-      )
+        HELP_IDS.ARRAY_OF_INVALID,
+      ),
     )
   }
 
@@ -169,15 +169,15 @@ export default (typeDef, visitorContext) => {
         if (!isDeclared) {
           const formattedTypeList = humanizeList(
             primitiveTypes.map((t) => t.name || t.type),
-            {conjunction: 'or'}
+            {conjunction: 'or'},
           )
           problems.push(
             error(
               `An invalid entry found in options.list: ${format(
-                value
+                value,
               )}. Must be either a value of type ${formattedTypeList}, or an object with {title: string, value: ${formattedTypeList}}`,
-              HELP_IDS.ARRAY_PREDEFINED_CHOICES_INVALID
-            )
+              HELP_IDS.ARRAY_PREDEFINED_CHOICES_INVALID,
+            ),
           )
         }
       })
@@ -185,21 +185,21 @@ export default (typeDef, visitorContext) => {
       list.forEach((option) => {
         const optionTypeName = option._type || 'object'
         const isDeclared = objectTypes.some((validObjectType) =>
-          isAssignable(optionTypeName, validObjectType)
+          isAssignable(optionTypeName, validObjectType),
         )
         if (!isDeclared) {
           problems.push(
             error(
               `An invalid entry found in options.list: ${format(
-                option
+                option,
               )}. Must be an object with "_type" set to ${humanizeList(
                 objectTypes
                   .map((t) => t.name || t.type)
                   .map((t) => (t === 'object' ? 'undefined' : quote(t))),
-                {conjunction: 'or'}
+                {conjunction: 'or'},
               )}`,
-              HELP_IDS.ARRAY_PREDEFINED_CHOICES_INVALID
-            )
+              HELP_IDS.ARRAY_PREDEFINED_CHOICES_INVALID,
+            ),
           )
         }
       })
@@ -209,8 +209,8 @@ export default (typeDef, visitorContext) => {
   if (typeDef?.options?.list && typeDef?.options?.layout === 'tags') {
     problems.push(
       warning(
-        'Found array member declaration with both tags layout and a list of predefined values. If you want to display a list of predefined values, remove the tags layout from `options`.'
-      )
+        'Found array member declaration with both tags layout and a list of predefined values. If you want to display a list of predefined values, remove the tags layout from `options`.',
+      ),
     )
   }
 

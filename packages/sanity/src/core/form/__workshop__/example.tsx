@@ -70,7 +70,7 @@ export default function ExampleStory() {
         title: value === `` ? `Cleared field filter` : `Updated field filter`,
       })
     },
-    [toast]
+    [toast],
   )
 
   const memoizedFieldFilter = useMemo(() => {
@@ -96,7 +96,7 @@ export default function ExampleStory() {
     (type: ObjectSchemaTypeWithOptions, field: ObjectField) => {
       return memoizedFieldFilter(type, field)
     },
-    [memoizedFieldFilter]
+    [memoizedFieldFilter],
   )
 
   // Remove any remaining field filter if you disable the option

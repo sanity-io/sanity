@@ -35,7 +35,7 @@ const inviteUserCommand: CliCommandDefinition<InviteFlags> = {
     const client = apiClient().clone().config({useProjectHostname: false, apiVersion: '2021-06-07'})
     const {projectId} = client.config()
     const roles = (await client.request<Role[]>({uri: `/projects/${projectId}/roles`})).filter(
-      (role) => role.appliesToUsers
+      (role) => role.appliesToUsers,
     )
     const email = selectedEmail || (await promptForEmail(prompt))
     const selectedRole = flags.role || (await promptForRole(prompt, roles))
@@ -55,8 +55,8 @@ const inviteUserCommand: CliCommandDefinition<InviteFlags> = {
       })
       .catch(
         prettifyQuotaError(
-          'Project is already at user quota, add billing details to the project in order to allow overage charges.'
-        )
+          'Project is already at user quota, add billing details to the project in order to allow overage charges.',
+        ),
       )
 
     output.print(`Invitation sent to ${email}`)

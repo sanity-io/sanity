@@ -38,7 +38,7 @@ export const TestModalDialogAction: DocumentActionComponent = (props) => {
         showCloseButton: false,
         width: 'medium',
       },
-    [dialogOpen, handleClose]
+    [dialogOpen, handleClose],
   )
 
   return {

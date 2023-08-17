@@ -113,7 +113,7 @@ export function createPaneLayoutController(): PaneLayoutController {
         cache as PaneResizeCache,
         leftOptions,
         rightOptions,
-        deltaX
+        deltaX,
       )
 
       // update resize cache

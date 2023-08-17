@@ -25,7 +25,7 @@ async function resolveUserDefinedFilter(
   options: ReferenceFilterOptions | undefined,
   document: SanityDocument,
   valuePath: Path,
-  getClient: Source['getClient']
+  getClient: Source['getClient'],
 ): Promise<ReferenceFilterSearchOptions> {
   if (!options) {
     return {}
@@ -106,7 +106,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
             filter,
             params,
             tag: 'search.cross-dataset-reference',
-          })
+          }),
         ),
 
         catchError((err: SearchError) => {
@@ -115,15 +115,15 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
             err.message = `Invalid reference filter, please check the custom "filter" option`
           }
           return throwError(err)
-        })
+        }),
       ),
 
-    [crossDatasetClient, documentRef, path, schemaType, getClient]
+    [crossDatasetClient, documentRef, path, schemaType, getClient],
   )
 
   const getReferenceInfo = useMemo(
     () => createGetReferenceInfo({client: crossDatasetClient, documentPreviewStore}),
-    [crossDatasetClient, documentPreviewStore]
+    [crossDatasetClient, documentPreviewStore],
   )
 
   return (

@@ -12,7 +12,7 @@ export const testSanityClient = createClient({
 
 export function deleteDocumentsForRun(
   typeName: string,
-  runId: string
+  runId: string,
 ): {query: string; params: Record<string, unknown>} {
   const threshold = new Date(Date.now() - STALE_TEST_THRESHOLD_MS).toISOString()
   return {

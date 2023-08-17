@@ -70,7 +70,7 @@ export function CustomComponent(props: ObjectInputProps) {
     (path: Path) => {
       onChange(unset(path))
     },
-    [onChange]
+    [onChange],
   )
 
   const setRandomValue = useCallback(
@@ -78,7 +78,7 @@ export function CustomComponent(props: ObjectInputProps) {
       const randomString = Math.random().toString()
       onChange(set(randomString, path))
     },
-    [onChange]
+    [onChange],
   )
 
   /**

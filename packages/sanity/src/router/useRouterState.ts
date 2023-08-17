@@ -33,7 +33,7 @@ export function useRouterState(): RouterState
  * @public
  */
 export function useRouterState(
-  selector: (routerState: RouterState) => unknown = identity
+  selector: (routerState: RouterState) => unknown = identity,
 ): unknown {
   const {state} = useRouter()
   return useMemo(() => selector(state), [selector, state])

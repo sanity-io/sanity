@@ -39,7 +39,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const {draft, published, isLoading} = useMemoObservable<PaneItemPreviewState>(
     () => getPreviewStateObservable(props.documentPreviewStore, schemaType, value._id, title),
-    [props.documentPreviewStore, schemaType, value._id, title]
+    [props.documentPreviewStore, schemaType, value._id, title],
   )!
 
   const status = isLoading ? null : (

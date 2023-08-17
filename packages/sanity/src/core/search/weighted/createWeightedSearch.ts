@@ -30,7 +30,7 @@ function getSearchTerms(searchParams: string | SearchTerms, types: SearchableTyp
 export function createWeightedSearch(
   types: SearchableType[],
   client: SanityClient,
-  commonOpts: WeightedSearchOptions = {}
+  commonOpts: WeightedSearchOptions = {},
 ): (searchTerms: string | SearchTerms, searchOpts?: SearchOptions) => Observable<WeightedHit[]> {
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
@@ -49,7 +49,7 @@ export function createWeightedSearch(
       map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
       // Optionally skip client-side score sorting.
       // This can be relevant when ordering results by specific fields, especially dates.
-      searchOpts?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score))
+      searchOpts?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score)),
     )
   }
 }

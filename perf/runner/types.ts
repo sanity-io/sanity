@@ -16,7 +16,7 @@ export interface PerformanceTestContext {
 
 export interface PerformanceTestProps<
   Metrics extends {[name: string]: number} = {[name: string]: number},
-  SetupData = undefined
+  SetupData = undefined,
 > {
   id: ValidTestId
   name: string

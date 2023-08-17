@@ -11,7 +11,7 @@ export default function ReferenceSchemaStory() {
       title: 'Author',
       fields: [{type: 'string', name: 'name'}],
     }),
-    []
+    [],
   )
 
   const testTypeDef = useMemo(
@@ -21,12 +21,12 @@ export default function ReferenceSchemaStory() {
       title: 'Test',
       to: [{type: 'author'}],
     }),
-    []
+    [],
   )
 
   const schemaDef = useMemo(
     () => ({name: 'test', types: [authorTypeDef, testTypeDef]}),
-    [authorTypeDef, testTypeDef]
+    [authorTypeDef, testTypeDef],
   )
 
   const schema = useMemo(() => createSchema(schemaDef), [schemaDef])
@@ -52,7 +52,7 @@ export default function ReferenceSchemaStory() {
             {JSON.stringify(
               [schemaTypeToJSON(schema.get('author')), schemaTypeToJSON(schema.get('test'))],
               null,
-              2
+              2,
             )}
           </Code>
         </Card>

@@ -79,7 +79,7 @@ describe('dateOperators', () => {
       }
       const filter = dateOperators.dateRange.groqFilter({fieldPath, value})
       expect(filter).toEqual(
-        `${fieldPath} >= "${value.dateMin}" && ${fieldPath} <= "${value.dateMax}"`
+        `${fieldPath} >= "${value.dateMin}" && ${fieldPath} <= "${value.dateMax}"`,
       )
     })
   })
@@ -107,7 +107,7 @@ describe('dateOperators', () => {
       const dateEnd = endOfMinute(date).toISOString()
       const filter = dateOperators.dateTimeEqual.groqFilter({fieldPath, value})
       expect(filter).toEqual(
-        `dateTime(${fieldPath}) > dateTime("${dateStart}") && dateTime(${fieldPath}) < dateTime("${dateEnd}")`
+        `dateTime(${fieldPath}) > dateTime("${dateStart}") && dateTime(${fieldPath}) < dateTime("${dateEnd}")`,
       )
     })
 
@@ -121,7 +121,7 @@ describe('dateOperators', () => {
       const dateEnd = endOfDay(date).toISOString()
       const filter = dateOperators.dateTimeEqual.groqFilter({fieldPath, value})
       expect(filter).toEqual(
-        `dateTime(${fieldPath}) > dateTime("${dateStart}") && dateTime(${fieldPath}) < dateTime("${dateEnd}")`
+        `dateTime(${fieldPath}) > dateTime("${dateStart}") && dateTime(${fieldPath}) < dateTime("${dateEnd}")`,
       )
     })
 
@@ -158,7 +158,7 @@ describe('dateOperators', () => {
       const dateEnd = endOfMinute(date).toISOString()
       const filter = dateOperators.dateTimeNotEqual.groqFilter({fieldPath, value})
       expect(filter).toEqual(
-        `dateTime(${fieldPath}) < dateTime("${dateStart}") || dateTime(${fieldPath}) > dateTime("${dateEnd}")`
+        `dateTime(${fieldPath}) < dateTime("${dateStart}") || dateTime(${fieldPath}) > dateTime("${dateEnd}")`,
       )
     })
 
@@ -172,7 +172,7 @@ describe('dateOperators', () => {
       const dateEnd = endOfDay(date).toISOString()
       const filter = dateOperators.dateTimeNotEqual.groqFilter({fieldPath, value})
       expect(filter).toEqual(
-        `dateTime(${fieldPath}) < dateTime("${dateStart}") || dateTime(${fieldPath}) > dateTime("${dateEnd}")`
+        `dateTime(${fieldPath}) < dateTime("${dateStart}") || dateTime(${fieldPath}) > dateTime("${dateEnd}")`,
       )
     })
 
@@ -183,7 +183,7 @@ describe('dateOperators', () => {
       }
       const filter = dateOperators.dateTimeRange.groqFilter({fieldPath, value})
       expect(filter).toEqual(
-        `dateTime(${fieldPath}) >= dateTime("${value.dateMin}") && dateTime(${fieldPath}) <= dateTime("${value.dateMax}")`
+        `dateTime(${fieldPath}) >= dateTime("${value.dateMin}") && dateTime(${fieldPath}) <= dateTime("${value.dateMax}")`,
       )
     })
   })

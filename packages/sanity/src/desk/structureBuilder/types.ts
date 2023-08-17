@@ -75,7 +75,7 @@ export interface StructureContext extends Source {
    */
   resolveDocumentNode: (
     /** an object holding the documentId and schemaType for the document node being resolved. */
-    options: {documentId?: string; schemaType: string}
+    options: {documentId?: string; schemaType: string},
   ) => DocumentBuilder
   /** Get structure builder
    * @returns a structure builder. See {@link StructureBuilder}
@@ -122,7 +122,7 @@ export type DefaultDocumentNodeResolver = (
    * An object holding the documentId and schemaType for the document node being resolved.
    * See {@link DefaultDocumentNodeContext}
    */
-  options: DefaultDocumentNodeContext
+  options: DefaultDocumentNodeContext,
 ) => DocumentBuilder | null | undefined
 
 /**
@@ -188,7 +188,7 @@ export interface StructureBuilder {
    */
   documentWithInitialValueTemplate: (
     templateId: string,
-    parameters?: Record<string, unknown>
+    parameters?: Record<string, unknown>,
   ) => DocumentBuilder
   /** By giving a Editor Node receive the respective Document Builder
    * @param spec - an editor node. See {@link EditorNode}
@@ -202,7 +202,7 @@ export interface StructureBuilder {
    */
   initialValueTemplateItem: (
     templateId: string,
-    parameters?: Record<string, any>
+    parameters?: Record<string, any>,
   ) => InitialValueTemplateItemBuilder
   /** By giving a List Input receive the respective Builder, otherwise return default ListBuilder builder
    * @param spec - a list input. See {@link ListInput}
@@ -251,7 +251,7 @@ export interface StructureBuilder {
      * @returns a Component View builder. See {@link ComponentViewBuilder}
      */
     component: (
-      componentOrSpec?: Partial<ComponentView> | React.ComponentType<any>
+      componentOrSpec?: Partial<ComponentView> | React.ComponentType<any>,
     ) => ComponentViewBuilder
   }
   /** Context for the structure builder. See {@link StructureContext} */

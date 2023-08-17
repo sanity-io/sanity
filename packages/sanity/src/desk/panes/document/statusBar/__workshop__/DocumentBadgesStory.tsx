@@ -16,7 +16,7 @@ export default function DocumentBadgesStory() {
         id: 'live-thesis',
       },
     }),
-    []
+    [],
   )
 
   return (

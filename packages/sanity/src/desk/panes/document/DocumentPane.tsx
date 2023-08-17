@@ -164,7 +164,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
 
 function usePaneOptions(
   options: DocumentPaneOptions,
-  params: Record<string, string | undefined> = {}
+  params: Record<string, string | undefined> = {},
 ): DocumentPaneOptions {
   const templates = useTemplates()
 
@@ -192,7 +192,7 @@ function usePaneOptions(
 function mergeDocumentType(
   props: DocumentPaneProviderProps,
   options: DocumentPaneOptions,
-  documentType: string
+  documentType: string,
 ): DocumentPaneProviderProps {
   return {
     ...props,
@@ -223,7 +223,7 @@ function InnerDocumentPane() {
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
   const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
   const [documentPanelPortalElement, setDocumentPanelPortalElement] = useState<HTMLElement | null>(
-    null
+    null,
   )
   const footerRect = useElementRect(footerElement)
   const footerH = footerRect?.height
@@ -233,7 +233,7 @@ function InnerDocumentPane() {
       onPathOpen(path)
       onFocus(path)
     },
-    [onPathOpen, onFocus]
+    [onPathOpen, onFocus],
   )
 
   const currentMinWidth =

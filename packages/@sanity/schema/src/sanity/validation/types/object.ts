@@ -22,7 +22,7 @@ function validateFieldName(name): Array<any> {
     return [
       error(
         `Field names must be strings. Saw "${inspect(name)}"`,
-        HELP_IDS.OBJECT_FIELD_NAME_INVALID
+        HELP_IDS.OBJECT_FIELD_NAME_INVALID,
       ),
     ]
   }
@@ -30,7 +30,7 @@ function validateFieldName(name): Array<any> {
     return [
       error(
         `Invalid field name "${name}". Field names cannot start with underscores "_" as it's reserved for system fields.`,
-        HELP_IDS.OBJECT_FIELD_NAME_INVALID
+        HELP_IDS.OBJECT_FIELD_NAME_INVALID,
       ),
     ]
   }
@@ -39,9 +39,9 @@ function validateFieldName(name): Array<any> {
     return [
       error(
         `Invalid field name: "${name}". Fields can only contain characters from A-Z, numbers and underscores and should not start with a number (must pass the regular expression ${String(
-          VALID_FIELD_RE
+          VALID_FIELD_RE,
         )}).`,
-        HELP_IDS.OBJECT_FIELD_NAME_INVALID
+        HELP_IDS.OBJECT_FIELD_NAME_INVALID,
       ),
     ]
   }
@@ -49,7 +49,7 @@ function validateFieldName(name): Array<any> {
     return [
       warning(
         'Thats an interesting field name for sure! But it is... how to put it... a bit... unconventional?' +
-          ' It may be wise to keep special characters out of field names for easier access later on.'
+          ' It may be wise to keep special characters out of field names for easier access later on.',
       ),
       HELP_IDS.OBJECT_FIELD_NAME_INVALID,
     ]
@@ -62,7 +62,7 @@ export function validateField(field, _visitorContext) {
     return [
       error(
         `Incorrect type for field definition - should be an object, saw ${inspect(field)}`,
-        HELP_IDS.OBJECT_FIELD_DEFINITION_INVALID_TYPE
+        HELP_IDS.OBJECT_FIELD_DEFINITION_INVALID_TYPE,
       ),
     ]
   }
@@ -71,7 +71,7 @@ export function validateField(field, _visitorContext) {
   problems.push(
     ...('name' in field
       ? validateFieldName(field.name)
-      : [error('Missing field name', HELP_IDS.OBJECT_FIELD_NAME_INVALID)])
+      : [error('Missing field name', HELP_IDS.OBJECT_FIELD_NAME_INVALID)]),
   )
   problems.push(...validateComponent(field))
   return problems
@@ -97,7 +97,7 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
     return [
       error(
         `The "fields" property must be an array of fields. Instead saw "${typeof fields}"`,
-        HELP_IDS.OBJECT_FIELDS_INVALID
+        HELP_IDS.OBJECT_FIELDS_INVALID,
       ),
     ]
   }
@@ -108,8 +108,8 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
     problems.push(
       error(
         `Found ${dupes.length} fields with name "${dupes[0].name}" in object`,
-        HELP_IDS.OBJECT_FIELD_NOT_UNIQUE
-      )
+        HELP_IDS.OBJECT_FIELD_NOT_UNIQUE,
+      ),
     )
   })
 
@@ -126,8 +126,8 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
     problems.push(
       error(
         `Invalid standalone block field(s) ${fmtFields}. Block content must be defined as an array of blocks`,
-        HELP_IDS.STANDALONE_BLOCK_TYPE
-      )
+        HELP_IDS.STANDALONE_BLOCK_TYPE,
+      ),
     )
   }
 
@@ -142,7 +142,7 @@ export function validatePreview(preview: PreviewConfig) {
   if (typeof preview.prepare !== 'undefined' && typeof preview.prepare !== 'function') {
     return [
       error(
-        `The "preview.prepare" property must be a function, instead saw "${typeof preview.prepare}"`
+        `The "preview.prepare" property must be a function, instead saw "${typeof preview.prepare}"`,
       ),
     ]
   }
@@ -154,7 +154,7 @@ export function validatePreview(preview: PreviewConfig) {
   if (!isPlainObject(preview.select)) {
     return [
       error(
-        `The "preview.select" property must be an object, instead saw "${typeof preview.prepare}"`
+        `The "preview.select" property must be an object, instead saw "${typeof preview.prepare}"`,
       ),
     ]
   }
@@ -165,8 +165,8 @@ export function validatePreview(preview: PreviewConfig) {
       : errs.concat(
           error(
             `The key "${key}" of "preview.select" must be a string, instead saw "${typeof preview
-              .select[key]}"`
-          )
+              .select[key]}"`,
+          ),
         )
   }, [])
 }
@@ -187,7 +187,7 @@ export default (typeDef, visitorContext) => {
     typeof typeDef.initialValue !== 'undefined'
   ) {
     problems.push(
-      error(`The "initialValue" property is currently only supported for document & object types.`)
+      error(`The "initialValue" property is currently only supported for document & object types.`),
     )
   }
 
