@@ -277,6 +277,12 @@ export const studioLocaleStrings = {
 
   /** Warning label that tells the user how many warnings were found */
   'navbar.configuration.found-number-schema-warning': `Found {{count}} schema warnings`,
+
+  /** Label for displaying the schema error and warnings for the studio configurations */
+  'navbar.configuration.type-label': 'type',
+
+  /** Prompt to view documentation about the schema problems */
+  'navbar.configuration.action.view-documentation': 'View documentation',
 }
 
 /**
