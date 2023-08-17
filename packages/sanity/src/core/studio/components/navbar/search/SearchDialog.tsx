@@ -4,6 +4,7 @@ import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
 import {supportsTouch} from '../../../../util'
 import {useColorScheme} from '../../../colorScheme'
+import {useTranslation} from '../../../../i18n'
 import {SearchWrapper} from './components/common/SearchWrapper'
 import {Filters} from './components/filters/Filters'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
@@ -44,6 +45,7 @@ const SearchDialogBox = styled(Box)`
 export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const {scheme} = useColorScheme()
+  const {t} = useTranslation()
 
   const {
     state: {filtersVisible, terms},
@@ -58,7 +60,11 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
           <SearchDialogBox>
             <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
               <SearchHeader
-                ariaInputLabel={hasValidTerms ? 'Search results' : 'Recent searches'}
+                ariaInputLabel={
+                  hasValidTerms
+                    ? t('navbar.search.search-results-label')
+                    : t('navbar.search.recent-searches-label')
+                }
                 onClose={onClose}
                 ref={setInputElement}
               />
