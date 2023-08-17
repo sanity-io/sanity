@@ -680,17 +680,19 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
             <Box padding={1} column={2}>
               <Stack>
                 <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>API version</StyledLabel>
+                  <StyledLabel>{t('header.api-version-label')}</StyledLabel>
                 </Card>
                 <Select
-                  value={customApiVersion === false ? apiVersion : 'other'}
+                  value={
+                    customApiVersion === false ? apiVersion : t('header.other-api-version-label')
+                  }
                   onChange={this.handleChangeApiVersion}
                 >
                   {API_VERSIONS.map((version) => (
                     <option key={version}>{version}</option>
                   ))}
-                  <option key="other" value="other">
-                    Other
+                  <option key="other" value={t('header.other-api-version-label')}>
+                    {t('header.other-api-version-label')}
                   </option>
                 </Select>
               </Stack>
@@ -701,14 +703,18 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
               <Box padding={1} column={2}>
                 <Stack>
                   <Card paddingTop={2} paddingBottom={3}>
-                    <StyledLabel textOverflow="ellipsis">Custom API version</StyledLabel>
+                    <StyledLabel textOverflow="ellipsis">
+                      {t('header.custom-api-version-label')}
+                    </StyledLabel>
                   </Card>
 
                   <TextInput
                     ref={this._customApiVersionElement}
                     value={customApiVersion}
                     onChange={this.handleCustomApiVersionChange}
-                    customValidity={isValidApiVersion ? undefined : 'Invalid API version'}
+                    customValidity={
+                      isValidApiVersion ? undefined : t('header.error.invalid-api-version')
+                    }
                     maxLength={11}
                   />
                 </Stack>
@@ -721,7 +727,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                 <Card paddingBottom={1}>
                   <Inline space={1}>
                     <Box>
-                      <StyledLabel>PERSPECTIVE</StyledLabel>
+                      <StyledLabel>{t('header.perspective-label')}</StyledLabel>
                     </Box>
 
                     <Box>
@@ -744,8 +750,10 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                 <Stack>
                   <Card paddingTop={2} paddingBottom={3}>
                     <StyledLabel>
-                      Query URL&nbsp;
-                      <QueryCopyLink onClick={this.handleCopyUrl}>[copy]</QueryCopyLink>
+                      {t('header.query-url')}&nbsp;
+                      <QueryCopyLink onClick={this.handleCopyUrl}>
+                        [{t('header.action.copy-to-clipboard')}]
+                      </QueryCopyLink>
                     </StyledLabel>
                   </Card>
                   <Flex flex={1} gap={1}>
@@ -755,12 +763,12 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                     <Tooltip
                       content={
                         <Box padding={2}>
-                          <Text>Copy to clipboard</Text>
+                          <Text>{t('header.action.copy-to-clipboard')}</Text>
                         </Box>
                       }
                     >
                       <Button
-                        aria-label="Copy to clipboard"
+                        aria-label={t('header.action.copy-to-clipboard')}
                         type="button"
                         mode="ghost"
                         icon={CopyIcon}
@@ -804,7 +812,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   <Box flex={1}>
                     <InputBackgroundContainerLeft>
                       <Flex>
-                        <StyledLabel muted>Query</StyledLabel>
+                        <StyledLabel muted>{t('query.query-label')}</StyledLabel>
                       </Flex>
                     </InputBackgroundContainerLeft>
                     <VisionCodeMirror value={this.state.query} onChange={this.handleQueryChange} />
@@ -814,7 +822,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   <Card flex={1} tone={hasValidParams ? 'default' : 'critical'}>
                     <InputBackgroundContainerLeft>
                       <Flex>
-                        <StyledLabel muted>Params</StyledLabel>
+                        <StyledLabel muted>{t('query.params-label')}</StyledLabel>
                         {paramsError && (
                           <Tooltip
                             placement="top-end"
@@ -843,7 +851,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                         content={
                           <Card padding={2} radius={4}>
                             <Text size={1} muted>
-                              Parameters are not valid JSON
+                              {t('query.error.params-invalid-json')}
                             </Text>
                           </Card>
                         }
@@ -868,7 +876,11 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                                 icon={queryInProgress ? StopIcon : PlayIcon}
                                 disabled={listenInProgress || !hasValidParams}
                                 tone={queryInProgress ? 'positive' : 'primary'}
-                                text={queryInProgress ? 'Cancel' : 'Fetch'}
+                                text={
+                                  queryInProgress
+                                    ? t('footer.action.cancel')
+                                    : t('footer.action.fetch')
+                                }
                               />
                             </Tooltip>
                           </Box>
@@ -877,7 +889,11 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                               onClick={this.handleListenExecution}
                               type="button"
                               icon={listenInProgress ? StopIcon : PlayIcon}
-                              text={listenInProgress ? 'Stop' : 'Listen'}
+                              text={
+                                listenInProgress
+                                  ? t('footer.action.stop')
+                                  : t('footer.action.listen')
+                              }
                               mode="ghost"
                               disabled={!hasValidParams}
                               tone={listenInProgress ? 'positive' : 'default'}
@@ -901,7 +917,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   <Result overflow="auto">
                     <InputBackgroundContainer>
                       <Box marginLeft={3}>
-                        <StyledLabel muted>Result</StyledLabel>
+                        <StyledLabel muted>{t('query.result-label')}</StyledLabel>
                       </Box>
                     </InputBackgroundContainer>
                     <Box padding={3} paddingTop={5}>
@@ -925,12 +941,16 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   <TimingsTextContainer align="center">
                     <Box>
                       <Text muted>
-                        Execution: {typeof queryTime === 'number' ? `${queryTime}ms` : 'n/a'}
+                        {t('footer.execution-time-label')}:{' '}
+                        {typeof queryTime === 'number'
+                          ? `${queryTime}ms`
+                          : t('footer.not-applicable')}
                       </Text>
                     </Box>
                     <Box marginLeft={4}>
                       <Text muted>
-                        End-to-end: {typeof e2eTime === 'number' ? `${e2eTime}ms` : 'n/a'}
+                        {t('footer.end-to-end-time-label')}:{' '}
+                        {typeof e2eTime === 'number' ? `${e2eTime}ms` : t('footer.not-applicable')}
                       </Text>
                     </Box>
                   </TimingsTextContainer>
