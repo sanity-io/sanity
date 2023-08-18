@@ -14,10 +14,10 @@ interface PackageJson {
 }
 
 const corePkg: PackageJson = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8')
+  fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'),
 )
 const config: LernaConfig = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'lerna.json'), 'utf8')
+  fs.readFileSync(path.join(__dirname, '..', 'lerna.json'), 'utf8'),
 )
 
 if (!('packages' in config) || !Array.isArray(config.packages)) {
@@ -116,7 +116,7 @@ Object.keys(versionRanges).forEach((depName) => {
 
           return `${pkgName} ${chalk.gray(path.relative(rootPath, pkg.file))}`
         })
-        .join(`\n    ${sign} `)}`
+        .join(`\n    ${sign} `)}`,
     )
 
     if (range === greatestRange || !isFixable) {
@@ -172,7 +172,7 @@ if (fixablePackages.length > 0) {
       'you might want to run "yarn bootstrap"',
       'and run some tests before pushing changes',
     ].join(' '),
-    fixablePackages.length
+    fixablePackages.length,
   )
   console.log('')
 }

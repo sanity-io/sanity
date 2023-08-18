@@ -7,7 +7,7 @@ import readPackages from './readPackages'
  * @internal
  */
 export default function transformPkgs(
-  mapFn: (pkg: PackageManifest, options: {relativeDir: string}) => PackageManifest
+  mapFn: (pkg: PackageManifest, options: {relativeDir: string}) => PackageManifest,
 ): void {
   readPackages().forEach((pkg) => {
     const {manifest, relativeDir} = pkg
