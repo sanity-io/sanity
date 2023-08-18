@@ -38,4 +38,5 @@ export enum HELP_URL {
   ACTION_OR_INTENT_REQUIRED = 'structure-action-or-intent-required',
   LIST_ITEM_IDS_MUST_BE_UNIQUE = 'structure-list-item-ids-must-be-unique',
   ACTION_AND_INTENT_MUTUALLY_EXCLUSIVE = 'structure-action-and-intent-mutually-exclusive',
+  API_VERSION_REQUIRED_FOR_CUSTOM_FILTER = 'structure-api-version-required-for-custom-filter',
 }
