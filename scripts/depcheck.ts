@@ -49,7 +49,7 @@ depcheck(cwd, options).then((unused) => {
         chalk.bold('Unused dependencies'),
         ...unused.dependencies.map((dep) => `- ${dep}`),
         ...unused.devDependencies.map((dep) => `- ${dep} (dev)`),
-      ].join('\n')
+      ].join('\n'),
     )
   }
   if (hasMissingDeps) {
@@ -61,7 +61,7 @@ depcheck(cwd, options).then((unused) => {
           '  used by',
           ...dep.usages.map((u) => `    -- ${path.relative(cwd, u)}`),
         ]),
-      ].join('\n')
+      ].join('\n'),
     )
   }
   if (hasInvalidFiles) {
@@ -69,7 +69,7 @@ depcheck(cwd, options).then((unused) => {
       [
         chalk.bold('Invalid files'),
         ...Object.entries(unused.invalidFiles).map(([file]) => `- ${file}`),
-      ].join('\n')
+      ].join('\n'),
     )
   }
   if (hasInvalidDirs) {
@@ -77,7 +77,7 @@ depcheck(cwd, options).then((unused) => {
       [
         chalk.bold('Invalid dirs'),
         ...Object.entries(unused.invalidDirs).map(([file]) => `- ${file}`),
-      ].join('\n')
+      ].join('\n'),
     )
   }
   if (hasMissingDeps || hasUnusedDeps || hasInvalidFiles) {
@@ -94,7 +94,7 @@ function implicitDepsParser(
   content: string,
   filePath: string,
   deps: ReadonlyArray<string>,
-  rootDir: string
+  rootDir: string,
 ) {
   return deps.flatMap((dep) => IMPLICIT_DEPS[dep] || [])
 }
@@ -119,18 +119,18 @@ function sanityJSONParser(
   content: string,
   filePath: string,
   deps: ReadonlyArray<string>,
-  rootDir: string
+  rootDir: string,
 ) {
   const filename = path.basename(filePath)
   if (filename === 'sanity.json') {
     const sanityConfig = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
     const allPlugins = sanityConfig.plugins.concat(
-      Object.keys(sanityConfig.env || {}).flatMap((env) => sanityConfig.env[env].plugins || [])
+      Object.keys(sanityConfig.env || {}).flatMap((env) => sanityConfig.env[env].plugins || []),
     )
     return deps
       .concat(allPlugins.filter(isLocalPlugin(filePath)))
       .filter((dep) =>
-        allPlugins.some((plugin: string) => plugin === dep || dep === `sanity-plugin-${plugin}`)
+        allPlugins.some((plugin: string) => plugin === dep || dep === `sanity-plugin-${plugin}`),
       )
   }
   return []

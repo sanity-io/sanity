@@ -8,7 +8,7 @@ interface LernaConfig {
 }
 
 const config: LernaConfig = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', '..', 'lerna.json'), 'utf8')
+  fs.readFileSync(path.join(__dirname, '..', '..', 'lerna.json'), 'utf8'),
 )
 
 if (!('packages' in config) || !Array.isArray(config.packages)) {
