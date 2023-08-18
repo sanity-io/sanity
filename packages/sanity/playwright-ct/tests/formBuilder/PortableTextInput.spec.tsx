@@ -49,7 +49,6 @@ test.describe('Decorators', () => {
     await typeInPTEWithDelay('bold text 123', $pteTextbox)
 
     await page.keyboard.press(`${getModifierKey()}+b`, {delay: DEFAULT_TYPE_DELAY})
-    await page.keyboard.press('Enter')
 
     await expect($pteTextbox.locator('[data-mark="strong"]', {hasText: 'bold text'})).toBeVisible()
 
@@ -58,14 +57,12 @@ test.describe('Decorators', () => {
     await typeInPTEWithDelay('italic text', $pteTextbox)
 
     await page.keyboard.press(`${getModifierKey()}+i`)
-    await page.keyboard.press('Enter')
     await expect($pteTextbox.locator('[data-mark="em"]', {hasText: 'italic text'})).toBeVisible()
 
     // Underline
     await page.keyboard.press(`${getModifierKey()}+u`)
     await typeInPTEWithDelay('underlined text', $pteTextbox)
     await page.keyboard.press(`${getModifierKey()}+u`)
-    await page.keyboard.press('Enter')
     await expect(
       $pteTextbox.locator('[data-mark="underline"]', {
         hasText: 'underlined text',
@@ -77,7 +74,6 @@ test.describe('Decorators', () => {
     await typeInPTEWithDelay('code text', $pteTextbox)
     await expect($pteTextbox.locator('[data-mark="code"]', {hasText: 'code text'})).toBeVisible()
     await page.keyboard.press(`${getModifierKey()}+'`)
-    await page.keyboard.press('Enter')
   })
 })
 
