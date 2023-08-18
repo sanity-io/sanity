@@ -9,6 +9,9 @@ jobs:
   test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TURBO_TEAM: sanity-io
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
