@@ -1,4 +1,4 @@
-import React, {memo, useContext, useId} from 'react'
+import React, {memo, useContext, useId, useMemo, useRef} from 'react'
 import {sortBy, uniqBy} from 'lodash'
 import {AvatarCounter, AvatarPosition} from '@sanity/ui'
 import {UserAvatar} from '../components/userAvatar'
@@ -22,10 +22,6 @@ export interface FieldPresenceInnerProps {
   stack?: boolean
   position?: AvatarPosition
   animateArrowFrom?: AvatarPosition
-}
-
-function calcAvatarStackWidth(len: number) {
-  return -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * len
 }
 
 /** @internal */
@@ -60,35 +56,30 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
       : null,
   ].filter(Boolean)
 
-  const maxWidth = calcAvatarStackWidth(maxAvatars)
-  const currWidth = Math.min(calcAvatarStackWidth(uniquePresence.length), maxWidth)
-
   return (
-    <FlexWrapper justify="flex-end" style={{width: maxWidth}}>
+    <FlexWrapper>
       <div />
 
-      <PresenceTooltip items={uniquePresence}>
-        <InnerBox direction="row-reverse" style={{width: currWidth}}>
-          {avatars.map(
-            (av, i) =>
-              av && (
-                <div
-                  key={av.key}
-                  style={{
-                    position: 'absolute',
-                    transform: `translate3d(${-i * (AVATAR_SIZE + AVATAR_DISTANCE)}px, 0px, 0px)`,
-                    transitionProperty: 'transform',
-                    transitionDuration: '200ms',
-                    transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
-                    zIndex: 100 - i,
-                  }}
-                >
-                  {av.element}
-                </div>
-              ),
-          )}
-        </InnerBox>
-      </PresenceTooltip>
+      <InnerBox direction="row-reverse">
+        {avatars.map(
+          (av, i) =>
+            av && (
+              <div
+                key={av.key}
+                style={{
+                  position: 'absolute',
+                  transform: `translate3d(${-i * (AVATAR_SIZE + AVATAR_DISTANCE)}px, 0px, 0px)`,
+                  transitionProperty: 'transform',
+                  transitionDuration: '200ms',
+                  transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
+                  zIndex: 100 - i,
+                }}
+              >
+                {av.element}
+              </div>
+            ),
+        )}
+      </InnerBox>
     </FlexWrapper>
   )
 })
@@ -103,18 +94,16 @@ export interface FieldPresenceProps {
 export function FieldPresenceWithOverlay(props: FieldPresenceProps) {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
-  const ref = React.useRef(null)
+  const ref = useRef(null)
 
   useReporter(useId(), () => ({presence, element: ref.current!, maxAvatars: maxAvatars}))
 
-  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * props.maxAvatars
+  const uniquePresence = useMemo(() => uniqBy(presence || [], (item) => item.user.id), [presence])
 
   return (
-    <FlexWrapper
-      justify="flex-end"
-      ref={ref}
-      style={{minWidth: minWidth, minHeight: AVATAR_SIZE}}
-    />
+    <PresenceTooltip items={uniquePresence}>
+      <FlexWrapper ref={ref} style={{minHeight: AVATAR_SIZE, minWidth: AVATAR_SIZE}} />
+    </PresenceTooltip>
   )
 }
 

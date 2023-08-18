@@ -19,7 +19,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
 
   const content = useMemo(
     () => (
-      <Stack padding={1}>
+      <Stack padding={1} sizing="border">
         {items.map((item) => (
           <Flex align="center" gap={2} padding={1} key={item.user.id}>
             <div>

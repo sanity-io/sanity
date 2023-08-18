@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {isShallowEmptyObject} from '@sanity/util/content'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -19,9 +19,6 @@ import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {applyAll} from '../../../patch/applyPatch'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {useFormPublishedId} from '../../../useFormPublishedId'
-import {DocumentFieldActionNode} from '../../../../config'
-import {FieldActionMenu, FieldActionsProvider, FieldActionsResolver} from '../../../field'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
@@ -62,8 +59,6 @@ export const ObjectField = function ObjectField(props: {
   const {
     field: {actions: fieldActions},
   } = useFormBuilder().__internal
-  const documentId = useFormPublishedId()
-  const [fieldActionNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
   const focusRef = useRef<{focus: () => void}>()
   // Keep a local reference to the most recent value. See comment in `handleChange` below for more details
@@ -262,10 +257,7 @@ export const ObjectField = function ObjectField(props: {
 
   const fieldProps = useMemo((): Omit<ObjectFieldProps, 'renderDefault'> => {
     return {
-      actions:
-        fieldActionNodes.length > 0 ? (
-          <FieldActionMenu focused={member.field.focused} nodes={fieldActionNodes} />
-        ) : undefined,
+      actions: fieldActions,
       name: member.name,
       index: member.index,
       level: member.field.level,
@@ -293,8 +285,9 @@ export const ObjectField = function ObjectField(props: {
       inputProps: inputProps as ObjectInputProps,
     }
   }, [
-    fieldActionNodes,
-    member.field.focused,
+    fieldActions,
+    member.name,
+    member.index,
     member.field.level,
     member.field.value,
     member.field.validation,
@@ -303,8 +296,6 @@ export const ObjectField = function ObjectField(props: {
     member.field.changed,
     member.field.id,
     member.field.path,
-    member.name,
-    member.index,
     member.collapsible,
     member.collapsed,
     member.open,
@@ -326,20 +317,7 @@ export const ObjectField = function ObjectField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {documentId && fieldActions.length > 0 && (
-        <FieldActionsResolver
-          actions={fieldActions}
-          documentId={documentId}
-          documentType={member.field.schemaType.name}
-          onActions={setFieldActionNodes}
-          path={member.field.path}
-          schemaType={member.field.schemaType}
-        />
-      )}
-
-      <FieldActionsProvider actions={fieldActionNodes} path={member.field.path}>
-        {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
-      </FieldActionsProvider>
+      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )
 }
