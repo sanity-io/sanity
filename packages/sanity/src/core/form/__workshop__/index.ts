@@ -19,7 +19,7 @@ export default defineScope({
       name: 'form-builder-pte-input',
       title: 'Form builder: Portable Text Input',
       component: lazy(
-        () => import('../../../../playwright-ct/tests/formBuilder/PortableTextInputStory')
+        () => import('../../../../playwright-ct/tests/formBuilder/PortableTextInputStory'),
       ),
     },
     {

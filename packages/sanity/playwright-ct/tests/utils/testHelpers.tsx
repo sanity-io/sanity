@@ -85,7 +85,7 @@ export function testHelpers({
             cancelable: true,
             inputType: 'insertText',
             data: value,
-          })
+          }),
         )
       }, input)
 

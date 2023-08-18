@@ -48,7 +48,7 @@ export function groupTests(report: JSONReportCustom): GroupedTests {
             projects: _.groupBy(tests, 'projectName'),
           }
         })
-        .value()
+        .value(),
     )
     .value()
 }
@@ -100,7 +100,7 @@ function getStatusText(totalFailed: number) {
 export function getSuiteSummaryRow(
   suiteTotals: Omit<SummaryRow, 'status' | 'file'>,
   suite: string,
-  workflowLink: string
+  workflowLink: string,
 ) {
   const statusText = getStatusText(suiteTotals.totalFailed)
 
@@ -121,8 +121,8 @@ function generateMarkdownTable(rows: SummaryRow[]) {
     ...rows.map(
       ({file, totalDuration, totalPassed, totalSkipped, totalFailed, status}) =>
         `| **${file}** | ${status} | ${formatDuration(
-          totalDuration
-        )} | ${totalPassed} | ${totalSkipped} | ${totalFailed} |`
+          totalDuration,
+        )} | ${totalPassed} | ${totalSkipped} | ${totalFailed} |`,
     ),
   ].join('\n')
 }

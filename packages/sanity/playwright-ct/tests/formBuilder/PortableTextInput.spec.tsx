@@ -8,7 +8,7 @@ test.use({viewport: {width: 1200, height: 1000}})
 test.beforeEach(({browserName}, testInfo) => {
   test.skip(
     browserName === 'webkit' || testInfo.project.name.toLowerCase().includes('webkit'),
-    'Currently failing on Webkit/Safari due to different focus behaviour on activation of the PTE'
+    'Currently failing on Webkit/Safari due to different focus behaviour on activation of the PTE',
   )
 })
 
@@ -69,7 +69,7 @@ test.describe('Decorators', () => {
     await expect(
       $pteTextbox.locator('[data-mark="underline"]', {
         hasText: 'underlined text',
-      })
+      }),
     ).toBeVisible()
 
     // Code
@@ -94,7 +94,7 @@ test.describe('Annotations', () => {
     await expect(
       $pteTextbox.locator('[data-slate-string="true"]', {
         hasText: 'Now we should insert a link.',
-      })
+      }),
     ).toBeVisible()
 
     // Backtrack and click link icon in menu bar
@@ -312,7 +312,7 @@ test.describe('Menu bar', () => {
     const ICONS = ['bold', 'code', 'italic', 'link', 'olist', 'ulist', 'underline']
     for (const icon of ICONS) {
       await expect(
-        $pteField.getByRole('button').locator(`[data-sanity-icon="${icon}"]`)
+        $pteField.getByRole('button').locator(`[data-sanity-icon="${icon}"]`),
       ).toBeVisible()
     }
 
@@ -343,7 +343,7 @@ test.describe('Menu bar', () => {
 
     // Assertion: Overflowing block link should appear in the “Add” menu button
     await expect(page.locator('[data-ui="MenuButton__popover"] [data-ui="Menu"]')).toContainText(
-      'Inline Object'
+      'Inline Object',
     )
   })
 

@@ -76,7 +76,7 @@ export function TestForm() {
     (nextFocusPath: Path) => {
       setFocusPath(nextFocusPath)
     },
-    [setFocusPath]
+    [setFocusPath],
   )
 
   const handleBlur = useCallback(() => {
@@ -104,7 +104,7 @@ export function TestForm() {
   const handleSetActiveFieldGroup = useCallback(
     (path: Path, groupName: string) =>
       onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName)),
-    []
+    [],
   )
 
   const setOpenPath = useCallback(
@@ -123,7 +123,7 @@ export function TestForm() {
       })
       onSetOpenPath(path)
     },
-    [formStateRef]
+    [formStateRef],
   )
 
   const formBuilderProps: FormBuilderProps = useMemo(
@@ -173,7 +173,7 @@ export function TestForm() {
       schemaType,
       setOpenPath,
       validation,
-    ]
+    ],
   )
 
   return <FormBuilder {...formBuilderProps} />
@@ -182,7 +182,7 @@ export function TestForm() {
 async function validateStaticDocument(
   document: any,
   schema: any,
-  setCallback: (result: ValidationMarker[]) => void
+  setCallback: (result: ValidationMarker[]) => void,
 ) {
   const result = await validateDocument(getClient, document, schema)
   setCallback(result)
