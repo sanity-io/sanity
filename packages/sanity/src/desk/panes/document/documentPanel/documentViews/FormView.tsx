@@ -131,8 +131,6 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     [ref],
   )
 
-  const isEditingForm = !!formState?.focusPath?.length
-
   // const after = useMemo(
   //   () =>
   //     Array.isArray(afterEditorComponents) &&
@@ -154,7 +152,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     >
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
-          <FormTitle title={title} isEditingForm={isEditingForm} />
+          <FormTitle title={title} ready={ready} />
           {ready ? (
             formState === null ? (
               <Box padding={2}>
