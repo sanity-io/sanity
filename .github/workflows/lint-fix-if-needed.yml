@@ -44,7 +44,7 @@ jobs:
         with:
           path: .eslintcache
           key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
-      - run: yarn lint:fix
+      - run: "yarn lint:fix --rule 'prettier/prettier: [off]'"
       - uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1
         # Run even if `yarn lint:fix` fails
         if: always()
@@ -57,9 +57,9 @@ jobs:
         if: always()
         with:
           author: github-actions <41898282+github-actions[bot]@users.noreply.github.com>
-          body: I ran `yarn lint:fix` 🧑‍💻
+          body: "I ran `yarn lint:fix --rule 'prettier/prettier: [off]'` 🧑‍💻"
           branch: actions/lint-fix-if-needed
           commit-message: 'chore(lint): fix linter issues 🤖 ✨'
           labels: 🤖 bot
-          title: 'chore(prettier): fix linter issues 🤖 ✨'
+          title: 'chore(lint): fix linter issues 🤖 ✨'
           token: ${{ steps.generate-token.outputs.token }}
