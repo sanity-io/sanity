@@ -2,10 +2,11 @@
 /* eslint-disable no-sync, no-console, strict */
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
-const rimraf = require('rimraf')
-const minimist = require('minimist')
+import fs from 'fs'
+
+import path from 'path'
+import rimraf from 'rimraf'
+import minimist from 'minimist'
 
 const argv = minimist(process.argv.slice(2), {boolean: ['all']})
 
@@ -14,14 +15,14 @@ if (!targetDir) {
   throw new Error('Target directory must be specified (`.` for current dir)')
 }
 
-const notSanity = (dir) => dir !== '@sanity'
-const prefix = (name) => `@sanity/${name}`
-const normalize = (dir) => dir.replace(/@sanity\//g, `@sanity${path.sep}`)
+const notSanity = (dir: string) => dir !== '@sanity'
+const prefix = (name: string) => `@sanity/${name}`
+const normalize = (dir: string) => dir.replace(/@sanity\//g, `@sanity${path.sep}`)
 
 const pkgPath = path.join(__dirname, '..', 'packages')
 const rootPackages = fs.readdirSync(pkgPath).filter(notSanity)
 const sanityPackages = fs.readdirSync(path.join(pkgPath, '@sanity')).map(prefix)
-const packages = [].concat(rootPackages, sanityPackages)
+const packages = [...rootPackages, ...sanityPackages]
 
 const targetPath = path.resolve(path.relative(process.cwd(), targetDir))
 const targetDepsPath = path.join(targetPath, 'node_modules')
@@ -44,7 +45,7 @@ if (targetDeps.includes('sanity')) {
 }
 
 // All the dependencies in the root of node_modules and node_modules/@sanity
-const targetPackages = [].concat(targetRootPackages, targetSanityPackages, targetDeps)
+const targetPackages = [...targetRootPackages, ...targetSanityPackages, ...targetDeps]
 const sharedPackages = argv.all
   ? packages
   : packages.filter((pkgName) => targetPackages.indexOf(pkgName) > -1)
