@@ -50,8 +50,9 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         schema,
         titleFilter,
         types,
+        t,
       }),
-    [documentTypesNarrowed, definitions.fields, definitions.filters, schema, titleFilter, types],
+    [documentTypesNarrowed, definitions.fields, definitions.filters, schema, titleFilter, types, t],
   )
 
   const renderItem = useCallback<CommandListRenderItemCallback<FilterMenuItem>>(
