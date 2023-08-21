@@ -20,6 +20,7 @@ import type {
   SearchFilter,
 } from '../../../types'
 import {buildSearchFilter, getFieldFromFilter} from '../../../utils/filterUtils'
+import type {TFunction} from '../../../../../../../i18n'
 
 /**
  * Creates a flat list of filter menu items based on the current filter text input.
@@ -31,6 +32,7 @@ export function createFilterMenuItems({
   schema,
   titleFilter,
   types,
+  t,
 }: {
   documentTypesNarrowed: string[]
   fieldDefinitions: SearchFieldDefinitionDictionary
@@ -38,6 +40,7 @@ export function createFilterMenuItems({
   schema: Schema
   titleFilter: string
   types: SearchableType[]
+  t: TFunction<'studio', undefined>
 }): FilterMenuItem[] {
   // Construct field filters based on available definitions and current title fitler
   const fieldFilters = Object.values(fieldDefinitions)
@@ -65,7 +68,7 @@ export function createFilterMenuItems({
         fieldDefinitions,
         filterDefinitions,
         filters: fieldFilters,
-        headerTitle: 'All fields',
+        headerTitle: t('navbar.search.all-fields'),
         id: 'field',
       }),
     ]
@@ -81,6 +84,7 @@ export function createFilterMenuItems({
       filters: fieldFilters,
       schema,
       types,
+      t,
     }),
   ]
 }
@@ -136,6 +140,7 @@ function buildFieldMenuItemsNarrowed({
   filters,
   schema,
   types,
+  t,
 }: {
   documentTypesNarrowed: string[]
   fieldDefinitions: SearchFieldDefinitionDictionary
@@ -143,6 +148,7 @@ function buildFieldMenuItemsNarrowed({
   filters: SearchFilter[]
   schema: Schema
   types: SearchableType[]
+  t: TFunction<'studio', undefined>
 }) {
   const sharedFilters = filters.filter((filter) => {
     const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
@@ -155,7 +161,7 @@ function buildFieldMenuItemsNarrowed({
           fieldDefinitions,
           filterDefinitions,
           filters: sharedFilters,
-          headerTitle: 'Shared fields',
+          headerTitle: t('navbar.search.shared-fields'),
           id: 'shared',
           tone: 'primary',
         })
@@ -165,7 +171,10 @@ function buildFieldMenuItemsNarrowed({
     .map((documentType) => {
       const docType = schema.get(documentType)
       return {
-        title: docType?.title || startCase(docType?.name) || '(Unknown type)',
+        title:
+          docType?.title ||
+          startCase(docType?.name) ||
+          `(${t('navbar.search.unknown-type-label')})`,
         documentType,
       }
     })
