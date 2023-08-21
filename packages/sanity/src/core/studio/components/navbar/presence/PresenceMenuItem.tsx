@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import {GlobalPresence} from '../../../../store'
 import {UserAvatar} from '../../../../components'
 import {IntentLink} from 'sanity/router'
+import {useTranslation} from '../../../../i18n'
 
 const AvatarCard = styled(Card)`
   background: transparent;
@@ -21,6 +22,7 @@ interface PresenceListRowProps {
 export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceListRowProps) {
   const {presence, focused, onFocus} = props
   const [menuItemElement, setMenuItemElement] = useState<HTMLElement | null>(null)
+  const {t} = useTranslation()
 
   const lastActiveLocation = orderBy(presence.locations || [], ['lastActiveAt'], ['desc']).find(
     (location) => location.documentId,
@@ -91,7 +93,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
           <Text textOverflow="ellipsis">{presence.user.displayName}</Text>
           {!hasLink && (
             <Text size={0} muted textOverflow="ellipsis">
-              Not in a document
+              {t('nav.presence-menu.not-in-a-document')}
             </Text>
           )}
         </Stack>
