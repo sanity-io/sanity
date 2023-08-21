@@ -20,6 +20,7 @@ import {useWorkspaces} from '../../workspaces'
 import {useColorSchemeOptions, useColorSchemeSetValue} from '../../colorScheme'
 import {StudioThemeColorSchemeKey} from '../../../theme'
 import {userHasRole} from '../../../util/userHasRole'
+import {useTranslation} from '../../../i18n'
 import {WorkspaceMenuButton} from './workspace'
 
 const ANIMATION_TRANSITION: Transition = {
@@ -72,15 +73,16 @@ const InnerCard = styled(motion(Card))`
 `
 
 function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSchemeKey) => void}) {
+  const {t} = useTranslation()
   // Subscribe to just what we need, if the menu isn't shown then we're not subscribed to these contexts
-  const options = useColorSchemeOptions(setScheme)
+  const options = useColorSchemeOptions(setScheme, t)
 
   return (
     <>
       <Card borderTop flex="none" padding={3} overflow="auto">
         <Box padding={2}>
           <Label size={1} muted>
-            Appearance
+            {t('navbar.user-menu.appearance-title')}
           </Label>
         </Box>
 
@@ -121,6 +123,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const ToolMenu = useToolMenuComponent()
 
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
+  const {t} = useTranslation()
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -205,28 +208,28 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                     <Stack as="ul" space={1}>
                       <Stack as="li">
                         <Button
-                          aria-label="Manage project"
+                          aria-label={t('navbar.user-menu.action.manage-project')}
                           as="a"
                           href={`https://sanity.io/manage/project/${projectId}`}
                           icon={CogIcon}
                           justify="flex-start"
                           mode="bleed"
                           target="_blank"
-                          text="Manage project"
+                          text={t('navbar.user-menu.action.manage-project')}
                         />
                       </Stack>
 
                       {isAdmin && (
                         <Stack as="li">
                           <Button
-                            aria-label="Invite members"
+                            aria-label={t('navbar.user-menu.action.invite-members')}
                             as="a"
                             href={`https://sanity.io/manage/project/${projectId}/members`}
                             icon={UsersIcon}
                             justify="flex-start"
                             mode="bleed"
                             target="_blank"
-                            text="Invite members"
+                            text={t('navbar.user-menu.action.invite-members')}
                           />
                         </Stack>
                       )}
@@ -244,7 +247,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                       mode="bleed"
                       // eslint-disable-next-line react/jsx-handler-names
                       onClick={auth.logout}
-                      text="Sign out"
+                      text={t('navbar.user-menu.action.sign-out')}
                     />
                   </Stack>
                 </Card>
