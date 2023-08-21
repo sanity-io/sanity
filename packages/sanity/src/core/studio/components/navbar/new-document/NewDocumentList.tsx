@@ -6,6 +6,7 @@ import {CommandList} from '../../../../components'
 import {supportsTouch} from '../../../../util'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {INLINE_PREVIEW_HEIGHT, NewDocumentListOption} from './NewDocumentListOption'
+import {useTranslation} from '../../../../i18n'
 
 const ContentFlex = styled(Flex)`
   min-height: 100px;
@@ -28,6 +29,7 @@ export interface NewDocumentListProps {
 export function NewDocumentList(props: NewDocumentListProps) {
   const {currentUser, loading, onDocumentClick, options, preview, searchQuery, textInputElement} =
     props
+  const {t} = useTranslation()
   const hasOptions = options.length > 0 && !loading
 
   const handleDocumentClick = useCallback(() => {
@@ -69,7 +71,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
           <Spinner muted size={1} />
 
           <Text muted size={1}>
-            Loading…
+            {t('navbar.new-document.loading')}
           </Text>
         </Inline>
       </ContentFlex>
@@ -88,7 +90,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
         sizing="border"
       >
         <Text align="center" muted size={1}>
-          No results found for <QueryString>“{searchQuery}”</QueryString>
+          {t('navbar.new-document.no-results')} <QueryString>“{searchQuery}”</QueryString>
         </Text>
       </ContentFlex>
     )
@@ -106,7 +108,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
         sizing="border"
       >
         <Text align="center" muted size={1}>
-          No documents found
+          {t('navbar.new-document.no-documents-found')}
         </Text>
       </ContentFlex>
     )
@@ -115,7 +117,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
   return (
     <CommandList
       activeItemDataAttr="data-hovered"
-      ariaLabel="New document"
+      ariaLabel={t('nav-bar.new-document.new-document')}
       autoFocus={supportsTouch ? undefined : 'input'}
       getItemDisabled={getItemDisabled}
       inputElement={textInputElement}
