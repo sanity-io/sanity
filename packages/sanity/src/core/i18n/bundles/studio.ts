@@ -356,6 +356,18 @@ export const studioLocaleStrings = {
 
   /** Title for locale section for the current studio */
   'navbar.user-menu.locale-title': 'Language',
+
+  /** --- Presence Menu --- */
+
+  /** Message title for when no one else is in the presence menu */
+  'navbar.presence-menu.no-one-else-title': 'No one else is here',
+
+  /** Message description for when no one else is in the presence menu */
+  'navbar.presence-menu.no-one-else-description':
+    'Invite people to the project to see their online status.',
+
+  /** Label for action to manage members of the current studio project */
+  'nav.presence-menu.action.manage-members': 'Manage members',
 }
 
 /**
