@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {useIntentLink} from 'sanity/router'
+import {useTranslation} from '../../../../i18n'
 
 const TooltipContentBox = styled(Box)`
   max-width: 300px;
@@ -25,6 +26,7 @@ interface NewDocumentListOptionProps {
 
 export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   const {option, currentUser, onClick, preview} = props
+  const {t} = useTranslation()
   const params = useMemo(
     () => ({template: option.templateId, type: option.schemaType}),
     [option.schemaType, option.templateId],
@@ -51,7 +53,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
         <TooltipContentBox padding={2}>
           <InsufficientPermissionsMessage
             currentUser={currentUser}
-            operationLabel="create this document"
+            operationLabel={t('nav-bar.new-document.error.unable-to-create-document')}
           />
         </TooltipContentBox>
       }
