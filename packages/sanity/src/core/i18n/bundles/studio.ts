@@ -277,6 +277,15 @@ export const studioLocaleStrings = {
   /** Label for "unknown types" in the filter menu */
   'navbar.search.unknown-type-label': 'Unknown type',
 
+  /** Label for boolean filter - true */
+  'navbar.search.true': 'True',
+
+  /** Label for boolean filter - false */
+  'navbar.search.false': 'False',
+
+  /** Label for search value in a range of numbers */
+  'navbar.search.number-items-range': `{{min}} → {{max}} items`,
+
   /** Title label for when no search results are found */
   'navbar.search.no-results-title': 'No results found',
 
