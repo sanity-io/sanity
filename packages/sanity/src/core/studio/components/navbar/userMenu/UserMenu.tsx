@@ -26,6 +26,7 @@ import {
 } from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
+import {useTranslation} from '../../../../i18n'
 import {LoginProviderLogo} from './LoginProviderLogo'
 import {LocaleMenu} from './LocaleMenu'
 
@@ -43,8 +44,9 @@ const AvatarBox = styled(Box)`
 `
 
 function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSchemeKey) => void}) {
+  const {t} = useTranslation()
   // Subscribe to just what we need, if the menu isn't shown then we're not subscribed to these contexts
-  const options = useColorSchemeOptions(setScheme)
+  const options = useColorSchemeOptions(setScheme, t)
 
   return (
     <>
@@ -52,7 +54,7 @@ function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSc
 
       <Box padding={2}>
         <Label size={1} muted>
-          Appearance
+          {t('navbar.user-menu.appearance-title')}
         </Label>
       </Box>
 
@@ -78,6 +80,8 @@ export function UserMenu() {
 
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
   const providerTitle = getProviderTitle(currentUser?.provider)
+
+  const {t} = useTranslation()
 
   const popoverProps: MenuButtonProps['popover'] = useMemo(
     () => ({
@@ -113,7 +117,7 @@ export function UserMenu() {
                 content={
                   providerTitle && (
                     <Box padding={2}>
-                      <Text size={1}>Signed in with {providerTitle}</Text>
+                      <Text size={1}>{t('navbar.user-menu.login-provider', {providerTitle})}</Text>
                     </Box>
                   )
                 }
@@ -143,19 +147,19 @@ export function UserMenu() {
 
           <MenuItem
             as="a"
-            aria-label="Manage project"
+            aria-label={t('navbar.user-menu.action.manage-project')}
             href={`https://sanity.io/manage/project/${projectId}`}
             target="_blank"
-            text="Manage project"
+            text={t('navbar.user-menu.action.manage-project')}
             icon={CogIcon}
           />
           {isAdmin && (
             <MenuItem
               as="a"
-              aria-label="Invite members"
+              aria-label={t('navbar.user-menu.action.invite-members')}
               href={`https://sanity.io/manage/project/${projectId}/members`}
               target="_blank"
-              text="Invite members"
+              text={t('navbar.user-menu.action.invite-members')}
               icon={UsersIcon}
             />
           )}
@@ -165,7 +169,7 @@ export function UserMenu() {
               <MenuDivider />
               <MenuItem
                 iconRight={LeaveIcon}
-                text="Sign out"
+                text={t('navbar.user-menu.action.sign-out')}
                 disabled={!auth.logout}
                 {...(auth.logout && {onClick: auth.logout})}
               />
