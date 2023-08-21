@@ -11,12 +11,14 @@ import type {
   OperatorDateRangeValue,
 } from '../../../definitions/operators/dateOperators'
 import {OperatorButtonValueComponentProps} from '../../../definitions/operators/operatorTypes'
+import {useTranslation} from '../../../../../../../i18n'
 import {ReferencePreviewTitle} from './ReferencePreviewTitle'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 
 export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentProps<boolean>) {
-  return <>{value ? 'True' : 'False'}</>
+  const {t} = useTranslation()
+  return <>{value ? t('navbar.search.true') : t('navbar.search.false')}</>
 }
 
 export function SearchButtonValueDate({
@@ -89,11 +91,8 @@ export function SearchButtonValueNumberRange({
 export function SearchButtonValueNumberCountRange({
   value,
 }: OperatorButtonValueComponentProps<OperatorNumberRangeValue>) {
-  return (
-    <>
-      {value.min} → {value.max} items
-    </>
-  )
+  const {t} = useTranslation()
+  return <>{t('navbar.search.number-items-range', {min: value.min, max: value.max})}</>
 }
 
 export function SearchButtonValueReference({value}: OperatorButtonValueComponentProps<Reference>) {
