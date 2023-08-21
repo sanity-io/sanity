@@ -2,6 +2,7 @@ import React, {createContext, useContext, useEffect, useMemo, useSyncExternalSto
 import {studioTheme, ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
 import type {StudioThemeColorSchemeKey} from '../theme/types'
+import {TFunction} from '../i18n'
 
 /**
  * Used to keep track of the internal value, which can be "system" in addition to "light" and "dark"
@@ -201,35 +202,38 @@ interface ColorSchemeOption {
 /**
  * @internal
  */
-export function useColorSchemeOptions(setScheme: (nextScheme: StudioThemeColorSchemeKey) => void) {
+export function useColorSchemeOptions(
+  setScheme: (nextScheme: StudioThemeColorSchemeKey) => void,
+  t: TFunction<'', undefined>
+) {
   const scheme = _useColorSchemeInternalValue()
 
   return useMemo(() => {
     return [
       {
-        title: 'System',
+        title: t('navbar.user-menu.color-scheme.system-title'),
         name: 'system',
-        label: 'Use system appearance',
+        label: t('navbar.user-menu.color-scheme.system-description'),
         selected: scheme === 'system',
         onSelect: () => setScheme('system'),
         icon: DesktopIcon,
       },
       {
-        title: 'Dark',
+        title: t('navbar.user-menu.color-scheme.dark-title'),
         name: 'dark',
-        label: 'Use dark appearance',
+        label: t('navbar.user-menu.color-scheme.dark-description'),
         selected: scheme === 'dark',
         onSelect: () => setScheme('dark'),
         icon: MoonIcon,
       },
       {
-        title: 'Light',
+        title: t('navbar.user-menu.color-scheme.light-title'),
         name: 'light',
-        label: 'Use light appearance',
+        label: t('navbar.user-menu.color-scheme.light-description'),
         selected: scheme === 'light',
         onSelect: () => setScheme('light'),
         icon: SunIcon,
       },
     ] satisfies ColorSchemeOption[]
-  }, [scheme, setScheme])
+  }, [scheme, setScheme, t])
 }
