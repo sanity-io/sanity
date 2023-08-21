@@ -303,6 +303,41 @@ export const studioLocaleStrings = {
 
   /** Label for "contact sales" call to action */
   'navbar.helpResources.action.contact-sales': `Contact sales`,
+
+  /** --- User Menu --- */
+
+  /** Label for tooltip to show which provider the currently logged in user is using */
+  'navbar.user-menu.login-provider': `Signed in with {{providerTitle}}`,
+
+  /** Label for action to manage the current sanity project, used for accessibility as well */
+  'navbar.user-menu.action.manage-project': 'Manage project',
+
+  /** Label for action to invite members to the current sanity project, used for accessibility as well */
+  'navbar.user-menu.action.invite-members': 'Invite members',
+
+  /** Label for action to sign out of the current sanity project */
+  'navbar.user-menu.action.sign-out': 'Sign out',
+
+  /** Title for appearance section for the current studio (dark / light scheme) */
+  'navbar.user-menu.appearance-title': 'Appearance',
+
+  /** Title for using system apparence in the apperance user menu */
+  'navbar.user-menu.color-scheme.system-title': 'System',
+
+  /** Description for using "system apparence" in the apperance user menu */
+  'navbar.user-menu.color-scheme.system-description': 'Use system appearance',
+
+  /** Title for using the "dark theme" in the apperance user menu */
+  'navbar.user-menu.color-scheme.dark-title': 'Dark',
+
+  /** Description for using the "dark theme" in the apperance user menu */
+  'navbar.user-menu.color-scheme.dark-description': 'Use dark appearance',
+
+  /** Title for using the "light theme" in the apperance user menu */
+  'navbar.user-menu.color-scheme.light-title': 'Light',
+
+  /** Description for using the "light theme" in the apperance user menu */
+  'navbar.user-menu.color-scheme.light-description': 'Use light appearance',
 }
 
 /**
