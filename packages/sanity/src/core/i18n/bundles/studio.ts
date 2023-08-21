@@ -215,6 +215,9 @@ export const studioLocaleStrings = {
   /** Accessibility label for options in the new document menu */
   'nav-bar.new-document.new-document': 'New document',
 
+  /** Error label for when a user is unable to create a document */
+  'nav-bar.new-document.error.unable-to-create-document': 'create this document',
+
   /** --- Search --- */
 
   /** Accessibility label for Search Input for when there are no recent searches */
