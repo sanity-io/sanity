@@ -259,6 +259,15 @@ export const studioLocaleStrings = {
   /** Accessibility Label for filter search input in the filtering section of search */
   'navbar.search.filter-by-title-label': 'Filter by title',
 
+  /** Label for filter search tooltip based on the field name */
+  'navbar.search.filter-field-name': 'Field name',
+
+  /** Label for filter search tooltip based on the field description */
+  'navbar.search.filter-field-description': 'Field description',
+
+  /** Message for showing that it's used in specific document types (used within the filter search tooltip) */
+  'navbar.search.used-in-document-types': 'Used in document types',
+
   /** Title label for when no search results are found */
   'navbar.search.no-results-title': 'No results found',
 
