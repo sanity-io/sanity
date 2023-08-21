@@ -2,7 +2,7 @@ import {ArraySchemaType, Path, ValidationMarker, PortableTextBlock} from '@sanit
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {PortableTextMarker, RenderCustomMarkers} from '../../../../types'
 import {applyAll} from '../../../../patch/simplePatch'
-import {RenderBlockActionsCallback} from '../../types'
+import {RenderBlockActionsCallback} from '../../../../types/_transitional'
 import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {useSource} from '../../../../../studio'
 
