@@ -368,6 +368,9 @@ export const studioLocaleStrings = {
 
   /** Label for action to manage members of the current studio project */
   'nav.presence-menu.action.manage-members': 'Manage members',
+
+  /** Message for when a user is not in a document (within the presence menu) */
+  'nav.presence-menu.not-in-a-document': 'Not in a document',
 }
 
 /**
