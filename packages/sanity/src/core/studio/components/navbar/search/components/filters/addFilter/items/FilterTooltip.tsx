@@ -8,6 +8,7 @@ import type {SearchFieldDefinition} from '../../../../definitions/fields'
 import type {SearchFilterDefinition} from '../../../../definitions/filters'
 import {getSchemaField} from '../../../../utils/getSchemaField'
 import {sanitizeFieldValue} from '../../../../utils/sanitizeField'
+import {useTranslation} from '../../../../../../../../i18n'
 
 interface FilterTooltipProps {
   children: ReactElement
@@ -27,6 +28,7 @@ export function FilterTooltip({
   const {
     state: {documentTypesNarrowed},
   } = useSearchState()
+  const {t} = useTranslation()
 
   const schema = useSchema()
 
@@ -80,7 +82,7 @@ export function FilterTooltip({
             {fieldDefinition && (
               <Stack space={2}>
                 <Label muted size={0}>
-                  Field name
+                  {t('navbar.search.filter-field-name')}
                 </Label>
                 <Inline>
                   <Card tone="caution" padding={1} radius={2}>
@@ -94,7 +96,7 @@ export function FilterTooltip({
             {fieldDefinitionDescription && (
               <Stack space={3}>
                 <Label muted size={0}>
-                  Field description
+                  {t('navbar.search.filter-field-description')}
                 </Label>
                 <Text muted size={0}>
                   {truncateString(fieldDefinitionDescription)}
@@ -114,7 +116,7 @@ export function FilterTooltip({
               <Stack space={2}>
                 <Flex align="center" gap={1}>
                   <Label muted size={0}>
-                    Used in document types
+                    {t('navbar.search.used-in-document-types')}
                   </Label>
                   <Card padding={1} radius={2} tone="transparent">
                     <Text size={0} muted>
