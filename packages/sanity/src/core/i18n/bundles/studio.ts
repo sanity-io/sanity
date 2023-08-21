@@ -338,6 +338,9 @@ export const studioLocaleStrings = {
 
   /** Description for using the "light theme" in the apperance user menu */
   'navbar.user-menu.color-scheme.light-description': 'Use light appearance',
+
+  /** Title for locale section for the current studio */
+  'navbar.user-menu.locale-title': 'Language',
 }
 
 /**
