@@ -194,6 +194,9 @@ export const studioLocaleStrings = {
   /** Placeholder for the "search" input within the new document menu */
   'navbar.new-document.search': 'Search',
 
+  /** Loading indicator text within the new document menu */
+  'navbar.new-document.loading': 'Loading…',
+
   /** Title for "Create new document" Also used for accessibility */
   'navbar.new-document.title': 'Create new document',
 
@@ -202,6 +205,15 @@ export const studioLocaleStrings = {
 
   /** Label for "Create new document" action */
   'navbar.new-document.action.create-new-document': 'New document...',
+
+  /** Message for when no results are found for a specific search query in the new document menu */
+  'navbar.new-document.no-results': 'No results for',
+
+  /** Message for when there are no document options in the new document menu */
+  'navbar.new-document.no-documents-found': 'No documents found',
+
+  /** Accessibility label for options in the new document menu */
+  'nav-bar.new-document.new-document': 'New document',
 
   /** --- Search --- */
 
