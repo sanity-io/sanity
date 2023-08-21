@@ -268,6 +268,15 @@ export const studioLocaleStrings = {
   /** Message for showing that it's used in specific document types (used within the filter search tooltip) */
   'navbar.search.used-in-document-types': 'Used in document types',
 
+  /** Label for "all fields" in the filter menu */
+  'navbar.search.all-fields': 'All fields',
+
+  /** Label for "shared fields" in the filter menu */
+  'navbar.search.shared-fields': 'Shared fields',
+
+  /** Label for "unknown types" in the filter menu */
+  'navbar.search.unknown-type-label': 'Unknown type',
+
   /** Title label for when no search results are found */
   'navbar.search.no-results-title': 'No results found',
 
