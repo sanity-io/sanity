@@ -81,9 +81,9 @@ export const PaneHeader = forwardRef(function PaneHeader(
               </TitleCard>
 
               {actions && (
-                <Box flex="none" hidden={collapsed}>
+                <Flex align="center" hidden={collapsed}>
                   <LegacyLayerProvider zOffset="paneHeader">{actions}</LegacyLayerProvider>
-                </Box>
+                </Flex>
               )}
             </Layout>
 
