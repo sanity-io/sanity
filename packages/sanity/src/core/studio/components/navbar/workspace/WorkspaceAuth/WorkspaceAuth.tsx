@@ -8,6 +8,7 @@ import {WorkspacePreview} from '../WorkspacePreview'
 import {useWorkspaceAuthStates} from '../hooks'
 import {LoadingScreen} from '../../../../screens'
 import {WORKSPACES_DOCS_URL} from '../constants'
+import {useTranslation} from '../../../../../i18n'
 import {Layout} from './Layout'
 
 export function WorkspaceAuth() {
@@ -24,6 +25,7 @@ export function WorkspaceAuth() {
   const LoginComponent = selectedWorkspace?.auth?.LoginComponent
 
   const handleBack = useCallback(() => setSelectedWorkspaceName(null), [])
+  const {t} = useTranslation()
 
   if (!authStates) return <LoadingScreen />
 
@@ -38,7 +40,7 @@ export function WorkspaceAuth() {
               mode="bleed"
               onClick={handleBack}
               padding={2}
-              text="Choose another workspace"
+              text={t('navbar.workspace-menu.action.choose-another-workspace')}
             />
           </Flex>
         )}
@@ -67,7 +69,7 @@ export function WorkspaceAuth() {
 
   return (
     <Layout
-      header="Choose your workspace"
+      header={t('navbar.workspace-menu.choose-your-workspace-label')}
       footer={
         <Stack padding={1}>
           <Button
@@ -78,7 +80,7 @@ export function WorkspaceAuth() {
             mode="bleed"
             rel="noopener noreferrer"
             target="__blank"
-            text="Add workspace"
+            text={t('navbar.workspace-menu.action.add-workspace')}
           />
         </Stack>
       }
