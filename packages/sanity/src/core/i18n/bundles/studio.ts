@@ -286,6 +286,12 @@ export const studioLocaleStrings = {
   /** Label for number filter */
   'navbar.search.value': 'Value',
 
+  /** Label for number range filter - min placeholder */
+  'navbar.search.min-value': 'Min value',
+
+  /** Label for number range filter - max placeholder */
+  'navbar.search.max-value': 'Max value',
+
   /** Label for search value in a range of numbers */
   'navbar.search.number-items-range': `{{min}} → {{max}} items`,
 
