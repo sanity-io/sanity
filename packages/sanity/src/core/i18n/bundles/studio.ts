@@ -330,6 +330,12 @@ export const studioLocaleStrings = {
   /** Label for action to clear filter (used in multiple places within the search) */
   'navbar.search.action.clear': `Clear`,
 
+  /** Label for placeholder when searching specific document types */
+  'navbar.search.action.search-for-doc-type': `Search for {{documentTypes}}`,
+
+  /** Label for searching all documents */
+  'navbar.search.action.search-all-docs': `Search all documents`,
+
   /** Label for instructions on how to use the search when no recent searches are available */
   'navbar.search.instructions': 'Use the following icon to refine your search',
 
