@@ -1,10 +1,9 @@
-import {Theme} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 
-const DecoratorWrapper = styled.span`
+const DecoratorWrapper = styled.span<{decoration: string}>`
   display: inline;
-  ${({theme, decoration}: {theme: Theme; decoration: string}) => {
+  ${({theme, decoration}) => {
     switch (decoration) {
       case 'strong':
         return 'font-weight: bold;'

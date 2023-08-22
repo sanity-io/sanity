@@ -10,7 +10,7 @@ export const ListWrapper = styled(Flex)`
   min-width: 244px;
 `
 
-export const Root = styled(Box)(({$visible}: {$visible?: boolean}) => {
+export const Root = styled(Box)<{$visible?: boolean}>(({$visible}) => {
   return css`
     opacity: 0;
     pointer-events: none;

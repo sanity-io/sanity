@@ -97,7 +97,6 @@
     "@types/mkdirp": "^1.0.2",
     "@types/node": "^14.18.9",
     "@types/react": "^18.2.25",
-    "@types/styled-components": "^5.1.26",
     "@types/tmp": "^0.2.3",
     "@types/yargs": "^17.0.7",
     "@typescript-eslint/eslint-plugin": "^5.62.0",

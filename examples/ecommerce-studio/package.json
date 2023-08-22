@@ -34,6 +34,6 @@
     "react-barcode": "^1.4.1",
     "react-dom": "^18.2.0",
     "sanity": "3.18.1",
-    "styled-components": "^5.2.0"
+    "styled-components": "^6.1.0"
   }
 }

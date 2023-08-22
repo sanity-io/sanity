@@ -43,7 +43,7 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
       data-as={dataAs}
       documentType={documentType}
       forwardedAs={as}
-      ref={ref}
+      ref={ref as unknown as React.ForwardedRef<HTMLDivElement>}
     />
   )
 })
