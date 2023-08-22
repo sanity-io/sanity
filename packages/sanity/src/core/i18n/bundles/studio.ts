@@ -201,6 +201,15 @@ export const studioLocaleStrings = {
   /** Title for "sanity io website" link within the workspace menu */
   'navbar.workspace-menu.sanity-io-title': 'sanity.io',
 
+  /** Label for area section that indicates that you can choose your workspace */
+  'navbar.workspace-menu.choose-your-workspace-label': 'Choose your workspace',
+
+  /** Label for action to choose a different workspace */
+  'navbar.workspace-menu.action.choose-another-workspace': 'Choose another workspace',
+
+  /** Label for action to add a workspace */
+  'navbar.workspace-menu.action.add-workspace': 'Add workspace',
+
   /** --- New Document --- */
 
   /** Placeholder for the "search" input within the new document menu */
