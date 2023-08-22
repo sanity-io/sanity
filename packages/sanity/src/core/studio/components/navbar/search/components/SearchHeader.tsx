@@ -4,6 +4,7 @@ import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {CustomTextInput} from './common/CustomTextInput'
+import {useTranslation} from '../../../../../i18n'
 
 const rotate = keyframes`
   from {
@@ -53,6 +54,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
       terms: {types, query},
     },
   } = useSearchState()
+  const {t} = useTranslation()
 
   const handleFiltersToggle = useCallback(
     () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
@@ -88,7 +90,12 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
         {/* (Fullscreen) Close button */}
         {fullscreen && (
           <Card>
-            <Button aria-label="Close search" icon={ArrowLeftIcon} mode="bleed" onClick={onClose} />
+            <Button
+              aria-label={t('navbar.search.action.close-search')}
+              icon={ArrowLeftIcon}
+              mode="bleed"
+              onClick={onClose}
+            />
           </Card>
         )}
 
@@ -104,7 +111,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
             icon={loading ? AnimatedSpinnerIcon : SearchIcon}
             onChange={handleQueryChange}
             onClear={handleQueryClear}
-            placeholder="Search"
+            placeholder={t('navbar.search.placeholder')}
             radius={fullscreen ? 2 : 1}
             ref={ref}
             smallClearButton={fullscreen}
@@ -118,7 +125,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
           <FilterBox>
             <Button
               aria-expanded={filtersVisible}
-              aria-label="Toggle filters"
+              aria-label={t('navbar.search.action.toggle-filters')}
               height="fill"
               icon={ControlsIcon}
               mode="bleed"
