@@ -13,7 +13,6 @@ import {
 import {
   distinct,
   distinctUntilChanged,
-  filter,
   first,
   groupBy,
   map,
