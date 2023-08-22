@@ -321,6 +321,13 @@ export const studioLocaleStrings = {
   /** Description for error when no valid asset source is found, describes that you should cehck the the current studio config */
   'navbar.search.error.no-valid-asset-source-check-config-description': `Please ensure it's enabled in your studio configuration file.`,
 
+  /** Title for error when a filter cannot be displayed */
+  'navbar.search.error.display-filter-title': 'An error occurred whilst displaying this filter.',
+
+  /** Description for error when a filter cannot be displayed, describes that you should check the schema */
+  'navbar.search.error.display-filter-description':
+    'This may indicate invalid options defined in your schema.',
+
   /** Label for action to clear recent searches */
   'navbar.search.action.clear-recent-searches': 'Clear recent searches',
 
