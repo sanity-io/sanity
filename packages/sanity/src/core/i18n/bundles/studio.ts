@@ -302,6 +302,16 @@ export const studioLocaleStrings = {
   /** Label for when the asset source is unknown (used in the nav bar search, specifically filter) */
   'navbar.search.error.unknown-asset-source': 'Unknown asset source found',
 
+  /** Title for error when no valid asset sources found */
+  'navbar.search.error.no-valid-asset-source-title': 'No valid asset sources found.',
+
+  /** Description for error when no valid asset source is found, describes that only the default asset is supported */
+  'navbar.search.error.no-valid-asset-source-only-default-description':
+    'Currently, only the default asset source is supported.',
+
+  /** Description for error when no valid asset source is found, describes that you should cehck the the current studio config */
+  'navbar.search.error.no-valid-asset-source-check-config-description': `Please ensure it's enabled in your studio configuration file.`,
+
   /** Label for action to clear recent searches */
   'navbar.search.action.clear-recent-searches': 'Clear recent searches',
 

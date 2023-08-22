@@ -2,8 +2,11 @@ import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Flex, ResponsivePaddingProps, Stack} from '@sanity/ui'
 import React from 'react'
 import {TextWithTone} from '../../../../../../../../../components'
+import {useTranslation} from '../../../../../../../../../i18n'
 
 export function AssetSourceError(props: ResponsivePaddingProps) {
+  const {t} = useTranslation()
+
   return (
     <Box {...props}>
       <Flex align="flex-start" gap={3}>
@@ -12,13 +15,13 @@ export function AssetSourceError(props: ResponsivePaddingProps) {
         </TextWithTone>
         <Stack space={4}>
           <TextWithTone size={1} tone="caution" weight="semibold">
-            No valid asset sources found.
+            {t('navbar.search.error.no-valid-asset-source-title')}
           </TextWithTone>
           <TextWithTone size={1} tone="caution">
-            Currently, only the default asset source is supported.
+            {t('navbar.search.error.no-valid-asset-source-only-default-description')}
           </TextWithTone>
           <TextWithTone size={1} tone="caution">
-            Please ensure it's enabled in your studio configuration file.
+            {t('navbar.search.error.no-valid-asset-source-check-config-description')}
           </TextWithTone>
         </Stack>
       </Flex>
