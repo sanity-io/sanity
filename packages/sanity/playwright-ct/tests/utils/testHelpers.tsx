@@ -94,6 +94,7 @@ export function testHelpers({
      * @param locator - editable element of a Portable Text Editor (as returned by getFocusedPortableTextEditorElement)
      */
     insertPortableText: async (text: string, locator: Locator) => {
+      await locator.focus()
       await locator.evaluate((el, value) => {
         el.dispatchEvent(
           new window.InputEvent('beforeinput', {
