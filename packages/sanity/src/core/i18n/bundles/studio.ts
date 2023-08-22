@@ -346,6 +346,12 @@ export const studioLocaleStrings = {
   /** Label for searching all documents */
   'navbar.search.action.search-all-docs': `Search all documents`,
 
+  /** Label for header (accessibility) when it's full screen and you want to close the search */
+  'navbar.search.action.close-search': 'Close search',
+
+  /** Label for header (accessibility) when it's full screen and you want to toggle filters */
+  'navbar.search.action.toggle-filters': 'Toggle filters',
+
   /** Label for instructions on how to use the search when no recent searches are available */
   'navbar.search.instructions': 'Use the following icon to refine your search',
 
