@@ -35,7 +35,6 @@ export function testHelpers({
   page: PlaywrightTestArgs['page']
   testInfo: TestInfo
 }) {
-  const platformName = getPlatformName(testInfo.project.name) || process.platform
   return {
     /**
      * Focuses on the PTE and activates it with the space key.
@@ -57,7 +56,7 @@ export function testHelpers({
      * @returns The modifier key name ('Meta' for macOS, 'Control' for other platforms).
      */
     getModifierKey: () => {
-      if ((platformName || process.platform) === 'darwin') {
+      if (process.platform === 'darwin') {
         return 'Meta'
       }
       return 'Control'
@@ -90,6 +89,16 @@ export function testHelpers({
       }, input)
 
       await new Promise((resolve) => setTimeout(resolve, delay || DEFAULT_TYPE_DELAY))
+    },
+    /**
+     * Will create a keyboard event of a given hotkey combination that can be activated with a modifier key
+     * @param hotkey - the hotkey
+     * @param modifierKey - the modifier key (if any) that can activate the hotkey
+     */
+    toggleHotkey: async (hotkey: string, modifierKey?: string) => {
+      if (modifierKey) await page.keyboard.down(modifierKey)
+      await page.keyboard.press(hotkey)
+      if (modifierKey) await page.keyboard.up(modifierKey)
     },
   }
 }

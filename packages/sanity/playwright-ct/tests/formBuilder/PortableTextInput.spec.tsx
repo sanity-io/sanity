@@ -36,33 +36,32 @@ test.describe('Activation', () => {
 
 test.describe('Decorators', () => {
   test('Render default styles with keyboard shortcuts', async ({mount, page}, testInfo) => {
-    const {getModifierKey, focusPTE, typeInPTEWithDelay} = testHelpers({
+    const {getModifierKey, focusPTE, typeInPTEWithDelay, toggleHotKey} = testHelpers({
       page,
       testInfo,
     })
     await mount(<PortableTextInputStory />)
     const $pteField = await focusPTE('field-body')
     const $pteTextbox = $pteField.getByRole('textbox')
+    const modifierKey = getModifierKey()
+    await $pteTextbox.focus()
 
     // Bold
-    await page.keyboard.press(`${getModifierKey()}+b`)
+    await toggleHotkey('b', modifierKey)
     await typeInPTEWithDelay('bold text 123', $pteTextbox)
-
-    await page.keyboard.press(`${getModifierKey()}+b`, {delay: DEFAULT_TYPE_DELAY})
-
+    await toggleHotkey('b', modifierKey)
     await expect($pteTextbox.locator('[data-mark="strong"]', {hasText: 'bold text'})).toBeVisible()
 
     // Italic
-    await page.keyboard.press(`${getModifierKey()}+i`, {delay: DEFAULT_TYPE_DELAY})
+    await toggleHotkey('i', modifierKey)
     await typeInPTEWithDelay('italic text', $pteTextbox)
-
-    await page.keyboard.press(`${getModifierKey()}+i`)
+    await toggleHotkey('i', modifierKey)
     await expect($pteTextbox.locator('[data-mark="em"]', {hasText: 'italic text'})).toBeVisible()
 
     // Underline
-    await page.keyboard.press(`${getModifierKey()}+u`)
+    await toggleHotkey('u', modifierKey)
     await typeInPTEWithDelay('underlined text', $pteTextbox)
-    await page.keyboard.press(`${getModifierKey()}+u`)
+    await toggleHotkey('u', modifierKey)
     await expect(
       $pteTextbox.locator('[data-mark="underline"]', {
         hasText: 'underlined text',
@@ -70,10 +69,10 @@ test.describe('Decorators', () => {
     ).toBeVisible()
 
     // Code
-    await page.keyboard.press(`${getModifierKey()}+'`)
+    await toggleHotkey("'", modifierKey)
     await typeInPTEWithDelay('code text', $pteTextbox)
     await expect($pteTextbox.locator('[data-mark="code"]', {hasText: 'code text'})).toBeVisible()
-    await page.keyboard.press(`${getModifierKey()}+'`)
+    await toggleHotkey("'", modifierKey)
   })
 })
 
