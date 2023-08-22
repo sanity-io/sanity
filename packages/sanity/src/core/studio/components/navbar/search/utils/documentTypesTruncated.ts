@@ -1,3 +1,4 @@
+import {TFunction} from '../../../../../i18n'
 import type {SearchableType} from '../../../../../search'
 
 const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
@@ -5,9 +6,11 @@ const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
 export function documentTypesTruncated({
   availableCharacters = DEFAULT_AVAILABLE_CHARS,
   types,
+  t,
 }: {
   availableCharacters?: number
   types: SearchableType[]
+  t: TFunction<'studio', undefined>
 }): string {
   /**
    * Get the total number of visible document types whose titles fit within `availableCharacters` count.
@@ -35,12 +38,12 @@ export function documentTypesTruncated({
   const remainingCount = types.length - visibleTypes.length
 
   if (!types.length) {
-    return 'All types'
+    return t('navbar.search.all-types-label')
   }
 
   return [
     `${visibleTypes.map(typeTitle).join(', ')}`,
-    ...(remainingCount ? [`+${remainingCount} more`] : []),
+    ...(remainingCount ? [`${t('navbar.search.remaining-document-types', {remainingCount})}`] : []),
   ].join(' ')
 }
 
