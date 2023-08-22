@@ -56,7 +56,7 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
     <Tooltip
       content={
         <Box padding={2}>
-          <Text size={1}>{t('navbar.workplace-menu.title')}</Text>
+          <Text size={1}>{t('navbar.workspace-menu.title')}</Text>
         </Box>
       }
       disabled={tooltipDisabled}
@@ -81,7 +81,7 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
             <StyledMenu>
               <Box paddingX={3} paddingY={3}>
                 <Label size={1} muted>
-                  Workspaces
+                  {t('navbar.workspace-menu.title')}
                 </Label>
               </Box>
 
