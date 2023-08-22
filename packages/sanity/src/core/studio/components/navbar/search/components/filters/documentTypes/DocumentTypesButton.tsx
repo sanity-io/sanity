@@ -6,6 +6,7 @@ import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {documentTypesTruncated} from '../../../utils/documentTypesTruncated'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
+import {useTranslation} from '../../../../../../../i18n'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
 
 const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
@@ -29,13 +30,14 @@ export function DocumentTypesButton() {
       terms: {types},
     },
   } = useSearchState()
+  const {t} = useTranslation()
 
   const handleClose = useCallback(() => setOpen(false), [])
   const handleOpen = useCallback(() => setOpen(true), [])
 
   useClickOutside(handleClose, [buttonElement, popoverElement])
 
-  const title = useMemo(() => documentTypesTruncated({types}), [types])
+  const title = useMemo(() => documentTypesTruncated({types, t}), [types, t])
 
   return (
     <Popover
