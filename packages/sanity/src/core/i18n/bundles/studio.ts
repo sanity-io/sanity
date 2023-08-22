@@ -328,6 +328,10 @@ export const studioLocaleStrings = {
   'navbar.search.error.display-filter-description':
     'This may indicate invalid options defined in your schema.',
 
+  /** Label for error when the useSearchState is not used within the SearchProvider */
+  'navbar.search.error.use-search-state-not-used-within-provider':
+    'useSearchState must be used within an SearchProvider',
+
   /** Label for action to clear recent searches */
   'navbar.search.action.clear-recent-searches': 'Clear recent searches',
 
