@@ -283,6 +283,9 @@ export const studioLocaleStrings = {
   /** Label for boolean filter - false */
   'navbar.search.false': 'False',
 
+  /** Label for number filter */
+  'navbar.search.value': 'Value',
+
   /** Label for search value in a range of numbers */
   'navbar.search.number-items-range': `{{min}} → {{max}} items`,
 
