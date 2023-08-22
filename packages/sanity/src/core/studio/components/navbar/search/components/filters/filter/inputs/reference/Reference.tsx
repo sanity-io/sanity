@@ -7,6 +7,7 @@ import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
+import {useTranslation} from '../../../../../../../../../i18n'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 
 export function SearchFilterReferenceInput({
@@ -19,6 +20,7 @@ export function SearchFilterReferenceInput({
     state: {documentTypesNarrowed, fullscreen},
   } = useSearchState()
   const schema = useSchema()
+  const {t} = useTranslation()
 
   const handleChange = useCallback(
     (referenceValue: ReferenceValue | null) => onChange(referenceValue),
@@ -76,7 +78,7 @@ export function SearchFilterReferenceInput({
             fontSize={fullscreen ? 2 : 1}
             mode="ghost"
             onClick={handleClear}
-            text="Clear"
+            text={t('navbar.search.action.clear')}
             tone="critical"
           />
         </Stack>
