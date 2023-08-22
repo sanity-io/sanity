@@ -82,13 +82,13 @@ test.describe('Annotations', () => {
       testInfo,
     })
     await mount(<PortableTextInputStory />)
-    const $pteTextbox = await getFocusedPortableTextEditor('field-body')
+    const $pte = await getFocusedPortableTextEditor('field-body')
 
-    await insertPortableText('Now we should insert a link.', $pteTextbox)
+    await insertPortableText('Now we should insert a link.', $pte)
 
     // Assertion: Wait for the text to be rendered
     await expect(
-      $pteTextbox.locator('[data-slate-string="true"]', {
+      $pte.locator('[data-slate-string="true"]', {
         hasText: 'Now we should insert a link.',
       }),
     ).toBeVisible()
@@ -102,7 +102,7 @@ test.describe('Annotations', () => {
       .click()
 
     // Assertion: Wait for link to be re-rendered / PTE internal state to be done
-    await expect($pteTextbox.locator('[data-slate-node="text"] span[data-link]')).toBeVisible()
+    await expect($pte.locator('span[data-link]')).toBeVisible()
 
     // Now we check if the edit popover shows automatically
     await expect(page.getByLabel('Link').first()).toBeAttached({timeout: 10000})
@@ -114,10 +114,13 @@ test.describe('Annotations', () => {
     await expect(page.getByLabel('Link').first()).toBeFocused()
 
     // Type in the URL
-    await typeWithDelay('https://www.sanity.io')
+    await page.keyboard.type('https://www.sanity.io')
 
     // Close the popover
     await page.keyboard.press('Escape')
+
+    // Expect the editor to have focus after closing the popover
+    await expect($pte).toBeFocused()
   })
 })
 
@@ -129,7 +132,7 @@ test.describe('Blocks', () => {
     const {getFocusedPortableTextInput} = testHelpers({page, testInfo})
     await mount(<PortableTextInputStory />)
 
-    const $portableTextField = await getFocusedPortableTextInput('field-body')
+    const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
     await page
       .getByRole('button')
@@ -140,13 +143,13 @@ test.describe('Blocks', () => {
       .click()
 
     // Assertion: Object preview should be visible
-    await expect($portableTextField.locator('.pt-block.pt-object-block')).toBeVisible()
+    await expect($portableTextInput.locator('.pt-block.pt-object-block')).toBeVisible()
   })
 
   test('Custom block preview components renders correctly', async ({mount, page}, testInfo) => {
     const {getFocusedPortableTextEditor} = testHelpers({page, testInfo})
     await mount(<PortableTextInputStory />)
-    const $pteTextbox = await getFocusedPortableTextEditor('field-body')
+    const $pte = await getFocusedPortableTextEditor('field-body')
 
     await page
       .getByRole('button')
@@ -157,17 +160,17 @@ test.describe('Blocks', () => {
       .click()
 
     // Assertion: Object preview should be visible
-    await expect($pteTextbox.getByTestId('inline-preview')).toBeVisible()
+    await expect($pte.getByTestId('inline-preview')).toBeVisible()
 
     // Assertion: Text in custom preview component should show
-    await expect($pteTextbox.getByText('Custom preview block:')).toBeVisible()
+    await expect($pte.getByText('Custom preview block:')).toBeVisible()
   })
 
   test('Double-clicking opens a block', async ({mount, page}, testInfo) => {
     const {getFocusedPortableTextEditor} = testHelpers({page, testInfo})
     await mount(<PortableTextInputStory />)
 
-    const $pteTextbox = await getFocusedPortableTextEditor('field-body')
+    const $pte = await getFocusedPortableTextEditor('field-body')
 
     await page
       .getByRole('button')
@@ -175,7 +178,7 @@ test.describe('Blocks', () => {
       .click()
 
     // Assertion: Object preview should be visible
-    await expect($pteTextbox.locator('.pt-block.pt-object-block')).toBeVisible()
+    await expect($pte.locator('.pt-block.pt-object-block')).toBeVisible()
 
     const $locatorDialog = page.getByTestId('default-edit-object-dialog')
 
@@ -189,7 +192,7 @@ test.describe('Blocks', () => {
     await expect($locatorDialog).toBeHidden()
 
     // Test that we can open dialog by double clicking
-    await $pteTextbox.getByTestId('pte-block-object').dblclick()
+    await $pte.getByTestId('pte-block-object').dblclick()
 
     // Assertion: Object edit dialog should be visible
     await expect($locatorDialog).toBeVisible()
@@ -256,7 +259,7 @@ test.describe('Blocks', () => {
     const {getFocusedPortableTextEditor} = testHelpers({page, testInfo})
     await mount(<PortableTextInputStory />)
 
-    const $pteTextbox = await getFocusedPortableTextEditor('field-body')
+    const $pte = await getFocusedPortableTextEditor('field-body')
 
     await page
       .getByRole('button')
@@ -264,7 +267,7 @@ test.describe('Blocks', () => {
       .click()
 
     // Assertion: Object preview should be visible
-    await expect($pteTextbox.locator('.pt-block.pt-object-block')).toBeVisible()
+    await expect($pte.locator('.pt-block.pt-object-block')).toBeVisible()
 
     // Assertion: Object edit dialog should be visible
     const $dialog = page.getByTestId('default-edit-object-dialog')
@@ -296,18 +299,18 @@ test.describe('Menu bar', () => {
   test('Should display all default styles', async ({mount, page}, testInfo) => {
     const {getFocusedPortableTextInput} = testHelpers({page, testInfo})
     await mount(<PortableTextInputStory />)
-    const $portableTextField = await getFocusedPortableTextInput('field-bodyStyles')
+    const $portableTextInput = await getFocusedPortableTextInput('field-bodyStyles')
 
     // Assertion: All icons in the menu bar should be visible
     const ICONS = ['bold', 'code', 'italic', 'link', 'olist', 'ulist', 'underline']
     for (const icon of ICONS) {
       await expect(
-        $portableTextField.getByRole('button').locator(`[data-sanity-icon="${icon}"]`),
+        $portableTextInput.getByRole('button').locator(`[data-sanity-icon="${icon}"]`),
       ).toBeVisible()
     }
 
     // Assertion: ???
-    await expect($portableTextField.locator('button#block-style-select')).not.toBeVisible()
+    await expect($portableTextInput.locator('button#block-style-select')).not.toBeVisible()
   })
 
   test('Overflow links should appear in the "Add" context menu', async ({
@@ -316,12 +319,12 @@ test.describe('Menu bar', () => {
   }, testInfo) => {
     const {getFocusedPortableTextInput} = testHelpers({page, testInfo})
     await mount(<PortableTextInputStory />)
-    const $portableTextField = await getFocusedPortableTextInput('field-body')
+    const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
     // Adjust the viewport size to make the Inline Object button hidden
     await page.setViewportSize({width: 800, height: 1000})
 
-    const $contextMenuButton = $portableTextField
+    const $contextMenuButton = $portableTextInput
       .getByRole('button')
       .locator('[data-sanity-icon="add"]')
 
@@ -330,7 +333,7 @@ test.describe('Menu bar', () => {
 
     // Assertion: Check if the Inline Object button is now hidden
     await expect(
-      $portableTextField.getByRole('button').filter({hasText: 'Inline Object'}),
+      $portableTextInput.getByRole('button').filter({hasText: 'Inline Object'}),
     ).toBeHidden()
 
     await $contextMenuButton.click()
@@ -348,10 +351,9 @@ test.describe('Menu bar', () => {
     const {getFocusedPortableTextInput} = testHelpers({page, testInfo})
     await mount(<PortableTextInputStory />)
 
-    const $portableTextField = await getFocusedPortableTextInput('field-body')
-
-    await $portableTextField.getByRole('textbox')
-
-    await expect(page.getByRole('button').filter({hasText: 'Object Without Title'})).toBeVisible()
+    const $portableTextInput = await getFocusedPortableTextInput('field-body')
+    await expect(
+      $portableTextInput.getByRole('button').filter({hasText: 'Object Without Title'}),
+    ).toBeVisible()
   })
 })
