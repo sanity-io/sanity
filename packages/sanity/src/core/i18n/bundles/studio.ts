@@ -283,7 +283,7 @@ export const studioLocaleStrings = {
   /** Label for boolean filter - false */
   'navbar.search.false': 'False',
 
-  /** Label for number filter */
+  /** Label for number and string filter */
   'navbar.search.value': 'Value',
 
   /** Label for number range filter - min placeholder */
