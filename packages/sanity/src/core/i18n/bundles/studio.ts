@@ -299,8 +299,17 @@ export const studioLocaleStrings = {
   'navbar.search.error.something-went-wrong-description':
     'Please try again or check your connection',
 
+  /** Label for when the asset source is unknown (used in the nav bar search, specifically filter) */
+  'navbar.search.error.unknown-asset-source': 'Unknown asset source found',
+
   /** Label for action to clear recent searches */
   'navbar.search.action.clear-recent-searches': 'Clear recent searches',
+
+  /** Label for action to select an asset type */
+  'navbar.search.action.select-type': `Select {{type}}`,
+
+  /** Label for action to clear the selected asset type */
+  'navbar.search.action.clear': `Clear`,
 
   /** Label for instructions on how to use the search when no recent searches are available */
   'navbar.search.instructions': 'Use the following icon to refine your search',
