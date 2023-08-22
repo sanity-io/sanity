@@ -1,6 +1,6 @@
 import {Box, BoxProps, Card, Code, Label, Stack} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import styled, {DefaultTheme, StyledComponent} from 'styled-components'
+import styled, {type ExecutionProps} from 'styled-components'
 import {pathToString} from '../../paths'
 import {FieldChangeNode} from '../../types'
 import {FromToArrow} from './FromToArrow'
@@ -9,7 +9,7 @@ import {FromToArrow} from './FromToArrow'
 export interface DiffInspectWrapperProps {
   children: React.ReactNode
   change: FieldChangeNode
-  as?: StyledComponent<'div', DefaultTheme>
+  as?: ExecutionProps['as']
 }
 
 const CodeWrapper = styled.pre`

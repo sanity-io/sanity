@@ -721,7 +721,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
       <RootContainer>
         <CanvasContainer
           readOnly={readOnly}
-          ref={this.setCanvas}
+          ref={this.setCanvas as any}
           onDrag={this.handleDrag}
           onDragStart={this.handleDragStart}
           onDragEnd={this.handleDragEnd}

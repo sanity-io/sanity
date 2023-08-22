@@ -40,10 +40,10 @@ export const DialogHeaderCard = styled(Card)`
   min-height: max-content;
 `
 
-export const PopoverListFlex = styled(Flex)((props: {
+export const PopoverListFlex = styled(Flex)<{
   $maxDisplayedItems: number
   $itemHeight: number
-}) => {
+}>((props) => {
   const {$maxDisplayedItems, $itemHeight} = props
 
   // Calculate the max height of the list.

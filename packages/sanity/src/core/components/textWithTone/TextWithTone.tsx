@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components'
-import {ButtonTone, Text, Theme} from '@sanity/ui'
+import {ButtonTone, Text} from '@sanity/ui'
 import React, {ComponentProps} from 'react'
 
 /** @internal */
@@ -9,7 +9,7 @@ export interface TextWithToneProps extends ComponentProps<typeof Text> {
 }
 
 /** @internal */
-const TextWithToneStyle = styled(Text)(({$tone, theme}: {$tone: ButtonTone; theme: Theme}) => {
+const TextWithToneStyle = styled(Text)<{$tone: ButtonTone}>(({$tone, theme}) => {
   const tone = theme.sanity.color.muted[$tone]
 
   return css`
