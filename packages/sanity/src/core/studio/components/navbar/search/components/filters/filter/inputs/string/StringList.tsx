@@ -8,6 +8,7 @@ import {isNonNullable} from '../../../../../../../../../util'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
+import {useTranslation} from '../../../../../../../../../i18n'
 
 interface TitledListValueGroup extends Omit<TitledListValue<number | string>, 'title'> {
   title: (number | string)[]
@@ -54,6 +55,8 @@ export function SearchFilterStringListInput({
   const {
     state: {documentTypesNarrowed},
   } = useSearchState()
+  const {t} = useTranslation()
+
   const schema = useSchema()
 
   // Build list items
@@ -110,7 +113,7 @@ export function SearchFilterStringListInput({
         <Button mode="ghost" padding={3}>
           <Flex align="center" gap={2} justify="space-between">
             <Text size={1} weight="regular">
-              {value ? value : 'Select...'}
+              {value ? value : t('navbar.search.action.select')}
             </Text>
             <Box marginLeft={1}>
               <Text size={1}>
