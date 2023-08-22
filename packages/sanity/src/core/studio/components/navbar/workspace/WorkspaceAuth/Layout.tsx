@@ -2,23 +2,24 @@ import {SanityLogo} from '@sanity/logos'
 import {Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../../i18n'
 
 const LINKS = [
   {
     url: 'https://slack.sanity.io/',
-    title: 'Community',
+    title: 'community',
   },
   {
     url: 'https://www.sanity.io/docs',
-    title: 'Docs',
+    title: 'docs',
   },
   {
     url: 'https://www.sanity.io/legal/privacy',
-    title: 'Privacy',
+    title: 'privacy',
   },
   {
     url: 'https://www.sanity.io',
-    title: 'sanity.io',
+    title: 'sanity-io',
   },
 ]
 
@@ -36,6 +37,7 @@ interface LayoutProps {
 
 export function Layout(props: LayoutProps) {
   const {children, footer, header} = props
+  const {t} = useTranslation()
 
   return (
     <Stack space={6}>
@@ -70,7 +72,7 @@ export function Layout(props: LayoutProps) {
             <React.Fragment key={link.title}>
               <StyledText muted size={1}>
                 <a href={link.url} target="_blank" rel="noopener noreferrer">
-                  {link.title}
+                  {t(`navbar.workspace-menu.${link.title}-title`)}
                 </a>
               </StyledText>
 
