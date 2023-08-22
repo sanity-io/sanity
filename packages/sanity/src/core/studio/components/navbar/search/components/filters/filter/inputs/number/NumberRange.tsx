@@ -3,6 +3,7 @@ import React, {ChangeEvent, useCallback, useState} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorNumberRangeValue} from '../../../../../definitions/operators/common'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {useTranslation} from '../../../../../../../../../i18n'
 
 export function SearchFilterNumberRangeInput({
   onChange,
@@ -14,6 +15,7 @@ export function SearchFilterNumberRangeInput({
   const {
     state: {fullscreen},
   } = useSearchState()
+  const {t} = useTranslation()
 
   const handleMaxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +46,7 @@ export function SearchFilterNumberRangeInput({
         <TextInput
           fontSize={fullscreen ? 2 : 1}
           onChange={handleMinChange}
-          placeholder="Min value"
+          placeholder={t('navbar.search.min-value')}
           radius={2}
           step="any"
           type="number"
@@ -55,7 +57,7 @@ export function SearchFilterNumberRangeInput({
         <TextInput
           fontSize={fullscreen ? 2 : 1}
           onChange={handleMaxChange}
-          placeholder="Max value"
+          placeholder={t('navbar.search.max-value')}
           radius={2}
           step="any"
           type="number"
