@@ -359,6 +359,12 @@ export const studioLocaleStrings = {
   /** Label for instructions on how to use the search when no recent searches are available */
   'navbar.search.instructions': 'Use the following icon to refine your search',
 
+  /** Label for truncating document types: showing all types */
+  'navbar.search.all-types-label': 'All types',
+
+  /** Label for truncating document types: showing the remaining count of document types */
+  'navbar.search.remaining-document-types': '+{{remainingCount}} more',
+
   /** --- Configuration Issues --- */
 
   /** label for when when there are configuration issues */

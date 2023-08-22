@@ -119,7 +119,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
     [hits, onSelect],
   )
   const placeholderText = useMemo(() => {
-    const documentTypes = documentTypesTruncated({types})
+    const documentTypes = documentTypesTruncated({types, t})
     if (types.length > 0) {
       return t('navbar.search.action.search-for-doc-type', {documentTypes})
     }
