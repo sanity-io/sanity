@@ -327,7 +327,7 @@ export const studioLocaleStrings = {
   /** Label for action to select an asset type */
   'navbar.search.action.select-type': `Select {{type}}`,
 
-  /** Label for action to clear the selected asset type */
+  /** Label for action to clear filter (used in multiple places within the search) */
   'navbar.search.action.clear': `Clear`,
 
   /** Label for instructions on how to use the search when no recent searches are available */
