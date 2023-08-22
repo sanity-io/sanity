@@ -13,6 +13,7 @@ import {
 import {
   distinct,
   distinctUntilChanged,
+  filter,
   first,
   groupBy,
   map,
@@ -148,7 +149,9 @@ export const validation = memoize(
     const getDocumentExists: GetDocumentExists = ({id}) =>
       lastValueFrom(
         referenceExistence$.pipe(
-          first(),
+          // If the id is not present as key in the `referenceExistence` map it means it's existence status
+          // isn't yet loaded, so we want to wait until it is
+          first((referenceExistence) => id in referenceExistence),
           map((referenceExistence) => referenceExistence[id]),
         ),
       )
