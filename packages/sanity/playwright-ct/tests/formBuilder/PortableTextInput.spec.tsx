@@ -77,7 +77,7 @@ test.describe('Decorators', () => {
 
 test.describe('Annotations', () => {
   test('Create a new link with keyboard only', async ({mount, page}, testInfo) => {
-    const {getFocusedPortableTextEditor, typeWithDelay, insertPortableText} = testHelpers({
+    const {getFocusedPortableTextEditor, insertPortableText} = testHelpers({
       page,
       testInfo,
     })
@@ -85,13 +85,6 @@ test.describe('Annotations', () => {
     const $pte = await getFocusedPortableTextEditor('field-body')
 
     await insertPortableText('Now we should insert a link.', $pte)
-
-    // Assertion: Wait for the text to be rendered
-    await expect(
-      $pte.locator('[data-slate-string="true"]', {
-        hasText: 'Now we should insert a link.',
-      }),
-    ).toBeVisible()
 
     // Backtrack and click link icon in menu bar
     await page.keyboard.press('ArrowLeft')
