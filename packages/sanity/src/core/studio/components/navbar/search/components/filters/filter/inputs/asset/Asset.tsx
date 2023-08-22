@@ -11,6 +11,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioCl
 import {useSource} from '../../../../../../../../source'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {useTranslation} from '../../../../../../../../../i18n'
 import {AssetSourceError} from './AssetSourceError'
 import {AssetPreview} from './preview/AssetPreview'
 
@@ -40,6 +41,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
     } = useSearchState()
 
     const {file, image} = useSource().form
+    const {t} = useTranslation()
 
     // Get available asset sources
     // NOTE: currently only the default studio asset source is supported
@@ -50,9 +52,9 @@ export function SearchFilterAssetInput(type?: AssetType) {
         case 'image':
           return image.assetSources.filter((a) => a.name === ImageSource.name)
         default:
-          throw Error('Unknown asset source found')
+          throw Error(t('navbar.search.error.unknown-asset-source'))
       }
-    }, [file.assetSources, image.assetSources])
+    }, [file.assetSources, image.assetSources, t])
 
     const menuButtonId = useId()
 
@@ -112,7 +114,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
             <Portal>
               <AssetSourceComponent
                 assetType={type}
-                dialogHeaderTitle={`Select ${type}`}
+                dialogHeaderTitle={t('navbar.search.action.select-type', {type})}
                 onClose={handleCloseAssetSource}
                 onSelect={handleSelectAssetFromSource}
                 selectedAssets={[]}
@@ -186,7 +188,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
                 mode="ghost"
                 onClick={handleClear}
                 style={{flex: 1}}
-                text="Clear"
+                text={t('navbar.search.action.clear')}
                 tone="critical"
               />
             )}
