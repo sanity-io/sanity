@@ -10,6 +10,7 @@ import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {useSearch} from '../../../../../hooks/useSearch'
 import {documentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
+import {useTranslation} from '../../../../../../../../../i18n'
 
 interface SearchHit {
   hit: WeightedHit
@@ -46,6 +47,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   const {
     state: {fullscreen},
   } = useSearchState()
+  const {t} = useTranslation()
 
   const autocompleteId = useId()
 
@@ -119,10 +121,10 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   const placeholderText = useMemo(() => {
     const documentTypes = documentTypesTruncated({types})
     if (types.length > 0) {
-      return `Search for ${documentTypes}`
+      return t('navbar.search.action.search-for-doc-type', {documentTypes})
     }
-    return `Search all documents`
-  }, [types])
+    return t('navbar.search.action.search-all-docs')
+  }, [types, t])
 
   const renderOption = useCallback((option: any) => {
     const documentType = option.hit.hit._type
@@ -152,7 +154,8 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
                     <Box padding={4}>
                       <Flex align="center" height="fill" justify="center">
                         <StyledText align="center" muted>
-                          No results for <strong>“{searchState.terms.query}”</strong>
+                          {t('navbar.new-document.no-results')}{' '}
+                          <strong>“{searchState.terms.query}”</strong>
                         </StyledText>
                       </Flex>
                     </Box>
@@ -170,7 +173,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         />
       )
     },
-    [hits, searchState.loading, searchState.terms.query],
+    [hits, searchState.loading, searchState.terms.query, t],
   )
 
   return (
