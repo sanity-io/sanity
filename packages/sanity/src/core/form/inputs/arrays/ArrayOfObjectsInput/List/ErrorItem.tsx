@@ -3,6 +3,7 @@ import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {Box, Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'
 import {RowLayout} from '../../layouts/RowLayout'
+import {useTranslation} from '../../../../../i18n'
 import {IncompatibleItemType} from './IncompatibleItemType'
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
@@ -15,6 +16,8 @@ export function ErrorItem(props: {
   const {member, sortable, onRemove} = props
   const id = useId()
 
+  const {t} = useTranslation()
+
   return (
     <Box paddingX={1}>
       <RowLayout
@@ -26,7 +29,12 @@ export function ErrorItem(props: {
             id={`${id}-menuButton`}
             menu={
               <Menu>
-                <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
+                <MenuItem
+                  text={t('inputs.array.action.remove-invalid-item')}
+                  tone="critical"
+                  icon={TrashIcon}
+                  onClick={onRemove}
+                />
               </Menu>
             }
             popover={MENU_POPOVER_PROPS}
@@ -36,7 +44,7 @@ export function ErrorItem(props: {
         {member.error.type === 'INVALID_ITEM_TYPE' ? (
           <IncompatibleItemType value={member.error.value} />
         ) : (
-          <div>Unexpected Error: {member.error.type}</div>
+          <div>{t('inputs.array.error.unexpected-error', {error: member.error.type})}</div>
         )}
       </RowLayout>
     </Box>
