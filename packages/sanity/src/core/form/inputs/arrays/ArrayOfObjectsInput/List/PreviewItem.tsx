@@ -27,6 +27,7 @@ import {RowLayout} from '../../layouts/RowLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {InsertMenu} from '../InsertMenu'
 import {EditPortal} from '../../../../components/EditPortal'
+import {useTranslation} from '../../../../../i18n'
 
 type PreviewItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 
@@ -77,6 +78,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     children,
     inputProps: {renderPreview},
   } = props
+  const {t} = useTranslation()
 
   const sortable = !readOnly && parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -139,15 +141,24 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>
-              <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
-              <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+              <MenuItem
+                text={t('arrayInput.action.remove')}
+                tone="critical"
+                icon={TrashIcon}
+                onClick={onRemove}
+              />
+              <MenuItem
+                text={t('arrayInput.action.duplicate')}
+                icon={DuplicateIcon}
+                onClick={handleDuplicate}
+              />
               <InsertMenu types={insertableTypes} onInsert={handleInsert} />
             </Menu>
           }
           popover={MENU_POPOVER_PROPS}
         />
       ),
-    [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly],
+    [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly, t],
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
@@ -195,7 +206,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
                 <Spinner muted />
               </Box>
               <Text size={1} muted>
-                Resolving initial value…
+                {t('arrayInput.resolving-initial-value')}
               </Text>
             </Flex>
           </Card>
@@ -212,7 +223,11 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
       </ChangeIndicator>
       {open && (
         <EditPortal
-          header={readOnly ? `View ${itemTypeTitle}` : `Edit ${itemTypeTitle}`}
+          header={
+            readOnly
+              ? t('arrayInput.action.view', {itemTypeTitle})
+              : t('arrayInput.action.edit', {itemTypeTitle})
+          }
           type={parentSchemaType?.options?.modal?.type || 'dialog'}
           width={parentSchemaType?.options?.modal?.width ?? 1}
           id={value._key}
