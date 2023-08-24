@@ -181,7 +181,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
             {membersWithSortIds.length === 0 ? (
               <Card padding={3} border style={{borderStyle: 'dashed'}} radius={2}>
                 <Text align="center" muted size={1}>
-                  {schemaType.placeholder || <>No items</>}
+                  {schemaType.placeholder || <>No Items</>}
                 </Text>
               </Card>
             ) : (

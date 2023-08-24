@@ -305,8 +305,20 @@ export const studioLocaleStrings = {
   /** Label for when the array input doesn't have any items */
   'inputs.array.no-items-label': 'No items',
 
+  /** Label for when the array input is resolving the initial value for the item */
+  'inputs.array.resolving-initial-value': 'Resolving initial value…',
+
   /** Label for removing action when an array item has an error  */
   'inputs.array.action.remove-invalid-item': 'Remove',
+
+  /** Label for duplicating an array item  */
+  'inputs.array.action.duplicate': 'Duplicate',
+
+  /** Label for viewing the item of a specific type */
+  'inputs.array.action.view': 'View {{itemTypeTitle}}',
+
+  /** Label for editing the item of a specific type */
+  'inputs.array.action.edit': 'Edit {{itemTypeTitle}}',
 
   /** Error label for unexpected errors in the Array Input */
   'inputs.array.error.unexpected-error': `Unexpected Error: {{error}}`,
