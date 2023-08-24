@@ -63,7 +63,12 @@ exports.createJestConfig = function createJestConfig(
     testEnvironmentOptions: {
       url: 'http://localhost:3333',
     },
-    testMatch: [...testMatch, '<rootDir>/**/*.{test,spec}.{js,ts,tsx}'],
+    /**
+     * Normally jest would look for test filenames matching {spec|test}.{js,ts,tsx}
+     * Currently component tests using playwright "owns" test files with the .spec.tsx ending
+     * while unit tests with jest "owns" test files with the .test.{ts|tsx} ending.
+     */
+    testMatch: [...testMatch, '<rootDir>/**/*.test.{js,ts,tsx}'],
     transform: {
       ...transform,
       '\\.[jt]sx?$': [

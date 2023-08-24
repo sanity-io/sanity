@@ -1,14 +1,14 @@
 /* eslint-disable no-process-env, no-sync */
-const fs = require('fs')
-const path = require('path')
-const dotenv = require('dotenv')
+import fs from 'fs'
+import path from 'path'
+import dotenv from 'dotenv'
 
 /**
  * Load environment variables from .env files, mirroring the behavior of Vite.
  *
  * @returns Array of environment file paths loaded.
  */
-exports.loadEnvFiles = () => {
+export function loadEnvFiles() {
   const mode = process.env.NODE_ENV || 'development'
   const envFiles = ['.env', '.env.local', `.env.${mode}`, `.env.${mode}.local`]
   const loaded = []

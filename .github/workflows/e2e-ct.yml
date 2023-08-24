@@ -1,0 +1,83 @@
+name: End-to-End Component Tests
+on:
+  # Build on pushes branches that have a PR (including drafts)
+  pull_request:
+  # Build on commits pushed to branches without a PR if it's in the allowlist
+  push:
+    branches: [next]
+jobs:
+  test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TURBO_TEAM: sanity-io
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
+
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --immutable --immutable-cache --check-cache
+
+      - name: Store Playwright's Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Build CLI
+        run: yarn build:cli # Needed for CLI tests
+      - name: Run end-to-end tests
+        run: yarn workspace sanity test:ct
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+      - name: Get Current Job Log URL
+        uses: Tiryoh/gha-jobid-action@603885a199c331cc2f828bcebeb1c4a275f4d6e1 # v0
+        id: job_html_url
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          job_name: 'test'
+      - name: Parse playwright report
+        id: parse-playwright-report
+        if: always()
+        run: yarn workspace sanity write:playwright-report-as-pr-comment
+        env:
+          GITHUB_WORKFLOW_URL: '${{ steps.job_html_url.outputs.html_url }}'
+      - name: PR comment with report
+        uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f # v2
+        if: ${{ always() && steps.parse-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
+        with:
+          comment_tag: 'playwright-ct-report'
+          filePath: ${{ github.workspace }}/packages/sanity/playwright-ct/results/playwright-report-pr-comment.md
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-ct-report
+          path: |
+            ${{ github.workspace }}/packages/sanity/playwright-ct/report
+            ${{ github.workspace }}/packages/sanity/playwright-ct/results
+          retention-days: 30

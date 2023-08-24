@@ -2,6 +2,8 @@
   "name": "sanity-starter-studio",
   "version": "3.15.1",
   "private": true,
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",

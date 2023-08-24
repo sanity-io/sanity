@@ -16,6 +16,7 @@ import {
 } from '@sanity/types'
 import {ReactElement, ReactNode} from 'react'
 import {FormNodePresence} from '../../presence'
+import {DocumentFieldAction} from '../../config'
 import {
   ArrayOfObjectsInputProps,
   ArrayOfPrimitivesInputProps,
@@ -30,7 +31,9 @@ import {
  * @beta */
 export interface BaseFieldProps {
   /** @beta */
-  actions?: ReactNode
+  actions?: DocumentFieldAction[]
+  /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
+  __internal_slot?: React.ReactNode
   schemaType: SchemaType
   title: string | undefined
   description: string | undefined

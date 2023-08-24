@@ -12,7 +12,6 @@
     "packages/groq",
     "packages/sanity"
   ],
-  "packageManager": "yarn@1.22.17",
   "scripts": {
     "bootstrap": "yarn install && yarn build:dts && yarn build:cli",
     "build": "turbo run --filter=@sanity/* --filter=groq --filter=sanity build",
@@ -23,8 +22,8 @@
     "clean": "lerna run clean && rm -f package-lock.json",
     "clean:deps": "rimraf packages/@sanity/*/node_modules packages/*/node_modules node_modules",
     "check:deps-updates": "npx npm-check-updates --workspaces --root -m",
-    "check:versions": "node scripts/normalizeDependencyVersions.js",
-    "depcheck": "lerna exec \\$LERNA_ROOT_PATH/scripts/depcheck.js --no-bail --parallel",
+    "check:versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
+    "depcheck": "lerna exec \"node -r esbuild-register \\$LERNA_ROOT_PATH/scripts/depcheck.ts\" --no-bail --parallel",
     "deploy:movies": "yarn build && cd examples/movies-studio && sanity deploy",
     "deploy:test": "yarn build && cd dev/test-studio && sanity deploy",
     "dev": "yarn start",
@@ -45,7 +44,7 @@
     "lint-next": "eslint `git diff --name-only next --diff-filter ACMRTUXB`",
     "lint:fix": "yarn lint --quiet --fix",
     "lint:exhaustive-deps": "yarn lint --quiet --rule 'react-hooks/exhaustive-deps: [error, {additionalHooks: \"(useAsync|useMemoObservable|useObservableCallback)\"}]'",
-    "normalize-pkgfields": "node scripts/normalizePackageFields.js",
+    "normalize-pkgfields": "node -r esbuild-register scripts/normalizePackageFields",
     "postinstall": "husky install",
     "prettier": "prettier --cache .",
     "prettify": "lerna run clean && prettier --write .",
@@ -56,7 +55,7 @@
     "release-rc": "yarn build && lerna publish --force-publish --dist-tag=dev-preview --preid=rc --exact",
     "release-tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; yarn build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
     "publish:tarball": "node -r esbuild-register scripts/publish/tarball",
-    "release-notes": "node scripts/printReleaseNotesTemplate.js",
+    "release-notes": "node -r esbuild-register scripts/printReleaseNotesTemplate",
     "start": "yarn dev:test-studio",
     "test": "jest --forceExit",
     "test:e2e": "playwright test",
@@ -85,7 +84,7 @@
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
     "@optimize-lodash/rollup-plugin": "^4.0.1",
-    "@playwright/test": "^1.31.2",
+    "@playwright/test": "^1.37.0",
     "@sanity/client": "^6.4.5",
     "@sanity/pkg-utils": "^2.3.10",
     "@sanity/tsdoc": "1.0.0-alpha.38",
@@ -128,7 +127,6 @@
     "minimist": "^1.2.5",
     "npm-run-all": "^4.1.5",
     "ora": "^6.3.1",
-    "playwright": "^1.31.2",
     "prettier": "^3.0.2",
     "prettier-plugin-packagejson": "^2.4.5",
     "pretty-quick": "^3.1.3",
@@ -141,5 +139,6 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
+  "packageManager": "yarn@1.22.17",
   "isSanityMonorepo": true
 }

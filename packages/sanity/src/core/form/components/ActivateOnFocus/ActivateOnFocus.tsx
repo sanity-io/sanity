@@ -75,7 +75,7 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       onKeyDown={handleKeyDown}
     >
       {isOverlayActive && (
-        <FlexContainer tabIndex={0} align="center" justify="center">
+        <FlexContainer data-testid="activate-overlay" tabIndex={0} align="center" justify="center">
           <CardContainer
             // Almost all input elements have radius=1, and this component is
             // typically used for overlaying input elements.

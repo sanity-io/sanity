@@ -1,28 +1,16 @@
 #!/usr/bin/env node
 /* eslint-disable import/no-dynamic-require, no-process-env */
-const path = require('path')
-const fs = require('fs')
-const depcheck = require('depcheck')
-const chalk = require('chalk')
+import path from 'path'
+import fs from 'fs'
+import chalk from 'chalk'
+import depcheck, {Node} from 'depcheck'
 
 const cwd = path.resolve(process.cwd(), process.argv[2] || '.')
 
-const MONOREPO_ROOT = process.env.LERNA_ROOT_PATH || path.resolve(__dirname, '..')
-
-const rootPkg = require(`${MONOREPO_ROOT}/package.json`)
-const package = require(`${cwd}/package.json`)
+const manifest = JSON.parse(fs.readFileSync(`${cwd}/package.json`, 'utf-8'))
 
 const options = {
-  ignoreMatches: [
-    '@types/jest',
-    '@types/webpack-env',
-    'ts-node',
-    'config:*',
-    'part:*',
-    'all:part:*',
-    'sanity:*',
-    ...getProjectIgnores(cwd),
-  ],
+  ignoreMatches: ['@types/jest', '@types/webpack-env', 'ts-node', ...getProjectIgnores(cwd)],
   ignoreDirs: ['lib'],
   detectors: [
     depcheck.detector.exportDeclaration,
@@ -40,17 +28,11 @@ const options = {
     depcheck.special.babel,
     depcheck.special.webpack,
     depcheck.special.jest,
-    eslint,
     sanityJSONParser,
     implicitDepsParser,
   ],
-  package,
-}
-
-async function eslint(filePath, deps, dir) {
-  const detected = await depcheck.special.eslint(filePath, deps, dir)
-  return detected.filter((res) => deps.includes(res) || !rootPkg.devDependencies[res])
-}
+  package: manifest,
+} as const
 
 depcheck(cwd, options).then((unused) => {
   const hasUnusedDeps = unused.dependencies.length > 0 || unused.devDependencies.length > 0
@@ -84,12 +66,18 @@ depcheck(cwd, options).then((unused) => {
   }
   if (hasInvalidFiles) {
     console.error(
-      [chalk.bold('Invalid files'), ...unused.invalidFiles.map((file) => `- ${file}`)].join('\n'),
+      [
+        chalk.bold('Invalid files'),
+        ...Object.entries(unused.invalidFiles).map(([file]) => `- ${file}`),
+      ].join('\n'),
     )
   }
   if (hasInvalidDirs) {
     console.error(
-      [chalk.bold('Invalid dirs'), ...unused.invalidDirs.map((file) => `- ${file}`)].join('\n'),
+      [
+        chalk.bold('Invalid dirs'),
+        ...Object.entries(unused.invalidDirs).map(([file]) => `- ${file}`),
+      ].join('\n'),
     )
   }
   if (hasMissingDeps || hasUnusedDeps || hasInvalidFiles) {
@@ -97,16 +85,21 @@ depcheck(cwd, options).then((unused) => {
   }
 })
 
-const IMPLICIT_DEPS = {
+const IMPLICIT_DEPS: Record<string, string | string[]> = {
   sanity: ['styled-components', 'react'],
   recast: '@babel/parser', // recast/parsers/typescript implicitly requires @babel/parser
 }
 
-function implicitDepsParser(filePath, deps) {
+function implicitDepsParser(
+  content: string,
+  filePath: string,
+  deps: ReadonlyArray<string>,
+  rootDir: string,
+) {
   return deps.flatMap((dep) => IMPLICIT_DEPS[dep] || [])
 }
 
-function getProjectIgnores(baseDir) {
+function getProjectIgnores(baseDir: string) {
   try {
     return JSON.parse(fs.readFileSync(`${baseDir}/.depcheckignore.json`, 'utf-8'))?.ignore || []
   } catch {
@@ -114,7 +107,7 @@ function getProjectIgnores(baseDir) {
   }
 }
 
-function typeScriptReferencesDirective(node) {
+function typeScriptReferencesDirective(node: Node): ReadonlyArray<string> | string {
   let match
   if (node.type === 'CommentLine' && (match = node.value.match(/\/<reference types="(.+)" \/>/))) {
     return [match[1]]
@@ -122,7 +115,12 @@ function typeScriptReferencesDirective(node) {
   return []
 }
 
-function sanityJSONParser(filePath, deps) {
+function sanityJSONParser(
+  content: string,
+  filePath: string,
+  deps: ReadonlyArray<string>,
+  rootDir: string,
+) {
   const filename = path.basename(filePath)
   if (filename === 'sanity.json') {
     const sanityConfig = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
@@ -132,14 +130,14 @@ function sanityJSONParser(filePath, deps) {
     return deps
       .concat(allPlugins.filter(isLocalPlugin(filePath)))
       .filter((dep) =>
-        allPlugins.some((plugin) => plugin === dep || dep === `sanity-plugin-${plugin}`),
+        allPlugins.some((plugin: string) => plugin === dep || dep === `sanity-plugin-${plugin}`),
       )
   }
   return []
 }
 
-function isLocalPlugin(basePath) {
-  return (pluginName) => {
+function isLocalPlugin(basePath: string) {
+  return (pluginName: string) => {
     try {
       fs.accessSync(path.join(basePath, pluginName, 'sanity.json'), fs.constants.R_OK)
       return true

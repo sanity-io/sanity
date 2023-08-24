@@ -1,15 +1,36 @@
 /* eslint-disable no-sync, no-console, id-length */
-const fs = require('fs')
-const path = require('path')
-const glob = require('glob')
-const chalk = require('chalk')
-const semver = require('semver')
-const config = require('../lerna.json')
-const corePkg = require('../package.json')
+import fs from 'node:fs'
+import path from 'node:path'
+import semver from 'semver'
+import chalk from 'chalk'
+import glob from 'glob'
+
+interface LernaConfig {
+  packages: string[]
+}
+
+interface PackageJson {
+  name: string
+}
+
+const corePkg: PackageJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'),
+)
+const config: LernaConfig = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'lerna.json'), 'utf8'),
+)
+
+if (!('packages' in config) || !Array.isArray(config.packages)) {
+  throw new Error('Lerna config is missing "packages" array')
+}
+
+if (!('name' in corePkg) || typeof corePkg.name !== 'string') {
+  throw new Error('Core package.json is missing "name" string')
+}
 
 const rootPath = path.join(__dirname, '..')
-const stripRange = (version) => version.replace(/^[~^]/, '')
-const sortRanges = (ranges) =>
+const stripRange = (version: string) => version.replace(/^[~^]/, '')
+const sortRanges = (ranges: string[]) =>
   ranges.sort((a, b) => {
     try {
       return semver.compare(stripRange(a), stripRange(b))
@@ -18,10 +39,9 @@ const sortRanges = (ranges) =>
     }
   })
 const patterns = config.packages.map((pkg) => path.join(pkg, 'package.json'))
-const flatten = (target, item) => target.concat(item)
-const globFlatten = (files, pattern) => glob.sync(pattern).reduce(flatten, files)
+
 const pkgs = patterns
-  .reduce(globFlatten, [])
+  .flatMap((pattern) => glob.sync(pattern))
   .map((file) => path.join(rootPath, file))
   .map((file) => ({contents: fs.readFileSync(file, 'utf8'), file}))
   .map(({contents, file}) => ({file, pkg: JSON.parse(contents)}))
@@ -34,11 +54,14 @@ const pkgs = patterns
   .map(({file, pkg}) => ({
     file,
     name: pkg.name,
-    deps: Object.assign({}, pkg.dependencies || {}, pkg.devDependencies || {}),
+    deps: Object.assign({}, pkg.dependencies || {}, pkg.devDependencies || {}) as Record<
+      string,
+      string
+    >,
   }))
 
-const versionRanges = {}
-const fixable = {}
+const versionRanges: Record<string, Record<string, string[]>> = {}
+const fixable: Record<string, {depName: string; version: string}[]> = {}
 
 pkgs.forEach((pkg) => {
   if (!pkg.name) {
@@ -89,7 +112,7 @@ Object.keys(versionRanges).forEach((depName) => {
       `    ${sign} ${packages
         .map((pkgName) => {
           // eslint-disable-next-line max-nested-callbacks
-          const pkg = pkgs.find((p) => p.name === pkgName)
+          const pkg = pkgs.find((p) => p.name === pkgName)!
 
           return `${pkgName} ${chalk.gray(path.relative(rootPath, pkg.file))}`
         })
@@ -114,9 +137,13 @@ fixablePackages.forEach((pkg) => {
   const manifestPath =
     pkg === corePkg.name
       ? path.join(rootPath, 'package.json')
-      : pkgs.find((mod) => mod.name === pkg).file
+      : pkgs.find((mod) => mod.name === pkg)?.file
 
-  let manifest
+  if (!manifestPath) {
+    return
+  }
+
+  let manifest: {dependencies: Record<string, string>; devDependencies: Record<string, string>}
   try {
     // eslint-disable-next-line import/no-dynamic-require
     manifest = require(manifestPath)
