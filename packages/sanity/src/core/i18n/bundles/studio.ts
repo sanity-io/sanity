@@ -378,7 +378,7 @@ export const studioLocaleStrings = {
   'navbar.search.action.toggle-filters': 'Toggle filters',
 
   /** Label for instructions on how to use the search when no recent searches are available */
-  'navbar.search.instructions': 'Use the following icon to refine your search',
+  'navbar.search.instructions': 'Use <0></0> to refine your search',
 
   /** Label for truncating document types: showing all types */
   'navbar.search.all-types-label': 'All types',
