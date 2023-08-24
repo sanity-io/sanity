@@ -308,17 +308,32 @@ export const studioLocaleStrings = {
   /** Label for when the array input is resolving the initial value for the item */
   'inputs.array.resolving-initial-value': 'Resolving initial value…',
 
+  /** Label for read only array fields */
+  'inputs.array.read-only-label': 'This field is read-only',
+
   /** Label for removing action when an array item has an error  */
   'inputs.array.action.remove-invalid-item': 'Remove',
 
   /** Label for duplicating an array item  */
   'inputs.array.action.duplicate': 'Duplicate',
 
-  /** Label for viewing the item of a specific type */
+  /** Label for viewing the item of a specific type, eg "View Person" */
   'inputs.array.action.view': 'View {{itemTypeTitle}}',
 
-  /** Label for editing the item of a specific type */
+  /** Label for editing the item of a specific type, eg "Edit Person" */
   'inputs.array.action.edit': 'Edit {{itemTypeTitle}}',
+
+  /** Label for adding array item action when the schema allows for only one schema type */
+  'inputs.array.action.add-item': 'Add item',
+
+  /**
+   * Label for adding one array item action when the schema allows for multiple schema types,
+   * eg. will prompt the user to select a type once triggered
+   */
+  'inputs.array.action.add-item-select-type': 'Add item...',
+
+  /** Label for removing an array item action  */
+  'inputs.array.action.remove': 'Remove',
 
   /** Error label for unexpected errors in the Array Input */
   'inputs.array.error.unexpected-error': `Unexpected Error: {{error}}`,

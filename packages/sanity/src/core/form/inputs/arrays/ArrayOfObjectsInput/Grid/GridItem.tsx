@@ -158,13 +158,13 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           menu={
             <Menu>
               <MenuItem
-                text={t('arrayInput.action.remove')}
+                text={t('inputs.array.action.remove')}
                 tone="critical"
                 icon={TrashIcon}
                 onClick={onRemove}
               />
               <MenuItem
-                text={t('arrayInput.action.duplicate')}
+                text={t('inputs.array.action.duplicate')}
                 icon={DuplicateIcon}
                 onClick={handleDuplicate}
               />
@@ -220,7 +220,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
                 <Spinner muted />
               </Box>
               <Text muted size={1}>
-                {t('arrayInput.resolving-initial-value')}
+                {t('inputs.array.resolving-initial-value')}
               </Text>
             </Flex>
           </Card>
@@ -239,8 +239,8 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         <EditPortal
           header={
             readOnly
-              ? t('arrayInput.action.view', {itemTypeTitle})
-              : t('arrayInput.action.edit', {itemTypeTitle})
+              ? t('inputs.array.action.view', {itemTypeTitle})
+              : t('inputs.array.action.edit', {itemTypeTitle})
           }
           type={parentSchemaType?.options?.modal?.type || 'dialog'}
           width={parentSchemaType?.options?.modal?.width ?? 1}
