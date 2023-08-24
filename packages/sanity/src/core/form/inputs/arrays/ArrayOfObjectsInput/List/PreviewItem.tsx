@@ -142,13 +142,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           menu={
             <Menu>
               <MenuItem
-                text={t('arrayInput.action.remove')}
+                text={t('inputs.array.action.remove')}
                 tone="critical"
                 icon={TrashIcon}
                 onClick={onRemove}
               />
               <MenuItem
-                text={t('arrayInput.action.duplicate')}
+                text={t('inputs.array.action.duplicate')}
                 icon={DuplicateIcon}
                 onClick={handleDuplicate}
               />
@@ -206,7 +206,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
                 <Spinner muted />
               </Box>
               <Text size={1} muted>
-                {t('arrayInput.resolving-initial-value')}
+                {t('inputs.array.resolving-initial-value')}
               </Text>
             </Flex>
           </Card>
@@ -225,8 +225,8 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         <EditPortal
           header={
             readOnly
-              ? t('arrayInput.action.view', {itemTypeTitle})
-              : t('arrayInput.action.edit', {itemTypeTitle})
+              ? t('inputs.array.action.view', {itemTypeTitle})
+              : t('inputs.array.action.edit', {itemTypeTitle})
           }
           type={parentSchemaType?.options?.modal?.type || 'dialog'}
           width={parentSchemaType?.options?.modal?.width ?? 1}
