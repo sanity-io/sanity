@@ -164,6 +164,16 @@ export const studioLocaleStrings = {
   'timeline.editLive': 'Live edited',
   'timeline.publish': 'Published',
   'timeline.unpublish': 'Unpublished',
+  /** --- Slug Input --- */
+
+  /** Error message for when the source to generate a slug from is missing */
+  'slugInput.error.missing-source': `Source is missing. Check source on type {{schemaType}} in schema`,
+
+  /** Loading message for when the input is actively generating a slug */
+  'slugInput.action.generating': `Generating…`,
+
+  /** Action message for generating the slug */
+  'slugInput.action.generate': `Generate`,
 }
 
 /**
