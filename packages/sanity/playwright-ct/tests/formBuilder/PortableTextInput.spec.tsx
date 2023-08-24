@@ -5,13 +5,6 @@ import {PortableTextInputStory} from './PortableTextInputStory'
 
 test.use({viewport: {width: 1200, height: 1000}})
 
-test.beforeEach(({browserName}, testInfo) => {
-  test.skip(
-    browserName === 'webkit' || testInfo.project.name.toLowerCase().includes('webkit'),
-    'Currently failing on Webkit/Safari due to different focus behaviour on activation of the PTE',
-  )
-})
-
 test.describe('Activation', () => {
   test(`Show call to action on focus`, async ({mount}) => {
     const component = await mount(<PortableTextInputStory />)
