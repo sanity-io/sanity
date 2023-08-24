@@ -4,6 +4,7 @@ import {AddIcon} from '@sanity/icons'
 import React, {useMemo, useId} from 'react'
 import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
 import {ArrayInputFunctionsProps} from '../../../types'
+import {useTranslation} from '../../../../i18n'
 
 /**
  * @hidden
@@ -14,6 +15,7 @@ export function ArrayOfPrimitivesFunctions<
 >(props: ArrayInputFunctionsProps<MemberType, SchemaType>) {
   const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
+  const {t} = useTranslation()
 
   const insertItem = React.useCallback(
     (itemType: any) => {
@@ -28,23 +30,25 @@ export function ArrayOfPrimitivesFunctions<
 
   const popoverProps = useMemo(() => ({constrainSize: true, portal: true}), [])
 
+  // If we have more than a single type candidate, we render a menu, so the button might show
+  // "Add item..." instead of simply "Add item", to indicate that further choices are available.
+  const addItemI18nKey =
+    schemaType.of.length > 1
+      ? 'inputs.array.action.add-item-select-type'
+      : 'inputs.array.action.add-item'
+
   if (readOnly) {
     return (
       <Tooltip
         portal
         content={
           <Box padding={2} sizing="border">
-            <Text size={1}>This field is read-only</Text>
+            <Text size={1}>{t('inputs.array.read-only-label')}</Text>
           </Box>
         }
       >
         <Grid>
-          <Button
-            icon={AddIcon}
-            mode="ghost"
-            disabled
-            text={schemaType.of.length === 1 ? 'Add item' : 'Add item...'}
-          />
+          <Button icon={AddIcon} mode="ghost" disabled text={t(addItemI18nKey)} />
         </Grid>
       </Tooltip>
     )
@@ -53,10 +57,10 @@ export function ArrayOfPrimitivesFunctions<
   return (
     <Grid gap={1} style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}>
       {schemaType.of.length === 1 ? (
-        <Button icon={AddIcon} mode="ghost" onClick={handleAddBtnClick} text="Add item" />
+        <Button icon={AddIcon} mode="ghost" onClick={handleAddBtnClick} text={t(addItemI18nKey)} />
       ) : (
         <MenuButton
-          button={<Button icon={AddIcon} mode="ghost" text="Add item…" />}
+          button={<Button icon={AddIcon} mode="ghost" text={t(addItemI18nKey)} />}
           id={menuButtonId || ''}
           menu={
             <Menu>
