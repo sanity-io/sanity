@@ -1,5 +1,5 @@
 import {type ComponentFixtures} from '@playwright/experimental-ct-react'
-import type {PlaywrightTestArgs, Locator, TestInfo} from '@playwright/test'
+import type {PlaywrightTestArgs, Locator} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
 
@@ -11,30 +11,7 @@ export const TYPE_DELAY_HIGH = 150
 
 export type MountResult = Awaited<ReturnType<ComponentFixtures['mount']>>
 
-/**
- * Get the platform name based on the project name.
- * @param projectName - The name of the project.
- * @returns The platform name or `null`.
- */
-function getPlatformName(projectName: string): string | null {
-  if (projectName.toLowerCase().includes('osx')) {
-    return 'darwin'
-  }
-
-  if (projectName.toLowerCase().includes('windows')) {
-    return 'win32'
-  }
-
-  return null
-}
-
-export function testHelpers({
-  page,
-  testInfo,
-}: {
-  page: PlaywrightTestArgs['page']
-  testInfo: TestInfo
-}) {
+export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
   return {
     /**
      * Returns the DOM element of a focused Portable Text Input ready to typed into

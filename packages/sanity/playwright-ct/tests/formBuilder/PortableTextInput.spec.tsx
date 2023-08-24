@@ -28,11 +28,10 @@ test.describe('Activation', () => {
 })
 
 test.describe('Decorators', () => {
-  test('Render default styles with keyboard shortcuts', async ({mount, page}, testInfo) => {
+  test('Render default styles with keyboard shortcuts', async ({mount, page}) => {
     const {getModifierKey, getFocusedPortableTextEditor, insertPortableText, toggleHotkey} =
       testHelpers({
         page,
-        testInfo,
       })
     await mount(<PortableTextInputStory />)
     const $pte = await getFocusedPortableTextEditor('field-body')
@@ -69,10 +68,9 @@ test.describe('Decorators', () => {
 })
 
 test.describe('Annotations', () => {
-  test('Create a new link with keyboard only', async ({mount, page}, testInfo) => {
+  test('Create a new link with keyboard only', async ({mount, page}) => {
     const {getFocusedPortableTextEditor, insertPortableText} = testHelpers({
       page,
-      testInfo,
     })
     await mount(<PortableTextInputStory />)
     const $pte = await getFocusedPortableTextEditor('field-body')
@@ -111,11 +109,8 @@ test.describe('Annotations', () => {
 })
 
 test.describe('Blocks', () => {
-  test('Clicking a block link in the menu create a new block element', async ({
-    mount,
-    page,
-  }, testInfo) => {
-    const {getFocusedPortableTextInput} = testHelpers({page, testInfo})
+  test('Clicking a block link in the menu create a new block element', async ({mount, page}) => {
+    const {getFocusedPortableTextInput} = testHelpers({page})
     await mount(<PortableTextInputStory />)
 
     const $portableTextInput = await getFocusedPortableTextInput('field-body')
@@ -132,8 +127,8 @@ test.describe('Blocks', () => {
     await expect($portableTextInput.locator('.pt-block.pt-object-block')).toBeVisible()
   })
 
-  test('Custom block preview components renders correctly', async ({mount, page}, testInfo) => {
-    const {getFocusedPortableTextEditor} = testHelpers({page, testInfo})
+  test('Custom block preview components renders correctly', async ({mount, page}) => {
+    const {getFocusedPortableTextEditor} = testHelpers({page})
     await mount(<PortableTextInputStory />)
     const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -152,8 +147,8 @@ test.describe('Blocks', () => {
     await expect($pte.getByText('Custom preview block:')).toBeVisible()
   })
 
-  test('Double-clicking opens a block', async ({mount, page}, testInfo) => {
-    const {getFocusedPortableTextEditor} = testHelpers({page, testInfo})
+  test('Double-clicking opens a block', async ({mount, page}) => {
+    const {getFocusedPortableTextEditor} = testHelpers({page})
     await mount(<PortableTextInputStory />)
 
     const $pte = await getFocusedPortableTextEditor('field-body')
@@ -184,8 +179,8 @@ test.describe('Blocks', () => {
     await expect($locatorDialog).toBeVisible()
   })
 
-  test('Blocks should be accessible via block context menu', async ({mount, page}, testInfo) => {
-    const {getFocusedPortableTextInput} = testHelpers({page, testInfo})
+  test('Blocks should be accessible via block context menu', async ({mount, page}) => {
+    const {getFocusedPortableTextInput} = testHelpers({page})
     await mount(<PortableTextInputStory />)
 
     const $portableTextField = await getFocusedPortableTextInput('field-body')
@@ -241,8 +236,8 @@ test.describe('Blocks', () => {
     await expect($portableTextField.getByTestId('pte-block-object')).not.toBeVisible()
   })
 
-  test('Handle focus correctly in block edit dialog', async ({page, mount}, testInfo) => {
-    const {getFocusedPortableTextEditor} = testHelpers({page, testInfo})
+  test('Handle focus correctly in block edit dialog', async ({page, mount}) => {
+    const {getFocusedPortableTextEditor} = testHelpers({page})
     await mount(<PortableTextInputStory />)
 
     const $pte = await getFocusedPortableTextEditor('field-body')
@@ -282,8 +277,8 @@ test.describe('Blocks', () => {
 })
 
 test.describe('Menu bar', () => {
-  test('Should display all default styles', async ({mount, page}, testInfo) => {
-    const {getFocusedPortableTextInput} = testHelpers({page, testInfo})
+  test('Should display all default styles', async ({mount, page}) => {
+    const {getFocusedPortableTextInput} = testHelpers({page})
     await mount(<PortableTextInputStory />)
     const $portableTextInput = await getFocusedPortableTextInput('field-bodyStyles')
 
@@ -299,11 +294,8 @@ test.describe('Menu bar', () => {
     await expect($portableTextInput.locator('button#block-style-select')).not.toBeVisible()
   })
 
-  test('Overflow links should appear in the "Add" context menu', async ({
-    mount,
-    page,
-  }, testInfo) => {
-    const {getFocusedPortableTextInput} = testHelpers({page, testInfo})
+  test('Overflow links should appear in the "Add" context menu', async ({mount, page}) => {
+    const {getFocusedPortableTextInput} = testHelpers({page})
     await mount(<PortableTextInputStory />)
     const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
@@ -333,8 +325,8 @@ test.describe('Menu bar', () => {
   test('Blocks that appear in the menu bar should always display a title', async ({
     page,
     mount,
-  }, testInfo) => {
-    const {getFocusedPortableTextInput} = testHelpers({page, testInfo})
+  }) => {
+    const {getFocusedPortableTextInput} = testHelpers({page})
     await mount(<PortableTextInputStory />)
 
     const $portableTextInput = await getFocusedPortableTextInput('field-body')
