@@ -300,6 +300,14 @@ export const studioLocaleStrings = {
   /** Accessibility label for icon indicating that document does _not_ have any unpublished changes */
   'inputs.reference.preview.has-no-unpublished-changes-aria-label': 'No unpublished edits',
 
+  /** --- Array Input --- */
+
+  /** Label for removing action when an array item has an error  */
+  'inputs.array.action.remove-invalid-item': 'Remove',
+
+  /** Error label for unexpected errors in the Array Input */
+  'inputs.array.error.unexpected-error': `Unexpected Error: {{error}}`,
+
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */
