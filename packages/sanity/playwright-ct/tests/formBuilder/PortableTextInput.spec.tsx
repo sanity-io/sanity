@@ -65,6 +65,18 @@ test.describe('Decorators', () => {
     await expect($pte.locator('[data-mark="code"]', {hasText: 'code text'})).toBeVisible()
     await toggleHotkey("'", modifierKey)
   })
+
+  test('Should not display block style button when no block styles are present', async ({
+    mount,
+    page,
+  }) => {
+    const {getFocusedPortableTextInput} = testHelpers({page})
+    await mount(<PortableTextInputStory />)
+    const $portableTextInput = await getFocusedPortableTextInput('field-bodyStyles')
+
+    // Assertion: Block style button should be hidden
+    await expect($portableTextInput.locator('button#block-style-select')).not.toBeVisible()
+  })
 })
 
 test.describe('Annotations', () => {
