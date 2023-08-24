@@ -3,6 +3,8 @@ import React, {useCallback} from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
 import {resolveTypeName} from '@sanity/util/content'
 import styled from 'styled-components'
+import {Trans} from 'react-i18next'
+import {useTranslation} from '../../../../../i18n'
 
 const PopoverCard = styled(Card)`
   max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1]}px;
@@ -18,6 +20,8 @@ export function IncompatibleItemType(props: Props) {
   const {value, onFocus, vertical, ...rest} = props
   const [showDetails, setShowDetails] = React.useState(false)
   const [popoverRef, setPopoverRef] = React.useState<HTMLElement | null>(null)
+
+  const {t} = useTranslation()
 
   useClickOutside(() => setShowDetails(false), [popoverRef])
 
@@ -44,22 +48,24 @@ export function IncompatibleItemType(props: Props) {
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
           <Stack space={4}>
             <Box>
-              <Text weight="semibold">Why is this happening?</Text>
+              <Text weight="semibold">{t('inputs.array.error.type-is-incompatible-title')}</Text>
             </Box>
             <Text size={1}>
-              The current schema does not declare items of type <code>{typeName}</code> as valid for
-              this list. This could mean that the type has been removed as a valid item type, or
-              that someone else has added it to their own local schema that is not yet deployed.
+              <Trans
+                t={t}
+                i18nKey="inputs.array.error.current-schema-not-declare-description"
+                components={[<code key={0}>{typeName}</code>]}
+                values={{typeName: typeName}}
+              />
             </Text>
             <Box>
               <Text size={1}>
-                <BulbOutlineIcon /> You can still move or delete this item, but it cannot be edited
-                since the schema definition for its type is nowhere to be found.
+                <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
             <Stack space={2}>
               <Text size={1} weight="semibold">
-                JSON representation of this item:
+                {t('inputs.array.error.json-representation-description')}
               </Text>
               <Card padding={2} overflow="auto" border>
                 <Code size={1} as="pre" language="json">
@@ -92,7 +98,12 @@ export function IncompatibleItemType(props: Props) {
             </Text>
           </Box>
           <Text align="center" size={1}>
-            Items of type <code>{typeName}</code> is not valid for this list
+            <Trans
+              t={t}
+              i18nKey="inputs.array.error.type-is-incompatible-prompt"
+              components={[<code key={0}>{typeName}</code>]}
+              values={{typeName: typeName}}
+            />
           </Text>
         </Stack>
       </Card>
