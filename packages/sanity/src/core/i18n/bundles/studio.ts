@@ -311,6 +311,23 @@ export const studioLocaleStrings = {
   /** Error label for unexpected errors in the Array Input */
   'inputs.array.error.unexpected-error': `Unexpected Error: {{error}}`,
 
+  /** Error title for when an item type within an array input is incompatible, used in the tooltip */
+  'inputs.array.error.type-is-incompatible-title': 'Why is this happening?',
+
+  /** Error description for the array item tooltip that explains what the error means with more context */
+  'inputs.array.error.type-is-incompatible-prompt': `Item of type <0>{{typeName}}</0> not valid for this list`,
+
+  /** Error description for the array item tooltip that explains that the current type item is not valid for the list  */
+  'inputs.array.error.current-schema-not-declare-description':
+    'The current schema does not declare items of type <0>{{typeName}}</0> as valid for this list. This could mean that the type has been removed as a valid item type, or that someone else has added it to their own local schema that is not yet deployed.',
+
+  /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
+  'inputs.array.error.can-delete-but-no-edit-description':
+    'You can still move or delete this item, but it cannot be edited since the schema definition for its type is nowhere to be found.',
+
+  /** Error description to show how the item is being represented in the json format */
+  'inputs.array.error.json-representation-description': 'JSON representation of this item:',
+
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */
