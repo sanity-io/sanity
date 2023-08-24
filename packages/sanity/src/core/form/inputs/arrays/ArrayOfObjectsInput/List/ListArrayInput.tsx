@@ -17,6 +17,7 @@ import {ArrayOfObjectsItem} from '../../../../members'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
+import {useTranslation} from '../../../../../i18n'
 import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
 import {ErrorItem} from './ErrorItem'
 import {useMemoCompare} from './useMemoCompare'
@@ -45,6 +46,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     schemaType,
     value = EMPTY,
   } = props
+  const {t} = useTranslation()
 
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
@@ -197,7 +199,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           {members.length === 0 ? (
             <Card padding={3} border style={{borderStyle: 'dashed'}} radius={2}>
               <Text align="center" muted size={1}>
-                {schemaType.placeholder || <>No items</>}
+                {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
               </Text>
             </Card>
           ) : (

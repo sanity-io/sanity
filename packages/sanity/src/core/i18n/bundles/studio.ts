@@ -302,6 +302,9 @@ export const studioLocaleStrings = {
 
   /** --- Array Input --- */
 
+  /** Label for when the array input doesn't have any items */
+  'inputs.array.no-items-label': 'No items',
+
   /** Label for removing action when an array item has an error  */
   'inputs.array.action.remove-invalid-item': 'Remove',
 
