@@ -302,7 +302,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
         validation={props.validation}
       >
         {isEditing ? (
-          <Box paddingY={2}>{children}</Box>
+          <Box>{children}</Box>
         ) : (
           <Card shadow={1} radius={1} padding={1} tone={tone}>
             <Stack space={1}>
