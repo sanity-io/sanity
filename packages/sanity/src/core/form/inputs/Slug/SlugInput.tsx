@@ -1,5 +1,5 @@
-import React, {useCallback, useMemo} from 'react'
-import {
+import React, {type FormEvent, useCallback, useMemo} from 'react'
+import type {
   Path,
   SanityDocument,
   SlugParent,
@@ -11,8 +11,9 @@ import {
 import * as PathUtils from '@sanity/util/paths'
 import {Box, Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
-import {ObjectInputProps} from '../../types'
+import type {ObjectInputProps} from '../../types'
 import {useGetFormValue} from '../../contexts/GetFormValue'
+import {useTranslation} from '../../../i18n'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 import {SlugContext, useSlugContext} from './utils/useSlugContext'
@@ -58,8 +59,10 @@ export function SlugInput(props: SlugInputProps) {
 
   const slugContext = useSlugContext()
 
+  const {t} = useTranslation()
+
   const updateSlug = useCallback(
-    (nextSlug: any) => {
+    (nextSlug: string) => {
       if (!nextSlug) {
         onChange(PatchEvent.from(unset([])))
         return
@@ -75,7 +78,7 @@ export function SlugInput(props: SlugInputProps) {
   const [generateState, handleGenerateSlug] = useAsync(() => {
     if (!sourceField) {
       return Promise.reject(
-        new Error(`Source is missing. Check source on type "${schemaType.name}" in schema`),
+        new Error(t('slugInput.error.missing-source', {schemaType: schemaType.name})),
       )
     }
 
@@ -84,12 +87,12 @@ export function SlugInput(props: SlugInputProps) {
     return getNewFromSource(sourceField, doc, sourceContext)
       .then((newFromSource) => slugify(newFromSource || '', schemaType, sourceContext))
       .then((newSlug) => updateSlug(newSlug))
-  }, [sourceField, getFormValue, schemaType, path, slugContext, updateSlug])
+  }, [sourceField, getFormValue, schemaType, path, slugContext, updateSlug, t])
 
   const isUpdating = generateState?.status === 'pending'
 
   const handleChange = React.useCallback(
-    (event: any) => updateSlug(event.currentTarget.value),
+    (event: FormEvent<HTMLInputElement>) => updateSlug(event.currentTarget.value),
     [updateSlug],
   )
 
@@ -119,7 +122,11 @@ export function SlugInput(props: SlugInputProps) {
               type="button"
               disabled={readOnly || isUpdating}
               onClick={handleGenerateSlug}
-              text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
+              text={
+                generateState?.status === 'pending'
+                  ? t('slugInput.action.generating')
+                  : t('slugInput.action.generate')
+              }
             />
           </Box>
         )}
