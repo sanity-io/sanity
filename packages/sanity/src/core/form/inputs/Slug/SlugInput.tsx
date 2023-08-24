@@ -13,6 +13,7 @@ import {Box, Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {ObjectInputProps} from '../../types'
 import {useFormBuilder} from '../../useFormBuilder'
+import {useTranslation} from '../../../i18n'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 import {SlugContext, useSlugContext} from './utils/useSlugContext'
@@ -58,6 +59,8 @@ export function SlugInput(props: SlugInputProps) {
 
   const slugContext = useSlugContext()
 
+  const {t} = useTranslation()
+
   const updateSlug = useCallback(
     (nextSlug: any) => {
       if (!nextSlug) {
@@ -75,7 +78,7 @@ export function SlugInput(props: SlugInputProps) {
   const [generateState, handleGenerateSlug] = useAsync(() => {
     if (!sourceField) {
       return Promise.reject(
-        new Error(`Source is missing. Check source on type "${schemaType.name}" in schema`),
+        new Error(t('slugInput.error.missing-source', {schemaType: schemaType.name})),
       )
     }
 
@@ -84,7 +87,7 @@ export function SlugInput(props: SlugInputProps) {
     return getNewFromSource(sourceField, doc, sourceContext)
       .then((newFromSource) => slugify(newFromSource || '', schemaType, sourceContext))
       .then((newSlug) => updateSlug(newSlug))
-  }, [sourceField, getDocument, schemaType, path, slugContext, updateSlug])
+  }, [sourceField, getDocument, schemaType, path, slugContext, updateSlug, t])
 
   const isUpdating = generateState?.status === 'pending'
 
@@ -119,7 +122,11 @@ export function SlugInput(props: SlugInputProps) {
               type="button"
               disabled={readOnly || isUpdating}
               onClick={handleGenerateSlug}
-              text={generateState?.status === 'pending' ? 'Generating…' : 'Generate'}
+              text={
+                generateState?.status === 'pending'
+                  ? t('slugInput.action.generating')
+                  : t('slugInput.action.generate')
+              }
             />
           </Box>
         )}
