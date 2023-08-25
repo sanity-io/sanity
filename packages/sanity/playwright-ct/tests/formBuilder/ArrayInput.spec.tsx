@@ -6,8 +6,8 @@ import ArrayInputStory from './ArrayInputStory'
 test.use({viewport: {width: 1200, height: 1000}})
 
 test.describe('Tag layout', () => {
-  test('Pressing enter should create inline tags', async ({mount, page}, testInfo) => {
-    const {typeWithDelay} = testHelpers({page, testInfo})
+  test('Pressing enter should create inline tags', async ({mount, page}) => {
+    const {typeWithDelay} = testHelpers({page})
     const component = await mount(<ArrayInputStory />)
     const $field = component.getByTestId('field-tags')
     const tags = $field.locator('[data-ui="Tag"]')
