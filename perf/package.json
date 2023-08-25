@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@playwright/test": "^1.37.0",
-    "@sanity/client": "^6.4.5",
+    "@sanity/client": "^6.4.9",
     "@sanity/uuid": "^3.0.1",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.15.3",
