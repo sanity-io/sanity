@@ -1,5 +1,10 @@
 /* eslint-disable react/jsx-handler-names */
-import {isBooleanSchemaType, isReferenceSchemaType, SchemaType} from '@sanity/types'
+import {
+  isBooleanSchemaType,
+  isCrossDatasetReferenceSchemaType,
+  isReferenceSchemaType,
+  SchemaType,
+} from '@sanity/types'
 import React, {useState} from 'react'
 import {ArrayFieldProps, FieldProps, ObjectFieldProps} from '../../types'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
@@ -168,6 +173,10 @@ export function defaultResolveFieldComponent(
 
   if (typeChain.some((t) => t.name === 'image' || t.name === 'file')) {
     return ImageOrFileField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+  }
+
+  if (typeChain.some((t) => isCrossDatasetReferenceSchemaType(t))) {
+    return PrimitiveField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (typeChain.some((t) => isReferenceSchemaType(t))) {
