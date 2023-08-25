@@ -1,5 +1,5 @@
 import {type ComponentFixtures} from '@playwright/experimental-ct-react'
-import type {PlaywrightTestArgs, Locator, TestInfo} from '@playwright/test'
+import type {PlaywrightTestArgs, Locator} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
 
@@ -11,53 +11,48 @@ export const TYPE_DELAY_HIGH = 150
 
 export type MountResult = Awaited<ReturnType<ComponentFixtures['mount']>>
 
-/**
- * Get the platform name based on the project name.
- * @param projectName - The name of the project.
- * @returns The platform name or `null`.
- */
-function getPlatformName(projectName: string): string | null {
-  if (projectName.toLowerCase().includes('osx')) {
-    return 'darwin'
-  }
-
-  if (projectName.toLowerCase().includes('windows')) {
-    return 'win32'
-  }
-
-  return null
-}
-
-export function testHelpers({
-  page,
-  testInfo,
-}: {
-  page: PlaywrightTestArgs['page']
-  testInfo: TestInfo
-}) {
-  const platformName = getPlatformName(testInfo.project.name) || process.platform
+export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
   return {
     /**
-     * Focuses on the PTE and activates it with the space key.
-     * @param testId - The data-testid attribute of the PTE.
-     * @returns The located PTE element.
+     * Returns the DOM element of a focused Portable Text Input ready to typed into
+     *
+     * @param testId The data-testid attribute of the Portable Text Input
+     * @returns The Portable Text Input element
      */
-    focusPTE: async (testId: string) => {
+    getFocusedPortableTextInput: async (testId: string) => {
       const $pteField: Locator = page.getByTestId(testId)
-      // Focus PTE and activate with space key
+      // Activate the input
       await $pteField.getByTestId('activate-overlay').focus()
       await page.keyboard.press('Space')
-
-      // Focus PTE by clicking manually
-      // await $pteLocator.getByTestId('activate-overlay').click({force: true})
+      // Ensure focus on the contentEditable element of the Portable Text Editor
+      const $pteTextbox = $pteField.getByRole('textbox')
+      await $pteTextbox.focus()
       return $pteField
+    },
+    /**
+     * Returns the editable element of a focused Portable Text Input
+     * This can receive events to simulate user action, or be tested for
+     * having the right content.
+     *
+     * @param testId - The data-testid attribute of the Portable Text Input.
+     * @returns The PT-editor's contentEditable element
+     */
+    getFocusedPortableTextEditor: async (testId: string) => {
+      const $pteField: Locator = page.getByTestId(testId)
+      // Activate the input
+      await $pteField.getByTestId('activate-overlay').focus()
+      await page.keyboard.press('Space')
+      // Ensure focus on the contentEditable element of the Portable Text Editor
+      const $pteTextbox = $pteField.getByRole('textbox')
+      await $pteTextbox.focus()
+      return $pteTextbox
     },
     /**
      * Gets the appropriate modifier key for the current platform.
      * @returns The modifier key name ('Meta' for macOS, 'Control' for other platforms).
      */
     getModifierKey: () => {
-      if ((platformName || process.platform) === 'darwin') {
+      if (process.platform === 'darwin') {
         return 'Meta'
       }
       return 'Control'
@@ -71,13 +66,12 @@ export function testHelpers({
       await page.keyboard.type(input, {delay: delay || DEFAULT_TYPE_DELAY})
     },
     /**
-     * Types text in the PTE by firing a `beforeinput` event with the input, with a delay after.
-     * The built-in `page.keyboard.type()` function fires each character async. This could lead to
-     * characters being lost, or ending up in the wrong order.
-     * @param input - The text to be typed.
-     * @param delay - (Optional) The delay between key presses in milliseconds.
+     * Write text into a Portable Text Editor's editable element
+     * @param text - The text to be typed.
+     * @param locator - editable element of a Portable Text Editor (as returned by getFocusedPortableTextEditorElement)
      */
-    typeInPTEWithDelay: async (input: string, locator: Locator, delay?: number) => {
+    insertPortableText: async (text: string, locator: Locator) => {
+      await locator.focus()
       await locator.evaluate((el, value) => {
         el.dispatchEvent(
           new window.InputEvent('beforeinput', {
@@ -87,9 +81,17 @@ export function testHelpers({
             data: value,
           }),
         )
-      }, input)
-
-      await new Promise((resolve) => setTimeout(resolve, delay || DEFAULT_TYPE_DELAY))
+      }, text)
+    },
+    /**
+     * Will create a keyboard event of a given hotkey combination that can be activated with a modifier key
+     * @param hotkey - the hotkey
+     * @param modifierKey - the modifier key (if any) that can activate the hotkey
+     */
+    toggleHotkey: async (hotkey: string, modifierKey?: string) => {
+      if (modifierKey) await page.keyboard.down(modifierKey)
+      await page.keyboard.press(hotkey)
+      if (modifierKey) await page.keyboard.up(modifierKey)
     },
   }
 }
