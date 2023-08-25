@@ -74,7 +74,7 @@
   "devDependencies": {
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^15.0.0",
-    "@sanity/client": "^6.4.5",
+    "@sanity/client": "^6.4.9",
     "@sanity/eslint-config-studio": "^2.0.4",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "3.15.1",
