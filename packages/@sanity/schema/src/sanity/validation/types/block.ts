@@ -2,6 +2,7 @@ import {omit, isPlainObject} from 'lodash'
 import humanizeList from 'humanize-list'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {isJSONTypeOf} from '../utils/isJSONTypeOf'
+import {coreTypeNames} from '../../coreTypes'
 
 const getTypeOf = (thing) => (Array.isArray(thing) ? 'array' : typeof thing)
 const quote = (str) => `"${str}"`
@@ -21,6 +22,7 @@ const allowedMarkKeys = ['decorators', 'annotations']
 const allowedStyleKeys = ['blockEditor', 'title', 'value', 'component']
 const allowedDecoratorKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
 const allowedListKeys = ['title', 'value', 'icon', 'component']
+const supportedBuiltInObjectTypes = ['file', 'image', 'object', 'reference']
 
 export default function validateBlockType(typeDef, visitorContext) {
   const problems = []
@@ -307,6 +309,42 @@ function validateMembers(members, visitorContext, problems) {
 
   return members.map((member) => {
     const {_problems} = visitorContext.visit(member, visitorContext)
+    if (member.type === 'object' && member.name && visitorContext.getType(member.name)) {
+      return {
+        ...member,
+        _problems: [
+          warning(
+            `Found array member declaration with the same name as the global schema type "${member.name}". It's recommended to use a unique name to avoid possibly incompatible data types that shares the same name.`,
+            HELP_IDS.ARRAY_OF_TYPE_GLOBAL_TYPE_CONFLICT,
+          ),
+        ],
+      }
+    }
+
+    // Test that each member is of a support object-like type
+    let type = member
+    while (type && !type.jsonType) {
+      type = visitorContext.getType(type.type)
+    }
+    const nonObjectCoreTypes = coreTypeNames.filter((n) => !supportedBuiltInObjectTypes.includes(n))
+    if (
+      // Must be object-like type (to validate hoisted types)
+      (type && type.jsonType !== 'object') ||
+      // Can't be a core type, or core object type that isn't supported (like 'span')
+      nonObjectCoreTypes.some((coreName) => coreName === member.type)
+    ) {
+      return {
+        ...member,
+        _problems: [
+          error(
+            `Block member types must be a supported object-like type. The following built-in types are supported: '${supportedBuiltInObjectTypes.join(
+              "', '",
+            )}'. You can also use shorthands for previously defined object types like {type: 'myObjectType'}`,
+            HELP_IDS.ARRAY_OF_TYPE_BUILTIN_TYPE_CONFLICT,
+          ),
+        ],
+      }
+    }
     return {...member, _problems}
   })
 }
