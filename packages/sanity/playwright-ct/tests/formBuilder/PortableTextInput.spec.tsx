@@ -1,9 +1,17 @@
+import Os from 'os'
 import {expect, test} from '@playwright/experimental-ct-react'
 import React from 'react'
 import {testHelpers} from '../utils/testHelpers'
 import {PortableTextInputStory} from './PortableTextInputStory'
 
 test.use({viewport: {width: 1200, height: 1000}})
+
+test.beforeEach(({browserName}) => {
+  test.skip(
+    browserName === 'webkit' && Os.platform() === 'linux',
+    "Skipping Webkit for Linux which currently isn't supported.",
+  )
+})
 
 test.describe('Activation', () => {
   test(`Show call to action on focus`, async ({mount}) => {
