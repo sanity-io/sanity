@@ -158,9 +158,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
         return (
           <>
-            <div style={PLACEHOLDER_STYLE} contentEditable={false}>
+            <span style={PLACEHOLDER_STYLE} contentEditable={false}>
               {renderPlaceholder()}
-            </div>
+            </span>
             {rendered}
           </>
         )
