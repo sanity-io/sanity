@@ -1,7 +1,7 @@
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {Box, Text} from '@sanity/ui'
 import React from 'react'
-import {TestWrapper} from './utils/TestWrapper'
+import {Box, Text} from '@sanity/ui'
+import {TestWrapper} from '../../utils/TestWrapper'
 import {PreviewProps} from 'sanity'
 
 // This is to emulate preview updates to the object without the preview store
@@ -19,17 +19,6 @@ const SCHEMA_TYPES = [
     name: 'test',
     title: 'Test',
     fields: [
-      defineField({
-        type: 'string',
-        name: 'title',
-        title: 'Title',
-      }),
-      defineField({
-        type: 'string',
-        name: 'requiredSubtitle',
-        title: 'Required Subtitle',
-        validation: (Rule) => Rule.required(),
-      }),
       defineField({
         type: 'array',
         name: 'body',
@@ -79,44 +68,12 @@ const SCHEMA_TYPES = [
           }),
         ],
       }),
-      defineField({
-        type: 'string',
-        name: 'genre',
-        title: 'Genre',
-        options: {
-          list: [
-            {title: 'Sci-Fi', value: 'sci-fi'},
-            {title: 'Western', value: 'western'},
-          ],
-        },
-      }),
-      defineField({
-        type: 'array',
-        name: 'bodyStyles',
-        of: [
-          defineArrayMember({
-            type: 'block',
-            styles: [{title: 'Normal', value: 'normal'}],
-          }),
-          defineArrayMember({
-            name: 'object',
-            type: 'object',
-            title: 'Object',
-            fields: [{type: 'string', name: 'title', title: 'Title'}],
-            preview: {
-              select: {
-                title: 'title',
-              },
-            },
-          }),
-        ],
-      }),
     ],
   }),
 ]
 
-export function PortableTextInputStory() {
+export function ObjectBlockStory() {
   return <TestWrapper schemaTypes={SCHEMA_TYPES} />
 }
 
-export default PortableTextInputStory
+export default ObjectBlockStory
