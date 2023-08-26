@@ -106,7 +106,10 @@ export function Editor(props: EditorProps) {
     ),
   )
 
-  const renderPlaceholder = useCallback(() => <>Empty</>, [])
+  const renderPlaceholder = useCallback(
+    () => <span data-testid="pt-input-placeholder">Empty</span>,
+    [],
+  )
   const spellcheck = useSpellcheck()
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
