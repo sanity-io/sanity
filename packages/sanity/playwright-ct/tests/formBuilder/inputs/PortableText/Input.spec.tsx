@@ -3,7 +3,7 @@ import React from 'react'
 import {testHelpers} from '../../../utils/testHelpers'
 import InputStory from './InputStory'
 
-test.describe('Input', () => {
+test.describe('Portable Text Input', () => {
   test.describe('Activation', () => {
     test(`Show call to action on focus`, async ({mount}) => {
       const component = await mount(<InputStory />)
