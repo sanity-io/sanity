@@ -65,12 +65,12 @@ describe('initialization', () => {
                     <span
                       data-slate-node="text"
                     >
-                      <div
+                      <span
                         contenteditable="false"
                         style="opacity: 0.5; position: absolute; user-select: none; pointer-events: none;"
                       >
                         Jot something down here
-                      </div>
+                      </span>
                       <span
                         data-slate-leaf="true"
                       >
