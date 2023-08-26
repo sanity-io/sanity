@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import Os from 'os'
 import {expect, test} from '@playwright/experimental-ct-react'
 import React from 'react'
@@ -32,49 +33,53 @@ const DEFAULT_DECORATORS = [
   },
 ]
 
-test.describe('Decorators', () => {
-  test.describe('Keyboard shortcuts', () => {
-    test.beforeEach(({browserName}) => {
-      test.skip(
-        browserName === 'webkit' && Os.platform() === 'linux',
-        'Skipping Webkit for Linux which currently is flaky with this test.',
-      )
-    })
-    test('Render default styles with keyboard shortcuts', async ({mount, page}) => {
-      const {getModifierKey, getFocusedPortableTextEditor, insertPortableText, toggleHotkey} =
-        testHelpers({
-          page,
-        })
-      await mount(<DecoratorsStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
-      const modifierKey = getModifierKey()
+test.describe('Portable Text Input', () => {
+  test.describe('Decorators', () => {
+    test.describe('Keyboard shortcuts', () => {
+      test.beforeEach(({browserName}) => {
+        test.skip(
+          browserName === 'webkit' && Os.platform() === 'linux',
+          'Skipping Webkit for Linux which currently is flaky with this test.',
+        )
+      })
+      test('Render default styles with keyboard shortcuts', async ({mount, page}) => {
+        const {getModifierKey, getFocusedPortableTextEditor, insertPortableText, toggleHotkey} =
+          testHelpers({
+            page,
+          })
+        await mount(<DecoratorsStory />)
+        const $pte = await getFocusedPortableTextEditor('field-body')
+        const modifierKey = getModifierKey()
 
-      // eslint-disable-next-line max-nested-callbacks
-      for (const decorator of DEFAULT_DECORATORS) {
-        if (decorator.hotkey) {
-          await toggleHotkey(decorator.hotkey, modifierKey)
-          await insertPortableText(`${decorator.name} text 123`, $pte)
-          await toggleHotkey(decorator.hotkey, modifierKey)
+        // eslint-disable-next-line max-nested-callbacks
+        for (const decorator of DEFAULT_DECORATORS) {
+          if (decorator.hotkey) {
+            await toggleHotkey(decorator.hotkey, modifierKey)
+            await insertPortableText(`${decorator.name} text 123`, $pte)
+            await toggleHotkey(decorator.hotkey, modifierKey)
+            await expect(
+              $pte.locator(`[data-mark="${decorator.name}"]`, {
+                hasText: `${decorator.name} text 123`,
+              }),
+            ).toBeVisible()
+          }
+        }
+      })
+    })
+
+    test.describe('Toolbar', () => {
+      test('Should display all default decorator buttons', async ({mount, page}) => {
+        const {getFocusedPortableTextInput} = testHelpers({page})
+        await mount(<DecoratorsStory />)
+        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+
+        // Assertion: All buttons in the menu bar should be visible
+        for (const decorator of DEFAULT_DECORATORS) {
           await expect(
-            $pte.locator(`[data-mark="${decorator.name}"]`, {
-              hasText: `${decorator.name} text 123`,
-            }),
+            $portableTextInput.getByRole('button', {name: decorator.title}),
           ).toBeVisible()
         }
-      }
-    })
-  })
-
-  test.describe('Toolbar', () => {
-    test('Should display all default decorator buttons', async ({mount, page}) => {
-      const {getFocusedPortableTextInput} = testHelpers({page})
-      await mount(<DecoratorsStory />)
-      const $portableTextInput = await getFocusedPortableTextInput('field-body')
-
-      // Assertion: All buttons in the menu bar should be visible
-      for (const decorator of DEFAULT_DECORATORS) {
-        await expect($portableTextInput.getByRole('button', {name: decorator.title})).toBeVisible()
-      }
+      })
     })
   })
 })
