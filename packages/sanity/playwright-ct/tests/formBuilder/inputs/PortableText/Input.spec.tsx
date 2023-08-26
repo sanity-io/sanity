@@ -25,4 +25,19 @@ test.describe('Input', () => {
       await expect($activeOverlay).toHaveText('Click to activate')
     })
   })
+
+  test.describe('Placeholder', () => {
+    test(`Displays placeholder text and removes it when typed into`, async ({mount, page}) => {
+      await mount(<InputStory />)
+      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers({page})
+      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $placeholder = $pte.getByTestId('pt-input-placeholder')
+      // Assertion: placeholder is there
+      await expect($placeholder).toHaveText('Empty')
+      // Write some text
+      await insertPortableText('Hello there', $pte)
+      // Assertion: placeholder was removed
+      expect(await $placeholder.count()).toEqual(0)
+    })
+  })
 })
