@@ -16,7 +16,7 @@ type Editor = {
   redo: () => Promise<void>
   setSelection: (selection: EditorSelection | null) => Promise<void>
   testId: string
-  toggleMark: () => Promise<void>
+  toggleMark: (hotkey: string) => Promise<void>
   undo: () => Promise<void>
 }
 
