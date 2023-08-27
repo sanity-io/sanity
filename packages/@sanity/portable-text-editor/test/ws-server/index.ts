@@ -7,12 +7,18 @@ import {PortableTextBlock} from '@sanity/types'
 import {applyAll} from '../../src/patch/applyPatch'
 import {Patch} from '../../src'
 
+const WEBSOCKET_PORT = 3001
+
+ipc.config.id = 'socketServer'
+ipc.config.retry = 5000
+ipc.config.networkPort = 3002
+ipc.config.silent = true
+
 const expressApp = express()
 const {app} = expressWS(expressApp)
 const messages: Subject<string> = new Subject()
 
-const PORT = 3001
-const valueMap: Record<string, {snapshot: PortableTextBlock[] | undefined}> = {}
+const valueMap: Record<string, PortableTextBlock[] | undefined> = {}
 const revisionMap: Record<string, string> = {}
 const editorToSocket: Record<string, WebSocket> = {}
 const sockets: WebSocket[] = []
@@ -38,25 +44,6 @@ const sub = messages.subscribe((next) => {
   })
 })
 
-ipc.config.id = 'socketServer'
-ipc.config.retry = 5000
-ipc.config.networkPort = 3002
-ipc.config.silent = true
-
-ipc.serveNet(() => {
-  ipc.server.on('payload', (message) => {
-    const data = JSON.parse(message)
-    if (data.type === 'value') {
-      valueMap[data.testId] = data.value
-    }
-    if (data.type === 'revId') {
-      revisionMap[data.testId] = data.revId
-    }
-    messages.next(message)
-  })
-})
-ipc.server.start()
-
 app.ws('/', (s, req) => {
   const testId = req.query.testId?.toString()
   if (testId && !sockets.includes(s)) {
@@ -78,38 +65,62 @@ app.ws('/', (s, req) => {
   })
   s.on('message', (msg: string) => {
     const data = JSON.parse(msg)
+    let mutatedValue: PortableTextBlock[] | undefined | null = null
     if (data.type === 'hello' && data.editorId) {
       editorToSocket[data.editorId] = s
     }
     if (data.type === 'mutation' && testId) {
       const prevValue = valueMap[testId]
       try {
-        valueMap[testId] = applyAll(prevValue, data.patches)
-        messages.next(
-          JSON.stringify({
-            ...data,
-            snapshot: valueMap[testId],
-          }),
-        )
-        messages.next(
-          JSON.stringify({
-            type: 'value',
-            value: valueMap[testId],
-            testId,
-            revId: revisionMap[testId],
-          }),
-        )
+        mutatedValue = applyAll(prevValue, data.patches)
+        messages.next(JSON.stringify(data))
       } catch (err) {
         console.error(err)
         // Nothing
       }
+      if (mutatedValue !== null) {
+        // Assign revId and store value
+        const revId = (Math.random() + 1).toString(36).substring(7)
+        valueMap[testId] = mutatedValue
+        revisionMap[testId] = revId
+        // Broadcast to all
+        messages.next(
+          JSON.stringify({
+            type: 'value',
+            value: mutatedValue,
+            testId,
+            revId,
+          }),
+        )
+      }
     }
   })
 })
-const server = app.listen(PORT)
+
+// Start the ipc server
+ipc.serveNet(() => {
+  ipc.server.on('payload', (message) => {
+    const data = JSON.parse(message)
+    // Broadcast value and selection messages
+    // to set them in the clients
+    if (data.type === 'value') {
+      valueMap[data.testId] = data.value
+      revisionMap[data.testId] = data.revId
+      messages.next(message)
+    }
+    if (data.type === 'selection') {
+      messages.next(message)
+    }
+  })
+})
+
+// Start the socket server
+const server = app.listen(WEBSOCKET_PORT)
+// Start the ipc server
+ipc.server.start()
 
 process.on('SIGTERM', () => {
   sub.unsubscribe()
-  server.close()
   ipc.server.stop()
+  server.close()
 })
