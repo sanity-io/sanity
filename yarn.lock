@@ -3374,10 +3374,22 @@
   dependencies:
     "@portabletext/types" "^2.0.5"
 
+"@portabletext/toolkit@^2.0.8":
+  version "2.0.8"
+  resolved "https://registry.npmjs.org/@portabletext/toolkit/-/toolkit-2.0.8.tgz#15e6382120892ec40e6145e6736633f3e94c3c81"
+  integrity sha512-MI3FKYZiL+/dYsClkkTDRjSvNS7K4j+U2LNZ5XIEoq67qCY0l7CYjvT0fn+lFBEUxjegtEmbxLk6T9nV/iXA+Q==
+  dependencies:
+    "@portabletext/types" "^2.0.6"
+
 "@portabletext/types@^2.0.5":
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/@portabletext/types/-/types-2.0.5.tgz#89872bd5b25df8c1d917e13fe3f035cdf135ae0e"
   integrity sha512-AceKp/Y6UIzvUe/T675oPKlO2Dnt1BVIiUpwhcplPzLeYqaYaWYvb7ricVyWj7j0rukYRgBRQdrTBvgo9E1D+g==
+
+"@portabletext/types@^2.0.6":
+  version "2.0.6"
+  resolved "https://registry.npmjs.org/@portabletext/types/-/types-2.0.6.tgz#334ef469346b168924ce7c2215c88a30d5e778c8"
+  integrity sha512-6iqorcsQ0Z1/4Y7PWLvoknyiUv0DngSPao+q5UIE0+0gT2cZwFdItUyLZRheG85AisSEvacHEEnvN+TT8mxXVg==
 
 "@radix-ui/popper@0.1.0":
   version "0.1.0"
@@ -4832,10 +4844,17 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@^18.0.0", "@types/react-dom@^18.0.9":
+"@types/react-dom@^18.0.0":
   version "18.2.1"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.2.1.tgz#663b2612feb5f6431a70207430d7c04881b87f29"
   integrity sha512-8QZEV9+Kwy7tXFmjJrp3XUKQSs9LTnE0KnoUb0YCguWBiNW0Yfb2iBMYZ08WPg35IR6P3Z0s00B15SwZnO26+w==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-dom@^18.0.9":
+  version "18.2.7"
+  resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-18.2.7.tgz#67222a08c0a6ae0a0da33c3532348277c70abb63"
+  integrity sha512-GRaAEriuT4zp9N4p1i8BDBYmEyfo+xQ3yHjJU4eiK5NDa1RmUZG+unZABUTK4/Ox/M+GaHwb6Ow8rUITrtjszA==
   dependencies:
     "@types/react" "*"
 
