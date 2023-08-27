@@ -1,9 +1,5 @@
-/**
- * \@jest-environment ./test/setup/jsdom.jest.env.ts
- */
 /* eslint-disable no-irregular-whitespace */
-// eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom/extend-expect'
+
 import React from 'react'
 import {render, waitFor} from '@testing-library/react'
 import {PortableTextBlock} from '@sanity/types'
@@ -227,7 +223,7 @@ describe('initialization', () => {
     const onChange = jest.fn()
     let _rerender: any
     await waitFor(() => {
-      const {rerender} = render(
+      render(
         <PortableTextEditorTester
           onChange={onChange}
           ref={editorRef}
