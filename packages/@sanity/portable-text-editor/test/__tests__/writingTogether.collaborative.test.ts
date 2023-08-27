@@ -686,7 +686,7 @@ describe('collaborate editing', () => {
   it('will not result in duplicate keys when overwriting some partial bold text line, as the only content in the editor', async () => {
     const [editorA, editorB] = await getEditors()
     await editorA.insertText('Hey')
-    await editorA.toggleMark()
+    await editorA.toggleMark('b')
     await editorA.insertText('there')
     const valA = await editorA.getValue()
     if (!valA || !Array.isArray(valA[0].children)) {
