@@ -276,6 +276,7 @@ export function createWithPortableTextMarkModel(
                       marks: (Array.isArray(node.marks) ? node.marks : []).filter(
                         (eMark: string) => eMark !== mark,
                       ),
+                      _type: 'span',
                     },
                     {at: path},
                   )
@@ -293,7 +294,7 @@ export function createWithPortableTextMarkModel(
             ...(Editor.marks(editor) || {}),
             marks: existingMarks.filter((eMark) => eMark !== mark),
           } as Text
-          editor.marks = {marks: marks.marks} as Text
+          editor.marks = {marks: marks.marks, _type: 'span'} as Text
           return editor
         }
         editor.onChange()
