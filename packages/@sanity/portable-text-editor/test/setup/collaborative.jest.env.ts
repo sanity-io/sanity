@@ -268,11 +268,11 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                 }
               }
             },
-            toggleMark: async () => {
+            toggleMark: async (hotkey: string) => {
               await page.keyboard.down(metaKey)
-              await page.keyboard.down('b')
+              await page.keyboard.down(hotkey)
 
-              await page.keyboard.up('b')
+              await page.keyboard.up(hotkey)
               await page.keyboard.up(metaKey)
               const selection = await selectionHandle.evaluate((node) =>
                 node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : null,
