@@ -12,8 +12,8 @@ export function Value({value, revId}: Props) {
           Value
         </Heading>
       </Box>
-      <Box>
-        <Code as="code" size={1} language="json" id="pte-value" data-rev-id={revId}>
+      <Box padding={4} style={{outline: '1px solid #999'}} marginBottom={2}>
+        <Code as="code" size={0} language="json" id="pte-value" data-rev-id={revId}>
           {JSON.stringify(value, null, 2)}
         </Code>
       </Box>
