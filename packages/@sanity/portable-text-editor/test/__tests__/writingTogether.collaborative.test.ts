@@ -197,7 +197,7 @@ describe('collaborate editing', () => {
   })
 
   it('will let editor A stay at the current position on line 1 while editor B inserts a new line below', async () => {
-    setDocumentValue([
+    await setDocumentValue([
       {
         _key: 'randomKey0',
         _type: 'block',
@@ -422,7 +422,7 @@ describe('collaborate editing', () => {
   })
 
   it('will let B stay on same line when A inserts a new line above', async () => {
-    setDocumentValue([
+    await setDocumentValue([
       {
         _key: 'randomKey0',
         _type: 'block',
@@ -468,8 +468,6 @@ describe('collaborate editing', () => {
       focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
     })
     await editorA.pressKey('Enter')
-    // await editorA.pressKey('Enter')
-    // await editorA.insertText('A new line appears')
     const valA = await editorA.getValue()
     const valB = await editorB.getValue()
     expect(valA).toEqual(valB)
