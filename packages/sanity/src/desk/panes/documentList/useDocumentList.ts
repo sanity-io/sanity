@@ -43,8 +43,11 @@ const INITIAL_QUERY_RESULTS: QueryResult = {
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
-  const {filter, params: paramsProp, sortOrder, searchQuery} = opts
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const {filter, params: paramsProp, sortOrder, searchQuery, apiVersion} = opts
+  const client = useClient({
+    ...DEFAULT_STUDIO_CLIENT_OPTIONS,
+    apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
+  })
   const schema = useSchema()
 
   const [resultState, setResult] = useState<QueryResult>(INITIAL_STATE)
