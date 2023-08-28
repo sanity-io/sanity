@@ -5307,6 +5307,14 @@
     "@iarna/toml" "2.2.3"
     js-yaml "3.13.1"
 
+"@vercel/frameworks@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@vercel/frameworks/-/frameworks-1.6.0.tgz#5a7466ffe1356a04fff52424e0d7aa9fea8d4e69"
+  integrity sha512-+I47c7ouiN6ESJtQU+/BEocJUfdyWDlBVIJr14YdLHNnZit1yL8+iqYN4WaqxzCD4VfJqGxwmLqBjvh85iPyBw==
+  dependencies:
+    "@iarna/toml" "2.2.3"
+    js-yaml "3.13.1"
+
 "@vercel/fs-detectors@4.1.1":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@vercel/fs-detectors/-/fs-detectors-4.1.1.tgz#6d55cbd1daab94ed9bb4d2a6c1a41abefd37a840"
