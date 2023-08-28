@@ -2,11 +2,12 @@ import {Flex, Inline, Spinner, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {CurrentUser} from '@sanity/types'
 import styled from 'styled-components'
+import {Trans} from 'react-i18next'
 import {CommandList} from '../../../../components'
 import {supportsTouch} from '../../../../util'
+import {useTranslation} from '../../../../i18n'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {INLINE_PREVIEW_HEIGHT, NewDocumentListOption} from './NewDocumentListOption'
-import {useTranslation} from '../../../../i18n'
 
 const ContentFlex = styled(Flex)`
   min-height: 100px;
@@ -90,7 +91,12 @@ export function NewDocumentList(props: NewDocumentListProps) {
         sizing="border"
       >
         <Text align="center" muted size={1}>
-          {t('navbar.new-document.no-results')} <QueryString>“{searchQuery}”</QueryString>
+          <Trans
+            t={t}
+            i18nKey="navbar.new-document.no-results"
+            components={[<QueryString key={0}>“{searchQuery}”</QueryString>]}
+            values={{searchQuery: searchQuery}}
+          />
         </Text>
       </ContentFlex>
     )
