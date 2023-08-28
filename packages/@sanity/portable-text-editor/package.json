@@ -57,7 +57,7 @@
     "clean": "rimraf lib",
     "eslint": "eslint 'src/**/*.{ts,js,tsx}'",
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
-    "start": "cd ./test/ && ts-node serve",
+    "dev": "cd ./test/ && ts-node serve",
     "test": "jest",
     "test:watch": "jest --watch",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
