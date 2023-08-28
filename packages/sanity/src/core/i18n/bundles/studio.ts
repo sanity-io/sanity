@@ -392,6 +392,9 @@ export const studioLocaleStrings = {
   /** Label for displaying the schema error and warnings for the studio configurations */
   'navbar.configuration.type-label': 'type',
 
+  /** Label for displaying the schema error and warnings for the studio configurations */
+  'navbar.configuration.type-label-1': '<0>{{schemaType}}</0> type <1>{{schemaName}}</1>',
+
   /** Prompt to view documentation about the schema problems */
   'navbar.configuration.action.view-documentation': 'View documentation',
 
