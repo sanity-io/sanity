@@ -189,18 +189,6 @@ export const studioLocaleStrings = {
   /** Title for Workplaces dropdown menu */
   'navbar.workspace-menu.title': 'Workspaces',
 
-  /** Title for "community" link within the workspace menu */
-  'navbar.workspace-menu.community-title': 'Community',
-
-  /** Title for "docs" link within the workspace menu */
-  'navbar.workspace-menu.docs-title': 'Docs',
-
-  /** Title for "privacy" link within the workspace menu */
-  'navbar.workspace-menu.privacy-title': 'Privacy',
-
-  /** Title for "sanity io website" link within the workspace menu */
-  'navbar.workspace-menu.sanity-io-title': 'sanity.io',
-
   /** Label for area section that indicates that you can choose your workspace */
   'navbar.workspace-menu.choose-your-workspace-label': 'Choose your workspace',
 
