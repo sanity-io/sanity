@@ -406,13 +406,18 @@ export const studioLocaleStrings = {
   /** Information for what the latest sanity version is */
   'navbar.helpResources.latest-sanity-version': `Latest version is {{latestVersion}}`,
 
-  /** Label for "join our community" call to action */
+  /** Label for "join our community" call to action.
+   * These are titles for fallback links in the event the help + resources endpoint isn't able to be fetched. */
   'navbar.helpResources.action.join-our-community': `Join our community`,
 
-  /** Label for "help and support" call to action */
+  /** Label for "help and support" call to action.
+   * These are titles for fallback links in the event the help + resources endpoint isn't able to be fetched
+   */
   'navbar.helpResources.action.help-and-support': `Help and support`,
 
-  /** Label for "contact sales" call to action */
+  /** Label for "contact sales" call to action
+   *  These are titles for fallback links in the event the help + resources endpoint isn't able to be fetched
+   */
   'navbar.helpResources.action.contact-sales': `Contact sales`,
 
   /** --- User Menu --- */
