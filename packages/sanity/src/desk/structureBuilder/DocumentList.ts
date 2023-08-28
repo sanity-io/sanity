@@ -1,5 +1,6 @@
 import {SchemaType, SortOrderingItem} from '@sanity/types'
 import {ComposeIcon} from '@sanity/icons'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
@@ -12,7 +13,7 @@ import {
 } from './GenericList'
 import {DocumentBuilder} from './Document'
 import {StructureContext} from './types'
-import {InitialValueTemplateItem} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, InitialValueTemplateItem} from 'sanity'
 
 const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) => {
   const filter = spec.options?.filter.trim() || ''
@@ -231,6 +232,13 @@ export class DocumentListBuilder extends GenericListBuilder<
       ).withHelpUrl(HELP_URL.FILTER_REQUIRED)
     }
 
+    const hasSimpleFilter = this.spec.options?.filter === '_type == $type'
+    if (!hasSimpleFilter && this.spec.options.filter && !this.spec.options.apiVersion) {
+      console.warn(
+        `No apiVersion specified for document type list with custom filter: \`${this.spec.options.filter}\`. This will be required in the future. See %s for more info.`,
+        generateHelpUrl(HELP_URL.API_VERSION_REQUIRED_FOR_CUSTOM_FILTER),
+      )
+    }
     return {
       ...super.serialize(options),
       type: 'documentList',
@@ -241,7 +249,8 @@ export class DocumentListBuilder extends GenericListBuilder<
         apiVersion:
           this.spec.options.apiVersion ||
           // If this is a simple type filter, use modern API version - otherwise default to v1
-          (this.spec.options?.filter === '_type == $type' ? '2021-06-07' : '1'),
+          // @todo: make specifying .apiVersion required when using custom filters in v4
+          (hasSimpleFilter ? DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion : '1'),
         filter: validateFilter(this.spec, options),
       },
     }

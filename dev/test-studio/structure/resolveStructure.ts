@@ -196,7 +196,7 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
                     options: {
                       filter: '_id in path("drafts.**")',
                     },
-                  }),
+                  }).apiVersion('2023-07-28'),
                 ),
 
               S.listItem()
@@ -317,6 +317,7 @@ export const structure: StructureResolver = (S, {schema, documentStore}) => {
                 child: () =>
                   S.documentTypeList('author')
                     .title('Developers')
+                    .apiVersion('2023-07-27')
                     .filter('_type == $type && role == $role')
                     .params({type: 'author', role: 'developer'})
                     .initialValueTemplates(S.initialValueTemplateItem('author-developer')),
