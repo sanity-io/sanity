@@ -216,7 +216,7 @@ export const studioLocaleStrings = {
   'navbar.new-document.action.create-new-document': 'New document...',
 
   /** Message for when no results are found for a specific search query in the new document menu */
-  'navbar.new-document.no-results': 'No results for',
+  'navbar.new-document.no-results': 'No results for <0>{{searchQuery}}</0>',
 
   /** Message for when there are no document options in the new document menu */
   'navbar.new-document.no-documents-found': 'No documents found',
