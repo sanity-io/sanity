@@ -5,6 +5,7 @@ import {SchemaValidationProblemGroup} from '@sanity/types'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {capitalize} from 'lodash'
+import {Trans} from 'react-i18next'
 import {useTranslation} from '../../../i18n'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
@@ -59,8 +60,18 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                 <Text size={1} weight="semibold">
                   {schemaType ? (
                     <>
-                      {capitalize(schemaType.type)} {t('navbar.configuration.type-label')} "
-                      {schemaType.name}"
+                      <Trans
+                        t={t}
+                        i18nKey="navbar.configuration.type-label-1"
+                        components={[
+                          <span key={0}>{capitalize(schemaType.type)}</span>,
+                          <span key={1}>"{schemaType.name}"</span>,
+                        ]}
+                        values={{
+                          schemaType: capitalize(schemaType.type),
+                          schemaName: schemaType.name,
+                        }}
+                      />
                     </>
                   ) : null}
                 </Text>
