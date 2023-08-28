@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useRef, useState, useEffect} from 'react'
-import {Text, Box, Card, Code} from '@sanity/ui'
+import {Text, Box, Card, Code, Heading} from '@sanity/ui'
 import styled from 'styled-components'
 import {Subject} from 'rxjs'
 import {PortableTextBlock} from '@sanity/types'
@@ -26,7 +26,7 @@ export const HOTKEYS: HotkeyOptions = {
     'mod+i': 'em',
   },
   custom: {
-    'mod+l': (e, editor) => {
+    'mod+-': (e, editor) => {
       e.preventDefault()
       PortableTextEditor.toggleList(editor, 'number')
     },
