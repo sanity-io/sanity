@@ -2,6 +2,7 @@ import type {ReferenceValue} from '@sanity/types'
 import {Autocomplete, Box, Flex, Popover, Text} from '@sanity/ui'
 import React, {forwardRef, ReactElement, useCallback, useId, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
+import {Trans} from 'react-i18next'
 import {useSchema} from '../../../../../../../../../hooks'
 import type {SearchableType, WeightedHit} from '../../../../../../../../../search'
 import {getPublishedId} from '../../../../../../../../../util'
@@ -154,8 +155,12 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
                     <Box padding={4}>
                       <Flex align="center" height="fill" justify="center">
                         <StyledText align="center" muted>
-                          {t('navbar.new-document.no-results')}{' '}
-                          <strong>“{searchState.terms.query}”</strong>
+                          <Trans
+                            t={t}
+                            i18nKey="navbar.new-document.no-results"
+                            components={[<strong key={0}>“{searchState.terms.query}”</strong>]}
+                            values={{searchQuery: searchState.terms.query}}
+                          />
                         </StyledText>
                       </Flex>
                     </Box>
