@@ -15,6 +15,13 @@ export default defineCliConfig({
   vite(viteConfig: UserConfig): UserConfig {
     return {
       ...viteConfig,
+      resolve: {
+        ...viteConfig.resolve,
+        alias: {
+          ...viteConfig.resolve?.alias,
+          '@sanity/ui': path.resolve(__dirname, '../../../ui/src'), // 👈 path to local ui repository
+        },
+      },
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
         include: ['react/jsx-runtime'],
