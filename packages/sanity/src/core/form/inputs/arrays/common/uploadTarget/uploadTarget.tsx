@@ -8,6 +8,7 @@ import {FileInfo, fileTarget} from '../../../common/fileTarget'
 import {DropMessage} from '../../../files/common/DropMessage'
 import {UploadEvent} from '../../../../types'
 import {FIXME} from '../../../../../FIXME'
+import {useTranslation} from '../../../../../i18n'
 import {Overlay} from './styles'
 
 export interface UploadTargetProps {
@@ -48,6 +49,7 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
   ) {
     const {children, resolveUploader, onUpload, types, ...rest} = props
     const {push: pushToast} = useToast()
+    const {t} = useTranslation()
 
     const uploadFile = React.useCallback(
       (file: File, resolvedUploader: ResolvedUploader) => {
@@ -70,15 +72,12 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
         const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
 
         if (rejected.length > 0) {
-          const plural = rejected.length > 1
           pushToast({
             closable: true,
             status: 'warning',
-            title: `The following item${
-              plural ? 's' : ''
-            } can't be uploaded because there's no known conversion from content type${
-              plural ? 's' : ''
-            } to array item:`,
+            title: t('inputs.array.error.cannot-upload-unable-to-convert', {
+              count: rejected.length,
+            }),
             description: rejected.map((task, i) => (
               <Flex key={i} padding={2}>
                 <Box marginLeft={1}>
@@ -104,7 +103,7 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
           )
         })
       },
-      [pushToast, resolveUploader, types, uploadFile],
+      [pushToast, resolveUploader, types, uploadFile, t],
     )
 
     const [hoveringFiles, setHoveringFiles] = React.useState<FileInfo[]>([])
