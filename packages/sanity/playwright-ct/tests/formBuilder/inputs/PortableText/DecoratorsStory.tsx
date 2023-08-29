@@ -1,5 +1,6 @@
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import React from 'react'
+import {BulbOutlineIcon} from '@sanity/icons'
 import {TestWrapper} from '../../utils/TestWrapper'
 
 const SCHEMA_TYPES = [
@@ -10,10 +11,22 @@ const SCHEMA_TYPES = [
     fields: [
       defineField({
         type: 'array',
-        name: 'body',
+        name: 'defaultDecorators',
         of: [
           defineArrayMember({
             type: 'block',
+          }),
+        ],
+      }),
+      defineField({
+        type: 'array',
+        name: 'customDecorator',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            marks: {
+              decorators: [{title: 'Highlight', value: 'highlight', icon: BulbOutlineIcon}],
+            },
           }),
         ],
       }),
