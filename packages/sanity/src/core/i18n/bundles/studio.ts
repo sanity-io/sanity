@@ -369,6 +369,10 @@ export const studioLocaleStrings = {
   'inputs.array.error.cannot-upload-unable-to-convert_other':
     "The following items can't be uploaded because there's no known conversion from content types to array item:",
 
+  /** Error label for toast when array could not resolve the initial value */
+  'inputs.array.error.cannot-resolve-initial-value-title':
+    'Unable to resolve initial value for type: {{schemaTypeTitle}}: {{errorMessage}}.',
+
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */
