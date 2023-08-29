@@ -9,7 +9,7 @@ import resolveFrom from 'resolve-from'
 import which from 'which'
 
 import type {DatasetAclMode} from '@sanity/client'
-import {Framework, frameworks} from '@vercel/frameworks'
+import {type Framework, frameworks} from '@vercel/frameworks'
 import execa, {CommonOptions} from 'execa'
 import {evaluate, patch} from 'golden-fleece'
 import {LocalFileSystemDetector, detectFrameworkRecord} from '@vercel/fs-detectors'
