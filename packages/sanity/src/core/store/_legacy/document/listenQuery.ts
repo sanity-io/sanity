@@ -1,4 +1,4 @@
-import {SanityClient} from '@sanity/client'
+import type {ClientPerspective, SanityClient} from '@sanity/client'
 import {asyncScheduler, defer, merge, Observable, of, partition, throwError, timer} from 'rxjs'
 import {filter, mergeMap, share, take, throttleTime} from 'rxjs/operators'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
@@ -13,6 +13,7 @@ export type ListenQueryParams = Record<string, string | number | boolean | strin
 export interface ListenQueryOptions {
   tag?: string
   apiVersion?: string
+  perspective?: ClientPerspective
   throttleTime?: number
   transitions?: ('update' | 'appear' | 'disappear')[]
 }
@@ -24,10 +25,10 @@ const fetch = (
   options: ListenQueryOptions,
 ) =>
   defer(() =>
-    // getVersionedClient(options.apiVersion)
     client.observable.fetch(query, params, {
       tag: options.tag,
       filterResponse: true,
+      perspective: options.perspective,
     }),
   )
 
@@ -38,7 +39,6 @@ const listen = (
   options: ListenQueryOptions,
 ) =>
   defer(() =>
-    // getVersionedClient(options.apiVersion)
     client.listen(query, params, {
       events: ['welcome', 'mutation', 'reconnect'],
       includeResult: false,
