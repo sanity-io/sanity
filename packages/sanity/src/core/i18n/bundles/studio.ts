@@ -361,6 +361,14 @@ export const studioLocaleStrings = {
   /** Error description to show how the item is being represented in the json format */
   'inputs.array.error.json-representation-description': 'JSON representation of this item:',
 
+  /** Error label for toast when trying to upload one array item of a type that cannot be converted to array */
+  'inputs.array.error.cannot-upload-unable-to-convert_one':
+    "The following item can't be uploaded because there's no known conversion from content type to array item:",
+
+  /** Error label for toast when trying to upload multiple array items of a type that cannot be converted to array */
+  'inputs.array.error.cannot-upload-unable-to-convert_other':
+    "The following items can't be uploaded because there's no known conversion from content types to array item:",
+
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */
