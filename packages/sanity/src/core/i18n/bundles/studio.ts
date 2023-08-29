@@ -311,6 +311,9 @@ export const studioLocaleStrings = {
   /** Label for read only array fields */
   'inputs.array.read-only-label': 'This field is read-only',
 
+  /** Label for removing an array item action  */
+  'inputs.array.action.remove': 'Remove',
+
   /** Label for removing action when an array item has an error  */
   'inputs.array.action.remove-invalid-item': 'Remove',
 
@@ -332,8 +335,11 @@ export const studioLocaleStrings = {
    */
   'inputs.array.action.add-item-select-type': 'Add item...',
 
-  /** Label for removing an array item action  */
-  'inputs.array.action.remove': 'Remove',
+  /** Label for adding item before a specific array item */
+  'inputs.array.action.add-before': 'Add item before',
+
+  /** Label for adding item after a specific array item */
+  'inputs.array.action.add-after': 'Add item after',
 
   /** Error label for unexpected errors in the Array Input */
   'inputs.array.error.unexpected-error': `Unexpected Error: {{error}}`,
