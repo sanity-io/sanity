@@ -24,6 +24,7 @@ import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useResolveInitialValueForType} from '../../../../store'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {useTranslation} from '../../../../i18n'
 
 /**
  *
@@ -58,6 +59,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderItem,
     renderPreview,
   } = props
+  const {t} = useTranslation()
 
   const {
     onPathBlur,
@@ -119,8 +121,11 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
                 onChange(PatchEvent.from(result.patches))
               } else {
                 toast.push({
-                  title: `Could not resolve initial value`,
-                  description: `Unable to resolve initial value for type: ${result.schemaType.title}: ${result.error.message}.`,
+                  title: t('inputs.array.error.cannot-resolve-initial-value-title'),
+                  description: t('inputs.array.error.cannot-resolve-initial-value-description', {
+                    schemaTypeTitle: result.schemaType.title,
+                    errorMessage: result.error.message,
+                  }),
                   status: 'error',
                 })
               }
@@ -144,6 +149,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathFocus,
       resolveInitialValue,
       toast,
+      t,
     ],
   )
 
