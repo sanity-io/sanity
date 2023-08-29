@@ -3,6 +3,7 @@ import {SchemaType} from '@sanity/types'
 import React, {ComponentProps, memo} from 'react'
 import {MenuGroup, MenuItem, PopoverProps} from '@sanity/ui'
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
+import {useTranslation} from '../../../../i18n'
 
 interface Props {
   types?: SchemaType[]
@@ -18,20 +19,21 @@ const MENU_POPOVER_PROPS: PopoverProps = {
 
 export const InsertMenu = memo(function InsertMenu(props: Props) {
   const {types, onInsert} = props
+  const {t} = useTranslation()
   return (
     <>
       <InsertMenuGroup
         pos="before"
         types={types}
         onInsert={onInsert}
-        text="Add item before"
+        text={t('inputs.array.action.add-before')}
         icon={InsertAboveIcon}
       />
       <InsertMenuGroup
         pos="after"
         types={types}
         onInsert={onInsert}
-        text="Add item after"
+        text={t('inputs.array.action.add-after')}
         icon={InsertBelowIcon}
       />
     </>
