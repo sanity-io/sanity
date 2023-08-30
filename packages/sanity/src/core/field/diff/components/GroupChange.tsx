@@ -119,21 +119,21 @@ export function GroupChange(
         </Stack>
       ),
     [
-      hidden,
-      isRevertButtonHovered,
-      isPortableText,
       changes,
+      closeRevertChangesConfirmDialog,
+      confirmRevertOpen,
+      group.fieldsetName,
+      handleRevertChanges,
+      handleRevertChangesConfirm,
+      hidden,
       isComparingCurrent,
       isPermissionsLoading,
+      isPortableText,
+      isRevertButtonHovered,
       permissions?.granted,
-      t,
-      closeRevertChangesConfirmDialog,
-      handleRevertChanges,
-      confirmRevertOpen,
-      handleRevertChangesConfirm,
-      revertButtonRef,
       readOnly,
-      group.fieldsetName,
+      revertButtonRef,
+      t,
     ]
   )
 
