@@ -37,7 +37,7 @@ test.describe('Portable Text Input', () => {
       // Write some text
       await insertPortableText('Hello there', $pte)
       // Assertion: placeholder was removed
-      expect($placeholder).toHaveCount(0)
+      await expect($placeholder).toHaveCount(0)
     })
   })
 })
