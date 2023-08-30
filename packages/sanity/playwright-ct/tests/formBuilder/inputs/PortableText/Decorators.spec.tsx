@@ -40,19 +40,28 @@ const DEFAULT_DECORATORS = [
 test.describe('Portable Text Input', () => {
   test.describe('Decorators', () => {
     test('Render default styles with keyboard shortcuts', async ({mount, page}) => {
-      const {getModifierKey, getFocusedPortableTextEditor, insertPortableText, toggleHotkey} =
-        testHelpers({
-          page,
-        })
+      const {
+        getModifierKey,
+        getFocusedPortableTextInput,
+        getFocusedPortableTextEditor,
+        insertPortableText,
+        toggleHotkey,
+      } = testHelpers({
+        page,
+      })
       await mount(<DecoratorsStory />)
       const $pte = await getFocusedPortableTextEditor('field-defaultDecorators')
+      const $portableTextInput = await getFocusedPortableTextInput('field-defaultDecorators')
       const modifierKey = getModifierKey()
 
       for (const decorator of DEFAULT_DECORATORS) {
         if (decorator.hotkey) {
           await toggleHotkey(decorator.hotkey, modifierKey)
+          const $button = $portableTextInput.getByRole('button', {name: decorator.title})
+          expect(await $button.getAttribute('data-selected')).not.toBeNull()
           await insertPortableText(`${decorator.name} text 123`, $pte)
           await toggleHotkey(decorator.hotkey, modifierKey)
+          expect(await $button.getAttribute('data-selected')).toBeNull()
           await expect(
             $pte.locator(`[data-mark="${decorator.name}"]`, {
               hasText: `${decorator.name} text 123`,
