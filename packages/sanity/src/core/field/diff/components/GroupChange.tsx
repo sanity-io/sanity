@@ -24,13 +24,7 @@ export function GroupChange(
     hidden?: boolean
   } & React.HTMLAttributes<HTMLDivElement>
 ): React.ReactElement | null {
-  const {
-    change: group,
-    readOnly,
-    hidden,
-    // 'data-revert-all-changes-hover': dataRevertAllChangesHover,
-    ...restProps
-  } = props
+  const {change: group, readOnly, hidden, ...restProps} = props
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)
   const {documentId, schemaType, FieldWrapper, rootDiff, isComparingCurrent} = useDocumentChange()
@@ -76,9 +70,6 @@ export function GroupChange(
           as={GroupChangeContainer}
           data-revert-group-hover={isRevertButtonHovered ? '' : undefined}
           data-portable-text={isPortableText ? '' : undefined}
-          // data-revert-all-groups-hover={
-          //   restProps[] === '' ? '' : undefined
-          // }
         >
           <Stack as={ChangeListWrapper} space={5}>
             {changes.map((change) => (
@@ -94,14 +85,14 @@ export function GroupChange(
             <PopoverWrapper
               content={
                 <Box>
-                  {t('review-changes.action.revert-changes-description')}
+                  {t('changes.action.revert-changes-description')}
                   <Grid columns={2} gap={2} marginTop={2}>
                     <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                      <Text align="center"> {t('review-changes.action.revert-all-cancel')}</Text>
+                      <Text align="center"> {t('changes.action.revert-all-cancel')}</Text>
                     </Button>
                     <Button tone="critical" onClick={handleRevertChanges}>
                       <Text align="center">
-                        {t('review-changes.action.revert-changes-confirm-change', {count: 1})}
+                        {t('changes.action.revert-changes-confirm-change', {count: 1})}
                       </Text>
                     </Button>
                   </Grid>
@@ -109,12 +100,13 @@ export function GroupChange(
               }
               portal
               padding={4}
-              placement={'left'}
+              placement="left"
               open={confirmRevertOpen}
               ref={setRevertPopoverElement}
             >
               <Box>
                 <RevertChangesButton
+                  changeCount={changes.length}
                   onClick={handleRevertChangesConfirm}
                   ref={revertButtonRef}
                   selected={confirmRevertOpen}

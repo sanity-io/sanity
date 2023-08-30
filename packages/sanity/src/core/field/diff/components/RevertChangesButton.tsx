@@ -27,19 +27,17 @@ const Root = styled(Button)`
 
 /** @internal */
 export const RevertChangesButton = forwardRef(function RevertChangesButton(
-  props: ButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'ref'>,
+  props: ButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'ref'> & {changeCount: number},
   ref: React.ForwardedRef<HTMLButtonElement>
 ): React.ReactElement {
-  const {selected, ...restProps} = props
+  const {selected, changeCount, ...restProps} = props
   const {t} = useTranslation()
 
   return (
     <Root
       icon={RevertIcon}
       selected={selected}
-      // kept at "count: 2" as a const because this component will always have plurals (and never a singular)
-      // the value itself is not used in translation (check the i18n file "studio.ts" for the actual translation)")
-      text={t('review-changes.action.revert-changes-confirm-change', {count: 2})}
+      text={t('changes.action.revert-changes-confirm-change', {count: changeCount})}
       mode="bleed"
       padding={1}
       fontSize={1}
