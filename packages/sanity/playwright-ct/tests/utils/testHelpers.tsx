@@ -12,6 +12,13 @@ export const TYPE_DELAY_HIGH = 150
 export type MountResult = Awaited<ReturnType<ComponentFixtures['mount']>>
 
 export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
+  const activatePTInputOverlay = async ($pteField: Locator) => {
+    const $overlay = $pteField.getByTestId('activate-overlay')
+    if ((await $overlay.count()) > 0) {
+      await $overlay.focus()
+      await page.keyboard.press('Space')
+    }
+  }
   return {
     /**
      * Returns the DOM element of a focused Portable Text Input ready to typed into
@@ -20,13 +27,11 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      * @returns The Portable Text Input element
      */
     getFocusedPortableTextInput: async (testId: string) => {
+      // Wait for field to get ready (without this tests fails randomly on Webkit)
+      await page.waitForSelector(`[data-testid='${testId}']`)
       const $pteField: Locator = page.getByTestId(testId)
       // Activate the input if needed
-      const $overlay = $pteField.getByTestId('activate-overlay')
-      if ((await $overlay.count()) > 0) {
-        await $overlay.focus()
-        await page.keyboard.press('Space')
-      }
+      await activatePTInputOverlay($pteField)
       // Ensure focus on the contentEditable element of the Portable Text Editor
       const $pteTextbox = $pteField.getByRole('textbox')
       await $pteTextbox.focus()
@@ -41,13 +46,11 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      * @returns The PT-editor's contentEditable element
      */
     getFocusedPortableTextEditor: async (testId: string) => {
+      // Wait for field to get ready (without this tests fails randomly on Webkit)
+      await page.waitForSelector(`[data-testid='${testId}']`)
       const $pteField: Locator = page.getByTestId(testId)
       // Activate the input if needed
-      const $overlay = $pteField.getByTestId('activate-overlay')
-      if ((await $overlay.count()) > 0) {
-        await $overlay.focus()
-        await page.keyboard.press('Space')
-      }
+      await activatePTInputOverlay($pteField)
       // Ensure focus on the contentEditable element of the Portable Text Editor
       const $pteTextbox = $pteField.getByRole('textbox')
       await $pteTextbox.focus()
