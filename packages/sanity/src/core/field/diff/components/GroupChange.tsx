@@ -85,7 +85,7 @@ export function GroupChange(
             <PopoverWrapper
               content={
                 <Box>
-                  {t('changes.action.revert-changes-description')}
+                  {t('changes.action.revert-changes-description', {count: changes.length})}
                   <Grid columns={2} gap={2} marginTop={2}>
                     <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
                       <Text align="center"> {t('changes.action.revert-all-cancel')}</Text>
