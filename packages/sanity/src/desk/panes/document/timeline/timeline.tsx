@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Box, Flex, Spinner, Text} from '@sanity/ui'
-import {deskLocaleNamespace} from '../../../i18n'
 import {TimelineItem} from './timelineItem'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {Chunk, CommandList, CommandListRenderItemCallback, useTranslation} from 'sanity'
@@ -25,7 +24,7 @@ export const Timeline = ({
   firstChunk,
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation('studio')
 
   const filteredChunks = useMemo(() => {
     return chunks.filter((c) => {

@@ -32,7 +32,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
   const realRevChunk = useTimelineSelector(timelineStore, (state) => state.realRevChunk)
   const sinceTime = useTimelineSelector(timelineStore, (state) => state.sinceTime)
 
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation('studio')
 
   const handleOpen = useCallback(() => {
     setTimelineMode(mode)
