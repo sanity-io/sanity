@@ -21,9 +21,12 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      */
     getFocusedPortableTextInput: async (testId: string) => {
       const $pteField: Locator = page.getByTestId(testId)
-      // Activate the input
-      await $pteField.getByTestId('activate-overlay').focus()
-      await page.keyboard.press('Space')
+      // Activate the input if needed
+      const $overlay = $pteField.getByTestId('activate-overlay')
+      if ((await $overlay.count()) > 0) {
+        await $overlay.focus()
+        await page.keyboard.press('Space')
+      }
       // Ensure focus on the contentEditable element of the Portable Text Editor
       const $pteTextbox = $pteField.getByRole('textbox')
       await $pteTextbox.focus()
@@ -39,9 +42,12 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      */
     getFocusedPortableTextEditor: async (testId: string) => {
       const $pteField: Locator = page.getByTestId(testId)
-      // Activate the input
-      await $pteField.getByTestId('activate-overlay').focus()
-      await page.keyboard.press('Space')
+      // Activate the input if needed
+      const $overlay = $pteField.getByTestId('activate-overlay')
+      if ((await $overlay.count()) > 0) {
+        await $overlay.focus()
+        await page.keyboard.press('Space')
+      }
       // Ensure focus on the contentEditable element of the Portable Text Editor
       const $pteTextbox = $pteField.getByRole('textbox')
       await $pteTextbox.focus()
