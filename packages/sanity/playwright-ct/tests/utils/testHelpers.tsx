@@ -28,7 +28,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      */
     getFocusedPortableTextInput: async (testId: string) => {
       // Wait for field to get ready (without this tests fails randomly on Webkit)
-      await page.waitForSelector(`[data-testid='${testId}']`)
+      await page.locator(`[data-testid='${testId}']`).waitFor()
       const $pteField: Locator = page.getByTestId(testId)
       // Activate the input if needed
       await activatePTInputOverlay($pteField)
@@ -47,7 +47,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      */
     getFocusedPortableTextEditor: async (testId: string) => {
       // Wait for field to get ready (without this tests fails randomly on Webkit)
-      await page.waitForSelector(`[data-testid='${testId}']`)
+      await page.locator(`[data-testid='${testId}']`).waitFor()
       const $pteField: Locator = page.getByTestId(testId)
       // Activate the input if needed
       await activatePTInputOverlay($pteField)
