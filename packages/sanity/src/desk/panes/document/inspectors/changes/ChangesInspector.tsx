@@ -5,7 +5,6 @@ import styled from 'styled-components'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
-import {deskLocaleNamespace} from '../../../../i18n'
 import {LoadingContent} from './LoadingContent'
 import {collectLatestAuthorAnnotations} from './helpers'
 import {
@@ -43,7 +42,9 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
   const loading = selectionState === 'loading'
   const isComparingCurrent = !onOlderRevision
 
-  const {t} = useTranslation(deskLocaleNamespace)
+  // Note that we are using the studio core namespace here, as changes theoretically should
+  // be part of Sanity core (needs to be moved from desk at some point)
+  const {t} = useTranslation('studio')
 
   const documentContext: DocumentChangeContextInstance = React.useMemo(
     () => ({
@@ -66,10 +67,10 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
-        closeButtonLabel={t('review-changes.action.close-label')}
+        closeButtonLabel={t('changes.action.close-label')}
         flex="none"
         onClose={onClose}
-        title={t('review-changes.title')}
+        title={t('changes.title')}
       >
         <Flex gap={1} padding={3} paddingTop={0} paddingBottom={2}>
           <Box flex={1}>
@@ -79,10 +80,10 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
           <Box flex="none">
             <DiffTooltip
               annotations={changeAnnotations}
-              description={t('review-changes.changes-by-author')}
+              description={t('changes.changes-by-author')}
               portal
             >
-              <AvatarStack maxLength={4} aria-label={t('review-changes.changes-by-author')}>
+              <AvatarStack maxLength={4} aria-label={t('changes.changes-by-author')}>
                 {changeAnnotations.map(({author}) => (
                   <UserAvatar key={author} user={author} />
                 ))}
