@@ -43,20 +43,6 @@ const deskLocaleStrings = {
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
 
-  /** --- Review Changes --- */
-
-  /** Title for the Review Changes pane */
-  'review-changes.title': 'Review changes',
-
-  /** Label for the close button label in Review Changes pane */
-  'review-changes.action.close-label': 'Close review changes',
-
-  /** Label and text for differences tooltip that indicates the authors of the changes */
-  'review-changes.changes-by-author': 'Changes by',
-
-  /** Loading changes in Review Changes Pane */
-  'review-changes.loading-changes': 'Loading changes',
-
   /** --- Timeline --- */
 
   /** Error prompt when revision cannot be loaded */
