@@ -8,18 +8,43 @@
 import {isEqual, flatten, uniq} from 'lodash'
 import {Editor, Range, Transforms, Text, Path, NodeEntry, Element, Descendant} from 'slate'
 
+import {Subject} from 'rxjs'
 import {debugWithName} from '../../utils/debug'
-import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
-import {IS_PROCESSING_REMOTE_CHANGES} from '../../utils/weakMaps'
+import {
+  EditorChange,
+  PortableTextMemberSchemaTypes,
+  PortableTextSlateEditor,
+} from '../../types/editor'
+import {toPortableTextRange} from '../../utils/ranges'
 
 const debug = debugWithName('plugin:withPortableTextMarkModel')
 
 export function createWithPortableTextMarkModel(
   types: PortableTextMemberSchemaTypes,
+  change$: Subject<EditorChange>,
 ): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   return function withPortableTextMarkModel(editor: PortableTextSlateEditor) {
     const {apply, normalizeNode} = editor
     const decorators = types.decorators.map((t) => t.value)
+
+    // Selections are normally emitted automatically via
+    // onChange, but they will keep the object reference if
+    // the selection is the same as the previous.
+    // When toggling marks however, it might not even
+    // result in a onChange event (for instance when nothing is selected),
+    // and if you toggle marks on a block with one single span,
+    // the selection would also stay the same.
+    // We should force a new selection object here when toggling marks,
+    // because toolbars and other things can very conveniently
+    // be memo'ed on the editor selection to update itself.
+    const forceNewSelection = () => {
+      if (editor.selection) {
+        Transforms.select(editor, {...editor.selection})
+        editor.selection = {...editor.selection} // Ensure new object
+      }
+      const ptRange = toPortableTextRange(editor.children, editor.selection, types)
+      change$.next({type: 'selection', selection: ptRange})
+    }
 
     // Extend Slate's default normalization. Merge spans with same set of .marks when doing merge_node operations, and clean up markDefs / marks
     editor.normalizeNode = (nodeEntry) => {
@@ -248,9 +273,11 @@ export function createWithPortableTextMarkModel(
             marks: [...existingMarks, mark],
           }
           editor.marks = marks as Text
+          forceNewSelection()
           return editor
         }
         editor.onChange()
+        forceNewSelection()
       }
       return editor
     }
@@ -295,15 +322,17 @@ export function createWithPortableTextMarkModel(
             marks: existingMarks.filter((eMark) => eMark !== mark),
           } as Text
           editor.marks = {marks: marks.marks, _type: 'span'} as Text
+          forceNewSelection()
           return editor
         }
         editor.onChange()
+        forceNewSelection()
       }
       return editor
     }
 
     editor.pteIsMarkActive = (mark: string): boolean => {
-      if (!editor.selection || editor.selection.focus.path.length < 2) {
+      if (!editor.selection) {
         return false
       }
       let existingMarks =
