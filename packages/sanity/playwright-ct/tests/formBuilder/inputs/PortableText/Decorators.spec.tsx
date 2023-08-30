@@ -40,7 +40,6 @@ const DEFAULT_DECORATORS = [
 test.describe('Portable Text Input', () => {
   test.describe('Decorators', () => {
     test('Render default styles with keyboard shortcuts', async ({mount, page}) => {
-      await page.evaluate(() => (window.localStorage.debug = 'sanity-pte:*'))
       const {getModifierKey, getFocusedPortableTextEditor, insertPortableText, toggleHotkey} =
         testHelpers({
           page,
