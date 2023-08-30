@@ -42,55 +42,6 @@ const deskLocaleStrings = {
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
-
-  /** --- Timeline --- */
-
-  /** Error prompt when revision cannot be loaded */
-  'timeline.error.unable-to-load-revision': 'Unable to load revision',
-
-  /** Label for latest version for timeline menu dropdown */
-  'timeline.latest-version': 'Latest version',
-
-  /** Label for loading history */
-  'timeline.loading-history': 'Loading history',
-
-  /** Label for determining since which version the changes for timeline menu dropdown are showing.
-   * Receives the time label as a parameter.
-   */
-  'timeline.since': 'Since: {{timestamp, datetime}}',
-
-  /** Label for missing change version for timeline menu dropdown are showing */
-  'timeline.since-version-missing': 'Since: unknown version',
-
-  /** Title for error when the timeline for the given document can't be loaded */
-  'timeline.error.load-document-changes-title':
-    'An error occurred whilst retrieving document changes.',
-
-  /** Description for error when the timeline for the given document can't be loaded */
-  'timeline.error.load-document-changes-description':
-    'Document history transactions have not been affected.',
-
-  /** Error title for when the document doesn't have history */
-  'timeline.error.no-document-history-title': 'No document history',
-
-  /** Error description for when the document doesn't have history */
-  'timeline.error.no-document-history-description':
-    'When changing the content of the document, the document versions will appear in this menu.',
-
-  /** --- Timeline constants --- */
-
-  /** Label for when the timeline item is the latest in the history */
-  'timeline.latest': 'Latest',
-
-  /** Consts used in the timeline item component (dropdown menu) - helpers */
-  'timeline.create': 'Created',
-  'timeline.delete': 'Deleted',
-  'timeline.discardDraft': 'Discarded draft',
-  'timeline.initial': 'Created',
-  'timeline.editDraft': 'Edited',
-  'timeline.editLive': 'Live edited',
-  'timeline.publish': 'Published',
-  'timeline.unpublish': 'Unpublished',
 }
 
 /**
