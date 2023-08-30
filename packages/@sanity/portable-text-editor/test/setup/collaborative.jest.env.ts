@@ -34,10 +34,10 @@ export default class CollaborationEnvironment extends NodeEnvironment {
   private _contextA?: BrowserContext
   private _contextB?: BrowserContext
 
+  // Saving these setup/teardown functions here for future reference.
   // public async setup(): Promise<void> {
   //   await super.setup()
   // }
-
   // public async teardown(): Promise<void> {
   //   await super.teardown()
   // }
