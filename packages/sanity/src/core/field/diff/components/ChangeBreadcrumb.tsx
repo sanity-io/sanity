@@ -12,7 +12,7 @@ export function ChangeBreadcrumb(props: {change?: FieldChangeNode; titlePath: Ch
     maxLength={4}
       separator={
         <Text muted size={1}>
-          &rarr;
+          {'>'}
         </Text>
       }
     >
