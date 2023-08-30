@@ -3,6 +3,7 @@ import {Observable} from 'rxjs'
 import {
   DefaultDocumentNodeResolver,
   MenuItem as DeskToolMenuItem,
+  Intent,
   StructureBuilder,
   StructureContext,
   UserComponent,
@@ -13,6 +14,7 @@ import {
   ConfigContext,
   InitialValueTemplateItem,
   DocumentStore,
+  DocumentFieldActionNode,
 } from 'sanity'
 
 /** @internal */
@@ -121,9 +123,9 @@ export interface DeskToolOptions {
    */
   name?: string
   /**
-   * A workspace can have different "sources". These sources were meant to allow using multiple datasets within the same workspace, for instance. 
+   * A workspace can have different "sources". These sources were meant to allow using multiple datasets within the same workspace, for instance.
    * This is not supported yet, but the API is still here.
-   * 
+   *
     @hidden
     @alpha
   */
@@ -362,3 +364,10 @@ export type UnresolvedPaneNode =
   | Observable<UnresolvedPaneNode>
   | PromiseLike<UnresolvedPaneNode>
   | PaneNode
+
+/**
+ * @hidden
+ * @beta */
+export type DocumentFieldMenuActionNode = DocumentFieldActionNode & {
+  intent?: Intent
+}
