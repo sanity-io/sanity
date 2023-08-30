@@ -95,9 +95,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      * @param modifierKey - the modifier key (if any) that can activate the hotkey
      */
     toggleHotkey: async (hotkey: string, modifierKey?: string) => {
-      if (modifierKey) await page.keyboard.down(modifierKey)
-      await page.keyboard.press(hotkey)
-      if (modifierKey) await page.keyboard.up(modifierKey)
+      await page.keyboard.press(modifierKey ? `${modifierKey}+${hotkey}` : hotkey, {delay: 200})
     },
   }
 }
