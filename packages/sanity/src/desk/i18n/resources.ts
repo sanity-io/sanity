@@ -46,7 +46,7 @@ const deskLocaleStrings = {
   /** --- Timeline --- */
 
   /** Error prompt when revision cannot be loaded */
-  'timeline.error.unable-to-load-rev': 'Unable to load revision',
+  'timeline.error.unable-to-load-revision': 'Unable to load revision',
 
   /** Label for latest version for timeline menu dropdown */
   'timeline.latest-version': 'Latest version',

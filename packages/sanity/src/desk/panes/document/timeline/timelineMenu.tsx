@@ -74,7 +74,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
           closable: true,
           description: err.message,
           status: 'error',
-          title: t('timeline.error.unable-to-load-rev'),
+          title: t('timeline.error.unable-to-load-revision'),
         })
       }
     },
@@ -92,7 +92,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
           closable: true,
           description: err.message,
           status: 'error',
-          title: t('timeline.error.unable-to-load-rev'),
+          title: t('timeline.error.unable-to-load-revision'),
         })
       }
     },
