@@ -91,7 +91,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
         <UserAvatar user={author} />
         <Inline paddingLeft={2}>
           <Text muted size={1} style={{color: color.text}}>
-            {user ? user.displayName : t('review-changes.loading-author')}
+            {user ? user.displayName : t('changes.loading-author')}
           </Text>
         </Inline>
       </Flex>

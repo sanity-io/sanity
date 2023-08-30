@@ -71,35 +71,47 @@ export const studioLocaleStrings = {
 
   /** --- Review Changes --- */
 
+  /** Title for the Review Changes pane */
+  'changes.title': 'Review changes',
+
+  /** Label for the close button label in Review Changes pane */
+  'changes.action.close-label': 'Close review changes',
+
+  /** Label and text for differences tooltip that indicates the authors of the changes */
+  'changes.changes-by-author': 'Changes by',
+
+  /** Loading changes in Review Changes Pane */
+  'changes.loading-changes': 'Loading changes',
+
   /** No Changes title in the Review Changes pane */
-  'review-changes.no-changes-title': 'There are no changes',
+  'changes.no-changes-title': 'There are no changes',
 
   /** No Changes description in the Review Changes pane */
-  'review-changes.no-changes-description':
+  'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
 
   /** Prompt for reverting all changes in document in Review Changes pane. Includes a count of changes. */
-  'review-changes.action.revert-all-description': `Are you sure you want to revert all {{count}} changes?`,
+  'changes.action.revert-all-description': `Are you sure you want to revert all {{count}} changes?`,
 
   /** Cancel label for revert button prompt action */
-  'review-changes.action.revert-all-cancel': `Cancel`,
+  'changes.action.revert-all-cancel': `Cancel`,
 
   /** Revert all confirm label for revert button action - used on prompt button + review changes pane */
-  'review-changes.action.revert-all-confirm': `Revert all`,
+  'changes.action.revert-all-confirm': `Revert all`,
 
   /** Loading author of change in the differences tooltip in the review changes pane */
-  'review-changes.loading-author': 'Loading…',
+  'changes.loading-author': 'Loading…',
 
   /** --- Review Changes: Field + Group --- */
 
   /** Prompt for reverting changes for a field change */
-  'review-changes.action.revert-changes-description': `Are you sure you want to revert the changes?`,
+  'changes.action.revert-changes-description': `Are you sure you want to revert the changes?`,
 
   /** Prompt for confirming revert change (singular) label for field change action */
-  'review-changes.action.revert-changes-confirm-change_one': `Revert change`,
+  'changes.action.revert-changes-confirm-change_one': `Revert change`,
 
   /** Revert for confirming revert (plural) label for field change action */
-  'review-changes.action.revert-changes-confirm-change_other': `Revert changes`,
+  'changes.action.revert-changes-confirm-change_other': `Revert changes`,
 }
 
 /**

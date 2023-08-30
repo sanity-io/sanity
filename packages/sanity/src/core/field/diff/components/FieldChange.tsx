@@ -102,14 +102,14 @@ export function FieldChange(
                 <PopoverWrapper
                   content={
                     <Box padding={3} sizing="border">
-                      {t('review-changes.action.revert-changes-description')}
+                      {t('changes.action.revert-changes-description')}
                       <Grid columns={2} gap={2} marginTop={2}>
                         <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                          <Text align="center">{t('review-changes.action.revert-all-cancel')}</Text>
+                          <Text align="center">{t('changes.action.revert-all-cancel')}</Text>
                         </Button>
                         <Button tone="critical" onClick={handleRevertChanges}>
                           <Text align="center">
-                            {t('review-changes.action.revert-changes-confirm-change', {count: 1})}
+                            {t('changes.action.revert-changes-confirm-change', {count: 1})}
                           </Text>
                         </Button>
                       </Grid>
@@ -122,6 +122,7 @@ export function FieldChange(
                 >
                   <Box flex={1}>
                     <RevertChangesButton
+                      changeCount={1}
                       onClick={handleRevertChangesConfirm}
                       onMouseEnter={handleRevertButtonMouseEnter}
                       onMouseLeave={handleRevertButtonMouseLeave}
