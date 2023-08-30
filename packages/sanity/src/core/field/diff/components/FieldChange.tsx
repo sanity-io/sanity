@@ -138,22 +138,22 @@ export function FieldChange(
         </Stack>
       ),
     [
-      hidden,
       change,
-      FieldWrapper,
-      revertHovered,
+      closeRevertChangesConfirmDialog,
+      conditionalReadOnly,
+      confirmRevertOpen,
       DiffComponent,
+      FieldWrapper,
+      handleRevertButtonMouseEnter,
+      handleRevertButtonMouseLeave,
+      handleRevertChanges,
+      handleRevertChangesConfirm,
+      hidden,
       isComparingCurrent,
       isPermissionsLoading,
       permissions?.granted,
+      revertHovered,
       t,
-      closeRevertChangesConfirmDialog,
-      handleRevertChanges,
-      confirmRevertOpen,
-      handleRevertChangesConfirm,
-      handleRevertButtonMouseEnter,
-      handleRevertButtonMouseLeave,
-      conditionalReadOnly,
     ]
   )
 
