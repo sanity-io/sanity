@@ -246,11 +246,8 @@ export class DocumentListBuilder extends GenericListBuilder<
       child: this.spec.child || createDocumentChildResolverForItem(this._context),
       options: {
         ...this.spec.options,
-        apiVersion:
-          this.spec.options.apiVersion ||
-          // If this is a simple type filter, use modern API version - otherwise default to v1
-          // @todo: make specifying .apiVersion required when using custom filters in v4
-          (hasSimpleFilter ? DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion : '1'),
+        // @todo: make specifying .apiVersion required when using custom (non-simple) filters in v4
+        apiVersion: this.spec.options.apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
         filter: validateFilter(this.spec, options),
       },
     }
