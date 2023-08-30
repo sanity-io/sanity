@@ -85,14 +85,14 @@ export function GroupChange(
             <PopoverWrapper
               content={
                 <Box>
-                  {t('review-changes.action.revert-changes-description')}
+                  {t('changes.action.revert-changes-description')}
                   <Grid columns={2} gap={2} marginTop={2}>
                     <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                      <Text align="center"> {t('review-changes.action.revert-all-cancel')}</Text>
+                      <Text align="center"> {t('changes.action.revert-all-cancel')}</Text>
                     </Button>
                     <Button tone="critical" onClick={handleRevertChanges}>
                       <Text align="center">
-                        {t('review-changes.action.revert-changes-confirm-change', {count: 1})}
+                        {t('changes.action.revert-changes-confirm-change', {count: 1})}
                       </Text>
                     </Button>
                   </Grid>
@@ -100,12 +100,13 @@ export function GroupChange(
               }
               portal
               padding={4}
-              placement={'left'}
+              placement="left"
               open={confirmRevertOpen}
               ref={setRevertPopoverElement}
             >
               <Box>
                 <RevertChangesButton
+                  changeCount={changes.length}
                   onClick={handleRevertChangesConfirm}
                   ref={revertButtonRef}
                   selected={confirmRevertOpen}

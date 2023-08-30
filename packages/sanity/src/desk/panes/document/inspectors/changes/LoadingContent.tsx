@@ -1,11 +1,10 @@
 import React from 'react'
 import {Box, Flex, Spinner, Text} from '@sanity/ui'
 import {Delay} from '../../../../components'
-import {deskLocaleNamespace} from '../../../../i18n'
 import {useTranslation} from 'sanity'
 
 export function LoadingContent() {
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation('studio')
 
   return (
     <Delay ms={300}>
@@ -13,7 +12,7 @@ export function LoadingContent() {
         <Spinner muted />
         <Box marginTop={3}>
           <Text align="center" muted size={1}>
-            {t('review-changes.loading-changes')}
+            {t('changes.loading-changes')}
           </Text>
         </Box>
       </Flex>
