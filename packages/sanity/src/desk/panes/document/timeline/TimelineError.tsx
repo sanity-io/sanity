@@ -1,11 +1,10 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Flex, Stack} from '@sanity/ui'
 import React from 'react'
-import {deskLocaleNamespace} from '../../../i18n'
 import {TextWithTone, useTranslation} from 'sanity'
 
 export function TimelineError() {
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation('studio')
 
   return (
     <Flex align="flex-start" gap={3} padding={4}>
