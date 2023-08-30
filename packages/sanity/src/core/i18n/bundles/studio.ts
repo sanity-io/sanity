@@ -107,6 +107,9 @@ export const studioLocaleStrings = {
   /** Prompt for reverting changes for a field change */
   'changes.action.revert-changes-description': `Are you sure you want to revert the changes?`,
 
+  /** Prompt for reverting changes for a group change, eg multiple changes */
+  'changes.action.revert-changes-description_one': `Are you sure you want to revert the change?`,
+
   /** Prompt for confirming revert change (singular) label for field change action */
   'changes.action.revert-changes-confirm-change_one': `Revert change`,
 
