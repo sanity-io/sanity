@@ -40,7 +40,7 @@ export function TimelineItem({
   timestamp,
   type,
 }: TimelineItemProps) {
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation('studio')
 
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
