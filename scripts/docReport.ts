@@ -1,223 +1,104 @@
+import fs from 'fs/promises'
 import path from 'path'
-import fs from 'fs'
-import ts, {JSDoc, JSDocComment, SyntaxKind} from 'typescript'
 import {createClient} from '@sanity/client'
-import {
-  at,
-  createIfNotExists,
-  type Mutation,
-  patch,
-  SanityEncoder,
-  set,
-  setIfMissing,
-  upsert,
-} from '@bjoerge/mutiny'
-import {deburr} from 'lodash'
-import {filter, map, mergeMap, of, tap} from 'rxjs'
-import readPackages from './utils/readPackages'
-import {PackageManifest} from './types'
+import {groupBy} from 'lodash'
+import {combineLatest, map} from 'rxjs'
+import {sanityIdify} from './utils/sanityIdify'
 import {readEnv} from 'sanity-perf-tests/config/envVars'
 
-const ALLOWED_TAGS = ['public', 'alpha', 'beta', 'internal', 'experimental', 'deprecated']
-interface Package {
-  path: string
-  dirname: string
-  manifest: PackageManifest
+const QUERY = `*[_type=='exportSymbol'] {
+  _id,
+  "package": exportedBy->normalized,
+  "isDocumented": defined(versions[0].comment)
 }
-function getTags(node: ts.Node) {
-  const tags = ts.getJSDocTags(node).map((tag) => tag.tagName.getText())
-  return tags.filter((tag) => ALLOWED_TAGS.includes(tag))
-}
+`
 
-export function sanityIdify(input: string) {
-  return deburr(input)
-    .replace(/[^a-zA-Z0-9_-]+/g, '_')
-    .replace(/^-/, '')
+interface ExportSymbol {
+  _id: string
+  package: string
+  isDocumented: boolean
 }
 
-type SyntaxType = 'function' | 'class' | 'interface' | 'variable' | 'typeAlias' | 'enum' | 'module'
-
-function getComment(comment: string | ts.NodeArray<JSDocComment>) {
-  // eslint-disable-next-line no-nested-ternary
-  return typeof comment === 'string' ? [comment] : comment.flatMap((c) => c.text)
-}
-
-function getCommentFromJSDoc(t: ts.JSDoc) {
-  return t.comment ? getComment(t.comment) : []
-}
-
-function getName(node: ts.Node) {
-  if (node.kind === ts.SyntaxKind.VariableStatement) {
-    return (node as ts.VariableStatement).declarationList.declarations[0].name.getText()
-  }
-  return (
-    node as ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration
-  ).name?.getText()
-}
-
-function getNodeType(node: ts.Node): SyntaxType {
-  if (node.kind === ts.SyntaxKind.VariableStatement) {
-    return 'variable'
-  }
-  if (node.kind === ts.SyntaxKind.InterfaceDeclaration) {
-    return 'interface'
-  }
-  if (node.kind === ts.SyntaxKind.FunctionDeclaration) {
-    return 'function'
-  }
-  if (node.kind === ts.SyntaxKind.ClassDeclaration) {
-    return 'class'
-  }
-  if (node.kind === ts.SyntaxKind.TypeAliasDeclaration) {
-    return 'typeAlias'
-  }
-  if (node.kind === ts.SyntaxKind.EnumDeclaration) {
-    return 'enum'
-  }
-  if (node.kind === ts.SyntaxKind.ModuleDeclaration) {
-    return 'module'
-  }
-  throw new Error(`Unsupported syntax kind for node: ${ts.SyntaxKind[node.kind]}`)
-}
-
-type ExportedSymbol = {
-  name: string
-  type: SyntaxType
-  tags: string[]
-  comment?: string | undefined
-}
-
-type ResolvedExport = {
-  exportName: string
-  normalized: string
-  dtsExport: string
-  dtsFilePath: string
-}
-function getExportedSymbols(exp: ResolvedExport): ExportedSymbol[] {
-  const exportedSymbols: ExportedSymbol[] = []
-  // Read the .d.ts file
-  const sourceFile = ts.createSourceFile(
-    exp.dtsExport!,
-    fs.readFileSync(exp.dtsFilePath!).toString('utf-8'),
-    // from tsconfig.settings.json
-    ts.ScriptTarget.ES2017,
-    true,
-  )
-  sourceFile.forEachChild((node) => {
-    // Get all the export items that are named or default export
-    const exportedItem = ts
-      .getModifiers(node as ts.HasModifiers)
-      ?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
-
-    if (exportedItem) {
-      const comment = ts
-        .getJSDocCommentsAndTags(node)
-        .filter((t): t is JSDoc => t.kind === SyntaxKind.JSDoc)
-        .flatMap((t) => getCommentFromJSDoc(t))
-
-      const name = getName(node)
-      if (!name) {
-        return
-      }
-      const tags = getTags(node)
-      const type = getNodeType(node)
-
-      exportedSymbols.push({
-        name,
-        type,
-        comment: comment.length > 0 ? comment.join('\n') : undefined,
-        tags,
-      })
-    }
-  })
-  return exportedSymbols
-}
-
-function getResolvedExports(pkg: Package): ResolvedExport[] {
-  const manifest = pkg.manifest
-  return Object.entries(manifest.exports || {}).flatMap(([exportName, exportDefinition]) => {
-    return exportDefinition.types
-      ? {
-          exportName,
-          normalized: path.join(manifest.name, exportName),
-          dtsExport: exportDefinition.types,
-          dtsFilePath: exportDefinition.types && path.join(pkg.dirname, exportDefinition.types),
-        }
-      : []
-  })
-}
-
-function getPackageMutations(pkg: Package): Mutation[] {
-  const exports = getResolvedExports(pkg)
-  return exports.flatMap((exp) => {
-    const exportsDocId = `package-exports-${sanityIdify(exp.normalized)}`
-    const symbols = getExportedSymbols(exp)
-    return [
-      createIfNotExists({
-        _id: exportsDocId,
-        _type: 'packageExports',
-      }),
-      patch(exportsDocId, [
-        at('name', set(exp.exportName)),
-        at('normalized', set(exp.normalized)),
-        at('package', set(pkg.manifest.name)),
-      ]),
-      ...symbols.flatMap((symbol) => {
-        const symbolDocumentId = `symbol-${sanityIdify(symbol.name)}`
-        return [
-          createIfNotExists({
-            _id: symbolDocumentId,
-            _type: 'exportSymbol',
-          }),
-          patch(symbolDocumentId, [
-            at('exportedBy', setIfMissing({_type: 'ref', _ref: exportsDocId})),
-          ]),
-          patch(symbolDocumentId, [
-            at('name', set(symbol.name)),
-            at('versions', setIfMissing([])),
-            at(
-              'versions',
-              upsert(
-                [
-                  {
-                    _key: pkg.manifest.version,
-                    version: pkg.manifest.version,
-                    type: symbol.type,
-                    comment: symbol.comment,
-                    tags: symbol.tags,
-                    updatedAt: new Date().toISOString(),
-                  },
-                ],
-                'before',
-                0,
-              ),
-            ),
-          ]),
-        ]
-      }),
-    ]
-  })
+interface Report {
+  package: string
+  documented: number
 }
 
 const studioMetricsClient = createClient({
   projectId: 'c1zuxvqn',
-  dataset: 'production',
-  token: readEnv('PERF_TEST_METRICS_TOKEN'),
+  dataset: sanityIdify(readEnv('DOCS_REPORT_DATASET')),
+  token: readEnv('DOCS_REPORT_TOKEN'),
   apiVersion: '2023-02-03',
   useCdn: false,
 })
 
-of(readPackages())
+const studioMetricsClientProduction = createClient({
+  projectId: 'c1zuxvqn',
+  dataset: 'production',
+  token: readEnv('DOCS_REPORT_TOKEN'),
+  apiVersion: '2023-02-03',
+  useCdn: false,
+})
+
+function getDocumentationReport(symbols: ExportSymbol[]): Report[] {
+  const obj = groupBy(symbols, 'package')
+
+  return Object.entries(obj).map(([key, val]) => {
+    // return total number of documented and not documented symbols
+    return {
+      package: key,
+      documented: val.filter((s) => s.isDocumented).length,
+    }
+  })
+}
+
+combineLatest([
+  studioMetricsClient.observable.fetch(QUERY),
+  studioMetricsClientProduction.observable.fetch(QUERY),
+])
   .pipe(
-    tap((packages) => console.log(`Updating docs for ${packages.length} packages`)),
-    mergeMap((packages) => packages),
-    map((pkg) => {
-      return {pkg, mutations: getPackageMutations(pkg)}
-    }),
-    filter(({mutations}) => mutations.length > 0),
-    mergeMap(({pkg, mutations}) => {
-      console.log(`Submitting ${mutations.length} mutations for ${pkg.manifest.name}`)
-      return studioMetricsClient.observable.transaction(SanityEncoder.encode(mutations)).commit()
-    }, 2),
+    map(
+      ([branch, production]: [ExportSymbol[], ExportSymbol[]]): {
+        package: string
+        documentedChange: number
+      }[] => {
+        const branchGroup = getDocumentationReport(branch)
+        const productionGroup = getDocumentationReport(production)
+
+        // Compare the two groups and return percent difference
+        return branchGroup.map((br) => {
+          const prod = productionGroup.find((p) => p.package === br.package)
+
+          if (!prod) {
+            return {
+              package: br.package,
+              documentedChange: 0,
+            }
+          }
+
+          const documentedPercentDiff = (br.documented - prod.documented) / prod.documented
+
+          return {
+            package: br.package,
+            documentedChange: Number.isNaN(documentedPercentDiff)
+              ? 0
+              : Math.floor(documentedPercentDiff * 100),
+          }
+        })
+      },
+    ),
   )
-  .subscribe()
+  .subscribe(async (res) => {
+    // convert the result to a markdown table with heading
+    const table = `
+| Package | Documentation Change |
+| ------- | ----------------- |
+${res
+  .sort((a, b) => b.documentedChange - a.documentedChange)
+  .map((r) => `| ${r.package} | ${r.documentedChange}% |`)
+  .join('\n')}
+`
+
+    // save it to a file
+    await fs.writeFile(path.resolve(__dirname, 'docs-report.md'), table, 'utf8')
+  })

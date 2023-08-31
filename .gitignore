@@ -76,3 +76,6 @@ etc
 .yarn
 .yarnrc
 .turbo
+
+## Documentation Report
+scripts/docs-report.md
