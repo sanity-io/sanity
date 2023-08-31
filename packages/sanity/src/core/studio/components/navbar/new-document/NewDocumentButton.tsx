@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {
   Box,
   Tooltip,
@@ -13,11 +13,8 @@ import {
   Card,
   Flex,
   Button,
-  useToast,
 } from '@sanity/ui'
-import {useCopyToClipboard} from 'usehooks-ts'
-import {IframeSizeKey, type SizeProps}  from 'sanity-plugin-iframe-pane'
-import {ClipboardIcon, ComposeIcon, LaunchIcon, MobileDeviceIcon, SearchIcon, UndoIcon} from '@sanity/icons'
+import {ComposeIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
@@ -191,8 +188,13 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   if (modal === 'dialog') {
     return (
       <>
-     
-        {/* {open && (
+        <Tooltip {...sharedTooltipProps}>
+          <div>
+            <Button {...sharedOpenButtonProps} />
+          </div>
+        </Tooltip>
+
+        {open && (
           <StyledDialog
             header={title}
             id="create-new-document-dialog"
@@ -212,7 +214,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
               </Flex>
             </RootFlex>
           </StyledDialog>
-        )} */}
+        )}
       </>
     )
   }
@@ -262,8 +264,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       }
     >
       <div>
-      <Toolbar setIframeSize={() => console.log('setloading')} handleReload={() => console.log('h')} ></Toolbar>
-        {/* <Tooltip {...sharedTooltipProps}>
+        <Tooltip {...sharedTooltipProps}>
           <div>
             <Button
               {...sharedOpenButtonProps}
@@ -272,151 +273,8 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
               onKeyDown={handleOpenButtonKeyDown}
             />
           </div>
-        </Tooltip> */}
+        </Tooltip>
       </div>
     </StyledPopover>
-  )
-}
-/* eslint-disable react/jsx-no-bind */
-
-
-export const sizes: SizeProps = {
-  desktop: {
-    width: '100%',
-    height: '100%',
-  },
-  mobile: {
-    width: 414,
-    height: 746,
-  },
-}
-
-export const DEFAULT_SIZE = `desktop`
-
-export interface ToolbarProps {
-  displayUrl?: string
-  iframeSize?: IframeSizeKey
-  setIframeSize: (size: IframeSizeKey) => void
-  reloading?: boolean
-  reloadButton?: boolean
-  handleReload: () => void
-}
-export function Toolbar(props: ToolbarProps) {
-  const {
-    displayUrl = 'sdkfhshjfn',
-    iframeSize = 'mobile',
-    setIframeSize,
-    reloading = false,
-    reloadButton = true,
-    handleReload,
-  } = props
-
-  const input = useRef<HTMLTextAreaElement>(null)
-  const {push: pushToast} = useToast()
-  const [, copy] = useCopyToClipboard()
-
-  return (
-    <>
-      <textarea
-        style={{position: `absolute`, pointerEvents: `none`, opacity: 0}}
-        ref={input}
-        value={displayUrl}
-        readOnly
-        tabIndex={-1}
-      />
-      <Card padding={2} borderBottom>
-        <Flex align="center" gap={2}>
-          <Flex align="center" gap={1}>
-            <Tooltip
-              content={
-                <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                  {iframeSize === 'mobile' ? 'Exit mobile preview' : 'Preview mobile viewport'}
-                </Text>
-              }
-              padding={2}
-            >
-              <Button
-                disabled={!displayUrl}
-                fontSize={[1]}
-                padding={2}
-                mode={iframeSize === 'mobile' ? 'default' : 'ghost'}
-                icon={MobileDeviceIcon}
-                onClick={() => setIframeSize(iframeSize === 'mobile' ? 'desktop' : 'mobile')}
-              />
-            </Tooltip>
-          </Flex>
-
-          <Flex align="center" gap={1}>
-            {reloadButton ? (
-              <Tooltip
-                content={
-                  <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                    {reloading ? 'Reloading…' : 'Reload'}
-                  </Text>
-                }
-                padding={2}
-              >
-                <Button
-                  disabled={!displayUrl}
-                  mode="bleed"
-                  fontSize={[1]}
-                  padding={2}
-                  icon={<UndoIcon style={{transform: 'rotate(90deg) scaleY(-1)'}} />}
-                  loading={reloading}
-                  aria-label="Reload"
-                  onClick={() => handleReload()}
-                />
-              </Tooltip>
-            ) : null}
-            <Tooltip
-              content={
-                <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                  Copy URL
-                </Text>
-              }
-              padding={2}
-            >
-              <Button
-                mode="bleed"
-                disabled={!displayUrl}
-                fontSize={[1]}
-                icon={ClipboardIcon}
-                padding={[2]}
-                aria-label="Copy URL"
-                onClick={() => {
-                  if (!input?.current?.value) return
-
-                  copy(input.current.value)
-                  pushToast({
-                    closable: true,
-                    status: 'success',
-                    title: 'The URL is copied to the clipboard',
-                  })
-                }}
-              />
-            </Tooltip>
-            <Tooltip
-              content={
-                <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                  Open URL in a new tab
-                </Text>
-              }
-              padding={2}
-            >
-              <Button
-                disabled={!displayUrl}
-                fontSize={[1]}
-                icon={LaunchIcon}
-                mode="ghost"
-                paddingY={[2]}
-                text="Open"
-                aria-label="Open URL in a new tab"
-                onClick={() => window.open(displayUrl)}
-              />
-            </Tooltip>
-          </Flex>
-        </Flex>
-      </Card>
-    </>
   )
 }
