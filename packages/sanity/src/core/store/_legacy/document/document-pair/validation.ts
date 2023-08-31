@@ -134,10 +134,10 @@ export const validation = memoize(
         ),
       ),
       scan((acc: Record<string, boolean>, [id, result]): Record<string, boolean> => {
-        if (Boolean(acc[id]) === result) {
+        if (acc[id] === result) {
           return acc
         }
-        return result ? {...acc, [id]: result} : omit(acc, id)
+        return {...acc, [id]: result}
       }, {}),
       distinctUntilChanged(shallowEquals),
       shareReplay({refCount: true, bufferSize: 1}),
