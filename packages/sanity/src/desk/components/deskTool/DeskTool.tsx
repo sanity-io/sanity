@@ -9,6 +9,7 @@ import {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
 import {useDeskTool} from '../../useDeskTool'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
+import {DeskTitle} from './DeskTitle'
 import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
 import {useRouterState} from 'sanity/router'
 
@@ -130,6 +131,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
           <LoadingPane paneKey="intent-resolver" />
         )}
       </StyledPaneLayout>
+      <DeskTitle resolvedPanes={resolvedPanes} />
       <div data-portal="" ref={setPortalElement} />
     </PortalProvider>
   )
