@@ -84,15 +84,19 @@ export function StudioLayout() {
     const mainTitle = title || startCase(name)
 
     if (activeToolName) {
-      return `${mainTitle} – ${startCase(activeToolName)}`
+      return `${startCase(activeToolName)} | ${mainTitle}`
     }
 
     return mainTitle
   }, [activeToolName, name, title])
 
   useEffect(() => {
+    if (activeToolName === 'content') {
+      // Will be handled by sanity/src/desk/components/deskTool/DeskTitle.tsx
+      return
+    }
     document.title = documentTitle
-  }, [documentTitle])
+  }, [documentTitle, activeToolName])
 
   const handleSearchFullscreenOpenChange = useCallback((open: boolean) => {
     setSearchFullscreenOpen(open)
