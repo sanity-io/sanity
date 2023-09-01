@@ -294,6 +294,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const handleBlur = useCallback(
     (blurredPath: Path) => {
+      if (disableBlurRef.current) {
+        return
+      }
+
       setFocusPath(EMPTY_ARRAY)
 
       if (focusPathRef.current !== EMPTY_ARRAY) {
@@ -658,11 +662,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
   }, [connectionState, pushToast])
 
+  const disableBlurRef = useRef(false)
+
   // Reset `focusPath` when `documentId` or `params.path` changes
   useEffect(() => {
     if (ready && params.path) {
       const {path, ...restParams} = params
       const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
+
+      disableBlurRef.current = true
+
       // Reset focus path when url params path changes
       setFocusPath(pathFromUrl)
       setOpenPath(pathFromUrl)
@@ -671,6 +680,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         focusPathRef.current = pathFromUrl
         onFocusPath?.(pathFromUrl)
       }
+
+      setTimeout(() => {
+        disableBlurRef.current = false
+      }, 0)
 
       // remove the `path`-param from url after we have consumed it as the initial focus path
       paneRouter.setParams(restParams)
