@@ -179,6 +179,10 @@ export function defaultResolveFieldComponent(
     return PrimitiveField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
+  if (typeChain.some((t) => t.name === 'slug')) {
+    return PrimitiveField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+  }
+
   if (typeChain.some((t) => isReferenceSchemaType(t))) {
     return ReferenceField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
