@@ -1,10 +1,9 @@
 import fs from 'fs/promises'
 import path from 'path'
-import {createClient} from '@sanity/client'
 import {groupBy} from 'lodash'
 import {combineLatest, map} from 'rxjs'
-import ora from 'ora'
-import {sanityIdify} from './utils/sanityIdify'
+import {startTimer} from '../utils/startTimer'
+import {createDocClient} from './docClient'
 import {readEnv} from 'sanity-perf-tests/config/envVars'
 
 const QUERY = `*[_type=='exportSymbol'] {
@@ -35,21 +34,8 @@ interface TransformResult {
   branchNotDocumented: number
 }
 
-const studioMetricsClient = createClient({
-  projectId: 'c1zuxvqn',
-  dataset: sanityIdify(readEnv('DOCS_REPORT_DATASET')),
-  token: readEnv('DOCS_REPORT_TOKEN'),
-  apiVersion: '2023-02-03',
-  useCdn: false,
-})
-
-const studioMetricsClientProduction = createClient({
-  projectId: 'c1zuxvqn',
-  dataset: 'production',
-  token: readEnv('DOCS_REPORT_TOKEN'),
-  apiVersion: '2023-02-03',
-  useCdn: false,
-})
+const studioMetricsClient = createDocClient(readEnv('DOCS_REPORT_DATASET'))
+const studioMetricsClientProduction = createDocClient('production')
 
 function getDocumentationReport(symbols: ExportSymbol[]): Report[] {
   const obj = groupBy(symbols, 'package')
@@ -145,19 +131,7 @@ ${res
 `
 
     // save it to a file
-    await fs.writeFile(path.resolve(__dirname, 'docs-report.md'), table, 'utf8')
+    await fs.writeFile(path.resolve(path.join(__dirname, '..', 'docs-report.md')), table, 'utf8')
 
     timer.end()
   })
-
-function startTimer(label: string) {
-  const spinner = ora(label).start()
-  const start = Date.now()
-  return {
-    end: () => spinner.succeed(`${label} (${formatMs(Date.now() - start)})`),
-  }
-}
-
-function formatMs(ms: number) {
-  return ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(2)}s`
-}

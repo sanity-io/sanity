@@ -1187,10 +1187,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@bjoerge/mutiny@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@bjoerge/mutiny/-/mutiny-0.0.1.tgz#02e050da524bf730a04f1287ed812d6e9ac2a4ec"
-  integrity sha512-xL8qsQovS1McDa+pDIJLZSo+sAyRiC5oe/k+T569oK97ka8Weu6XrzR5ypCtMN20TIduw9VV00nc3hv3E9gQmg==
+"@bjoerge/mutiny@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@bjoerge/mutiny/-/mutiny-0.0.2.tgz#b5fd307000894d1836cb346b8405d8f3f39a548b"
+  integrity sha512-9OIQwEkErDCVelhsM4z+BOPzaDlGgTfOwbaxIVH05EPaYnq1qUtFtiQ9z9crPEACHrcsF8cuohoVpPHR0S/Xdw==
   dependencies:
     diff-match-patch "^1.0.5"
     hotscript "^1.0.13"

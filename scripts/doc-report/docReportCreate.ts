@@ -1,7 +1,6 @@
 import path from 'path'
 import fs from 'fs'
-import ts, {JSDoc, JSDocComment, SyntaxKind} from 'typescript'
-import {createClient} from '@sanity/client'
+import ts, {type JSDoc, type JSDocComment, SyntaxKind} from 'typescript'
 import {
   at,
   createIfNotExists,
@@ -13,10 +12,11 @@ import {
   upsert,
 } from '@bjoerge/mutiny'
 import {filter, map, mergeMap, of, tap} from 'rxjs'
-import ora from 'ora'
-import readPackages from './utils/readPackages'
-import {PackageManifest} from './types'
-import {sanityIdify} from './utils/sanityIdify'
+import readPackages from '../utils/readPackages'
+import type {PackageManifest} from '../types'
+import {sanityIdify} from '../utils/sanityIdify'
+import {startTimer} from '../utils/startTimer'
+import {createDocClient} from './docClient'
 import {readEnv} from 'sanity-perf-tests/config/envVars'
 
 const ALLOWED_TAGS = ['public', 'alpha', 'beta', 'internal', 'experimental', 'deprecated']
@@ -196,13 +196,7 @@ function getPackageMutations(pkg: Package): Mutation[] {
 
 const dataset = sanityIdify(readEnv('DOCS_REPORT_DATASET'))
 
-const studioMetricsClient = createClient({
-  projectId: 'c1zuxvqn',
-  dataset,
-  token: readEnv('DOCS_REPORT_TOKEN'),
-  apiVersion: '2023-02-03',
-  useCdn: false,
-})
+const studioMetricsClient = createDocClient(readEnv('DOCS_REPORT_DATASET'))
 
 studioMetricsClient.datasets.list().then(async (datasets) => {
   // If the dataset doesn't exist, create it
@@ -229,15 +223,3 @@ studioMetricsClient.datasets.list().then(async (datasets) => {
     )
     .subscribe()
 })
-
-function startTimer(label: string) {
-  const spinner = ora(label).start()
-  const start = Date.now()
-  return {
-    end: () => spinner.succeed(`${label} (${formatMs(Date.now() - start)})`),
-  }
-}
-
-function formatMs(ms: number) {
-  return ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(2)}s`
-}
