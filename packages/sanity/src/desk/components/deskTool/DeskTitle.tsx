@@ -29,7 +29,6 @@ const DocumentTitle = (props: {title: string; documentId: string; documentType: 
     : value?.title || 'Untitled'
 
   const settled = editState.ready && !previewValueIsLoading
-
   useEffect(() => {
     if (!settled) return
     // Set the title as the document title
@@ -50,6 +49,7 @@ const NoDocumentTitle = (props: {title: string}) => {
 
 export const DeskTitle = (props: DeskTitleProps) => {
   const {resolvedPanes} = props
+
   const deskToolTitle = useDeskTool().structureContext.title
   // Will show up to the first pane of type document.
   const paneWithTypeDocumentIndex = resolvedPanes.findIndex((pane) => {
