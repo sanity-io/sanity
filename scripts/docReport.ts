@@ -3,6 +3,7 @@ import path from 'path'
 import {createClient} from '@sanity/client'
 import {groupBy} from 'lodash'
 import {combineLatest, map} from 'rxjs'
+import ora from 'ora'
 import {sanityIdify} from './utils/sanityIdify'
 import {readEnv} from 'sanity-perf-tests/config/envVars'
 
@@ -22,6 +23,16 @@ interface ExportSymbol {
 interface Report {
   package: string
   documented: number
+  notDocumented: number
+}
+
+interface TransformResult {
+  package: string
+  documentedChange: number
+  prodDocumented: number
+  prodNotDocumented: number
+  branchDocumented: number
+  branchNotDocumented: number
 }
 
 const studioMetricsClient = createClient({
@@ -48,45 +59,51 @@ function getDocumentationReport(symbols: ExportSymbol[]): Report[] {
     return {
       package: key,
       documented: val.filter((s) => s.isDocumented).length,
+      notDocumented: val.filter((s) => !s.isDocumented).length,
     }
   })
 }
+
+const timer = startTimer(`Fetching docs report`)
 
 combineLatest([
   studioMetricsClient.observable.fetch(QUERY),
   studioMetricsClientProduction.observable.fetch(QUERY),
 ])
   .pipe(
-    map(
-      ([branch, production]: [ExportSymbol[], ExportSymbol[]]): {
-        package: string
-        documentedChange: number
-      }[] => {
-        const branchGroup = getDocumentationReport(branch)
-        const productionGroup = getDocumentationReport(production)
+    map(([branch, production]: [ExportSymbol[], ExportSymbol[]]): TransformResult[] => {
+      const branchGroup = getDocumentationReport(branch)
+      const productionGroup = getDocumentationReport(production)
 
-        // Compare the two groups and return percent difference
-        return branchGroup.map((br) => {
-          const prod = productionGroup.find((p) => p.package === br.package)
+      // Compare the two groups and return percent difference
+      return branchGroup.map((br) => {
+        const prod = productionGroup.find((p) => p.package === br.package)
 
-          if (!prod) {
-            return {
-              package: br.package,
-              documentedChange: 0,
-            }
-          }
-
-          const documentedPercentDiff = (br.documented - prod.documented) / prod.documented
-
+        if (!prod) {
           return {
             package: br.package,
-            documentedChange: Number.isNaN(documentedPercentDiff)
-              ? 0
-              : Math.floor(documentedPercentDiff * 100),
+            documentedChange: 0,
+            prodDocumented: 0,
+            prodNotDocumented: 0,
+            branchDocumented: br.documented,
+            branchNotDocumented: br.notDocumented,
           }
-        })
-      },
-    ),
+        }
+
+        const documentedPercentDiff = (br.documented - prod.documented) / prod.documented
+
+        return {
+          package: br.package,
+          documentedChange: Number.isNaN(documentedPercentDiff)
+            ? 0
+            : Math.floor(documentedPercentDiff * 100),
+          prodDocumented: prod.documented,
+          prodNotDocumented: prod.notDocumented,
+          branchDocumented: br.documented,
+          branchNotDocumented: br.notDocumented,
+        }
+      })
+    }),
   )
   .subscribe(async (res) => {
     // convert the result to a markdown table with heading
@@ -97,8 +114,50 @@ ${res
   .sort((a, b) => b.documentedChange - a.documentedChange)
   .map((r) => `| ${r.package} | ${r.documentedChange}% |`)
   .join('\n')}
+
+<details>
+  <summary>Full Report</summary>
+  ${res
+    .sort((a, b) => b.documentedChange - a.documentedChange)
+    .map(
+      (r) =>
+        `<details>
+  <summary>${r.package}</summary>
+  <table>
+    <tr>
+      <th>Branch</th>
+      <th>Production</th>
+    </tr>
+    <tr>
+      <td>${r.branchDocumented} documented</td>
+      <td>${r.prodDocumented} documented</td>
+    </tr>
+    <tr>
+      <td>${r.branchNotDocumented} not documented</td>
+      <td>${r.prodNotDocumented} not documented</td>
+    </tr>
+  </table>
+</details>
+`,
+    )
+    .join('\n')}
+</details>
 `
 
     // save it to a file
     await fs.writeFile(path.resolve(__dirname, 'docs-report.md'), table, 'utf8')
+
+    timer.end()
   })
+
+function startTimer(label: string) {
+  const spinner = ora(label).start()
+  const start = Date.now()
+  return {
+    end: () => spinner.succeed(`${label} (${formatMs(Date.now() - start)})`),
+  }
+}
+
+function formatMs(ms: number) {
+  return ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(2)}s`
+}
