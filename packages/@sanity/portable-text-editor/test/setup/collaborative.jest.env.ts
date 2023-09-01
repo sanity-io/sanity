@@ -1,16 +1,10 @@
-import {chromium, Browser, Page, ElementHandle} from '@playwright/test'
+import {chromium, Browser, Page, ElementHandle, BrowserContext} from '@playwright/test'
 import NodeEnvironment from 'jest-environment-node'
 import {isEqual} from 'lodash'
 import ipc from 'node-ipc'
 import {PortableTextBlock} from '@sanity/types'
 import {normalizeSelection} from '../../src/utils/selection'
 import type {EditorSelection} from '../../src'
-
-export const delay = (time: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time)
-  })
-}
 
 ipc.config.id = 'collaborative-jest-environment-ipc-client'
 ipc.config.retry = 5000
@@ -24,29 +18,71 @@ const WEB_SERVER_ROOT_URL = 'http://localhost:3000'
 // eslint-disable-next-line no-process-env
 const DEBUG = process.env.DEBUG || false
 
-// Wait this long for selections and a new doc revision to appear in the clients.
-const SELECTION_TIMEOUT_MS = 500
+// Wait this long for selections to appear in the browser
+// This should be set high to support slower host systems.
+const SELECTION_TIMEOUT_MS = 2000
 
 // How long to wait for a new revision to come back to the client(s) when patched through the server.
-// Wait for patch debounce time and some slack for selection adjustment time for everything to be ready
-const REVISION_TIMEOUT_MS = 1000
+// This should be set high to support slower host systems.
+const REVISION_TIMEOUT_MS = 5000
 
 export default class CollaborationEnvironment extends NodeEnvironment {
   private _browserA?: Browser
   private _browserB?: Browser
   private _pageA?: Page
   private _pageB?: Page
+  private _contextA?: BrowserContext
+  private _contextB?: BrowserContext
 
-  public async setup(): Promise<void> {
-    await super.setup()
+  // Saving these setup/teardown functions here for future reference.
+  // public async setup(): Promise<void> {
+  //   await super.setup()
+  // }
+  // public async teardown(): Promise<void> {
+  //   await super.teardown()
+  // }
+
+  public async handleTestEvent(event: {name: string}): Promise<void> {
+    if (event.name === 'run_start') {
+      await this._setupInstance()
+    }
+    if (event.name == 'test_start') {
+      await this._createNewTestPage()
+    }
+    if (event.name === 'run_finish') {
+      await this._destroyInstance()
+    }
+  }
+
+  private async _setupInstance(): Promise<void> {
+    ipc.connectToNet('socketServer')
     this._browserA = await chromium.launch()
-    const contextA = await this._browserA.newContext()
     this._browserB = await chromium.launch()
+    const contextA = await this._browserA.newContext()
     const contextB = await this._browserB.newContext()
     await contextA.grantPermissions(['clipboard-read', 'clipboard-write'])
     await contextB.grantPermissions(['clipboard-read', 'clipboard-write'])
-    this._pageA = await contextA.newPage()
-    this._pageB = await contextB.newPage()
+    this._contextA = contextA
+    this._contextB = contextB
+    this._pageA = await this._contextA.newPage()
+    this._pageB = await this._contextB.newPage()
+  }
+
+  private async _destroyInstance(): Promise<void> {
+    await this._pageA?.close()
+    await this._pageB?.close()
+    await this._browserA?.close()
+    await this._browserB?.close()
+    ipc.disconnect('socketServer')
+  }
+
+  private async _createNewTestPage(): Promise<void> {
+    if (!this._pageA || !this._pageB) {
+      throw new Error('Page not initialized')
+    }
+
+    // This will identify this test throughout the web environment
+    const testId = (Math.random() + 1).toString(36).substring(7)
 
     // Hook up page console and npm debug in the PTE
     if (DEBUG) {
@@ -73,58 +109,20 @@ export default class CollaborationEnvironment extends NodeEnvironment {
       console.error('Editor B crashed', err)
       throw err
     })
-    await new Promise<void>((resolve) => {
-      ipc.connectToNet('socketServer', () => {
-        resolve()
-      })
-    })
-  }
 
-  public async handleTestEvent(event: {name: string}): Promise<void> {
-    if (event.name === 'test_start') {
-      await this._setupInstance()
-    }
-  }
-
-  public async teardown(): Promise<void> {
-    await super.teardown()
-    this._browserA?.close()
-    this._browserB?.close()
-    ipc.disconnect('socketServer')
-  }
-
-  private async _setupInstance(): Promise<void> {
-    const testId = (Math.random() + 1).toString(36).substring(7)
-    await this._pageA?.goto(`${WEB_SERVER_ROOT_URL}?editorId=A${testId}&testId=${testId}`)
-    await this._pageB?.goto(`${WEB_SERVER_ROOT_URL}?editorId=B${testId}&testId=${testId}`)
     this.global.setDocumentValue = async (
       value: PortableTextBlock[] | undefined,
     ): Promise<void> => {
-      ipc.of.socketServer.emit('payload', JSON.stringify({type: 'value', value, testId}))
-      const [valueHandleA, valueHandleB] = await Promise.all([
-        this._pageA?.waitForSelector('#pte-value', {timeout: REVISION_TIMEOUT_MS}),
-        this._pageB?.waitForSelector('#pte-value', {timeout: REVISION_TIMEOUT_MS}),
-      ])
-
-      if (!valueHandleA || !valueHandleB) {
-        throw new Error('Failed to find `#pte-value` element on page')
-      }
-
-      const readVal = (node: any) => {
-        return node.innerText ? JSON.parse(node.innerText) : undefined
-      }
-      if (valueHandleA === null || valueHandleB === null) {
-        throw new Error('Value handle is null')
-      }
-      const valueA: PortableTextBlock[] | undefined = await valueHandleA.evaluate(readVal)
-      const valueB: PortableTextBlock[] | undefined = await valueHandleB.evaluate(readVal)
-      return new Promise<void>((resolve, reject) => {
-        if (isEqual(value, valueA) && isEqual(value, valueB)) {
-          return resolve()
-        }
-        return reject(new Error('Could not propagate value to browsers'))
+      const revId = (Math.random() + 1).toString(36).substring(7)
+      ipc.of.socketServer.emit('payload', JSON.stringify({type: 'value', value, testId, revId}))
+      await this._pageA?.waitForSelector(`code[data-rev-id="${revId}"]`, {
+        timeout: REVISION_TIMEOUT_MS,
+      })
+      await this._pageB?.waitForSelector(`code[data-rev-id="${revId}"]`, {
+        timeout: REVISION_TIMEOUT_MS,
       })
     }
+
     this.global.getEditors = () =>
       Promise.all(
         [this._pageA!, this._pageB!].map(async (page, index) => {
@@ -132,27 +130,36 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           const isMac = /Mac|iPod|iPhone|iPad/.test(userAgent)
           const metaKey = isMac ? 'Meta' : 'Control'
           const editorId = `${['A', 'B'][index]}${testId}`
-          const [editableHandle, selectionHandle, valueHandle]: (ElementHandle<Element> | null)[] =
-            await Promise.all([
-              page.waitForSelector('div[contentEditable="true"]', {timeout: REVISION_TIMEOUT_MS}),
-              page.waitForSelector('#pte-selection', {timeout: REVISION_TIMEOUT_MS}),
-              page.waitForSelector('#pte-value', {timeout: REVISION_TIMEOUT_MS}),
-            ])
+          const [
+            editableHandle,
+            selectionHandle,
+            valueHandle,
+            revIdHandle,
+          ]: (ElementHandle<Element> | null)[] = await Promise.all([
+            page.waitForSelector('div[contentEditable="true"]'),
+            page.waitForSelector('#pte-selection'),
+            page.waitForSelector('#pte-value'),
+            page.waitForSelector('#pte-revId'),
+          ])
 
-          if (!editableHandle || !selectionHandle || !valueHandle) {
+          if (!editableHandle || !selectionHandle || !valueHandle || !revIdHandle) {
             throw new Error('Failed to find required editor elements')
           }
 
-          const waitForRevision = async () => {
-            const revId = (Math.random() + 1).toString(36).substring(7)
-            ipc.of.socketServer.emit(
-              'payload',
-              JSON.stringify({type: 'revId', revId, testId, editorId}),
-            )
-            await page.waitForSelector(`code[data-rev-id="${revId}"]`, {
-              timeout: REVISION_TIMEOUT_MS,
-            })
+          const waitForRevision = async (mutatingFunction?: () => Promise<void>) => {
+            if (mutatingFunction) {
+              const currentRevId = await revIdHandle.evaluate((node) =>
+                node instanceof HTMLElement && node.innerText
+                  ? JSON.parse(node.innerText)?.revId
+                  : null,
+              )
+              await mutatingFunction()
+              await page.waitForSelector(`code[data-rev-id]:not([data-rev-id='${currentRevId}'])`, {
+                timeout: REVISION_TIMEOUT_MS,
+              })
+            }
           }
+
           const getSelection = async (): Promise<EditorSelection | null> => {
             const selection = await selectionHandle.evaluate((node) =>
               node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : null,
@@ -184,36 +191,38 @@ export default class CollaborationEnvironment extends NodeEnvironment {
             testId,
             editorId,
             insertText: async (text: string) => {
-              await Promise.all([
-                waitForRevision(),
-                waitForNewSelection(async () => {
-                  await editableHandle.evaluate(
-                    (node, args) => {
-                      node.dispatchEvent(
-                        new InputEvent('beforeinput', {
-                          bubbles: true,
-                          cancelable: true,
-                          inputType: 'insertText',
-                          data: args[0],
-                        }),
-                      )
-                    },
-                    [text],
-                  )
-                }),
-              ])
+              await editableHandle.focus()
+              await waitForRevision(async () => {
+                await editableHandle.evaluate(
+                  (node, args) => {
+                    node.dispatchEvent(
+                      new InputEvent('beforeinput', {
+                        bubbles: true,
+                        cancelable: true,
+                        inputType: 'insertText',
+                        data: args[0],
+                      }),
+                    )
+                  },
+                  [text],
+                )
+              })
             },
             undo: async () => {
-              await page.keyboard.down(metaKey)
-              await page.keyboard.press('z')
-              await page.keyboard.up(metaKey)
-              await waitForRevision()
+              await waitForRevision(async () => {
+                await editableHandle.focus()
+                await page.keyboard.down(metaKey)
+                await page.keyboard.press('z')
+                await page.keyboard.up(metaKey)
+              })
             },
             redo: async () => {
-              await page.keyboard.down(metaKey)
-              await page.keyboard.press('y')
-              await page.keyboard.up(metaKey)
-              await waitForRevision()
+              await waitForRevision(async () => {
+                await editableHandle.focus()
+                await page.keyboard.down(metaKey)
+                await page.keyboard.press('y')
+                await page.keyboard.up(metaKey)
+              })
             },
             paste: async (string: string, type = 'text/plain') => {
               // Write text to native clipboard
@@ -226,12 +235,12 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                 },
                 {string, type},
               )
-              // Simulate paste key command
-              await page.keyboard.down(metaKey)
-              await page.keyboard.press('v')
-              await page.keyboard.up(metaKey)
-
-              await waitForRevision()
+              await waitForRevision(async () => {
+                // Simulate paste key command
+                await page.keyboard.down(metaKey)
+                await page.keyboard.press('v')
+                await page.keyboard.up(metaKey)
+              })
             },
             pressKey: async (keyName: string, times?: number) => {
               const pressKey = async () => {
@@ -245,8 +254,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   keyName === 'Delete' ||
                   keyName === 'Enter'
                 ) {
-                  await pressKey()
-                  await waitForRevision()
+                  await waitForRevision(async () => {
+                    await pressKey()
+                  })
                 } else if (
                   // Selection manipulation keys
                   [
@@ -269,17 +279,20 @@ export default class CollaborationEnvironment extends NodeEnvironment {
               }
             },
             toggleMark: async (hotkey: string) => {
-              await page.keyboard.down(metaKey)
-              await page.keyboard.down(hotkey)
-
-              await page.keyboard.up(hotkey)
-              await page.keyboard.up(metaKey)
               const selection = await selectionHandle.evaluate((node) =>
                 node instanceof HTMLElement && node.innerText ? JSON.parse(node.innerText) : null,
               )
-              // Don't wait for a new revision unless something was actually selected
-              if (selection && !isEqual(selection.anchor, selection.focus)) {
-                await waitForRevision()
+              const performKeyPress = async () => {
+                await page.keyboard.down(metaKey)
+                await page.keyboard.down(hotkey)
+
+                await page.keyboard.up(hotkey)
+                await page.keyboard.up(metaKey)
+              }
+              if (selection && isEqual(selection.focus, selection.anchor)) {
+                await performKeyPress()
+              } else {
+                await waitForRevision(performKeyPress)
               }
             },
             focus: async () => {
@@ -295,7 +308,6 @@ export default class CollaborationEnvironment extends NodeEnvironment {
                   editorId,
                 }),
               )
-              await delay(200)
               await waitForSelection(selection)
             },
             async getValue(): Promise<PortableTextBlock[] | undefined> {
@@ -310,5 +322,13 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           }
         }),
       )
+
+    // Open up the test documents
+    await this._pageA?.goto(`${WEB_SERVER_ROOT_URL}?editorId=A${testId}&testId=${testId}`, {
+      waitUntil: 'load',
+    })
+    await this._pageB?.goto(`${WEB_SERVER_ROOT_URL}?editorId=B${testId}&testId=${testId}`, {
+      waitUntil: 'load',
+    })
   }
 }

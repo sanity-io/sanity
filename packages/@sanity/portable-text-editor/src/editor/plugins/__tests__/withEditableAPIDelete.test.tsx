@@ -1,11 +1,4 @@
-/**
- * \@jest-environment ./test/setup/jsdom.jest.env.ts
- */
-/* eslint-disable no-irregular-whitespace */
-// eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom/extend-expect'
-import {act} from 'react-dom/test-utils'
-import {render, waitFor, screen} from '@testing-library/react'
+import {render, waitFor} from '@testing-library/react'
 
 import React from 'react'
 import {PortableTextEditor} from '../../PortableTextEditor'

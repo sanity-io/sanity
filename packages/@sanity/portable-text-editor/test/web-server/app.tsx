@@ -1,5 +1,5 @@
 import {PortableTextBlock} from '@sanity/types'
-import {Box, Card, Stack, studioTheme, ThemeProvider} from '@sanity/ui'
+import {Box, Card, Heading, Stack, studioTheme, ThemeProvider, Text, Inline} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import {Subject} from 'rxjs'
 import {EditorSelection, Patch} from '../../src'
@@ -75,11 +75,31 @@ export function App() {
     <ThemeProvider theme={studioTheme}>
       <Stack>
         <Card padding={[0, 3]} sizing="border">
-          <Box>editorId: {editorId}</Box>
-          <Box>testId: {testId}</Box>
+          <Box>
+            <Heading as="h2" size={3}>
+              Test Document
+            </Heading>
+          </Box>
+        </Card>
+        <Card padding={[0, 3]} sizing="border">
+          <Box marginBottom={2}>
+            <Inline>
+              <Text weight="bold">editorId:</Text> <Text>{editorId}</Text>
+            </Inline>
+          </Box>
+          <Box>
+            <Inline>
+              <Text weight="bold">testId:</Text> <Text>{testId}</Text>
+            </Inline>
+          </Box>
         </Card>
         <Card padding={[0, 3]} sizing="border">
           <Box marginBottom={5}>
+            <Box paddingBottom={4}>
+              <Heading as="h3" size={1}>
+                Editor
+              </Heading>
+            </Box>
             <Editor
               editorId={editorId}
               value={value || undefined}

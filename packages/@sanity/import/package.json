@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "3.16.0",
+  "version": "3.16.2",
   "description": "Import documents to a Sanity dataset",
   "keywords": [
     "sanity",
@@ -33,7 +33,7 @@
   "dependencies": {
     "@sanity/asset-utils": "^1.2.5",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/mutator": "3.16.0",
+    "@sanity/mutator": "3.16.2",
     "@sanity/uuid": "^3.0.1",
     "debug": "^3.2.7",
     "file-url": "^2.0.2",

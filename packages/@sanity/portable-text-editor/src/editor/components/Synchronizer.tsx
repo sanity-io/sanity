@@ -26,7 +26,9 @@ import {IS_PROCESSING_LOCAL_CHANGES} from '../../utils/weakMaps'
 const debug = debugWithName('component:PortableTextEditor:Synchronizer')
 const debugVerbose = debug.enabled && false
 
-const FLUSH_PATCHES_THROTTLED_MS = 500 // Send patches away every this ms
+// The editor will commit changes in a throttled fashion in order
+// not to overload the network and degrade performance while typing.
+const FLUSH_PATCHES_THROTTLED_MS = 500
 
 /**
  * @internal

@@ -3,8 +3,13 @@ import {setup as setupDevServer} from 'jest-dev-server'
 
 const testFolderPath = path.resolve(__dirname, '..')
 
-export default async function globalSetup() {
-  await setupDevServer([
+declare global {
+  // eslint-disable-next-line no-var
+  var servers: any[] // For the globalSetup and globalTeardown script
+}
+
+export default async function globalSetup(): Promise<void> {
+  globalThis.servers = await setupDevServer([
     {
       command: `vite --port 3000 ${testFolderPath}/web-server`,
       launchTimeout: 10000,
