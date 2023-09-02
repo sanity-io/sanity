@@ -77,9 +77,13 @@ interface PaneSizeOptions {
   maxSize: number
 }
 
+function narrowBreakpoint(): boolean {
+  return typeof window !== 'undefined' && window.innerWidth > 600
+}
+
 function calculatePaneSizeOptions(rootHeight: number): PaneSizeOptions {
   return {
-    defaultSize: rootHeight / 2,
+    defaultSize: rootHeight / (narrowBreakpoint() ? 2 : 1),
     size: rootHeight > 550 ? undefined : rootHeight * 0.4,
     allowResize: rootHeight > 550,
     minSize: Math.min(170, Math.max(170, rootHeight / 2)),
@@ -773,9 +777,14 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
             )}
           </Grid>
         </Header>
-        <SplitpaneContainer flex={1}>
+        <SplitpaneContainer flex={'auto'}>
           {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
-          <SplitPane split="vertical" minSize={280} defaultSize={400} maxSize={-400}>
+          <SplitPane
+            split={narrowBreakpoint() ? 'vertical' : 'horizontal'}
+            minSize={280}
+            defaultSize={400}
+            maxSize={-400}
+          >
             <Box height="stretch" flex={1}>
               {/*
                   The way react-split-pane handles the sizes is kind of finicky and not clear. What the props above does is:
@@ -790,11 +799,13 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
               {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
               <SplitPane
                 className="sidebarPanes"
-                split="horizontal"
-                defaultSize={paneSizeOptions.defaultSize}
+                split={'horizontal'}
+                defaultSize={
+                  narrowBreakpoint() ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
+                }
                 size={paneSizeOptions.size}
                 allowResize={paneSizeOptions.allowResize}
-                minSize={paneSizeOptions.minSize}
+                minSize={narrowBreakpoint() ? paneSizeOptions.minSize : 100}
                 maxSize={paneSizeOptions.maxSize}
                 primary="first"
               >
