@@ -659,7 +659,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
         overflow="hidden"
       >
         <Header paddingX={3} paddingY={2}>
-          <Grid columns={[6, 6, 12]}>
+          <Grid columns={[1, 4, 8, 12]}>
             {/* Dataset selector */}
             <Box padding={1} column={2}>
               <Stack>
