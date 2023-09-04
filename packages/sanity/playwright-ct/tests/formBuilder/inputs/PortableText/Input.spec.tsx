@@ -33,11 +33,12 @@ test.describe('Portable Text Input', () => {
       const $pte = await getFocusedPortableTextEditor('field-body')
       const $placeholder = $pte.getByTestId('pt-input-placeholder')
       // Assertion: placeholder is there
+      await expect($placeholder).toBeVisible()
       await expect($placeholder).toHaveText('Empty')
       // Write some text
       await insertPortableText('Hello there', $pte)
       // Assertion: placeholder was removed
-      await expect($placeholder).toHaveCount(0)
+      await expect($placeholder).not.toBeVisible()
     })
   })
 })
