@@ -1,24 +1,19 @@
-import React, {useMemo} from 'react'
+import React from 'react'
 import {Breadcrumbs, Text} from '@sanity/ui'
+import {ChevronRightIcon} from '@sanity/icons'
 import {ChangeTitlePath, FieldChangeNode} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'
 
 /** @internal */
 export function ChangeBreadcrumb(props: {change?: FieldChangeNode; titlePath: ChangeTitlePath}) {
   const {change, titlePath} = props
-  const maxLength = useMemo(() => {
-    if (change && change?.titlePath.length > 3) {
-      return 4
-    }
-    return undefined
-  }, [change])
 
   return (
     <Breadcrumbs
-      maxLength={maxLength}
+      maxLength={4}
       separator={
         <Text muted size={1}>
-          {'>'}
+          <ChevronRightIcon />
         </Text>
       }
     >
