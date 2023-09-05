@@ -1,12 +1,5 @@
 import {flatten} from 'lodash'
-import {traverseSchema} from '../../src/core/traverseSchema'
 import {validateSchema} from '../../src/sanity/validateSchema'
-import array from '../../src/sanity/validation/types/array'
-import block from '../../src/sanity/validation/types/block'
-import file from '../../src/sanity/validation/types/file'
-import image from '../../src/sanity/validation/types/image'
-import object from '../../src/sanity/validation/types/object'
-import reference from '../../src/sanity/validation/types/reference'
 
 describe('Validation test', () => {
   test('assigns/populates `_problems` property', () => {
@@ -27,21 +20,7 @@ describe('Validation test', () => {
       },
     ]
 
-    const coreTypes = [
-      {name: 'array', type: 'type'},
-      {name: 'string', type: 'type'},
-      {name: 'object', type: 'type'},
-    ]
-
-    const visitors = {
-      array: {visit: array},
-      object: {visit: object},
-    }
-
-    const validation = traverseSchema(schemaDef, coreTypes, (typeDef, visitorContext) => {
-      const visitor = visitors[typeDef.type]
-      return visitor ? visitor.visit(typeDef, visitorContext) : typeDef
-    })
+    const validation = validateSchema(schemaDef)
 
     const myArray = validation.get('myArray')
     expect(myArray._problems.length).toBeGreaterThan(0)
@@ -150,28 +129,8 @@ describe('Validation test', () => {
         ],
       },
     ]
-    const coreTypes = [
-      {name: 'array', type: 'type'},
-      {name: 'object', type: 'type'},
-      {name: 'block', type: 'type'},
-      {name: 'reference', type: 'type'},
-      {name: 'image', type: 'type'},
-      {name: 'file', type: 'type'},
-    ]
 
-    const visitors = {
-      array: {visit: array},
-      object: {visit: object},
-      block: {visit: block},
-      reference: {visit: reference},
-      image: {visit: image},
-      file: {visit: file},
-    }
-
-    const validation = traverseSchema(schemaDef, coreTypes, (typeDef, visitorContext) => {
-      const visitor = visitors[typeDef.type]
-      return visitor ? visitor.visit(typeDef, visitorContext) : typeDef
-    })
+    const validation = validateSchema(schemaDef)
 
     const validObjectResult = validation.get('validObject')
     expect(validObjectResult._problems).toHaveLength(0)
@@ -180,7 +139,7 @@ describe('Validation test', () => {
     const problems = flatten(
       invalidObjectResult.fields[0].of[0].of.map((item) => item._problems),
     ).filter(Boolean)
-    expect(problems).toHaveLength(6)
+    expect(problems).toHaveLength(7)
     expect(problems[0]).toMatchObject({
       severity: 'error',
       helpId: 'schema-array-of-type-builtin-type-conflict',
@@ -202,6 +161,10 @@ describe('Validation test', () => {
       helpId: 'schema-array-of-type-global-type-conflict',
     })
     expect(problems[5]).toMatchObject({
+      severity: 'warning',
+      helpId: 'schema-array-of-type-global-type-conflict',
+    })
+    expect(problems[6]).toMatchObject({
       severity: 'error',
       helpId: 'schema-array-of-type-builtin-type-conflict',
     })
