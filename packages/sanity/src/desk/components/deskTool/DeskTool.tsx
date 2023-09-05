@@ -1,4 +1,4 @@
-import {PortalProvider, useToast} from '@sanity/ui'
+import {PortalProvider, useTheme, useToast} from '@sanity/ui'
 import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
@@ -38,6 +38,9 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
   const isResolvingIntent = useRouterState(
     useCallback((routerState) => typeof routerState.intent === 'string', []),
   )
+  const {
+    sanity: {media},
+  } = useTheme()
 
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
 
@@ -84,7 +87,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
       <StyledPaneLayout
         flex={1}
         height={layoutCollapsed ? undefined : 'fill'}
-        minWidth={512}
+        minWidth={media[1]}
         onCollapse={handleRootCollapse}
         onExpand={handleRootExpand}
       >

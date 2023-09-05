@@ -14,6 +14,7 @@ import {
   Stack,
   Text,
   TextInput,
+  useTheme,
 } from '@sanity/ui'
 import {useAction} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
@@ -60,6 +61,10 @@ export default function ChangeConnectorsStory() {
   const handleLayoutCollapse = useAction('PaneLayout.onCollapse')
   const handleLayoutExpand = useAction('PaneLayout.onExpand')
 
+  const {
+    sanity: {media},
+  } = useTheme()
+
   return (
     <LayerProvider>
       <Card height="fill" tone="transparent">
@@ -72,7 +77,7 @@ export default function ChangeConnectorsStory() {
             >
               <PaneLayout
                 height="fill"
-                minWidth={512}
+                minWidth={media[1]}
                 onCollapse={handleLayoutCollapse}
                 onExpand={handleLayoutExpand}
               >
