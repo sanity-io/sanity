@@ -62,6 +62,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
         const active = activeKeys.includes(action.key)
         return (
           <CollapseMenuButton
+            data-testid={`action-button-${action.key}`}
             disabled={disabled || annotationDisabled}
             {...COLLAPSE_BUTTON_PROPS}
             dividerBefore={action.firstInGroup}
