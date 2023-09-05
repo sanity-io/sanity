@@ -11,13 +11,7 @@ test.describe('Portable Text Input', () => {
 
       const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
-      await page
-        .getByRole('button')
-        .filter({hasText: /^Object$/})
-        // @todo It seems like Firefox has different focus behaviour when using keypress here
-        // causing the focus assertion to fail. The insert button will stay focused even after the dialog opens.
-        // .press('Enter', {delay: DEFAULT_TYPE_DELAY})
-        .click()
+      await page.getByRole('button', {name: 'Insert Object (block)'}).click()
 
       // Assertion: Object preview should be visible
       await expect($portableTextInput.locator('.pt-block.pt-object-block')).toBeVisible()
@@ -28,13 +22,7 @@ test.describe('Portable Text Input', () => {
       await mount(<ObjectBlockStory />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
-      await page
-        .getByRole('button')
-        .filter({hasText: /^Inline Object$/})
-        // @todo It seems like Firefox has different focus behaviour when using keypress here
-        // causing the focus assertion to fail. The insert button will stay focused even after the dialog opens.
-        // .press('Enter', {delay: DEFAULT_TYPE_DELAY})
-        .click()
+      await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
 
       // Assertion: Object preview should be visible
       await expect($pte.getByTestId('inline-preview')).toBeVisible()
@@ -49,10 +37,7 @@ test.describe('Portable Text Input', () => {
 
       const $pte = await getFocusedPortableTextEditor('field-body')
 
-      await page
-        .getByRole('button')
-        .filter({hasText: /^Object$/})
-        .click()
+      await page.getByRole('button', {name: 'Insert Object (block)'}).click()
 
       // Assertion: Object preview should be visible
       await expect($pte.locator('.pt-block.pt-object-block')).toBeVisible()
@@ -81,10 +66,7 @@ test.describe('Portable Text Input', () => {
 
       const $portableTextField = await getFocusedPortableTextInput('field-body')
 
-      await page
-        .getByRole('button')
-        .filter({hasText: /^Object$/})
-        .click()
+      await page.getByRole('button', {name: 'Insert Object (block)'}).click()
 
       // Assertion: Object preview should be visible
       await expect($portableTextField.locator('.pt-block.pt-object-block')).toBeVisible()
@@ -138,10 +120,7 @@ test.describe('Portable Text Input', () => {
 
       const $pte = await getFocusedPortableTextEditor('field-body')
 
-      await page
-        .getByRole('button')
-        .filter({hasText: /^Object$/})
-        .click()
+      await page.getByRole('button', {name: 'Insert Object (block)'}).click()
 
       // Assertion: Object preview should be visible
       await expect($pte.locator('.pt-block.pt-object-block')).toBeVisible()

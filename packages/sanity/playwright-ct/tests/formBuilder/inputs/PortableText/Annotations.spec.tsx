@@ -17,11 +17,7 @@ test.describe('Portable Text Input', () => {
       // Backtrack and click link icon in menu bar
       await page.keyboard.press('ArrowLeft')
       await page.keyboard.press('Shift+ArrowLeft+ArrowLeft+ArrowLeft+ArrowLeft')
-      await page
-        .getByRole('button')
-        .filter({has: page.locator('[data-sanity-icon="link"]')})
-        .click()
-
+      await page.getByRole('button', {name: 'Link'}).click()
       // Assertion: Wait for link to be re-rendered / PTE internal state to be done
       await expect($pte.locator('span[data-link]')).toBeVisible()
 
