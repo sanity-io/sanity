@@ -13,8 +13,8 @@ jobs:
     name: Test (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     env:
-      TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      TURBO_TEAM: sanity-io
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     continue-on-error: ${{ matrix.experimental }}
 
     strategy:
