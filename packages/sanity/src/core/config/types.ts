@@ -142,6 +142,11 @@ export interface Tool<Options = any> {
   title: string
 
   /**
+   * Determines whether the tool will control the `document.title`.
+   */
+  controlsDocumentTitle?: boolean
+
+  /**
    * Gets the state for the given intent.
    *
    * @param intent - The intent to get the state for.
