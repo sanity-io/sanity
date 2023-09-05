@@ -7,8 +7,15 @@ on:
     branches: [next]
 jobs:
   test:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            browser: 'chromium|firefox'
+          - os: macos-latest
+            browser: webkit
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     env:
       TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       TURBO_TEAM: sanity-io
@@ -50,7 +57,7 @@ jobs:
       - name: Build CLI
         run: yarn build:cli # Needed for CLI tests
       - name: Run end-to-end tests
-        run: yarn workspace sanity test:ct
+        run: yarn workspace sanity test:ct --project ${{ matrix.browser }}
         env:
           NODE_OPTIONS: --max_old_space_size=8192
       - name: Get Current Job Log URL
