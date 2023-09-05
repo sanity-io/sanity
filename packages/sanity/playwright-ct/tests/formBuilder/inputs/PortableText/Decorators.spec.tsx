@@ -39,29 +39,42 @@ const DEFAULT_DECORATORS = [
 
 test.describe('Portable Text Input', () => {
   test.describe('Decorators', () => {
-    test('Render default styles with keyboard shortcuts', async ({mount, page}) => {
+    test('Render default decorators with keyboard shortcuts', async ({mount, page}) => {
       const {
         getModifierKey,
-        getFocusedPortableTextInput,
         getFocusedPortableTextEditor,
+        getFocusedPortableTextInput,
         insertPortableText,
         toggleHotkey,
       } = testHelpers({
         page,
       })
       await mount(<DecoratorsStory />)
-      const $pte = await getFocusedPortableTextEditor('field-defaultDecorators')
       const $portableTextInput = await getFocusedPortableTextInput('field-defaultDecorators')
+      const $pte = await getFocusedPortableTextEditor('field-defaultDecorators')
       const modifierKey = getModifierKey()
 
       for (const decorator of DEFAULT_DECORATORS) {
         if (decorator.hotkey) {
+          // Turn on the decorator
           await toggleHotkey(decorator.hotkey, modifierKey)
-          const $button = $portableTextInput.getByRole('button', {name: decorator.title})
-          expect(await $button.getAttribute('data-selected')).not.toBeNull()
+          // Assertion: button was toggled
+          await expect(
+            $portableTextInput.locator(
+              `button[data-testid="action-button-${decorator.name}"][data-selected]:not([disabled])`,
+            ),
+          ).toBeVisible()
+          // Insert some text
           await insertPortableText(`${decorator.name} text 123`, $pte)
+          // Turn off the decorator
           await toggleHotkey(decorator.hotkey, modifierKey)
-          expect(await $button.getAttribute('data-selected')).toBeNull()
+          // Assertion: button was toggled
+          await expect(
+            $portableTextInput.locator(
+              `button[data-testid="action-button-${decorator.name}"]:not([data-selected]):not([disabled])`,
+            ),
+          ).toBeVisible()
+          // Assertion: text has the correct decorator value
           await expect(
             $pte.locator(`[data-mark="${decorator.name}"]`, {
               hasText: `${decorator.name} text 123`,
@@ -77,7 +90,7 @@ test.describe('Portable Text Input', () => {
         await mount(<DecoratorsStory />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultDecorators')
 
-        // Assertion: All buttons in the menu bar should be visible
+        // Assertion: All buttons in the menu bar should be visible and have icon
         for (const decorator of DEFAULT_DECORATORS) {
           const $button = $portableTextInput.getByRole('button', {name: decorator.title})
           await expect($button).toBeVisible()

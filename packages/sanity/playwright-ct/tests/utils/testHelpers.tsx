@@ -14,11 +14,13 @@ export type MountResult = Awaited<ReturnType<ComponentFixtures['mount']>>
 export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
   const activatePTInputOverlay = async ($pteField: Locator) => {
     const $overlay = $pteField.getByTestId('activate-overlay')
-    if ((await $overlay.count()) > 0) {
+    if (await $overlay.isVisible()) {
       await $overlay.focus()
       await page.keyboard.press('Space')
     }
-    await $pteField.locator(`[data-testid='pt-editor__toolbar-card']`).waitFor()
+    await $pteField
+      .locator(`[data-testid='pt-editor__toolbar-card']`)
+      .waitFor({state: 'visible', timeout: 1000})
   }
   return {
     /**
@@ -35,6 +37,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       await activatePTInputOverlay($pteField)
       // Ensure focus on the contentEditable element of the Portable Text Editor
       const $pteTextbox = $pteField.getByRole('textbox')
+      await $pteTextbox.isEditable()
       await $pteTextbox.focus()
       return $pteField
     },
@@ -54,6 +57,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       await activatePTInputOverlay($pteField)
       // Ensure focus on the contentEditable element of the Portable Text Editor
       const $pteTextbox = $pteField.getByRole('textbox')
+      await $pteTextbox.isEditable()
       await $pteTextbox.focus()
       return $pteTextbox
     },
@@ -92,6 +96,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
           }),
         )
       }, text)
+      await locator.getByText(text).waitFor()
     },
     /**
      * Will create a keyboard event of a given hotkey combination that can be activated with a modifier key
@@ -99,7 +104,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      * @param modifierKey - the modifier key (if any) that can activate the hotkey
      */
     toggleHotkey: async (hotkey: string, modifierKey?: string) => {
-      await page.keyboard.press(modifierKey ? `${modifierKey}+${hotkey}` : hotkey, {delay: 200})
+      await page.keyboard.press(modifierKey ? `${modifierKey}+${hotkey}` : hotkey)
     },
   }
 }
