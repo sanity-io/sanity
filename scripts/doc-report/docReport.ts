@@ -4,7 +4,7 @@ import {groupBy} from 'lodash'
 import {combineLatest, map} from 'rxjs'
 import {startTimer} from '../utils/startTimer'
 import {createDocClient} from './docClient'
-import {readEnv} from 'sanity-perf-tests/config/envVars'
+import {readEnv} from './envVars'
 
 const QUERY = `*[_type=='exportSymbol'] {
   _id,

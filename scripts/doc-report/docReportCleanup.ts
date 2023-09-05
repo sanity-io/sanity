@@ -1,6 +1,6 @@
 import {sanityIdify} from '../utils/sanityIdify'
 import {createDocClient} from './docClient'
-import {readEnv} from 'sanity-perf-tests/config/envVars'
+import {readEnv} from './envVars'
 
 const DATASET = readEnv('DOCS_REPORT_DATASET')
 const studioMetricsClient = createDocClient(DATASET)

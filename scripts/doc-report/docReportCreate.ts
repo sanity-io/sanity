@@ -17,7 +17,7 @@ import type {PackageManifest} from '../types'
 import {sanityIdify} from '../utils/sanityIdify'
 import {startTimer} from '../utils/startTimer'
 import {createDocClient} from './docClient'
-import {readEnv} from 'sanity-perf-tests/config/envVars'
+import {readEnv} from './envVars'
 
 const ALLOWED_TAGS = ['public', 'alpha', 'beta', 'internal', 'experimental', 'deprecated']
 interface Package {

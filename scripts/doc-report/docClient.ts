@@ -1,6 +1,6 @@
 import {type SanityClient, createClient} from '@sanity/client'
 import {sanityIdify} from '../utils/sanityIdify'
-import {readEnv} from 'sanity-perf-tests/config/envVars'
+import {readEnv} from './envVars'
 
 export function createDocClient(dataset: string): SanityClient {
   return createClient({
