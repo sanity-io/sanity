@@ -98,7 +98,13 @@ combineLatest([
 | ------- | ----------------- |
 ${res
   .sort((a, b) => b.documentedChange - a.documentedChange)
-  .map((r) => `| ${r.package} | ${r.documentedChange}% |`)
+  .filter((r) => r.documentedChange !== 0)
+  .map(
+    (r) =>
+      `| ${r.package} | ${
+        r.documentedChange > 0 ? `+${r.documentedChange}` : r.documentedChange
+      }% |`,
+  )
   .join('\n')}
 
 <details>
@@ -111,8 +117,8 @@ ${res
   <summary>${r.package}</summary>
   <table>
     <tr>
-      <th>Branch</th>
-      <th>Production</th>
+      <th>This branch</th>
+      <th>Current release</th>
     </tr>
     <tr>
       <td>${r.branchDocumented} documented</td>
