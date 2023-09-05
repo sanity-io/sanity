@@ -45,6 +45,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       // Ensure focus on the contentEditable element of the Portable Text Editor
       const $pteTextbox = $pteField.getByRole('textbox')
       await $pteTextbox.focus()
+      await expect($pteTextbox).toBeFocused()
       return $pteTextbox
     },
     /**
