@@ -56,8 +56,15 @@ jobs:
         run: npx playwright install --with-deps
       - name: Build CLI
         run: yarn build:cli # Needed for CLI tests
-      - name: Run end-to-end tests
-        run: yarn workspace sanity test:ct --project ${{ matrix.browser }}
+      - name: Run end-to-end tests for ${{ matrix.browser }}
+        # run: yarn workspace sanity test:ct --project ${{ matrix.browser }}
+        run: |
+          CMD="yarn workspace sanity test:ct"
+          IFS='|' read -ra BROWSERS <<< "${{ matrix.browser }}"
+          for browser in "${BROWSERS[@]}"; do
+            CMD="$CMD --project=$browser"
+          done
+          eval $CMD
         env:
           NODE_OPTIONS: --max_old_space_size=8192
       - name: Get Current Job Log URL
