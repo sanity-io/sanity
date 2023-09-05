@@ -3,6 +3,7 @@
 import {FormNodeValidation} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React, {memo} from 'react'
+import {constructDescriptionId} from '../../members/common/constructDescriptionId'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 
 /** @internal */
@@ -45,7 +46,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
       </Flex>
 
       {description && (
-        <Text muted size={1}>
+        <Text muted size={1} id={constructDescriptionId(inputId, description)}>
           {description}
         </Text>
       )}

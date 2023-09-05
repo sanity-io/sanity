@@ -392,6 +392,7 @@ export interface PrimitiveInputElementProps {
   onFocus: FocusEventHandler
   onBlur: FocusEventHandler
   ref: React.MutableRefObject<any>
+  'aria-describedby': string | undefined
 }
 
 /**
@@ -402,6 +403,7 @@ export interface ComplexElementProps {
   onFocus: FocusEventHandler
   onBlur: FocusEventHandler
   ref: React.MutableRefObject<any>
+  'aria-describedby': string | undefined
 }
 
 /**

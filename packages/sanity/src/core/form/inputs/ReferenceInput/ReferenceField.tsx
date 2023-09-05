@@ -300,6 +300,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
         level={props.level}
         title={props.title}
         validation={props.validation}
+        inputId={props.inputId}
       >
         {isEditing ? (
           <Box>{children}</Box>

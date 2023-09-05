@@ -57,6 +57,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
       onExpand={handleExpand}
       columns={member?.fieldSet?.columns}
       data-testid={`fieldset-${member.fieldSet.name}`}
+      inputId={member.fieldSet.name}
     >
       {member.fieldSet.members.map((fieldsetMember) => {
         if (fieldsetMember.kind === 'error') {

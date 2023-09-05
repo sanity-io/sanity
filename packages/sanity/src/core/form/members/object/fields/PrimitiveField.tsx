@@ -11,6 +11,7 @@ import {FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {constructDescriptionId} from '../../common/constructDescriptionId'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input
@@ -105,6 +106,10 @@ export function PrimitiveField(props: {
       value: resolveNativeNumberInputValue(member.field.schemaType, member.field.value, localValue),
       readOnly: Boolean(member.field.readOnly),
       placeholder: member.field.schemaType.placeholder,
+      'aria-describedby': constructDescriptionId(
+        member.field.id,
+        member.field.schemaType.description,
+      ),
     }),
     [
       handleBlur,
