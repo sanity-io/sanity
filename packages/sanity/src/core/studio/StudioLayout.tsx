@@ -89,14 +89,14 @@ export function StudioLayout() {
 
     return mainTitle
   }, [activeToolName, name, title])
+  const toolControlsDocumentTitle = !!activeTool?.controlsDocumentTitle
 
   useEffect(() => {
-    if (activeToolName === 'content') {
-      // Will be handled by sanity/src/desk/components/deskTool/DeskTitle.tsx
+    if (toolControlsDocumentTitle) {
       return
     }
     document.title = documentTitle
-  }, [documentTitle, activeToolName])
+  }, [documentTitle, toolControlsDocumentTitle])
 
   const handleSearchFullscreenOpenChange = useCallback((open: boolean) => {
     setSearchFullscreenOpen(open)
