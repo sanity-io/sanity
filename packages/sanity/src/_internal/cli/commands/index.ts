@@ -37,6 +37,7 @@ import graphqlGroup from './graphql/graphqlGroup'
 import listGraphQLAPIsCommand from './graphql/listGraphQLAPIsCommand'
 import deployGraphQLAPICommand from './graphql/deployGraphQLAPICommand'
 import deleteGraphQLAPICommand from './graphql/deleteGraphQLAPICommand'
+import typegenCommand from './typegen/typegenCommand'
 import usersGroup from './users/usersGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
@@ -78,6 +79,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   listGraphQLAPIsCommand,
   deployGraphQLAPICommand,
   deleteGraphQLAPICommand,
+  typegenCommand,
   devCommand,
   startCommand,
   previewCommand,

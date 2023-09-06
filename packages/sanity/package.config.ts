@@ -28,6 +28,11 @@ export default defineConfig({
       require: './lib/_internal/cli/threads/getGraphQLAPIs.js',
       default: './lib/_internal/cli/threads/getGraphQLAPIs.js',
     },
+    './_internal/cli/threads/getSchemaDocumentTypeDefinitions': {
+      source: './src/_internal/cli/threads/getSchemaDocumentTypeDefinitions.ts',
+      require: './lib/_internal/cli/threads/getSchemaDocumentTypeDefinitions.js',
+      default: './lib/_internal/cli/threads/getSchemaDocumentTypeDefinitions.js',
+    },
   }),
 
   extract: {

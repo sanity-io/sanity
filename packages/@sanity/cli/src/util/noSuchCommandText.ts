@@ -15,6 +15,7 @@ const coreCommands = [
   'documents',
   'exec',
   'graphql',
+  'typegen',
   'hook',
   'preview',
   'start',
