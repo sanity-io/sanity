@@ -3,7 +3,6 @@ import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown, useToast}
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
-import {deskLocaleNamespace} from '../../../i18n'
 import {TimelineError} from './TimelineError'
 import {Timeline} from './timeline'
 import {Chunk, useTimelineSelector, useTranslation} from 'sanity'
