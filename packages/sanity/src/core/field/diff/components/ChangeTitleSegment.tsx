@@ -25,7 +25,7 @@ export function ChangeTitleSegment(props: {
 
   if (typeof segment === 'string') {
     return (
-      <Box style={segment.length > 30 ? {maxWidth: 100} : {}}>
+      <Box>
         <Text title={segment} size={1} weight="semibold" textOverflow="ellipsis">
           {segment}
         </Text>
