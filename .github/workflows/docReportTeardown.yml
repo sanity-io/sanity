@@ -1,0 +1,40 @@
+name: 'Cleanup: Documentation Report'
+
+on:
+  # Build on closed or merged PRs
+  pull_request:
+    types: [closed]
+
+jobs:
+  reportTeardown:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TURBO_TEAM: sanity-io
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
+
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Remove datasets for closed PRs
+        env:
+          PERF_TEST_METRICS_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
+          DOCS_REPORT_DATASET: $GITHUB_REF_NAME
+        run: yarn docs:report:cleanup

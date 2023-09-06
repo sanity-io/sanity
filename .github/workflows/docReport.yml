@@ -1,0 +1,69 @@
+name: Create Documentation Report
+
+on:
+  # Build on pushes branches that have a PR (including drafts)
+  pull_request:
+  # Build on commits pushed to branches without a PR if it's in the allowlist
+  push:
+    branches: [current]
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TURBO_TEAM: sanity-io
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
+
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Build packages
+        run: yarn build
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+
+      - name: Create Docs Report on current
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/current' }}
+        env:
+          DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
+          DOCS_REPORT_DATASET: production
+        run: yarn docs:report:create
+
+      - name: Create Docs Report on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
+          DOCS_REPORT_DATASET: ${{ github.ref_name }}
+        run: yarn docs:report:create
+
+      - name: Compare Docs Coverage on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
+          DOCS_REPORT_DATASET: ${{ github.ref_name }}
+        run: yarn docs:report
+
+      - name: PR comment with report
+        uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f # v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment_tag: 'docs-report'
+          filePath: ${{ github.workspace }}/scripts/docs-report.md
