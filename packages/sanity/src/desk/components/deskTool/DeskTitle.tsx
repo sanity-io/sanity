@@ -10,8 +10,8 @@ interface DeskTitleProps {
   resolvedPanes: Panes['resolvedPanes']
 }
 
-const DocumentTitle = (props: {title: string; documentId: string; documentType: string}) => {
-  const {title, documentId, documentType} = props
+const DocumentTitle = (props: {documentId: string; documentType: string}) => {
+  const {documentId, documentType} = props
   const editState = useEditState(documentId, documentType)
   const schema = useSchema()
   const isNewDocument = !editState?.published && !editState?.draft
@@ -29,52 +29,71 @@ const DocumentTitle = (props: {title: string; documentId: string; documentType: 
     : value?.title || 'Untitled'
 
   const settled = editState.ready && !previewValueIsLoading
+  const newTitle = useConstructDocumentTitle(documentTitle)
   useEffect(() => {
     if (!settled) return
     // Set the title as the document title
-    document.title = `${documentTitle} ${title}`
-  }, [documentTitle, title, settled])
+    document.title = newTitle
+  }, [documentTitle, settled, newTitle])
 
   return null
 }
 
-const NoDocumentTitle = (props: {title: string}) => {
+const PassthroughTitle = (props: {title?: string}) => {
   const {title} = props
+  const newTitle = useConstructDocumentTitle(title)
   useEffect(() => {
     // Set the title as the document title
-    document.title = title
-  }, [title])
+    document.title = newTitle
+  }, [newTitle, title])
   return null
 }
 
 export const DeskTitle = (props: DeskTitleProps) => {
   const {resolvedPanes} = props
 
-  const deskToolTitle = useDeskTool().structureContext.title
-  // Will show up to the first pane of type document.
-  const paneWithTypeDocumentIndex = resolvedPanes.findIndex((pane) => {
-    return pane !== LOADING_PANE && pane.type === 'document'
-  })
-  const paneToShow =
-    paneWithTypeDocumentIndex > -1
-      ? resolvedPanes[paneWithTypeDocumentIndex]
-      : resolvedPanes[resolvedPanes.length - 1]
-
-  const paneTitle = `${
-    paneToShow === LOADING_PANE ? '' : paneToShow?.title ?? ''
-  } |  ${deskToolTitle}`
-
   if (!resolvedPanes?.length) return null
-  if (paneWithTypeDocumentIndex === -1) return <NoDocumentTitle title={paneTitle} />
 
-  const documentPane = resolvedPanes[paneWithTypeDocumentIndex] as DocumentPaneNode
-  if (documentPane.title) return <NoDocumentTitle title={paneTitle} />
+  const lastPane = resolvedPanes[resolvedPanes.length - 1]
 
-  return (
-    <DocumentTitle
-      title={paneTitle}
-      documentId={documentPane.options.id}
-      documentType={documentPane.options.type}
-    />
-  )
+  // If the last pane is loading, display the desk tool title only
+  if (isLoadingPane(lastPane)) {
+    return <PassthroughTitle />
+  }
+
+  // If the last pane is a document
+  if (isDocumentPane(lastPane)) {
+    // Passthrough the document pane's title, which may be defined in structure builder
+    if (lastPane?.title) {
+      return <PassthroughTitle title={lastPane.title} />
+    }
+
+    // Otherwise, display a `document.title` containing the resolved Sanity document title
+    return <DocumentTitle documentId={lastPane.options.id} documentType={lastPane.options.type} />
+  }
+
+  // Otherwise, display the last pane's title (if present)
+  return <PassthroughTitle title={lastPane?.title} />
+}
+
+/**
+ * Construct a pipe delimited title containing `activeTitle` (if applicable) and the base desk title.
+ *
+ * @param activeTitle - Title of the first segment
+ *
+ * @returns A pipe delimited title in the format `${activeTitle} | %BASE_DESK_TITLE%`
+ * or simply `%BASE_DESK_TITLE` if `activeTitle` is undefined.
+ */
+function useConstructDocumentTitle(activeTitle?: string) {
+  const deskToolBaseTitle = useDeskTool().structureContext.title
+  return [activeTitle, deskToolBaseTitle].filter((title) => title).join(' | ')
+}
+
+// Type guards
+function isDocumentPane(pane: Panes['resolvedPanes'][number]): pane is DocumentPaneNode {
+  return pane !== LOADING_PANE && pane.type === 'document'
+}
+
+function isLoadingPane(pane: Panes['resolvedPanes'][number]): pane is typeof LOADING_PANE {
+  return pane === LOADING_PANE
 }
