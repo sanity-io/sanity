@@ -84,15 +84,19 @@ export function StudioLayout() {
     const mainTitle = title || startCase(name)
 
     if (activeToolName) {
-      return `${mainTitle} – ${startCase(activeToolName)}`
+      return `${startCase(activeToolName)} | ${mainTitle}`
     }
 
     return mainTitle
   }, [activeToolName, name, title])
+  const toolControlsDocumentTitle = !!activeTool?.controlsDocumentTitle
 
   useEffect(() => {
+    if (toolControlsDocumentTitle) {
+      return
+    }
     document.title = documentTitle
-  }, [documentTitle])
+  }, [documentTitle, toolControlsDocumentTitle])
 
   const handleSearchFullscreenOpenChange = useCallback((open: boolean) => {
     setSearchFullscreenOpen(open)

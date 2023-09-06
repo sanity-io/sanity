@@ -107,6 +107,8 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
             (intent === 'create' && params.template),
         )
       },
+      // Controlled by sanity/src/desk/components/deskTool/DeskTitle.tsx
+      controlsDocumentTitle: true,
       getIntentState,
       options,
       router,

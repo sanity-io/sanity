@@ -22,7 +22,7 @@ interface PaneData {
   siblingIndex: number
 }
 
-interface Panes {
+export interface Panes {
   paneDataItems: PaneData[]
   routerPanes: RouterPanes
   resolvedPanes: (PaneNode | typeof LOADING_PANE)[]
