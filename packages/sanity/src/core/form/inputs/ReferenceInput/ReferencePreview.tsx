@@ -93,7 +93,7 @@ export function ReferencePreview(props: {
                   dimmed={!preview.published}
                   muted={!preview.published}
                 >
-                  <PublishIcon />
+                  <PublishIcon aria-label={preview.published ? 'Published' : 'Not published'} />
                 </TextWithTone>
               </Tooltip>
             </Box>
@@ -121,7 +121,7 @@ export function ReferencePreview(props: {
                   dimmed={!preview.draft}
                   muted={!preview.draft}
                 >
-                  <EditIcon />
+                  <EditIcon aria-label={preview.draft ? 'Edited' : 'No unpublished edits'} />
                 </TextWithTone>
               </Tooltip>
             </Box>

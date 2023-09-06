@@ -6,7 +6,7 @@ export function NotPublishedStatus() {
   return (
     <Tooltip content={<>Not published</>}>
       <Text muted>
-        <UnpublishIcon />
+        <UnpublishIcon aria-label="Not publised" />
       </Text>
     </Tooltip>
   )
