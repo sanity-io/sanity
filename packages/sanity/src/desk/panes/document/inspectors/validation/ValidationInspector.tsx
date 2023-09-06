@@ -52,9 +52,9 @@ export function ValidationInspector(props: DocumentInspectorProps) {
 
         {validation.length > 0 && (
           <Stack space={2}>
-            {validation.map((marker) => (
+            {validation.map((marker, i) => (
               <ValidationCard
-                key={pathToString(marker.path)}
+                key={i}
                 marker={marker}
                 onOpen={handleOpen}
                 schemaType={schemaType}
