@@ -777,7 +777,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
             )}
           </Grid>
         </Header>
-        <SplitpaneContainer flex={'auto'}>
+        <SplitpaneContainer flex="auto">
           {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
           <SplitPane
             split={narrowBreakpoint() ? 'vertical' : 'horizontal'}
