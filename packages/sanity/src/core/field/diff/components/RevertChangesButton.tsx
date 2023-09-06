@@ -1,8 +1,8 @@
 import {RevertIcon} from '@sanity/icons'
 import {Button, ButtonProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
-import {useTranslation} from 'react-i18next'
 import styled from 'styled-components'
+import {useTranslation} from '../../../i18n'
 
 const Root = styled(Button)`
   [data-ui='Text'] {
