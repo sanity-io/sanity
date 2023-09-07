@@ -92,6 +92,15 @@ export function validateValue(
           }
           return true
         }
+        if (!Array.isArray(textBlock.children)) {
+          resolution = {
+            patches: [unset([{_key: textBlock._key}])],
+            description: `Children of text block with _key '${textBlock._key}' is not an array.`,
+            action: 'Remove the block',
+            item: textBlock,
+          }
+          return true
+        }
         // Test that markDefs exists
         if (!blk.markDefs) {
           resolution = {
