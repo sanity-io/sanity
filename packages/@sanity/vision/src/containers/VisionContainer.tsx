@@ -5,7 +5,7 @@ import {DelayedSpinner} from '../components/DelayedSpinner'
 import {VisionGui} from '../components/VisionGui'
 import {useDatasets} from '../hooks/useDatasets'
 import type {VisionProps} from '../types'
-import {visionLocaleNamespace} from '../../i18n'
+import {visionLocaleNamespace} from '../i18n'
 
 export function VisionContainer(props: VisionProps) {
   const toast = useToast()
