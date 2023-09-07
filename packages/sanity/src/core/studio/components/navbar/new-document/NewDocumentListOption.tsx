@@ -53,7 +53,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
         <TooltipContentBox padding={2}>
           <InsufficientPermissionsMessage
             currentUser={currentUser}
-            operationLabel={t('nav-bar.new-document.error.unable-to-create-document')}
+            operationLabel={t('navbar.new-document.error.unable-to-create-document')}
           />
         </TooltipContentBox>
       }
