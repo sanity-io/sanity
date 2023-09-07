@@ -136,7 +136,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
               paddingY={4}
               rel="noopener noreferrer"
               target="_blank"
-              text={t('nav.presence-menu.action.manage-members')}
+              text={t('navbar.presence-menu.action.manage-members')}
             />
           </FooterStack>
         </StyledMenu>
