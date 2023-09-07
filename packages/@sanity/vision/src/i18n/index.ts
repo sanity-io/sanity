@@ -3,7 +3,7 @@ import {defineLocaleResourceBundle} from 'sanity'
 /**
  * The locale namespace for the vision tool
  *
- * @public
+ * @internal
  */
 export const visionLocaleNamespace = 'vision' as const
 
@@ -17,11 +17,3 @@ export const visionUsEnglishLocaleBundle = defineLocaleResourceBundle({
   namespace: visionLocaleNamespace,
   resources: () => import('./resources'),
 })
-
-/**
- * The locale resource keys for the desk tool.
- *
- * @alpha
- * @hidden
- */
-export type {VisionLocaleResourceKeys} from './resources'
