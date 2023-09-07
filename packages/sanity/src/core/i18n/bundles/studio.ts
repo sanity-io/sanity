@@ -222,10 +222,10 @@ export const studioLocaleStrings = {
   'navbar.new-document.no-documents-found': 'No documents found',
 
   /** Accessibility label for options in the new document menu */
-  'nav-bar.new-document.new-document': 'New document',
+  'navbar.new-document.new-document': 'New document',
 
   /** Error label for when a user is unable to create a document */
-  'nav-bar.new-document.error.unable-to-create-document': 'create this document',
+  'navbar.new-document.error.unable-to-create-document': 'create this document',
 
   /** --- Search --- */
 
@@ -471,10 +471,10 @@ export const studioLocaleStrings = {
     'Invite people to the project to see their online status.',
 
   /** Label for action to manage members of the current studio project */
-  'nav.presence-menu.action.manage-members': 'Manage members',
+  'navbar.presence-menu.action.manage-members': 'Manage members',
 
   /** Message for when a user is not in a document (within the presence menu) */
-  'nav.presence-menu.not-in-a-document': 'Not in a document',
+  'navbar.presence-menu.not-in-a-document': 'Not in a document',
 }
 
 /**
