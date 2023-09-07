@@ -666,7 +666,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
             <Box padding={1} column={2}>
               <Stack>
                 <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>{t('header.dataset-label')}</StyledLabel>
+                  <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
                 </Card>
                 <Select value={dataset} onChange={this.handleChangeDataset}>
                   {datasets.map((ds) => (
@@ -680,19 +680,19 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
             <Box padding={1} column={2}>
               <Stack>
                 <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>{t('header.api-version-label')}</StyledLabel>
+                  <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
                 </Card>
                 <Select
                   value={
-                    customApiVersion === false ? apiVersion : t('header.other-api-version-label')
+                    customApiVersion === false ? apiVersion : t('settings.other-api-version-label')
                   }
                   onChange={this.handleChangeApiVersion}
                 >
                   {API_VERSIONS.map((version) => (
                     <option key={version}>{version}</option>
                   ))}
-                  <option key="other" value={t('header.other-api-version-label')}>
-                    {t('header.other-api-version-label')}
+                  <option key="other" value={t('settings.other-api-version-label')}>
+                    {t('settings.other-api-version-label')}
                   </option>
                 </Select>
               </Stack>
@@ -704,7 +704,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                 <Stack>
                   <Card paddingTop={2} paddingBottom={3}>
                     <StyledLabel textOverflow="ellipsis">
-                      {t('header.custom-api-version-label')}
+                      {t('settings.custom-api-version-label')}
                     </StyledLabel>
                   </Card>
 
@@ -713,7 +713,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                     value={customApiVersion}
                     onChange={this.handleCustomApiVersionChange}
                     customValidity={
-                      isValidApiVersion ? undefined : t('header.error.invalid-api-version')
+                      isValidApiVersion ? undefined : t('settings.error.invalid-api-version')
                     }
                     maxLength={11}
                   />
@@ -727,7 +727,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                 <Card paddingBottom={1}>
                   <Inline space={1}>
                     <Box>
-                      <StyledLabel>{t('header.perspective-label')}</StyledLabel>
+                      <StyledLabel>{t('settings.perspective-label')}</StyledLabel>
                     </Box>
 
                     <Box>
@@ -738,7 +738,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
                 <Select value={perspective} onChange={this.handleChangePerspective}>
                   {PERSPECTIVES.map((p) => (
-                    <option key={p}>{t(`perspectives.${p}`)}</option>
+                    <option key={p}>{p}</option>
                   ))}
                 </Select>
               </Stack>
@@ -750,9 +750,9 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                 <Stack>
                   <Card paddingTop={2} paddingBottom={3}>
                     <StyledLabel>
-                      {t('header.query-url')}&nbsp;
+                      {t('query.url')}&nbsp;
                       <QueryCopyLink onClick={this.handleCopyUrl}>
-                        [{t('header.action.copy-to-clipboard')}]
+                        [{t('action.copy-url-to-clipboard')}]
                       </QueryCopyLink>
                     </StyledLabel>
                   </Card>
@@ -763,12 +763,12 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                     <Tooltip
                       content={
                         <Box padding={2}>
-                          <Text>{t('header.action.copy-to-clipboard')}</Text>
+                          <Text>{t('action.copy-url-to-clipboard')}</Text>
                         </Box>
                       }
                     >
                       <Button
-                        aria-label={t('header.action.copy-to-clipboard')}
+                        aria-label={t('action.copy-url-to-clipboard')}
                         type="button"
                         mode="ghost"
                         icon={CopyIcon}
@@ -812,7 +812,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   <Box flex={1}>
                     <InputBackgroundContainerLeft>
                       <Flex>
-                        <StyledLabel muted>{t('query.query-label')}</StyledLabel>
+                        <StyledLabel muted>{t('query.label')}</StyledLabel>
                       </Flex>
                     </InputBackgroundContainerLeft>
                     <VisionCodeMirror value={this.state.query} onChange={this.handleQueryChange} />
@@ -822,7 +822,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   <Card flex={1} tone={hasValidParams ? 'default' : 'critical'}>
                     <InputBackgroundContainerLeft>
                       <Flex>
-                        <StyledLabel muted>{t('query.params-label')}</StyledLabel>
+                        <StyledLabel muted>{t('params.label')}</StyledLabel>
                         {paramsError && (
                           <Tooltip
                             placement="top-end"
@@ -851,7 +851,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                         content={
                           <Card padding={2} radius={4}>
                             <Text size={1} muted>
-                              {t('query.error.params-invalid-json')}
+                              {t('params.error.params-invalid-json')}
                             </Text>
                           </Card>
                         }
@@ -878,8 +878,8 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                                 tone={queryInProgress ? 'positive' : 'primary'}
                                 text={
                                   queryInProgress
-                                    ? t('footer.action.cancel')
-                                    : t('footer.action.fetch')
+                                    ? t('action.query-cancel')
+                                    : t('action.query-execute')
                                 }
                               />
                             </Tooltip>
@@ -891,8 +891,8 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                               icon={listenInProgress ? StopIcon : PlayIcon}
                               text={
                                 listenInProgress
-                                  ? t('footer.action.stop')
-                                  : t('footer.action.listen')
+                                  ? t('action.listen-cancel')
+                                  : t('action.listen-execute')
                               }
                               mode="ghost"
                               disabled={!hasValidParams}
@@ -917,7 +917,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   <Result overflow="auto">
                     <InputBackgroundContainer>
                       <Box marginLeft={3}>
-                        <StyledLabel muted>{t('query.result-label')}</StyledLabel>
+                        <StyledLabel muted>{t('result.label')}</StyledLabel>
                       </Box>
                     </InputBackgroundContainer>
                     <Box padding={3} paddingTop={5}>
@@ -941,16 +941,18 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                   <TimingsTextContainer align="center">
                     <Box>
                       <Text muted>
-                        {t('footer.execution-time-label')}:{' '}
+                        {t('result.execution-time-label')}:{' '}
                         {typeof queryTime === 'number'
                           ? `${queryTime}ms`
-                          : t('footer.not-applicable')}
+                          : t('result.timing-not-applicable')}
                       </Text>
                     </Box>
                     <Box marginLeft={4}>
                       <Text muted>
-                        {t('footer.end-to-end-time-label')}:{' '}
-                        {typeof e2eTime === 'number' ? `${e2eTime}ms` : t('footer.not-applicable')}
+                        {t('result.end-to-end-time-label')}:{' '}
+                        {typeof e2eTime === 'number'
+                          ? `${e2eTime}ms`
+                          : t('result.timing-not-applicable')}
                       </Text>
                     </Box>
                   </TimingsTextContainer>

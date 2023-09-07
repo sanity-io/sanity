@@ -11,7 +11,10 @@ export function tryParseParams(
   } catch (err) {
     // JSON5 always prefixes the error message with JSON5:, so we remove it
     // to clean up the error tooltip
-    err.message = `${t('query.error.params-invalid-json')}:\n\n${err.message.replace('JSON5:', '')}`
+    err.message = `${t('params.error.params-invalid-json')}:\n\n${err.message.replace(
+      'JSON5:',
+      '',
+    )}`
     return err
   }
 }

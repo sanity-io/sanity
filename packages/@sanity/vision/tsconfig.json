@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig.settings",
-  "include": ["./src", "./i18n"],
+  "include": ["./src"],
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
