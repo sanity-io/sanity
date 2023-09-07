@@ -1,7 +1,7 @@
 import React from 'react'
 import {Box} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {visionLocaleNamespace} from '../../i18n'
+import {visionLocaleNamespace} from '../i18n'
 import {ErrorCode} from './QueryErrorDialog.styled'
 
 interface ContentLakeQueryError {

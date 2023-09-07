@@ -1,9 +1,9 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {debounce} from 'lodash'
+import {TFunction, useTranslation} from 'sanity'
 import {tryParseParams} from '../util/tryParseParams'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
-import {visionLocaleNamespace} from '../../i18n'
-import {TFunction, useTranslation} from 'sanity'
+import {visionLocaleNamespace} from '../i18n'
 
 const defaultValue = `{\n  \n}`
 
@@ -51,7 +51,10 @@ export function ParamsEditor(props: ParamsEditorProps) {
   return <VisionCodeMirror value={props.value || defaultValue} onChange={handleChange} />
 }
 
-function eventFromValue(value: string, t: TFunction<'vision', undefined>): ParamsEditorChangeEvent {
+function eventFromValue(
+  value: string,
+  t: TFunction<typeof visionLocaleNamespace, undefined>
+): ParamsEditorChangeEvent {
   const parsedParams = tryParseParams(value, t)
   const params = parsedParams instanceof Error ? {} : parsedParams
   const validationError = parsedParams instanceof Error ? parsedParams.message : undefined
