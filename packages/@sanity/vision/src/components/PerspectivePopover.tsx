@@ -2,7 +2,7 @@ import React, {useCallback, useState} from 'react'
 import {Popover, Stack, Inline, Text, Card, Badge, Button, useClickOutside} from '@sanity/ui'
 import {HelpCircleIcon} from '@sanity/icons'
 import {useTranslation} from 'sanity'
-import {visionLocaleNamespace} from '../../i18n'
+import {visionLocaleNamespace} from '../i18n'
 import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 
 export function PerspectivePopover() {
@@ -23,18 +23,18 @@ export function PerspectivePopover() {
         <PerspectivePopoverContent>
           <Stack space={4}>
             <Inline space={2}>
-              <Text weight="medium">{t('perspectives.title')}</Text>
-              <Badge tone="primary">{t('perspectives.new-label')}</Badge>
+              <Text weight="medium">{t('settings.perspectives.title')}</Text>
+              <Badge tone="primary">{t('label.new')}</Badge>
             </Inline>
 
             <Card>
-              <Text muted>{t('perspectives.description')}</Text>
+              <Text muted>{t('settings.perspectives.description')}</Text>
             </Card>
 
             <Card>
               <Text>
                 <PerspectivePopoverLink href="https://sanity.io/docs/perspectives" target="_blank">
-                  {t('perspectives.action.docs-link')} &rarr;
+                  {t('settings.perspectives.action.docs-link')} &rarr;
                 </PerspectivePopoverLink>
               </Text>
             </Card>
