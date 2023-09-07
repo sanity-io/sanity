@@ -35,7 +35,7 @@ interface TransformResult {
 }
 
 const studioMetricsClient = createDocClient(readEnv('DOCS_REPORT_DATASET'))
-const studioMetricsClientProduction = createDocClient('production')
+const studioMetricsClientProduction = createDocClient('next')
 
 function getDocumentationReport(symbols: ExportSymbol[]): Report[] {
   const obj = groupBy(symbols, 'package')
@@ -92,52 +92,60 @@ combineLatest([
     }),
   )
   .subscribe(async (res) => {
-    // convert the result to a markdown table with heading
-    const table = `
-| Package | Documentation Change |
-| ------- | ----------------- |
-${res
-  .sort((a, b) => b.documentedChange - a.documentedChange)
-  .filter((r) => r.documentedChange !== 0)
-  .map(
-    (r) =>
-      `| ${r.package} | ${
-        r.documentedChange > 0 ? `+${r.documentedChange}` : r.documentedChange
-      }% |`,
-  )
-  .join('\n')}
+    const result = res.filter((r) => r.documentedChange !== 0)
 
-<details>
-  <summary>Full Report</summary>
-  ${res
-    .sort((a, b) => b.documentedChange - a.documentedChange)
-    .map(
-      (r) =>
-        `<details>
-  <summary>${r.package}</summary>
-  <table>
-    <tr>
-      <th>This branch</th>
-      <th>Current release</th>
-    </tr>
-    <tr>
-      <td>${r.branchDocumented} documented</td>
-      <td>${r.prodDocumented} documented</td>
-    </tr>
-    <tr>
-      <td>${r.branchNotDocumented} not documented</td>
-      <td>${r.prodNotDocumented} not documented</td>
-    </tr>
-  </table>
-</details>
-`,
-    )
-    .join('\n')}
-</details>
-`
+    let report = ''
+
+    if (result.length === 0) {
+      report = 'No changes to documentation'
+    } else {
+      // convert the result to a markdown table with heading
+      report = `
+      | Package | Documentation Change |
+      | ------- | ----------------- |
+      ${res
+        .sort((a, b) => b.documentedChange - a.documentedChange)
+        .filter((r) => r.documentedChange !== 0)
+        .map(
+          (r) =>
+            `| ${r.package} | ${
+              r.documentedChange > 0 ? `+${r.documentedChange}` : r.documentedChange
+            }% |`,
+        )
+        .join('\n')}
+
+      <details>
+        <summary>Full Report</summary>
+        ${res
+          .sort((a, b) => b.documentedChange - a.documentedChange)
+          .map(
+            (r) =>
+              `<details>
+        <summary>${r.package}</summary>
+        <table>
+          <tr>
+            <th>This branch</th>
+            <th>Next branch</th>
+          </tr>
+          <tr>
+            <td>${r.branchDocumented} documented</td>
+            <td>${r.prodDocumented} documented</td>
+          </tr>
+          <tr>
+            <td>${r.branchNotDocumented} not documented</td>
+            <td>${r.prodNotDocumented} not documented</td>
+          </tr>
+        </table>
+      </details>
+      `,
+          )
+          .join('\n')}
+      </details>
+      `
+    }
 
     // save it to a file
-    await fs.writeFile(path.resolve(path.join(__dirname, '..', 'docs-report.md')), table, 'utf8')
+    await fs.writeFile(path.resolve(path.join(__dirname, '..', 'docs-report.md')), report, 'utf8')
 
     timer.end()
   })

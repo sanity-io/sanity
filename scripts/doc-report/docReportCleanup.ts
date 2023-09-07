@@ -15,5 +15,5 @@ studioMetricsClient.datasets
     }
   })
   .catch((err) => {
-    console.error(`Something went wrong! ${err?.response?.body?.message}`)
+    throw new Error(`Something went wrong! ${err?.response?.body?.message}`)
   })

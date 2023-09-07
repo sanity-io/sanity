@@ -35,6 +35,6 @@ jobs:
 
       - name: Remove datasets for closed PRs
         env:
-          DOCS_REPORT_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
+          DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
           DOCS_REPORT_DATASET: ${{ github.ref_name }}
         run: yarn docs:report:cleanup

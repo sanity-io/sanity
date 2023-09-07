@@ -40,11 +40,11 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=8192
 
-      - name: Create Docs Report on current
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/current' }}
+      - name: Create Docs Report on current or next
+        if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/current' || github.ref == 'refs/heads/next') }}
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
-          DOCS_REPORT_DATASET: production
+          DOCS_REPORT_DATASET: ${{ github.ref == 'refs/heads/current' && 'production' || 'next'}}
         run: yarn docs:report:create
 
       - name: Create Docs Report on PR
