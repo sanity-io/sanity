@@ -78,7 +78,7 @@ export function SlugInput(props: SlugInputProps) {
   const [generateState, handleGenerateSlug] = useAsync(() => {
     if (!sourceField) {
       return Promise.reject(
-        new Error(t('slugInput.error.missing-source', {schemaType: schemaType.name}))
+        new Error(t('inputs.slug.error.missing-source', {schemaType: schemaType.name}))
       )
     }
 
@@ -124,8 +124,8 @@ export function SlugInput(props: SlugInputProps) {
               onClick={handleGenerateSlug}
               text={
                 generateState?.status === 'pending'
-                  ? t('slugInput.action.generating')
-                  : t('slugInput.action.generate')
+                  ? t('inputs.slug.action.generating')
+                  : t('inputs.slug.action.generate')
               }
             />
           </Box>
