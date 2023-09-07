@@ -1,7 +1,6 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
-import {useConditionalReadOnly} from '../../conditional-property/conditionalReadOnly'
 import {useDocumentOperation} from '../../../hooks'
 import {FieldChangeNode, FieldOperationsAPI} from '../../types'
 import {undoChange} from '../changes/undoChange'
@@ -25,7 +24,6 @@ export function FieldChange(
   } & React.HTMLAttributes<HTMLDivElement>,
 ) {
   const {change, hidden, readOnly} = props
-  const conditionalReadOnly = useConditionalReadOnly() ?? readOnly
   const DiffComponent = change.diffComponent || FallbackDiff
   const {
     documentId,
@@ -131,7 +129,7 @@ export function FieldChange(
                       onMouseEnter={handleRevertButtonMouseEnter}
                       onMouseLeave={handleRevertButtonMouseLeave}
                       selected={confirmRevertOpen}
-                      disabled={conditionalReadOnly}
+                      disabled={readOnly}
                       data-testid={`single-change-revert-button-${change?.key}`}
                     />
                   </Box>
@@ -144,7 +142,7 @@ export function FieldChange(
     [
       change,
       closeRevertChangesConfirmDialog,
-      conditionalReadOnly,
+      readOnly,
       confirmRevertOpen,
       DiffComponent,
       FieldWrapper,
