@@ -38,6 +38,7 @@ describe('initialization', () => {
         <div>
           <div>
             <div
+              aria-describedby="desc_foo"
               aria-multiline="true"
               autocapitalize="false"
               autocorrect="false"

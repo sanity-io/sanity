@@ -67,6 +67,7 @@ export type PortableTextEditableProps = {
   scrollSelectionIntoView?: ScrollSelectionIntoViewFunction
   selection?: EditorSelection
   spellCheck?: boolean
+  describedBy?: string
 }
 
 /**
@@ -91,6 +92,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     selection: propsSelection,
     scrollSelectionIntoView,
     spellCheck,
+    describedBy,
     ...restProps
   } = props
 
@@ -405,6 +407,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         renderLeaf={renderLeaf}
         style={props.style}
         scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
+        aria-describedby={describedBy}
       />
     ),
     [
@@ -420,6 +423,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       renderElement,
       renderLeaf,
       scrollSelectionIntoViewToSlate,
+      describedBy,
     ],
   )
 

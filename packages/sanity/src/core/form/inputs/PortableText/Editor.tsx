@@ -150,7 +150,7 @@ export function Editor(props: EditorProps) {
         selection={initialSelection}
         style={noOutlineStyle}
         spellCheck={spellcheck}
-        aria-describedby={describedBy}
+        describedBy={describedBy}
       />
     ),
     [
