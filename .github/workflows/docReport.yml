@@ -51,14 +51,14 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
-          DOCS_REPORT_DATASET: ${{ github.event.number }}
+          DOCS_REPORT_DATASET: pr-${{ github.event.number }}
         run: yarn docs:report:create
 
       - name: Compare Docs Coverage on PR
         if: ${{ github.event_name == 'pull_request' }}
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
-          DOCS_REPORT_DATASET: ${{ github.event.number }}
+          DOCS_REPORT_DATASET: pr-${{ github.event.number }}
         run: yarn docs:report
 
       - name: PR comment with report
