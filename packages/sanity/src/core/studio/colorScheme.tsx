@@ -204,7 +204,7 @@ interface ColorSchemeOption {
  */
 export function useColorSchemeOptions(
   setScheme: (nextScheme: StudioThemeColorSchemeKey) => void,
-  t: TFunction<'', undefined>
+  t: TFunction<'studio', undefined>,
 ) {
   const scheme = _useColorSchemeInternalValue()
 
