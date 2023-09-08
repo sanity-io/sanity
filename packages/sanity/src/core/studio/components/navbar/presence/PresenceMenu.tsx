@@ -70,7 +70,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
     return (
       <Button mode="bleed" padding={1}>
         <AvatarStackCard>
-          <AvatarStack maxLength={MAX_AVATARS}>
+          <AvatarStack maxLength={MAX_AVATARS} aria-label="Who is here">
             {presence.map((item) => (
               <UserAvatar key={item.user.id} user={item.user} />
             ))}
