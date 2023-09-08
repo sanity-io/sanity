@@ -101,21 +101,24 @@ export function validateValue(
           }
           return true
         }
-        // Test that markDefs exists
-        if (!blk.markDefs) {
-          resolution = {
-            patches: [set({...textBlock, markDefs: []}, [{_key: textBlock._key}])],
-            description: `Block is missing required key 'markDefs'.`,
-            action: 'Add empty markDefs array',
-            item: textBlock,
-          }
-          return true
-        }
-        // NOTE: this is commented out as we want to allow the saved data to have optional .marks for spans (as specified by the schema)
+
+        // NOTE: this is commented out as we want to allow the saved data to have
+        // optional .markDefs for block (as specified by the PortableTextTextBlock schema)
+        // if (!blk.markDefs) {
+        //   resolution = {
+        //     patches: [set({...textBlock, markDefs: []}, [{_key: textBlock._key}])],
+        //     description: `Block is missing required key 'markDefs'.`,
+        //     action: 'Add empty markDefs array',
+        //     item: textBlock,
+        //   }
+        //   return true
+        // }
+
+        // NOTE: this is commented out as we want to allow the saved data to have
+        // optional .marks for spans (as specified by the PortableTextTextBlock schema)
         // const spansWithUndefinedMarks = blk.children
         //   .filter(cld => cld._type === types.span.name)
         //   .filter(cld => typeof cld.marks === 'undefined')
-
         // if (spansWithUndefinedMarks.length > 0) {
         //   const first = spansWithUndefinedMarks[0]
         //   resolution = {
