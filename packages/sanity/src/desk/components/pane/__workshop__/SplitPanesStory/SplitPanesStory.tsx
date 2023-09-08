@@ -1,4 +1,4 @@
-import {Flex, ToastProvider, PortalProvider} from '@sanity/ui'
+import {Flex, ToastProvider, PortalProvider, useTheme} from '@sanity/ui'
 import React, {useState, useCallback} from 'react'
 import {useBoolean} from '@sanity/ui-workshop'
 import {PaneLayout} from '../../PaneLayout'
@@ -50,11 +50,15 @@ function DeskTool(props: {
 }) {
   const {collapsed, onCollapse, onExpand, path, setPath} = props
 
+  const {
+    sanity: {media},
+  } = useTheme()
+
   return (
     <PaneLayout
       flex={1}
       height={collapsed ? undefined : 'fill'}
-      minWidth={512}
+      minWidth={media[1]}
       onCollapse={onCollapse}
       onExpand={onExpand}
     >

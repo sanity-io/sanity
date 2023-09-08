@@ -46,7 +46,8 @@ import {
 type DocumentPaneOptions = DocumentPaneNode['options']
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
-  // We use the `position: fixed` for dialogs on narrow screens (< 512px).
+  // We use the `position: fixed` for dialogs on narrower screens (first two media breakpoints).
+  'fixed',
   'fixed',
   // And we use the `position: absolute` strategy (within panes) on wide screens.
   'absolute',
