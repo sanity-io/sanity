@@ -16,7 +16,7 @@ export function useCheckCondition(
   checkPropertyName: string,
   context: ConditionalPropertyCallbackContext,
 ): boolean {
-  const {currentUser, document, parent, value} = context
+  const {currentUser, document, parent, value, path} = context
 
   const didWarn = useRef(false)
 
@@ -33,6 +33,7 @@ export function useCheckCondition(
         parent,
         value,
         currentUser,
+        path,
       })
     } catch (err) {
       console.error(
@@ -55,5 +56,5 @@ export function useCheckCondition(
     }
 
     return isTrueIsh
-  }, [checkProperty, document, parent, value, currentUser, checkPropertyName])
+  }, [checkProperty, document, parent, value, currentUser, checkPropertyName, path])
 }

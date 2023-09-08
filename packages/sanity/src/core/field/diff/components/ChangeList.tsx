@@ -34,6 +34,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
   const isReadOnly = useConditionalProperty({
     document: value as SanityDocument,
     value: undefined,
+    path,
     checkProperty: schemaType.readOnly,
     checkPropertyKey: 'readOnly',
   })

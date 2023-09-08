@@ -24,6 +24,7 @@ export function isTrueIsh(
       parent,
       value,
       currentUser,
+      path,
     })
   } catch (err) {
     console.error(
