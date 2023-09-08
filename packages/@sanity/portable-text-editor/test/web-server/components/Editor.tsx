@@ -73,6 +73,7 @@ export const Editor = ({
   const keyGenFn = useMemo(() => createKeyGenerator(editorId.substring(0, 1)), [editorId])
   const [isOffline, setIsOffline] = useState(!window.navigator.onLine)
   const [readOnly, setReadOnly] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
 
   const renderBlock: RenderBlockFunction = useCallback((props) => {
     const {value: block, schemaType, children} = props
@@ -149,14 +150,17 @@ export const Editor = ({
             setIsOffline(false)
           }
           break
+        case 'invalidValue':
+          console.error(change.resolution?.description)
+          setError(new Error(change.resolution?.description))
+          break
+        case 'value':
         case 'blur':
         case 'focus':
-        case 'invalidValue':
         case 'loading':
         case 'patch':
         case 'ready':
         case 'unset':
-        case 'value':
           break
         default:
           throw new Error(`Unhandled editor change ${JSON.stringify(change)}`)
@@ -233,6 +237,13 @@ export const Editor = ({
           Toggle readonly ({JSON.stringify(readOnly)})
         </button>
       </Box>
+      {error && (
+        <Box marginTop={6}>
+          <Card tone="critical" paddingTop={2} title="Error" padding={[2, 4]}>
+            <Text>{error?.message}</Text>
+          </Card>
+        </Box>
+      )}
     </PortableTextEditor>
   )
 }
