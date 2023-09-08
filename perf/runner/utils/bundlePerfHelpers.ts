@@ -5,7 +5,6 @@ export async function bundle(file: string) {
     entryPoints: [file],
     bundle: true,
     write: false,
-    watch: false,
   })
   return result.outputFiles[0].text
 }
