@@ -157,7 +157,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
                         <StyledText align="center" muted>
                           <Trans
                             t={t}
-                            i18nKey="navbar.new-document.no-results"
+                            i18nKey="new-document.no-results"
                             components={[<strong key={0}>“{searchState.terms.query}”</strong>]}
                             values={{searchQuery: searchState.terms.query}}
                           />
