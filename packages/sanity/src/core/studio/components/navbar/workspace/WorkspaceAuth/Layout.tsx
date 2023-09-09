@@ -72,7 +72,7 @@ export function Layout(props: LayoutProps) {
             <React.Fragment key={link.title}>
               <StyledText muted size={1}>
                 <a href={link.url} target="_blank" rel="noopener noreferrer">
-                  {t(`navbar.workspace-menu.${link.title}-title`)}
+                  {t(`workspaces.${link.title}-title`)}
                 </a>
               </StyledText>
 

@@ -49,14 +49,14 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
   )
   // Tooltip should be disabled in the Navdrawer
   const tooltipDisabled = menuOpen || !collapsed
-  const ariaLabel = collapsed ? t('navbar.action.select-workspace') : undefined
-  const buttonText = collapsed ? undefined : t('navbar.action.select-workspace')
+  const ariaLabel = collapsed ? t('workspaces.select-workspace-aria-label') : undefined
+  const buttonText = collapsed ? undefined : t('workspaces.select-workspace-label')
 
   return (
     <Tooltip
       content={
         <Box padding={2}>
-          <Text size={1}>{t('navbar.workspace-menu.title')}</Text>
+          <Text size={1}>{t('workspaces.title')}</Text>
         </Box>
       }
       disabled={tooltipDisabled}
@@ -76,12 +76,12 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
               justify={collapsed ? undefined : 'flex-start'}
             />
           }
-          id="workspace-menu"
+          id="workspaces"
           menu={
             <StyledMenu>
               <Box paddingX={3} paddingY={3}>
                 <Label size={1} muted>
-                  {t('navbar.workspace-menu.title')}
+                  {t('workspaces.title')}
                 </Label>
               </Box>
 
