@@ -176,58 +176,76 @@ export const studioLocaleStrings = {
   /** Action message for generating the slug */
   'inputs.slug.action.generate': `Generate`,
 
-  /** --- Nav bar --- */
-
-  /** Label for workspace picker */
-  'navbar.action.select-workspace': 'Select workspace',
-
-  /** Label to open search action when the search is on full screen */
-  'navbar.action.open-search': 'Open search',
-
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */
-  'navbar.workspace-menu.title': 'Workspaces',
+  'workspaces.title': 'Workspaces',
 
-  /** Label for area section that indicates that you can choose your workspace */
-  'navbar.workspace-menu.choose-your-workspace-label': 'Choose your workspace',
+  /** Label for the workspace menu */
+  'workspaces.select-workspace-aria-label': 'Select workspace',
 
-  /** Label for action to choose a different workspace */
-  'navbar.workspace-menu.action.choose-another-workspace': 'Choose another workspace',
+  /** Button label for opening the workspace switcher */
+  'workspaces.select-workspace-label': 'Select workspace',
 
-  /** Label for action to add a workspace */
-  'navbar.workspace-menu.action.add-workspace': 'Add workspace',
+  /** Label for heading that indicates that you can choose your workspace */
+  'workspaces.choose-your-workspace-label': 'Choose your workspace',
+
+  /**
+   * Label for action to choose a different workspace, in the case where you are not logged in,
+   * have selected a workspace, and are faced with the authentication options for the selected
+   * workspace. In other words, label for the action shown when you have reconsidered which
+   * workspace to authenticate in.
+   */
+  'workspaces.action.choose-another-workspace': 'Choose another workspace',
+
+  /**
+   * Label for action to add a workspace (currently a developer-oriented action, as this will
+   * lead to the documentation on workspace configuration)
+   */
+  'workspaces.action.add-workspace': 'Add workspace',
 
   /** --- New Document --- */
 
-  /** Placeholder for the "search" input within the new document menu */
-  'navbar.new-document.search': 'Search',
+  /** Placeholder for the "filter" input within the new document menu */
+  'new-document.filter-placeholder': 'Filter',
 
   /** Loading indicator text within the new document menu */
-  'navbar.new-document.loading': 'Loading…',
+  'new-document.loading': 'Loading…',
 
-  /** Title for "Create new document" Also used for accessibility */
-  'navbar.new-document.title': 'Create new document',
+  /** Title for "Create new document" dialog */
+  'new-document.title': 'Create new document',
 
-  /** Label for when no document types are found when searching them in the new document menu */
-  'navbar.new-document.no-document-types': 'No document types',
+  /** Aria label for the button that opens the "Create new document" popover/dialog */
+  'new-document.open-dialog-aria-label': 'Create new document',
 
-  /** Label for "Create new document" action */
-  'navbar.new-document.action.create-new-document': 'New document...',
+  /**
+   * Tooltip message displayed when hovering/activating the "Create new document" action,
+   * when there are no templates/types to create from
+   */
+  'new-document.no-document-types-label': 'No document types',
+
+  /**
+   * Tooltip message displayed when hovering/activating the "Create new document" action,
+   * when there are templates/types available for creation
+   */
+  'new-document.create-new-document-label': 'New document...',
 
   /** Message for when no results are found for a specific search query in the new document menu */
-  'navbar.new-document.no-results': 'No results for <0>{{searchQuery}}</0>',
+  'new-document.no-results': 'No results for <0>{{searchQuery}}</0>',
 
-  /** Message for when there are no document options in the new document menu */
-  'navbar.new-document.no-documents-found': 'No documents found',
+  /** Message for when there are no document type options in the new document menu */
+  'new-document.no-document-types-found': 'No document types found',
 
-  /** Accessibility label for options in the new document menu */
-  'navbar.new-document.new-document': 'New document',
+  /** Accessibility label for the list displaying options in the new document menu */
+  'new-document.new-document-aria-label': 'New document',
 
   /** Error label for when a user is unable to create a document */
-  'navbar.new-document.error.unable-to-create-document': 'create this document',
+  'new-document.error.unable-to-create-document': 'create this document',
 
   /** --- Search --- */
+
+  /** Label to open search action when the search is on full screen */
+  'search.action-open': 'Open search',
 
   /** Accessibility label for Search Input for when there are no recent searches */
   'navbar.search.search-results-label': 'Search results',
