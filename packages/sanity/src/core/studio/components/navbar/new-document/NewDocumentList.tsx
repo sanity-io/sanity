@@ -72,7 +72,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
           <Spinner muted size={1} />
 
           <Text muted size={1}>
-            {t('navbar.new-document.loading')}
+            {t('new-document.loading')}
           </Text>
         </Inline>
       </ContentFlex>
@@ -93,7 +93,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
         <Text align="center" muted size={1}>
           <Trans
             t={t}
-            i18nKey="navbar.new-document.no-results"
+            i18nKey="new-document.no-results"
             components={[<QueryString key={0}>“{searchQuery}”</QueryString>]}
             values={{searchQuery: searchQuery}}
           />
@@ -114,7 +114,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
         sizing="border"
       >
         <Text align="center" muted size={1}>
-          {t('navbar.new-document.no-documents-found')}
+          {t('new-document.no-document-types-found')}
         </Text>
       </ContentFlex>
     )
@@ -123,7 +123,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
   return (
     <CommandList
       activeItemDataAttr="data-hovered"
-      ariaLabel={t('navbar.new-document.new-document')}
+      ariaLabel={t('new-document.new-document')}
       autoFocus={supportsTouch ? undefined : 'input'}
       getItemDisabled={getItemDisabled}
       inputElement={textInputElement}

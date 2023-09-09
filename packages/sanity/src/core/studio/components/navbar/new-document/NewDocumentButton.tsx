@@ -16,6 +16,7 @@ import {
 } from '@sanity/ui'
 import {ComposeIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
+import {useTranslation} from '../../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
@@ -32,7 +33,6 @@ import {
   PopoverListFlex,
 } from './NewDocumentButton.style'
 import {INLINE_PREVIEW_HEIGHT} from './NewDocumentListOption'
-import {useTranslation} from '../../../../i18n'
 
 const MAX_DISPLAYED_ITEMS = 10
 
@@ -62,8 +62,9 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   const hasNewDocumentOptions = options.length > 0
   const disabled = !canCreateDocument || !hasNewDocumentOptions
-  const placeholder = t('navbar.new-document.search')
-  const title = t('navbar.new-document.title')
+  const placeholder = t('new-document.filter-placeholder')
+  const title = t('new-document.title')
+  const openDialogAriaLabel = t('new-document.open-dialog-aria-label')
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => filterOptions(options, searchQuery), [options, searchQuery])
@@ -145,7 +146,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   // Shared open button props for the popover and dialog
   const sharedOpenButtonProps: ButtonProps = useMemo(
     () => ({
-      'aria-label': title,
+      'aria-label': openDialogAriaLabel,
       disabled: disabled || loading,
       icon: ComposeIcon,
       mode: 'bleed',
@@ -153,17 +154,17 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       ref: setButtonElement,
       selected: open,
     }),
-    [disabled, handleToggleOpen, loading, open, title],
+    [disabled, handleToggleOpen, loading, open, openDialogAriaLabel],
   )
 
   // Tooltip content for the open button
   const tooltipContent: TooltipProps['content'] = useMemo(() => {
     if (!hasNewDocumentOptions) {
-      return <Text size={1}>{t('navbar.new-document.no-document-types')}</Text>
+      return <Text size={1}>{t('new-document.no-document-types-label')}</Text>
     }
 
     if (canCreateDocument) {
-      return <Text size={1}>{t('navbar.new-document.action.create-new-document')}</Text>
+      return <Text size={1}>{t('new-document.create-new-document-label')}</Text>
     }
 
     return (
