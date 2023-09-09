@@ -40,7 +40,7 @@ export function WorkspaceAuth() {
               mode="bleed"
               onClick={handleBack}
               padding={2}
-              text={t('navbar.workspace-menu.action.choose-another-workspace')}
+              text={t('workspaces.action.choose-another-workspace')}
             />
           </Flex>
         )}
@@ -69,7 +69,7 @@ export function WorkspaceAuth() {
 
   return (
     <Layout
-      header={t('navbar.workspace-menu.choose-your-workspace-label')}
+      header={t('workspaces.choose-your-workspace-label')}
       footer={
         <Stack padding={1}>
           <Button
@@ -80,7 +80,7 @@ export function WorkspaceAuth() {
             mode="bleed"
             rel="noopener noreferrer"
             target="__blank"
-            text={t('navbar.workspace-menu.action.add-workspace')}
+            text={t('workspaces.action.add-workspace')}
           />
         </Stack>
       }
