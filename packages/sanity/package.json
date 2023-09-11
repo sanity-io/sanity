@@ -151,6 +151,7 @@
     "@sanity/logos": "^2.0.2",
     "@sanity/mutator": "3.17.0",
     "@sanity/portable-text-editor": "3.17.0",
+    "@portabletext/react": "^3.0.0",
     "@sanity/schema": "3.17.0",
     "@sanity/types": "3.17.0",
     "@sanity/ui": "^1.7.2",

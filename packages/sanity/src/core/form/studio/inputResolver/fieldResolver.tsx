@@ -51,6 +51,7 @@ function PrimitiveField(field: FieldProps) {
       <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
         <FormField
           __internal_slot={field.__internal_slot}
+          __internal_comments={field.__internal_comments}
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={field.presence}
           data-testid={`field-${field.inputId}`}
@@ -93,6 +94,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
 
       <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
         <FormFieldSet
+          __internal_comments={field.__internal_comments}
           __internal_slot={field.__internal_slot}
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={field.presence}
@@ -142,6 +144,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
 
       <FieldActionsProvider actions={fieldActionsNodes} focused={focused} path={field.path}>
         <FormFieldSet
+          __internal_comments={field.__internal_comments}
           __internal_slot={field.__internal_slot}
           __unstable_headerActions={fieldActionsNodes}
           __unstable_presence={presence}

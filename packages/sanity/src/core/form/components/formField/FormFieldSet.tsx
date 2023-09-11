@@ -7,6 +7,7 @@ import {FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFieldActions} from '../../field'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
+import {FieldCommentsProps} from '../../types'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
@@ -24,6 +25,8 @@ export interface FormFieldSetProps {
    * @beta
    */
   __unstable_presence?: FormNodePresence[]
+  /** @internal @deprecated DO NOT USE */
+  __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: React.ReactNode
   children: React.ReactNode | (() => React.ReactNode)
@@ -96,9 +99,10 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {
+    __internal_comments: comments,
+    __internal_slot: slot = null,
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
-    __internal_slot: slot = null,
     children,
     collapsed,
     collapsible,
@@ -150,6 +154,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   return (
     <Root data-level={level} {...restProps} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <FormFieldBaseHeader
+        __internal_comments={comments}
         __internal_slot={slot}
         actions={actions}
         fieldFocused={Boolean(focused)}
