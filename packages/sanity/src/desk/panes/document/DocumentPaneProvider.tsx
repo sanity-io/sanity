@@ -58,7 +58,7 @@ import {
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey} = props
+  const {children, index, pane, paneKey, onFocusPath} = props
   const schema = useSchema()
   const templates = useTemplates()
   const {
@@ -135,8 +135,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const views = useUnique(viewsProp)
 
   const [focusPath, setFocusPath] = useState<Path>(() =>
-    params.path ? pathFromString(params.path) : [],
+    params.path ? pathFromString(params.path) : EMPTY_ARRAY,
   )
+  const focusPathRef = useRef(focusPath)
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
@@ -273,6 +274,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
       setFocusPath(nextFocusPath)
+
+      if (focusPathRef.current !== nextFocusPath) {
+        focusPathRef.current = nextFocusPath
+        onFocusPath?.(nextFocusPath)
+      }
+
       presenceStore.setLocation([
         {
           type: 'document',
@@ -282,16 +289,22 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         },
       ])
     },
-    [documentId, presenceStore, setFocusPath],
+    [documentId, onFocusPath, presenceStore, setFocusPath],
   )
 
   const handleBlur = useCallback(
     (blurredPath: Path) => {
-      setFocusPath([])
+      setFocusPath(EMPTY_ARRAY)
+
+      if (focusPathRef.current !== EMPTY_ARRAY) {
+        focusPathRef.current = EMPTY_ARRAY
+        onFocusPath?.(EMPTY_ARRAY)
+      }
+
       // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
       // user clicks outside a field without focusing another one
     },
-    [setFocusPath],
+    [onFocusPath, setFocusPath],
   )
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
@@ -653,10 +666,16 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       // Reset focus path when url params path changes
       setFocusPath(pathFromUrl)
       setOpenPath(pathFromUrl)
+
+      if (focusPathRef.current !== pathFromUrl) {
+        focusPathRef.current = pathFromUrl
+        onFocusPath?.(pathFromUrl)
+      }
+
       // remove the `path`-param from url after we have consumed it as the initial focus path
       paneRouter.setParams(restParams)
     }
-  }, [params, documentId, setOpenPath, ready, paneRouter])
+  }, [params, documentId, onFocusPath, setOpenPath, ready, paneRouter])
 
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
