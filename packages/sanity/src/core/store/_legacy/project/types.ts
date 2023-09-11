@@ -1,3 +1,4 @@
+import {Role} from '@sanity/types'
 import {Observable} from 'rxjs'
 
 /**
@@ -26,6 +27,7 @@ export interface ProjectData {
     isCurrentUser: boolean
     isRobot: boolean
     role: string
+    roles: Role[]
   }[]
   features: string[]
   pendingInvites: number

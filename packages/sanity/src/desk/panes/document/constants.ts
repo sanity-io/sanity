@@ -16,3 +16,4 @@ export const DEFAULT_MENU_ITEM_GROUPS: PaneMenuItemGroup[] = [{id: 'inspectors'}
 // inspectors
 export const HISTORY_INSPECTOR_NAME = 'sanity/desk/history'
 export const VALIDATION_INSPECTOR_NAME = 'sanity/desk/validation'
+export const COMMENTS_INSPECTOR_NAME = 'sanity/desk/comments'
