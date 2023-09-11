@@ -84,6 +84,7 @@ export function resolveIntentState(
     return {
       type: 'state',
       isNotFound: false,
+      searchParams: {},
       state: {
         ...prevState,
         tool: matchingTool.name,
@@ -99,9 +100,14 @@ export function resolveIntentState(
   }
 }
 
-export function decodeUrlState(rootRouter: Router, pathname: string): RouterStateEvent {
+export function decodeUrlState(
+  rootRouter: Router,
+  pathname: string,
+  searchParams: Record<string, string | undefined>,
+): RouterStateEvent {
   return {
     type: 'state',
+    searchParams,
     state: rootRouter.decode(pathname) || {},
     isNotFound: rootRouter.isNotFound(pathname),
   }
