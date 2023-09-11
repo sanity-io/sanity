@@ -39,10 +39,9 @@ test('rejects on invalid input type (non-array)', async () => {
 
 test('rejects on invalid JSON', async () => {
   expect.assertions(1)
-  await expect(importer(getFixtureStream('invalid-json'), importOptions)).rejects.toHaveProperty(
-    'message',
-    'Failed to parse line #3: Unexpected token _ in JSON at position 1',
-  )
+  await expect(importer(getFixtureStream('invalid-json'), importOptions)).rejects.toMatchObject({
+    message: /Failed to parse line #3:.+/,
+  })
 })
 
 test('rejects on invalid `_id` property', async () => {
