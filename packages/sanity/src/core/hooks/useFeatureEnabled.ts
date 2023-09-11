@@ -2,8 +2,8 @@ import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 import {Observable, of} from 'rxjs'
 import {SanityClient} from '@sanity/client'
 import {useMemoObservable} from 'react-rx'
-import {useClient} from '../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
+import {useClient} from './useClient'
 
 interface Features {
   isLoading: boolean
@@ -29,6 +29,7 @@ function fetchFeatures({versionedClient}: {versionedClient: SanityClient}): Obse
 
 let cachedFeatureRequest: Observable<string[]>
 
+/** @internal */
 export function useFeatureEnabled(featureKey: string): Features {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 

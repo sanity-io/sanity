@@ -77,7 +77,7 @@ const panePattern = /^([.a-z0-9_-]+),?({.*?})?(?:(;|$))/i
 const isParam = (str: string) => /^[a-z0-9]+=[^=]+/i.test(str)
 const isPayload = (str: string) =>
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
-const exclusiveParams = ['view', 'since', 'rev', 'inspect']
+const exclusiveParams = ['view', 'since', 'rev', 'inspect', 'comment']
 
 type Truthy<T> = T extends false
   ? never

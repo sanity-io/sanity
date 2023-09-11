@@ -4,6 +4,7 @@ import React, {memo} from 'react'
 import {FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFieldActions} from '../../field'
+import {FieldCommentsProps} from '../../types'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
 
@@ -21,6 +22,8 @@ export interface FormFieldProps {
    * @beta
    */
   __unstable_presence?: FormNodePresence[]
+  /** @internal @deprecated DO NOT USE */
+  __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: React.ReactNode
   children: React.ReactNode
@@ -48,6 +51,7 @@ export const FormField = memo(function FormField(
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
     __internal_slot: slot = null,
+    __internal_comments: comments,
     children,
     description,
     inputId,
@@ -72,7 +76,7 @@ export const FormField = memo(function FormField(
       */}
       {title && (
         <FormFieldBaseHeader
-          // eslint-disable-next-line camelcase
+          __internal_comments={comments}
           __internal_slot={slot}
           actions={actions}
           fieldFocused={Boolean(focused)}
