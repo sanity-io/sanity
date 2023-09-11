@@ -7,11 +7,12 @@ import {FileLike, ResolvedUploader, UploaderResolver} from '../../../../studio/u
 import {FileInfo, fileTarget} from '../../../common/fileTarget'
 import {DropMessage} from '../../../files/common/DropMessage'
 import {UploadEvent} from '../../../../types'
+import {FIXME} from '../../../../../FIXME'
 import {Overlay} from './styles'
 
 export interface UploadTargetProps {
   types: SchemaType[]
-  resolveUploader?: UploaderResolver
+  resolveUploader?: UploaderResolver<FIXME>
   onUpload?: (event: UploadEvent) => void
   children?: React.ReactNode
 }
@@ -39,7 +40,7 @@ function getUploadCandidates(
     .filter((member) => member.uploader) as ResolvedUploader[]
 }
 export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
-  const FileTarget = fileTarget<any>(Component)
+  const FileTarget = fileTarget<FIXME>(Component)
 
   return React.forwardRef(function UploadTarget(
     props: UploadTargetProps & Props,
