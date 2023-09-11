@@ -26,12 +26,21 @@ import {
   StringInputProps,
 } from './inputProps'
 
+/** @internal @deprecated DO NOT USE */
+export interface FieldCommentsProps {
+  hasComments: boolean
+  button: React.ReactNode
+  isAddingComment: boolean
+}
+
 /**
  * @hidden
  * @public */
 export interface BaseFieldProps {
   /** @beta */
   actions?: DocumentFieldAction[]
+  /** @internal @deprecated DO NOT USE */
+  __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: React.ReactNode
   schemaType: SchemaType

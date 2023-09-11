@@ -1,4 +1,4 @@
-import {BookIcon} from '@sanity/icons'
+import {BookIcon, CheckmarkCircleIcon, CircleIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
@@ -39,7 +39,6 @@ import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {copyAction} from './fieldActions/copyAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
-import {commentAction} from './fieldActions/commentFieldAction'
 import {customInspector} from './inspectors/custom'
 import {pasteAction} from './fieldActions/pasteAction'
 
@@ -70,7 +69,7 @@ const sharedSettings = definePlugin({
     },
     unstable_fieldActions: (prev, ctx) => {
       if (['fieldActionsTest', 'stringsTest'].includes(ctx.documentType)) {
-        return [...prev, commentAction, assistFieldActionGroup, copyAction, pasteAction]
+        return [...prev, assistFieldActionGroup, copyAction, pasteAction]
       }
 
       return prev
@@ -131,6 +130,173 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
+  },
+  // Temporary comments (metacontent) workspace
+  {
+    name: 'default-metacontent-comments',
+    title: 'Comments (metacontent)',
+    projectId: 'ppsg7ml5',
+    dataset: 'test-metacontent-comments',
+    plugins: [deskTool(), visionTool()],
+    schema: {
+      types: [
+        {
+          name: 'comment',
+          type: 'document',
+          title: 'Comment',
+          fields: [
+            {
+              name: 'threadId',
+              title: 'Thread ID',
+              type: 'string',
+            },
+            {
+              name: 'parentCommentId',
+              title: 'Parent comment ID',
+              type: 'string',
+            },
+            {
+              name: 'authorId',
+              title: 'Author ID',
+              type: 'string',
+            },
+            {
+              name: 'editedAt',
+              title: 'Last edited',
+              type: 'date',
+            },
+            {
+              name: 'message',
+              title: 'Message',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    annotations: [
+                      {
+                        name: 'mention',
+                        type: 'object',
+                        title: 'Mention',
+                        fields: [
+                          {
+                            name: 'userId',
+                            type: 'string',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+            {
+              name: 'status',
+              title: 'Status',
+              type: 'string',
+              options: {
+                layout: 'radio',
+                list: ['open', 'resolved'],
+              },
+            },
+            {
+              name: 'workspace',
+              title: 'Workspace',
+              type: 'string',
+            },
+            {
+              name: 'target',
+              title: 'Target',
+              type: 'object',
+              fields: [
+                {
+                  name: 'documentId',
+                  title: 'Document ID',
+                  type: 'string',
+                  readOnly: true,
+                },
+                {
+                  name: 'documentType',
+                  title: 'Document type',
+                  type: 'string',
+                  readOnly: true,
+                },
+                {
+                  name: 'path',
+                  title: 'Path',
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'field',
+                      title: 'Field',
+                      type: 'string',
+                    },
+                  ],
+                },
+              ],
+              options: {
+                collapsible: true,
+              },
+            },
+            {
+              name: 'context',
+              title: 'Context',
+              type: 'object',
+              fields: [
+                {
+                  name: 'type',
+                  title: 'Type',
+                  type: 'string',
+                },
+                {
+                  name: 'name',
+                  title: 'Name',
+                  type: 'string',
+                },
+              ],
+              options: {
+                collapsible: true,
+              },
+            },
+            {
+              name: 'notification',
+              title: 'Notification',
+              type: 'object',
+              fields: [
+                {
+                  name: 'title',
+                  title: 'Title',
+                  type: 'string',
+                },
+                {
+                  name: 'url',
+                  title: 'URL',
+                  type: 'string',
+                },
+              ],
+              options: {
+                collapsible: true,
+              },
+            },
+          ],
+          preview: {
+            select: {
+              id: '_id',
+              status: 'status',
+              threadId: 'threadId',
+            },
+            prepare({id, status, threadId}) {
+              return {
+                media: status === 'resolved' ? CheckmarkCircleIcon : CircleIcon,
+                subtitle: `Comment: ${id}`,
+                title: `Thread: ${threadId}`,
+              }
+            },
+          },
+        },
+      ],
+    },
+    basePath: '/test-metacontent-comments',
   },
   {
     name: 'tsdoc',
