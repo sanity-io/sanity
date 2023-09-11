@@ -1,20 +1,36 @@
 import {RestoreIcon} from '@sanity/icons'
-import React, {useCallback, useMemo, useState} from 'react'
-import {DocumentActionComponent, DocumentActionDialogProps, useDocumentOperation} from 'sanity'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  DocumentActionComponent,
+  DocumentActionDialogProps,
+  useDocumentOperation,
+  useDocumentOperationEvent,
+} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 /** @internal */
 export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, onComplete}) => {
   const {restore} = useDocumentOperation(id, type)
+  const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()
+  const prevEvent = useRef(event)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
   const handleConfirm = useCallback(() => {
     restore.execute(revision!)
     onComplete()
-    // wrapping in setTimeout gives the onComplete time to finish before navigating
-    setTimeout(() => navigateIntent('edit', {id, type}), 0)
-  }, [restore, revision, navigateIntent, id, type, onComplete])
+  }, [restore, revision, onComplete])
+
+  /**
+   * If the restore operation is successful, navigate to the document edit view
+   */
+  useEffect(() => {
+    if (!event || event === prevEvent.current) return
+
+    if (event.type === 'success' && event.op === 'restore') {
+      navigateIntent('edit', {id, type})
+    }
+  }, [event, id, navigateIntent, type])
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
