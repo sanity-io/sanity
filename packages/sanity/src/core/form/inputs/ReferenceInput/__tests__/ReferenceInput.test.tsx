@@ -43,7 +43,12 @@ function ReferenceInputTester(
   const onChange = jest.fn()
 
   return (
-    <RouterProvider router={route.intents('/intents')} state={{}} onNavigate={noop}>
+    <RouterProvider
+      router={route.intents('/intents')}
+      searchParams={{}}
+      state={{}}
+      onNavigate={noop}
+    >
       <ThemeProvider scheme="light" theme={studioTheme}>
         <ToastProvider>
           <LayerProvider>

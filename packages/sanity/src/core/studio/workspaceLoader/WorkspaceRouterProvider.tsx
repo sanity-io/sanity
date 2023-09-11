@@ -5,7 +5,13 @@ import type {Tool, Workspace} from '../../config'
 import {createRouter, type RouterStateEvent, type RouterHistory} from '../router'
 import {decodeUrlState, resolveDefaultState, resolveIntentState} from '../router/helpers'
 import {useRouterHistory} from '../router/RouterHistoryContext'
-import {type Router, RouterProvider, type RouterState} from 'sanity/router'
+import {
+  type Router,
+  RouterProvider,
+  type RouterState,
+  compileSearchParams,
+  parseSearchParams,
+} from 'sanity/router'
 
 interface WorkspaceRouterProviderProps {
   children: React.ReactNode
@@ -21,20 +27,29 @@ export function WorkspaceRouterProvider({
   const {basePath, tools} = workspace
   const history = useRouterHistory()
   const router = useMemo(() => createRouter({basePath, tools}), [basePath, tools])
-  const [state, onNavigate] = useRouterFromWorkspaceHistory(history, router, tools)
+  const [{searchParams, state}, onNavigate] = useRouterFromWorkspaceHistory(history, router, tools)
 
   // `state` is only null if the Studio is somehow rendering in SSR or using hydrateRoot in combination with `unstable_noAuthBoundary`.
   // Which makes this loading condition extremely rare, most of the time it'll render `RouteProvider` right away.
   if (!state) return <LoadingComponent />
 
   return (
-    <RouterProvider onNavigate={onNavigate} router={router} state={state}>
+    <RouterProvider
+      onNavigate={onNavigate}
+      router={router}
+      searchParams={searchParams}
+      state={state}
+    >
       {children}
     </RouterProvider>
   )
 }
 
-type HandleNavigate = (opts: {path: string; replace?: boolean}) => void
+type HandleNavigate = (opts: {
+  path: string
+  searchParams?: Record<string, string | undefined>
+  replace?: boolean
+}) => void
 
 /**
  * @internal
@@ -43,7 +58,7 @@ function useRouterFromWorkspaceHistory(
   history: RouterHistory,
   router: Router,
   tools: Tool[],
-): [RouterState | null, HandleNavigate] {
+): [{searchParams: Record<string, string | undefined>; state: RouterState | null}, HandleNavigate] {
   // React will only re-subscribe if store.subscribe changes identity, so by memoizing the whole store
   // we ensure that if any of the dependencies used by store.selector changes, we'll re-subscribe.
   // If we don't, we risk hot reload seeing stale workspace configs as the user is editing them.
@@ -57,13 +72,19 @@ function useRouterFromWorkspaceHistory(
       routerBasePath === '/' ? true : routerBasePathRegex.test(pathname)
     return {
       subscribe: (onStoreChange: () => void) => history.listen(onStoreChange),
-      getSnapshot: () => history.location.pathname,
+      getSnapshot: () => ({
+        pathname: history.location.pathname,
+        searchParams: parseSearchParams(history.location.search),
+      }),
       // Always return null for the server snapshot, as we can't know how to resolve intents until after authentication is done, which is browser-only
       getServerSnapshot: () => null,
-      selector: (pathname: string | null) =>
-        typeof pathname === 'string' && shouldHandle(pathname)
-          ? decodeUrlState(router, pathname)
-          : null,
+      selector: (
+        loc: {pathname: string; searchParams: Record<string, string | undefined>} | null,
+      ) => {
+        if (!loc || typeof loc.pathname !== 'string' || !shouldHandle(loc?.pathname)) return null
+
+        return decodeUrlState(router, loc.pathname, loc.searchParams)
+      },
     }
   }, [history, router])
 
@@ -116,21 +137,27 @@ function useRouterFromWorkspaceHistory(
     // This is using useMemo instead of useCallback just so we can track if it's called an abnormal amount of times
     // console.debug('handleNavigate useMemo called (should optimally only happen once)')
     // console.count('handleNavigate')
-    return ({path, replace}) => {
+    return ({path, searchParams, replace}) => {
       // Handle intent resolving early, so we avoid rendering intermediate states in the workspace root, as it otherwise resolves intents in useEffect handlers
-      const predictedEvent = store.selector(path)
+      const predictedEvent = store.selector({pathname: path, searchParams: searchParams ?? {}})
       const resolvedIntent = maybeResolveIntent(predictedEvent, router, tools, prevEvent)
       const resolvedPath = typeof resolvedIntent === 'string' ? resolvedIntent : path
 
       if (replace) {
-        history.replace(resolvedPath)
+        history.replace({pathname: resolvedPath, search: compileSearchParams(searchParams)})
       } else {
-        history.push(resolvedPath)
+        history.push({pathname: resolvedPath, search: compileSearchParams(searchParams)})
       }
     }
   }, [history, router, store, tools])
 
-  return [event?.state ?? null, handleNavigate]
+  return [
+    {
+      state: event?.state as RouterState | null,
+      searchParams: event?.searchParams ?? {},
+    },
+    handleNavigate,
+  ]
 }
 
 // Handles intent resolving, both on navigate events (onClick and such), as well as onLoad by useEffect

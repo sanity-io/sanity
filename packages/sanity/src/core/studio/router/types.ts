@@ -2,6 +2,7 @@ import type {History, BrowserHistory, MemoryHistory, HashHistory} from 'history'
 
 export interface RouterStateEvent {
   type: 'state'
+  searchParams: Record<string, string | undefined>
   state: Record<string, unknown> // | null
   isNotFound: boolean
 }
