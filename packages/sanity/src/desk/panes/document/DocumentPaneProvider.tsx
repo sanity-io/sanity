@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {ObjectSchemaType, Path, SanityDocument, SanityDocumentLike} from '@sanity/types'
-import {omit, set} from 'lodash'
+import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
@@ -21,16 +21,25 @@ import {
 } from './constants'
 import {DocumentInspectorMenuItemsResolver} from './DocumentInspectorMenuItemsResolver'
 import {
+  CommentsProvider,
+  DocumentFieldAction,
+  DocumentFieldActionNode,
   DocumentInspector,
+  DocumentInspectorMenuItem,
   DocumentPresence,
-  PatchEvent,
-  StateTree,
-  toMutationPatches,
+  EMPTY_ARRAY,
+  FieldActionsProvider,
+  FieldActionsResolver,
+  getDraftId,
   getExpandOperations,
   getPublishedId,
+  PatchEvent,
   setAtPath,
+  StateTree,
+  toMutationPatches,
   useConnectionState,
   useDocumentOperation,
+  useDocumentValuePermissions,
   useEditState,
   useFormState,
   useInitialValue,
@@ -38,18 +47,10 @@ import {
   useSchema,
   useSource,
   useTemplates,
+  useTimelineSelector,
+  useTimelineStore,
   useUnique,
   useValidationStatus,
-  getDraftId,
-  useDocumentValuePermissions,
-  useTimelineStore,
-  useTimelineSelector,
-  DocumentFieldAction,
-  DocumentInspectorMenuItem,
-  FieldActionsResolver,
-  EMPTY_ARRAY,
-  DocumentFieldActionNode,
-  FieldActionsProvider,
 } from 'sanity'
 
 /**
@@ -683,7 +684,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       )}
 
       <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
-        {children}
+        <CommentsProvider documentValue={value as SanityDocument}>{children}</CommentsProvider>
       </FieldActionsProvider>
     </DocumentPaneContext.Provider>
   )
