@@ -12,6 +12,10 @@ export interface StateLinkProps {
    */
   replace?: boolean
   /**
+   * @internal
+   */
+  searchParams?: Record<string, string | undefined>
+  /**
    * The state to associate with the link.
    */
   state?: Record<string, unknown>
@@ -44,10 +48,19 @@ export const StateLink = forwardRef(function StateLink(
   props: StateLinkProps & Omit<React.HTMLProps<HTMLAnchorElement>, 'href'>,
   ref: React.ForwardedRef<HTMLAnchorElement>,
 ) {
-  const {onClick: onClickProp, replace, state, target, toIndex = false, ...restProps} = props
+  const {
+    onClick: onClickProp,
+    replace,
+    searchParams,
+    state,
+    target,
+    toIndex = false,
+    ...restProps
+  } = props
   const {onClick, href} = useStateLink({
     onClick: onClickProp,
     replace,
+    searchParams,
     state,
     target,
     toIndex,

@@ -1,5 +1,6 @@
 import {useCallback} from 'react'
 import {useRouter} from './useRouter'
+import {parseSearchParams} from './parseSearchParams'
 
 function isLeftClickEvent(event: React.MouseEvent) {
   return event.button === 0
@@ -81,10 +82,16 @@ export function useLink(options: UseLinkOptions): {onClick: React.MouseEventHand
 
       event.preventDefault()
 
-      navigateUrl({path: href, replace})
+      const [path, search] = href.split('?')
+
+      navigateUrl({
+        path,
+        replace,
+        searchParams: search ? parseSearchParams(`?${search}`) : undefined,
+      })
     },
     [href, navigateUrl, onClickProp, replace, target],
   )
 
-  return {onClick: onClick}
+  return {onClick}
 }
