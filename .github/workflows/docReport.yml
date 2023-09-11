@@ -11,8 +11,8 @@ jobs:
   report:
     runs-on: ubuntu-latest
     env:
-      TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      TURBO_TEAM: sanity-io
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
       - name: Checkout
@@ -51,14 +51,14 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
-          DOCS_REPORT_DATASET: ${{ github.ref_name }}
+          DOCS_REPORT_DATASET: pr-${{ github.event.number }}
         run: yarn docs:report:create
 
       - name: Compare Docs Coverage on PR
         if: ${{ github.event_name == 'pull_request' }}
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
-          DOCS_REPORT_DATASET: ${{ github.ref_name }}
+          DOCS_REPORT_DATASET: pr-${{ github.event.number }}
         run: yarn docs:report
 
       - name: PR comment with report
