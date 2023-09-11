@@ -28,6 +28,7 @@ import type {
 import {
   documentActionsReducer,
   documentBadgesReducer,
+  documentCommentsEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   fileAssetSourceResolver,
@@ -506,6 +507,16 @@ function resolveSource({
           propertyName: 'document.unstable_languageFilter',
           reducer: documentLanguageFilterReducer,
         }),
+
+      unstable_comments: {
+        enabled: (partialContext) => {
+          return documentCommentsEnabledReducer({
+            context: partialContext,
+            config,
+            initialValue: true,
+          })
+        },
+      },
     },
     form: {
       file: {
