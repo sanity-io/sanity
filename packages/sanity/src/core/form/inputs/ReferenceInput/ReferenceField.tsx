@@ -33,7 +33,7 @@ import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFoc
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch'
 import {AlertStrip} from '../../components/AlertStrip'
-import {FieldActionsResolver} from '../../field'
+import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFormPublishedId} from '../../useFormPublishedId'
 import {useReferenceInput} from './useReferenceInput'
@@ -68,7 +68,7 @@ const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
 export function ReferenceField(props: ReferenceFieldProps) {
   const elementRef = useRef<HTMLDivElement | null>(null)
-  const {schemaType, path, open, inputId, children, inputProps, __internal_slot: slot} = props
+  const {schemaType, path, open, inputId, children, inputProps} = props
   const {readOnly, focused, renderPreview, onChange} = props.inputProps
 
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
@@ -292,53 +292,58 @@ export function ReferenceField(props: ReferenceFieldProps) {
         />
       )}
 
-      <FormField
-        __internal_slot={slot}
-        __unstable_headerActions={fieldActionsNodes}
-        __unstable_presence={props.presence}
-        description={props.description}
-        level={props.level}
-        title={props.title}
-        validation={props.validation}
-        inputId={props.inputId}
+      <FieldActionsProvider
+        actions={fieldActionsNodes}
+        focused={Boolean(props.inputProps.focused)}
+        path={path}
       >
-        {isEditing ? (
-          <Box>{children}</Box>
-        ) : (
-          <Card shadow={1} radius={1} padding={1} tone={tone}>
-            <Stack space={1}>
-              <Flex gap={1} align="center">
-                <ReferenceLinkCard
-                  flex={1}
-                  as={EditReferenceLink}
-                  tone="inherit"
-                  radius={2}
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  documentId={value?._ref}
-                  documentType={refType?.name}
-                  paddingX={2}
-                  paddingY={1}
-                  __unstable_focusRing
-                  selected={selected}
-                  pressed={pressed}
-                  ref={elementRef}
-                  data-selected={selected ? true : undefined}
-                  data-pressed={pressed ? true : undefined}
-                >
-                  <PreviewReferenceValue
-                    value={value}
-                    referenceInfo={loadableReferenceInfo}
-                    renderPreview={renderPreview}
-                    type={schemaType}
-                  />
-                </ReferenceLinkCard>
-                <Box>{menu}</Box>
-              </Flex>
-              {footer}
-            </Stack>
-          </Card>
-        )}
-      </FormField>
+        <FormField
+          __internal_comments={props.__internal_comments}
+          __internal_slot={props.__internal_slot}
+          __unstable_headerActions={fieldActionsNodes}
+          __unstable_presence={props.presence}
+          description={props.description}
+          level={props.level}
+          title={props.title}
+          validation={props.validation}
+        >
+          {isEditing ? (
+            <Box>{children}</Box>
+          ) : (
+            <Card shadow={1} radius={1} padding={1} tone={tone}>
+              <Stack space={1}>
+                <Flex gap={1} align="center">
+                  <ReferenceLinkCard
+                    __unstable_focusRing
+                    as={EditReferenceLink}
+                    data-pressed={pressed ? true : undefined}
+                    data-selected={selected ? true : undefined}
+                    documentId={value?._ref}
+                    documentType={refType?.name}
+                    flex={1}
+                    paddingX={2}
+                    paddingY={1}
+                    pressed={pressed}
+                    radius={2}
+                    ref={elementRef}
+                    selected={selected}
+                    tone="inherit"
+                  >
+                    <PreviewReferenceValue
+                      value={value}
+                      referenceInfo={loadableReferenceInfo}
+                      renderPreview={renderPreview}
+                      type={schemaType}
+                    />
+                  </ReferenceLinkCard>
+                  <Box>{menu}</Box>
+                </Flex>
+                {footer}
+              </Stack>
+            </Card>
+          )}
+        </FormField>
+      </FieldActionsProvider>
     </>
   )
 }
