@@ -59,6 +59,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       const $pteTextbox = $pteField.getByRole('textbox')
       await $pteTextbox.isEditable()
       await $pteTextbox.focus()
+      await expect($pteTextbox).toBeFocused()
       return $pteTextbox
     },
     /**

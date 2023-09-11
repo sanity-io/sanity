@@ -7,8 +7,15 @@ on:
     branches: [next]
 jobs:
   test:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            browser: 'chromium|firefox'
+          - os: macos-latest
+            browser: webkit
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -44,13 +51,20 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+          key: ${{ runner.os }}-playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Build CLI
         run: yarn build:cli # Needed for CLI tests
-      - name: Run end-to-end tests
-        run: yarn workspace sanity test:ct
+      - name: Run end-to-end tests for ${{ matrix.browser }}
+        # run: yarn workspace sanity test:ct --project ${{ matrix.browser }}
+        run: |
+          CMD="yarn workspace sanity test:ct"
+          IFS='|' read -ra BROWSERS <<< "${{ matrix.browser }}"
+          for browser in "${BROWSERS[@]}"; do
+            CMD="$CMD --project=$browser"
+          done
+          eval $CMD
         env:
           NODE_OPTIONS: --max_old_space_size=8192
       - name: Get Current Job Log URL
