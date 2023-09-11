@@ -140,6 +140,9 @@ export interface NavigateOptions {
    * Indicates whether to replace the current state.
    */
   replace?: boolean
+
+  /** @internal */
+  searchParams?: Record<string, string>
 }
 
 /**
@@ -199,7 +202,12 @@ export interface RouterContextValue {
    * Navigates to the given URL.
    * The function requires an object that has a path and an optional replace property.
    */
-  navigateUrl: (opts: {path: string; replace?: boolean}) => void
+  navigateUrl: (opts: {
+    path: string
+    replace?: boolean
+    /** @internal */
+    searchParams?: Record<string, string | undefined>
+  }) => void
 
   /**
    * Navigates to the given router state.
@@ -212,6 +220,11 @@ export interface RouterContextValue {
    * See {@link RouterState} and {@link NavigateOptions}
    */
   navigateIntent: (intentName: string, params?: IntentParameters, options?: NavigateOptions) => void
+
+  /**
+   * @internal
+   */
+  searchParams: Record<string, string | undefined>
 
   /**
    * The current router state. See {@link RouterState}

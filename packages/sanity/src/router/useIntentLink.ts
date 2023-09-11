@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import {IntentParameters} from './types'
 import {useLink} from './useLink'
 import {useRouter} from './useRouter'
+import {compileSearchParams} from './compileSearchParams'
 
 /**
  * @public
@@ -26,6 +27,11 @@ export interface UseIntentLinkOptions {
    * Whether to replace the current URL in the browser history.
    */
   replace?: boolean
+
+  /**
+   * @internal
+   */
+  searchParams?: Record<string, string | undefined>
 
   /**
    * The target window or frame to open the link in.
@@ -58,9 +64,16 @@ export function useIntentLink(options: UseIntentLinkOptions): {
   onClick: React.MouseEventHandler<HTMLElement>
   href: string
 } {
-  const {intent, onClick: onClickProp, params, replace, target} = options
+  const {intent, onClick: onClickProp, params, replace, searchParams, target} = options
   const {resolveIntentLink} = useRouter()
-  const href = useMemo(() => resolveIntentLink(intent, params), [intent, params, resolveIntentLink])
+
+  const href = useMemo(() => {
+    const path = resolveIntentLink(intent, params)
+    const search = compileSearchParams(searchParams)
+
+    return `${path}${search || ''}`
+  }, [intent, searchParams, params, resolveIntentLink])
+
   const {onClick} = useLink({href, onClick: onClickProp, replace, target})
 
   return {onClick, href}
