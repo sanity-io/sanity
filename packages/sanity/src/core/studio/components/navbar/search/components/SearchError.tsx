@@ -23,10 +23,10 @@ export function SearchError() {
         </TextWithTone>
       </Box>
       <TextWithTone size={2} tone="critical" weight="semibold">
-        {t('navbar.search.error.something-went-wrong-title')}
+        {t('search.error.unspecified-error-title')}
       </TextWithTone>
       <TextWithTone size={1} tone="critical">
-        {t('navbar.search.error.something-went-wrong-description')}
+        {t('search.error.unspecified-error-help-description')}
       </TextWithTone>
     </Flex>
   )
