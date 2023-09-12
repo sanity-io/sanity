@@ -3,7 +3,24 @@ import {NoJavascript} from './NoJavascript'
 import {GlobalErrorHandler} from './globalErrorHandler'
 import {Favicons} from './Favicons'
 
+// @todo: replace with fonts on our origin
 const globalStyles = `
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19") format("woff2");
+    font-named-instance: 'Regular';
+  }
+  @font-face {
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("https://rsms.me/inter/font-files/Inter-italic.var.woff2?v=3.19") format("woff2");
+    font-named-instance: 'Italic';
+  }
   html {
     background-color: #f1f3f6;
   }
@@ -51,7 +68,8 @@ export function DefaultDocument(props: DefaultDocumentProps): React.ReactElement
         {css.map((href) => (
           <link key={href} rel="stylesheet" href={href} />
         ))}
-        <style>{globalStyles}</style>
+        {/* eslint-disable-next-line react/no-danger */}
+        <style dangerouslySetInnerHTML={{__html: globalStyles}} />
       </head>
       <body>
         <div id="sanity" />
