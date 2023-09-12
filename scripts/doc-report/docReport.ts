@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import {groupBy} from 'lodash'
 import {combineLatest, map} from 'rxjs'
+import prettier from 'prettier'
 import {startTimer} from '../utils/startTimer'
 import {createDocClient} from './docClient'
 import {readEnv} from './envVars'
@@ -82,7 +83,7 @@ combineLatest([
           package: br.package,
           documentedChange: Number.isNaN(documentedPercentDiff)
             ? 0
-            : Math.floor(documentedPercentDiff * 100),
+            : Math.ceil(documentedPercentDiff * 100),
           prodDocumented: prod.documented,
           prodNotDocumented: prod.notDocumented,
           branchDocumented: br.documented,
@@ -100,9 +101,9 @@ combineLatest([
       report = 'No changes to documentation'
     } else {
       // convert the result to a markdown table with heading
-      report = `
-      | Package | Documentation Change |
-      | ------- | ----------------- |
+      report = await prettier.format(
+        `| Package | Documentation Change |
+| ------- | ----------------- |
       ${res
         .sort((a, b) => b.documentedChange - a.documentedChange)
         .filter((r) => r.documentedChange !== 0)
@@ -114,34 +115,35 @@ combineLatest([
         )
         .join('\n')}
 
-      <details>
-        <summary>Full Report</summary>
-        ${res
-          .sort((a, b) => b.documentedChange - a.documentedChange)
-          .map(
-            (r) =>
-              `<details>
-        <summary>${r.package}</summary>
-        <table>
-          <tr>
-            <th>This branch</th>
-            <th>Next branch</th>
-          </tr>
-          <tr>
-            <td>${r.branchDocumented} documented</td>
-            <td>${r.prodDocumented} documented</td>
-          </tr>
-          <tr>
-            <td>${r.branchNotDocumented} not documented</td>
-            <td>${r.prodNotDocumented} not documented</td>
-          </tr>
-        </table>
-      </details>
+<details>
+  <summary>Full Report</summary>
+  ${res
+    .sort((a, b) => b.documentedChange - a.documentedChange)
+    .map(
+      (r) =>
+        ` <details>
+    <summary>${r.package}</summary>
+    <table>
+      <tr>
+        <th>This branch</th>
+        <th>Next branch</th>
+      </tr>
+      <tr>
+        <td>${r.branchDocumented} documented</td>
+        <td>${r.prodDocumented} documented</td>
+      </tr>
+      <tr>
+        <td>${r.branchNotDocumented} not documented</td>
+        <td>${r.prodNotDocumented} not documented</td>
+      </tr>
+    </table>
+  </details>`,
+    )
+    .join('\n')}
+</details>
       `,
-          )
-          .join('\n')}
-      </details>
-      `
+        {parser: 'markdown'},
+      )
     }
 
     // save it to a file
