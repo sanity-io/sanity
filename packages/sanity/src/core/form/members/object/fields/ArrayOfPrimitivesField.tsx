@@ -36,7 +36,7 @@ import {readAsText} from '../../../studio/uploads/file/readAsText'
 import {accepts} from '../../../studio/uploads/accepts'
 import {applyAll} from '../../../patch/applyPatch'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {constructDescriptionId} from '../../common/constructDescriptionId'
+import {createDescriptionId} from '../../common/createDescriptionId'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -302,10 +302,7 @@ export function ArrayOfPrimitivesField(props: {
       onFocus: handleFocus,
       id: member.field.id,
       ref: focusRef,
-      'aria-describedby': constructDescriptionId(
-        member.field.id,
-        member.field.schemaType.description,
-      ),
+      'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
     }),
     [handleBlur, handleFocus, member.field.id, member.field.schemaType.description],
   )

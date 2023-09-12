@@ -19,7 +19,7 @@ import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {applyAll} from '../../../patch/applyPatch'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {constructDescriptionId} from '../../common/constructDescriptionId'
+import {createDescriptionId} from '../../common/createDescriptionId'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input
@@ -184,10 +184,7 @@ export const ObjectField = function ObjectField(props: {
       onFocus: handleFocus,
       id: member.field.id,
       ref: focusRef,
-      'aria-describedby': constructDescriptionId(
-        member.field.id,
-        member.field.schemaType.description,
-      ),
+      'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
     }),
     [handleBlur, handleFocus, member.field.id, member.field.schemaType.description],
   )

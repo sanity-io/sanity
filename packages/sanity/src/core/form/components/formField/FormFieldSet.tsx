@@ -6,7 +6,7 @@ import {FormNodeValidation} from '@sanity/types'
 import {FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFieldActions} from '../../field'
-import {constructDescriptionId} from '../../members/common/constructDescriptionId'
+import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
@@ -173,7 +173,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
             </Flex>
 
             {description && (
-              <Text muted size={1} id={constructDescriptionId(inputId, description)}>
+              <Text muted size={1} id={createDescriptionId(inputId, description)}>
                 {description}
               </Text>
             )}

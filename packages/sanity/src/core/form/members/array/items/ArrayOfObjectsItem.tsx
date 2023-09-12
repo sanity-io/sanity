@@ -23,7 +23,7 @@ import {createProtoValue} from '../../../utils/createProtoValue'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useResolveInitialValueForType} from '../../../../store'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
-import {constructDescriptionId} from '../../common/constructDescriptionId'
+import {createDescriptionId} from '../../common/createDescriptionId'
 
 /**
  *
@@ -243,10 +243,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onFocus: handleFocus,
       id: member.item.id,
       ref: focusRef,
-      'aria-describedby': constructDescriptionId(
-        member.item.id,
-        member.item.schemaType.description,
-      ),
+      'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
     }),
     [handleBlur, handleFocus, member.item.id, member.item.schemaType.description],
   )

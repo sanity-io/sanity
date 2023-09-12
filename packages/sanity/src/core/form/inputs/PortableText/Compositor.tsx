@@ -351,11 +351,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderPreview,
     ],
   )
-  const describedBy = props.elementProps['aria-describedby']
+  const ariaDescribedBy = props.elementProps['aria-describedby']
   const editorNode = useMemo(
     () => (
       <Editor
-        describedBy={describedBy}
+        ariaDescribedBy={ariaDescribedBy}
         hasFocus={hasFocus}
         hotkeys={editorHotkeys}
         isActive={isActive}
@@ -391,7 +391,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       onPaste,
       path,
       readOnly,
-      describedBy,
+      ariaDescribedBy,
     ],
   )
 

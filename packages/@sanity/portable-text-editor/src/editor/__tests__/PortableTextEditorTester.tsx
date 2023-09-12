@@ -73,7 +73,7 @@ export const PortableTextEditorTester = forwardRef(function PortableTextEditorTe
       <PortableTextEditable
         selection={props.selection || undefined}
         renderPlaceholder={props.renderPlaceholder}
-        describedBy="desc_foo"
+        aria-describedby="desc_foo"
       />
     </PortableTextEditor>
   )

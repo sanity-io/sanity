@@ -5,7 +5,7 @@ import React from 'react'
  * and added to the descriptive element id.
  * @internal
  */
-export function constructDescriptionId(
+export function createDescriptionId(
   id: string | undefined,
   description: React.ReactNode | undefined,
 ): string | undefined {
