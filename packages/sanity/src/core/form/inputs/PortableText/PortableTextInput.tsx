@@ -282,7 +282,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onBlur, onChange, onPathFocus, toast],
+    [onBlur, onChange, onEditorChange, onPathFocus, toast],
   )
 
   useEffect(() => {
