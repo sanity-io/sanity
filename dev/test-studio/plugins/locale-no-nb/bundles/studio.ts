@@ -2,7 +2,7 @@ import type {StudioLocaleResourceKeys} from 'sanity'
 
 const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Placeholder text for the omnisearch input field */
-  'navbar.search.placeholder': 'Søk',
+  'search.placeholder': 'Søk',
 
   /* Relative time, just now */
   'timeAgo.justNow': 'akkurat nå',

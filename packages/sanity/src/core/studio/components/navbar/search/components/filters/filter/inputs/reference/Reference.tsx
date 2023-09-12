@@ -78,7 +78,7 @@ export function SearchFilterReferenceInput({
             fontSize={fullscreen ? 2 : 1}
             mode="ghost"
             onClick={handleClear}
-            text={t('navbar.search.action.clear')}
+            text={t('search.filter.reference-clear')}
             tone="critical"
           />
         </Stack>

@@ -236,7 +236,7 @@ export function StudioNavbar() {
               {shouldRender.tools && <UserMenu />}
               {shouldRender.searchFullscreen && (
                 <Button
-                  aria-label={t('search.action-open')}
+                  aria-label={t('search.action-open-aria-label')}
                   icon={SearchIcon}
                   mode="bleed"
                   onClick={handleOpenSearchFullscreen}

@@ -62,8 +62,8 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
               <SearchHeader
                 ariaInputLabel={
                   hasValidTerms
-                    ? t('navbar.search.search-results-label')
-                    : t('navbar.search.recent-searches-label')
+                    ? t('search.search-results-aria-label')
+                    : t('search.recent-searches-aria-label')
                 }
                 onClose={onClose}
                 ref={setInputElement}

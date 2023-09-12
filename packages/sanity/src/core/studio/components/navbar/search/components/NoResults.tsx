@@ -9,10 +9,10 @@ export function NoResults() {
     <Container width={0}>
       <Stack aria-live="assertive" space={4} paddingX={4} paddingY={5}>
         <Text align="center" muted weight="semibold">
-          {t('navbar.search.no-results-title')}
+          {t('search.no-results-title')}
         </Text>
         <Text align="center" muted size={1}>
-          {t('navbar.search.no-results-description')}
+          {t('search.no-results-help-description')}
         </Text>
       </Stack>
     </Container>
