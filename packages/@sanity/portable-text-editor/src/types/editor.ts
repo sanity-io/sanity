@@ -18,7 +18,8 @@ import {
 import {Subject, Observable} from 'rxjs'
 import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from 'slate-react'
-import {FocusEvent} from 'react'
+import {FocusEvent, PropsWithChildren, ReactElement} from 'react'
+import {DOMNode} from 'slate-react/dist/utils/dom'
 import type {Patch} from '../types/patch'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 

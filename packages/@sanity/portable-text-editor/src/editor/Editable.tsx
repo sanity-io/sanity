@@ -1,12 +1,5 @@
 import {BaseRange, Transforms, Text, NodeEntry, Range as SlateRange} from 'slate'
-import React, {
-  forwardRef,
-  KeyboardEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, {forwardRef, KeyboardEvent, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   Editable as SlateEditable,
   ReactEditor,
