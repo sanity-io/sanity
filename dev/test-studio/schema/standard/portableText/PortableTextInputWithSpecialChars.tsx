@@ -81,7 +81,7 @@ export const PortableTextInputWithSpecialCharacters = (props: InputProps) => {
         },
       },
     }),
-    []
+    [],
   )
 
   const closeMenu = useCallback(() => {
@@ -120,7 +120,7 @@ export const PortableTextInputWithSpecialCharacters = (props: InputProps) => {
         PortableTextEditor.focus(editorRef.current)
       }
     },
-    [editorRef, closeMenu]
+    [editorRef, closeMenu],
   )
 
   const setRangeDecorators = useCallback(() => {
@@ -142,7 +142,7 @@ export const PortableTextInputWithSpecialCharacters = (props: InputProps) => {
               const isRangeInvalid = (editor: PortableTextEditor) => {
                 const [currentBlockValue] = PortableTextEditor.findByPath(
                   editor,
-                  relativePath.slice(0, 1)
+                  relativePath.slice(0, 1),
                 )
                 if (!isEqual(memberBlockValue, currentBlockValue)) {
                   return true
