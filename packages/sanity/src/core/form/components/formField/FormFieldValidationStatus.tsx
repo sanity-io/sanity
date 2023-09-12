@@ -34,9 +34,30 @@ const VALIDATION_COLORS: Record<'error' | 'warning' | 'info', string> = {
 }
 
 const VALIDATION_ICONS: Record<'error' | 'warning' | 'info', React.ReactElement> = {
-  error: <ErrorOutlineIcon data-testid="input-validation-icon-error" />,
-  warning: <WarningOutlineIcon data-testid="input-validation-icon-warning" />,
-  info: <InfoOutlineIcon data-testid="input-validation-icon-info" />,
+  error: (
+    <ErrorOutlineIcon
+      data-testid="input-validation-icon-error"
+      aria-label="Has error"
+      aria-hidden
+      role="presentation"
+    />
+  ),
+  warning: (
+    <WarningOutlineIcon
+      data-testid="input-validation-icon-warning"
+      aria-label="Has warning"
+      aria-hidden
+      role="presentation"
+    />
+  ),
+  info: (
+    <InfoOutlineIcon
+      data-testid="input-validation-icon-info"
+      aria-label="Has information"
+      aria-hidden
+      role="presentation"
+    />
+  ),
 }
 
 const StyledStack = styled(Stack)`
