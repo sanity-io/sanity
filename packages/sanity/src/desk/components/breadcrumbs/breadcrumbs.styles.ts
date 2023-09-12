@@ -1,19 +1,30 @@
 import styled, {css} from 'styled-components'
 import {Box, Button, Theme} from '@sanity/ui'
+import {TitleText} from '../pane/PaneHeader.styles'
 import {BreadcrumbItemProps} from './BreadcrumbItem'
 
 export const BREADCRUMB_ITEM_TITLE_MIN_WIDTH = 220
 export const BREADCRUMB_ITEM_MAX_WIDTH = 130
 
 export const Root = styled.ol`
-  margin: 0;
-  padding: 0;
+  align-items: center;
   display: flex;
   list-style: none;
-  align-items: center;
-  width: 100%;
+  margin: 0;
   overflow: hidden;
+  padding: 0;
   white-space: nowrap;
+  width: 100%;
+
+  @media (max-width: 512px) {
+    display: none;
+  }
+`
+
+export const MobileTitleText = styled(TitleText)`
+  @media (min-width: 512px) {
+    display: none !important;
+  }
 `
 
 export const ExpandButton = styled(Button)`

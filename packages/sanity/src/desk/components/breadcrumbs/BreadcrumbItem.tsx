@@ -1,4 +1,4 @@
-import {Text, Tooltip, Box, type ButtonProps} from '@sanity/ui'
+import {Text, Tooltip, type ButtonProps} from '@sanity/ui'
 import React, {forwardRef, type HTMLProps, type ReactNode, type ForwardedRef, useRef} from 'react'
 import {BreadcrumbButtonRoot, BreadcrumbItemSpan, TooltipRoot} from './breadcrumbs.styles'
 
