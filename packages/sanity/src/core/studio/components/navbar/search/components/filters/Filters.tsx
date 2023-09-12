@@ -43,7 +43,7 @@ export function Filters() {
       mode="bleed"
       onClick={handleClear}
       padding={fullscreen ? 3 : 2}
-      text={t('navbar.search.action.clear-filters')}
+      text={t('search.action.clear-filters')}
       tone="critical"
     />
   )

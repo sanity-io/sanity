@@ -15,13 +15,13 @@ export function AssetSourceError(props: ResponsivePaddingProps) {
         </TextWithTone>
         <Stack space={4}>
           <TextWithTone size={1} tone="caution" weight="semibold">
-            {t('navbar.search.error.no-valid-asset-source-title')}
+            {t('search.error.no-valid-asset-source-title')}
           </TextWithTone>
           <TextWithTone size={1} tone="caution">
-            {t('navbar.search.error.no-valid-asset-source-only-default-description')}
+            {t('search.error.no-valid-asset-source-only-default-description')}
           </TextWithTone>
           <TextWithTone size={1} tone="caution">
-            {t('navbar.search.error.no-valid-asset-source-check-config-description')}
+            {t('search.error.no-valid-asset-source-check-config-description')}
           </TextWithTone>
         </Stack>
       </Flex>

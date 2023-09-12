@@ -15,10 +15,10 @@ export function FilterError(props: ResponsivePaddingProps) {
         </TextWithTone>
         <Stack space={4}>
           <TextWithTone size={1} tone="critical" weight="semibold">
-            {t('navbar.search.error.display-filter-title')}
+            {t('search.error.display-filter-title')}
           </TextWithTone>
           <TextWithTone size={1} tone="critical">
-            {t('navbar.search.error.display-filter-description')}
+            {t('search.error.display-filter-description')}
           </TextWithTone>
         </Stack>
       </Flex>
