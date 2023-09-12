@@ -5,6 +5,8 @@ export const testStudioLocaleNamespace = 'testStudio' as const
 const enUSStrings = {
   'studio.logo.title': 'English logo',
   'structure.root.title': 'Content 🇺🇸',
+  'translate.example':
+    '<Icon/> Your search for "<Red>{{keyword}}</Red>" took <Bold>{{duration}}ms</Bold>',
 }
 
 const enUS = defineLocaleResourceBundle({
@@ -19,6 +21,8 @@ const noNB = defineLocaleResourceBundle({
   resources: {
     'studio.logo.title': 'Norsk logo',
     'structure.root.title': 'Innhold 🇳🇴',
+    'translate.example':
+      '<Icon/> Ditt søk på "<Red>{{keyword}}</Red>" tok <Bold>{{duration}}</Bold> millisekunder',
   },
 })
 
