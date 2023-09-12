@@ -41,7 +41,7 @@ export function AddFilterButton() {
         ref={setButtonElement}
         selected={open}
         space={2}
-        text={t('navbar.search.action.add-filter')}
+        text={t('search.action.add-filter')}
       />
     </Popover>
   )

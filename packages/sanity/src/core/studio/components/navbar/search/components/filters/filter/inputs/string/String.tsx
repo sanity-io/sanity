@@ -22,7 +22,7 @@ export function SearchFilterStringInput({
     <TextInput
       fontSize={fullscreen ? 2 : 1}
       onChange={handleChange}
-      placeholder={t('navbar.search.value')}
+      placeholder={t('search.filter.string-value-placeholder')}
       radius={2}
       value={value || ''}
     />

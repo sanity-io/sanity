@@ -89,7 +89,7 @@ export function SearchResults({inputElement}: SearchResultsProps) {
                 {hasSearchResults && (
                   <CommandList
                     activeItemDataAttr="data-hovered"
-                    ariaLabel={t('navbar.search.search-results-label')}
+                    ariaLabel={t('search.search-results-label')}
                     fixedHeight
                     initialIndex={lastActiveIndex}
                     inputElement={inputElement}

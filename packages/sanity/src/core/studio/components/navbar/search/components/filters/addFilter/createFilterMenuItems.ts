@@ -68,7 +68,7 @@ export function createFilterMenuItems({
         fieldDefinitions,
         filterDefinitions,
         filters: fieldFilters,
-        headerTitle: t('navbar.search.all-fields'),
+        headerTitle: t('search.filter-all-fields-header'),
         id: 'field',
       }),
     ]
@@ -161,7 +161,7 @@ function buildFieldMenuItemsNarrowed({
           fieldDefinitions,
           filterDefinitions,
           filters: sharedFilters,
-          headerTitle: t('navbar.search.shared-fields'),
+          headerTitle: t('search.filter-shared-fields-header'),
           id: 'shared',
           tone: 'primary',
         })
@@ -171,10 +171,10 @@ function buildFieldMenuItemsNarrowed({
     .map((documentType) => {
       const docType = schema.get(documentType)
       return {
-        title:
-          docType?.title ||
-          startCase(docType?.name) ||
-          `(${t('navbar.search.unknown-type-label')})`,
+        // Note: it shouldn't be possible to select document types that do not exist in schema,
+        // and there is no way to inject it into state (eg not persisted in URL), thus we leave
+        // this fallback (`Unknown type`) only as a edge-case safety net and will not translate it.
+        title: docType?.title || startCase(docType?.name) || '(Unknown type)',
         documentType,
       }
     })

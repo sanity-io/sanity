@@ -9,7 +9,7 @@ import {getPublishedId} from '../../../../../../../../../util'
 import {POPOVER_RADIUS} from '../../../../../constants'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {useSearch} from '../../../../../hooks/useSearch'
-import {documentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
+import {getDocumentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
 import {useTranslation} from '../../../../../../../../../i18n'
 
@@ -120,11 +120,23 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
     [hits, onSelect],
   )
   const placeholderText = useMemo(() => {
-    const documentTypes = documentTypesTruncated({types, t})
-    if (types.length > 0) {
-      return t('navbar.search.action.search-for-doc-type', {documentTypes})
+    if (types.length === 0) {
+      // "Search all documents"
+      return t('search.action.search-all-types')
     }
-    return t('navbar.search.action.search-all-docs')
+
+    const {remainingCount, types: visibleTypes} = getDocumentTypesTruncated({types})
+    const key =
+      remainingCount > 0
+        ? 'search.action.search-specific-types-truncated'
+        : 'search.action.search-specific-types'
+
+    // "Search for Author, Book" or "Search for Author, Book +2 more"
+    return t(key, {
+      count: remainingCount,
+      types: visibleTypes,
+      formatParams: {types: {style: 'short', type: 'unit'}},
+    })
   }, [types, t])
 
   const renderOption = useCallback((option: any) => {

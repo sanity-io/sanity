@@ -18,7 +18,7 @@ const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 
 export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentProps<boolean>) {
   const {t} = useTranslation()
-  return <>{value ? t('navbar.search.true') : t('navbar.search.false')}</>
+  return <>{value ? t('search.filter.true') : t('search.filter.false')}</>
 }
 
 export function SearchButtonValueDate({
@@ -92,7 +92,7 @@ export function SearchButtonValueNumberCountRange({
   value,
 }: OperatorButtonValueComponentProps<OperatorNumberRangeValue>) {
   const {t} = useTranslation()
-  return <>{t('navbar.search.number-items-range', {min: value.min, max: value.max})}</>
+  return <>{t('search.number-items-range', {min: value.min, max: value.max})}</>
 }
 
 export function SearchButtonValueReference({value}: OperatorButtonValueComponentProps<Reference>) {
