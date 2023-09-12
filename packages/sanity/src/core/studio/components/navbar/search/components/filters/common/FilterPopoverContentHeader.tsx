@@ -44,8 +44,7 @@ export const FilterPopoverContentHeader = forwardRef<
           muted
           onChange={onChange}
           onClear={onClear}
-          // in this case, it will always be a single filter
-          placeholder={t('navbar.search.filter-label', {count: 1})}
+          placeholder={t('search.filter-placeholder')}
           ref={ref}
           smallClearButton
           spellCheck={false}

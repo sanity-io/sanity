@@ -91,7 +91,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
         {fullscreen && (
           <Card>
             <Button
-              aria-label={t('navbar.search.action.close-search')}
+              aria-label={t('search.action.close-search-aria-label')}
               icon={ArrowLeftIcon}
               mode="bleed"
               onClick={onClose}
@@ -111,7 +111,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
             icon={loading ? AnimatedSpinnerIcon : SearchIcon}
             onChange={handleQueryChange}
             onClear={handleQueryClear}
-            placeholder={t('navbar.search.placeholder')}
+            placeholder={t('search.placeholder')}
             radius={fullscreen ? 2 : 1}
             ref={ref}
             smallClearButton={fullscreen}
@@ -125,7 +125,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
           <FilterBox>
             <Button
               aria-expanded={filtersVisible}
-              aria-label={t('navbar.search.action.toggle-filters')}
+              aria-label={t('search.action.toggle-filters-aria-label')}
               height="fill"
               icon={ControlsIcon}
               mode="bleed"

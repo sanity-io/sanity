@@ -19,6 +19,8 @@ interface AddFilterPopoverContentProps {
   onClose: () => void
 }
 
+const POPOVER_STYLES = {width: '300px'}
+
 export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
@@ -98,10 +100,10 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   )
 
   return (
-    <Flex direction="column" style={{width: '300px'}}>
+    <Flex direction="column" style={POPOVER_STYLES}>
       {/* Filter header */}
       <FilterPopoverContentHeader
-        ariaInputLabel={t('navbar.search.filter-by-title-label')}
+        ariaInputLabel={t('search.filter-by-title-aria-label')}
         onChange={handleFilterChange}
         onClear={handleFilterClear}
         ref={setInputElement}
@@ -112,7 +114,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         {filteredMenuItems.length > 0 && (
           <CommandList
             activeItemDataAttr="data-hovered"
-            ariaLabel={t('navbar.search.filter-label', {count: filteredMenuItems.length})}
+            ariaLabel={t('search.filters-aria-label', {count: filteredMenuItems.length})}
             autoFocus="input"
             getItemDisabled={getItemDisabled}
             getItemKey={getItemKey}
@@ -130,7 +132,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         {filteredMenuItems.length == 0 && (
           <Box padding={3}>
             <Text muted size={1} textOverflow="ellipsis">
-              {t('navbar.search.no-matches-found', {filter: titleFilter})}
+              {t('search.filter-no-matches-found', {filter: titleFilter})}
             </Text>
           </Box>
         )}

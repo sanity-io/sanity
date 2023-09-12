@@ -7,9 +7,6 @@ import {studioLocaleNamespace} from '../localeNamespaces'
  * @internal
  */
 export const studioLocaleStrings = {
-  /** Placeholder text for the omnisearch input field */
-  'navbar.search.placeholder': 'Search',
-
   /* Relative time, just now */
   'timeAgo.justNow': 'just now',
 
@@ -244,153 +241,200 @@ export const studioLocaleStrings = {
 
   /** --- Search --- */
 
-  /** Label to open search action when the search is on full screen */
-  'search.action-open': 'Open search',
+  /** Placeholder text for the omnisearch input field */
+  'search.placeholder': 'Search',
 
-  /** Accessibility label for Search Input for when there are no recent searches */
-  'navbar.search.search-results-label': 'Search results',
+  /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
+  'search.action-open-aria-label': 'Open search',
 
-  /** Accessibility label for Search Input for when there are recent searches */
-  'navbar.search.recent-searches-label': 'Recent searches',
+  /** Accessibility label for the search results section, shown when the user has typed valid terms */
+  'search.search-results-aria-label': 'Search results',
+
+  /** Accessibility label for the recent searches section, shown when no valid search terms has been given */
+  'search.recent-searches-aria-label': 'Recent searches',
+
+  /** Label/heading shown for the recent searches section */
+  'search.recent-searches-label': 'Recent searches',
 
   /** Action label for clearing search filters */
-  'navbar.search.action.clear-filters': 'Clear filters',
+  'search.action.clear-filters': 'Clear filters',
 
   /** Accessibility label for filtering by document type */
-  'navbar.search.action.filter-by-document-type': 'Filter by document type',
+  'search.action.filter-by-document-type-aria-label': 'Filter by document type',
 
-  /** Label for placeholder for Filter (singular) */
-  'navbar.search.filter-label_one': 'Filter',
+  /** Accessibility label for the "Filters" list, that is shown when using "Add filter" in search (singular) */
+  'search.filters-aria-label_one': 'Filter',
 
-  /** Label for placeholder for Filters (plural) */
-  'navbar.search.filter-label_other': 'Filters',
+  /** Accessibility label for the "Filters" list, that is shown when using "Add filter" in search (plural) */
+  'search.filters-aria-label_other': 'Filters',
 
-  /** Accessibility label for command list for Document types */
-  'navbar.search.document-types-label': 'Document types',
+  /** Placeholder for the "Filter" input, when narrowing possible fields/filters */
+  'search.filter-placeholder': 'Filter',
 
-  /** Label for when no documents are found for a filter are found */
-  'navbar.search.no-matches-found': `No matches for {{filter}}`,
+  /** Label for when no fields/filters are found for the given term */
+  'search.filter-no-matches-found': `No matches for {{filter}}`,
 
-  /** Accessibility action label for clearing document type filters */
-  'navbar.search.action.clear-type-filters': 'Clear checked filters',
+  /** Accessibility label for list displaying the available document types */
+  'search.document-types-aria-label': 'Document types',
 
-  /** Clear action label for clearing document type filters */
-  'navbar.search.action.clear-type-label': 'Clear',
+  /** Label for when no document types matching the filter are found */
+  'search.document-types-no-matches-found': `No matches for {{filter}}`,
 
-  /** Accessibility action label for deleting a search filter */
-  'navbar.search.action.delete-filter': 'Delete filter',
+  /** Accessibility label for action to clear all currently applied document type filters */
+  'search.action.clear-type-filters-aria-label': 'Clear checked filters',
+
+  /** Label for action to clear all currently applied document type filters */
+  'search.action.clear-type-filters-label': 'Clear',
+
+  /** Accessibility action label for removing an already applied search filter */
+  'search.action.remove-filter-aria-label': 'Remove filter',
 
   /** Action label for adding a search filter */
-  'navbar.search.action.add-filter': 'Add filter',
+  'search.action.add-filter': 'Add filter',
 
-  /** Accessibility Label for filter search input in the filtering section of search */
-  'navbar.search.filter-by-title-label': 'Filter by title',
+  /** Accessibility label for list that lets you filter fields by title, when adding a new filter in search */
+  'search.filter-by-title-aria-label': 'Filter by title',
 
-  /** Label for filter search tooltip based on the field name */
-  'navbar.search.filter-field-name': 'Field name',
+  /** Label for "field name" shown in tooltip when navigating list of possible fields to filter */
+  'search.filter-field-tooltip-name': 'Field name',
 
-  /** Label for filter search tooltip based on the field description */
-  'navbar.search.filter-field-description': 'Field description',
+  /** Label for "field description" shown in tooltip when navigating list of possible fields to filter */
+  'search.filter-field-tooltip-description': 'Field description',
 
-  /** Message for showing that it's used in specific document types (used within the filter search tooltip) */
-  'navbar.search.used-in-document-types': 'Used in document types',
+  /** Label for "Used in document types", a list of the document types a field appears in. Shown in tooltip when navigating list of possible fields to filter */
+  'search.filter-field-tooltip-used-in-document-types': 'Used in document types',
 
-  /** Label for "all fields" in the filter menu */
-  'navbar.search.all-fields': 'All fields',
+  /**
+   * Label for "All fields", a label that appears above the list of available fields when filtering.
+   * If one or more document type has been chosen as filter, this label is replaced with a group of
+   * fields per selected document type
+   */
+  'search.filter-all-fields-header': 'All fields',
 
-  /** Label for "shared fields" in the filter menu */
-  'navbar.search.shared-fields': 'Shared fields',
-
-  /** Label for "unknown types" in the filter menu */
-  'navbar.search.unknown-type-label': 'Unknown type',
+  /**
+   * Label for "shared fields", a label that appears above a list of fields that all filtered types
+   * have in common, when adding a new filter. For instance, if "book" and "employee" both have a
+   * "title" field, this field would be listed under "shared fields".
+   * */
+  'search.filter-shared-fields-header': 'Shared fields',
 
   /** Label for boolean filter - true */
-  'navbar.search.true': 'True',
+  'search.filter.true': 'True',
 
   /** Label for boolean filter - false */
-  'navbar.search.false': 'False',
+  'search.filter.false': 'False',
 
-  /** Label for number and string filter */
-  'navbar.search.value': 'Value',
+  /** Placeholder value for the string filter */
+  'search.filter.string-value-placeholder': 'Value',
 
-  /** Label for number range filter - min placeholder */
-  'navbar.search.min-value': 'Min value',
+  /** Placeholder value for the number filter */
+  'search.filter.number-value-placeholder': 'Value',
 
-  /** Label for number range filter - max placeholder */
-  'navbar.search.max-value': 'Max value',
+  /** Placeholder value for minimum numeric value filter */
+  'search.filter.number-min-value-placeholder': 'Min value',
+
+  /** Placeholder value for maximum numeric value filter */
+  'search.filter.number-max-value-placeholder': 'Max value',
+
+  /** Label/placeholder prompting user to select one of the predefined, allowed values for a string field */
+  'search.filter.string-value-select-predefined-value': 'Select...',
+
+  /** Label for the action of clearing the currently selected asset in an image/file filter */
+  'search.filter.asset-clear': 'Clear',
+
+  /** Label for the action of clearing the currently selected document in a reference filter */
+  'search.filter.reference-clear': 'Clear',
 
   /** Label for search value in a range of numbers */
-  'navbar.search.number-items-range': `{{min}} → {{max}} items`,
+  // @todo Part of `arrayOperators` - needs `<Translate />` refactoring
+  'search.filter.number-items-range': `{{min}} → {{max}} items`,
 
   /** Title label for when no search results are found */
-  'navbar.search.no-results-title': 'No results found',
+  'search.no-results-title': 'No results found',
 
-  /** Description for when no search results are found */
-  'navbar.search.no-results-description': 'Try another keyword or adjust your filters',
+  /** Helpful description for when no search results are found */
+  'search.no-results-help-description': 'Try another keyword or adjust your filters',
 
-  /** Title label for when the search has found an error */
-  'navbar.search.error.something-went-wrong-title': 'Something went wrong while searching',
+  /** Title label for when search returned an error that we are not able to describe in detail */
+  'search.error.unspecified-error-title': 'Something went wrong while searching',
 
-  /** Description label for when the search has found an error */
-  'navbar.search.error.something-went-wrong-description':
-    'Please try again or check your connection',
-
-  /** Label for when the asset source is unknown (used in the nav bar search, specifically filter) */
-  'navbar.search.error.unknown-asset-source': 'Unknown asset source found',
+  /** Helpful description for when search returned an error that we are not able to describe in detail */
+  'search.error.unspecified-error-help-description': 'Please try again or check your connection',
 
   /** Title for error when no valid asset sources found */
-  'navbar.search.error.no-valid-asset-source-title': 'No valid asset sources found.',
+  'search.error.no-valid-asset-source-title': 'No valid asset sources found.',
 
   /** Description for error when no valid asset source is found, describes that only the default asset is supported */
-  'navbar.search.error.no-valid-asset-source-only-default-description':
+  'search.error.no-valid-asset-source-only-default-description':
     'Currently, only the default asset source is supported.',
 
-  /** Description for error when no valid asset source is found, describes that you should cehck the the current studio config */
-  'navbar.search.error.no-valid-asset-source-check-config-description': `Please ensure it's enabled in your studio configuration file.`,
+  /** Description for error when no valid asset source is found, describes that you should check the the current studio config */
+  'search.error.no-valid-asset-source-check-config-description': `Please ensure it's enabled in your studio configuration file.`,
 
-  /** Title for error when a filter cannot be displayed */
-  'navbar.search.error.display-filter-title': 'An error occurred whilst displaying this filter.',
+  /** Title for error when a filter cannot be displayed (mainly a developer-oriented error) */
+  'search.error.display-filter-title': 'An error occurred whilst displaying this filter.',
 
   /** Description for error when a filter cannot be displayed, describes that you should check the schema */
-  'navbar.search.error.display-filter-description':
+  'search.error.display-filter-description':
     'This may indicate invalid options defined in your schema.',
 
-  /** Label for error when the useSearchState is not used within the SearchProvider */
-  'navbar.search.error.use-search-state-not-used-within-provider':
-    'useSearchState must be used within an SearchProvider',
-
   /** Label for action to clear recent searches */
-  'navbar.search.action.clear-recent-searches': 'Clear recent searches',
+  'search.action.clear-recent-searches': 'Clear recent searches',
 
-  /** Label for action to select an asset type */
-  'navbar.search.action.select-type': `Select {{type}}`,
+  /** Dialog title for action to select an asset of unknown type */
+  'search.action.select-asset': 'Select asset',
 
-  /** Label for action to select for filters for string lists */
-  'navbar.search.action.select': `Select...`,
+  /** Dialog title for action to select an image asset */
+  'search.action.select-asset_image': 'Select image',
 
-  /** Label for action to clear filter (used in multiple places within the search) */
-  'navbar.search.action.clear': `Clear`,
+  /** Dialog title for action to select a file asset */
+  'search.action.select-asset_file': 'Select file',
 
-  /** Label for placeholder when searching specific document types */
-  'navbar.search.action.search-for-doc-type': `Search for {{documentTypes}}`,
+  /**
+   * Text displayed when either no document type(s) have been selected, or we need a fallback,
+   * eg "Search for all types".
+   */
+  'search.action.search-all-types': 'Search all documents',
 
-  /** Label for searching all documents */
-  'navbar.search.action.search-all-docs': `Search all documents`,
+  /**
+   * Text displayed when we are able to determine one or more document types that will be used for
+   * searching, and can fit within the space assigned by the design.
+   */
+  'search.action.search-specific-types': `Search for {{types, list}}`,
 
-  /** Label for header (accessibility) when it's full screen and you want to close the search */
-  'navbar.search.action.close-search': 'Close search',
+  /**
+   * Text displayed when we are able to determine one or more document types that will be used for
+   * searching, but cannot list them all within the space assigned by the design, so we need an
+   * additional "and X more" suffix. Allows using pluralization suffixes, eg `_one`, `_other` etc.
+   */
+  'search.action.search-specific-types-truncated': `Search for {{types, list}} +{{count}} more`,
 
-  /** Label for header (accessibility) when it's full screen and you want to toggle filters */
-  'navbar.search.action.toggle-filters': 'Toggle filters',
+  /**
+   * In the context of a list of document types - no filtering selection has been done,
+   * thus the default is "all types".
+   */
+  'search.document-type-list-all-types': 'All types',
 
-  /** Label for instructions on how to use the search when no recent searches are available */
-  'navbar.search.instructions': 'Use <0></0> to refine your search',
+  /**
+   * A list of provided types, formatted with the locales list formatter.
+   */
+  'search.document-type-list': `{{types, list}}`,
 
-  /** Label for truncating document types: showing all types */
-  'navbar.search.all-types-label': 'All types',
+  /**
+   * A list of provided types that has been truncated - more types are included but not displayed,
+   * thus we need to indicate that there are more. Allows using pluralization suffixes,
+   * eg `_one`, `_other` etc.
+   */
+  'search.document-type-list-truncated': `{{types, list}} +{{count}} more`,
 
-  /** Label for truncating document types: showing the remaining count of document types */
-  'navbar.search.remaining-document-types': '+{{remainingCount}} more',
+  /** Accessibility label for when the search is full screen (on narrow screens) and you want to close the search */
+  'search.action.close-search-aria-label': 'Close search',
+
+  /** Accessibility label for when the search is full screen (on narrow screens) and you want to toggle filters */
+  'search.action.toggle-filters-aria-label': 'Toggle filters',
+
+  /** Label for instructions on how to use the search - displayed when no recent searches are available */
+  'search.instructions': 'Use <0></0> to refine your search',
 
   /** --- Configuration Issues --- */
 
