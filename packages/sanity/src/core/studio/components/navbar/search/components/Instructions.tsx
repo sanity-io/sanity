@@ -13,7 +13,7 @@ export function Instructions() {
         <Text muted>
           <Trans
             t={t}
-            i18nKey="navbar.search.instructions"
+            i18nKey="search.instructions"
             components={[<ControlsIcon key={0} style={{padding: '0 0.25rem'}} />]}
           />
         </Text>

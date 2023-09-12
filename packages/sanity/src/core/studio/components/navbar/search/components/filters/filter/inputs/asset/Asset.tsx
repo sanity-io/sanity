@@ -52,9 +52,9 @@ export function SearchFilterAssetInput(type?: AssetType) {
         case 'image':
           return image.assetSources.filter((a) => a.name === ImageSource.name)
         default:
-          throw Error(t('navbar.search.error.unknown-asset-source'))
+          throw Error('Unknown asset source found')
       }
-    }, [file.assetSources, image.assetSources, t])
+    }, [file.assetSources, image.assetSources])
 
     const menuButtonId = useId()
 
@@ -114,7 +114,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
             <Portal>
               <AssetSourceComponent
                 assetType={type}
-                dialogHeaderTitle={t('navbar.search.action.select-type', {type})}
+                dialogHeaderTitle={t('search.action.select-asset', {context: type})}
                 onClose={handleCloseAssetSource}
                 onSelect={handleSelectAssetFromSource}
                 selectedAssets={[]}
@@ -188,7 +188,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
                 mode="ghost"
                 onClick={handleClear}
                 style={{flex: 1}}
-                text={t('navbar.search.action.clear')}
+                text={t('search.filter.asset-clear')}
                 tone="critical"
               />
             )}

@@ -24,8 +24,8 @@ export function SearchFilterBooleanInput({onChange, value}: OperatorInputCompone
       radius={2}
       value={String(value ?? true)}
     >
-      <option value="true">{t('navbar.search.true')}</option>
-      <option value="false">{t('navbar.search.false')}</option>
+      <option value="true">{t('search.filter.true')}</option>
+      <option value="false">{t('search.filter.false')}</option>
     </Select>
   )
 }

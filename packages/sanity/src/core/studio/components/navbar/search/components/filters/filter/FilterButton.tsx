@@ -116,7 +116,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
             tone={isValid ? 'primary' : 'transparent'}
           >
             <CloseButton
-              aria-label={t('navbar.search.action.delete-filter')}
+              aria-label={t('search.action.remove-filter-aria-label')}
               fontSize={1}
               icon={CloseIcon}
               mode="bleed"
