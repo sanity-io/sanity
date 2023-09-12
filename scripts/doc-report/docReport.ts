@@ -82,7 +82,7 @@ combineLatest([
           package: br.package,
           documentedChange: Number.isNaN(documentedPercentDiff)
             ? 0
-            : Math.floor(documentedPercentDiff * 100),
+            : Math.ceil(documentedPercentDiff * 100),
           prodDocumented: prod.documented,
           prodNotDocumented: prod.notDocumented,
           branchDocumented: br.documented,
