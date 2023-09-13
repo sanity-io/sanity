@@ -199,7 +199,7 @@ export interface ArrayOfObjectsInputProps<
   /**
    * @hidden
    * @beta */
-  resolveUploader: UploaderResolver
+  resolveUploader: UploaderResolver<ObjectSchemaType>
 
   /**
    * @hidden
