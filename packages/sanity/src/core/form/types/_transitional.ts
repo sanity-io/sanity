@@ -14,18 +14,20 @@ import {FieldProps} from './fieldProps'
 import {ItemProps} from './itemProps'
 
 /**
- * Export `PortableTextMarker` so it can be used to build custom Portable Text markers.
+ * Function for rendering custom block markers
  *
- * @beta
+ * @public
  * @hidden
- * @deprecated - use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
+ * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
 export type RenderCustomMarkers = (markers: PortableTextMarker[]) => React.ReactNode
 
 /**
+ * Props for rendering block actions
  *
+ * @public
  * @hidden
- * @beta
+ * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
 export interface RenderBlockActionsProps {
   block: PortableTextBlock
@@ -36,18 +38,20 @@ export interface RenderBlockActionsProps {
 }
 
 /**
+ * Function for rendering custom block actions
  *
+ * @public
  * @hidden
- * @beta
+ * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
 export type RenderBlockActionsCallback = (props: RenderBlockActionsProps) => React.ReactNode
 
 /**
  * A generic marker for attaching metadata to specific nodes of the Portable Text input.
  *
- * @beta
+ * @public
  * @hidden
- * @deprecated - use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
+ * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  * @param type - a type name for this marker
  * @param data - some data connected to this marker
  * @param path - the path to the Portable Text content connected to this marker
@@ -59,18 +63,11 @@ export interface PortableTextMarker {
 }
 
 /**
+ * Component for rendering custom block markers
  *
+ * @public
  * @hidden
- * @beta
- */
-export type FormBuilderArrayFunctionComponent = React.ComponentType<
-  ArrayInputFunctionsProps<unknown, ArraySchemaType>
->
-
-/**
- *
- * @hidden
- * @beta
+ * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
 export type FormBuilderCustomMarkersComponent = React.ComponentType<{markers: PortableTextMarker[]}>
 

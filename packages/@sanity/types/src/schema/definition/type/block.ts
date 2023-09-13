@@ -54,8 +54,11 @@ export interface BlockDecoratorDefinition {
 
 /**
  * Schema definition for a text block style.
+ * A text block may have a block style like 'header', 'normal', 'lead'
+ * attached to it, which is stored on the `.style` property for that block.
  *
  * @public
+ * @remarks The first defined style will become the default style.´´
  * @example The default set of styles
  * ```ts
  * {
@@ -78,6 +81,29 @@ export interface BlockDecoratorDefinition {
  *     }
  *   ]
  * }
+ * ```
+ * @example Example of defining a block type with custom styles and render components.
+ * ```ts
+ * defineArrayMember({
+ *   type: 'block',
+ *   styles: [
+ *     {
+ *       title: 'Paragraph',
+ *       value: 'paragraph',
+ *       component: ParagraphStyle,
+ *     },
+ *     {
+ *       title: 'Lead',
+ *       value: 'lead',
+ *       component: LeadStyle,
+ *     },
+ *     {
+ *       title: 'Heading',
+ *       value: 'heading',
+ *       component: HeadingStyle,
+ *     },
+ *   ],
+ * })
  * ```
  */
 export interface BlockStyleDefinition {

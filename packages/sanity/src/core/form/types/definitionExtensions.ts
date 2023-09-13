@@ -326,26 +326,66 @@ declare module '@sanity/types' {
 
   export interface BlockDecoratorDefinition {
     /**
+     * Component for rendering a decorator.
      *
-     * @hidden
-     * @beta
+     * See also {@link BlockDecoratorProps | BlockDecoratorProps}
+     *
+     * @public
+     * @remarks - Try not to hard code CSS properties that could be derived from `@sanity/ui`.
+     * This will make sure your rendering looks good independent of the theme context it appears in.
+     * - Don't render arbitrary text nodes as this will confuse the editor with
+     * what is editable text and not. If you need arbitrary text, make sure to wrap them in in a
+     * container with `contentEditable={false}`.
+     * @example Example of rendering custom decorator that highlights text.
+     * ```ts
+     * const Highlight = (props: BlockDecoratorProps) => (
+     *   <span style={{backgroundColor: '#ff0'}}>
+     *     {props.children}
+     *   </span>
+     * )
+     * ```
      */
     component?: ComponentType<BlockDecoratorProps>
   }
-
   export interface BlockStyleDefinition {
     /**
+     * Component for rendering a text style.
      *
-     * @hidden
-     * @beta
+     * See also {@link BlockStyleProps | BlockStyleProps}
+     *
+     * @public
+     * @remarks - Try not to hard code CSS properties that could be derived from `@sanity/ui`.
+     * This will make sure your rendering looks good independent of the theme context it appears in.
+     * - Don't render arbitrary text nodes as this will confuse the editor with
+     * what is editable text and not. If you need arbitrary text, make sure to wrap them in in a
+     * container with `contentEditable={false}`.
+     * @example Example of rendering a custom style for article leads which is bigger,
+     * and bolder, but will adapt to what the current `@sanity/ui` theme has defined
+     * as actual values for weight "bold" and `size={3}`.
+     * ```ts
+     * import {Text} from '@sanity/ui'
+     *
+     * const LeadStyle = (props: BlockStyleProps) => (
+     *   <Text weight="bold" size={3}>
+     *     {props.children}
+     *   </Text>
+     * )
+     * ```
      */
     component?: ComponentType<BlockStyleProps>
   }
   export interface BlockListDefinition {
     /**
+     * Component for rendering a block as a list item
      *
-     * @hidden
-     * @beta
+     * See also {@link BlockListItemProps | BlockListItemProps}
+     *
+     * @public
+     * @remarks - Try not to hard code CSS properties that could be derived from `@sanity/ui`.
+     * This will make sure your rendering looks good independent of the theme context it appears in.
+     * - Don't render arbitrary text nodes as this will confuse the editor with
+     * what is editable text and not. If you need arbitrary text, make sure to wrap them in in a
+     * container with `contentEditable={false}`.
      */
     component?: ComponentType<BlockListItemProps>
   }
