@@ -20,7 +20,7 @@ const DEBUG = process.env.DEBUG || false
 
 // Wait this long for selections to appear in the browser
 // This should be set high to support slower host systems.
-const SELECTION_TIMEOUT_MS = 2000
+const SELECTION_TIMEOUT_MS = 5000
 
 // How long to wait for a new revision to come back to the client(s) when patched through the server.
 // This should be set high to support slower host systems.
