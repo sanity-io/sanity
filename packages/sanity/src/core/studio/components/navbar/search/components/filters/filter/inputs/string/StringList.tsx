@@ -113,7 +113,7 @@ export function SearchFilterStringListInput({
         <Button mode="ghost" padding={3}>
           <Flex align="center" gap={2} justify="space-between">
             <Text size={1} weight="regular">
-              {value ? value : t('search.filter.string-value-select-predefined-value')}
+              {value ? value : t('search.filter-string-value-select-predefined-value')}
             </Text>
             <Box marginLeft={1}>
               <Text size={1}>
