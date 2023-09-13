@@ -188,7 +188,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
                 mode="ghost"
                 onClick={handleClear}
                 style={{flex: 1}}
-                text={t('search.filter.asset-clear')}
+                text={t('search.filter-asset-clear')}
                 tone="critical"
               />
             )}
