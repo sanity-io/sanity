@@ -3,7 +3,7 @@ const progressStepper = require('./util/progressStepper')
 const retryOnFailure = require('./util/retryOnFailure')
 const suffixTag = require('./util/suffixTag')
 
-const DOCUMENT_IMPORT_CONCURRENCY = 3
+const DOCUMENT_IMPORT_CONCURRENCY = 6
 
 async function importBatches(batches, options) {
   const progress = progressStepper(options.onProgress, {

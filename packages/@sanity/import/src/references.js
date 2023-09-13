@@ -7,7 +7,7 @@ const progressStepper = require('./util/progressStepper')
 const retryOnFailure = require('./util/retryOnFailure')
 const suffixTag = require('./util/suffixTag')
 
-const STRENGTHEN_CONCURRENCY = 1
+const STRENGTHEN_CONCURRENCY = 30
 const STRENGTHEN_BATCH_SIZE = 30
 
 function getStrongRefs(doc) {
