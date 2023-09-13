@@ -509,20 +509,19 @@ export const studioLocaleStrings = {
   /** Title for locale section for the current studio */
   'user-menu.locale-title': 'Language',
 
-  /** --- Presence Menu --- */
+  /** --- Presence --- */
 
-  /** Message title for when no one else is in the presence menu */
-  'navbar.presence-menu.no-one-else-title': 'No one else is here',
+  /** Message title for when no one else is currently present */
+  'presence.no-one-else-title': 'No one else is here',
 
-  /** Message description for when no one else is in the presence menu */
-  'navbar.presence-menu.no-one-else-description':
-    'Invite people to the project to see their online status.',
+  /** Message description for when no one else is currently present */
+  'presence.no-one-else-description': 'Invite people to the project to see their online status.',
 
   /** Label for action to manage members of the current studio project */
-  'navbar.presence-menu.action.manage-members': 'Manage members',
+  'presence.action.manage-members': 'Manage members',
 
-  /** Message for when a user is not in a document (within the presence menu) */
-  'navbar.presence-menu.not-in-a-document': 'Not in a document',
+  /** Message for when a user is not in a document (displayed in the global presence menu) */
+  'presence.not-in-a-document': 'Not in a document',
 }
 
 /**
