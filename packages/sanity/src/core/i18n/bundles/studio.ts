@@ -439,27 +439,31 @@ export const studioLocaleStrings = {
   /** --- Help & Resources Menu --- */
 
   /** Title for help and resources menus */
-  'navbar.helpResources.title': 'Help and resources',
+  'helpResources.title': 'Help and resources',
 
   /** Information for what studio version the current studio is running */
-  'navbar.helpResources.studio-version': `Sanity Studio version {{studioVersion}}`,
+  'helpResources.studio-version': `Sanity Studio version {{studioVersion}}`,
 
   /** Information for what the latest sanity version is */
-  'navbar.helpResources.latest-sanity-version': `Latest version is {{latestVersion}}`,
+  'helpResources.latest-sanity-version': `Latest version is {{latestVersion}}`,
 
-  /** Label for "join our community" call to action.
-   * These are titles for fallback links in the event the help + resources endpoint isn't able to be fetched. */
-  'navbar.helpResources.action.join-our-community': `Join our community`,
-
-  /** Label for "help and support" call to action.
-   * These are titles for fallback links in the event the help + resources endpoint isn't able to be fetched
+  /**
+   * Label for "join our community" call to action
+   * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
-  'navbar.helpResources.action.help-and-support': `Help and support`,
+  'helpResources.action.join-our-community': `Join our community`,
 
-  /** Label for "contact sales" call to action
-   *  These are titles for fallback links in the event the help + resources endpoint isn't able to be fetched
+  /**
+   * Label for "help and support" call to action
+   * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
-  'navbar.helpResources.action.contact-sales': `Contact sales`,
+  'helpResources.action.help-and-support': `Help and support`,
+
+  /**
+   * Label for "contact sales" call to action
+   * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
+   */
+  'helpResources.action.contact-sales': `Contact sales`,
 
   /** --- User Menu --- */
 
