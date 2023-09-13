@@ -10,8 +10,8 @@ type ComponentMap = Record<string, ComponentType<{children?: ReactNode}>>
 export interface TranslationProps {
   t: TFunction
   i18nKey: string
-  components: ComponentMap
-  values: Record<string, string>
+  components?: ComponentMap
+  values?: Record<string, string>
 }
 
 function render(tokens: Token[], componentMap: ComponentMap): ReactNode {
@@ -72,5 +72,5 @@ export function Translate(props: TranslationProps) {
 
   const tokens = useMemo(() => simpleParser(translated), [translated])
 
-  return <>{render(tokens, props.components)}</>
+  return <>{render(tokens, props.components || {})}</>
 }
