@@ -436,30 +436,6 @@ export const studioLocaleStrings = {
   /** Label for instructions on how to use the search - displayed when no recent searches are available */
   'search.instructions': 'Use <0></0> to refine your search',
 
-  /** --- Configuration Issues --- */
-
-  /** label for when when there are configuration issues */
-  'navbar.configuration.error.found-configuration-issues-status': 'Found configuration issues',
-
-  /** Error title for when there are configuration issues */
-  'navbar.configuration.error.configuration-issues-title': 'Configuration issues',
-
-  /** Error description for when there are configuration issues, explaining that the checks are only performed during development */
-  'navbar.configuration.error.configuration-issues-description':
-    'Configuration checks are only performed during development and will not be visible in production builds',
-
-  /** Warning label that tells the user how many warnings were found */
-  'navbar.configuration.found-number-schema-warning': `Found {{count}} schema warnings`,
-
-  /** Label for displaying the schema error and warnings for the studio configurations */
-  'navbar.configuration.type-label': 'type',
-
-  /** Label for displaying the schema error and warnings for the studio configurations */
-  'navbar.configuration.type-label-1': '<0>{{schemaType}}</0> type <1>{{schemaName}}</1>',
-
-  /** Prompt to view documentation about the schema problems */
-  'navbar.configuration.action.view-documentation': 'View documentation',
-
   /** --- Help & Resources Menu --- */
 
   /** Title for help and resources menus */
