@@ -319,35 +319,35 @@ export const studioLocaleStrings = {
   'search.filter-shared-fields-header': 'Shared fields',
 
   /** Label for boolean filter - true */
-  'search.filter.true': 'True',
+  'search.filter-boolean-true': 'True',
 
   /** Label for boolean filter - false */
-  'search.filter.false': 'False',
+  'search.filter-boolean-false': 'False',
 
   /** Placeholder value for the string filter */
-  'search.filter.string-value-placeholder': 'Value',
+  'search.filter-string-value-placeholder': 'Value',
 
   /** Placeholder value for the number filter */
-  'search.filter.number-value-placeholder': 'Value',
+  'search.filter-number-value-placeholder': 'Value',
 
   /** Placeholder value for minimum numeric value filter */
-  'search.filter.number-min-value-placeholder': 'Min value',
+  'search.filter-number-min-value-placeholder': 'Min value',
 
   /** Placeholder value for maximum numeric value filter */
-  'search.filter.number-max-value-placeholder': 'Max value',
+  'search.filter-number-max-value-placeholder': 'Max value',
 
   /** Label/placeholder prompting user to select one of the predefined, allowed values for a string field */
-  'search.filter.string-value-select-predefined-value': 'Select...',
+  'search.filter-string-value-select-predefined-value': 'Select...',
 
   /** Label for the action of clearing the currently selected asset in an image/file filter */
-  'search.filter.asset-clear': 'Clear',
+  'search.filter-asset-clear': 'Clear',
 
   /** Label for the action of clearing the currently selected document in a reference filter */
-  'search.filter.reference-clear': 'Clear',
+  'search.filter-reference-clear': 'Clear',
 
   /** Label for search value in a range of numbers */
   // @todo Part of `arrayOperators` - needs `<Translate />` refactoring
-  'search.filter.number-items-range': `{{min}} → {{max}} items`,
+  'search.filter-number-items-range': `{{min}} → {{max}} items`,
 
   /** Title label for when no search results are found */
   'search.no-results-title': 'No results found',
