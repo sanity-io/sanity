@@ -369,6 +369,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               description={schemaType.description}
               __unstable_presence={presence}
               validation={validation}
+              inputId={inputId}
             >
               {children}
             </FormFieldSet>

@@ -6,6 +6,7 @@ import {FormNodeValidation} from '@sanity/types'
 import {FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFieldActions} from '../../field'
+import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
@@ -43,6 +44,7 @@ export interface FormFieldSetProps {
    * @beta
    */
   validation?: FormNodeValidation[]
+  inputId: string
 }
 
 function getChildren(children: React.ReactNode | (() => React.ReactNode)): React.ReactNode {
@@ -109,6 +111,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     tabIndex,
     title,
     validation = EMPTY_ARRAY,
+    inputId,
     ...restProps
   } = props
 
@@ -170,7 +173,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
             </Flex>
 
             {description && (
-              <Text muted size={1}>
+              <Text muted size={1} id={createDescriptionId(inputId, description)}>
                 {description}
               </Text>
             )}

@@ -13,6 +13,7 @@ import {
 import {insert, PatchArg, PatchEvent, set, unset} from '../../../patch'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
+import {createDescriptionId} from '../../common/createDescriptionId'
 
 /**
  *
@@ -111,6 +112,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       value: resolveNativeInputValue(member.item.schemaType, member.item.value, localValue),
       readOnly: Boolean(member.item.readOnly),
       placeholder: member.item.schemaType.placeholder,
+      'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
     }),
     [
       handleBlur,

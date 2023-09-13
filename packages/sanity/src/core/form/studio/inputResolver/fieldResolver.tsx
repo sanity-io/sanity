@@ -105,6 +105,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           onExpand={field.onExpand}
           title={field.title}
           validation={field.validation}
+          inputId={field.inputId}
         >
           {field.children}
         </FormFieldSet>
@@ -152,6 +153,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
           onExpand={field.onExpand}
           title={field.title}
           validation={field.validation}
+          inputId={field.inputId}
         >
           {field.children}
         </FormFieldSet>

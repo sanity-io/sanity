@@ -35,57 +35,56 @@ describe('initialization', () => {
       expect(onChange).toHaveBeenCalledWith({type: 'ready'})
       expect(onChange).toHaveBeenCalledWith({type: 'value', value: undefined})
       expect(container).toMatchInlineSnapshot(`
+<div>
+  <div
+    aria-describedby="desc_foo"
+    aria-multiline="true"
+    autocapitalize="false"
+    autocorrect="false"
+    class="pt-editable"
+    contenteditable="true"
+    data-slate-editor="true"
+    data-slate-node="value"
+    role="textbox"
+    spellcheck="false"
+    style="position: relative; white-space: pre-wrap; word-wrap: break-word;"
+    zindex="-1"
+  >
+    <div
+      class="pt-block pt-text-block pt-text-block-style-normal"
+      data-slate-node="element"
+    >
+      <div
+        draggable="false"
+      >
         <div>
-          <div>
-            <div
-              aria-multiline="true"
-              autocapitalize="false"
-              autocorrect="false"
-              class="pt-editable"
-              contenteditable="true"
-              data-slate-editor="true"
-              data-slate-node="value"
-              role="textbox"
-              spellcheck="false"
-              style="position: relative; white-space: pre-wrap; word-wrap: break-word;"
-              zindex="-1"
+          <span
+            data-slate-node="text"
+          >
+            <span
+              contenteditable="false"
+              style="opacity: 0.5; position: absolute; user-select: none; pointer-events: none;"
             >
-              <div
-                class="pt-block pt-text-block pt-text-block-style-normal"
-                data-slate-node="element"
+              Jot something down here
+            </span>
+            <span
+              data-slate-leaf="true"
+            >
+              <span
+                data-slate-length="0"
+                data-slate-zero-width="n"
               >
-                <div
-                  draggable="false"
-                >
-                  <div>
-                    <span
-                      data-slate-node="text"
-                    >
-                      <span
-                        contenteditable="false"
-                        style="opacity: 0.5; position: absolute; user-select: none; pointer-events: none;"
-                      >
-                        Jot something down here
-                      </span>
-                      <span
-                        data-slate-leaf="true"
-                      >
-                        <span
-                          data-slate-length="0"
-                          data-slate-zero-width="n"
-                        >
-                          ﻿
-                          <br />
-                        </span>
-                      </span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                ﻿
+                <br />
+              </span>
+            </span>
+          </span>
         </div>
-      `)
+      </div>
+    </div>
+  </div>
+</div>
+`)
     })
   })
   it('takes value from props', async () => {

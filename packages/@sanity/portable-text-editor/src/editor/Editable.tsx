@@ -52,7 +52,10 @@ const EMPTY_DECORATORS: BaseRange[] = []
 /**
  * @public
  */
-export type PortableTextEditableProps = {
+export type PortableTextEditableProps = Omit<
+  React.TextareaHTMLAttributes<HTMLDivElement>,
+  'onPaste' | 'onCopy'
+> & {
   hotkeys?: HotkeyOptions
   onBeforeInput?: OnBeforeInputFn
   onPaste?: OnPasteFn
@@ -387,48 +390,33 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     return EMPTY_DECORATORS
   }, [schemaTypes, slateEditor])
 
-  // The editor
-  const slateEditable = useMemo(
-    () => (
-      <SlateEditable
-        autoFocus={false}
-        className="pt-editable"
-        decorate={decorate}
-        onBlur={handleOnBlur}
-        onCopy={handleCopy}
-        onDOMBeforeInput={handleOnBeforeInput}
-        onFocus={handleOnFocus}
-        onKeyDown={handleKeyDown}
-        onPaste={handlePaste}
-        readOnly={readOnly}
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        style={props.style}
-        scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
-      />
-    ),
-    [
-      decorate,
-      handleCopy,
-      handleKeyDown,
-      handleOnBeforeInput,
-      handleOnBlur,
-      handleOnFocus,
-      handlePaste,
-      props.style,
-      readOnly,
-      renderElement,
-      renderLeaf,
-      scrollSelectionIntoViewToSlate,
-    ],
-  )
+  // Set the forwarded ref to be the Slate editable DOM element
+  useEffect(() => {
+    ref.current = ReactEditor.toDOMNode(slateEditor, slateEditor) as HTMLDivElement | null
+  }, [slateEditor, ref])
 
   if (!portableTextEditor) {
     return null
   }
-  return (
-    <div ref={ref} {...restProps}>
-      {hasInvalidValue ? null : slateEditable}
-    </div>
+  return hasInvalidValue ? null : (
+    <SlateEditable
+      {...restProps}
+      autoFocus={false}
+      className={restProps.className || 'pt-editable'}
+      decorate={decorate}
+      onBlur={handleOnBlur}
+      onCopy={handleCopy}
+      onDOMBeforeInput={handleOnBeforeInput}
+      onFocus={handleOnFocus}
+      onKeyDown={handleKeyDown}
+      onPaste={handlePaste}
+      readOnly={readOnly}
+      // We have implemented our own placeholder logic with decorations.
+      // This 'renderPlaceholder' should not be used.
+      renderPlaceholder={undefined}
+      renderElement={renderElement}
+      renderLeaf={renderLeaf}
+      scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
+    />
   )
 })

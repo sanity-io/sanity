@@ -23,6 +23,7 @@ import {createProtoValue} from '../../../utils/createProtoValue'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useResolveInitialValueForType} from '../../../../store'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
+import {createDescriptionId} from '../../common/createDescriptionId'
 
 /**
  *
@@ -242,8 +243,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onFocus: handleFocus,
       id: member.item.id,
       ref: focusRef,
+      'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
     }),
-    [handleBlur, handleFocus, member.item.id],
+    [handleBlur, handleFocus, member.item.id, member.item.schemaType.description],
   )
 
   const inputProps = useMemo((): Omit<ObjectInputProps, 'renderDefault'> => {

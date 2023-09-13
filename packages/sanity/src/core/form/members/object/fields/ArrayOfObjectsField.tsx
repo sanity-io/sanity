@@ -34,6 +34,7 @@ import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 import {applyAll} from '../../../patch/applyPatch'
 import {useFormPublishedId} from '../../../useFormPublishedId'
 import {DocumentFieldActionNode} from '../../../../config'
+import {createDescriptionId} from '../../common/createDescriptionId'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -298,8 +299,9 @@ export function ArrayOfObjectsField(props: {
       onFocus: handleFocus,
       id: member.field.id,
       ref: focusRef,
+      'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
     }),
-    [handleBlur, handleFocus, member.field.id],
+    [handleBlur, handleFocus, member.field.id, member.field.schemaType.description],
   )
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

@@ -51,6 +51,7 @@ interface EditorProps {
   scrollElement: HTMLElement | null
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement | null) => void
+  ariaDescribedBy: string | undefined
 }
 
 const renderDecorator: RenderDecoratorFunction = (props) => {
@@ -84,6 +85,7 @@ export function Editor(props: EditorProps) {
     scrollElement,
     setPortalElement,
     setScrollElement,
+    ariaDescribedBy,
   } = props
   const {isTopLayer} = useLayer()
   const editableRef = useRef<HTMLDivElement | null>(null)
@@ -148,6 +150,7 @@ export function Editor(props: EditorProps) {
         selection={initialSelection}
         style={noOutlineStyle}
         spellCheck={spellcheck}
+        aria-describedby={ariaDescribedBy}
       />
     ),
     [
@@ -161,6 +164,7 @@ export function Editor(props: EditorProps) {
       renderPlaceholder,
       scrollSelectionIntoView,
       spellcheck,
+      ariaDescribedBy,
     ],
   )
 
