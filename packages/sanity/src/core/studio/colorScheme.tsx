@@ -211,25 +211,25 @@ export function useColorSchemeOptions(
   return useMemo(() => {
     return [
       {
-        title: t('navbar.user-menu.color-scheme.system-title'),
+        title: t('user-menu.color-scheme.system-title'),
         name: 'system',
-        label: t('navbar.user-menu.color-scheme.system-description'),
+        label: t('user-menu.color-scheme.system-description'),
         selected: scheme === 'system',
         onSelect: () => setScheme('system'),
         icon: DesktopIcon,
       },
       {
-        title: t('navbar.user-menu.color-scheme.dark-title'),
+        title: t('user-menu.color-scheme.dark-title'),
         name: 'dark',
-        label: t('navbar.user-menu.color-scheme.dark-description'),
+        label: t('user-menu.color-scheme.dark-description'),
         selected: scheme === 'dark',
         onSelect: () => setScheme('dark'),
         icon: MoonIcon,
       },
       {
-        title: t('navbar.user-menu.color-scheme.light-title'),
+        title: t('user-menu.color-scheme.light-title'),
         name: 'light',
-        label: t('navbar.user-menu.color-scheme.light-description'),
+        label: t('user-menu.color-scheme.light-description'),
         selected: scheme === 'light',
         onSelect: () => setScheme('light'),
         icon: SunIcon,
