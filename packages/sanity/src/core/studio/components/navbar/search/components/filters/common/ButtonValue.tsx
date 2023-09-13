@@ -18,7 +18,7 @@ const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 
 export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentProps<boolean>) {
   const {t} = useTranslation()
-  return <>{value ? t('search.filter.true') : t('search.filter.false')}</>
+  return <>{value ? t('search.filter-boolean-true') : t('search.filter-boolean-false')}</>
 }
 
 export function SearchButtonValueDate({

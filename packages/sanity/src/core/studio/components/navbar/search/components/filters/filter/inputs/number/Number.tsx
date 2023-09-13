@@ -25,7 +25,7 @@ export function SearchFilterNumberInput({value, onChange}: OperatorInputComponen
     <TextInput
       fontSize={fullscreen ? 2 : 1}
       onChange={handleChange}
-      placeholder={t('search.filter.number-value-placeholder')}
+      placeholder={t('search.filter-number-value-placeholder')}
       radius={2}
       step="any"
       type="number"
