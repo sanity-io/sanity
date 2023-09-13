@@ -27,7 +27,7 @@ export function ResourcesButton() {
       <Tooltip
         content={
           <Box padding={2}>
-            <Text size={1}>{t('navbar.helpResources.title')}</Text>
+            <Text size={1}>{t('helpResources.title')}</Text>
           </Box>
         }
         scheme={scheme}
@@ -39,7 +39,7 @@ export function ResourcesButton() {
           <MenuButton
             button={
               <Button
-                aria-label={t('navbar.helpResources.title')}
+                aria-label={t('helpResources.title')}
                 icon={HelpCircleIcon}
                 mode="bleed"
                 fontSize={2}
