@@ -54,7 +54,7 @@ function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSc
 
       <Box padding={2}>
         <Label size={1} muted>
-          {t('navbar.user-menu.appearance-title')}
+          {t('user-menu.appearance-title')}
         </Label>
       </Box>
 
@@ -117,7 +117,7 @@ export function UserMenu() {
                 content={
                   providerTitle && (
                     <Box padding={2}>
-                      <Text size={1}>{t('navbar.user-menu.login-provider', {providerTitle})}</Text>
+                      <Text size={1}>{t('user-menu.login-provider', {providerTitle})}</Text>
                     </Box>
                   )
                 }
@@ -147,19 +147,19 @@ export function UserMenu() {
 
           <MenuItem
             as="a"
-            aria-label={t('navbar.user-menu.action.manage-project')}
+            aria-label={t('user-menu.action.manage-project-aria-label')}
             href={`https://sanity.io/manage/project/${projectId}`}
             target="_blank"
-            text={t('navbar.user-menu.action.manage-project')}
+            text={t('user-menu.action.manage-project')}
             icon={CogIcon}
           />
           {isAdmin && (
             <MenuItem
               as="a"
-              aria-label={t('navbar.user-menu.action.invite-members')}
+              aria-label={t('user-menu.action.invite-members-aria-label')}
               href={`https://sanity.io/manage/project/${projectId}/members`}
               target="_blank"
-              text={t('navbar.user-menu.action.invite-members')}
+              text={t('user-menu.action.invite-members')}
               icon={UsersIcon}
             />
           )}
@@ -169,7 +169,7 @@ export function UserMenu() {
               <MenuDivider />
               <MenuItem
                 iconRight={LeaveIcon}
-                text={t('navbar.user-menu.action.sign-out')}
+                text={t('user-menu.action.sign-out')}
                 disabled={!auth.logout}
                 {...(auth.logout && {onClick: auth.logout})}
               />
