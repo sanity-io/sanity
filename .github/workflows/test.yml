@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [16, 18]
+        node: [18, 20]
         experimental: [false]
         # include:
         #   - os: windows-latest
