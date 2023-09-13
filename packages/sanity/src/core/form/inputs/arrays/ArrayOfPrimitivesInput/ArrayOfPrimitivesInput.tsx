@@ -8,9 +8,7 @@ import {ArrayOfPrimitivesItem} from '../../../members'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {UploadTargetCard} from '../common/UploadTargetCard'
 import {ChangeIndicator} from '../../../../changeIndicators'
-import {ArrayOfPrimitivesItemMember, ArrayOfPrimitivesMember} from '../../../store/types/members'
 import {getEmptyValue} from './getEmptyValue'
-
 import {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
 import {ItemRow} from './ItemRow'
@@ -155,7 +153,6 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
       resolveUploader,
       elementProps,
       arrayFunctions: ArrayFunctions = ArrayOfPrimitivesFunctions,
-      path,
       changed,
     } = this.props
 
