@@ -115,11 +115,11 @@ export function PresenceMenu(props: PresenceMenuProps) {
             <Box paddingX={3} paddingY={4}>
               <Stack space={3}>
                 <Text weight="semibold" size={2}>
-                  {t('navbar.presence-menu.no-one-else-title')}
+                  {t('presence.no-one-else-title')}
                 </Text>
 
                 <Text size={1} muted>
-                  {t('navbar.presence-menu.no-one-else-description')}
+                  {t('presence.no-one-else-description')}
                 </Text>
               </Stack>
             </Box>
@@ -136,7 +136,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
               paddingY={4}
               rel="noopener noreferrer"
               target="_blank"
-              text={t('navbar.presence-menu.action.manage-members')}
+              text={t('presence.action.manage-members')}
             />
           </FooterStack>
         </StyledMenu>

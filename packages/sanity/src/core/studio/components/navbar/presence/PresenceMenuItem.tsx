@@ -93,7 +93,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
           <Text textOverflow="ellipsis">{presence.user.displayName}</Text>
           {!hasLink && (
             <Text size={0} muted textOverflow="ellipsis">
-              {t('navbar.presence-menu.not-in-a-document')}
+              {t('presence.not-in-a-document')}
             </Text>
           )}
         </Stack>
