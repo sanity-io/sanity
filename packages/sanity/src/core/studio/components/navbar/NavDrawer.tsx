@@ -1,13 +1,5 @@
 import {Layer, Card, Flex, Text, Box, Button, Stack, Label} from '@sanity/ui'
-import {
-  CheckmarkIcon,
-  CloseIcon,
-  CogIcon,
-  LeaveIcon,
-  UsersIcon,
-  HelpCircleIcon,
-  CommentIcon,
-} from '@sanity/icons'
+import {CheckmarkIcon, CloseIcon, CogIcon, LeaveIcon, UsersIcon} from '@sanity/icons'
 import React, {memo, useCallback} from 'react'
 import styled from 'styled-components'
 import TrapFocus from 'react-focus-lock'
@@ -82,7 +74,7 @@ function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSc
       <Card borderTop flex="none" padding={3} overflow="auto">
         <Box padding={2}>
           <Label size={1} muted>
-            {t('navbar.user-menu.appearance-title')}
+            {t('user-menu.appearance-title')}
           </Label>
         </Box>
 
@@ -208,28 +200,28 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                     <Stack as="ul" space={1}>
                       <Stack as="li">
                         <Button
-                          aria-label={t('navbar.user-menu.action.manage-project')}
+                          aria-label={t('user-menu.action.manage-project-aria-label')}
                           as="a"
                           href={`https://sanity.io/manage/project/${projectId}`}
                           icon={CogIcon}
                           justify="flex-start"
                           mode="bleed"
                           target="_blank"
-                          text={t('navbar.user-menu.action.manage-project')}
+                          text={t('user-menu.action.manage-project')}
                         />
                       </Stack>
 
                       {isAdmin && (
                         <Stack as="li">
                           <Button
-                            aria-label={t('navbar.user-menu.action.invite-members')}
+                            aria-label={t('user-menu.action.invite-members-aria-label')}
                             as="a"
                             href={`https://sanity.io/manage/project/${projectId}/members`}
                             icon={UsersIcon}
                             justify="flex-start"
                             mode="bleed"
                             target="_blank"
-                            text={t('navbar.user-menu.action.invite-members')}
+                            text={t('user-menu.action.invite-members')}
                           />
                         </Stack>
                       )}
@@ -247,7 +239,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                       mode="bleed"
                       // eslint-disable-next-line react/jsx-handler-names
                       onClick={auth.logout}
-                      text={t('navbar.user-menu.action.sign-out')}
+                      text={t('user-menu.action.sign-out')}
                     />
                   </Stack>
                 </Card>
