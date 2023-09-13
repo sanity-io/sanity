@@ -40,7 +40,7 @@ export function ConfigIssuesButton() {
     <>
       <StatusButton
         icon={WarningOutlineIcon}
-        label={t('navbar.configuration.error.found-configuration-issues-status')}
+        label="Found configuration issues"
         mode="bleed"
         onClick={handleOpen}
         ref={setButtonElement}
@@ -53,11 +53,10 @@ export function ConfigIssuesButton() {
         <Dialog
           header={
             <Stack space={3}>
-              <Text weight="semibold">
-                {t('navbar.configuration.error.configuration-issues-title')}
-              </Text>
+              <Text weight="semibold">Configuration issues</Text>
               <Text muted size={1}>
-                {t('navbar.configuration.error.configuration-issues-description')}
+                Configuration checks are only performed during development and will not be visible
+                in production builds
               </Text>
             </Stack>
           }
@@ -70,9 +69,7 @@ export function ConfigIssuesButton() {
         >
           <Stack space={4} padding={4}>
             <Heading as="h2" size={1}>
-              {t('navbar.configuration.found-number-schema-warning', {
-                count: groupsWithWarnings.length,
-              })}
+              Found {groupsWithWarnings.length} schema warnings
             </Heading>
             <SchemaProblemGroups problemGroups={groupsWithWarnings} />
           </Stack>
