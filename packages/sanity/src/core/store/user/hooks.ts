@@ -23,7 +23,7 @@ export function useUser(userId: string): LoadingTuple<User | null | undefined> {
 }
 
 /**
- * Retrieves the current user from the source.
+ * Retrieves information about the currently authenticated user.
  *
  * @returns The current user or null if not available.
  *
