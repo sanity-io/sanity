@@ -30,6 +30,8 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
     if (event.type === 'success' && event.op === 'restore') {
       navigateIntent('edit', {id, type})
     }
+
+    prevEvent.current = event
   }, [event, id, navigateIntent, type])
 
   const handle = useCallback(() => {
