@@ -1,6 +1,7 @@
 import {Box, Label, MenuDivider, MenuItem} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {useLocale, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n'
+import {useLocale} from '../../../../i18n/hooks/useLocale'
 
 export function LocaleMenu() {
   const {changeLocale, currentLocale, locales} = useLocale()
@@ -16,7 +17,7 @@ export function LocaleMenu() {
 
       <Box padding={2}>
         <Label size={1} muted>
-          {t('navbar.user-menu.locale-title')}
+          {t('user-menu.locale-title')}
         </Label>
       </Box>
 
