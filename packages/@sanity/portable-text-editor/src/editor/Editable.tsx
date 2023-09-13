@@ -395,46 +395,28 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     ref.current = ReactEditor.toDOMNode(slateEditor, slateEditor) as HTMLDivElement | null
   }, [slateEditor, ref])
 
-  // The editor
-  const slateEditable = useMemo(
-    () => (
-      <SlateEditable
-        {...restProps}
-        autoFocus={false}
-        className="pt-editable"
-        decorate={decorate}
-        onBlur={handleOnBlur}
-        onCopy={handleCopy}
-        onDOMBeforeInput={handleOnBeforeInput}
-        onFocus={handleOnFocus}
-        onKeyDown={handleKeyDown}
-        onPaste={handlePaste}
-        readOnly={readOnly}
-        // We have implemented our own placeholder logic with decorations. This 'renderPlaceholder' should not be used.
-        renderPlaceholder={undefined}
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
-      />
-    ),
-    [
-      decorate,
-      handleCopy,
-      handleKeyDown,
-      handleOnBeforeInput,
-      handleOnBlur,
-      handleOnFocus,
-      handlePaste,
-      readOnly,
-      renderElement,
-      renderLeaf,
-      restProps,
-      scrollSelectionIntoViewToSlate,
-    ],
-  )
-
   if (!portableTextEditor) {
     return null
   }
-  return hasInvalidValue ? null : slateEditable
+  return hasInvalidValue ? null : (
+    <SlateEditable
+      {...restProps}
+      autoFocus={false}
+      className={restProps.className || 'pt-editable'}
+      decorate={decorate}
+      onBlur={handleOnBlur}
+      onCopy={handleCopy}
+      onDOMBeforeInput={handleOnBeforeInput}
+      onFocus={handleOnFocus}
+      onKeyDown={handleKeyDown}
+      onPaste={handlePaste}
+      readOnly={readOnly}
+      // We have implemented our own placeholder logic with decorations.
+      // This 'renderPlaceholder' should not be used.
+      renderPlaceholder={undefined}
+      renderElement={renderElement}
+      renderLeaf={renderLeaf}
+      scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
+    />
+  )
 })
