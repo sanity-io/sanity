@@ -10,7 +10,7 @@ const urlExists = require('./util/urlExists')
 const suffixTag = require('./util/suffixTag')
 
 const ASSET_UPLOAD_CONCURRENCY = 8
-const ASSET_PATCH_CONCURRENCY = 1
+const ASSET_PATCH_CONCURRENCY = 30
 const ASSET_PATCH_BATCH_SIZE = 50
 
 async function uploadAssets(assets, options) {
