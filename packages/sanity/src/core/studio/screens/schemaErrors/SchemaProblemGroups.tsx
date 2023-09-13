@@ -60,18 +60,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                 <Text size={1} weight="semibold">
                   {schemaType ? (
                     <>
-                      <Trans
-                        t={t}
-                        i18nKey="navbar.configuration.type-label-1"
-                        components={[
-                          <span key={0}>{capitalize(schemaType.type)}</span>,
-                          <span key={1}>"{schemaType.name}"</span>,
-                        ]}
-                        values={{
-                          schemaType: capitalize(schemaType.type),
-                          schemaName: schemaType.name,
-                        }}
-                      />
+                      {capitalize(schemaType.type)} type "{schemaType.name}"
                     </>
                   ) : null}
                 </Text>
@@ -125,7 +114,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {t('navbar.configuration.action.view-documentation')} &rarr;
+                        View documentation &rarr;
                       </a>
                     </Text>
                   )}
