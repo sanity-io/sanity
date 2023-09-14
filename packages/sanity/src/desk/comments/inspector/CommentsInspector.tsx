@@ -1,7 +1,9 @@
 import {Flex} from '@sanity/ui'
-import React, {useCallback, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
+import {usePaneRouter} from '../../components'
+import {EMPTY_PARAMS} from '../../constants'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {
   CommentCreatePayload,
@@ -9,13 +11,12 @@ import {
   CommentEditPayload,
   CommentStatus,
   CommentsList,
+  CommentsListHandle,
   DocumentInspectorProps,
   useComments,
   useCurrentUser,
   useUnique,
 } from 'sanity'
-import {usePaneRouter} from '../../components'
-import {EMPTY_PARAMS} from '../../constants'
 
 interface CommentToDelete {
   commentId: string
@@ -27,7 +28,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const [view, setView] = useState<CommentStatus>('open')
   const paneRouter = usePaneRouter()
   const params = useUnique(paneRouter.params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
-  const commentIdParamRef = useRef(params?.comment)
+  const commentIdParamRef = useRef<string | undefined>(params?.comment)
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
@@ -37,6 +38,20 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const {onPathOpen, onFocus} = useDocumentPane()
   const currentUser = useCurrentUser()
   const {comments, create, edit, mentionOptions, remove, update} = useComments()
+
+  const commentsListHandleRef = useRef<CommentsListHandle>(null)
+  const didScrollDown = useRef<boolean>(false)
+
+  useEffect(() => {
+    if (commentIdParamRef.current && !didScrollDown.current && !comments.loading) {
+      commentsListHandleRef.current?.scrollToComment(commentIdParamRef.current)
+      didScrollDown.current = true
+    }
+
+    return () => {
+      didScrollDown.current = false
+    }
+  }, [comments.loading])
 
   const closeDeleteDialog = useCallback(() => {
     if (deleteLoading) return
@@ -125,7 +140,6 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
         {currentUser && (
           <CommentsList
-            currentCommentId={commentIdParamRef?.current}
             comments={comments.data}
             currentUser={currentUser}
             error={comments.error}
@@ -137,6 +151,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
             onPathFocus={handlePathFocus}
             onReply={handleReply}
             onStatusChange={handleStatusChange}
+            ref={commentsListHandleRef}
             status={view}
           />
         )}
