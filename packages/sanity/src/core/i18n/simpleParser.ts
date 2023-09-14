@@ -13,9 +13,10 @@ export type TextToken = {
 }
 export type Token = OpenTagToken | CloseTagToken | TextToken
 
-const OPEN_TAG_RE = /<(?<tag>\w+)\/?>/
-const CLOSE_TAG_RE = /<\/(?<tag>\w+)>/
-const SELF_CLOSING_RE = /<\w+\/>/
+const OPEN_TAG_RE = /<(?<tag>[^\s\d][^/?><]+)\/?>/
+const CLOSE_TAG_RE = /<\/(?<tag>[^>]+)>/
+const SELF_CLOSING_RE = /<[^>]+\/>/
+const VALID_TAG_NAME = /^[A-Z][A-Za-z0-9]+$/
 
 function isSelfClosing(tag: string) {
   return SELF_CLOSING_RE.test(tag)
@@ -41,6 +42,11 @@ export function simpleParser(input: string): Token[] {
       const match = matchOpenTag(remainder)
       if (match) {
         const tagName = match.groups!.tag
+        if (!VALID_TAG_NAME.test(tagName)) {
+          throw new Error(
+            `Invalid tag "<${tagName}>". Tag names must start with an uppercase letter and can only include letters and numbers"`,
+          )
+        }
         if (text) {
           tokens.push({type: 'text', text})
           text = ''
@@ -60,12 +66,16 @@ export function simpleParser(input: string): Token[] {
     } else if (openTag && remainder[0] === '<') {
       const match = matchCloseTag(remainder)
       if (match) {
-        if (remainder[1] !== '/') {
-          throw new Error('Expected closing tag')
-        }
         const tagName = match.groups!.tag
+        if (remainder[1] !== '/') {
+          throw new Error(
+            `Expected closing tag for <${openTag}>, but found new opening tag <${tagName}>. Nested tags is not supported.`,
+          )
+        }
         if (tagName !== openTag) {
-          throw new Error(`Unbalanced tag: expected a closing tag for ${openTag}`)
+          throw new Error(
+            `Expected closing tag for <${openTag}>, but found closing tag </${tagName}> instead. Make sure each opening tag has a matching closing tag.`,
+          )
         }
         if (text) {
           tokens.push({type: 'text', text})
@@ -84,6 +94,11 @@ export function simpleParser(input: string): Token[] {
       text += remainder[0]
       remainder = remainder.substring(1)
     }
+  }
+  if (openTag) {
+    throw new Error(
+      `No matching closing tag for <${openTag}> found. Either make it self closing (e.g. "<${openTag}/>") or close it (e.g "<${openTag}>...</${openTag}>")`,
+    )
   }
   if (text) {
     tokens.push({type: 'text', text})
