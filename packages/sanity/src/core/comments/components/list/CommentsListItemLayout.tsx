@@ -194,10 +194,10 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   return (
     <RootStack
-      space={1}
-      ref={setRootElement}
-      data-menu-open={menuOpen ? 'true' : 'false'}
       data-comment-id={_id}
+      data-menu-open={menuOpen ? 'true' : 'false'}
+      ref={setRootElement}
+      space={1}
     >
       <Flex align="center" gap={FLEX_GAP} flex={1}>
         {avatar}
