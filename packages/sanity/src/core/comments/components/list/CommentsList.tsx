@@ -1,4 +1,5 @@
-import React, {useEffect, useMemo, useState} from 'react'
+/* eslint-disable max-nested-callbacks */
+import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useState} from 'react'
 import {BoundaryElementProvider, Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {CurrentUser, Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
@@ -32,7 +33,6 @@ function groupComments(comments: CommentDocument[]) {
  */
 export interface CommentsListProps {
   comments: CommentDocument[]
-  currentCommentId?: string
   currentUser: CurrentUser
   error: Error | null
   loading: boolean
@@ -50,10 +50,20 @@ export interface CommentsListProps {
  * @beta
  * @hidden
  */
-export function CommentsList(props: CommentsListProps) {
+export interface CommentsListHandle {
+  scrollToComment: (id: string) => void
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(function CommentsList(
+  props: CommentsListProps,
+  ref,
+) {
   const {
     comments,
-    currentCommentId,
     currentUser,
     error,
     loading,
@@ -67,6 +77,29 @@ export function CommentsList(props: CommentsListProps) {
     status,
   } = props
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
+
+  const scrollToComment = useCallback(
+    (id: string) => {
+      const commentElement = boundaryElement?.querySelector(`[data-comment-id="${id}"]`)
+
+      commentElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center',
+      })
+    },
+    [boundaryElement],
+  )
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        scrollToComment,
+      }
+    },
+    [scrollToComment],
+  )
 
   const groupedComments = useMemo(() => {
     // This is done to make sure we get all replies, even if they are not in
@@ -87,17 +120,6 @@ export function CommentsList(props: CommentsListProps) {
   const showEmptyState = !loading && !error && groupedComments.length === 0
   const showError = error
   const showLoading = loading && !error
-
-  useEffect(() => {
-    if (!loading && currentCommentId && boundaryElement) {
-      const commentElement = boundaryElement.querySelector(
-        `[data-comment-id="${currentCommentId}"]`,
-      )
-      if (commentElement) {
-        commentElement.scrollIntoView({behavior: 'smooth', block: 'center'})
-      }
-    }
-  }, [boundaryElement, currentCommentId, loading])
 
   return (
     <Flex
@@ -197,4 +219,4 @@ export function CommentsList(props: CommentsListProps) {
       )}
     </Flex>
   )
-}
+})
