@@ -1,6 +1,6 @@
 {
   "name": "create-sanity",
-  "version": "3.16.6",
+  "version": "3.16.7",
   "description": "Initialize a new Sanity project",
   "keywords": [
     "sanity",
@@ -26,7 +26,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@sanity/cli": "3.16.6",
+    "@sanity/cli": "3.16.7",
     "resolve-pkg": "^2.0.0"
   },
   "engines": {
