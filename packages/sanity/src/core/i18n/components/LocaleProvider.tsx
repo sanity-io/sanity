@@ -9,8 +9,7 @@ import {LocaleContext, LocaleContextValue} from '../LocaleContext'
 /**
  * @internal
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function LocaleProvider(props: PropsWithChildren<{}>) {
+export function LocaleProvider(props: PropsWithChildren) {
   const {
     projectId,
     name: sourceId,
