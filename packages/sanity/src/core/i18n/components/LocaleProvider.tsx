@@ -32,7 +32,6 @@ export function LocaleProvider(props: PropsWithChildren) {
 /**
  * @internal
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 export function LocaleProviderBase({
   projectId,
   sourceId,
