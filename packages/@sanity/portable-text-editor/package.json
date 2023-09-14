@@ -1,6 +1,6 @@
 {
   "name": "@sanity/portable-text-editor",
-  "version": "3.16.5",
+  "version": "3.16.6",
   "description": "Portable Text Editor made in React",
   "keywords": [
     "sanity",
@@ -63,10 +63,10 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/block-tools": "3.16.5",
-    "@sanity/schema": "3.16.5",
-    "@sanity/types": "3.16.5",
-    "@sanity/util": "3.16.5",
+    "@sanity/block-tools": "3.16.6",
+    "@sanity/schema": "3.16.6",
+    "@sanity/types": "3.16.6",
+    "@sanity/util": "3.16.6",
     "debug": "^3.2.7",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.21",
