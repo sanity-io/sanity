@@ -1,6 +1,6 @@
 {
   "name": "sanity-starter-next-studio",
-  "version": "3.16.4",
+  "version": "3.16.5",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -14,7 +14,7 @@
     "next": "^12.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "3.16.4",
+    "sanity": "3.16.5",
     "styled-components": "^5.2.0"
   }
 }
