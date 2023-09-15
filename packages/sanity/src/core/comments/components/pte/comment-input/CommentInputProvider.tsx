@@ -4,16 +4,18 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import React, {FormEventHandler, useCallback, useMemo, useState} from 'react'
+import React, {FormEventHandler, startTransition, useCallback, useMemo, useState} from 'react'
 import {Path, isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {CommentMessage} from '../../../types'
 import {useDidUpdate} from '../../../../form'
 import {useCommentHasChanged} from '../../../helpers'
 import {MentionOptionsHookValue} from '../../../hooks'
+import {getCaretElement} from './getCaretElement'
 
 type FIXME = any
 
 export interface CommentInputContextValue {
+  activeCaretElement?: HTMLElement | null
   canSubmit?: boolean
   closeMentions: () => void
   editor: PortableTextEditor
@@ -58,6 +60,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
 
   const editor = usePortableTextEditor()
 
+  const [activeCaretElement, setActiveCaretElement] = useState<HTMLElement | null>(null)
   const [mentionsMenuOpen, setMentionsMenuOpen] = useState<boolean>(false)
   const [selectionAtMentionInsert, setSelectionAtMentionInsert] = useState<EditorSelection>(null)
 
@@ -100,7 +103,10 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
   const onBeforeInput = useCallback(
     (event: FIXME): void => {
       if (event.inputType === 'insertText' && event.data === '@') {
-        setMentionsMenuOpen(true)
+        const element = getCaretElement(event.target)
+        setActiveCaretElement(element)
+        startTransition(() => setMentionsMenuOpen(true))
+
         setSelectionAtMentionInsert(PortableTextEditor.getSelection(editor))
       }
     },
@@ -109,6 +115,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
 
   const closeMentions = useCallback(() => {
     if (!mentionsMenuOpen) return
+    setActiveCaretElement(null)
     setMentionsMenuOpen(false)
     focusEditor()
     setSelectionAtMentionInsert(null)
@@ -181,6 +188,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
   const ctxValue = useMemo(
     () =>
       ({
+        activeCaretElement,
         canSubmit,
         closeMentions,
         editor,
@@ -198,6 +206,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
         mentionOptions,
       }) satisfies CommentInputContextValue,
     [
+      activeCaretElement,
       canSubmit,
       closeMentions,
       editor,
