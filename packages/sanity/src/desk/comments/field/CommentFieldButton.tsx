@@ -2,6 +2,7 @@ import React, {useCallback, useState} from 'react'
 import {
   Box,
   Button,
+  Flex,
   Popover,
   Stack,
   Text,
@@ -9,8 +10,8 @@ import {
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import {CommentIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
+import {CommentIcon} from '../common/CommentIcon'
 import {COMMENTS_INSPECTOR_NAME} from '../../panes/document/constants'
 import {DocumentPaneContextValue} from '../../panes/document/DocumentPaneContext'
 import {
@@ -18,7 +19,6 @@ import {
   CommentMessage,
   CurrentUser,
   PortableTextBlock,
-  StatusButton,
   useComments,
   useDidUpdate,
 } from 'sanity'
@@ -137,6 +137,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
       >
         <div>
           <Tooltip
+            delay={{open: 500}}
             disabled={open}
             portal
             placement="top"
@@ -167,21 +168,22 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
       placement="top"
       content={
         <Box padding={2}>
-          <Text size={1}>
-            {count} comment{count > 1 ? 's' : ''}
+          <Text size={1} style={{whiteSpace: 'nowrap'}}>
+            View comment{count > 1 ? 's' : ''}
           </Text>
         </Box>
       }
+      delay={{open: 500}}
+      fallbackPlacements={['bottom']}
     >
-      <StatusButton
-        arial-label="Open comments"
-        fontSize={1}
-        icon={CommentIcon}
-        mode="bleed"
-        onClick={handleClick}
-        padding={2}
-        tone="primary"
-      />
+      <Button aria-label="Open comments" mode="bleed" onClick={handleClick} padding={2}>
+        <Flex align="center" gap={2}>
+          <Text size={1}>
+            <CommentIcon />
+          </Text>
+          <Text size={0}>{count > 9 ? '9+' : count}</Text>
+        </Flex>
+      </Button>
     </Tooltip>
   )
 }

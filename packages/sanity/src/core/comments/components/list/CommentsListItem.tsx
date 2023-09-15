@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Card, Flex, Stack} from '@sanity/ui'
+import {Button, Card, CardProps, Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser, Path} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
@@ -19,13 +19,12 @@ const EMPTY_ARRAY: [] = []
 
 const MAX_COLLAPSED_REPLIES = 5
 
-export const ThreadCard = styled(Card).attrs({
-  paddingX: 3,
-  paddingY: 4,
+export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
+  padding: 3,
   radius: 3,
   sizing: 'border',
-  tone: 'transparent',
-})`
+  tone: tone || 'transparent',
+}))<CardProps>`
   // ...
 `
 
@@ -159,6 +158,7 @@ export function CommentsListItem(props: CommentsListItemProps) {
                 mode="bleed"
                 onClick={handleExpand}
                 padding={2}
+                space={2}
                 text={`${replies?.length - MAX_COLLAPSED_REPLIES} more ${
                   replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
                 }`}
@@ -186,7 +186,7 @@ export function CommentsListItem(props: CommentsListItemProps) {
             onChange={setValue}
             onEditDiscard={cancelEdit}
             onSubmit={handleSubmit}
-            placeholder="Reply…"
+            placeholder="Reply"
             ref={replyInputRef}
             value={value}
           />
