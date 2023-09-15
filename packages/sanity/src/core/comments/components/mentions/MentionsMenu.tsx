@@ -1,20 +1,14 @@
-import {Box, Flex, Spinner, Stack, Text, TextInput} from '@sanity/ui'
+import {Box, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {SearchIcon} from '@sanity/icons'
+import React, {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {MentionOptionUser} from '../../types'
-import {CommandList} from '../../../components'
+import {CommandList, CommandListHandle} from '../../../components'
 import {MentionsMenuItem} from './MentionsMenuItem'
 
 const EMPTY_ARRAY: MentionOptionUser[] = []
 
 const Root = styled(Stack)({
   maxWidth: '220px', // todo: improve
-})
-
-const HeaderBox = styled(Box)({
-  borderBottom: '1px solid var(--card-border-color)',
-  minHeight: 'max-content',
 })
 
 const ITEM_HEIGHT = 41
@@ -25,23 +19,35 @@ const FlexWrap = styled(Flex)({
   maxHeight: ITEM_HEIGHT * MAX_ITEMS + LIST_PADDING * 2 + ITEM_HEIGHT / 2,
 })
 
+export interface MentionsMenuHandle {
+  setSearchTerm: (term: string) => void
+}
 interface MentionsMenuProps {
   loading: boolean
+  inputElement?: HTMLDivElement | null
   onSelect: (userId: string) => void
   options: MentionOptionUser[] | null
 }
 
 export const MentionsMenu = React.forwardRef(function MentionsMenu(
   props: MentionsMenuProps,
-  ref: React.Ref<HTMLDivElement>,
+  ref: React.Ref<MentionsMenuHandle>,
 ) {
-  const {loading, onSelect, options = []} = props
-  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
+  const {loading, onSelect, options = [], inputElement} = props
   const [searchTerm, setSearchTerm] = useState<string>('')
+  const commandListRef = useRef<CommandListHandle>(null)
 
-  const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value)
-  }, [])
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        setSearchTerm(term: string) {
+          setSearchTerm(term)
+        },
+      }
+    },
+    [],
+  )
 
   const renderItem = useCallback(
     (itemProps: MentionOptionUser) => {
@@ -67,14 +73,6 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
     return filtered || EMPTY_ARRAY
   }, [options, searchTerm])
 
-  useEffect(() => {
-    const timeout = setTimeout(() => inputElement?.focus(), 0)
-
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [inputElement])
-
   if (loading) {
     return (
       <Root>
@@ -85,19 +83,12 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
     )
   }
 
-  return (
-    <Flex direction="column" height="fill" ref={ref}>
-      <HeaderBox padding={1}>
-        <TextInput
-          fontSize={1}
-          icon={SearchIcon}
-          onChange={handleInputChange}
-          placeholder="Search for a user"
-          radius={2}
-          ref={setInputElement}
-        />
-      </HeaderBox>
+  // In this case the input element is the actual content editable HTMLDivElement from the PTE.
+  // Typecast it to an input element to make the CommandList component happy.
+  const _inputElement = inputElement ? (inputElement as HTMLInputElement) : undefined
 
+  return (
+    <Flex direction="column" height="fill">
       {filteredOptions.length === 0 && (
         <Box padding={5}>
           <Text align="center" size={1} muted>
@@ -111,13 +102,13 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel="List of users to mention"
-            autoFocus="input"
             fixedHeight
             getItemDisabled={getItemDisabled}
-            inputElement={inputElement}
+            inputElement={_inputElement}
             itemHeight={41}
             items={filteredOptions}
             padding={1}
+            ref={commandListRef}
             renderItem={renderItem}
           />
         </FlexWrap>
