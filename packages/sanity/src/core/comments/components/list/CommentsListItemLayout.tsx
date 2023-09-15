@@ -1,8 +1,8 @@
 import {
+  CheckmarkCircleIcon,
   EditIcon,
   TrashIcon,
   EllipsisVerticalIcon,
-  CheckmarkIcon,
   UndoIcon,
   EyeOpenIcon,
 } from '@sanity/icons'
@@ -21,6 +21,7 @@ import {
   Menu,
   MenuItem,
   Box,
+  TooltipDelayGroupProvider,
 } from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {CurrentUser, Path} from '@sanity/types'
@@ -46,7 +47,7 @@ const FloatingLayer = styled(Layer)(({theme}) => {
     position: absolute;
     top: 0;
     right: 0;
-    transform: translate(${space[1]}px, -${space[2]}px);
+    transform: translate(${space[1]}px, -${space[1]}px);
   `
 })
 
@@ -239,75 +240,83 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
       {!isEditing && (
         <>
-          <FloatingLayer hidden={!floatingMenuEnabled} data-root-menu={isParent ? 'true' : 'false'}>
-            <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
-              {isParent && (
-                <>
-                  {onPathFocus && (
-                    <TextTooltip text="Go to field">
+          <TooltipDelayGroupProvider delay={{open: 500}}>
+            <FloatingLayer
+              hidden={!floatingMenuEnabled}
+              data-root-menu={isParent ? 'true' : 'false'}
+            >
+              <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
+                {isParent && (
+                  <>
+                    {onPathFocus && (
+                      <TextTooltip text="Go to field">
+                        <Button
+                          aria-label="Go to field"
+                          fontSize={1}
+                          icon={EyeOpenIcon}
+                          mode="bleed"
+                          onClick={handlePathFocus}
+                          padding={2}
+                        />
+                      </TextTooltip>
+                    )}
+
+                    {onStatusChange && (
+                      <TextTooltip
+                        text={comment.status === 'open' ? 'Mark as resolved' : 'Re-open'}
+                      >
+                        <Button
+                          aria-label="Mark comment as resolved"
+                          fontSize={1}
+                          icon={comment.status === 'open' ? CheckmarkCircleIcon : UndoIcon}
+                          mode="bleed"
+                          onClick={handleOpenStatusChange}
+                          padding={2}
+                        />
+                      </TextTooltip>
+                    )}
+                  </>
+                )}
+
+                {canDelete && canEdit && (
+                  <MenuButton
+                    id="comment-actions-menu"
+                    button={
                       <Button
-                        aria-label="Go to field"
+                        aria-label="Open comment actions menu"
                         fontSize={1}
-                        icon={EyeOpenIcon}
+                        icon={EllipsisVerticalIcon}
                         mode="bleed"
-                        onClick={handlePathFocus}
                         padding={2}
                       />
-                    </TextTooltip>
-                  )}
-
-                  {onStatusChange && (
-                    <TextTooltip text={comment.status === 'open' ? 'Mark as resolved' : 'Re-open'}>
-                      <Button
-                        aria-label="Mark comment as resolved"
-                        fontSize={1}
-                        icon={comment.status === 'open' ? CheckmarkIcon : UndoIcon}
-                        mode="bleed"
-                        onClick={handleOpenStatusChange}
-                        padding={2}
-                      />
-                    </TextTooltip>
-                  )}
-                </>
-              )}
-
-              {canDelete && canEdit && (
-                <MenuButton
-                  id="comment-actions-menu"
-                  button={
-                    <Button
-                      aria-label="Open comment actions menu"
-                      fontSize={1}
-                      icon={EllipsisVerticalIcon}
-                      mode="bleed"
-                      padding={2}
-                    />
-                  }
-                  onOpen={handleMenuOpen}
-                  onClose={handleMenuClose}
-                  menu={
-                    <Menu>
-                      <MenuItem
-                        aria-label="Edit comment"
-                        fontSize={1}
-                        icon={EditIcon}
-                        onClick={toggleEdit}
-                        text="Edit comment"
-                      />
-                      <MenuItem
-                        aria-label="Delete comment"
-                        fontSize={1}
-                        icon={TrashIcon}
-                        onClick={handleDelete}
-                        text="Delete comment"
-                        tone="critical"
-                      />
-                    </Menu>
-                  }
-                />
-              )}
-            </FloatingCard>
-          </FloatingLayer>
+                    }
+                    onOpen={handleMenuOpen}
+                    onClose={handleMenuClose}
+                    menu={
+                      <Menu>
+                        <MenuItem
+                          aria-label="Edit comment"
+                          fontSize={1}
+                          icon={EditIcon}
+                          onClick={toggleEdit}
+                          text="Edit comment"
+                        />
+                        <MenuItem
+                          aria-label="Delete comment"
+                          fontSize={1}
+                          icon={TrashIcon}
+                          onClick={handleDelete}
+                          text="Delete comment"
+                          tone="critical"
+                        />
+                      </Menu>
+                    }
+                    popover={{placement: 'bottom-end'}}
+                  />
+                )}
+              </FloatingCard>
+            </FloatingLayer>
+          </TooltipDelayGroupProvider>
 
           <Flex gap={FLEX_GAP}>
             <div style={{minWidth: AVATAR_SIZE}} aria-hidden="true" />

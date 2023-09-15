@@ -9,8 +9,8 @@ import {MentionOptionsHookValue} from '../../hooks'
 import {CommentInputHandle} from '../pte'
 import {CommentMessage, CommentCreatePayload} from '../../types'
 import {TextTooltip} from '../TextTooltip'
-import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './CommentsListItem'
+import {CreateNewThreadInput} from './CreateNewThreadInput'
 
 interface CommentThreadLayoutProps {
   children: React.ReactNode
@@ -62,8 +62,8 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
   return (
     <Stack space={2}>
-      <Flex align="flex-end" gap={2} paddingX={1} sizing="border">
-        <Stack flex={1} paddingBottom={1}>
+      <Flex align="center" gap={2} paddingX={1} sizing="border">
+        <Stack flex={1}>
           <Breadcrumbs maxLength={3}>
             {path.map((p, index) => {
               const pathSegment = p.toString()
@@ -97,7 +97,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       </Flex>
 
       {displayNewThreadInput && (
-        <ThreadCard>
+        <ThreadCard tone="primary">
           <CreateNewThreadInput
             currentUser={currentUser}
             mentionOptions={mentionOptions}
