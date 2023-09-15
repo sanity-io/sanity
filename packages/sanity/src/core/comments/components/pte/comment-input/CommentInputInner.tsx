@@ -31,7 +31,7 @@ const RootCard = styled(Card)(({theme}) => {
 
     &[data-focused='true'] {
       ${EditableWrap} {
-        min-height: 2em;
+        min-height: 1em;
       }
 
       box-shadow:
@@ -42,13 +42,13 @@ const RootCard = styled(Card)(({theme}) => {
 
     &:focus-within {
       ${EditableWrap} {
-        min-height: 2em;
+        min-height: 1em;
       }
     }
 
     &[data-expand-on-focus='false'] {
       ${EditableWrap} {
-        min-height: 2em;
+        min-height: 1em;
       }
     }
 
@@ -90,20 +90,20 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   }, [discardButtonElement, onEditDiscard])
 
   return (
-    <Flex align="flex-start" gap={1}>
+    <Flex align="flex-start" gap={2}>
       {withAvatar ? avatar : null}
-
       <RootCard
         data-expand-on-focus={expandOnFocus && !canSubmit ? 'true' : 'false'}
         data-focused={focused ? 'true' : 'false'}
         flex={1}
-        padding={2}
+        paddingX={1}
+        paddingY={2}
         paddingBottom={1}
         sizing="border"
         tone="default"
         shadow={1}
       >
-        <Stack space={3}>
+        <Stack space={2}>
           <EditableWrap sizing="border">
             <Editable placeholder={placeholder} focusLock={focusLock} />
           </EditableWrap>
