@@ -1,5 +1,5 @@
 import {BaseRange, Transforms, Text} from 'slate'
-import React, {useCallback, useMemo, useEffect, forwardRef, useState} from 'react'
+import React, {useCallback, useMemo, useEffect, forwardRef, useState, KeyboardEvent} from 'react'
 import {
   Editable as SlateEditable,
   ReactEditor,
@@ -81,6 +81,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 ) {
   const {
     hotkeys,
+    onBlur,
+    onFocus,
     onBeforeInput,
     onPaste,
     onCopy,
@@ -294,25 +296,35 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   const handleOnFocus: React.FocusEventHandler<HTMLDivElement> = useCallback(
     (event) => {
-      const selection = PortableTextEditor.getSelection(portableTextEditor)
-      change$.next({type: 'focus', event})
-      const newSelection = PortableTextEditor.getSelection(portableTextEditor)
-      // If the selection is the same, emit it explicitly here as there is no actual onChange event triggered.
-      if (selection === newSelection) {
-        change$.next({
-          type: 'selection',
-          selection,
-        })
+      if (onFocus) {
+        onFocus(event)
+      }
+      if (!event.isDefaultPrevented()) {
+        const selection = PortableTextEditor.getSelection(portableTextEditor)
+        change$.next({type: 'focus', event})
+        const newSelection = PortableTextEditor.getSelection(portableTextEditor)
+        // If the selection is the same, emit it explicitly here as there is no actual onChange event triggered.
+        if (selection === newSelection) {
+          change$.next({
+            type: 'selection',
+            selection,
+          })
+        }
       }
     },
-    [change$, portableTextEditor],
+    [change$, portableTextEditor, onFocus],
   )
 
   const handleOnBlur: React.FocusEventHandler<HTMLDivElement> = useCallback(
     (event) => {
-      change$.next({type: 'blur', event})
+      if (onBlur) {
+        onBlur(event)
+      }
+      if (!event.isPropagationStopped()) {
+        change$.next({type: 'blur', event})
+      }
     },
-    [change$],
+    [change$, onBlur],
   )
 
   const handleOnBeforeInput = useCallback(
@@ -354,7 +366,17 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [handleDOMChange, ref])
 
-  const handleKeyDown = slateEditor.pteWithHotKeys
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (props.onKeyDown) {
+        props.onKeyDown(event)
+      }
+      if (!event.isDefaultPrevented()) {
+        slateEditor.pteWithHotKeys(event)
+      }
+    },
+    [props, slateEditor],
+  )
 
   const scrollSelectionIntoViewToSlate = useMemo(() => {
     // Use slate-react default scroll into view
