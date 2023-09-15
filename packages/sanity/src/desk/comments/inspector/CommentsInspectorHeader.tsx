@@ -56,7 +56,7 @@ export function CommentsInspectorHeader(props: CommentsInspectorHeaderProps) {
               />
             }
             menu={
-              <Menu>
+              <Menu style={{width: '180px'}}>
                 <MenuItem
                   fontSize={1}
                   iconRight={view === 'open' ? CheckmarkIcon : undefined}
@@ -71,6 +71,7 @@ export function CommentsInspectorHeader(props: CommentsInspectorHeaderProps) {
                 />
               </Menu>
             }
+            popover={{placement: 'bottom-end'}}
           />
 
           <Button

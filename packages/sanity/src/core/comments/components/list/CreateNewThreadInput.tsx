@@ -38,7 +38,6 @@ export const CreateNewThreadInput = forwardRef(function CreateNewThreadInput(
       onChange={setValue}
       onEditDiscard={cancelEdit}
       onSubmit={handleSubmit}
-      placeholder="Start a new thread…"
       ref={ref}
       value={value}
     />
