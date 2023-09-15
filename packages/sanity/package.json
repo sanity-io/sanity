@@ -154,7 +154,7 @@
     "@portabletext/react": "^3.0.0",
     "@sanity/schema": "3.18.1",
     "@sanity/types": "3.18.1",
-    "@sanity/ui": "^1.7.2",
+    "@sanity/ui": "^1.8.2",
     "@sanity/util": "3.18.1",
     "@sanity/uuid": "^3.0.1",
     "@tanstack/react-virtual": "3.0.0-beta.54",

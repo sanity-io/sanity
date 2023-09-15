@@ -1,5 +1,5 @@
-import {CommentIcon} from '@sanity/icons'
 import {COMMENTS_INSPECTOR_NAME} from '../../panes/document/constants'
+import {CommentIcon} from '../common/CommentIcon'
 import {CommentsInspector} from './CommentsInspector'
 import {
   DocumentInspectorMenuItem,
