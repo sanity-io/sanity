@@ -1,13 +1,5 @@
 import React from 'react'
-import {Box, Flex, Text, Tooltip} from '@sanity/ui'
-import styled from 'styled-components'
-
-const TextBox = styled(Box)`
-  // There is currently an issue with the Tooltip component in @sanity/ui where it
-  // animates the tooltip width on mount when it needs to reposition itself.
-  // Adding a the CSS below to the tooltip content prevents this from happening.
-  width: max-content;
-`
+import {Flex, Text, Tooltip} from '@sanity/ui'
 
 interface TextTooltipProps {
   children: React.ReactNode
@@ -19,14 +11,17 @@ export function TextTooltip(props: TextTooltipProps) {
 
   return (
     <Tooltip
+      delay={{open: 500}}
       portal
       placement="top"
-      fallbackPlacements={['bottom']}
+      // @todo: there appears to be an issue with `fallbackPlacements` and tooltips in sanity UI `1.8.2`
+      // fallbackPlacements={['bottom']}
       content={
-        <TextBox padding={2} sizing="border">
-          <Text size={1}>{text}</Text>
-        </TextBox>
+        <Text size={1} style={{whiteSpace: 'nowrap'}}>
+          {text}
+        </Text>
       }
+      padding={2}
     >
       <Flex>{children}</Flex>
     </Tooltip>
