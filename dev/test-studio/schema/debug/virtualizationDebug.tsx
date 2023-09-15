@@ -42,6 +42,10 @@ export const virtualizationDebug = defineType({
       name: 'singleItem',
       title: 'Single Item test',
     },
+    {
+      name: 'singleItemNested',
+      title: 'Single Item Nested Group',
+    },
   ],
 
   fields: [
@@ -270,6 +274,63 @@ export const virtualizationDebug = defineType({
           _ref: author._id,
         }))
       },
+    }),
+
+    defineField({
+      name: 'arrayInObjectNestedGroup',
+      title: 'Array in Object Arrays',
+      type: 'object',
+      group: 'singleItemNested',
+      options: {
+        collapsible: true,
+      },
+      groups: [
+        {
+          name: 'nestedGroup',
+          title: 'Nested Group',
+        },
+      ],
+      fields: [
+        defineField({
+          name: 'arrayListNestedGroup',
+          title: 'Array List with no customization',
+          type: 'array',
+          of: [
+            {
+              type: 'playlist',
+            },
+          ],
+          initialValue: () => {
+            const arr = new Array(10).fill(null)
+            return arr.map((_, i) => ({
+              _type: 'playlist',
+              name: `Playlist ${i}`,
+            }))
+          },
+        }),
+        defineField({
+          name: 'arrayListNestedSingleGroup',
+          title: 'Array List single item in nested group',
+          type: 'array',
+          group: 'nestedGroup',
+          of: [
+            {
+              type: 'reference',
+              to: [{type: 'author'}],
+            },
+          ],
+          initialValue: async (_, context) => {
+            const {getClient} = context
+            const client = getClient({apiVersion: '2022-12-07'})
+            const authors = await getAuthors(client, 8)
+
+            return authors.map((author: any) => ({
+              _type: 'reference',
+              _ref: author._id,
+            }))
+          },
+        }),
+      ],
     }),
   ],
 })
