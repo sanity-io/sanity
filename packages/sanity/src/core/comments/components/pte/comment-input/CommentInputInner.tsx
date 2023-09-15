@@ -87,7 +87,8 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   const [discardButtonElement, setDiscardButtonElement] = useState<HTMLButtonElement | null>(null)
 
   const [user] = useUser(currentUser.id)
-  const {openMentions, focused, expandOnFocus, canSubmit, hasChanges} = useCommentInput()
+  const {openMentions, focused, expandOnFocus, canSubmit, hasChanges, insertAtChar} =
+    useCommentInput()
 
   const avatar = withAvatar ? <CommentsAvatar user={user} /> : null
 
@@ -95,6 +96,11 @@ export function CommentInputInner(props: CommentInputInnerProps) {
     onEditDiscard()
     discardButtonElement?.blur()
   }, [discardButtonElement, onEditDiscard])
+
+  const handleMentionButtonClicked = useCallback(() => {
+    insertAtChar()
+    openMentions()
+  }, [insertAtChar, openMentions])
 
   return (
     <Flex align="flex-start" gap={2}>
@@ -121,7 +127,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               aria-label="Mention user"
               icon={MentionIcon}
               mode="bleed"
-              onClick={openMentions}
+              onClick={handleMentionButtonClicked}
             />
 
             <ButtonDivider />
