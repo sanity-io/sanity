@@ -6,7 +6,6 @@ import {MentionsMenu} from '../../mentions'
 import {useDidUpdate} from '../../../../form'
 import {renderBlock, renderChild} from '../render'
 import {useCommentInput} from './useCommentInput'
-import {useCursorElement} from './useCursorElement'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 
@@ -53,6 +52,7 @@ export function Editable(props: EditableProps) {
   const editableRef = useRef<HTMLDivElement | null>(null)
 
   const {
+    activeCaretElement,
     closeMentions,
     expanded,
     focusEditor,
@@ -62,11 +62,6 @@ export function Editable(props: EditableProps) {
     mentionsMenuOpen,
     onBeforeInput,
   } = useCommentInput()
-
-  const cursorElement = useCursorElement({
-    disabled: mentionsMenuOpen,
-    rootElement: editableRef.current,
-  })
 
   const renderPlaceholder = useCallback(() => <span>{placeholder}</span>, [placeholder])
 
@@ -100,7 +95,7 @@ export function Editable(props: EditableProps) {
       <PortalProvider element={rootElementRef.current}>
         <StyledPopover
           constrainSize
-          hidden={!mentionsMenuOpen || !cursorElement}
+          disabled={!mentionsMenuOpen}
           content={
             <MentionsMenu
               loading={mentionOptions.loading}
@@ -113,7 +108,7 @@ export function Editable(props: EditableProps) {
           placement="bottom-start"
           portal
           ref={setPopoverElement}
-          referenceElement={cursorElement}
+          referenceElement={activeCaretElement}
         />
       </PortalProvider>
 
