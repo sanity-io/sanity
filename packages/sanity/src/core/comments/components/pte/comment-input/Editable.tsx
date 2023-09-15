@@ -1,11 +1,13 @@
-import React, {useCallback, useRef, useState} from 'react'
+import React, {KeyboardEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {Popover, PortalProvider, Stack, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import {PortableTextEditable} from '@sanity/portable-text-editor'
+import {PortableTextEditable, usePortableTextEditorSelection} from '@sanity/portable-text-editor'
 import styled, {css} from 'styled-components'
-import {MentionsMenu} from '../../mentions'
+import {isEqual} from 'lodash'
+import {MentionsMenu, MentionsMenuHandle} from '../../mentions'
 import {useDidUpdate} from '../../../../form'
 import {renderBlock, renderChild} from '../render'
 import {useCommentInput} from './useCommentInput'
+import {useCursorElement} from './useCursorElement'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 
@@ -22,7 +24,7 @@ const EditableWrapStack = styled(Stack)(() => {
 export const StyledPopover = styled(Popover)(() => {
   return css`
     // Position the Popover relative to the @
-    transform: translateX(6px); // todo: improve
+    transform: translate(6px, 6px); // todo: improve
 
     [data-ui='Popover__wrapper'] {
       border-radius: ${({theme}) => theme.sanity.radius[3]}px;
@@ -50,9 +52,10 @@ export function Editable(props: EditableProps) {
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
   const editableRef = useRef<HTMLDivElement | null>(null)
+  const mentionsMenuRef = useRef<MentionsMenuHandle | null>(null)
+  const selection = usePortableTextEditorSelection()
 
   const {
-    activeCaretElement,
     closeMentions,
     expanded,
     focusEditor,
@@ -60,14 +63,11 @@ export function Editable(props: EditableProps) {
     insertMention,
     mentionOptions,
     mentionsMenuOpen,
+    mentionsSearchTerm,
     onBeforeInput,
   } = useCommentInput()
 
   const renderPlaceholder = useCallback(() => <span>{placeholder}</span>, [placeholder])
-
-  useGlobalKeyDown(
-    useCallback((event) => event.key === 'Escape' && closeMentions(), [closeMentions]),
-  )
 
   useClickOutside(
     useCallback(() => {
@@ -90,31 +90,81 @@ export function Editable(props: EditableProps) {
     }
   })
 
+  // Update the mentions search term in the mentions menu
+  useEffect(() => {
+    mentionsMenuRef.current?.setSearchTerm(mentionsSearchTerm)
+  }, [mentionsSearchTerm])
+
+  // Close mentions if the user selects text
+  useEffect(() => {
+    if (mentionsMenuOpen && selection && !isEqual(selection.anchor, selection.focus)) {
+      closeMentions()
+    }
+  }, [mentionsMenuOpen, closeMentions, selection])
+
+  // Close mentions if the menu itself has focus and user press Escape
+  useGlobalKeyDown((event) => {
+    if (event.code === 'Escape' && mentionsMenuOpen) {
+      closeMentions()
+    }
+  })
+
+  const cursorElement = useCursorElement({
+    disabled: !mentionsMenuOpen,
+    rootElement: rootElementRef.current,
+  })
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      switch (event.code) {
+        case 'Enter':
+          if (mentionsMenuOpen) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          break
+        case 'Escape':
+        case 'ArrowLeft':
+        case 'ArrowRight':
+          if (mentionsMenuOpen) {
+            closeMentions()
+            focusEditor()
+          }
+          break
+        default:
+      }
+    },
+    [closeMentions, focusEditor, mentionsMenuOpen],
+  )
+
   return (
     <>
       <PortalProvider element={rootElementRef.current}>
         <StyledPopover
+          arrow={false}
           constrainSize
           disabled={!mentionsMenuOpen}
           content={
             <MentionsMenu
+              ref={mentionsMenuRef}
               loading={mentionOptions.loading}
               onSelect={insertMention}
               options={mentionOptions.data || []}
+              inputElement={editableRef.current}
               // error={mentionOptions.error}
             />
           }
           open={mentionsMenuOpen}
-          placement="bottom-start"
+          placement="bottom-end"
           portal
           ref={setPopoverElement}
-          referenceElement={activeCaretElement}
+          referenceElement={cursorElement}
         />
       </PortalProvider>
-
       <EditableWrapStack ref={rootElementRef} data-ui="EditableWrapStack">
         <PortableTextEditable
           data-ui="EditableElement"
+          onKeyDown={handleKeyDown}
           onBeforeInput={onBeforeInput}
           ref={editableRef}
           renderBlock={renderBlock}
