@@ -10,12 +10,14 @@ import {
   CodeIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import {DocumentStore, SanityDocument, Schema} from 'sanity'
+import {DocumentStore, SanityDocument, Schema, Translate} from 'sanity'
 import {ItemChild, StructureBuilder, StructureResolver} from 'sanity/desk'
 import {map} from 'rxjs/operators'
 import {Observable, timer} from 'rxjs'
+import React from 'react'
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
+import {TranslateExample} from '../components/TranslateExample'
 import {_buildTypeGroup} from './_buildTypeGroup'
 import {
   CI_INPUT_TYPES,
@@ -37,6 +39,10 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
     .items([
       S.documentListItem().id('validation').schemaType('allTypes'),
 
+      S.listItem()
+        .id('translate')
+        .title('Translate Test')
+        .child(S.component(TranslateExample).id('example')),
       S.listItem()
         .title('Untitled repro')
         .child(

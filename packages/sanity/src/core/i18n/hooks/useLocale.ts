@@ -6,17 +6,7 @@ import {useSource} from '../../studio'
  * @internal
  */
 export function useCurrentLocale(): string {
-  const i18next = useSource().__internal.i18next
-
-  const subscribe = useCallback(
-    (callback: () => void) => {
-      i18next.on('languageChanged', callback)
-      return () => i18next.off('languageChanged', callback)
-    },
-    [i18next],
-  )
-
-  return useSyncExternalStore(subscribe, () => i18next.language)
+  return useLocale().currentLocale
 }
 
 /**
