@@ -16,7 +16,5 @@ export function useFieldCommentsCount(opts: FieldCommentsCountHook): number {
   const {comments} = useComments()
   const stringPath = PathUtils.toString(opts.path)
 
-  return comments.data.filter(
-    (comment) => comment.status === 'open' && comment.target.path?.field === stringPath,
-  ).length
+  return comments.data.open.filter((comment) => comment.target.path?.field === stringPath).length
 }
