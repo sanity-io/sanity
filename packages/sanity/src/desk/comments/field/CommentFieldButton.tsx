@@ -44,6 +44,7 @@ interface CommentFieldButtonProps {
   currentUser: CurrentUser
   hasComments: boolean
   onChange: (value: PortableTextBlock[]) => void
+  onClick?: () => void
   onCommentAdd: () => void
   onDiscardEdit: () => void
   onOpenChange: (open: boolean) => void
@@ -57,6 +58,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     currentUser,
     hasComments,
     onChange,
+    onClick,
     onCommentAdd,
     onDiscardEdit,
     onOpenChange,
@@ -77,14 +79,15 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
   }, [close, mentionMenuOpen])
 
   const handleClick = useCallback(() => {
+    onClick?.()
+
     if (hasComments) {
       openInspector(COMMENTS_INSPECTOR_NAME)
       setOpen(false)
       return
     }
-
     setOpen((prev) => !prev)
-  }, [hasComments, openInspector])
+  }, [hasComments, onClick, openInspector])
 
   const handleSubmit = useCallback(() => {
     onCommentAdd()
