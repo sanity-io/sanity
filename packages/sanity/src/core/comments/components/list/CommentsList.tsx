@@ -3,7 +3,13 @@ import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useState} 
 import {BoundaryElementProvider, Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {CurrentUser, Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {CommentCreatePayload, CommentDocument, CommentEditPayload, CommentStatus} from '../../types'
+import {
+  CommentBreadcrumbs,
+  CommentCreatePayload,
+  CommentDocument,
+  CommentEditPayload,
+  CommentStatus,
+} from '../../types'
 import {MentionOptionsHookValue} from '../../hooks'
 import {CommentsListItem} from './CommentsListItem'
 import {CommentThreadLayout} from './CommentThreadLayout'
@@ -32,6 +38,7 @@ function groupComments(comments: CommentDocument[]) {
  * @hidden
  */
 export interface CommentsListProps {
+  buildCommentBreadcrumbs?: (fieldPath: string) => CommentBreadcrumbs
   comments: CommentDocument[]
   currentUser: CurrentUser
   error: Error | null
@@ -63,6 +70,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
   ref,
 ) {
   const {
+    buildCommentBreadcrumbs,
     comments,
     currentUser,
     error,
@@ -180,8 +188,11 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
             {groupedComments.map(([fieldPath, group]) => {
               const parentComments = group.filter((c) => !c.parentCommentId)
 
+              const breadcrumbs = buildCommentBreadcrumbs?.(fieldPath)
+
               return (
                 <CommentThreadLayout
+                  breadcrumbs={breadcrumbs}
                   currentUser={currentUser}
                   key={fieldPath}
                   mentionOptions={mentionOptions}
