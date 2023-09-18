@@ -5,8 +5,8 @@ import {SchemaValidationProblemGroup} from '@sanity/types'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {capitalize} from 'lodash'
-import {Trans} from 'react-i18next'
 import {useTranslation} from '../../../i18n'
+import {Translate} from '../../../i18n/Translate'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',

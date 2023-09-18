@@ -2,6 +2,7 @@ export * from './hooks/useTranslation'
 export * from './hooks/useLocale'
 export * from './components/LocaleProvider'
 export * from './locales'
+export * from './Translate'
 export type {
   ImplicitLocaleResourceBundle,
   LocaleConfigContext,
