@@ -11,4 +11,13 @@ export {useComments, useFieldCommentsCount, useCommentsEnabled} from './hooks'
 
 export type {CommentDeleteDialogProps, CommentsListHandle} from './components'
 export type {CommentsProviderProps} from './context'
-export type {CommentCreatePayload, CommentEditPayload, CommentMessage, CommentStatus} from './types'
+export type {
+  CommentBreadcrumbs,
+  CommentCreatePayload,
+  CommentDocument,
+  CommentEditPayload,
+  CommentMessage,
+  CommentStatus,
+} from './types'
+
+export {buildCommentBreadcrumbs} from './utils'
