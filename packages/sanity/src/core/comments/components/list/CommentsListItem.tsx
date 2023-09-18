@@ -50,6 +50,7 @@ const ExpandButton = styled(Button)(({theme}) => {
 })
 
 interface CommentsListItemProps {
+  canReply?: boolean
   currentUser: CurrentUser
   mentionOptions: MentionOptionsHookValue
   onDelete: (id: string) => void
@@ -63,6 +64,7 @@ interface CommentsListItemProps {
 
 export function CommentsListItem(props: CommentsListItemProps) {
   const {
+    canReply,
     currentUser,
     mentionOptions,
     onDelete,
@@ -130,66 +132,70 @@ export function CommentsListItem(props: CommentsListItemProps) {
   return (
     <Stack space={2}>
       <RootCard>
-        <Stack space={4}>
-          <CommentsListItemLayout
-            canDelete={parentComment.authorId === currentUser.id}
-            canEdit={parentComment.authorId === currentUser.id}
-            comment={parentComment}
-            currentUser={currentUser}
-            isParent
-            mentionOptions={mentionOptions}
-            onDelete={onDelete}
-            onEdit={onEdit}
-            onStatusChange={onStatusChange}
-            onPathFocus={onPathFocus}
-          />
-
-          {showCollapseButton && !didExpand.current && (
-            <Flex gap={1} paddingY={1} sizing="border">
-              <div
-                style={{
-                  width: AVATAR_SIZE,
-                }}
-              />
-
-              <ExpandButton
-                fontSize={1}
-                iconRight={ChevronDownIcon}
-                mode="bleed"
-                onClick={handleExpand}
-                padding={2}
-                space={2}
-                text={`${replies?.length - MAX_COLLAPSED_REPLIES} more ${
-                  replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
-                }`}
-              />
-            </Flex>
-          )}
-
-          {splicedReplies.map((reply) => (
+        <Stack paddingBottom={canReply ? undefined : 1}>
+          <Stack space={4}>
             <CommentsListItemLayout
-              canDelete={reply.authorId === currentUser.id}
-              canEdit={reply.authorId === currentUser.id}
-              comment={reply}
+              canDelete={parentComment.authorId === currentUser.id}
+              canEdit={parentComment.authorId === currentUser.id}
+              comment={parentComment}
               currentUser={currentUser}
-              key={reply._id}
+              isParent
               mentionOptions={mentionOptions}
               onDelete={onDelete}
               onEdit={onEdit}
+              onPathFocus={onPathFocus}
+              onStatusChange={onStatusChange}
             />
-          ))}
 
-          <CommentInput
-            currentUser={currentUser}
-            expandOnFocus
-            mentionOptions={mentionOptions}
-            onChange={setValue}
-            onEditDiscard={cancelEdit}
-            onSubmit={handleSubmit}
-            placeholder="Reply"
-            ref={replyInputRef}
-            value={value}
-          />
+            {showCollapseButton && !didExpand.current && (
+              <Flex gap={1} paddingY={1} sizing="border">
+                <div
+                  style={{
+                    width: AVATAR_SIZE,
+                  }}
+                />
+
+                <ExpandButton
+                  fontSize={1}
+                  iconRight={ChevronDownIcon}
+                  mode="bleed"
+                  onClick={handleExpand}
+                  padding={2}
+                  space={2}
+                  text={`${replies?.length - MAX_COLLAPSED_REPLIES} more ${
+                    replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
+                  }`}
+                />
+              </Flex>
+            )}
+
+            {splicedReplies.map((reply) => (
+              <CommentsListItemLayout
+                canDelete={reply.authorId === currentUser.id}
+                canEdit={reply.authorId === currentUser.id}
+                comment={reply}
+                currentUser={currentUser}
+                key={reply._id}
+                mentionOptions={mentionOptions}
+                onDelete={onDelete}
+                onEdit={onEdit}
+              />
+            ))}
+
+            {canReply && (
+              <CommentInput
+                currentUser={currentUser}
+                expandOnFocus
+                mentionOptions={mentionOptions}
+                onChange={setValue}
+                onEditDiscard={cancelEdit}
+                onSubmit={handleSubmit}
+                placeholder="Reply"
+                ref={replyInputRef}
+                value={value}
+              />
+            )}
+          </Stack>
         </Stack>
       </RootCard>
     </Stack>
