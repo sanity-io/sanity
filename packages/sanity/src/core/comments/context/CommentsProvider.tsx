@@ -1,6 +1,6 @@
-import React, {memo, useMemo} from 'react'
+import React, {memo, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
-import {CommentDocument, CommentsContextValue} from '../types'
+import {CommentDocument, CommentStatus, CommentsContextValue} from '../types'
 import {useCommentOperations, useCommentsEnabled, useMentionOptions} from '../hooks'
 import {useCommentsStore} from '../store'
 import {useSchema} from '../../hooks'
@@ -24,7 +24,16 @@ export interface CommentsProviderProps {
   documentValue: SanityDocument
 }
 
-const EMPTY_DATA = {
+const EMPTY_COMMENTS = {
+  data: {
+    open: EMPTY_ARRAY,
+    resolved: EMPTY_ARRAY,
+  },
+  error: null,
+  loading: false,
+}
+
+const EMPTY_MENTION_OPTIONS = {
   data: [],
   error: null,
   loading: false,
@@ -39,12 +48,14 @@ const noopOperation = {
 }
 
 const COMMENTS_DISABLED_CONTEXT: CommentsContextValue = {
-  comments: EMPTY_DATA,
+  comments: EMPTY_COMMENTS,
   create: noopOperation,
-  remove: noopOperation,
   edit: noopOperation,
+  mentionOptions: EMPTY_MENTION_OPTIONS,
+  remove: noopOperation,
+  setStatus: noop,
+  status: 'open',
   update: noopOperation,
-  mentionOptions: EMPTY_DATA,
 }
 
 /**
@@ -74,7 +85,9 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
   const {children, documentValue} = props
   const {_id: documentId, _type: documentType} = documentValue || {}
 
-  const {dispatch, data, error, loading} = useCommentsStore({documentId})
+  const [status, setStatus] = useState<CommentStatus>('open')
+
+  const {dispatch, data = EMPTY_ARRAY, error, loading} = useCommentsStore({documentId})
   const mentionOptions = useMentionOptions({documentValue})
 
   const schemaType = useSchema().get(documentType)
@@ -118,11 +131,19 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
     },
   })
 
+  const commentsByStatus = useMemo(() => {
+    const open = data?.filter((c) => c.status === 'open') || EMPTY_ARRAY
+    const resolved = data?.filter((c) => c.status === 'resolved') || EMPTY_ARRAY
+    return {open, resolved}
+  }, [data])
+
   const ctxValue = useMemo(
     () =>
       ({
+        status,
+        setStatus,
         comments: {
-          data: data || EMPTY_ARRAY,
+          data: commentsByStatus,
           error,
           loading,
         },
@@ -141,7 +162,7 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
         mentionOptions,
       }) satisfies CommentsContextValue,
     [
-      data,
+      commentsByStatus,
       error,
       loading,
       mentionOptions,
@@ -149,6 +170,7 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
       operation.edit,
       operation.remove,
       operation.update,
+      status,
     ],
   )
 
