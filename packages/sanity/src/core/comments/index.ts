@@ -18,5 +18,11 @@ export type {
   CommentEditPayload,
   CommentMessage,
   CommentStatus,
+<<<<<<< HEAD
   CommentThreadItem,
 } from './types'
+=======
+} from './types'
+
+export {buildCommentBreadcrumbs} from './utils'
+>>>>>>> d2d61b0cce (feat: improve comment breadcrumbs)
