@@ -143,3 +143,19 @@ export type CommentEditPayload = {
   message: CommentMessage
   lastEditedAt?: string
 }
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentsListBreadcrumbItem {
+  invalid: boolean
+  isArrayItem?: boolean
+  title: string
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export type CommentBreadcrumbs = CommentsListBreadcrumbItem[]
