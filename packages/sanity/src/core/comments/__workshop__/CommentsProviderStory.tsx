@@ -36,7 +36,7 @@ function Inner() {
 
   return (
     <CommentsList
-      comments={comments.data}
+      comments={comments.data.open}
       currentUser={currentUser}
       error={comments.error}
       loading={comments.loading}
