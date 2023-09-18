@@ -46,6 +46,14 @@ function Inner() {
       onNewThreadCreate={create.execute}
       onReply={create.execute}
       status="open"
+      // eslint-disable-next-line react/jsx-no-bind
+      buildCommentBreadcrumbs={(path) =>
+        path.split('.').map((p) => ({
+          title: p,
+          invalid: false,
+          isArrayItem: false,
+        }))
+      }
     />
   )
 }
