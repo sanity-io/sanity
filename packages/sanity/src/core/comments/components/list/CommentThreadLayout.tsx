@@ -3,6 +3,7 @@ import {Badge, Box, Breadcrumbs, Button, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
+import styled from 'styled-components'
 import {AddCommentIcon} from '../icons'
 import {MentionOptionsHookValue} from '../../hooks'
 import {CommentInputHandle} from '../pte'
@@ -11,11 +12,16 @@ import {TextTooltip} from '../TextTooltip'
 import {ThreadCard} from './CommentsListItem'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 
+const BreadcrumbsFlex = styled(Flex)`
+  min-height: 25px;
+`
+
 interface CommentThreadLayoutProps {
   breadcrumbs?: CommentBreadcrumbs
   canCreateNewThread: boolean
   children: React.ReactNode
   currentUser: CurrentUser
+  threadId: string
   mentionOptions: MentionOptionsHookValue
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   path: Path
@@ -27,6 +33,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     canCreateNewThread,
     children,
     currentUser,
+    threadId,
     mentionOptions,
     onNewThreadCreate,
     path,
@@ -70,8 +77,8 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   )
 
   return (
-    <Stack space={2}>
-      <Flex align="center" gap={2} paddingX={1} sizing="border">
+    <Stack space={2} data-thread-id={threadId}>
+      <BreadcrumbsFlex align="center" gap={2} paddingX={1} sizing="border">
         <Stack flex={1}>
           <Breadcrumbs maxLength={3}>
             {breadcrumbs?.map((p, index) => {
@@ -126,7 +133,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
             />
           </TextTooltip>
         )}
-      </Flex>
+      </BreadcrumbsFlex>
 
       {displayNewThreadInput && (
         <ThreadCard tone="primary">
