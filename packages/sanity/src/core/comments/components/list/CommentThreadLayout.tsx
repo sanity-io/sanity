@@ -1,5 +1,5 @@
 import {CurrentUser, Path} from '@sanity/types'
-import {Badge, Box, Breadcrumbs, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Breadcrumbs, Button, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
@@ -13,6 +13,7 @@ import {CreateNewThreadInput} from './CreateNewThreadInput'
 
 interface CommentThreadLayoutProps {
   breadcrumbs?: CommentBreadcrumbs
+  canCreateNewThread: boolean
   children: React.ReactNode
   currentUser: CurrentUser
   mentionOptions: MentionOptionsHookValue
@@ -21,7 +22,15 @@ interface CommentThreadLayoutProps {
 }
 
 export function CommentThreadLayout(props: CommentThreadLayoutProps) {
-  const {breadcrumbs, children, path, currentUser, mentionOptions, onNewThreadCreate} = props
+  const {
+    breadcrumbs,
+    canCreateNewThread,
+    children,
+    currentUser,
+    mentionOptions,
+    onNewThreadCreate,
+    path,
+  } = props
   const createNewThreadInputRef = useRef<CommentInputHandle>(null)
   const [displayNewThreadInput, setDisplayNewThreadInput] = useState<boolean>(false)
 
@@ -105,16 +114,18 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
           </Breadcrumbs>
         </Stack>
 
-        <TextTooltip text="Start a new thread...">
-          <Button
-            aria-label="Start a new thread"
-            fontSize={1}
-            icon={AddCommentIcon}
-            mode="bleed"
-            onClick={onCreateNewThreadClick}
-            padding={2}
-          />
-        </TextTooltip>
+        {canCreateNewThread && (
+          <TextTooltip text="Start a new thread...">
+            <Button
+              aria-label="Start a new thread"
+              fontSize={1}
+              icon={AddCommentIcon}
+              mode="bleed"
+              onClick={onCreateNewThreadClick}
+              padding={2}
+            />
+          </TextTooltip>
+        )}
       </Flex>
 
       {displayNewThreadInput && (
