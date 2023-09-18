@@ -25,7 +25,10 @@ export interface MentionOptionUser extends User {
  */
 export interface CommentsContextValue {
   comments: {
-    data: CommentDocument[]
+    data: {
+      open: CommentDocument[]
+      resolved: CommentDocument[]
+    }
     error: Error | null
     loading: boolean
   }
@@ -47,6 +50,9 @@ export interface CommentsContextValue {
   }
 
   mentionOptions: MentionOptionsHookValue
+
+  status: CommentStatus
+  setStatus: (status: CommentStatus) => void
 }
 
 /**

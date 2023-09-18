@@ -110,11 +110,9 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
   )
 
   const groupedComments = useMemo(() => {
-    // This is done to make sure we get all replies, even if they are not in
-    // the current view (ie has wrong status)
     const filteredComments = comments
       // 1. Get all comments that are not replies and are in the current view (open or resolved)
-      .filter((c) => c.status === status && !c.parentCommentId)
+      .filter((c) => !c.parentCommentId)
       // 2. Get all replies to each parent comment and add them to the array
       .map((c) => {
         return [c, ...comments.filter((c2) => c2.parentCommentId === c._id)]
@@ -122,7 +120,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
       .flat()
 
     return Object.entries(groupComments(filteredComments))
-  }, [comments, status])
+  }, [comments])
 
   const showComments = !loading && !error && groupedComments.length > 0
   const showEmptyState = !loading && !error && groupedComments.length === 0
@@ -189,6 +187,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
               const parentComments = group.filter((c) => !c.parentCommentId)
 
               const breadcrumbs = buildCommentBreadcrumbs?.(fieldPath)
+              const threadId = group[0].threadId
 
               return (
                 <CommentThreadLayout
@@ -199,6 +198,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
                   mentionOptions={mentionOptions}
                   onNewThreadCreate={onNewThreadCreate}
                   path={PathUtils.fromString(fieldPath)}
+                  threadId={threadId}
                 >
                   {parentComments.map((comment) => {
                     const replies = group.filter((c) => c.parentCommentId === comment._id)

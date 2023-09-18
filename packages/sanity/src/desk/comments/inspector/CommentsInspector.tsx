@@ -30,7 +30,6 @@ interface CommentToDelete {
 export function CommentsInspector(props: DocumentInspectorProps) {
   const {onClose, documentType, documentId} = props
 
-  const [view, setView] = useState<CommentStatus>('open')
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
@@ -42,7 +41,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const params = useUnique(paneRouter.params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
   const commentIdParamRef = useRef<string | undefined>(params?.comment)
 
-  const {comments, create, edit, mentionOptions, remove, update} = useComments()
+  const {comments, create, edit, mentionOptions, remove, update, status, setStatus} = useComments()
 
   const schema = useSchema()
   const schemaType = schema.get(documentType)
@@ -109,9 +108,9 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   )
 
   const handleStatusChange = useCallback(
-    (id: string, status: CommentStatus) => {
+    (id: string, nextStatus: CommentStatus) => {
       update.execute(id, {
-        status,
+        status: nextStatus,
       })
     },
     [update],
@@ -122,10 +121,10 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       setShowDeleteDialog(true)
       setCommentToDelete({
         commentId: id,
-        isParent: comments.data.filter((c) => c.parentCommentId === id).length > 0,
+        isParent: comments.data[status].filter((c) => c.parentCommentId === id).length > 0,
       })
     },
-    [comments],
+    [comments.data, status],
   )
 
   const handleDeleteConfirm = useCallback(
@@ -156,12 +155,12 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       )}
 
       <Flex direction="column" overflow="hidden" height="fill">
-        <CommentsInspectorHeader onClose={onClose} onViewChange={setView} view={view} />
+        <CommentsInspectorHeader onClose={onClose} onViewChange={setStatus} view={status} />
 
         {currentUser && (
           <CommentsList
             buildCommentBreadcrumbs={handleBuildCommentBreadcrumbs}
-            comments={comments.data}
+            comments={comments.data[status] || []}
             currentUser={currentUser}
             error={comments.error}
             loading={comments.loading}
@@ -173,7 +172,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
             onReply={handleReply}
             onStatusChange={handleStatusChange}
             ref={commentsListHandleRef}
-            status={view}
+            status={status}
           />
         )}
       </Flex>
