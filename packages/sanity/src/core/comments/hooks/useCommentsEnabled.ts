@@ -27,7 +27,7 @@ export function useCommentsEnabled(opts: CommentsEnabledHookOptions): CommentsEn
   const {documentId, documentType} = opts
 
   // 1. Plan check
-  const {enabled: featureEnabled, isLoading} = useFeatureEnabled('crossDatasetReferences') // Replace when comments feature is available
+  const {enabled: featureEnabled, isLoading} = useFeatureEnabled('studioComments')
 
   // 2. Config check
   const {enabled} = useSource().document.unstable_comments
@@ -41,7 +41,7 @@ export function useCommentsEnabled(opts: CommentsEnabledHookOptions): CommentsEn
       } satisfies CommentsEnabled
     }
 
-    if (!enabledFromConfig) {
+    if (!enabledFromConfig || isLoading) {
       return {
         isEnabled: false,
         reason: 'disabled-by-config',
