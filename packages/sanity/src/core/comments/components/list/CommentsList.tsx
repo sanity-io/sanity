@@ -193,6 +193,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
               return (
                 <CommentThreadLayout
                   breadcrumbs={breadcrumbs}
+                  canCreateNewThread={status === 'open'}
                   currentUser={currentUser}
                   key={fieldPath}
                   mentionOptions={mentionOptions}
@@ -209,6 +210,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
 
                     return (
                       <CommentsListItem
+                        canReply={status === 'open'}
                         currentUser={currentUser}
                         key={comment?._id}
                         mentionOptions={mentionOptions}
