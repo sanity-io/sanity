@@ -1,18 +1,18 @@
 import {CurrentUser, Path} from '@sanity/types'
-import {Box, Breadcrumbs, Button, Flex, Stack, Text} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {Badge, Box, Breadcrumbs, Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {AddCommentIcon} from '../icons'
 import {MentionOptionsHookValue} from '../../hooks'
 import {CommentInputHandle} from '../pte'
-import {CommentMessage, CommentCreatePayload} from '../../types'
+import {CommentMessage, CommentCreatePayload, CommentBreadcrumbs} from '../../types'
 import {TextTooltip} from '../TextTooltip'
 import {ThreadCard} from './CommentsListItem'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 
 interface CommentThreadLayoutProps {
+  breadcrumbs?: CommentBreadcrumbs
   children: React.ReactNode
   currentUser: CurrentUser
   mentionOptions: MentionOptionsHookValue
@@ -21,7 +21,7 @@ interface CommentThreadLayoutProps {
 }
 
 export function CommentThreadLayout(props: CommentThreadLayoutProps) {
-  const {children, path, currentUser, mentionOptions, onNewThreadCreate} = props
+  const {breadcrumbs, children, path, currentUser, mentionOptions, onNewThreadCreate} = props
   const createNewThreadInputRef = useRef<CommentInputHandle>(null)
   const [displayNewThreadInput, setDisplayNewThreadInput] = useState<boolean>(false)
 
@@ -65,18 +65,39 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       <Flex align="center" gap={2} paddingX={1} sizing="border">
         <Stack flex={1}>
           <Breadcrumbs maxLength={3}>
-            {path.map((p, index) => {
-              const pathSegment = p.toString()
-              const idx = `${pathSegment}-${index}`
+            {breadcrumbs?.map((p, index) => {
+              const idx = `${p.title}-${index}`
 
-              // If the path segment is an object, we don't want to render it since it
-              // is not human readable, e.g: {_key: 'xyz}
-              if (typeof p === 'object') return null
+              if (p.isArrayItem) {
+                if (p.invalid) {
+                  return (
+                    <TextTooltip key={idx} text="The array item does no longer exist">
+                      <Badge
+                        aria-label="The array item does no longer exist"
+                        fontSize={1}
+                        mode="outline"
+                        sizing="border"
+                        tone="caution"
+                      >
+                        ?
+                      </Badge>
+                    </TextTooltip>
+                  )
+                }
+
+                return (
+                  <Box key={idx}>
+                    <Badge fontSize={1} mode="outline" sizing="border">
+                      {p.title}
+                    </Badge>
+                  </Box>
+                )
+              }
 
               return (
                 <Box key={idx}>
                   <Text size={1} weight="semibold" textOverflow="ellipsis">
-                    {startCase(pathSegment)}
+                    {p.title}
                   </Text>
                 </Box>
               )
