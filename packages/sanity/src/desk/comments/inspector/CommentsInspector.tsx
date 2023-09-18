@@ -6,15 +6,19 @@ import {usePaneRouter} from '../../components'
 import {EMPTY_PARAMS} from '../../constants'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {
+  buildCommentBreadcrumbs,
   CommentCreatePayload,
   CommentDeleteDialog,
   CommentEditPayload,
-  CommentStatus,
   CommentsList,
   CommentsListHandle,
+  CommentStatus,
   DocumentInspectorProps,
+  getPublishedId,
   useComments,
   useCurrentUser,
+  useEditState,
+  useSchema,
   useUnique,
 } from 'sanity'
 
@@ -24,12 +28,9 @@ interface CommentToDelete {
 }
 
 export function CommentsInspector(props: DocumentInspectorProps) {
-  const {onClose} = props
-  const [view, setView] = useState<CommentStatus>('open')
-  const paneRouter = usePaneRouter()
-  const params = useUnique(paneRouter.params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
-  const commentIdParamRef = useRef<string | undefined>(params?.comment)
+  const {onClose, documentType, documentId} = props
 
+  const [view, setView] = useState<CommentStatus>('open')
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
@@ -37,7 +38,26 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
   const {onPathOpen, onFocus} = useDocumentPane()
   const currentUser = useCurrentUser()
+  const paneRouter = usePaneRouter()
+  const params = useUnique(paneRouter.params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
+  const commentIdParamRef = useRef<string | undefined>(params?.comment)
+
   const {comments, create, edit, mentionOptions, remove, update} = useComments()
+
+  const schema = useSchema()
+  const schemaType = schema.get(documentType)
+
+  const publishedId = getPublishedId(documentId)
+  const editState = useEditState(publishedId, documentType)
+  const documentValue = editState?.draft || editState?.published
+
+  const handleBuildCommentBreadcrumbs = useCallback(
+    (fieldPath: string) => {
+      if (!schemaType) return []
+      return buildCommentBreadcrumbs({fieldPath, schemaType, documentValue})
+    },
+    [documentValue, schemaType],
+  )
 
   const commentsListHandleRef = useRef<CommentsListHandle>(null)
   const didScrollDown = useRef<boolean>(false)
@@ -140,6 +160,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
         {currentUser && (
           <CommentsList
+            buildCommentBreadcrumbs={handleBuildCommentBreadcrumbs}
             comments={comments.data}
             currentUser={currentUser}
             error={comments.error}
