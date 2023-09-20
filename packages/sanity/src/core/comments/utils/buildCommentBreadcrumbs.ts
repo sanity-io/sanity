@@ -25,6 +25,7 @@ function getSchemaField(
       return field
     }
   }
+
   return undefined
 }
 
@@ -36,7 +37,7 @@ function findArrayItemIndex(array: unknown[], pathSegment: any): number | false 
   return index === -1 ? false : index
 }
 
-interface BuildCommentBreadcrumbs {
+interface BuildCommentBreadcrumbsProps {
   documentValue: unknown
   fieldPath: string
   schemaType: SchemaType
@@ -46,7 +47,7 @@ interface BuildCommentBreadcrumbs {
  * @beta
  * @hidden
  */
-export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbs): CommentBreadcrumbs {
+export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): CommentBreadcrumbs {
   const {schemaType, fieldPath, documentValue} = props
   const paths = PathUtils.fromString(fieldPath)
   const fieldPaths: CommentBreadcrumbs = []
@@ -56,17 +57,7 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbs): Comment
     const isArraySegment = seg.hasOwnProperty('_key')
     const field = getSchemaField(schemaType, currentPath)
 
-    if (!field && !isArraySegment) {
-      fieldPaths.push({
-        invalid: true,
-        isArrayItem: false,
-        title: startCase(seg.toString()),
-      })
-
-      return
-    }
-
-    if (field && !isArraySegment) {
+    if (field) {
       const title = getSchemaTypeTitle(field?.type)
 
       fieldPaths.push({
@@ -74,6 +65,8 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbs): Comment
         isArrayItem: false,
         title,
       })
+
+      return
     }
 
     if (isArraySegment) {
@@ -85,6 +78,19 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbs): Comment
         invalid: arrayItemIndex === false,
         isArrayItem: true,
         title: `#${Number(arrayItemIndex) + 1}`,
+      })
+
+      return
+    }
+
+    // This is usually the schema definition of an array item (ie inside of: []).
+    // todo: fix so that we get the defined titled instead of the field name.
+    // We need to add support for it in `getSchemaField`.
+    if (!isArraySegment) {
+      fieldPaths.push({
+        invalid: false,
+        isArrayItem: false,
+        title: startCase(seg.toString()),
       })
     }
   })
