@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useState} from 'react'
 import {BoundaryElementProvider, Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {CurrentUser, Path} from '@sanity/types'
@@ -14,6 +13,12 @@ import {MentionOptionsHookValue} from '../../hooks'
 import {CommentsListItem} from './CommentsListItem'
 import {CommentThreadLayout} from './CommentThreadLayout'
 import {EMPTY_STATE_MESSAGES} from './constants'
+
+const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
+  behavior: 'smooth',
+  block: 'center',
+  inline: 'center',
+}
 
 interface GroupedComments {
   [field: string]: CommentDocument[]
@@ -31,6 +36,17 @@ function groupComments(comments: CommentDocument[]) {
 
     return acc
   }, {} as GroupedComments)
+}
+
+function getReplies(parentCommentId: string, group: CommentDocument[]) {
+  const replies = group.filter((c) => c.parentCommentId === parentCommentId)
+
+  // The default sort order is by date, descending (newest first).
+  // However, inside a thread, we want the order to be ascending (oldest first).
+  // So we reverse the array here.
+  const orderedReplies = [...replies].reverse()
+
+  return orderedReplies
 }
 
 /**
@@ -89,12 +105,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
   const scrollToComment = useCallback(
     (id: string) => {
       const commentElement = boundaryElement?.querySelector(`[data-comment-id="${id}"]`)
-
-      commentElement?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'center',
-      })
+      commentElement?.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
     },
     [boundaryElement],
   )
@@ -114,9 +125,8 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
       // 1. Get all comments that are not replies and are in the current view (open or resolved)
       .filter((c) => !c.parentCommentId)
       // 2. Get all replies to each parent comment and add them to the array
-      .map((c) => {
-        return [c, ...comments.filter((c2) => c2.parentCommentId === c._id)]
-      })
+      // eslint-disable-next-line max-nested-callbacks
+      .map((c) => [c, ...comments.filter((c2) => c2.parentCommentId === c._id)])
       .flat()
 
     return Object.entries(groupComments(filteredComments))
@@ -186,45 +196,50 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
             {groupedComments.map(([fieldPath, group]) => {
               const parentComments = group.filter((c) => !c.parentCommentId)
 
-              const breadcrumbs = buildCommentBreadcrumbs?.(fieldPath)
+              // The threadId is used to identify the thread in the DOM, so we can scroll to it.
+              // todo: validate this approach
               const threadId = group[0].threadId
 
+              const breadcrumbs = buildCommentBreadcrumbs?.(fieldPath)
+              const hasInvalidBreadcrumb = breadcrumbs?.some((b) => b.invalid === true)
+
+              // If the breadcrumb is invalid, the field might have been remove from the
+              // the schema, or an array item might have been removed. In that case, we don't
+              // want to render any button to open the field.
+              const _onPathFocus = hasInvalidBreadcrumb ? undefined : onPathFocus
+
               return (
-                <CommentThreadLayout
-                  breadcrumbs={breadcrumbs}
-                  canCreateNewThread={status === 'open'}
-                  currentUser={currentUser}
-                  key={fieldPath}
-                  mentionOptions={mentionOptions}
-                  onNewThreadCreate={onNewThreadCreate}
-                  path={PathUtils.fromString(fieldPath)}
-                  threadId={threadId}
-                >
-                  {parentComments.map((comment) => {
-                    const replies = group.filter((c) => c.parentCommentId === comment._id)
+                <Stack data-thread-id={threadId} key={fieldPath}>
+                  <CommentThreadLayout
+                    breadcrumbs={breadcrumbs}
+                    canCreateNewThread={status === 'open'}
+                    currentUser={currentUser}
+                    key={fieldPath}
+                    mentionOptions={mentionOptions}
+                    onNewThreadCreate={onNewThreadCreate}
+                    path={PathUtils.fromString(fieldPath)}
+                  >
+                    {parentComments.map((comment) => {
+                      const replies = getReplies(comment._id, group)
 
-                    // The default sort order is by date, descending (newest first).
-                    // However, inside a thread, we want the order to be ascending (oldest first).
-                    // So we reverse the array here.
-                    const orderedReplies = [...replies].reverse()
-
-                    return (
-                      <CommentsListItem
-                        canReply={status === 'open'}
-                        currentUser={currentUser}
-                        key={comment?._id}
-                        mentionOptions={mentionOptions}
-                        onDelete={onDelete}
-                        onEdit={onEdit}
-                        onPathFocus={onPathFocus}
-                        onReply={onReply}
-                        onStatusChange={onStatusChange}
-                        parentComment={comment}
-                        replies={orderedReplies}
-                      />
-                    )
-                  })}
-                </CommentThreadLayout>
+                      return (
+                        <CommentsListItem
+                          canReply={status === 'open'}
+                          currentUser={currentUser}
+                          key={comment?._id}
+                          mentionOptions={mentionOptions}
+                          onDelete={onDelete}
+                          onEdit={onEdit}
+                          onPathFocus={_onPathFocus}
+                          onReply={onReply}
+                          onStatusChange={onStatusChange}
+                          parentComment={comment}
+                          replies={replies}
+                        />
+                      )
+                    })}
+                  </CommentThreadLayout>
+                </Stack>
               )
             })}
           </BoundaryElementProvider>
