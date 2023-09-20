@@ -14,6 +14,8 @@ import {
   useFieldCommentsCount,
 } from 'sanity'
 
+const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {behavior: 'smooth', block: 'start'}
+
 export function CommentField(props: FieldProps) {
   const {documentId, documentType} = useDocumentPane()
 
@@ -52,7 +54,7 @@ function CommentFieldInner(props: FieldProps) {
   useEffect(() => {
     if (status === 'open' && inspector?.name === COMMENTS_INSPECTOR_NAME && shouldScrollToThread) {
       const threadId = comments.data.open.find(
-        (comment) => comment.target.path.field === props.path.toString(),
+        (comment) => comment.target?.path?.field === props.path.toString(),
       )?.threadId
 
       // Find the node in the DOM
@@ -61,7 +63,7 @@ function CommentFieldInner(props: FieldProps) {
       // Scroll to the node
       if (node) {
         requestAnimationFrame(() => {
-          node.scrollIntoView({behavior: 'smooth', block: 'start'})
+          node.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
         })
       }
 
