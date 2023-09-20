@@ -3,17 +3,22 @@ import {useFeatureEnabled} from '../../hooks'
 import {useSource} from '../../studio'
 import {getPublishedId} from '../../util'
 
-interface Enabled {
+interface Disabled {
   isEnabled: false
-  reason: 'disabled-by-config' | 'plan-upgrade-required'
+  reason: 'disabled-by-config' | 'plan-upgrade-required' | 'loading'
 }
 
-interface Disabled {
+interface Enabled {
   isEnabled: true
   reason: null
 }
 
-type CommentsEnabled = Enabled | Disabled
+interface Loading {
+  isEnabled: false
+  reason: 'loading'
+}
+
+type CommentsEnabled = Enabled | Disabled | Loading
 
 interface CommentsEnabledHookOptions {
   documentId: string
@@ -34,14 +39,21 @@ export function useCommentsEnabled(opts: CommentsEnabledHookOptions): CommentsEn
   const enabledFromConfig = enabled({documentType, documentId: getPublishedId(documentId)})
 
   const commentsEnabled = useMemo(() => {
-    if (!featureEnabled && !isLoading) {
+    if (isLoading) {
+      return {
+        isEnabled: false,
+        reason: 'loading',
+      } satisfies CommentsEnabled
+    }
+
+    if (!featureEnabled) {
       return {
         isEnabled: false,
         reason: 'plan-upgrade-required',
       } satisfies CommentsEnabled
     }
 
-    if (!enabledFromConfig || isLoading) {
+    if (!enabledFromConfig) {
       return {
         isEnabled: false,
         reason: 'disabled-by-config',
