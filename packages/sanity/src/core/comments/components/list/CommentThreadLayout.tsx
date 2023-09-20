@@ -21,7 +21,6 @@ interface CommentThreadLayoutProps {
   canCreateNewThread: boolean
   children: React.ReactNode
   currentUser: CurrentUser
-  threadId: string
   mentionOptions: MentionOptionsHookValue
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   path: Path
@@ -33,7 +32,6 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     canCreateNewThread,
     children,
     currentUser,
-    threadId,
     mentionOptions,
     onNewThreadCreate,
     path,
@@ -77,7 +75,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   )
 
   return (
-    <Stack space={2} data-thread-id={threadId}>
+    <Stack space={2}>
       <BreadcrumbsFlex align="center" gap={2} paddingX={1} sizing="border">
         <Stack flex={1}>
           <Breadcrumbs maxLength={3}>
