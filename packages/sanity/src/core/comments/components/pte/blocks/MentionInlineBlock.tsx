@@ -1,8 +1,8 @@
 import React from 'react'
 import {Tooltip, Flex, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {UserAvatar} from '../../../../components'
 import {useCurrentUser, useUser} from '../../../../store'
+import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 
 const Span = styled.span(({theme}) => {
   const {regular} = theme.sanity.fonts?.text.weights
@@ -42,7 +42,7 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
       content={
         <Flex align="center" padding={2} gap={1}>
           <Flex>
-            <UserAvatar user={user} />
+            <CommentsAvatar user={user} />
           </Flex>
 
           <Text size={1}>{user.displayName}</Text>

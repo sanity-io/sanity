@@ -1,11 +1,11 @@
-import React, {useCallback, useRef, useState} from 'react'
-import {Avatar, Flex, Button, MenuDivider, Box, Card, Stack} from '@sanity/ui'
+import React, {useCallback, useState} from 'react'
+import {Flex, Button, MenuDivider, Box, Card, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
-import {ArrowUpIcon, CloseIcon} from '@sanity/icons'
+import {CloseIcon} from '@sanity/icons'
 import {useUser} from '../../../../store'
-import {UserAvatar} from '../../../../components'
-import {MentionIcon} from '../../icons'
+import {MentionIcon, SendIcon} from '../../icons'
+import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 import {useCommentInput} from './useCommentInput'
 import {Editable} from './Editable'
 
@@ -82,7 +82,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   const [user] = useUser(currentUser.id)
   const {openMentions, focused, expandOnFocus, canSubmit, hasChanges} = useCommentInput()
 
-  const avatar = user ? <UserAvatar size={0} user={user} /> : <Avatar size={0} />
+  const avatar = <CommentsAvatar user={user} />
 
   const handleDiscardEdit = useCallback(() => {
     onEditDiscard()
@@ -134,7 +134,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               aria-label="Send comment"
               disabled={!canSubmit || !hasChanges}
               fontSize={1}
-              icon={ArrowUpIcon}
+              icon={SendIcon}
               mode={hasChanges && canSubmit ? 'default' : 'bleed'}
               onClick={onSubmit}
               padding={2}
