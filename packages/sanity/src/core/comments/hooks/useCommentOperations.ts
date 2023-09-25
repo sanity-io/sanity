@@ -58,13 +58,13 @@ export function useCommentOperations(
   const handleCreate = useCallback(
     async (comment: CommentCreatePayload) => {
       const nextComment = {
-        _type: 'comment',
         _id: uuid(),
+        _type: 'comment',
         authorId: authorId || '', // improve
         lastEditedAt: undefined,
         message: comment.message,
-        status: comment.status,
         parentCommentId: comment.parentCommentId,
+        status: comment.status,
         threadId: comment.threadId,
         context: {
           payload: {
