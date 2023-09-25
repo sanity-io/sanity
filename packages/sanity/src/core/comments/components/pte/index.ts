@@ -1,2 +1,2 @@
-export * from './Serializer'
+export * from './CommentMessageSerializer'
 export * from './comment-input'

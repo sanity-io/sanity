@@ -7,7 +7,6 @@ import {
   EyeOpenIcon,
 } from '@sanity/icons'
 import {
-  Avatar,
   TextSkeleton,
   Flex,
   Button,
@@ -28,17 +27,17 @@ import {CurrentUser, Path} from '@sanity/types'
 import styled, {css} from 'styled-components'
 import {format} from 'date-fns'
 import * as PathUtils from '@sanity/util/paths'
-import {UserAvatar} from '../../../components'
 import {TimeAgoOpts, useTimeAgo} from '../../../hooks'
 import {useUser} from '../../../store'
 import {CommentMessageSerializer} from '../pte'
 import {CommentInput} from '../pte/comment-input'
 import {CommentDocument, CommentEditPayload, CommentMessage, CommentStatus} from '../../types'
-import {AVATAR_SIZE, FLEX_GAP} from '../constants'
+import {FLEX_GAP} from '../constants'
 import {useDidUpdate} from '../../../form'
 import {useCommentHasChanged} from '../../helpers'
 import {MentionOptionsHookValue} from '../../hooks'
 import {TextTooltip} from '../TextTooltip'
+import {CommentsAvatar, SpacerAvatar} from '../avatars'
 
 const FloatingLayer = styled(Layer)(({theme}) => {
   const {space} = theme.sanity
@@ -126,9 +125,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const hasChanges = useCommentHasChanged(value)
 
-  const _date = lastEditedAt || _createdAt
-  const date = _date ? new Date(_date) : new Date()
-  const timeAgo = useTimeAgo(date, TIME_AGO_OPTS)
+  const createdDate = _createdAt ? new Date(_createdAt) : new Date()
+  const createdTimeAgo = useTimeAgo(createdDate, TIME_AGO_OPTS)
 
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -181,7 +179,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     }
   }, [rootElement])
 
-  const avatar = user ? <UserAvatar user={user} /> : <Avatar />
+  const avatar = <CommentsAvatar user={user} />
 
   const name = user?.displayName ? (
     <Text size={1} weight="semibold" textOverflow="ellipsis" title={user.displayName}>
@@ -207,20 +205,34 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           <Flex align="flex-end" gap={2} flex={1}>
             <Box flex={1}>{name}</Box>
 
-            <Text size={0} muted title={format(date, 'PPPPp')} style={{minWidth: 'max-content'}}>
-              {timeAgo} {lastEditedAt && <>(edited)</>}
-            </Text>
+            <Flex align="center" gap={1}>
+              <Text
+                size={0}
+                muted
+                title={format(createdDate, 'PPPPp')}
+                style={{minWidth: 'max-content'}}
+              >
+                {createdTimeAgo}
+              </Text>
+
+              {lastEditedAt && (
+                <Text
+                  size={0}
+                  muted
+                  title={format(new Date(lastEditedAt), 'PPPPp')}
+                  style={{minWidth: 'max-content'}}
+                >
+                  (edited)
+                </Text>
+              )}
+            </Flex>
           </Flex>
         </Flex>
       </Flex>
 
       {isEditing && (
         <Flex align="flex-start" gap={2} ref={setRootElement}>
-          <div
-            style={{
-              minWidth: AVATAR_SIZE,
-            }}
-          />
+          <SpacerAvatar />
 
           <Stack flex={1}>
             <CommentInput
@@ -319,7 +331,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           </TooltipDelayGroupProvider>
 
           <Flex gap={FLEX_GAP}>
-            <div style={{minWidth: AVATAR_SIZE}} aria-hidden="true" />
+            <SpacerAvatar />
 
             <CommentMessageSerializer blocks={message} />
           </Flex>
