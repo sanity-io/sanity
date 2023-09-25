@@ -14,8 +14,6 @@ import {
   useFieldCommentsCount,
 } from 'sanity'
 
-const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {behavior: 'smooth', block: 'start'}
-
 export function CommentField(props: FieldProps) {
   const {documentId, documentType} = useDocumentPane()
 
@@ -38,7 +36,7 @@ function CommentFieldInner(props: FieldProps) {
   const currentUser = useCurrentUser()
   const {create, status, setStatus, comments} = useComments()
 
-  const count = useFieldCommentsCount({path: props.path})
+  const count = useFieldCommentsCount(props.path)
   const hasComments = Boolean(count > 0)
 
   const [shouldScrollToThread, setShouldScrollToThread] = useState<boolean>(false)
@@ -51,43 +49,61 @@ function CommentFieldInner(props: FieldProps) {
     setShouldScrollToThread(true)
   }, [hasComments, setStatus, status])
 
-  useEffect(() => {
-    if (status === 'open' && inspector?.name === COMMENTS_INSPECTOR_NAME && shouldScrollToThread) {
-      const threadId = comments.data.open.find(
-        (comment) => comment.target?.path?.field === props.path.toString(),
-      )?.threadId
+  const handleScrollToThread = useCallback(
+    (threadId: string) => {
+      if (
+        status === 'open' &&
+        inspector?.name === COMMENTS_INSPECTOR_NAME &&
+        shouldScrollToThread &&
+        threadId
+      ) {
+        // Find the node in the DOM
+        const node = document.querySelector(`[data-thread-id="${threadId}"]`)
 
-      // Find the node in the DOM
-      const node = document.querySelector(`[data-thread-id="${threadId}"]`)
+        // // Scroll to node with 8px offset top
+        if (node) {
+          requestAnimationFrame(() => {
+            node.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'})
+          })
+        }
 
-      // Scroll to the node
-      if (node) {
-        requestAnimationFrame(() => {
-          node.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
-        })
+        // Reset shouldScrollToThread to false after performing the scroll action
+        setShouldScrollToThread(false)
       }
+    },
+    [inspector?.name, shouldScrollToThread, status],
+  )
 
-      // Reset shouldScrollToThread to false after performing the scroll action
-      setShouldScrollToThread(false)
+  useEffect(() => {
+    const threadId = comments.data.open.find(
+      (comment) => comment.target?.path?.field === props.path.toString(),
+    )?.threadId
+
+    if (threadId) {
+      handleScrollToThread(threadId)
     }
-  }, [status, inspector?.name, props.path, shouldScrollToThread, comments.data.open])
+  }, [comments.data.open, handleScrollToThread, props.path])
 
   const handleCommentAdd = useCallback(() => {
     if (value) {
+      // Since this is a new comment, we generate a new thread ID
+      const threadId = uuid()
+
       const nextComment = {
         fieldPath: pathToString(props.path),
         message: value,
         parentCommentId: undefined,
         status: 'open',
-        // Since this is a new comment, we generate a new thread ID
-        threadId: uuid(),
+        threadId,
       } satisfies CommentCreatePayload
 
       create.execute(nextComment)
 
+      openInspector(COMMENTS_INSPECTOR_NAME)
+
       setValue(null)
     }
-  }, [create, props.path, value])
+  }, [create, openInspector, props.path, value])
 
   const handleDiscard = useCallback(() => {
     setValue(null)
