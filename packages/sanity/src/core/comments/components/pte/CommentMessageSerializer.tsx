@@ -17,6 +17,8 @@ const PortableTextWrap = styled(Stack)(() => {
   `
 })
 
+const EMPTY_ARRAY: [] = []
+
 const components: PortableTextComponents = {
   block: {
     normal: ({children}) => <NormalBlock>{children}</NormalBlock>,
@@ -30,9 +32,16 @@ const components: PortableTextComponents = {
     h6: ({children}) => <NormalBlock>{children}</NormalBlock>,
     blockquote: ({children}) => <NormalBlock>{children}</NormalBlock>,
     code: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    ul: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    ol: ({children}) => <NormalBlock>{children}</NormalBlock>,
-    li: ({children}) => <NormalBlock>{children}</NormalBlock>,
+  },
+  list: {
+    bullet: ({children}) => <>{children}</>,
+    number: ({children}) => <>{children}</>,
+    checkmarks: ({children}) => <>{children}</>,
+  },
+  listItem: {
+    bullet: ({children}) => <NormalBlock>{children}</NormalBlock>,
+    number: ({children}) => <NormalBlock>{children}</NormalBlock>,
+    checkmarks: ({children}) => <NormalBlock>{children}</NormalBlock>,
   },
   marks: {
     // Since we do not offer any formatting options, we can just use the normal block for all of these.
@@ -41,6 +50,7 @@ const components: PortableTextComponents = {
     code: ({children}) => <>{children}</>,
     underline: ({children}) => <>{children}</>,
     strikeThrough: ({children}) => <>{children}</>,
+    link: ({children}) => <>{children}</>,
   },
   types: {
     mention: (props) => {
@@ -49,7 +59,7 @@ const components: PortableTextComponents = {
   },
 }
 
-interface PortableTextSerializerProps {
+interface CommentMessageSerializerProps {
   blocks: CommentMessage
 }
 
@@ -57,12 +67,12 @@ interface PortableTextSerializerProps {
  * @beta
  * @hidden
  */
-export function CommentMessageSerializer(props: PortableTextSerializerProps) {
+export function CommentMessageSerializer(props: CommentMessageSerializerProps) {
   const {blocks} = props
 
   return (
     <PortableTextWrap>
-      <PortableText value={blocks || []} components={components} />
+      <PortableText value={blocks || EMPTY_ARRAY} components={components} />
     </PortableTextWrap>
   )
 }
