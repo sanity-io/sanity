@@ -12,7 +12,7 @@ import {
   CommentStatus,
 } from '../../types'
 import {MentionOptionsHookValue} from '../../hooks'
-import {AVATAR_SIZE} from '../constants'
+import {SpacerAvatar} from '../avatars'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 
 const EMPTY_ARRAY: [] = []
@@ -123,6 +123,12 @@ export function CommentsListItem(props: CommentsListItemProps) {
     return replies.length > MAX_COLLAPSED_REPLIES
   }, [replies])
 
+  const expandButtonText = useMemo(() => {
+    return `${replies?.length - MAX_COLLAPSED_REPLIES} more ${
+      replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
+    }`
+  }, [replies?.length])
+
   useEffect(() => {
     if (replies.length > MAX_COLLAPSED_REPLIES && !didExpand.current) {
       setCollapsed(true)
@@ -149,11 +155,7 @@ export function CommentsListItem(props: CommentsListItemProps) {
 
             {showCollapseButton && !didExpand.current && (
               <Flex gap={1} paddingY={1} sizing="border">
-                <div
-                  style={{
-                    width: AVATAR_SIZE,
-                  }}
-                />
+                <SpacerAvatar />
 
                 <ExpandButton
                   fontSize={1}
@@ -162,9 +164,7 @@ export function CommentsListItem(props: CommentsListItemProps) {
                   onClick={handleExpand}
                   padding={2}
                   space={2}
-                  text={`${replies?.length - MAX_COLLAPSED_REPLIES} more ${
-                    replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
-                  }`}
+                  text={expandButtonText}
                 />
               </Flex>
             )}
