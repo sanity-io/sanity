@@ -145,7 +145,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         </ThreadCard>
       )}
 
-      {children}
+      <Stack space={2}>{children}</Stack>
     </Stack>
   )
 }

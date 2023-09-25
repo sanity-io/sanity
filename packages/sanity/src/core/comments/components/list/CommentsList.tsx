@@ -183,15 +183,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
       )}
 
       {showComments && (
-        <Stack
-          flex={1}
-          overflow="auto"
-          paddingBottom={6}
-          paddingX={3}
-          paddingY={4}
-          sizing="border"
-          space={4}
-        >
+        <Stack flex={1} overflow="auto" padding={3} paddingBottom={6} sizing="border" space={4}>
           <BoundaryElementProvider element={boundaryElement}>
             {groupedComments.map(([fieldPath, group]) => {
               const parentComments = group.filter((c) => !c.parentCommentId)
