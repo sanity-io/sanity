@@ -83,8 +83,8 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
       return
     }
 
-    // This is usually the schema definition of an array item (ie inside of: []).
-    // todo: fix so that we get the defined titled instead of the field name.
+    // This is usually the schema definition of an array item (ie inside `of: []`).
+    // todo: fix so that we get the defined title (if any) instead of the field name.
     // We need to add support for it in `getSchemaField`.
     if (!isArraySegment) {
       fieldPaths.push({

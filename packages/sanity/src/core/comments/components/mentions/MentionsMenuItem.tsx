@@ -1,9 +1,9 @@
-import {Avatar, TextSkeleton, Flex, Text, Card, Box, Badge} from '@sanity/ui'
+import {TextSkeleton, Flex, Text, Card, Box, Badge} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {MentionOptionUser} from '../../types'
-import {UserAvatar} from '../../../components'
 import {useUser} from '../../../store'
+import {CommentsAvatar} from '../avatars/CommentsAvatar'
 
 const InnerFlex = styled(Flex)``
 
@@ -16,10 +16,8 @@ export function MentionsMenuItem(props: MentionsItemProps) {
   const {user, onSelect} = props
   const [loadedUser] = useUser(user.id)
 
-  const avatar = loadedUser ? (
-    <UserAvatar user={loadedUser} status={user.canBeMentioned ? undefined : 'inactive'} />
-  ) : (
-    <Avatar />
+  const avatar = (
+    <CommentsAvatar user={loadedUser} status={user.canBeMentioned ? undefined : 'inactive'} />
   )
 
   const text = loadedUser ? (
