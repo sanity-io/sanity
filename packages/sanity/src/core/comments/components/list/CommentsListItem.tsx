@@ -139,19 +139,21 @@ export function CommentsListItem(props: CommentsListItemProps) {
     <Stack space={2}>
       <RootCard>
         <Stack paddingBottom={canReply ? undefined : 1}>
-          <Stack space={4}>
-            <CommentsListItemLayout
-              canDelete={parentComment.authorId === currentUser.id}
-              canEdit={parentComment.authorId === currentUser.id}
-              comment={parentComment}
-              currentUser={currentUser}
-              isParent
-              mentionOptions={mentionOptions}
-              onDelete={onDelete}
-              onEdit={onEdit}
-              onPathFocus={onPathFocus}
-              onStatusChange={onStatusChange}
-            />
+          <Stack as="ul" space={4}>
+            <Stack as="li">
+              <CommentsListItemLayout
+                canDelete={parentComment.authorId === currentUser.id}
+                canEdit={parentComment.authorId === currentUser.id}
+                comment={parentComment}
+                currentUser={currentUser}
+                isParent
+                mentionOptions={mentionOptions}
+                onDelete={onDelete}
+                onEdit={onEdit}
+                onPathFocus={onPathFocus}
+                onStatusChange={onStatusChange}
+              />
+            </Stack>
 
             {showCollapseButton && !didExpand.current && (
               <Flex gap={1} paddingY={1} sizing="border">
@@ -170,16 +172,17 @@ export function CommentsListItem(props: CommentsListItemProps) {
             )}
 
             {splicedReplies.map((reply) => (
-              <CommentsListItemLayout
-                canDelete={reply.authorId === currentUser.id}
-                canEdit={reply.authorId === currentUser.id}
-                comment={reply}
-                currentUser={currentUser}
-                key={reply._id}
-                mentionOptions={mentionOptions}
-                onDelete={onDelete}
-                onEdit={onEdit}
-              />
+              <Stack as="li" key={reply._id}>
+                <CommentsListItemLayout
+                  canDelete={reply.authorId === currentUser.id}
+                  canEdit={reply.authorId === currentUser.id}
+                  comment={reply}
+                  currentUser={currentUser}
+                  mentionOptions={mentionOptions}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                />
+              </Stack>
             ))}
 
             {canReply && (
