@@ -183,7 +183,15 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
       )}
 
       {showComments && (
-        <Stack flex={1} overflow="auto" padding={3} paddingBottom={6} sizing="border" space={4}>
+        <Stack
+          as="ul"
+          flex={1}
+          overflow="auto"
+          padding={3}
+          paddingBottom={6}
+          sizing="border"
+          space={4}
+        >
           <BoundaryElementProvider element={boundaryElement}>
             {groupedComments.map(([fieldPath, group]) => {
               const parentComments = group.filter((c) => !c.parentCommentId)
@@ -193,19 +201,20 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
               const threadId = group[0].threadId
 
               const breadcrumbs = buildCommentBreadcrumbs?.(fieldPath)
-              const hasInvalidBreadcrumb = breadcrumbs?.some((b) => b.invalid === true)
+              const hasInvalidField = breadcrumbs?.some((b) => b.invalid === true)
 
               // If the breadcrumb is invalid, the field might have been remove from the
               // the schema, or an array item might have been removed. In that case, we don't
               // want to render any button to open the field.
-              const _onPathFocus = hasInvalidBreadcrumb ? undefined : onPathFocus
+              const _onPathFocus = hasInvalidField ? undefined : onPathFocus
 
               return (
-                <Stack data-thread-id={threadId} key={fieldPath}>
+                <Stack as="li" data-thread-id={threadId} key={fieldPath}>
                   <CommentThreadLayout
                     breadcrumbs={breadcrumbs}
                     canCreateNewThread={status === 'open'}
                     currentUser={currentUser}
+                    hasInvalidField={hasInvalidField}
                     key={fieldPath}
                     mentionOptions={mentionOptions}
                     onNewThreadCreate={onNewThreadCreate}
@@ -216,7 +225,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
 
                       return (
                         <CommentsListItem
-                          canReply={status === 'open'}
+                          canReply={status === 'open' && !hasInvalidField}
                           currentUser={currentUser}
                           key={comment?._id}
                           mentionOptions={mentionOptions}
