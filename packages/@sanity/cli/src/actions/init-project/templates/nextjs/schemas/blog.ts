@@ -451,7 +451,7 @@ const postJS = `export const post = {
       return {...selection, subtitle: author && \`by \${author}\`}
     },
   },
-})
+}
 `
 
 // Schema definition
