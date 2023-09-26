@@ -113,6 +113,7 @@ import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetRef
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
 import fieldGroupsWithFieldsets from './debug/fieldGroupsWithFieldsets'
 import ptReference from './debug/ptReference'
+import {commentsDebug} from './debug/comments'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -159,6 +160,7 @@ export const schemaTypes = [
   code,
   codeInputType, // @todo temporary, until code input is v3 compatible
   color,
+  commentsDebug,
   conditionalFields,
   conditionalFieldset,
   customBlock,
