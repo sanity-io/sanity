@@ -18,7 +18,7 @@ import {
 import {Subject, Observable} from 'rxjs'
 import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from 'slate-react'
-import {FocusEvent} from 'react'
+import {FocusEvent, FormEventHandler} from 'react'
 import type {Patch} from '../types/patch'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 
@@ -362,7 +362,7 @@ export interface PasteData {
 export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise
 
 /** @beta */
-export type OnBeforeInputFn = (event: Event) => void
+export type OnBeforeInputFn = (event: InputEvent) => void
 
 /** @beta */
 export type OnCopyFn = (
