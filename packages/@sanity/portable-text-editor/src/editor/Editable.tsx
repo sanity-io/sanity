@@ -12,7 +12,6 @@ import {PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
   EditorSelection,
-  OnBeforeInputFn,
   OnCopyFn,
   OnPasteFn,
   OnPasteResult,
@@ -54,10 +53,10 @@ const EMPTY_DECORATORS: BaseRange[] = []
  */
 export type PortableTextEditableProps = Omit<
   React.TextareaHTMLAttributes<HTMLDivElement>,
-  'onPaste' | 'onCopy'
+  'onPaste' | 'onCopy' | 'onBeforeInput'
 > & {
   hotkeys?: HotkeyOptions
-  onBeforeInput?: OnBeforeInputFn
+  onBeforeInput?: (event: InputEvent) => void
   onPaste?: OnPasteFn
   onCopy?: OnCopyFn
   renderAnnotation?: RenderAnnotationFunction
@@ -76,7 +75,8 @@ export type PortableTextEditableProps = Omit<
  * @public
  */
 export const PortableTextEditable = forwardRef(function PortableTextEditable(
-  props: PortableTextEditableProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'onPaste'>,
+  props: PortableTextEditableProps &
+    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'onPaste' | 'onBeforeInput'>,
   forwardedRef: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {
@@ -328,7 +328,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   const handleOnBeforeInput = useCallback(
-    (event: Event) => {
+    (event: InputEvent) => {
       if (onBeforeInput) {
         onBeforeInput(event)
       }
