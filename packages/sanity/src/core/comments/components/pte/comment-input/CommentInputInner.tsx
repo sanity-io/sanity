@@ -18,6 +18,13 @@ const ButtonDivider = styled(MenuDivider)({
   width: 1,
 })
 
+const ActionButton = styled(Button).attrs({
+  fontSize: 1,
+  padding: 2,
+})`
+  /* border-radius: 50%; */
+`
+
 const RootCard = styled(Card)(({theme}) => {
   const radii = theme.sanity.radius[2]
 
@@ -82,7 +89,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   const [user] = useUser(currentUser.id)
   const {openMentions, focused, expandOnFocus, canSubmit, hasChanges} = useCommentInput()
 
-  const avatar = <CommentsAvatar user={user} />
+  const avatar = withAvatar ? <CommentsAvatar user={user} /> : null
 
   const handleDiscardEdit = useCallback(() => {
     onEditDiscard()
@@ -91,7 +98,8 @@ export function CommentInputInner(props: CommentInputInnerProps) {
 
   return (
     <Flex align="flex-start" gap={2}>
-      {withAvatar ? avatar : null}
+      {avatar}
+
       <RootCard
         data-expand-on-focus={expandOnFocus && !canSubmit ? 'true' : 'false'}
         data-focused={focused ? 'true' : 'false'}
@@ -109,35 +117,29 @@ export function CommentInputInner(props: CommentInputInnerProps) {
           </EditableWrap>
 
           <Flex align="center" gap={1} justify="flex-end" data-ui="CommentInputActions">
-            <Button
+            <ActionButton
               aria-label="Mention user"
-              fontSize={1}
               icon={MentionIcon}
               mode="bleed"
               onClick={openMentions}
-              padding={2}
             />
 
             <ButtonDivider />
 
-            <Button
+            <ActionButton
               aria-label="Discard edit"
-              fontSize={1}
               icon={CloseIcon}
               mode="bleed"
               onClick={handleDiscardEdit}
-              padding={2}
               ref={setDiscardButtonElement}
             />
 
-            <Button
+            <ActionButton
               aria-label="Send comment"
               disabled={!canSubmit || !hasChanges}
-              fontSize={1}
               icon={SendIcon}
               mode={hasChanges && canSubmit ? 'default' : 'bleed'}
               onClick={onSubmit}
-              padding={2}
               tone={hasChanges && canSubmit ? 'primary' : 'default'}
             />
           </Flex>
