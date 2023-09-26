@@ -1,4 +1,4 @@
-import {SchemaType, ObjectField, isObjectSchemaType} from '@sanity/types'
+import {SchemaType, ObjectField, isObjectSchemaType, isArraySchemaType} from '@sanity/types'
 import {findIndex, startCase} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
 import {getValueAtPath} from '../../field'
@@ -11,6 +11,17 @@ function getSchemaField(
 ): ObjectField<SchemaType> | undefined {
   const paths = PathUtils.fromString(fieldPath)
   const firstPath = paths[0]
+
+  if (isArraySchemaType(schemaType)) {
+    const pathWithoutKeys = paths.filter((seg) => !seg.hasOwnProperty('_key')).toString()
+
+    const field =
+      isObjectSchemaType(schemaType?.of[0]) &&
+      schemaType?.of[0]?.fields &&
+      schemaType?.of[0]?.fields.find((f: ObjectField<SchemaType>) => f.name === pathWithoutKeys)
+
+    return field ? field : undefined
+  }
 
   if (firstPath && isObjectSchemaType(schemaType)) {
     const field = schemaType.fields.find((f) => f.name === firstPath)
@@ -56,6 +67,7 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
     const currentPath = PathUtils.toString(paths.slice(0, index + 1))
     const isArraySegment = seg.hasOwnProperty('_key')
     const field = getSchemaField(schemaType, currentPath)
+    const previousPath = paths.slice(0, index)
 
     if (field) {
       const title = getSchemaTypeTitle(field?.type)
@@ -70,7 +82,6 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
     }
 
     if (isArraySegment) {
-      const previousPath = paths.slice(0, index)
       const valueAtPath = getValueAtPath(documentValue, previousPath) as unknown[]
       const arrayItemIndex = findArrayItemIndex(valueAtPath, seg)
 
@@ -83,12 +94,11 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
       return
     }
 
-    // This is usually the schema definition of an array item (ie inside `of: []`).
-    // todo: fix so that we get the defined title (if any) instead of the field name.
-    // We need to add support for it in `getSchemaField`.
-    if (!isArraySegment) {
+    if (!field) {
+      const invalid = !PathUtils.toString(previousPath)?.hasOwnProperty('_key')
+
       fieldPaths.push({
-        invalid: false,
+        invalid,
         isArrayItem: false,
         title: startCase(seg.toString()),
       })
