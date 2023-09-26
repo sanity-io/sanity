@@ -14,10 +14,8 @@ import {
   CommentsListHandle,
   CommentStatus,
   DocumentInspectorProps,
-  getPublishedId,
   useComments,
   useCurrentUser,
-  useEditState,
   useSchema,
   useUnique,
 } from 'sanity'
@@ -28,14 +26,14 @@ interface CommentToDelete {
 }
 
 export function CommentsInspector(props: DocumentInspectorProps) {
-  const {onClose, documentType, documentId} = props
+  const {onClose, documentType} = props
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
   const [deleteError, setDeleteError] = useState<Error | null>(null)
 
-  const {onPathOpen, onFocus} = useDocumentPane()
+  const {onPathOpen, onFocus, displayed} = useDocumentPane()
   const currentUser = useCurrentUser()
   const paneRouter = usePaneRouter()
   const params = useUnique(paneRouter.params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
@@ -46,16 +44,17 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const schema = useSchema()
   const schemaType = schema.get(documentType)
 
-  const publishedId = getPublishedId(documentId)
-  const editState = useEditState(publishedId, documentType)
-  const documentValue = editState?.draft || editState?.published
-
   const handleBuildCommentBreadcrumbs = useCallback(
     (fieldPath: string) => {
       if (!schemaType) return []
-      return buildCommentBreadcrumbs({fieldPath, schemaType, documentValue})
+
+      return buildCommentBreadcrumbs({
+        fieldPath,
+        schemaType,
+        documentValue: displayed,
+      })
     },
-    [documentValue, schemaType],
+    [displayed, schemaType],
   )
 
   const commentsListHandleRef = useRef<CommentsListHandle>(null)
@@ -160,7 +159,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
         {currentUser && (
           <CommentsList
             buildCommentBreadcrumbs={handleBuildCommentBreadcrumbs}
-            comments={comments.data[status] || []}
+            comments={comments.data[status]}
             currentUser={currentUser}
             error={comments.error}
             loading={comments.loading}
