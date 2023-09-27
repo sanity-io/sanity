@@ -1,9 +1,11 @@
 import React, {ReactElement} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
+import {useFormState} from 'sanity/document'
 import {unstable_useValuePreview as useValuePreview} from 'sanity'
 
 export function DocumentHeaderTitle(): ReactElement {
-  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
+  const {value: documentValue, schemaType, connectionState} = useFormState()
+  const {title} = useDocumentPane()
   const subscribed = Boolean(documentValue) && connectionState === 'connected'
 
   const {error, value} = useValuePreview({

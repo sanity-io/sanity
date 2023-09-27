@@ -6,6 +6,7 @@ import {TimelineState, TimelineStore} from './useTimelineStore'
  * Accepts a selector function which can be used to opt-in to specific timelineStore updates.
  *
  * @internal
+ * @deprecated use `useTimelineSelector` from `sanity/document` instead
  */
 export function useTimelineSelector<ReturnValue>(
   timelineStore: TimelineStore,

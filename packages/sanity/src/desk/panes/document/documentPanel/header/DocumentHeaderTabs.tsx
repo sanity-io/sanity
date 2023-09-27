@@ -2,6 +2,7 @@ import React, {useCallback} from 'react'
 import {Tab, TabList} from '@sanity/ui'
 import {useDocumentPane} from '../../useDocumentPane'
 import {usePaneRouter} from '../../../../components'
+import {useFormState} from 'sanity/document'
 
 export function DocumentHeaderTabs() {
   const {activeViewId, paneKey, views} = useDocumentPane()
@@ -33,7 +34,7 @@ function DocumentHeaderTab(props: {
   viewId: string | null
 }) {
   const {isActive, tabPanelId, viewId} = props
-  const {ready} = useDocumentPane()
+  const {ready} = useFormState()
   const {setView} = usePaneRouter()
   const handleClick = useCallback(() => setView(viewId), [setView, viewId])
 

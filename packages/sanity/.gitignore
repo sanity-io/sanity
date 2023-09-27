@@ -16,6 +16,7 @@
 /cli.js
 /desk.js
 /router.js
+/document.js
 
 # Playwright-ct artifacts
 /playwright-ct/report

@@ -6,6 +6,7 @@ import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 import {useConditionalToast} from './useConditionalToast'
+import {useFormState} from 'sanity/document'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
@@ -16,6 +17,7 @@ import {
   fromMutationPatches,
   useDocumentPresence,
   useDocumentStore,
+  useEditState,
 } from 'sanity'
 
 interface FormViewProps {
@@ -28,25 +30,24 @@ const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormView(props, ref) {
   const {hidden, margins} = props
 
+  const {fieldActions} = useDocumentPane()
   const {
-    collapsedFieldSets,
-    collapsedPaths,
-    displayed: value,
-    editState,
     documentId,
     documentType,
-    fieldActions,
-    onChange,
-    validation,
+    value,
     ready,
     formState,
-    onFocus,
-    onBlur,
-    onSetCollapsedPath,
-    onPathOpen,
-    onSetCollapsedFieldSet,
-    onSetActiveFieldGroup,
-  } = useDocumentPane()
+    collapsedFieldsets,
+    collapsedPaths,
+    patchValue,
+    setActiveFieldGroup,
+    setFocusPath,
+    setOpenPath,
+    setFieldsetCollapsed,
+    setPathCollapsed,
+    validation,
+  } = useFormState()
+  const editState = useEditState(documentId, documentType)
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
 
@@ -158,7 +159,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
               <FormBuilder
                 __internal_fieldActions={fieldActions}
                 __internal_patchChannel={patchChannel}
-                collapsedFieldSets={collapsedFieldSets}
+                collapsedFieldSets={collapsedFieldsets}
                 collapsedPaths={collapsedPaths}
                 focusPath={formState.focusPath}
                 changed={formState.changed}
@@ -166,13 +167,15 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 groups={formState.groups}
                 id="root"
                 members={formState.members}
-                onChange={onChange}
-                onFieldGroupSelect={onSetActiveFieldGroup}
-                onPathBlur={onBlur}
-                onPathFocus={onFocus}
-                onPathOpen={onPathOpen}
-                onSetFieldSetCollapsed={onSetCollapsedFieldSet}
-                onSetPathCollapsed={onSetCollapsedPath}
+                onChange={patchValue}
+                onFieldGroupSelect={setActiveFieldGroup}
+                onPathBlur={() => {
+                  // TODO
+                }}
+                onPathFocus={setFocusPath}
+                onPathOpen={setOpenPath}
+                onSetFieldSetCollapsed={setFieldsetCollapsed}
+                onSetPathCollapsed={setPathCollapsed}
                 presence={presence}
                 readOnly={formState.readOnly}
                 schemaType={formState.schemaType}

@@ -13,13 +13,13 @@ import {
 import {useSchema} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {useDocumentPreviewStore} from '../../../store'
-import {useReferenceInputOptions} from '../../studio'
 import {useSource} from '../../../studio'
 import {Source} from '../../../config'
 import {useFormValue} from '../../useFormValue'
 import {FIXME} from '../../../FIXME'
 import * as adapter from '../../studio/inputs/client-adapters/reference'
 import {isNonNullable} from '../../../util'
+import {useReferenceInputOptions} from '../../../document'
 import {EditReferenceEvent} from './types'
 
 function useValueRef<T>(value: T): {current: T} {

@@ -54,7 +54,7 @@ export interface DocumentStore {
   pair: {
     consistencyStatus: (publishedId: string, type: string) => Observable<boolean>
     /** @internal */
-    documentEvents: (publishedId: string, type: string) => Observable<DocumentVersionEvent>
+    documentEvents: (publishedId: string, type?: string) => Observable<DocumentVersionEvent>
     /** @internal */
     editOperations: (publishedId: string, type: string) => Observable<OperationsAPI>
     editState: (publishedId: string, type: string) => Observable<EditStateFor>
@@ -116,7 +116,7 @@ export function createDocumentStore({
       consistencyStatus(publishedId, type) {
         return consistencyStatus(ctx.client, getIdPairFromPublished(publishedId), type)
       },
-      documentEvents(publishedId, type) {
+      documentEvents(publishedId, type = '*') {
         return documentEvents(ctx.client, getIdPairFromPublished(publishedId), type)
       },
       editOperations(publishedId, type) {

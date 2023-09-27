@@ -1,9 +1,15 @@
 import isHotkey from 'is-hotkey'
 import React, {ElementType, createElement, useCallback, useMemo, useState} from 'react'
+import {useDocumentId, useDocumentType} from 'sanity/document'
 import {ActionStateDialog} from '../statusBar'
 import {RenderActionCollectionState} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
-import {DocumentActionDescription, DocumentActionProps, LegacyLayerProvider} from 'sanity'
+import {
+  DocumentActionDescription,
+  DocumentActionProps,
+  LegacyLayerProvider,
+  useEditState,
+} from 'sanity'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null
@@ -99,7 +105,10 @@ export interface DocumentActionShortcutsProps {
 export const DocumentActionShortcuts = React.memo(
   (props: DocumentActionShortcutsProps & Omit<React.HTMLProps<HTMLDivElement>, 'as'>) => {
     const {actionsBoxElement, as = 'div', children, ...rest} = props
-    const {actions, editState} = useDocumentPane()
+    const {actions} = useDocumentPane()
+    const documentId = useDocumentId()
+    const documentType = useDocumentType()
+    const editState = useEditState(documentId, documentType)
     const [activeIndex, setActiveIndex] = useState(-1)
 
     const onActionStart = useCallback((idx: number) => {

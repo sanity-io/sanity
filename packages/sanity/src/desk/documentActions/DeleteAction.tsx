@@ -2,6 +2,7 @@
 
 import {TrashIcon} from '@sanity/icons'
 import React, {useCallback, useState} from 'react'
+import {useFormState} from 'sanity/document'
 import {ConfirmDeleteDialog} from '../components'
 import {
   DocumentActionComponent,
@@ -10,18 +11,18 @@ import {
   useDocumentOperation,
   useDocumentPairPermissions,
 } from 'sanity'
-import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_TITLE = {
   NOTHING_TO_DELETE: 'This document doesn’t yet exist or is already deleted',
+  NOT_READY: '', // purposefully empty
 }
 
 /** @internal */
 export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete}) => {
-  const {setIsDeleting: paneSetIsDeleting} = useDocumentPane()
+  const {delete: deleteFn, isDeleting} = useFormState()
   const {delete: deleteOp} = useDocumentOperation(id, type)
-  const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const deleteDisabledReason = deleteOp.disabled
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
@@ -29,12 +30,10 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   }, [onComplete])
 
   const handleConfirm = useCallback(() => {
-    setIsDeleting(true)
     setConfirmDialogOpen(false)
-    paneSetIsDeleting(true)
-    deleteOp.execute()
+    deleteFn()
     onComplete()
-  }, [deleteOp, onComplete, paneSetIsDeleting])
+  }, [deleteFn, onComplete])
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
@@ -66,11 +65,8 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   return {
     tone: 'critical',
     icon: TrashIcon,
-    disabled: isDeleting || Boolean(deleteOp.disabled) || isPermissionsLoading,
-    title:
-      (deleteOp.disabled &&
-        DISABLED_REASON_TITLE[deleteOp.disabled as keyof typeof DISABLED_REASON_TITLE]) ||
-      '',
+    disabled: isDeleting || Boolean(deleteDisabledReason) || isPermissionsLoading,
+    title: (deleteDisabledReason && DISABLED_REASON_TITLE[deleteDisabledReason]) || '',
     label: isDeleting ? 'Deleting…' : 'Delete',
     shortcut: 'Ctrl+Alt+D',
     onHandle: handle,

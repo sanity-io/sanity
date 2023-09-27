@@ -14,7 +14,8 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {useDeskTool} from '../../../../useDeskTool'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {useFieldActions, useTimelineSelector} from 'sanity'
+import {useFormState, useTimelineSelector} from 'sanity/document'
+import {useFieldActions} from 'sanity'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentPanelHeaderProps {}
@@ -24,15 +25,13 @@ export const DocumentPanelHeader = memo(
     _props: DocumentPanelHeaderProps,
     ref: React.ForwardedRef<HTMLDivElement>,
   ) {
+    const {ready, schemaType} = useFormState()
     const {
       onMenuAction,
       onPaneClose,
       onPaneSplit,
       menuItems,
       menuItemGroups,
-      schemaType,
-      timelineStore,
-      ready,
       views,
       unstable_languageFilter,
     } = useDocumentPane()
@@ -49,7 +48,7 @@ export const DocumentPanelHeader = memo(
     const showTabs = views.length > 1
 
     // Subscribe to external timeline state changes
-    const rev = useTimelineSelector(timelineStore, (state) => state.revTime)
+    const rev = useTimelineSelector((state) => state.revTime)
 
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.

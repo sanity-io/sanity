@@ -17,6 +17,7 @@
       "sanity/_internal": ["./exports/_internal.ts"],
       "sanity/cli": ["./exports/cli.ts"],
       "sanity/desk": ["./exports/desk.ts"],
+      "sanity/document": ["./exports/document.ts"],
       "sanity/router": ["./exports/router.ts"],
       "sanity": ["./exports/index.ts"]
     },

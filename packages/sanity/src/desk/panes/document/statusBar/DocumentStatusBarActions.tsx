@@ -1,11 +1,12 @@
 import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
+import {useFormState, useTimelineSelector} from 'sanity/document'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription, useTimelineSelector} from 'sanity'
+import {DocumentActionDescription} from 'sanity'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
@@ -72,7 +73,8 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 }
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions, connectionState, documentId, editState} = useDocumentPane()
+  const {connectionState, documentId, editState} = useFormState()
+  const {actions} = useDocumentPane()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -107,10 +109,10 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {connectionState, editState, timelineStore} = useDocumentPane()
+  const {editState, connectionState} = useFormState()
 
   // Subscribe to external timeline state changes
-  const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)
+  const revTime = useTimelineSelector((state) => state.revTime)
 
   const revision = revTime?.id || ''
   const disabled = (editState?.draft || editState?.published || {})._rev === revision
