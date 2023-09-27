@@ -59,7 +59,7 @@ describe('Translate component', () => {
   it('it translates a key', async () => {
     const {findByTestId} = render(
       <TestProviders bundles={[createBundle({title: 'English title'})]}>
-        <TestComponent i18nKey="title" />
+        <TestComponent i18nKey="title" components={{}} />
       </TestProviders>,
     )
     expect((await findByTestId('output')).innerHTML).toEqual('English title')
@@ -67,7 +67,7 @@ describe('Translate component', () => {
   it('it renders the key as-is if translation is missing', async () => {
     const {findByTestId} = render(
       <TestProviders bundles={[createBundle({title: 'English title'})]}>
-        <TestComponent i18nKey="does-not-exist" />
+        <TestComponent i18nKey="does-not-exist" components={{}} />
       </TestProviders>,
     )
     expect((await findByTestId('output')).innerHTML).toEqual('does-not-exist')
