@@ -14,7 +14,6 @@ export interface CommentInputContextValue {
   canSubmit?: boolean
   closeMentions: () => void
   editor: PortableTextEditor
-  expanded?: boolean
   expandOnFocus?: boolean
   focused: boolean
   focusEditor: () => void
@@ -34,7 +33,6 @@ export const CommentInputContext = React.createContext<CommentInputContextValue 
 
 interface CommentInputProviderProps {
   children: React.ReactNode
-  expanded?: boolean
   expandOnFocus?: boolean
   focused: boolean
   focusOnMount?: boolean
@@ -46,7 +44,6 @@ interface CommentInputProviderProps {
 export function CommentInputProvider(props: CommentInputProviderProps) {
   const {
     children,
-    expanded,
     expandOnFocus = false,
     focused,
     focusOnMount = false,
@@ -218,7 +215,6 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
         canSubmit,
         closeMentions,
         editor,
-        expanded,
         expandOnFocus,
         focused,
         focusEditor,
@@ -237,7 +233,6 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
       canSubmit,
       closeMentions,
       editor,
-      expanded,
       expandOnFocus,
       focused,
       focusEditor,
