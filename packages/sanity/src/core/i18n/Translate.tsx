@@ -10,7 +10,7 @@ type ComponentMap = Record<string, ComponentType<{children?: ReactNode}>>
 export interface TranslationProps {
   t: TFunction
   i18nKey: string
-  components?: ComponentMap
+  components: ComponentMap
   values?: Record<string, string | string[]>
 }
 
