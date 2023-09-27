@@ -57,7 +57,6 @@ export function Editable(props: EditableProps) {
 
   const {
     closeMentions,
-    expanded,
     focusEditor,
     focusOnMount,
     insertMention,
@@ -77,12 +76,6 @@ export function Editable(props: EditableProps) {
     }, [closeMentions, mentionsMenuOpen]),
     [popoverElement],
   )
-
-  useDidUpdate(expanded, () => {
-    if (expanded) {
-      focusEditor()
-    }
-  })
 
   useDidUpdate(focusOnMount, () => {
     if (focusOnMount) {
