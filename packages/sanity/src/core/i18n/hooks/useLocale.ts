@@ -1,6 +1,5 @@
-import {useCallback, useContext, useSyncExternalStore} from 'react'
+import {useContext} from 'react'
 import {LocaleContext, LocaleContextValue} from '../LocaleContext'
-import {useSource} from '../../studio'
 
 /**
  * @internal
