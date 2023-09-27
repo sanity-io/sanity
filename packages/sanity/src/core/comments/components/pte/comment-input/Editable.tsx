@@ -4,7 +4,6 @@ import {PortableTextEditable, usePortableTextEditorSelection} from '@sanity/port
 import styled, {css} from 'styled-components'
 import {isEqual} from 'lodash'
 import {MentionsMenu, MentionsMenuHandle} from '../../mentions'
-import {useDidUpdate} from '../../../../form'
 import {renderBlock, renderChild} from '../render'
 import {useCommentInput} from './useCommentInput'
 import {useCursorElement} from './useCursorElement'
@@ -58,6 +57,7 @@ export function Editable(props: EditableProps) {
   const {
     closeMentions,
     focusEditor,
+    focusEditorEndOfContent,
     focusOnMount,
     insertMention,
     mentionOptions,
@@ -77,11 +77,13 @@ export function Editable(props: EditableProps) {
     [popoverElement],
   )
 
-  useDidUpdate(focusOnMount, () => {
+  // This effect will focus the editor when the component mounts (if focusOnMount context value is true)
+  useEffect(() => {
     if (focusOnMount) {
-      focusEditor()
+      // Focus to the end of the content
+      focusEditorEndOfContent()
     }
-  })
+  }, [focusOnMount, focusEditorEndOfContent])
 
   // Update the mentions search term in the mentions menu
   useEffect(() => {
