@@ -11,7 +11,7 @@ export interface TranslationProps {
   t: TFunction
   i18nKey: string
   components?: ComponentMap
-  values?: Record<string, string>
+  values?: Record<string, string | string[]>
 }
 
 function render(tokens: Token[], componentMap: ComponentMap): ReactNode {
