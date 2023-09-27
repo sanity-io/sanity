@@ -1,9 +1,5 @@
 import {CurrentUser, Path} from '@sanity/types'
-<<<<<<< HEAD
 import {Box, Breadcrumbs, Button, Card, Flex, Stack, Text} from '@sanity/ui'
-=======
-import {Badge, Box, Breadcrumbs, Button, Card, Flex, Stack, Text} from '@sanity/ui'
->>>>>>> d2d61b0cce (feat: improve comment breadcrumbs)
 import React, {useCallback, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
@@ -23,10 +19,7 @@ const BreadcrumbsFlex = styled(Flex)`
 
 interface CommentThreadLayoutProps {
   breadcrumbs?: CommentBreadcrumbs
-<<<<<<< HEAD
   canCreateNewThread: boolean
-=======
->>>>>>> d2d61b0cce (feat: improve comment breadcrumbs)
   children: React.ReactNode
   currentUser: CurrentUser
   hasInvalidField?: boolean
