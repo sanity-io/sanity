@@ -1,15 +1,17 @@
 import {_XPathResult} from './xpathResult'
 
-function isGoogleDocsDocument(el: Element) {
-  if (el.nodeType !== 1) {
-    return false
-  }
-  const id = el.getAttribute('id')
-  return id && id.match(/^docs-internal-guid-/) && el.tagName === 'B'
-}
-
 export default (html: string, doc: Document): Document => {
-  if (doc.body.firstElementChild && isGoogleDocsDocument(doc.body.firstElementChild)) {
+  const gDocsRootNode = doc
+    .evaluate(
+      '//b[contains(@id, "docs-internal-guid")]',
+      doc,
+      null,
+      _XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+      null,
+    )
+    .iterateNext()
+
+  if (gDocsRootNode) {
     // Tag every child with attribute 'is-google-docs' so that the GDocs rule-set can
     // work exclusivly on these children
     const childNodes = doc.evaluate(
@@ -24,7 +26,7 @@ export default (html: string, doc: Document): Document => {
       elm?.setAttribute('data-is-google-docs', 'true')
     }
     // Remove that 'b' which Google Docs wraps the HTML content in
-    doc.body.firstElementChild.replaceWith(...Array.from(doc.body.firstElementChild.childNodes))
+    doc.body.firstElementChild?.replaceWith(...Array.from(gDocsRootNode.childNodes))
     return doc
   }
   return doc
