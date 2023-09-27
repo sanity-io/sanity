@@ -1,4 +1,11 @@
-import React, {KeyboardEvent, useCallback, useEffect, useRef, useState} from 'react'
+import React, {
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import {Popover, PortalProvider, Stack, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {PortableTextEditable, usePortableTextEditorSelection} from '@sanity/portable-text-editor'
 import styled, {css} from 'styled-components'
@@ -66,6 +73,12 @@ export function Editable(props: EditableProps) {
     onBeforeInput,
   } = useCommentInput()
 
+  const [mounted, setMounted] = useState<boolean>(false)
+
+  useLayoutEffect(() => {
+    setMounted(true)
+  }, [])
+
   const renderPlaceholder = useCallback(() => <span>{placeholder}</span>, [placeholder])
 
   useClickOutside(
@@ -78,12 +91,13 @@ export function Editable(props: EditableProps) {
   )
 
   // This effect will focus the editor when the component mounts (if focusOnMount context value is true)
+  // Use the mounted state to avoid focusing the editor before it's properly rendered.
   useEffect(() => {
-    if (focusOnMount) {
-      // Focus to the end of the content
+    if (mounted && focusOnMount) {
+      // Focus to the end of the content.
       focusEditorEndOfContent()
     }
-  }, [focusOnMount, focusEditorEndOfContent])
+  }, [focusOnMount, focusEditorEndOfContent, mounted])
 
   // Update the mentions search term in the mentions menu
   useEffect(() => {
