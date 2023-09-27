@@ -17,6 +17,7 @@ export interface CommentInputContextValue {
   expandOnFocus?: boolean
   focused: boolean
   focusEditor: () => void
+  focusEditorEndOfContent: () => void
   focusOnMount?: boolean
   hasChanges: boolean
   insertAtChar: () => void
@@ -71,6 +72,32 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
   const hasChanges = useCommentHasChanged(value)
 
   const focusEditor = useCallback(() => PortableTextEditor.focus(editor), [editor])
+
+  const focusEditorEndOfContent = useCallback(() => {
+    const _value = PortableTextEditor.getValue(editor)
+    const lastBlock = (_value || []).slice(-1)[0]
+    if (!lastBlock) {
+      PortableTextEditor.focus(editor)
+      return
+    }
+    const lastChild = isPortableTextTextBlock(lastBlock)
+      ? lastBlock.children.slice(-1)[0]
+      : undefined
+    if (!lastChild) {
+      PortableTextEditor.focus(editor)
+      return
+    }
+    const point = {
+      path: [{_key: lastBlock._key}, 'children', {_key: lastChild._key}],
+      offset: isPortableTextSpan(lastChild) ? lastChild.text.length : 0,
+    }
+    const newSelection = {
+      focus: point,
+      anchor: point,
+    }
+    PortableTextEditor.select(editor, newSelection)
+    PortableTextEditor.focus(editor)
+  }, [editor])
 
   const closeMentions = useCallback(() => {
     setMentionsMenuOpen(false)
@@ -218,6 +245,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
         expandOnFocus,
         focused,
         focusEditor,
+        focusEditorEndOfContent,
         focusOnMount,
         hasChanges,
         insertAtChar,
@@ -236,6 +264,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
       expandOnFocus,
       focused,
       focusEditor,
+      focusEditorEndOfContent,
       focusOnMount,
       hasChanges,
       insertAtChar,
