@@ -212,6 +212,70 @@ export const studioLocaleStrings = {
   /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
   'inputs.datetime.calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
 
+  /** --- Reference (and Cross-Dataset Reference) Input --- */
+
+  /** Error title for when the search for a reference failed. Note that the message sent by the backend may not be localized. */
+  'inputs.reference.error.search-failed-title': `Reference search failed`,
+
+  /** Error title for when the current reference value points to a document that does not exist (on weak references) */
+  'inputs.reference.error.nonexistent-document-title': 'Not found',
+
+  /** Error description for when the current reference value points to a document that does not exist (on weak references) */
+  'inputs.reference.error.nonexistent-document-description': `The referenced document does not exist (ID: <Code>{{documentId}}</Code>). You can either remove the reference or replace it with another document.`,
+
+  /** Error title for when the referenced document failed to be loaded */
+  'inputs.reference.error.failed-to-load-document-title': 'Failed to load referenced document',
+
+  /** Error title for when the user does not have permissions to read the referenced document */
+  'inputs.reference.error.missing-read-permissions-title': 'Insufficient permissions',
+
+  /** Error description for when the user does not have permissions to read the referenced document */
+  'inputs.reference.error.missing-read-permissions-description':
+    'The referenced document could not be accessed due to insufficient permissions',
+
+  /** Error title for when the document is unavailable (for any possible reason) */
+  'inputs.reference.error.document-unavailable-title': 'Document unavailable',
+
+  /** Error title for when the reference search returned a document that is not an allowed type for the field */
+  'inputs.reference.error.invalid-search-result-type-title': `Search returned a type that's not valid for this reference: "{{returnedType}}"`,
+
+  /** Error title for when the document referenced is not one of the types declared as allowed target types in schema */
+  'inputs.reference.error.invalid-type-title': 'Document of invalid type',
+
+  /** Error description for when the document referenced is not one of the types declared as allowed target types in schema */
+  'inputs.reference.error.invalid-type-description': `Referenced document (<Code>{{documentId}}</Code>) is of type <Code>{{actualType}}</Code>. According to the schema, referenced documents can only be of type <AllowedTypes />.`,
+
+  /** Placeholder shown in a reference input with no current value */
+  'inputs.reference.search-placeholder': 'Type to search',
+
+  /** Message shown when no documents were found that matched the given search string */
+  'inputs.reference.no-results-for-query':
+    'No results for <SearchTerm>“{{searchString}}”</SearchTerm>',
+
+  /** Label for action to create a new document from the reference input */
+  'inputs.reference.action.create-new-document': 'Create new',
+
+  /** Label for action to create a new document from the reference input, when there are multiple templates or document types to choose from */
+  'inputs.reference.action-create-new-document-select': 'Create new…',
+
+  /** Label for action to clear the current value of the reference field */
+  'inputs.reference.action.clear': 'Clear',
+
+  /** Label for action to replace the current value of the field */
+  'inputs.reference.action.replace': 'Replace',
+
+  /** Label for action to remove the reference from an array */
+  'inputs.reference.action.remove': 'Remove',
+
+  /** Label for action to duplicate the current item to a new item (used within arrays) */
+  'inputs.reference.action.duplicate': 'Duplicate',
+
+  /** Label for action to cancel a previously initiated replace action  */
+  'inputs.reference.action.replace-cancel': 'Cancel replace',
+
+  /** Label for action that opens the referenced document in a new tab */
+  'inputs.reference.action.open-in-new-tab': 'Open in new tab',
+
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */
@@ -264,7 +328,7 @@ export const studioLocaleStrings = {
    * Tooltip message displayed when hovering/activating the "Create new document" action,
    * when there are templates/types available for creation
    */
-  'new-document.create-new-document-label': 'New document...',
+  'new-document.create-new-document-label': 'New document…',
 
   /** Message for when no results are found for a specific search query in the new document menu */
   'new-document.no-results': 'No results for <0>{{searchQuery}}</0>',
@@ -376,7 +440,7 @@ export const studioLocaleStrings = {
   'search.filter-number-max-value-placeholder': 'Max value',
 
   /** Label/placeholder prompting user to select one of the predefined, allowed values for a string field */
-  'search.filter-string-value-select-predefined-value': 'Select...',
+  'search.filter-string-value-select-predefined-value': 'Select…',
 
   /** Label for the action of clearing the currently selected asset in an image/file filter */
   'search.filter-asset-clear': 'Clear',

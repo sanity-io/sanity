@@ -2,7 +2,7 @@ import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, u
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import * as PathUtils from '@sanity/util/paths'
-import {
+import type {
   Path,
   Reference,
   ReferenceFilterSearchOptions,

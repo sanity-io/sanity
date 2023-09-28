@@ -1,13 +1,13 @@
 import React, {
-  ComponentProps,
-  ForwardedRef,
+  type ComponentProps,
+  type ForwardedRef,
   forwardRef,
   useCallback,
   useMemo,
   useRef,
   useState,
 } from 'react'
-import {Reference, ReferenceSchemaType} from '@sanity/types'
+import type {Reference, ReferenceSchemaType} from '@sanity/types'
 import {
   Box,
   Button,
@@ -27,7 +27,7 @@ import {
   SyncIcon as ReplaceIcon,
   TrashIcon,
 } from '@sanity/icons'
-import {ObjectFieldProps, RenderPreviewCallback} from '../../types'
+import type {ObjectFieldProps, RenderPreviewCallback} from '../../types'
 import {FormField} from '../../components'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -36,6 +36,7 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
+import {useTranslation} from '../../../i18n'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -145,6 +146,8 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const isEditing = !value?._ref || inputProps.focusPath[0] === '_ref'
   const preview =
     loadableReferenceInfo.result?.preview.draft || loadableReferenceInfo.result?.preview.published
+
+  const {t} = useTranslation()
 
   const footer = (
     <>
@@ -256,8 +259,17 @@ export function ReferenceField(props: ReferenceFieldProps) {
               <Menu>
                 {!readOnly && (
                   <>
-                    <MenuItem text="Clear" tone="critical" icon={TrashIcon} onClick={handleClear} />
-                    <MenuItem text="Replace" icon={ReplaceIcon} onClick={handleReplace} />
+                    <MenuItem
+                      text={t('inputs.reference.action.clear')}
+                      tone="critical"
+                      icon={TrashIcon}
+                      onClick={handleClear}
+                    />
+                    <MenuItem
+                      text={t('inputs.reference.action.replace')}
+                      icon={ReplaceIcon}
+                      onClick={handleReplace}
+                    />
                   </>
                 )}
 
@@ -266,7 +278,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
                   <MenuItem
                     as={OpenLink}
                     data-as="a"
-                    text="Open in new tab"
+                    text={t('inputs.reference.action.open-in-new-tab')}
                     icon={OpenInNewTabIcon}
                   />
                 )}
@@ -276,7 +288,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           />
         </Box>
       ),
-    [handleClear, handleReplace, inputId, OpenLink, readOnly, value?._ref],
+    [handleClear, handleReplace, inputId, OpenLink, readOnly, t, value?._ref],
   )
 
   return (
