@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import {Reference, ReferenceSchemaType} from '@sanity/types'
+import type {Reference, ReferenceSchemaType} from '@sanity/types'
 import {
   Box,
   Button,
@@ -35,6 +35,7 @@ import {set, unset} from '../../patch'
 import {AlertStrip} from '../../components/AlertStrip'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
+import {useTranslation} from '../../../i18n'
 import {useFormPublishedId} from '../../useFormPublishedId'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -146,6 +147,8 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const preview =
     loadableReferenceInfo.result?.preview.draft || loadableReferenceInfo.result?.preview.published
 
+  const {t} = useTranslation()
+
   const footer = (
     <>
       {isCurrentDocumentLiveEdit && publishedReferenceExists && value._strengthenOnPublish && (
@@ -256,8 +259,17 @@ export function ReferenceField(props: ReferenceFieldProps) {
               <Menu>
                 {!readOnly && (
                   <>
-                    <MenuItem text="Clear" tone="critical" icon={TrashIcon} onClick={handleClear} />
-                    <MenuItem text="Replace" icon={ReplaceIcon} onClick={handleReplace} />
+                    <MenuItem
+                      text={t('inputs.reference.action.clear')}
+                      tone="critical"
+                      icon={TrashIcon}
+                      onClick={handleClear}
+                    />
+                    <MenuItem
+                      text={t('inputs.reference.action.replace')}
+                      icon={ReplaceIcon}
+                      onClick={handleReplace}
+                    />
                   </>
                 )}
 
@@ -266,7 +278,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
                   <MenuItem
                     as={OpenLink}
                     data-as="a"
-                    text="Open in new tab"
+                    text={t('inputs.reference.action.open-in-new-tab')}
                     icon={OpenInNewTabIcon}
                   />
                 )}
@@ -276,7 +288,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           />
         </Box>
       ),
-    [handleClear, handleReplace, inputId, OpenLink, readOnly, value?._ref],
+    [handleClear, handleReplace, inputId, OpenLink, readOnly, t, value?._ref],
   )
 
   return (

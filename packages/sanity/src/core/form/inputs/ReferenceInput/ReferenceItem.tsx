@@ -14,7 +14,6 @@ import {
   Text,
 } from '@sanity/ui'
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
-import {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import {
   CloseIcon,
   CopyIcon as DuplicateIcon,
@@ -23,13 +22,14 @@ import {
   SyncIcon as ReplaceIcon,
   TrashIcon,
 } from '@sanity/icons'
-import {ObjectItem, ObjectItemProps} from '../../types'
+import type {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
+import type {ObjectItem, ObjectItemProps} from '../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {randomKey} from '../../utils/randomKey'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
 import {FieldPresence} from '../../../presence'
-
+import {useTranslation} from '../../../i18n'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {RowLayout} from '../arrays/layouts/RowLayout'
 import {AlertStrip} from '../../components/AlertStrip'
@@ -165,6 +165,8 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   const tone = getTone({readOnly, hasErrors, hasWarnings})
   const isEditing = !hasRef || focusPath[0] === '_ref'
 
+  const {t} = useTranslation()
+
   const OpenLink = useMemo(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -205,13 +207,26 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               <Menu ref={menuRef}>
                 {!readOnly && (
                   <>
-                    <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
                     <MenuItem
-                      text={hasRef && isEditing ? 'Cancel replace' : 'Replace'}
+                      text={t('inputs.reference.action.remove')}
+                      tone="critical"
+                      icon={TrashIcon}
+                      onClick={onRemove}
+                    />
+                    <MenuItem
+                      text={t(
+                        hasRef && isEditing
+                          ? 'inputs.reference.action.replace-cancel'
+                          : 'inputs.reference.action.replace',
+                      )}
                       icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
                       onClick={handleReplace}
                     />
-                    <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+                    <MenuItem
+                      text={t('inputs.reference.action.duplicate')}
+                      icon={DuplicateIcon}
+                      onClick={handleDuplicate}
+                    />
                     <InsertMenu onInsert={handleInsert} types={insertableTypes} />
                   </>
                 )}
@@ -221,7 +236,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                   <MenuItem
                     as={OpenLink}
                     data-as="a"
-                    text="Open in new tab"
+                    text={'inputs.reference.action.open-in-new-tab'}
                     icon={OpenInNewTabIcon}
                   />
                 )}
@@ -232,16 +247,17 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
         </Box>
       ),
     [
-      readOnly,
-      inputId,
-      onRemove,
-      hasRef,
-      isEditing,
-      handleReplace,
       handleDuplicate,
       handleInsert,
+      handleReplace,
+      hasRef,
+      inputId,
       insertableTypes,
+      isEditing,
+      onRemove,
       OpenLink,
+      readOnly,
+      t,
     ],
   )
 

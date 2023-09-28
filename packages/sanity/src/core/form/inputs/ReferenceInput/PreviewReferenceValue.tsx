@@ -4,6 +4,7 @@ import {Box, Flex, Inline, Label, Stack, Text, Tooltip} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
 import {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
+import {Translate, useIntlListFormat, useTranslation} from '../../../i18n'
 import {TextWithTone} from '../../../components'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
@@ -17,6 +18,7 @@ export function PreviewReferenceValue(props: {
   showTypeLabel?: boolean
 }) {
   const {referenceInfo, renderPreview, type, value, showTypeLabel} = props
+  const {t} = useTranslation()
 
   if (referenceInfo.isLoading || referenceInfo.error) {
     return <SanityDefaultPreview isPlaceholder />
@@ -80,7 +82,7 @@ export function PreviewReferenceValue(props: {
         <Box padding={1}>
           <Flex align="center">
             <Box flex={1} paddingY={2}>
-              <Text muted>Document unavailable</Text>
+              <Text muted>{t('inputs.reference.error.document-unavailable-title')}</Text>
             </Box>
           </Flex>
         </Box>
@@ -90,14 +92,23 @@ export function PreviewReferenceValue(props: {
               portal
               content={
                 notFound ? (
-                  <UnavailableMessage title="Not found" icon={HelpCircleIcon}>
-                    The referenced document does not exist
-                    <br />
-                    (id: <code>{value._ref}</code>)
+                  <UnavailableMessage
+                    title={t('inputs.reference.error.nonexistent-document-title')}
+                    icon={HelpCircleIcon}
+                  >
+                    <Translate
+                      i18nKey="inputs.reference.error.nonexistent-document-description"
+                      t={t}
+                      components={{Code: ({children}) => <code>{children}</code>}}
+                      values={{documentId: value._ref}}
+                    />
                   </UnavailableMessage>
                 ) : (
-                  <UnavailableMessage title="Insufficient permissions" icon={AccessDeniedIcon}>
-                    The referenced document could not be accessed due to insufficient permissions
+                  <UnavailableMessage
+                    title={t('inputs.reference.error.missing-read-permissions-title')}
+                    icon={AccessDeniedIcon}
+                  >
+                    {t('inputs.reference.error.missing-read-permissions-description')}
                   </UnavailableMessage>
                 )
               }
@@ -163,13 +174,23 @@ function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; ti
   )
 }
 
-function InvalidType(props: {documentId: string; actualType: string; declaredTypes: string[]}) {
+function InvalidType({
+  declaredTypes,
+  documentId,
+  actualType,
+}: {
+  documentId: string
+  actualType: string
+  declaredTypes: string[]
+}) {
+  const {t} = useTranslation()
+
   return (
     <Flex align="center" justify="flex-start">
       <Box padding={1}>
         <Flex align="center">
           <Box flex={1} paddingY={2}>
-            <Text muted>Document of invalid type</Text>
+            <Text muted>{t('inputs.reference.error.invalid-type-title')}</Text>
           </Box>
         </Flex>
       </Box>
@@ -179,16 +200,15 @@ function InvalidType(props: {documentId: string; actualType: string; declaredTyp
           content={
             <Stack space={3} padding={3}>
               <Text size={1}>
-                Referenced document (<code>{props.documentId}</code>) is of type{' '}
-                <code>{props.actualType}</code>.
-              </Text>
-              <Text size={1}>
-                According to the schema, referenced documents can only be of type{' '}
-                {humanizeList(
-                  props.declaredTypes.map((typeName) => <code key={typeName}>{typeName}</code>),
-                  'or',
-                )}
-                .
+                <Translate
+                  t={t}
+                  i18nKey="inputs.reference.error.invalid-type-description"
+                  values={{documentId, actualType, declaredTypes}}
+                  components={{
+                    AllowedTypes: () => <HumanizedList values={declaredTypes} />,
+                    Code: ({children}) => <code>{children}</code>,
+                  }}
+                />
               </Text>
             </Stack>
           }
@@ -204,20 +224,18 @@ function InvalidType(props: {documentId: string; actualType: string; declaredTyp
   )
 }
 
-const humanizeList = (list: React.ReactNode[], conjunction: string) => {
-  if (list.length === 1) {
-    return list[0]
-  }
-
-  if (list.length === 2) {
-    return [list[0], <Fragment key="comma"> {conjunction} </Fragment>, list[1]]
-  }
-
-  const subList = list.slice(0, -1)
-  return [
-    ...subList.map((item, i) => <Fragment key={i}>{item}, </Fragment>),
-    <Fragment key="last">
-      {conjunction} {list[list.length - 1]}
-    </Fragment>,
-  ]
+function HumanizedList(props: {values: string[]}) {
+  const listFormat = useIntlListFormat({type: 'disjunction'})
+  const parts = listFormat.formatToParts(props.values)
+  return (
+    <Fragment>
+      {parts.map((segment) =>
+        segment.type === 'element' ? (
+          <code key={segment.value}>{segment.value}</code>
+        ) : (
+          segment.value
+        ),
+      )}
+    </Fragment>
+  )
 }

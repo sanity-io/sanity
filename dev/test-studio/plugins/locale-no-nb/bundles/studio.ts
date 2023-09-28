@@ -101,6 +101,70 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
   'inputs.datetime.calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
+
+  /** --- Reference (and Cross-Dataset Reference) Input --- */
+
+  /** Error title for when the search for a reference failed. Note that the message sent by the backend may not be localized. */
+  'inputs.reference.error.search-failed-title': `Referansesøk mislyktes`,
+
+  /** Error title for when the current reference value points to a document that does not exist (on weak references) */
+  'inputs.reference.error.nonexistent-document-title': 'Ikke funnet',
+
+  /** Error description for when the current reference value points to a document that does not exist (on weak references) */
+  'inputs.reference.error.nonexistent-document-description': `Det refererte dokumentet eksisterer ikke (ID: <Code>{{documentId}}</Code>). Du kan enten fjerne referansen eller erstatte den med et annet dokument.`,
+
+  /** Error title for when the referenced document failed to be loaded */
+  'inputs.reference.error.failed-to-load-document-title': 'Kunne ikke laste referert dokument',
+
+  /** Error title for when the user does not have permissions to read the referenced document */
+  'inputs.reference.error.missing-read-permissions-title': 'Manglende tillatelser',
+
+  /** Error description for when the user does not have permissions to read the referenced document */
+  'inputs.reference.error.missing-read-permissions-description':
+    'Det refererte dokumentet kunne ikke åpnes på grunn av manglende tillatelser',
+
+  /** Error title for when the document is unavailable (for any possible reason) */
+  'inputs.reference.error.document-unavailable-title': 'Dokument ikke tilgjengelig',
+
+  /** Error title for when the reference search returned a document that is not an allowed type for the field */
+  'inputs.reference.error.invalid-search-result-type-title': `Søket returnerte en type som ikke er gyldig for denne referansen: "{{returnedType}}"`,
+
+  /** Error title for when the document referenced is not one of the types declared as allowed target types in schema */
+  'inputs.reference.error.invalid-type-title': 'Dokument av ugyldig type',
+
+  /** Error description for when the document referenced is not one of the types declared as allowed target types in schema */
+  'inputs.reference.error.invalid-type-description': `Referert dokument (<Code>{{documentId}}</Code>) er av type <Code>{{actualType}}</Code>. Ifølge skjemaet kan refererte dokumenter bare være av type <AllowedTypes />.`,
+
+  /** Placeholder shown in a reference input with no current value */
+  'inputs.reference.search-placeholder': 'Skriv for å søke',
+
+  /** Message shown when no documents were found that matched the given search string */
+  'inputs.reference.no-results-for-query':
+    'Ingen resultater for <SearchTerm>«{{searchString}}»</SearchTerm>',
+
+  /** Label for action to create a new document from the reference input */
+  'inputs.reference.action.create-new-document': 'Opprett ny',
+
+  /** Label for action to create a new document from the reference input, when there are multiple templates or document types to choose from */
+  'inputs.reference.action-create-new-document-select': 'Opprett ny…',
+
+  /** Label for action to clear the current value of the reference field */
+  'inputs.reference.action.clear': 'Tøm',
+
+  /** Label for action to replace the current value of the field */
+  'inputs.reference.action.replace': 'Erstatt',
+
+  /** Label for action to remove the reference from an array */
+  'inputs.reference.action.remove': 'Fjern',
+
+  /** Label for action to duplicate the current item to a new item (used within arrays) */
+  'inputs.reference.action.duplicate': 'Dupliser',
+
+  /** Label for action to cancel a previously initiated replace action  */
+  'inputs.reference.action.replace-cancel': 'Avbryt erstatning',
+
+  /** Label for action that opens the referenced document in a new tab */
+  'inputs.reference.action.open-in-new-tab': 'Åpne i ny fane',
 }
 
 export default studioResources
