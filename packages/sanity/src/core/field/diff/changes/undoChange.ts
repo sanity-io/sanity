@@ -58,7 +58,7 @@ export function undoChange(
     patches.push(
       ...buildUnsetPatches(
         rootDiff,
-        unsetChanges.map((unsetChange) => unsetChange.path),
+        unsetChanges.reverse().map((unsetChange) => unsetChange.path),
       ),
     )
   } else if (change.diff.action === 'added') {
