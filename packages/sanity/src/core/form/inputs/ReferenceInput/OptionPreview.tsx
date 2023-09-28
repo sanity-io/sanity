@@ -1,13 +1,11 @@
-/* eslint-disable max-nested-callbacks */
-/* eslint-disable no-nested-ternary */
-
 import React from 'react'
-import {ReferenceSchemaType} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
-import {Observable} from 'rxjs'
+import type {ReferenceSchemaType} from '@sanity/types'
+import type {Observable} from 'rxjs'
 import {Alert} from '../../components/Alert'
-import {RenderPreviewCallback} from '../../types'
-import {ReferenceInfo} from './types'
+import {useTranslation} from '../../../i18n'
+import type {RenderPreviewCallback} from '../../types'
+import type {ReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'
 import {ReferencePreview} from './ReferencePreview'
 
@@ -23,6 +21,7 @@ export function OptionPreview(props: {
 }) {
   const {getReferenceInfo, id: documentId, renderPreview} = props
   const {isLoading, result: referenceInfo, error} = useReferenceInfo(documentId, getReferenceInfo)
+  const {t} = useTranslation()
 
   if (isLoading) {
     return (
@@ -36,7 +35,7 @@ export function OptionPreview(props: {
   if (error) {
     return (
       <Stack space={2} padding={1}>
-        <Alert title="Failed to load referenced document">
+        <Alert title={t('inputs.reference.error.failed-to-load-document-title')}>
           <Text muted size={1}>
             Error: {error.message}
           </Text>
@@ -52,7 +51,7 @@ export function OptionPreview(props: {
   if (referenceInfo.availability.reason === 'PERMISSION_DENIED') {
     return (
       <Stack space={2} padding={1}>
-        Insufficient permissions to view this document
+        {t('inputs.reference.error.missing-read-permissions-description')}
       </Stack>
     )
   }
@@ -62,7 +61,9 @@ export function OptionPreview(props: {
   if (!refType) {
     return (
       <Stack space={2} padding={1}>
-        Search returned a type that's not valid for this reference: "${referenceInfo.type}"
+        {t('inputs.reference.error.invalid-search-result-type-title', {
+          returnedType: referenceInfo.type,
+        })}
       </Stack>
     )
   }
