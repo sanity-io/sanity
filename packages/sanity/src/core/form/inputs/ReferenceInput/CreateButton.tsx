@@ -1,8 +1,9 @@
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, Menu, MenuButton, MenuButtonProps, MenuItem, Tooltip} from '@sanity/ui'
+import {useTranslation} from '../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../components'
-import {CreateReferenceOption} from './types'
+import type {CreateReferenceOption} from './types'
 
 interface Props extends ComponentProps<typeof Button> {
   id: string
@@ -27,6 +28,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 export function CreateButton(props: Props) {
   const {createOptions, onCreate, id, ...rest} = props
 
+  const {t} = useTranslation()
   const canCreateAny = createOptions.some((option) => option.permission.granted)
   if (!canCreateAny) {
     return (
@@ -39,7 +41,13 @@ export function CreateButton(props: Props) {
       >
         {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
         <div style={INLINE_BLOCK_STYLE}>
-          <Button text="Create new" mode="ghost" disabled icon={AddIcon} style={FULL_WIDTH} />
+          <Button
+            text={t('inputs.reference.create-new-document')}
+            mode="ghost"
+            disabled
+            icon={AddIcon}
+            style={FULL_WIDTH}
+          />
         </div>
       </Tooltip>
     )
@@ -51,7 +59,7 @@ export function CreateButton(props: Props) {
         <Button
           {...rest}
           disabled={props.readOnly}
-          text="Create new…"
+          text={t('inputs.reference.action-create-new-document-select')}
           mode="ghost"
           icon={AddIcon}
         />
@@ -88,7 +96,7 @@ export function CreateButton(props: Props) {
   ) : (
     <Button
       {...rest}
-      text="Create new"
+      text={t('inputs.reference.action-create-new-document')}
       mode="ghost"
       disabled={!createOptions[0].permission.granted || props.readOnly}
       onClick={() => onCreate(createOptions[0])}
