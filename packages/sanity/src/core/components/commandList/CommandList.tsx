@@ -1,4 +1,4 @@
-import {Box, rem, Theme} from '@sanity/ui'
+import {Box, rem, Stack, Theme} from '@sanity/ui'
 import {ScrollToOptions, useVirtualizer, Virtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash/throttle'
 import React, {
@@ -126,13 +126,13 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
   const commandListId = useRef(useId())
   const activeIndexRef = useRef(initialIndex ?? 0)
 
-  const [childContainerElement, setChildContainerElement] = useState<HTMLDivElement | null>(null)
+  const [childContainerElement, setChildContainerElement] = useState<HTMLElement | null>(null)
   const [hovered, setHovered] = useState(false)
   const [pointerOverlayElement, setPointerOverlayElement] = useState<HTMLDivElement | null>(null)
-  const [virtualListElement, setVirtualListElement] = useState<HTMLDivElement | null>(null)
+  const [virtualListElement, setVirtualListElement] = useState<HTMLElement | null>(null)
 
   const handleChange = useCallback(
-    (v: Virtualizer<HTMLDivElement, Element>) => {
+    (v: Virtualizer<HTMLElement, Element>) => {
       if (!onEndReached) return
 
       const [lastItem] = [...v.getVirtualItems()].reverse()
@@ -596,6 +596,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       <PointerOverlayDiv aria-hidden="true" data-enabled ref={setPointerOverlayElement} />
       {virtualizer && (
         <VirtualListChildBox
+          forwardedAs="ul"
           $height={virtualizer.getTotalSize()}
           aria-label={ariaLabel}
           aria-multiselectable={ariaMultiselectable}
@@ -631,7 +632,8 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
                 : {}
 
             return (
-              <div
+              <Stack
+                as="li"
                 data-index={virtualIndex}
                 key={virtualRow.key}
                 ref={fixedHeight ? undefined : virtualizer.measureElement}
@@ -648,7 +650,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
                 {...activeAriaAttributes}
               >
                 {clonedItem}
-              </div>
+              </Stack>
             )
           })}
         </VirtualListChildBox>
