@@ -1,12 +1,11 @@
 import {Flex} from '@sanity/ui'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {usePaneRouter} from '../../components'
 import {EMPTY_PARAMS} from '../../constants'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {
-  buildCommentBreadcrumbs,
   CommentCreatePayload,
   CommentDeleteDialog,
   CommentEditPayload,
@@ -16,7 +15,6 @@ import {
   DocumentInspectorProps,
   useComments,
   useCurrentUser,
-  useSchema,
   useUnique,
 } from 'sanity'
 
@@ -26,14 +24,15 @@ interface CommentToDelete {
 }
 
 export function CommentsInspector(props: DocumentInspectorProps) {
-  const {onClose, documentType} = props
+  const {onClose} = props
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
   const [deleteError, setDeleteError] = useState<Error | null>(null)
 
-  const {onPathOpen, onFocus, displayed} = useDocumentPane()
+  const {onPathOpen, onFocus} = useDocumentPane()
+
   const currentUser = useCurrentUser()
   const paneRouter = usePaneRouter()
   const params = useUnique(paneRouter.params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
@@ -41,21 +40,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
   const {comments, create, edit, mentionOptions, remove, update, status, setStatus} = useComments()
 
-  const schema = useSchema()
-  const schemaType = schema.get(documentType)
-
-  const handleBuildCommentBreadcrumbs = useCallback(
-    (fieldPath: string) => {
-      if (!schemaType) return []
-
-      return buildCommentBreadcrumbs({
-        fieldPath,
-        schemaType,
-        documentValue: displayed,
-      })
-    },
-    [displayed, schemaType],
-  )
+  const currentComments = useMemo(() => comments.data[status], [comments, status])
 
   const commentsListHandleRef = useRef<CommentsListHandle>(null)
   const didScrollDown = useRef<boolean>(false)
@@ -120,10 +105,10 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       setShowDeleteDialog(true)
       setCommentToDelete({
         commentId: id,
-        isParent: comments.data[status].filter((c) => c.parentCommentId === id).length > 0,
+        isParent: currentComments.some((c) => c.parentComment._id === id),
       })
     },
-    [comments.data, status],
+    [currentComments],
   )
 
   const handleDeleteConfirm = useCallback(
@@ -158,8 +143,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
         {currentUser && (
           <CommentsList
-            buildCommentBreadcrumbs={handleBuildCommentBreadcrumbs}
-            comments={comments.data[status]}
+            comments={currentComments}
             currentUser={currentUser}
             error={comments.error}
             loading={comments.loading}

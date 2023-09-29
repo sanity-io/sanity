@@ -2,7 +2,13 @@ import React, {useCallback, useState} from 'react'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {CommentsList} from '../components'
 import {useCurrentUser} from '../../store'
-import {CommentDocument, CommentCreatePayload, CommentEditPayload, CommentStatus} from '../types'
+import {
+  CommentDocument,
+  CommentCreatePayload,
+  CommentEditPayload,
+  CommentStatus,
+  CommentThreadItem,
+} from '../types'
 
 const BASE: CommentDocument = {
   _id: '1',
@@ -46,16 +52,19 @@ const BASE: CommentDocument = {
   ],
 }
 
-const PROPS = [
-  {
-    ...BASE,
-  },
-]
+const PROPS: CommentThreadItem = {
+  parentComment: BASE,
+  breadcrumbs: [],
+  commentsCount: 1,
+  fieldPath: 'test',
+  replies: [],
+  threadId: '1',
+}
 
 const STATUS_OPTIONS: Record<CommentStatus, CommentStatus> = {open: 'open', resolved: 'resolved'}
 
 export default function CommentsListStory() {
-  const [state, setState] = useState<CommentDocument[]>(PROPS)
+  const [state, setState] = useState<CommentThreadItem>(PROPS)
 
   const error = useBoolean('Error', false, 'Props') || null
   const loading = useBoolean('Loading', false, 'Props') || false
@@ -70,38 +79,66 @@ export default function CommentsListStory() {
         ...BASE,
         ...payload,
         _createdAt: new Date().toISOString(),
-        _id: `${state.length + 1}`,
+        _id: `${state.commentsCount + 1}`,
         authorId: currentUser?.id || 'pP5s3g90N',
         parentCommentId: payload.parentCommentId,
       }
 
-      setState((prev) => [...prev, comment])
+      setState((prev) => {
+        return {
+          ...prev,
+          replies: [...prev.replies, comment],
+        }
+      })
     },
-    [currentUser?.id, state.length],
+    [currentUser?.id, state.commentsCount],
   )
 
   const handleEdit = useCallback(
     (id: string, payload: CommentEditPayload) => {
-      setState((prev) =>
-        prev.map((item) => {
-          if (item._id === id) {
-            return {
-              ...item,
+      const isParentEdit = id === state.parentComment._id
+
+      if (isParentEdit) {
+        setState((prev) => {
+          return {
+            ...prev,
+            parentComment: {
+              ...prev.parentComment,
               ...payload,
               _updatedAt: new Date().toISOString(),
-            }
+            },
           }
+        })
+      }
 
-          return item
-        }),
-      )
+      setState((prev) => {
+        return {
+          ...prev,
+          replies: prev.replies.map((item) => {
+            if (item._id === id) {
+              return {
+                ...item,
+                ...payload,
+                _updatedAt: new Date().toISOString(),
+              }
+            }
+
+            return item
+          }),
+        }
+      })
     },
-    [setState],
+    [state.parentComment._id],
   )
 
   const handleDelete = useCallback(
     (id: string) => {
-      setState((prev) => prev.filter((item) => item._id !== id))
+      setState((prev) => {
+        return {
+          ...prev,
+          replies: prev.replies.filter((item) => item._id !== id),
+        }
+      })
     },
     [setState],
   )
@@ -110,7 +147,7 @@ export default function CommentsListStory() {
 
   return (
     <CommentsList
-      comments={emptyState ? [] : state}
+      comments={emptyState ? [] : [state]}
       currentUser={currentUser}
       error={error ? new Error('Something went wrong') : null}
       loading={loading}

@@ -684,7 +684,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       )}
 
       <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
-        <CommentsProvider documentValue={value as SanityDocument}>{children}</CommentsProvider>
+        <CommentsProvider documentValue={displayed as SanityDocument}>{children}</CommentsProvider>
       </FieldActionsProvider>
     </DocumentPaneContext.Provider>
   )
