@@ -1,3 +1,4 @@
+import {toArray} from 'rxjs/operators'
 import {
   isIndexSegment,
   isKeyedObject,
@@ -56,10 +57,7 @@ export function undoChange(
       .forEach((child) => undoChange(child, rootDiff, documentOperations))
 
     patches.push(
-      ...buildUnsetPatches(
-        rootDiff,
-        unsetChanges.map((unsetChange) => unsetChange.path),
-      ),
+      ...buildUnsetPatches(rootDiff, unsetChanges.map((unsetChange) => unsetChange.path).reverse()),
     )
   } else if (change.diff.action === 'added') {
     // The reverse of an add operation is an unset -
