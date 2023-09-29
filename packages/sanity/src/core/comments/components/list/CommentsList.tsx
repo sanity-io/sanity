@@ -179,8 +179,13 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
               // the same for all of them. Therefore, we can just pick the first one.
               const breadcrumbs = group[0].breadcrumbs
 
+              // The thread ID is used to scroll to the thread.
+              // We pick the first thread id in the group so that we scroll to the first thread
+              // in the group.
+              const firstThreadId = group[0].threadId
+
               return (
-                <Stack as="li" key={fieldPath}>
+                <Stack as="li" key={fieldPath} data-thread-id={firstThreadId}>
                   <CommentThreadLayout
                     breadcrumbs={breadcrumbs}
                     canCreateNewThread={status === 'open'}
@@ -198,21 +203,19 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
                       const replies = item.replies.slice().reverse()
 
                       return (
-                        <Stack data-thread-id={item.threadId} key={item.threadId}>
-                          <CommentsListItem
-                            canReply={status === 'open'}
-                            currentUser={currentUser}
-                            key={item.parentComment._id}
-                            mentionOptions={mentionOptions}
-                            onDelete={onDelete}
-                            onEdit={onEdit}
-                            onPathFocus={onPathFocus}
-                            onReply={onReply}
-                            onStatusChange={onStatusChange}
-                            parentComment={item.parentComment}
-                            replies={replies}
-                          />
-                        </Stack>
+                        <CommentsListItem
+                          canReply={status === 'open'}
+                          currentUser={currentUser}
+                          key={item.parentComment._id}
+                          mentionOptions={mentionOptions}
+                          onDelete={onDelete}
+                          onEdit={onEdit}
+                          onPathFocus={onPathFocus}
+                          onReply={onReply}
+                          onStatusChange={onStatusChange}
+                          parentComment={item.parentComment}
+                          replies={replies}
+                        />
                       )
                     })}
                   </CommentThreadLayout>

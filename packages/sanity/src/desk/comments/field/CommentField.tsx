@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {uuid} from '@sanity/uuid'
+import * as PathUtils from '@sanity/util/paths'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {COMMENTS_INSPECTOR_NAME} from '../../panes/document/constants'
 import {CommentFieldButton} from './CommentFieldButton'
@@ -39,71 +40,78 @@ function CommentFieldInner(props: FieldProps) {
   const count = useFieldCommentsCount(props.path)
   const hasComments = Boolean(count > 0)
 
+  const currentComments = useMemo(() => comments.data[status], [comments.data, status])
+
   const [shouldScrollToThread, setShouldScrollToThread] = useState<boolean>(false)
+
+  const threadId = useMemo(() => {
+    const pathString = PathUtils.toString(props.path)
+
+    return currentComments.find((comment) => comment.fieldPath === pathString)?.threadId
+  }, [currentComments, props.path])
+
+  const handleScrollToThread = useCallback(() => {
+    if (
+      status === 'open' &&
+      inspector?.name === COMMENTS_INSPECTOR_NAME &&
+      shouldScrollToThread &&
+      threadId
+    ) {
+      // Find the node in the DOM
+      const node = document.querySelector(`[data-thread-id="${threadId}"]`)
+
+      // // Scroll to node with 8px offset top
+      if (node) {
+        requestAnimationFrame(() => {
+          node.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'})
+        })
+      }
+
+      // Reset shouldScrollToThread to false after performing the scroll action
+      setShouldScrollToThread(false)
+    }
+  }, [inspector?.name, shouldScrollToThread, status, threadId])
 
   const handleClick = useCallback(() => {
     if (hasComments && status === 'resolved') {
       setStatus('open')
     }
 
-    setShouldScrollToThread(true)
-  }, [hasComments, setStatus, status])
-
-  const handleScrollToThread = useCallback(
-    (threadId: string) => {
-      if (
-        status === 'open' &&
-        inspector?.name === COMMENTS_INSPECTOR_NAME &&
-        shouldScrollToThread &&
-        threadId
-      ) {
-        // Find the node in the DOM
-        const node = document.querySelector(`[data-thread-id="${threadId}"]`)
-
-        // // Scroll to node with 8px offset top
-        if (node) {
-          requestAnimationFrame(() => {
-            node.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'})
-          })
-        }
-
-        // Reset shouldScrollToThread to false after performing the scroll action
-        setShouldScrollToThread(false)
-      }
-    },
-    [inspector?.name, shouldScrollToThread, status],
-  )
+    if (threadId) {
+      setShouldScrollToThread(true)
+      handleScrollToThread()
+    }
+  }, [handleScrollToThread, hasComments, setStatus, status, threadId])
 
   useEffect(() => {
-    const threadId = comments.data.open.find(
-      (comment) => comment.fieldPath === props.path.toString(),
-    )?.threadId
-
     if (threadId) {
-      handleScrollToThread(threadId)
+      handleScrollToThread()
     }
-  }, [comments.data.open, handleScrollToThread, props.path])
+  }, [comments.data.open, handleScrollToThread, props.path, threadId])
 
   const handleCommentAdd = useCallback(() => {
     if (value) {
       // Since this is a new comment, we generate a new thread ID
-      const threadId = uuid()
+      const newThreadId = uuid()
 
       const nextComment = {
         fieldPath: pathToString(props.path),
         message: value,
         parentCommentId: undefined,
         status: 'open',
-        threadId,
+        threadId: newThreadId,
       } satisfies CommentCreatePayload
 
       create.execute(nextComment)
 
       openInspector(COMMENTS_INSPECTOR_NAME)
 
+      // If a comment is added to a field when viewing resolved comments, we switch
+      // to open comments and scroll to the comment that was just added
+      setStatus('open')
       setValue(null)
     }
-  }, [create, openInspector, props.path, value])
+  }, [create, openInspector, props.path, setStatus, value])
 
   const handleDiscard = useCallback(() => {
     setValue(null)
