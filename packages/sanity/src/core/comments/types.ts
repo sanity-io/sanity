@@ -23,11 +23,24 @@ export interface MentionOptionUser extends User {
  * @beta
  * @hidden
  */
+export interface CommentThreadItem {
+  breadcrumbs: CommentBreadcrumbs
+  commentsCount: number
+  fieldPath: string
+  parentComment: CommentDocument
+  replies: CommentDocument[]
+  threadId: string
+}
+
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentsContextValue {
   comments: {
     data: {
-      open: CommentDocument[]
-      resolved: CommentDocument[]
+      open: CommentThreadItem[]
+      resolved: CommentThreadItem[]
     }
     error: Error | null
     loading: boolean
