@@ -42,6 +42,16 @@ const deskLocaleStrings = {
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
+
+  /** --- DELETE ACTION --- **/
+  /** Tooltip when delete button is disabled because the document does not exist */
+  'action.delete.disabled.nothingToDelete': 'This document doesn’t yet exist or is already deleted',
+
+  /** Label for the "Delete" document action */
+  'action.delete.label': 'Delete',
+
+  /** Label for the "Delete" document action while the document is being deleted */
+  'action.delete.running.label': 'Deleting…',
 }
 
 /**

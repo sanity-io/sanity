@@ -39,6 +39,17 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Venter på at andre oppgaver skal fullføre',
+
+  /** --- DELETE ACTION --- **/
+  /** Tooltip when delete button is disabled because the document does not exist */
+  'action.delete.disabled.nothingToDelete':
+    'Dette dokumentet eksisterer ikke eller har allerede blitt slettet',
+
+  /** Label for the "Delete" document action */
+  'action.delete.label': 'Slett',
+
+  /** Label for the "Delete" document action while the document is being deleted */
+  'action.delete.running.label': 'Sletter…',
 }
 
 export default deskResources
