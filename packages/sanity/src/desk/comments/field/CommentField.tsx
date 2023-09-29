@@ -76,7 +76,7 @@ function CommentFieldInner(props: FieldProps) {
 
   useEffect(() => {
     const threadId = comments.data.open.find(
-      (comment) => comment.target?.path?.field === props.path.toString(),
+      (comment) => comment.fieldPath === props.path.toString(),
     )?.threadId
 
     if (threadId) {
