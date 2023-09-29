@@ -3,11 +3,10 @@ import {BoundaryElementProvider, Container, Flex, Spinner, Stack, Text} from '@s
 import {CurrentUser, Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {
-  CommentBreadcrumbs,
   CommentCreatePayload,
-  CommentDocument,
   CommentEditPayload,
   CommentStatus,
+  CommentThreadItem,
 } from '../../types'
 import {MentionOptionsHookValue} from '../../hooks'
 import {CommentsListItem} from './CommentsListItem'
@@ -21,12 +20,12 @@ const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
 }
 
 interface GroupedComments {
-  [field: string]: CommentDocument[]
+  [field: string]: CommentThreadItem[]
 }
 
-function groupComments(comments: CommentDocument[]) {
+function groupThreads(comments: CommentThreadItem[]) {
   return comments.reduce((acc, comment) => {
-    const field = comment.target?.path?.field
+    const field = comment.fieldPath
 
     if (!acc[field]) {
       acc[field] = []
@@ -38,24 +37,12 @@ function groupComments(comments: CommentDocument[]) {
   }, {} as GroupedComments)
 }
 
-function getReplies(parentCommentId: string, group: CommentDocument[]) {
-  const replies = group.filter((c) => c.parentCommentId === parentCommentId)
-
-  // The default sort order is by date, descending (newest first).
-  // However, inside a thread, we want the order to be ascending (oldest first).
-  // So we reverse the array here.
-  const orderedReplies = [...replies].reverse()
-
-  return orderedReplies
-}
-
 /**
  * @beta
  * @hidden
  */
 export interface CommentsListProps {
-  buildCommentBreadcrumbs?: (fieldPath: string) => CommentBreadcrumbs
-  comments: CommentDocument[]
+  comments: CommentThreadItem[]
   currentUser: CurrentUser
   error: Error | null
   loading: boolean
@@ -86,7 +73,6 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
   ref,
 ) {
   const {
-    buildCommentBreadcrumbs,
     comments,
     currentUser,
     error,
@@ -120,22 +106,17 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
     [scrollToComment],
   )
 
-  const groupedComments = useMemo(() => {
-    const filteredComments = comments
-      // 1. Get all comments that are not replies and are in the current view (open or resolved)
-      .filter((c) => !c.parentCommentId)
-      // 2. Get all replies to each parent comment and add them to the array
-      // eslint-disable-next-line max-nested-callbacks
-      .map((c) => [c, ...comments.filter((c2) => c2.parentCommentId === c._id)])
-      .flat()
-
-    return Object.entries(groupComments(filteredComments))
-  }, [comments])
-
-  const showComments = !loading && !error && groupedComments.length > 0
-  const showEmptyState = !loading && !error && groupedComments.length === 0
+  const showComments = !loading && !error && comments.length > 0
+  const showEmptyState = !loading && !error && comments.length === 0
   const showError = error
   const showLoading = loading && !error
+
+  // We group the threads so that they can be rendered together under the
+  // same breadcrumbs. This is to avoid having the same breadcrumbs repeated
+  // for every single comment thread. Also, we don't want to have threads pointing
+  // to the same field to be rendered separately in the list since that makes it
+  // harder to get an overview of the comments about a specific field.
+  const groupedThreads = useMemo(() => Object.entries(groupThreads(comments)), [comments])
 
   return (
     <Flex
@@ -193,50 +174,45 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
           space={4}
         >
           <BoundaryElementProvider element={boundaryElement}>
-            {groupedComments.map(([fieldPath, group]) => {
-              const parentComments = group.filter((c) => !c.parentCommentId)
-
-              // The threadId is used to identify the thread in the DOM, so we can scroll to it.
-              // todo: validate this approach
-              const threadId = group[0].threadId
-
-              const breadcrumbs = buildCommentBreadcrumbs?.(fieldPath)
-              const hasInvalidField = breadcrumbs?.some((b) => b.invalid === true)
-
-              // If the breadcrumb is invalid, the field might have been remove from the
-              // the schema, or an array item might have been removed. In that case, we don't
-              // want to render any button to open the field.
-              const _onPathFocus = hasInvalidField ? undefined : onPathFocus
+            {groupedThreads?.map(([fieldPath, group]) => {
+              // Since all threads in the group point to the same field, the breadcrumbs will be
+              // the same for all of them. Therefore, we can just pick the first one.
+              const breadcrumbs = group[0].breadcrumbs
 
               return (
-                <Stack as="li" data-thread-id={threadId} key={fieldPath}>
+                <Stack as="li" key={fieldPath}>
                   <CommentThreadLayout
                     breadcrumbs={breadcrumbs}
                     canCreateNewThread={status === 'open'}
                     currentUser={currentUser}
-                    hasInvalidField={hasInvalidField}
                     key={fieldPath}
                     mentionOptions={mentionOptions}
                     onNewThreadCreate={onNewThreadCreate}
                     path={PathUtils.fromString(fieldPath)}
                   >
-                    {parentComments.map((comment) => {
-                      const replies = getReplies(comment._id, group)
+                    {group.map((item) => {
+                      // The default sort order is by date, descending (newest first).
+                      // However, inside a thread, we want the order to be ascending (oldest first).
+                      // So we reverse the array here.
+                      // We use slice() to avoid mutating the original array.
+                      const replies = item.replies.slice().reverse()
 
                       return (
-                        <CommentsListItem
-                          canReply={status === 'open' && !hasInvalidField}
-                          currentUser={currentUser}
-                          key={comment?._id}
-                          mentionOptions={mentionOptions}
-                          onDelete={onDelete}
-                          onEdit={onEdit}
-                          onPathFocus={_onPathFocus}
-                          onReply={onReply}
-                          onStatusChange={onStatusChange}
-                          parentComment={comment}
-                          replies={replies}
-                        />
+                        <Stack data-thread-id={item.threadId} key={item.threadId}>
+                          <CommentsListItem
+                            canReply={status === 'open'}
+                            currentUser={currentUser}
+                            key={item.parentComment._id}
+                            mentionOptions={mentionOptions}
+                            onDelete={onDelete}
+                            onEdit={onEdit}
+                            onPathFocus={onPathFocus}
+                            onReply={onReply}
+                            onStatusChange={onStatusChange}
+                            parentComment={item.parentComment}
+                            replies={replies}
+                          />
+                        </Stack>
                       )
                     })}
                   </CommentThreadLayout>
