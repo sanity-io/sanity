@@ -1,15 +1,21 @@
 import React, {memo, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
-import {CommentDocument, CommentStatus, CommentsContextValue} from '../types'
+import {CommentStatus, CommentsContextValue} from '../types'
 import {useCommentOperations, useCommentsEnabled, useMentionOptions} from '../hooks'
 import {useCommentsStore} from '../store'
 import {useSchema} from '../../hooks'
 import {useCurrentUser} from '../../store'
 import {useWorkspace} from '../../studio'
 import {getPublishedId} from '../../util'
+import {buildCommentThreadItems} from '../utils/buildCommentThreadItems'
 import {CommentsContext} from './CommentsContext'
 
-const EMPTY_ARRAY: CommentDocument[] = []
+const EMPTY_ARRAY: [] = []
+
+const EMPTY_COMMENTS_DATA = {
+  open: EMPTY_ARRAY,
+  resolved: EMPTY_ARRAY,
+}
 
 /**
  * @beta
@@ -17,18 +23,11 @@ const EMPTY_ARRAY: CommentDocument[] = []
  */
 export interface CommentsProviderProps {
   children: React.ReactNode
-  /** The document value is being used to:
-   * - Attach a comment to a document using the _id
-   * - Check user permissions with grants filter to determine if a user can be mentioned (see `useMentionOptions`)
-   */
   documentValue: SanityDocument
 }
 
 const EMPTY_COMMENTS = {
-  data: {
-    open: EMPTY_ARRAY,
-    resolved: EMPTY_ARRAY,
-  },
+  data: EMPTY_COMMENTS_DATA,
   error: null,
   loading: false,
 }
@@ -131,11 +130,21 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
     },
   })
 
-  const commentsByStatus = useMemo(() => {
-    const open = data?.filter((c) => c.status === 'open') || EMPTY_ARRAY
-    const resolved = data?.filter((c) => c.status === 'resolved') || EMPTY_ARRAY
-    return {open, resolved}
-  }, [data])
+  const threadItemsByStatus = useMemo(() => {
+    if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
+
+    const threadItems = buildCommentThreadItems({
+      comments: data,
+      schemaType,
+      currentUser,
+      documentValue,
+    })
+
+    return {
+      open: threadItems.filter((item) => item.parentComment.status === 'open'),
+      resolved: threadItems.filter((item) => item.parentComment.status === 'resolved'),
+    }
+  }, [currentUser, data, documentValue, schemaType])
 
   const ctxValue = useMemo(
     () =>
@@ -143,7 +152,7 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
         status,
         setStatus,
         comments: {
-          data: commentsByStatus,
+          data: threadItemsByStatus,
           error,
           loading,
         },
@@ -162,7 +171,6 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
         mentionOptions,
       }) satisfies CommentsContextValue,
     [
-      commentsByStatus,
       error,
       loading,
       mentionOptions,
@@ -171,6 +179,7 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
       operation.remove,
       operation.update,
       status,
+      threadItemsByStatus,
     ],
   )
 
