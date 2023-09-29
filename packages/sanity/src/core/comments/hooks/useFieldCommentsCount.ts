@@ -12,5 +12,9 @@ export function useFieldCommentsCount(path: Path): number {
   const {comments} = useComments()
   const stringPath = PathUtils.toString(path)
 
-  return comments.data.open.filter((comment) => comment.target.path?.field === stringPath).length
+  const count = comments.data.open
+    .map((c) => (c.fieldPath === stringPath ? c.commentsCount : 0))
+    .reduce((acc, val) => acc + val, 0)
+
+  return count || 0
 }

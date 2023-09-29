@@ -14,21 +14,13 @@ import {
 import {MentionOptionsHookValue} from '../../hooks'
 import {SpacerAvatar} from '../avatars'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
+import {ThreadCard} from './styles'
 
 const EMPTY_ARRAY: [] = []
 
 const MAX_COLLAPSED_REPLIES = 5
 
-export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
-  padding: 3,
-  radius: 3,
-  sizing: 'border',
-  tone: tone || 'transparent',
-}))<CardProps>`
-  // ...
-`
-
-const RootCard = styled(ThreadCard)`
+const StyledThreadCard = styled(ThreadCard)`
   // When hovering over the thread root we want to display the parent comments menu.
   // The data-root-menu attribute is used to target the menu and is applied in
   // the CommentsListItemLayout component.
@@ -137,7 +129,7 @@ export function CommentsListItem(props: CommentsListItemProps) {
 
   return (
     <Stack space={2}>
-      <RootCard>
+      <StyledThreadCard>
         <Stack paddingBottom={canReply ? undefined : 1}>
           <Stack as="ul" space={4}>
             <Stack as="li">
@@ -200,7 +192,7 @@ export function CommentsListItem(props: CommentsListItemProps) {
             )}
           </Stack>
         </Stack>
-      </RootCard>
+      </StyledThreadCard>
     </Stack>
   )
 }
