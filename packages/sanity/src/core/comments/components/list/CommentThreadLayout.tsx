@@ -4,14 +4,14 @@ import React, {useCallback, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import styled from 'styled-components'
-import {WarningOutlineIcon} from '@sanity/icons'
+import {ChevronRightIcon, WarningOutlineIcon} from '@sanity/icons'
 import {AddCommentIcon} from '../icons'
 import {MentionOptionsHookValue} from '../../hooks'
 import {CommentInputHandle} from '../pte'
 import {CommentMessage, CommentCreatePayload, CommentBreadcrumbs} from '../../types'
 import {TextTooltip} from '../TextTooltip'
-import {ThreadCard} from './CommentsListItem'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
+import {ThreadCard} from './styles'
 
 const BreadcrumbsFlex = styled(Flex)`
   min-height: 25px;
@@ -98,7 +98,14 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       {!hasInvalidField && (
         <BreadcrumbsFlex align="center" gap={2} paddingX={1} sizing="border">
           <Stack flex={1}>
-            <Breadcrumbs maxLength={3}>
+            <Breadcrumbs
+              maxLength={3}
+              separator={
+                <Text muted size={1}>
+                  <ChevronRightIcon />
+                </Text>
+              }
+            >
               {breadcrumbs?.map((p, index) => {
                 const idx = `${p.title}-${index}`
 

@@ -1,9 +1,21 @@
-import {SchemaType, ObjectField, isObjectSchemaType, isArraySchemaType} from '@sanity/types'
-import {findIndex, startCase} from 'lodash'
+import {
+  SchemaType,
+  ObjectField,
+  isObjectSchemaType,
+  CurrentUser,
+  ArraySchemaType,
+  ConditionalPropertyCallbackContext,
+  ObjectSchemaType,
+  ObjectFieldType,
+  PathSegment,
+} from '@sanity/types'
+import {findIndex} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
+import {SanityDocument} from '@sanity/client'
 import {getValueAtPath} from '../../field'
 import {getSchemaTypeTitle} from '../../schema'
 import {CommentBreadcrumbs} from '../types'
+import {resolveConditionalProperty} from '../../form/store/conditional-property'
 
 function getSchemaField(
   schemaType: SchemaType,
@@ -12,19 +24,8 @@ function getSchemaField(
   const paths = PathUtils.fromString(fieldPath)
   const firstPath = paths[0]
 
-  if (isArraySchemaType(schemaType)) {
-    const pathWithoutKeys = paths.filter((seg) => !seg.hasOwnProperty('_key')).toString()
-
-    const field =
-      isObjectSchemaType(schemaType?.of[0]) &&
-      schemaType?.of[0]?.fields &&
-      schemaType?.of[0]?.fields.find((f: ObjectField<SchemaType>) => f.name === pathWithoutKeys)
-
-    return field ? field : undefined
-  }
-
   if (firstPath && isObjectSchemaType(schemaType)) {
-    const field = schemaType.fields.find((f) => f.name === firstPath)
+    const field = schemaType?.fields?.find((f) => f.name === firstPath)
 
     if (field) {
       const nextPath = PathUtils.toString(paths.slice(1))
@@ -40,7 +41,7 @@ function getSchemaField(
   return undefined
 }
 
-function findArrayItemIndex(array: unknown[], pathSegment: any): number | false {
+function findArrayItemIndex(array: unknown[], pathSegment: PathSegment): number | false {
   if (typeof pathSegment === 'number') {
     return pathSegment
   }
@@ -49,41 +50,50 @@ function findArrayItemIndex(array: unknown[], pathSegment: any): number | false 
 }
 
 interface BuildCommentBreadcrumbsProps {
-  documentValue: unknown
+  documentValue: Partial<SanityDocument> | null
   fieldPath: string
   schemaType: SchemaType
+  currentUser: CurrentUser
 }
 
 /**
  * @beta
  * @hidden
+ *
+ *  This function builds a breadcrumb trail for a given comment using its field path.
+ *  It will validate each segment of the path against the document value and/or schema type.
+ *  The path is invalid if:
+ * - The field is hidden by a conditional field
+ * - The field is not found in the schema type
+ * - The field is not found in the document value (array items only)
  */
 export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): CommentBreadcrumbs {
-  const {schemaType, fieldPath, documentValue} = props
+  const {currentUser, schemaType, fieldPath, documentValue} = props
   const paths = PathUtils.fromString(fieldPath)
   const fieldPaths: CommentBreadcrumbs = []
 
+  let currentSchemaType: ArraySchemaType<SchemaType> | ObjectFieldType<SchemaType> | null = null
+
   paths.forEach((seg, index) => {
-    const currentPath = PathUtils.toString(paths.slice(0, index + 1))
-    const isArraySegment = seg.hasOwnProperty('_key')
-    const field = getSchemaField(schemaType, currentPath)
+    const currentPath = paths.slice(0, index + 1)
     const previousPath = paths.slice(0, index)
 
-    if (field) {
-      const title = getSchemaTypeTitle(field?.type)
+    const field = getSchemaField(schemaType, PathUtils.toString(currentPath))
+    const isKeySegment = seg.hasOwnProperty('_key')
 
-      fieldPaths.push({
-        invalid: false,
-        isArrayItem: false,
-        title,
-      })
+    const parentValue = getValueAtPath(documentValue, previousPath)
+    const currentValue = getValueAtPath(documentValue, currentPath)
 
-      return
+    const conditionalContext: ConditionalPropertyCallbackContext = {
+      document: documentValue as SanityDocument,
+      currentUser,
+      parent: parentValue,
+      value: currentValue,
     }
 
-    if (isArraySegment) {
-      const valueAtPath = getValueAtPath(documentValue, previousPath) as unknown[]
-      const arrayItemIndex = findArrayItemIndex(valueAtPath, seg)
+    if (isKeySegment) {
+      const previousValue = getValueAtPath(documentValue, previousPath) as unknown[]
+      const arrayItemIndex = findArrayItemIndex(previousValue, seg)
 
       fieldPaths.push({
         invalid: arrayItemIndex === false,
@@ -94,15 +104,74 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
       return
     }
 
-    if (!field) {
-      const invalid = !PathUtils.toString(previousPath)?.hasOwnProperty('_key')
+    if (field?.type) {
+      const hidden = resolveConditionalProperty(field.type.hidden, conditionalContext)
 
       fieldPaths.push({
-        invalid,
+        invalid: hidden,
         isArrayItem: false,
-        title: startCase(seg.toString()),
+        title: getSchemaTypeTitle(field.type),
       })
+
+      currentSchemaType = field.type
+
+      return
     }
+
+    if (currentSchemaType?.jsonType === 'array') {
+      const arrayValue: any = getValueAtPath(documentValue, previousPath)
+      const objectType = arrayValue?._type
+
+      const objectField = currentSchemaType?.of?.find(
+        (type) => type.name === objectType,
+      ) as ObjectSchemaType
+
+      const currentField = objectField?.fields?.find(
+        (f) => f.name === seg,
+      ) as ObjectField<SchemaType>
+
+      if (!currentField) {
+        fieldPaths.push({
+          invalid: true,
+          isArrayItem: false,
+          title: 'Unknown field',
+        })
+
+        return
+      }
+
+      const currentTitle = getSchemaTypeTitle(currentField?.type)
+
+      const objectFieldHidden = resolveConditionalProperty(
+        objectField?.type?.hidden,
+        conditionalContext,
+      )
+
+      const currentFieldHidden = resolveConditionalProperty(
+        currentField?.type.hidden,
+        conditionalContext,
+      )
+
+      const isHidden = objectFieldHidden || currentFieldHidden
+
+      fieldPaths.push({
+        invalid: isHidden,
+        isArrayItem: false,
+        title: currentTitle,
+      })
+
+      currentSchemaType = currentField?.type
+
+      return
+    }
+
+    // If we get here, the field is not found in the schema type
+    // or the document value so we'll mark it as invalid.
+    fieldPaths.push({
+      invalid: true,
+      isArrayItem: false,
+      title: 'Unknown field',
+    })
   })
 
   return fieldPaths
