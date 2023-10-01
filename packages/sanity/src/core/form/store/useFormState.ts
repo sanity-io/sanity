@@ -16,7 +16,10 @@ export type FormState<
   S extends ObjectSchemaType = ObjectSchemaType,
 > = ObjectFormNode<T, S>
 
-/** @internal */
+/**
+ * @internal
+ * @deprecated use `useFormState` from `sanity/document`
+ */
 export function useFormState<
   T extends {[key in string]: unknown} = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType,

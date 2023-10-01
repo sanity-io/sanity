@@ -18,7 +18,8 @@ import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelHeader} from './header'
-import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
+import {useFormState, useTimelineSelector} from 'sanity/document'
+import {ScrollContainer, VirtualizerScrollInstanceProvider} from 'sanity'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -47,22 +48,18 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, isInspectOpen, rootElement, setDocumentPanelPortalElement} = props
+  const {activeViewId, inspector, views} = useDocumentPane()
   const {
-    activeViewId,
-    displayed,
     documentId,
-    editState,
-    inspector,
     value,
-    views,
     ready,
     schemaType,
     permissions,
     isPermissionsLoading,
+    editState,
     isDeleting,
     isDeleted,
-    timelineStore,
-  } = useDocumentPane()
+  } = useFormState()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
@@ -103,21 +100,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       createElement(activeView.component, {
         document: {
           draft: editState?.draft || null,
-          displayed: displayed || value,
-          historical: displayed,
+          displayed: value,
+          historical: value,
           published: editState?.published || null,
         },
         documentId,
         options: activeView.options,
         schemaType,
       }),
-    [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value],
+    [activeView, documentId, editState?.draft, editState?.published, schemaType, value],
   )
 
-  const lastNonDeletedRevId = useTimelineSelector(
-    timelineStore,
-    (state) => state.lastNonDeletedRevId,
-  )
+  const lastNonDeletedRevId = useTimelineSelector((state) => state.lastNonDeletedRevId)
 
   // Scroll to top as `documentId` changes
   useEffect(() => {
@@ -131,10 +125,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       setDocumentPanelPortalElement(portalElement)
     }
   }, [portalElement, setDocumentPanelPortalElement])
-
-  const inspectDialog = useMemo(() => {
-    return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
-  }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
 
@@ -182,7 +172,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                       {activeViewNode}
                     </Scroller>
 
-                    {inspectDialog}
+                    {isInspectOpen ? <InspectDialog value={value} /> : null}
 
                     <div data-testid="document-panel-portal" ref={portalRef} />
                   </VirtualizerScrollInstanceProvider>

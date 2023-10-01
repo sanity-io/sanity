@@ -1,8 +1,8 @@
 import {useToast} from '@sanity/ui'
 import React, {memo, useEffect, useRef} from 'react'
-import {useDocumentPane} from './useDocumentPane'
-import {useDocumentOperationEvent} from 'sanity'
+import {useDocumentId, useDocumentType} from 'sanity/document'
 import {usePaneRouter} from '../../components'
+import {useDocumentOperationEvent} from 'sanity'
 
 function getOpErrorTitle(op: string): string {
   if (op === 'delete') {
@@ -36,7 +36,8 @@ const IGNORE_OPS = ['patch', 'commit']
 
 export const DocumentOperationResults = memo(function DocumentOperationResults() {
   const {push: pushToast} = useToast()
-  const {documentId, documentType} = useDocumentPane()
+  const documentId = useDocumentId()
+  const documentType = useDocumentType()
   const event: any = useDocumentOperationEvent(documentId, documentType)
   const prevEvent = useRef(event)
   const paneRouter = usePaneRouter()

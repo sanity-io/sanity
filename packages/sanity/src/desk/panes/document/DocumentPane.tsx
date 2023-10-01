@@ -3,47 +3,50 @@ import {
   Code,
   DialogProvider,
   DialogProviderProps,
+  ErrorBoundary,
+  ErrorBoundaryProps,
   Flex,
   PortalProvider,
   Stack,
   Text,
   useElementRect,
+  useToast,
 } from '@sanity/ui'
-import React, {memo, useCallback, useMemo, useState} from 'react'
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
-import {DocumentPaneNode} from '../../types'
 import {Pane, PaneFooter, usePaneRouter} from '../../components'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../constants'
 import {DocumentOperationResults} from './DocumentOperationResults'
-import {DocumentPaneProvider} from './DocumentPaneProvider'
+import {DocumentPaneProvider, DocumentPaneProviderProps} from './DocumentPaneProvider'
 import {DocumentPanel} from './documentPanel'
 import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
-import {DocumentPaneProviderProps} from './types'
 import {useDocumentPane} from './useDocumentPane'
 import {
   DOCUMENT_INSPECTOR_MIN_WIDTH,
   DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
   DOCUMENT_PANEL_MIN_WIDTH,
+  HISTORY_INSPECTOR_NAME,
 } from './constants'
+import {TimelineErrorPane} from './timeline'
+import {DocumentProvider, useDocumentType, useFormState} from 'sanity/document'
 import {
   ChangeConnectorRoot,
-  ReferenceInputOptionsProvider,
   SourceProvider,
+  TimelineError,
+  getPublishedId,
   isDev,
-  useDocumentType,
+  useConnectionState,
   useSource,
-  useTemplatePermissions,
-  useTemplates,
   useZIndex,
 } from 'sanity'
 
-type DocumentPaneOptions = DocumentPaneNode['options']
+type ErrorParams = Parameters<ErrorBoundaryProps['onCatch']>[0]
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrower screens (first two media breakpoints).
@@ -73,31 +76,8 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
 
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
-  const {resolveNewDocumentOptions} = useSource().document
   const paneRouter = usePaneRouter()
-  const options = usePaneOptions(pane.options, paneRouter.params)
-  const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
-
-  // The templates that should be creatable from inside this document pane.
-  // For example, from the "Create new" menu in reference inputs.
-  const templateItems = useMemo(() => {
-    return resolveNewDocumentOptions({
-      type: 'document',
-      documentId: options.id,
-      schemaType: options.type,
-    })
-  }, [options.id, options.type, resolveNewDocumentOptions])
-
-  const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
-    templateItems,
-  })
-  const isLoaded = isDocumentLoaded && !isTemplatePermissionsLoading
-
-  const providerProps = useMemo(() => {
-    return isLoaded && documentType && options.type !== documentType
-      ? mergeDocumentType(props, options, documentType)
-      : props
-  }, [props, documentType, isLoaded, options])
+  const [errorParams, setErrorParams] = useState<ErrorParams | null>(null)
 
   const {ReferenceChildLink, handleEditReference, groupIndex, routerPanesState} = paneRouter
   const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
@@ -119,106 +99,119 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       : {path: [], state: 'none'}
   }, [parentRefPath, groupIndex, routerPanesStateLength])
 
-  if (options.type === '*' && !isLoaded) {
-    return <LoadingPane flex={2.5} minWidth={320} paneKey={paneKey} title="Loading document…" />
+  const templateNameFromUrl = paneRouter.params?.template
+  const templateNameFromStructure = pane.options.template
+
+  if (
+    templateNameFromUrl &&
+    templateNameFromStructure &&
+    templateNameFromUrl !== templateNameFromStructure
+  ) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Conflicting templates: URL says "${templateNameFromUrl}", structure node says "${templateNameFromStructure}". Using "${templateNameFromStructure}".`,
+    )
+  }
+  const templateName = templateNameFromStructure || templateNameFromUrl
+
+  const templateParams = {
+    ...pane.options.templateParameters,
+    ...(typeof paneRouter.payload === 'object' ? paneRouter.payload || {} : {}),
   }
 
-  if (!documentType) {
+  const handleTimelineRangeChange = useCallback(
+    (range: {since?: string; rev?: string}) => {
+      paneRouter.setParams({
+        ...paneRouter.params,
+        since: range.since,
+        rev: range.rev,
+      })
+    },
+    [paneRouter],
+  )
+
+  const connectionState = useConnectionState(getPublishedId(pane.options.id))
+  const toast = useToast()
+
+  // reset the error if the ID changes
+  useEffect(() => {
+    setErrorParams(null)
+  }, [pane.options.id])
+
+  useEffect(() => {
+    if (connectionState === 'reconnecting') {
+      toast.push({
+        id: 'sanity/desk/reconnecting',
+        status: 'warning',
+        title: <>Connection lost. Reconnecting…</>,
+      })
+    }
+  }, [connectionState, toast])
+
+  if (errorParams?.error instanceof TimelineError) {
+    // not using a `useCallback` here because this handler won't always be needed
+    const handleRetry = () => {
+      const nextParams = {...paneRouter.params}
+      delete nextParams.since
+      delete nextParams.rev
+      paneRouter.setParams(nextParams)
+
+      setErrorParams(null)
+    }
+
     return (
-      <ErrorPane
+      <TimelineErrorPane
         flex={2.5}
         minWidth={320}
         paneKey={paneKey}
-        title={<>The document was not found</>}
-      >
-        <Stack space={4}>
-          <Text as="p">
-            The document type is not defined, and a document with the <code>{options.id}</code>{' '}
-            identifier could not be found.
-          </Text>
-        </Stack>
-      </ErrorPane>
+        // eslint-disable-next-line react/jsx-no-bind
+        onRetry={handleRetry}
+      />
     )
   }
 
   return (
-    <DocumentPaneProvider
-      // this needs to be here to avoid formState from being re-used across (incompatible) document types
-      // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-      key={`${documentType}-${options.id}`}
-      {...providerProps}
-    >
-      {/* NOTE: this is a temporary location for this provider until we */}
-      {/* stabilize the reference input options formally in the form builder */}
-      {/* eslint-disable-next-line react/jsx-pascal-case */}
-      <ReferenceInputOptionsProvider
+    <ErrorBoundary onCatch={setErrorParams}>
+      <DocumentProvider
+        documentId={pane.options.id}
+        documentType={pane.options.type}
+        templateName={templateName}
+        templateParams={templateParams}
+        timelineRange={{
+          rev: paneRouter.params?.rev,
+          since: paneRouter.params?.since,
+        }}
+        onTimelineRangeChange={handleTimelineRangeChange}
+        initialFocusPath={
+          paneRouter.params?.path ? pathFromString(paneRouter.params.path) : undefined
+        }
+        isHistoryInspectorOpen={paneRouter.params?.inspect === HISTORY_INSPECTOR_NAME}
         EditReferenceLinkComponent={ReferenceChildLink}
         onEditReference={handleEditReference}
-        initialValueTemplateItems={templatePermissions}
         activePath={activePath}
+        fallback={
+          <LoadingPane flex={2.5} minWidth={320} paneKey={paneKey} title="Loading document…" />
+        }
       >
-        <InnerDocumentPane />
-      </ReferenceInputOptionsProvider>
-    </DocumentPaneProvider>
+        <DocumentPaneProvider
+          // this needs to be here to avoid formState from being re-used across (incompatible) document types
+          // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
+          key={`${pane.options.type}-${pane.options.id}`}
+          {...props}
+        >
+          <InnerDocumentPane />
+        </DocumentPaneProvider>
+      </DocumentProvider>
+    </ErrorBoundary>
   )
 }
 
-function usePaneOptions(
-  options: DocumentPaneOptions,
-  params: Record<string, string | undefined> = {},
-): DocumentPaneOptions {
-  const templates = useTemplates()
-
-  return useMemo(() => {
-    // The document type is provided, so return
-    if (options.type && options.type !== '*') {
-      return options
-    }
-
-    // Attempt to derive document type from the template configuration
-    const templateName = options.template || params.template
-    const template = templateName ? templates.find((t) => t.id === templateName) : undefined
-    const documentType = template?.schemaType
-
-    // No document type was found in a template
-    if (!documentType) {
-      return options
-    }
-
-    // The template provided the document type, so modify the pane’s `options` property
-    return {...options, type: documentType}
-  }, [options, params.template, templates])
-}
-
-function mergeDocumentType(
-  props: DocumentPaneProviderProps,
-  options: DocumentPaneOptions,
-  documentType: string,
-): DocumentPaneProviderProps {
-  return {
-    ...props,
-    pane: {
-      ...props.pane,
-      options: {...options, type: documentType},
-    },
-  }
-}
-
 function InnerDocumentPane() {
-  const {
-    changesOpen,
-    documentType,
-    inspector,
-    inspectOpen,
-    onFocus,
-    onPathOpen,
-    onHistoryOpen,
-    onKeyUp,
-    paneKey,
-    schemaType,
-    value,
-  } = useDocumentPane()
+  const documentType = useDocumentType()
+  const {changesOpen, inspector, inspectOpen, onHistoryOpen, onKeyUp, paneKey} = useDocumentPane()
+  const {setOpenPath, setFocusPath, schemaType, value, ready} = useFormState()
   const {collapsed: layoutCollapsed} = usePaneLayout()
+  const paneRouter = usePaneRouter()
   const zOffsets = useZIndex()
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
@@ -229,12 +222,21 @@ function InnerDocumentPane() {
   const footerRect = useElementRect(footerElement)
   const footerH = footerRect?.height
 
+  // Reset `focusPath` when `documentId` or `params.path` changes
+  useEffect(() => {
+    if (ready && paneRouter.params?.path) {
+      const nextParams = {...paneRouter.params}
+      delete nextParams.path
+      paneRouter.setParams(nextParams)
+    }
+  }, [paneRouter, ready])
+
   const onConnectorSetFocus = useCallback(
     (path: Path) => {
-      onPathOpen(path)
-      onFocus(path)
+      setOpenPath(path)
+      setFocusPath(path)
     },
-    [onPathOpen, onFocus],
+    [setFocusPath, setOpenPath],
   )
 
   const currentMinWidth =

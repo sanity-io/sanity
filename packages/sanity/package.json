@@ -33,6 +33,17 @@
       "import": "./lib/index.esm.js",
       "default": "./lib/index.esm.js"
     },
+    "./document": {
+      "types": "./lib/exports/document.d.ts",
+      "source": "./exports/document.ts",
+      "require": "./lib/document.js",
+      "node": {
+        "import": "./lib/document.cjs.mjs",
+        "require": "./lib/document.js"
+      },
+      "import": "./lib/document.esm.js",
+      "default": "./lib/document.esm.js"
+    },
     "./_internal": {
       "types": "./lib/exports/_internal.d.ts",
       "source": "./exports/_internal.ts",

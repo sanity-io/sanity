@@ -132,7 +132,7 @@ export interface Tool<Options = any> {
   options?: Options
 
   /**
-   * The router for the tool. See {@link router.Router}
+   * The router for the tool. See {@link Router}
    */
   router?: Router
 

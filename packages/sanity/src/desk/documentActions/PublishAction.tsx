@@ -1,6 +1,7 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
+import {useDocumentId, useDocumentType} from 'sanity/document'
 import {TimeAgo} from '../components'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
@@ -45,7 +46,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
+  const documentId = useDocumentId()
+  const documentType = useDocumentType()
+  const {changesOpen, onHistoryOpen} = useDocumentPane()
   const editState = useEditState(documentId, documentType)
 
   const revision = (editState?.draft || editState?.published || {})._rev

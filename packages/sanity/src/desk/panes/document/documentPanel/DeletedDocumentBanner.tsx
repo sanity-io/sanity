@@ -2,7 +2,7 @@ import React, {useCallback} from 'react'
 import {Button, Card, Container, Flex, Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {useDocumentPane} from '../useDocumentPane'
+import {useFormState} from 'sanity/document'
 import {useDocumentOperation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
@@ -16,7 +16,7 @@ interface DeletedDocumentBannerProps {
 }
 
 export function DeletedDocumentBanner({revisionId}: DeletedDocumentBannerProps) {
-  const {documentId, documentType} = useDocumentPane()
+  const {documentId, documentType} = useFormState()
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
   const handleRestore = useCallback(() => {

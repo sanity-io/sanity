@@ -1,7 +1,7 @@
 import {useToast} from '@sanity/ui'
 import {useEffect} from 'react'
 import {ConfigResolutionError, SchemaError} from '../config'
-import {CorsOriginError} from '../store'
+import {CorsOriginError, TimelineError} from '../store'
 import {globalScope} from '../util'
 
 const errorChannel = globalScope.__sanityErrorChannel
@@ -60,6 +60,10 @@ function isKnownError(err: Error): boolean {
   }
 
   if (err instanceof ConfigResolutionError) {
+    return true
+  }
+
+  if (err instanceof TimelineError) {
     return true
   }
 

@@ -3,10 +3,10 @@ import {AvatarStack, BoundaryElementProvider, Box, Card, Flex} from '@sanity/ui'
 import React, {ReactElement, useRef} from 'react'
 import styled from 'styled-components'
 import {TimelineMenu} from '../../timeline'
-import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
 import {LoadingContent} from './LoadingContent'
 import {collectLatestAuthorAnnotations} from './helpers'
+import {useFormState, useTimelineSelector} from 'sanity/document'
 import {
   ChangeFieldWrapper,
   ChangeList,
@@ -18,7 +18,6 @@ import {
   ObjectSchemaType,
   ScrollContainer,
   UserAvatar,
-  useTimelineSelector,
 } from 'sanity'
 
 const Scroller = styled(ScrollContainer)`
@@ -30,16 +29,16 @@ const Scroller = styled(ScrollContainer)`
 
 export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
   const {onClose} = props
-  const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
+  const {documentId, schemaType, value} = useFormState()
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
   // Subscribe to external timeline state changes
-  const diff = useTimelineSelector(timelineStore, (state) => state.diff)
-  const onOlderRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
-  const selectionState = useTimelineSelector(timelineStore, (state) => state.selectionState)
-  const sinceTime = useTimelineSelector(timelineStore, (state) => state.sinceTime)
-  const loading = selectionState === 'loading'
-  const isComparingCurrent = !onOlderRevision
+  const diff = useTimelineSelector((state) => state.diff)
+  const {loading, sinceTime, isComparingCurrent} = useTimelineSelector((state) => ({
+    isComparingCurrent: !state.onOlderRevision,
+    sinceTime: state.sinceTime,
+    loading: state.selectionState === 'loading',
+  }))
 
   const documentContext: DocumentChangeContextInstance = React.useMemo(
     () => ({
@@ -91,7 +90,6 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
               <Content
                 diff={diff}
                 documentContext={documentContext}
-                error={timelineError}
                 loading={loading}
                 schemaType={schemaType}
               />

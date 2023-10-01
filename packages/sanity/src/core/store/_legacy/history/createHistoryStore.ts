@@ -30,7 +30,10 @@ export interface HistoryStore {
 
   restore: (id: string, targetId: string, rev: string) => Observable<SanityDocument>
 
-  /** @internal */
+  /**
+   * @internal
+   * @deprecated import the `createTimelineController` function instead
+   */
   getTimelineController: (options: {
     client: SanityClient
     documentId: string
@@ -94,7 +97,10 @@ const getDocumentAtRevision = (
   return entry
 }
 
-const getTimelineController = ({
+/**
+ * @internal
+ */
+export const createTimelineController = ({
   client,
   documentId,
   documentType,
@@ -219,6 +225,6 @@ export function createHistoryStore({client}: HistoryStoreOptions): HistoryStore 
 
     restore: (id, targetId, rev) => restore(client, id, targetId, rev),
 
-    getTimelineController,
+    getTimelineController: createTimelineController,
   }
 }

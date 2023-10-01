@@ -1,16 +1,31 @@
 import {ObjectDiff} from '@sanity/diff'
-import {useEffect, useMemo, useRef} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
-import {BehaviorSubject, catchError, distinctUntilChanged, map, of, Subscription, tap} from 'rxjs'
-import {Annotation, Chunk, SelectionState, TimelineController, useHistoryStore} from '../../..'
+import {
+  BehaviorSubject,
+  catchError,
+  distinctUntilChanged,
+  map,
+  of,
+  Subscription,
+  tap,
+  throwError,
+} from 'rxjs'
+import {
+  Annotation,
+  Chunk,
+  SelectionState,
+  TimelineController,
+  createTimelineController,
+} from '../../..'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {remoteSnapshots, RemoteSnapshotVersionEvent} from '../document'
+import {TimelineError} from './TimelineError'
 
 interface UseTimelineControllerOpts {
   documentId: string
   documentType: string
-  onError?: (err: Error) => void
   rev?: string
   since?: string
 }
@@ -73,30 +88,32 @@ export interface TimelineStore {
  * `useSyncExternalStore` to subscribe to selected state changes.
  *
  * @internal
+ *
+ * @deprecated use `useTimeline` from `sanity/document` instead.
  * */
 export function useTimelineStore({
   documentId,
   documentType,
-  onError,
   rev,
   since,
 }: UseTimelineControllerOpts): TimelineStore {
-  const historyStore = useHistoryStore()
   const snapshotsSubscriptionRef = useRef<Subscription | null>(null)
   const timelineStateRef = useRef<TimelineState>(INITIAL_TIMELINE_STATE)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const [error, setError] = useState<unknown>(null)
+  if (error) throw error
 
   /**
    * The mutable TimelineController, used internally
    */
   const controller = useMemo(
     () =>
-      historyStore.getTimelineController({
+      createTimelineController({
         client,
         documentId,
         documentType,
       }),
-    [client, documentId, documentType, historyStore],
+    [client, documentId, documentType],
   )
 
   /**
@@ -204,25 +221,22 @@ export function useTimelineStore({
             }),
             // Only emit (and in turn, re-render) when values have changed
             distinctUntilChanged(deepEquals),
-            // Emit initial timeline state whenever we encounter an error in TimelineController's `handler` callback.
-            // A little ham-fisted, but also reflects how we handle timeline errors in the UI
-            // (i.e. no timeline state or diffs are rendered and we revert to the current editable document)
-            catchError((err) => {
-              onError?.(err)
-              return of(INITIAL_TIMELINE_STATE)
-            }),
             tap((timelineState) => {
               timelineStateRef.current = timelineState
             }),
-            // Trigger callback function required by `useSyncExternalStore` to denote when to re-render
-            tap(callback),
           )
-          .subscribe()
+          .subscribe({
+            // Trigger callback function required by `useSyncExternalStore` to denote when to re-render
+            next: () => callback(),
+            // propagate errors wrapped in `TimelineError`s so they can be
+            // re-thrown in the component stack and caught in error boundaries
+            error: (err) => setError(new TimelineError(err)),
+          })
 
         return () => subscription.unsubscribe()
       },
     }
-  }, [controller, onError, timelineController$])
+  }, [controller, timelineController$])
 
   return timelineStore
 }

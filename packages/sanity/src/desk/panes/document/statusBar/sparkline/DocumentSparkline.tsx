@@ -1,25 +1,20 @@
 import {Box, Flex, useElementRect} from '@sanity/ui'
 import React, {useEffect, useMemo, useState, memo, useLayoutEffect} from 'react'
+import {useDocumentId, useDocumentType, useFormState, useTimelineSelector} from 'sanity/document'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {PublishStatus} from './PublishStatus'
 import {ReviewChangesButton} from './ReviewChangesButton'
-import {useSyncState, useTimelineSelector} from 'sanity'
+import {useSyncState} from 'sanity'
 
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
 export const DocumentSparkline = memo(function DocumentSparkline() {
-  const {
-    changesOpen,
-    documentId,
-    documentType,
-    editState,
-    onHistoryClose,
-    onHistoryOpen,
-    timelineStore,
-    value,
-  } = useDocumentPane()
+  const documentId = useDocumentId()
+  const documentType = useDocumentType()
+  const {value, editState} = useFormState()
+  const {changesOpen, onHistoryClose, onHistoryOpen} = useDocumentPane()
   const syncState = useSyncState(documentId, documentType)
 
   const lastUpdated = value?._updatedAt
@@ -35,7 +30,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
 
   // Subscribe to TimelineController changes and store internal state.
-  const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
+  const showingRevision = useTimelineSelector((state) => state.onOlderRevision)
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {

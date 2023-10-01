@@ -4,11 +4,10 @@ import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {useDocumentPane} from '../useDocumentPane'
-import {TimelineError} from './TimelineError'
 import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
-import {Chunk, useTimelineSelector} from 'sanity'
+import {useFormState, useTimeline, useTimelineSelector} from 'sanity/document'
+import {Chunk} from 'sanity'
 
 interface TimelineMenuProps {
   chunk: Chunk | null
@@ -22,28 +21,30 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore, isDeleted} =
-    useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)
   const toast = useToast()
 
-  const chunks = useTimelineSelector(timelineStore, (state) => state.chunks)
-  const loading = useTimelineSelector(timelineStore, (state) => state.isLoading)
-  const hasMoreChunks = useTimelineSelector(timelineStore, (state) => state.hasMoreChunks)
-  const realRevChunk = useTimelineSelector(timelineStore, (state) => state.realRevChunk)
-  const sinceTime = useTimelineSelector(timelineStore, (state) => state.sinceTime)
+  const {timelineStore, setRange} = useTimeline()
+  const {ready} = useFormState()
+  const {chunks, hasMoreChunks, isLoading, realRevChunk, sinceTime} = useTimelineSelector(
+    (state) => ({
+      chunks: state.chunks,
+      isLoading: state.isLoading,
+      hasMoreChunks: state.hasMoreChunks,
+      realRevChunk: state.realRevChunk,
+      sinceTime: state.sinceTime,
+    }),
+  )
 
   const handleOpen = useCallback(() => {
-    setTimelineMode(mode)
     setOpen(true)
-  }, [mode, setTimelineMode])
+  }, [])
 
   const handleClose = useCallback(() => {
-    setTimelineMode('closed')
     setOpen(false)
-  }, [setTimelineMode])
+  }, [])
 
   const handleClickOutside = useCallback(() => {
     if (open) {
@@ -68,8 +69,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     (revChunk: Chunk) => {
       try {
         const [sinceId, revId] = timelineStore.findRangeForRev(revChunk)
-        setTimelineMode('closed')
-        setTimelineRange(sinceId, revId)
+        setRange({since: sinceId, rev: revId})
       } catch (err) {
         toast.push({
           closable: true,
@@ -79,15 +79,14 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         })
       }
     },
-    [setTimelineMode, setTimelineRange, timelineStore, toast],
+    [setRange, timelineStore, toast],
   )
 
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
       try {
         const [sinceId, revId] = timelineStore.findRangeForSince(sinceChunk)
-        setTimelineMode('closed')
-        setTimelineRange(sinceId, revId)
+        setRange({since: sinceId, rev: revId})
       } catch (err) {
         toast.push({
           closable: true,
@@ -97,18 +96,16 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
         })
       }
     },
-    [setTimelineMode, setTimelineRange, timelineStore, toast],
+    [setRange, timelineStore, toast],
   )
 
   const handleLoadMore = useCallback(() => {
-    if (!loading) {
+    if (!isLoading) {
       timelineStore.loadMore()
     }
-  }, [loading, timelineStore])
+  }, [isLoading, timelineStore])
 
-  const content = timelineError ? (
-    <TimelineError />
-  ) : (
+  const content = (
     <>
       {mode === 'rev' && (
         <Timeline
