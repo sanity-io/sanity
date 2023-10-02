@@ -4,7 +4,7 @@ import {CurrentUser, PortableTextBlock} from '@sanity/types'
 import FocusLock from 'react-focus-lock'
 import {Stack} from '@sanity/ui'
 import {editorSchemaType} from '../config'
-import {MentionOptionsHookValue} from '../../../hooks'
+import {MentionOptionsHookValue} from '../../../types'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'
 

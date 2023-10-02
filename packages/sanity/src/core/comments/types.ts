@@ -1,5 +1,4 @@
 import {PortableTextBlock, User} from '@sanity/types'
-import {CommentOperations, MentionOptionsHookValue} from './hooks'
 
 /**
  * @beta
@@ -10,6 +9,24 @@ export interface Loadable<T> {
   error: Error | null
   loading: boolean
 }
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentOperations {
+  create: (comment: CommentCreatePayload) => Promise<void>
+  edit: (id: string, comment: CommentEditPayload) => Promise<void>
+  remove: (id: string) => Promise<void>
+  update: (id: string, comment: Partial<CommentCreatePayload>) => Promise<void>
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+
+export type MentionOptionsHookValue = Loadable<MentionOptionUser[]>
 
 /**
  * @beta

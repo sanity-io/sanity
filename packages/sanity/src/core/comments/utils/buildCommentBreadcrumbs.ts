@@ -8,6 +8,7 @@ import {
   ObjectSchemaType,
   ObjectFieldType,
   PathSegment,
+  isArraySchemaType,
 } from '@sanity/types'
 import {findIndex} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
@@ -91,9 +92,12 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
       value: currentValue,
     }
 
-    if (isKeySegment) {
-      const previousValue = getValueAtPath(documentValue, previousPath) as unknown[]
-      const arrayItemIndex = findArrayItemIndex(previousValue, seg)
+    // If the field is a key segment and the parent value is an array, we'll
+    // try to find the index of the array item in the parent value.
+    // If the index is not found, we'll mark it as invalid.
+    // This can happen if the array item has been removed from the document value.
+    if (isKeySegment && Array.isArray(parentValue)) {
+      const arrayItemIndex = findArrayItemIndex(parentValue, seg)
 
       fieldPaths.push({
         invalid: arrayItemIndex === false,
@@ -104,6 +108,7 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
       return
     }
 
+    // If we find a field in the schema type, we'll add it to the breadcrumb trail.
     if (field?.type) {
       const hidden = resolveConditionalProperty(field.type.hidden, conditionalContext)
 
@@ -113,23 +118,34 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
         title: getSchemaTypeTitle(field.type),
       })
 
+      // Store the current schema type so we can use it in the next iteration.
       currentSchemaType = field.type
 
       return
     }
 
-    if (currentSchemaType?.jsonType === 'array') {
+    if (isArraySchemaType(currentSchemaType)) {
+      // Get the value of the array field in the document value
       const arrayValue: any = getValueAtPath(documentValue, previousPath)
+
+      // Get the object type of the array field in the schema type
+      // from the array field's `_type` property in the document value.
       const objectType = arrayValue?._type
 
+      // Find the object field in the array field's `of` array using
+      // the object type from the document value.
       const objectField = currentSchemaType?.of?.find(
         (type) => type.name === objectType,
       ) as ObjectSchemaType
 
+      // Find the field in the object field's `fields` array
+      // using the field name from the path segment.
       const currentField = objectField?.fields?.find(
         (f) => f.name === seg,
       ) as ObjectField<SchemaType>
 
+      // If we don't find the object field, we'll mark it as invalid.
+      // This can happen if the object field has been removed from the schema type.
       if (!currentField) {
         fieldPaths.push({
           invalid: true,
@@ -140,26 +156,33 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
         return
       }
 
+      // Get the title of the current field
       const currentTitle = getSchemaTypeTitle(currentField?.type)
 
+      // Resolve the hidden property of the object field
       const objectFieldHidden = resolveConditionalProperty(
         objectField?.type?.hidden,
         conditionalContext,
       )
 
+      // Resolve the hidden property of the current field
       const currentFieldHidden = resolveConditionalProperty(
         currentField?.type.hidden,
         conditionalContext,
       )
 
+      // If the object field or the current field is hidden, we'll mark it as invalid.
       const isHidden = objectFieldHidden || currentFieldHidden
 
+      // Add the field to the breadcrumb trail
       fieldPaths.push({
         invalid: isHidden,
         isArrayItem: false,
         title: currentTitle,
       })
 
+      // If the current field is an object field, we'll set it as the current schema type
+      // so we can use it in the next iteration.
       currentSchemaType = currentField?.type
 
       return

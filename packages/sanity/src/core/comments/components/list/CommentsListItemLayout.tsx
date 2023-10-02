@@ -31,11 +31,16 @@ import {TimeAgoOpts, useTimeAgo} from '../../../hooks'
 import {useUser} from '../../../store'
 import {CommentMessageSerializer} from '../pte'
 import {CommentInput} from '../pte/comment-input'
-import {CommentDocument, CommentEditPayload, CommentMessage, CommentStatus} from '../../types'
+import {
+  CommentDocument,
+  CommentEditPayload,
+  CommentMessage,
+  CommentStatus,
+  MentionOptionsHookValue,
+} from '../../types'
 import {FLEX_GAP} from '../constants'
 import {useDidUpdate} from '../../../form'
 import {useCommentHasChanged} from '../../helpers'
-import {MentionOptionsHookValue} from '../../hooks'
 import {TextTooltip} from '../TextTooltip'
 import {CommentsAvatar, SpacerAvatar} from '../avatars'
 
