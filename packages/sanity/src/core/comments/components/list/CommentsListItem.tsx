@@ -3,6 +3,7 @@ import {Button, Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser, Path} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
+// import * as PathUtils from '@sanity/util/paths'
 import {CommentInput, CommentInputHandle} from '../pte'
 import {
   CommentCreatePayload,
@@ -73,7 +74,7 @@ export function CommentsListItem(props: CommentsListItemProps) {
 
   const replyInputRef = useRef<CommentInputHandle>(null)
 
-  const handleSubmit = useCallback(() => {
+  const handleReplySubmit = useCallback(() => {
     const nextComment: CommentCreatePayload = {
       fieldPath: parentComment.target.path.field,
       message: value,
@@ -95,6 +96,12 @@ export function CommentsListItem(props: CommentsListItemProps) {
     parentComment.threadId,
     value,
   ])
+
+  // const handleThreadRootClick = useCallback(() => {
+  //   const path = PathUtils.fromString(parentComment.target.path.field)
+
+  //   onPathFocus?.(path)
+  // }, [onPathFocus, parentComment.target.path.field])
 
   const cancelEdit = useCallback(() => {
     setValue(EMPTY_ARRAY)
@@ -184,7 +191,7 @@ export function CommentsListItem(props: CommentsListItemProps) {
                 mentionOptions={mentionOptions}
                 onChange={setValue}
                 onEditDiscard={cancelEdit}
-                onSubmit={handleSubmit}
+                onSubmit={handleReplySubmit}
                 placeholder="Reply"
                 ref={replyInputRef}
                 value={value}

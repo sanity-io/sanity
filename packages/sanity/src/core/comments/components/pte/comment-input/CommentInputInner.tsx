@@ -36,7 +36,7 @@ const RootCard = styled(Card)(({theme}) => {
       box-shadow: unset;
     }
 
-    &[data-focused='true'] {
+    &[data-focused='true']:focus-within {
       ${EditableWrap} {
         min-height: 1em;
       }

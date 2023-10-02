@@ -1,10 +1,10 @@
 import {CurrentUser, Path} from '@sanity/types'
-import {Box, Breadcrumbs, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Breadcrumbs, Button, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import styled from 'styled-components'
-import {ChevronRightIcon, WarningOutlineIcon} from '@sanity/icons'
+import {ChevronRightIcon} from '@sanity/icons'
 import {AddCommentIcon} from '../icons'
 import {CommentInputHandle} from '../pte'
 import {
@@ -17,7 +17,7 @@ import {TextTooltip} from '../TextTooltip'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './styles'
 
-const BreadcrumbsFlex = styled(Flex)`
+const HeaderFlex = styled(Flex)`
   min-height: 25px;
 `
 
@@ -26,7 +26,6 @@ interface CommentThreadLayoutProps {
   canCreateNewThread: boolean
   children: React.ReactNode
   currentUser: CurrentUser
-  hasInvalidField?: boolean
   mentionOptions: MentionOptionsHookValue
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   path: Path
@@ -38,7 +37,6 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     canCreateNewThread,
     children,
     currentUser,
-    hasInvalidField,
     mentionOptions,
     onNewThreadCreate,
     path,
@@ -83,63 +81,45 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
   return (
     <Stack space={2}>
-      {hasInvalidField && (
-        <BreadcrumbsFlex align="center" gap={2} paddingX={1} sizing="border">
-          <Card tone="caution" style={{background: 'transparent'}}>
-            <Text size={1} muted>
-              <WarningOutlineIcon />
-            </Text>
-          </Card>
+      <HeaderFlex align="center" gap={2} paddingX={1} sizing="border">
+        <Stack flex={1}>
+          <Breadcrumbs
+            maxLength={3}
+            separator={
+              <Text muted size={1}>
+                <ChevronRightIcon />
+              </Text>
+            }
+          >
+            {breadcrumbs?.map((p, index) => {
+              const idx = `${p.title}-${index}`
 
-          <Box flex={1}>
-            <Text textOverflow="ellipsis" size={1} muted>
-              <b>Missing field: </b> ({PathUtils.toString(path)})
-            </Text>
-          </Box>
-        </BreadcrumbsFlex>
-      )}
+              return (
+                <Box key={idx}>
+                  <Text size={1} weight="semibold" textOverflow="ellipsis">
+                    {p.title}
+                  </Text>
+                </Box>
+              )
+            })}
+          </Breadcrumbs>
+        </Stack>
 
-      {!hasInvalidField && (
-        <BreadcrumbsFlex align="center" gap={2} paddingX={1} sizing="border">
-          <Stack flex={1}>
-            <Breadcrumbs
-              maxLength={3}
-              separator={
-                <Text muted size={1}>
-                  <ChevronRightIcon />
-                </Text>
-              }
-            >
-              {breadcrumbs?.map((p, index) => {
-                const idx = `${p.title}-${index}`
+        {canCreateNewThread && (
+          <TextTooltip text="Start a new thread">
+            <Button
+              aria-label="Start a new thread"
+              fontSize={1}
+              icon={AddCommentIcon}
+              mode="bleed"
+              onClick={onCreateNewThreadClick}
+              padding={2}
+            />
+          </TextTooltip>
+        )}
+      </HeaderFlex>
 
-                return (
-                  <Box key={idx}>
-                    <Text size={1} weight="semibold" textOverflow="ellipsis">
-                      {p.title}
-                    </Text>
-                  </Box>
-                )
-              })}
-            </Breadcrumbs>
-          </Stack>
-
-          {canCreateNewThread && (
-            <TextTooltip text="Start a new thread...">
-              <Button
-                aria-label="Start a new thread"
-                fontSize={1}
-                icon={AddCommentIcon}
-                mode="bleed"
-                onClick={onCreateNewThreadClick}
-                padding={2}
-              />
-            </TextTooltip>
-          )}
-        </BreadcrumbsFlex>
-      )}
-
-      {displayNewThreadInput && !hasInvalidField && (
+      {displayNewThreadInput && (
         <ThreadCard tone="primary">
           <CreateNewThreadInput
             currentUser={currentUser}
