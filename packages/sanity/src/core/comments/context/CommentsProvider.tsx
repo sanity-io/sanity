@@ -134,7 +134,7 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
     if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
 
     const threadItems = buildCommentThreadItems({
-      comments: data,
+      comments: data || EMPTY_ARRAY,
       schemaType,
       currentUser,
       documentValue,

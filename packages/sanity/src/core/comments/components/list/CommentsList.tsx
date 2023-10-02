@@ -7,8 +7,8 @@ import {
   CommentEditPayload,
   CommentStatus,
   CommentThreadItem,
+  MentionOptionsHookValue,
 } from '../../types'
-import {MentionOptionsHookValue} from '../../hooks'
 import {CommentsListItem} from './CommentsListItem'
 import {CommentThreadLayout} from './CommentThreadLayout'
 import {EMPTY_STATE_MESSAGES} from './constants'

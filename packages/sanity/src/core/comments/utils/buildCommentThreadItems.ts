@@ -6,7 +6,7 @@ import {buildCommentBreadcrumbs} from './buildCommentBreadcrumbs'
 const EMPTY_ARRAY: [] = []
 
 interface BuildCommentThreadItemsProps {
-  comments: CommentDocument[] | null
+  comments: CommentDocument[]
   currentUser: CurrentUser
   documentValue: Partial<SanityDocument> | null
   schemaType: SchemaType
@@ -19,7 +19,7 @@ interface BuildCommentThreadItemsProps {
  * returned array.
  */
 export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): CommentThreadItem[] {
-  const {currentUser, schemaType, documentValue, comments = EMPTY_ARRAY} = props
+  const {comments, currentUser, documentValue, schemaType} = props
   const parentComments = comments?.filter((c) => !c.parentCommentId) || EMPTY_ARRAY
 
   const items = parentComments
@@ -51,5 +51,5 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
     })
     .filter(Boolean) as CommentThreadItem[]
 
-  return items || EMPTY_ARRAY
+  return items
 }
