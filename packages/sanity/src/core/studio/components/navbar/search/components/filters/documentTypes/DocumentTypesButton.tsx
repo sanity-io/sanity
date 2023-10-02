@@ -1,5 +1,5 @@
 import {SelectIcon} from '@sanity/icons'
-import {Button, Popover, Theme, useClickOutside} from '@sanity/ui'
+import {Button, Placement, Popover, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
@@ -17,6 +17,8 @@ const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
     }
   `
 })
+
+const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
 export function DocumentTypesButton() {
   const [open, setOpen] = useState(false)
@@ -47,6 +49,7 @@ export function DocumentTypesButton() {
       }
       open={open}
       placement="bottom-start"
+      fallbackPlacements={FALLBACK_PLACEMENTS}
       portal
       radius={POPOVER_RADIUS}
       ref={setPopoverElement}
