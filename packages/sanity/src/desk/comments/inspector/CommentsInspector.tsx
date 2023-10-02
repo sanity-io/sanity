@@ -102,12 +102,16 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
   const onDeleteStart = useCallback(
     (id: string) => {
+      const parent = currentComments.find((c) => c.parentComment?._id === id)
+      const isParent = Boolean(parent && parent?.replies?.length > 0)
+
       setShowDeleteDialog(true)
       setCommentToDelete({
         commentId: id,
-        isParent: currentComments.some((c) => c.parentComment._id === id),
+        isParent,
       })
     },
+
     [currentComments],
   )
 
