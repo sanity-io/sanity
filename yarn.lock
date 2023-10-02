@@ -4016,10 +4016,10 @@
     uuid "^9.0.0"
     zod "^3.21.4"
 
-"@sanity/tsdoc@1.0.0-alpha.38":
-  version "1.0.0-alpha.38"
-  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-alpha.38.tgz#572462d71bc167adeaae986f017dc8238df53f47"
-  integrity sha512-ZC5oMEP4Cfg9KOfPVGtf5EbbLfSkiojy46KfQ4k3nJx0NQIwVB2lmVB6ZVYYqVtQH35okrW6WMV4DXzQp2fhCQ==
+"@sanity/tsdoc@1.0.0-bundle.types.2":
+  version "1.0.0-bundle.types.2"
+  resolved "https://registry.yarnpkg.com/@sanity/tsdoc/-/tsdoc-1.0.0-bundle.types.2.tgz#45b3f44d54008bafff29739bc6dad33196ed5711"
+  integrity sha512-LkROIQxGpRfqXuu+VLfZJAwkvZEhEPyaP4GehaoXyhEZ+2eD2hlMpL3MAKV7juJJZZlxZOayrBdB8LEA9cDRJg==
   dependencies:
     "@microsoft/api-extractor" "7.35.0"
     "@microsoft/api-extractor-model" "7.27.0"

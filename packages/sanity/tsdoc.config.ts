@@ -10,4 +10,8 @@ export default defineConfig({
       token: process.env.EXTRACT_SANITY_API_TOKEN,
     },
   },
+  input: {
+    type: 'fs',
+    bundledPackages: ['@sanity/types'],
+  },
 })
