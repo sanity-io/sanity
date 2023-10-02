@@ -1,8 +1,7 @@
 import {CurrentUser} from '@sanity/types'
 import {EMPTY_ARRAY} from '@sanity/ui-workshop'
 import React, {useState, useCallback, forwardRef} from 'react'
-import {MentionOptionsHookValue} from '../../hooks'
-import {CommentMessage} from '../../types'
+import {CommentMessage, MentionOptionsHookValue} from '../../types'
 import {CommentInput, CommentInputHandle} from '../pte'
 
 interface CreateNewThreadInputProps {

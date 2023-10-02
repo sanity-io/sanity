@@ -1,15 +1,13 @@
 /* eslint-disable max-nested-callbacks */
 import {useState, useEffect, useMemo} from 'react'
-import {Observable, concat, forkJoin, map, mergeMap, of, switchMap, tap} from 'rxjs'
+import {Observable, concat, forkJoin, map, mergeMap, of, switchMap} from 'rxjs'
 import {SanityDocument} from '@sanity/client'
 import {sortBy} from 'lodash'
 import {useProjectStore, useUserStore, ProjectData} from '../../../store'
-import {Loadable, MentionOptionUser} from '../../types'
+import {Loadable, MentionOptionUser, MentionOptionsHookValue} from '../../types'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {grantsPermissionOn} from './helpers'
-
-export type MentionOptionsHookValue = Loadable<MentionOptionUser[]>
 
 const INITIAL_STATE: MentionOptionsHookValue = {
   data: [],

@@ -5,10 +5,9 @@ import {
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo, useState} from 'react'
 import {Path, isKeySegment, isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import {CommentMessage} from '../../../types'
+import {CommentMessage, MentionOptionsHookValue} from '../../../types'
 import {useDidUpdate} from '../../../../form'
 import {useCommentHasChanged} from '../../../helpers'
-import {MentionOptionsHookValue} from '../../../hooks'
 
 export interface CommentInputContextValue {
   canSubmit?: boolean
@@ -24,9 +23,9 @@ export interface CommentInputContextValue {
   insertMention: (userId: string) => void
   mentionOptions: MentionOptionsHookValue
   mentionsMenuOpen: boolean
+  mentionsSearchTerm: string
   onBeforeInput: (event: InputEvent) => void
   openMentions: () => void
-  mentionsSearchTerm: string
   value: CommentMessage
 }
 

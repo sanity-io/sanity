@@ -6,9 +6,13 @@ import * as PathUtils from '@sanity/util/paths'
 import styled from 'styled-components'
 import {ChevronRightIcon, WarningOutlineIcon} from '@sanity/icons'
 import {AddCommentIcon} from '../icons'
-import {MentionOptionsHookValue} from '../../hooks'
 import {CommentInputHandle} from '../pte'
-import {CommentMessage, CommentCreatePayload, CommentBreadcrumbs} from '../../types'
+import {
+  CommentMessage,
+  CommentCreatePayload,
+  CommentBreadcrumbs,
+  MentionOptionsHookValue,
+} from '../../types'
 import {TextTooltip} from '../TextTooltip'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './styles'
