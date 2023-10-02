@@ -7,6 +7,8 @@ import {CommentsAvatar} from '../avatars/CommentsAvatar'
 
 const InnerFlex = styled(Flex)``
 
+const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
+
 interface MentionsItemProps {
   user: MentionOptionUser
   onSelect: (userId: string) => void
@@ -25,7 +27,7 @@ export function MentionsMenuItem(props: MentionsItemProps) {
       {loadedUser.displayName}
     </Text>
   ) : (
-    <TextSkeleton size={1} style={{width: '50%'}} />
+    <TextSkeleton size={1} style={SKELETON_INLINE_STYLE} />
   )
 
   const handleSelect = useCallback(() => {
