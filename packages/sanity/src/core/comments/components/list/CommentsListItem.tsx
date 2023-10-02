@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Card, CardProps, Flex, Stack} from '@sanity/ui'
+import {Button, Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser, Path} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
@@ -10,8 +10,8 @@ import {
   CommentEditPayload,
   CommentMessage,
   CommentStatus,
+  MentionOptionsHookValue,
 } from '../../types'
-import {MentionOptionsHookValue} from '../../hooks'
 import {SpacerAvatar} from '../avatars'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
