@@ -1,5 +1,5 @@
 import React, {forwardRef, useCallback} from 'react'
-import {Autocomplete, Box, Flex, Popover, Text} from '@sanity/ui'
+import {Autocomplete, Box, Flex, Placement, Popover, Text} from '@sanity/ui'
 import styled from 'styled-components'
 
 const StyledPopover = styled(Popover)`
@@ -12,6 +12,8 @@ const StyledPopover = styled(Popover)`
 const StyledText = styled(Text)`
   word-break: break-word;
 `
+
+const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   props: React.ComponentProps<typeof Autocomplete> & {
@@ -42,6 +44,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       <StyledPopover
         data-testid="autocomplete-popover"
         placement="bottom-start"
+        fallbackPlacements={FALLBACK_PLACEMENTS}
         arrow={false}
         constrainSize
         onMouseEnter={onMouseEnter}
