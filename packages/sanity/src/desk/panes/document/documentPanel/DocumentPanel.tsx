@@ -62,6 +62,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     isDeleting,
     isDeleted,
     timelineStore,
+    formState,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
@@ -74,6 +75,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const formContainerElement = useRef<HTMLDivElement | null>(null)
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
+
+  const selectedGroup = useMemo(() => {
+    if (!formState) return undefined
+
+    return formState.groups.find((group) => group.selected)
+  }, [formState])
 
   const activeView = useMemo(
     () => views.find((view) => view.id === activeViewId) || views[0] || {type: 'form'},
@@ -172,6 +179,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                       $disabled={layoutCollapsed || false}
                       data-testid="document-panel-scroller"
                       ref={setDocumentScrollElement}
+                      // Note: this is to make sure the scroll container is changed
+                      // when the selected group changes which causes virtualization
+                      // to re-render and re-measure the scroll container
+                      key={`${selectedGroup?.name}-${documentId}}`}
                     >
                       <FormView
                         hidden={formViewHidden}

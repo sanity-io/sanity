@@ -19,8 +19,8 @@ export function MyField(props: FieldProps) {
   )
 }
 
-const getAuthors = (client: SanityClient) => {
-  const query = `*[_type == "author"][0...20]{_id}`
+const getAuthors = (client: SanityClient, limit = 20) => {
+  const query = `*[_type == "author"][0...${limit}]{_id}`
 
   return client.fetch(query)
 }
@@ -37,6 +37,14 @@ export const virtualizationDebug = defineType({
     {
       name: 'objects',
       title: 'Objects',
+    },
+    {
+      name: 'singleItem',
+      title: 'Single Item test',
+    },
+    {
+      name: 'singleItemNested',
+      title: 'Single Item Nested Group',
     },
   ],
 
@@ -240,6 +248,85 @@ export const virtualizationDebug = defineType({
             return arr.map((_, i) => ({
               _type: 'playlist',
               name: `Playlist ${i}`,
+            }))
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'arrayListSingleGroup',
+      title: 'Array List single item in group',
+      type: 'array',
+      group: 'singleItem',
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'author'}],
+        },
+      ],
+      initialValue: async (_, context) => {
+        const {getClient} = context
+        const client = getClient({apiVersion: '2022-12-07'})
+        const authors = await getAuthors(client, 8)
+
+        return authors.map((author: any) => ({
+          _type: 'reference',
+          _ref: author._id,
+        }))
+      },
+    }),
+
+    defineField({
+      name: 'arrayInObjectNestedGroup',
+      title: 'Array in Object Arrays',
+      type: 'object',
+      group: 'singleItemNested',
+      options: {
+        collapsible: true,
+      },
+      groups: [
+        {
+          name: 'nestedGroup',
+          title: 'Nested Group',
+        },
+      ],
+      fields: [
+        defineField({
+          name: 'arrayListNestedGroup',
+          title: 'Array List with no customization',
+          type: 'array',
+          of: [
+            {
+              type: 'playlist',
+            },
+          ],
+          initialValue: () => {
+            const arr = new Array(10).fill(null)
+            return arr.map((_, i) => ({
+              _type: 'playlist',
+              name: `Playlist ${i}`,
+            }))
+          },
+        }),
+        defineField({
+          name: 'arrayListNestedSingleGroup',
+          title: 'Array List single item in nested group',
+          type: 'array',
+          group: 'nestedGroup',
+          of: [
+            {
+              type: 'reference',
+              to: [{type: 'author'}],
+            },
+          ],
+          initialValue: async (_, context) => {
+            const {getClient} = context
+            const client = getClient({apiVersion: '2022-12-07'})
+            const authors = await getAuthors(client, 8)
+
+            return authors.map((author: any) => ({
+              _type: 'reference',
+              _ref: author._id,
             }))
           },
         }),
