@@ -35,7 +35,7 @@
     "@sanity/logos": "^2.1.2",
     "@sanity/migrate": "3.27.1",
     "@sanity/portable-text-editor": "3.27.1",
-    "@sanity/tsdoc": "1.0.0-alpha.38",
+    "@sanity/tsdoc": "1.0.0-bundle.types.2",
     "@sanity/types": "3.27.1",
     "@sanity/ui": "^2.0.1",
     "@sanity/ui-workshop": "^1.0.0",
