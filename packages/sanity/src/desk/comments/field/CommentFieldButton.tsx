@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
   Tooltip,
+  TooltipProps,
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
@@ -22,6 +23,16 @@ import {
   useComments,
   useDidUpdate,
 } from 'sanity'
+
+const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500}
+
+const TooltipText = styled(Text)`
+  width: max-content;
+`
+
+const ContentStack = styled(Stack)`
+  width: 320px;
+`
 
 const StyledPopover = styled(Popover)(({theme}) => {
   const {space} = theme.sanity
@@ -106,14 +117,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
 
   if (!hasComments) {
     const content = (
-      <Stack
-        padding={2}
-        space={4}
-        style={{
-          // todo: improve
-          width: 320,
-        }}
-      >
+      <ContentStack padding={2} space={4}>
         <CommentInput
           currentUser={currentUser}
           focusLock
@@ -125,7 +129,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
           onSubmit={handleSubmit}
           value={value}
         />
-      </Stack>
+      </ContentStack>
     )
 
     return (
@@ -140,7 +144,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
       >
         <div>
           <Tooltip
-            delay={{open: 500}}
+            delay={TOOLTIP_DELAY}
             disabled={open}
             portal
             placement="top"
@@ -170,13 +174,11 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
       portal
       placement="top"
       content={
-        <Box padding={2}>
-          <Text size={1} style={{whiteSpace: 'nowrap'}}>
-            View comment{count > 1 ? 's' : ''}
-          </Text>
+        <Box padding={2} sizing="border">
+          <TooltipText size={1}>View comment{count > 1 ? 's' : ''}</TooltipText>
         </Box>
       }
-      delay={{open: 500}}
+      delay={TOOLTIP_DELAY}
       fallbackPlacements={['bottom']}
     >
       <Button aria-label="Open comments" mode="bleed" onClick={handleClick} padding={2}>
