@@ -30,7 +30,10 @@ const EditableWrapStack = styled(Stack)(() => {
 export const StyledPopover = styled(Popover)(() => {
   return css`
     // Position the Popover relative to the @
-    transform: translate(6px, 6px); // todo: improve
+    transform: translateY(6px);
+    &[data-placement='top-end'] {
+      transform: translateY(-12px);
+    }
 
     [data-ui='Popover__wrapper'] {
       border-radius: ${({theme}) => theme.sanity.radius[3]}px;
@@ -128,6 +131,7 @@ export function Editable(props: EditableProps) {
       switch (event.code) {
         case 'Enter':
           if (mentionsMenuOpen) {
+            // Stop the event from creating a new block in the editor here
             event.preventDefault()
             event.stopPropagation()
           }
@@ -152,7 +156,6 @@ export function Editable(props: EditableProps) {
         <StyledPopover
           arrow={false}
           constrainSize
-          disabled={!mentionsMenuOpen}
           content={
             <MentionsMenu
               ref={mentionsMenuRef}
@@ -163,6 +166,8 @@ export function Editable(props: EditableProps) {
               // error={mentionOptions.error}
             />
           }
+          disabled={!mentionsMenuOpen}
+          fallbackPlacements={['bottom-end', 'top-end']}
           open={mentionsMenuOpen}
           placement="bottom-end"
           portal
