@@ -61,6 +61,8 @@ function normalizeIcon(
   return createDefaultIcon(title, subtitle)
 }
 
+const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
+
 /**
  * Takes in a config (created from the `defineConfig` function) and returns
  * an array of `WorkspaceSummary`. Note: this only partially resolves a config.
@@ -98,97 +100,95 @@ export function prepareConfig(
     })
   }
 
-  const workspaces = workspaceOptions.map(
-    ({unstable_sources: nestedSources = [], ...rootSource}): WorkspaceSummary => {
-      const sources = [rootSource as SourceOptions, ...nestedSources]
+  const workspaces = workspaceOptions.map((rawWorkspace): WorkspaceSummary => {
+    if (preparedWorkspaces.has(rawWorkspace)) {
+      return preparedWorkspaces.get(rawWorkspace)!
+    }
+    const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
+    const sources = [rootSource as SourceOptions, ...nestedSources]
 
-      const resolvedSources = sources.map((source): InternalSource => {
-        const {projectId, dataset} = source
+    const resolvedSources = sources.map((source): InternalSource => {
+      const {projectId, dataset} = source
 
-        let schemaTypes
-        try {
-          schemaTypes = resolveConfigProperty({
-            propertyName: 'schema.types',
-            config: source,
-            context: {projectId, dataset},
-            initialValue: [],
-            reducer: schemaTypesReducer,
-          })
-        } catch (e) {
-          throw new ConfigResolutionError({
-            name: source.name,
-            type: 'source',
-            causes: [e],
-          })
-        }
-
-        const schema = createSchema({
-          name: source.name,
-          types: schemaTypes,
+      let schemaTypes
+      try {
+        schemaTypes = resolveConfigProperty({
+          propertyName: 'schema.types',
+          config: source,
+          context: {projectId, dataset},
+          initialValue: [],
+          reducer: schemaTypesReducer,
         })
-
-        const schemaValidationProblemGroups = schema._validation
-        const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
-          msg.problems.some(isError),
-        )
-
-        if (schemaValidationProblemGroups && schemaErrors?.length) {
-          // TODO: consider using the `ConfigResolutionError`
-          throw new SchemaError(schema)
-        }
-
-        const auth = getAuthStore(source)
-        const source$ = auth.state.pipe(
-          map(({client, authenticated, currentUser}) => {
-            return resolveSource({
-              config: source,
-              client,
-              currentUser,
-              schema,
-              authenticated,
-              auth,
-            })
-          }),
-          shareReplay(1),
-        )
-
-        return {
+      } catch (e) {
+        throw new ConfigResolutionError({
           name: source.name,
-          projectId: source.projectId,
-          dataset: source.dataset,
-          title: source.title || startCase(source.name),
-          auth,
-          schema,
-          source: source$,
-        }
-      })
-
-      const title = rootSource.title || startCase(rootSource.name)
-
-      const workspaceSummary: WorkspaceSummary = {
-        type: 'workspace-summary',
-        auth: resolvedSources[0].auth,
-        basePath: joinBasePath(rootPath, rootSource.basePath),
-        dataset: rootSource.dataset,
-        schema: resolvedSources[0].schema,
-        icon: normalizeIcon(
-          rootSource.icon,
-          title,
-          `${rootSource.projectId} ${rootSource.dataset}`,
-        ),
-        name: rootSource.name || 'default',
-        projectId: rootSource.projectId,
-        theme: rootSource.theme || studioTheme,
-        title,
-        subtitle: rootSource.subtitle,
-        __internal: {
-          sources: resolvedSources,
-        },
+          type: 'source',
+          causes: [e],
+        })
       }
 
-      return workspaceSummary
-    },
-  )
+      const schema = createSchema({
+        name: source.name,
+        types: schemaTypes,
+      })
+
+      const schemaValidationProblemGroups = schema._validation
+      const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
+        msg.problems.some(isError),
+      )
+
+      if (schemaValidationProblemGroups && schemaErrors?.length) {
+        // TODO: consider using the `ConfigResolutionError`
+        throw new SchemaError(schema)
+      }
+
+      const auth = getAuthStore(source)
+      const source$ = auth.state.pipe(
+        map(({client, authenticated, currentUser}) => {
+          return resolveSource({
+            config: source,
+            client,
+            currentUser,
+            schema,
+            authenticated,
+            auth,
+          })
+        }),
+        shareReplay(1),
+      )
+
+      return {
+        name: source.name,
+        projectId: source.projectId,
+        dataset: source.dataset,
+        title: source.title || startCase(source.name),
+        auth,
+        schema,
+        source: source$,
+      }
+    })
+
+    const title = rootSource.title || startCase(rootSource.name)
+
+    const workspaceSummary: WorkspaceSummary = {
+      type: 'workspace-summary',
+      auth: resolvedSources[0].auth,
+      basePath: joinBasePath(rootPath, rootSource.basePath),
+      dataset: rootSource.dataset,
+      schema: resolvedSources[0].schema,
+      icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
+      name: rootSource.name || 'default',
+      projectId: rootSource.projectId,
+      theme: rootSource.theme || studioTheme,
+      title,
+      subtitle: rootSource.subtitle,
+      __internal: {
+        sources: resolvedSources,
+      },
+    }
+    preparedWorkspaces.set(rawWorkspace, workspaceSummary)
+    return workspaceSummary
+  })
 
   return {type: 'prepared-config', workspaces}
 }
