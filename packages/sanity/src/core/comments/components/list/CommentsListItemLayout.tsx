@@ -21,6 +21,7 @@ import {
   MenuItem,
   Box,
   TooltipDelayGroupProvider,
+  TooltipDelayGroupProviderProps,
 } from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {CurrentUser, Path} from '@sanity/types'
@@ -44,14 +45,23 @@ import {useCommentHasChanged} from '../../helpers'
 import {TextTooltip} from '../TextTooltip'
 import {CommentsAvatar, SpacerAvatar} from '../avatars'
 
+const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
+const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
+
+const TimeText = styled(Text)`
+  min-width: max-content;
+`
+
 const FloatingLayer = styled(Layer)(({theme}) => {
   const {space} = theme.sanity
 
   return css`
-    position: absolute;
-    top: 0;
-    right: 0;
+    opacity: 1;
     transform: translate(${space[1]}px, -${space[1]}px);
+    // If hover is supported, the position is set to absolute (see below)
+    position: static;
+    right: 0;
+    top: 0;
   `
 })
 
@@ -71,21 +81,27 @@ const FloatingCard = styled(Card)(({theme}) => {
 const RootStack = styled(Stack)`
   position: relative;
 
-  ${FloatingLayer}:not(:focus-within) {
-    opacity: 0;
+  // Only show the floating layer when hover is supported.
+  // Else, the layer is always visible.
+  @media (hover: hover) {
+    ${FloatingLayer} {
+      position: absolute;
+
+      &:not(:focus-within) {
+        opacity: 0;
+      }
+    }
+
+    &:hover {
+      ${FloatingLayer} {
+        opacity: 1;
+      }
+    }
   }
 
   &[data-menu-open='true'] {
     ${FloatingLayer} {
       opacity: 1;
-    }
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      ${FloatingLayer} {
-        opacity: 1;
-      }
     }
   }
 `
@@ -132,6 +148,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const createdDate = _createdAt ? new Date(_createdAt) : new Date()
   const createdTimeAgo = useTimeAgo(createdDate, TIME_AGO_OPTS)
+  const formattedCreatedAt = format(createdDate, 'PPPPp')
+
+  const formattedLastEditAt = lastEditedAt ? format(new Date(lastEditedAt), 'PPPPp') : null
 
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -191,7 +210,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       {user.displayName}
     </Text>
   ) : (
-    <TextSkeleton size={1} style={{width: '50%'}} />
+    <TextSkeleton size={1} style={SKELETON_INLINE_STYLE} />
   )
 
   const floatingMenuEnabled = canEdit || canDelete || isParent || onPathFocus || onStatusChange
@@ -206,58 +225,26 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       <Flex align="center" gap={FLEX_GAP} flex={1}>
         {avatar}
 
-        <Flex align="center" paddingBottom={1} sizing="border">
-          <Flex align="flex-end" gap={2} flex={1}>
+        <Flex align="center" paddingBottom={1} sizing="border" flex={1}>
+          <Flex align="flex-end" gap={2}>
             <Box flex={1}>{name}</Box>
 
             <Flex align="center" gap={1}>
-              <Text
-                size={0}
-                muted
-                title={format(createdDate, 'PPPPp')}
-                style={{minWidth: 'max-content'}}
-              >
+              <TimeText size={0} muted title={formattedCreatedAt}>
                 {createdTimeAgo}
-              </Text>
+              </TimeText>
 
-              {lastEditedAt && (
-                <Text
-                  size={0}
-                  muted
-                  title={format(new Date(lastEditedAt), 'PPPPp')}
-                  style={{minWidth: 'max-content'}}
-                >
+              {formattedLastEditAt && (
+                <TimeText size={0} muted title={formattedLastEditAt}>
                   (edited)
-                </Text>
+                </TimeText>
               )}
             </Flex>
           </Flex>
         </Flex>
-      </Flex>
 
-      {isEditing && (
-        <Flex align="flex-start" gap={2} ref={setRootElement}>
-          <SpacerAvatar />
-
-          <Stack flex={1}>
-            <CommentInput
-              currentUser={currentUser}
-              focusOnMount
-              mentionOptions={mentionOptions}
-              onChange={setValue}
-              onEditDiscard={handleEditDiscard}
-              onMentionMenuOpenChange={setMentionMenuOpen}
-              onSubmit={handleEditSubmit}
-              value={value}
-              withAvatar={false}
-            />
-          </Stack>
-        </Flex>
-      )}
-
-      {!isEditing && (
-        <>
-          <TooltipDelayGroupProvider delay={{open: 500}}>
+        {!isEditing && (
+          <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
             <FloatingLayer
               hidden={!floatingMenuEnabled}
               data-root-menu={isParent ? 'true' : 'false'}
@@ -334,13 +321,35 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               </FloatingCard>
             </FloatingLayer>
           </TooltipDelayGroupProvider>
+        )}
+      </Flex>
 
-          <Flex gap={FLEX_GAP}>
-            <SpacerAvatar />
+      {isEditing && (
+        <Flex align="flex-start" gap={2} ref={setRootElement}>
+          <SpacerAvatar />
 
-            <CommentMessageSerializer blocks={message} />
-          </Flex>
-        </>
+          <Stack flex={1}>
+            <CommentInput
+              currentUser={currentUser}
+              focusOnMount
+              mentionOptions={mentionOptions}
+              onChange={setValue}
+              onEditDiscard={handleEditDiscard}
+              onMentionMenuOpenChange={setMentionMenuOpen}
+              onSubmit={handleEditSubmit}
+              value={value}
+              withAvatar={false}
+            />
+          </Stack>
+        </Flex>
+      )}
+
+      {!isEditing && (
+        <Flex gap={FLEX_GAP}>
+          <SpacerAvatar />
+
+          <CommentMessageSerializer blocks={message} />
+        </Flex>
       )}
     </RootStack>
   )
