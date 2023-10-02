@@ -17,6 +17,7 @@ const blockType = defineField({
   name: 'block',
   of: [mentionObject],
   styles: [{title: 'Normal', value: 'normal'}],
+  lists: [],
 })
 
 const portableTextType = defineArrayMember({
