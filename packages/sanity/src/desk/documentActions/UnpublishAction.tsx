@@ -1,6 +1,7 @@
 import {UnpublishIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
 import {ConfirmDeleteDialog} from '../components'
+import {deskLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -8,10 +9,13 @@ import {
   useCurrentUser,
   useDocumentOperation,
   DocumentActionModalDialogProps,
+  useTranslation,
 } from 'sanity'
 
-const DISABLED_REASON_TITLE = {
-  NOT_PUBLISHED: 'This document is not published',
+const DISABLED_REASON_KEY = {
+  NOT_PUBLISHED: 'action.unpublish.disabled.notPublished',
+  NOT_READY: 'action.unpublish.disabled.notReady',
+  LIVE_EDIT_ENABLED: 'action.unpublish.disabled.liveEditEnabled',
 }
 
 /** @internal */
@@ -30,6 +34,7 @@ export const UnpublishAction: DocumentActionComponent = ({
     permission: 'unpublish',
   })
   const currentUser = useCurrentUser()
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
@@ -85,10 +90,8 @@ export const UnpublishAction: DocumentActionComponent = ({
     tone: 'critical',
     icon: UnpublishIcon,
     disabled: Boolean(unpublish.disabled) || isPermissionsLoading,
-    label: 'Unpublish',
-    title: unpublish.disabled
-      ? DISABLED_REASON_TITLE[unpublish.disabled as keyof typeof DISABLED_REASON_TITLE]
-      : '',
+    label: t('action.unpublish.label'),
+    title: unpublish.disabled ? t(DISABLED_REASON_KEY[unpublish.disabled]) : '',
     onHandle: () => setConfirmDialogOpen(true),
     dialog,
   }
