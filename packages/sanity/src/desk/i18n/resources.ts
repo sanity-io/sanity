@@ -4,7 +4,11 @@
  * @internal
  */
 const deskLocaleStrings = {
-  /** Label for the "Publish" document action when there are pending changes.*/
+  /** --- PUBLISH ACTION --- */
+  /** Tooltip when action is disabled because the studio is not ready.*/
+  'action.publish.disabled.notReady': 'Operation not ready',
+
+  /** Label for action when there are pending changes.*/
   'action.publish.draft.label': 'Publish',
 
   /** Label for the "Publish" document action while publish is being executed.*/
@@ -36,9 +40,6 @@ const deskLocaleStrings = {
 
   /** Tooltip when publish button is disabled because there are no changes.*/
   'action.publish.tooltip.noChanges': 'No unpublished changes',
-
-  /** Tooltip when publish button is disabled because the studio is not ready.*/
-  'action.publish.disabled.notReady': 'Operation not ready',
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',

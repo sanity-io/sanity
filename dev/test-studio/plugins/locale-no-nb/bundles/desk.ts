@@ -1,7 +1,11 @@
 import type {DeskLocaleResourceKeys} from 'sanity/desk'
 
 const deskResources: Record<DeskLocaleResourceKeys, string> = {
-  /** Label for the "Publish" document action when there are pending changes.*/
+  /** --- PUBLISH ACTION --- */
+  /** Tooltip when action is disabled because the studio is not ready.*/
+  'action.publish.disabled.notReady': 'Operasjonen er ikke klar',
+
+  /** Label for action when there are pending changes.*/
   'action.publish.draft.label': 'Publiser',
 
   /** Label for the "Publish" document action while publish is being executed.*/
@@ -19,7 +23,7 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
 
   /** Fallback tooltip for the "Publish" document action when publish is invoked for a document with live edit enabled.*/
   'action.publish.liveEdit.publishDisabled':
-    'Kan ikke publsere fordi liveEdit er skrudd på for denne dokumenttypen.',
+    'Kan ikke publisere fordi "Live Edit" er skrudd på for denne dokumenttypen.',
 
   /** Tooltip when the "Publish" document action is disabled due to validation issues */
   'action.publish.validationIssues.tooltip':
@@ -33,9 +37,6 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
 
   /** Tooltip when publish button is disabled because there are no changes.*/
   'action.publish.tooltip.noChanges': 'Ingen upubliserte endringer',
-
-  /** Tooltip when publish button is disabled because the studio is not ready.*/
-  'action.publish.disabled.notReady': 'Operasjonen er ikke klar',
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Venter på at andre oppgaver skal fullføre',
