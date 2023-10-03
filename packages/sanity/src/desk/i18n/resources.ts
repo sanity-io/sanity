@@ -73,6 +73,20 @@ const deskLocaleStrings = {
   /** Message prompting the user to confirm discarding changes */
   'action.discardChanges.confirmDialog.confirmDiscardChanges':
     'Are you sure you want to discard all changes since last published?',
+
+  /** --- DUPLICATE ACTION --- */
+  /** Tooltip when action is disabled because the operation is not ready   */
+  'action.duplicate.disabled.notReady': 'Operation not ready',
+
+  /** Tooltip when action is disabled because the document doesn't exist */
+  'action.duplicate.disabled.nothingToDuplicate':
+    "This document doesn't yet exist so there‘s nothing to duplicate",
+
+  /** Label for the "Duplicate" document action */
+  'action.duplicate.label': 'Duplicate',
+
+  /** Label for the "Duplicate" document action while the document is being duplicated */
+  'action.duplicate.running.label': 'Duplicating…',
 }
 
 /**

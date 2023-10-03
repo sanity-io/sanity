@@ -71,6 +71,19 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
   /** Message prompting the user to confirm discarding changes */
   'action.discardChanges.confirmDialog.confirmDiscardChanges':
     'Er du sikker på at du vil forkaste alle endringer siden forrige gang dette dokumentet ble publisert?',
+
+  /** --- DUPLICATE ACTION --- */
+  /** Tooltip when action is disabled because the operation is not ready   */
+  'action.duplicate.disabled.notReady': 'Operasjonen er ikke klar',
+
+  /** Tooltip when action is disabled because the document doesn't exist */
+  'action.duplicate.disabled.nothingToDuplicate': 'Dette dokumentet er tomt og kan ikke dupliseres',
+
+  /** Label for the "Duplicate" document action */
+  'action.duplicate.label': 'Duplisèr',
+
+  /** Label for the "Duplicate" document action while the document is being duplicated */
+  'action.duplicate.running.label': 'Duplisèrer…',
 }
 
 export default deskResources
