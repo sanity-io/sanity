@@ -2,6 +2,7 @@
 
 import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
+import {deskLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,
   DocumentActionDialogProps,
@@ -9,12 +10,14 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  useTranslation,
 } from 'sanity'
 
-const DISABLED_REASON_TITLE = {
-  NO_CHANGES: 'This document has no unpublished changes',
-  NOT_PUBLISHED: 'This document is not published',
-}
+const DISABLED_REASON_KEY = {
+  NO_CHANGES: 'action.discardChanges.disabled.noChanges',
+  NOT_PUBLISHED: 'action.discardChanges.disabled.notPublished',
+  NOT_READY: 'action.discardChanges.disabled.notReady',
+} as const
 
 /** @internal */
 export const DiscardChangesAction: DocumentActionComponent = ({
@@ -33,6 +36,8 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   })
   const currentUser = useCurrentUser()
 
+  const {t} = useTranslation(deskLocaleNamespace)
+
   const handleConfirm = useCallback(() => {
     discardChanges.execute()
     onComplete()
@@ -49,9 +54,9 @@ export const DiscardChangesAction: DocumentActionComponent = ({
         tone: 'critical',
         onCancel: onComplete,
         onConfirm: handleConfirm,
-        message: <>Are you sure you want to discard all changes since last published?</>,
+        message: t('action.discardChanges.confirmDialog.confirmDiscardChanges'),
       },
-    [handleConfirm, isConfirmDialogOpen, onComplete],
+    [handleConfirm, isConfirmDialogOpen, onComplete, t],
   )
 
   if (!published || liveEdit) {
@@ -63,7 +68,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       tone: 'critical',
       icon: ResetIcon,
       disabled: true,
-      label: 'Discard changes',
+      label: t('action.discardChanges.label'),
       title: (
         <InsufficientPermissionsMessage
           operationLabel="discard changes in this document"
@@ -77,11 +82,8 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     tone: 'critical',
     icon: ResetIcon,
     disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
-    title:
-      (discardChanges.disabled &&
-        DISABLED_REASON_TITLE[discardChanges.disabled as keyof typeof DISABLED_REASON_TITLE]) ||
-      '',
-    label: 'Discard changes',
+    title: (discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || '',
+    label: t('action.discardChanges.label'),
     onHandle: handle,
     dialog,
   }

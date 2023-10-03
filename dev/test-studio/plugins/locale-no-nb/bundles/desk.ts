@@ -54,6 +54,23 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
 
   /** Label for the "Delete" document action while the document is being deleted */
   'action.delete.running.label': 'Sletter…',
+
+  /** --- DISCARD CHANGES ACTION --- **/
+  /** Tooltip when action button is disabled because the operation is not ready   */
+  'action.discardChanges.disabled.notReady': 'Operasjonen er ikke klar',
+
+  /** Label for the "Discard changes" document action */
+  'action.discardChanges.label': 'Forkast endringer',
+
+  /** Tooltip when action is disabled because the document has no unpublished changes */
+  'action.discardChanges.disabled.noChange': 'Dette dokumentet har ingen endringer',
+
+  /** Tooltip when action is disabled because the document is not published */
+  'action.discardChanges.disabled.notPublished': 'Dette dokumentet er ikke publisert',
+
+  /** Message prompting the user to confirm discarding changes */
+  'action.discardChanges.confirmDialog.confirmDiscardChanges':
+    'Er du sikker på at du vil forkaste alle endringer siden forrige gang dette dokumentet ble publisert?',
 }
 
 export default deskResources
