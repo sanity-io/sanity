@@ -59,7 +59,7 @@ export default defineType({
 })
 `
 
-const authorJS = `export default author = {
+const authorJS = `export const author = {
   name: 'author',
   title: 'Author',
   type: 'document',
@@ -128,7 +128,7 @@ const blockContentTS = `import {defineType, defineArrayMember} from 'sanity'
  *    type: 'blockContent'
  *  }
  */
- 
+
 export default defineType({
   title: 'Block Content',
   name: 'blockContent',
@@ -204,7 +204,7 @@ const blockContentJS = `/**
  *  }
  */
 
-export default blockContent = {
+export const blockContent = {
   title: 'Block Content',
   name: 'blockContent',
   type: 'array',
@@ -289,7 +289,7 @@ export default defineType({
 })
 `
 
-const categoryJS = `export default category = {
+const categoryJS = `export const category = {
   name: 'category',
   title: 'Category',
   type: 'document',
@@ -382,7 +382,7 @@ export default defineType({
 })
 `
 
-const postJS = `export default post = {
+const postJS = `export const post = {
   name: 'post',
   title: 'Post',
   type: 'document',
@@ -451,7 +451,7 @@ const postJS = `export default post = {
       return {...selection, subtitle: author && \`by \${author}\`}
     },
   },
-})
+}
 `
 
 // Schema definition
@@ -468,10 +468,10 @@ export const schema: { types: SchemaTypeDefinition[] } = {
 }
 `
 
-export const blogSchemaJS = `import blockContent from './schemas/blockContent'
-import category from './schemas/category'
-import post from './schemas/post'
-import author from './schemas/author'
+export const blogSchemaJS = `import {blockContent} from './schemas/blockContent'
+import {category} from './schemas/category'
+import {post} from './schemas/post'
+import {author} from './schemas/author'
 
 export const schema = {
   types: [post, author, category, blockContent],

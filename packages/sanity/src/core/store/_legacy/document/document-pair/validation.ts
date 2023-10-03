@@ -17,10 +17,7 @@ import {
   groupBy,
   map,
   mergeMap,
-  publishReplay,
-  refCount,
   scan,
-  share,
   shareReplay,
   skip,
   throttleTime,
@@ -82,6 +79,10 @@ const DOC_UPDATE_DELAY = 200
 // throttle delay for referenced document updates (i.e. time between responding to changes in referenced documents)
 const REF_UPDATE_DELAY = 1000
 
+function shareLatestWithRefCount<T>() {
+  return shareReplay<T>({bufferSize: 1, refCount: true})
+}
+
 /** @internal */
 export const validation = memoize(
   (
@@ -105,7 +106,7 @@ export const validation = memoize(
         // so only pass on documents if _other_ attributes changes
         return shallowEquals(omit(prev, '_rev', '_updatedAt'), omit(next, '_rev', '_updatedAt'))
       }),
-      share(),
+      shareLatestWithRefCount(),
     )
 
     const referenceIds$ = document$.pipe(
@@ -115,11 +116,7 @@ export const validation = memoize(
 
     // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
     const referenceExistence$ = referenceIds$.pipe(
-      groupBy(
-        (id) => id,
-        undefined,
-        () => timer(1000 * 60 * 30),
-      ),
+      groupBy((id) => id, {duration: () => timer(1000 * 60 * 30)}),
       mergeMap((id$) =>
         id$.pipe(
           distinct(),
@@ -140,7 +137,7 @@ export const validation = memoize(
         return {...acc, [id]: result}
       }, {}),
       distinctUntilChanged(shallowEquals),
-      shareReplay({refCount: true, bufferSize: 1}),
+      shareLatestWithRefCount(),
     )
 
     // Provided to individual validation functions to support using existence of a weakly referenced document
@@ -180,8 +177,7 @@ export const validation = memoize(
         })
       }),
       scan((acc, next) => ({...acc, ...next}), INITIAL_VALIDATION_STATUS),
-      publishReplay(1),
-      refCount(),
+      shareLatestWithRefCount(),
     )
   },
   (ctx, idPair, typeName) => {
