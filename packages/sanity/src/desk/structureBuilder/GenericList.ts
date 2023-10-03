@@ -208,7 +208,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
    * @param canHandleIntent - generic list intent checker. See {@link IntentChecker}
    * @returns generic list builder based on can handle intent provided.
    */
-  canHandleIntent(canHandleIntent: IntentChecker): ConcreteImpl {
+  canHandleIntent(canHandleIntent?: IntentChecker): ConcreteImpl {
     return this.clone({canHandleIntent})
   }
 
