@@ -1,10 +1,12 @@
 import {RestoreIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {deskLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,
   DocumentActionDialogProps,
   useDocumentOperation,
   useDocumentOperationEvent,
+  useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
@@ -15,6 +17,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const handleConfirm = useCallback(() => {
     restore.execute(revision!)
@@ -45,12 +48,12 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
         tone: 'critical',
         onCancel: onComplete,
         onConfirm: handleConfirm,
-        message: <>Are you sure you want to restore this document?</>,
+        message: t('action.restore.confirm.message'),
       }
     }
 
     return null
-  }, [handleConfirm, isConfirmDialogOpen, onComplete])
+  }, [handleConfirm, isConfirmDialogOpen, onComplete, t])
 
   const isRevisionInitialVersion = revision === '@initial'
   const isRevisionLatestVersion = revision === undefined // undefined means latest version
@@ -60,12 +63,14 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
   }
 
   return {
-    label: 'Restore',
+    label: t('action.restore.label'),
     color: 'primary',
     onHandle: handle,
-    title: isRevisionInitialVersion
-      ? "You can't restore to the initial version"
-      : 'Restore to this version',
+    title: t(
+      isRevisionInitialVersion
+        ? 'action.restore.disabled.cantRestoreInitial'
+        : 'action.restore.tooltip',
+    ),
     icon: RestoreIcon,
     dialog,
     disabled: isRevisionInitialVersion,

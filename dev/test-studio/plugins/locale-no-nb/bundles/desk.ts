@@ -98,6 +98,20 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
   /** Fallback tooltip for the Unpublish document action when publish is invoked for a document with live edit enabled.*/
   'action.unpublish.liveEdit.disabled':
     'Dette dokumentet har "Live Edit" skrudd på og kan ikke avpubliseres',
+
+  /** --- RESTORE ACTION --- */
+  /** Label for the "Restore" document action */
+  'action.restore.label': 'Gjenopprett',
+
+  /** Fallback tooltip for when user is looking at the initial version */
+  'action.restore.disabled.cantRestoreInitial': 'Kan ikke gjenopprette til første version',
+
+  /** Default tooltip for the action */
+  'action.restore.tooltip': 'Gjenopprett til denne versjonen',
+
+  /** Message prompting the user to confirm that they want to restore to an earlier version*/
+  'action.restore.confirmDialog.confirmDiscardChanges':
+    'Er du sikker på at du vil gjenopprette til valgte versjon?',
 }
 
 export default deskResources

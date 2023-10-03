@@ -101,6 +101,20 @@ const deskLocaleStrings = {
   /** Fallback tooltip for the Unpublish document action when publish is invoked for a document with live edit enabled.*/
   'action.unpublish.liveEdit.disabled':
     'This document has live edit enabled and cannot be unpublished',
+
+  /** --- RESTORE ACTION --- */
+  /** Label for the "Restore" document action */
+  'action.restore.label': 'Restore',
+
+  /** Fallback tooltip for when user is looking at the initial version */
+  'action.restore.disabled.cantRestoreInitial': "You can't restore to the initial version",
+
+  /** Default tooltip for the action */
+  'action.restore.tooltip': 'Restore to this version',
+
+  /** Message prompting the user to confirm that they want to restore to an earlier version*/
+  'action.restore.confirmDialog.confirmDiscardChanges':
+    'Are you sure you want to restore this document?',
 }
 
 /**
