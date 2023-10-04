@@ -48,13 +48,12 @@ const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SO
 
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
   const client = useCommentsClient()
-  const documentId = getPublishedId(opts.documentId)
 
   const [state, dispatch] = useReducer(commentsReducer, INITIAL_STATE)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
-  const params = useMemo(() => ({documentId}), [documentId])
+  const params = useMemo(() => ({documentId: getPublishedId(opts.documentId)}), [opts.documentId])
 
   const initialFetch = useCallback(async () => {
     try {
@@ -67,6 +66,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
   const handleListenerEvent = useCallback(
     async (event: ListenEvent<Record<string, CommentDocument>>) => {
+      // Fetch all comments on initial connection
       if (event.type === 'welcome') {
         setLoading(true)
         await initialFetch()
@@ -78,12 +78,17 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
         await initialFetch()
       }
 
+      // Handle mutations (create, update, delete) from the realtime listener
+      // and update the comments store accordingly
       if (event.type === 'mutation') {
         if (event.transition === 'appear') {
           const nextComment = event.result as CommentDocument | undefined
 
           if (nextComment) {
-            dispatch({type: 'COMMENT_ADDED', result: nextComment})
+            dispatch({
+              type: 'COMMENT_ADDED',
+              payload: nextComment,
+            })
           }
         }
 
@@ -93,8 +98,12 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
         if (event.transition === 'update') {
           const updatedComment = event.result as CommentDocument | undefined
+
           if (updatedComment) {
-            dispatch({type: 'COMMENT_UPDATED', result: updatedComment})
+            dispatch({
+              type: 'COMMENT_ADDED',
+              payload: updatedComment,
+            })
           }
         }
       }
@@ -106,7 +115,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     const events$ = client.observable.listen(QUERY, params, LISTEN_OPTIONS).pipe(
       catchError((err) => {
         setError(err)
-        return of()
+        return of(err)
       }),
     )
 

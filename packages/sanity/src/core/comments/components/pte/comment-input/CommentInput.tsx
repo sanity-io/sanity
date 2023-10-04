@@ -24,6 +24,7 @@ interface CommentInputProps {
 }
 
 export interface CommentInputHandle {
+  blur: () => void
   focus: () => void
   scrollTo: () => void
 }
@@ -84,6 +85,11 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
           focus() {
             if (editorRef?.current) {
               PortableTextEditor.focus(editorRef.current)
+            }
+          },
+          blur() {
+            if (editorRef?.current) {
+              PortableTextEditor.blur(editorRef.current)
             }
           },
           scrollTo: scrollToEditor,

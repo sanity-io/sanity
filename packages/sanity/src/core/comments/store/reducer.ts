@@ -1,7 +1,7 @@
 import {CommentDocument, CommentPostPayload} from '../types'
 
 interface CommentAddedAction {
-  result: CommentDocument | CommentPostPayload
+  payload: CommentDocument | CommentPostPayload
   type: 'COMMENT_ADDED'
 }
 
@@ -11,7 +11,7 @@ interface CommentDeletedAction {
 }
 
 interface CommentUpdatedAction {
-  result: CommentDocument | Partial<CommentPostPayload>
+  payload: CommentDocument | Partial<CommentPostPayload>
   type: 'COMMENT_UPDATED'
 }
 
@@ -60,8 +60,37 @@ export function commentsReducer(
     }
 
     case 'COMMENT_ADDED': {
-      const nextCommentResult = action.result as CommentDocument
-      const nextComment = {[nextCommentResult._id]: nextCommentResult}
+      const nextCommentResult = action.payload as CommentDocument
+
+      const nextCommentValue = nextCommentResult satisfies CommentDocument
+
+      const nextComment = {
+        [nextCommentResult._id]: {
+          ...state.comments[nextCommentResult._id],
+          ...nextCommentValue,
+          _state: nextCommentResult._state || undefined,
+          // If the comment is created optimistically, it won't have a createdAt date.
+          // In that case, we'll use the current date.
+          // The correct date will be set when the comment is created on the server
+          // and the comment is received in the realtime listener.
+          _createdAt: nextCommentResult._createdAt || new Date().toISOString(),
+        } satisfies CommentDocument,
+      }
+
+      const commentExists = state.comments && state.comments[nextCommentResult._id]
+
+      // The comment might already exist in the store if an optimistic update
+      // has been performed but the post request failed. In that case we want
+      // to merge the new comment with the existing one.
+      if (commentExists) {
+        return {
+          ...state,
+          comments: {
+            ...nextComment,
+            ...state.comments,
+          },
+        }
+      }
 
       const nextComments = {
         ...nextComment,
@@ -92,7 +121,7 @@ export function commentsReducer(
     }
 
     case 'COMMENT_UPDATED': {
-      const updatedComment = action.result
+      const updatedComment = action.payload
       const id = updatedComment._id as string
 
       return {
