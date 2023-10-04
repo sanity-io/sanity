@@ -62,7 +62,7 @@ export function ConfirmDeleteDialogBody({
         </Box>
       )
     },
-    [schema, onReferenceLinkClick]
+    [schema, onReferenceLinkClick],
   )
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
