@@ -46,6 +46,7 @@ interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
   mentionOptions: MentionOptionsHookValue
+  onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
   onPathFocus?: (path: Path) => void
@@ -60,6 +61,7 @@ export function CommentsListItem(props: CommentsListItemProps) {
     canReply,
     currentUser,
     mentionOptions,
+    onCreateRetry,
     onDelete,
     onEdit,
     onPathFocus,
@@ -137,67 +139,77 @@ export function CommentsListItem(props: CommentsListItemProps) {
   return (
     <Stack space={2}>
       <StyledThreadCard>
-        <Stack paddingBottom={canReply ? undefined : 1}>
-          <Stack as="ul" space={4}>
-            <Stack as="li">
+        <Stack
+          as="ul"
+          // We add some extra padding to the bottom of the thread root if the thread is resolved
+          // since the reply input is hidden in that case.
+          paddingBottom={parentComment.status === 'resolved' ? 1 : undefined}
+          space={4}
+        >
+          <Stack as="li">
+            <CommentsListItemLayout
+              canDelete={parentComment.authorId === currentUser.id}
+              canEdit={parentComment.authorId === currentUser.id}
+              comment={parentComment}
+              currentUser={currentUser}
+              hasError={parentComment._state?.type === 'createError'}
+              isParent
+              isRetrying={parentComment._state?.type === 'createRetrying'}
+              mentionOptions={mentionOptions}
+              onCreateRetry={onCreateRetry}
+              onDelete={onDelete}
+              onEdit={onEdit}
+              onPathFocus={onPathFocus}
+              onStatusChange={onStatusChange}
+            />
+          </Stack>
+
+          {showCollapseButton && !didExpand.current && (
+            <Flex gap={1} paddingY={1} sizing="border">
+              <SpacerAvatar />
+
+              <ExpandButton
+                fontSize={1}
+                iconRight={ChevronDownIcon}
+                mode="bleed"
+                onClick={handleExpand}
+                padding={2}
+                space={2}
+                text={expandButtonText}
+              />
+            </Flex>
+          )}
+
+          {splicedReplies.map((reply) => (
+            <Stack as="li" key={reply._id}>
               <CommentsListItemLayout
-                canDelete={parentComment.authorId === currentUser.id}
-                canEdit={parentComment.authorId === currentUser.id}
-                comment={parentComment}
+                canDelete={reply.authorId === currentUser.id}
+                canEdit={reply.authorId === currentUser.id}
+                comment={reply}
                 currentUser={currentUser}
-                isParent
+                hasError={reply._state?.type === 'createError'}
+                isRetrying={reply._state?.type === 'createRetrying'}
                 mentionOptions={mentionOptions}
+                onCreateRetry={onCreateRetry}
                 onDelete={onDelete}
                 onEdit={onEdit}
-                onPathFocus={onPathFocus}
-                onStatusChange={onStatusChange}
               />
             </Stack>
+          ))}
 
-            {showCollapseButton && !didExpand.current && (
-              <Flex gap={1} paddingY={1} sizing="border">
-                <SpacerAvatar />
-
-                <ExpandButton
-                  fontSize={1}
-                  iconRight={ChevronDownIcon}
-                  mode="bleed"
-                  onClick={handleExpand}
-                  padding={2}
-                  space={2}
-                  text={expandButtonText}
-                />
-              </Flex>
-            )}
-
-            {splicedReplies.map((reply) => (
-              <Stack as="li" key={reply._id}>
-                <CommentsListItemLayout
-                  canDelete={reply.authorId === currentUser.id}
-                  canEdit={reply.authorId === currentUser.id}
-                  comment={reply}
-                  currentUser={currentUser}
-                  mentionOptions={mentionOptions}
-                  onDelete={onDelete}
-                  onEdit={onEdit}
-                />
-              </Stack>
-            ))}
-
-            {canReply && (
-              <CommentInput
-                currentUser={currentUser}
-                expandOnFocus
-                mentionOptions={mentionOptions}
-                onChange={setValue}
-                onEditDiscard={cancelEdit}
-                onSubmit={handleReplySubmit}
-                placeholder="Reply"
-                ref={replyInputRef}
-                value={value}
-              />
-            )}
-          </Stack>
+          {canReply && (
+            <CommentInput
+              currentUser={currentUser}
+              expandOnFocus
+              mentionOptions={mentionOptions}
+              onChange={setValue}
+              onEditDiscard={cancelEdit}
+              onSubmit={handleReplySubmit}
+              placeholder="Reply"
+              ref={replyInputRef}
+              value={value}
+            />
+          )}
         </Stack>
       </StyledThreadCard>
     </Stack>

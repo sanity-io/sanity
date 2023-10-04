@@ -38,7 +38,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const params = useUnique(paneRouter.params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
   const commentIdParamRef = useRef<string | undefined>(params?.comment)
 
-  const {comments, create, edit, mentionOptions, remove, update, status, setStatus} = useComments()
+  const {comments, create, edit, mentionOptions, remove, update, status, setStatus, getComment} =
+    useComments()
 
   const currentComments = useMemo(() => comments.data[status], [comments, status])
 
@@ -55,6 +56,23 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       didScrollDown.current = false
     }
   }, [comments.loading])
+
+  const handleCreateRetry = useCallback(
+    (id: string) => {
+      const comment = getComment(id)
+      if (!comment) return
+
+      create.execute({
+        fieldPath: comment.target.path.field,
+        id: comment._id,
+        message: comment.message,
+        parentCommentId: comment.parentCommentId,
+        status: comment.status,
+        threadId: comment.threadId,
+      })
+    },
+    [create, getComment],
+  )
 
   const closeDeleteDialog = useCallback(() => {
     if (deleteLoading) return
@@ -152,6 +170,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
             error={comments.error}
             loading={comments.loading}
             mentionOptions={mentionOptions}
+            onCreateRetry={handleCreateRetry}
             onDelete={onDeleteStart}
             onEdit={handleEdit}
             onNewThreadCreate={handleNewThreadCreate}

@@ -27,22 +27,26 @@ const EditableWrapStack = styled(Stack)(() => {
   `
 })
 
-export const StyledPopover = styled(Popover)(() => {
+export const StyledPopover = styled(Popover)(({theme}) => {
+  const {space, radius} = theme.sanity
+
   return css`
-    // Position the Popover relative to the @
-    transform: translateY(6px);
-    &[data-placement='top-end'] {
-      transform: translateY(-12px);
+    &[data-placement='bottom'] {
+      transform: translateY(${space[1]}px);
+    }
+
+    &[data-placement='top'] {
+      transform: translateY(-${space[1]}px);
     }
 
     [data-ui='Popover__wrapper'] {
-      border-radius: ${({theme}) => theme.sanity.radius[3]}px;
+      border-radius: ${radius[3]}px;
       display: flex;
       flex-direction: column;
-      width: 300px; // todo: improve
       overflow: clip;
       overflow: hidden;
       position: relative;
+      width: 300px; // todo: improve
     }
   `
 })
@@ -167,19 +171,20 @@ export function Editable(props: EditableProps) {
             />
           }
           disabled={!mentionsMenuOpen}
-          fallbackPlacements={['bottom-end', 'top-end']}
+          fallbackPlacements={['bottom', 'top']}
           open={mentionsMenuOpen}
-          placement="bottom-end"
+          placement="bottom"
           portal
           ref={setPopoverElement}
           referenceElement={cursorElement}
         />
       </PortalProvider>
+
       <EditableWrapStack ref={rootElementRef} data-ui="EditableWrapStack">
         <PortableTextEditable
           data-ui="EditableElement"
-          onKeyDown={handleKeyDown}
           onBeforeInput={onBeforeInput}
+          onKeyDown={handleKeyDown}
           ref={editableRef}
           renderBlock={renderBlock}
           renderChild={renderChild}

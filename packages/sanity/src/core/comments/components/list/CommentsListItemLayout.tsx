@@ -22,6 +22,7 @@ import {
   Box,
   TooltipDelayGroupProvider,
   TooltipDelayGroupProviderProps,
+  MenuButtonProps,
 } from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {CurrentUser, Path} from '@sanity/types'
@@ -31,7 +32,7 @@ import * as PathUtils from '@sanity/util/paths'
 import {TimeAgoOpts, useTimeAgo} from '../../../hooks'
 import {useUser} from '../../../store'
 import {CommentMessageSerializer} from '../pte'
-import {CommentInput} from '../pte/comment-input'
+import {CommentInput, CommentInputHandle} from '../pte/comment-input'
 import {
   CommentDocument,
   CommentEditPayload,
@@ -43,13 +44,27 @@ import {FLEX_GAP} from '../constants'
 import {useDidUpdate} from '../../../form'
 import {useCommentHasChanged} from '../../helpers'
 import {TextTooltip} from '../TextTooltip'
-import {CommentsAvatar, SpacerAvatar} from '../avatars'
+import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
 
 const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
+const POPOVER_PROPS: MenuButtonProps['popover'] = {placement: 'bottom-end'}
 
 const TimeText = styled(Text)`
   min-width: max-content;
+`
+
+const InnerStack = styled(Stack)`
+  transition: opacity 200ms ease;
+
+  &[data-muted='true'] {
+    transition: unset;
+    opacity: 0.5;
+  }
+`
+
+const ErrorFlex = styled(Flex)`
+  min-height: ${AVATAR_HEIGHT}px;
 `
 
 const FloatingLayer = styled(Layer)(({theme}) => {
@@ -64,6 +79,13 @@ const FloatingLayer = styled(Layer)(({theme}) => {
     top: 0;
   `
 })
+
+const RetryCardButton = styled(Card)`
+  // Add not on hover
+  &:not(:hover) {
+    background-color: transparent;
+  }
+`
 
 const FloatingCard = styled(Card)(({theme}) => {
   const {space} = theme.sanity
@@ -111,8 +133,11 @@ interface CommentsListItemLayoutProps {
   canEdit?: boolean
   comment: CommentDocument
   currentUser: CurrentUser
+  hasError?: boolean
   isParent?: boolean
+  isRetrying?: boolean
   mentionOptions: MentionOptionsHookValue
+  onCreateRetry?: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, message: CommentEditPayload) => void
   onPathFocus?: (path: Path) => void
@@ -127,8 +152,11 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     canEdit,
     comment,
     currentUser,
+    hasError,
     isParent,
+    isRetrying,
     mentionOptions,
+    onCreateRetry,
     onDelete,
     onEdit,
     onPathFocus,
@@ -146,6 +174,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const hasChanges = useCommentHasChanged(value)
 
+  const commentInputRef = useRef<CommentInputHandle>(null)
+
   const createdDate = _createdAt ? new Date(_createdAt) : new Date()
   const createdTimeAgo = useTimeAgo(createdDate, TIME_AGO_OPTS)
   const formattedCreatedAt = format(createdDate, 'PPPPp')
@@ -154,6 +184,12 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
+
+  const displayError = hasError || isRetrying
+
+  const handleCreateRetry = useCallback(() => {
+    onCreateRetry?.(_id)
+  }, [_id, onCreateRetry])
 
   const cancelEdit = useCallback(() => {
     setIsEditing(false)
@@ -200,6 +236,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   useClickOutside(() => {
     if (!hasChanges) {
       cancelEdit()
+      commentInputRef.current?.blur()
     }
   }, [rootElement])
 
@@ -218,138 +255,173 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   return (
     <RootStack
       data-comment-id={_id}
+      data-create-error={displayError ? 'true' : 'false'}
       data-menu-open={menuOpen ? 'true' : 'false'}
       ref={setRootElement}
-      space={1}
+      space={4}
     >
-      <Flex align="center" gap={FLEX_GAP} flex={1}>
-        {avatar}
+      <InnerStack space={1} data-muted={displayError}>
+        <Flex align="center" gap={FLEX_GAP} flex={1}>
+          {avatar}
 
-        <Flex align="center" paddingBottom={1} sizing="border" flex={1}>
-          <Flex align="flex-end" gap={2}>
-            <Box flex={1}>{name}</Box>
+          <Flex align="center" paddingBottom={1} sizing="border" flex={1}>
+            <Flex align="flex-end" gap={2}>
+              <Box flex={1}>{name}</Box>
 
-            <Flex align="center" gap={1}>
-              <TimeText size={0} muted title={formattedCreatedAt}>
-                {createdTimeAgo}
-              </TimeText>
+              {!displayError && (
+                <Flex align="center" gap={1}>
+                  <TimeText size={0} muted title={formattedCreatedAt}>
+                    {createdTimeAgo}
+                  </TimeText>
 
-              {formattedLastEditAt && (
-                <TimeText size={0} muted title={formattedLastEditAt}>
-                  (edited)
-                </TimeText>
+                  {formattedLastEditAt && (
+                    <TimeText size={0} muted title={formattedLastEditAt}>
+                      (edited)
+                    </TimeText>
+                  )}
+                </Flex>
               )}
             </Flex>
           </Flex>
+
+          {!isEditing && !displayError && (
+            <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
+              <FloatingLayer
+                hidden={!floatingMenuEnabled}
+                data-root-menu={isParent ? 'true' : 'false'}
+              >
+                <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
+                  {isParent && (
+                    <>
+                      {onPathFocus && (
+                        <TextTooltip text="Go to field">
+                          <Button
+                            aria-label="Go to field"
+                            fontSize={1}
+                            icon={EyeOpenIcon}
+                            mode="bleed"
+                            onClick={handlePathFocus}
+                            padding={2}
+                          />
+                        </TextTooltip>
+                      )}
+
+                      {onStatusChange && (
+                        <TextTooltip
+                          text={comment.status === 'open' ? 'Mark as resolved' : 'Re-open'}
+                        >
+                          <Button
+                            aria-label="Mark comment as resolved"
+                            fontSize={1}
+                            icon={comment.status === 'open' ? CheckmarkCircleIcon : UndoIcon}
+                            mode="bleed"
+                            onClick={handleOpenStatusChange}
+                            padding={2}
+                          />
+                        </TextTooltip>
+                      )}
+                    </>
+                  )}
+
+                  {canDelete && canEdit && (
+                    <MenuButton
+                      id="comment-actions-menu"
+                      button={
+                        <Button
+                          aria-label="Open comment actions menu"
+                          fontSize={1}
+                          icon={EllipsisVerticalIcon}
+                          mode="bleed"
+                          padding={2}
+                        />
+                      }
+                      onOpen={handleMenuOpen}
+                      onClose={handleMenuClose}
+                      menu={
+                        <Menu>
+                          <MenuItem
+                            aria-label="Edit comment"
+                            fontSize={1}
+                            icon={EditIcon}
+                            onClick={toggleEdit}
+                            text="Edit comment"
+                          />
+                          <MenuItem
+                            aria-label="Delete comment"
+                            fontSize={1}
+                            icon={TrashIcon}
+                            onClick={handleDelete}
+                            text="Delete comment"
+                            tone="critical"
+                          />
+                        </Menu>
+                      }
+                      popover={POPOVER_PROPS}
+                    />
+                  )}
+                </FloatingCard>
+              </FloatingLayer>
+            </TooltipDelayGroupProvider>
+          )}
         </Flex>
+
+        {isEditing && (
+          <Flex align="flex-start" gap={2}>
+            <SpacerAvatar />
+
+            <Stack flex={1}>
+              <CommentInput
+                currentUser={currentUser}
+                focusOnMount
+                mentionOptions={mentionOptions}
+                onChange={setValue}
+                onEditDiscard={handleEditDiscard}
+                onMentionMenuOpenChange={setMentionMenuOpen}
+                onSubmit={handleEditSubmit}
+                ref={commentInputRef}
+                value={value}
+                withAvatar={false}
+              />
+            </Stack>
+          </Flex>
+        )}
 
         {!isEditing && (
-          <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
-            <FloatingLayer
-              hidden={!floatingMenuEnabled}
-              data-root-menu={isParent ? 'true' : 'false'}
-            >
-              <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
-                {isParent && (
-                  <>
-                    {onPathFocus && (
-                      <TextTooltip text="Go to field">
-                        <Button
-                          aria-label="Go to field"
-                          fontSize={1}
-                          icon={EyeOpenIcon}
-                          mode="bleed"
-                          onClick={handlePathFocus}
-                          padding={2}
-                        />
-                      </TextTooltip>
-                    )}
+          <Flex gap={FLEX_GAP}>
+            <SpacerAvatar />
 
-                    {onStatusChange && (
-                      <TextTooltip
-                        text={comment.status === 'open' ? 'Mark as resolved' : 'Re-open'}
-                      >
-                        <Button
-                          aria-label="Mark comment as resolved"
-                          fontSize={1}
-                          icon={comment.status === 'open' ? CheckmarkCircleIcon : UndoIcon}
-                          mode="bleed"
-                          onClick={handleOpenStatusChange}
-                          padding={2}
-                        />
-                      </TextTooltip>
-                    )}
-                  </>
-                )}
-
-                {canDelete && canEdit && (
-                  <MenuButton
-                    id="comment-actions-menu"
-                    button={
-                      <Button
-                        aria-label="Open comment actions menu"
-                        fontSize={1}
-                        icon={EllipsisVerticalIcon}
-                        mode="bleed"
-                        padding={2}
-                      />
-                    }
-                    onOpen={handleMenuOpen}
-                    onClose={handleMenuClose}
-                    menu={
-                      <Menu>
-                        <MenuItem
-                          aria-label="Edit comment"
-                          fontSize={1}
-                          icon={EditIcon}
-                          onClick={toggleEdit}
-                          text="Edit comment"
-                        />
-                        <MenuItem
-                          aria-label="Delete comment"
-                          fontSize={1}
-                          icon={TrashIcon}
-                          onClick={handleDelete}
-                          text="Delete comment"
-                          tone="critical"
-                        />
-                      </Menu>
-                    }
-                    popover={{placement: 'bottom-end'}}
-                  />
-                )}
-              </FloatingCard>
-            </FloatingLayer>
-          </TooltipDelayGroupProvider>
+            <CommentMessageSerializer blocks={message} />
+          </Flex>
         )}
-      </Flex>
+      </InnerStack>
 
-      {isEditing && (
-        <Flex align="flex-start" gap={2} ref={setRootElement}>
+      {displayError && (
+        <ErrorFlex gap={FLEX_GAP}>
           <SpacerAvatar />
 
-          <Stack flex={1}>
-            <CommentInput
-              currentUser={currentUser}
-              focusOnMount
-              mentionOptions={mentionOptions}
-              onChange={setValue}
-              onEditDiscard={handleEditDiscard}
-              onMentionMenuOpenChange={setMentionMenuOpen}
-              onSubmit={handleEditSubmit}
-              value={value}
-              withAvatar={false}
-            />
-          </Stack>
-        </Flex>
-      )}
+          <Flex align="center" gap={1} flex={1}>
+            <Text muted size={1}>
+              {hasError && 'Failed to send.'}
+              {isRetrying && 'Posting...'}
+            </Text>
 
-      {!isEditing && (
-        <Flex gap={FLEX_GAP}>
-          <SpacerAvatar />
-
-          <CommentMessageSerializer blocks={message} />
-        </Flex>
+            <Flex hidden={isRetrying}>
+              <RetryCardButton
+                __unstable_focusRing
+                display="flex"
+                forwardedAs="button"
+                onClick={handleCreateRetry}
+                padding={1}
+                radius={2}
+                tone="primary"
+              >
+                <Text size={1} muted>
+                  Retry
+                </Text>
+              </RetryCardButton>
+            </Flex>
+          </Flex>
+        </ErrorFlex>
       )}
     </RootStack>
   )
