@@ -62,6 +62,45 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'timeAgo.seconds.minimal': '{{count}}m',
   /* Relative time, granularity: seconds, using a minimal format, configured to show ago suffix*/
   'timeAgo.seconds.minimal.ago': '{{count}}m ago',
+
+  /** --- DateTime (and Date) Input --- */
+
+  /** Action message for navigating to previous month */
+  'inputs.datetime.calendar.action.previous-month': `Forrige måned`,
+  /** Action message for navigating to next year */
+  'inputs.datetime.calendar.action.next-year': `Neste år`,
+  /** Action message for navigating to previous year */
+  'inputs.datetime.calendar.action.previous-year': `Forrige år`,
+  /** Action message for selecting hour */
+  'inputs.datetime.calendar.action.select-hour': `Velg time`,
+  /** Action message for setting to current time */
+  'inputs.datetime.calendar.action.set-to-current-time': `Sett til nå`,
+
+  /** Month names */
+  'inputs.datetime.calendar.month-names.january': 'Januar',
+  'inputs.datetime.calendar.month-names.february': 'Februar',
+  'inputs.datetime.calendar.month-names.march': 'Mars',
+  'inputs.datetime.calendar.month-names.april': 'April',
+  'inputs.datetime.calendar.month-names.may': 'Mai',
+  'inputs.datetime.calendar.month-names.june': 'Juni',
+  'inputs.datetime.calendar.month-names.july': 'Juli',
+  'inputs.datetime.calendar.month-names.august': 'August',
+  'inputs.datetime.calendar.month-names.september': 'September',
+  'inputs.datetime.calendar.month-names.october': 'Oktober',
+  'inputs.datetime.calendar.month-names.november': 'November',
+  'inputs.datetime.calendar.month-names.december': 'Desember',
+
+  /** Short weekday names */
+  'inputs.datetime.calendar.weekday-names.short.monday': 'Man',
+  'inputs.datetime.calendar.weekday-names.short.tuesday': 'Tir',
+  'inputs.datetime.calendar.weekday-names.short.wednesday': 'Ons',
+  'inputs.datetime.calendar.weekday-names.short.thursday': 'Tor',
+  'inputs.datetime.calendar.weekday-names.short.friday': 'Fre',
+  'inputs.datetime.calendar.weekday-names.short.saturday': 'Lør',
+  'inputs.datetime.calendar.weekday-names.short.sunday': 'Søn',
+
+  /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
+  'inputs.datetime.calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
 }
 
 export default studioResources
