@@ -26,6 +26,7 @@ interface CommentOperationsHookOptions {
   workspace: string
 
   onCreate?: (comment: CommentPostPayload) => void
+  onCreateError: (id: string, error: Error) => void
   onEdit?: (id: string, comment: CommentEditPayload) => void
   onRemove?: (id: string) => void
   onUpdate?: (id: string, comment: Partial<CommentCreatePayload>) => void
@@ -40,12 +41,13 @@ export function useCommentOperations(
     documentId,
     documentType,
     onCreate,
+    onCreateError,
     onEdit,
     onRemove,
     onUpdate,
     projectId,
     workspace,
-  } = opts || {}
+  } = opts
   const client = useCommentsClient()
 
   const authorId = currentUser?.id
@@ -58,7 +60,10 @@ export function useCommentOperations(
   const handleCreate = useCallback(
     async (comment: CommentCreatePayload) => {
       const nextComment = {
-        _id: uuid(),
+        // The comment payload might already have an id if, for example, the comment was created
+        // but the request failed. In that case, we'll reuse the id when retrying to
+        // create the comment.
+        _id: comment?.id || uuid(),
         _type: 'comment',
         authorId: authorId || '', // improve
         lastEditedAt: undefined,
@@ -66,6 +71,7 @@ export function useCommentOperations(
         parentCommentId: comment.parentCommentId,
         status: comment.status,
         threadId: comment.threadId,
+
         context: {
           payload: {
             workspace,
@@ -90,7 +96,13 @@ export function useCommentOperations(
 
       onCreate?.(nextComment)
 
-      await client.create(nextComment)
+      try {
+        await client.create(nextComment)
+      } catch (err) {
+        onCreateError?.(nextComment._id, err)
+
+        throw err
+      }
     },
     [
       authorId,
@@ -99,6 +111,7 @@ export function useCommentOperations(
       documentId,
       documentType,
       onCreate,
+      onCreateError,
       projectId,
       title,
       toolName,
@@ -137,6 +150,8 @@ export function useCommentOperations(
     async (id: string, comment: Partial<CommentCreatePayload>) => {
       onUpdate?.(id, comment)
 
+      // If the update contains a status, we'll update the status of all replies
+      // to the comment as well.
       if (comment.status) {
         await Promise.all([
           client
@@ -151,6 +166,7 @@ export function useCommentOperations(
         return
       }
 
+      // Else we'll just update the comment itself
       await client.patch(id).set(comment).commit()
     },
     [client, onUpdate],
@@ -159,9 +175,9 @@ export function useCommentOperations(
   const operation = useMemo(
     () => ({
       create: handleCreate,
-      update: handleUpdate,
-      remove: handleRemove,
       edit: handleEdit,
+      remove: handleRemove,
+      update: handleUpdate,
     }),
     [handleCreate, handleRemove, handleEdit, handleUpdate],
   )

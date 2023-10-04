@@ -43,6 +43,9 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   } = props
   const createNewThreadInputRef = useRef<CommentInputHandle>(null)
   const [displayNewThreadInput, setDisplayNewThreadInput] = useState<boolean>(false)
+  const [newThreadButtonElement, setNewThreadButtonElement] = useState<HTMLButtonElement | null>(
+    null,
+  )
 
   const onCreateNewThreadClick = useCallback(() => {
     setDisplayNewThreadInput(true)
@@ -75,8 +78,11 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
       onNewThreadCreate?.(nextComment)
       setDisplayNewThreadInput(false)
+
+      // When the new thread is created, we focus the button again
+      newThreadButtonElement?.focus()
     },
-    [onNewThreadCreate, path],
+    [newThreadButtonElement, onNewThreadCreate, path],
   )
 
   return (
@@ -114,6 +120,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
               mode="bleed"
               onClick={onCreateNewThreadClick}
               padding={2}
+              ref={setNewThreadButtonElement}
             />
           </TextTooltip>
         )}

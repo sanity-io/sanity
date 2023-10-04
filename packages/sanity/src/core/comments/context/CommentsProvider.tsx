@@ -1,5 +1,6 @@
-import React, {memo, useMemo, useState} from 'react'
+import React, {memo, useCallback, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
+import {orderBy} from 'lodash'
 import {CommentStatus, CommentsContextValue} from '../types'
 import {useCommentOperations, useCommentsEnabled, useMentionOptions} from '../hooks'
 import {useCommentsStore} from '../store'
@@ -50,6 +51,7 @@ const COMMENTS_DISABLED_CONTEXT: CommentsContextValue = {
   comments: EMPTY_COMMENTS,
   create: noopOperation,
   edit: noopOperation,
+  getComment: () => undefined,
   mentionOptions: EMPTY_MENTION_OPTIONS,
   remove: noopOperation,
   setStatus: noop,
@@ -80,9 +82,11 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   return <CommentsProviderInner {...props} />
 })
 
+const EMPTY = {}
+
 function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
   const {children, documentValue} = props
-  const {_id: documentId, _type: documentType} = documentValue || {}
+  const {_id: documentId, _type: documentType} = documentValue || EMPTY
 
   const [status, setStatus] = useState<CommentStatus>('open')
 
@@ -102,17 +106,48 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
     schemaType,
     workspace: workspaceName,
 
-    // The following callbacks are used to update the local state
-    // when a comment is created, updated or deleted to make the
-    // UI feel more responsive.
+    // The following callbacks runs when the comment operations are executed.
+    // They are used to update the local state of the comments immediately after
+    // a comment operation has been executed. This is done to avoid waiting for
+    // the real time listener to update the comments and make the UI feel more
+    // responsive. The comment will be updated again when we receive an mutation
+    // event from the real time listener.
+
     onCreate: (payload) => {
-      dispatch({type: 'COMMENT_ADDED', result: payload})
+      // If the comment we try to create already exists in the local state and has
+      // the 'createError' state, we know that we are retrying a comment creation.
+      // In that case, we want to change the state to 'createRetrying'.
+      const hasError = data?.find((c) => c._id === payload._id)?._state?.type === 'createError'
+
+      dispatch({
+        type: 'COMMENT_ADDED',
+        payload: {
+          ...payload,
+          _state: hasError ? {type: 'createRetrying'} : undefined,
+        },
+      })
+    },
+
+    // When an error occurs during comment creation, we update the comment state
+    // to `createError`. This will make the comment appear in the UI as a comment
+    // that failed to be created. The user can then retry the comment creation.
+    onCreateError: (id, err) => {
+      dispatch({
+        type: 'COMMENT_UPDATED',
+        payload: {
+          _id: id,
+          _state: {
+            error: err,
+            type: 'createError',
+          },
+        },
+      })
     },
 
     onEdit: (id, payload) => {
       dispatch({
         type: 'COMMENT_UPDATED',
-        result: {
+        payload: {
           _id: id,
           ...payload,
         },
@@ -122,7 +157,7 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
     onUpdate: (id, payload) => {
       dispatch({
         type: 'COMMENT_UPDATED',
-        result: {
+        payload: {
           _id: id,
           ...payload,
         },
@@ -133,8 +168,15 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
   const threadItemsByStatus = useMemo(() => {
     if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
 
+    // Since we only make one query to get all comments using the order `_createdAt desc` – we
+    // can't know for sure that the comments added through the real time listener will be in the
+    // correct order. In order to avoid that comments are out of order, we make an additional
+    // sort here. The comments can be out of order if e.g a comment creation fails and is retried
+    // later.
+    const sorted = orderBy(data, ['_createdAt'], ['desc'])
+
     const threadItems = buildCommentThreadItems({
-      comments: data || EMPTY_ARRAY,
+      comments: sorted || EMPTY_ARRAY,
       schemaType,
       currentUser,
       documentValue,
@@ -146,11 +188,14 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
     }
   }, [currentUser, data, documentValue, schemaType])
 
+  const getComment = useCallback((id: string) => data?.find((c) => c._id === id), [data])
+
   const ctxValue = useMemo(
     () =>
       ({
         status,
         setStatus,
+        getComment,
         comments: {
           data: threadItemsByStatus,
           error,
@@ -172,6 +217,7 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
       }) satisfies CommentsContextValue,
     [
       error,
+      getComment,
       loading,
       mentionOptions,
       operation.create,

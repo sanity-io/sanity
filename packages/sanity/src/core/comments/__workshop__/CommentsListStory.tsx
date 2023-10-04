@@ -156,6 +156,9 @@ export default function CommentsListStory() {
       onEdit={handleEdit}
       onReply={handleReplySubmit}
       status={status}
+      onCreateRetry={() => {
+        // ...
+      }}
       onNewThreadCreate={() => {
         // ...
       }}
