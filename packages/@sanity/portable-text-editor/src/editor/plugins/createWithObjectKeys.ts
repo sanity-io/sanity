@@ -1,6 +1,9 @@
-import {Element, Transforms, Node, Editor} from 'slate'
+import {Transforms, Node, Editor, Element, Text} from 'slate'
 import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
 import {isPreservingKeys, PRESERVE_KEYS} from '../../utils/withPreserveKeys'
+import {debugWithName} from '../../utils/debug'
+
+const debug = debugWithName('plugin:withObjectKeys')
 
 /**
  * This plugin makes sure that every new node in the editor get a new _key prop when created
@@ -34,18 +37,26 @@ export function createWithObjectKeys(
     }
     editor.normalizeNode = (entry) => {
       const [node, path] = entry
-      if (Element.isElement(node) && node._type === schemaTypes.block.name) {
+      // If the node is a block, ensure everything got keys
+      if (path.length === 1) {
         // Set key on block itself
         if (!node._key) {
+          debug('Assigning _key to block')
           Transforms.setNodes(editor, {_key: keyGenerator()}, {at: path})
         }
-        // Set keys on it's children
+        // Set keys on it's children for text blocks
         for (const [child, childPath] of Node.children(editor, path)) {
           if (!child._key) {
+            debug('Assigning _key to block child')
             Transforms.setNodes(editor, {_key: keyGenerator()}, {at: childPath})
             return
           }
         }
+      }
+      // If the node is a child, ensure key
+      if (path.length === 2 && node._key === undefined) {
+        debug('Assigning _key to child node', node)
+        Transforms.setNodes(editor, {_key: keyGenerator()}, {at: path})
       }
       normalizeNode(entry)
     }
