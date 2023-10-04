@@ -8,6 +8,7 @@ import type {
   ObjectSchemaType,
   ArraySchemaType,
   IntrinsicTypeName,
+  CrossDatasetReferenceSchemaType,
 } from '@sanity/types'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Schema} from '@sanity/schema'
@@ -110,8 +111,41 @@ function isReference(
   return isType(typeDef, 'reference')
 }
 
-function isCrossDatasetReference(typeDef: SchemaType) {
+function isCrossDatasetReference(
+  typeDef: SchemaType | ObjectField | ObjectFieldType | CrossDatasetReferenceSchemaType,
+) {
   return isType(typeDef, 'crossDatasetReference')
+}
+
+function getCrossDatasetReferenceMetadata(
+  typeDef: SchemaType | ObjectField | ObjectFieldType | CrossDatasetReferenceSchemaType,
+) {
+  if (!isCrossDatasetReference(typeDef)) return undefined
+
+  function getTypeNames(
+    type: SchemaType | ObjectField | ObjectFieldType | CrossDatasetReferenceSchemaType | undefined,
+  ) {
+    if (!type) return undefined
+    if (!('to' in type)) return getTypeNames(type.type)
+    return type.to.map((t) => t.type).filter((t): t is string => typeof t === 'string')
+  }
+
+  function getDataset(
+    type: SchemaType | ObjectField | ObjectFieldType | CrossDatasetReferenceSchemaType | undefined,
+  ) {
+    if (!type) return undefined
+    if ('dataset' in type && typeof type.dataset === 'string') return type.dataset
+    if (type.type) return getDataset(type.type)
+    return undefined
+  }
+
+  const typeNames = getTypeNames(typeDef)
+  if (!typeNames) return undefined
+
+  const dataset = getDataset(typeDef)
+  if (typeof dataset !== 'string') return undefined
+
+  return {typeNames, dataset}
 }
 
 export function extractFromSanitySchema(
@@ -228,7 +262,14 @@ export function extractFromSanitySchema(
     const gqlName = props.fieldName || mapped.name
     const originalName = type.name
     const original = gqlName === originalName ? {} : {originalName: originalName}
-    return {...props, ...mapped, ...original}
+    const crossDatasetReferenceMetadata = getCrossDatasetReferenceMetadata(type)
+
+    return {
+      ...props,
+      ...mapped,
+      ...original,
+      ...(crossDatasetReferenceMetadata && {crossDatasetReferenceMetadata}),
+    }
   }
 
   function isField(def: SchemaType | ObjectField): def is ObjectField {
