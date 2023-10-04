@@ -1,7 +1,9 @@
 import React from 'react'
 
+export const AVATAR_HEIGHT = 25
+
 const INLINE_STYLE: React.CSSProperties = {
-  minWidth: 25,
+  minWidth: AVATAR_HEIGHT,
 }
 
 /**

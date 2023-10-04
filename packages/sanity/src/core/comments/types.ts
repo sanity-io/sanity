@@ -54,6 +54,8 @@ export interface CommentThreadItem {
  * @hidden
  */
 export interface CommentsContextValue {
+  getComment: (id: string) => CommentDocument | undefined
+
   comments: {
     data: {
       open: CommentThreadItem[]
@@ -114,6 +116,24 @@ interface CommentContext {
   }
 }
 
+interface CommentCreateRetryingState {
+  type: 'createRetrying'
+}
+
+interface CommentCreateFailedState {
+  type: 'createError'
+  error: Error
+}
+
+/**
+ * The state is used to track the state of the comment (e.g. if it failed to be created, etc.)
+ * It is a local value and is not stored on the server.
+ * When there's no state, the comment is considered to be in a "normal" state (e.g. created successfully).
+ *
+ * The state value is primarily used to update the UI. That is, to show an error message or retry button.
+ */
+type CommentState = CommentCreateFailedState | CommentCreateRetryingState | undefined
+
 /**
  * @beta
  * @hidden
@@ -139,6 +159,8 @@ export interface CommentDocument {
 
   context?: CommentContext
 
+  _state?: CommentState
+
   target: {
     path: CommentPath
     documentType: string
@@ -157,17 +179,18 @@ export interface CommentDocument {
  * @beta
  * @hidden
  */
-export type CommentPostPayload = Omit<CommentDocument, '_rev' | '_createdAt' | '_updatedAt'>
+export type CommentPostPayload = Omit<CommentDocument, '_rev' | '_updatedAt' | '_createdAt'>
 
 /**
  * @beta
  * @hidden
  */
 export interface CommentCreatePayload {
-  message: CommentMessage
-  status: CommentStatus
   fieldPath: string
+  id?: string
+  message: CommentMessage
   parentCommentId: string | undefined
+  status: CommentStatus
   threadId: string
 }
 

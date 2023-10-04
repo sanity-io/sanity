@@ -46,6 +46,9 @@ function Inner() {
       onNewThreadCreate={create.execute}
       onReply={create.execute}
       status="open"
+      onCreateRetry={() => {
+        // ...
+      }}
     />
   )
 }
