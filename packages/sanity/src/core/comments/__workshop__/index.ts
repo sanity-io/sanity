@@ -30,5 +30,10 @@ export default defineScope({
       title: 'MentionsMenu',
       component: lazy(() => import('./MentionsMenuStory')),
     },
+    {
+      name: 'comment-delete-dialog',
+      title: 'CommentDeleteDialog',
+      component: lazy(() => import('./CommentDeleteDialogStory')),
+    },
   ],
 })
