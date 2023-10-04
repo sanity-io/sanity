@@ -47,6 +47,7 @@ export interface CommentsListProps {
   error: Error | null
   loading: boolean
   mentionOptions: MentionOptionsHookValue
+  onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
   onNewThreadCreate: (payload: CommentCreatePayload) => void
@@ -78,6 +79,7 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
     error,
     loading,
     mentionOptions,
+    onCreateRetry,
     onDelete,
     onEdit,
     onNewThreadCreate,
@@ -202,12 +204,18 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
                       // We use slice() to avoid mutating the original array.
                       const replies = item.replies.slice().reverse()
 
+                      const canReply =
+                        status === 'open' &&
+                        item.parentComment._state?.type !== 'createError' &&
+                        item.parentComment._state?.type !== 'createRetrying'
+
                       return (
                         <CommentsListItem
-                          canReply={status === 'open'}
+                          canReply={canReply}
                           currentUser={currentUser}
                           key={item.parentComment._id}
                           mentionOptions={mentionOptions}
+                          onCreateRetry={onCreateRetry}
                           onDelete={onDelete}
                           onEdit={onEdit}
                           onPathFocus={onPathFocus}
