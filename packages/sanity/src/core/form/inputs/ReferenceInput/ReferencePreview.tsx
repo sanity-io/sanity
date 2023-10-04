@@ -2,11 +2,12 @@ import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {EditIcon, PublishIcon} from '@sanity/icons'
+import {Translate, useTranslation} from '../../../i18n'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey, TextWithTone} from '../../../components'
-import {useTimeAgo} from '../../../hooks'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
+import {useTimeAgo} from '../../../hooks'
 import {ReferenceInfo} from './types'
 
 /**
@@ -23,6 +24,7 @@ export function ReferencePreview(props: {
 }) {
   const {id, layout, preview, refType, renderPreview, showTypeLabel} = props
 
+  const {t} = useTranslation()
   const theme = useRootTheme()
   const documentPresence = useDocumentPresence(id)
 
@@ -53,12 +55,14 @@ export function ReferencePreview(props: {
     [layout, previewStub, refType],
   )
 
-  const timeSincePublished = useTimeAgo(preview.published?._updatedAt || '', {
+  const publishedAt = preview.published?._updatedAt
+  const timeSincePublished = useTimeAgo(publishedAt || '', {
     minimal: true,
     agoSuffix: true,
   })
 
-  const timeSinceEdited = useTimeAgo(preview.draft?._updatedAt || '', {
+  const draftEditedAt = preview.draft?._updatedAt
+  const timeSinceEdited = useTimeAgo(draftEditedAt || '', {
     minimal: true,
     agoSuffix: true,
   })
@@ -86,9 +90,15 @@ export function ReferencePreview(props: {
                 content={
                   <Box padding={2}>
                     <Text size={1}>
-                      {preview.published?._updatedAt
-                        ? `Published ${timeSincePublished}`
-                        : 'Not published'}
+                      {publishedAt ? (
+                        <Translate
+                          t={t}
+                          i18nKey="inputs.reference.preview.published-at-time"
+                          components={{TimeAgo: () => <>{timeSincePublished}</>}}
+                        />
+                      ) : (
+                        <>{t('inputs.reference.preview.not-published')}</>
+                      )}
                     </Text>
                   </Box>
                 }
@@ -99,7 +109,13 @@ export function ReferencePreview(props: {
                   dimmed={!preview.published}
                   muted={!preview.published}
                 >
-                  <PublishIcon aria-label={preview.published ? 'Published' : 'Not published'} />
+                  <PublishIcon
+                    aria-label={
+                      preview.published
+                        ? t('inputs.reference.preview.is-published-aria-label')
+                        : t('inputs.reference.preview.is-not-published-aria-label')
+                    }
+                  />
                 </TextWithTone>
               </Tooltip>
             </Box>
@@ -110,9 +126,15 @@ export function ReferencePreview(props: {
                 content={
                   <Box padding={2}>
                     <Text size={1}>
-                      {preview.draft?._updatedAt
-                        ? `Edited ${timeSinceEdited}`
-                        : 'No unpublished edits'}
+                      {draftEditedAt ? (
+                        <Translate
+                          t={t}
+                          i18nKey="inputs.reference.preview.edited-at-time"
+                          components={{TimeAgo: () => <>{timeSinceEdited}</>}}
+                        />
+                      ) : (
+                        <>{t('inputs.reference.preview.no-unpublished-edits')}</>
+                      )}
                     </Text>
                   </Box>
                 }
@@ -123,7 +145,13 @@ export function ReferencePreview(props: {
                   dimmed={!preview.draft}
                   muted={!preview.draft}
                 >
-                  <EditIcon aria-label={preview.draft ? 'Edited' : 'No unpublished edits'} />
+                  <EditIcon
+                    aria-label={
+                      preview.draft
+                        ? t('inputs.reference.preview.has-unpublished-changes-aria-label')
+                        : t('inputs.reference.preview.has-no-unpublished-changes-aria-label')
+                    }
+                  />
                 </TextWithTone>
               </Tooltip>
             </Box>

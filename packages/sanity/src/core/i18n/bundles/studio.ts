@@ -276,6 +276,30 @@ export const studioLocaleStrings = {
   /** Label for action that opens the referenced document in a new tab */
   'inputs.reference.action.open-in-new-tab': 'Open in new tab',
 
+  /** Text for tooltip showing when a document was published, using relative time (eg "how long ago was it published?") */
+  'inputs.reference.preview.published-at-time': 'Published <TimeAgo/>',
+
+  /** Text for tooltip indicating that a document has not yet been published */
+  'inputs.reference.preview.not-published': 'Not published',
+
+  /** Accessibility label for icon indicating that document has a published version */
+  'inputs.reference.preview.is-published-aria-label': 'Published',
+
+  /** Accessibility label for icon indicating that document does _not_ have a published version */
+  'inputs.reference.preview.is-not-published-aria-label': 'Not published',
+
+  /** Text for tooltip showing when a document was edited, using relative time (eg "how long ago was it edited?") */
+  'inputs.reference.preview.edited-at-time': 'Edited <TimeAgo/>',
+
+  /** Text for tooltip indicating that a document has no unpublished edits */
+  'inputs.reference.preview.no-unpublished-edits': 'No unpublished edits',
+
+  /** Accessibility label for icon indicating that document has unpublished changes */
+  'inputs.reference.preview.has-unpublished-changes-aria-label': 'Edited',
+
+  /** Accessibility label for icon indicating that document does _not_ have any unpublished changes */
+  'inputs.reference.preview.has-no-unpublished-changes-aria-label': 'No unpublished edits',
+
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */

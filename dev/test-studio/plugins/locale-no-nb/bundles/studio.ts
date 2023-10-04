@@ -165,6 +165,30 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Label for action that opens the referenced document in a new tab */
   'inputs.reference.action.open-in-new-tab': 'Åpne i ny fane',
+
+  /** Text for tooltip showing when a document was published, using relative time (eg "how long ago was it published?") */
+  'inputs.reference.preview.published-at-time': 'Publisert <TimeAgo/>',
+
+  /** Text for tooltip indicating that a document has not yet been published */
+  'inputs.reference.preview.not-published': 'Ikke publisert',
+
+  /** Accessibility label for icon indicating that document has a published version */
+  'inputs.reference.preview.is-published-aria-label': 'Publisert',
+
+  /** Accessibility label for icon indicating that document does _not_ have a published version */
+  'inputs.reference.preview.is-not-published-aria-label': 'Ikke publisert',
+
+  /** Text for tooltip showing when a document was edited, using relative time (eg "how long ago was it edited?") */
+  'inputs.reference.preview.edited-at-time': 'Redigert <TimeAgo/>',
+
+  /** Text for tooltip indicating that a document has no unpublished edits */
+  'inputs.reference.preview.no-unpublished-edits': 'Ingen upubliserte endringer',
+
+  /** Accessibility label for icon indicating that document has unpublished changes */
+  'inputs.reference.preview.has-unpublished-changes-aria-label': 'Redigert',
+
+  /** Accessibility label for icon indicating that document does _not_ have any unpublished changes */
+  'inputs.reference.preview.has-no-unpublished-changes-aria-label': 'Ingen upubliserte endringer',
 }
 
 export default studioResources
