@@ -2,6 +2,7 @@ import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {EditIcon, PublishIcon} from '@sanity/icons'
+import {Translate, useTranslation} from '../../../i18n'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey, TextWithTone} from '../../../components'
 import {useDocumentPresence} from '../../../store'
@@ -23,6 +24,7 @@ export function ReferencePreview(props: {
 }) {
   const {id, layout, preview, refType, renderPreview, showTypeLabel} = props
 
+  const {t} = useTranslation()
   const theme = useRootTheme()
   const documentPresence = useDocumentPresence(id)
 
@@ -53,6 +55,9 @@ export function ReferencePreview(props: {
     [layout, previewStub, refType],
   )
 
+  const publishedAt = preview.published?._updatedAt
+  const draftEditedAt = preview.draft?._updatedAt
+
   return (
     <Flex align="center">
       <Box flex={1}>{renderPreview(previewProps)}</Box>
@@ -76,12 +81,14 @@ export function ReferencePreview(props: {
                 content={
                   <Box padding={2}>
                     <Text size={1}>
-                      {preview.published?._updatedAt ? (
-                        <>
-                          Published <TimeAgo time={preview.published._updatedAt} />
-                        </>
+                      {publishedAt ? (
+                        <Translate
+                          t={t}
+                          i18nKey="inputs.reference.preview.published-at-time"
+                          components={{TimeAgo: () => <TimeAgo time={publishedAt} />}}
+                        />
                       ) : (
-                        <>Not published</>
+                        <>{t('inputs.reference.preview.not-published')}</>
                       )}
                     </Text>
                   </Box>
@@ -93,7 +100,13 @@ export function ReferencePreview(props: {
                   dimmed={!preview.published}
                   muted={!preview.published}
                 >
-                  <PublishIcon aria-label={preview.published ? 'Published' : 'Not published'} />
+                  <PublishIcon
+                    aria-label={
+                      preview.published
+                        ? t('inputs.reference.preview.is-published-aria-label')
+                        : t('inputs.reference.preview.is-not-published-aria-label')
+                    }
+                  />
                 </TextWithTone>
               </Tooltip>
             </Box>
@@ -104,12 +117,14 @@ export function ReferencePreview(props: {
                 content={
                   <Box padding={2}>
                     <Text size={1}>
-                      {preview.draft?._updatedAt ? (
-                        <>
-                          Edited <TimeAgo time={preview.draft._updatedAt} />
-                        </>
+                      {draftEditedAt ? (
+                        <Translate
+                          t={t}
+                          i18nKey="inputs.reference.preview.edited-at-time"
+                          components={{TimeAgo: () => <TimeAgo time={draftEditedAt} />}}
+                        />
                       ) : (
-                        <>No unpublished edits</>
+                        <>{t('inputs.reference.preview.no-unpublished-edits')}</>
                       )}
                     </Text>
                   </Box>
@@ -121,7 +136,13 @@ export function ReferencePreview(props: {
                   dimmed={!preview.draft}
                   muted={!preview.draft}
                 >
-                  <EditIcon aria-label={preview.draft ? 'Edited' : 'No unpublished edits'} />
+                  <EditIcon
+                    aria-label={
+                      preview.draft
+                        ? t('inputs.reference.preview.has-unpublished-changes-aria-label')
+                        : t('inputs.reference.preview.has-no-unpublished-changes-aria-label')
+                    }
+                  />
                 </TextWithTone>
               </Tooltip>
             </Box>
