@@ -2,7 +2,6 @@ import type {ReferenceValue} from '@sanity/types'
 import {Autocomplete, Box, Flex, Popover, Text} from '@sanity/ui'
 import React, {forwardRef, ReactElement, useCallback, useId, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {Trans} from 'react-i18next'
 import {useSchema} from '../../../../../../../../../hooks'
 import type {SearchableType, WeightedHit} from '../../../../../../../../../search'
 import {getPublishedId} from '../../../../../../../../../util'
@@ -11,7 +10,7 @@ import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {useSearch} from '../../../../../hooks/useSearch'
 import {getDocumentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
-import {useTranslation} from '../../../../../../../../../i18n'
+import {Translate, useTranslation} from '../../../../../../../../../i18n'
 
 interface SearchHit {
   hit: WeightedHit
@@ -167,11 +166,13 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
                     <Box padding={4}>
                       <Flex align="center" height="fill" justify="center">
                         <StyledText align="center" muted>
-                          <Trans
+                          <Translate
                             t={t}
                             i18nKey="new-document.no-results"
-                            components={[<strong key={0}>“{searchState.terms.query}”</strong>]}
                             values={{searchQuery: searchState.terms.query}}
+                            components={{
+                              QueryString: ({children}) => <strong>{children}</strong>,
+                            }}
                           />
                         </StyledText>
                       </Flex>
