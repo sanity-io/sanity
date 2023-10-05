@@ -20,7 +20,7 @@ jobs:
     # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` thus we need an if check
     if: ${{ github.ref_name == 'next' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
