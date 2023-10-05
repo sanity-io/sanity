@@ -189,6 +189,79 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Accessibility label for icon indicating that document does _not_ have any unpublished changes */
   'inputs.reference.preview.has-no-unpublished-changes-aria-label': 'Ingen upubliserte endringer',
+
+  /** --- Array Input --- */
+
+  /** Label for when the array input doesn't have any items */
+  'inputs.array.no-items-label': 'Ingen elementer',
+
+  /** Label for when the array input is resolving the initial value for the item */
+  'inputs.array.resolving-initial-value': 'Finner startverdi…',
+
+  /** Label for read only array fields */
+  'inputs.array.read-only-label': 'Dette feltet er skrivebeskyttet',
+
+  /** Label for removing an array item action  */
+  'inputs.array.action.remove': 'Fjern',
+
+  /** Label for removing action when an array item has an error */
+  'inputs.array.action.remove-invalid-item': 'Fjern',
+
+  /** Label for duplicating an array item */
+  'inputs.array.action.duplicate': 'Dupliser',
+
+  /** Label for viewing the item of a specific type, eg "View Person" */
+  'inputs.array.action.view': 'Se {{itemTypeTitle}}',
+
+  /** Label for editing the item of a specific type, eg "Edit Person" */
+  'inputs.array.action.edit': 'Rediger {{itemTypeTitle}}',
+
+  /** Label for adding array item action when the schema allows for only one schema type */
+  'inputs.array.action.add-item': 'Legg til',
+
+  /**
+   * Label for adding one array item action when the schema allows for multiple schema types,
+   * eg. will prompt the user to select a type once triggered
+   */
+  'inputs.array.action.add-item-select-type': 'Legg til...',
+
+  /** Label for adding item before a specific array item */
+  'inputs.array.action.add-before': 'Legg til før',
+
+  /** Label for adding item after a specific array item */
+  'inputs.array.action.add-after': 'Legg til etter',
+
+  /** Error label for unexpected errors in the Array Input */
+  'inputs.array.error.unexpected-error': `Uventet feil: {{error}}`,
+
+  /** Error title for when an item type within an array input is incompatible, used in the tooltip */
+  'inputs.array.error.type-is-incompatible-title': 'Hvorfor skjer dette?',
+
+  /** Error description for the array item tooltip that explains what the error means with more context */
+  'inputs.array.error.type-is-incompatible-prompt': `Typen <Code>{{typeName}}</Code> er ikke gyldig for denne listen`,
+
+  /** Error description for the array item tooltip that explains that the current type item is not valid for the list  */
+  'inputs.array.error.current-schema-not-declare-description':
+    'Den nåværende skjemaet erklærer ikke typen <Code>{{typeName}}</Code> som gyldig for denne listen. Dette kan bety at typen har blitt fjernet som en gyldig type, eller at noen andre har lagt den til i sitt eget lokale skjema som ennå ikke er distribuert.',
+
+  /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
+  'inputs.array.error.can-delete-but-no-edit-description':
+    'Du kan fortsatt flytte eller slette dette elementet, men det kan ikke redigeres siden skjemadefinisjonen for typen ikke finnes.',
+
+  /** Error description to show how the item is being represented in the json format */
+  'inputs.array.error.json-representation-description': 'JSON-representasjon av dette elementet:',
+
+  /** Error label for toast when trying to upload one array item of a type that cannot be converted to array */
+  'inputs.array.error.cannot-upload-unable-to-convert_one':
+    'Følgende element kan ikke lastes opp fordi det ikke finnes noen kjent konvertering fra innholdstypen til element i listen:',
+
+  /** Error label for toast when trying to upload multiple array items of a type that cannot be converted to array */
+  'inputs.array.error.cannot-upload-unable-to-convert_other':
+    'Følgende elementer kan ikke lastes opp fordi det ikke finnes noen kjent konvertering fra innholdstypene til element i listen:',
+
+  /** Error label for toast when array could not resolve the initial value */
+  'inputs.array.error.cannot-resolve-initial-value-title':
+    'Kan ikke finne startverdi for type: {{schemaTypeTitle}}: {{errorMessage}}.',
 }
 
 export default studioResources
