@@ -3,8 +3,7 @@ import React, {useCallback} from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
 import {resolveTypeName} from '@sanity/util/content'
 import styled from 'styled-components'
-import {Trans} from 'react-i18next'
-import {useTranslation} from '../../../../../i18n'
+import {Translate, useTranslation} from '../../../../../i18n'
 
 const PopoverCard = styled(Card)`
   max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1]}px;
@@ -51,11 +50,11 @@ export function IncompatibleItemType(props: Props) {
               <Text weight="semibold">{t('inputs.array.error.type-is-incompatible-title')}</Text>
             </Box>
             <Text size={1}>
-              <Trans
+              <Translate
                 t={t}
                 i18nKey="inputs.array.error.current-schema-not-declare-description"
-                components={[<code key={0}>{typeName}</code>]}
-                values={{typeName: typeName}}
+                components={{Code: ({children}) => <code>{children}</code>}}
+                values={{typeName}}
               />
             </Text>
             <Box>
@@ -100,11 +99,11 @@ export function IncompatibleItemType(props: Props) {
 
           <Box flex={1}>
             <Text size={1} textOverflow="ellipsis">
-              <Trans
+              <Translate
                 t={t}
                 i18nKey="inputs.array.error.type-is-incompatible-prompt"
-                components={[<code key={0}>{typeName}</code>]}
-                values={{typeName: typeName}}
+                components={{Code: ({children}) => <code>{children}</code>}}
+                values={{typeName}}
               />
             </Text>
           </Box>
