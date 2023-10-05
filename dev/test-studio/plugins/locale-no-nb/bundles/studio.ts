@@ -140,7 +140,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Message shown when no documents were found that matched the given search string */
   'inputs.reference.no-results-for-query':
-    'Ingen resultater for <SearchTerm>«{{searchString}}»</SearchTerm>',
+    'Ingen resultater for <SearchTerm>«{{searchTerm}}»</SearchTerm>',
 
   /** Label for action to create a new document from the reference input */
   'inputs.reference.action.create-new-document': 'Opprett ny',
