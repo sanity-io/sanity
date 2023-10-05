@@ -47,7 +47,7 @@ jobs:
       - run: yarn prettier --write
       - name: GitHub blocks PRs from automation that alter workflows in any way
         run: git restore .github/workflows yarn.lock
-      - uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1
+      - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2
         id: generate-token
         with:
           app_id: ${{ secrets.ECOSPARK_APP_ID }}
