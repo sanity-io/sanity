@@ -23,11 +23,11 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
   const parentComments = comments?.filter((c) => !c.parentCommentId) || EMPTY_ARRAY
 
   const items = parentComments
-    .map((c) => {
+    .map((parentComment) => {
       const crumbs = buildCommentBreadcrumbs({
         currentUser,
         documentValue,
-        fieldPath: c.target.path.field,
+        fieldPath: parentComment.target.path.field,
         schemaType,
       })
 
@@ -35,18 +35,18 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
 
       if (hasInvalidBreadcrumb) return undefined
 
-      const replies = comments?.filter((r) => r.parentCommentId === c._id) || EMPTY_ARRAY
+      const replies =
+        comments?.filter((r) => r.parentCommentId === parentComment._id) || EMPTY_ARRAY
 
-      // Add one to the replies count to account for the parent comment
-      const commentsCount = replies.length + 1
+      const commentsCount = [parentComment, ...replies].length
 
       return {
         breadcrumbs: crumbs,
         commentsCount,
-        fieldPath: c.target.path.field,
-        parentComment: c,
+        fieldPath: parentComment.target.path.field,
+        parentComment,
         replies,
-        threadId: c.threadId,
+        threadId: parentComment.threadId,
       }
     })
     .filter(Boolean) as CommentThreadItem[]

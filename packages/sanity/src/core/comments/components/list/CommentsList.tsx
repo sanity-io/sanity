@@ -118,7 +118,25 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
   // for every single comment thread. Also, we don't want to have threads pointing
   // to the same field to be rendered separately in the list since that makes it
   // harder to get an overview of the comments about a specific field.
-  const groupedThreads = useMemo(() => Object.entries(groupThreads(comments)), [comments])
+  const groupedThreads = useMemo(() => {
+    const entries = Object.entries(groupThreads(comments))
+
+    // Sort groupedThreads in descending order (newest first) base on the date of the
+    // last comment in the thread.
+    // This is to make sure that, when a new thread is added to the group, the group
+    // is not moved to the top of the list.
+    return entries.sort((a, b) => {
+      const [, threadA] = a
+      const [, threadB] = b
+
+      const lastCommentA = threadA[threadA.length - 1]
+      const lastCommentB = threadB[threadB.length - 1]
+
+      return lastCommentB.parentComment._createdAt.localeCompare(
+        lastCommentA.parentComment._createdAt,
+      )
+    })
+  }, [comments])
 
   return (
     <Flex
