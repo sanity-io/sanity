@@ -4,8 +4,8 @@ export interface CalendarLabels {
   goToPreviousMonth: string
   selectHour: string
   setToCurrentTime: string
-  montNames: MonthNames
-  weekDayNames: WeekDayNames
+  monthNames: MonthNames
+  weekDayNamesShort: WeekDayNames
   setToTimePreset: (time: string, date: Date) => string
 }
 
@@ -28,7 +28,7 @@ export type MonthNames = [
   jun: string,
   jul: string,
   aug: string,
-  sept: string,
+  sep: string,
   oct: string,
   nov: string,
   dec: string,

@@ -13,7 +13,7 @@ export function getCalendarLabels(
     previousYear: t('inputs.datetime.calendar.action.previous-year'),
     setToCurrentTime: t('inputs.datetime.calendar.action.set-to-current-time'),
     selectHour: t('inputs.datetime.calendar.action.select-hour'),
-    montNames: [
+    monthNames: [
       t('inputs.datetime.calendar.month-names.january'),
       t('inputs.datetime.calendar.month-names.february'),
       t('inputs.datetime.calendar.month-names.march'),
@@ -27,7 +27,7 @@ export function getCalendarLabels(
       t('inputs.datetime.calendar.month-names.november'),
       t('inputs.datetime.calendar.month-names.december'),
     ],
-    weekDayNames: [
+    weekDayNamesShort: [
       t('inputs.datetime.calendar.weekday-names.short.monday'),
       t('inputs.datetime.calendar.weekday-names.short.tuesday'),
       t('inputs.datetime.calendar.weekday-names.short.wednesday'),

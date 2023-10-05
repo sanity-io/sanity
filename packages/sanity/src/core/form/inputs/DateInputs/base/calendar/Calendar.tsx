@@ -189,7 +189,7 @@ export const Calendar = forwardRef(function Calendar(
               moveFocusedDate={moveFocusedDate}
               onChange={handleFocusedMonthChange}
               labels={{goToPreviousMonth: labels.goToPreviousMonth}}
-              monthNames={labels.montNames}
+              monthNames={labels.monthNames}
               value={focusedDate?.getMonth()}
             />
           </Box>
@@ -212,7 +212,7 @@ export const Calendar = forwardRef(function Calendar(
           tabIndex={0}
         >
           <CalendarMonth
-            weekDayNames={labels.weekDayNames}
+            weekDayNames={labels.weekDayNamesShort}
             date={focusedDate}
             focused={focusedDate}
             onSelect={handleDateChange}
