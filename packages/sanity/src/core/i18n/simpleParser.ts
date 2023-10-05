@@ -44,7 +44,9 @@ export function simpleParser(input: string): Token[] {
         const tagName = match.groups!.tag
         if (!VALID_TAG_NAME.test(tagName)) {
           throw new Error(
-            `Invalid tag "<${tagName}>". Tag names must start with an uppercase letter and can only include letters and numbers"`,
+            tagName.trim() === tagName
+              ? `Invalid tag "<${tagName}>". Tag names must start with an uppercase letter and can only include letters and numbers."`
+              : `Invalid tag "<${tagName}>". No whitespace allowed in tags."`,
           )
         }
         if (text) {
@@ -97,7 +99,7 @@ export function simpleParser(input: string): Token[] {
   }
   if (openTag) {
     throw new Error(
-      `No matching closing tag for <${openTag}> found. Either make it self closing (e.g. "<${openTag}/>") or close it (e.g "<${openTag}>...</${openTag}>")`,
+      `No matching closing tag for <${openTag}> found. Either make it self closing (e.g. "<${openTag}/>") or close it (e.g "<${openTag}>...</${openTag}>").`,
     )
   }
   if (text) {
