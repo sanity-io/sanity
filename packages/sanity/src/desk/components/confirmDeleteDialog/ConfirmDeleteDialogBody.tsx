@@ -2,7 +2,7 @@ import React, {useCallback} from 'react'
 import {
   WarningOutlineIcon,
   DocumentsIcon,
-  ClipboardIcon,
+  CopyIcon,
   UnknownIcon,
   ChevronDownIcon,
 } from '@sanity/icons'
@@ -241,7 +241,7 @@ export function ConfirmDeleteDialogBody({
                                   <Button
                                     title="Copy ID to clipboard"
                                     mode="bleed"
-                                    icon={ClipboardIcon}
+                                    icon={CopyIcon}
                                     fontSize={0}
                                   />
                                 </CopyToClipboard>
