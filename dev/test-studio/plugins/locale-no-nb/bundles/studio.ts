@@ -57,11 +57,11 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'timeAgo.seconds_other': '{{count}} sekunder',
   /* Relative time, granularity: seconds, configured to show ago suffix*/
   'timeAgo.seconds.ago_one': 'ett sekund siden',
-  'timeAgo.seconds.ago_other': '{{count}} second ago',
+  'timeAgo.seconds.ago_other': '{{count}} sekunder siden',
   /* Relative time, granularity: seconds, using a minimal format*/
-  'timeAgo.seconds.minimal': '{{count}}m',
+  'timeAgo.seconds.minimal': '{{count}}s',
   /* Relative time, granularity: seconds, using a minimal format, configured to show ago suffix*/
-  'timeAgo.seconds.minimal.ago': '{{count}}m ago',
+  'timeAgo.seconds.minimal.ago': '{{count}}s siden',
 
   /** --- DateTime (and Date) Input --- */
 
