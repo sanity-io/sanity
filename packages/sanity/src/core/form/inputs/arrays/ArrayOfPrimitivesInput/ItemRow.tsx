@@ -4,6 +4,7 @@ import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {FormFieldValidationStatus} from '../../../components/formField'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
+import {useTranslation} from '../../../../i18n'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {RowLayout} from '../layouts/RowLayout'
 import {FieldPresence} from '../../../../presence'
@@ -59,6 +60,8 @@ export const ItemRow = React.forwardRef(function ItemRow(
     return undefined
   }, [hasError, hasWarning])
 
+  const {t} = useTranslation()
+
   const menu = (
     <MenuButton
       button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
@@ -66,9 +69,17 @@ export const ItemRow = React.forwardRef(function ItemRow(
       popover={MENU_BUTTON_POPOVER_PROPS}
       menu={
         <Menu>
-          <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={onRemove} />
-
-          <MenuItem text="Duplicate" icon={DuplicateIcon} onClick={handleDuplicate} />
+          <MenuItem
+            text={t('inputs.array.action.remove')}
+            tone="critical"
+            icon={TrashIcon}
+            onClick={onRemove}
+          />
+          <MenuItem
+            text={t('inputs.array.action.duplicate')}
+            icon={DuplicateIcon}
+            onClick={handleDuplicate}
+          />
           <InsertMenu types={insertableTypes} onInsert={handleInsert} />
         </Menu>
       }
