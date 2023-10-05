@@ -31,6 +31,7 @@ export interface UseIntlListFormatOptions {
  *
  * @param options - Optional options for the list formatter
  * @returns Instance of `Intl.ListFormat`
+ * @public
  */
 export function useIntlListFormat(options?: UseIntlListFormatOptions): Intl.ListFormat {
   const currentLocale = useCurrentLocale()
