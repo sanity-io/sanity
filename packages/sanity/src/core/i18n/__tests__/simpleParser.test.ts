@@ -82,7 +82,7 @@ describe('simpleParser - errors', () => {
   })
   test('unclosed tags', () => {
     expect(() => simpleParser('foo <Icon> bar')).toThrow(
-      'No matching closing tag for <Icon> found. Either make it self closing (e.g. "<Icon/>") or close it (e.g "<Icon>...</Icon>")',
+      'No matching closing tag for <Icon> found. Either make it self closing (e.g. "<Icon/>") or close it (e.g "<Icon>...</Icon>").',
     )
   })
   test('unclosed tags before another close tag', () => {
@@ -92,15 +92,18 @@ describe('simpleParser - errors', () => {
   })
   test('tags must be title cased', () => {
     expect(() => simpleParser('foo <red> bar</Blue>')).toThrow(
-      'Invalid tag "<red>". Tag names must start with an uppercase letter and can only include letters and numbers"',
+      'Invalid tag "<red>". Tag names must start with an uppercase letter and can only include letters and numbers.',
     )
   })
   test('tags cant contain whitespace or special characters', () => {
     expect(() => simpleParser('foo <Em@ail> bar</Em@ail>')).toThrow(
-      'Invalid tag "<Em@ail>". Tag names must start with an uppercase letter and can only include letters and numbers"',
+      'Invalid tag "<Em@ail>". Tag names must start with an uppercase letter and can only include letters and numbers.',
     )
     expect(() => simpleParser('foo <Bold >bar</Bold>')).toThrow(
-      'Invalid tag "<Bold >". Tag names must start with an uppercase letter and can only include letters and numbers"',
+      'Invalid tag "<Bold >". No whitespace allowed in tags.',
+    )
+    expect(() => simpleParser('foo <Bold /> bar')).toThrow(
+      'Invalid tag "<Bold >". No whitespace allowed in tags.',
     )
   })
   test('handles tag chars at random positions', () => {
