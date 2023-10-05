@@ -51,7 +51,7 @@
     "sanity": "3.17.0",
     "sanity-plugin-mux-input": "^2.2.1",
     "styled-components": "^5.2.0",
-    "three": "^0.155.0",
+    "three": "^0.157.0",
     "three-stdlib": "^2.24.2"
   },
   "devDependencies": {
