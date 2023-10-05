@@ -348,11 +348,11 @@ export const studioLocaleStrings = {
   'inputs.array.error.type-is-incompatible-title': 'Why is this happening?',
 
   /** Error description for the array item tooltip that explains what the error means with more context */
-  'inputs.array.error.type-is-incompatible-prompt': `Item of type <0>{{typeName}}</0> not valid for this list`,
+  'inputs.array.error.type-is-incompatible-prompt': `Item of type <Code>{{typeName}}</Code> not valid for this list`,
 
   /** Error description for the array item tooltip that explains that the current type item is not valid for the list  */
   'inputs.array.error.current-schema-not-declare-description':
-    'The current schema does not declare items of type <0>{{typeName}}</0> as valid for this list. This could mean that the type has been removed as a valid item type, or that someone else has added it to their own local schema that is not yet deployed.',
+    'The current schema does not declare items of type <Code>{{typeName}}</Code> as valid for this list. This could mean that the type has been removed as a valid item type, or that someone else has added it to their own local schema that is not yet deployed.',
 
   /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
   'inputs.array.error.can-delete-but-no-edit-description':
@@ -428,7 +428,7 @@ export const studioLocaleStrings = {
   'new-document.create-new-document-label': 'New document…',
 
   /** Message for when no results are found for a specific search query in the new document menu */
-  'new-document.no-results': 'No results for <0>{{searchQuery}}</0>',
+  'new-document.no-results': 'No results for <QueryString>{{searchQuery}}</QueryString>',
 
   /** Message for when there are no document type options in the new document menu */
   'new-document.no-document-types-found': 'No document types found',
@@ -634,7 +634,7 @@ export const studioLocaleStrings = {
   'search.action.toggle-filters-aria-label': 'Toggle filters',
 
   /** Label for instructions on how to use the search - displayed when no recent searches are available */
-  'search.instructions': 'Use <0></0> to refine your search',
+  'search.instructions': 'Use <ControlsIcon /> to refine your search',
 
   /** --- Help & Resources Menu --- */
 
