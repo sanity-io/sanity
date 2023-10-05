@@ -37,13 +37,6 @@ export const commentsDebug = defineType({
       ],
     },
     {
-      name: 'image',
-      type: 'image',
-      title: 'Image title',
-      hidden: ({document}) => Boolean(document?.hideFields),
-      description: DESCRIPTION,
-    },
-    {
       type: 'array',
       name: 'arrayOfObjects',
       title: 'Array 1',
@@ -110,6 +103,13 @@ export const commentsDebug = defineType({
           ],
         },
       ],
+    },
+    {
+      name: 'image',
+      type: 'image',
+      title: 'Image title',
+      hidden: ({document}) => Boolean(document?.hideFields),
+      description: DESCRIPTION,
     },
   ],
 })
