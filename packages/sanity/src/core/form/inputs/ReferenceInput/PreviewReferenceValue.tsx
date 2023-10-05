@@ -203,7 +203,7 @@ function InvalidType({
                 <Translate
                   t={t}
                   i18nKey="inputs.reference.error.invalid-type-description"
-                  values={{documentId, actualType, declaredTypes}}
+                  values={{documentId, actualType}}
                   components={{
                     AllowedTypes: () => <HumanizedList values={declaredTypes} />,
                     Code: ({children}) => <code>{children}</code>,
