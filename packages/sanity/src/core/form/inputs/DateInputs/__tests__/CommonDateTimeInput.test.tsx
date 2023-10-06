@@ -7,6 +7,7 @@ import {ParseResult} from '../types'
 import {CommonDateTimeInput} from '../CommonDateTimeInput'
 import {isValidDate} from '../utils'
 import {renderStringInput} from '../../../../../../test/form'
+import {CalendarLabels} from '../base/calendar/types'
 
 function parseInputValue(input: string): ParseResult {
   const candidate = parse(input, 'yyyy-MM-dd HH:mm', 0)
@@ -28,6 +29,30 @@ function serialize(date: Date): string {
   return date.toISOString()
 }
 
+const CALENDAR_LABELS: CalendarLabels = {
+  previousYear: 'Previous year',
+  nextYear: 'Next year',
+  goToPreviousMonth: 'Goto previous mont',
+  selectHour: 'Select hour',
+  setToCurrentTime: 'Set to current time',
+  monthNames: [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ],
+  weekDayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  setToTimePreset: (time: string, date: Date) => `${time} on ${format(date, 'yyyy-MM-dd')}`,
+}
+
 async function renderInput() {
   const onChange = jest.fn()
 
@@ -42,6 +67,7 @@ async function renderInput() {
       return (
         <CommonDateTimeInput
           deserialize={deserialize}
+          calendarLabels={CALENDAR_LABELS}
           id={id}
           formatInputValue={formatInputValue}
           onChange={onChange}
