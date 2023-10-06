@@ -6,8 +6,9 @@ export default defineConfig({
   name: 'default',
   title: 'Blog studio example',
 
-  projectId: 'ppsg7ml5',
-  dataset: 'blog',
+  projectId: '50lyhgrn',
+  dataset: 'production',
+  apiHost: 'https://api.sanity.work',
 
   schema: {
     types: schemaTypes,
