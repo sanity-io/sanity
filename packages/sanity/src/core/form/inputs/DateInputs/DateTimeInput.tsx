@@ -1,24 +1,24 @@
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import {getMinutes, setMinutes, parseISO} from 'date-fns'
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
+import {useTranslation} from '../../../i18n'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {ParseResult} from './types'
-import {isValidDate} from './utils'
+import {getCalendarLabels, isValidDate} from './utils'
+import {CalendarLabels} from './base/calendar/types'
 
 interface ParsedOptions {
   dateFormat: string
   timeFormat: string
   timeStep: number
-  calendarTodayLabel: string
 }
 
 interface SchemaOptions {
   dateFormat?: string
   timeFormat?: string
   timeStep?: number
-  calendarTodayLabel?: string
 }
 
 /**
@@ -34,7 +34,6 @@ function parseOptions(options: SchemaOptions = {}): ParsedOptions {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
     timeFormat: options.timeFormat || DEFAULT_TIME_FORMAT,
     timeStep: ('timeStep' in options && Number(options.timeStep)) || 1,
-    calendarTodayLabel: options.calendarTodayLabel || 'Today',
   }
 }
 
@@ -73,6 +72,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
   const {onChange, schemaType, value, elementProps} = props
 
   const {dateFormat, timeFormat, timeStep} = parseOptions(schemaType.options)
+  const {t} = useTranslation()
 
   const handleChange = useCallback(
     (nextDate: string | null) => {
@@ -95,10 +95,11 @@ export function DateTimeInput(props: DateTimeInputProps) {
     (inputValue: string) => parse(inputValue, `${dateFormat} ${timeFormat}`),
     [dateFormat, timeFormat],
   )
-
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   return (
     <CommonDateTimeInput
       {...elementProps}
+      calendarLabels={calendarLabels}
       onChange={handleChange}
       deserialize={deserialize}
       formatInputValue={formatInputValue}

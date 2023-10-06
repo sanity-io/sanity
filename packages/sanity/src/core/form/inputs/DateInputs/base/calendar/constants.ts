@@ -1,6 +1,6 @@
 import {range} from 'lodash'
 
-export const MONTH_NAMES = [
+export const DEFAULT_MONTH_NAMES = [
   'January',
   'February',
   'March',
@@ -15,7 +15,7 @@ export const MONTH_NAMES = [
   'December',
 ]
 
-export const WEEK_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+export const DEFAULT_WEEK_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 export const HOURS_24 = range(0, 24)
 
