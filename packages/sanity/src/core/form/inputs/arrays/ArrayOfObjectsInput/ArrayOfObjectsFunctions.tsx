@@ -14,7 +14,11 @@ import {
 } from '@sanity/ui'
 import {ArrayInputFunctionsProps, ObjectItem} from '../../../types'
 
-const POPOVER_PROPS: MenuButtonProps['popover'] = {constrainSize: true, portal: true}
+const POPOVER_PROPS: MenuButtonProps['popover'] = {
+  constrainSize: true,
+  portal: true,
+  fallbackPlacements: ['top', 'bottom'],
+}
 
 /**
  * @hidden
