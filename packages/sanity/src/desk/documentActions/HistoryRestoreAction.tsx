@@ -68,7 +68,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
     onHandle: handle,
     title: t(
       isRevisionInitialVersion
-        ? 'action.restore.disabled.cantRestoreInitial'
+        ? 'action.restore.disabled.cannot-restore-initial'
         : 'action.restore.tooltip',
     ),
     icon: RestoreIcon,

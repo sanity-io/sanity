@@ -104,7 +104,7 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
   'action.restore.label': 'Gjenopprett',
 
   /** Fallback tooltip for when user is looking at the initial version */
-  'action.restore.disabled.cantRestoreInitial': 'Kan ikke gjenopprette til første version',
+  'action.restore.disabled.cannot-restore-initial': 'Kan ikke gjenopprette til første version',
 
   /** Default tooltip for the action */
   'action.restore.tooltip': 'Gjenopprett til denne versjonen',

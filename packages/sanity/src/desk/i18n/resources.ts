@@ -107,7 +107,7 @@ const deskLocaleStrings = {
   'action.restore.label': 'Restore',
 
   /** Fallback tooltip for when user is looking at the initial version */
-  'action.restore.disabled.cantRestoreInitial': "You can't restore to the initial version",
+  'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial version",
 
   /** Default tooltip for the action */
   'action.restore.tooltip': 'Restore to this version',
