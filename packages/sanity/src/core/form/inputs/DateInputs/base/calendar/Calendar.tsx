@@ -4,10 +4,11 @@ import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} fr
 import {range} from 'lodash'
 import React, {forwardRef, useCallback, useEffect} from 'react'
 import {CalendarMonth} from './CalendarMonth'
-import {ARROW_KEYS, HOURS_24, MONTH_NAMES, DEFAULT_TIME_PRESETS} from './constants'
+import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
 import {features} from './features'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
+import {CalendarLabels, MonthNames} from './types'
 
 type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
@@ -16,6 +17,7 @@ type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
   onSelect: (date: Date) => void
   focusedDate: Date
   onFocusedDateChange: (index: Date) => void
+  labels: CalendarLabels
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -44,6 +46,7 @@ export const Calendar = forwardRef(function Calendar(
     focusedDate = selectedDate,
     timeStep = 1,
     onSelect,
+    labels,
     ...restProps
   } = props
 
@@ -185,12 +188,15 @@ export const Calendar = forwardRef(function Calendar(
             <CalendarMonthSelect
               moveFocusedDate={moveFocusedDate}
               onChange={handleFocusedMonthChange}
+              labels={{goToPreviousMonth: labels.goToPreviousMonth}}
+              monthNames={labels.monthNames}
               value={focusedDate?.getMonth()}
             />
           </Box>
           <Box marginLeft={2}>
             <CalendarYearSelect
               moveFocusedDate={moveFocusedDate}
+              labels={{nextYear: labels.nextYear, previousYear: labels.previousYear}}
               onChange={setFocusedDateYear}
               value={focusedDate.getFullYear()}
             />
@@ -206,6 +212,7 @@ export const Calendar = forwardRef(function Calendar(
           tabIndex={0}
         >
           <CalendarMonth
+            weekDayNames={labels.weekDayNamesShort}
             date={focusedDate}
             focused={focusedDate}
             onSelect={handleDateChange}
@@ -222,7 +229,7 @@ export const Calendar = forwardRef(function Calendar(
             <Flex align="center" flex={1}>
               <Box>
                 <Select
-                  aria-label="Select hour"
+                  aria-label={labels.selectHour}
                   value={selectedDate?.getHours()}
                   onChange={handleHoursChange}
                 >
@@ -254,20 +261,22 @@ export const Calendar = forwardRef(function Calendar(
             </Flex>
 
             <Box marginLeft={2}>
-              <Button text="Set to current time" mode="bleed" onClick={handleNowClick} />
+              <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
             </Box>
           </Flex>
 
           {features.timePresets && (
             <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
               {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
+                const text = formatTime(hours, minutes)
                 return (
                   <CalendarTimePresetButton
                     key={`${hours}-${minutes}`}
                     hours={hours}
                     minutes={minutes}
                     onTimeChange={handleTimeChange}
-                    selectedDate={selectedDate}
+                    text={text}
+                    aria-label={labels.setToTimePreset(text, selectedDate)}
                   />
                 )
               })}
@@ -283,10 +292,10 @@ function CalendarTimePresetButton(props: {
   hours: number
   minutes: number
   onTimeChange: (hours: number, minutes: number) => void
-  selectedDate: Date
+  'aria-label': string
+  text: string
 }) {
-  const {hours, minutes, onTimeChange, selectedDate} = props
-  const formatted = formatTime(hours, minutes)
+  const {hours, minutes, text, onTimeChange} = props
 
   const handleClick = useCallback(() => {
     onTimeChange(hours, minutes)
@@ -294,8 +303,8 @@ function CalendarTimePresetButton(props: {
 
   return (
     <Button
-      text={formatted}
-      aria-label={`${formatted} on ${selectedDate.toDateString()}`}
+      text={text}
+      aria-label={props['aria-label']}
       mode="bleed"
       fontSize={1}
       onClick={handleClick}
@@ -307,8 +316,12 @@ function CalendarMonthSelect(props: {
   moveFocusedDate: (by: number) => void
   onChange: (e: React.FormEvent<HTMLSelectElement>) => void
   value?: number
+  monthNames: MonthNames
+  labels: {
+    goToPreviousMonth: string
+  }
 }) {
-  const {moveFocusedDate, onChange, value} = props
+  const {moveFocusedDate, onChange, value, labels, monthNames} = props
 
   const handlePrevMonthClick = useCallback(() => moveFocusedDate(-1), [moveFocusedDate])
 
@@ -317,7 +330,7 @@ function CalendarMonthSelect(props: {
   return (
     <Flex flex={1}>
       <Button
-        aria-label="Go to previous month"
+        aria-label={labels.goToPreviousMonth}
         onClick={handlePrevMonthClick}
         mode="bleed"
         icon={ChevronLeftIcon}
@@ -326,7 +339,7 @@ function CalendarMonthSelect(props: {
       />
       <Box flex={1}>
         <Select radius={0} value={value} onChange={onChange}>
-          {MONTH_NAMES.map((m, i) => (
+          {monthNames.map((m, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <option key={i} value={i}>
               {m}
@@ -350,8 +363,9 @@ function CalendarYearSelect(props: {
   moveFocusedDate: (by: number) => void
   onChange: (year: number) => void
   value?: number
+  labels: {nextYear: string; previousYear: string}
 }) {
-  const {moveFocusedDate, onChange, value} = props
+  const {moveFocusedDate, onChange, value, labels} = props
 
   const handlePrevYearClick = useCallback(() => moveFocusedDate(-12), [moveFocusedDate])
 
@@ -360,7 +374,7 @@ function CalendarYearSelect(props: {
   return (
     <Flex>
       <Button
-        aria-label="Previous year"
+        aria-label={labels.previousYear}
         onClick={handlePrevYearClick}
         mode="bleed"
         icon={ChevronLeftIcon}
@@ -369,7 +383,7 @@ function CalendarYearSelect(props: {
       />
       <YearInput value={value} onChange={onChange} radius={0} style={{width: 65}} />
       <Button
-        aria-label="Next year"
+        aria-label={labels.nextYear}
         onClick={handleNextYearClick}
         mode="bleed"
         icon={ChevronRightIcon}

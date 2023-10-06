@@ -1,18 +1,11 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {format, parse} from '@sanity/util/legacyDateFormat'
 import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
+import {useTranslation} from '../../../i18n'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
-
-interface ParsedOptions {
-  dateFormat: string
-  calendarTodayLabel: string
-}
-
-interface SchemaOptions {
-  dateFormat?: string
-  calendarTodayLabel?: string
-}
+import {CalendarLabels} from './base/calendar/types'
+import {getCalendarLabels} from './utils'
 
 /**
  * @hidden
@@ -24,13 +17,6 @@ const VALUE_FORMAT = 'YYYY-MM-DD'
 // default to how they are stored
 const DEFAULT_DATE_FORMAT = VALUE_FORMAT
 
-function parseOptions(options: SchemaOptions = {}): ParsedOptions {
-  return {
-    dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
-    calendarTodayLabel: options.calendarTodayLabel || 'Today',
-  }
-}
-
 const deserialize = (value: string) => parse(value, VALUE_FORMAT)
 const serialize = (date: Date) => format(date, VALUE_FORMAT)
 
@@ -39,7 +25,8 @@ const serialize = (date: Date) => format(date, VALUE_FORMAT)
  * @beta */
 export function DateInput(props: DateInputProps) {
   const {readOnly, onChange, schemaType, elementProps, value} = props
-  const {dateFormat} = parseOptions(schemaType.options)
+  const dateFormat = schemaType.options?.dateFormat || DEFAULT_DATE_FORMAT
+  const {t} = useTranslation()
 
   const handleChange = useCallback(
     (nextDate: string | null) => {
@@ -55,6 +42,7 @@ export function DateInput(props: DateInputProps) {
     [dateFormat],
   )
 
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   return (
     <CommonDateTimeInput
       {...elementProps}
@@ -63,6 +51,7 @@ export function DateInput(props: DateInputProps) {
       onChange={handleChange}
       parseInputValue={parseInputValue}
       placeholder={schemaType.placeholder}
+      calendarLabels={calendarLabels}
       readOnly={readOnly}
       selectTime={false}
       serialize={serialize}

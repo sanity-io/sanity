@@ -173,6 +173,45 @@ export const studioLocaleStrings = {
   /** Action message for generating the slug */
   'inputs.slug.action.generate': `Generate`,
 
+  /** --- DateTime (and Date) Input --- */
+
+  /** Action message for navigating to previous month */
+  'inputs.datetime.calendar.action.previous-month': `Previous month`,
+  /** Action message for navigating to next year */
+  'inputs.datetime.calendar.action.next-year': `Next year`,
+  /** Action message for navigating to previous year */
+  'inputs.datetime.calendar.action.previous-year': `Previous year`,
+  /** Action message for selecting hour */
+  'inputs.datetime.calendar.action.select-hour': `Select hour`,
+  /** Action message for setting to current time */
+  'inputs.datetime.calendar.action.set-to-current-time': `Set to current time`,
+
+  /** Month names */
+  'inputs.datetime.calendar.month-names.january': 'January',
+  'inputs.datetime.calendar.month-names.february': 'February',
+  'inputs.datetime.calendar.month-names.march': 'March',
+  'inputs.datetime.calendar.month-names.april': 'April',
+  'inputs.datetime.calendar.month-names.may': 'May',
+  'inputs.datetime.calendar.month-names.june': 'June',
+  'inputs.datetime.calendar.month-names.july': 'July',
+  'inputs.datetime.calendar.month-names.august': 'August',
+  'inputs.datetime.calendar.month-names.september': 'September',
+  'inputs.datetime.calendar.month-names.october': 'October',
+  'inputs.datetime.calendar.month-names.november': 'November',
+  'inputs.datetime.calendar.month-names.december': 'December',
+
+  /** Short weekday names */
+  'inputs.datetime.calendar.weekday-names.short.monday': 'Mon',
+  'inputs.datetime.calendar.weekday-names.short.tuesday': 'Tue',
+  'inputs.datetime.calendar.weekday-names.short.wednesday': 'Wed',
+  'inputs.datetime.calendar.weekday-names.short.thursday': 'Thu',
+  'inputs.datetime.calendar.weekday-names.short.friday': 'Fri',
+  'inputs.datetime.calendar.weekday-names.short.saturday': 'Sat',
+  'inputs.datetime.calendar.weekday-names.short.sunday': 'Sun',
+
+  /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
+  'inputs.datetime.calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
+
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */
