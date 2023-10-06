@@ -4,6 +4,7 @@ import {Box, Button, LayerProvider, Popover, useClickOutside, useForwardedRef} f
 import {CalendarIcon} from '@sanity/icons'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
+import {CalendarLabels, MonthNames} from './calendar/types'
 
 export interface DateTimeInputProps {
   customValidity?: string
@@ -16,13 +17,23 @@ export interface DateTimeInputProps {
   selectTime?: boolean
   timeStep?: number
   value?: Date
+  calendarLabels: CalendarLabels
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
   props: DateTimeInputProps,
   ref: React.ForwardedRef<HTMLInputElement>,
 ) {
-  const {value, inputValue, onInputChange, onChange, selectTime, timeStep, ...rest} = props
+  const {
+    value,
+    inputValue,
+    onInputChange,
+    onChange,
+    selectTime,
+    timeStep,
+    calendarLabels,
+    ...rest
+  } = props
   const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
   const forwardedRef = useForwardedRef(ref)
   const buttonRef = useRef(null)
@@ -78,6 +89,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                 <Box overflow="auto">
                   <FocusLock onDeactivation={handleDeactivation}>
                     <DatePicker
+                      calendarLabels={calendarLabels}
                       selectTime={selectTime}
                       timeStep={timeStep}
                       onKeyUp={handleKeyUp}
