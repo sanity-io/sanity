@@ -2,7 +2,6 @@ import {Box, Grid, Text} from '@sanity/ui'
 import {isSameDay, isSameMonth} from 'date-fns'
 import React from 'react'
 import {CalendarDay} from './CalendarDay'
-import {WEEK_DAY_NAMES} from './constants'
 import {getWeeksOfMonth} from './utils'
 
 interface CalendarMonthProps {
@@ -11,13 +10,22 @@ interface CalendarMonthProps {
   selected?: Date
   onSelect: (date: Date) => void
   hidden?: boolean
+  weekDayNames: [
+    mon: string,
+    tue: string,
+    wed: string,
+    thu: string,
+    fri: string,
+    sat: string,
+    sun: string,
+  ]
 }
 
 export function CalendarMonth(props: CalendarMonthProps) {
   return (
     <Box aria-hidden={props.hidden || false} data-ui="CalendarMonth">
       <Grid gap={1} style={{gridTemplateColumns: 'repeat(7, minmax(44px, 46px))'}}>
-        {WEEK_DAY_NAMES.map((weekday) => (
+        {props.weekDayNames.map((weekday) => (
           <Box key={weekday} paddingY={2}>
             <Text size={1} weight="medium" style={{textAlign: 'center'}}>
               {weekday}

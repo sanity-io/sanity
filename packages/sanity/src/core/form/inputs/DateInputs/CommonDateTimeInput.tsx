@@ -5,6 +5,7 @@ import React, {useEffect} from 'react'
 import {TextInput, useForwardedRef} from '@sanity/ui'
 import {DateTimeInput} from './base/DateTimeInput'
 import {ParseResult} from './types'
+import {CalendarLabels} from './base/calendar/types'
 
 export interface CommonDateTimeInputProps {
   id: string
@@ -18,6 +19,7 @@ export interface CommonDateTimeInputProps {
   serialize: (date: Date) => string
   timeStep?: number
   value: string | undefined
+  calendarLabels: CalendarLabels
 }
 
 const DEFAULT_PLACEHOLDER_TIME = new Date()
@@ -91,6 +93,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
   ) : (
     <DateTimeInput
       {...restProps}
+      calendarLabels={props.calendarLabels}
       id={id}
       selectTime={selectTime}
       timeStep={timeStep}
