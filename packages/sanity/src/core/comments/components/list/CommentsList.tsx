@@ -1,5 +1,5 @@
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useState} from 'react'
-import {BoundaryElementProvider, Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {CurrentUser, Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {
@@ -69,131 +69,129 @@ export interface CommentsListHandle {
  * @beta
  * @hidden
  */
-export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(function CommentsList(
-  props: CommentsListProps,
-  ref,
-) {
-  const {
-    comments,
-    currentUser,
-    error,
-    loading,
-    mentionOptions,
-    onCreateRetry,
-    onDelete,
-    onEdit,
-    onNewThreadCreate,
-    onPathFocus,
-    onReply,
-    onStatusChange,
-    status,
-  } = props
-  const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
+export const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
+  function CommentsListInner(props: CommentsListProps, ref) {
+    const {
+      comments,
+      currentUser,
+      error,
+      loading,
+      mentionOptions,
+      onCreateRetry,
+      onDelete,
+      onEdit,
+      onNewThreadCreate,
+      onPathFocus,
+      onReply,
+      onStatusChange,
+      status,
+    } = props
+    const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
 
-  const scrollToComment = useCallback(
-    (id: string) => {
-      const commentElement = boundaryElement?.querySelector(`[data-comment-id="${id}"]`)
-      commentElement?.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
-    },
-    [boundaryElement],
-  )
+    const scrollToComment = useCallback(
+      (id: string) => {
+        const commentElement = boundaryElement?.querySelector(`[data-comment-id="${id}"]`)
+        commentElement?.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
+      },
+      [boundaryElement],
+    )
 
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        scrollToComment,
-      }
-    },
-    [scrollToComment],
-  )
+    useImperativeHandle(
+      ref,
+      () => {
+        return {
+          scrollToComment,
+        }
+      },
+      [scrollToComment],
+    )
 
-  const showComments = !loading && !error && comments.length > 0
-  const showEmptyState = !loading && !error && comments.length === 0
-  const showError = error
-  const showLoading = loading && !error
+    const showComments = !loading && !error && comments.length > 0
+    const showEmptyState = !loading && !error && comments.length === 0
+    const showError = error
+    const showLoading = loading && !error
 
-  // We group the threads so that they can be rendered together under the
-  // same breadcrumbs. This is to avoid having the same breadcrumbs repeated
-  // for every single comment thread. Also, we don't want to have threads pointing
-  // to the same field to be rendered separately in the list since that makes it
-  // harder to get an overview of the comments about a specific field.
-  const groupedThreads = useMemo(() => {
-    const entries = Object.entries(groupThreads(comments))
+    // We group the threads so that they can be rendered together under the
+    // same breadcrumbs. This is to avoid having the same breadcrumbs repeated
+    // for every single comment thread. Also, we don't want to have threads pointing
+    // to the same field to be rendered separately in the list since that makes it
+    // harder to get an overview of the comments about a specific field.
+    const groupedThreads = useMemo(() => {
+      const entries = Object.entries(groupThreads(comments))
 
-    // Sort groupedThreads in descending order (newest first) base on the date of the
-    // last comment in the thread.
-    // This is to make sure that, when a new thread is added to the group, the group
-    // is not moved to the top of the list.
-    return entries.sort((a, b) => {
-      const [, threadA] = a
-      const [, threadB] = b
+      // Sort groupedThreads in descending order (newest first) base on the date of the
+      // last comment in the thread.
+      // This is to make sure that, when a new thread is added to the group, the group
+      // is not moved to the top of the list.
+      return entries.sort((a, b) => {
+        const [, threadA] = a
+        const [, threadB] = b
 
-      const lastCommentA = threadA[threadA.length - 1]
-      const lastCommentB = threadB[threadB.length - 1]
+        const lastCommentA = threadA[threadA.length - 1]
+        const lastCommentB = threadB[threadB.length - 1]
 
-      return lastCommentB.parentComment._createdAt.localeCompare(
-        lastCommentA.parentComment._createdAt,
-      )
-    })
-  }, [comments])
+        return lastCommentB.parentComment._createdAt.localeCompare(
+          lastCommentA.parentComment._createdAt,
+        )
+      })
+    }, [comments])
 
-  return (
-    <Flex
-      direction="column"
-      flex={1}
-      height="fill"
-      overflow="hidden"
-      ref={setBoundaryElement}
-      sizing="border"
-    >
-      {showEmptyState && (
-        <Flex align="center" justify="center" flex={1} sizing="border">
-          <Container width={0} padding={4}>
-            <Stack space={3}>
-              <Text align="center" size={1} muted weight="semibold">
-                {EMPTY_STATE_MESSAGES[status].title}
-              </Text>
-              <Text align="center" size={1} muted>
-                {EMPTY_STATE_MESSAGES[status].message}
-              </Text>
-            </Stack>
-          </Container>
-        </Flex>
-      )}
-
-      {showLoading && (
-        <Flex align="center" justify="center" flex={1} padding={4}>
-          <Flex align="center" gap={2}>
-            <Spinner muted size={1} />
-            <Text size={1} muted>
-              Loading comments...
-            </Text>
+    return (
+      <Flex
+        direction="column"
+        flex={1}
+        height="fill"
+        overflow="hidden"
+        ref={setBoundaryElement}
+        sizing="border"
+      >
+        {showEmptyState && (
+          <Flex align="center" justify="center" flex={1} sizing="border">
+            <Container width={0} padding={4}>
+              <Stack space={3}>
+                <Text align="center" size={1} muted weight="semibold">
+                  {EMPTY_STATE_MESSAGES[status].title}
+                </Text>
+                <Text align="center" size={1} muted>
+                  {EMPTY_STATE_MESSAGES[status].message}
+                </Text>
+              </Stack>
+            </Container>
           </Flex>
-        </Flex>
-      )}
+        )}
 
-      {showError && (
-        <Flex align="center" justify="center" flex={1} padding={4}>
-          <Flex align="center">
-            <Text size={1} muted>
-              Something went wrong
-            </Text>
+        {showLoading && (
+          <Flex align="center" justify="center" flex={1} padding={4}>
+            <Flex align="center" gap={2}>
+              <Spinner muted size={1} />
+              <Text size={1} muted>
+                Loading comments...
+              </Text>
+            </Flex>
           </Flex>
-        </Flex>
-      )}
+        )}
 
-      {showComments && (
-        <Stack
-          as="ul"
-          flex={1}
-          overflow="auto"
-          padding={3}
-          paddingBottom={6}
-          sizing="border"
-          space={4}
-        >
-          <BoundaryElementProvider element={boundaryElement}>
+        {showError && (
+          <Flex align="center" justify="center" flex={1} padding={4}>
+            <Flex align="center">
+              <Text size={1} muted>
+                Something went wrong
+              </Text>
+            </Flex>
+          </Flex>
+        )}
+
+        {showComments && (
+          <Stack
+            as="ul"
+            flex={1}
+            overflow="auto"
+            padding={3}
+            paddingBottom={6}
+            sizing="border"
+            space={4}
+          >
+            {/* <BoundaryElementProvider element={boundaryElement}> */}
             {groupedThreads?.map(([fieldPath, group]) => {
               // Since all threads in the group point to the same field, the breadcrumbs will be
               // the same for all of them. Therefore, we can just pick the first one.
@@ -248,9 +246,12 @@ export const CommentsList = forwardRef<CommentsListHandle, CommentsListProps>(fu
                 </Stack>
               )
             })}
-          </BoundaryElementProvider>
-        </Stack>
-      )}
-    </Flex>
-  )
-})
+            {/* </BoundaryElementProvider> */}
+          </Stack>
+        )}
+      </Flex>
+    )
+  },
+)
+
+export const CommentsList = React.memo(CommentsListInner)

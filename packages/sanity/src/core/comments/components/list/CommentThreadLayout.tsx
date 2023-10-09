@@ -49,16 +49,6 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
   const onCreateNewThreadClick = useCallback(() => {
     setDisplayNewThreadInput(true)
-
-    // We need to wait for the next tick to focus the input
-    const raf = requestAnimationFrame(() => {
-      createNewThreadInputRef.current?.focus()
-      createNewThreadInputRef.current?.scrollTo()
-    })
-
-    return () => {
-      cancelAnimationFrame(raf)
-    }
   }, [])
 
   const handleNewThreadCreateDiscard = useCallback(() => {
