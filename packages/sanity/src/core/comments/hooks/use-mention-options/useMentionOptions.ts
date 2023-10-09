@@ -19,6 +19,8 @@ interface MentionHookOptions {
   documentValue: SanityDocument | null
 }
 
+let cachedSystemGroups: [] | null = null
+
 export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookValue {
   const {documentValue} = opts
 
@@ -50,12 +52,17 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
       ),
     )
 
-    // 3. Get the system group
-    const systemGroup$ = client.observable.fetch('*[_type == "system.group"]')
+    // 3. Get all the system groups. Use the cached response if it exists to avoid unnecessary requests.
+    const cached = cachedSystemGroups
+    const systemGroup$ = cached ? of(cached) : client.observable.fetch('*[_type == "system.group"]')
 
     // 4. Check if the user has read permission on the document and set the `canBeMentioned` property
     const grants$: Observable<MentionOptionUser[]> = forkJoin([users$, systemGroup$]).pipe(
       mergeMap(async ([users, groups]) => {
+        if (!cached) {
+          cachedSystemGroups = groups
+        }
+
         const grantPromises = users?.map(async (user) => {
           const grants = groups.map((group: any) => {
             if (group.members.includes(user.id)) {
