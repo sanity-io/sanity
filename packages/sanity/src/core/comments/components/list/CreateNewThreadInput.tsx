@@ -32,13 +32,13 @@ export const CreateNewThreadInput = forwardRef(function CreateNewThreadInput(
   return (
     <CommentInput
       currentUser={currentUser}
-      // expandOnFocus
       mentionOptions={mentionOptions}
       onChange={setValue}
       onEditDiscard={cancelEdit}
       onSubmit={handleSubmit}
       ref={ref}
       value={value}
+      focusOnMount
     />
   )
 })
