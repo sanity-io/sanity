@@ -257,6 +257,6 @@
     "styled-components": "^5.2"
   },
   "engines": {
-    "node": ">=14.18.0"
+    "node": ">=18"
   }
 }
