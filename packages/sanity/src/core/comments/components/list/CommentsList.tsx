@@ -65,11 +65,7 @@ export interface CommentsListHandle {
   scrollToComment: (id: string) => void
 }
 
-/**
- * @beta
- * @hidden
- */
-export const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
+const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
   function CommentsListInner(props: CommentsListProps, ref) {
     const {
       comments,
@@ -254,4 +250,8 @@ export const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProp
   },
 )
 
+/**
+ * @beta
+ * @hidden
+ */
 export const CommentsList = React.memo(CommentsListInner)
