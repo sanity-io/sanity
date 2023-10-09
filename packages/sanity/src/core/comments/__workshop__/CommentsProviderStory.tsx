@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-handler-names */
-import React, {useMemo} from 'react'
+import React from 'react'
 import {useString} from '@sanity/ui-workshop'
 import {useCurrentUser} from '../../store'
 import {CommentsList} from '../components'
@@ -10,19 +10,8 @@ export default function CommentsProviderStory() {
   const _type = useString('_type', 'author') || 'author'
   const _id = useString('_id', 'grrm') || 'grrm'
 
-  const documentValue = useMemo(
-    () => ({
-      _id,
-      _type,
-      _createdAt: '2021-01-01T00:00:00Z',
-      _updatedAt: '2021-01-01T00:00:00Z',
-      _rev: '',
-    }),
-    [_id, _type],
-  )
-
   return (
-    <CommentsProvider documentValue={documentValue}>
+    <CommentsProvider documentType={_type} documentId={_id}>
       <Inner />
     </CommentsProvider>
   )

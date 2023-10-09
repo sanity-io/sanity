@@ -16,7 +16,7 @@ const INITIAL_STATE: MentionOptionsHookValue = {
 }
 
 interface MentionHookOptions {
-  documentValue: SanityDocument
+  documentValue: SanityDocument | null
 }
 
 export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookValue {

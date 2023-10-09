@@ -56,7 +56,7 @@ interface CommentsListItemProps {
   replies: CommentDocument[] | undefined
 }
 
-export function CommentsListItem(props: CommentsListItemProps) {
+export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
   const {
     canReply,
     currentUser,
@@ -214,4 +214,4 @@ export function CommentsListItem(props: CommentsListItemProps) {
       </StyledThreadCard>
     </Stack>
   )
-}
+})
