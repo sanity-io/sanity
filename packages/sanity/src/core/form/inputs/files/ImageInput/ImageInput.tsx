@@ -52,6 +52,7 @@ import {PresenceOverlay} from '../../../../presence'
 import {FIXME} from '../../../../FIXME'
 import {ImperativeToast} from '../../../../components'
 import {ChangeIndicator} from '../../../../changeIndicators'
+import {TFunction} from '../../../../i18n'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
@@ -74,6 +75,7 @@ export interface BaseImageInputProps
   observeAsset: (documentId: string) => Observable<ImageAsset>
   resolveUploader: UploaderResolver
   client: SanityClient
+  t: TFunction
 }
 
 const getDevicePixelRatio = () => {
@@ -182,7 +184,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   }
 
   uploadWith = (uploader: Uploader, file: File, assetDocumentProps: UploadOptions = {}) => {
-    const {schemaType, onChange, client} = this.props
+    const {schemaType, onChange, client, t} = this.props
     const {label, title, description, creditLine, source} = assetDocumentProps
     const options = {
       metadata: get(schemaType, 'options.metadata'),
@@ -208,8 +210,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         console.error(err)
         this.toast?.push({
           status: 'error',
-          description: 'The upload could not be completed at this time.',
-          title: 'Upload failed',
+          description: t('inputs.files.image.upload-error.description'),
+          title: t('inputs.files.image.upload-error.title'),
         })
 
         this.clearUploadStatus()
@@ -395,14 +397,14 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   }
 
   renderHotspotInput = (hotspotInputProps: Omit<InputProps, 'renderDefault'>) => {
-    const {value, changed, id, imageUrlBuilder} = this.props
+    const {value, changed, id, imageUrlBuilder, t} = this.props
 
     const withImageTool = this.isImageToolEnabled() && value && value.asset
 
     return (
       <Dialog
         __unstable_autoFocus={false}
-        header="Edit hotspot and crop"
+        header={t('inputs.files.image.hotspot-dialog.title')}
         id={`${id}_dialog`}
         onClickOutside={this.handleCloseDialog}
         onClose={this.handleCloseDialog}
@@ -428,7 +430,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   }
 
   renderPreview = () => {
-    const {value, schemaType, readOnly, directUploads, imageUrlBuilder, resolveUploader} =
+    const {value, schemaType, readOnly, directUploads, imageUrlBuilder, t, resolveUploader} =
       this.props
 
     if (!value || !isImageSource(value)) {
@@ -454,7 +456,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
         src={imageUrl}
-        alt="Preview of uploaded image"
+        alt={t('inputs.files.image.preview-uploaded-image')}
       />
     )
   }

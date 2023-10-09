@@ -2,6 +2,7 @@ import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} f
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
 import {Button, Inline, Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../i18n'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;
@@ -79,11 +80,12 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
     }
   }, [isMenuOpen, menuElement])
 
+  const {t} = useTranslation()
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
       {showEdit && (
         <Button
-          aria-label="Open image edit dialog"
+          aria-label={t('inputs.files.image.actions-menu.edit-details.label')}
           data-testid="options-menu-edit-details"
           icon={CropIcon}
           mode="ghost"
@@ -101,7 +103,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
         constrainSize
       >
         <Button
-          aria-label="Open image options menu"
+          aria-label={t('inputs.files.image.actions-menu.options.label')}
           data-testid="options-menu-button"
           icon={EllipsisVerticalIcon}
           mode="ghost"

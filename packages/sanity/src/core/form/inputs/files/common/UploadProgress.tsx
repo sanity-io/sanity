@@ -2,6 +2,8 @@ import React, {useEffect} from 'react'
 import {Flex, Text, Button, Inline, Card} from '@sanity/ui'
 import {UploadState} from '@sanity/types'
 import {LinearProgress} from '../../../../components'
+import {Translate, useTranslation} from '../../../../i18n'
+import {STALE_UPLOAD_MS} from '../constants'
 import {CardWrapper, FlexWrapper, LeftSection, CodeWrapper} from './UploadProgress.styled'
 
 type Props = {
@@ -10,11 +12,6 @@ type Props = {
   onStale?: () => void
   height?: number
 }
-
-// If it's more than this amount of milliseconds since last time upload state was reported,
-// the upload will be marked as stale/interrupted.
-const STALE_UPLOAD_MS = 1000 * 60 * 2 // 2 minutes
-
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
 
 export function UploadProgress({uploadState, onCancel, onStale, height}: Props) {
@@ -26,6 +23,7 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
     }
   }, [uploadState.updatedAt, onStale])
 
+  const {t} = useTranslation()
   return (
     <CardWrapper tone="primary" padding={4} border style={{height: `${height}px`}}>
       <FlexWrapper align="center" justify="space-between" height="fill" direction="row" gap={2}>
@@ -33,8 +31,15 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
           <Flex justify="center" gap={[3, 3, 2, 2]} direction={['column', 'column', 'row']}>
             <Text size={1}>
               <Inline space={2}>
-                Uploading
-                <CodeWrapper size={1}>{filename ? filename : '...'}</CodeWrapper>
+                <Translate
+                  t={t}
+                  i18nKey="input.files.common.upload-progress"
+                  components={{
+                    FileName: () => (
+                      <CodeWrapper size={1}>{filename ? filename : '...'}</CodeWrapper>
+                    ),
+                  }}
+                />
               </Inline>
             </Text>
           </Flex>
@@ -47,7 +52,7 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
         {onCancel ? (
           <Button
             fontSize={2}
-            text="Cancel upload"
+            text={t('input.files.common.cancel-upload')}
             mode="ghost"
             tone="critical"
             onClick={onCancel}
