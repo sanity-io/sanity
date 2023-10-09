@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {usePaneRouter} from '../../components'
@@ -149,7 +149,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   )
 
   return (
-    <>
+    <Fragment>
       {commentToDelete && showDeleteDialog && (
         <CommentDeleteDialog
           {...commentToDelete}
@@ -182,6 +182,6 @@ export function CommentsInspector(props: DocumentInspectorProps) {
           />
         )}
       </Flex>
-    </>
+    </Fragment>
   )
 }
