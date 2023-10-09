@@ -1,10 +1,9 @@
 import React, {memo, useCallback, useMemo, useState} from 'react'
-import {SanityDocument} from '@sanity/client'
 import {orderBy} from 'lodash'
-import {CommentStatus, CommentsContextValue} from '../types'
+import {CommentStatus, CommentThreadItem, CommentsContextValue} from '../types'
 import {useCommentOperations, useCommentsEnabled, useMentionOptions} from '../hooks'
 import {useCommentsStore} from '../store'
-import {useSchema} from '../../hooks'
+import {useEditState, useSchema} from '../../hooks'
 import {useCurrentUser} from '../../store'
 import {useWorkspace} from '../../studio'
 import {getPublishedId} from '../../util'
@@ -18,13 +17,19 @@ const EMPTY_COMMENTS_DATA = {
   resolved: EMPTY_ARRAY,
 }
 
+interface ThreadItemsByStatus {
+  open: CommentThreadItem[]
+  resolved: CommentThreadItem[]
+}
+
 /**
  * @beta
  * @hidden
  */
 export interface CommentsProviderProps {
   children: React.ReactNode
-  documentValue: SanityDocument
+  documentId: string
+  documentType: string
 }
 
 const EMPTY_COMMENTS = {
@@ -64,11 +69,11 @@ const COMMENTS_DISABLED_CONTEXT: CommentsContextValue = {
  * @hidden
  */
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
-  const {children, documentValue} = props
+  const {children, documentId, documentType} = props
 
   const {isEnabled} = useCommentsEnabled({
-    documentId: documentValue._id,
-    documentType: documentValue._type,
+    documentId,
+    documentType,
   })
 
   if (!isEnabled) {
@@ -82,90 +87,117 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   return <CommentsProviderInner {...props} />
 })
 
-const EMPTY = {}
+const CommentsProviderInner = memo(function CommentsProviderInner(
+  props: Omit<CommentsProviderProps, 'enabled'>,
+) {
+  const {children, documentId, documentType} = props
 
-function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
-  const {children, documentValue} = props
-  const {_id: documentId, _type: documentType} = documentValue || EMPTY
+  const publishedId = getPublishedId(documentId)
+  const editState = useEditState(publishedId, documentType, 'low')
+
+  const documentValue = useMemo(() => {
+    return editState.draft || editState.published
+  }, [editState.draft, editState.published])
 
   const [status, setStatus] = useState<CommentStatus>('open')
 
-  const {dispatch, data = EMPTY_ARRAY, error, loading} = useCommentsStore({documentId})
-  const mentionOptions = useMentionOptions({documentValue})
+  const {
+    dispatch,
+    data = EMPTY_ARRAY,
+    error,
+    loading,
+  } = useCommentsStore(useMemo(() => ({documentId: publishedId}), [publishedId]))
+
+  const mentionOptions = useMentionOptions(useMemo(() => ({documentValue}), [documentValue]))
 
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
   const {name: workspaceName, dataset, projectId} = useWorkspace()
 
-  const {operation} = useCommentOperations({
-    currentUser,
-    dataset,
-    documentId: getPublishedId(documentId),
-    documentType,
-    projectId,
-    schemaType,
-    workspace: workspaceName,
+  const {operation} = useCommentOperations(
+    useMemo(
+      () => ({
+        currentUser,
+        dataset,
+        documentId: publishedId,
+        documentType,
+        projectId,
+        schemaType,
+        workspace: workspaceName,
 
-    // The following callbacks runs when the comment operations are executed.
-    // They are used to update the local state of the comments immediately after
-    // a comment operation has been executed. This is done to avoid waiting for
-    // the real time listener to update the comments and make the UI feel more
-    // responsive. The comment will be updated again when we receive an mutation
-    // event from the real time listener.
+        // The following callbacks runs when the comment operations are executed.
+        // They are used to update the local state of the comments immediately after
+        // a comment operation has been executed. This is done to avoid waiting for
+        // the real time listener to update the comments and make the UI feel more
+        // responsive. The comment will be updated again when we receive an mutation
+        // event from the real time listener.
 
-    onCreate: (payload) => {
-      // If the comment we try to create already exists in the local state and has
-      // the 'createError' state, we know that we are retrying a comment creation.
-      // In that case, we want to change the state to 'createRetrying'.
-      const hasError = data?.find((c) => c._id === payload._id)?._state?.type === 'createError'
+        onCreate: (payload) => {
+          // If the comment we try to create already exists in the local state and has
+          // the 'createError' state, we know that we are retrying a comment creation.
+          // In that case, we want to change the state to 'createRetrying'.
+          const hasError = data?.find((c) => c._id === payload._id)?._state?.type === 'createError'
 
-      dispatch({
-        type: 'COMMENT_ADDED',
-        payload: {
-          ...payload,
-          _state: hasError ? {type: 'createRetrying'} : undefined,
+          dispatch({
+            type: 'COMMENT_ADDED',
+            payload: {
+              ...payload,
+              _state: hasError ? {type: 'createRetrying'} : undefined,
+            },
+          })
         },
-      })
-    },
 
-    // When an error occurs during comment creation, we update the comment state
-    // to `createError`. This will make the comment appear in the UI as a comment
-    // that failed to be created. The user can then retry the comment creation.
-    onCreateError: (id, err) => {
-      dispatch({
-        type: 'COMMENT_UPDATED',
-        payload: {
-          _id: id,
-          _state: {
-            error: err,
-            type: 'createError',
-          },
+        // When an error occurs during comment creation, we update the comment state
+        // to `createError`. This will make the comment appear in the UI as a comment
+        // that failed to be created. The user can then retry the comment creation.
+        onCreateError: (id, err) => {
+          dispatch({
+            type: 'COMMENT_UPDATED',
+            payload: {
+              _id: id,
+              _state: {
+                error: err,
+                type: 'createError',
+              },
+            },
+          })
         },
-      })
-    },
 
-    onEdit: (id, payload) => {
-      dispatch({
-        type: 'COMMENT_UPDATED',
-        payload: {
-          _id: id,
-          ...payload,
+        onEdit: (id, payload) => {
+          dispatch({
+            type: 'COMMENT_UPDATED',
+            payload: {
+              _id: id,
+              ...payload,
+            },
+          })
         },
-      })
-    },
 
-    onUpdate: (id, payload) => {
-      dispatch({
-        type: 'COMMENT_UPDATED',
-        payload: {
-          _id: id,
-          ...payload,
+        onUpdate: (id, payload) => {
+          dispatch({
+            type: 'COMMENT_UPDATED',
+            payload: {
+              _id: id,
+              ...payload,
+            },
+          })
         },
-      })
-    },
-  })
+      }),
+      [
+        currentUser,
+        data,
+        dataset,
+        dispatch,
+        documentType,
+        projectId,
+        publishedId,
+        schemaType,
+        workspaceName,
+      ],
+    ),
+  )
 
-  const threadItemsByStatus = useMemo(() => {
+  const threadItemsByStatus: ThreadItemsByStatus = useMemo(() => {
     if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
 
     // Since we only make one query to get all comments using the order `_createdAt desc` – we
@@ -216,18 +248,18 @@ function CommentsProviderInner(props: Omit<CommentsProviderProps, 'enabled'>) {
         mentionOptions,
       }) satisfies CommentsContextValue,
     [
-      error,
-      getComment,
-      loading,
-      mentionOptions,
-      operation.create,
-      operation.edit,
-      operation.remove,
-      operation.update,
       status,
+      getComment,
       threadItemsByStatus,
+      error,
+      loading,
+      operation.create,
+      operation.remove,
+      operation.edit,
+      operation.update,
+      mentionOptions,
     ],
   )
 
   return <CommentsContext.Provider value={ctxValue}>{children}</CommentsContext.Provider>
-}
+})
