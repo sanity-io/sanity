@@ -99,10 +99,12 @@ export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): Co
     if (isKeySegment && Array.isArray(parentValue)) {
       const arrayItemIndex = findArrayItemIndex(parentValue, seg)
 
+      const isNumber = typeof arrayItemIndex === 'number'
+
       fieldPaths.push({
         invalid: arrayItemIndex === false,
         isArrayItem: true,
-        title: `#${Number(arrayItemIndex) + 1}`,
+        title: isNumber ? `#${Number(arrayItemIndex) + 1}` : 'Unknown array item',
       })
 
       return
