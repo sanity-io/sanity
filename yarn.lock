@@ -3896,6 +3896,11 @@
     get-it "^8.4.3"
     rxjs "^7.0.0"
 
+"@sanity/color@3.0.0-beta.5":
+  version "3.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-3.0.0-beta.5.tgz#3ce87ca43e5a9b41443988fb7286983046902878"
+  integrity sha512-fJz61gJ1ESE9CWhjXe7EvV5oFB42diuo4z8UQHZzGyhJrJOg3gXInhYUib5y/qunarvSNo3PpPOGt/JbuA7tVQ==
+
 "@sanity/color@^2.1.20", "@sanity/color@^2.2.5":
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.5.tgz#6b28578573859495ed1ffd5491322cb8e90b3e07"
@@ -4076,7 +4081,19 @@
     segmented-property "^3.0.3"
     vite "^4.4.7"
 
-"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2", "@sanity/ui@^1.8.2":
+"@sanity/ui@2.0.0-alpha.5":
+  version "2.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-alpha.5.tgz#6532cd744dd9701579f7591696d30ecc411a55c0"
+  integrity sha512-Xc7wh1l7Gsux6p+ImIlvksU1qbkFsZE7KBQEdShH60tALV0Wq/NXbK/033WSqvwkvrP2oDczsHMqR2VH00hAng==
+  dependencies:
+    "@floating-ui/react-dom" "2.0.0"
+    "@sanity/color" "3.0.0-beta.5"
+    "@sanity/icons" "^2.4.1"
+    csstype "^3.1.2"
+    framer-motion "^10.16.2"
+    react-refractor "^2.1.7"
+
+"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.8.2.tgz#70f0c55e3bdd04b662d3cd84af168d4e27adfc2c"
   integrity sha512-XWtVdIG1PWBEiNPcObRfXsX/EPhiPCHMmfdn+frPIVLTLnoQnNju3W9UQAWec+BwjXBCpPtfc36AoiQSDUkxzw==
@@ -9795,7 +9812,7 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^10.0.0, framer-motion@^10.16.1:
+framer-motion@^10.0.0, framer-motion@^10.16.1, framer-motion@^10.16.2:
   version "10.16.4"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.4.tgz#30279ef5499b8d85db3a298ee25c83429933e9f8"
   integrity sha512-p9V9nGomS3m6/CALXqv6nFGMuFOxbWsmaOrdmhyQimMIlLl3LC7h7l86wge/Js/8cRu5ktutS/zlzgR7eBOtFA==
