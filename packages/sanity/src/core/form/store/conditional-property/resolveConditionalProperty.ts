@@ -1,6 +1,9 @@
 /* eslint-disable no-nested-ternary */
 import {ConditionalProperty, CurrentUser} from '@sanity/types'
 
+/**
+ * @internal
+ */
 export interface ConditionalPropertyCallbackContext {
   parent?: unknown
   document?: Record<string, unknown>
@@ -8,6 +11,9 @@ export interface ConditionalPropertyCallbackContext {
   value: unknown
 }
 
+/**
+ * @internal
+ */
 export function resolveConditionalProperty(
   property: ConditionalProperty,
   context: ConditionalPropertyCallbackContext,
