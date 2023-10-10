@@ -14,19 +14,17 @@ import {
 } from '../../constants'
 import {BlockEnabledFeatures, DeserializerRule} from '../../types'
 
-export function resolveListItem(listNodeTagName: string): string {
-  let listStyle
-  switch (listNodeTagName) {
-    case 'ul':
-      listStyle = 'bullet'
-      break
-    case 'ol':
-      listStyle = 'number'
-      break
-    default:
-      listStyle = 'bullet'
+export function resolveListItem(
+  listNodeTagName: string,
+  enabledListTypes: string[],
+): string | undefined {
+  if (listNodeTagName === 'ul' && enabledListTypes.includes('bullet')) {
+    return 'bullet'
   }
-  return listStyle
+  if (listNodeTagName === 'ol' && enabledListTypes.includes('number')) {
+    return 'number'
+  }
+  return undefined
 }
 
 export default function createHTMLRules(
@@ -188,15 +186,19 @@ export default function createHTMLRules(
       },
     }, // Deal with list items
     {
-      deserialize(el, next) {
+      deserialize(el, next, block) {
         const tag = tagName(el)
         const listItem = tag ? HTML_LIST_ITEM_TAGS[tag] : undefined
         const parentTag = tagName(el.parentNode) || ''
         if (!listItem || !el.parentNode || !HTML_LIST_CONTAINER_TAGS[parentTag]) {
           return undefined
         }
-
-        listItem.listItem = resolveListItem(parentTag)
+        const enabledListItem = resolveListItem(parentTag, options.enabledListTypes)
+        // If the list item style is not supported, return a new default block
+        if (!enabledListItem) {
+          return block({_type: 'block', children: next(el.childNodes)})
+        }
+        listItem.listItem = enabledListItem
         return {
           ...listItem,
           children: next(el.childNodes),
