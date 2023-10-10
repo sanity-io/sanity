@@ -21,7 +21,6 @@ import {
 } from './constants'
 import {DocumentInspectorMenuItemsResolver} from './DocumentInspectorMenuItemsResolver'
 import {
-  CommentsProvider,
   DocumentFieldAction,
   DocumentFieldActionNode,
   DocumentInspector,
@@ -52,6 +51,7 @@ import {
   useUnique,
   useValidationStatus,
 } from 'sanity'
+import {CommentsProvider} from '../../comments'
 
 /**
  * @internal
