@@ -118,7 +118,7 @@ const sharedSettings = definePlugin({
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
     presenceTool(),
-    tsdoc(),
+    // tsdoc(),
   ],
 })
 
@@ -391,7 +391,10 @@ export default defineConfig([
     title: 'Sanity AI Assist',
     projectId: 'ppsg7ml5',
     dataset: 'test',
-    plugins: [sharedSettings(), assist()],
+    plugins: [
+      sharedSettings(),
+      // assist()
+    ],
     basePath: '/ai-assist',
   },
 ])
