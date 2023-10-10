@@ -27,5 +27,3 @@ export type {
   SearchSort,
   WeightedSearchOptions,
 } from './search'
-
-export * from './comments'
