@@ -266,7 +266,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** --- File (Image, File and ImageTool) Inputs --- */
 
   /** Open image edit dialog */
-  'inputs.files.image.actions-menu.edit-details.label': 'Åpne bilde redigeringsdialog',
+  'inputs.files.image.actions-menu.edit-details.label': 'Åpne bilderedigeringsdialog',
 
   /** Open image options menu */
   'inputs.files.image.actions-menu.options.label': 'Åpne bildeinnstillingsmeny',
@@ -325,14 +325,21 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Read only */
   'inputs.files.common.placeholder.read-only': 'Skrivebeskyttet',
 
-  /** Drop to upload `{{type}}` */
-  'inputs.files.common.placeholder.drop-to-upload': 'Slipp for å laste opp {{type}}',
+  /** Drop to upload file */
+  'inputs.files.common.placeholder.drop-to-upload_file': 'Slipp for å laste opp fil',
+
+  /** Drop to upload image */
+  'inputs.files.common.placeholder.drop-to-upload_image': 'Slipp for å laste opp bilde',
 
   /** Cannot upload `{{count}}` files */
-  'inputs.files.common.placeholder.cannot-upload-some-files': 'Kan ikke laste opp {{count}} filer',
+  'inputs.files.common.placeholder.cannot-upload-some-files_one': 'Kan ikke laste opp fil',
+  'inputs.files.common.placeholder.cannot-upload-some-files_other':
+    'Kan ikke laste opp {{count}} filer',
 
-  /** Drag or paste `{{type}}` here */
-  'inputs.files.common.placeholder.drag-or-paste-to-upload': 'Dra eller lim inn {{type}} her',
+  /** Drag or paste file here */
+  'inputs.files.common.placeholder.drag-or-paste-to-upload_file': 'Dra eller lim inn fil her',
+  /** Drag or paste image here */
+  'inputs.files.common.placeholder.drag-or-paste-to-upload_image': 'Dra eller lim inn bilde her',
 
   /** Drop to upload */
   'inputs.files.common.drop-message.drop-to-upload': 'Slipp for å laste opp',

@@ -47,7 +47,7 @@ export function PlaceholderText(props: Props) {
 
     if (hoveringFiles && directUploads && !readOnly) {
       if (acceptedFiles.length > 0) {
-        return t('inputs.files.common.placeholder.drop-to-upload', {type})
+        return t('inputs.files.common.placeholder.drop-to-upload', {context: type})
       }
       if (rejectedFilesCount > 0) {
         return t('inputs.files.common.placeholder.cannot-upload-some-files', {
@@ -56,7 +56,7 @@ export function PlaceholderText(props: Props) {
       }
     }
 
-    return t('inputs.files.common.placeholder.drag-or-paste-to-upload')
+    return t('inputs.files.common.placeholder.drag-or-paste-to-upload', {context: type})
   }, [acceptedFiles.length, directUploads, hoveringFiles, readOnly, rejectedFilesCount, t, type])
 
   return (

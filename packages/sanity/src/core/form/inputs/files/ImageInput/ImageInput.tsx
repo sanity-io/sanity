@@ -75,7 +75,7 @@ export interface BaseImageInputProps
   observeAsset: (documentId: string) => Observable<ImageAsset>
   resolveUploader: UploaderResolver
   client: SanityClient
-  t: TFunction
+  t: (key: string, values?: Record<string, string>) => string
 }
 
 const getDevicePixelRatio = () => {

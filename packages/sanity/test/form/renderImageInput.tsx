@@ -35,6 +35,7 @@ export async function renderImageInput(options: {
       ...restProps,
       assetSources,
       client,
+      t: (key: string, values?: Record<string, string>) => key,
       imageUrlBuilder,
       observeAsset,
       resolveUploader,

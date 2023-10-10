@@ -35,9 +35,7 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
                   t={t}
                   i18nKey="input.files.common.upload-progress"
                   components={{
-                    FileName: () => (
-                      <CodeWrapper size={1}>{filename ? filename : '...'}</CodeWrapper>
-                    ),
+                    FileName: () => <CodeWrapper size={1}>{filename ? filename : '…'}</CodeWrapper>,
                   }}
                 />
               </Inline>

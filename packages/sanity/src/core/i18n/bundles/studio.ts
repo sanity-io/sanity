@@ -269,14 +269,21 @@ export const studioLocaleStrings = {
   /** Read only */
   'inputs.files.common.placeholder.read-only': 'Read only',
 
-  /** Drop to upload `{{type}}` */
-  'inputs.files.common.placeholder.drop-to-upload': 'Drop to upload {{type}}',
+  /** Drop to upload image */
+  'inputs.files.common.placeholder.drop-to-upload_image': 'Drop to upload image',
+
+  /** Drop to upload file */
+  'inputs.files.common.placeholder.drop-to-upload_file': 'Drop to upload file',
 
   /** Cannot upload `{{count}}` files */
-  'inputs.files.common.placeholder.cannot-upload-some-files': 'Cannot upload {{count}} files',
+  'inputs.files.common.placeholder.cannot-upload-some-files_one': 'Cannot upload file',
+  'inputs.files.common.placeholder.cannot-upload-some-files_other': 'Cannot upload {{count}} files',
 
-  /** Drag or paste `{{type}}` here */
-  'inputs.files.common.placeholder.drag-or-paste-to-upload': 'Drag or paste {{type}} here',
+  /** Drag or paste type here */
+  'inputs.files.common.placeholder.drag-or-paste-to-upload_file': 'Drag or paste file here',
+
+  /** Drag or paste image here */
+  'inputs.files.common.placeholder.drag-or-paste-to-upload_image': 'Drag or paste image here',
 
   /** Drop to upload */
   'inputs.files.common.drop-message.drop-to-upload': 'Drop to upload',
