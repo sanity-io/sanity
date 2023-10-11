@@ -7,8 +7,9 @@ export const allTypes = defineType({
   fields: [
     defineField({
       name: 'string',
+      title: 'Strengfelt',
       type: 'string',
-      description: 'Required. Must be uppercase.',
+      description: 'Påbudt. Må være i store bokstaver..',
       validation: (Rule) =>
         Rule.required().uppercase().error({
           'en-US': 'Dude, UPPERCASE!',
@@ -18,38 +19,51 @@ export const allTypes = defineType({
     defineField({
       name: 'type',
       type: 'string',
-      description: 'Required. Must be one of the values.',
+      title: 'Type',
+      description: 'Påbudt. Må være en av verdiene her.',
       initialValue: 'foo',
       validation: (Rule) => Rule.required(),
-      options: {list: ['Fruit', 'Animal', 'Mountain']},
+      options: {list: ['Frukt', 'Dyr', 'Fjell']},
     }),
     defineField({
       name: 'number',
+      title: 'Nummer',
       type: 'number',
-      description: 'Required. Must be between 5 and 10.',
+      description: 'Påbudt. Må være mellom 5 og 10.',
       validation: (Rule) => Rule.required().min(5).max(10),
     }),
     defineField({
       name: 'boolean',
+      title: 'Ja eller nei',
       type: 'boolean',
-      description: 'Required.',
+      description: 'Påbudt.',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'array',
+      title: 'Liste',
       type: 'array',
       of: [{type: 'string'}],
-      description: 'Required. Must have at least 2 unique items.',
+      description: 'Påbudt. Må ha minste 2 unike ting i seg.',
       validation: (Rule) => Rule.required().min(2).unique(),
     }),
     defineField({
       name: 'object',
+      title: 'Objekt',
       type: 'object',
       validation: (Rule) => Rule.required(),
-      fields: [defineField({name: 'email', type: 'email', validation: (Rule) => Rule.required()})],
+      fields: [
+        defineField({
+          name: 'email',
+          title: 'Epost',
+          type: 'email',
+          validation: (Rule) => Rule.required(),
+        }),
+      ],
     }),
     defineField({
       name: 'reference',
+      title: 'Referanse',
       type: 'reference',
       to: [{type: 'author'}, {type: 'book'}],
       validation: (Rule) =>
@@ -62,12 +76,13 @@ export const allTypes = defineType({
     }),
     defineField({
       name: 'image',
+      title: 'Bilde',
       type: 'image',
       validation: (Rule) => Rule.required().assetRequired(),
       fields: [
         defineField({
           name: 'alt',
-          title: 'Alternative text',
+          title: 'Alternativ tekst',
           type: 'string',
           validation: (Rule) => Rule.required(),
         }),
@@ -75,11 +90,13 @@ export const allTypes = defineType({
     }),
     defineField({
       name: 'file',
+      title: 'Fil',
       type: 'file',
       validation: (Rule) => Rule.required().assetRequired(),
       fields: [
         defineField({
           name: 'description',
+          title: 'Beskrivelse',
           type: 'string',
           validation: (Rule) => Rule.required().lowercase(),
         }),
@@ -87,38 +104,45 @@ export const allTypes = defineType({
     }),
     defineField({
       name: 'date',
+      title: 'Dato',
       type: 'date',
       validation: (Rule) => Rule.required().min('2023-01-01'),
     }),
     defineField({
       name: 'datetime',
+      title: 'Dato/klokkeslett',
       type: 'datetime',
       validation: (Rule) => Rule.required().min('2023-06-03T13:00:00Z'),
     }),
     defineField({
       name: 'geopoint',
+      title: 'Lokasjon',
       type: 'geopoint',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'url',
+      title: 'URL',
       type: 'url',
       validation: (Rule) => Rule.required().uri({scheme: ['https']}),
     }),
     defineField({
       name: 'slug',
+      title: 'Snegle (fnis)',
       type: 'slug',
       options: {source: 'string'},
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'text',
+      title: 'Tekst',
       type: 'text',
       validation: (Rule) =>
         Rule.required().regex(/^[a-z]+\d$/, {name: 'All lowercase, ends with a digit'}),
     }),
     defineField({
       name: 'blocks',
+      title: 'Blokker',
       type: 'array',
       of: [{type: 'block'}],
       validation: (Rule) => Rule.required().min(3),
