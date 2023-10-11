@@ -91,7 +91,7 @@ export function getPathTypes(options: {
     if (isRecord(segment) && segment._key) {
       if (!isArray(v)) {
         throw new Error(
-          `Parent value is not an anrray, cannot get path segment: [_key == ${segment}]`,
+          `Parent value is not an array, cannot get path segment: [_key == ${segment}]`,
         )
       }
 
