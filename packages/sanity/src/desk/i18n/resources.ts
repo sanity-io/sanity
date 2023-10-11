@@ -71,7 +71,7 @@ const deskLocaleStrings = {
   'action.discardChanges.disabled.notPublished': 'This document is not published',
 
   /** Message prompting the user to confirm discarding changes */
-  'action.discardChanges.confirmDialog.confirmDiscardChanges':
+  'action.discardChanges.confirmDialog.confirm-discardchanges':
     'Are you sure you want to discard all changes since last published?',
 
   /** --- DUPLICATE ACTION --- */
@@ -113,7 +113,7 @@ const deskLocaleStrings = {
   'action.restore.tooltip': 'Restore to this version',
 
   /** Message prompting the user to confirm that they want to restore to an earlier version*/
-  'action.restore.confirmDialog.confirmDiscardChanges':
+  'action.restore.confirmDialog.confirm-discard-changes':
     'Are you sure you want to restore this document?',
 }
 

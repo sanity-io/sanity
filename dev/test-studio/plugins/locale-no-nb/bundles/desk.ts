@@ -69,7 +69,7 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
   'action.discardChanges.disabled.notPublished': 'Dette dokumentet er ikke publisert',
 
   /** Message prompting the user to confirm discarding changes */
-  'action.discardChanges.confirmDialog.confirmDiscardChanges':
+  'action.discardChanges.confirmDialog.confirm-discard-changes':
     'Er du sikker på at du vil forkaste alle endringer siden forrige gang dette dokumentet ble publisert?',
 
   /** --- DUPLICATE ACTION --- */
@@ -110,7 +110,7 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
   'action.restore.tooltip': 'Gjenopprett til denne versjonen',
 
   /** Message prompting the user to confirm that they want to restore to an earlier version*/
-  'action.restore.confirmDialog.confirmDiscardChanges':
+  'action.restore.confirmDialog.confirm-discard-changes':
     'Er du sikker på at du vil gjenopprette til valgte versjon?',
 }
 

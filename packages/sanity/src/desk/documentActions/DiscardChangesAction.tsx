@@ -54,7 +54,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
         tone: 'critical',
         onCancel: onComplete,
         onConfirm: handleConfirm,
-        message: t('action.discardChanges.confirmDialog.confirmDiscardChanges'),
+        message: t('action.discardChanges.confirmDialog.confirm-discard-changes'),
       },
     [handleConfirm, isConfirmDialogOpen, onComplete, t],
   )
