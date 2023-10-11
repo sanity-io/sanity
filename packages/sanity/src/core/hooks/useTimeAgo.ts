@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable complexity */
 import {useEffect, useReducer} from 'react'
 import {
   differenceInDays,
@@ -7,9 +9,9 @@ import {
   differenceInSeconds,
   differenceInWeeks,
   differenceInYears,
-  format,
 } from 'date-fns'
-import {useTranslation} from '../i18n'
+import {useCurrentLocale, useTranslation} from '../i18n'
+import {intlCache} from '../i18n/intlCache'
 
 interface TimeSpec {
   timestamp: string
@@ -21,15 +23,33 @@ const TWENTY_SECONDS = 1000 * 20
 const ONE_MINUTE = 1000 * 60
 const ONE_HOUR = ONE_MINUTE * 60
 
+const NO_YEAR_DATE_ONLY_FORMAT: Intl.DateTimeFormatOptions = {
+  month: 'short',
+  day: 'numeric',
+}
+
+const DATE_ONLY_FORMAT: Intl.DateTimeFormatOptions = {
+  ...NO_YEAR_DATE_ONLY_FORMAT,
+  year: 'numeric',
+}
+
+const FULL_DATE_FORMAT: Intl.DateTimeFormatOptions = {
+  ...DATE_ONLY_FORMAT,
+  hour: 'numeric',
+  minute: 'numeric',
+}
+
 /** @internal */
 export interface TimeAgoOpts {
   minimal?: boolean
   agoSuffix?: boolean
+  relativeTo?: Date
+  timeZone?: string
 }
 
 /** @internal */
-export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpts = {}): string {
-  const resolved = useFormatRelativeTime(time, {minimal, agoSuffix})
+export function useTimeAgo(time: Date | string, options: TimeAgoOpts = {}): string {
+  const resolved = useFormatRelativeTime(time, options)
 
   const [, forceUpdate] = useReducer((x) => x + 1, 0)
 
@@ -61,7 +81,11 @@ export function useTimeAgo(time: Date | string, {minimal, agoSuffix}: TimeAgoOpt
 
 function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): TimeSpec {
   const {t} = useTranslation()
+  const currentLocale = useCurrentLocale()
+
+  const {timeZone} = opts
   const parsedDate = date instanceof Date ? date : new Date(date)
+  const withModifier = Boolean(opts.agoSuffix)
 
   // Invalid date? Return empty timestamp and `null` as refresh interval, to save us from
   // continuously trying to format an invalid date. The `useEffect` calls in the hook will
@@ -73,7 +97,7 @@ function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): Tim
     }
   }
 
-  const now = Date.now()
+  const now = opts.relativeTo || Date.now()
   const diffMonths = differenceInMonths(now, parsedDate)
   const diffYears = differenceInYears(now, parsedDate)
 
@@ -81,20 +105,26 @@ function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): Tim
     if (opts.minimal && diffYears === 0) {
       // same year
       return {
-        timestamp: format(parsedDate, 'MMM d'),
+        timestamp: intlCache
+          .dateTimeFormat(currentLocale, {...NO_YEAR_DATE_ONLY_FORMAT, timeZone})
+          .format(parsedDate),
         refreshInterval: null,
       }
     }
 
     if (opts.minimal) {
       return {
-        timestamp: format(parsedDate, 'MMM d, yyyy'),
+        timestamp: intlCache
+          .dateTimeFormat(currentLocale, {...DATE_ONLY_FORMAT, timeZone})
+          .format(parsedDate),
         refreshInterval: null,
       }
     }
 
     return {
-      timestamp: format(parsedDate, 'MMM d, yyyy, hh:mm a'),
+      timestamp: intlCache
+        .dateTimeFormat(currentLocale, {...FULL_DATE_FORMAT, timeZone})
+        .format(parsedDate),
       refreshInterval: null,
     }
   }
@@ -102,19 +132,12 @@ function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): Tim
   const diffWeeks = differenceInWeeks(now, parsedDate)
 
   if (diffWeeks) {
-    if (opts.minimal) {
-      return {
-        timestamp: opts.agoSuffix
-          ? t('timeAgo.weeks.minimal.ago', {count: diffWeeks})
-          : t('timeAgo.weeks.minimal', {count: diffWeeks}),
-        refreshInterval: ONE_HOUR,
-      }
-    }
+    const count = Math.abs(diffWeeks)
+    const context = withModifier ? (diffWeeks > 0 ? 'past' : 'future') : undefined
+    const resource = opts.minimal ? 'relative-time.weeks.minimal' : 'relative-time.weeks'
 
     return {
-      timestamp: opts.agoSuffix
-        ? t('timeAgo.weeks.ago', {count: diffWeeks})
-        : t('timeAgo.weeks', {count: diffWeeks}),
+      timestamp: t(resource, {count, context}),
       refreshInterval: ONE_HOUR,
     }
   }
@@ -122,18 +145,16 @@ function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): Tim
   const diffDays = differenceInDays(now, parsedDate)
 
   if (diffDays) {
-    if (opts.minimal) {
-      return {
-        timestamp: opts.agoSuffix
-          ? t('timeAgo.days.minimal.ago', {count: diffDays})
-          : t('timeAgo.days.minimal', {count: diffDays}),
-        refreshInterval: ONE_HOUR,
-      }
+    const count = Math.abs(diffDays)
+    let context = withModifier ? (diffDays > 0 ? 'past' : 'future') : undefined
+    if (count === 1) {
+      context = diffDays > 0 ? 'yesterday' : 'tomorrow'
     }
+
+    const resource = opts.minimal ? 'relative-time.days.minimal' : 'relative-time.days'
+
     return {
-      timestamp: opts.agoSuffix
-        ? t('timeAgo.days.ago', {count: diffDays})
-        : t('timeAgo.days', {count: diffDays}),
+      timestamp: t(resource, {count, context}),
       refreshInterval: ONE_HOUR,
     }
   }
@@ -141,19 +162,12 @@ function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): Tim
   const diffHours = differenceInHours(now, parsedDate)
 
   if (diffHours) {
-    if (opts.minimal) {
-      return {
-        timestamp: opts.agoSuffix
-          ? t('timeAgo.hours.minimal.ago', {count: diffHours})
-          : t('timeAgo.hours.minimal', {count: diffHours}),
-        refreshInterval: ONE_MINUTE,
-      }
-    }
+    const count = Math.abs(diffHours)
+    const context = withModifier ? (diffHours > 0 ? 'past' : 'future') : undefined
+    const resource = opts.minimal ? 'relative-time.hours.minimal' : 'relative-time.hours'
 
     return {
-      timestamp: opts.agoSuffix
-        ? t('timeAgo.hours.ago', {count: diffHours})
-        : t('timeAgo.hours', {count: diffHours}),
+      timestamp: t(resource, {count, context}),
       refreshInterval: ONE_MINUTE,
     }
   }
@@ -161,41 +175,27 @@ function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): Tim
   const diffMins = differenceInMinutes(now, parsedDate)
 
   if (diffMins) {
-    if (opts.minimal) {
-      return {
-        timestamp: opts.agoSuffix
-          ? t('timeAgo.minutes.minimal.ago', {count: diffMins})
-          : t('timeAgo.minutes.minimal', {count: diffMins}),
-        refreshInterval: TWENTY_SECONDS,
-      }
-    }
+    const count = Math.abs(diffMins)
+    const context = withModifier ? (diffMins > 0 ? 'past' : 'future') : undefined
+    const resource = opts.minimal ? 'relative-time.minutes.minimal' : 'relative-time.minutes'
+
     return {
-      timestamp: opts.agoSuffix
-        ? t('timeAgo.minutes.ago', {count: diffMins})
-        : t('timeAgo.minutes', {count: diffMins}),
+      timestamp: t(resource, {count, context}),
       refreshInterval: TWENTY_SECONDS,
     }
   }
 
   const diffSeconds = differenceInSeconds(now, parsedDate)
-
-  if (diffSeconds > 10) {
-    if (opts.minimal) {
-      return {
-        timestamp: opts.agoSuffix
-          ? t('timeAgo.seconds.minimal.ago', {count: diffSeconds})
-          : t('timeAgo.seconds.minimal', {count: diffSeconds}),
-        refreshInterval: FIVE_SECONDS,
-      }
-    }
+  if (Math.abs(diffSeconds) > 10) {
+    const count = Math.abs(diffSeconds)
+    const context = withModifier ? (diffSeconds > 0 ? 'past' : 'future') : undefined
+    const resource = opts.minimal ? 'relative-time.seconds.minimal' : 'relative-time.seconds'
 
     return {
-      timestamp: opts.agoSuffix
-        ? t('timeAgo.seconds.ago', {count: diffSeconds})
-        : t('timeAgo.seconds', {count: diffSeconds}),
+      timestamp: t(resource, {count, context}),
       refreshInterval: FIVE_SECONDS,
     }
   }
 
-  return {timestamp: t('timeAgo.justNow'), refreshInterval: FIVE_SECONDS}
+  return {timestamp: t('relative-time.just-now'), refreshInterval: FIVE_SECONDS}
 }

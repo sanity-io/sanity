@@ -1,4 +1,5 @@
 import {createInstance as createI18nInstance, type InitOptions, type i18n} from 'i18next'
+import {initReactI18next} from 'react-i18next'
 import type {SourceOptions} from '../config'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
 import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
@@ -51,7 +52,10 @@ function createI18nApi({
   sourceName: string
 }): {source: LocaleSource; i18next: i18n} {
   const options = getI18NextOptions(projectId, sourceName, locales)
-  const i18nInstance = createI18nInstance().use(createSanityI18nBackend({bundles}))
+  const i18nInstance = createI18nInstance()
+    .use(createSanityI18nBackend({bundles}))
+    .use(initReactI18next)
+
   i18nInstance.init(options).catch((err) => {
     console.error('Failed to initialize i18n backend: %s', err)
   })
