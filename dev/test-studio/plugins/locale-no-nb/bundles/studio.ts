@@ -5,63 +5,65 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'search.placeholder': 'Søk',
 
   /* Relative time, just now */
-  'timeAgo.justNow': 'akkurat nå',
+  'relative-time.just-now': 'just now',
 
-  /* Relative time, granularity: weeks*/
-  'timeAgo.weeks_one': '{{count}} uke',
-  'timeAgo.weeks_other': '{{count}} uker',
-  /* Relative time, granularity: weeks, configured to show ago suffix*/
-  'timeAgo.weeks.ago_one': '{{count}} uke siden',
-  'timeAgo.weeks.ago_other': '{{count}} uker siden',
-  /* Relative time, granularity: count, using a minimal format*/
-  'timeAgo.weeks.minimal': '{{count}}u',
-  /* Relative time, granularity: weeks, using a minimal format, configured to show ago suffix*/
-  'timeAgo.weeks.minimal.ago': '{{count}}u siden',
+  /* Relative time, granularity: weeks */
+  'relative-time.weeks': '{{count}} uker',
+  'relative-time.weeks_one': '{{count}} uke',
+  'relative-time.weeks_past': '{{count}} uker siden',
+  'relative-time.weeks_past_one': '{{count}} uke siden',
+  'relative-time.weeks_future': 'om {{count}} uker',
+  'relative-time.weeks_future_one': 'om {{count}} uke',
+  'relative-time.weeks.minimal': '{{count}}u',
+  'relative-time.weeks.minimal_past': '{{count}}u siden',
+  'relative-time.weeks.minimal_future': 'om {{count}}u',
 
-  /* Relative time, granularity: days*/
-  'timeAgo.days_one': 'i går',
-  'timeAgo.days_other': '{{count}} dager',
-  /* Relative time, granularity: days, configured to show ago suffix*/
-  'timeAgo.days.ago_one': 'i går',
-  'timeAgo.days.ago_other': '{{count}} dager siden',
-  /* Relative time, granularity: days, using a minimal format*/
-  'timeAgo.days.minimal_one': 'i går',
-  'timeAgo.days.minimal_other': '{{count}}d',
-  /* Relative time, granularity: days, using a minimal format, configured to show ago suffix*/
-  'timeAgo.days.minimal.ago': '{{count}}d siden',
+  /* Relative time, granularity: days */
+  'relative-time.days': '{{count}} dager',
+  'relative-time.days_past': '{{count}} dager siden',
+  'relative-time.days_future': 'om {{count}} dager',
+  'relative-time.days_yesterday': 'i går',
+  'relative-time.days_tomorrow': 'i morgen',
+  'relative-time.days.minimal': '{{count}}d',
+  'relative-time.days.minimal_yesterday': 'i går',
+  'relative-time.days.minimal_tomorrow': 'i morgen',
+  'relative-time.days.minimal_past_one': 'i går',
+  'relative-time.days.minimal_future_one': 'i morgen',
+  'relative-time.days.minimal_past': '{{count}}d siden',
+  'relative-time.days.minimal_future': 'om {{count}}d',
 
-  /* Relative time, granularity: hours*/
-  'timeAgo.hours_one': 'en time',
-  'timeAgo.hours_other': '{{count}} timer',
-  /* Relative time, granularity: hours, configured to show ago suffix*/
-  'timeAgo.hours.ago_one': 'en time siden',
-  'timeAgo.hours.ago_other': '{{count}} timer siden',
-  /* Relative time, granularity: hours, using a minimal format*/
-  'timeAgo.hours.minimal': '{{count}}t',
-  /* Relative time, granularity: hours, using a minimal format, configured to show ago suffix*/
-  'timeAgo.hours.minimal.ago': '{{count}}t siden',
+  /* Relative time, granularity: hours */
+  'relative-time.hours': '{{count}} timer',
+  'relative-time.hours_one': '{{count}} time',
+  'relative-time.hours_past': '{{count}} timer siden',
+  'relative-time.hours_past_one': '{{count}} time siden',
+  'relative-time.hours_future': 'om {{count}} timer',
+  'relative-time.hours_future_one': 'om {{count}} time',
+  'relative-time.hours.minimal': '{{count}}t',
+  'relative-time.hours.minimal_past': '{{count}}t siden',
+  'relative-time.hours.minimal_future': 'om {{count}}t',
 
-  /* Relative time, granularity: minutes*/
-  'timeAgo.minutes_one': 'ett minutt',
-  'timeAgo.minutes_other': '{{count}} minutter',
-  /* Relative time, granularity: minutes, configured to show ago suffix*/
-  'timeAgo.minutes.ago_one': 'ett minutt siden',
-  'timeAgo.minutes.ago_other': '{{count}} minutter siden',
-  /* Relative time, granularity: minutes, using a minimal format*/
-  'timeAgo.minutes.minimal': '{{count}}m',
-  /* Relative time, granularity: minutes, using a minimal format, configured to show ago suffix*/
-  'timeAgo.minutes.minimal.ago': '{{count}}m siden',
+  /* Relative time, granularity: minutes */
+  'relative-time.minutes': '{{count}} minutter',
+  'relative-time.minutes_one': '{{count}} minutt',
+  'relative-time.minutes_past': '{{count}} minutter siden',
+  'relative-time.minutes_past_one': '{{count}} minutt siden',
+  'relative-time.minutes_future': 'om {{count}} minutter',
+  'relative-time.minutes_future_one': 'om {{count}} minutt',
+  'relative-time.minutes.minimal': '{{count}}m',
+  'relative-time.minutes.minimal_past': '{{count}}m siden',
+  'relative-time.minutes.minimal_future': 'om {{count}}m',
 
-  /* Relative time, granularity: seconds*/
-  'timeAgo.seconds_one': 'ett sekund',
-  'timeAgo.seconds_other': '{{count}} sekunder',
-  /* Relative time, granularity: seconds, configured to show ago suffix*/
-  'timeAgo.seconds.ago_one': 'ett sekund siden',
-  'timeAgo.seconds.ago_other': '{{count}} sekunder siden',
-  /* Relative time, granularity: seconds, using a minimal format*/
-  'timeAgo.seconds.minimal': '{{count}}s',
-  /* Relative time, granularity: seconds, using a minimal format, configured to show ago suffix*/
-  'timeAgo.seconds.minimal.ago': '{{count}}s siden',
+  /* Relative time, granularity: seconds */
+  'relative-time.seconds': '{{count}} sekunder',
+  'relative-time.seconds_one': '{{count}} sekund',
+  'relative-time.seconds_past': '{{count}} sekunder siden',
+  'relative-time.seconds_past_one': '{{count}} sekund siden',
+  'relative-time.seconds_future': 'om {{count}} sekunder',
+  'relative-time.seconds_future_one': 'om {{count}} sekund',
+  'relative-time.seconds.minimal': '{{count}}s',
+  'relative-time.seconds.minimal_past': '{{count}}s siden',
+  'relative-time.seconds.minimal_future': 'om {{count}}s',
 
   /** --- DateTime (and Date) Input --- */
 
