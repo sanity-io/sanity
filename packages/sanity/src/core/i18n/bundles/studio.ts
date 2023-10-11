@@ -8,63 +8,65 @@ import {studioLocaleNamespace} from '../localeNamespaces'
  */
 export const studioLocaleStrings = {
   /* Relative time, just now */
-  'timeAgo.justNow': 'just now',
+  'relative-time.just-now': 'just now',
 
-  /* Relative time, granularity: weeks*/
-  'timeAgo.weeks_one': '{{count}} week',
-  'timeAgo.weeks_other': '{{count}} weeks',
-  /* Relative time, granularity: weeks, configured to show ago suffix*/
-  'timeAgo.weeks.ago_one': '{{count}} week ago',
-  'timeAgo.weeks.ago_other': '{{count}} weeks ago',
-  /* Relative time, granularity: count, using a minimal format*/
-  'timeAgo.weeks.minimal': '{{count}}w',
-  /* Relative time, granularity: weeks, using a minimal format, configured to show ago suffix*/
-  'timeAgo.weeks.minimal.ago': '{{count}}w ago',
+  /* Relative time, granularity: weeks */
+  'relative-time.weeks': '{{count}} weeks',
+  'relative-time.weeks_one': '{{count}} week',
+  'relative-time.weeks_past': '{{count}} weeks ago',
+  'relative-time.weeks_past_one': '{{count}} week ago',
+  'relative-time.weeks_future': 'in {{count}} weeks',
+  'relative-time.weeks_future_one': 'in {{count}} week',
+  'relative-time.weeks.minimal': '{{count}}w',
+  'relative-time.weeks.minimal_past': '{{count}}w ago',
+  'relative-time.weeks.minimal_future': 'in {{count}}w',
 
-  /* Relative time, granularity: days*/
-  'timeAgo.days_one': 'yesterday',
-  'timeAgo.days_other': '{{count}} days',
-  /* Relative time, granularity: days, configured to show ago suffix*/
-  'timeAgo.days.ago_one': 'yesterday',
-  'timeAgo.days.ago_other': '{{count}} days ago',
-  /* Relative time, granularity: days, using a minimal format*/
-  'timeAgo.days.minimal_one': 'yesterday',
-  'timeAgo.days.minimal_other': '{{count}}d',
-  /* Relative time, granularity: days, using a minimal format, configured to show ago suffix*/
-  'timeAgo.days.minimal.ago': '{{count}}d ago',
+  /* Relative time, granularity: days */
+  'relative-time.days': '{{count}} days',
+  'relative-time.days_past': '{{count}} days ago',
+  'relative-time.days_future': 'in {{count}} days',
+  'relative-time.days_yesterday': 'yesterday',
+  'relative-time.days_tomorrow': 'tomorrow',
+  'relative-time.days.minimal': '{{count}}d',
+  'relative-time.days.minimal_yesterday': 'yesterday',
+  'relative-time.days.minimal_tomorrow': 'tomorrow',
+  'relative-time.days.minimal_past_one': 'yesterday',
+  'relative-time.days.minimal_future_one': 'tomorrow',
+  'relative-time.days.minimal_past': '{{count}}d ago',
+  'relative-time.days.minimal_future': 'in {{count}}d',
 
-  /* Relative time, granularity: hours*/
-  'timeAgo.hours_one': '{{count}} hour',
-  'timeAgo.hours_other': '{{count}} hours',
-  /* Relative time, granularity: hours, configured to show ago suffix*/
-  'timeAgo.hours.ago_one': '{{count}} hour ago',
-  'timeAgo.hours.ago_other': '{{count}} hours ago',
-  /* Relative time, granularity: hours, using a minimal format*/
-  'timeAgo.hours.minimal': '{{count}}h',
-  /* Relative time, granularity: hours, using a minimal format, configured to show ago suffix*/
-  'timeAgo.hours.minimal.ago': '{{count}}h ago',
+  /* Relative time, granularity: hours */
+  'relative-time.hours': '{{count}} hours',
+  'relative-time.hours_one': '{{count}} hour',
+  'relative-time.hours_past': '{{count}} hours ago',
+  'relative-time.hours_past_one': '{{count}} hour ago',
+  'relative-time.hours_future': 'in {{count}} hours',
+  'relative-time.hours_future_one': 'in 1 hour',
+  'relative-time.hours.minimal': '{{count}}h',
+  'relative-time.hours.minimal_past': '{{count}}h ago',
+  'relative-time.hours.minimal_future': 'in {{count}}h',
 
-  /* Relative time, granularity: minutes*/
-  'timeAgo.minutes_one': '{{count}} minute',
-  'timeAgo.minutes_other': '{{count}} minutes',
-  /* Relative time, granularity: minutes, configured to show ago suffix*/
-  'timeAgo.minutes.ago_one': '{{count}} minute ago',
-  'timeAgo.minutes.ago_other': '{{count}} minutes ago',
-  /* Relative time, granularity: minutes, using a minimal format*/
-  'timeAgo.minutes.minimal': '{{count}}m',
-  /* Relative time, granularity: minutes, using a minimal format, configured to show ago suffix*/
-  'timeAgo.minutes.minimal.ago': '{{count}}m ago',
+  /* Relative time, granularity: minutes */
+  'relative-time.minutes': '{{count}} minutes',
+  'relative-time.minutes_one': '{{count}} minute',
+  'relative-time.minutes_past': '{{count}} minutes ago',
+  'relative-time.minutes_past_one': '{{count}} minute ago',
+  'relative-time.minutes_future': 'in {{count}} minutes',
+  'relative-time.minutes_future_one': 'in {{count}} minute',
+  'relative-time.minutes.minimal': '{{count}}m',
+  'relative-time.minutes.minimal_past': '{{count}}m ago',
+  'relative-time.minutes.minimal_future': 'in {{count}}m',
 
-  /* Relative time, granularity: seconds*/
-  'timeAgo.seconds_one': '{{count}} second',
-  'timeAgo.seconds_other': '{{count}} seconds',
-  /* Relative time, granularity: seconds, configured to show ago suffix*/
-  'timeAgo.seconds.ago_one': '{{count}} minute ago',
-  'timeAgo.seconds.ago_other': '{{count}} second ago',
-  /* Relative time, granularity: seconds, using a minimal format*/
-  'timeAgo.seconds.minimal': '{{count}}m',
-  /* Relative time, granularity: seconds, using a minimal format, configured to show ago suffix*/
-  'timeAgo.seconds.minimal.ago': '{{count}}m ago',
+  /* Relative time, granularity: seconds */
+  'relative-time.seconds': '{{count}} seconds',
+  'relative-time.seconds_one': '{{count}} second',
+  'relative-time.seconds_past': '{{count}} seconds ago',
+  'relative-time.seconds_past_one': '{{count}} second ago',
+  'relative-time.seconds_future': 'in {{count}} seconds',
+  'relative-time.seconds_future_one': 'in {{count}} second',
+  'relative-time.seconds.minimal': '{{count}}s',
+  'relative-time.seconds.minimal_past': '{{count}}s ago',
+  'relative-time.seconds.minimal_future': 'in {{count}}s',
 
   /** --- Review Changes --- */
 
