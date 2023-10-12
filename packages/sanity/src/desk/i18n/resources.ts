@@ -46,10 +46,11 @@ const deskLocaleStrings = {
 
   /** --- DELETE ACTION --- **/
   /** Tooltip when action button is disabled because the operation is not ready   */
-  'action.delete.disabled.notReady': 'Operation not ready',
+  'action.delete.disabled.not-ready': 'Operation not ready',
 
   /** Tooltip when action button is disabled because the document does not exist */
-  'action.delete.disabled.nothingToDelete': 'This document doesn’t yet exist or is already deleted',
+  'action.delete.disabled.nothing-to-delete':
+    'This document doesn’t yet exist or is already deleted',
 
   /** Label for the "Delete" document action button */
   'action.delete.label': 'Delete',

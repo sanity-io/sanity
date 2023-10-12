@@ -43,10 +43,10 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
 
   /** --- DELETE ACTION --- **/
   /** Tooltip when action button is disabled because the operation is not ready   */
-  'action.delete.disabled.notReady': 'Operasjonen er ikke klar',
+  'action.delete.disabled.not-ready': 'Operasjonen er ikke klar',
 
   /** Tooltip when action button is disabled because the document does not exist */
-  'action.delete.disabled.nothingToDelete':
+  'action.delete.disabled.nothing-to-delete':
     'Dette dokumentet eksisterer ikke eller har allerede blitt slettet',
 
   /** Label for the "Delete" document action button */
