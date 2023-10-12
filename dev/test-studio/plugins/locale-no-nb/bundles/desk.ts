@@ -88,16 +88,16 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
 
   /** --- UNPUBLISH ACTION --- */
   /** Tooltip when action is disabled because the operation is not ready   */
-  'action.unpublish.disabled.notReady': 'Operasjonen er ikke klar',
+  'action.unpublish.disabled.not-ready': 'Operasjonen er ikke klar',
 
   /** Label for the "Unpublish" document action */
   'action.unpublish.label': 'Avpubliser',
 
   /** Tooltip when action is disabled because the document is not already published */
-  'action.unpublish.disabled.notPublished': 'Dette dokumentet er ikke publisert',
+  'action.unpublish.disabled.not-published': 'Dette dokumentet er ikke publisert',
 
   /** Fallback tooltip for the Unpublish document action when publish is invoked for a document with live edit enabled.*/
-  'action.unpublish.liveEdit.disabled':
+  'action.unpublish.live-edit.disabled':
     'Dette dokumentet har "Live Edit" skrudd på og kan ikke avpubliseres',
 
   /** --- RESTORE ACTION --- */

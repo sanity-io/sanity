@@ -91,16 +91,16 @@ const deskLocaleStrings = {
 
   /** --- UNPUBLISH ACTION --- */
   /** Tooltip when action is disabled because the operation is not ready   */
-  'action.unpublish.disabled.notReady': 'Operation not ready',
+  'action.unpublish.disabled.not-ready': 'Operation not ready',
 
   /** Label for the "Unpublish" document action */
   'action.unpublish.label': 'Unpublish',
 
   /** Tooltip when action is disabled because the document is not already published */
-  'action.unpublish.disabled.notPublished': 'This document is not published',
+  'action.unpublish.disabled.not-published': 'This document is not published',
 
   /** Fallback tooltip for the Unpublish document action when publish is invoked for a document with live edit enabled.*/
-  'action.unpublish.liveEdit.disabled':
+  'action.unpublish.live-edit.disabled':
     'This document has live edit enabled and cannot be unpublished',
 
   /** --- RESTORE ACTION --- */
