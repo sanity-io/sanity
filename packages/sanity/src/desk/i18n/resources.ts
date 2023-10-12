@@ -60,19 +60,19 @@ const deskLocaleStrings = {
 
   /** --- DISCARD CHANGES ACTION --- **/
   /** Tooltip when action button is disabled because the operation is not ready   */
-  'action.discardChanges.disabled.notReady': 'Operation not ready',
+  'action.discard-changes.disabled.not-ready': 'Operation not ready',
 
   /** Label for the "Discard changes" document action */
-  'action.discardChanges.label': 'Discard changes',
+  'action.discard-changes.label': 'Discard changes',
 
   /** Tooltip when action is disabled because the document has no unpublished changes */
-  'action.discardChanges.disabled.noChange': 'This document has no unpublished changes',
+  'action.discard-changes.disabled.no-change': 'This document has no unpublished changes',
 
   /** Tooltip when action is disabled because the document is not published */
-  'action.discardChanges.disabled.notPublished': 'This document is not published',
+  'action.discard-changes.disabled.not-published': 'This document is not published',
 
   /** Message prompting the user to confirm discarding changes */
-  'action.discardChanges.confirmDialog.confirm-discardchanges':
+  'action.discard-changes.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to discard all changes since last published?',
 
   /** --- DUPLICATE ACTION --- */
@@ -114,7 +114,7 @@ const deskLocaleStrings = {
   'action.restore.tooltip': 'Restore to this version',
 
   /** Message prompting the user to confirm that they want to restore to an earlier version*/
-  'action.restore.confirmDialog.confirm-discard-changes':
+  'action.restore.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to restore this document?',
 }
 
