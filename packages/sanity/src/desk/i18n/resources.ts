@@ -18,28 +18,28 @@ const deskLocaleStrings = {
   'action.publish.published.label': 'Published',
 
   /** Label for the "Publish" document action when the document has live edit enabled.*/
-  'action.publish.liveEdit.label': 'Publish',
+  'action.publish.live-edit.label': 'Publish',
 
   /** Tooltip for the "Publish" document action when the document has live edit enabled.*/
-  'action.publish.liveEdit.tooltip':
+  'action.publish.live-edit.tooltip':
     'Live Edit is enabled for this content type and publishing happens automatically as you make changes',
 
   /** Fallback tooltip for the "Publish" document action when publish is invoked for a document with live edit enabled.*/
-  'action.publish.liveEdit.publishDisabled':
+  'action.publish.live-edit.publish-disabled':
     'Cannot publish since liveEdit is enabled for this document type',
 
   /** Tooltip when the "Publish" document action is disabled due to validation issues */
-  'action.publish.validationIssues.tooltip':
+  'action.publish.validation-issues.tooltip':
     'There are validation errors that need to be fixed before this document can be published',
 
   /** Tooltip when publish button is disabled because the document is already published.*/
-  'action.publish.alreadyPublished.tooltip': 'Published {{timeSincePublished}} ago',
+  'action.publish.already-published.tooltip': 'Published {{timeSincePublished}} ago',
 
   /** Tooltip when publish button is disabled because the document is already published, and published time is unavailable.*/
   'action.publish.already-published.no-time-ago.tooltip': 'Already published',
 
   /** Tooltip when publish button is disabled because there are no changes.*/
-  'action.publish.tooltip.noChanges': 'No unpublished changes',
+  'action.publish.tooltip.no-changes': 'No unpublished changes',
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',

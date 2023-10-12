@@ -15,10 +15,10 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
   'action.publish.published.label': 'Publisert',
 
   /** Label for the "Publish" document action when the document has live edit enabled.*/
-  'action.publish.liveEdit.label': 'Publiser',
+  'action.publish.live-edit.label': 'Publiser',
 
   /** Tooltip for the "Publish" document action when the document has live edit enabled.*/
-  'action.publish.liveEdit.tooltip':
+  'action.publish.live-edit.tooltip':
     '"Live Edit" er skrudd på for denne dokumenttypen og publisering skjer automatisk når du gjør endringer',
 
   /** Fallback tooltip for the "Publish" document action when publish is invoked for a document with live edit enabled.*/
@@ -26,17 +26,17 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
     'Kan ikke publisere fordi "Live Edit" er skrudd på for denne dokumenttypen.',
 
   /** Tooltip when the "Publish" document action is disabled due to validation issues */
-  'action.publish.validationIssues.tooltip':
+  'action.publish.validation-issues.tooltip':
     'Valideringsfeil som må rettes før dokumentet kan publiseres',
 
   /** Tooltip when publish button is disabled because the document is already published.*/
-  'action.publish.alreadyPublished.tooltip': 'Publisert for {{timeSincePublished}} siden',
+  'action.publish.already-published.tooltip': 'Publisert for {{timeSincePublished}} siden',
 
   /** Tooltip when publish button is disabled because the document is already published, and published time is unavailable.*/
   'action.publish.already-published.no-time-ago.tooltip': 'Allerede publisert',
 
   /** Tooltip when publish button is disabled because there are no changes.*/
-  'action.publish.tooltip.noChanges': 'Ingen upubliserte endringer',
+  'action.publish.tooltip.no-changes': 'Ingen upubliserte endringer',
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Venter på at andre oppgaver skal fullføre',
