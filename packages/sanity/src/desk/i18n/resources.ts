@@ -6,7 +6,7 @@
 const deskLocaleStrings = {
   /** --- PUBLISH ACTION --- */
   /** Tooltip when action is disabled because the studio is not ready.*/
-  'action.publish.disabled.notReady': 'Operation not ready',
+  'action.publish.disabled.not-ready': 'Operation not ready',
 
   /** Label for action when there are pending changes.*/
   'action.publish.draft.label': 'Publish',
@@ -36,7 +36,7 @@ const deskLocaleStrings = {
   'action.publish.alreadyPublished.tooltip': 'Published {{timeSincePublished}} ago',
 
   /** Tooltip when publish button is disabled because the document is already published, and published time is unavailable.*/
-  'action.publish.alreadyPublished.noTimeAgo.tooltip': 'Already published',
+  'action.publish.already-published.no-time-ago.tooltip': 'Already published',
 
   /** Tooltip when publish button is disabled because there are no changes.*/
   'action.publish.tooltip.noChanges': 'No unpublished changes',
