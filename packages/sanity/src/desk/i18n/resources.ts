@@ -77,10 +77,10 @@ const deskLocaleStrings = {
 
   /** --- DUPLICATE ACTION --- */
   /** Tooltip when action is disabled because the operation is not ready   */
-  'action.duplicate.disabled.notReady': 'Operation not ready',
+  'action.duplicate.disabled.not-ready': 'Operation not ready',
 
   /** Tooltip when action is disabled because the document doesn't exist */
-  'action.duplicate.disabled.nothingToDuplicate':
+  'action.duplicate.disabled.nothing-to-duplicate':
     "This document doesn't yet exist so there‘s nothing to duplicate",
 
   /** Label for the "Duplicate" document action */

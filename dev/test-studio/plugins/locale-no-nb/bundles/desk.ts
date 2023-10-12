@@ -74,10 +74,11 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
 
   /** --- DUPLICATE ACTION --- */
   /** Tooltip when action is disabled because the operation is not ready   */
-  'action.duplicate.disabled.notReady': 'Operasjonen er ikke klar',
+  'action.duplicate.disabled.not-ready': 'Operasjonen er ikke klar',
 
   /** Tooltip when action is disabled because the document doesn't exist */
-  'action.duplicate.disabled.nothingToDuplicate': 'Dette dokumentet er tomt og kan ikke dupliseres',
+  'action.duplicate.disabled.nothing-to-duplicate':
+    'Dette dokumentet er tomt og kan ikke dupliseres',
 
   /** Label for the "Duplicate" document action */
   'action.duplicate.label': 'Duplisèr',
