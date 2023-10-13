@@ -1,20 +1,22 @@
 import {useCallback, useMemo} from 'react'
 import {uuid} from '@sanity/uuid'
 import {CurrentUser, SchemaType} from '@sanity/types'
+import {SanityClient} from '@sanity/client'
 import {
   CommentCreatePayload,
   CommentEditPayload,
   CommentOperations,
   CommentPostPayload,
 } from '../types'
-import {useCommentsClient} from './useCommentsClient'
 import {useNotificationTarget} from './useNotificationTarget'
 
 export interface CommentOperationsHookValue {
   operation: CommentOperations
 }
 
-interface CommentOperationsHookOptions {
+export interface CommentOperationsHookOptions {
+  client: SanityClient | null
+
   currentUser: CurrentUser | null
   dataset: string
   documentId: string
@@ -34,6 +36,7 @@ export function useCommentOperations(
   opts: CommentOperationsHookOptions,
 ): CommentOperationsHookValue {
   const {
+    client,
     currentUser,
     dataset,
     documentId,
@@ -46,7 +49,6 @@ export function useCommentOperations(
     projectId,
     workspace,
   } = opts
-  const client = useCommentsClient()
 
   const authorId = currentUser?.id
 
@@ -92,7 +94,12 @@ export function useCommentOperations(
         },
       } satisfies CommentPostPayload
 
+      // We still want to run the `onCreate` callback even if the client is not defined.
+      // This is because, if this is the first comment being created, we'll want to
+      // handle creation of the client in the `CommentsProvider` and then post the comment.
       onCreate?.(nextComment)
+
+      if (!client) return
 
       try {
         await client.create(nextComment)
@@ -120,6 +127,8 @@ export function useCommentOperations(
 
   const handleRemove = useCallback(
     async (id: string) => {
+      if (!client) return
+
       onRemove?.(id)
 
       await Promise.all([
@@ -132,6 +141,8 @@ export function useCommentOperations(
 
   const handleEdit = useCallback(
     async (id: string, comment: CommentEditPayload) => {
+      if (!client) return
+
       const editedComment = {
         message: comment.message,
         lastEditedAt: new Date().toISOString(),
@@ -146,6 +157,8 @@ export function useCommentOperations(
 
   const handleUpdate = useCallback(
     async (id: string, comment: Partial<CommentCreatePayload>) => {
+      if (!client) return
+
       onUpdate?.(id, comment)
 
       // If the update contains a status, we'll update the status of all replies
@@ -165,7 +178,7 @@ export function useCommentOperations(
       }
 
       // Else we'll just update the comment itself
-      await client.patch(id).set(comment).commit()
+      await client?.patch(id).set(comment).commit()
     },
     [client, onUpdate],
   )

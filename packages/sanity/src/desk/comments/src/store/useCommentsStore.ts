@@ -1,13 +1,13 @@
 import {useMemo, useEffect, useCallback, useReducer, useState} from 'react'
-import {ListenEvent, ListenOptions} from '@sanity/client'
+import {ListenEvent, ListenOptions, SanityClient} from '@sanity/client'
 import {catchError, of} from 'rxjs'
 import {CommentDocument, Loadable} from '../types'
-import {useCommentsClient} from '../hooks'
 import {CommentsReducerAction, CommentsReducerState, commentsReducer} from './reducer'
 import {getPublishedId} from 'sanity'
 
-interface CommentsStoreOptions {
+export interface CommentsStoreOptions {
   documentId: string
+  client: SanityClient | null
 }
 
 interface CommentsStoreReturnType extends Loadable<CommentDocument[]> {
@@ -47,15 +47,20 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
-  const client = useCommentsClient()
+  const {client, documentId} = opts
 
   const [state, dispatch] = useReducer(commentsReducer, INITIAL_STATE)
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = useState<boolean>(client !== null)
   const [error, setError] = useState<Error | null>(null)
 
-  const params = useMemo(() => ({documentId: getPublishedId(opts.documentId)}), [opts.documentId])
+  const params = useMemo(() => ({documentId: getPublishedId(documentId)}), [documentId])
 
   const initialFetch = useCallback(async () => {
+    if (!client) {
+      setLoading(false)
+      return
+    }
+
     try {
       const res = await client.fetch(QUERY, params)
       dispatch({type: 'COMMENTS_SET', comments: res})
@@ -112,6 +117,8 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   )
 
   const listener$ = useMemo(() => {
+    if (!client) return of()
+
     const events$ = client.observable.listen(QUERY, params, LISTEN_OPTIONS).pipe(
       catchError((err) => {
         setError(err)
@@ -120,13 +127,13 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     )
 
     return events$
-  }, [client.observable, params])
+  }, [client, params])
 
   useEffect(() => {
     const sub = listener$.subscribe(handleListenerEvent)
 
     return () => {
-      sub.unsubscribe()
+      sub?.unsubscribe()
     }
   }, [handleListenerEvent, listener$])
 
