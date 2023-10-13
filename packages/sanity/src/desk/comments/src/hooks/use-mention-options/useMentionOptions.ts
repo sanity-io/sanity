@@ -19,7 +19,7 @@ const INITIAL_STATE: MentionOptionsHookValue = {
   loading: true,
 }
 
-interface MentionHookOptions {
+export interface MentionHookOptions {
   documentValue: SanityDocument | null
 }
 
