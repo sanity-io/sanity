@@ -1,8 +1,7 @@
-import {CurrentUser, Path} from '@sanity/types'
+import {CurrentUser} from '@sanity/types'
 import {Box, Breadcrumbs, Button, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
-import * as PathUtils from '@sanity/util/paths'
 import styled from 'styled-components'
 import {ChevronRightIcon} from '@sanity/icons'
 import {AddCommentIcon} from '../icons'
@@ -28,7 +27,7 @@ interface CommentThreadLayoutProps {
   currentUser: CurrentUser
   mentionOptions: MentionOptionsHookValue
   onNewThreadCreate: (payload: CommentCreatePayload) => void
-  path: Path
+  fieldPath: string
 }
 
 export function CommentThreadLayout(props: CommentThreadLayoutProps) {
@@ -39,7 +38,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     currentUser,
     mentionOptions,
     onNewThreadCreate,
-    path,
+    fieldPath,
   } = props
   const createNewThreadInputRef = useRef<CommentInputHandle>(null)
   const [displayNewThreadInput, setDisplayNewThreadInput] = useState<boolean>(false)
@@ -58,7 +57,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
       const nextComment: CommentCreatePayload = {
-        fieldPath: PathUtils.toString(path),
+        fieldPath,
         message: payload,
         parentCommentId: undefined,
         status: 'open',
@@ -72,7 +71,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       // When the new thread is created, we focus the button again
       newThreadButtonElement?.focus()
     },
-    [newThreadButtonElement, onNewThreadCreate, path],
+    [newThreadButtonElement, onNewThreadCreate, fieldPath],
   )
 
   return (
@@ -121,8 +120,8 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
           <CreateNewThreadInput
             currentUser={currentUser}
             mentionOptions={mentionOptions}
-            onNewThreadCreate={handleNewThreadCreate}
             onEditDiscard={handleNewThreadCreateDiscard}
+            onNewThreadCreate={handleNewThreadCreate}
             ref={createNewThreadInputRef}
           />
         </ThreadCard>
