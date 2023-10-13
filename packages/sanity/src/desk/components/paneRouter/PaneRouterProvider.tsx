@@ -25,7 +25,7 @@ export function PaneRouterProvider(props: {
   siblingIndex: number
 }) {
   const {children, flatIndex, index, params, payload, siblingIndex} = props
-  const {navigate, navigateIntent} = useRouter()
+  const {navigate, navigateIntent, resolvePathFromState} = useRouter()
   const routerState = useRouterState()
   const {panes, expand} = usePaneLayout()
   const routerPaneGroups: RouterPaneGroup[] = useMemo(
@@ -36,7 +36,7 @@ export function PaneRouterProvider(props: {
 
   const groupIndex = index - 1
 
-  const modifyCurrentGroup = useCallback(
+  const createNextRouterState = useCallback(
     (modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup) => {
       const currentGroup = routerPaneGroups[groupIndex] || []
       const currentItem = currentGroup[siblingIndex]
@@ -48,11 +48,31 @@ export function PaneRouterProvider(props: {
       ]
       const nextRouterState = {...(routerState || {}), panes: nextPanes}
 
-      setTimeout(() => navigate(nextRouterState), 0)
-
       return nextRouterState
     },
-    [groupIndex, navigate, routerPaneGroups, routerState, siblingIndex],
+    [groupIndex, routerPaneGroups, routerState, siblingIndex],
+  )
+
+  const modifyCurrentGroup = useCallback(
+    (modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup) => {
+      const nextRouterState = createNextRouterState(modifier)
+      setTimeout(() => navigate(nextRouterState), 0)
+      return nextRouterState
+    },
+    [createNextRouterState, navigate],
+  )
+
+  const createPathWithParams: PaneRouterContextValue['createPathWithParams'] = useCallback(
+    (nextParams) => {
+      const nextRouterState = createNextRouterState((siblings, item) => [
+        ...siblings.slice(0, siblingIndex),
+        {...item, params: nextParams},
+        ...siblings.slice(siblingIndex + 1),
+      ])
+
+      return resolvePathFromState(nextRouterState)
+    },
+    [createNextRouterState, resolvePathFromState, siblingIndex],
   )
 
   const setPayload: PaneRouterContextValue['setPayload'] = useCallback(
@@ -195,6 +215,9 @@ export function PaneRouterProvider(props: {
       // Set the payload for the current pane
       setPayload,
 
+      // A function that returns a path with the given parameters
+      createPathWithParams,
+
       // Proxied navigation to a given intent. Consider just exposing `router` instead?
       navigateIntent,
     }),
@@ -208,6 +231,7 @@ export function PaneRouterProvider(props: {
       handleEditReference,
       setParams,
       setPayload,
+      createPathWithParams,
       navigateIntent,
       modifyCurrentGroup,
       lastPane,
