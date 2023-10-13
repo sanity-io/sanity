@@ -14,7 +14,7 @@ const CURRENT_USER: CurrentUser = {
 
 const stringWithTitleField = defineField({
   name: 'stringWithTitle',
-  title: 'String title',
+  title: 'My string title',
   type: 'string',
 })
 
@@ -28,21 +28,21 @@ const stringWithHiddenCallback = defineField({
 
 const objectField = defineField({
   name: 'myObject',
-  title: 'My object',
+  title: 'My object title',
   type: 'object',
   fields: [stringWithTitleField, stringWithHiddenCallback],
 })
 
 const arrayOfObjectsField = defineField({
   name: 'myArray',
-  title: 'My array',
+  title: 'My array title',
   type: 'array',
   of: [objectField],
 })
 
 const nestedArrayOfObjectsField = defineField({
   name: 'myNestedArray',
-  title: 'My nested array',
+  title: 'My nested array title',
   type: 'array',
   of: [
     {
@@ -81,7 +81,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
       schemaType: schema.get('testDocument'),
     })
 
-    expect(crumbs).toEqual([{invalid: false, isArrayItem: false, title: 'String title'}])
+    expect(crumbs).toEqual([{invalid: false, isArrayItem: false, title: 'My string title'}])
   })
 
   it('should use the field name as title if no title exists', () => {
@@ -104,8 +104,8 @@ describe('comments: buildCommentBreadcrumbs', () => {
     })
 
     expect(crumbs).toEqual([
-      {invalid: false, isArrayItem: false, title: 'My object'},
-      {invalid: false, isArrayItem: false, title: 'String title'},
+      {invalid: false, isArrayItem: false, title: 'My object title'},
+      {invalid: false, isArrayItem: false, title: 'My string title'},
     ])
   })
 
@@ -144,9 +144,9 @@ describe('comments: buildCommentBreadcrumbs', () => {
     })
 
     expect(crumbs).toEqual([
-      {invalid: false, isArrayItem: false, title: 'My array'},
+      {invalid: false, isArrayItem: false, title: 'My array title'},
       {invalid: false, isArrayItem: true, title: '#2'},
-      {invalid: false, isArrayItem: false, title: 'String title'},
+      {invalid: false, isArrayItem: false, title: 'My string title'},
     ])
   })
 
@@ -172,7 +172,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     })
 
     expect(crumbs).toEqual([
-      {invalid: false, isArrayItem: false, title: 'My array'},
+      {invalid: false, isArrayItem: false, title: 'My array title'},
       {invalid: true, isArrayItem: true, title: 'Unknown array item'},
       {invalid: true, isArrayItem: false, title: 'Unknown field'},
     ])
@@ -211,11 +211,11 @@ describe('comments: buildCommentBreadcrumbs', () => {
     })
 
     expect(crumbs).toEqual([
-      {invalid: false, isArrayItem: false, title: 'My nested array'},
+      {invalid: false, isArrayItem: false, title: 'My nested array title'},
       {invalid: false, isArrayItem: true, title: '#1'},
-      {invalid: false, isArrayItem: false, title: 'My array'},
+      {invalid: false, isArrayItem: false, title: 'My array title'},
       {invalid: false, isArrayItem: true, title: '#2'},
-      {invalid: false, isArrayItem: false, title: 'String title'},
+      {invalid: false, isArrayItem: false, title: 'My string title'},
     ])
   })
 
@@ -252,9 +252,9 @@ describe('comments: buildCommentBreadcrumbs', () => {
     })
 
     expect(crumbs).toEqual([
-      {invalid: false, isArrayItem: false, title: 'My nested array'},
+      {invalid: false, isArrayItem: false, title: 'My nested array title'},
       {invalid: false, isArrayItem: true, title: '#1'},
-      {invalid: false, isArrayItem: false, title: 'My array'},
+      {invalid: false, isArrayItem: false, title: 'My array title'},
       {invalid: false, isArrayItem: true, title: '#2'},
       {invalid: true, isArrayItem: false, title: 'String With Hidden Callback'},
     ])
