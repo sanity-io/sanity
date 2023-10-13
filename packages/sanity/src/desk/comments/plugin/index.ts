@@ -1,5 +1,6 @@
 import {commentsInspector} from './inspector'
 import {CommentField} from './field'
+import {CommentsLayout} from './layout'
 import {definePlugin} from 'sanity'
 
 export const comments = definePlugin({
@@ -10,6 +11,11 @@ export const comments = definePlugin({
   form: {
     components: {
       field: CommentField,
+    },
+  },
+  studio: {
+    components: {
+      layout: CommentsLayout,
     },
   },
 })
