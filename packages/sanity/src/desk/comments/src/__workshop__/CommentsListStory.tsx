@@ -1,14 +1,34 @@
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
+import {Schema} from '@sanity/schema'
+import {uuid} from '@sanity/uuid'
+import {Container, Flex} from '@sanity/ui'
 import {CommentsList} from '../components'
-import {
-  CommentDocument,
-  CommentCreatePayload,
-  CommentEditPayload,
-  CommentStatus,
-  CommentThreadItem,
-} from '../types'
+import {CommentDocument, CommentCreatePayload, CommentEditPayload, CommentStatus} from '../types'
+import {buildCommentThreadItems} from '../utils/buildCommentThreadItems'
+import {useMentionOptions} from '../hooks'
 import {useCurrentUser} from 'sanity'
+
+const noop = () => {
+  // noop
+}
+
+const schema = Schema.compile({
+  name: 'default',
+  types: [
+    {
+      type: 'document',
+      name: 'article',
+      fields: [
+        {
+          name: 'title',
+          type: 'string',
+          title: 'My string title',
+        },
+      ],
+    },
+  ],
+})
 
 const BASE: CommentDocument = {
   _id: '1',
@@ -24,7 +44,7 @@ const BASE: CommentDocument = {
   target: {
     documentType: 'article',
     path: {
-      field: JSON.stringify([]),
+      field: 'title',
     },
     document: {
       _dataset: '1',
@@ -52,19 +72,20 @@ const BASE: CommentDocument = {
   ],
 }
 
-const PROPS: CommentThreadItem = {
-  parentComment: BASE,
-  breadcrumbs: [],
-  commentsCount: 1,
-  fieldPath: 'test',
-  replies: [],
-  threadId: '1',
+const MENTION_HOOK_OPTIONS = {
+  documentValue: {
+    _type: 'author',
+    _id: 'grrm',
+    _createdAt: '2021-05-04T14:54:37Z',
+    _rev: '1',
+    _updatedAt: '2021-05-04T14:54:37Z',
+  },
 }
 
 const STATUS_OPTIONS: Record<CommentStatus, CommentStatus> = {open: 'open', resolved: 'resolved'}
 
 export default function CommentsListStory() {
-  const [state, setState] = useState<CommentThreadItem>(PROPS)
+  const [state, setState] = useState<CommentDocument[]>([BASE])
 
   const error = useBoolean('Error', false, 'Props') || null
   const loading = useBoolean('Loading', false, 'Props') || false
@@ -73,95 +94,122 @@ export default function CommentsListStory() {
 
   const currentUser = useCurrentUser()
 
+  const mentionOptions = useMentionOptions(MENTION_HOOK_OPTIONS)
+
   const handleReplySubmit = useCallback(
+    (payload: CommentCreatePayload) => {
+      const reply: CommentDocument = {
+        ...BASE,
+        ...payload,
+        _createdAt: new Date().toISOString(),
+        _id: uuid(),
+        authorId: currentUser?.id || 'pP5s3g90N',
+        parentCommentId: payload.parentCommentId,
+      }
+
+      setState((prev) => [reply, ...prev])
+    },
+    [currentUser?.id],
+  )
+
+  const handleEdit = useCallback((id: string, payload: CommentEditPayload) => {
+    setState((prev) => {
+      return prev.map((item) => {
+        if (item._id === id) {
+          return {
+            ...item,
+            ...payload,
+            _updatedAt: new Date().toISOString(),
+          }
+        }
+
+        return item
+      })
+    })
+  }, [])
+
+  const handleDelete = useCallback(
+    (id: string) => {
+      setState((prev) => prev.filter((item) => item._id !== id))
+    },
+    [setState],
+  )
+
+  const handleNewThreadCreate = useCallback(
     (payload: CommentCreatePayload) => {
       const comment: CommentDocument = {
         ...BASE,
         ...payload,
         _createdAt: new Date().toISOString(),
-        _id: `${state.commentsCount + 1}`,
+        _id: uuid(),
         authorId: currentUser?.id || 'pP5s3g90N',
-        parentCommentId: payload.parentCommentId,
       }
 
-      setState((prev) => {
-        return {
-          ...prev,
-          replies: [...prev.replies, comment],
-        }
-      })
+      setState((prev) => [comment, ...prev])
     },
-    [currentUser?.id, state.commentsCount],
+    [currentUser?.id],
   )
 
-  const handleEdit = useCallback(
-    (id: string, payload: CommentEditPayload) => {
-      const isParentEdit = id === state.parentComment._id
-
-      if (isParentEdit) {
-        setState((prev) => {
-          return {
-            ...prev,
-            parentComment: {
-              ...prev.parentComment,
-              ...payload,
+  const handleStatusChange = useCallback(
+    (id: string, newStatus: CommentStatus) => {
+      setState((prev) => {
+        return prev.map((item) => {
+          if (item._id === id) {
+            return {
+              ...item,
+              status: newStatus,
               _updatedAt: new Date().toISOString(),
-            },
-          }
-        })
-      }
-
-      setState((prev) => {
-        return {
-          ...prev,
-          replies: prev.replies.map((item) => {
-            if (item._id === id) {
-              return {
-                ...item,
-                ...payload,
-                _updatedAt: new Date().toISOString(),
-              }
             }
+          }
 
-            return item
-          }),
-        }
-      })
-    },
-    [state.parentComment._id],
-  )
+          if (item.parentCommentId === id) {
+            return {
+              ...item,
+              status: newStatus,
+              _updatedAt: new Date().toISOString(),
+            }
+          }
 
-  const handleDelete = useCallback(
-    (id: string) => {
-      setState((prev) => {
-        return {
-          ...prev,
-          replies: prev.replies.filter((item) => item._id !== id),
-        }
+          return item
+        })
       })
     },
     [setState],
   )
 
+  const threadItems = useMemo(() => {
+    if (!currentUser || emptyState) return []
+
+    const items = buildCommentThreadItems({
+      comments: state.filter((item) => item.status === status),
+      currentUser,
+      documentValue: {},
+      schemaType: schema.get('article'),
+    })
+
+    return items
+  }, [currentUser, emptyState, state, status])
+
   if (!currentUser) return null
 
   return (
-    <CommentsList
-      comments={emptyState ? [] : [state]}
-      currentUser={currentUser}
-      error={error ? new Error('Something went wrong') : null}
-      loading={loading}
-      mentionOptions={{data: [], error: null, loading: false}}
-      onDelete={handleDelete}
-      onEdit={handleEdit}
-      onReply={handleReplySubmit}
-      status={status}
-      onCreateRetry={() => {
-        // ...
-      }}
-      onNewThreadCreate={() => {
-        // ...
-      }}
-    />
+    <Flex height="fill" overflow="hidden" padding={3}>
+      <Container width={1}>
+        <CommentsList
+          comments={threadItems}
+          currentUser={currentUser}
+          error={error ? new Error('Something went wrong') : null}
+          loading={loading}
+          mentionOptions={mentionOptions}
+          onCreateRetry={noop}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+          onNewThreadCreate={handleNewThreadCreate}
+          onReply={handleReplySubmit}
+          onStatusChange={handleStatusChange}
+          status={status}
+        />
+      </Container>
+    </Flex>
   )
 }
