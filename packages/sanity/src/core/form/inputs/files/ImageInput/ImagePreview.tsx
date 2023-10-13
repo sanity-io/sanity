@@ -2,6 +2,7 @@ import React, {ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Box, Card, CardTone, Heading, Text, useElementRect} from '@sanity/ui'
+import {useTranslation} from '../../../../i18n'
 import {
   MAX_DEFAULT_HEIGHT,
   RatioBox,
@@ -67,6 +68,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
     setLoaded(true)
   }, [])
 
+  const {t} = useTranslation()
   return (
     <RatioBox {...rest} ref={setRootElement} style={{height: rootHeight}} tone="transparent">
       <Card data-container tone="inherit">
@@ -91,7 +93,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
                   <HoverIcon isRejected={isRejected} readOnly={readOnly} />
                 </Heading>
               </Box>
-              <HoverText isRejected={isRejected} readOnly={readOnly} />
+              <Text size={1}>{t(getHoverTextTranslationKey({isRejected, readOnly}))}</Text>
             </>
           }
         />
@@ -110,16 +112,19 @@ function HoverIcon({isRejected, readOnly}: {isRejected: boolean; readOnly?: bool
   return <ImageIcon />
 }
 
-function HoverText({isRejected, readOnly}: {isRejected: boolean; readOnly?: boolean}) {
-  let message = 'Drop image to upload'
+function getHoverTextTranslationKey({
+  isRejected,
+  readOnly,
+}: {
+  isRejected: boolean
+  readOnly?: boolean
+}) {
   if (isRejected) {
-    message = 'Cannot upload this file here'
+    return 'inputs.files.image.drag-overlay.this-field-is-read-only'
   }
-  if (readOnly) {
-    message = 'This field is read only'
-  }
-
-  return <Text size={1}>{message}</Text>
+  return readOnly
+    ? 'inputs.files.image.drag-overlay.cannot-upload-here'
+    : 'inputs.files.image.drag-overlay.drop-to-upload-image'
 }
 
 function OverlayComponent({
