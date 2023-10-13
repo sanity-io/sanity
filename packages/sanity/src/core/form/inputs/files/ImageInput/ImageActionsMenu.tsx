@@ -11,6 +11,7 @@ import {
   useGlobalKeyDown,
 } from '@sanity/ui'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../i18n'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;
@@ -88,12 +89,16 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
     }
   }, [isMenuOpen, menuElement])
 
+  const {t} = useTranslation()
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
       {showEdit && (
-        <Tooltip content={<Text size={1}>Crop image</Text>} padding={2}>
+        <Tooltip
+          content={<Text size={1}>{t('inputs.files.image.actions-menu.crop-image-tooltip')}</Text>}
+          padding={2}
+        >
           <Button
-            aria-label="Open image edit dialog"
+            aria-label={t('inputs.files.image.actions-menu.edit-details.aria-label')}
             data-testid="options-menu-edit-details"
             icon={CropIcon}
             mode="ghost"
@@ -112,7 +117,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
         constrainSize
       >
         <Button
-          aria-label="Open image options menu"
+          aria-label={t('inputs.files.image.actions-menu.options.label')}
           data-testid="options-menu-button"
           icon={EllipsisVerticalIcon}
           mode="ghost"

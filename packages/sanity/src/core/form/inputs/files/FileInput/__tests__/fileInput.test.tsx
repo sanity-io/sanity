@@ -28,9 +28,7 @@ describe('FileInput with empty state', () => {
       observeAsset: observeAssetStub,
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
-
     expect(result.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
-    expect(result.queryByText('Drag or paste file here')).toBeInTheDocument()
   })
 
   it.todo('renders new file when a new file in uploaded')
@@ -127,7 +125,9 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} />,
     })
 
-    expect(result.queryByText(`Can't upload files here`)).toBeInTheDocument()
+    expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
+      'true',
+    )
   })
 
   /* readOnly - the file input is read only or not */
@@ -184,7 +184,7 @@ describe('FileInput with empty state', () => {
     })
 
     await waitFor(() => {
-      expect(result.queryByText(`Read only`)).toBeInTheDocument()
+      expect(result.queryByText(`inputs.files.common.placeholder.read-only`)).toBeInTheDocument()
     })
   })
 

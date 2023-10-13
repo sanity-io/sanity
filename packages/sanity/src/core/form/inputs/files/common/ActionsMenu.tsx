@@ -2,6 +2,7 @@ import React, {MouseEventHandler, useCallback} from 'react'
 
 import {UploadIcon, CopyIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
 import {Box, MenuItem, MenuDivider, Label, useToast} from '@sanity/ui'
+import {useTranslation} from '../../../../i18n'
 import {FileInputMenuItem} from './FileInputMenuItem/FileInputMenuItem'
 
 interface Props {
@@ -19,17 +20,22 @@ export function ActionsMenu(props: Props) {
   const {onUpload, onReset, readOnly, accept, directUploads, browse, downloadUrl, copyUrl} = props
 
   const {push: pushToast} = useToast()
+  const {t} = useTranslation()
 
   const handleCopyURL = useCallback(() => {
     navigator.clipboard.writeText(copyUrl || '')
-    pushToast({closable: true, status: 'success', title: 'The URL is copied to the clipboard'})
-  }, [pushToast, copyUrl])
+    pushToast({
+      closable: true,
+      status: 'success',
+      title: t('inputs.files.common.actions-menu.notification.url-copied'),
+    })
+  }, [copyUrl, pushToast, t])
 
   return (
     <>
       <Box padding={2}>
         <Label muted size={1}>
-          Replace
+          {t('inputs.files.common.actions-menu.replace.label')}
         </Label>
       </Box>
       <FileInputMenuItem
@@ -37,7 +43,7 @@ export function ActionsMenu(props: Props) {
         mode="bleed"
         onSelect={onUpload}
         accept={accept}
-        text="Upload"
+        text={t('inputs.files.common.actions-menu.upload.label')}
         data-testid="file-input-upload-button"
         disabled={readOnly || !directUploads}
         fontSize={2}
@@ -45,14 +51,27 @@ export function ActionsMenu(props: Props) {
       {browse}
 
       {(downloadUrl || copyUrl) && <MenuDivider />}
-      {downloadUrl && <MenuItem as="a" icon={DownloadIcon} text="Download" href={downloadUrl} />}
-      {copyUrl && <MenuItem icon={CopyIcon} text="Copy URL" onClick={handleCopyURL} />}
+      {downloadUrl && (
+        <MenuItem
+          as="a"
+          icon={DownloadIcon}
+          text={t('inputs.files.common.actions-menu.download.label')}
+          href={downloadUrl}
+        />
+      )}
+      {copyUrl && (
+        <MenuItem
+          icon={CopyIcon}
+          text={t('inputs.files.common.actions-menu.copy-url.label')}
+          onClick={handleCopyURL}
+        />
+      )}
 
       <MenuDivider />
       <MenuItem
         tone="critical"
         icon={ResetIcon}
-        text="Clear field"
+        text={t('inputs.files.common.actions-menu.clear-field.label')}
         onClick={onReset}
         disabled={readOnly}
         data-testid="file-input-clear"

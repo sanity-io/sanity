@@ -2,6 +2,8 @@ import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../i18n'
+import {STALE_UPLOAD_MS} from '../constants'
 
 type Props = {
   onClearStale?: () => void
@@ -12,6 +14,8 @@ const ButtonWrapper = styled(Button)`
 `
 
 export function UploadWarning({onClearStale}: Props) {
+  const {t} = useTranslation()
+
   return (
     <Card tone="caution" padding={4} border radius={2}>
       <Flex gap={4} marginBottom={4}>
@@ -22,15 +26,21 @@ export function UploadWarning({onClearStale}: Props) {
         </Box>
         <Stack space={3}>
           <Text size={1} weight="semibold">
-            Incomplete upload
+            {t('inputs.files.common.stale-upload-warning.title')}
           </Text>
           <Text size={1}>
-            An upload has made no progress in the last 6m and likely got interrupted. You can safely
-            clear the incomplete upload and try uploading again.
+            {t('inputs.files.common.stale-upload-warning.description', {
+              staleThresholdMinutes: Math.ceil(STALE_UPLOAD_MS / 1000 / 60),
+            })}
           </Text>
         </Stack>
       </Flex>
-      <ButtonWrapper icon={ResetIcon} text="Clear upload" onClick={onClearStale} mode="ghost" />
+      <ButtonWrapper
+        icon={ResetIcon}
+        text={t('inputs.files.common.stale-upload-warning.clear')}
+        onClick={onClearStale}
+        mode="ghost"
+      />
     </Card>
   )
 }
