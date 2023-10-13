@@ -15,8 +15,8 @@ import {
 } from 'sanity'
 
 const DISABLED_REASON_TITLE_KEY = {
-  NOTHING_TO_DELETE: 'action.delete.disabled.nothingToDelete',
-  NOT_READY: 'action.delete.disabled.notReady',
+  NOTHING_TO_DELETE: 'action.delete.disabled.nothing-to-delete',
+  NOT_READY: 'action.delete.disabled.not-ready',
 }
 
 /** @internal */
