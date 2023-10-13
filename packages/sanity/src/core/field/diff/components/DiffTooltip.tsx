@@ -2,7 +2,7 @@ import {Path} from '@sanity/types'
 import {Tooltip, TooltipProps, Text, Stack, Flex, Inline, Label} from '@sanity/ui'
 import React from 'react'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
-import {useTimeAgo} from '../../../hooks'
+import {useRelativeTime} from '../../../hooks'
 import {useUser} from '../../../store'
 import {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
@@ -68,7 +68,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
   const {author, timestamp} = annotation
   const [user] = useUser(author)
   const color = useAnnotationColor(annotation)
-  const timeAgo = useTimeAgo(timestamp, {minimal: true})
+  const timeAgo = useRelativeTime(timestamp, {minimal: true})
   const {t} = useTranslation()
 
   return (

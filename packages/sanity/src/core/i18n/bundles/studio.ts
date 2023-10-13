@@ -329,7 +329,7 @@ export const studioLocaleStrings = {
   'inputs.reference.action.open-in-new-tab': 'Open in new tab',
 
   /** Text for tooltip showing when a document was published, using relative time (eg "how long ago was it published?") */
-  'inputs.reference.preview.published-at-time': 'Published <TimeAgo/>',
+  'inputs.reference.preview.published-at-time': 'Published <RelativeTime/>',
 
   /** Text for tooltip indicating that a document has not yet been published */
   'inputs.reference.preview.not-published': 'Not published',
@@ -341,7 +341,7 @@ export const studioLocaleStrings = {
   'inputs.reference.preview.is-not-published-aria-label': 'Not published',
 
   /** Text for tooltip showing when a document was edited, using relative time (eg "how long ago was it edited?") */
-  'inputs.reference.preview.edited-at-time': 'Edited <TimeAgo/>',
+  'inputs.reference.preview.edited-at-time': 'Edited <RelativeTime/>',
 
   /** Text for tooltip indicating that a document has no unpublished edits */
   'inputs.reference.preview.no-unpublished-edits': 'No unpublished edits',
