@@ -12,7 +12,7 @@ import {
   useDocumentPairPermissions,
   useEditState,
   useSyncState,
-  useTimeAgo,
+  useRelativeTime,
   useTranslation,
   useValidationStatus,
 } from 'sanity'
@@ -37,7 +37,7 @@ function getDisabledReason(
 
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   const {t} = useTranslation(deskLocaleNamespace)
-  const timeSincePublished = useTimeAgo(publishedAt)
+  const timeSincePublished = useRelativeTime(publishedAt)
   return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
 }
 

@@ -111,7 +111,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.reference.action.open-in-new-tab': 'Åpne i ny fane',
 
   /** Text for tooltip showing when a document was published, using relative time (eg "how long ago was it published?") */
-  'inputs.reference.preview.published-at-time': 'Publisert <TimeAgo/>',
+  'inputs.reference.preview.published-at-time': 'Publisert <RelativeTime/>',
 
   /** Text for tooltip indicating that a document has not yet been published */
   'inputs.reference.preview.not-published': 'Ikke publisert',
@@ -123,7 +123,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.reference.preview.is-not-published-aria-label': 'Ikke publisert',
 
   /** Text for tooltip showing when a document was edited, using relative time (eg "how long ago was it edited?") */
-  'inputs.reference.preview.edited-at-time': 'Redigert <TimeAgo/>',
+  'inputs.reference.preview.edited-at-time': 'Redigert <RelativeTime/>',
 
   /** Text for tooltip indicating that a document has no unpublished edits */
   'inputs.reference.preview.no-unpublished-edits': 'Ingen upubliserte endringer',

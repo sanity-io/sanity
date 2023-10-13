@@ -5,7 +5,7 @@ import {Button, Box, Card, Flex, Stack, Label, Text, Tooltip, Grid, useToast} fr
 import {DocumentIcon, ChevronUpIcon, ChevronDownIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Asset as AssetType} from '@sanity/types'
 import {FIXME} from '../../../FIXME'
-import {useClient, useTimeAgo} from '../../../hooks'
+import {useClient, useRelativeTime} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {prettyBytes} from './prettyBytes'
 import {AssetUsageDialog} from './AssetUsageDialog'
@@ -129,7 +129,7 @@ export const AssetRow = (props: RowProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const {asset, onClick, onKeyPress, onDeleteFinished, isSelected, isMobile} = props
   const {originalFilename, _id, mimeType, size, _createdAt} = asset
-  const formattedTime = useTimeAgo(_createdAt, {agoSuffix: true})
+  const formattedTime = useRelativeTime(_createdAt, {useTemporalPhrase: true})
   const formattedMimeType = formatMimeType(mimeType)
   const formattedSize = prettyBytes(size)
   const showTooltip = (originalFilename || '').length > 37
