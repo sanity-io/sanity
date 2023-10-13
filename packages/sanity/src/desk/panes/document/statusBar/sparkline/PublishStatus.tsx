@@ -2,7 +2,7 @@ import {Box, Button, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
-import {useTimeAgo} from 'sanity'
+import {useRelativeTime} from 'sanity'
 
 interface PublishStatusProps {
   collapsed?: boolean
@@ -20,18 +20,30 @@ export function PublishStatus(props: PublishStatusProps) {
   const {collapsed, disabled, lastPublished, lastUpdated, liveEdit} = props
 
   // Label with abbreviations and suffix
-  const lastPublishedTimeAgo = useTimeAgo(lastPublished || '', {minimal: true, agoSuffix: true})
+  const lastPublishedTimeAgo = useRelativeTime(lastPublished || '', {
+    minimal: true,
+    useTemporalPhrase: true,
+  })
   // Label with abbreviation and no suffix
-  const lastPublishedTime = useTimeAgo(lastPublished || '', {minimal: true})
+  const lastPublishedTime = useRelativeTime(lastPublished || '', {minimal: true})
 
   // Label with abbreviations and suffix
-  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
+  const lastUpdatedTimeAgo = useRelativeTime(lastUpdated || '', {
+    minimal: true,
+    useTemporalPhrase: true,
+  })
   // Label with abbreviation and no suffix
-  const lastUpdatedTime = useTimeAgo(lastUpdated || '', {minimal: true})
+  const lastUpdatedTime = useRelativeTime(lastUpdated || '', {minimal: true})
 
   // Accessible labels without abbreviations or suffixes
-  const a11yUpdatedAgo = useTimeAgo(lastUpdated || '', {minimal: false, agoSuffix: true})
-  const a11yPublishedAgo = useTimeAgo(lastPublished || '', {minimal: false, agoSuffix: true})
+  const a11yUpdatedAgo = useRelativeTime(lastUpdated || '', {
+    minimal: false,
+    useTemporalPhrase: true,
+  })
+  const a11yPublishedAgo = useRelativeTime(lastPublished || '', {
+    minimal: false,
+    useTemporalPhrase: true,
+  })
   const a11yLabel = liveEdit
     ? `Last updated ${a11yUpdatedAgo}`
     : `Last published ${a11yPublishedAgo}`
