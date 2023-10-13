@@ -51,22 +51,22 @@ describe('useTimeAgo', () => {
       expect(result.current).toBe('Jun 3, 2022')
     })
 
-    it('outputs eg "3w" if less than a month apart', () => {
+    it('outputs eg "3 wks" if less than a month apart', () => {
       const date = new Date('2023-07-03T12:00:00Z')
       const relativeTo = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(() => useTimeAgo(date, {timeZone, relativeTo, minimal}), {
         wrapper,
       })
-      expect(result.current).toBe('3w')
+      expect(result.current).toBe('3 wks')
     })
 
-    it('outputs eg "5d" if less than a week apart', () => {
+    it('outputs eg "5 days" if less than a week apart', () => {
       const date = new Date('2023-07-20T12:00:00Z')
       const relativeTo = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(() => useTimeAgo(date, {timeZone, relativeTo, minimal}), {
         wrapper,
       })
-      expect(result.current).toBe('5d')
+      expect(result.current).toBe('5 days')
     })
 
     it('outputs "yesterday" if one day apart, and in the past', () => {
@@ -87,31 +87,31 @@ describe('useTimeAgo', () => {
       expect(result.current).toBe('tomorrow')
     })
 
-    it('outputs eg "5h" if hours apart', () => {
+    it('outputs eg "5 hr" if hours apart', () => {
       const date = new Date('2023-07-25T07:00:00Z')
       const relativeTo = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(() => useTimeAgo(date, {timeZone, relativeTo, minimal}), {
         wrapper,
       })
-      expect(result.current).toBe('5h')
+      expect(result.current).toBe('5 hr')
     })
 
-    it('outputs eg "5m" if minutes apart', () => {
+    it('outputs eg "5 min" if minutes apart', () => {
       const date = new Date('2023-07-25T12:00:00Z')
       const relativeTo = new Date('2023-07-25T12:05:00Z')
       const {result} = renderHook(() => useTimeAgo(date, {timeZone, relativeTo, minimal}), {
         wrapper,
       })
-      expect(result.current).toBe('5m')
+      expect(result.current).toBe('5 min')
     })
 
-    it('outputs eg "20s" if seconds apart (and more than 10)', () => {
+    it('outputs eg "20 sec" if seconds apart (and more than 10)', () => {
       const date = new Date('2023-07-25T12:00:00Z')
       const relativeTo = new Date('2023-07-25T12:00:20Z')
       const {result} = renderHook(() => useTimeAgo(date, {timeZone, relativeTo, minimal}), {
         wrapper,
       })
-      expect(result.current).toBe('20s')
+      expect(result.current).toBe('20 sec')
     })
 
     it('outputs "just now" if less than 10 seconds ago', () => {
@@ -143,44 +143,44 @@ describe('useTimeAgo', () => {
       expect(result.current).toBe('Jun 3, 2022')
     })
 
-    it('outputs eg "3w ago" if less than a month apart, and in the past', () => {
+    it('outputs eg "3 wk. ago" if less than a month apart, and in the past', () => {
       const date = new Date('2023-07-03T12:00:00Z')
       const relativeTo = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('3w ago')
+      expect(result.current).toBe('3 wk. ago')
     })
 
-    it('outputs eg "in 3w" if less than a month apart, and in the future', () => {
+    it('outputs eg "in 3 wk." if less than a month apart, and in the future', () => {
       const relativeTo = new Date('2023-07-03T12:00:00Z')
       const date = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('in 3w')
+      expect(result.current).toBe('in 3 wk.')
     })
 
-    it('outputs eg "5d ago" if less than a week apart, and in the past', () => {
+    it('outputs eg "5 days ago" if less than a week apart, and in the past', () => {
       const date = new Date('2023-07-20T12:00:00Z')
       const relativeTo = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('5d ago')
+      expect(result.current).toBe('5 days ago')
     })
 
-    it('outputs eg "in 5d" if less than a week apart, and in the future', () => {
+    it('outputs eg "in 5 days" if less than a week apart, and in the future', () => {
       const relativeTo = new Date('2023-07-20T12:00:00Z')
       const date = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('in 5d')
+      expect(result.current).toBe('in 5 days')
     })
 
     it('outputs "yesterday" if one day apart, and in the past', () => {
@@ -203,64 +203,64 @@ describe('useTimeAgo', () => {
       expect(result.current).toBe('tomorrow')
     })
 
-    it('outputs eg "5h ago" if hours apart, and in the past', () => {
+    it('outputs eg "5 hr. ago" if hours apart, and in the past', () => {
       const date = new Date('2023-07-25T07:00:00Z')
       const relativeTo = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('5h ago')
+      expect(result.current).toBe('5 hr. ago')
     })
 
-    it('outputs eg "in 5h" if hours apart, and in the future', () => {
+    it('outputs eg "in 5 hr." if hours apart, and in the future', () => {
       const relativeTo = new Date('2023-07-25T07:00:00Z')
       const date = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('in 5h')
+      expect(result.current).toBe('in 5 hr.')
     })
 
-    it('outputs eg "5m ago" if minutes apart, and in the past', () => {
+    it('outputs eg "5 min. ago" if minutes apart, and in the past', () => {
       const date = new Date('2023-07-25T12:00:00Z')
       const relativeTo = new Date('2023-07-25T12:05:00Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('5m ago')
+      expect(result.current).toBe('5 min. ago')
     })
 
-    it('outputs eg "in 5m" if minutes apart, and in the future', () => {
+    it('outputs eg "in 5 min." if minutes apart, and in the future', () => {
       const relativeTo = new Date('2023-07-25T12:00:00Z')
       const date = new Date('2023-07-25T12:05:00Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('in 5m')
+      expect(result.current).toBe('in 5 min.')
     })
 
-    it('outputs eg "20s ago" if more than 10 seconds apart, and in the past', () => {
+    it('outputs eg "20 sec. ago" if more than 10 seconds apart, and in the past', () => {
       const date = new Date('2023-07-25T12:00:00Z')
       const relativeTo = new Date('2023-07-25T12:00:20Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('20s ago')
+      expect(result.current).toBe('20 sec. ago')
     })
 
-    it('outputs eg "in 20s" if more than 10 seconds apart, and in the future', () => {
+    it('outputs eg "in 20 sec." if more than 10 seconds apart, and in the future', () => {
       const relativeTo = new Date('2023-07-25T12:00:00Z')
       const date = new Date('2023-07-25T12:00:20Z')
       const {result} = renderHook(
         () => useTimeAgo(date, {timeZone, relativeTo, minimal, agoSuffix: true}),
         {wrapper},
       )
-      expect(result.current).toBe('in 20s')
+      expect(result.current).toBe('in 20 sec.')
     })
 
     it('outputs "just now" if less than 10 seconds ago', () => {
@@ -405,22 +405,22 @@ describe('useTimeAgo', () => {
       expect(result.current).toBe('in 3 weeks')
     })
 
-    it('outputs eg "1 week ago" if less than a month apart, and in the past', () => {
+    it('outputs eg "last week" if diff is a week, and in the past', () => {
       const date = new Date('2023-07-17T12:00:00Z')
       const relativeTo = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(() => useTimeAgo(date, {timeZone, relativeTo, agoSuffix: true}), {
         wrapper,
       })
-      expect(result.current).toBe('1 week ago')
+      expect(result.current).toBe('last week')
     })
 
-    it('outputs eg "in 1 week" if less than a month apart, and in the future', () => {
+    it('outputs eg "next week" if diff is a week, and in the future', () => {
       const relativeTo = new Date('2023-07-17T12:00:00Z')
       const date = new Date('2023-07-25T12:00:00Z')
       const {result} = renderHook(() => useTimeAgo(date, {timeZone, relativeTo, agoSuffix: true}), {
         wrapper,
       })
-      expect(result.current).toBe('in 1 week')
+      expect(result.current).toBe('next week')
     })
 
     it('outputs eg "5 days ago" if less than a week apart, and in the past', () => {
