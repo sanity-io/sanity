@@ -1,6 +1,7 @@
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import React, {useCallback, useState} from 'react'
+import {deskLocaleNamespace} from '../i18n'
 import {useRouter} from 'sanity/router'
 import {
   DocumentActionComponent,
@@ -8,10 +9,12 @@ import {
   useDocumentPairPermissions,
   useDocumentOperation,
   useCurrentUser,
+  useTranslation,
 } from 'sanity'
 
-const DISABLED_REASON_TITLE = {
-  NOTHING_TO_DUPLICATE: 'This document doesn’t yet exist so there‘s nothing to duplicate',
+const DISABLED_REASON_KEY = {
+  NOTHING_TO_DUPLICATE: 'action.duplicate.disabled.nothingToDuplicate',
+  NOT_READY: 'action.duplicate.disabled.notReady',
 }
 
 /** @internal */
@@ -24,6 +27,8 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
     type,
     permission: 'duplicate',
   })
+
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const currentUser = useCurrentUser()
 
@@ -40,7 +45,7 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
     return {
       icon: CopyIcon,
       disabled: true,
-      label: 'Duplicate',
+      label: t('action.duplicate.label'),
       title: (
         <InsufficientPermissionsMessage
           operationLabel="duplicate this document"
@@ -53,11 +58,8 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
   return {
     icon: CopyIcon,
     disabled: isDuplicating || Boolean(duplicate.disabled) || isPermissionsLoading,
-    label: isDuplicating ? 'Duplicating…' : 'Duplicate',
-    title:
-      (duplicate.disabled &&
-        DISABLED_REASON_TITLE[duplicate.disabled as keyof typeof DISABLED_REASON_TITLE]) ||
-      '',
+    label: isDuplicating ? t('action.duplicate.running.label') : t('action.duplicate.label'),
+    title: duplicate.disabled ? t(DISABLED_REASON_KEY[duplicate.disabled]) : '',
     onHandle: handle,
   }
 }
