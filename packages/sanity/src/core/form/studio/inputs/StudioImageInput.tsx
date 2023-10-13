@@ -8,6 +8,7 @@ import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploa
 import {FileLike} from '../uploads/types'
 import {useDocumentPreviewStore} from '../../../store'
 import {useClient} from '../../../hooks'
+import {useTranslation} from '../../../i18n'
 import {observeImageAsset} from './client-adapters/assets'
 
 /**
@@ -57,9 +58,11 @@ export function StudioImageInput(props: ImageInputProps) {
     [documentPreviewStore],
   )
 
+  const {t} = useTranslation()
   return (
     <BaseImageInput
       {...props}
+      t={t}
       client={client}
       assetSources={assetSources}
       directUploads={supportsImageUploads}

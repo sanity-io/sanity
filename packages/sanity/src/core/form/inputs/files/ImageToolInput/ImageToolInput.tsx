@@ -9,6 +9,7 @@ import type {ObjectInputProps} from '../../../types'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../../util'
+import {useTranslation} from '../../../../i18n'
 import {ImageTool, HotspotImage, DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool'
 import {useLoadImage} from './useLoadImage'
 
@@ -108,11 +109,12 @@ export function ImageToolInput(props: ImageToolInputProps) {
     [onChange, readOnly, schemaType.fields],
   )
 
+  const {t} = useTranslation()
   return (
     <FormField
-      title="Hotspot &amp; crop"
+      title={t('inputs.files.imagetool.field.title')}
       level={level}
-      description="Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible."
+      description={t('inputs.files.imagetool.field.description')}
       __unstable_presence={presence}
     >
       <div>

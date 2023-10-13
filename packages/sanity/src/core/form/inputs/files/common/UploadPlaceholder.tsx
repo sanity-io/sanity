@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import {UploadIcon} from '@sanity/icons'
 import {Flex, useElementSize} from '@sanity/ui'
 import {FileLike} from '../../../studio/uploads/types'
+import {useTranslation} from '../../../../i18n'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 import {PlaceholderText} from './PlaceholderText'
 
