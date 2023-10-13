@@ -18,10 +18,10 @@ import {
 } from 'sanity'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, DeskLocaleResourceKeys> = {
-  LIVE_EDIT_ENABLED: 'action.publish.liveEdit.publishDisabled',
-  ALREADY_PUBLISHED: 'action.publish.alreadyPublished.noTimeAgo.tooltip',
-  NO_CHANGES: 'action.publish.tooltip.noChanges',
-  NOT_READY: 'action.publish.disabled.notReady',
+  LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
+  ALREADY_PUBLISHED: 'action.publish.already-published.no-time-ago.tooltip',
+  NO_CHANGES: 'action.publish.tooltip.no-changes',
+  NOT_READY: 'action.publish.disabled.not-ready',
 } as const
 
 function getDisabledReason(
@@ -143,8 +143,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
   if (liveEdit) {
     return {
       tone: 'positive',
-      label: t('action.publish.liveEdit.label'),
-      title: t('action.publish.liveEdit.tooltip'),
+      label: t('action.publish.live-edit.label'),
+      title: t('action.publish.live-edit.tooltip'),
       disabled: true,
     }
   }

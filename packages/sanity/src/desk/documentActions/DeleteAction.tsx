@@ -3,17 +3,20 @@
 import {TrashIcon} from '@sanity/icons'
 import React, {useCallback, useState} from 'react'
 import {ConfirmDeleteDialog} from '../components'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
+import {deskLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  useTranslation,
 } from 'sanity'
-import {useDocumentPane} from '../panes/document/useDocumentPane'
 
-const DISABLED_REASON_TITLE = {
-  NOTHING_TO_DELETE: 'This document doesn’t yet exist or is already deleted',
+const DISABLED_REASON_TITLE_KEY = {
+  NOTHING_TO_DELETE: 'action.delete.disabled.nothingToDelete',
+  NOT_READY: 'action.delete.disabled.notReady',
 }
 
 /** @internal */
@@ -22,6 +25,8 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   const {delete: deleteOp} = useDocumentOperation(id, type)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
+
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
@@ -53,7 +58,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
       tone: 'critical',
       icon: TrashIcon,
       disabled: true,
-      label: 'Delete',
+      label: t('action.delete.label'),
       title: (
         <InsufficientPermissionsMessage
           operationLabel="delete this document"
@@ -67,11 +72,8 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
     tone: 'critical',
     icon: TrashIcon,
     disabled: isDeleting || Boolean(deleteOp.disabled) || isPermissionsLoading,
-    title:
-      (deleteOp.disabled &&
-        DISABLED_REASON_TITLE[deleteOp.disabled as keyof typeof DISABLED_REASON_TITLE]) ||
-      '',
-    label: isDeleting ? 'Deleting…' : 'Delete',
+    title: (deleteOp.disabled && t(DISABLED_REASON_TITLE_KEY[deleteOp.disabled])) || '',
+    label: isDeleting ? t('action.delete.running.label') : t('action.delete.label'),
     shortcut: 'Ctrl+Alt+D',
     onHandle: handle,
     dialog: isConfirmDialogOpen && {
