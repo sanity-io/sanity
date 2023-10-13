@@ -2,7 +2,7 @@
 import React from 'react'
 import {useString} from '@sanity/ui-workshop'
 import {CommentsList} from '../components'
-import {CommentsProvider} from '../context'
+import {CommentsProvider, CommentsSetupProvider} from '../context'
 import {useComments} from '../hooks'
 import {useCurrentUser} from 'sanity'
 
@@ -11,9 +11,11 @@ export default function CommentsProviderStory() {
   const _id = useString('_id', 'grrm') || 'grrm'
 
   return (
-    <CommentsProvider documentType={_type} documentId={_id}>
-      <Inner />
-    </CommentsProvider>
+    <CommentsSetupProvider>
+      <CommentsProvider documentType={_type} documentId={_id}>
+        <Inner />
+      </CommentsProvider>
+    </CommentsSetupProvider>
   )
 }
 
