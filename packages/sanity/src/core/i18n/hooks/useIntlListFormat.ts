@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {intlCache} from '../intlCache'
 import {useCurrentLocale} from './useLocale'
 
 /**
@@ -33,13 +33,7 @@ export interface UseIntlListFormatOptions {
  * @returns Instance of `Intl.ListFormat`
  * @public
  */
-export function useIntlListFormat(options?: UseIntlListFormatOptions): Intl.ListFormat {
+export function useIntlListFormat(options: UseIntlListFormatOptions = {}): Intl.ListFormat {
   const currentLocale = useCurrentLocale()
-
-  // @todo Consider memoizing this "globally", since these can be a little costly to create,
-  // and the limited set of options makes them highly reusable
-  return useMemo(
-    () => new Intl.ListFormat(currentLocale, {style: options?.style, type: options?.type}),
-    [currentLocale, options?.style, options?.type],
-  )
+  return intlCache.listFormat(currentLocale, options)
 }
