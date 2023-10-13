@@ -10,64 +10,6 @@ export const studioLocaleStrings = {
   /* Relative time, just now */
   'relative-time.just-now': 'just now',
 
-  /* Relative time, granularity: weeks */
-  'relative-time.weeks': '{{count}} weeks',
-  'relative-time.weeks_one': '{{count}} week',
-  'relative-time.weeks_past': '{{count}} weeks ago',
-  'relative-time.weeks_past_one': '{{count}} week ago',
-  'relative-time.weeks_future': 'in {{count}} weeks',
-  'relative-time.weeks_future_one': 'in {{count}} week',
-  'relative-time.weeks.minimal': '{{count}}w',
-  'relative-time.weeks.minimal_past': '{{count}}w ago',
-  'relative-time.weeks.minimal_future': 'in {{count}}w',
-
-  /* Relative time, granularity: days */
-  'relative-time.days': '{{count}} days',
-  'relative-time.days_past': '{{count}} days ago',
-  'relative-time.days_future': 'in {{count}} days',
-  'relative-time.days_yesterday': 'yesterday',
-  'relative-time.days_tomorrow': 'tomorrow',
-  'relative-time.days.minimal': '{{count}}d',
-  'relative-time.days.minimal_yesterday': 'yesterday',
-  'relative-time.days.minimal_tomorrow': 'tomorrow',
-  'relative-time.days.minimal_past_one': 'yesterday',
-  'relative-time.days.minimal_future_one': 'tomorrow',
-  'relative-time.days.minimal_past': '{{count}}d ago',
-  'relative-time.days.minimal_future': 'in {{count}}d',
-
-  /* Relative time, granularity: hours */
-  'relative-time.hours': '{{count}} hours',
-  'relative-time.hours_one': '{{count}} hour',
-  'relative-time.hours_past': '{{count}} hours ago',
-  'relative-time.hours_past_one': '{{count}} hour ago',
-  'relative-time.hours_future': 'in {{count}} hours',
-  'relative-time.hours_future_one': 'in 1 hour',
-  'relative-time.hours.minimal': '{{count}}h',
-  'relative-time.hours.minimal_past': '{{count}}h ago',
-  'relative-time.hours.minimal_future': 'in {{count}}h',
-
-  /* Relative time, granularity: minutes */
-  'relative-time.minutes': '{{count}} minutes',
-  'relative-time.minutes_one': '{{count}} minute',
-  'relative-time.minutes_past': '{{count}} minutes ago',
-  'relative-time.minutes_past_one': '{{count}} minute ago',
-  'relative-time.minutes_future': 'in {{count}} minutes',
-  'relative-time.minutes_future_one': 'in {{count}} minute',
-  'relative-time.minutes.minimal': '{{count}}m',
-  'relative-time.minutes.minimal_past': '{{count}}m ago',
-  'relative-time.minutes.minimal_future': 'in {{count}}m',
-
-  /* Relative time, granularity: seconds */
-  'relative-time.seconds': '{{count}} seconds',
-  'relative-time.seconds_one': '{{count}} second',
-  'relative-time.seconds_past': '{{count}} seconds ago',
-  'relative-time.seconds_past_one': '{{count}} second ago',
-  'relative-time.seconds_future': 'in {{count}} seconds',
-  'relative-time.seconds_future_one': 'in {{count}} second',
-  'relative-time.seconds.minimal': '{{count}}s',
-  'relative-time.seconds.minimal_past': '{{count}}s ago',
-  'relative-time.seconds.minimal_future': 'in {{count}}s',
-
   /** --- Review Changes --- */
 
   /** Title for the Review Changes pane */
