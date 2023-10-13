@@ -209,6 +209,111 @@ export const studioLocaleStrings = {
   'inputs.datetime.calendar.weekday-names.short.saturday': 'Sat',
   'inputs.datetime.calendar.weekday-names.short.sunday': 'Sun',
 
+  /** --- File (Image, File and ImageTool) Inputs --- */
+
+  /** Open image edit dialog */
+  'inputs.files.image.actions-menu.edit-details.label': 'Open image edit dialog',
+
+  /** Open image options menu */
+  'inputs.files.image.actions-menu.options.label': 'Open image options menu',
+
+  /** The upload could not be completed at this time. */
+  'inputs.files.image.upload-error.description': 'The upload could not be completed at this time.',
+
+  /** Upload failed */
+  'inputs.files.image.upload-error.title': 'Upload failed',
+
+  /** Edit hotspot and crop */
+  'inputs.files.image.hotspot-dialog.title': 'Edit hotspot and crop',
+
+  /** Preview of uploaded image */
+  'inputs.files.image.preview-uploaded-image': 'Preview of uploaded image',
+
+  /** Cannot upload this file here */
+  'inputs.files.image.drag-overlay.cannot-upload-here': 'Cannot upload this file here',
+
+  /** This field is read only */
+  'inputs.files.image.drag-overlay.this-field-is-read-only': 'This field is read only',
+
+  /** Drop image to upload */
+  'inputs.files.image.drag-overlay.drop-to-upload-image': 'Drop image to upload',
+
+  /** Invalid image value */
+  'inputs.files.image.invalid-image-warning.title': 'Invalid image value',
+
+  /** The value of this field is not a valid image. Resetting this field will let you choose a new image. */
+  'inputs.files.image.invalid-image-warning.description':
+    'The value of this field is not a valid image. Resetting this field will let you choose a new image.',
+
+  /** The URL is copied to the clipboard */
+  'inputs.files.common.actions-menu.notification.url-copied': 'The URL is copied to the clipboard',
+
+  /** Replace */
+  'inputs.files.common.actions-menu.replace.label': 'Replace',
+
+  /** Upload */
+  'inputs.files.common.actions-menu.upload.label': 'Upload',
+
+  /** Download */
+  'inputs.files.common.actions-menu.download.label': 'Download',
+
+  /** Copy URL */
+  'inputs.files.common.actions-menu.copy-url.label': 'Copy URL',
+
+  /** Clear field */
+  'inputs.files.common.actions-menu.clear-field.label': 'Clear field',
+
+  /** Can't upload files here */
+  'inputs.files.common.placeholder.upload-not-supported': "Can't upload files here",
+
+  /** Read only */
+  'inputs.files.common.placeholder.read-only': 'Read only',
+
+  /** Drop to upload image */
+  'inputs.files.common.placeholder.drop-to-upload_image': 'Drop to upload image',
+
+  /** Drop to upload file */
+  'inputs.files.common.placeholder.drop-to-upload_file': 'Drop to upload file',
+
+  /** Cannot upload `{{count}}` files */
+  'inputs.files.common.placeholder.cannot-upload-some-files_one': 'Cannot upload file',
+  'inputs.files.common.placeholder.cannot-upload-some-files_other': 'Cannot upload {{count}} files',
+
+  /** Drag or paste type here */
+  'inputs.files.common.placeholder.drag-or-paste-to-upload_file': 'Drag or paste file here',
+
+  /** Drag or paste image here */
+  'inputs.files.common.placeholder.drag-or-paste-to-upload_image': 'Drag or paste image here',
+
+  /** Drop to upload */
+  'inputs.files.common.drop-message.drop-to-upload': 'Drop to upload',
+
+  /** Drop to upload `{{count}}` file */
+  'inputs.files.common.drop-message.drop-to-upload-multi_one': 'Drop to upload {{count}} file',
+
+  /** Drop to upload `{{count}}` files */
+  'inputs.files.common.drop-message.drop-to-upload-multi_other': 'Drop to upload {{count}} files',
+
+  /** Uploading <FileName/> */
+  'input.files.common.upload-progress': 'Uploading <FileName/>',
+
+  /** Incomplete upload */
+  'inputs.files.common.stale-upload-warning.title': 'Incomplete upload',
+
+  /** An upload has made no progress for at least `{{staleThresholdMinutes}}` minutes and likely got interrupted. You can safely clear the incomplete upload and try uploading again. */
+  'inputs.files.common.stale-upload-warning.description':
+    'An upload has made no progress for at least {{staleThresholdMinutes}} minutes and likely got interrupted. You can safely clear the incomplete upload and try uploading again.',
+
+  /** Clear upload */
+  'inputs.files.common.stale-upload-warning.clear': 'Clear upload',
+
+  /** Hotspot & Crop */
+  'inputs.files.imagetool.field.title': 'Hotspot & Crop',
+
+  /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
+  'inputs.files.imagetool.field.description':
+    'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
+
   /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
   'inputs.datetime.calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
 

@@ -1,8 +1,9 @@
 import React, {useMemo} from 'react'
-import {BinaryDocumentIcon, AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
+import {AccessDeniedIcon, BinaryDocumentIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {FileLike} from '../../../studio/uploads/types'
+import {useTranslation} from '../../../../i18n'
 
 interface Props {
   readOnly?: boolean
@@ -21,6 +22,8 @@ export function PlaceholderText(props: Props) {
   const {hoveringFiles, type, readOnly, acceptedFiles, rejectedFilesCount, directUploads} = props
   const isFileType = type === 'file'
 
+  const {t} = useTranslation()
+
   const messageIcon = useMemo(() => {
     if (readOnly) {
       return <ReadOnlyIcon />
@@ -34,27 +37,27 @@ export function PlaceholderText(props: Props) {
   }, [directUploads, hoveringFiles, isFileType, readOnly, rejectedFilesCount])
 
   const messageText = useMemo(() => {
-    let message = `Drag or paste ${type} here`
-
     if (!directUploads) {
-      return `Can't upload files here`
+      return t('inputs.files.common.placeholder.upload-not-supported')
     }
 
     if (readOnly) {
-      message = 'Read only'
+      return t('inputs.files.common.placeholder.read-only')
     }
 
     if (hoveringFiles && directUploads && !readOnly) {
       if (acceptedFiles.length > 0) {
-        message = `Drop to upload ${type}`
+        return t('inputs.files.common.placeholder.drop-to-upload', {context: type})
       }
       if (rejectedFilesCount > 0) {
-        message = `Can't upload ${rejectedFilesCount} file${rejectedFilesCount > 1 ? 's' : ''} here`
+        return t('inputs.files.common.placeholder.cannot-upload-some-files', {
+          count: rejectedFilesCount,
+        })
       }
     }
 
-    return message
-  }, [acceptedFiles.length, directUploads, hoveringFiles, readOnly, rejectedFilesCount, type])
+    return t('inputs.files.common.placeholder.drag-or-paste-to-upload', {context: type})
+  }, [acceptedFiles.length, directUploads, hoveringFiles, readOnly, rejectedFilesCount, t, type])
 
   return (
     <RootFlex align="center" gap={2} justify="center">
