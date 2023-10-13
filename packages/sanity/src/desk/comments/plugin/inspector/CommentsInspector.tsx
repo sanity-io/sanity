@@ -1,5 +1,13 @@
-import {Flex} from '@sanity/ui'
-import React, {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Flex, useToast} from '@sanity/ui'
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {Path} from '@sanity/types'
 import {usePaneRouter} from '../../../components'
 import {EMPTY_PARAMS} from '../../../constants'
@@ -29,12 +37,14 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
   const [deleteError, setDeleteError] = useState<Error | null>(null)
 
+  const pushToast = useToast().push
+
   const {onPathOpen, onFocus} = useDocumentPane()
 
   const currentUser = useCurrentUser()
-  const paneRouter = usePaneRouter()
-  const params = useUnique(paneRouter.params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
-  const commentIdParamRef = useRef<string | undefined>(params?.comment)
+  const {params, createPathWithParams, setParams} = usePaneRouter()
+  const uniqueParams = useUnique(params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
+  const commentIdParamRef = useRef<string | undefined>(uniqueParams?.comment)
 
   const {comments, create, edit, mentionOptions, remove, update, status, setStatus, getComment} =
     useComments()
@@ -44,16 +54,34 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const commentsListHandleRef = useRef<CommentsListHandle>(null)
   const didScrollDown = useRef<boolean>(false)
 
-  useEffect(() => {
-    if (commentIdParamRef.current && !didScrollDown.current && !comments.loading) {
-      commentsListHandleRef.current?.scrollToComment(commentIdParamRef.current)
-      didScrollDown.current = true
-    }
+  const handleCopyLink = useCallback(
+    (id: string) => {
+      const path = createPathWithParams({
+        ...params,
+        comment: id,
+      })
 
-    return () => {
-      didScrollDown.current = false
-    }
-  }, [comments.loading])
+      const url = `${window.location.origin}${path}`
+
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          pushToast({
+            closable: true,
+            status: 'info',
+            title: 'Copied link to clipboard',
+          })
+        })
+        .catch(() => {
+          pushToast({
+            closable: true,
+            status: 'error',
+            title: 'Unable to copy link to clipboard',
+          })
+        })
+    },
+    [createPathWithParams, params, pushToast],
+  )
 
   const handleCreateRetry = useCallback(
     (id: string) => {
@@ -146,6 +174,25 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     [closeDeleteDialog, remove],
   )
 
+  useEffect(() => {
+    if (commentIdParamRef.current && !didScrollDown.current && !comments.loading) {
+      commentsListHandleRef.current?.scrollToComment(commentIdParamRef.current)
+
+      setTimeout(() => {
+        setParams({
+          ...params,
+          comment: undefined,
+        })
+
+        didScrollDown.current = true
+      })
+    }
+
+    return () => {
+      didScrollDown.current = false
+    }
+  }, [comments.loading, params, setParams])
+
   return (
     <Fragment>
       {commentToDelete && showDeleteDialog && (
@@ -168,6 +215,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
             error={comments.error}
             loading={comments.loading}
             mentionOptions={mentionOptions}
+            onCopyLink={handleCopyLink}
             onCreateRetry={handleCreateRetry}
             onDelete={onDeleteStart}
             onEdit={handleEdit}

@@ -5,6 +5,7 @@ import {
   EllipsisVerticalIcon,
   UndoIcon,
   EyeOpenIcon,
+  LinkIcon,
 } from '@sanity/icons'
 import {
   TextSkeleton,
@@ -23,6 +24,7 @@ import {
   TooltipDelayGroupProvider,
   TooltipDelayGroupProviderProps,
   MenuButtonProps,
+  MenuDivider,
 } from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {CurrentUser, Path} from '@sanity/types'
@@ -135,6 +137,7 @@ interface CommentsListItemLayoutProps {
   isParent?: boolean
   isRetrying?: boolean
   mentionOptions: MentionOptionsHookValue
+  onCopyLink?: (id: string) => void
   onCreateRetry?: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, message: CommentEditPayload) => void
@@ -154,6 +157,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     isParent,
     isRetrying,
     mentionOptions,
+    onCopyLink,
     onCreateRetry,
     onDelete,
     onEdit,
@@ -184,6 +188,10 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
 
   const displayError = hasError || isRetrying
+
+  const handleCopyLink = useCallback(() => {
+    onCopyLink?.(_id)
+  }, [_id, onCopyLink])
 
   const handleCreateRetry = useCallback(() => {
     onCreateRetry?.(_id)
@@ -248,16 +256,11 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     <TextSkeleton size={1} style={SKELETON_INLINE_STYLE} />
   )
 
-  const floatingMenuEnabled = canEdit || canDelete || isParent || onPathFocus || onStatusChange
+  const contextMenuEnabled = canEdit || canDelete || onCopyLink
+  const floatingMenuEnabled = isParent || onPathFocus || onStatusChange || contextMenuEnabled
 
   return (
-    <RootStack
-      data-comment-id={_id}
-      data-create-error={displayError ? 'true' : 'false'}
-      data-menu-open={menuOpen ? 'true' : 'false'}
-      ref={setRootElement}
-      space={4}
-    >
+    <RootStack data-menu-open={menuOpen ? 'true' : 'false'} ref={setRootElement} space={4}>
       <InnerStack space={1} data-muted={displayError}>
         <Flex align="center" gap={FLEX_GAP} flex={1}>
           {avatar}
@@ -321,7 +324,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                     </>
                   )}
 
-                  {canDelete && canEdit && (
+                  {contextMenuEnabled && (
                     <MenuButton
                       id="comment-actions-menu"
                       button={
@@ -340,17 +343,31 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                           <MenuItem
                             aria-label="Edit comment"
                             fontSize={1}
+                            hidden={!canEdit}
                             icon={EditIcon}
                             onClick={toggleEdit}
                             text="Edit comment"
                           />
+
                           <MenuItem
                             aria-label="Delete comment"
                             fontSize={1}
+                            hidden={!canDelete}
                             icon={TrashIcon}
                             onClick={handleDelete}
                             text="Delete comment"
                             tone="critical"
+                          />
+
+                          <MenuDivider hidden={!canDelete && !canEdit} />
+
+                          <MenuItem
+                            aria-label="Copy link to comment"
+                            fontSize={1}
+                            hidden={!onCopyLink}
+                            icon={LinkIcon}
+                            onClick={handleCopyLink}
+                            text="Copy link to comment"
                           />
                         </Menu>
                       }
