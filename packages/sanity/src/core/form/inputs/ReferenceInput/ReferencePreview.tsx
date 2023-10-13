@@ -2,12 +2,12 @@ import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {EditIcon, PublishIcon} from '@sanity/icons'
+import {RelativeTime} from '../../../components/RelativeTime'
 import {Translate, useTranslation} from '../../../i18n'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey, TextWithTone} from '../../../components'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {useTimeAgo} from '../../../hooks'
 import {ReferenceInfo} from './types'
 
 /**
@@ -56,16 +56,7 @@ export function ReferencePreview(props: {
   )
 
   const publishedAt = preview.published?._updatedAt
-  const timeSincePublished = useTimeAgo(publishedAt || '', {
-    minimal: true,
-    agoSuffix: true,
-  })
-
   const draftEditedAt = preview.draft?._updatedAt
-  const timeSinceEdited = useTimeAgo(draftEditedAt || '', {
-    minimal: true,
-    agoSuffix: true,
-  })
 
   return (
     <Flex align="center">
@@ -94,7 +85,11 @@ export function ReferencePreview(props: {
                         <Translate
                           t={t}
                           i18nKey="inputs.reference.preview.published-at-time"
-                          components={{TimeAgo: () => <>{timeSincePublished}</>}}
+                          components={{
+                            RelativeTime: () => (
+                              <RelativeTime time={publishedAt} useTemporalPhrase />
+                            ),
+                          }}
                         />
                       ) : (
                         <>{t('inputs.reference.preview.not-published')}</>
@@ -130,7 +125,11 @@ export function ReferencePreview(props: {
                         <Translate
                           t={t}
                           i18nKey="inputs.reference.preview.edited-at-time"
-                          components={{TimeAgo: () => <>{timeSinceEdited}</>}}
+                          components={{
+                            RelativeTime: () => (
+                              <RelativeTime time={draftEditedAt} useTemporalPhrase />
+                            ),
+                          }}
                         />
                       ) : (
                         <>{t('inputs.reference.preview.no-unpublished-edits')}</>
