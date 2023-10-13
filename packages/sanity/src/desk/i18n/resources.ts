@@ -26,7 +26,7 @@ const deskLocaleStrings = {
 
   /** Fallback tooltip for the "Publish" document action when publish is invoked for a document with live edit enabled.*/
   'action.publish.live-edit.publish-disabled':
-    'Cannot publish since liveEdit is enabled for this document type',
+    'Cannot publish since Live Edit is enabled for this document type',
 
   /** Tooltip when the "Publish" document action is disabled due to validation issues */
   'action.publish.validation-issues.tooltip':
@@ -39,7 +39,7 @@ const deskLocaleStrings = {
   'action.publish.already-published.no-time-ago.tooltip': 'Already published',
 
   /** Tooltip when publish button is disabled because there are no changes.*/
-  'action.publish.tooltip.no-changes': 'No unpublished changes',
+  'action.publish.no-changes.tooltip': 'No unpublished changes',
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
@@ -50,7 +50,7 @@ const deskLocaleStrings = {
 
   /** Tooltip when action button is disabled because the document does not exist */
   'action.delete.disabled.nothing-to-delete':
-    'This document doesn’t yet exist or is already deleted',
+    "This document doesn't yet exist or is already deleted",
 
   /** Label for the "Delete" document action button */
   'action.delete.label': 'Delete',
@@ -81,7 +81,7 @@ const deskLocaleStrings = {
 
   /** Tooltip when action is disabled because the document doesn't exist */
   'action.duplicate.disabled.nothing-to-duplicate':
-    "This document doesn't yet exist so there‘s nothing to duplicate",
+    "This document doesn't yet exist so there's nothing to duplicate",
 
   /** Label for the "Duplicate" document action */
   'action.duplicate.label': 'Duplicate',
@@ -116,6 +116,22 @@ const deskLocaleStrings = {
   /** Message prompting the user to confirm that they want to restore to an earlier version*/
   'action.restore.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to restore this document?',
+
+  /** --- REVIEW CHANGES BUTTON --- */
+  /** Label for button when status is syncing */
+  'status-bar.review-changes-button.status.syncing.text': 'Saving...',
+
+  /** Label for button when status is saved */
+  'status-bar.review-changes-button.status.saved.text': 'Saved!',
+
+  /** Primary text for tooltip for the button */
+  'status-bar.review-changes-button.tooltip.text': 'Review changes',
+
+  /** Text for the secondary text for tooltip for the button */
+  'status-bar.review-changes-button.tooltip.changes-saved': 'Changes saved',
+
+  /** Aria label for the button */
+  'status-bar.review-changes-button.aria-label': 'Review changes',
 }
 
 /**
