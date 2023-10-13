@@ -184,7 +184,7 @@ describe('FileInput with empty state', () => {
     })
 
     await waitFor(() => {
-      expect(result.queryByText(`inputs.files.common.placeholder.read-only`)).toBeInTheDocument()
+      expect(result.queryByText('Read only')).toBeInTheDocument()
     })
   })
 
