@@ -2,7 +2,7 @@ import React, {useMemo} from 'react'
 import {Box, Button, ButtonProps, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {deskLocaleNamespace} from '../../../../../i18n'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
-import {useTimeAgo, useTranslation} from 'sanity'
+import {useRelativeTime, useTranslation} from 'sanity'
 
 interface ReviewChangesButtonProps extends React.HTMLProps<HTMLButtonElement> {
   status?: 'changes' | 'saved' | 'syncing'
@@ -15,9 +15,15 @@ const ReviewButton = React.forwardRef(function ReviewButton(
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
   const {collapsed, status, lastUpdated, ...rest} = props
-  const lastUpdatedTime = useTimeAgo(lastUpdated || '', {minimal: true})
-  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
-  const a11yUpdatedAgo = useTimeAgo(lastUpdated || '', {minimal: false, agoSuffix: true})
+  const lastUpdatedTime = useRelativeTime(lastUpdated || '', {minimal: true})
+  const lastUpdatedTimeAgo = useRelativeTime(lastUpdated || '', {
+    minimal: true,
+    useTemporalPhrase: true,
+  })
+  const a11yUpdatedAgo = useRelativeTime(lastUpdated || '', {
+    minimal: false,
+    useTemporalPhrase: true,
+  })
 
   const {t} = useTranslation(deskLocaleNamespace)
 
