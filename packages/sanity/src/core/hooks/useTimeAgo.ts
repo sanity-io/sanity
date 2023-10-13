@@ -1,6 +1,4 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable complexity */
-import {useEffect, useReducer} from 'react'
+import {useCallback, useEffect, useReducer} from 'react'
 import {
   differenceInDays,
   differenceInHours,
@@ -83,9 +81,24 @@ function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): Tim
   const {t} = useTranslation()
   const currentLocale = useCurrentLocale()
 
-  const {timeZone} = opts
+  const {timeZone, minimal} = opts
   const parsedDate = date instanceof Date ? date : new Date(date)
   const withModifier = Boolean(opts.agoSuffix)
+  const format = useCallback(
+    function formatWithUnit(count: number, unit: Intl.RelativeTimeFormatUnit): string {
+      const isNextOrPrevDay = unit === 'day' && Math.abs(count) === 1
+      if (withModifier || isNextOrPrevDay) {
+        return intlCache
+          .relativeTimeFormat(currentLocale, {style: minimal ? 'short' : 'long', numeric: 'auto'})
+          .format(count, unit)
+      }
+
+      return intlCache
+        .numberFormat(currentLocale, {style: 'unit', unit, unitDisplay: minimal ? 'short' : 'long'})
+        .format(Math.abs(count))
+    },
+    [currentLocale, withModifier, minimal],
+  )
 
   // Invalid date? Return empty timestamp and `null` as refresh interval, to save us from
   // continuously trying to format an invalid date. The `useEffect` calls in the hook will
@@ -129,70 +142,42 @@ function useFormatRelativeTime(date: Date | string, opts: TimeAgoOpts = {}): Tim
     }
   }
 
-  const diffWeeks = differenceInWeeks(now, parsedDate)
-
+  const diffWeeks = differenceInWeeks(parsedDate, now)
   if (diffWeeks) {
-    const count = Math.abs(diffWeeks)
-    const context = withModifier ? (diffWeeks > 0 ? 'past' : 'future') : undefined
-    const resource = opts.minimal ? 'relative-time.weeks.minimal' : 'relative-time.weeks'
-
     return {
-      timestamp: t(resource, {count, context}),
+      timestamp: format(diffWeeks, 'week'),
       refreshInterval: ONE_HOUR,
     }
   }
 
-  const diffDays = differenceInDays(now, parsedDate)
-
+  const diffDays = differenceInDays(parsedDate, now)
   if (diffDays) {
-    const count = Math.abs(diffDays)
-    let context = withModifier ? (diffDays > 0 ? 'past' : 'future') : undefined
-    if (count === 1) {
-      context = diffDays > 0 ? 'yesterday' : 'tomorrow'
-    }
-
-    const resource = opts.minimal ? 'relative-time.days.minimal' : 'relative-time.days'
-
     return {
-      timestamp: t(resource, {count, context}),
+      timestamp: format(diffDays, 'day'),
       refreshInterval: ONE_HOUR,
     }
   }
 
-  const diffHours = differenceInHours(now, parsedDate)
-
+  const diffHours = differenceInHours(parsedDate, now)
   if (diffHours) {
-    const count = Math.abs(diffHours)
-    const context = withModifier ? (diffHours > 0 ? 'past' : 'future') : undefined
-    const resource = opts.minimal ? 'relative-time.hours.minimal' : 'relative-time.hours'
-
     return {
-      timestamp: t(resource, {count, context}),
+      timestamp: format(diffHours, 'hour'),
       refreshInterval: ONE_MINUTE,
     }
   }
 
-  const diffMins = differenceInMinutes(now, parsedDate)
-
+  const diffMins = differenceInMinutes(parsedDate, now)
   if (diffMins) {
-    const count = Math.abs(diffMins)
-    const context = withModifier ? (diffMins > 0 ? 'past' : 'future') : undefined
-    const resource = opts.minimal ? 'relative-time.minutes.minimal' : 'relative-time.minutes'
-
     return {
-      timestamp: t(resource, {count, context}),
+      timestamp: format(diffMins, 'minute'),
       refreshInterval: TWENTY_SECONDS,
     }
   }
 
-  const diffSeconds = differenceInSeconds(now, parsedDate)
+  const diffSeconds = differenceInSeconds(parsedDate, now)
   if (Math.abs(diffSeconds) > 10) {
-    const count = Math.abs(diffSeconds)
-    const context = withModifier ? (diffSeconds > 0 ? 'past' : 'future') : undefined
-    const resource = opts.minimal ? 'relative-time.seconds.minimal' : 'relative-time.seconds'
-
     return {
-      timestamp: t(resource, {count, context}),
+      timestamp: format(diffSeconds, 'second'),
       refreshInterval: FIVE_SECONDS,
     }
   }
