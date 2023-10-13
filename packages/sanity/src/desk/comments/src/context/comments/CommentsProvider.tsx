@@ -1,8 +1,15 @@
 import React, {memo, useCallback, useMemo, useState} from 'react'
 import {orderBy} from 'lodash'
 import {CommentStatus, CommentThreadItem} from '../../types'
-import {useCommentOperations, useCommentsEnabled, useMentionOptions} from '../../hooks'
-import {useCommentsStore} from '../../store'
+import {
+  CommentOperationsHookOptions,
+  MentionHookOptions,
+  useCommentOperations,
+  useCommentsEnabled,
+  useCommentsSetup,
+  useMentionOptions,
+} from '../../hooks'
+import {CommentsStoreOptions, useCommentsStore} from '../../store'
 import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
 import {CommentsContext} from './CommentsContext'
 import {CommentsContextValue} from './types'
@@ -90,6 +97,8 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
 ) {
   const {children, documentId, documentType} = props
 
+  const {client, runSetup, isRunningSetup} = useCommentsSetup()
+
   const publishedId = getPublishedId(documentId)
   const editState = useEditState(publishedId, documentType, 'low')
 
@@ -104,9 +113,20 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
     data = EMPTY_ARRAY,
     error,
     loading,
-  } = useCommentsStore(useMemo(() => ({documentId: publishedId}), [publishedId]))
+  } = useCommentsStore(
+    useMemo(
+      () =>
+        ({
+          documentId: publishedId,
+          client,
+        }) satisfies CommentsStoreOptions,
+      [client, publishedId],
+    ),
+  )
 
-  const mentionOptions = useMentionOptions(useMemo(() => ({documentValue}), [documentValue]))
+  const mentionOptions = useMentionOptions(
+    useMemo(() => ({documentValue}) satisfies MentionHookOptions, [documentValue]),
+  )
 
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
@@ -114,74 +134,102 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
 
   const {operation} = useCommentOperations(
     useMemo(
-      () => ({
-        currentUser,
-        dataset,
-        documentId: publishedId,
-        documentType,
-        projectId,
-        schemaType,
-        workspace: workspaceName,
+      () =>
+        ({
+          client,
+          currentUser,
+          dataset,
+          documentId: publishedId,
+          documentType,
+          projectId,
+          schemaType,
+          workspace: workspaceName,
 
-        // The following callbacks runs when the comment operations are executed.
-        // They are used to update the local state of the comments immediately after
-        // a comment operation has been executed. This is done to avoid waiting for
-        // the real time listener to update the comments and make the UI feel more
-        // responsive. The comment will be updated again when we receive an mutation
-        // event from the real time listener.
+          // The following callbacks runs when the comment operations are executed.
+          // They are used to update the local state of the comments immediately after
+          // a comment operation has been executed. This is done to avoid waiting for
+          // the real time listener to update the comments and make the UI feel more
+          // responsive. The comment will be updated again when we receive an mutation
+          // event from the real time listener.
+          onCreate: async (payload) => {
+            // If the comment we try to create already exists in the local state and has
+            // the 'createError' state, we know that we are retrying a comment creation.
+            // In that case, we want to change the state to 'createRetrying'.
+            const hasError =
+              data?.find((c) => c._id === payload._id)?._state?.type === 'createError'
 
-        onCreate: (payload) => {
-          // If the comment we try to create already exists in the local state and has
-          // the 'createError' state, we know that we are retrying a comment creation.
-          // In that case, we want to change the state to 'createRetrying'.
-          const hasError = data?.find((c) => c._id === payload._id)?._state?.type === 'createError'
-
-          dispatch({
-            type: 'COMMENT_ADDED',
-            payload: {
-              ...payload,
-              _state: hasError ? {type: 'createRetrying'} : undefined,
-            },
-          })
-        },
-
-        // When an error occurs during comment creation, we update the comment state
-        // to `createError`. This will make the comment appear in the UI as a comment
-        // that failed to be created. The user can then retry the comment creation.
-        onCreateError: (id, err) => {
-          dispatch({
-            type: 'COMMENT_UPDATED',
-            payload: {
-              _id: id,
-              _state: {
-                error: err,
-                type: 'createError',
+            dispatch({
+              type: 'COMMENT_ADDED',
+              payload: {
+                ...payload,
+                _state: hasError ? {type: 'createRetrying'} : undefined,
               },
-            },
-          })
-        },
+            })
 
-        onEdit: (id, payload) => {
-          dispatch({
-            type: 'COMMENT_UPDATED',
-            payload: {
-              _id: id,
-              ...payload,
-            },
-          })
-        },
+            // If we don't have a client, that means that the dataset doesn't have an addon dataset.
+            // Therefore, when the first comment is created, we need to create the addon dataset and create
+            // a client for it and then post the comment. We do this here, since we know that we have a
+            // comment to create.
+            if (!client) {
+              try {
+                await runSetup(payload)
+              } catch (err) {
+                // If we fail to create the addon dataset, we update the comment state to `createError`.
+                // This will make the comment appear in the UI as a comment that failed to be created.
+                // The user can then retry the comment creation.
+                dispatch({
+                  type: 'COMMENT_UPDATED',
+                  payload: {
+                    _id: payload._id,
+                    _state: {
+                      error: err,
+                      type: 'createError',
+                    },
+                  },
+                })
+              }
+            }
+          },
 
-        onUpdate: (id, payload) => {
-          dispatch({
-            type: 'COMMENT_UPDATED',
-            payload: {
-              _id: id,
-              ...payload,
-            },
-          })
-        },
-      }),
+          // When an error occurs during comment creation, we update the comment state
+          // to `createError`. This will make the comment appear in the UI as a comment
+          // that failed to be created. The user can then retry the comment creation.
+          onCreateError: (id, err) => {
+            dispatch({
+              type: 'COMMENT_UPDATED',
+              payload: {
+                _id: id,
+                _state: {
+                  error: err,
+                  type: 'createError',
+                },
+              },
+            })
+          },
+
+          onEdit: (id, payload) => {
+            dispatch({
+              type: 'COMMENT_UPDATED',
+              payload: {
+                _id: id,
+                ...payload,
+              },
+            })
+          },
+
+          onUpdate: (id, payload) => {
+            dispatch({
+              type: 'COMMENT_UPDATED',
+              payload: {
+                _id: id,
+                ...payload,
+              },
+            })
+          },
+        }) satisfies CommentOperationsHookOptions,
       [
+        client,
+        runSetup,
         currentUser,
         data,
         dataset,
@@ -229,7 +277,7 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
         comments: {
           data: threadItemsByStatus,
           error,
-          loading,
+          loading: loading || isRunningSetup,
         },
         create: {
           execute: operation.create,
@@ -251,6 +299,7 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
       threadItemsByStatus,
       error,
       loading,
+      isRunningSetup,
       operation.create,
       operation.remove,
       operation.edit,
