@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {Avatar, AvatarProps} from '@sanity/ui'
 import {User} from '@sanity/types'
@@ -29,13 +29,16 @@ interface CommentsAvatarProps extends AvatarProps {
 export function CommentsAvatar(props: CommentsAvatarProps) {
   const {user: userProp, ...restProps} = props
   const user = userProp as User
-  const initials = nameToInitials(user?.displayName || '')
+  const initials = useMemo(() => nameToInitials(user?.displayName || ''), [user?.displayName])
 
-  const avatar = user ? (
-    <StyledAvatar src={user?.imageUrl} initials={initials} {...restProps} />
-  ) : (
-    <StyledAvatar {...restProps} />
+  if (!user) return <StyledAvatar {...restProps} />
+
+  return (
+    <StyledAvatar
+      initials={initials}
+      src={user?.imageUrl}
+      title={user?.displayName}
+      {...restProps}
+    />
   )
-
-  return avatar
 }

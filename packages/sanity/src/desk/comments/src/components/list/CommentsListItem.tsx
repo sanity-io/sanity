@@ -46,6 +46,7 @@ interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
   mentionOptions: MentionOptionsHookValue
+  onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
@@ -61,6 +62,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     canReply,
     currentUser,
     mentionOptions,
+    onCopyLink,
     onCreateRetry,
     onDelete,
     onEdit,
@@ -141,12 +143,12 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       <StyledThreadCard>
         <Stack
           as="ul"
-          // We add some extra padding to the bottom of the thread root if the thread is resolved
-          // since the reply input is hidden in that case.
-          paddingBottom={parentComment.status === 'resolved' ? 1 : undefined}
+          // Add some extra padding to the bottom if there is no reply input.
+          // This is to make the UI look more balanced.
+          paddingBottom={canReply ? undefined : 1}
           space={4}
         >
-          <Stack as="li">
+          <Stack as="li" data-comment-id={parentComment._id}>
             <CommentsListItemLayout
               canDelete={parentComment.authorId === currentUser.id}
               canEdit={parentComment.authorId === currentUser.id}
@@ -156,6 +158,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               isParent
               isRetrying={parentComment._state?.type === 'createRetrying'}
               mentionOptions={mentionOptions}
+              onCopyLink={onCopyLink}
               onCreateRetry={onCreateRetry}
               onDelete={onDelete}
               onEdit={onEdit}
@@ -181,7 +184,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
           )}
 
           {splicedReplies.map((reply) => (
-            <Stack as="li" key={reply._id}>
+            <Stack as="li" key={reply._id} data-comment-id={reply._id}>
               <CommentsListItemLayout
                 canDelete={reply.authorId === currentUser.id}
                 canEdit={reply.authorId === currentUser.id}
@@ -190,6 +193,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
                 hasError={reply._state?.type === 'createError'}
                 isRetrying={reply._state?.type === 'createRetrying'}
                 mentionOptions={mentionOptions}
+                onCopyLink={onCopyLink}
                 onCreateRetry={onCreateRetry}
                 onDelete={onDelete}
                 onEdit={onEdit}
