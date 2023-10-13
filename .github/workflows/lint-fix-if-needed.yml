@@ -20,7 +20,7 @@ jobs:
     # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` thus we need an if check
     if: ${{ github.ref_name == 'next' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
@@ -45,7 +45,7 @@ jobs:
           path: .eslintcache
           key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
       - run: "yarn lint:fix --rule 'prettier/prettier: [off]'"
-      - uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1
+      - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2
         # Run even if `yarn lint:fix` fails
         if: always()
         id: generate-token

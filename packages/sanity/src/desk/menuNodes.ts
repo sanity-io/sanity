@@ -2,8 +2,7 @@
 
 import {negate} from 'lodash'
 import {_PaneMenuGroup, _PaneMenuItem, _PaneMenuNode} from './components/pane/types'
-import {PaneMenuItem, PaneMenuItemGroup} from './types'
-import {DocumentFieldActionNode} from 'sanity'
+import {PaneMenuItem, PaneMenuItemGroup, DocumentFieldMenuActionNode} from './types'
 
 export function isMenuNodeButton(node: _PaneMenuNode): node is _PaneMenuItem | _PaneMenuGroup {
   return (node.type === 'item' || node.type === 'group') && node.renderAsButton
@@ -13,7 +12,7 @@ export const isNotMenuNodeButton = negate(isMenuNodeButton)
 
 export function resolveMenuNodes(params: {
   actionHandler: (item: PaneMenuItem) => void
-  fieldActions?: DocumentFieldActionNode[]
+  fieldActions?: DocumentFieldMenuActionNode[]
   menuItems: PaneMenuItem[]
   menuItemGroups: PaneMenuItemGroup[]
 }): _PaneMenuNode[] {
@@ -102,7 +101,7 @@ export function resolveMenuNodes(params: {
   return [...ungroupedItems, ...groups, ...nodes]
 }
 
-function mapFieldActionToPaneMenuNode(a: DocumentFieldActionNode, key: string): _PaneMenuNode {
+function mapFieldActionToPaneMenuNode(a: DocumentFieldMenuActionNode, key: string): _PaneMenuNode {
   if (a.type === 'divider') {
     return {
       type: 'divider',
@@ -129,7 +128,7 @@ function mapFieldActionToPaneMenuNode(a: DocumentFieldActionNode, key: string): 
   return {
     type: 'item',
     key,
-
+    intent: a.intent,
     disabled: a.disabled,
     icon: a.icon,
     iconRight: a.iconRight,

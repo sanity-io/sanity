@@ -10,7 +10,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     if: github.event_name == 'deployment_status' && github.event.deployment.environment == 'production' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: 18

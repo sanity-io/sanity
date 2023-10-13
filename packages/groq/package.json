@@ -1,6 +1,6 @@
 {
   "name": "groq",
-  "version": "3.16.7",
+  "version": "3.18.0",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "keywords": [
     "sanity",
@@ -59,7 +59,7 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "engines": {
-    "node": ">=14.18.0"
+    "node": ">=18"
   },
   "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
 }

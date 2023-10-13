@@ -1,6 +1,6 @@
 import React, {MouseEventHandler, useCallback} from 'react'
 
-import {UploadIcon, ClipboardIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
+import {UploadIcon, CopyIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
 import {Box, MenuItem, MenuDivider, Label, useToast} from '@sanity/ui'
 import {FileInputMenuItem} from './FileInputMenuItem/FileInputMenuItem'
 
@@ -46,7 +46,7 @@ export function ActionsMenu(props: Props) {
 
       {(downloadUrl || copyUrl) && <MenuDivider />}
       {downloadUrl && <MenuItem as="a" icon={DownloadIcon} text="Download" href={downloadUrl} />}
-      {copyUrl && <MenuItem icon={ClipboardIcon} text="Copy URL" onClick={handleCopyURL} />}
+      {copyUrl && <MenuItem icon={CopyIcon} text="Copy URL" onClick={handleCopyURL} />}
 
       <MenuDivider />
       <MenuItem
