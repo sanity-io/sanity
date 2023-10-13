@@ -1,7 +1,6 @@
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useState} from 'react'
-import {Container, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
 import {CurrentUser, Path} from '@sanity/types'
-import * as PathUtils from '@sanity/util/paths'
 import {
   CommentCreatePayload,
   CommentEditPayload,
@@ -11,12 +10,12 @@ import {
 } from '../../types'
 import {CommentsListItem} from './CommentsListItem'
 import {CommentThreadLayout} from './CommentThreadLayout'
-import {EMPTY_STATE_MESSAGES} from './constants'
+import {CommentsListStatus} from './CommentsListStatus'
 
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
   behavior: 'smooth',
-  block: 'center',
-  inline: 'center',
+  block: 'start',
+  inline: 'nearest',
 }
 
 interface GroupedComments {
@@ -47,6 +46,7 @@ export interface CommentsListProps {
   error: Error | null
   loading: boolean
   mentionOptions: MentionOptionsHookValue
+  onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
@@ -73,6 +73,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       error,
       loading,
       mentionOptions,
+      onCopyLink,
       onCreateRetry,
       onDelete,
       onEdit,
@@ -86,8 +87,12 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
 
     const scrollToComment = useCallback(
       (id: string) => {
-        const commentElement = boundaryElement?.querySelector(`[data-comment-id="${id}"]`)
-        commentElement?.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
+        requestAnimationFrame(() => {
+          const commentElement = boundaryElement?.querySelector(`[data-comment-id="${id}"]`)
+          if (commentElement) {
+            commentElement.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
+          }
+        })
       },
       [boundaryElement],
     )
@@ -101,11 +106,6 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       },
       [scrollToComment],
     )
-
-    const showComments = !loading && !error && comments.length > 0
-    const showEmptyState = !loading && !error && comments.length === 0
-    const showError = error
-    const showLoading = loading && !error
 
     // We group the threads so that they can be rendered together under the
     // same breadcrumbs. This is to avoid having the same breadcrumbs repeated
@@ -132,6 +132,8 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       })
     }, [comments])
 
+    const showComments = !loading && !error && groupedThreads.length > 0
+
     return (
       <Flex
         direction="column"
@@ -141,41 +143,12 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
         ref={setBoundaryElement}
         sizing="border"
       >
-        {showEmptyState && (
-          <Flex align="center" justify="center" flex={1} sizing="border">
-            <Container width={0} padding={4}>
-              <Stack space={3}>
-                <Text align="center" size={1} muted weight="semibold">
-                  {EMPTY_STATE_MESSAGES[status].title}
-                </Text>
-                <Text align="center" size={1} muted>
-                  {EMPTY_STATE_MESSAGES[status].message}
-                </Text>
-              </Stack>
-            </Container>
-          </Flex>
-        )}
-
-        {showLoading && (
-          <Flex align="center" justify="center" flex={1} padding={4}>
-            <Flex align="center" gap={2}>
-              <Spinner muted size={1} />
-              <Text size={1} muted>
-                Loading comments...
-              </Text>
-            </Flex>
-          </Flex>
-        )}
-
-        {showError && (
-          <Flex align="center" justify="center" flex={1} padding={4}>
-            <Flex align="center">
-              <Text size={1} muted>
-                Something went wrong
-              </Text>
-            </Flex>
-          </Flex>
-        )}
+        <CommentsListStatus
+          error={error}
+          hasNoComments={groupedThreads.length === 0}
+          loading={loading}
+          status={status}
+        />
 
         {showComments && (
           <Stack
@@ -187,62 +160,63 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
             sizing="border"
             space={4}
           >
-            {/* <BoundaryElementProvider element={boundaryElement}> */}
-            {groupedThreads?.map(([fieldPath, group]) => {
-              // Since all threads in the group point to the same field, the breadcrumbs will be
-              // the same for all of them. Therefore, we can just pick the first one.
-              const breadcrumbs = group[0].breadcrumbs
+            <BoundaryElementProvider element={boundaryElement}>
+              {groupedThreads?.map(([fieldPath, group]) => {
+                // Since all threads in the group point to the same field, the breadcrumbs will be
+                // the same for all of them. Therefore, we can just pick the first one.
+                const breadcrumbs = group[0].breadcrumbs
 
-              // The thread ID is used to scroll to the thread.
-              // We pick the first thread id in the group so that we scroll to the first thread
-              // in the group.
-              const firstThreadId = group[0].threadId
+                // The thread ID is used to scroll to the thread.
+                // We pick the first thread id in the group so that we scroll to the first thread
+                // in the group.
+                const firstThreadId = group[0].threadId
 
-              return (
-                <Stack as="li" key={fieldPath} data-thread-id={firstThreadId}>
-                  <CommentThreadLayout
-                    breadcrumbs={breadcrumbs}
-                    canCreateNewThread={status === 'open'}
-                    currentUser={currentUser}
-                    key={fieldPath}
-                    mentionOptions={mentionOptions}
-                    onNewThreadCreate={onNewThreadCreate}
-                    path={PathUtils.fromString(fieldPath)}
-                  >
-                    {group.map((item) => {
-                      // The default sort order is by date, descending (newest first).
-                      // However, inside a thread, we want the order to be ascending (oldest first).
-                      // So we reverse the array here.
-                      // We use slice() to avoid mutating the original array.
-                      const replies = item.replies.slice().reverse()
+                return (
+                  <Stack as="li" key={fieldPath} data-thread-id={firstThreadId}>
+                    <CommentThreadLayout
+                      breadcrumbs={breadcrumbs}
+                      canCreateNewThread={status === 'open'}
+                      currentUser={currentUser}
+                      fieldPath={fieldPath}
+                      key={fieldPath}
+                      mentionOptions={mentionOptions}
+                      onNewThreadCreate={onNewThreadCreate}
+                    >
+                      {group.map((item) => {
+                        // The default sort order is by date, descending (newest first).
+                        // However, inside a thread, we want the order to be ascending (oldest first).
+                        // So we reverse the array here.
+                        // We use slice() to avoid mutating the original array.
+                        const replies = item.replies.slice().reverse()
 
-                      const canReply =
-                        status === 'open' &&
-                        item.parentComment._state?.type !== 'createError' &&
-                        item.parentComment._state?.type !== 'createRetrying'
+                        const canReply =
+                          status === 'open' &&
+                          item.parentComment._state?.type !== 'createError' &&
+                          item.parentComment._state?.type !== 'createRetrying'
 
-                      return (
-                        <CommentsListItem
-                          canReply={canReply}
-                          currentUser={currentUser}
-                          key={item.parentComment._id}
-                          mentionOptions={mentionOptions}
-                          onCreateRetry={onCreateRetry}
-                          onDelete={onDelete}
-                          onEdit={onEdit}
-                          onPathFocus={onPathFocus}
-                          onReply={onReply}
-                          onStatusChange={onStatusChange}
-                          parentComment={item.parentComment}
-                          replies={replies}
-                        />
-                      )
-                    })}
-                  </CommentThreadLayout>
-                </Stack>
-              )
-            })}
-            {/* </BoundaryElementProvider> */}
+                        return (
+                          <CommentsListItem
+                            canReply={canReply}
+                            currentUser={currentUser}
+                            key={item.parentComment._id}
+                            mentionOptions={mentionOptions}
+                            onCopyLink={onCopyLink}
+                            onCreateRetry={onCreateRetry}
+                            onDelete={onDelete}
+                            onEdit={onEdit}
+                            onPathFocus={onPathFocus}
+                            onReply={onReply}
+                            onStatusChange={onStatusChange}
+                            parentComment={item.parentComment}
+                            replies={replies}
+                          />
+                        )
+                      })}
+                    </CommentThreadLayout>
+                  </Stack>
+                )
+              })}
+            </BoundaryElementProvider>
           </Stack>
         )}
       </Flex>
