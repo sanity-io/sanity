@@ -221,7 +221,7 @@ module.exports = {
             paths: [
               {
                 name: '@sanity/ui',
-                importNames: ['Tooltip'],
+                importNames: ['Tooltip', 'TooltipProps'],
                 message:
                   'Please use the (more opinionated) exported components in sanity/src/ui instead.',
               },
