@@ -58,12 +58,11 @@ test.describe('Portable Text Input', () => {
   })
   test.describe('Should track focusPath', () => {
     test(`for span .text`, async ({mount, page}) => {
+      const initialPath = ['body', {_key: 'c'}, 'children', {_key: 'd'}, 'text']
       const component = await mount(
-        <FocusTrackingStory
-          document={document}
-          focusPath={['body', {_key: 'c'}, 'children', {_key: 'd'}, 'text']}
-        />,
+        <FocusTrackingStory document={document} focusPath={initialPath} />,
       )
+      await waitForFocusPath(page, initialPath)
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).toBeFocused()
@@ -72,12 +71,11 @@ test.describe('Portable Text Input', () => {
       expect(await getFocusedNodeText(page)).toEqual('Baz')
     })
     test(`for span child root`, async ({mount, page}) => {
+      const initialPath = ['body', {_key: 'c'}, 'children', {_key: 'd'}]
       const component = await mount(
-        <FocusTrackingStory
-          document={document}
-          focusPath={['body', {_key: 'c'}, 'children', {_key: 'd'}]}
-        />,
+        <FocusTrackingStory document={document} focusPath={initialPath} />,
       )
+      await waitForFocusPath(page, initialPath)
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).toBeFocused()
@@ -86,12 +84,11 @@ test.describe('Portable Text Input', () => {
       expect(await getFocusedNodeText(page)).toEqual('Baz')
     })
     test(`for inline objects with .text prop`, async ({mount, page}) => {
+      const initialPath = ['body', {_key: 'g'}, 'children', {_key: 'i'}, 'text']
       const component = await mount(
-        <FocusTrackingStory
-          document={document}
-          focusPath={['body', {_key: 'g'}, 'children', {_key: 'i'}, 'text']}
-        />,
+        <FocusTrackingStory document={document} focusPath={initialPath} />,
       )
+      await waitForFocusPath(page, initialPath)
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
@@ -101,9 +98,11 @@ test.describe('Portable Text Input', () => {
       await expect($pteTextbox).toBeFocused()
     })
     test(`for object blocks with .text prop`, async ({mount, page}) => {
+      const initialPath = ['body', {_key: 'k'}, 'text']
       const component = await mount(
-        <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}, 'text']} />,
+        <FocusTrackingStory document={document} focusPath={initialPath} />,
       )
+      await waitForFocusPath(page, initialPath)
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
@@ -111,9 +110,11 @@ test.describe('Portable Text Input', () => {
       await expect(blockObjectInput).toBeFocused()
     })
     test(`for block paths`, async ({mount, page}) => {
+      const initialPath = ['body', {_key: 'k'}]
       const component = await mount(
-        <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}]} />,
+        <FocusTrackingStory document={document} focusPath={initialPath} />,
       )
+      await waitForFocusPath(page, initialPath)
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
@@ -133,6 +134,11 @@ async function setFocusPathFromOutside(page: Page, path: Path) {
     },
     {_path: path},
   )
+  await waitForFocusPath(page, path)
+}
+
+// Make sure the focusPath is propagated before we start testing on it
+async function waitForFocusPath(page: Page, path: Path) {
   await page.waitForSelector(`[data-focus-path='${JSON.stringify(path)}']`)
 }
 
