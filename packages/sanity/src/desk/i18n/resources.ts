@@ -117,6 +117,20 @@ const deskLocaleStrings = {
   'action.restore.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to restore this document?',
 
+  /** --- PUBLISH STATUS BUTTON --- */
+  /** Accessibility label indicating when the document was last updated, in relative time, eg "2 hours ago" */
+  'status-bar.publish-status-button.last-updated-time.aria-label': 'Last updated {{relativeTime}}',
+
+  /** Accessibility label indicating when the document was last published, in relative time, eg "3 weeks ago" */
+  'status-bar.publish-status-button.last-published-time.aria-label':
+    'Last published {{relativeTime}}',
+
+  /** Text for tooltip showing explanation of timestamp/relative time, eg "Last updated <RelativeTime/>" */
+  'status-bar.publish-status-button.last-updated-time.tooltip': 'Last updated <RelativeTime/>',
+
+  /** Text for tooltip showing explanation of timestamp/relative time, eg "Last published <RelativeTime/>" */
+  'status-bar.publish-status-button.last-published-time.tooltip': 'Last published <RelativeTime/>',
+
   /** --- REVIEW CHANGES BUTTON --- */
   /** Label for button when status is syncing */
   'status-bar.review-changes-button.status.syncing.text': 'Saving...',
