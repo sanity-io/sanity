@@ -145,5 +145,8 @@
     "node-notifier": "^10.0.0"
   },
   "packageManager": "yarn@1.22.19",
-  "isSanityMonorepo": true
+  "isSanityMonorepo": true,
+  "dependencies": {
+    "eslint-plugin-i18next": "^6.0.3"
+  }
 }
