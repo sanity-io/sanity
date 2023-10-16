@@ -1,5 +1,4 @@
 export type {PortableTextEditorElement} from './PortableText/Compositor'
-export type {RenderBlockActionsCallback, RenderBlockActionsProps} from './PortableText/types'
 export * from './files/types'
 export * from './PortableText/PortableTextInput'
 export {PortableTextInput as BlockEditor} from './PortableText/PortableTextInput'

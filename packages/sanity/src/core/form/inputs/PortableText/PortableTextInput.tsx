@@ -45,10 +45,16 @@ export interface PortableTextMemberItem {
 }
 
 /**
- * The root Portable Text Input component
+ * Input component for editing block content
+ * ({@link https://github.com/portabletext/portabletext | Portable Text}) in the Sanity Studio.
  *
- * @hidden
- * @beta
+ * Supports multi-user real-time block content editing on larger documents.
+ *
+ * This component can be configured and customized extensively.
+ * {@link https://www.sanity.io/docs/portable-text-features | Go to the documentation for more details}.
+ *
+ * @public
+ * @param props - {@link PortableTextInputProps} component props.
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {
