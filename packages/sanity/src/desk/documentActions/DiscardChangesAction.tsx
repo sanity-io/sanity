@@ -14,7 +14,7 @@ import {
 } from 'sanity'
 
 const DISABLED_REASON_KEY = {
-  NO_CHANGES: 'action.discard-changes.disabled.noChanges',
+  NO_CHANGES: 'action.discard-changes.disabled.no-changes',
   NOT_PUBLISHED: 'action.discard-changes.disabled.not-published',
   NOT_READY: 'action.discard-changes.disabled.not-ready',
 } as const
@@ -54,7 +54,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
         tone: 'critical',
         onCancel: onComplete,
         onConfirm: handleConfirm,
-        message: t('action.discard-changes.confirmDialog.confirm-discard-changes'),
+        message: t('action.discard-changes.confirm-dialog.confirm-discard-changes'),
       },
     [handleConfirm, isConfirmDialogOpen, onComplete, t],
   )
