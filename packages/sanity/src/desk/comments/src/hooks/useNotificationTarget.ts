@@ -10,9 +10,10 @@ interface NotificationTargetHookOptions {
 }
 
 interface NotificationTargetHookValue {
-  url: string
-  title: string
+  documentTitle: string
   toolName: string
+  url: string
+  workspaceTitle: string
 }
 
 /** @internal */
@@ -21,7 +22,7 @@ export function useNotificationTarget(
 ): NotificationTargetHookValue {
   const {documentId, documentType} = opts || {}
   const schemaType = useSchema().get(documentType)
-  const {basePath, tools} = useWorkspace()
+  const {basePath, title: workspaceTitle, tools} = useWorkspace()
 
   const activeToolName = useRouterState(
     useCallback(
@@ -42,7 +43,7 @@ export function useNotificationTarget(
   }, [documentId, documentPreviewStore, schemaType])
 
   const {published, draft} = previewState || {}
-  const notificationTitle = (draft?.title || published?.title || 'Sanity document') as string
+  const documentTitle = (draft?.title || published?.title || 'Sanity document') as string
 
   const currentUrl = new URL(window.location.href)
   const deskToolSegment = currentUrl.pathname.split('/').slice(2, 3).join('')
@@ -50,8 +51,9 @@ export function useNotificationTarget(
   const notificationUrl = currentUrl.toString()
 
   return {
-    url: notificationUrl,
-    title: notificationTitle,
+    documentTitle,
     toolName: activeTool?.name || '',
+    url: notificationUrl,
+    workspaceTitle,
   }
 }

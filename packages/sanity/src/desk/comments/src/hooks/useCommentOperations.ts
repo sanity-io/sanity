@@ -52,7 +52,7 @@ export function useCommentOperations(
 
   const authorId = currentUser?.id
 
-  const {title, url, toolName} = useNotificationTarget({
+  const {documentTitle, toolName, url, workspaceTitle} = useNotificationTarget({
     documentId,
     documentType,
   })
@@ -76,7 +76,11 @@ export function useCommentOperations(
           payload: {
             workspace,
           },
-          notification: {title, url},
+          notification: {
+            documentTitle,
+            url,
+            workspaceTitle,
+          },
           tool: toolName,
         },
         target: {
@@ -114,14 +118,15 @@ export function useCommentOperations(
       client,
       dataset,
       documentId,
+      documentTitle,
       documentType,
       onCreate,
       onCreateError,
       projectId,
-      title,
       toolName,
       url,
       workspace,
+      workspaceTitle,
     ],
   )
 
