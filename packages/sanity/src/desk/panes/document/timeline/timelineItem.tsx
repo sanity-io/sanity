@@ -1,10 +1,9 @@
 import React, {useCallback, createElement, useMemo} from 'react'
 import {Box, ButtonTone, Card, Flex, Label, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
-import {deskLocaleNamespace} from '../../../i18n'
 import {getTimelineEventIconComponent} from './helpers'
 import {UserAvatarStack} from './userAvatarStack'
-import {EventLabel, IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
+import {IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
 import {ChunkType, Chunk, useTranslation} from 'sanity'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone> = {
@@ -102,9 +101,9 @@ export function TimelineItem({
               </Flex>
             )}
             <Box>
-              <EventLabel size={1} weight="medium">
+              <Text size={1} weight="medium">
                 {t(`timeline.${type}`) || <code>{type}</code>}
-              </EventLabel>
+              </Text>
             </Box>
             <TimestampBox paddingX={1}>
               <Text size={0} muted>

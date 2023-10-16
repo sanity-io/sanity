@@ -125,7 +125,9 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
           <FilterBox>
             <Button
               aria-expanded={filtersVisible}
-              aria-label={t('search.action.toggle-filters-aria-label')}
+              aria-label={t('search.action.toggle-filters-aria-label', {
+                context: filtersVisible ? 'hide' : 'show',
+              })}
               height="fill"
               icon={ControlsIcon}
               mode="bleed"
