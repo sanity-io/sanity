@@ -72,9 +72,10 @@ export interface CommentPath {
 interface CommentContext {
   tool: string
   payload?: Record<string, unknown>
-  notification: {
-    title: string
+  notification?: {
+    documentTitle: string
     url: string
+    workspaceTitle: string
   }
 }
 
