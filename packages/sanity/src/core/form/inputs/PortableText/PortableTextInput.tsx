@@ -224,7 +224,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return items
   }, [members, props])
 
-  const hasFocus = focused || isEditorFocusablePath(focusPath)
+  const hasFocus =
+    focused ||
+    (focusPath.length > 0 &&
+      portableTextMemberItems.some((m) => m.member.open && m.kind === 'textBlock'))
 
   // Set active if focused
   useEffect(() => {
@@ -354,9 +357,4 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
 function toFormPatches(patches: any) {
   return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE}))
-}
-
-// Return true if the path directly points to something focusable in the editor
-function isEditorFocusablePath(path: Path) {
-  return path.length === 1 || (path.length === 3 && path[1] === 'children')
 }
