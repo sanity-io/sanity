@@ -14,9 +14,9 @@ import {
 } from 'sanity'
 
 const DISABLED_REASON_KEY = {
-  NO_CHANGES: 'action.discardChanges.disabled.noChanges',
-  NOT_PUBLISHED: 'action.discardChanges.disabled.notPublished',
-  NOT_READY: 'action.discardChanges.disabled.notReady',
+  NO_CHANGES: 'action.discard-changes.disabled.no-changes',
+  NOT_PUBLISHED: 'action.discard-changes.disabled.not-published',
+  NOT_READY: 'action.discard-changes.disabled.not-ready',
 } as const
 
 /** @internal */
@@ -54,7 +54,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
         tone: 'critical',
         onCancel: onComplete,
         onConfirm: handleConfirm,
-        message: t('action.discardChanges.confirmDialog.confirm-discard-changes'),
+        message: t('action.discard-changes.confirm-dialog.confirm-discard-changes'),
       },
     [handleConfirm, isConfirmDialogOpen, onComplete, t],
   )
@@ -68,7 +68,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       tone: 'critical',
       icon: ResetIcon,
       disabled: true,
-      label: t('action.discardChanges.label'),
+      label: t('action.discard-changes.label'),
       title: (
         <InsufficientPermissionsMessage
           operationLabel="discard changes in this document"
@@ -83,7 +83,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     icon: ResetIcon,
     disabled: Boolean(discardChanges.disabled) || isPermissionsLoading,
     title: (discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || '',
-    label: t('action.discardChanges.label'),
+    label: t('action.discard-changes.label'),
     onHandle: handle,
     dialog,
   }
