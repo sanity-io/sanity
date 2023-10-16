@@ -13,9 +13,9 @@ import {
 } from 'sanity'
 
 const DISABLED_REASON_KEY = {
-  NOT_PUBLISHED: 'action.unpublish.disabled.notPublished',
-  NOT_READY: 'action.unpublish.disabled.notReady',
-  LIVE_EDIT_ENABLED: 'action.unpublish.disabled.liveEditEnabled',
+  NOT_PUBLISHED: 'action.unpublish.disabled.not-published',
+  NOT_READY: 'action.unpublish.disabled.not-ready',
+  LIVE_EDIT_ENABLED: 'action.unpublish.disabled.live-edit-enabled',
 }
 
 /** @internal */

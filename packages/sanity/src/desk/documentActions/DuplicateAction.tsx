@@ -13,8 +13,8 @@ import {
 } from 'sanity'
 
 const DISABLED_REASON_KEY = {
-  NOTHING_TO_DUPLICATE: 'action.duplicate.disabled.nothingToDuplicate',
-  NOT_READY: 'action.duplicate.disabled.notReady',
+  NOTHING_TO_DUPLICATE: 'action.duplicate.disabled.nothing-to-duplicate',
+  NOT_READY: 'action.duplicate.disabled.not-ready',
 }
 
 /** @internal */
