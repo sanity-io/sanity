@@ -26,8 +26,7 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
     'Kan ikke publisere fordi "Live Edit" er skrudd på for denne dokumenttypen.',
 
   /** Tooltip when the "Publish" document action is disabled due to validation issues */
-  'action.publish.validation-issues.tooltip':
-    'Valideringsfeil som må rettes før dokumentet kan publiseres',
+  'action.publish.validation-issues.tooltip': 'Valideringsfeil må rettes før det kan publiseres',
 
   /** Tooltip when publish button is disabled because the document is already published.*/
   'action.publish.already-published.tooltip': 'Publisert for {{timeSincePublished}} siden',
@@ -36,7 +35,7 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
   'action.publish.already-published.no-time-ago.tooltip': 'Allerede publisert',
 
   /** Tooltip when publish button is disabled because there are no changes.*/
-  'action.publish.tooltip.no-changes': 'Ingen upubliserte endringer',
+  'action.publish.no-changes.tooltip': 'Ingen upubliserte endringer',
 
   /** Tooltip when publish button is waiting for validation and async tasks to complete.*/
   'action.publish.waiting': 'Venter på at andre oppgaver skal fullføre',
@@ -81,10 +80,10 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
     'Dette dokumentet er tomt og kan ikke dupliseres',
 
   /** Label for the "Duplicate" document action */
-  'action.duplicate.label': 'Duplisèr',
+  'action.duplicate.label': 'Dupliser',
 
   /** Label for the "Duplicate" document action while the document is being duplicated */
-  'action.duplicate.running.label': 'Duplisèrer…',
+  'action.duplicate.running.label': 'Dupliserer…',
 
   /** --- UNPUBLISH ACTION --- */
   /** Tooltip when action is disabled because the operation is not ready   */
@@ -113,6 +112,37 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
   /** Message prompting the user to confirm that they want to restore to an earlier version*/
   'action.restore.confirm-dialog.confirm-discard-changes':
     'Er du sikker på at du vil gjenopprette til valgte versjon?',
+
+  /** --- PUBLISH STATUS BUTTON --- */
+  /** Accessibility label indicating when the document was last updated, in relative time, eg "2 hours ago" */
+  'status-bar.publish-status-button.last-updated-time.aria-label':
+    'Sist oppdatert {{relativeTime}}',
+
+  /** Accessibility label indicating when the document was last published, in relative time, eg "3 weeks ago" */
+  'status-bar.publish-status-button.last-published-time.aria-label':
+    'Sist publisert {{relativeTime}}',
+
+  /** Text for tooltip showing explanation of timestamp/relative time, eg "Last updated <RelativeTime/>" */
+  'status-bar.publish-status-button.last-updated-time.tooltip': 'Sist oppdatert <RelativeTime/>',
+
+  /** Text for tooltip showing explanation of timestamp/relative time, eg "Last published <RelativeTime/>" */
+  'status-bar.publish-status-button.last-published-time.tooltip': 'Sist publisert <RelativeTime/>',
+
+  /** --- REVIEW CHANGES BUTTON --- */
+  /** Label for button when status is syncing */
+  'status-bar.review-changes-button.status.syncing.text': 'Lagrer...',
+
+  /** Label for button when status is saved */
+  'status-bar.review-changes-button.status.saved.text': 'Lagret!',
+
+  /** Primary text for tooltip for the button */
+  'status-bar.review-changes-button.tooltip.text': 'Se endringer',
+
+  /** Text for the secondary text for tooltip for the button */
+  'status-bar.review-changes-button.tooltip.changes-saved': 'Endringer lagret',
+
+  /** Aria label for the button */
+  'status-bar.review-changes-button.aria-label': 'Se endringer',
 }
 
 export default deskResources
