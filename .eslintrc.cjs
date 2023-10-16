@@ -13,7 +13,7 @@ const baseConfig = {
     'prettier',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc'],
+  plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc','i18next'],
   rules: {
     '@typescript-eslint/no-var-requires': 'off', // prefer import/no-dynamic-require
     'import/extensions': ['error', {pattern: {cjs: 'always', json: 'always'}}],
@@ -32,6 +32,7 @@ const baseConfig = {
         additionalHooks: '(useMemoObservable|useObservableCallback|useAsync)',
       },
     ],
+    'i18next/no-literal-string': 2,
   },
   settings: {
     'import/extensions': ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx'],
