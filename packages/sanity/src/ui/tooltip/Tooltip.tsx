@@ -1,8 +1,15 @@
-import {Text, Tooltip as UITooltip, TooltipProps as UITooltipProps} from '@sanity/ui'
+import {
+  Text,
+  Tooltip as UITooltip,
+  TooltipProps as UITooltipProps,
+  HotkeysProps as UIHotkeysProps,
+} from '@sanity/ui'
 import React from 'react'
 
+/** @internal */
 export interface TooltipProps
-  extends Pick<UITooltipProps, 'children' | 'disabled' | 'placement' | 'scheme'> {
+  extends Pick<UITooltipProps, 'children' | 'disabled' | 'placement' | 'scheme'>,
+    Pick<UIHotkeysProps, 'keys'> {
   text: string
 }
 
