@@ -6,7 +6,9 @@ import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {TestForm} from './TestForm'
 import {
+  Path,
   ResourceCacheProvider,
+  SanityDocument,
   SchemaTypeDefinition,
   SourceProvider,
   Workspace,
@@ -17,7 +19,15 @@ import {
  * @description This component is used to wrap all tests in the providers it needs to be able to run successfully.
  * It provides a mock Sanity client and a mock workspace.
  */
-export const TestWrapper = ({schemaTypes}: {schemaTypes: SchemaTypeDefinition[]}) => {
+export const TestWrapper = ({
+  schemaTypes,
+  focusPath,
+  document,
+}: {
+  schemaTypes: SchemaTypeDefinition[]
+  focusPath?: Path
+  document?: SanityDocument
+}) => {
   const [mockWorkspace, setMockWorkspace] = useState<Workspace | null>(null)
 
   useEffect(() => {
@@ -54,7 +64,7 @@ export const TestWrapper = ({schemaTypes}: {schemaTypes: SchemaTypeDefinition[]}
                   <Pane id="test-pane">
                     <PaneContent>
                       <Card padding={3}>
-                        <TestForm />
+                        <TestForm focusPath={focusPath} document={document} />
                       </Card>
                     </PaneContent>
                   </Pane>
