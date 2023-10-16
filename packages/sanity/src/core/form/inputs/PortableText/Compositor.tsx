@@ -7,6 +7,7 @@ import {
   BlockRenderProps as EditorBlockRenderProps,
   BlockChildRenderProps as EditorChildRenderProps,
   BlockAnnotationRenderProps,
+  EditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
@@ -352,10 +353,38 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     ],
   )
   const ariaDescribedBy = props.elementProps['aria-describedby']
+
+  // Create an initial editor selection based on the focusPath
+  // at the time that the editor mounts. Any updates to the
+  // focusPath later will be handled by the useTrackFocusPath hook.
+  // The initial selection is handled explicitly as a separate
+  // prop to the Editable PTE component (initialSelection) so that
+  // selections can be set initially even though the editor value
+  // might not be fully propagated or rendered yet.
+  const initialSelection: EditorSelection | undefined = useMemo(() => {
+    // We can be sure that the focusPath is pointing directly to
+    // editor content when hasFocusWithin is true.
+    if (hasFocusWithin) {
+      return {
+        anchor: {
+          path: focusPath,
+          offset: 0,
+        },
+        focus: {
+          path: focusPath,
+          offset: 0,
+        },
+      }
+    }
+    return undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only at mount time!
+
   const editorNode = useMemo(
     () => (
       <Editor
         ariaDescribedBy={ariaDescribedBy}
+        initialSelection={initialSelection}
         hasFocus={hasFocus}
         hotkeys={editorHotkeys}
         isActive={isActive}
@@ -377,21 +406,22 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
     // Keep only stable ones here!
     [
-      scrollElement,
-      editorHotkeys,
-      handleToggleFullscreen,
+      ariaDescribedBy,
+      initialSelection,
       hasFocus,
+      editorHotkeys,
+      isActive,
+      isFullscreen,
+      onItemOpen,
+      onCopy,
+      onPaste,
+      handleToggleFullscreen,
+      path,
+      readOnly,
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
-      isActive,
-      isFullscreen,
-      onCopy,
-      onItemOpen,
-      onPaste,
-      path,
-      readOnly,
-      ariaDescribedBy,
+      scrollElement,
     ],
   )
 
