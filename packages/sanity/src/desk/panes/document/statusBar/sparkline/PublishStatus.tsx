@@ -2,7 +2,8 @@ import {Box, Button, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
-import {useRelativeTime} from 'sanity'
+import {deskLocaleNamespace} from '../../../../i18n'
+import {Translate, useRelativeTime, useTranslation} from 'sanity'
 
 interface PublishStatusProps {
   collapsed?: boolean
@@ -18,6 +19,7 @@ const Root = styled(Flex)`
 
 export function PublishStatus(props: PublishStatusProps) {
   const {collapsed, disabled, lastPublished, lastUpdated, liveEdit} = props
+  const {t} = useTranslation(deskLocaleNamespace)
 
   // Label with abbreviations and suffix
   const lastPublishedTimeAgo = useRelativeTime(lastPublished || '', {
@@ -45,11 +47,15 @@ export function PublishStatus(props: PublishStatusProps) {
     useTemporalPhrase: true,
   })
   const a11yLabel = liveEdit
-    ? `Last updated ${a11yUpdatedAgo}`
-    : `Last published ${a11yPublishedAgo}`
+    ? t('status-bar.publish-status-button.last-updated-time.aria-label', {
+        relativeTime: a11yUpdatedAgo,
+      })
+    : t('status-bar.publish-status-button.last-published-time.aria-label', {
+        relativeTime: a11yPublishedAgo,
+      })
 
   return (
-    <Root align="center" data-ui="SessionLayout" sizing="border">
+    <Root align="center" data-ui="PublishStatus" sizing="border">
       <Tooltip
         placement="top"
         portal
@@ -57,16 +63,32 @@ export function PublishStatus(props: PublishStatusProps) {
           <Stack padding={3} space={3}>
             <Text size={1}>
               {liveEdit ? (
-                <>
-                  Last updated{' '}
-                  <abbr aria-label={lastUpdated ? a11yUpdatedAgo : a11yPublishedAgo}>
-                    {lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}
-                  </abbr>
-                </>
+                <Translate
+                  t={t}
+                  i18nKey="status-bar.publish-status-button.last-updated-time.tooltip"
+                  components={{
+                    RelativeTime: () => (
+                      <time
+                        dateTime={lastUpdated}
+                        aria-label={lastUpdated ? a11yUpdatedAgo : a11yPublishedAgo}
+                      >
+                        {lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}
+                      </time>
+                    ),
+                  }}
+                />
               ) : (
-                <>
-                  Last published <abbr aria-label={a11yPublishedAgo}>{lastPublishedTimeAgo}</abbr>
-                </>
+                <Translate
+                  t={t}
+                  i18nKey="status-bar.publish-status-button.last-published-time.tooltip"
+                  components={{
+                    RelativeTime: () => (
+                      <time dateTime={lastPublished} aria-label={a11yPublishedAgo}>
+                        {lastPublishedTimeAgo}
+                      </time>
+                    ),
+                  }}
+                />
               )}
             </Text>
           </Stack>
@@ -88,11 +110,13 @@ export function PublishStatus(props: PublishStatusProps) {
             {!collapsed && (
               <Text size={1} weight="medium">
                 {liveEdit ? (
-                  <abbr aria-label={a11yLabel}>
+                  <time dateTime={lastUpdated || lastPublished} aria-label={a11yLabel}>
                     {lastUpdated ? lastUpdatedTime : lastPublishedTime}
-                  </abbr>
+                  </time>
                 ) : (
-                  <abbr aria-label={a11yLabel}>{lastPublishedTime}</abbr>
+                  <time dateTime={lastPublished} aria-label={a11yLabel}>
+                    {lastPublishedTime}
+                  </time>
                 )}
               </Text>
             )}
