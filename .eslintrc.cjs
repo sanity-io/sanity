@@ -228,6 +228,26 @@ module.exports = {
       files: ['./test/**/*.js', './test/*.js', '*.test.{js,ts,tsx}'],
       env: {jest: true},
     },
+
+    // Prefer local components vs certain @sanity/ui imports (in all non-ui folders)
+    {
+      files: ['!packages/sanity/src/ui/**'],
+      rules: {
+        'no-restricted-imports': [
+          'warn',
+          {
+            paths: [
+              {
+                name: '@sanity/ui',
+                importNames: ['Tooltip'],
+                message:
+                  'Please use the (more opinionated) exported components in sanity/src/ui instead.',
+              },
+            ],
+          },
+        ],
+      },
+    },
   ],
 
   root: true,
