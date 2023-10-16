@@ -14,7 +14,7 @@ export interface TooltipProps
  *
  * @internal
  */
-export const Tooltip = ({children, disabled, placement, scheme, text}: TooltipProps) => {
+export const Tooltip = ({text, ...rest}: TooltipProps) => {
   return (
     <UITooltip
       content={
@@ -22,11 +22,7 @@ export const Tooltip = ({children, disabled, placement, scheme, text}: TooltipPr
           {text}
         </Text>
       }
-      disabled={disabled}
-      placement={placement}
-      scheme={scheme}
-    >
-      {children}
-    </UITooltip>
+      {...rest}
+    />
   )
 }
