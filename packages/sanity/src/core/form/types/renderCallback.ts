@@ -8,7 +8,7 @@ import {BlockAnnotationProps, BlockProps} from './blockProps'
 
 /**
  * @hidden
- * @beta  */
+ * @public  */
 export type RenderArrayOfObjectsItemCallback = (
   itemProps: Omit<ObjectItemProps, 'renderDefault'>,
 ) => ReactNode
@@ -22,35 +22,35 @@ export type RenderArrayOfPrimitivesItemCallback = (
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export type RenderItemCallback = (
   itemProps: Omit<ObjectItemProps, 'renderDefault'> | Omit<PrimitiveItemProps, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export type RenderFieldCallback<T extends FieldProps = FieldProps> = (
   fieldProps: Omit<T, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export type RenderInputCallback<T extends InputProps = InputProps> = (
   inputProps: Omit<T, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export type RenderBlockCallback<T extends BlockProps = BlockProps> = (
   blockProps: Omit<T, 'renderDefault'>,
 ) => ReactNode
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export type RenderAnnotationCallback<T extends BlockAnnotationProps = BlockAnnotationProps> = (
   annotationProps: Omit<T, 'renderDefault'>,
 ) => ReactNode
@@ -58,7 +58,7 @@ export type RenderAnnotationCallback<T extends BlockAnnotationProps = BlockAnnot
 /**
  *
  * @hidden
- * @beta
+ * @public
  */
 export interface RenderPreviewCallbackProps<TLayoutKey = PreviewLayoutKey> {
   actions?: ReactNode | ComponentType<{layout: TLayoutKey}>
@@ -81,5 +81,5 @@ export interface RenderPreviewCallbackProps<TLayoutKey = PreviewLayoutKey> {
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export type RenderPreviewCallback = (props: RenderPreviewCallbackProps) => ReactNode

@@ -3,7 +3,6 @@ import {createContext} from 'react'
 import {DocumentFieldAction} from '../config'
 import {PatchChannel} from './patch'
 import {
-  FormBuilderArrayFunctionComponent,
   FormBuilderCustomMarkersComponent,
   FormBuilderFilterFieldFn,
   FormBuilderMarkersComponent,
