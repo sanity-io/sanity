@@ -1,4 +1,4 @@
-import {Text, Box, Button, Theme, Flex, rem} from '@sanity/ui'
+import {Box, Button, Theme, Flex, rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export interface IconWrapperProps {
@@ -69,10 +69,6 @@ export const IconBox = styled(Box)`
   border-radius: 50px;
   position: relative;
   z-index: 2;
-`
-
-export const EventLabel = styled(Text)`
-  text-transform: capitalize;
 `
 
 export const TimestampBox = styled(Box)`
