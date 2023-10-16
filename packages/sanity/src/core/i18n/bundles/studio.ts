@@ -18,7 +18,7 @@ export const studioLocaleStrings = {
   /** Label for the close button label in Review Changes pane */
   'changes.action.close-label': 'Close review changes',
 
-  /** Label and text for differences tooltip that indicates the authors of the changes */
+  /** Label and text for tooltip that indicates the authors of the changes */
   'changes.changes-by-author': 'Changes by',
 
   /** Loading changes in Review Changes Pane */
@@ -68,7 +68,8 @@ export const studioLocaleStrings = {
   /** Label for loading history */
   'timeline.loading-history': 'Loading history',
 
-  /** Label for determining since which version the changes for timeline menu dropdown are showing.
+  /**
+   * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter.
    */
   'timeline.since': 'Since: {{timestamp, datetime}}',
@@ -152,6 +153,9 @@ export const studioLocaleStrings = {
   'inputs.datetime.calendar.weekday-names.short.friday': 'Fri',
   'inputs.datetime.calendar.weekday-names.short.saturday': 'Sat',
   'inputs.datetime.calendar.weekday-names.short.sunday': 'Sun',
+
+  /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
+  'inputs.datetime.calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
 
   /** --- File (Image, File and ImageTool) Inputs --- */
 
@@ -260,9 +264,6 @@ export const studioLocaleStrings = {
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
   'inputs.files.imagetool.field.description':
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
-
-  /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
-  'inputs.datetime.calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
 
   /** --- Reference (and Cross-Dataset Reference) Input --- */
 
@@ -489,6 +490,7 @@ export const studioLocaleStrings = {
   'new-document.new-document-aria-label': 'New document',
 
   /** Error label for when a user is unable to create a document */
+  // @todo refactor InsufficientPermissionsMessage
   'new-document.error.unable-to-create-document': 'create this document',
 
   /** --- Search --- */
@@ -683,10 +685,11 @@ export const studioLocaleStrings = {
   'search.action.close-search-aria-label': 'Close search',
 
   /** Accessibility label for when the search is full screen (on narrow screens) and you want to toggle filters */
-  'search.action.toggle-filters-aria-label': 'Toggle filters',
+  'search.action.toggle-filters-aria-label_hide': 'Hide filters',
+  'search.action.toggle-filters-aria-label_show': 'Show filters',
 
   /** Label for instructions on how to use the search - displayed when no recent searches are available */
-  'search.instructions': 'Use <ControlsIcon /> to refine your search',
+  'search.instructions': 'Use <ControlsIcon/> to refine your search',
 
   /** --- Help & Resources Menu --- */
 
@@ -732,7 +735,7 @@ export const studioLocaleStrings = {
   'user-menu.action.invite-members': 'Invite members',
 
   /** Accessibility label for action to invite members to the current sanity project */
-  'user-menu.action.invite-members-aria-lable': 'Invite members',
+  'user-menu.action.invite-members-aria-label': 'Invite members',
 
   /** Label for action to sign out of the current sanity project */
   'user-menu.action.sign-out': 'Sign out',
