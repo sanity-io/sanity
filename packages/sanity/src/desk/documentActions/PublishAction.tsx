@@ -20,7 +20,7 @@ import {
 const DISABLED_REASON_TITLE_KEY: Record<string, DeskLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
   ALREADY_PUBLISHED: 'action.publish.already-published.no-time-ago.tooltip',
-  NO_CHANGES: 'action.publish.tooltip.no-changes',
+  NO_CHANGES: 'action.publish.no-changes.tooltip',
   NOT_READY: 'action.publish.disabled.not-ready',
 } as const
 

@@ -1,7 +1,8 @@
 import React, {useMemo} from 'react'
 import {Box, Button, ButtonProps, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {deskLocaleNamespace} from '../../../../../i18n'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
-import {useTimeAgo} from 'sanity'
+import {useTimeAgo, useTranslation} from 'sanity'
 
 interface ReviewChangesButtonProps extends React.HTMLProps<HTMLButtonElement> {
   status?: 'changes' | 'saved' | 'syncing'
@@ -18,10 +19,12 @@ const ReviewButton = React.forwardRef(function ReviewButton(
   const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
   const a11yUpdatedAgo = useTimeAgo(lastUpdated || '', {minimal: false, agoSuffix: true})
 
+  const {t} = useTranslation(deskLocaleNamespace)
+
   const buttonProps: ButtonProps = useMemo(() => {
     if (status === 'syncing') {
       return {
-        text: 'Saving...',
+        text: t('status-bar.review-changes-button.status.syncing.text'),
         tone: undefined,
       }
     }
@@ -33,13 +36,13 @@ const ReviewButton = React.forwardRef(function ReviewButton(
     }
     if (status === 'saved') {
       return {
-        text: 'Saved!',
+        text: t('status-bar.review-changes-button.status.saved.text'),
         tone: 'positive',
       }
     }
 
     return {}
-  }, [status, lastUpdatedTime])
+  }, [status, lastUpdatedTime, t])
 
   if (!status) {
     return null
@@ -53,10 +56,11 @@ const ReviewButton = React.forwardRef(function ReviewButton(
       content={
         <Stack padding={3} space={3}>
           <Text size={1} weight="semibold">
-            Review changes
+            {t('status-bar.review-changes-button.tooltip.text')}
           </Text>
           <Text size={1} muted>
-            Changes saved <abbr aria-label={a11yUpdatedAgo}>{lastUpdatedTimeAgo}</abbr>
+            {t('status-bar.review-changes-button.tooltip.changes-saved')}{' '}
+            <abbr aria-label={a11yUpdatedAgo}>{lastUpdatedTimeAgo}</abbr>
           </Text>
         </Stack>
       }
@@ -68,7 +72,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
         {...rest}
         data-testid="review-changes-button"
         ref={ref}
-        aria-label="Review changes"
+        aria-label={t('status-bar.review-changes-button.aria-label')}
       >
         <Flex align="center">
           <Box marginRight={collapsed ? 0 : 3} aria-hidden="true">
