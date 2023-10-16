@@ -38,7 +38,7 @@ function getDisabledReason(
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   const {t} = useTranslation(deskLocaleNamespace)
   const timeSincePublished = useTimeAgo(publishedAt)
-  return <span>{t('action.publish.alreadyPublished.tooltip', {timeSincePublished})}</span>
+  return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
 }
 
 /** @internal */
@@ -72,7 +72,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const title = publish.disabled
     ? getDisabledReason(publish.disabled, (published || {})._updatedAt, t) || ''
     : hasValidationErrors
-    ? t('action.publish.validationIssues.tooltip')
+    ? t('action.publish.validation-issues.tooltip')
     : ''
 
   const hasDraft = Boolean(draft)
