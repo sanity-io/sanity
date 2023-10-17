@@ -13,7 +13,7 @@ const baseConfig = {
     'prettier',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc','i18next'],
+  plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc', 'i18next'],
   rules: {
     '@typescript-eslint/no-var-requires': 'off', // prefer import/no-dynamic-require
     'import/extensions': ['error', {pattern: {cjs: 'always', json: 'always'}}],
