@@ -691,31 +691,31 @@ export const studioLocaleStrings = {
   /** --- Help & Resources Menu --- */
 
   /** Title for help and resources menus */
-  'helpResources.title': 'Help and resources',
+  'help-resources.title': 'Help and resources',
 
   /** Information for what studio version the current studio is running */
-  'helpResources.studio-version': `Sanity Studio version {{studioVersion}}`,
+  'help-resources.studio-version': `Sanity Studio version {{studioVersion}}`,
 
   /** Information for what the latest sanity version is */
-  'helpResources.latest-sanity-version': `Latest version is {{latestVersion}}`,
+  'help-resources.latest-sanity-version': `Latest version is {{latestVersion}}`,
 
   /**
    * Label for "join our community" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
-  'helpResources.action.join-our-community': `Join our community`,
+  'help-resources.action.join-our-community': `Join our community`,
 
   /**
    * Label for "help and support" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
-  'helpResources.action.help-and-support': `Help and support`,
+  'help-resources.action.help-and-support': `Help and support`,
 
   /**
    * Label for "contact sales" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
-  'helpResources.action.contact-sales': `Contact sales`,
+  'help-resources.action.contact-sales': `Contact sales`,
 
   /** --- User Menu --- */
 
