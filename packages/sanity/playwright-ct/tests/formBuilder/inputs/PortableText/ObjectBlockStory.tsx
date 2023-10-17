@@ -2,6 +2,7 @@ import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import React from 'react'
 import {Box, Text} from '@sanity/ui'
 import {TestWrapper} from '../../utils/TestWrapper'
+import {TestForm} from '../../utils/TestForm'
 import {PreviewProps} from 'sanity'
 
 // This is to emulate preview updates to the object without the preview store
@@ -73,7 +74,11 @@ const SCHEMA_TYPES = [
 ]
 
 export function ObjectBlockStory() {
-  return <TestWrapper schemaTypes={SCHEMA_TYPES} />
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm />
+    </TestWrapper>
+  )
 }
 
 export default ObjectBlockStory

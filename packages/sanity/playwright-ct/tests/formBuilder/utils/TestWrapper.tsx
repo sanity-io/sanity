@@ -4,11 +4,8 @@ import React, {useEffect, useState} from 'react'
 import {Pane, PaneContent, PaneLayout} from '../../../../src/desk/components'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
-import {TestForm} from './TestForm'
 import {
-  Path,
   ResourceCacheProvider,
-  SanityDocument,
   SchemaTypeDefinition,
   SourceProvider,
   Workspace,
@@ -20,13 +17,11 @@ import {
  * It provides a mock Sanity client and a mock workspace.
  */
 export const TestWrapper = ({
+  children,
   schemaTypes,
-  focusPath,
-  document,
 }: {
+  children?: React.ReactNode
   schemaTypes: SchemaTypeDefinition[]
-  focusPath?: Path
-  document?: SanityDocument
 }) => {
   const [mockWorkspace, setMockWorkspace] = useState<Workspace | null>(null)
 
@@ -63,9 +58,7 @@ export const TestWrapper = ({
                 <PaneLayout height="fill">
                   <Pane id="test-pane">
                     <PaneContent>
-                      <Card padding={3}>
-                        <TestForm focusPath={focusPath} document={document} />
-                      </Card>
+                      <Card padding={3}>{children}</Card>
                     </PaneContent>
                   </Pane>
                 </PaneLayout>
