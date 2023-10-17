@@ -1,16 +1,18 @@
 import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {ObjectSchemaType, Path, SanityDocument, SanityDocumentLike} from '@sanity/types'
+import type {ObjectSchemaType, Path, SanityDocument, SanityDocumentLike} from '@sanity/types'
 import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import isHotkey from 'is-hotkey'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
-import {PaneMenuItem} from '../../types'
+import type {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
-import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
+import {deskLocaleNamespace} from '../../i18n'
+import {CommentsProvider} from '../../comments'
+import {DocumentPaneContext, type DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
-import {DocumentPaneProviderProps} from './types'
+import type {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {
@@ -21,20 +23,20 @@ import {
 } from './constants'
 import {DocumentInspectorMenuItemsResolver} from './DocumentInspectorMenuItemsResolver'
 import {
-  DocumentFieldAction,
-  DocumentFieldActionNode,
-  DocumentInspector,
-  DocumentInspectorMenuItem,
-  DocumentPresence,
+  type DocumentFieldAction,
+  type DocumentFieldActionNode,
+  type DocumentInspector,
+  type DocumentInspectorMenuItem,
+  type DocumentPresence,
+  type PatchEvent,
+  type StateTree,
   EMPTY_ARRAY,
   FieldActionsProvider,
   FieldActionsResolver,
   getDraftId,
   getExpandOperations,
   getPublishedId,
-  PatchEvent,
   setAtPath,
-  StateTree,
   toMutationPatches,
   useConnectionState,
   useDocumentOperation,
@@ -48,10 +50,10 @@ import {
   useTemplates,
   useTimelineSelector,
   useTimelineStore,
+  useTranslation,
   useUnique,
   useValidationStatus,
 } from 'sanity'
-import {CommentsProvider} from '../../comments'
 
 /**
  * @internal
@@ -217,6 +219,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
 
   const hasValue = Boolean(value)
+  const {t} = useTranslation(deskLocaleNamespace)
   const menuItems = useMemo(
     () =>
       getMenuItems({
@@ -226,8 +229,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         inspectorMenuItems,
         inspectors,
         previewUrl,
+        t,
       }),
-    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl],
+    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl, t],
   )
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
