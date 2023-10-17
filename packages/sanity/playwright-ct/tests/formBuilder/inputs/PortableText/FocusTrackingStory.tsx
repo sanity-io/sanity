@@ -3,6 +3,7 @@ import {Path, defineArrayMember, defineField, defineType} from '@sanity/types'
 import React, {useEffect, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
 import {TestWrapper} from '../../utils/TestWrapper'
+import {TestForm} from '../../utils/TestForm'
 
 const SCHEMA_TYPES = [
   defineType({
@@ -72,7 +73,9 @@ export function FocusTrackingStory({
   }, [])
   return (
     <div data-focus-path={JSON.stringify(focusPath)}>
-      <TestWrapper schemaTypes={SCHEMA_TYPES} focusPath={focusPath} document={document} />
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        <TestForm document={document} focusPath={focusPath} />
+      </TestWrapper>
     </div>
   )
 }
