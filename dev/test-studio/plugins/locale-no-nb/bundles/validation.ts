@@ -1,4 +1,13 @@
 const validationResources = {
+  /** Title for the actual "Validation" panel/feature */
+  'panel.title': 'Validering',
+
+  /** Accessibility label for closing the validation panel */
+  'panel.close-button-aria-label': 'Lukk validering',
+
+  /** Message shown when the validation panel is opened but there are no errors/warnings */
+  'panel.no-errors-message': 'Ingen valideringsfeil',
+
   /** A value of incorrect type is found, eg found `number` instead of `string` */
   'generic.incorrect-type': 'Forventet type "{{expectedType}}", fikk "{{actualType}}"',
 
