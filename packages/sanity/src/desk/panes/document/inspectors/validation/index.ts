@@ -3,17 +3,19 @@ import {useMemo} from 'react'
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {ValidationInspector} from './ValidationInspector'
 import {
-  DocumentInspector,
-  DocumentInspectorMenuItem,
-  DocumentInspectorUseMenuItemProps,
-  FormNodeValidation,
+  type DocumentInspector,
+  type DocumentInspectorMenuItem,
+  type DocumentInspectorUseMenuItemProps,
+  type FormNodeValidation,
   isValidationError,
   isValidationWarning,
+  useTranslation,
   useValidationStatus,
 } from 'sanity'
 
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {documentId, documentType} = props
+  const {t} = useTranslation('validation')
   const {validation: validationMarkers} = useValidationStatus(documentId, documentType)
 
   const validation: FormNodeValidation[] = useMemo(
@@ -44,7 +46,7 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
   return {
     hidden: validation.length === 0,
     icon,
-    title: 'Validation',
+    title: t('panel.title'),
     tone,
     showAsAction: true,
   }

@@ -7,6 +7,15 @@ import {validationLocaleNamespace} from '../localeNamespaces'
  * @internal
  */
 const validationLocaleStrings = {
+  /** Title for the actual "Validation" panel/feature */
+  'panel.title': 'Validation',
+
+  /** Accessibility label for closing the validation panel */
+  'panel.close-button-aria-label': 'Close validation',
+
+  /** Message shown when the validation panel is opened but there are no errors/warnings */
+  'panel.no-errors-message': 'No validation errors',
+
   /** A value of incorrect type is found, eg found `number` instead of `string` */
   'generic.incorrect-type': 'Expected type "{{expectedType}}", got "{{actualType}}"',
 
