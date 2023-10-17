@@ -5,7 +5,7 @@ import React, {ErrorInfo, Fragment, createElement, useCallback, useMemo, useStat
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
 import {getPathTypes} from './getPathTypes'
-import {DocumentInspectorProps} from 'sanity'
+import {DocumentInspectorProps, useTranslation} from 'sanity'
 
 const MARKER_ICON: Record<'error' | 'warning' | 'info', IconComponent> = {
   error: ErrorOutlineIcon,
@@ -22,6 +22,7 @@ const MARKER_TONE: Record<'error' | 'warning' | 'info', CardTone> = {
 export function ValidationInspector(props: DocumentInspectorProps) {
   const {onClose} = props
   const {onFocus, onPathOpen, schemaType, validation, value} = useDocumentPane()
+  const {t} = useTranslation('validation')
 
   const handleOpen = useCallback(
     (path: Path) => {
@@ -35,17 +36,17 @@ export function ValidationInspector(props: DocumentInspectorProps) {
     <Flex direction="column" height="fill" overflow="hidden">
       <DocumentInspectorHeader
         as="header"
-        closeButtonLabel="Close validation"
+        closeButtonLabel={t('panel.close-button-aria-label')}
         flex="none"
         onClose={onClose}
-        title="Validation"
+        title={t('panel.title')}
       />
 
       <Card flex={1} overflow="auto" padding={3}>
         {validation.length === 0 && (
           <Box padding={2}>
             <Text muted size={1}>
-              No validation errors
+              {t('panel.no-errors-message')}
             </Text>
           </Box>
         )}
