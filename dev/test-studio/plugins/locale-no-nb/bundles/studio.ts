@@ -662,31 +662,31 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** --- Help & Resources Menu --- */
 
   /** Title for help and resources menus */
-  'helpResources.title': 'Hjelp og ressurser',
+  'help-resources.title': 'Hjelp og ressurser',
 
   /** Information for what studio version the current studio is running */
-  'helpResources.studio-version': `Sanity Studio versjon {{studioVersion}}`,
+  'help-resources.studio-version': `Sanity Studio versjon {{studioVersion}}`,
 
   /** Information for what the latest sanity version is */
-  'helpResources.latest-sanity-version': `Siste versjon er {{latestVersion}}`,
+  'help-resources.latest-sanity-version': `Siste versjon er {{latestVersion}}`,
 
   /**
    * Label for "join our community" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
-  'helpResources.action.join-our-community': `Bli med i vårt community`,
+  'help-resources.action.join-our-community': `Bli med i vårt community`,
 
   /**
    * Label for "help and support" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
-  'helpResources.action.help-and-support': `Hjelp og støtte`,
+  'help-resources.action.help-and-support': `Hjelp og støtte`,
 
   /**
    * Label for "contact sales" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
    */
-  'helpResources.action.contact-sales': `Kontakt salg`,
+  'help-resources.action.contact-sales': `Kontakt salg`,
 
   /** --- User Menu --- */
 

@@ -27,7 +27,7 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
     <>
       <MenuItem
         as="a"
-        text={t('helpResources.action.join-our-community')}
+        text={t('help-resources.action.join-our-community')}
         size={0}
         href="https://www.sanity.io/exchange/community"
         target="_blank"
@@ -35,7 +35,7 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
       />
       <MenuItem
         as="a"
-        text={t('helpResources.action.help-and-support')}
+        text={t('help-resources.action.help-and-support')}
         size={0}
         href="https://www.sanity.io/contact/support"
         target="_blank"
@@ -43,7 +43,7 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
       />
       <MenuItem
         as="a"
-        text={t('helpResources.action.contact-sales')}
+        text={t('help-resources.action.contact-sales')}
         size={0}
         href="https://www.sanity.io/contact/sales?ref=studio"
         target="_blank"
@@ -67,12 +67,12 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
       {/* Studio version information */}
       <Box padding={3}>
         <Text size={1} muted weight="medium" textOverflow="ellipsis">
-          {t('helpResources.studio-version', {studioVersion: SANITY_VERSION})}
+          {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
         </Text>
         {!error && latestStudioVersion && (
           <Box paddingTop={2}>
             <Text size={1} muted textOverflow="ellipsis">
-              {t('helpResources.latest-sanity-version', {
+              {t('help-resources.latest-sanity-version', {
                 latestVersion: latestStudioVersion,
               })}
             </Text>
