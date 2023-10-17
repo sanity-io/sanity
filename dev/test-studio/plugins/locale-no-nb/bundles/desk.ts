@@ -143,6 +143,25 @@ const deskResources: Record<DeskLocaleResourceKeys, string> = {
 
   /** Aria label for the button */
   'status-bar.review-changes-button.aria-label': 'Se endringer',
+
+  /** --- DOCUMENT JSON INSPECTOR --- */
+  /** Title shown for menu item that opens the "Inspect" dialog */
+  'document-inspector.menu-item.title': 'Inspiser',
+
+  /** The title shown in the dialog header, when inspecting a valid document */
+  'document-inspector.dialog.title': 'Inspiserer <DocumentTitle/>',
+
+  /** The title shown in the dialog header, when the document being inspected is not created yet/has no value */
+  'document-inspector.dialog.title-no-value': 'Ingen verdi',
+
+  /** The "parsed" view mode, meaning the JSON is searchable, collapsible etc */
+  'document-inspector.view-mode.parsed': 'Behandlet',
+
+  /** The "raw" view mode, meaning the JSON is presented syntax-highlighted, but with no other features - optimal for copying */
+  'document-inspector.view-mode.raw-json': 'Rå JSON',
+
+  /** --- "PRODUCTION PREVIEW", eg link to content --- */
+  'production-preview.menu-item.title': 'Åpne forhåndsvisning',
 }
 
 export default deskResources
