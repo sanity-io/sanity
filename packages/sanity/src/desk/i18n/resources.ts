@@ -146,6 +146,25 @@ const deskLocaleStrings = {
 
   /** Aria label for the button */
   'status-bar.review-changes-button.aria-label': 'Review changes',
+
+  /** --- DOCUMENT JSON INSPECTOR --- */
+  /** Title shown for menu item that opens the "Inspect" dialog */
+  'document-inspector.menu-item.title': 'Inspect',
+
+  /** The title shown in the dialog header, when inspecting a valid document */
+  'document-inspector.dialog.title': 'Inspecting <DocumentTitle/>',
+
+  /** The title shown in the dialog header, when the document being inspected is not created yet/has no value */
+  'document-inspector.dialog.title-no-value': 'No value',
+
+  /** The "parsed" view mode, meaning the JSON is searchable, collapsible etc */
+  'document-inspector.view-mode.parsed': 'Parsed',
+
+  /** The "raw" view mode, meaning the JSON is presented syntax-highlighted, but with no other features - optimal for copying */
+  'document-inspector.view-mode.raw-json': 'Raw JSON',
+
+  /** --- "PRODUCTION PREVIEW", eg link to content --- */
+  'production-preview.menu-item.title': 'Open preview',
 }
 
 /**

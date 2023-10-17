@@ -4,11 +4,13 @@ import React, {useCallback} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
 import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
+import {deskLocaleNamespace} from '../../../i18n'
 import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
+import {Translate, useTranslation} from 'sanity'
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null
@@ -39,19 +41,26 @@ export function InspectDialog(props: InspectDialogProps) {
     onViewModeChange(VIEW_MODE_RAW.id)
   }, [onViewModeChange])
 
+  const {t} = useTranslation(deskLocaleNamespace)
+
   return (
     <Dialog
       id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentLike(value) ? (
-          <>
-            Inspecting{' '}
-            <em>
-              <DocTitle document={value} />
-            </em>
-          </>
+          <Translate
+            t={t}
+            i18nKey="document-inspector.dialog.title"
+            components={{
+              DocumentTitle: () => (
+                <em>
+                  <DocTitle document={value} />
+                </em>
+              ),
+            }}
+          />
         ) : (
-          <em>No value</em>
+          <em>{t('document-inspector.dialog.title-no-value')}</em>
         )
       }
       onClose={onInspectClose}
@@ -65,7 +74,7 @@ export function InspectDialog(props: InspectDialogProps) {
               aria-controls={`${dialogIdPrefix}tabpanel`}
               fontSize={1}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_PARSED.id}`}
-              label={VIEW_MODE_PARSED.title}
+              label={t(VIEW_MODE_PARSED.title)}
               onClick={setParsedViewMode}
               selected={viewMode === VIEW_MODE_PARSED}
             />
@@ -73,7 +82,7 @@ export function InspectDialog(props: InspectDialogProps) {
               aria-controls={`${dialogIdPrefix}tabpanel`}
               fontSize={1}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_RAW.id}`}
-              label={VIEW_MODE_RAW.title}
+              label={t(VIEW_MODE_RAW.title)}
               onClick={setRawViewMode}
               selected={viewMode === VIEW_MODE_RAW}
             />
