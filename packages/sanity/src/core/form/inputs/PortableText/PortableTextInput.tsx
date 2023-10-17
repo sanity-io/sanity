@@ -224,17 +224,20 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return items
   }, [members, props])
 
-  const hasFocus =
+  // Is true if something inside the editor itself has focus,
+  // as opposed to focus on a form field inside an
+  // annotation or object block's editing interface.
+  const hasFocusWithin =
     focused ||
     (focusPath.length > 0 &&
       portableTextMemberItems.some((m) => m.member.open && m.kind === 'textBlock'))
 
-  // Set active if focused
+  // Set active if focused within the editor
   useEffect(() => {
-    if (hasFocus) {
+    if (hasFocusWithin) {
       setIsActive(true)
     }
-  }, [hasFocus])
+  }, [hasFocusWithin])
 
   // Handle editor changes
   const handleEditorChange = useCallback(
@@ -334,7 +337,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
             >
               <Compositor
                 {...props}
-                hasFocus={hasFocus}
+                hasFocusWithin={hasFocusWithin}
                 hotkeys={hotkeys}
                 isActive={isActive}
                 isFullscreen={isFullscreen}
