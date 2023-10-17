@@ -57,6 +57,10 @@ function WorkspaceLoader({
             ...rootSource,
             unstable_sources: [rootSource, ...restOfSources],
             type: 'workspace',
+            __internal: {
+              ...rootSource.__internal,
+              i18next: activeWorkspace.__internal.i18next,
+            },
           }),
         ),
       )

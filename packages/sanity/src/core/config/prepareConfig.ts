@@ -105,11 +105,14 @@ export function prepareConfig(
   }
 
   const workspaces = workspaceOptions.map((rawWorkspace): WorkspaceSummary => {
-    if (preparedWorkspaces.has(rawWorkspace)) {
-      return preparedWorkspaces.get(rawWorkspace)!
+    const preparedWorkspace = preparedWorkspaces.get(rawWorkspace)
+    if (preparedWorkspace) {
+      return preparedWorkspace
     }
+
     const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
     const sources = [rootSource as SourceOptions, ...nestedSources]
+    const i18n = prepareI18n({name: 'default', ...rawWorkspace})
 
     const resolvedSources = sources.map((source): InternalSource => {
       const {projectId, dataset} = source
@@ -147,7 +150,6 @@ export function prepareConfig(
       }
 
       const auth = getAuthStore(source)
-      const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
           return resolveSource({
@@ -170,7 +172,6 @@ export function prepareConfig(
         title: source.title || startCase(source.name),
         auth,
         schema,
-        i18n: i18n.source,
         source: source$,
       }
     })
@@ -183,7 +184,7 @@ export function prepareConfig(
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
       schema: resolvedSources[0].schema,
-      i18n: resolvedSources[0].i18n,
+      i18n: i18n.source,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,
@@ -191,6 +192,7 @@ export function prepareConfig(
       title,
       subtitle: rootSource.subtitle,
       __internal: {
+        i18next: i18n.i18next,
         sources: resolvedSources,
       },
     }
@@ -467,7 +469,6 @@ function resolveSource({
     authenticated,
     templates,
     auth,
-    i18n: i18n.source,
     document: {
       actions: (partialContext) =>
         resolveConfigProperty({
@@ -570,7 +571,6 @@ function resolveSource({
 
     __internal: {
       bifur,
-      i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
     },

@@ -26,6 +26,10 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
             ...sources[0],
             unstable_sources: sources,
             type: 'workspace',
+            __internal: {
+              ...sources[0].__internal,
+              i18next: workspaceSummary.__internal.i18next,
+            },
           }),
         ),
       ),

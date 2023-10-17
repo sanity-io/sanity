@@ -1,7 +1,7 @@
 import {I18nextProvider} from 'react-i18next'
 import React, {PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalStore} from 'react'
 import type {i18n} from 'i18next'
-import {useSource} from '../../studio'
+import {useWorkspace} from '../../studio'
 import {LoadingScreen} from '../../studio/screens'
 import {storePreferredLocale} from '../localeStore'
 import {LocaleContext, LocaleContextValue} from '../LocaleContext'
@@ -11,18 +11,15 @@ import {LocaleContext, LocaleContextValue} from '../LocaleContext'
  */
 export function LocaleProvider(props: PropsWithChildren) {
   const {
-    projectId,
-    name: sourceId,
-
+    name: workspaceName,
     i18n: {locales},
     __internal: {i18next},
-  } = useSource()
+  } = useWorkspace()
 
   return (
     <LocaleProviderBase
       {...props}
-      projectId={projectId}
-      sourceId={sourceId}
+      workspaceName={workspaceName}
       locales={locales}
       i18next={i18next}
     />
@@ -33,14 +30,12 @@ export function LocaleProvider(props: PropsWithChildren) {
  * @internal
  */
 export function LocaleProviderBase({
-  projectId,
-  sourceId,
+  workspaceName,
   locales,
   i18next,
   children,
 }: PropsWithChildren<{
-  projectId: string
-  sourceId: string
+  workspaceName: string
   locales: {id: string; title: string}[]
   i18next: i18n
 }>) {
@@ -51,7 +46,11 @@ export function LocaleProviderBase({
     },
     [i18next],
   )
-  const currentLocale = useSyncExternalStore(subscribe, () => i18next.language)
+  const currentLocale = useSyncExternalStore(
+    subscribe,
+    () => i18next.language,
+    () => i18next.language,
+  )
 
   const context = useMemo<LocaleContextValue>(
     () => ({
@@ -59,11 +58,11 @@ export function LocaleProviderBase({
       currentLocale,
       __internal: {i18next},
       changeLocale: async (newLocale: string) => {
-        storePreferredLocale(projectId, sourceId, newLocale)
+        storePreferredLocale(workspaceName, newLocale)
         await i18next.changeLanguage(newLocale)
       },
     }),
-    [currentLocale, i18next, locales, projectId, sourceId],
+    [currentLocale, i18next, locales, workspaceName],
   )
 
   return (

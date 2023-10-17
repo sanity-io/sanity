@@ -2,7 +2,10 @@ import {PaneNode, UnresolvedPaneNode} from '../../types'
 import {createStructureBuilder, SerializeError} from '../../structureBuilder'
 import {resolveIntent} from '../resolveIntent'
 import {PaneResolutionError} from '../PaneResolutionError'
-import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
+import {
+  getMockSource,
+  getMockWorkspace,
+} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {SchemaPluginOptions} from 'sanity'
 
 const mockSchema: SchemaPluginOptions = {
@@ -38,7 +41,8 @@ const mockSchema: SchemaPluginOptions = {
 describe('resolveIntent', () => {
   it('takes in an intent request and returns `RouterPanes` that match the request', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    const S = createStructureBuilder({source})
+    const workspace = await getMockWorkspace({config: {schema: mockSchema}})
+    const S = createStructureBuilder({source, workspace})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -65,7 +69,8 @@ describe('resolveIntent', () => {
 
   it('resolves singletons', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    const S = createStructureBuilder({source})
+    const workspace = await getMockWorkspace({config: {schema: mockSchema}})
+    const S = createStructureBuilder({source, workspace})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -92,7 +97,8 @@ describe('resolveIntent', () => {
 
   it('resolves nested singletons', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    const S = createStructureBuilder({source})
+    const workspace = await getMockWorkspace({config: {schema: mockSchema}})
+    const S = createStructureBuilder({source, workspace})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -139,7 +145,8 @@ describe('resolveIntent', () => {
 
   it('returns the shallowest match', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    const S = createStructureBuilder({source})
+    const workspace = await getMockWorkspace({config: {schema: mockSchema}})
+    const S = createStructureBuilder({source, workspace})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -194,7 +201,8 @@ describe('resolveIntent', () => {
 
   it('resolves to the fallback editor if no match is found', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    const S = createStructureBuilder({source})
+    const workspace = await getMockWorkspace({config: {schema: mockSchema}})
+    const S = createStructureBuilder({source, workspace})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -218,7 +226,8 @@ describe('resolveIntent', () => {
 
   it('matches document nodes that have the same ID as the target ID', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    const S = createStructureBuilder({source})
+    const workspace = await getMockWorkspace({config: {schema: mockSchema}})
+    const S = createStructureBuilder({source, workspace})
 
     const rootPaneNode = S.list()
       .title('Content')
@@ -248,7 +257,8 @@ describe('resolveIntent', () => {
 
   it('resolves pane nodes that implement `canHandleIntent`', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    const S = createStructureBuilder({source})
+    const workspace = await getMockWorkspace({config: {schema: mockSchema}})
+    const S = createStructureBuilder({source, workspace})
 
     const list = S.list()
       .canHandleIntent(() => true)
@@ -290,7 +300,8 @@ describe('resolveIntent', () => {
 
   it('bubbles (re-throws) structure errors wrapped in a PaneResolutionError', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
-    const S = createStructureBuilder({source})
+    const workspace = await getMockWorkspace({config: {schema: mockSchema}})
+    const S = createStructureBuilder({source, workspace})
 
     const rootPaneNode = S.list().title('Content').items([
       // will give a missing ID error

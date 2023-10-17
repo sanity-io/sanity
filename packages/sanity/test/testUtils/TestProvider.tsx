@@ -23,8 +23,6 @@ export async function createTestProvider({client, config}: TestProviderOptions =
 
   const locales = [usEnglishLocale]
   const {i18next} = prepareI18n({
-    projectId: 'test',
-    dataset: 'test',
     name: 'test',
     i18n: {bundles: [studioDefaultLocaleResources]},
   })
@@ -34,17 +32,17 @@ export async function createTestProvider({client, config}: TestProviderOptions =
   function TestProvider({children}: {children: React.ReactNode}) {
     return (
       <ThemeProvider theme={studioTheme}>
-        <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">
-          <ToastProvider>
-            <LayerProvider>
-              <WorkspaceProvider workspace={workspace}>
+        <WorkspaceProvider workspace={workspace}>
+          <LocaleProviderBase locales={locales} i18next={i18next} workspaceName="test">
+            <ToastProvider>
+              <LayerProvider>
                 <SourceProvider source={workspace.unstable_sources[0]}>
                   <ResourceCacheProvider>{children}</ResourceCacheProvider>
                 </SourceProvider>
-              </WorkspaceProvider>
-            </LayerProvider>
-          </ToastProvider>
-        </LocaleProviderBase>
+              </LayerProvider>
+            </ToastProvider>
+          </LocaleProviderBase>
+        </WorkspaceProvider>
       </ThemeProvider>
     )
   }

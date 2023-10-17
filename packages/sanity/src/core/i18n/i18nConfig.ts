@@ -1,23 +1,31 @@
 import {createInstance as createI18nInstance, type InitOptions, type i18n} from 'i18next'
 import {initReactI18next} from 'react-i18next'
-import type {SourceOptions} from '../config'
+import type {PluginOptions} from '../config'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
 import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
 import {defaultLocale} from './locales'
 import {createSanityI18nBackend} from './backend'
-import {LocaleSource, LocaleDefinition, LocaleResourceBundle} from './types'
+import type {
+  LocaleSource,
+  LocaleDefinition,
+  LocaleResourceBundle,
+  LocaleConfigContext,
+} from './types'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {getPreferredLocale} from './localeStore'
 
 /**
  * @internal
  */
-export function prepareI18n(source: SourceOptions): {source: LocaleSource; i18next: i18n} {
-  const {projectId, dataset, name: sourceName} = source
-  const context = {projectId: projectId, dataset}
+export function prepareI18n(workspace: PluginOptions): {
+  source: LocaleSource
+  i18next: i18n
+} {
+  const {name: workspaceName = 'default'} = workspace
+  const context: LocaleConfigContext = {workspaceName}
 
   const locales = resolveConfigProperty({
-    config: source,
+    config: workspace,
     context,
     propertyName: 'i18n.locales',
     reducer: localeDefReducer,
@@ -25,7 +33,7 @@ export function prepareI18n(source: SourceOptions): {source: LocaleSource; i18ne
   })
 
   const bundles = resolveConfigProperty({
-    config: source,
+    config: workspace,
     context,
     propertyName: 'i18n.bundles',
     reducer: localeBundlesReducer,
@@ -35,23 +43,20 @@ export function prepareI18n(source: SourceOptions): {source: LocaleSource; i18ne
   return createI18nApi({
     locales,
     bundles,
-    projectId,
-    sourceName,
+    workspaceName,
   })
 }
 
 function createI18nApi({
   locales,
   bundles,
-  projectId,
-  sourceName,
+  workspaceName,
 }: {
   locales: LocaleDefinition[]
   bundles: LocaleResourceBundle[]
-  projectId: string
-  sourceName: string
+  workspaceName: string
 }): {source: LocaleSource; i18next: i18n} {
-  const options = getI18NextOptions(projectId, sourceName, locales)
+  const options = getI18NextOptions(workspaceName, locales)
   const i18nInstance = createI18nInstance()
     .use(createSanityI18nBackend({bundles}))
     .use(initReactI18next)
@@ -159,11 +164,10 @@ const defaultOptions: InitOptions = {
 }
 
 function getI18NextOptions(
-  projectId: string,
-  sourceName: string,
+  workspaceName: string,
   locales: LocaleDefinition[],
 ): InitOptions & {lng: string} {
-  const preferredLocaleId = getPreferredLocale(projectId, sourceName)
+  const preferredLocaleId = getPreferredLocale(workspaceName)
   const preferredLocale = locales.find((l) => l.id === preferredLocaleId)
   const locale = preferredLocale?.id ?? locales[0]?.id ?? defaultOptions.lng
   return {

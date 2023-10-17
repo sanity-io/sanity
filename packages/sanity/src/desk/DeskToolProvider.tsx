@@ -2,7 +2,7 @@ import React, {useMemo, useState} from 'react'
 import {DeskToolContext} from './DeskToolContext'
 import {createStructureBuilder, DefaultDocumentNodeResolver} from './structureBuilder'
 import {DeskToolContextValue, StructureResolver, UnresolvedPaneNode} from './types'
-import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
+import {useActiveWorkspace, useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
 
 /** @internal */
 export interface DeskToolProviderProps {
@@ -19,15 +19,17 @@ export function DeskToolProvider({
 }: DeskToolProviderProps): React.ReactElement {
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const source = useSource()
-  const configContext = useConfigContextFromSource(source)
+  const {activeWorkspace: workspace} = useActiveWorkspace()
+  const configContext = useConfigContextFromSource(source, workspace)
   const documentStore = useDocumentStore()
 
   const S = useMemo(() => {
     return createStructureBuilder({
       defaultDocumentNode,
       source,
+      workspace,
     })
-  }, [defaultDocumentNode, source])
+  }, [defaultDocumentNode, source, workspace])
 
   const rootPaneNode = useMemo(() => {
     // TODO: unify types and remove cast
