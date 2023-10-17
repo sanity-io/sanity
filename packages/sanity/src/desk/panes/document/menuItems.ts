@@ -1,7 +1,7 @@
 import {BinaryDocumentIcon, EarthAmericasIcon} from '@sanity/icons'
-import {DeskToolFeatures, PaneMenuItem} from '../../types'
+import type {DeskToolFeatures, PaneMenuItem} from '../../types'
 import {INSPECT_ACTION_PREFIX} from './constants'
-import {DocumentInspector, DocumentInspectorMenuItem, ValidationMarker} from 'sanity'
+import type {DocumentInspector, DocumentInspectorMenuItem, TFunction} from 'sanity'
 
 interface GetMenuItemsParams {
   currentInspector?: DocumentInspector
@@ -10,6 +10,7 @@ interface GetMenuItemsParams {
   inspectors: DocumentInspector[]
   previewUrl?: string | null
   inspectorMenuItems: DocumentInspectorMenuItem[]
+  t: TFunction
 }
 
 function getInspectorItems({
@@ -39,24 +40,24 @@ function getInspectorItems({
     .filter(Boolean) as PaneMenuItem[]
 }
 
-function getInspectItem({hasValue}: GetMenuItemsParams): PaneMenuItem {
+function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
   return {
     action: 'inspect',
     group: 'inspectors',
-    title: 'Inspect',
+    title: t('document-inspector.menu-item.title'),
     icon: BinaryDocumentIcon,
     isDisabled: !hasValue,
     shortcut: 'Ctrl+Alt+I',
   }
 }
 
-export function getProductionPreviewItem({previewUrl}: GetMenuItemsParams): PaneMenuItem | null {
+export function getProductionPreviewItem({previewUrl, t}: GetMenuItemsParams): PaneMenuItem | null {
   if (!previewUrl) return null
 
   return {
     action: 'production-preview',
     group: 'links',
-    title: 'Open preview',
+    title: t('production-preview.menu-item.title'),
     icon: EarthAmericasIcon,
     shortcut: 'Ctrl+Alt+O',
   }
