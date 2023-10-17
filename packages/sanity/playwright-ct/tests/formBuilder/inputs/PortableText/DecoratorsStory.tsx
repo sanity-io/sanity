@@ -2,6 +2,7 @@ import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import React from 'react'
 import {BulbOutlineIcon} from '@sanity/icons'
 import {TestWrapper} from '../../utils/TestWrapper'
+import {TestForm} from '../../utils/TestForm'
 
 const SCHEMA_TYPES = [
   defineType({
@@ -35,7 +36,11 @@ const SCHEMA_TYPES = [
 ]
 
 export function DecoratorsStory() {
-  return <TestWrapper schemaTypes={SCHEMA_TYPES} />
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm />
+    </TestWrapper>
+  )
 }
 
 export default DecoratorsStory
