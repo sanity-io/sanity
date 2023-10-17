@@ -26,7 +26,7 @@ import {useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
-  hasFocus: boolean
+  hasFocusWithin: boolean
   hotkeys?: HotkeyOptions
   isActive: boolean
   isFullscreen: boolean
@@ -48,7 +48,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     changed,
     focused,
     focusPath = EMPTY_ARRAY,
-    hasFocus,
+    hasFocusWithin,
     hotkeys,
     isActive,
     isFullscreen,
@@ -385,7 +385,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       <Editor
         ariaDescribedBy={ariaDescribedBy}
         initialSelection={initialSelection}
-        hasFocus={hasFocus}
+        hasFocus={hasFocusWithin}
         hotkeys={editorHotkeys}
         isActive={isActive}
         isFullscreen={isFullscreen}
@@ -408,7 +408,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       ariaDescribedBy,
       initialSelection,
-      hasFocus,
+      hasFocusWithin,
       editorHotkeys,
       isActive,
       isFullscreen,
@@ -453,7 +453,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           isChanged={changed}
           path={path}
         >
-          <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
+          <Root
+            data-focused={hasFocusWithin ? '' : undefined}
+            data-read-only={readOnly ? '' : undefined}
+          >
             <Box data-wrapper="" ref={setWrapperElement}>
               <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
                 {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
