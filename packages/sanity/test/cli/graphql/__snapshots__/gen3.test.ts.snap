@@ -112,6 +112,28 @@ Object {
     Object {
       "args": Array [
         Object {
+          "description": "DocumentWithCdrField document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": Array [
+        Object {
+          "comparator": "eq",
+          "field": "_id",
+          "value": Object {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "DocumentWithCdrField",
+      "type": "DocumentWithCdrField",
+    },
+    Object {
+      "args": Array [
+        Object {
           "description": "Poppers document ID",
           "isNullable": false,
           "name": "id",
@@ -249,7 +271,7 @@ Object {
         },
       ],
       "fieldName": "allDocument",
-      "filter": "_type in [\\"sanity.imageAsset\\", \\"sanity.fileAsset\\", \\"documentActionsTest\\", \\"poppers\\", \\"author\\"]",
+      "filter": "_type in [\\"sanity.imageAsset\\", \\"sanity.fileAsset\\", \\"documentActionsTest\\", \\"poppers\\", \\"author\\", \\"documentWithCdrField\\"]",
       "type": Object {
         "children": Object {
           "isNullable": false,
@@ -296,6 +318,48 @@ Object {
         "children": Object {
           "isNullable": false,
           "type": "DocumentActionsTest",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        Object {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        Object {
+          "name": "sort",
+          "type": Object {
+            "children": Object {
+              "isNullable": false,
+              "type": "DocumentWithCdrFieldSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        Object {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "DocumentWithCdrFieldFilter",
+        },
+      ],
+      "fieldName": "allDocumentWithCdrField",
+      "filter": "_type == \\"documentWithCdrField\\"",
+      "type": Object {
+        "children": Object {
+          "isNullable": false,
+          "type": "DocumentWithCdrField",
         },
         "isNullable": false,
         "kind": "List",
@@ -676,6 +740,117 @@ Object {
       "isConstraintFilter": true,
       "kind": "InputObject",
       "name": "BooleanFilter",
+    },
+    Object {
+      "crossDatasetReferenceMetadata": Object {
+        "dataset": "production",
+        "typeNames": Array [
+          "person",
+        ],
+      },
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_dataset",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_projectId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "CdrPersonReference",
+      "originalName": "cdrPersonReference",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_dataset",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_projectId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CdrPersonReferenceFilter",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_dataset",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_projectId",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CdrPersonReferenceSorting",
     },
     Object {
       "description": undefined,
@@ -1274,6 +1449,163 @@ Object {
       ],
       "kind": "InputObject",
       "name": "DocumentSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "crossDatasetReferenceMetadata": Object {
+            "dataset": "production",
+            "typeNames": Array [
+              "person",
+              "place",
+            ],
+          },
+          "fieldName": "cdrFieldInline",
+          "type": "CrossDatasetReference",
+        },
+        Object {
+          "crossDatasetReferenceMetadata": Object {
+            "dataset": "production",
+            "typeNames": Array [
+              "person",
+            ],
+          },
+          "fieldName": "cdrFieldNamed",
+          "type": "CdrPersonReference",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "DocumentWithCdrField",
+      "originalName": "documentWithCdrField",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        Object {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "cdrFieldInline",
+          "isReference": undefined,
+          "type": "CrossDatasetReferenceFilter",
+        },
+        Object {
+          "fieldName": "cdrFieldNamed",
+          "isReference": undefined,
+          "type": "CdrPersonReferenceFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentWithCdrFieldFilter",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "cdrFieldInline",
+          "type": "CrossDatasetReferenceSorting",
+        },
+        Object {
+          "fieldName": "cdrFieldNamed",
+          "type": "CdrPersonReferenceSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentWithCdrFieldSorting",
     },
     Object {
       "description": undefined,
