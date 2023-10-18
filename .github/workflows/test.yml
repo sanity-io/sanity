@@ -5,7 +5,6 @@ on:
   pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [next]
 
 jobs:
   test:
