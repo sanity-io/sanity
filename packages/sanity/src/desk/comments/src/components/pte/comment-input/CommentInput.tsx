@@ -69,6 +69,11 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
 
     const handleChange = useCallback(
       (change: EditorChange) => {
+        if (change.type === 'ready') {
+          if (focusOnMount && editorRef.current) {
+            PortableTextEditor.focus(editorRef.current)
+          }
+        }
         if (change.type === 'focus') {
           setFocused(true)
         }
@@ -81,7 +86,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
           onChange(change.snapshot)
         }
       },
-      [onChange],
+      [focusOnMount, onChange],
     )
 
     const scrollToEditor = useCallback(() => {
