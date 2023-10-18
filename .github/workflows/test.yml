@@ -79,6 +79,6 @@ jobs:
         run: |
           node -v
           npm -v
-          yarn test
+          yarn test --silent
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
