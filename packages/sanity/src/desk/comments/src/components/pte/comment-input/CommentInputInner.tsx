@@ -92,15 +92,23 @@ export function CommentInputInner(props: CommentInputInnerProps) {
 
   const avatar = withAvatar ? <CommentsAvatar user={user} /> : null
 
-  const handleDiscardEdit = useCallback(() => {
-    onEditDiscard()
-    discardButtonElement?.blur()
-  }, [discardButtonElement, onEditDiscard])
+  const handleDiscardEdit = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+      onEditDiscard()
+      discardButtonElement?.blur()
+    },
+    [discardButtonElement, onEditDiscard],
+  )
 
-  const handleMentionButtonClicked = useCallback(() => {
-    insertAtChar()
-    openMentions()
-  }, [insertAtChar, openMentions])
+  const handleMentionButtonClicked = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+      insertAtChar()
+      openMentions()
+    },
+    [insertAtChar, openMentions],
+  )
 
   return (
     <Flex align="flex-start" gap={2}>

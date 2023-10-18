@@ -3,7 +3,7 @@ import {Button, Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser, Path} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
-// import * as PathUtils from '@sanity/util/paths'
+import * as PathUtils from '@sanity/util/paths'
 import {CommentInput, CommentInputHandle} from '../pte'
 import {
   CommentCreatePayload,
@@ -21,18 +21,35 @@ const EMPTY_ARRAY: [] = []
 
 const MAX_COLLAPSED_REPLIES = 5
 
-const StyledThreadCard = styled(ThreadCard)`
-  // When hovering over the thread root we want to display the parent comments menu.
-  // The data-root-menu attribute is used to target the menu and is applied in
-  // the CommentsListItemLayout component.
-  @media (hover: hover) {
-    &:hover {
-      [data-root-menu='true'] {
-        opacity: 1;
+const StyledThreadCard = styled(ThreadCard)(({theme}) => {
+  const {hovered} = theme.sanity.color.button.bleed.default
+
+  return css`
+    position: relative;
+
+    &:has(> [data-ui='GhostButton']:focus:focus-visible) {
+      box-shadow:
+        inset 0 0 0 1px var(--card-border-color),
+        0 0 0 1px var(--card-bg-color),
+        0 0 0 3px var(--card-focus-ring-color);
+    }
+
+    // When hovering over the thread root we want to display the parent comments menu.
+    // The data-root-menu attribute is used to target the menu and is applied in
+    // the CommentsListItemLayout component.
+    &:not([data-active='true']) {
+      @media (hover: hover) {
+        &:hover {
+          --card-bg-color: ${hovered.bg2};
+
+          [data-root-menu='true'] {
+            opacity: 1;
+          }
+        }
       }
     }
-  }
-`
+  `
+})
 
 const ExpandButton = styled(Button)(({theme}) => {
   const {medium} = theme.sanity.fonts.text.weights
@@ -41,6 +58,16 @@ const ExpandButton = styled(Button)(({theme}) => {
     font-weight: ${medium};
   `
 })
+
+const GhostButton = styled(Button)`
+  /* background: orange; */
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+`
 
 interface CommentsListItemProps {
   canReply?: boolean
@@ -55,6 +82,7 @@ interface CommentsListItemProps {
   onStatusChange?: (id: string, status: CommentStatus) => void
   parentComment: CommentDocument
   replies: CommentDocument[] | undefined
+  selected?: boolean
 }
 
 export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
@@ -71,6 +99,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     onStatusChange,
     parentComment,
     replies = EMPTY_ARRAY,
+    selected,
   } = props
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
@@ -101,17 +130,17 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     value,
   ])
 
-  // const handleThreadRootClick = useCallback(() => {
-  //   const path = PathUtils.fromString(parentComment.target.path.field)
-
-  //   onPathFocus?.(path)
-  // }, [onPathFocus, parentComment.target.path.field])
+  const handleThreadRootClick = useCallback(() => {
+    const path = PathUtils.fromString(parentComment.target.path.field)
+    onPathFocus?.(path)
+  }, [onPathFocus, parentComment.target.path.field])
 
   const cancelEdit = useCallback(() => {
     setValue(EMPTY_ARRAY)
   }, [])
 
-  const handleExpand = useCallback(() => {
+  const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
     setCollapsed(false)
     didExpand.current = true
   }, [])
@@ -140,7 +169,13 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
 
   return (
     <Stack space={2}>
-      <StyledThreadCard>
+      <StyledThreadCard
+        data-active={selected ? 'true' : 'fase'}
+        onClick={handleThreadRootClick}
+        tone={selected ? 'primary' : undefined}
+      >
+        <GhostButton data-ui="GhostButton" aria-label="Go to field" />
+
         <Stack
           as="ul"
           // Add some extra padding to the bottom if there is no reply input.
@@ -162,7 +197,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onCreateRetry={onCreateRetry}
               onDelete={onDelete}
               onEdit={onEdit}
-              onPathFocus={onPathFocus}
               onStatusChange={onStatusChange}
             />
           </Stack>

@@ -207,6 +207,7 @@ export default function CommentsListStory() {
           onNewThreadCreate={handleNewThreadCreate}
           onReply={handleReplySubmit}
           onStatusChange={handleStatusChange}
+          selectedPath={null}
           status={status}
         />
       </Container>
