@@ -26,10 +26,12 @@ export function createRuleOptions(blockContentType: ArraySchemaType): BlockEnabl
   const enabledBlockStyles = features.styles.map((item) => item.value || item.title)
   const enabledSpanDecorators = features.decorators.map((item) => item.value || item.title)
   const enabledBlockAnnotations = features.annotations.map((item) => item.value || item.title || '')
+  const enabledListTypes = features.lists.map((item) => item.value || item.title || '')
   return {
     enabledBlockStyles,
     enabledSpanDecorators,
     enabledBlockAnnotations,
+    enabledListTypes,
   }
 }
 

@@ -118,5 +118,6 @@ export interface DeserializerRule {
 export interface BlockEnabledFeatures {
   enabledBlockStyles: string[]
   enabledSpanDecorators: string[]
+  enabledListTypes: string[]
   enabledBlockAnnotations: string[]
 }
