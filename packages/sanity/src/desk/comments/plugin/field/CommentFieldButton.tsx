@@ -13,8 +13,6 @@ import {
 } from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CommentIcon} from '../common/CommentIcon'
-import {DocumentPaneContextValue} from '../../../panes/document/DocumentPaneContext'
-import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {CommentMessage, useComments, CommentInput} from '../../src'
 import {CurrentUser, PortableTextBlock, useDidUpdate} from 'sanity'
 
@@ -47,13 +45,12 @@ const StyledPopover = styled(Popover)(({theme}) => {
 interface CommentFieldButtonProps {
   count: number
   currentUser: CurrentUser
-  hasComments: boolean
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
   onCommentAdd: () => void
   onDiscardEdit: () => void
   onOpenChange: (open: boolean) => void
-  openInspector: DocumentPaneContextValue['openInspector']
+  openInspector: () => void
   value: CommentMessage
 }
 
@@ -61,7 +58,6 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
   const {
     count,
     currentUser,
-    hasComments,
     onChange,
     onClick,
     onCommentAdd,
@@ -76,6 +72,8 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
 
   const {mentionOptions} = useComments()
 
+  const hasComments = Boolean(count > 0)
+
   const close = useCallback(() => setOpen(false), [])
 
   const conditionalClose = useCallback(() => {
@@ -87,7 +85,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     onClick?.()
 
     if (hasComments) {
-      openInspector(COMMENTS_INSPECTOR_NAME)
+      openInspector()
       setOpen(false)
       return
     }

@@ -1,30 +1,12 @@
 import {
-  CheckmarkCircleIcon,
-  EditIcon,
-  TrashIcon,
-  EllipsisVerticalIcon,
-  UndoIcon,
-  EyeOpenIcon,
-  LinkIcon,
-} from '@sanity/icons'
-import {
   TextSkeleton,
   Flex,
-  Button,
   Stack,
   Text,
   Card,
   useGlobalKeyDown,
-  Layer,
   useClickOutside,
-  MenuButton,
-  Menu,
-  MenuItem,
   Box,
-  TooltipDelayGroupProvider,
-  TooltipDelayGroupProviderProps,
-  MenuButtonProps,
-  MenuDivider,
 } from '@sanity/ui'
 import React, {useCallback, useRef, useState} from 'react'
 import {CurrentUser, Path} from '@sanity/types'
@@ -42,13 +24,21 @@ import {
 } from '../../types'
 import {FLEX_GAP} from '../constants'
 import {useCommentHasChanged} from '../../helpers'
-import {TextTooltip} from '../TextTooltip'
 import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
+import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {TimeAgoOpts, useTimeAgo, useUser, useDidUpdate} from 'sanity'
 
-const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
+export function StopPropagation(props: React.PropsWithChildren) {
+  const {children} = props
+
+  const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation()
+  }, [])
+
+  return <Stack onClick={handleClick}>{children}</Stack>
+}
+
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
-const POPOVER_PROPS: MenuButtonProps['popover'] = {placement: 'bottom-end'}
 
 const TimeText = styled(Text)`
   min-width: max-content;
@@ -67,19 +57,6 @@ const ErrorFlex = styled(Flex)`
   min-height: ${AVATAR_HEIGHT}px;
 `
 
-const FloatingLayer = styled(Layer)(({theme}) => {
-  const {space} = theme.sanity
-
-  return css`
-    opacity: 1;
-    transform: translate(${space[1]}px, -${space[1]}px);
-    // If hover is supported, the position is set to absolute (see below)
-    position: static;
-    right: 0;
-    top: 0;
-  `
-})
-
 const RetryCardButton = styled(Card)`
   // Add not on hover
   &:not(:hover) {
@@ -87,46 +64,46 @@ const RetryCardButton = styled(Card)`
   }
 `
 
-const FloatingCard = styled(Card)(({theme}) => {
+const StyledCommentsListItemContextMenu = styled(CommentsListItemContextMenu)``
+
+const RootStack = styled(Stack)(({theme}) => {
   const {space} = theme.sanity
 
   return css`
-    gap: ${space[1] / 2}px;
-    padding: ${space[1] / 2}px;
+    position: relative;
 
-    &:empty {
-      display: none;
-    }
-  `
-})
-
-const RootStack = styled(Stack)`
-  position: relative;
-
-  // Only show the floating layer when hover is supported.
-  // Else, the layer is always visible.
-  @media (hover: hover) {
-    ${FloatingLayer} {
-      position: absolute;
-
-      &:not(:focus-within) {
+    // Only show the floating layer on hover when hover is supported.
+    // Else, the layer is always visible.
+    @media (hover: hover) {
+      ${StyledCommentsListItemContextMenu} {
         opacity: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+
+        transform: translate(${space[1]}px, -${space[1]}px);
+      }
+
+      ${StyledCommentsListItemContextMenu} {
+        &:focus-within {
+          opacity: 1;
+        }
+      }
+
+      &:hover {
+        ${StyledCommentsListItemContextMenu} {
+          opacity: 1;
+        }
       }
     }
 
-    &:hover {
-      ${FloatingLayer} {
+    &[data-menu-open='true'] {
+      ${StyledCommentsListItemContextMenu} {
         opacity: 1;
       }
     }
-  }
-
-  &[data-menu-open='true'] {
-    ${FloatingLayer} {
-      opacity: 1;
-    }
-  }
-`
+  `
+})
 
 interface CommentsListItemLayoutProps {
   canDelete?: boolean
@@ -141,7 +118,6 @@ interface CommentsListItemLayoutProps {
   onCreateRetry?: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, message: CommentEditPayload) => void
-  onPathFocus?: (path: Path) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
 }
 
@@ -161,7 +137,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     onCreateRetry,
     onDelete,
     onEdit,
-    onPathFocus,
     onStatusChange,
   } = props
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
@@ -225,10 +200,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     setIsEditing((v) => !v)
   }, [])
 
-  const handlePathFocus = useCallback(() => {
-    onPathFocus?.(PathUtils.fromString(comment.target.path.field))
-  }, [comment.target.path.field, onPathFocus])
-
   useDidUpdate(isEditing, () => {
     setMenuOpen(false)
   })
@@ -255,9 +226,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   ) : (
     <TextSkeleton size={1} style={SKELETON_INLINE_STYLE} />
   )
-
-  const contextMenuEnabled = canEdit || canDelete || onCopyLink
-  const floatingMenuEnabled = isParent || onPathFocus || onStatusChange || contextMenuEnabled
 
   return (
     <RootStack data-menu-open={menuOpen ? 'true' : 'false'} ref={setRootElement} space={4}>
@@ -286,97 +254,20 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           </Flex>
 
           {!isEditing && !displayError && (
-            <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
-              <FloatingLayer
-                hidden={!floatingMenuEnabled}
-                data-root-menu={isParent ? 'true' : 'false'}
-              >
-                <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
-                  {isParent && (
-                    <>
-                      {onPathFocus && (
-                        <TextTooltip text="Go to field">
-                          <Button
-                            aria-label="Go to field"
-                            fontSize={1}
-                            icon={EyeOpenIcon}
-                            mode="bleed"
-                            onClick={handlePathFocus}
-                            padding={2}
-                          />
-                        </TextTooltip>
-                      )}
-
-                      {onStatusChange && (
-                        <TextTooltip
-                          text={comment.status === 'open' ? 'Mark as resolved' : 'Re-open'}
-                        >
-                          <Button
-                            aria-label="Mark comment as resolved"
-                            fontSize={1}
-                            icon={comment.status === 'open' ? CheckmarkCircleIcon : UndoIcon}
-                            mode="bleed"
-                            onClick={handleOpenStatusChange}
-                            padding={2}
-                          />
-                        </TextTooltip>
-                      )}
-                    </>
-                  )}
-
-                  {contextMenuEnabled && (
-                    <MenuButton
-                      id="comment-actions-menu"
-                      button={
-                        <Button
-                          aria-label="Open comment actions menu"
-                          fontSize={1}
-                          icon={EllipsisVerticalIcon}
-                          mode="bleed"
-                          padding={2}
-                        />
-                      }
-                      onOpen={handleMenuOpen}
-                      onClose={handleMenuClose}
-                      menu={
-                        <Menu>
-                          <MenuItem
-                            aria-label="Edit comment"
-                            fontSize={1}
-                            hidden={!canEdit}
-                            icon={EditIcon}
-                            onClick={toggleEdit}
-                            text="Edit comment"
-                          />
-
-                          <MenuItem
-                            aria-label="Delete comment"
-                            fontSize={1}
-                            hidden={!canDelete}
-                            icon={TrashIcon}
-                            onClick={handleDelete}
-                            text="Delete comment"
-                            tone="critical"
-                          />
-
-                          <MenuDivider hidden={!canDelete && !canEdit} />
-
-                          <MenuItem
-                            aria-label="Copy link to comment"
-                            fontSize={1}
-                            hidden={!onCopyLink}
-                            icon={LinkIcon}
-                            onClick={handleCopyLink}
-                            text="Copy link to comment"
-                          />
-                        </Menu>
-                      }
-                      popover={POPOVER_PROPS}
-                    />
-                  )}
-                </FloatingCard>
-              </FloatingLayer>
-            </TooltipDelayGroupProvider>
+            <StopPropagation>
+              <StyledCommentsListItemContextMenu
+                canDelete={canDelete}
+                canEdit={canEdit}
+                isParent={isParent}
+                onCopyLink={handleCopyLink}
+                onDeleteStart={handleDelete}
+                onEditStart={toggleEdit}
+                onMenuClose={handleMenuClose}
+                onMenuOpen={handleMenuOpen}
+                onStatusChange={handleOpenStatusChange}
+                status={comment.status}
+              />
+            </StopPropagation>
           )}
         </Flex>
 
