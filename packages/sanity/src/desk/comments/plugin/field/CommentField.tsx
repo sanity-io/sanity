@@ -3,9 +3,9 @@ import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement, useClickOutside} from '@sanity/ui'
-import styled, {css, keyframes} from 'styled-components'
+import styled, {css} from 'styled-components'
 import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed'
-import {useInView} from 'framer-motion'
+import {useInView, motion, AnimatePresence, Variants} from 'framer-motion'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
 import {
@@ -16,6 +16,18 @@ import {
 } from '../../src'
 import {CommentFieldButton} from './CommentFieldButton'
 import {FieldProps, useCurrentUser} from 'sanity'
+
+const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+  },
+  exit: {
+    opacity: 0,
+  },
+}
 
 export function CommentField(props: FieldProps) {
   const {documentId, documentType} = useDocumentPane()
@@ -38,46 +50,29 @@ const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
   inline: 'nearest',
 }
 
-const fadeInKeyFrame = keyframes`
-  0% {
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  80% {
-      opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-`
-
-const FieldStack = styled(Stack)(({theme}) => {
+const HighlightDiv = styled(motion.div)(({theme}) => {
   const {radius, space, color} = theme.sanity
   const bg = color.button.bleed.primary.pressed.bg
 
   return css`
-    position: relative;
-
-    &[data-highlight='true'] {
-      &:after {
-        content: '';
-        top: -${space[2]}px;
-        border-radius: ${radius[3]}px;
-        animation: ${fadeInKeyFrame} 1.5s forwards;
-        left: -${space[2]}px;
-        bottom: -${space[2]}px;
-        right: -${space[2]}px;
-        pointer-events: none;
-        position: absolute;
-        z-index: 1;
-        background-color: ${bg};
-        mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
-      }
-    }
+    mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
+    border-radius: ${radius[3]}px;
+    top: -${space[2]}px;
+    left: -${space[2]}px;
+    bottom: -${space[2]}px;
+    right: -${space[2]}px;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+    width: calc(100% + ${space[2] * 2}px);
+    height: calc(100% + ${space[2] * 2}px);
+    background-color: ${bg};
   `
 })
+
+const FieldStack = styled(Stack)`
+  position: relative;
+`
 
 function CommentFieldInner(props: FieldProps) {
   const [open, setOpen] = useState<boolean>(false)
@@ -97,20 +92,13 @@ function CommentFieldInner(props: FieldProps) {
   const hasComments = Boolean(count > 0)
   const currentComments = useMemo(() => comments.data[status], [comments.data, status])
 
-  const shouldHighlighRef = useRef<boolean>(false)
+  const [shouldHighlight, setShouldHighlight] = useState<boolean>(false)
 
   // Determine if the current field is selected
   const isSelected = useMemo(() => {
     if (selectedPath?.origin === 'field') return false
     return selectedPath?.fieldPath === PathUtils.toString(props.path)
   }, [props.path, selectedPath])
-
-  // Determine if the field should be highlighted. Since we sometimes need to scroll
-  // to the thread, we want to wait with highlighting the field until the field
-  // is in view.
-  const shouldHighlight = useMemo(() => {
-    return inView && isSelected
-  }, [inView, isSelected])
 
   // Get the most recent thread ID for the current field. This is used to query the
   // DOM for the thread in order to be able to scroll to it.
@@ -258,6 +246,18 @@ function CommentFieldInner(props: FieldProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    const showHighlight = inView && isSelected
+
+    setShouldHighlight(showHighlight)
+
+    const timer = setTimeout(() => {
+      setShouldHighlight(false)
+    }, 1200)
+
+    return () => clearTimeout(timer)
+  }, [currentComments, inView, isSelected, props.path, selectedPath])
+
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({
       button: currentUser && (
@@ -290,11 +290,18 @@ function CommentFieldInner(props: FieldProps) {
   )
 
   return (
-    <FieldStack
-      data-highlight={shouldHighlight ? 'true' : 'false'}
-      key={props.inputId}
-      ref={rootElementRef}
-    >
+    <FieldStack ref={rootElementRef}>
+      <AnimatePresence>
+        {shouldHighlight && (
+          <HighlightDiv
+            animate="animate"
+            exit="exit"
+            initial="initial"
+            variants={HIGHLIGHT_BLOCK_VARIANTS}
+          />
+        )}
+      </AnimatePresence>
+
       {props.renderDefault({
         ...props,
         // eslint-disable-next-line camelcase
