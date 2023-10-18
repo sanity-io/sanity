@@ -30,9 +30,24 @@ export function createWithEditableAPI(
   types: PortableTextMemberSchemaTypes,
   keyGenerator: () => string,
 ) {
+  let focusTimerHandle: NodeJS.Timeout
   return function withEditableAPI(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     portableTextEditor.setEditable({
       focus: (): void => {
+        // If the editor has pending operations, focus should be requested after
+        // those changes are applied. Retry in the next tick if this is the case.
+        // Relevant: https://github.com/ianstormtaylor/slate/pull/5516#issuecomment-1768359239
+        if (editor.operations.length > 0) {
+          if (focusTimerHandle) {
+            clearTimeout(focusTimerHandle)
+          }
+          focusTimerHandle = setTimeout(() => {
+            // Make sure everything is applied
+            editor.onChange()
+            PortableTextEditor.focus(portableTextEditor)
+          })
+          return
+        }
         // Make a selection if missing
         if (!editor.selection) {
           const point = {path: [0, 0], offset: 0}
