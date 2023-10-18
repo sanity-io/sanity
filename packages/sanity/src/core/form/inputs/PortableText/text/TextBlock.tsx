@@ -130,11 +130,14 @@ export function TextBlock(props: TextBlockProps) {
   }, [onItemOpen, memberItem])
 
   const onRemove = useCallback(() => {
-    const sel: EditorSelection = {focus: {path, offset: 0}, anchor: {path, offset: 0}}
+    const point = {path: path.slice(-1), offset: 0}
+    const sel: EditorSelection = {
+      focus: point,
+      anchor: point,
+    }
     PortableTextEditor.delete(editor, sel, {mode: 'blocks'})
-    // Focus will not stick unless this is done through a timeout when deleted through clicking the menu button.
-    setTimeout(() => PortableTextEditor.focus(editor))
-  }, [editor, path])
+    PortableTextEditor.focus(editor)
+  }, [path, editor])
 
   const text = useMemo(() => {
     return (
