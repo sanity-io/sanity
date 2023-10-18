@@ -1,7 +1,6 @@
 /dev/*/.next
 /dev/*/.sanity
 /dev/*/build
-/dev/*/dist
 /dev/*/node_modules
 /dev/*/public
 /dev/*/static
@@ -10,7 +9,6 @@
 /etc
 
 /examples/*/.sanity
-/examples/*/dist
 /examples/*/node_modules
 /examples/*/static
 
@@ -37,6 +35,8 @@
 /packages/@sanity/cli/templates
 
 /test/v2-studio
+
+dist
 
 *.json
 *.css
