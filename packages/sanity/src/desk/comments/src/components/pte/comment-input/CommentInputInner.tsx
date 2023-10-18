@@ -10,7 +10,7 @@ import {Editable} from './Editable'
 import {useUser} from 'sanity'
 
 const EditableWrap = styled(Box)`
-  max-height: 30vh;
+  max-height: 20vh;
   overflow-y: auto;
 `
 
