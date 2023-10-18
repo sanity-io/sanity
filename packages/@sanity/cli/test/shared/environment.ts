@@ -101,25 +101,19 @@ export const getTestRunArgs = (version: string) => {
   }
 }
 
-export async function runSanityCmdCommand(
+export function runSanityCmdCommand(
   version: string,
   args: string[],
-  options: {env?: Record<string, string | undefined>; expectFailure?: boolean} = {},
+  options: {env?: Record<string, string | undefined>} = {},
 ): Promise<{
   code: number | null
   stdout: string
   stderr: string
 }> {
-  const result = await exec(process.argv[0], [cliBinPath, ...args], {
+  return exec(process.argv[0], [cliBinPath, ...args], {
     cwd: path.join(studiosPath, version),
     env: {...sanityEnv, ...options.env},
   })
-
-  if (result.code !== 0 && !options.expectFailure) {
-    throw new Error(`Command failed with code ${result.code}. stderr: ${result.stderr}`)
-  }
-
-  return result
 }
 
 export function exec(
@@ -131,7 +125,7 @@ export function exec(
   stdout: string
   stderr: string
 }> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const stdout: Buffer[] = []
     const stderr: Buffer[] = []
 
@@ -143,7 +137,42 @@ export function exec(
       const stdoutStr = Buffer.concat(stdout).toString('utf8')
       const stderrStr = Buffer.concat(stderr).toString('utf8')
 
-      resolve({code, stdout: stdoutStr, stderr: stderrStr})
+      if (code === 0) {
+        resolve({code, stdout: stdoutStr, stderr: stderrStr})
+      } else {
+        reject(
+          new ExecError(
+            `Command failed:
+Exit code: ${code}
+Command: ${command} ${args.join(' ')}
+CWD: ${options.cwd}\n
+--- stderr ---
+${stderrStr}\n
+--------------\n
+${
+  stdoutStr &&
+  `--- stdout ---\n
+${stdoutStr}\n
+--------------\n`
+}`,
+            code || 1,
+            stdoutStr,
+            stderrStr,
+          ),
+        )
+      }
     })
   })
+}
+
+class ExecError extends Error {
+  code: number
+  stdout: string
+  stderr: string
+  constructor(message: string, code: number, stdout: string, stderr: string) {
+    super(message)
+    this.code = code
+    this.stdout = stdout
+    this.stderr = stderr
+  }
 }
