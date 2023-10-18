@@ -9,6 +9,8 @@ import {
   CommentPostPayload,
 } from '../types'
 import {useNotificationTarget} from './useNotificationTarget'
+import {useWorkspace} from 'sanity'
+import {useRouterState} from 'sanity/router'
 
 export interface CommentOperationsHookValue {
   operation: CommentOperations
@@ -52,18 +54,28 @@ export function useCommentOperations(
 
   const authorId = currentUser?.id
 
-  const {documentTitle, toolName, url, workspaceTitle} = useNotificationTarget({
-    documentId,
-    documentType,
-  })
+  const activeToolName = useRouterState(
+    useCallback(
+      (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
+      [],
+    ),
+  )
+  const {tools} = useWorkspace()
+  const activeTool = useMemo(
+    () => tools.find((tool) => tool.name === activeToolName),
+    [activeToolName, tools],
+  )
+  const {getNotificationValue} = useNotificationTarget({documentId, documentType})
 
   const handleCreate = useCallback(
     async (comment: CommentCreatePayload) => {
+      // The comment payload might already have an id if, for example, the comment was created
+      // but the request failed. In that case, we'll reuse the id when retrying to
+      // create the comment.
+      const commentId = comment?.id || uuid()
+
       const nextComment = {
-        // The comment payload might already have an id if, for example, the comment was created
-        // but the request failed. In that case, we'll reuse the id when retrying to
-        // create the comment.
-        _id: comment?.id || uuid(),
+        _id: commentId,
         _type: 'comment',
         authorId: authorId || '', // improve
         lastEditedAt: undefined,
@@ -76,12 +88,8 @@ export function useCommentOperations(
           payload: {
             workspace,
           },
-          notification: {
-            documentTitle,
-            url,
-            workspaceTitle,
-          },
-          tool: toolName,
+          notification: getNotificationValue({commentId}),
+          tool: activeTool?.name || '',
         },
         target: {
           path: {
@@ -114,19 +122,17 @@ export function useCommentOperations(
       }
     },
     [
+      activeTool?.name,
       authorId,
       client,
       dataset,
       documentId,
-      documentTitle,
       documentType,
+      getNotificationValue,
       onCreate,
       onCreateError,
       projectId,
-      toolName,
-      url,
       workspace,
-      workspaceTitle,
     ],
   )
 
