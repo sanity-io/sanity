@@ -2,7 +2,8 @@
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React, {useMemo, useId} from 'react'
-import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
+import {Button, Grid, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {Tooltip} from '../../../../../ui'
 import {ArrayInputFunctionsProps} from '../../../types'
 
 /**
@@ -30,14 +31,7 @@ export function ArrayOfPrimitivesFunctions<
 
   if (readOnly) {
     return (
-      <Tooltip
-        portal
-        content={
-          <Box padding={2} sizing="border">
-            <Text size={1}>This field is read-only</Text>
-          </Box>
-        }
-      >
+      <Tooltip text="This field is read-only">
         <Grid>
           <Button
             icon={AddIcon}

@@ -3,9 +3,9 @@
 import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {FormNodeValidation} from '@sanity/types'
-import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
+import {Placement, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import styled from 'styled-components'
+import {Tooltip} from '../../../../ui'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
@@ -60,10 +60,6 @@ const VALIDATION_ICONS: Record<'error' | 'warning' | 'info', React.ReactElement>
   ),
 }
 
-const StyledStack = styled(Stack)`
-  max-width: 200px;
-`
-
 /** @internal */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
   const {
@@ -95,24 +91,15 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
     return undefined
   }, [hasErrors, hasInfo, hasWarnings])
 
+  const validationMessage: string = useMemo(() => {
+    return validation.map((item) => item.message).join('\n')
+  }, [validation])
+
   return (
     <Tooltip
-      content={
-        <StyledStack padding={3} space={3}>
-          {showSummary && <FormFieldValidationSummary validation={validation} />}
-
-          {!showSummary && (
-            <>
-              {validation.map((item, itemIndex) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <FormFieldValidationStatusItem validation={item} key={itemIndex} />
-              ))}
-            </>
-          )}
-        </StyledStack>
-      }
-      portal
+      text={showSummary ? FormFieldValidationSummary({validation}) : validationMessage}
       placement={placement}
+      portal
       fallbackPlacements={['bottom', 'right', 'left']}
     >
       <div>
@@ -121,37 +108,6 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
         </Text>
       </div>
     </Tooltip>
-  )
-}
-
-function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) {
-  const {validation} = props
-
-  const statusIcon = useMemo(() => {
-    if (validation.level === 'error') return VALIDATION_ICONS.error
-    if (validation.level === 'warning') return VALIDATION_ICONS.warning
-    if (validation.level === 'info') return VALIDATION_ICONS.info
-    return undefined
-  }, [validation])
-
-  const statusColor = useMemo(() => {
-    if (validation.level === 'error') return VALIDATION_COLORS.error
-    if (validation.level === 'warning') return VALIDATION_COLORS.warning
-    if (validation.level === 'info') return VALIDATION_COLORS.info
-    return undefined
-  }, [validation])
-
-  return (
-    <Flex>
-      <Box marginRight={2}>
-        <Text size={1} style={{color: statusColor}}>
-          {statusIcon}
-        </Text>
-      </Box>
-      <Box flex={1}>
-        <Text size={1}>{validation.message}</Text>
-      </Box>
-    </Flex>
   )
 }
 
@@ -170,11 +126,5 @@ function FormFieldValidationSummary({validation}: {validation: FormNodeValidatio
   const hasWarnings = warningLen > 0
   const hasBoth = hasErrors && hasWarnings
 
-  return (
-    <Text size={1}>
-      {errorText || ''}
-      {hasBoth && <> and </>}
-      {warningText || ''}
-    </Text>
-  )
+  return `${errorText ? errorText : ''}${hasBoth ? ' and ' : ''}${warningText ? warningText : ''}`
 }

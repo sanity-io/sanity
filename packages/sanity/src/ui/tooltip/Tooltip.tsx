@@ -3,14 +3,15 @@ import {
   Tooltip as UITooltip,
   TooltipProps as UITooltipProps,
   HotkeysProps as UIHotkeysProps,
+  Hotkeys,
 } from '@sanity/ui'
 import React from 'react'
 
 /** @internal */
 export interface TooltipProps
-  extends Pick<UITooltipProps, 'children' | 'disabled' | 'placement' | 'scheme'>,
+  extends Pick<UITooltipProps, 'children' | 'disabled' | 'placement' | 'scheme' | 'portal'>,
     Pick<UIHotkeysProps, 'keys'> {
-  text: string
+  text: string //should be optional? because hotkeys can be used without text
 }
 
 /**
@@ -25,11 +26,17 @@ export const Tooltip = ({text, ...rest}: TooltipProps) => {
   return (
     <UITooltip
       content={
-        <Text size={1} weight="medium">
-          {text}
-        </Text>
+        <>
+          {text && (
+            <Text size={1} weight="medium">
+              {text}
+            </Text>
+          )}
+          {rest.keys && <Hotkeys keys={rest.keys} />}
+        </>
       }
       {...rest}
+      portal
     />
   )
 }

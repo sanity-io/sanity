@@ -1,5 +1,6 @@
 import React, {useMemo} from 'react'
-import {Box, Button, ButtonProps, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Box, Button, ButtonProps, Flex, Text} from '@sanity/ui'
+import {Tooltip} from '../../../../../../ui'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 import {useTimeAgo} from 'sanity'
 
@@ -48,18 +49,8 @@ const ReviewButton = React.forwardRef(function ReviewButton(
   return (
     <Tooltip
       placement="top"
-      portal
       disabled={status !== 'changes'}
-      content={
-        <Stack padding={3} space={3}>
-          <Text size={1} weight="semibold">
-            Review changes
-          </Text>
-          <Text size={1} muted>
-            Changes saved <abbr aria-label={a11yUpdatedAgo}>{lastUpdatedTimeAgo}</abbr>
-          </Text>
-        </Stack>
-      }
+      text={`Changes saved ${lastUpdatedTimeAgo}`}
     >
       <Button
         mode="bleed"

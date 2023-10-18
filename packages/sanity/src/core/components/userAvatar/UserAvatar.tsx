@@ -1,6 +1,7 @@
-import {Avatar, AvatarPosition, AvatarSize, AvatarStatus, Box, Text, Tooltip} from '@sanity/ui'
+import {Avatar, AvatarPosition, AvatarSize, AvatarStatus} from '@sanity/ui'
 import React, {forwardRef, useState} from 'react'
 import type {User} from '@sanity/types'
+import {Tooltip} from '../../../ui'
 import {useUser} from '../../store'
 import {isRecord} from '../../util'
 import {useUserColor} from '../../user-color'
@@ -60,15 +61,7 @@ function TooltipUserAvatar(props: Omit<UserAvatarProps, 'user'> & {user: User}) 
   } = props
 
   return (
-    <Tooltip
-      content={
-        <Box padding={2}>
-          <Text size={1}>{displayName}</Text>
-        </Box>
-      }
-      placement="top"
-      portal
-    >
+    <Tooltip text={displayName ?? ''} placement="top">
       <div style={{display: 'inline-block'}}>
         <StaticUserAvatar {...props} />
       </div>

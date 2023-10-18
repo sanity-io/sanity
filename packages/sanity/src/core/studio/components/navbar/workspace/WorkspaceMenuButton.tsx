@@ -1,18 +1,8 @@
 import {SelectIcon} from '@sanity/icons'
-import {
-  Button,
-  MenuButton,
-  MenuItem,
-  Menu,
-  MenuButtonProps,
-  Box,
-  Label,
-  Tooltip,
-  Text,
-  Stack,
-} from '@sanity/ui'
+import {Button, MenuButton, MenuItem, Menu, MenuButtonProps, Box, Label, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
+import {Tooltip} from '../../../../../ui'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
@@ -53,17 +43,7 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
   const buttonText = collapsed ? undefined : TITLE
 
   return (
-    <Tooltip
-      content={
-        <Box padding={2}>
-          <Text size={1}>Select workspace</Text>
-        </Box>
-      }
-      disabled={tooltipDisabled}
-      placement="bottom"
-      portal
-      scheme={scheme}
-    >
+    <Tooltip text={TITLE} disabled={tooltipDisabled} placement="bottom" scheme={scheme}>
       <Stack>
         <MenuButton
           button={

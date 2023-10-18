@@ -1,7 +1,8 @@
-import {Box, Button, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Box, Button, Flex, Text} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
+import {Tooltip} from '../../../../../ui'
 import {useTimeAgo} from 'sanity'
 
 interface PublishStatusProps {
@@ -39,26 +40,12 @@ export function PublishStatus(props: PublishStatusProps) {
   return (
     <Root align="center" data-ui="SessionLayout" sizing="border">
       <Tooltip
-        placement="top"
-        portal
-        content={
-          <Stack padding={3} space={3}>
-            <Text size={1}>
-              {liveEdit ? (
-                <>
-                  Last updated{' '}
-                  <abbr aria-label={lastUpdated ? a11yUpdatedAgo : a11yPublishedAgo}>
-                    {lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}
-                  </abbr>
-                </>
-              ) : (
-                <>
-                  Last published <abbr aria-label={a11yPublishedAgo}>{lastPublishedTimeAgo}</abbr>
-                </>
-              )}
-            </Text>
-          </Stack>
-        }
+        text={`${
+          liveEdit
+            ? `Last updated ${lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}`
+            : `Last published ${lastPublishedTime}`
+        }`}
+        placement="top-start"
       >
         <Button
           mode="bleed"

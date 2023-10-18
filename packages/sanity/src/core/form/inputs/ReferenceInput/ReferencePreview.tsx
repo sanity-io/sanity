@@ -1,13 +1,15 @@
 import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
+import {Box, Flex, Inline, Label, useRootTheme} from '@sanity/ui'
 import {EditIcon, PublishIcon} from '@sanity/icons'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey, TextWithTone} from '../../../components'
+import {Tooltip} from '../../../../ui'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {TimeAgo} from './utils/TimeAgo'
 import {ReferenceInfo} from './types'
+// eslint-disable-next-line boundaries/element-types
+import {useTimeAgo} from 'sanity'
 
 /**
  * Used to preview a referenced type
@@ -53,6 +55,15 @@ export function ReferencePreview(props: {
     [layout, previewStub, refType],
   )
 
+  const lastPublished = preview.published?._updatedAt
+  const lastUpdated = preview.draft?._updatedAt
+
+  // Label with abbreviations and suffix
+  const lastPublishedTimeAgo = useTimeAgo(lastPublished || '', {minimal: true, agoSuffix: true})
+
+  // Label with abbreviations and suffix
+  const lastUpdatedTimeAgo = useTimeAgo(lastUpdated || '', {minimal: true, agoSuffix: true})
+
   return (
     <Flex align="center">
       <Box flex={1}>{renderPreview(previewProps)}</Box>
@@ -71,22 +82,7 @@ export function ReferencePreview(props: {
 
           <Inline space={4}>
             <Box>
-              <Tooltip
-                portal
-                content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {preview.published?._updatedAt ? (
-                        <>
-                          Published <TimeAgo time={preview.published._updatedAt} />
-                        </>
-                      ) : (
-                        <>Not published</>
-                      )}
-                    </Text>
-                  </Box>
-                }
-              >
+              <Tooltip text={lastPublished ? `Published ${lastPublishedTimeAgo}` : 'Not published'}>
                 <TextWithTone
                   tone={theme.tone === 'default' ? 'positive' : 'default'}
                   size={1}
@@ -99,22 +95,7 @@ export function ReferencePreview(props: {
             </Box>
 
             <Box>
-              <Tooltip
-                portal
-                content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {preview.draft?._updatedAt ? (
-                        <>
-                          Edited <TimeAgo time={preview.draft._updatedAt} />
-                        </>
-                      ) : (
-                        <>No unpublished edits</>
-                      )}
-                    </Text>
-                  </Box>
-                }
-              >
+              <Tooltip text={lastUpdated ? `Edited ${lastUpdatedTimeAgo}` : 'No unpublished edits'}>
                 <TextWithTone
                   tone={theme.tone === 'default' ? 'caution' : 'default'}
                   size={1}

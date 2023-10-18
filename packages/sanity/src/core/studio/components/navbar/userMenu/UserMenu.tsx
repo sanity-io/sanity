@@ -12,7 +12,6 @@ import {
   MenuItem,
   Stack,
   Text,
-  Tooltip,
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
@@ -24,6 +23,7 @@ import {
   useColorSchemeSetValue,
   useColorSchemeValue,
 } from '../../../colorScheme'
+import {Tooltip} from '../../../../../ui'
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
 import {LoginProviderLogo} from './LoginProviderLogo'
@@ -108,14 +108,7 @@ export function UserMenu() {
             <Flex align="center">
               <Tooltip
                 disabled={!providerTitle}
-                portal
-                content={
-                  providerTitle && (
-                    <Box padding={2}>
-                      <Text size={1}>Signed in with {providerTitle}</Text>
-                    </Box>
-                  )
-                }
+                text={providerTitle ? `Signed in with ${providerTitle}` : ''}
               >
                 <AvatarBox marginRight={3}>
                   <UserAvatar size={AVATAR_SIZE} user="me" />
