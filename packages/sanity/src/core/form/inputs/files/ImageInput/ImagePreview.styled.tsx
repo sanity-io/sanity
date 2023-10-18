@@ -31,13 +31,10 @@ export const SpinnerWrapper = styled(Spinner)`
   position: absolute;
 `
 
-export const Overlay = styled(Flex)(({
-  tone,
-  drag,
-}: {
+export const Overlay = styled(Flex)<{
   tone: Exclude<CardTone, 'inherit'>
   drag: boolean
-}) => {
+}>(({tone, drag}) => {
   const textColor = studioTheme.color.light[tone].card.enabled.fg
   const backgroundColor = rgba(studioTheme.color.light[tone].card.enabled.bg, 0.8)
 

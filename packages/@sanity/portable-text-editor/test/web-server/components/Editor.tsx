@@ -33,10 +33,9 @@ export const HOTKEYS: HotkeyOptions = {
   },
 }
 
-export const BlockObject = styled.div`
-  border: ${(props: BlockRenderProps) =>
-    props.focused ? '1px solid blue' : '1px solid transparent'};
-  background: ${(props: BlockRenderProps) => (props.selected ? '#eeeeff' : 'transparent')};
+export const BlockObject = styled.div<BlockRenderProps>`
+  border: ${(props) => (props.focused ? '1px solid blue' : '1px solid transparent')};
+  background: ${(props) => (props.selected ? '#eeeeff' : 'transparent')};
   padding: 2em;
 `
 

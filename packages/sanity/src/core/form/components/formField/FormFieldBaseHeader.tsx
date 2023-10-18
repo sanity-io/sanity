@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Theme} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
 import React, {useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {FieldPresence, FormNodePresence} from '../../../presence'
@@ -15,7 +15,7 @@ const Root = styled(Flex)({
   position: 'relative',
 })
 
-const PresenceBox = styled(Box)(({theme, $right}: {theme: Theme; $right: number}) => {
+const PresenceBox = styled(Box)<{$right: number}>(({theme, $right}) => {
   const {space} = theme.sanity
 
   return css`
@@ -25,13 +25,9 @@ const PresenceBox = styled(Box)(({theme, $right}: {theme: Theme; $right: number}
   `
 })
 
-const ContentBox = styled(Box)(({
-  theme,
-  $presenceMaxWidth,
-}: {
-  theme: Theme
+const ContentBox = styled(Box)<{
   $presenceMaxWidth: number
-}) => {
+}>(({theme, $presenceMaxWidth}) => {
   const {space} = theme.sanity
 
   return css`
@@ -41,15 +37,10 @@ const ContentBox = styled(Box)(({
   `
 })
 
-const SlotBox = styled(Box)(({
-  theme,
-  $right,
-  $fieldActionsVisible,
-}: {
-  theme: Theme
+const SlotBox = styled(Box)<{
   $right: number
   $fieldActionsVisible: boolean
-}) => {
+}>(({theme, $right, $fieldActionsVisible}) => {
   const {space} = theme.sanity
   const right = $fieldActionsVisible ? $right + space[1] : $right
 

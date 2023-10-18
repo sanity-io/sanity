@@ -1,13 +1,10 @@
 import {Box} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
-export const CustomTextInputBox = styled(Box)(({
-  background,
-  smallClearButton,
-}: {
+export const CustomTextInputBox = styled(Box)<{
   background?: boolean
   smallClearButton?: boolean
-}) => {
+}>(({background, smallClearButton}) => {
   return css`
     width: 100%;
 

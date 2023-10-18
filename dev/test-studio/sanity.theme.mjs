@@ -1,7 +1,7 @@
 // Generated 2023-08-10T00:53:46.713Z by https://themer.sanity.build/api/hues?preset=tw-cyan&default=64748b&primary=d946ef%3Blightest%3Afdf4ff%3Bdarkest%3A701a75&transparent=6b7180%3Bdarkest%3A111826&positive=43d675%3B400%3Blightest%3Af8fafc&caution=f59e09%3B300%3Blightest%3Afffbeb%3Bdarkest%3A783510&critical=f43f5e%3Blightest%3Afef1f2%3Bdarkest%3A881337&lightest=ffffff&darkest=0f172a&min=0
 // Not minified, remove `?min=0` from the request for much smaller output
 
-// ../../node_modules/.pnpm/@sanity+ui@1.7.4_react-dom@18.2.0_react-is@18.2.0_react@18.2.0_styled-components@5.3.11/node_modules/@sanity/ui/src/theme/studioTheme/fonts.ts
+// ../../node_modules/.pnpm/@sanity+ui@1.7.4_react-dom@18.2.0_react-is@18.2.0_react@18.2.0_styled-components@5.3.11/node_modules/
 var fonts = {
   code: {
     family: 'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace',

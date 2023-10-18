@@ -27,7 +27,7 @@ export const RegionWrapper = css`
   position: absolute;
 `
 
-export const TopRegionWrapper = styled(WithIntersection)(({$debug, margins}: StyleProps) => {
+export const TopRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug, margins}) => {
   return css`
     ${RegionWrapper}
 
@@ -39,7 +39,7 @@ export const TopRegionWrapper = styled(WithIntersection)(({$debug, margins}: Sty
   `
 })
 
-export const MiddleRegionWrapper = styled(WithIntersection)(({$debug}: StyleProps) => {
+export const MiddleRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug}) => {
   return css`
     ${RegionWrapper}
 
@@ -54,7 +54,7 @@ export const MiddleRegionWrapper = styled(WithIntersection)(({$debug}: StyleProp
   `
 })
 
-export const BottomRegionWrapper = styled(WithIntersection)(({$debug}: StyleProps) => {
+export const BottomRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug}) => {
   return css`
     ${RegionWrapper}
 

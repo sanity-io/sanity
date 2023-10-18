@@ -3,7 +3,6 @@ import {
   ContainerProps,
   rem,
   ResponsiveWidthStyleProps,
-  Theme,
   useArrayProp,
   _responsive,
 } from '@sanity/ui'
@@ -13,7 +12,7 @@ import styled from 'styled-components'
 // This is a workaround to make sure that the Container gets the correct width when used inside a popover.
 // The default Container uses `maxWidth` which doesn't work well with popovers because the popover
 // calculates its width based on the content width.
-const StyledContainer = styled(Container)((props: ResponsiveWidthStyleProps & {theme: Theme}) => {
+const StyledContainer = styled(Container)<ResponsiveWidthStyleProps>((props) => {
   const {theme} = props
   const {container, media} = theme.sanity
 

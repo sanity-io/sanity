@@ -38,6 +38,7 @@ exports.createJestConfig = function createJestConfig(
 
   return {
     globals,
+    prettierPath: null,
     moduleNameMapper: {
       // > The order in which the mappings are defined matters. Patterns are checked one by one
       // > until one fits. The most specific rule should be listed first. This is true for arrays of
