@@ -315,9 +315,35 @@ declare module '@sanity/types' {
 
   export interface BlockDefinition {
     /**
+     * Components for the block schema type
      *
-     * @hidden
-     * @beta
+     * @public
+     * @remarks - This only applies to the block text type, and not block object types (like images).
+     * - Don't render arbitrary text nodes inside regular text blocks, as this will confuse the editor with
+     * what is editable text and not. Make sure to wrap all nodes which are NOT part of the edited text inside a
+     * container with `contentEditable={false}` and with `style={{userSelection: 'none'}}` so that
+     * the editor can distinguish between editable text and non-editable text.
+     * @example Example of custom block component with delete button next to it that removes the block.
+     * ```ts
+     * {
+     *   block: (blockProps) => {
+     *     return (
+     *       <Flex>
+     *         <Box flex={1}>{blockProps.renderDefault(blockProps)}</Box>
+     *         <Box contentEditable={false} style={{userSelect: 'none'}}>
+     *           <Button
+     *             icon={TrashIcon}
+     *             onClick={(event) => {
+     *               event.preventDefault()
+     *               blockProps.onRemove()
+     *              }}
+     *             />
+     *         </Box>
+     *       </Flex>
+     *     )
+     *   },
+     * },
+     * ```
      */
     components?: {
       block?: ComponentType<BlockProps>
