@@ -9,9 +9,10 @@ import {useCommentInput} from './useCommentInput'
 import {Editable} from './Editable'
 import {useUser} from 'sanity'
 
-const EditableWrap = styled(Box)({
-  // ...
-})
+const EditableWrap = styled(Box)`
+  max-height: 20vh;
+  overflow-y: auto;
+`
 
 const ButtonDivider = styled(MenuDivider)({
   height: 20,
@@ -118,19 +119,16 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         data-expand-on-focus={expandOnFocus && !canSubmit ? 'true' : 'false'}
         data-focused={focused ? 'true' : 'false'}
         flex={1}
-        paddingX={1}
-        paddingY={2}
-        paddingBottom={1}
         sizing="border"
         tone="default"
         shadow={1}
       >
-        <Stack space={2}>
-          <EditableWrap sizing="border">
+        <Stack>
+          <EditableWrap paddingX={1} paddingY={2} sizing="border">
             <Editable placeholder={placeholder} focusLock={focusLock} />
           </EditableWrap>
 
-          <Flex align="center" gap={1} justify="flex-end" data-ui="CommentInputActions">
+          <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
             <ActionButton
               aria-label="Mention user"
               icon={MentionIcon}
