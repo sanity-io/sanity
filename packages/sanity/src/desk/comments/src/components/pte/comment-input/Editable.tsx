@@ -1,15 +1,13 @@
-import React, {
-  KeyboardEvent,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, {KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Popover, PortalProvider, Stack, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import {PortableTextEditable, usePortableTextEditorSelection} from '@sanity/portable-text-editor'
+import {
+  EditorSelection,
+  PortableTextEditable,
+  usePortableTextEditorSelection,
+} from '@sanity/portable-text-editor'
 import styled, {css} from 'styled-components'
 import {isEqual} from 'lodash'
+import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {MentionsMenu, MentionsMenuHandle} from '../../mentions'
 import {renderBlock, renderChild} from '../render'
 import {useCommentInput} from './useCommentInput'
@@ -71,20 +69,12 @@ export function Editable(props: EditableProps) {
   const {
     closeMentions,
     focusEditor,
-    focusEditorEndOfContent,
-    focusOnMount,
     insertMention,
     mentionOptions,
     mentionsMenuOpen,
     mentionsSearchTerm,
     onBeforeInput,
   } = useCommentInput()
-
-  const [mounted, setMounted] = useState<boolean>(false)
-
-  useLayoutEffect(() => {
-    setMounted(true)
-  }, [])
 
   const renderPlaceholder = useCallback(() => <span>{placeholder}</span>, [placeholder])
 
@@ -96,15 +86,6 @@ export function Editable(props: EditableProps) {
     }, [closeMentions, mentionsMenuOpen]),
     [popoverElement],
   )
-
-  // This effect will focus the editor when the component mounts (if focusOnMount context value is true)
-  // Use the mounted state to avoid focusing the editor before it's properly rendered.
-  useEffect(() => {
-    if (mounted && focusOnMount) {
-      // Focus to the end of the content.
-      focusEditorEndOfContent()
-    }
-  }, [focusOnMount, focusEditorEndOfContent, mounted])
 
   // Update the mentions search term in the mentions menu
   useEffect(() => {
@@ -154,6 +135,29 @@ export function Editable(props: EditableProps) {
     [closeMentions, focusEditor, mentionsMenuOpen],
   )
 
+  const {value} = useCommentInput()
+
+  const initialSelectionAtEndOfContent: EditorSelection | undefined = useMemo(() => {
+    if (selection) {
+      return undefined
+    }
+    const lastBlock = (value || []).slice(-1)[0]
+    const lastChild = isPortableTextTextBlock(lastBlock)
+      ? lastBlock.children.slice(-1)[0]
+      : undefined
+    if (!lastChild) {
+      return undefined
+    }
+    const point = {
+      path: [{_key: lastBlock._key}, 'children', {_key: lastChild._key}],
+      offset: isPortableTextSpan(lastChild) ? lastChild.text.length : 0,
+    }
+    return {
+      focus: point,
+      anchor: point,
+    }
+  }, [value, selection])
+
   return (
     <>
       <PortalProvider element={rootElementRef.current}>
@@ -184,6 +188,7 @@ export function Editable(props: EditableProps) {
         <PortableTextEditable
           data-testid="comment-input-editable"
           data-ui="EditableElement"
+          selection={initialSelectionAtEndOfContent}
           onBeforeInput={onBeforeInput}
           onKeyDown={handleKeyDown}
           ref={editableRef}
