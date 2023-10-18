@@ -142,7 +142,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
           <CommentInputDiscardDialog onClose={onDiscardCancel} onConfirm={onDiscardConfirm} />
         )}
 
-        <Stack ref={editorContainerRef}>
+        <Stack ref={editorContainerRef} data-testid="comment-input">
           <PortableTextEditor
             onChange={handleChange}
             ref={editorRef}
