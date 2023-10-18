@@ -76,7 +76,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
   return (
     <Stack space={2}>
-      <HeaderFlex align="center" gap={2} paddingX={1} sizing="border">
+      <HeaderFlex align="center" gap={2} paddingLeft={2} paddingRight={1} sizing="border">
         <Stack flex={1}>
           <Breadcrumbs
             maxLength={3}
