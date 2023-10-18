@@ -54,12 +54,11 @@ describeCliTest('CLI: `sanity preview`', () => {
       expect(previewHtml).toContain('<h1>This is static.</h1>')
     })
 
-    testConcurrent('start (hint for new `dev` command)', async () => {
-      const result = await runSanityCmdCommand('v3', ['start'], {expectFailure: true})
-      const error = result.stderr.trim()
-      expect(error).toContain('command is used to preview static builds')
-      expect(error).toContain('sanity dev')
-      expect(result.code).toBe(1)
+    testConcurrent('start (hint for new `dev` command)', () => {
+      return expect(runSanityCmdCommand('v3', ['start'])).rejects.toMatchObject({
+        stderr: /.*(command is used to preview static builds).*(sanity dev).*/,
+        code: 1,
+      })
     })
   })
 })
