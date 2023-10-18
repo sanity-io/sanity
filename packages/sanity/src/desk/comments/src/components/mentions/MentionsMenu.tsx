@@ -88,7 +88,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
   const _inputElement = inputElement ? (inputElement as HTMLInputElement) : undefined
 
   return (
-    <Flex direction="column" height="fill">
+    <Flex direction="column" height="fill" data-testid="comments-mentions-menu">
       {filteredOptions.length === 0 && (
         <Box padding={5}>
           <Text align="center" size={1} muted>

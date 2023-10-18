@@ -182,6 +182,7 @@ export function Editable(props: EditableProps) {
 
       <EditableWrapStack ref={rootElementRef} data-ui="EditableWrapStack">
         <PortableTextEditable
+          data-testid="comment-input-editable"
           data-ui="EditableElement"
           onBeforeInput={onBeforeInput}
           onKeyDown={handleKeyDown}
