@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react'
 import {Path} from '@sanity/types'
+import * as PathUtils from '@sanity/util/paths'
 import {usePaneRouter} from '../../../components'
 import {EMPTY_PARAMS} from '../../../constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
@@ -36,23 +37,40 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
   const [deleteError, setDeleteError] = useState<Error | null>(null)
-
-  const pushToast = useToast().push
-
-  const {onPathOpen, onFocus} = useDocumentPane()
+  const commentsListHandleRef = useRef<CommentsListHandle>(null)
 
   const currentUser = useCurrentUser()
   const {params, createPathWithParams, setParams} = usePaneRouter()
   const uniqueParams = useUnique(params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
   const commentIdParamRef = useRef<string | undefined>(uniqueParams?.comment)
 
-  const {comments, create, edit, mentionOptions, remove, update, status, setStatus, getComment} =
-    useComments()
+  const pushToast = useToast().push
+  const {onPathOpen, ready} = useDocumentPane()
+
+  const {
+    comments,
+    create,
+    edit,
+    getComment,
+    getCommentPath,
+    mentionOptions,
+    remove,
+    selectedPath,
+    setSelectedPath,
+    setStatus,
+    status,
+    update,
+  } = useComments()
 
   const currentComments = useMemo(() => comments.data[status], [comments, status])
 
-  const commentsListHandleRef = useRef<CommentsListHandle>(null)
-  const didScrollDown = useRef<boolean>(false)
+  const loading = useMemo(() => {
+    // The comments and the document are loaded separately which means that
+    // the comments might be ready before the document is ready. Since the user should
+    // be able to interact with the document from the comments inspector, we need to make sure
+    // that the document is ready before we allow the user to interact with the comments.
+    return comments.loading || !ready
+  }, [comments.loading, ready])
 
   const handleCopyLink = useCallback(
     (id: string) => {
@@ -109,9 +127,12 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const handlePathFocus = useCallback(
     (path: Path) => {
       onPathOpen(path)
-      onFocus(path)
+      setSelectedPath({
+        fieldPath: PathUtils.toString(path),
+        origin: 'inspector',
+      })
     },
-    [onFocus, onPathOpen],
+    [onPathOpen, setSelectedPath],
   )
 
   const handleNewThreadCreate = useCallback(
@@ -174,24 +195,34 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     [closeDeleteDialog, remove],
   )
 
-  useEffect(() => {
-    if (commentIdParamRef.current && !didScrollDown.current && !comments.loading) {
-      commentsListHandleRef.current?.scrollToComment(commentIdParamRef.current)
+  const handleScrollToComment = useCallback(
+    (id: string, fieldPath: string) => {
+      if (fieldPath) {
+        setSelectedPath({
+          fieldPath,
+          origin: 'inspector',
+        })
 
-      setTimeout(() => {
+        requestAnimationFrame(() => {
+          commentsListHandleRef.current?.scrollToComment(id)
+        })
+
         setParams({
           ...params,
           comment: undefined,
         })
+      }
+    },
+    [params, setParams, setSelectedPath],
+  )
 
-        didScrollDown.current = true
-      })
-    }
+  useLayoutEffect(() => {
+    const path = getCommentPath(commentIdParamRef.current || '')
 
-    return () => {
-      didScrollDown.current = false
+    if (path && !loading && commentIdParamRef.current) {
+      handleScrollToComment(commentIdParamRef.current, path)
     }
-  }, [comments.loading, params, setParams])
+  }, [getCommentPath, handleScrollToComment, loading])
 
   return (
     <Fragment>
@@ -213,7 +244,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
             comments={currentComments}
             currentUser={currentUser}
             error={comments.error}
-            loading={comments.loading}
+            loading={loading}
             mentionOptions={mentionOptions}
             onCopyLink={handleCopyLink}
             onCreateRetry={handleCreateRetry}
@@ -224,6 +255,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
             onReply={handleReply}
             onStatusChange={handleStatusChange}
             ref={commentsListHandleRef}
+            selectedPath={selectedPath}
             status={status}
           />
         )}
