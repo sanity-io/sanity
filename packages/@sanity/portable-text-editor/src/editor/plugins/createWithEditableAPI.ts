@@ -392,6 +392,14 @@ export function createWithEditableAPI(
                 hanging: true,
               })
             })
+            // If the editor was emptied, insert a placeholder block
+            // directly into the editor's children. We don't want to do this
+            // through a Transform (because that would trigger a change event
+            // that would insert the placeholder into the actual value
+            // which should remain empty)
+            if (editor.children.length === 0) {
+              editor.children = [editor.createPlaceholderBlock()]
+            }
             editor.onChange()
           }
         }
