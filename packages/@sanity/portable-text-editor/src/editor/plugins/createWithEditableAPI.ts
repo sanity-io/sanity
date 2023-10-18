@@ -349,6 +349,10 @@ export function createWithEditableAPI(
       delete: (selection: EditorSelection, options?: EditableAPIDeleteOptions): void => {
         if (selection) {
           const range = toSlateRange(selection, editor)
+          const hasRange = range && range.anchor.path.length > 0 && range.focus.path.length > 0
+          if (!hasRange) {
+            throw new Error('Invalid range')
+          }
           if (range) {
             if (!options?.mode || options?.mode === 'selected') {
               debug(`Deleting content in selection`)
