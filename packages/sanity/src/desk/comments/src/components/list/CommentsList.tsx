@@ -11,6 +11,7 @@ import {
 import {CommentsListItem} from './CommentsListItem'
 import {CommentThreadLayout} from './CommentThreadLayout'
 import {CommentsListStatus} from './CommentsListStatus'
+import {SelectedPath} from '../../context/comments/types'
 
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
   behavior: 'smooth',
@@ -54,6 +55,7 @@ export interface CommentsListProps {
   onPathFocus?: (path: Path) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
+  selectedPath: SelectedPath
   status: CommentStatus
 }
 
@@ -81,21 +83,18 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       onPathFocus,
       onReply,
       onStatusChange,
+      selectedPath,
       status,
     } = props
     const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
 
-    const scrollToComment = useCallback(
-      (id: string) => {
-        requestAnimationFrame(() => {
-          const commentElement = boundaryElement?.querySelector(`[data-comment-id="${id}"]`)
-          if (commentElement) {
-            commentElement.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
-          }
-        })
-      },
-      [boundaryElement],
-    )
+    const scrollToComment = useCallback((id: string) => {
+      const commentElement = document?.querySelector(`[data-comment-id="${id}"]`)
+
+      if (commentElement) {
+        commentElement.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
+      }
+    }, [])
 
     useImperativeHandle(
       ref,
@@ -156,9 +155,10 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
             flex={1}
             overflow="auto"
             padding={3}
+            paddingTop={1}
             paddingBottom={6}
             sizing="border"
-            space={4}
+            space={1}
           >
             <BoundaryElementProvider element={boundaryElement}>
               {groupedThreads?.map(([fieldPath, group]) => {
@@ -172,7 +172,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                 const firstThreadId = group[0].threadId
 
                 return (
-                  <Stack as="li" key={fieldPath} data-thread-id={firstThreadId}>
+                  <Stack as="li" key={fieldPath} data-thread-id={firstThreadId} paddingTop={3}>
                     <CommentThreadLayout
                       breadcrumbs={breadcrumbs}
                       canCreateNewThread={status === 'open'}
@@ -194,6 +194,9 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                           item.parentComment._state?.type !== 'createError' &&
                           item.parentComment._state?.type !== 'createRetrying'
 
+                        // Check if the current field is selected
+                        const isSelected = selectedPath?.fieldPath === item.fieldPath
+
                         return (
                           <CommentsListItem
                             canReply={canReply}
@@ -209,6 +212,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                             onStatusChange={onStatusChange}
                             parentComment={item.parentComment}
                             replies={replies}
+                            selected={isSelected}
                           />
                         )
                       })}

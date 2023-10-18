@@ -6,6 +6,10 @@ import {CommentsProvider, CommentsSetupProvider} from '../context'
 import {useComments} from '../hooks'
 import {useCurrentUser} from 'sanity'
 
+const noop = () => {
+  // ...
+}
+
 export default function CommentsProviderStory() {
   const _type = useString('_type', 'author') || 'author'
   const _id = useString('_id', 'grrm') || 'grrm'
@@ -32,14 +36,13 @@ function Inner() {
       error={comments.error}
       loading={comments.loading}
       mentionOptions={mentionOptions}
+      onCreateRetry={noop}
       onDelete={remove.execute}
       onEdit={edit.execute}
       onNewThreadCreate={create.execute}
       onReply={create.execute}
+      selectedPath={null}
       status="open"
-      onCreateRetry={() => {
-        // ...
-      }}
     />
   )
 }
