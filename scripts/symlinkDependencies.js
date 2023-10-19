@@ -40,6 +40,9 @@ if (!argv.all) {
   targetDeps = Object.keys(targetDeclared)
 }
 
+// make sure node_modules/@sanity directory exists (e.g. in case it's ran in a project without a prior node_modules)
+fs.mkdirSync(path.join(targetDepsPath, '@sanity'), {recursive: true})
+
 const targetRootPackages = fs.readdirSync(targetDepsPath).filter(notSanity)
 const targetSanityPackages = fs.readdirSync(path.join(targetDepsPath, '@sanity')).map(prefix)
 
@@ -59,7 +62,10 @@ const sharedDeclared = argv.all
   ? packages
   : packages.filter((pkgName) => targetDeps.indexOf(pkgName) > -1)
 
-const removeFolders = sharedPackages.map(normalize).map((dir) => path.join(targetDepsPath, dir))
+const removeFolders = sharedPackages
+  .map(normalize)
+  .map((dir) => path.join(targetDepsPath, dir))
+  .filter((dir) => fs.existsSync(dir))
 
 // First, remove all locally installed dependencies that exists as a package in our monorepo
 console.log('Removing dependencies from node_modules:')
