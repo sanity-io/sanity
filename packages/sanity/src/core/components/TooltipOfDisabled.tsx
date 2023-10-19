@@ -1,5 +1,5 @@
-import {Tooltip, TooltipProps} from '@sanity/ui'
 import React, {ForwardedRef, forwardRef} from 'react'
+import {Tooltip, TooltipProps} from '../../ui' //ref error
 
 /** @internal */
 export const TooltipOfDisabled = forwardRef(function DisabledTooltip(
@@ -9,7 +9,7 @@ export const TooltipOfDisabled = forwardRef(function DisabledTooltip(
   const {children, content, disabled, ...restProps} = props
 
   return (
-    <Tooltip {...restProps} content={content} disabled={disabled || !content} padding={2} ref={ref}>
+    <Tooltip {...restProps} content={content} disabled={disabled || !content} ref={ref}>
       <div>{children}</div>
     </Tooltip>
   )
