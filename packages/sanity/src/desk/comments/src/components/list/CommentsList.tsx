@@ -52,7 +52,7 @@ export interface CommentsListProps {
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
   onNewThreadCreate: (payload: CommentCreatePayload) => void
-  onPathFocus?: (path: Path) => void
+  onPathSelect?: (path: Path) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   selectedPath: SelectedPath
@@ -80,7 +80,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       onDelete,
       onEdit,
       onNewThreadCreate,
-      onPathFocus,
+      onPathSelect,
       onReply,
       onStatusChange,
       selectedPath,
@@ -207,7 +207,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                             onCreateRetry={onCreateRetry}
                             onDelete={onDelete}
                             onEdit={onEdit}
-                            onPathFocus={onPathFocus}
+                            onPathSelect={onPathSelect}
                             onReply={onReply}
                             onStatusChange={onStatusChange}
                             parentComment={item.parentComment}

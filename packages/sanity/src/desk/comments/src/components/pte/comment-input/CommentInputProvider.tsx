@@ -6,7 +6,7 @@ import {
 import React, {useCallback, useMemo, useState} from 'react'
 import {Path, isKeySegment, isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {CommentMessage, MentionOptionsHookValue} from '../../../types'
-import {useCommentHasChanged} from '../../../helpers'
+import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
 import {useDidUpdate} from 'sanity'
 
 export interface CommentInputContextValue {
@@ -58,15 +58,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
   const [mentionsSearchTerm, setMentionsSearchTerm] = useState<string>('')
   const [selectionAtMentionInsert, setSelectionAtMentionInsert] = useState<EditorSelection>(null)
 
-  const canSubmit = useMemo(() => {
-    if (!value) return false
-
-    return value?.some(
-      (block) =>
-        isPortableTextTextBlock(block) &&
-        (block?.children || [])?.some((c) => (isPortableTextSpan(c) ? c.text : c.userId)),
-    )
-  }, [value])
+  const canSubmit = useMemo(() => hasCommentMessageValue(value), [value])
 
   const hasChanges = useCommentHasChanged(value)
 

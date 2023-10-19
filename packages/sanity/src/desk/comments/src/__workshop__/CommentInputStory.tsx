@@ -6,6 +6,10 @@ import {CommentInput} from '../components'
 import {CommentMessageSerializer} from '../components/pte'
 import {useCurrentUser} from 'sanity'
 
+const noop = () => {
+  // ...
+}
+
 export default function CommentsInputStory() {
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
   const currentUser = useCurrentUser()
@@ -19,16 +23,13 @@ export default function CommentsInputStory() {
         <Container width={0}>
           <CommentInput
             currentUser={currentUser}
-            onChange={setValue}
-            value={value}
             expandOnFocus={expandOnFocus}
             mentionOptions={{data: [], error: null, loading: false}}
-            onEditDiscard={() => {
-              // ...
-            }}
-            onSubmit={() => {
-              // ...
-            }}
+            onChange={setValue}
+            onDiscardCancel={noop}
+            onDiscardConfirm={noop}
+            onSubmit={noop}
+            value={value}
           />
         </Container>
       </Card>
