@@ -69,7 +69,11 @@ export interface CommentPath {
   field: string
 }
 
-interface CommentContext {
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentContext {
   tool: string
   payload?: Record<string, unknown>
   notification?: {
