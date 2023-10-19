@@ -13,12 +13,12 @@ import {
   Select,
   Text,
   TextInput,
-  Tooltip,
   Grid,
   Button,
   ToastContextValue,
   Inline,
 } from '@sanity/ui'
+import {Tooltip} from 'sanity/src/ui'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {getLocalStorage, LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
@@ -756,7 +756,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                     </Box>
                     <Tooltip
                       content={
-                        <Box padding={2}>
+                        <Box>
                           <Text>Copy to clipboard</Text>
                         </Box>
                       }
@@ -825,15 +825,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                       <Flex>
                         <StyledLabel muted>Params</StyledLabel>
                         {paramsError && (
-                          <Tooltip
-                            placement="top-end"
-                            portal
-                            content={
-                              <Box padding={2}>
-                                <Text>{paramsError}</Text>
-                              </Box>
-                            }
-                          >
+                          <Tooltip placement="top-end" portal content={<Text>{paramsError}</Text>}>
                             <Box padding={1} marginX={2}>
                               <Text>
                                 <ErrorOutlineIcon />
@@ -850,7 +842,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                     <Card padding={3} paddingX={3}>
                       <Tooltip
                         content={
-                          <Card padding={2} radius={4}>
+                          <Card radius={4}>
                             <Text size={1} muted>
                               Parameters are not valid JSON
                             </Text>
@@ -864,7 +856,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                           <Box flex={1}>
                             <Tooltip
                               content={
-                                <Card padding={2} radius={4}>
+                                <Card radius={4}>
                                   <Hotkeys keys={['Ctrl', 'Enter']} />
                                 </Card>
                               }

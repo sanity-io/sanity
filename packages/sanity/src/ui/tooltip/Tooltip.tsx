@@ -2,6 +2,7 @@ import {Tooltip as UITooltip, TooltipProps as UITooltipProps} from '@sanity/ui'
 import React from 'react'
 
 /** @internal */
+export type TooltipProps = UITooltipProps
 
 /**
  * Studio UI <Tooltip>.

@@ -1,11 +1,12 @@
 import {Path} from '@sanity/types'
-import {Tooltip, TooltipProps, Text, Stack, Flex, Inline, Label} from '@sanity/ui'
+import {Text, Stack, Flex, Inline, Label} from '@sanity/ui'
 import React from 'react'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useTimeAgo} from '../../../hooks'
 import {useUser} from '../../../store'
 import {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
+import {Tooltip, TooltipProps} from '../../../../ui'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
@@ -42,7 +43,7 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   }
 
   const content = (
-    <Stack padding={3} space={2}>
+    <Stack space={2}>
       <Label size={1} style={{textTransform: 'uppercase'}}>
         {description}
       </Label>

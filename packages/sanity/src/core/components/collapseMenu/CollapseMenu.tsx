@@ -1,7 +1,8 @@
 import {EllipsisVerticalIcon} from '@sanity/icons'
-import {Box, Button, Flex, MenuButtonProps, Text, Tooltip, useElementRect} from '@sanity/ui'
+import {Button, Flex, MenuButtonProps, Text, useElementRect} from '@sanity/ui'
 import React, {cloneElement, forwardRef, useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
+import {Tooltip} from '../../../ui'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
@@ -201,11 +202,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
                   <Tooltip
                     portal
                     disabled={!tooltipText}
-                    content={
-                      <Box padding={2} sizing="border">
-                        <Text size={1}>{tooltipText}</Text>
-                      </Box>
-                    }
+                    content={<Text size={1}>{tooltipText}</Text>}
                     {...tooltipProps}
                   >
                     <Flex>

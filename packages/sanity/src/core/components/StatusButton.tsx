@@ -1,15 +1,4 @@
-import {
-  Box,
-  Button,
-  ButtonMode,
-  ButtonProps,
-  Flex,
-  Hotkeys,
-  Text,
-  Tooltip,
-  TooltipProps,
-  useTheme,
-} from '@sanity/ui'
+import {Box, Button, ButtonMode, ButtonProps, Flex, Hotkeys, Text, useTheme} from '@sanity/ui'
 import React, {
   createElement,
   isValidElement,
@@ -21,6 +10,7 @@ import React, {
 } from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
+import {Tooltip, TooltipProps} from '../../ui'
 
 /** @hidden @beta */
 export interface StatusButtonProps extends Omit<ButtonProps, 'iconRight'> {
@@ -79,14 +69,7 @@ export const StatusButton = forwardRef(function StatusButton(
     )
 
   return (
-    <Tooltip
-      padding={2}
-      placement="bottom"
-      {...tooltip}
-      content={tooltipContent}
-      disabled={!label}
-      portal
-    >
+    <Tooltip placement="bottom" {...tooltip} content={tooltipContent} disabled={!label} portal>
       <div>
         <Button
           data-ui="StatusButton"

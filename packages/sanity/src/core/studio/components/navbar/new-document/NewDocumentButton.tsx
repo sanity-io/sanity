@@ -11,14 +11,13 @@ import {
   Card,
   Flex,
   Button,
-  TooltipProps,
 } from '@sanity/ui'
 import {ComposeIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip, TooltipProps} from '../../../../../ui'
 import {NewDocumentList, NewDocumentListProps} from './NewDocumentList'
 import {ModalType, NewDocumentOption} from './types'
 import {filterOptions} from './filter'

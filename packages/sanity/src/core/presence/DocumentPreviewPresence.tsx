@@ -1,10 +1,10 @@
-import {AvatarStack, Box, Card, Text, Theme, TooltipProps} from '@sanity/ui'
+import {AvatarStack, Box, Card, Text, Theme} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled, {css, useTheme} from 'styled-components'
 import {usePreviewCard, UserAvatar} from '../components'
 import {DocumentPresence} from '../store'
 import {isNonNullable} from '../util'
-import {Tooltip} from '../../ui'
+import {Tooltip, TooltipProps} from '../../ui'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {
