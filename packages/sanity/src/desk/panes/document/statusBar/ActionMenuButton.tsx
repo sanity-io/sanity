@@ -9,7 +9,6 @@ import {
   MenuItem,
   PopoverProps,
   Text,
-  Tooltip,
 } from '@sanity/ui'
 import React, {
   createElement,
@@ -21,6 +20,7 @@ import React, {
   useId,
 } from 'react'
 import {isValidElementType} from 'react-is'
+import {Tooltip} from '../../../../ui'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 
@@ -108,11 +108,7 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
     if (onHandle) onHandle()
   }, [index, onAction, onHandle])
 
-  const tooltipContent = actionState.title && (
-    <Box padding={2}>
-      <Text size={1}>{actionState.title}</Text>
-    </Box>
-  )
+  const tooltipContent = actionState.title && <Text size={1}>{actionState.title}</Text>
 
   return (
     <MenuItem

@@ -1,12 +1,13 @@
 import type {Subscription} from 'rxjs'
 import React, {useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {Button, Box, Card, Flex, Stack, Label, Text, Tooltip, Grid, useToast} from '@sanity/ui'
+import {Button, Box, Card, Flex, Stack, Label, Text, Grid, useToast} from '@sanity/ui'
 import {DocumentIcon, ChevronUpIcon, ChevronDownIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Asset as AssetType} from '@sanity/types'
 import {FIXME} from '../../../FIXME'
 import {useClient, useTimeAgo} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {Tooltip} from '../../../../ui'
 import {prettyBytes} from './prettyBytes'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
@@ -357,11 +358,7 @@ export const AssetRow = (props: RowProps) => {
             </Card>
             {showTooltip && (
               <Tooltip
-                content={
-                  <Box padding={2}>
-                    <Text size={1}>{originalFilename}</Text>
-                  </Box>
-                }
+                content={<Text size={1}>{originalFilename}</Text>}
                 fallbackPlacements={['right', 'left']}
                 placement="top"
                 portal

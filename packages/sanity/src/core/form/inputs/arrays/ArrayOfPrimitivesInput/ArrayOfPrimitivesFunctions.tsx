@@ -2,8 +2,9 @@
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React, {useMemo, useId} from 'react'
-import {Box, Button, Grid, Menu, MenuButton, MenuItem, Tooltip, Text} from '@sanity/ui'
+import {Box, Button, Grid, Menu, MenuButton, MenuItem, Text} from '@sanity/ui'
 import {ArrayInputFunctionsProps} from '../../../types'
+import {Tooltip} from '../../../../../ui'
 
 /**
  * @hidden
@@ -33,7 +34,7 @@ export function ArrayOfPrimitivesFunctions<
       <Tooltip
         portal
         content={
-          <Box padding={2} sizing="border">
+          <Box sizing="border">
             <Text size={1}>This field is read-only</Text>
           </Box>
         }

@@ -22,7 +22,7 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
   const plural = roles.length !== 1
 
   return (
-    <Box padding={2}>
+    <Box>
       <Inline space={2}>
         <Text size={1}>
           <AccessDeniedIcon />

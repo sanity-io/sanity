@@ -5,7 +5,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, isImage} from '@sanity/types'
-import {Tooltip, Flex, ResponsivePaddingProps, Box} from '@sanity/ui'
+import {Flex, ResponsivePaddingProps, Box} from '@sanity/ui'
 import React, {PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
 import {
@@ -30,6 +30,7 @@ import {debugRender} from '../debugRender'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {useFormCallbacks} from '../../../studio'
+import {Tooltip} from '../../../../../ui'
 import {
   Root,
   ChangeIndicatorWrapper,
@@ -187,7 +188,7 @@ export function BlockObject(props: BlockObjectProps) {
   const toolTipContent = useMemo(
     () =>
       (tooltipEnabled && (
-        <TooltipBox padding={2}>
+        <TooltipBox>
           <Markers
             markers={markers}
             validation={validation}
