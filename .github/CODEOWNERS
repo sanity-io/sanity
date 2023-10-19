@@ -25,3 +25,5 @@
 # Tom owns the Shopify templates
 /packages/@sanity/cli/src/actions/init-project/templates/shopify* @thebiggianthead
 /packages/@sanity/cli/templates/shopify* @thebiggianthead
+
+/packages/sanity/src/desk/comments/ @hermanwikner
