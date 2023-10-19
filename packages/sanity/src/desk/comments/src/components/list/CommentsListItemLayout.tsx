@@ -158,37 +158,39 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const formattedCreatedAt = format(createdDate, 'PPPPp')
 
   const formattedLastEditAt = lastEditedAt ? format(new Date(lastEditedAt), 'PPPPp') : null
+  const displayError = hasError || isRetrying
 
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
-
-  const displayError = hasError || isRetrying
-
-  const handleCopyLink = useCallback(() => {
-    onCopyLink?.(_id)
-  }, [_id, onCopyLink])
-
-  const handleCreateRetry = useCallback(() => {
-    onCreateRetry?.(_id)
-  }, [_id, onCreateRetry])
+  const handleCopyLink = useCallback(() => onCopyLink?.(_id), [_id, onCopyLink])
+  const handleCreateRetry = useCallback(() => onCreateRetry?.(_id), [_id, onCreateRetry])
+  const handleDelete = useCallback(() => onDelete(_id), [_id, onDelete])
 
   const cancelEdit = useCallback(() => {
     setIsEditing(false)
     setValue(startMessage.current)
   }, [])
 
-  const handleEditDiscard = useCallback(() => {
-    cancelEdit()
+  const startDiscard = useCallback(() => {
+    commentInputRef.current?.discardController.start().callback((needsConfirm) => {
+      if (!needsConfirm || !hasChanges) {
+        cancelEdit()
+      }
+    })
+  }, [cancelEdit, hasChanges])
+
+  const cancelDiscard = useCallback(() => {
+    commentInputRef.current?.discardController.cancel()
+  }, [])
+
+  const confirmDiscard = useCallback(() => {
+    commentInputRef.current?.discardController.confirm().callback(() => {
+      cancelEdit()
+    })
   }, [cancelEdit])
 
-  const handleDelete = useCallback(() => {
-    onDelete(_id)
-  }, [_id, onDelete])
-
   const handleEditSubmit = useCallback(() => {
-    onEdit(_id, {
-      message: value,
-    })
+    onEdit(_id, {message: value})
     setIsEditing(false)
   }, [_id, onEdit, value])
 
@@ -281,7 +283,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 focusOnMount
                 mentionOptions={mentionOptions}
                 onChange={setValue}
-                onEditDiscard={handleEditDiscard}
+                onDiscardCancel={cancelDiscard}
+                onDiscardConfirm={confirmDiscard}
+                onEscapeKeyDown={startDiscard}
                 onMentionMenuOpenChange={setMentionMenuOpen}
                 onSubmit={handleEditSubmit}
                 ref={commentInputRef}

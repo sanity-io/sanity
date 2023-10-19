@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Flex, Stack} from '@sanity/ui'
+import {Button, Flex, Stack, useClickOutside} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser, Path} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
@@ -60,7 +60,6 @@ const ExpandButton = styled(Button)(({theme}) => {
 })
 
 const GhostButton = styled(Button)`
-  /* background: orange; */
   opacity: 0;
   position: absolute;
   right: 0;
@@ -77,7 +76,7 @@ interface CommentsListItemProps {
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
-  onPathFocus?: (path: Path) => void
+  onPathSelect?: (path: Path) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   parentComment: CommentDocument
@@ -94,7 +93,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     onCreateRetry,
     onDelete,
     onEdit,
-    onPathFocus,
+    onPathSelect,
     onReply,
     onStatusChange,
     parentComment,
@@ -104,7 +103,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const didExpand = useRef<boolean>(false)
-
+  const rootRef = useRef<HTMLDivElement | null>(null)
   const replyInputRef = useRef<CommentInputHandle>(null)
 
   const handleReplySubmit = useCallback(() => {
@@ -130,14 +129,28 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     value,
   ])
 
+  const startDiscard = useCallback(() => {
+    replyInputRef.current?.discardController.start().callback((needsConfirm) => {
+      if (!needsConfirm) {
+        setValue(EMPTY_ARRAY)
+      }
+    })
+  }, [])
+
+  const cancelDiscard = useCallback(() => {
+    replyInputRef.current?.discardController.cancel()
+  }, [])
+
+  const confirmDiscard = useCallback(() => {
+    replyInputRef.current?.discardController.confirm().callback(() => {
+      setValue(EMPTY_ARRAY)
+    })
+  }, [])
+
   const handleThreadRootClick = useCallback(() => {
     const path = PathUtils.fromString(parentComment.target.path.field)
-    onPathFocus?.(path)
-  }, [onPathFocus, parentComment.target.path.field])
-
-  const cancelEdit = useCallback(() => {
-    setValue(EMPTY_ARRAY)
-  }, [])
+    onPathSelect?.(path)
+  }, [onPathSelect, parentComment.target.path.field])
 
   const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -168,7 +181,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   }, [replies])
 
   return (
-    <Stack space={2}>
+    <Stack space={2} ref={rootRef}>
       <StyledThreadCard
         data-active={selected ? 'true' : 'fase'}
         onClick={handleThreadRootClick}
@@ -241,7 +254,9 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               expandOnFocus
               mentionOptions={mentionOptions}
               onChange={setValue}
-              onEditDiscard={cancelEdit}
+              onDiscardCancel={cancelDiscard}
+              onDiscardConfirm={confirmDiscard}
+              onEscapeKeyDown={startDiscard}
               onSubmit={handleReplySubmit}
               placeholder="Reply"
               ref={replyInputRef}
