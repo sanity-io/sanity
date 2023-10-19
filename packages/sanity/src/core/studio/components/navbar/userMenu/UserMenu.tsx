@@ -12,13 +12,13 @@ import {
   MenuItem,
   Stack,
   Text,
-  Tooltip,
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
 import {type StudioThemeColorSchemeKey} from '../../../../theme'
+import {Tooltip} from '../../../../../ui'
 import {
   useColorSchemeOptions,
   useColorSchemeSetValue,
@@ -109,13 +109,7 @@ export function UserMenu() {
               <Tooltip
                 disabled={!providerTitle}
                 portal
-                content={
-                  providerTitle && (
-                    <Box padding={2}>
-                      <Text size={1}>Signed in with {providerTitle}</Text>
-                    </Box>
-                  )
-                }
+                content={providerTitle && <Text size={1}>Signed in with {providerTitle}</Text>}
               >
                 <AvatarBox marginRight={3}>
                   <UserAvatar size={AVATAR_SIZE} user="me" />

@@ -1,11 +1,12 @@
 import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
+import {Box, Flex, Inline, Label, Text, useRootTheme} from '@sanity/ui'
 import {EditIcon, PublishIcon} from '@sanity/icons'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey, TextWithTone} from '../../../components'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
+import {Tooltip} from '../../../../ui'
 import {TimeAgo} from './utils/TimeAgo'
 import {ReferenceInfo} from './types'
 
@@ -74,17 +75,15 @@ export function ReferencePreview(props: {
               <Tooltip
                 portal
                 content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {preview.published?._updatedAt ? (
-                        <>
-                          Published <TimeAgo time={preview.published._updatedAt} />
-                        </>
-                      ) : (
-                        <>Not published</>
-                      )}
-                    </Text>
-                  </Box>
+                  <Text size={1}>
+                    {preview.published?._updatedAt ? (
+                      <>
+                        Published <TimeAgo time={preview.published._updatedAt} />
+                      </>
+                    ) : (
+                      <>Not published</>
+                    )}
+                  </Text>
                 }
               >
                 <TextWithTone
@@ -102,17 +101,15 @@ export function ReferencePreview(props: {
               <Tooltip
                 portal
                 content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {preview.draft?._updatedAt ? (
-                        <>
-                          Edited <TimeAgo time={preview.draft._updatedAt} />
-                        </>
-                      ) : (
-                        <>No unpublished edits</>
-                      )}
-                    </Text>
-                  </Box>
+                  <Text size={1}>
+                    {preview.draft?._updatedAt ? (
+                      <>
+                        Edited <TimeAgo time={preview.draft._updatedAt} />
+                      </>
+                    ) : (
+                      <>No unpublished edits</>
+                    )}
+                  </Text>
                 }
               >
                 <TextWithTone

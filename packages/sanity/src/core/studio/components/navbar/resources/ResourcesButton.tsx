@@ -1,8 +1,9 @@
 import {HelpCircleIcon} from '@sanity/icons'
-import {Box, Button, Flex, Menu, MenuButton, Text, Tooltip} from '@sanity/ui'
+import {Button, Flex, Menu, MenuButton, Text} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
+import {Tooltip} from '../../../../../ui'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 
@@ -23,11 +24,7 @@ export function ResourcesButton() {
   return (
     <Flex>
       <Tooltip
-        content={
-          <Box padding={2}>
-            <Text size={1}>Help and resources </Text>
-          </Box>
-        }
+        content={<Text size={1}>Help and resources</Text>}
         scheme={scheme}
         placement="bottom"
         portal
