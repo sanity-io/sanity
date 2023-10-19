@@ -332,5 +332,63 @@ export const virtualizationDebug = defineType({
         }),
       ],
     }),
+
+    defineField({
+      type: 'array',
+      name: 'modalTest',
+      title: 'Modal Test',
+      of: [
+        {
+          type: 'object',
+          name: 'modalTestObject',
+          title: 'Modal Test Object',
+          fields: [
+            {
+              type: 'string',
+              name: 'title',
+              title: 'Title',
+            },
+            {
+              name: 'arrayInObjectNestedGroup',
+              title: 'Array in Object Arrays',
+              type: 'object',
+              options: {
+                collapsible: true,
+              },
+              groups: [
+                {
+                  name: 'nestedModalGroup',
+                  title: 'Nested Modal Group',
+                },
+              ],
+              fields: [
+                defineField({
+                  name: 'arrayListNestedSingleGroup',
+                  title: 'Array List single item in nested group',
+                  type: 'array',
+                  group: 'nestedModalGroup',
+                  of: [
+                    {
+                      type: 'reference',
+                      to: [{type: 'author'}],
+                    },
+                  ],
+                  initialValue: async (_, context) => {
+                    const {getClient} = context
+                    const client = getClient({apiVersion: '2022-12-07'})
+                    const authors = await getAuthors(client, 8)
+
+                    return authors.map((author: any) => ({
+                      _type: 'reference',
+                      _ref: author._id,
+                    }))
+                  },
+                }),
+              ],
+            },
+          ],
+        },
+      ],
+    }),
   ],
 })
