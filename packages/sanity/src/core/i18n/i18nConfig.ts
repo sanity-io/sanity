@@ -8,6 +8,7 @@ import {createSanityI18nBackend} from './backend'
 import {LocaleSource, LocaleDefinition, LocaleResourceBundle} from './types'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {getPreferredLocale} from './localeStore'
+import {DEBUG_I18N, maybeWrapT} from './debug'
 
 /**
  * @internal
@@ -73,7 +74,7 @@ function createI18nApi({
         return missing.length === 0 ? Promise.resolve() : i18nInstance.loadNamespaces(namespaces)
       },
       locales: reducedLocales,
-      t: i18nInstance.t,
+      t: maybeWrapT(i18nInstance.t),
     },
 
     /** @internal */
@@ -136,7 +137,7 @@ const defaultOptions: InitOptions = {
 
   // In rare cases we'll want to be able to debug i18next - there is a `debug` option
   // in the studio i18n configuration for that, which will override this value.
-  debug: false,
+  debug: DEBUG_I18N,
 
   // When specifying language 'en-US', do not load 'en-US', 'en', 'dev' - only `en-US`.
   load: 'currentOnly',

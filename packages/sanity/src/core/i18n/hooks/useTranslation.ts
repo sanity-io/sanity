@@ -1,6 +1,7 @@
 import type {FlatNamespace, KeyPrefix, Namespace, TFunction} from 'i18next'
 import type {$Tuple} from 'react-i18next/helpers'
 import {type FallbackNs, useTranslation as useOriginalTranslation} from 'react-i18next'
+import {maybeWrapT} from '../debug'
 
 /**
  * @alpha
@@ -44,5 +45,5 @@ export function useTranslation<
       : translationOptionOverrides,
   )
 
-  return {t}
+  return {t: maybeWrapT(t)}
 }
