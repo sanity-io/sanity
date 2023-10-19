@@ -33,6 +33,8 @@ export default defineConfig({
 
   retries: 1,
 
+  fullyParallel: true,
+
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
