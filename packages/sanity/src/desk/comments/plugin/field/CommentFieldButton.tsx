@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {
   Box,
   Button,
@@ -9,12 +9,11 @@ import {
   Tooltip,
   TooltipProps,
   useClickOutside,
-  useGlobalKeyDown,
 } from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CommentIcon} from '../common/CommentIcon'
-import {CommentMessage, useComments, CommentInput} from '../../src'
-import {CurrentUser, PortableTextBlock, useDidUpdate} from 'sanity'
+import {CommentMessage, useComments, CommentInput, CommentInputHandle} from '../../src'
+import {CurrentUser, PortableTextBlock} from 'sanity'
 
 const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500}
 
@@ -48,64 +47,47 @@ interface CommentFieldButtonProps {
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
   onCommentAdd: () => void
-  onDiscardEdit: () => void
-  onOpenChange: (open: boolean) => void
-  openInspector: () => void
+  onDiscard: () => void
+  open: boolean
+  setOpen: (open: boolean) => void
   value: CommentMessage
 }
 
 export function CommentFieldButton(props: CommentFieldButtonProps) {
-  const {
-    count,
-    currentUser,
-    onChange,
-    onClick,
-    onCommentAdd,
-    onDiscardEdit,
-    onOpenChange,
-    openInspector,
-    value,
-  } = props
+  const {count, currentUser, onChange, onClick, onCommentAdd, onDiscard, value, open, setOpen} =
+    props
   const [mentionMenuOpen, setMentionMenuOpen] = useState<boolean>(false)
-  const [open, setOpen] = useState<boolean>(false)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
-
+  const commentInputHandle = useRef<CommentInputHandle | null>(null)
   const {mentionOptions} = useComments()
-
   const hasComments = Boolean(count > 0)
 
-  const close = useCallback(() => setOpen(false), [])
-
-  const conditionalClose = useCallback(() => {
-    if (mentionMenuOpen) return
-    close()
-  }, [close, mentionMenuOpen])
-
-  const handleClick = useCallback(() => {
-    onClick?.()
-
-    if (hasComments) {
-      openInspector()
-      setOpen(false)
-      return
-    }
-    setOpen((prev) => !prev)
-  }, [hasComments, onClick, openInspector])
+  const closePopover = useCallback(() => setOpen(false), [setOpen])
 
   const handleSubmit = useCallback(() => {
     onCommentAdd()
-    close()
-  }, [close, onCommentAdd])
+    closePopover()
+  }, [closePopover, onCommentAdd])
 
-  useDidUpdate(open, () => onOpenChange?.(open))
+  const startDiscard = useCallback(() => {
+    commentInputHandle.current?.discardController.start().callback((needsConfirm) => {
+      if (needsConfirm || mentionMenuOpen) return
+      closePopover()
+    })
+  }, [closePopover, mentionMenuOpen])
 
-  useClickOutside(conditionalClose, [popoverElement])
+  const handleDiscardCancel = useCallback(() => {
+    commentInputHandle.current?.discardController.cancel()
+  }, [])
 
-  useGlobalKeyDown((event) => {
-    if (event.key === 'Escape') {
-      conditionalClose()
-    }
-  })
+  const handleDiscardConfirm = useCallback(() => {
+    commentInputHandle.current?.discardController.confirm().callback(() => {
+      closePopover()
+      onDiscard()
+    })
+  }, [closePopover, onDiscard])
+
+  useClickOutside(startDiscard, [popoverElement])
 
   if (!hasComments) {
     const content = (
@@ -116,9 +98,12 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
           focusOnMount
           mentionOptions={mentionOptions}
           onChange={onChange}
-          onEditDiscard={onDiscardEdit}
+          onDiscardCancel={handleDiscardCancel}
+          onDiscardConfirm={handleDiscardConfirm}
+          onEscapeKeyDown={startDiscard}
           onMentionMenuOpenChange={setMentionMenuOpen}
           onSubmit={handleSubmit}
+          ref={commentInputHandle}
           value={value}
         />
       </ContentStack>
@@ -151,7 +136,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
               fontSize={1}
               icon={CommentIcon}
               mode="bleed"
-              onClick={handleClick}
+              onClick={onClick}
               padding={2}
               selected={open}
             />
@@ -173,7 +158,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
       delay={TOOLTIP_DELAY}
       fallbackPlacements={['bottom']}
     >
-      <Button aria-label="Open comments" mode="bleed" onClick={handleClick} padding={2}>
+      <Button aria-label="Open comments" mode="bleed" onClick={onClick} padding={2}>
         <Flex align="center" gap={2}>
           <Text size={1}>
             <CommentIcon />

@@ -136,6 +136,13 @@ function CommentFieldInner(props: FieldProps) {
       setStatus('open')
     }
 
+    if (hasComments) {
+      setOpen(false)
+      openInspector(COMMENTS_INSPECTOR_NAME)
+    } else {
+      setOpen((v) => !v)
+    }
+
     // If the field has comments, we want to open the inspector, scroll to the comment
     // thread and set the path as selected so that the comment is highlighted  when the
     // user clicks the button.
@@ -152,6 +159,7 @@ function CommentFieldInner(props: FieldProps) {
     status,
     currentThreadId,
     setStatus,
+    openInspector,
     handleScrollToThread,
     setSelectedPath,
     props.path,
@@ -210,7 +218,7 @@ function CommentFieldInner(props: FieldProps) {
     value,
   ])
 
-  const handleEditDiscard = useCallback(() => setValue(null), [])
+  const handleDiscard = useCallback(() => setValue(null), [])
 
   useEffect(() => {
     if (currentThreadId) {
@@ -228,23 +236,6 @@ function CommentFieldInner(props: FieldProps) {
       })
     }
   }, [boundaryElement, isSelected, props.path, selectedPath])
-
-  // Give the user a way to deselect the path by clicking outside the field
-  // to get rid of the highlight.
-  useClickOutside(() => {
-    if (isSelected) {
-      setSelectedPath(null)
-    }
-  }, [rootElementRef.current])
-
-  useEffect(() => {
-    return () => {
-      // Clear the selected path when the field is unmounted
-      setSelectedPath(null)
-    }
-    // Intentionally omitting `setSelectedPath` from the deps array
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   useEffect(() => {
     const showHighlight = inView && isSelected
@@ -267,26 +258,16 @@ function CommentFieldInner(props: FieldProps) {
           onChange={setValue}
           onClick={handleClick}
           onCommentAdd={handleCommentAdd}
-          onDiscardEdit={handleEditDiscard}
-          onOpenChange={setOpen}
-          openInspector={handleOpenInspector}
+          onDiscard={handleDiscard}
+          open={open}
+          setOpen={setOpen}
           value={value}
         />
       ),
       hasComments,
       isAddingComment: open,
     }),
-    [
-      currentUser,
-      count,
-      hasComments,
-      handleClick,
-      handleCommentAdd,
-      handleEditDiscard,
-      handleOpenInspector,
-      value,
-      open,
-    ],
+    [currentUser, count, hasComments, handleClick, handleCommentAdd, handleDiscard, value, open],
   )
 
   return (
