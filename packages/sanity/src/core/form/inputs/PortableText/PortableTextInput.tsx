@@ -1,4 +1,4 @@
-import {Path, PortableTextBlock} from '@sanity/types'
+import {PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
   Patch as EditorPatch,
@@ -59,8 +59,6 @@ export interface PortableTextMemberItem {
 export function PortableTextInput(props: PortableTextInputProps) {
   const {
     elementProps,
-    focused,
-    focusPath,
     hotkeys,
     markers = EMPTY_ARRAY,
     members,
@@ -96,6 +94,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isActive, setIsActive] = useState(false)
   const [isOffline, setIsOffline] = useState(false)
+  const [hasFocusWithin, setHasFocusWithin] = useState(false)
 
   const toast = useToast()
   const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
@@ -224,14 +223,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
     return items
   }, [members, props])
 
-  // Is true if something inside the editor itself has focus,
-  // as opposed to focus on a form field inside an
-  // annotation or object block's editing interface.
-  const hasFocusWithin =
-    focused ||
-    (focusPath.length > 0 &&
-      portableTextMemberItems.some((m) => m.member.open && m.kind === 'textBlock'))
-
   // Set active if focused within the editor
   useEffect(() => {
     if (hasFocusWithin) {
@@ -264,9 +255,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
           break
         case 'focus':
           setIsActive(true)
+          setHasFocusWithin(true)
           break
         case 'blur':
           onBlur(change.event)
+          setHasFocusWithin(false)
           break
         case 'undo':
         case 'redo':
