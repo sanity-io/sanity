@@ -75,6 +75,10 @@ const sharedSettings = definePlugin({
       return prev
     },
     newDocumentOptions,
+
+    unstable_comments: {
+      enabled: true,
+    },
   },
   plugins: [
     deskTool({
