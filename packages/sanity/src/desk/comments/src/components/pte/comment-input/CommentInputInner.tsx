@@ -1,8 +1,7 @@
-import React, {useCallback, useState} from 'react'
+import React, {useCallback} from 'react'
 import {Flex, Button, MenuDivider, Box, Card, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
-import {CloseIcon} from '@sanity/icons'
 import {MentionIcon, SendIcon} from '../../icons'
 import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 import {useCommentInput} from './useCommentInput'
@@ -77,30 +76,27 @@ const RootCard = styled(Card)(({theme}) => {
 interface CommentInputInnerProps {
   currentUser: CurrentUser
   focusLock?: boolean
-  onEditDiscard: () => void
+  onEscapeKeyDown?: () => void
   onSubmit: () => void
   placeholder?: string
   withAvatar?: boolean
 }
 
 export function CommentInputInner(props: CommentInputInnerProps) {
-  const {currentUser, onSubmit, onEditDiscard, placeholder, withAvatar, focusLock} = props
-  const [discardButtonElement, setDiscardButtonElement] = useState<HTMLButtonElement | null>(null)
+  const {currentUser, onSubmit, placeholder, withAvatar, focusLock, onEscapeKeyDown} = props
 
   const [user] = useUser(currentUser.id)
-  const {openMentions, focused, expandOnFocus, canSubmit, hasChanges, insertAtChar} =
-    useCommentInput()
+  const {
+    canSubmit,
+    expandOnFocus,
+    focused,
+    hasChanges,
+    insertAtChar,
+    mentionsMenuOpen,
+    openMentions,
+  } = useCommentInput()
 
   const avatar = withAvatar ? <CommentsAvatar user={user} /> : null
-
-  const handleDiscardEdit = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation()
-      onEditDiscard()
-      discardButtonElement?.blur()
-    },
-    [discardButtonElement, onEditDiscard],
-  )
 
   const handleMentionButtonClicked = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -111,8 +107,21 @@ export function CommentInputInner(props: CommentInputInnerProps) {
     [insertAtChar, openMentions],
   )
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        e.preventDefault()
+        if (mentionsMenuOpen) return
+
+        onEscapeKeyDown?.()
+      }
+    },
+    [mentionsMenuOpen, onEscapeKeyDown],
+  )
+
   return (
-    <Flex align="flex-start" gap={2}>
+    <Flex align="flex-start" gap={2} onKeyDown={handleKeyDown}>
       {avatar}
 
       <RootCard
@@ -137,14 +146,6 @@ export function CommentInputInner(props: CommentInputInnerProps) {
             />
 
             <ButtonDivider />
-
-            <ActionButton
-              aria-label="Discard edit"
-              icon={CloseIcon}
-              mode="bleed"
-              onClick={handleDiscardEdit}
-              ref={setDiscardButtonElement}
-            />
 
             <ActionButton
               aria-label="Send comment"

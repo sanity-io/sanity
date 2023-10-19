@@ -124,7 +124,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     setCommentToDelete(null)
   }, [deleteLoading])
 
-  const handlePathFocus = useCallback(
+  const handlePathSelect = useCallback(
     (path: Path) => {
       onPathOpen(path)
       setSelectedPath({
@@ -251,7 +251,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
             onDelete={onDeleteStart}
             onEdit={handleEdit}
             onNewThreadCreate={handleNewThreadCreate}
-            onPathFocus={handlePathFocus}
+            onPathSelect={handlePathSelect}
             onReply={handleReply}
             onStatusChange={handleStatusChange}
             ref={commentsListHandleRef}

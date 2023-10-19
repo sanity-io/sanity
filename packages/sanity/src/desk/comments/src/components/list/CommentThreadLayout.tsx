@@ -1,11 +1,10 @@
 import {CurrentUser} from '@sanity/types'
 import {Box, Breadcrumbs, Button, Flex, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useRef, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import styled from 'styled-components'
 import {ChevronRightIcon} from '@sanity/icons'
 import {AddCommentIcon} from '../icons'
-import {CommentInputHandle} from '../pte'
 import {
   CommentMessage,
   CommentCreatePayload,
@@ -40,7 +39,6 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     onNewThreadCreate,
     fieldPath,
   } = props
-  const createNewThreadInputRef = useRef<CommentInputHandle>(null)
   const [displayNewThreadInput, setDisplayNewThreadInput] = useState<boolean>(false)
   const [newThreadButtonElement, setNewThreadButtonElement] = useState<HTMLButtonElement | null>(
     null,
@@ -122,7 +120,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
             mentionOptions={mentionOptions}
             onEditDiscard={handleNewThreadCreateDiscard}
             onNewThreadCreate={handleNewThreadCreate}
-            ref={createNewThreadInputRef}
+            openButtonElement={newThreadButtonElement}
           />
         </ThreadCard>
       )}
