@@ -1,12 +1,17 @@
 #!/usr/bin/env node
 /* eslint-disable no-sync, no-console, strict */
+/**
+ * **************************************************************
+ * This script needs to stay as a CommonJS/JavaScript file
+ * (it's executed in node by the `CLI unit tests`, and possibly other places)
+ * **************************************************************
+ **/
 'use strict'
 
-import fs from 'fs'
-
-import path from 'path'
-import rimraf from 'rimraf'
-import minimist from 'minimist'
+const fs = require('fs')
+const path = require('path')
+const rimraf = require('rimraf')
+const minimist = require('minimist')
 
 const argv = minimist(process.argv.slice(2), {boolean: ['all']})
 
@@ -15,9 +20,9 @@ if (!targetDir) {
   throw new Error('Target directory must be specified (`.` for current dir)')
 }
 
-const notSanity = (dir: string) => dir !== '@sanity'
-const prefix = (name: string) => `@sanity/${name}`
-const normalize = (dir: string) => dir.replace(/@sanity\//g, `@sanity${path.sep}`)
+const notSanity = (dir) => dir !== '@sanity'
+const prefix = (name) => `@sanity/${name}`
+const normalize = (dir) => dir.replace(/@sanity\//g, `@sanity${path.sep}`)
 
 const pkgPath = path.join(__dirname, '..', 'packages')
 const rootPackages = fs.readdirSync(pkgPath).filter(notSanity)
