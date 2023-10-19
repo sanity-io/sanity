@@ -385,7 +385,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       <Editor
         ariaDescribedBy={ariaDescribedBy}
         initialSelection={initialSelection}
-        hasFocus={hasFocusWithin}
         hotkeys={editorHotkeys}
         isActive={isActive}
         isFullscreen={isFullscreen}
@@ -407,20 +406,19 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     // Keep only stable ones here!
     [
       ariaDescribedBy,
-      initialSelection,
-      hasFocusWithin,
       editorHotkeys,
-      isActive,
-      isFullscreen,
-      onItemOpen,
-      onCopy,
-      onPaste,
-      handleToggleFullscreen,
-      path,
-      readOnly,
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
+      handleToggleFullscreen,
+      initialSelection,
+      isActive,
+      isFullscreen,
+      onCopy,
+      onItemOpen,
+      onPaste,
+      path,
+      readOnly,
       scrollElement,
     ],
   )
@@ -444,6 +442,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onItemClose,
   })
 
+  // The editor should have a focus ring when the field itself is focused,
+  // or focus is pointing directly to a node inside the editor
+  // (as opposed to focus on fields inside object nodes like annotations, inline blocks etc.)
+  const editorFocused = focused || hasFocusWithin
+
   return (
     <PortalProvider __unstable_elements={portalElements}>
       <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
@@ -454,7 +457,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           path={path}
         >
           <Root
-            data-focused={hasFocusWithin ? '' : undefined}
+            data-focused={editorFocused ? '' : undefined}
             data-read-only={readOnly ? '' : undefined}
           >
             <Box data-wrapper="" ref={setWrapperElement}>
