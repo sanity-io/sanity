@@ -43,7 +43,7 @@ export function PublishStatus(props: PublishStatusProps) {
         text={`${
           liveEdit
             ? `Last updated ${lastUpdated ? lastUpdatedTimeAgo : lastPublishedTimeAgo}`
-            : `Last published ${lastPublishedTime}`
+            : `Last published ${lastPublishedTimeAgo}`
         }`}
         placement="top-start"
       >

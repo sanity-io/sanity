@@ -7,14 +7,12 @@ import {TextWithTone, useTimeAgo} from 'sanity'
 export function DraftStatus(props: {document?: PreviewValue | Partial<SanityDocument> | null}) {
   const {document} = props
   const updatedAt = document && '_updatedAt' in document && document._updatedAt
+
   // Label with abbreviations and suffix
   const lastEditedTime = useTimeAgo(updatedAt || '', {minimal: true, agoSuffix: true})
-  const lastEditedTimeAgo = `${lastEditedTime} ago`
 
   return (
-    <Tooltip
-      text={document ? `Edited ${updatedAt ? lastEditedTimeAgo : ''}` : 'No unpublished edits'}
-    >
+    <Tooltip text={document ? `Edited ${updatedAt ? lastEditedTime : ''}` : 'No unpublished edits'}>
       <TextWithTone tone="caution" dimmed={!document} muted={!document} size={1}>
         <EditIcon />
       </TextWithTone>

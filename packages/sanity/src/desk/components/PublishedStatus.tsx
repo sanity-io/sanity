@@ -9,8 +9,8 @@ export function PublishedStatus(props: {document?: PreviewValue | Partial<Sanity
   const updatedAt = document && '_updatedAt' in document && document._updatedAt
   const statusLabel = document ? 'Published' : 'Not published'
 
-  // Label with abbreviations
-  const lastPublishedTime = useTimeAgo(updatedAt || '', {minimal: true})
+  // Label with abbreviations and suffix
+  const lastPublishedTime = useTimeAgo(updatedAt || '', {minimal: true, agoSuffix: true})
 
   return (
     <Tooltip text={document ? `Published ${updatedAt ? lastPublishedTime : ''}` : 'Not published'}>
