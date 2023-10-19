@@ -1,4 +1,4 @@
-import {studioTheme, rgba, Card, Flex, CardTone, Spinner} from '@sanity/ui'
+import {rgba, Card, Flex, CardTone, Spinner, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export const MAX_DEFAULT_HEIGHT = 30
@@ -34,12 +34,14 @@ export const SpinnerWrapper = styled(Spinner)`
 export const Overlay = styled(Flex)(({
   tone,
   drag,
+  theme,
 }: {
   tone: Exclude<CardTone, 'inherit'>
   drag: boolean
+  theme: Theme
 }) => {
-  const textColor = studioTheme.color.light[tone].card.enabled.fg
-  const backgroundColor = rgba(studioTheme.color.light[tone].card.enabled.bg, 0.8)
+  const textColor = theme.sanity.color.card.enabled.fg
+  const backgroundColor = rgba(theme.sanity.color.card.enabled.bg, 0.8)
 
   return css`
     position: absolute;
