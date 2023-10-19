@@ -1,8 +1,10 @@
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {of} from 'rxjs'
-import {useRouterState} from 'sanity/router'
-import {useSchema, useWorkspace, useDocumentPreviewStore, getPreviewStateObservable} from 'sanity'
+import {usePaneRouter} from '../../../components'
+import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
+import {CommentContext} from '../types'
+import {getPreviewStateObservable, useDocumentPreviewStore, useSchema, useWorkspace} from 'sanity'
 
 interface NotificationTargetHookOptions {
   documentId: string
@@ -10,10 +12,16 @@ interface NotificationTargetHookOptions {
 }
 
 interface NotificationTargetHookValue {
-  documentTitle: string
-  toolName: string
-  url: string
-  workspaceTitle: string
+  /**
+   * Returns an object with notification-specific values for the selected comment, such as
+   * the current workspace + document title and full URL to the comment.
+   * These values are currently used in notification emails.
+   *
+   * **Please note:** this will generate a URL for the comment based on the current _active_ pane.
+   * The current active pane may not necessarily be the right-most desk pane and in these cases,
+   * the selected comment may not be visible on initial load when visiting these URLs.
+   */
+  getNotificationValue: ({commentId}: {commentId: string}) => CommentContext['notification']
 }
 
 /** @internal */
@@ -22,18 +30,8 @@ export function useNotificationTarget(
 ): NotificationTargetHookValue {
   const {documentId, documentType} = opts || {}
   const schemaType = useSchema().get(documentType)
-  const {basePath, title: workspaceTitle, tools} = useWorkspace()
-
-  const activeToolName = useRouterState(
-    useCallback(
-      (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
-      [],
-    ),
-  )
-  const activeTool = useMemo(
-    () => tools.find((tool) => tool.name === activeToolName),
-    [activeToolName, tools],
-  )
+  const {title: workspaceTitle} = useWorkspace()
+  const {createPathWithParams, params} = usePaneRouter()
 
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -45,15 +43,25 @@ export function useNotificationTarget(
   const {published, draft} = previewState || {}
   const documentTitle = (draft?.title || published?.title || 'Sanity document') as string
 
-  const currentUrl = new URL(window.location.href)
-  const deskToolSegment = currentUrl.pathname.split('/').slice(2, 3).join('')
-  currentUrl.pathname = `${basePath}/${deskToolSegment}/__edit__${documentId},type=${documentType}`
-  const notificationUrl = currentUrl.toString()
+  const handleGetNotificationValue = useCallback(
+    ({commentId}: {commentId: string}) => {
+      // Generate a path based on the current pane params.
+      // We force a value for `inspect` to ensure that this is included in URLs when comments
+      // are created outside of the inspector context (i.e. directly on the field)
+      // @todo: consider filtering pane router params and culling all non-active RHS panes prior to generating this link
+      const path = createPathWithParams({
+        ...params,
+        comment: commentId,
+        inspect: COMMENTS_INSPECTOR_NAME,
+      })
+      const url = `${window.location.origin}${path}`
+
+      return {documentTitle, url, workspaceTitle}
+    },
+    [createPathWithParams, documentTitle, params, workspaceTitle],
+  )
 
   return {
-    documentTitle,
-    toolName: activeTool?.name || '',
-    url: notificationUrl,
-    workspaceTitle,
+    getNotificationValue: handleGetNotificationValue,
   }
 }
