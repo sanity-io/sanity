@@ -43,9 +43,9 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
 
   const cancelDiscard = useCallback(() => {
     commentInputHandle.current?.discardController.cancel().callback(() => {
-      openButtonElement?.focus()
+      commentInputHandle.current?.focus()
     })
-  }, [openButtonElement])
+  }, [])
 
   return (
     <CommentInput
