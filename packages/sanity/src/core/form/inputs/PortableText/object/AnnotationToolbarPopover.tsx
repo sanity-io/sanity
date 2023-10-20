@@ -24,13 +24,24 @@ interface AnnotationToolbarPopoverProps {
   floatingBoundary: HTMLElement | null
   onOpen: () => void
   onRemove: () => void
+  open: boolean
   referenceBoundary: HTMLElement | null
   referenceElement: HTMLElement | null
+  selected: boolean
   title: string
 }
 
 export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
-  const {floatingBoundary, onOpen, onRemove, referenceBoundary, referenceElement, title} = props
+  const {
+    floatingBoundary,
+    onOpen,
+    onRemove,
+    open,
+    referenceBoundary,
+    referenceElement,
+    selected,
+    title,
+  } = props
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [selection, setSelection] = useState<{
@@ -70,6 +81,12 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       [popoverOpen],
     ),
   )
+
+  useEffect(() => {
+    if (selected && !open) {
+      setPopoverOpen(true)
+    }
+  }, [open, selected])
 
   const handleSelectionChange = useCallback(() => {
     const winSelection = window.getSelection()
@@ -152,6 +169,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
 
   return (
     <ToolbarPopover
+      open={popoverOpen}
       floatingBoundary={floatingBoundary}
       constrainSize
       content={
@@ -183,7 +201,6 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         </Box>
       }
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-      open
       placement="top"
       portal
       preventOverflow
