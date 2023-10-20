@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import {CurrentUser, PortableTextBlock} from '@sanity/types'
+import {noop} from 'lodash'
 import {CommentInput} from '../../../src/desk/comments/src/components/pte/comment-input/CommentInput'
 import {TestWrapper} from '../formBuilder/utils/TestWrapper'
 
@@ -28,12 +29,9 @@ export function CommentsInputStory() {
         onChange={setValue}
         value={value}
         mentionOptions={{data: [], error: null, loading: false}}
-        onEditDiscard={() => {
-          // ...
-        }}
-        onSubmit={() => {
-          // ...
-        }}
+        onDiscardConfirm={noop}
+        onDiscardCancel={noop}
+        onSubmit={noop}
       />
     </TestWrapper>
   )
