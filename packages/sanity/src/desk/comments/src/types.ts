@@ -131,13 +131,11 @@ export interface CommentDocument {
   target: {
     path: CommentPath
     documentType: string
-
     document: {
       _dataset: string
-      _projectId: string // verify
+      _projectId: string
       _ref: string
-      _type: 'crossDatasetReference'
-      _weak: true
+      _type: 'object'
     }
   }
 }
