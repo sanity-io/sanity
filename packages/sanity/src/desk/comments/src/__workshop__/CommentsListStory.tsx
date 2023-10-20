@@ -50,8 +50,7 @@ const BASE: CommentDocument = {
       _dataset: '1',
       _projectId: '1',
       _ref: '1',
-      _type: 'crossDatasetReference',
-      _weak: true,
+      _type: 'object',
     },
   },
   message: [
