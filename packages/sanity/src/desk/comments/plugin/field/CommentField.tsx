@@ -95,11 +95,16 @@ function CommentFieldInner(props: FieldProps) {
 
   const [shouldHighlight, setShouldHighlight] = useState<boolean>(false)
 
+  const commentsInspectorOpen = useMemo(() => {
+    return inspector?.name === COMMENTS_INSPECTOR_NAME
+  }, [inspector?.name])
+
   // Determine if the current field is selected
   const isSelected = useMemo(() => {
+    if (!commentsInspectorOpen) return false
     if (selectedPath?.origin === 'field') return false
     return selectedPath?.fieldPath === PathUtils.toString(props.path)
-  }, [props.path, selectedPath])
+  }, [commentsInspectorOpen, props.path, selectedPath?.fieldPath, selectedPath?.origin])
 
   // Get the most recent thread ID for the current field. This is used to query the
   // DOM for the thread in order to be able to scroll to it.
@@ -112,7 +117,7 @@ function CommentFieldInner(props: FieldProps) {
   // A function that scrolls to the thread with the given ID
   const handleScrollToThread = useCallback(
     (threadId: string) => {
-      if (inspector?.name === COMMENTS_INSPECTOR_NAME && shouldScrollToThread && threadId) {
+      if (commentsInspectorOpen && shouldScrollToThread && threadId) {
         const node = document.querySelector(`[data-thread-id="${threadId}"]`)
 
         if (node) {
@@ -121,7 +126,7 @@ function CommentFieldInner(props: FieldProps) {
         }
       }
     },
-    [inspector, shouldScrollToThread],
+    [shouldScrollToThread, commentsInspectorOpen],
   )
 
   const handleOpenInspector = useCallback(
