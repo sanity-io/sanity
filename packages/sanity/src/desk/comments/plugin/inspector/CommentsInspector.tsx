@@ -211,6 +211,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
           ...params,
           comment: undefined,
         })
+
+        commentIdParamRef.current = undefined
       }
     },
     [params, setParams, setSelectedPath],
