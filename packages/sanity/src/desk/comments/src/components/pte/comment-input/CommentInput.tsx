@@ -5,7 +5,6 @@ import FocusLock from 'react-focus-lock'
 import {Stack} from '@sanity/ui'
 import {editorSchemaType} from '../config'
 import {MentionOptionsHookValue} from '../../../types'
-import {hasCommentMessageValue} from '../../../helpers'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
@@ -29,28 +28,14 @@ interface CommentInputProps {
   withAvatar?: boolean
 }
 
-interface CommentDiscardController {
-  /**
-   * Starts the discard process by showing a dialog if there is a value to be discarded.
-   */
-  start: () => {
-    callback: (fn: (needsConfirm: boolean) => void) => void
-  }
-  /**
-   * Confirms the discard process and closes the confirm dialog and focuses the editor.
-   */
-  confirm: () => {
-    callback: (fn: () => void) => void
-  }
-  /** Cancels the discard process and closes the confirm dialog and focuses the editor. */
-  cancel: () => {
-    callback: (fn: () => void) => void
-  }
+interface CommentDiscardDialogController {
+  open: () => void
+  close: () => void
 }
 
 export interface CommentInputHandle {
   blur: () => void
-  discardController: CommentDiscardController
+  discardDialogController: CommentDiscardDialogController
   focus: () => void
   scrollTo: () => void
 }
@@ -82,8 +67,6 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     const editorContainerRef = useRef<HTMLDivElement | null>(null)
     const [showDiscardDialog, setShowDiscardDialog] = useState<boolean>(false)
 
-    const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
-
     const handleChange = useCallback(
       (change: EditorChange) => {
         if (change.type === 'focus') {
@@ -112,48 +95,24 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     // The way a user a comment can be discarded varies from the context it is used in.
     // This controller is used to take care of the main logic of the discard process, while
     // specific behavior is handled by the consumer.
-    const discardController: CommentDiscardController = useMemo(() => {
+    const discardDialogController = useMemo(() => {
       return {
-        start: () => {
-          const needsConfirm = hasValue
-
-          if (needsConfirm) {
-            setShowDiscardDialog(true)
-            return {
-              callback: (fn: (needsConfirm: boolean) => void) => {
-                fn(true)
-              },
-            }
+        open: () => {
+          if (editorRef?.current) {
+            PortableTextEditor.blur(editorRef.current)
           }
 
-          return {
-            callback: (fn: (needsConfirm: boolean) => void) => {
-              fn(false)
-            },
-          }
+          setShowDiscardDialog(true)
         },
-        confirm: () => {
+        close: () => {
           setShowDiscardDialog(false)
+
           if (editorRef?.current) {
             PortableTextEditor.focus(editorRef.current)
           }
-
-          return {
-            callback: (fn) => fn(),
-          }
         },
-        cancel: () => {
-          setShowDiscardDialog(false)
-          if (editorRef?.current) {
-            PortableTextEditor.focus(editorRef.current)
-          }
-
-          return {
-            callback: (fn) => fn(),
-          }
-        },
-      }
-    }, [hasValue])
+      } satisfies CommentDiscardDialogController
+    }, [])
 
     useImperativeHandle(
       ref,
@@ -171,10 +130,10 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
           },
           scrollTo: scrollToEditor,
 
-          discardController,
+          discardDialogController,
         }
       },
-      [discardController, scrollToEditor],
+      [discardDialogController, scrollToEditor],
     )
 
     return (

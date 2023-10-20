@@ -8,11 +8,10 @@ import {
   useClickOutside,
   Box,
 } from '@sanity/ui'
-import React, {useCallback, useRef, useState} from 'react'
-import {CurrentUser, Path} from '@sanity/types'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {CurrentUser} from '@sanity/types'
 import styled, {css} from 'styled-components'
 import {format} from 'date-fns'
-import * as PathUtils from '@sanity/util/paths'
 import {CommentMessageSerializer} from '../pte'
 import {CommentInput, CommentInputHandle} from '../pte/comment-input'
 import {
@@ -23,7 +22,7 @@ import {
   MentionOptionsHookValue,
 } from '../../types'
 import {FLEX_GAP} from '../constants'
-import {useCommentHasChanged} from '../../helpers'
+import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
 import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {TimeAgoOpts, useTimeAgo, useUser, useDidUpdate} from 'sanity'
@@ -150,6 +149,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
 
   const hasChanges = useCommentHasChanged(value)
+  const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
   const commentInputRef = useRef<CommentInputHandle>(null)
 
@@ -172,21 +172,21 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   }, [])
 
   const startDiscard = useCallback(() => {
-    commentInputRef.current?.discardController.start().callback((needsConfirm) => {
-      if (!needsConfirm || !hasChanges) {
-        cancelEdit()
-      }
-    })
-  }, [cancelEdit, hasChanges])
+    if (!hasValue || !hasChanges) {
+      cancelEdit()
+      return
+    }
+
+    commentInputRef.current?.discardDialogController.open()
+  }, [cancelEdit, hasChanges, hasValue])
 
   const cancelDiscard = useCallback(() => {
-    commentInputRef.current?.discardController.cancel()
+    commentInputRef.current?.discardDialogController.close()
   }, [])
 
   const confirmDiscard = useCallback(() => {
-    commentInputRef.current?.discardController.confirm().callback(() => {
-      cancelEdit()
-    })
+    commentInputRef.current?.discardDialogController.close()
+    cancelEdit()
   }, [cancelEdit])
 
   const handleEditSubmit = useCallback(() => {
