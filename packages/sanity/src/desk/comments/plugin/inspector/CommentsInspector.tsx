@@ -138,8 +138,13 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const handleNewThreadCreate = useCallback(
     (payload: CommentCreatePayload) => {
       create.execute(payload)
+
+      setSelectedPath({
+        fieldPath: payload.fieldPath,
+        origin: 'inspector',
+      })
     },
-    [create],
+    [create, setSelectedPath],
   )
 
   const handleReply = useCallback(
