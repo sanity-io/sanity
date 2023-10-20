@@ -1,6 +1,7 @@
 export * from './hooks/useTranslation'
 export * from './hooks/useLocale'
 export * from './hooks/useIntlListFormat'
+export * from './hooks/useIntlNumberFormat'
 export * from './components/LocaleProvider'
 export * from './locales'
 export * from './Translate'
