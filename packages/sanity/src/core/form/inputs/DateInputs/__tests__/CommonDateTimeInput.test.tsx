@@ -30,10 +30,12 @@ function serialize(date: Date): string {
 }
 
 const CALENDAR_LABELS: CalendarLabels = {
-  previousYear: 'Previous year',
-  nextYear: 'Next year',
-  goToPreviousMonth: 'Goto previous mont',
+  goToPreviousYear: 'Previous year',
+  goToNextYear: 'Next year',
+  goToNextMonth: 'Go to next month',
+  goToPreviousMonth: 'Go to previous month',
   selectHour: 'Select hour',
+  selectMinute: 'Select minute',
   setToCurrentTime: 'Set to current time',
   monthNames: [
     'January',
