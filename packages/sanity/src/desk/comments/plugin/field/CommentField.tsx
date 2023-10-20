@@ -2,10 +2,11 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {PortableTextBlock} from '@sanity/types'
-import {Stack, useBoundaryElement, useClickOutside} from '@sanity/ui'
+import {Stack, useBoundaryElement} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed'
+import scrollIntoViewIfNeeded, {Options} from 'scroll-into-view-if-needed'
 import {useInView, motion, AnimatePresence, Variants} from 'framer-motion'
+import {hues} from '@sanity/color'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
 import {
@@ -52,7 +53,7 @@ const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
   const {radius, space, color} = theme.sanity
-  const bg = color.button.bleed.primary.pressed.bg
+  const bg = hues.blue[color.dark ? 900 : 50].hex
 
   return css`
     mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
@@ -226,16 +227,24 @@ function CommentFieldInner(props: FieldProps) {
     }
   }, [currentThreadId, handleScrollToThread])
 
-  useEffect(() => {
-    if (isSelected && rootElementRef.current) {
-      scrollIntoViewIfNeeded(rootElementRef.current, {
+  const scrollIntoViewIfNeededOpts = useMemo(
+    () =>
+      ({
         ...SCROLL_INTO_VIEW_OPTIONS,
         boundary: boundaryElement,
         scrollMode: 'if-needed',
         block: 'center',
-      })
+      }) satisfies Options,
+    [boundaryElement],
+  )
+
+  useEffect(() => {
+    // When the field is selected, we want to scroll it into
+    // view (if needed) and highlight it.
+    if (isSelected && rootElementRef.current) {
+      scrollIntoViewIfNeeded(rootElementRef.current, scrollIntoViewIfNeededOpts)
     }
-  }, [boundaryElement, isSelected, props.path, selectedPath])
+  }, [boundaryElement, isSelected, props.path, scrollIntoViewIfNeededOpts, selectedPath])
 
   useEffect(() => {
     const showHighlight = inView && isSelected
