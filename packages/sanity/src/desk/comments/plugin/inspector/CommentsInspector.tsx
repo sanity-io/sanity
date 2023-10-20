@@ -1,13 +1,5 @@
 import {Flex, useToast} from '@sanity/ui'
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, {Fragment, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {usePaneRouter} from '../../../components'
@@ -71,6 +63,14 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     // that the document is ready before we allow the user to interact with the comments.
     return comments.loading || !ready
   }, [comments.loading, ready])
+
+  const handleChangeView = useCallback(
+    (nextView: CommentStatus) => {
+      setStatus(nextView)
+      setSelectedPath(null)
+    },
+    [setSelectedPath, setStatus],
+  )
 
   const handleCopyLink = useCallback(
     (id: string) => {
@@ -244,7 +244,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       )}
 
       <Flex direction="column" overflow="hidden" height="fill">
-        <CommentsInspectorHeader onClose={onClose} onViewChange={setStatus} view={status} />
+        <CommentsInspectorHeader onClose={onClose} onViewChange={handleChangeView} view={status} />
 
         {currentUser && (
           <CommentsList
