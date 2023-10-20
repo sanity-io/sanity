@@ -1,4 +1,4 @@
-import React, {useState, useRef, useMemo, useEffect, useCallback, startTransition} from 'react'
+import React, {useState, useRef, useMemo, useEffect, useCallback} from 'react'
 import {
   Box,
   Button,
@@ -21,24 +21,29 @@ const ToolbarPopover = styled(Popover)`
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface AnnotationToolbarPopoverProps {
+  annotationOpen: boolean
   floatingBoundary: HTMLElement | null
   onOpen: () => void
   onRemove: () => void
   referenceBoundary: HTMLElement | null
   referenceElement: HTMLElement | null
+  selected: boolean
   title: string
 }
 
 export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
-  const {floatingBoundary, onOpen, onRemove, referenceBoundary, referenceElement, title} = props
+  const {
+    annotationOpen,
+    floatingBoundary,
+    onOpen,
+    onRemove,
+    referenceBoundary,
+    referenceElement,
+    selected,
+    title,
+  } = props
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
-  const [selection, setSelection] = useState<{
-    anchorNode: Node | null
-    anchorOffset: number
-    focusNode: Node | null
-    focusOffset: number
-  } | null>(null)
   const rangeRef = useRef<Range | null>(null)
   const {sanity} = useTheme()
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -71,21 +76,32 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     ),
   )
 
+  // Open popover when selection is within the annotation text
   const handleSelectionChange = useCallback(() => {
-    const winSelection = window.getSelection()
-    if (!winSelection) {
+    if (annotationOpen) {
+      setPopoverOpen(false)
+      setCursorRect(null)
       return
     }
-    const {anchorNode, anchorOffset, focusNode, focusOffset} = winSelection
-    startTransition(() =>
-      setSelection({
-        anchorNode,
-        anchorOffset,
-        focusNode,
-        focusOffset,
-      }),
-    )
-  }, [])
+
+    const sel = window.getSelection()
+
+    if (!sel || sel.rangeCount === 0) return
+
+    const range = sel.getRangeAt(0)
+    const isWithinRoot = referenceElement?.contains(range.commonAncestorContainer)
+
+    if (!isWithinRoot) {
+      setPopoverOpen(false)
+      setCursorRect(null)
+      return
+    }
+    const rect = range?.getBoundingClientRect()
+    if (rect) {
+      setPopoverOpen(true)
+      setCursorRect(rect)
+    }
+  }, [annotationOpen, referenceElement])
 
   // Detect selection changes
   useEffect(() => {
@@ -95,33 +111,20 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     }
   }, [handleSelectionChange])
 
-  // Open popover when selection is within annotations
-  useEffect(() => {
-    if (!selection) return
-    const {anchorNode, focusNode} = selection
-    if (referenceElement?.contains(anchorNode) && anchorNode === focusNode) {
-      const range = window.getSelection()?.getRangeAt(0)
-      const rect = range?.getBoundingClientRect()
-
-      rangeRef.current = range || null
-
-      if (rect) {
-        startTransition(() => setCursorRect(rect))
-      }
-      startTransition(() => setPopoverOpen(true))
-    } else if (focusNode) {
-      startTransition(() => {
-        setPopoverOpen(false)
-        setCursorRect(null)
-      })
-      rangeRef.current = null
-    }
-  }, [selection, referenceElement])
-
   const handleEditButtonClicked = useCallback(() => {
     setPopoverOpen(false)
     onOpen()
   }, [onOpen])
+
+  // Open the popover when closing the annotation dialog
+  useEffect(() => {
+    if (!annotationOpen && selected) {
+      setPopoverOpen(true)
+    }
+    if (annotationOpen) {
+      setPopoverOpen(false)
+    }
+  }, [annotationOpen, selected])
 
   const handleRemoveButtonClicked = useCallback(() => {
     setPopoverOpen(false)
@@ -152,10 +155,11 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
 
   return (
     <ToolbarPopover
+      open={popoverOpen}
       floatingBoundary={floatingBoundary}
       constrainSize
       content={
-        <Box padding={1}>
+        <Box padding={1} data-testid="annotation-toolbar-popover">
           <Inline space={1}>
             <Box padding={2}>
               <Text weight="semibold" size={1}>
@@ -183,7 +187,6 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         </Box>
       }
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-      open
       placement="top"
       portal
       preventOverflow
