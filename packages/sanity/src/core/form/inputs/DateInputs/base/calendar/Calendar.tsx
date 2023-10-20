@@ -188,7 +188,10 @@ export const Calendar = forwardRef(function Calendar(
             <CalendarMonthSelect
               moveFocusedDate={moveFocusedDate}
               onChange={handleFocusedMonthChange}
-              labels={{goToPreviousMonth: labels.goToPreviousMonth}}
+              labels={{
+                goToPreviousMonth: labels.goToPreviousMonth,
+                goToNextMonth: labels.goToNextMonth,
+              }}
               monthNames={labels.monthNames}
               value={focusedDate?.getMonth()}
             />
@@ -196,7 +199,10 @@ export const Calendar = forwardRef(function Calendar(
           <Box marginLeft={2}>
             <CalendarYearSelect
               moveFocusedDate={moveFocusedDate}
-              labels={{nextYear: labels.nextYear, previousYear: labels.previousYear}}
+              labels={{
+                goToNextYear: labels.goToNextYear,
+                goToPreviousYear: labels.goToPreviousYear,
+              }}
               onChange={setFocusedDateYear}
               value={focusedDate.getFullYear()}
             />
@@ -247,7 +253,7 @@ export const Calendar = forwardRef(function Calendar(
 
               <Box>
                 <Select
-                  aria-label="Select minutes"
+                  aria-label={labels.selectMinute}
                   value={selectedDate?.getMinutes()}
                   onChange={handleMinutesChange}
                 >
@@ -319,6 +325,7 @@ function CalendarMonthSelect(props: {
   monthNames: MonthNames
   labels: {
     goToPreviousMonth: string
+    goToNextMonth: string
   }
 }) {
   const {moveFocusedDate, onChange, value, labels, monthNames} = props
@@ -339,16 +346,16 @@ function CalendarMonthSelect(props: {
       />
       <Box flex={1}>
         <Select radius={0} value={value} onChange={onChange}>
-          {monthNames.map((m, i) => (
+          {monthNames.map((monthName, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <option key={i} value={i}>
-              {m}
+              {monthName}
             </option>
           ))}
         </Select>
       </Box>
       <Button
-        aria-label="Go to next month"
+        aria-label={labels.goToNextMonth}
         mode="bleed"
         icon={ChevronRightIcon}
         onClick={handleNextMonthClick}
@@ -363,7 +370,7 @@ function CalendarYearSelect(props: {
   moveFocusedDate: (by: number) => void
   onChange: (year: number) => void
   value?: number
-  labels: {nextYear: string; previousYear: string}
+  labels: {goToNextYear: string; goToPreviousYear: string}
 }) {
   const {moveFocusedDate, onChange, value, labels} = props
 
@@ -374,7 +381,7 @@ function CalendarYearSelect(props: {
   return (
     <Flex>
       <Button
-        aria-label={labels.previousYear}
+        aria-label={labels.goToPreviousYear}
         onClick={handlePrevYearClick}
         mode="bleed"
         icon={ChevronLeftIcon}
@@ -383,7 +390,7 @@ function CalendarYearSelect(props: {
       />
       <YearInput value={value} onChange={onChange} radius={0} style={{width: 65}} />
       <Button
-        aria-label={labels.nextYear}
+        aria-label={labels.goToNextYear}
         onClick={handleNextYearClick}
         mode="bleed"
         icon={ChevronRightIcon}

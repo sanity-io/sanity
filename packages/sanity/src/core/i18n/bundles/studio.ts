@@ -120,16 +120,20 @@ export const studioLocaleStrings = {
 
   /** --- DateTime (and Date) Input --- */
 
+  /** Action message for navigating to next month */
+  'inputs.datetime.calendar.action.go-to-next-month': 'Go to next month',
   /** Action message for navigating to previous month */
-  'inputs.datetime.calendar.action.previous-month': `Previous month`,
+  'inputs.datetime.calendar.action.go-to-previous-month': 'Go to previous month',
   /** Action message for navigating to next year */
-  'inputs.datetime.calendar.action.next-year': `Next year`,
+  'inputs.datetime.calendar.action.go-to-next-year': 'Go to next year',
   /** Action message for navigating to previous year */
-  'inputs.datetime.calendar.action.previous-year': `Previous year`,
-  /** Action message for selecting hour */
-  'inputs.datetime.calendar.action.select-hour': `Select hour`,
-  /** Action message for setting to current time */
-  'inputs.datetime.calendar.action.set-to-current-time': `Set to current time`,
+  'inputs.datetime.calendar.action.go-to-previous-year': 'Go to previous year',
+  /** Action message for setting to the current time */
+  'inputs.datetime.calendar.action.set-to-current-time': 'Set to current time',
+  /** Action message for selecting the hour */
+  'inputs.datetime.calendar.action.select-hour': 'Select hour',
+  /** Action message for selecting the minute */
+  'inputs.datetime.calendar.action.select-minute': 'Select minute',
 
   /** Month names */
   'inputs.datetime.calendar.month-names.january': 'January',

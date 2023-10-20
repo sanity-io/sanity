@@ -1,6 +1,6 @@
-import {CalendarLabels} from './base/calendar/types'
+import type {CalendarLabels} from './base/calendar/types'
 
-export function isValidDate(date: Date) {
+export function isValidDate(date: Date): boolean {
   return date instanceof Date && !isNaN(date.valueOf())
 }
 
@@ -8,11 +8,13 @@ export function getCalendarLabels(
   t: (key: string, values?: Record<string, unknown>) => string,
 ): CalendarLabels {
   return {
-    goToPreviousMonth: t('inputs.datetime.calendar.go-to-previous-month'),
-    nextYear: t('inputs.datetime.calendar.action.next-year'),
-    previousYear: t('inputs.datetime.calendar.action.previous-year'),
+    goToNextMonth: t('inputs.datetime.calendar.action.go-to-next-month'),
+    goToPreviousMonth: t('inputs.datetime.calendar.action.go-to-previous-month'),
+    goToNextYear: t('inputs.datetime.calendar.action.go-to-next-year'),
+    goToPreviousYear: t('inputs.datetime.calendar.action.go-to-previous-year'),
     setToCurrentTime: t('inputs.datetime.calendar.action.set-to-current-time'),
     selectHour: t('inputs.datetime.calendar.action.select-hour'),
+    selectMinute: t('inputs.datetime.calendar.action.select-minute'),
     monthNames: [
       t('inputs.datetime.calendar.month-names.january'),
       t('inputs.datetime.calendar.month-names.february'),

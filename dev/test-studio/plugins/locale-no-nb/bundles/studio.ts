@@ -114,16 +114,20 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** --- DateTime (and Date) Input --- */
 
+  /** Action message for navigating to next month */
+  'inputs.datetime.calendar.action.go-to-next-month': 'Gå til forrige måned',
   /** Action message for navigating to previous month */
-  'inputs.datetime.calendar.action.previous-month': `Forrige måned`,
+  'inputs.datetime.calendar.action.go-to-previous-month': 'Gå til neste måned',
   /** Action message for navigating to next year */
-  'inputs.datetime.calendar.action.next-year': `Neste år`,
+  'inputs.datetime.calendar.action.go-to-next-year': 'Gå til neste år',
   /** Action message for navigating to previous year */
-  'inputs.datetime.calendar.action.previous-year': `Forrige år`,
-  /** Action message for selecting hour */
-  'inputs.datetime.calendar.action.select-hour': `Velg time`,
-  /** Action message for setting to current time */
-  'inputs.datetime.calendar.action.set-to-current-time': `Sett til nå`,
+  'inputs.datetime.calendar.action.go-to-previous-year': 'Gå til forrige år',
+  /** Action message for setting to the current time */
+  'inputs.datetime.calendar.action.set-to-current-time': 'Sett til nå',
+  /** Action message for selecting the hour */
+  'inputs.datetime.calendar.action.select-hour': 'Velg time',
+  /** Action message for selecting the minute */
+  'inputs.datetime.calendar.action.select-minute': 'Velg minutt',
 
   /** Month names */
   'inputs.datetime.calendar.month-names.january': 'Januar',
