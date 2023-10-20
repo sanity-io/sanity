@@ -254,6 +254,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     onRemove,
     open,
     readOnly,
+    selected,
     schemaType,
     textElement,
     validation,
@@ -290,10 +291,12 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
       {textElement}
       <AnnotationToolbarPopover
         floatingBoundary={floatingBoundary}
-        referenceBoundary={referenceBoundary}
-        referenceElement={referenceElement}
         onOpen={onOpen}
         onRemove={onRemove}
+        open={open}
+        referenceBoundary={referenceBoundary}
+        referenceElement={referenceElement}
+        selected={selected}
         title={schemaType.title || schemaType.name}
       />
       {open && (
