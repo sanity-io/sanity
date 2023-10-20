@@ -8,10 +8,10 @@ import {
   CommentThreadItem,
   MentionOptionsHookValue,
 } from '../../types'
+import {SelectedPath} from '../../context/comments/types'
 import {CommentsListItem} from './CommentsListItem'
 import {CommentThreadLayout} from './CommentThreadLayout'
 import {CommentsListStatus} from './CommentsListStatus'
-import {SelectedPath} from '../../context/comments/types'
 
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
   behavior: 'smooth',
@@ -106,30 +106,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       [scrollToComment],
     )
 
-    // We group the threads so that they can be rendered together under the
-    // same breadcrumbs. This is to avoid having the same breadcrumbs repeated
-    // for every single comment thread. Also, we don't want to have threads pointing
-    // to the same field to be rendered separately in the list since that makes it
-    // harder to get an overview of the comments about a specific field.
-    const groupedThreads = useMemo(() => {
-      const entries = Object.entries(groupThreads(comments))
-
-      // Sort groupedThreads in descending order (newest first) base on the date of the
-      // last comment in the thread.
-      // This is to make sure that, when a new thread is added to the group, the group
-      // is not moved to the top of the list.
-      return entries.sort((a, b) => {
-        const [, threadA] = a
-        const [, threadB] = b
-
-        const lastCommentA = threadA[threadA.length - 1]
-        const lastCommentB = threadB[threadB.length - 1]
-
-        return lastCommentB.parentComment._createdAt.localeCompare(
-          lastCommentA.parentComment._createdAt,
-        )
-      })
-    }, [comments])
+    const groupedThreads = useMemo(() => Object.entries(groupThreads(comments)), [comments])
 
     const showComments = !loading && !error && groupedThreads.length > 0
 
