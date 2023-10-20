@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Flex, Stack, useClickOutside} from '@sanity/ui'
+import {Button, Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser, Path} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
@@ -14,6 +14,7 @@ import {
   MentionOptionsHookValue,
 } from '../../types'
 import {SpacerAvatar} from '../avatars'
+import {hasCommentMessageValue} from '../../helpers'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 
@@ -106,6 +107,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const rootRef = useRef<HTMLDivElement | null>(null)
   const replyInputRef = useRef<CommentInputHandle>(null)
 
+  const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
+
   const handleReplySubmit = useCallback(() => {
     const nextComment: CommentCreatePayload = {
       fieldPath: parentComment.target.path.field,
@@ -130,21 +133,21 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   ])
 
   const startDiscard = useCallback(() => {
-    replyInputRef.current?.discardController.start().callback((needsConfirm) => {
-      if (!needsConfirm) {
-        setValue(EMPTY_ARRAY)
-      }
-    })
-  }, [])
+    if (!hasValue) {
+      setValue(EMPTY_ARRAY)
+      return
+    }
+
+    replyInputRef.current?.discardDialogController.open()
+  }, [hasValue])
 
   const cancelDiscard = useCallback(() => {
-    replyInputRef.current?.discardController.cancel()
+    replyInputRef.current?.discardDialogController.close()
   }, [])
 
   const confirmDiscard = useCallback(() => {
-    replyInputRef.current?.discardController.confirm().callback(() => {
-      setValue(EMPTY_ARRAY)
-    })
+    replyInputRef.current?.discardDialogController.close()
+    setValue(EMPTY_ARRAY)
   }, [])
 
   const handleThreadRootClick = useCallback(() => {

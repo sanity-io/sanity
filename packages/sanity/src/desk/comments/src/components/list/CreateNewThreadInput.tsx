@@ -1,6 +1,6 @@
 import {CurrentUser} from '@sanity/types'
 import {EMPTY_ARRAY} from '@sanity/ui-workshop'
-import React, {useState, useCallback, useRef} from 'react'
+import React, {useState, useCallback, useRef, useMemo} from 'react'
 import {CommentMessage, MentionOptionsHookValue} from '../../types'
 import {CommentInput, CommentInputHandle} from '../pte'
 import {hasCommentMessageValue} from '../../helpers'
@@ -24,27 +24,28 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     setValue(EMPTY_ARRAY)
   }, [onNewThreadCreate, value])
 
-  const startDiscard = useCallback(() => {
-    commentInputHandle.current?.discardController.start().callback(() => {
-      if (!hasCommentMessageValue(value)) {
-        onEditDiscard?.()
-        openButtonElement?.focus()
-      }
-    })
-  }, [onEditDiscard, openButtonElement, value])
+  const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
-  const confirmDiscard = useCallback(() => {
-    commentInputHandle.current?.discardController.confirm().callback(() => {
-      setValue(EMPTY_ARRAY)
+  const startDiscard = useCallback(() => {
+    if (!hasValue) {
       onEditDiscard?.()
       openButtonElement?.focus()
-    })
+      return
+    }
+
+    commentInputHandle.current?.discardDialogController.open()
+  }, [hasValue, onEditDiscard, openButtonElement])
+
+  const confirmDiscard = useCallback(() => {
+    commentInputHandle.current?.discardDialogController.close()
+    setValue(EMPTY_ARRAY)
+    onEditDiscard?.()
+    openButtonElement?.focus()
   }, [onEditDiscard, openButtonElement])
 
   const cancelDiscard = useCallback(() => {
-    commentInputHandle.current?.discardController.cancel().callback(() => {
-      commentInputHandle.current?.focus()
-    })
+    commentInputHandle.current?.discardDialogController.close()
+    commentInputHandle.current?.focus()
   }, [])
 
   return (
