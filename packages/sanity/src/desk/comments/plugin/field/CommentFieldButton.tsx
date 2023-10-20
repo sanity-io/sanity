@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {
   Box,
   Button,
@@ -12,7 +12,13 @@ import {
 } from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CommentIcon} from '../common/CommentIcon'
-import {CommentMessage, useComments, CommentInput, CommentInputHandle} from '../../src'
+import {
+  CommentMessage,
+  useComments,
+  CommentInput,
+  CommentInputHandle,
+  hasCommentMessageValue,
+} from '../../src'
 import {CurrentUser, PortableTextBlock} from 'sanity'
 
 const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500}
@@ -69,22 +75,27 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     closePopover()
   }, [closePopover, onCommentAdd])
 
+  const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
+
   const startDiscard = useCallback(() => {
-    commentInputHandle.current?.discardController.start().callback((needsConfirm) => {
-      if (needsConfirm || mentionMenuOpen) return
+    if (mentionMenuOpen) return
+
+    if (!hasValue) {
       closePopover()
-    })
-  }, [closePopover, mentionMenuOpen])
+      return
+    }
+
+    commentInputHandle.current?.discardDialogController.open()
+  }, [closePopover, hasValue, mentionMenuOpen])
 
   const handleDiscardCancel = useCallback(() => {
-    commentInputHandle.current?.discardController.cancel()
+    commentInputHandle.current?.discardDialogController.close()
   }, [])
 
   const handleDiscardConfirm = useCallback(() => {
-    commentInputHandle.current?.discardController.confirm().callback(() => {
-      closePopover()
-      onDiscard()
-    })
+    commentInputHandle.current?.discardDialogController.close()
+    closePopover()
+    onDiscard()
   }, [closePopover, onDiscard])
 
   useClickOutside(startDiscard, [popoverElement])
