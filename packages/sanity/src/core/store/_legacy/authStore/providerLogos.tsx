@@ -11,6 +11,12 @@ const GithubRoot = styled.svg(({theme}: {theme: Theme}) => {
   `
 })
 
+const CustomImage = styled.img`
+  height: 19px;
+  width: 19px;
+  object-fit: contain;
+`
+
 const GithubLogo = () => (
   <GithubRoot
     // data-sanity-icon="google-logo"
@@ -50,17 +56,16 @@ const GoogleLogo = () => (
   </svg>
 )
 
-function CustomLogo(props: {provider: AuthProvider}) {
+export function CustomLogo(props: {provider: AuthProvider}) {
   const {provider} = props
 
-  return (
-    provider.logo ? <img src={provider.logo} alt={`Logo for ${provider.name}`} /> : undefined
-  ) as any
+  return provider.logo ? (
+    <CustomImage src={provider.logo} alt={`Logo for ${provider.name}`} />
+  ) : undefined
 }
 
 export const providerLogos: Record<string, React.ComponentType<{provider: AuthProvider}>> = {
   google: GoogleLogo,
   github: GithubLogo,
-  custom: CustomLogo,
   // sanity: () => <SanityMonogram data-sanity-icon="" />,
 }

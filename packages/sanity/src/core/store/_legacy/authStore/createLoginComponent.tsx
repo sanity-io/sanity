@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react'
 import type {Observable} from 'rxjs'
 import type {AuthConfig} from '../../../config'
 import {createHookFromObservableFactory} from '../../../util'
-import {providerLogos} from './providerLogos'
+import {CustomLogo, providerLogos} from './providerLogos'
 import type {LoginComponentProps} from './types'
 
 interface GetProvidersOptions extends AuthConfig {
@@ -156,7 +156,7 @@ export function createLoginComponent({
               // eslint-disable-next-line react/no-array-index-key
               key={`${provider.url}_${index}`}
               as="a"
-              icon={providerLogos[provider.name]}
+              icon={providerLogos[provider.name] || <CustomLogo provider={provider} />}
               href={createHrefForProvider({
                 loginMethod,
                 projectId,
