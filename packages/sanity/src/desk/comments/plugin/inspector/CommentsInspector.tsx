@@ -72,6 +72,11 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     [setSelectedPath, setStatus],
   )
 
+  const handleCloseInspector = useCallback(() => {
+    onClose()
+    setSelectedPath(null)
+  }, [onClose, setSelectedPath])
+
   const handleCopyLink = useCallback(
     (id: string) => {
       const path = createPathWithParams({
@@ -244,7 +249,11 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       )}
 
       <Flex direction="column" overflow="hidden" height="fill">
-        <CommentsInspectorHeader onClose={onClose} onViewChange={handleChangeView} view={status} />
+        <CommentsInspectorHeader
+          onClose={handleCloseInspector}
+          onViewChange={handleChangeView}
+          view={status}
+        />
 
         {currentUser && (
           <CommentsList

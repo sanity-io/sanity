@@ -163,7 +163,13 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
   const handleCopyLink = useCallback(() => onCopyLink?.(_id), [_id, onCopyLink])
-  const handleCreateRetry = useCallback(() => onCreateRetry?.(_id), [_id, onCreateRetry])
+  const handleCreateRetry = useCallback(
+    (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation()
+      onCreateRetry?.(_id)
+    },
+    [_id, onCreateRetry],
+  )
   const handleDelete = useCallback(() => onDelete(_id), [_id, onDelete])
 
   const cancelEdit = useCallback(() => {
