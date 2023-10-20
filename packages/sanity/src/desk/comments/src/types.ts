@@ -41,7 +41,7 @@ export interface MentionOptionUser extends User {
  * @hidden
  */
 export interface CommentThreadItem {
-  breadcrumbs: CommentBreadcrumbs
+  breadcrumbs: CommentListBreadcrumbs
   commentsCount: number
   fieldPath: string
   parentComment: CommentDocument
@@ -182,4 +182,4 @@ export interface CommentsListBreadcrumbItem {
  * @beta
  * @hidden
  */
-export type CommentBreadcrumbs = CommentsListBreadcrumbItem[]
+export type CommentListBreadcrumbs = CommentsListBreadcrumbItem[]

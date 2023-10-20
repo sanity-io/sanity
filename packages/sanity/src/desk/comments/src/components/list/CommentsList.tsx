@@ -158,6 +158,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                       key={fieldPath}
                       mentionOptions={mentionOptions}
                       onNewThreadCreate={onNewThreadCreate}
+                      onPathSelect={onPathSelect}
                     >
                       {group.map((item) => {
                         // The default sort order is by date, descending (newest first).

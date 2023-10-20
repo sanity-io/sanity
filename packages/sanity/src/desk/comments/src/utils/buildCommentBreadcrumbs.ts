@@ -13,7 +13,7 @@ import {
 import {findIndex} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
 import {SanityDocument} from '@sanity/client'
-import {CommentBreadcrumbs} from '../types'
+import {CommentListBreadcrumbs} from '../types'
 import {getSchemaTypeTitle, getValueAtPath, resolveConditionalProperty} from 'sanity'
 
 function getSchemaField(
@@ -66,10 +66,12 @@ interface BuildCommentBreadcrumbsProps {
  * - The field is not found in the schema type
  * - The field is not found in the document value (array items only)
  */
-export function buildCommentBreadcrumbs(props: BuildCommentBreadcrumbsProps): CommentBreadcrumbs {
+export function buildCommentBreadcrumbs(
+  props: BuildCommentBreadcrumbsProps,
+): CommentListBreadcrumbs {
   const {currentUser, schemaType, fieldPath, documentValue} = props
   const paths = PathUtils.fromString(fieldPath)
-  const fieldPaths: CommentBreadcrumbs = []
+  const fieldPaths: CommentListBreadcrumbs = []
 
   let currentSchemaType: ArraySchemaType<SchemaType> | ObjectFieldType<SchemaType> | null = null
 
