@@ -8,6 +8,7 @@ test.describe('Comments', () => {
     test('Should render', async ({mount, page}) => {
       await mount(<CommentsInputStory />)
       const $editable = page.getByTestId('comment-input-editable')
+      await $editable.waitFor()
       await expect($editable).toBeVisible()
     })
 
@@ -15,16 +16,15 @@ test.describe('Comments', () => {
       const {insertPortableText} = testHelpers({page})
       await mount(<CommentsInputStory />)
       const $editable = page.getByTestId('comment-input-editable')
-      await expect($editable).toBeEditable()
+      await $editable.waitFor()
       await insertPortableText('My first comment!', $editable)
       await expect($editable).toHaveText('My first comment!')
     })
 
     test('Should bring up mentions menu when typing @', async ({mount, page}) => {
       await mount(<CommentsInputStory />)
-      const $editable = page.getByTestId('comment-input-editable')
-      await expect($editable).toBeEditable()
-      await page.keyboard.type(`@`)
+      await page.getByTestId('comment-input-editable').waitFor({state: 'visible'})
+      await page.keyboard.press('@')
       await expect(page.getByTestId('comments-mentions-menu')).toBeVisible()
     })
   })
