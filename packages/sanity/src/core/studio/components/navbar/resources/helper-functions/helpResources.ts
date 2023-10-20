@@ -11,7 +11,6 @@ export function getHelpResources(
   client: SanityClient,
   locale: string,
 ): Observable<ResourcesResponse> {
-  // @todo: Send `locale` as query parameter once API supports it
   return client.withConfig({apiVersion: '1'}).observable.request<ResourcesResponse>({
     url: '/help',
     /*
@@ -19,7 +18,7 @@ export function getHelpResources(
       Builds to: `{m: ['sanity@3.0.2']}' and serializes to: `?m=sanity@3.0.2`.
       Final format will be e.g. https://api.sanity.io/v1/help?tag=sanity.studio.module.version-check&m=sanity%403.0.2
       */
-    query: {m: [`sanity@${SANITY_VERSION}`]},
+    query: {m: [`sanity@${SANITY_VERSION}`], locale},
     tag: 'module.version-check',
     json: true,
   })
