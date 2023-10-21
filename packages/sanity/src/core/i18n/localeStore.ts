@@ -9,16 +9,15 @@ const LOCAL_STORAGE_PREFIX = 'sanity-locale'
 /**
  * Get the users' preferred locale, if any
  *
- * @param projectId - Project ID to segment on
- * @param sourceId - Source ID to segment on
+ * @param workspaceName - Workspace name to segment on
  * @returns Locale identifier, or `undefined`
  * @internal
  */
-export function getPreferredLocale(projectId: string, sourceId: string): string | undefined {
+export function getPreferredLocale(workspaceName: string): string | undefined {
   if (!supportsLocalStorage) {
     return undefined
   }
-  const locale = localStorage.getItem(getItemKey(projectId, sourceId))
+  const locale = localStorage.getItem(getItemKey(workspaceName))
   return locale ?? undefined
 }
 
@@ -31,11 +30,11 @@ export function getPreferredLocale(projectId: string, sourceId: string): string 
  * @returns
  * @internal
  */
-export function storePreferredLocale(projectId: string, sourceId: string, locale: string): void {
+export function storePreferredLocale(workspaceName: string, locale: string): void {
   if (!supportsLocalStorage) {
     return
   }
-  localStorage.setItem(getItemKey(projectId, sourceId), locale)
+  localStorage.setItem(getItemKey(workspaceName), locale)
 }
 
 /**
@@ -46,6 +45,6 @@ export function storePreferredLocale(projectId: string, sourceId: string, locale
  * @returns Storage key
  * @internal
  */
-function getItemKey(projectId: string, sourceId: string) {
-  return [LOCAL_STORAGE_PREFIX, projectId, sourceId].join(':')
+function getItemKey(workspaceName: string) {
+  return [LOCAL_STORAGE_PREFIX, workspaceName].join(':')
 }

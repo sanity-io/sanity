@@ -7,6 +7,7 @@ import {DocumentPreviewStore} from '../../../preview'
 import {getDraftId, isDraftId} from '../../../util'
 import {Template} from '../../../templates'
 import {SourceClientOptions} from '../../../config'
+import type {LocaleSource} from '../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {checkoutPair, DocumentVersionEvent, Pair} from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
@@ -20,7 +21,6 @@ import {listenQuery, ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import type {IdPair} from './types'
 import {getInitialValueStream, InitialValueMsg, InitialValueOptions} from './initialValue'
-import {LocaleSource} from '../../../i18n'
 
 /**
  * @hidden

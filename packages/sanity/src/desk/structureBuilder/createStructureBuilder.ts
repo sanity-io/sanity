@@ -27,11 +27,17 @@ import type {
   StructureContext,
   DefaultDocumentNodeResolver,
 } from './types'
-import {Source, getConfigContextFromSource, getPublishedId} from 'sanity'
+import {
+  type Source,
+  type WorkspaceSummary,
+  getConfigContextFromSource,
+  getPublishedId,
+} from 'sanity'
 
 /** @internal */
 export interface StructureBuilderOptions {
   source: Source
+  workspace: Pick<WorkspaceSummary, 'i18n'>
   defaultDocumentNode?: DefaultDocumentNodeResolver
 }
 
@@ -56,8 +62,9 @@ function getDefaultStructure(context: StructureContext): ListBuilder {
 export function createStructureBuilder({
   defaultDocumentNode,
   source,
+  workspace,
 }: StructureBuilderOptions): StructureBuilder {
-  const configContext = getConfigContextFromSource(source)
+  const configContext = getConfigContextFromSource(source, workspace)
   const context: StructureContext = {
     ...source,
     getStructureBuilder: () => structureBuilder,

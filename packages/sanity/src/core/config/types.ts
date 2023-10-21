@@ -646,9 +646,6 @@ export interface Source {
   }
 
   /** @internal */
-  i18n: LocaleSource
-
-  /** @internal */
   __internal: {
     /** @internal */
     bifur: BifurClient
@@ -656,11 +653,6 @@ export interface Source {
     staticInitialValueTemplateItems: InitialValueTemplateItem[]
     /** @internal */
     options: SourceOptions
-    /**
-     * _VERY_ internal, likely to change at any point.
-     * @internal
-     */
-    i18next: i18n
   }
 }
 
@@ -690,9 +682,14 @@ export interface WorkspaceSummary {
       title: string
       auth: AuthStore
       schema: Schema
-      i18n: LocaleSource
       source: Observable<Source>
     }>
+
+    /**
+     * _VERY_ internal, likely to change at any point.
+     * @internal
+     */
+    i18next: i18n
   }
 }
 
@@ -701,7 +698,7 @@ export interface WorkspaceSummary {
  *
  * @public
  */
-export interface Workspace extends Omit<Source, 'type'> {
+export interface Workspace extends Omit<Source, 'type' | '__internal'> {
   type: 'workspace'
   /**
    * URL base path to use, for instance `/myWorkspace`
@@ -714,12 +711,17 @@ export interface Workspace extends Omit<Source, 'type'> {
   subtitle?: string
   /** React component to use as icon for this workspace */
   icon: ReactNode
+  /** Localization resources */
+  i18n: LocaleSource
   /**
    *
    * @hidden
    * @beta
    */
   unstable_sources: Source[]
+  __internal: Source['__internal'] & {
+    i18next: i18n
+  }
 }
 
 /**

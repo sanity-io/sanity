@@ -22,8 +22,6 @@ function createBundle(resources: LocaleResourceRecord) {
 
 function TestProviders(props: {children: React.ReactNode; bundles: LocaleResourceBundle[]}) {
   const {i18next} = prepareI18n({
-    projectId: 'test',
-    dataset: 'test',
     name: 'test',
     i18n: {bundles: props.bundles},
   })
@@ -32,8 +30,7 @@ function TestProviders(props: {children: React.ReactNode; bundles: LocaleResourc
       <LocaleProviderBase
         locales={[{id: 'en-US', title: 'English'}]}
         i18next={i18next}
-        projectId="test"
-        sourceId="test"
+        workspaceName="test"
       >
         {props.children}
       </LocaleProviderBase>

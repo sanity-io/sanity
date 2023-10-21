@@ -28,8 +28,7 @@ export interface LocaleResourceRecord {
  * @beta
  */
 export interface LocaleConfigContext {
-  projectId: string
-  dataset: string
+  workspaceName: string
 }
 
 /** @beta @hidden */

@@ -122,12 +122,13 @@ export function useDocumentPreviewStore(): DocumentPreviewStore {
  * @hidden
  * @beta */
 export function useDocumentStore(): DocumentStore {
-  const {getClient, i18n} = useSource()
+  const {getClient} = useSource()
   const schema = useSchema()
   const templates = useTemplates()
   const resourceCache = useResourceCache()
   const historyStore = useHistoryStore()
   const documentPreviewStore = useDocumentPreviewStore()
+  const {i18n} = useWorkspace()
 
   return useMemo(() => {
     const documentStore =

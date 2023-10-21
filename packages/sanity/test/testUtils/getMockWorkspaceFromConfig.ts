@@ -6,8 +6,10 @@ import {
   SingleWorkspace,
   Source,
   Workspace,
+  WorkspaceSummary,
 } from '../../src/core/config'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
+import {studioTheme} from '@sanity/ui'
 
 const defaultMockUser: CurrentUser = {
   id: 'doug',
