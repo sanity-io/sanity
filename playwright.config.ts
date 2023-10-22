@@ -33,6 +33,8 @@ export default defineConfig({
 
   retries: 1,
 
+  fullyParallel: true,
+
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -42,9 +44,7 @@ export default defineConfig({
   },
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: CI
-    ? [['github'], ['html', {outputFolder: HTML_REPORT_PATH}]]
-    : [['list'], ['html', {outputFolder: HTML_REPORT_PATH}]],
+  reporter: CI ? [['github'], ['blob']] : [['list'], ['html', {outputFolder: HTML_REPORT_PATH}]],
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

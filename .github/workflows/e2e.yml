@@ -6,12 +6,19 @@ on:
   push:
     branches: [next]
 jobs:
-  test:
+  playwright-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox]
+        # Add more shards here if needed
+        shardIndex: [1, 2]
+        shardTotal: [2]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -58,13 +65,53 @@ jobs:
       - name: Run end-to-end tests
         env:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN }}
-        run: yarn test:e2e
+        run: yarn test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: playwright-report
-          path: |
-            test/e2e/report
-            test/e2e/results
+          path: blob-report
+          retention-days: 30
+  merge-reports:
+    if: always()
+    needs: [playwright-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
+
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Download blob reports from Github Actions Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report
+
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./playwright-report
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
           retention-days: 30
