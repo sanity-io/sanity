@@ -135,7 +135,8 @@ export interface CommentDocument {
       _dataset: string
       _projectId: string
       _ref: string
-      _type: 'object'
+      _type: 'crossDatasetReference'
+      _weak: boolean
     }
   }
 }

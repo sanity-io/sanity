@@ -18,9 +18,9 @@ import {
   CommentInputHandle,
   hasCommentMessageValue,
   AddCommentIcon,
+  CommentIcon,
 } from '../../src'
 import {CurrentUser, PortableTextBlock} from 'sanity'
-import {CommentIcon} from '@sanity/icons'
 
 const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500}
 
