@@ -79,6 +79,7 @@ function prepareStudios() {
       const destinationPath = path.join(studiosPath, version)
       const customDocStudioPath = path.join(studiosPath, `${version}-custom-document`)
 
+      await mkdir(destinationPath, {recursive: true})
       await copy(`${sourceStudioPath}/**/{*,.*}`, destinationPath, {dereference: true})
 
       if (version === 'v2') {
