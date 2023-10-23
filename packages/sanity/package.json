@@ -162,7 +162,7 @@
     "@types/react-is": "^18.2.0",
     "@types/shallow-equals": "^1.0.0",
     "@types/speakingurl": "^13.0.3",
-    "@types/use-sync-external-store": "^0.0.3",
+    "@types/use-sync-external-store": "^0.0.5",
     "@vitejs/plugin-react": "^4.0.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
