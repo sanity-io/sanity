@@ -29,7 +29,7 @@ const BlockActions = memo(function BlockActions(props: {
   }, [block, insert])
 
   return (
-    <Tooltip content={<Text size={1}>Duplicate</Text>} placement="right" portal="default">
+    <Tooltip content="Duplicate" placement="right" portal="default">
       <Button
         aria-label="Duplicate"
         fontSize={1}

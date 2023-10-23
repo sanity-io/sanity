@@ -754,13 +754,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                     <Box flex={1}>
                       <TextInput readOnly type="url" ref={this._operationUrlElement} value={url} />
                     </Box>
-                    <Tooltip
-                      content={
-                        <Box>
-                          <Text>Copy to clipboard</Text>
-                        </Box>
-                      }
-                    >
+                    <Tooltip content="Copy to clipboard">
                       <Button
                         aria-label="Copy to clipboard"
                         type="button"
@@ -825,7 +819,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                       <Flex>
                         <StyledLabel muted>Params</StyledLabel>
                         {paramsError && (
-                          <Tooltip placement="top-end" portal content={<Text>{paramsError}</Text>}>
+                          <Tooltip placement="top-end" portal content={paramsError}>
                             <Box padding={1} marginX={2}>
                               <Text>
                                 <ErrorOutlineIcon />

@@ -358,7 +358,7 @@ export const AssetRow = (props: RowProps) => {
             </Card>
             {showTooltip && (
               <Tooltip
-                content={<Text size={1}>{originalFilename}</Text>}
+                content={originalFilename}
                 fallbackPlacements={['right', 'left']}
                 placement="top"
                 portal

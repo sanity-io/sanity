@@ -199,12 +199,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
                   aria-hidden={hidden}
                   data-hidden={hidden}
                 >
-                  <Tooltip
-                    portal
-                    disabled={!tooltipText}
-                    content={<Text size={1}>{tooltipText}</Text>}
-                    {...tooltipProps}
-                  >
+                  <Tooltip portal disabled={!tooltipText} content={tooltipText} {...tooltipProps}>
                     <Flex>
                       {cloneElement(child, {
                         disabled: child.props.disabled || hidden,

@@ -111,15 +111,7 @@ export const DocumentPanelHeader = memo(
             <PaneContextMenuButton nodes={contextMenuNodes} key="context-menu" />
 
             {showSplitPaneButton && (
-              <Tooltip
-                content={
-                  <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                    Split pane right
-                  </Text>
-                }
-                placement="bottom"
-                portal
-              >
+              <Tooltip content="Split pane right" placement="bottom" portal>
                 <Button
                   aria-label="Split pane right"
                   icon={SplitVerticalIcon}

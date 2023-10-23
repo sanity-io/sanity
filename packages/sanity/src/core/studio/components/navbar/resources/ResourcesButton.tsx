@@ -24,7 +24,7 @@ export function ResourcesButton() {
   return (
     <Flex>
       <Tooltip
-        content={<Text size={1}>Help and resources</Text>}
+        content="Help and resources"
         scheme={scheme}
         placement="bottom"
         portal

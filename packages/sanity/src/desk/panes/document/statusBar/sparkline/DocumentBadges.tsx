@@ -21,7 +21,7 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
     <Inline space={1}>
       {states.map((badge, index) => (
         <Tooltip
-          content={badge.title && <Text size={1}>{badge.title}</Text>}
+          content={badge.title}
           disabled={!badge.title}
           key={String(index)}
           placement="top"

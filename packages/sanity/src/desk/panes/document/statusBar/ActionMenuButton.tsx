@@ -108,8 +108,6 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
     if (onHandle) onHandle()
   }, [index, onAction, onHandle])
 
-  const tooltipContent = actionState.title && <Text size={1}>{actionState.title}</Text>
-
   return (
     <MenuItem
       data-testid={`action-${actionState.label.replace(' ', '')}`}
@@ -119,8 +117,8 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
       tone={actionState.tone}
     >
       <Tooltip
-        content={tooltipContent}
-        disabled={!tooltipContent}
+        content={actionState.title}
+        disabled={!actionState.title}
         fallbackPlacements={['left', 'bottom']}
         placement="top"
         portal

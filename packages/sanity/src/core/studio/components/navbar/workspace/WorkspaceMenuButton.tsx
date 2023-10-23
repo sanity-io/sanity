@@ -54,7 +54,7 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
 
   return (
     <Tooltip
-      content={<Text size={1}>Select workspace</Text>}
+      content="Select workspace"
       disabled={tooltipDisabled}
       placement="bottom"
       portal

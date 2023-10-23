@@ -22,13 +22,7 @@ export function InsufficientPermissionsMessageTooltip({
 
   return (
     <Tooltip
-      content={
-        loading ? (
-          <Text>Loading…</Text>
-        ) : (
-          <InsufficientPermissionsMessage currentUser={currentUser} />
-        )
-      }
+      content={loading ? 'Loading…' : <InsufficientPermissionsMessage currentUser={currentUser} />}
       portal
     >
       {/* this wrapping div is to allow mouse events */}

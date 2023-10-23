@@ -61,7 +61,7 @@ function TooltipUserAvatar(props: Omit<UserAvatarProps, 'user'> & {user: User}) 
   } = props
 
   return (
-    <Tooltip content={<Text size={1}>{displayName}</Text>} placement="top" portal>
+    <Tooltip content={displayName} placement="top" portal>
       <div style={{display: 'inline-block'}}>
         <StaticUserAvatar {...props} />
       </div>
