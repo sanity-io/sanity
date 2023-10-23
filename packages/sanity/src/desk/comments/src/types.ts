@@ -80,6 +80,7 @@ export interface CommentContext {
     documentTitle: string
     url: string
     workspaceTitle: string
+    currentThreadLength?: number
   }
 }
 

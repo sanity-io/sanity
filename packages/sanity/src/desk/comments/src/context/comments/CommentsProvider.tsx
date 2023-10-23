@@ -134,6 +134,64 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
   const currentUser = useCurrentUser()
   const {name: workspaceName, dataset, projectId} = useWorkspace()
 
+  const threadItemsByStatus: ThreadItemsByStatus = useMemo(() => {
+    if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
+    // Since we only make one query to get all comments using the order `_createdAt desc` – we
+    // can't know for sure that the comments added through the real time listener will be in the
+    // correct order. In order to avoid that comments are out of order, we make an additional
+    // sort here. The comments can be out of order if e.g a comment creation fails and is retried
+    // later.
+    const sorted = orderBy(data, ['_createdAt'], ['desc'])
+
+    const items = buildCommentThreadItems({
+      comments: sorted,
+      schemaType,
+      currentUser,
+      documentValue,
+    })
+
+    return {
+      open: items.filter((item) => item.parentComment.status === 'open'),
+      resolved: items.filter((item) => item.parentComment.status === 'resolved'),
+    }
+  }, [currentUser, data, documentValue, schemaType])
+
+  const getThreadLength = useCallback(
+    (threadId: string) => {
+      return threadItemsByStatus.open.filter((item) => item.threadId === threadId).length
+    },
+    [threadItemsByStatus.open],
+  )
+
+  const getComment = useCallback((id: string) => data?.find((c) => c._id === id), [data])
+
+  const getCommentPath = useCallback(
+    (id: string) => {
+      const comment = getComment(id)
+      if (!comment) return null
+
+      return comment.target.path.field
+    },
+    [getComment],
+  )
+
+  const handleSetSelectedPath = useCallback((nextPath: SelectedPath) => {
+    // If the path is being set to null, immediately set the selected path to null.
+    if (nextPath === null) {
+      setSelectedPath(null)
+      return
+    }
+
+    // Sometimes, a path is cleared (set to null) but at the same time a new path is set.
+    // In this case, we want to make sure that the selected path is set to the new path
+    // and not the cleared path. Therefore, we set the selected path in a timeout to make
+    // sure that the selected path is set after the cleared path.
+    // todo: can this be done in a better way?
+    setTimeout(() => {
+      setSelectedPath(nextPath)
+    })
+  }, [])
+
   const handleOnCreate = useCallback(
     async (payload: CommentPostPayload) => {
       // If the comment we try to create already exists in the local state and has
@@ -233,6 +291,7 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
           projectId,
           schemaType,
           workspace: workspaceName,
+          getThreadLength,
           // The following callbacks runs when the comment operations are executed.
           // They are used to update the local state of the comments immediately after
           // a comment operation has been executed. This is done to avoid waiting for
@@ -253,6 +312,7 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
         projectId,
         schemaType,
         workspaceName,
+        getThreadLength,
         handleOnCreate,
         handleOnCreateError,
         handleOnEdit,
@@ -260,57 +320,6 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
       ],
     ),
   )
-
-  const threadItemsByStatus: ThreadItemsByStatus = useMemo(() => {
-    if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
-    // Since we only make one query to get all comments using the order `_createdAt desc` – we
-    // can't know for sure that the comments added through the real time listener will be in the
-    // correct order. In order to avoid that comments are out of order, we make an additional
-    // sort here. The comments can be out of order if e.g a comment creation fails and is retried
-    // later.
-    const sorted = orderBy(data, ['_createdAt'], ['desc'])
-
-    const items = buildCommentThreadItems({
-      comments: sorted,
-      schemaType,
-      currentUser,
-      documentValue,
-    })
-
-    return {
-      open: items.filter((item) => item.parentComment.status === 'open'),
-      resolved: items.filter((item) => item.parentComment.status === 'resolved'),
-    }
-  }, [currentUser, data, documentValue, schemaType])
-
-  const getComment = useCallback((id: string) => data?.find((c) => c._id === id), [data])
-
-  const getCommentPath = useCallback(
-    (id: string) => {
-      const comment = getComment(id)
-      if (!comment) return null
-
-      return comment.target.path.field
-    },
-    [getComment],
-  )
-
-  const handleSetSelectedPath = useCallback((nextPath: SelectedPath) => {
-    // If the path is being set to null, immediately set the selected path to null.
-    if (nextPath === null) {
-      setSelectedPath(null)
-      return
-    }
-
-    // Sometimes, a path is cleared (set to null) but at the same time a new path is set.
-    // In this case, we want to make sure that the selected path is set to the new path
-    // and not the cleared path. Therefore, we set the selected path in a timeout to make
-    // sure that the selected path is set after the cleared path.
-    // todo: can this be done in a better way?
-    setTimeout(() => {
-      setSelectedPath(nextPath)
-    })
-  }, [])
 
   const ctxValue = useMemo(
     () =>
