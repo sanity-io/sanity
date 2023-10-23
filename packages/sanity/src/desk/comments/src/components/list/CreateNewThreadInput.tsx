@@ -2,26 +2,37 @@ import {CurrentUser} from '@sanity/types'
 import {EMPTY_ARRAY} from '@sanity/ui-workshop'
 import React, {useState, useCallback, useRef, useMemo} from 'react'
 import {CommentMessage, MentionOptionsHookValue} from '../../types'
-import {CommentInput, CommentInputHandle} from '../pte'
+import {CommentInput, CommentInputHandle, CommentInputProps} from '../pte'
 import {hasCommentMessageValue} from '../../helpers'
 
 interface CreateNewThreadInputProps {
   currentUser: CurrentUser
+  fieldName: string
   mentionOptions: MentionOptionsHookValue
+  onBlur?: CommentInputProps['onBlur']
   onEditDiscard?: () => void
+  onFocus?: CommentInputProps['onFocus']
   onNewThreadCreate: (payload: CommentMessage) => void
-  openButtonElement: HTMLButtonElement | null
 }
 
 export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
-  const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
-  const {currentUser, mentionOptions, onNewThreadCreate, onEditDiscard, openButtonElement} = props
+  const {
+    currentUser,
+    fieldName,
+    mentionOptions,
+    onBlur,
+    onEditDiscard,
+    onFocus,
+    onNewThreadCreate,
+  } = props
 
+  const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
 
   const handleSubmit = useCallback(() => {
     onNewThreadCreate?.(value)
     setValue(EMPTY_ARRAY)
+    commentInputHandle.current?.focus()
   }, [onNewThreadCreate, value])
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
@@ -29,19 +40,19 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   const startDiscard = useCallback(() => {
     if (!hasValue) {
       onEditDiscard?.()
-      openButtonElement?.focus()
+      commentInputHandle.current?.focus()
       return
     }
 
     commentInputHandle.current?.discardDialogController.open()
-  }, [hasValue, onEditDiscard, openButtonElement])
+  }, [hasValue, onEditDiscard])
 
   const confirmDiscard = useCallback(() => {
     commentInputHandle.current?.discardDialogController.close()
     setValue(EMPTY_ARRAY)
     onEditDiscard?.()
-    openButtonElement?.focus()
-  }, [onEditDiscard, openButtonElement])
+    commentInputHandle.current?.focus()
+  }, [onEditDiscard])
 
   const cancelDiscard = useCallback(() => {
     commentInputHandle.current?.discardDialogController.close()
@@ -51,13 +62,20 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   return (
     <CommentInput
       currentUser={currentUser}
-      focusOnMount
+      expandOnFocus
       mentionOptions={mentionOptions}
+      onBlur={onBlur}
       onChange={setValue}
       onDiscardCancel={cancelDiscard}
       onDiscardConfirm={confirmDiscard}
       onEscapeKeyDown={startDiscard}
+      onFocus={onFocus}
       onSubmit={handleSubmit}
+      placeholder={
+        <>
+          Add comment to <b>{fieldName}</b>
+        </>
+      }
       ref={commentInputHandle}
       value={value}
     />

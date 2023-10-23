@@ -130,11 +130,12 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   }, [deleteLoading])
 
   const handlePathSelect = useCallback(
-    (path: Path) => {
+    (path: Path, threadId?: string) => {
       onPathOpen(path)
       setSelectedPath({
         fieldPath: PathUtils.toString(path),
         origin: 'inspector',
+        threadId: threadId || null,
       })
     },
     [onPathOpen, setSelectedPath],
@@ -147,6 +148,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       setSelectedPath({
         fieldPath: payload.fieldPath,
         origin: 'inspector',
+        threadId: payload.threadId,
       })
     },
     [create, setSelectedPath],
@@ -211,6 +213,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
         setSelectedPath({
           fieldPath,
           origin: 'inspector',
+          threadId: null,
         })
 
         requestAnimationFrame(() => {

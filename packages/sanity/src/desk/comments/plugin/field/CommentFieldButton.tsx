@@ -11,15 +11,16 @@ import {
   useClickOutside,
 } from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {CommentIcon} from '../common/CommentIcon'
 import {
   CommentMessage,
   useComments,
   CommentInput,
   CommentInputHandle,
   hasCommentMessageValue,
+  AddCommentIcon,
 } from '../../src'
 import {CurrentUser, PortableTextBlock} from 'sanity'
+import {CommentIcon} from '@sanity/icons'
 
 const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500}
 
@@ -50,6 +51,7 @@ const StyledPopover = styled(Popover)(({theme}) => {
 interface CommentFieldButtonProps {
   count: number
   currentUser: CurrentUser
+  fieldTitle: string
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
   onCommentAdd: () => void
@@ -60,8 +62,18 @@ interface CommentFieldButtonProps {
 }
 
 export function CommentFieldButton(props: CommentFieldButtonProps) {
-  const {count, currentUser, onChange, onClick, onCommentAdd, onDiscard, value, open, setOpen} =
-    props
+  const {
+    count,
+    currentUser,
+    fieldTitle,
+    onChange,
+    onClick,
+    onCommentAdd,
+    onDiscard,
+    open,
+    setOpen,
+    value,
+  } = props
   const [mentionMenuOpen, setMentionMenuOpen] = useState<boolean>(false)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
@@ -116,6 +128,11 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
           onSubmit={handleSubmit}
           ref={commentInputHandle}
           value={value}
+          placeholder={
+            <>
+              Add comment to <b>{fieldTitle}</b>
+            </>
+          }
         />
       </ContentStack>
     )
@@ -145,7 +162,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
             <Button
               aria-label="Add comment"
               fontSize={1}
-              icon={CommentIcon}
+              icon={AddCommentIcon}
               mode="bleed"
               onClick={onClick}
               padding={2}

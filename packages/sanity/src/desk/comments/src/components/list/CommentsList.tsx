@@ -52,7 +52,7 @@ export interface CommentsListProps {
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
   onNewThreadCreate: (payload: CommentCreatePayload) => void
-  onPathSelect?: (path: Path) => void
+  onPathSelect?: (path: Path, threadId?: string) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   selectedPath: SelectedPath
@@ -95,6 +95,13 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
         commentElement.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
       }
     }, [])
+
+    const handleListItemPathSelect = useCallback(
+      (path: Path, threadId?: string) => {
+        onPathSelect?.(path, threadId)
+      },
+      [onPathSelect],
+    )
 
     useImperativeHandle(
       ref,
@@ -149,7 +156,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                 const firstThreadId = group[0].threadId
 
                 return (
-                  <Stack as="li" key={fieldPath} data-thread-id={firstThreadId} paddingTop={3}>
+                  <Stack as="li" key={fieldPath} data-group-id={firstThreadId} paddingTop={3}>
                     <CommentThreadLayout
                       breadcrumbs={breadcrumbs}
                       canCreateNewThread={status === 'open'}
@@ -173,7 +180,10 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                           item.parentComment._state?.type !== 'createRetrying'
 
                         // Check if the current field is selected
-                        const isSelected = selectedPath?.fieldPath === item.fieldPath
+                        const hasSelectedThread = selectedPath?.threadId
+                        const threadIsSelected = selectedPath?.threadId === item.threadId
+                        const fieldIsSelect = selectedPath?.fieldPath === item.fieldPath
+                        const isSelected = threadIsSelected || (fieldIsSelect && !hasSelectedThread)
 
                         return (
                           <CommentsListItem
@@ -185,7 +195,8 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                             onCreateRetry={onCreateRetry}
                             onDelete={onDelete}
                             onEdit={onEdit}
-                            onPathSelect={onPathSelect}
+                            // eslint-disable-next-line react/jsx-no-bind
+                            onPathSelect={(path) => handleListItemPathSelect(path, item.threadId)}
                             onReply={onReply}
                             onStatusChange={onStatusChange}
                             parentComment={item.parentComment}

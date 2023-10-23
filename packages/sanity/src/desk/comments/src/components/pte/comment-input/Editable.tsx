@@ -50,8 +50,10 @@ export const StyledPopover = styled(Popover)(({theme}) => {
 })
 
 interface EditableProps {
-  placeholder?: string
   focusLock?: boolean
+  onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
+  onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
+  placeholder?: React.ReactNode
 }
 
 export interface EditableHandle {
@@ -59,7 +61,7 @@ export interface EditableHandle {
 }
 
 export function Editable(props: EditableProps) {
-  const {focusLock, placeholder = 'Create a new comment'} = props
+  const {focusLock, placeholder = 'Create a new comment', onFocus, onBlur} = props
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
   const editableRef = useRef<HTMLDivElement | null>(null)
@@ -188,13 +190,15 @@ export function Editable(props: EditableProps) {
         <PortableTextEditable
           data-testid="comment-input-editable"
           data-ui="EditableElement"
-          selection={initialSelectionAtEndOfContent}
           onBeforeInput={onBeforeInput}
+          onBlur={onBlur}
+          onFocus={onFocus}
           onKeyDown={handleKeyDown}
           ref={editableRef}
           renderBlock={renderBlock}
           renderChild={renderChild}
           renderPlaceholder={renderPlaceholder}
+          selection={initialSelectionAtEndOfContent}
           style={INLINE_STYLE}
           tabIndex={focusLock ? 0 : undefined}
         />

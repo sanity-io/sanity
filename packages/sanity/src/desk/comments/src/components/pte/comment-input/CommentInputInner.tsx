@@ -76,14 +76,25 @@ const RootCard = styled(Card)(({theme}) => {
 interface CommentInputInnerProps {
   currentUser: CurrentUser
   focusLock?: boolean
+  onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
   onEscapeKeyDown?: () => void
+  onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onSubmit: () => void
-  placeholder?: string
+  placeholder?: React.ReactNode
   withAvatar?: boolean
 }
 
 export function CommentInputInner(props: CommentInputInnerProps) {
-  const {currentUser, onSubmit, placeholder, withAvatar, focusLock, onEscapeKeyDown} = props
+  const {
+    currentUser,
+    focusLock,
+    onBlur,
+    onEscapeKeyDown,
+    onFocus,
+    onSubmit,
+    placeholder,
+    withAvatar,
+  } = props
 
   const [user] = useUser(currentUser.id)
   const {
@@ -134,7 +145,12 @@ export function CommentInputInner(props: CommentInputInnerProps) {
       >
         <Stack>
           <EditableWrap paddingX={1} paddingY={2} sizing="border">
-            <Editable placeholder={placeholder} focusLock={focusLock} />
+            <Editable
+              focusLock={focusLock}
+              onBlur={onBlur}
+              onFocus={onFocus}
+              placeholder={placeholder}
+            />
           </EditableWrap>
 
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
