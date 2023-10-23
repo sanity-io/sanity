@@ -5,7 +5,6 @@ import {deskTool} from 'sanity/desk'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {imageAssetSource} from './assetSources'
@@ -122,7 +121,7 @@ const sharedSettings = definePlugin({
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
     presenceTool(),
-    // tsdoc(),
+    tsdoc(),
   ],
 })
 
@@ -228,10 +227,7 @@ export default defineConfig([
     title: 'Sanity AI Assist',
     projectId: 'ppsg7ml5',
     dataset: 'test',
-    plugins: [
-      sharedSettings(),
-      // assist()
-    ],
+    plugins: [sharedSettings(), assist()],
     basePath: '/ai-assist',
   },
 ])
