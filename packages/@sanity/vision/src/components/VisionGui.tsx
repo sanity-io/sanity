@@ -18,7 +18,7 @@ import {
   ToastContextValue,
   Inline,
 } from '@sanity/ui'
-import {Tooltip} from 'sanity/src/ui'
+import {Tooltip} from '../../../../sanity/src/ui'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {getLocalStorage, LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
