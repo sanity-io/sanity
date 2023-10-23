@@ -1,1 +1,1 @@
-export {schemaTypes} from '../../test-studio/schema'
+export {schemaTypes} from 'sanity-test-studio/schema'
