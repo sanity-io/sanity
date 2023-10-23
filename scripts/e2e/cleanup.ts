@@ -1,14 +1,14 @@
 import {sanityIdify} from '../utils/sanityIdify'
 import {startTimer} from '../utils/startTimer'
 import {readEnv} from '../utils/envVars'
-import {KnownEnvVar, createDocClient} from './docClient'
+import {KnownEnvVar, createE2EClient} from './e2eClient'
 
-const DATASET = readEnv<KnownEnvVar>('DOCS_REPORT_DATASET')
-const studioMetricsClient = createDocClient(DATASET)
+const DATASET = readEnv<KnownEnvVar>('SANITY_E2E_DATASET')
+const studioE2EClient = createE2EClient(DATASET)
 
 const timer = startTimer(`Deleting dataset ${DATASET}`)
 
-studioMetricsClient.datasets
+studioE2EClient.datasets
   .delete(sanityIdify(DATASET))
   .then((res) => {
     if (res.deleted) {

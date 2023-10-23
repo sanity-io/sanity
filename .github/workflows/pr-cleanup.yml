@@ -1,4 +1,4 @@
-name: 'Cleanup: Documentation Report'
+name: 'Cleanup: PR Merge/Closed'
 
 on:
   # Build on closed or merged PRs
@@ -6,7 +6,7 @@ on:
     types: [closed]
 
 jobs:
-  reportTeardown:
+  pr-cleanup:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -33,7 +33,14 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
 
-      - name: Remove datasets for closed PRs
+      - name: Remove E2E datasets for closed PRs
+        env:
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: pr-${{ github.event.number }}
+        run: yarn e2e:cleanup
+
+      - name: Remove docs report datasets for closed PRs
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
           DOCS_REPORT_DATASET: pr-${{ github.event.number }}

@@ -4,8 +4,8 @@ import {groupBy} from 'lodash'
 import {combineLatest, map} from 'rxjs'
 import prettier from 'prettier'
 import {startTimer} from '../utils/startTimer'
-import {createDocClient} from './docClient'
-import {readEnv} from './envVars'
+import {readEnv} from '../utils/envVars'
+import {KnownEnvVar, createDocClient} from './docClient'
 
 const QUERY = `*[_type=='exportSymbol'] {
   _id,
@@ -35,7 +35,7 @@ interface TransformResult {
   branchNotDocumented: number
 }
 
-const studioMetricsClient = createDocClient(readEnv('DOCS_REPORT_DATASET'))
+const studioMetricsClient = createDocClient(readEnv<KnownEnvVar>('DOCS_REPORT_DATASET'))
 const studioMetricsClientProduction = createDocClient('next')
 
 function getDocumentationReport(symbols: ExportSymbol[]): Report[] {

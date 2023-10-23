@@ -62,7 +62,8 @@ jobs:
       - name: Build CLI
         run: yarn build:cli # Needed for CLI tests
 
-      - name: Build E2E test studio
+      - name: Build E2E test studio on next
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
         env:
           # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
           # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
@@ -70,9 +71,10 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
-        run: yarn e2e:build
+        run: yarn e2e:setup && yarn e2e:build
 
-      - name: Run end-to-end tests
+      - name: Run E2E tests on next
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
         env:
           # Missing in docs but in use
           # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
@@ -83,6 +85,28 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
+        run: yarn test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+
+      - name: Build E2E test studio on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
+          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: pr-${{ github.event.number }}
+        run: yarn e2e:setup && yarn e2e:build
+
+      - name: Run E2E tests on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
+          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: pr-${{ github.event.number }}
         run: yarn test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v3
