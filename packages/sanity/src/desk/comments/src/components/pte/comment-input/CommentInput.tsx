@@ -11,19 +11,27 @@ import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 
 const EMPTY_ARRAY: [] = []
 
-interface CommentInputProps {
+const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
+  behavior: 'smooth',
+  block: 'center',
+  inline: 'center',
+}
+
+export interface CommentInputProps {
   currentUser: CurrentUser
   expandOnFocus?: boolean
   focusLock?: boolean
   focusOnMount?: boolean
   mentionOptions: MentionOptionsHookValue
+  onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
   onChange: (value: PortableTextBlock[]) => void
   onDiscardCancel: () => void
   onDiscardConfirm: () => void
   onEscapeKeyDown?: () => void
+  onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onMentionMenuOpenChange?: (open: boolean) => void
   onSubmit: () => void
-  placeholder?: string
+  placeholder?: React.ReactNode
   value: PortableTextBlock[] | null
   withAvatar?: boolean
 }
@@ -52,14 +60,16 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       focusLock = false,
       focusOnMount,
       mentionOptions,
+      onBlur,
       onChange,
       onDiscardCancel,
       onDiscardConfirm,
       onEscapeKeyDown,
+      onFocus,
       onMentionMenuOpenChange,
       onSubmit,
       placeholder,
-      value = [],
+      value = EMPTY_ARRAY,
       withAvatar = true,
     } = props
     const [focused, setFocused] = useState<boolean>(false)
@@ -95,11 +105,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     )
 
     const scrollToEditor = useCallback(() => {
-      editorContainerRef.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'center',
-      })
+      editorContainerRef.current?.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
     }, [])
 
     // The way a user a comment can be discarded varies from the context it is used in.
@@ -175,7 +181,9 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
                 <CommentInputInner
                   currentUser={currentUser}
                   focusLock={focusLock}
+                  onBlur={onBlur}
                   onEscapeKeyDown={onEscapeKeyDown}
+                  onFocus={onFocus}
                   onSubmit={onSubmit}
                   placeholder={placeholder}
                   withAvatar={withAvatar}
