@@ -21,6 +21,9 @@ test.describe('Portable Text Input', () => {
       // Assertion: Wait for link to be re-rendered / PTE internal state to be done
       await expect($pte.locator('span[data-link]')).toBeVisible()
 
+      // Assertion: the annotation toolbar popover should not be visible
+      await expect(page.getByTestId('annotation-toolbar-popover')).not.toBeVisible()
+
       // Now we check if the edit popover shows automatically
       await expect(page.getByLabel('Link').first()).toBeAttached({timeout: 10000})
 
@@ -38,6 +41,9 @@ test.describe('Portable Text Input', () => {
 
       // Expect the editor to have focus after closing the popover
       await expect($pte).toBeFocused()
+
+      // Assertion: the annotation toolbar popover should be visible
+      await expect(page.getByTestId('annotation-toolbar-popover')).toBeVisible()
     })
   })
 })
