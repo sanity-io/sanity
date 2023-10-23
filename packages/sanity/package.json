@@ -234,7 +234,7 @@
     "@playwright/experimental-ct-react": "^1.38.1",
     "@playwright/test": "^1.38.1",
     "@sanity/tsdoc": "1.0.0-alpha.38",
-    "@sanity/ui-workshop": "^1.2.10",
+    "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.0.16",

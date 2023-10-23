@@ -4051,7 +4051,7 @@
     tmp "^0.2.1"
     vite "^4.3.8"
 
-"@sanity/ui-workshop@^1.0.0", "@sanity/ui-workshop@^1.2.10":
+"@sanity/ui-workshop@^1.0.0", "@sanity/ui-workshop@^1.2.11":
   version "1.2.11"
   resolved "https://registry.yarnpkg.com/@sanity/ui-workshop/-/ui-workshop-1.2.11.tgz#2eceaa82886650560f3cb69237dcd43d04788e13"
   integrity sha512-vzj7upIF7wq2W1HEA0D5VSkR8axaH4Rt07yNTAaas7CLgjSE9r2d+Gnkrq4FIbIuN1GYhhCD+D3/s60GaZrpQw==
