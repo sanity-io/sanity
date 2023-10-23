@@ -3,6 +3,7 @@ import {uuid} from '@sanity/uuid'
 import {CurrentUser, SchemaType} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
 import {
+  CommentContext,
   CommentCreatePayload,
   CommentEditPayload,
   CommentOperations,
@@ -27,6 +28,8 @@ export interface CommentOperationsHookOptions {
   schemaType: SchemaType | undefined
   workspace: string
 
+  getThreadLength?: (threadId: string) => number
+
   onCreate?: (comment: CommentPostPayload) => void
   onCreateError: (id: string, error: Error) => void
   onEdit?: (id: string, comment: CommentEditPayload) => void
@@ -43,6 +46,7 @@ export function useCommentOperations(
     dataset,
     documentId,
     documentType,
+    getThreadLength,
     onCreate,
     onCreateError,
     onEdit,
@@ -74,6 +78,23 @@ export function useCommentOperations(
       // create the comment.
       const commentId = comment?.id || uuid()
 
+      // Get the current thread length of the thread the comment is being added to.
+      // We add 1 to the length to account for the comment being added.
+      const currentThreadLength = (getThreadLength?.(comment.threadId) || 0) + 1
+
+      const {
+        documentTitle = '',
+        url = '',
+        workspaceTitle = '',
+      } = getNotificationValue({commentId}) || {}
+
+      const notification: CommentContext['notification'] = {
+        currentThreadLength,
+        documentTitle,
+        url,
+        workspaceTitle,
+      }
+
       const nextComment = {
         _id: commentId,
         _type: 'comment',
@@ -88,7 +109,7 @@ export function useCommentOperations(
           payload: {
             workspace,
           },
-          notification: getNotificationValue({commentId}),
+          notification,
           tool: activeTool?.name || '',
         },
         target: {
@@ -129,6 +150,7 @@ export function useCommentOperations(
       documentId,
       documentType,
       getNotificationValue,
+      getThreadLength,
       onCreate,
       onCreateError,
       projectId,
