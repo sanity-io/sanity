@@ -15,6 +15,11 @@ interface SelectedPathValue {
    * The origin of where the path was selected from
    */
   origin: 'inspector' | 'field'
+
+  /**
+   * The id of the thread that is selected. If null, there is no specific thread selected.
+   */
+  threadId: string | null
 }
 
 export type SelectedPath = SelectedPathValue | null

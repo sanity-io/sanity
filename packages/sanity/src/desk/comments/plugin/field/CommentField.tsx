@@ -16,7 +16,7 @@ import {
   CommentCreatePayload,
 } from '../../src'
 import {CommentFieldButton} from './CommentFieldButton'
-import {FieldProps, useCurrentUser} from 'sanity'
+import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
 
 const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
   initial: {
@@ -90,6 +90,7 @@ function CommentFieldInner(props: FieldProps) {
 
   const inView = useInView(rootElementRef)
 
+  const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
   const hasComments = Boolean(count > 0)
   const currentComments = useMemo(() => comments.data[status], [comments.data, status])
 
@@ -114,11 +115,11 @@ function CommentFieldInner(props: FieldProps) {
     return currentComments.find((comment) => comment.fieldPath === pathString)?.threadId
   }, [currentComments, props.path])
 
-  // A function that scrolls to the thread with the given ID
+  // A function that scrolls to the thread group with the given ID
   const handleScrollToThread = useCallback(
     (threadId: string) => {
       if (commentsInspectorOpen && shouldScrollToThread && threadId) {
-        const node = document.querySelector(`[data-thread-id="${threadId}"]`)
+        const node = document.querySelector(`[data-group-id="${threadId}"]`)
 
         if (node) {
           node.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
@@ -158,6 +159,7 @@ function CommentFieldInner(props: FieldProps) {
       setSelectedPath({
         fieldPath: PathUtils.toString(props.path),
         origin: 'field',
+        threadId: null,
       })
     }
   }, [
@@ -208,6 +210,7 @@ function CommentFieldInner(props: FieldProps) {
         setSelectedPath({
           fieldPath: PathUtils.toString(props.path),
           origin: 'field',
+          threadId: newThreadId,
         })
 
         setShouldScrollToThread(true)
@@ -269,6 +272,7 @@ function CommentFieldInner(props: FieldProps) {
         <CommentFieldButton
           count={Number(count)}
           currentUser={currentUser}
+          fieldTitle={fieldTitle}
           onChange={setValue}
           onClick={handleClick}
           onCommentAdd={handleCommentAdd}
@@ -281,7 +285,17 @@ function CommentFieldInner(props: FieldProps) {
       hasComments,
       isAddingComment: open,
     }),
-    [currentUser, count, hasComments, handleClick, handleCommentAdd, handleDiscard, value, open],
+    [
+      currentUser,
+      count,
+      fieldTitle,
+      handleClick,
+      handleCommentAdd,
+      handleDiscard,
+      open,
+      value,
+      hasComments,
+    ],
   )
 
   return (

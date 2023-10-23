@@ -4,14 +4,12 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import styled, {css} from 'styled-components'
 import * as PathUtils from '@sanity/util/paths'
-import {AddCommentIcon} from '../icons'
 import {
   CommentMessage,
   CommentCreatePayload,
   MentionOptionsHookValue,
   CommentListBreadcrumbs,
 } from '../../types'
-import {TextTooltip} from '../TextTooltip'
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './styles'
@@ -49,22 +47,20 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     onNewThreadCreate,
     onPathSelect,
   } = props
-  const [displayNewThreadInput, setDisplayNewThreadInput] = useState<boolean>(false)
-  const [newThreadButtonElement, setNewThreadButtonElement] = useState<HTMLButtonElement | null>(
-    null,
-  )
 
-  const onCreateNewThreadClick = useCallback(() => {
-    setDisplayNewThreadInput(true)
-  }, [])
+  const [focused, setFocused] = useState<boolean>(false)
 
-  const handleNewThreadCreateDiscard = useCallback(() => {
-    setDisplayNewThreadInput(false)
-  }, [])
-
-  const handleBreadcrumbsClick = useCallback(() => {
+  const selectPath = useCallback(() => {
     onPathSelect?.(PathUtils.fromString(fieldPath))
   }, [fieldPath, onPathSelect])
+
+  const handleCreateNewThreadFocus = useCallback(() => {
+    setFocused(true)
+  }, [])
+
+  const handleCreateNewThreadBlur = useCallback(() => {
+    setFocused(false)
+  }, [])
 
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
@@ -78,12 +74,8 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       }
 
       onNewThreadCreate?.(nextComment)
-      setDisplayNewThreadInput(false)
-
-      // When the new thread is created, we focus the button again
-      newThreadButtonElement?.focus()
     },
-    [newThreadButtonElement, onNewThreadCreate, fieldPath],
+    [onNewThreadCreate, fieldPath],
   )
 
   const crumbsTitlePath = useMemo(() => breadcrumbs?.map((p) => p.title) || [], [breadcrumbs])
@@ -97,37 +89,26 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
             <BreadcrumbsButton
               aria-label={`Go to ${lastCrumb} field`}
               mode="bleed"
-              onClick={handleBreadcrumbsClick}
+              onClick={selectPath}
               padding={2}
             >
               <CommentBreadcrumbs maxLength={3} titlePath={crumbsTitlePath} />
             </BreadcrumbsButton>
           </Flex>
         </Stack>
-
-        {canCreateNewThread && (
-          <TextTooltip text="Start a new thread">
-            <Button
-              aria-label="Start a new thread"
-              fontSize={1}
-              icon={AddCommentIcon}
-              mode="bleed"
-              onClick={onCreateNewThreadClick}
-              padding={2}
-              ref={setNewThreadButtonElement}
-            />
-          </TextTooltip>
-        )}
       </HeaderFlex>
 
-      {displayNewThreadInput && (
-        <ThreadCard tone="primary">
+      {canCreateNewThread && (
+        <ThreadCard
+        // tone={focused ? 'primary' : undefined}
+        >
           <CreateNewThreadInput
             currentUser={currentUser}
+            fieldName={lastCrumb}
             mentionOptions={mentionOptions}
-            onEditDiscard={handleNewThreadCreateDiscard}
+            onBlur={handleCreateNewThreadBlur}
+            onFocus={handleCreateNewThreadFocus}
             onNewThreadCreate={handleNewThreadCreate}
-            openButtonElement={newThreadButtonElement}
           />
         </ThreadCard>
       )}
