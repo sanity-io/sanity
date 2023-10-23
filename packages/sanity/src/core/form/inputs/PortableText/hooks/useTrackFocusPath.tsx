@@ -4,7 +4,7 @@ import {
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path, KeyedObject, isKeyedObject} from '@sanity/types'
-import {useEffect} from 'react'
+import {useLayoutEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {isEqual} from '@sanity/util/paths'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
@@ -22,7 +22,7 @@ export function useTrackFocusPath(props: Props): void {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Don't do anything if no focusPath
     if (focusPath.length === 0) {
       return
