@@ -13,12 +13,12 @@ import {
 import styled, {css} from 'styled-components'
 import {
   CommentMessage,
-  useComments,
   CommentInput,
   CommentInputHandle,
   hasCommentMessageValue,
   AddCommentIcon,
   CommentIcon,
+  MentionOptionsHookValue,
 } from '../../src'
 import {CurrentUser, PortableTextBlock} from 'sanity'
 
@@ -52,6 +52,7 @@ interface CommentFieldButtonProps {
   count: number
   currentUser: CurrentUser
   fieldTitle: string
+  mentionOptions: MentionOptionsHookValue
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
   onCommentAdd: () => void
@@ -66,6 +67,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     count,
     currentUser,
     fieldTitle,
+    mentionOptions,
     onChange,
     onClick,
     onCommentAdd,
@@ -77,7 +79,6 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
   const [mentionMenuOpen, setMentionMenuOpen] = useState<boolean>(false)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
-  const {mentionOptions} = useComments()
   const hasComments = Boolean(count > 0)
 
   const closePopover = useCallback(() => setOpen(false), [setOpen])
