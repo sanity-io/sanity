@@ -24,8 +24,5 @@
     "sanity-plugin-mux-input": "^2.2.1",
     "sanity-test-studio": "3.18.1",
     "styled-components": "^6.1.0"
-  },
-  "devDependencies": {
-    "vite": "^4.4.8"
   }
 }
