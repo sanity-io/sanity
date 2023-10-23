@@ -58,51 +58,61 @@ test.describe('Portable Text Input', () => {
   })
   test.describe('Should track focusPath', () => {
     test(`for span .text`, async ({mount, page}) => {
-      const initialPath = ['body', {_key: 'c'}, 'children', {_key: 'd'}, 'text']
       const component = await mount(
-        <FocusTrackingStory document={document} focusPath={initialPath} />,
+        <FocusTrackingStory
+          document={document}
+          focusPath={['body', {_key: 'c'}, 'children', {_key: 'd'}, 'text']}
+        />,
       )
-      await waitForFocusPath(page, initialPath)
-      const $portableTextInput = component.getByTestId('field-body')
-      const $pteTextbox = $portableTextInput.getByRole('textbox')
-      await expect($pteTextbox).toBeFocused()
-      expect(await getFocusedNodeText(page)).toEqual('Bar')
-      await setFocusPathFromOutside(page, ['body', {_key: 'e'}, 'children', {_key: 'f'}, 'text'])
-      expect(await getFocusedNodeText(page)).toEqual('Baz')
+      await waitForFocusedNodeText(page, 'Bar')
+      await component.update(
+        <FocusTrackingStory
+          document={document}
+          focusPath={['body', {_key: 'e'}, 'children', {_key: 'f'}, 'text']}
+        />,
+      )
+      await waitForFocusedNodeText(page, 'Baz')
     })
     test(`for span child root`, async ({mount, page}) => {
-      const initialPath = ['body', {_key: 'c'}, 'children', {_key: 'd'}]
       const component = await mount(
-        <FocusTrackingStory document={document} focusPath={initialPath} />,
+        <FocusTrackingStory
+          document={document}
+          focusPath={['body', {_key: 'c'}, 'children', {_key: 'd'}]}
+        />,
       )
-      await waitForFocusPath(page, initialPath)
-      const $portableTextInput = component.getByTestId('field-body')
-      const $pteTextbox = $portableTextInput.getByRole('textbox')
-      await expect($pteTextbox).toBeFocused()
-      expect(await getFocusedNodeText(page)).toEqual('Bar')
-      await setFocusPathFromOutside(page, ['body', {_key: 'e'}, 'children', {_key: 'f'}])
-      expect(await getFocusedNodeText(page)).toEqual('Baz')
+      await waitForFocusedNodeText(page, 'Bar')
+      await component.update(
+        <FocusTrackingStory
+          document={document}
+          focusPath={['body', {_key: 'e'}, 'children', {_key: 'f'}]}
+        />,
+      )
+      await waitForFocusedNodeText(page, 'Baz')
     })
     test(`for inline objects with .text prop`, async ({mount, page}) => {
-      const initialPath = ['body', {_key: 'g'}, 'children', {_key: 'i'}, 'text']
       const component = await mount(
-        <FocusTrackingStory document={document} focusPath={initialPath} />,
+        <FocusTrackingStory
+          document={document}
+          focusPath={['body', {_key: 'g'}, 'children', {_key: 'i'}, 'text']}
+        />,
       )
-      await waitForFocusPath(page, initialPath)
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
       const inlineObjectTextInput = page.getByTestId('inlineTextInputField').getByRole('textbox')
       await expect(inlineObjectTextInput).toBeFocused()
-      await setFocusPathFromOutside(page, ['body', {_key: 'e'}, 'children', {_key: 'f'}])
+      await component.update(
+        <FocusTrackingStory
+          document={document}
+          focusPath={['body', {_key: 'e'}, 'children', {_key: 'f'}]}
+        />,
+      )
       await expect($pteTextbox).toBeFocused()
     })
     test(`for object blocks with .text prop`, async ({mount, page}) => {
-      const initialPath = ['body', {_key: 'k'}, 'text']
       const component = await mount(
-        <FocusTrackingStory document={document} focusPath={initialPath} />,
+        <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}, 'text']} />,
       )
-      await waitForFocusPath(page, initialPath)
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
@@ -110,38 +120,26 @@ test.describe('Portable Text Input', () => {
       await expect(blockObjectInput).toBeFocused()
     })
     test(`for block paths`, async ({mount, page}) => {
-      const initialPath = ['body', {_key: 'k'}]
       const component = await mount(
-        <FocusTrackingStory document={document} focusPath={initialPath} />,
+        <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}]} />,
       )
-      await waitForFocusPath(page, initialPath)
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
       const blockObjectInput = page.getByTestId('objectBlockInputField').getByRole('textbox')
       await expect(blockObjectInput).toBeVisible()
-      await setFocusPathFromOutside(page, ['body', {_key: 'g'}])
+      await component.update(
+        <FocusTrackingStory document={document} focusPath={['body', {_key: 'g'}]} />,
+      )
+
       await expect($pteTextbox).toBeFocused()
       await expect(blockObjectInput).not.toBeVisible()
     })
   })
 })
 
-async function setFocusPathFromOutside(page: Page, path: Path) {
-  await page.evaluate(
-    ({_path}) => {
-      ;(window as any).__setFocusPath(_path)
-    },
-    {_path: path},
-  )
-  await waitForFocusPath(page, path)
-}
-
-// Make sure the focusPath is propagated before we start testing on it
-async function waitForFocusPath(page: Page, path: Path) {
-  await page.waitForSelector(`[data-focus-path='${JSON.stringify(path)}']`)
-}
-
-function getFocusedNodeText(page: Page) {
-  return page.evaluate(() => window.getSelection()?.focusNode?.textContent)
+function waitForFocusedNodeText(page: Page, text: string) {
+  return page.waitForFunction((arg) => {
+    return window.getSelection()?.focusNode?.textContent === arg
+  }, text)
 }

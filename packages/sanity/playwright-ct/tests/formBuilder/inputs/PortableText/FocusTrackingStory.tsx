@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import {Path, defineArrayMember, defineField, defineType} from '@sanity/types'
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import {SanityDocument} from '@sanity/client'
 import {TestWrapper} from '../../utils/TestWrapper'
 import {TestForm} from '../../utils/TestForm'
@@ -56,27 +56,16 @@ const SCHEMA_TYPES = [
 ]
 
 export function FocusTrackingStory({
-  focusPath: focusPathFromProps,
+  focusPath,
   document,
 }: {
   focusPath?: Path
   document?: SanityDocument
 }) {
-  const [focusPath, setFocusPath] = useState<Path>(focusPathFromProps || [])
-  useEffect(() => {
-    ;(window as any).__setFocusPath = (path: Path) => {
-      setFocusPath(path)
-    }
-    return () => {
-      ;(window as any).__setFocusPath = undefined
-    }
-  }, [])
   return (
-    <div data-focus-path={JSON.stringify(focusPath)}>
-      <TestWrapper schemaTypes={SCHEMA_TYPES}>
-        <TestForm document={document} focusPath={focusPath} />
-      </TestWrapper>
-    </div>
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={document} focusPath={focusPath} />
+    </TestWrapper>
   )
 }
 
