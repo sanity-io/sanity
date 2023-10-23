@@ -1,8 +1,18 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, isHTMLElement, rem, Text, Theme, useForwardedRef} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  CSSObject,
+  Flex,
+  isHTMLElement,
+  rem,
+  Text,
+  Theme,
+  useForwardedRef,
+} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import type {CSSObject} from 'styled-components'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
@@ -38,10 +48,8 @@ const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
     },
 
     // hovered
-    '@media(hover:hover)': {
-      '&:not([data-disabled]):not([data-read-only]):hover': {
-        borderColor: color.default.hovered.border,
-      },
+    '@media(hover:hover):not([data-disabled]):not([data-read-only]):hover': {
+      borderColor: color.default.hovered.border,
     },
 
     // focused

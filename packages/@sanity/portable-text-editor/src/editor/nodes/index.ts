@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
-export const DefaultBlockObject = styled.div`
+export const DefaultBlockObject = styled.div<{selected: boolean}>`
   user-select: none;
-  border: ${(props: {selected: boolean}) => {
+  border: ${(props) => {
     if (props.selected) {
       return '1px solid blue'
     }
@@ -10,9 +10,9 @@ export const DefaultBlockObject = styled.div`
   }};
 `
 
-export const DefaultInlineObject = styled.span`
+export const DefaultInlineObject = styled.span<{selected: boolean}>`
   background: #999;
-  border: ${(props: {selected: boolean}) => {
+  border: ${(props) => {
     if (props.selected) {
       return '1px solid blue'
     }

@@ -16,7 +16,7 @@ interface RootProps {
 
 const animationSpeed = 250
 
-export const ChangeBarWrapper = styled.div(({changed, disabled, isReviewChangeOpen}: RootProps) => {
+export const ChangeBarWrapper = styled.div<RootProps>(({changed, disabled, isReviewChangeOpen}) => {
   if (disabled)
     return css`
       ${ChangeBar} {
@@ -87,8 +87,8 @@ export const ChangeBarMarker = styled.div(({theme}: ThemeContext) => {
   `
 })
 
-export const ChangeBarButton = styled.button(
-  ({theme, $withHoverEffect}: {theme: Theme; $withHoverEffect?: boolean}) => {
+export const ChangeBarButton = styled.button<{$withHoverEffect?: boolean}>(
+  ({theme, $withHoverEffect}) => {
     /* these colours aren't freely available on the current theme */
     const notSelectedColor = theme.sanity.color.spot.yellow
 

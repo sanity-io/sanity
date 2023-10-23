@@ -1,4 +1,4 @@
-import {Box, rem, Stack, Theme} from '@sanity/ui'
+import {Box, rem, Stack} from '@sanity/ui'
 import {ScrollToOptions, useVirtualizer, Virtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash/throttle'
 import React, {
@@ -25,7 +25,7 @@ const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 /**
  * Conditionally render a focus ring overlay over the command list, with adjustable offset
  */
-const FocusOverlayDiv = styled.div(({theme, offset}: {theme: Theme; offset: number}) => {
+const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
   return css`
     bottom: ${-offset}px;
     border-radius: ${rem(theme.sanity.radius[1])};
