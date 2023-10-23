@@ -18,7 +18,9 @@ const OS_BROWSERS =
 // Read environment variables
 const CI = readBoolEnv('CI', false)
 const E2E_DEBUG = readBoolEnv('SANITY_E2E_DEBUG', false)
-const PROJECT_ID = 'ppsg7ml5'
+const PROJECT_ID = process.env.SANITY_E2E_PROJECT_ID!
+
+const BASE_URL = 'http://localhost:3339/'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -52,7 +54,7 @@ export default defineConfig({
     actionTimeout: 10000,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    baseURL: 'http://localhost:3333/',
+    baseURL: BASE_URL,
     headless: readBoolEnv('SANITY_E2E_HEADLESS', !E2E_DEBUG),
     storageState: getStorageStateForProjectId(PROJECT_ID),
     viewport: {width: 1728, height: 1000},
@@ -87,8 +89,8 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'yarn dev',
-    port: 3333,
+    command: 'yarn e2e:dev',
+    port: 3339,
     reuseExistingServer: !CI,
   },
 })
@@ -123,7 +125,7 @@ function getStorageStateForProjectId(projectId: string) {
     cookies: [],
     origins: [
       {
-        origin: 'http://localhost:3333',
+        origin: BASE_URL,
         localStorage: [
           {
             name: `__studio_auth_token_${projectId}`,

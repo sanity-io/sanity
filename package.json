@@ -40,6 +40,7 @@
     "example:ecommerce-studio": "yarn --cwd examples/ecommerce-studio start",
     "example:example-studio": "yarn --cwd dev/example-studio start",
     "example:movies-studio": "yarn --cwd examples/movies-studio start",
+    "e2e:dev": "yarn --cwd dev/studio-e2e-testing dev",
     "etl": "node -r dotenv-flow/config -r esbuild-register scripts/etl",
     "init": "lerna clean --yes && run-s bootstrap build",
     "lerna:clean": "lerna clean",

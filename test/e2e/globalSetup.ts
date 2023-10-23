@@ -1,7 +1,7 @@
 import {chromium, type FullConfig} from '@playwright/test'
 
 const INIT_TIMEOUT_MS = 120000
-const FALLBACK_URL = 'http://localhost:3333/'
+const FALLBACK_URL = 'http://localhost:3339/'
 
 /**
  * Global setup for all end-to-end tests.
