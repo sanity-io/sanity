@@ -22,7 +22,14 @@ export class SetPatch {
           result = result.setIndex(i, this.value)
         })
       } else if (target.isAttributeReference()) {
-        result = result.setAttribute(target.name(), this.value)
+        // setting a subproperty on a primitive value overwrites it, eg
+        // `{set: {'address.street': 'California St'}}` on `{address: 'Fiction St'}` will result in
+        // `{address: {street: 'California St'}}`
+        if (result.containerType() === 'primitive') {
+          result = result.set({[target.name()]: this.value})
+        } else {
+          result = result.setAttribute(target.name(), this.value)
+        }
       } else {
         throw new Error(`Unable to apply to target ${target.toString()}`)
       }
