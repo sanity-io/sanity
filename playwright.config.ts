@@ -89,9 +89,14 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'yarn e2e:dev',
+    /**
+     * If it is running in CI just start the production build assuming that studio is already build
+     * Locally run the dev server
+     */
+    command: CI ? 'yarn e2e:start' : 'yarn e2e:dev',
     port: 3339,
     reuseExistingServer: !CI,
+    stdout: 'pipe',
   },
 })
 

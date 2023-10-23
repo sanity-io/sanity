@@ -62,6 +62,16 @@ jobs:
       - name: Build CLI
         run: yarn build:cli # Needed for CLI tests
 
+      - name: Build E2E test studio
+        env:
+          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
+          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
+        run: yarn e2e:build
+
       - name: Run end-to-end tests
         env:
           # Missing in docs but in use

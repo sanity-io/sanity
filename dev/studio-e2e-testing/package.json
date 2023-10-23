@@ -6,7 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "dev": "sanity dev --port 3339",
-    "start": "sanity start",
+    "start": "sanity start --port 3339",
     "build": "sanity build"
   },
   "keywords": [
