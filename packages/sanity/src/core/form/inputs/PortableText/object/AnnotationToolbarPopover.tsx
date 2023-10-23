@@ -131,23 +131,23 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     onRemove()
   }, [onRemove])
 
+  const handleScroll = useCallback(() => {
+    if (rangeRef.current) {
+      setCursorRect(rangeRef.current.getBoundingClientRect())
+    }
+  }, [])
+
   useEffect(() => {
     if (!popoverOpen) {
       return undefined
     }
 
-    const handleScroll = () => {
-      if (rangeRef.current) {
-        setCursorRect(rangeRef.current.getBoundingClientRect())
-      }
-    }
-
-    floatingBoundary?.addEventListener('scroll', handleScroll, {passive: true})
+    referenceBoundary?.addEventListener('scroll', handleScroll)
 
     return () => {
-      floatingBoundary?.removeEventListener('scroll', handleScroll)
+      referenceBoundary?.removeEventListener('scroll', handleScroll)
     }
-  }, [popoverOpen, floatingBoundary])
+  }, [popoverOpen, referenceBoundary, handleScroll])
 
   if (!popoverOpen) {
     return null
