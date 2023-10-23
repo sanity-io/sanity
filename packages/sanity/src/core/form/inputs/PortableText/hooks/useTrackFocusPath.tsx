@@ -28,11 +28,6 @@ export function useTrackFocusPath(props: Props): void {
       return
     }
 
-    // Don't do anything if the selection focus path already is the focusPath
-    if (selection?.focus.path && isEqual(selection.focus.path, focusPath)) {
-      return
-    }
-
     // Find the opened member item
     const openItem = portableTextMemberItems.find((m) => m.member.open)
 
@@ -52,6 +47,12 @@ export function useTrackFocusPath(props: Props): void {
           inline: 'start',
         })
       }
+
+      // Don't do anything if the selection focus path is already equal to the focusPath
+      if (selection?.focus.path && isEqual(selection.focus.path, focusPath)) {
+        return
+      }
+
       const isTextBlock = openItem.kind === 'textBlock'
       const isBlockFocusPath = focusPath.length === 1
 
