@@ -65,6 +65,7 @@ jobs:
       - name: Run end-to-end tests
         env:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN }}
+          PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
         run: yarn test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v3
