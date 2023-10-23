@@ -9,12 +9,7 @@ import {useInView, motion, AnimatePresence, Variants} from 'framer-motion'
 import {hues} from '@sanity/color'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
-import {
-  useCommentsEnabled,
-  useComments,
-  useFieldCommentsCount,
-  CommentCreatePayload,
-} from '../../src'
+import {useCommentsEnabled, useComments, CommentCreatePayload} from '../../src'
 import {CommentFieldButton} from './CommentFieldButton'
 import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
 
@@ -85,13 +80,12 @@ function CommentFieldInner(props: FieldProps) {
 
   const {openInspector, inspector} = useDocumentPane()
   const currentUser = useCurrentUser()
-  const {create, status, setStatus, comments, selectedPath, setSelectedPath} = useComments()
-  const count = useFieldCommentsCount(props.path)
+  const {create, status, setStatus, comments, selectedPath, setSelectedPath, mentionOptions} =
+    useComments()
 
   const inView = useInView(rootElementRef)
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
-  const hasComments = Boolean(count > 0)
   const currentComments = useMemo(() => comments.data[status], [comments.data, status])
 
   const [shouldHighlight, setShouldHighlight] = useState<boolean>(false)
@@ -114,6 +108,19 @@ function CommentFieldInner(props: FieldProps) {
 
     return currentComments.find((comment) => comment.fieldPath === pathString)?.threadId
   }, [currentComments, props.path])
+
+  // Total number of comments for the current field
+  const count = useMemo(() => {
+    const stringPath = PathUtils.toString(props.path)
+
+    const commentsCount = comments.data.open
+      .map((c) => (c.fieldPath === stringPath ? c.commentsCount : 0))
+      .reduce((acc, val) => acc + val, 0)
+
+    return commentsCount || 0
+  }, [comments.data.open, props.path])
+
+  const hasComments = Boolean(count > 0)
 
   // A function that scrolls to the thread group with the given ID
   const handleScrollToThread = useCallback(
@@ -273,6 +280,7 @@ function CommentFieldInner(props: FieldProps) {
           count={Number(count)}
           currentUser={currentUser}
           fieldTitle={fieldTitle}
+          mentionOptions={mentionOptions}
           onChange={setValue}
           onClick={handleClick}
           onCommentAdd={handleCommentAdd}
@@ -289,6 +297,7 @@ function CommentFieldInner(props: FieldProps) {
       currentUser,
       count,
       fieldTitle,
+      mentionOptions,
       handleClick,
       handleCommentAdd,
       handleDiscard,
