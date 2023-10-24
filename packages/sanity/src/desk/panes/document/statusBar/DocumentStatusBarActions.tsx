@@ -1,11 +1,11 @@
-import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
+import {Box, Flex, Tooltip, Stack, Button, LayerProvider, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription, useTimelineSelector} from 'sanity'
+import {DocumentActionDescription, Hotkeys, useTimelineSelector} from 'sanity'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
