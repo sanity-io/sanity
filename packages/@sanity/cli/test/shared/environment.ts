@@ -58,7 +58,7 @@ const getTestId = () => {
 
   const localId = readFileSync(testIdPath, 'utf8').trim()
   const ghRunId = `${process.env.GITHUB_RUN_ID || ''}`.slice(-4)
-  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}`
+  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}-${process.env.GITHUB_SHARD_IDENTIFIER}`
   const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}` : ''
   const runId = `${githubId || localId}`.replace(/\W/g, '-').replace(/(^-+|-+$)/g, '')
 
