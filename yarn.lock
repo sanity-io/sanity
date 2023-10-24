@@ -3343,17 +3343,17 @@
     "@portabletext/toolkit" "^2.0.4"
     "@portabletext/types" "^2.0.5"
 
-"@portabletext/toolkit@^2.0.1", "@portabletext/toolkit@^2.0.4", "@portabletext/toolkit@^2.0.8":
-  version "2.0.8"
-  resolved "https://registry.npmjs.org/@portabletext/toolkit/-/toolkit-2.0.8.tgz#15e6382120892ec40e6145e6736633f3e94c3c81"
-  integrity sha512-MI3FKYZiL+/dYsClkkTDRjSvNS7K4j+U2LNZ5XIEoq67qCY0l7CYjvT0fn+lFBEUxjegtEmbxLk6T9nV/iXA+Q==
+"@portabletext/toolkit@^2.0.1", "@portabletext/toolkit@^2.0.10", "@portabletext/toolkit@^2.0.4":
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/@portabletext/toolkit/-/toolkit-2.0.10.tgz#ddcf88cb76b287ff9d5c94f69a6b370a9c9aba9c"
+  integrity sha512-d+F9JvpnMEx7kd6saZ9OWA4U1Iwuokh6TOht7iqkfWU+0ivh9yM4v+b0Kpu+iiPcElicoabhtXol+yTvWJ1jDw==
   dependencies:
-    "@portabletext/types" "^2.0.6"
+    "@portabletext/types" "^2.0.8"
 
-"@portabletext/types@^2.0.5", "@portabletext/types@^2.0.6":
-  version "2.0.6"
-  resolved "https://registry.npmjs.org/@portabletext/types/-/types-2.0.6.tgz#334ef469346b168924ce7c2215c88a30d5e778c8"
-  integrity sha512-6iqorcsQ0Z1/4Y7PWLvoknyiUv0DngSPao+q5UIE0+0gT2cZwFdItUyLZRheG85AisSEvacHEEnvN+TT8mxXVg==
+"@portabletext/types@^2.0.5", "@portabletext/types@^2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@portabletext/types/-/types-2.0.8.tgz#34aec838701482f838bdd0ee07a9e31dc01a9230"
+  integrity sha512-eiq9/kMX2bYezS4/kLFk3xNnruCFjCDdw6aYEv5ECHVKkYROiuLd3/AsP5d7tWF3+kPPy6tB0Wq8aqDG/URHGA==
 
 "@radix-ui/popper@0.1.0":
   version "0.1.0"

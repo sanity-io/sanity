@@ -75,7 +75,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.38.1",
-    "@portabletext/toolkit": "^2.0.8",
+    "@portabletext/toolkit": "^2.0.10",
     "@sanity/diff-match-patch": "^3.1.1",
     "@sanity/ui": "^1.8.2",
     "@testing-library/react": "^13.4.0",
