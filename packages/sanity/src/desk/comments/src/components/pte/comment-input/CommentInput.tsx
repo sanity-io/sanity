@@ -84,7 +84,10 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
         // Focus the editor when ready if focusOnMount is true
         if (change.type === 'ready') {
           if (focusOnMount && editorRef.current) {
-            PortableTextEditor.focus(editorRef.current)
+            requestAnimationFrame(() => {
+              if (!editorRef.current) return
+              PortableTextEditor.focus(editorRef.current)
+            })
           }
         }
         if (change.type === 'focus') {
