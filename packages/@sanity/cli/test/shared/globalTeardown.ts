@@ -84,7 +84,15 @@ async function deleteDatasets(args: ReturnType<typeof getTestRunArgs>) {
     args.aclDataset,
   ]
 
+  const existingDatasets = await testClient.datasets.list()
+  const datasetSet = new Set(existingDatasets.map((ds) => ds.name))
+
   await Promise.all(
-    datasets.map((ds) => testClient.datasets.delete(ds).catch(getErrorWarner('dataset', ds))),
+    datasets.map((ds) => {
+      if (!datasetSet.has(ds)) {
+        return Promise.resolve()
+      }
+      return testClient.datasets.delete(ds).catch(getErrorWarner('dataset', ds))
+    }),
   )
 }

@@ -140,12 +140,18 @@ async function prepareDatasets() {
     token: cliUserToken,
   })
 
+  const existingDatasets = await client.datasets.list()
+  const datasetSet = new Set(existingDatasets.map((ds) => ds.name))
+
   for (const version of studioVersions) {
     const args = getTestRunArgs(version)
     const datasets = [args.documentsDataset, args.graphqlDataset, args.aclDataset]
 
     await Promise.all(
       datasets.map((ds) => {
+        if (datasetSet.has(ds)) {
+          return Promise.resolve()
+        }
         // eslint-disable-next-line no-console
         console.log(`Creating dataset ${ds}...`)
         return client.datasets.create(ds, {aclMode: 'public'}).catch((err) => {
