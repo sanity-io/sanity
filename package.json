@@ -89,7 +89,7 @@
     "@bjoerge/mutiny": "^0.0.2",
     "@optimize-lodash/rollup-plugin": "^4.0.4",
     "@playwright/test": "^1.38.1",
-    "@sanity/client": "^6.4.9",
+    "@sanity/client": "^6.7.0",
     "@sanity/pkg-utils": "^2.3.10",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/uuid": "^3.0.2",
