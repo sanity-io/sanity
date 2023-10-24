@@ -27,6 +27,7 @@ import {
 import {
   Annotation,
   Block,
+  CustomBadge,
   Field,
   formComponentsPlugin,
   InlineBlock,
@@ -76,6 +77,7 @@ const sharedSettings = definePlugin({
       return prev
     },
     newDocumentOptions,
+    badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [
     deskTool({
