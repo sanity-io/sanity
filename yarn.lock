@@ -3949,9 +3949,9 @@
   integrity sha512-5wVG/vIiGuGrSmq+Bl3PY7XDgQrGv0fyHdJI64FSulnr2wH3NMqZ6C59UFxnrZ93sr7kOt0zQFoNv2lkPBi0Cg==
 
 "@sanity/icons@^2", "@sanity/icons@^2.0.0", "@sanity/icons@^2.3.1", "@sanity/icons@^2.4.0", "@sanity/icons@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-2.4.1.tgz#34ce2c5b58f53c7369ff926b651ea57c4e3c0a8c"
-  integrity sha512-/yxcIT0k1RxStI/pP/oHM44fHI6Oxiygf0jPcdV06Ce0xfFo+51UEqJSfE8hQ3fh+uFkat8ZZObZjq5v1ceJzw==
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-2.6.0.tgz#48e0aa2bcc39c018911cdf7a3d66647b6f87675f"
+  integrity sha512-l4yBs2z2nEsgtasPuBQ5muowxJBXNfw0bqty2uG1tFsEyCYSPHGUROQSLLvIseYC3Onees+r5E9ijMadJQNc/Q==
 
 "@sanity/image-url@^1.0.2":
   version "1.0.2"
