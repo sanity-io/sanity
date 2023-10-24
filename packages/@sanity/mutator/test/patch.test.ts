@@ -9,8 +9,17 @@ import unset from './patchExamples/unset'
 import diffMatchPatch from './patchExamples/diffMatchPatch'
 import insert from './patchExamples/insert'
 import incDec from './patchExamples/incDec'
+import mixed from './patchExamples/mixed'
 
-const examples = [...set, ...setIfMissing, ...unset, ...diffMatchPatch, ...insert, ...incDec]
+const examples = [
+  ...set,
+  ...setIfMissing,
+  ...unset,
+  ...diffMatchPatch,
+  ...insert,
+  ...incDec,
+  ...mixed,
+]
 
 examples.forEach((example) => {
   test(example.name, () => {

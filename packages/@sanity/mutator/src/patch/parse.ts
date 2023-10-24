@@ -14,15 +14,15 @@ export function parsePatch(patch: SingleDocumentPatch | SingleDocumentPatch[]): 
   }
 
   const {set, setIfMissing, unset, diffMatchPatch, inc, dec, insert} = patch
-  if (set) {
-    Object.keys(set).forEach((path) => {
-      result.push(new SetPatch(patch.id, path, set[path]))
-    })
-  }
-
   if (setIfMissing) {
     Object.keys(setIfMissing).forEach((path) => {
       result.push(new SetIfMissingPatch(patch.id, path, setIfMissing[path]))
+    })
+  }
+
+  if (set) {
+    Object.keys(set).forEach((path) => {
+      result.push(new SetPatch(patch.id, path, set[path]))
     })
   }
 
