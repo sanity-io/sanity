@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 // eslint-disable-next-line import/no-unassigned-import
 import './global.css'
 import StyledComponentsRegistry from './registry'
