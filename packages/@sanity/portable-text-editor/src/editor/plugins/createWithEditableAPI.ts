@@ -1,4 +1,4 @@
-import {Text, Range, Transforms, Editor, Element as SlateElement, Node, Descendant} from 'slate'
+import {Text, Range, Transforms, Editor, Element as SlateElement, Node} from 'slate'
 import {
   ObjectSchemaType,
   Path,
@@ -366,32 +366,30 @@ export function createWithEditableAPI(
             }
             if (options?.mode === 'blocks') {
               debug(`Deleting blocks touched by selection`)
-            } else {
-              debug(`Deleting children touched by selection`)
-            }
-            const nodes = Editor.nodes(editor, {
-              at: range,
-              match: (node) => {
-                if (options?.mode === 'blocks') {
+              Transforms.removeNodes(editor, {
+                at: range,
+                voids: true,
+                match: (node) => {
                   return (
                     editor.isTextBlock(node) ||
                     (!editor.isTextBlock(node) && SlateElement.isElement(node))
                   )
-                }
-                return (
-                  node._type === types.span.name || // Text children
-                  (!editor.isTextBlock(node) && SlateElement.isElement(node)) // inline blocks
-                )
-              },
-            })
-            const nodeAndPaths = [...nodes]
-            nodeAndPaths.forEach(([, p]) => {
-              Transforms.removeNodes(editor, {
-                at: p,
-                voids: true,
-                hanging: true,
+                },
               })
-            })
+            }
+            if (options?.mode === 'children') {
+              debug(`Deleting children touched by selection`)
+              Transforms.removeNodes(editor, {
+                at: range,
+                voids: true,
+                match: (node) => {
+                  return (
+                    node._type === types.span.name || // Text children
+                    (!editor.isTextBlock(node) && SlateElement.isElement(node)) // inline blocks
+                  )
+                },
+              })
+            }
             // If the editor was emptied, insert a placeholder block
             // directly into the editor's children. We don't want to do this
             // through a Transform (because that would trigger a change event
