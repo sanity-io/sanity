@@ -53,6 +53,7 @@ interface CommentsListItemContextMenuProps {
   onMenuClose?: () => void
   onMenuOpen?: () => void
   onStatusChange?: () => void
+  readOnly?: boolean
   status: CommentStatus
 }
 
@@ -67,6 +68,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     onMenuClose,
     onMenuOpen,
     onStatusChange,
+    readOnly,
     status,
     ...rest
   } = props
@@ -81,6 +83,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
             <TextTooltip text={status === 'open' ? 'Mark as resolved' : 'Re-open'}>
               <Button
                 aria-label="Mark comment as resolved"
+                disabled={readOnly}
                 fontSize={1}
                 icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
                 mode="bleed"
@@ -95,6 +98,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
             button={
               <Button
                 aria-label="Open comment actions menu"
+                disabled={readOnly}
                 fontSize={1}
                 hidden={!showMenuButton}
                 icon={EllipsisVerticalIcon}

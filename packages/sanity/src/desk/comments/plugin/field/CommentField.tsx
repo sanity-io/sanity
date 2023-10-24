@@ -80,8 +80,16 @@ function CommentFieldInner(props: FieldProps) {
 
   const {openInspector, inspector} = useDocumentPane()
   const currentUser = useCurrentUser()
-  const {create, status, setStatus, comments, selectedPath, setSelectedPath, mentionOptions} =
-    useComments()
+  const {
+    comments,
+    create,
+    isRunningSetup,
+    mentionOptions,
+    selectedPath,
+    setSelectedPath,
+    setStatus,
+    status,
+  } = useComments()
 
   const inView = useInView(rootElementRef)
 
@@ -280,6 +288,7 @@ function CommentFieldInner(props: FieldProps) {
           count={Number(count)}
           currentUser={currentUser}
           fieldTitle={fieldTitle}
+          isRunningSetup={isRunningSetup}
           mentionOptions={mentionOptions}
           onChange={setValue}
           onClick={handleClick}
@@ -303,6 +312,7 @@ function CommentFieldInner(props: FieldProps) {
       handleDiscard,
       open,
       value,
+      isRunningSetup,
       hasComments,
     ],
   )

@@ -25,6 +25,7 @@ export interface CommentInputContextValue {
   mentionsSearchTerm: string
   onBeforeInput: (event: InputEvent) => void
   openMentions: () => void
+  readOnly: boolean
   value: CommentMessage
 }
 
@@ -37,6 +38,7 @@ interface CommentInputProviderProps {
   focusOnMount?: boolean
   mentionOptions: MentionOptionsHookValue
   onMentionMenuOpenChange?: (open: boolean) => void
+  readOnly?: boolean
   value: CommentMessage
 }
 
@@ -49,6 +51,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
     mentionOptions,
     onMentionMenuOpenChange,
     value,
+    readOnly,
   } = props
 
   const editor = usePortableTextEditor()
@@ -61,7 +64,10 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
 
   const hasChanges = useCommentHasChanged(value)
 
-  const focusEditor = useCallback(() => PortableTextEditor.focus(editor), [editor])
+  const focusEditor = useCallback(() => {
+    if (readOnly) return
+    PortableTextEditor.focus(editor)
+  }, [editor, readOnly])
 
   const closeMentions = useCallback(() => {
     setMentionsMenuOpen(false)
@@ -218,6 +224,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
         mentionsSearchTerm,
         onBeforeInput,
         openMentions,
+        readOnly: Boolean(readOnly),
         value,
       }) satisfies CommentInputContextValue,
     [
@@ -231,12 +238,13 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
       hasChanges,
       insertAtChar,
       insertMention,
+      mentionOptions,
       mentionsMenuOpen,
       mentionsSearchTerm,
       onBeforeInput,
       openMentions,
+      readOnly,
       value,
-      mentionOptions,
     ],
   )
 

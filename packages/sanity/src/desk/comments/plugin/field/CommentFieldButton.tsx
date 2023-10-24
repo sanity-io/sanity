@@ -52,6 +52,7 @@ interface CommentFieldButtonProps {
   count: number
   currentUser: CurrentUser
   fieldTitle: string
+  isRunningSetup: boolean
   mentionOptions: MentionOptionsHookValue
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
@@ -67,6 +68,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     count,
     currentUser,
     fieldTitle,
+    isRunningSetup,
     mentionOptions,
     onChange,
     onClick,
@@ -113,6 +115,12 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
 
   useClickOutside(startDiscard, [popoverElement])
 
+  const placeholder = (
+    <>
+      Add comment to <b>{fieldTitle}</b>
+    </>
+  )
+
   if (!hasComments) {
     const content = (
       <ContentStack padding={2} space={4}>
@@ -127,13 +135,10 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
           onEscapeKeyDown={startDiscard}
           onMentionMenuOpenChange={setMentionMenuOpen}
           onSubmit={handleSubmit}
+          placeholder={placeholder}
+          readOnly={isRunningSetup}
           ref={commentInputHandle}
           value={value}
-          placeholder={
-            <>
-              Add comment to <b>{fieldTitle}</b>
-            </>
-          }
         />
       </ContentStack>
     )
@@ -162,6 +167,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
           >
             <Button
               aria-label="Add comment"
+              disabled={isRunningSetup}
               fontSize={1}
               icon={AddCommentIcon}
               mode="bleed"

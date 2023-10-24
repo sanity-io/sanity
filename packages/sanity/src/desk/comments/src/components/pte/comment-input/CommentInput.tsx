@@ -32,6 +32,7 @@ export interface CommentInputProps {
   onMentionMenuOpenChange?: (open: boolean) => void
   onSubmit: () => void
   placeholder?: React.ReactNode
+  readOnly?: boolean
   value: PortableTextBlock[] | null
   withAvatar?: boolean
 }
@@ -69,6 +70,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       onMentionMenuOpenChange,
       onSubmit,
       placeholder,
+      readOnly,
       value = EMPTY_ARRAY,
       withAvatar = true,
     } = props
@@ -161,6 +163,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
         <Stack ref={editorContainerRef} data-testid="comment-input">
           <PortableTextEditor
             onChange={handleChange}
+            readOnly={readOnly}
             ref={editorRef}
             schemaType={editorSchemaType}
             value={value || EMPTY_ARRAY}
@@ -171,6 +174,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
               focusOnMount={focusOnMount}
               mentionOptions={mentionOptions}
               onMentionMenuOpenChange={onMentionMenuOpenChange}
+              readOnly={readOnly}
               value={value}
             >
               <FocusLock

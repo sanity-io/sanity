@@ -55,6 +55,7 @@ export interface CommentsListProps {
   onPathSelect?: (path: Path, threadId?: string) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
+  readOnly?: boolean
   selectedPath: SelectedPath
   status: CommentStatus
 }
@@ -83,6 +84,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       onPathSelect,
       onReply,
       onStatusChange,
+      readOnly,
       selectedPath,
       status,
     } = props
@@ -166,6 +168,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                       mentionOptions={mentionOptions}
                       onNewThreadCreate={onNewThreadCreate}
                       onPathSelect={onPathSelect}
+                      readOnly={readOnly}
                     >
                       {group.map((item) => {
                         // The default sort order is by date, descending (newest first).
@@ -200,6 +203,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                             onReply={onReply}
                             onStatusChange={onStatusChange}
                             parentComment={item.parentComment}
+                            readOnly={readOnly}
                             replies={replies}
                             selected={isSelected}
                           />

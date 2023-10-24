@@ -105,6 +105,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
     insertAtChar,
     mentionsMenuOpen,
     openMentions,
+    readOnly,
   } = useCommentInput()
 
   const avatar = withAvatar ? <CommentsAvatar user={user} /> : null
@@ -139,9 +140,9 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         data-expand-on-focus={expandOnFocus && !canSubmit ? 'true' : 'false'}
         data-focused={focused ? 'true' : 'false'}
         flex={1}
-        sizing="border"
-        tone="default"
         shadow={1}
+        sizing="border"
+        tone={readOnly ? 'transparent' : 'default'}
       >
         <Stack>
           <EditableWrap paddingX={1} paddingY={2} sizing="border">
@@ -156,6 +157,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
             <ActionButton
               aria-label="Mention user"
+              disabled={readOnly}
               icon={MentionIcon}
               mode="bleed"
               onClick={handleMentionButtonClicked}
@@ -165,7 +167,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
 
             <ActionButton
               aria-label="Send comment"
-              disabled={!canSubmit || !hasChanges}
+              disabled={!canSubmit || !hasChanges || readOnly}
               icon={SendIcon}
               mode={hasChanges && canSubmit ? 'default' : 'bleed'}
               onClick={onSubmit}
