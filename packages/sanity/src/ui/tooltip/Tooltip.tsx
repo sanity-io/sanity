@@ -3,14 +3,8 @@ import React, {forwardRef} from 'react'
 
 /** @internal */
 export interface TooltipProps extends UITooltipProps {
-  //pick the props we allow
   ref?: React.ForwardedRef<HTMLDivElement>
 }
-
-//We want to be able to set the text, like earlier, but then you are not allowed to set content
-//So content OR text
-//OR just have one prop and check if it is a string - then we wrap that text in a <Text />
-// IF it is a reactnode - just render it
 
 /**
  * Studio UI <Tooltip>.

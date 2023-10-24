@@ -144,11 +144,9 @@ function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; ti
   const Icon = props.icon
   return (
     <Flex>
-      <Box>
-        <Text size={1}>
-          <Icon />
-        </Text>
-      </Box>
+      <Text size={1}>
+        <Icon />
+      </Text>
       <Box flex={1} marginLeft={3}>
         <Text size={1} weight="semibold">
           {props.title}

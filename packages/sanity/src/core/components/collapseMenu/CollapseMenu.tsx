@@ -1,5 +1,5 @@
 import {EllipsisVerticalIcon} from '@sanity/icons'
-import {Button, Flex, MenuButtonProps, Text, useElementRect} from '@sanity/ui'
+import {Button, Flex, MenuButtonProps, useElementRect} from '@sanity/ui'
 import React, {cloneElement, forwardRef, useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Tooltip} from '../../../ui'

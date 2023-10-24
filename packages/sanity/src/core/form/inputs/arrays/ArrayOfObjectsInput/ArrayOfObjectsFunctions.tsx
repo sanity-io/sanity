@@ -36,14 +36,7 @@ export function ArrayOfObjectsFunctions<
 
   if (readOnly) {
     return (
-      <Tooltip
-        portal
-        content={
-          <Box sizing="border">
-            <Text size={1}>This field is read-only</Text>
-          </Box>
-        }
-      >
+      <Tooltip portal content="This field is read-only">
         <Grid>
           <Button
             icon={AddIcon}
