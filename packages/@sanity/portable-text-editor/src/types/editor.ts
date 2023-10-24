@@ -362,7 +362,7 @@ export interface PasteData {
 export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise
 
 /** @beta */
-export type OnBeforeInputFn = (event: Event) => void
+export type OnBeforeInputFn = (event: InputEvent) => void
 
 /** @beta */
 export type OnCopyFn = (
