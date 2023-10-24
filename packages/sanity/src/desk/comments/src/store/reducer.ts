@@ -20,11 +20,17 @@ interface CommentsSetAction {
   type: 'COMMENTS_SET'
 }
 
+interface CommentReceivedAction {
+  payload: CommentDocument
+  type: 'COMMENT_RECEIVED'
+}
+
 export type CommentsReducerAction =
   | CommentAddedAction
   | CommentDeletedAction
   | CommentUpdatedAction
   | CommentsSetAction
+  | CommentReceivedAction
 
 export interface CommentsReducerState {
   comments: Record<string, CommentDocument>
@@ -86,20 +92,32 @@ export function commentsReducer(
         return {
           ...state,
           comments: {
-            ...nextComment,
             ...state.comments,
+            ...nextComment,
           },
         }
       }
 
       const nextComments = {
-        ...nextComment,
         ...(state.comments || {}),
+        ...nextComment,
       }
 
       return {
         ...state,
         comments: nextComments,
+      }
+    }
+
+    case 'COMMENT_RECEIVED': {
+      const nextCommentResult = action.payload as CommentDocument
+
+      return {
+        ...state,
+        comments: {
+          ...state.comments,
+          [nextCommentResult._id]: nextCommentResult,
+        },
       }
     }
 
