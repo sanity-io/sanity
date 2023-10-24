@@ -156,7 +156,7 @@
     "@sanity/ui": "^1.7.2",
     "@sanity/util": "3.18.1",
     "@sanity/uuid": "^3.0.1",
-    "@tanstack/react-virtual": "3.0.0-beta.54",
+    "@tanstack/react-virtual": "3.0.0-beta.68",
     "@types/is-hotkey": "^0.1.7",
     "@types/react-copy-to-clipboard": "^5.0.2",
     "@types/react-is": "^18.2.0",
