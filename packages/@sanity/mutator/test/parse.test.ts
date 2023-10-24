@@ -151,6 +151,36 @@ const cases = {
     ],
     type: 'union',
   },
+  'variants[stock >= 20].stock': {
+    type: 'path',
+    nodes: [
+      {
+        type: 'attribute',
+        name: 'variants',
+      },
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'constraint',
+            operator: '>=',
+            lhs: {
+              type: 'attribute',
+              name: 'stock',
+            },
+            rhs: {
+              type: 'number',
+              value: 20,
+            },
+          },
+        ],
+      },
+      {
+        type: 'attribute',
+        name: 'stock',
+      },
+    ],
+  },
 }
 
 Object.keys(cases).forEach((path) => {
