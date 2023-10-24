@@ -87,7 +87,7 @@
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.23.0",
     "@bjoerge/mutiny": "^0.0.2",
-    "@optimize-lodash/rollup-plugin": "^4.0.1",
+    "@optimize-lodash/rollup-plugin": "^4.0.4",
     "@playwright/test": "^1.38.1",
     "@sanity/client": "^6.4.9",
     "@sanity/pkg-utils": "^2.3.10",
