@@ -8735,7 +8735,7 @@ esbuild@^0.18.10, esbuild@^0.18.17:
     "@esbuild/win32-ia32" "0.18.17"
     "@esbuild/win32-x64" "0.18.17"
 
-esbuild@^0.19.0, esbuild@^0.19.2:
+esbuild@^0.19.0, esbuild@^0.19.2, esbuild@^0.19.5:
   version "0.19.5"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.19.5.tgz#53a0e19dfbf61ba6c827d51a80813cf071239a8c"
   integrity sha512-bUxalY7b1g8vNhQKdB24QDmHeY4V4tw/s6Ak5z+jJX9laP5MoQseTOMemAr0gxssjNcH0MCViG8ONI2kksvfFQ==
