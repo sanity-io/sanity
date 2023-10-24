@@ -6,7 +6,7 @@
     "rootDir": ".",
     "outDir": "./lib/dts",
 
-    "jsx": "react",
+    "jsx": "react-jsx",
     "paths": {
       "_self_": ["./src"]
     }
