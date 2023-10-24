@@ -64,6 +64,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     try {
       const res = await client.fetch(QUERY, params)
       dispatch({type: 'COMMENTS_SET', comments: res})
+      setLoading(false)
     } catch (err) {
       setError(err)
     }
@@ -78,9 +79,12 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
         setLoading(false)
       }
 
-      // ???
+      // The reconnect event means that we are trying to reconnect to the realtime listener.
+      // In this case we set loading to true to indicate that we're trying to
+      // reconnect. Once a connection has been established, the welcome event
+      // will be received and we'll fetch all comments again (above).
       if (event.type === 'reconnect') {
-        await initialFetch()
+        setLoading(true)
       }
 
       // Handle mutations (create, update, delete) from the realtime listener
