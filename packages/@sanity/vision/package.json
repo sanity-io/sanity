@@ -70,12 +70,12 @@
     "@sanity/ui": "^1.7.2",
     "@uiw/react-codemirror": "^4.11.4",
     "hashlru": "^2.3.0",
-    "is-hotkey": "^0.1.6",
+    "is-hotkey": "^0.2.0",
     "json5": "^2.2.3",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@sanity/client": "^6.4.9",
+    "@sanity/client": "^6.7.0",
     "react": "^18.2.0",
     "sanity": "3.18.1",
     "styled-components": "^6.1.0"

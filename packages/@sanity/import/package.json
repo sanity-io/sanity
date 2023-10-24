@@ -37,7 +37,7 @@
     "@sanity/uuid": "^3.0.1",
     "debug": "^3.2.7",
     "file-url": "^2.0.2",
-    "get-it": "^8.4.3",
+    "get-it": "^8.4.4",
     "get-uri": "^2.0.2",
     "globby": "^10.0.0",
     "gunzip-maybe": "^1.4.1",
@@ -51,8 +51,8 @@
     "tar-fs": "^2.1.1"
   },
   "devDependencies": {
-    "@sanity/client": "^6.4.9",
-    "nock": "^13.2.9"
+    "@sanity/client": "^6.7.0",
+    "nock": "^13.3.6"
   },
   "engines": {
     "node": ">=18"
