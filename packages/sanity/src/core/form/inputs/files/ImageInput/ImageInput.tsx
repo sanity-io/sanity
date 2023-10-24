@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Card,
-  Dialog,
   Menu,
   MenuButton,
   MenuButtonProps,
@@ -27,6 +26,7 @@ import {
 import React, {ReactNode} from 'react'
 import {SanityClient} from '@sanity/client'
 import {isImageSource} from '@sanity/asset-utils'
+import {Dialog} from '../../../../../ui/dialog'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FieldMember} from '../../../store'
 import {InputProps, ObjectInputProps} from '../../../types'

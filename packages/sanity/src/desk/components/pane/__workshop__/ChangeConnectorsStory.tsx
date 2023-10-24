@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   Container,
-  Dialog,
   DialogProvider,
   Flex,
   LayerProvider,
@@ -19,6 +18,7 @@ import {
 import {useAction} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
+import {Dialog} from '../../../../ui/dialog'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'

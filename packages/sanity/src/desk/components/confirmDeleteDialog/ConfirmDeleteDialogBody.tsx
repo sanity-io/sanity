@@ -1,11 +1,5 @@
 import React, {useCallback} from 'react'
-import {
-  WarningOutlineIcon,
-  DocumentsIcon,
-  CopyIcon,
-  UnknownIcon,
-  ChevronDownIcon,
-} from '@sanity/icons'
+import {DocumentsIcon, CopyIcon, UnknownIcon, ChevronDownIcon} from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
@@ -34,7 +28,6 @@ export function ConfirmDeleteDialogBody({
   crossDatasetReferences,
   internalReferences,
   documentTitle,
-  totalCount,
   action,
   datasetNames,
   hasUnknownDatasetNames,
@@ -67,9 +60,11 @@ export function ConfirmDeleteDialogBody({
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
     return (
-      <Text as="p">
-        Are you sure you want to {action} <strong>“{documentTitle}”</strong>?
-      </Text>
+      <Box paddingY={5}>
+        <Text as="p">
+          Are you sure you want to {action} “{documentTitle}”?
+        </Text>
+      </Box>
     )
   }
 
@@ -101,37 +96,18 @@ export function ConfirmDeleteDialogBody({
   }
 
   return (
-    <Card>
-      <Card padding={3} radius={2} tone="caution" marginBottom={4} flex="none">
-        <Flex>
-          <Text aria-hidden="true" size={1}>
-            <WarningOutlineIcon />
-          </Text>
-          <Box flex={1} marginLeft={3}>
-            <Text size={1}>
-              {totalCount === 1 ? (
-                <>1 document refers to “{documentTitle}”</>
-              ) : (
-                <>
-                  {totalCount.toLocaleString()} documents refer to “{documentTitle}”
-                </>
-              )}
-            </Text>
-          </Box>
-        </Flex>
-      </Card>
-
-      <Box flex="none" marginBottom={4}>
-        <Text>
+    <Flex paddingY={4} direction="column" gap={4}>
+      <Box flex="none">
+        <Text size={1}>
           You may not be able to {action} “{documentTitle}” because the following documents refer to
           it:
         </Text>
       </Box>
 
-      <Card radius={2} shadow={1} marginBottom={4} flex="auto">
+      <Card radius={2} shadow={1} flex="auto" padding={1}>
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" padding={2} space={3} data-testid="internal-references">
+            <Stack as="ul" space={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box as="li" key={item._id}>
                   {renderPreviewItem(item)}
@@ -150,6 +126,7 @@ export function ConfirmDeleteDialogBody({
             <CrossDatasetReferencesDetails
               data-testid="cross-dataset-references"
               style={{
+                marginTop: '8px',
                 // only add the border if needed
                 borderTop:
                   internalReferences.totalCount > 0
@@ -263,11 +240,11 @@ export function ConfirmDeleteDialogBody({
       </Card>
 
       <Box flex="none">
-        <Text>
+        <Text size={1}>
           If you {action} this document, documents that refer to it will no longer be able to access
           it.
         </Text>
       </Box>
-    </Card>
+    </Flex>
   )
 }

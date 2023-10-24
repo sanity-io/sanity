@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {TrashIcon} from '@sanity/icons'
-import {Box, Button, Dialog, Grid, Stack} from '@sanity/ui'
+import {Box, Stack} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
+import {Dialog} from '../../../../ui/dialog'
 import {SpinnerWithText} from '../../components/SpinnerWithText'
 import {useReferringDocuments} from '../../../hooks/useReferringDocuments'
 import {DocumentList} from './DocumentList'
@@ -38,19 +39,7 @@ export function AssetUsageDialog({
   const hasResults = publishedDocuments.length > 0
   const showDocumentList = mode === MODE_LIST_USAGE || hasResults
   const noPaddingOnStack = mode === MODE_CONFIRM_DELETE && !hasResults
-  const footer = showActionFooter ? (
-    <Grid padding={2} gap={2} columns={2}>
-      <Button mode="bleed" text="Cancel" onClick={onClose} />
-      <Button
-        text="Delete"
-        tone="critical"
-        icon={TrashIcon}
-        onClick={onDelete}
-        loading={isDeleting}
-        disabled={!canDelete}
-      />
-    </Grid>
-  ) : undefined
+
   useEffect(() => {
     const drafts = referringDocuments.reduce<string[]>(
       (acc, doc) => (doc._id.startsWith('drafts.') ? acc.concat(doc._id.slice(7)) : acc),
@@ -67,7 +56,23 @@ export function AssetUsageDialog({
   return (
     <Dialog
       __unstable_autoFocus={!isLoadingParent}
-      footer={footer}
+      footer={
+        showActionFooter
+          ? {
+              cancelButton: {
+                text: 'Cancel',
+                onClick: onClose,
+              },
+              confirmButton: {
+                text: 'Delete',
+                onClick: onDelete,
+                icon: TrashIcon,
+                loading: isDeleting,
+                disabled: !canDelete,
+              },
+            }
+          : undefined
+      }
       header={defaultHeaderTitle}
       id="asset-dialog"
       onClickOutside={onClose}

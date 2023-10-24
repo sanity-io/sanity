@@ -1,5 +1,6 @@
 import React, {type ReactNode, useState, useRef} from 'react'
-import {Box, Dialog, ResponsiveWidthProps} from '@sanity/ui'
+import {Box, ResponsiveWidthProps} from '@sanity/ui'
+import {Dialog} from '../../../ui/dialog'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
@@ -34,7 +35,7 @@ export function EditPortal(props: Props): React.ReactElement {
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
-      <Box ref={containerElement} padding={4}>
+      <Box ref={containerElement} padding={5}>
         {children}
       </Box>
     </PresenceOverlay>

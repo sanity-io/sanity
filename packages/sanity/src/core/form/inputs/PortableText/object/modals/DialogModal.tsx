@@ -1,7 +1,8 @@
 import React, {useId, useRef, useState} from 'react'
-import {Box, Dialog} from '@sanity/ui'
+import {Box} from '@sanity/ui'
 import {PresenceOverlay} from '../../../../../presence'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {Dialog} from '../../../../../../ui/dialog'
 import {ModalWidth} from './types'
 
 interface DefaultEditDialogProps {
@@ -36,7 +37,7 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
           scrollElement={contentElement}
           containerElement={containerElement}
         >
-          <Box padding={4} ref={containerElement}>
+          <Box padding={5} ref={containerElement}>
             {children}
           </Box>
         </VirtualizerScrollInstanceProvider>

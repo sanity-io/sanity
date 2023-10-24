@@ -1,7 +1,8 @@
 import {ImagesIcon} from '@sanity/icons'
 import {AssetSource, AssetSourceComponentProps} from '@sanity/types'
-import {Box, Dialog, Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
 import React from 'react'
+import {Dialog} from '../../../packages/sanity/src/ui/dialog/'
 
 function ImageAssetSource(props: AssetSourceComponentProps) {
   const {dialogHeaderTitle, onClose, ...restProps} = props

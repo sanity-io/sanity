@@ -1,7 +1,8 @@
-import {Card, Dialog, Stack, Button, Text, TextInput, Flex} from '@sanity/ui'
+import {Card, Stack, Button, Text, TextInput, Flex} from '@sanity/ui'
 import React, {useEffect, useMemo} from 'react'
 import {LaunchIcon} from '@sanity/icons'
 import styled from 'styled-components'
+import {Dialog} from '../../../ui/dialog'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string

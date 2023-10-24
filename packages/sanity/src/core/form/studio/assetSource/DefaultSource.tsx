@@ -1,10 +1,11 @@
 import type {Subscription} from 'rxjs'
 import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
+import {Box, Button, Card, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
+import {Dialog} from '../../../../ui/dialog'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {AssetThumb} from './AssetThumb'
@@ -268,7 +269,7 @@ const DefaultAssetSource = function DefaultAssetSource(
       width={2}
     >
       {showAcceptMessage && !isImageOnlyWildCard && (
-        <Card tone="primary" marginTop={4} marginX={4} padding={[3, 3, 4]} border radius={2}>
+        <Card tone="primary" marginX={4} border radius={2}>
           <Flex gap={[3, 4]} align="center">
             <Text>
               <InfoOutlineIcon />
