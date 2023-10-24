@@ -95,7 +95,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
           if (nextComment) {
             dispatch({
-              type: 'COMMENT_ADDED',
+              type: 'COMMENT_RECEIVED',
               payload: nextComment,
             })
           }
@@ -110,7 +110,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
           if (updatedComment) {
             dispatch({
-              type: 'COMMENT_ADDED',
+              type: 'COMMENT_UPDATED',
               payload: updatedComment,
             })
           }
