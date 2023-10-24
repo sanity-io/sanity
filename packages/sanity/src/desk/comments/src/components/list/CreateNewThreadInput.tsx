@@ -13,6 +13,7 @@ interface CreateNewThreadInputProps {
   onEditDiscard?: () => void
   onFocus?: CommentInputProps['onFocus']
   onNewThreadCreate: (payload: CommentMessage) => void
+  readOnly?: boolean
 }
 
 export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
@@ -24,6 +25,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     onEditDiscard,
     onFocus,
     onNewThreadCreate,
+    readOnly,
   } = props
 
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
@@ -59,6 +61,12 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     commentInputHandle.current?.focus()
   }, [])
 
+  const placeholder = (
+    <>
+      Add comment to <b>{fieldName}</b>
+    </>
+  )
+
   return (
     <CommentInput
       currentUser={currentUser}
@@ -71,11 +79,8 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       onEscapeKeyDown={startDiscard}
       onFocus={onFocus}
       onSubmit={handleSubmit}
-      placeholder={
-        <>
-          Add comment to <b>{fieldName}</b>
-        </>
-      }
+      placeholder={placeholder}
+      readOnly={readOnly}
       ref={commentInputHandle}
       value={value}
     />

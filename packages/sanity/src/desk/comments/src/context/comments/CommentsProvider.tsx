@@ -69,6 +69,7 @@ const COMMENTS_DISABLED_CONTEXT: CommentsContextValue = {
   edit: noopOperation,
   getComment: () => undefined,
   getCommentPath: () => null,
+  isRunningSetup: false,
   mentionOptions: EMPTY_MENTION_OPTIONS,
   remove: noopOperation,
   selectedPath: null,
@@ -327,6 +328,8 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
         setSelectedPath: handleSetSelectedPath,
         selectedPath,
 
+        isRunningSetup,
+
         status,
         setStatus,
 
@@ -355,13 +358,13 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
     [
       handleSetSelectedPath,
       selectedPath,
+      isRunningSetup,
       status,
       getComment,
       getCommentPath,
       threadItemsByStatus,
       error,
       loading,
-      isRunningSetup,
       operation.create,
       operation.remove,
       operation.edit,

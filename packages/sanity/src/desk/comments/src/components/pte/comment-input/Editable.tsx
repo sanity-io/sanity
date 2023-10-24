@@ -76,6 +76,7 @@ export function Editable(props: EditableProps) {
     mentionsMenuOpen,
     mentionsSearchTerm,
     onBeforeInput,
+    value,
   } = useCommentInput()
 
   const renderPlaceholder = useCallback(() => <span>{placeholder}</span>, [placeholder])
@@ -136,8 +137,6 @@ export function Editable(props: EditableProps) {
     },
     [closeMentions, focusEditor, mentionsMenuOpen],
   )
-
-  const {value} = useCommentInput()
 
   const initialSelectionAtEndOfContent: EditorSelection | undefined = useMemo(() => {
     if (selection) {

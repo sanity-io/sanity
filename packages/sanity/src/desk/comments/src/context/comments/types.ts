@@ -32,6 +32,8 @@ export interface CommentsContextValue {
   getComment: (id: string) => CommentDocument | undefined
   getCommentPath: (id: string) => string | null
 
+  isRunningSetup: boolean
+
   comments: {
     data: {
       open: CommentThreadItem[]

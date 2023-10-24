@@ -14,6 +14,7 @@ export default function CommentsInputStory() {
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
   const currentUser = useCurrentUser()
   const expandOnFocus = useBoolean('Expand on focus', false, 'Props')
+  const readOnly = useBoolean('Read only', false, 'Props')
 
   if (!currentUser) return null
 
@@ -29,6 +30,7 @@ export default function CommentsInputStory() {
             onDiscardCancel={noop}
             onDiscardConfirm={noop}
             onSubmit={noop}
+            readOnly={readOnly}
             value={value}
           />
         </Container>

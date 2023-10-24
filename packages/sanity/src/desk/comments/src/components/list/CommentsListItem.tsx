@@ -81,6 +81,7 @@ interface CommentsListItemProps {
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   parentComment: CommentDocument
+  readOnly?: boolean
   replies: CommentDocument[] | undefined
   selected?: boolean
 }
@@ -98,6 +99,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     onReply,
     onStatusChange,
     parentComment,
+    readOnly,
     replies = EMPTY_ARRAY,
     selected,
   } = props
@@ -214,6 +216,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onDelete={onDelete}
               onEdit={onEdit}
               onStatusChange={onStatusChange}
+              readOnly={readOnly}
             />
           </Stack>
 
@@ -247,6 +250,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
                 onCreateRetry={onCreateRetry}
                 onDelete={onDelete}
                 onEdit={onEdit}
+                readOnly={readOnly}
               />
             </Stack>
           ))}
@@ -262,6 +266,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onEscapeKeyDown={startDiscard}
               onSubmit={handleReplySubmit}
               placeholder="Reply"
+              readOnly={readOnly}
               ref={replyInputRef}
               value={value}
             />

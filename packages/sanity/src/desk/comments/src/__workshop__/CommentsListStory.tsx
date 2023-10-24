@@ -91,6 +91,7 @@ export default function CommentsListStory() {
   const loading = useBoolean('Loading', false, 'Props') || false
   const emptyState = useBoolean('Empty', false, 'Props') || false
   const status = useSelect('Status', STATUS_OPTIONS, 'open', 'Props') || 'open'
+  const readOnly = useBoolean('Read only', false, 'Props') || false
 
   const currentUser = useCurrentUser()
 
@@ -207,6 +208,7 @@ export default function CommentsListStory() {
           onNewThreadCreate={handleNewThreadCreate}
           onReply={handleReplySubmit}
           onStatusChange={handleStatusChange}
+          readOnly={readOnly}
           selectedPath={null}
           status={status}
         />

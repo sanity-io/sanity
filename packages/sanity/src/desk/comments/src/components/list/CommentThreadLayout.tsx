@@ -1,6 +1,6 @@
 import {CurrentUser, Path} from '@sanity/types'
 import {Button, Flex, Stack} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {uuid} from '@sanity/uuid'
 import styled, {css} from 'styled-components'
 import * as PathUtils from '@sanity/util/paths'
@@ -34,6 +34,7 @@ interface CommentThreadLayoutProps {
   mentionOptions: MentionOptionsHookValue
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   onPathSelect?: (path: Path) => void
+  readOnly?: boolean
 }
 
 export function CommentThreadLayout(props: CommentThreadLayoutProps) {
@@ -46,21 +47,12 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     mentionOptions,
     onNewThreadCreate,
     onPathSelect,
+    readOnly,
   } = props
-
-  const [focused, setFocused] = useState<boolean>(false)
 
   const selectPath = useCallback(() => {
     onPathSelect?.(PathUtils.fromString(fieldPath))
   }, [fieldPath, onPathSelect])
-
-  const handleCreateNewThreadFocus = useCallback(() => {
-    setFocused(true)
-  }, [])
-
-  const handleCreateNewThreadBlur = useCallback(() => {
-    setFocused(false)
-  }, [])
 
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
@@ -99,16 +91,13 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       </HeaderFlex>
 
       {canCreateNewThread && (
-        <ThreadCard
-        // tone={focused ? 'primary' : undefined}
-        >
+        <ThreadCard>
           <CreateNewThreadInput
             currentUser={currentUser}
             fieldName={lastCrumb}
             mentionOptions={mentionOptions}
-            onBlur={handleCreateNewThreadBlur}
-            onFocus={handleCreateNewThreadFocus}
             onNewThreadCreate={handleNewThreadCreate}
+            readOnly={readOnly}
           />
         </ThreadCard>
       )}

@@ -3,8 +3,6 @@ import {SchemaType, CurrentUser} from '@sanity/types'
 import {CommentDocument, CommentThreadItem} from '../types'
 import {buildCommentBreadcrumbs} from './buildCommentBreadcrumbs'
 
-const EMPTY_ARRAY: [] = []
-
 interface BuildCommentThreadItemsProps {
   comments: CommentDocument[]
   currentUser: CurrentUser
@@ -20,7 +18,7 @@ interface BuildCommentThreadItemsProps {
  */
 export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): CommentThreadItem[] {
   const {comments, currentUser, documentValue, schemaType} = props
-  const parentComments = comments?.filter((c) => !c.parentCommentId) || EMPTY_ARRAY
+  const parentComments = comments?.filter((c) => !c.parentCommentId)
 
   const items = parentComments
     .map((parentComment) => {
@@ -35,8 +33,7 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
 
       if (hasInvalidBreadcrumb) return undefined
 
-      const replies =
-        comments?.filter((r) => r.parentCommentId === parentComment._id) || EMPTY_ARRAY
+      const replies = comments?.filter((r) => r.parentCommentId === parentComment._id)
 
       const commentsCount = [parentComment, ...replies].length
 

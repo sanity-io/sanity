@@ -45,6 +45,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     edit,
     getComment,
     getCommentPath,
+    isRunningSetup,
     mentionOptions,
     remove,
     selectedPath,
@@ -273,6 +274,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
             onPathSelect={handlePathSelect}
             onReply={handleReply}
             onStatusChange={handleStatusChange}
+            readOnly={isRunningSetup}
             ref={commentsListHandleRef}
             selectedPath={selectedPath}
             status={status}

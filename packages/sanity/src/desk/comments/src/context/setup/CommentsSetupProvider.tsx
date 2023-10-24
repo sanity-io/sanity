@@ -49,15 +49,28 @@ export function CommentsSetupProvider(props: CommentsClientProviderProps) {
 
   const handleRunSetup = useCallback(
     async (comment: CommentPostPayload) => {
-      // todo:
-      // Check if the addon dataset already exists. If it does, we create
-      // a client for it and post the comment to it. The dataset might already
-      // exist if user1 ran the setup and user2 has not refreshed the browser
-      // and therefore not received the new dataset name from the server.
+      setIsRunningSetup(true)
+
+      // Before running the setup, we check if the addon dataset already exists.
+      // The addon dataset might already exist if another user has already run
+      // the setup, but the current user has not refreshed the page yet and
+      // therefore don't have a client for the addon dataset yet.
+      try {
+        const addonDatasetName = await getAddonDatasetName()
+
+        if (addonDatasetName) {
+          const client = handleCreateClient(addonDatasetName)
+          setAddonDatasetClient(client)
+          await client.create(comment)
+          setIsRunningSetup(false)
+          return
+        }
+      } catch (_) {
+        // If the dataset does not exist we will get an error, but we can ignore
+        // it since we will create the dataset in the next step.
+      }
 
       try {
-        setIsRunningSetup(true)
-
         // 1. Create the addon dataset
         const res = await originalClient.withConfig({apiVersion: 'vX'}).request({
           uri: `/comments/${dataset}/setup`,
@@ -86,7 +99,7 @@ export function CommentsSetupProvider(props: CommentsClientProviderProps) {
         setIsRunningSetup(false)
       }
     },
-    [dataset, handleCreateClient, originalClient],
+    [dataset, getAddonDatasetName, handleCreateClient, originalClient],
   )
 
   useEffect(() => {

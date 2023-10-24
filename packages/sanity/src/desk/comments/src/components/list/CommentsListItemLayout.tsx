@@ -118,6 +118,7 @@ interface CommentsListItemLayoutProps {
   onDelete: (id: string) => void
   onEdit: (id: string, message: CommentEditPayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
+  readOnly?: boolean
 }
 
 const TIME_AGO_OPTS: TimeAgoOpts = {agoSuffix: true}
@@ -137,6 +138,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     onDelete,
     onEdit,
     onStatusChange,
+    readOnly,
   } = props
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
   const [user] = useUser(authorId)
@@ -273,6 +275,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 onMenuClose={handleMenuClose}
                 onMenuOpen={handleMenuOpen}
                 onStatusChange={handleOpenStatusChange}
+                readOnly={readOnly}
                 status={comment.status}
               />
             </StopPropagation>
@@ -294,6 +297,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 onEscapeKeyDown={startDiscard}
                 onMentionMenuOpenChange={setMentionMenuOpen}
                 onSubmit={handleEditSubmit}
+                readOnly={readOnly}
                 ref={commentInputRef}
                 value={value}
                 withAvatar={false}
