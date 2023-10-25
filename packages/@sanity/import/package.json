@@ -51,7 +51,7 @@
     "tar-fs": "^2.1.1"
   },
   "devDependencies": {
-    "@sanity/client": "^6.4.9",
+    "@sanity/client": "^6.7.0",
     "nock": "^13.2.9"
   },
   "engines": {
