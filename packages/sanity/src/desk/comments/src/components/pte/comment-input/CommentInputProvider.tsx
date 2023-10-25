@@ -200,10 +200,8 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
           }
         }
       }
-
-      closeMentions()
     },
-    [closeMentions, editor, selectionAtMentionInsert],
+    [editor, selectionAtMentionInsert],
   )
 
   const ctxValue = useMemo(

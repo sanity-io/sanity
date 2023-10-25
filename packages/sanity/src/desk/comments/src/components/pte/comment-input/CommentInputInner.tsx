@@ -150,6 +150,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               focusLock={focusLock}
               onBlur={onBlur}
               onFocus={onFocus}
+              onSubmit={onSubmit}
               placeholder={placeholder}
             />
           </EditableWrap>
