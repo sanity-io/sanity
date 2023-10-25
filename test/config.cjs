@@ -77,6 +77,10 @@ exports.createJestConfig = function createJestConfig(
         {rootMode: 'upward'},
       ],
     },
+    snapshotFormat: {
+      escapeString: true,
+      printBasicPrototype: true,
+    },
     ...restOfInputConfig,
   }
 }
