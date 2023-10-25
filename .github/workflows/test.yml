@@ -54,7 +54,7 @@ jobs:
         id: cache-build
         uses: actions/cache@v3
         env:
-          cache-name: cache-build-build
+          cache-name: cache-build
         with:
           path: './*'
           key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
@@ -120,14 +120,31 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - name: Store Playwright's Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+
       - uses: actions/cache@v3
         id: restore-node-modules
+        env:
+          cache-name: cache-node-modules
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v3
         id: restore-build
+        env:
+          cache-name: cache-build
         with:
           path: ./*
           key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
