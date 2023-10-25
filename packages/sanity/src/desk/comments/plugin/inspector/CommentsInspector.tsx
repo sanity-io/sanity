@@ -13,6 +13,8 @@ import {
   CommentStatus,
   CommentDeleteDialog,
   CommentsList,
+  CommentsOnboardingPopover,
+  useCommentsOnboarding,
 } from '../../src'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {DocumentInspectorProps, useCurrentUser, useUnique} from 'sanity'
@@ -38,6 +40,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
   const pushToast = useToast().push
   const {onPathOpen, ready} = useDocumentPane()
+
+  const {isDismissed, setDismissed} = useCommentsOnboarding()
 
   const {
     comments,
@@ -253,11 +257,17 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       )}
 
       <Flex direction="column" overflow="hidden" height="fill">
-        <CommentsInspectorHeader
-          onClose={handleCloseInspector}
-          onViewChange={handleChangeView}
-          view={status}
-        />
+        <CommentsOnboardingPopover
+          onDismiss={setDismissed}
+          open={!isDismissed}
+          placement="left-start"
+        >
+          <CommentsInspectorHeader
+            onClose={handleCloseInspector}
+            onViewChange={handleChangeView}
+            view={status}
+          />
+        </CommentsOnboardingPopover>
 
         {currentUser && (
           <CommentsList
