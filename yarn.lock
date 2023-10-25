@@ -9927,10 +9927,10 @@ get-intrinsic@^1.0.2, get-intrinsic@^1.1.1, get-intrinsic@^1.1.3, get-intrinsic@
     has-proto "^1.0.1"
     has-symbols "^1.0.3"
 
-get-it@^8.0.9, get-it@^8.4.3:
-  version "8.4.3"
-  resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.4.3.tgz#f5d05fb95644c5414afa6f5dfd3a927820472f7f"
-  integrity sha512-H9YbPCN3QCbxtojv42fvmrkIYe434qKg1nKpMMtBqwL8U3XprnHMgDbQwMJIxSIFOPpajQPf0BxhjsHoFI0cEQ==
+get-it@^8.0.9, get-it@^8.4.3, get-it@^8.4.4:
+  version "8.4.4"
+  resolved "https://registry.yarnpkg.com/get-it/-/get-it-8.4.4.tgz#8c1c4b16f6f2da4120c00fffa66c5afe2d454e23"
+  integrity sha512-Pu3pnJfnYuLEhwJgMlFqk19ugvtazzTxh7rg8wATaBL4c5Fy4ahM5B+bGdluiNSNYYK89F5vSa+N3sTa/qqtlg==
   dependencies:
     debug "^4.3.4"
     decompress-response "^7.0.0"
