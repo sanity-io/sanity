@@ -185,6 +185,38 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     }
   }, [replies])
 
+  const renderedReplies = useMemo(
+    () =>
+      splicedReplies.map((reply) => (
+        <Stack as="li" key={reply._id} data-comment-id={reply._id}>
+          <CommentsListItemLayout
+            canDelete={reply.authorId === currentUser.id}
+            canEdit={reply.authorId === currentUser.id}
+            comment={reply}
+            currentUser={currentUser}
+            hasError={reply._state?.type === 'createError'}
+            isRetrying={reply._state?.type === 'createRetrying'}
+            mentionOptions={mentionOptions}
+            onCopyLink={onCopyLink}
+            onCreateRetry={onCreateRetry}
+            onDelete={onDelete}
+            onEdit={onEdit}
+            readOnly={readOnly}
+          />
+        </Stack>
+      )),
+    [
+      currentUser,
+      mentionOptions,
+      onCopyLink,
+      onCreateRetry,
+      onDelete,
+      onEdit,
+      readOnly,
+      splicedReplies,
+    ],
+  )
+
   return (
     <Stack space={2} ref={rootRef}>
       <StyledThreadCard
@@ -236,24 +268,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
             </Flex>
           )}
 
-          {splicedReplies.map((reply) => (
-            <Stack as="li" key={reply._id} data-comment-id={reply._id}>
-              <CommentsListItemLayout
-                canDelete={reply.authorId === currentUser.id}
-                canEdit={reply.authorId === currentUser.id}
-                comment={reply}
-                currentUser={currentUser}
-                hasError={reply._state?.type === 'createError'}
-                isRetrying={reply._state?.type === 'createRetrying'}
-                mentionOptions={mentionOptions}
-                onCopyLink={onCopyLink}
-                onCreateRetry={onCreateRetry}
-                onDelete={onDelete}
-                onEdit={onEdit}
-                readOnly={readOnly}
-              />
-            </Stack>
-          ))}
+          {renderedReplies}
 
           {canReply && (
             <CommentInput
