@@ -121,6 +121,12 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - uses: actions/cache@v3
+        id: restore-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v3
         id: restore-build
         with:
           path: ./*
