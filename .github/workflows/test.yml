@@ -24,6 +24,8 @@ jobs:
         os: [ubuntu-latest]
         node: [18, 20]
         experimental: [false]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
         # include:
         #   - os: windows-latest
         #     node: 16
@@ -80,6 +82,7 @@ jobs:
         run: |
           node -v
           npm -v
-          yarn test --silent
+          yarn test --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
+          GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}_${{ matrix.shardTotal }}
