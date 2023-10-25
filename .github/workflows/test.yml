@@ -85,4 +85,4 @@ jobs:
           yarn test --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
-          GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}_${{ matrix.shardTotal }}
+          GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
