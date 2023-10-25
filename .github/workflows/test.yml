@@ -8,9 +8,9 @@ on:
     branches: [next]
 
 jobs:
-  install:
+  test:
     timeout-minutes: 60
-    name: Install (${{ matrix.os }} / node ${{ matrix.node }})
+    name: Test (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -51,19 +51,6 @@ jobs:
             ${{ runner.os }}-modules-
             ${{ runner.os }}-
 
-      - name: Cache CLI build
-        id: cache-cli-build
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-cli-build
-        with:
-          path: 'packages/@sanity/cli/lib'
-          key: ${{ runner.os }}-cli-${{ env.cache-name }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-cli-${{ env.cache-name }}-
-            ${{ runner.os }}-cli-
-            ${{ runner.os }}-
-
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
@@ -86,58 +73,8 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build CLI
-        if: steps.cache-cli-build.outputs.cache-hit != 'true'
         run: yarn build:cli # Needed for CLI tests
 
-  test-cli:
-    timeout-minutes: 60
-    name: Test CLI (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
-    needs: [install]
-
-    strategy:
-      # we want to know if a test fails on a specific node version
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [16, 18]
-        experimental: [false]
-        # include:
-        #   - os: windows-latest
-        #     node: 16
-        #     experimental: true
-
-    steps:
-      - name: Test CLI
-        id: test-cli
-        run: |
-          node -v
-          npm -v
-          yarn test --testPathPattern=cli
-        env:
-          SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
-  test:
-    timeout-minutes: 60
-    name: Test (${{ matrix.os }} / node ${{ matrix.node }} / shard ${{ matrix.shard }})
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
-    needs: [install]
-
-    strategy:
-      # we want to know if a test fails on a specific node version
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [16, 18]
-        experimental: [false]
-        shard: ['1/4', '2/4', '3/4', '4/4']
-        # include:
-        #   - os: windows-latest
-        #     node: 16
-        #     experimental: true
-
-    steps:
       - name: Test
         id: test
         run: |
