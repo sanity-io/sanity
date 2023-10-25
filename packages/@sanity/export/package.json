@@ -32,7 +32,7 @@
   "dependencies": {
     "archiver": "^5.0.0",
     "debug": "^3.2.7",
-    "get-it": "^8.4.3",
+    "get-it": "^8.4.4",
     "lodash": "^4.17.21",
     "mississippi": "^4.0.0",
     "p-queue": "^2.3.0",
