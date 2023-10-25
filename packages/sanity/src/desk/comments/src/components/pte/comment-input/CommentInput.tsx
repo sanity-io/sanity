@@ -1,5 +1,5 @@
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
-import {EditorChange, PortableTextEditor} from '@sanity/portable-text-editor'
+import {EditorChange, PortableTextEditor, keyGenerator} from '@sanity/portable-text-editor'
 import {CurrentUser, PortableTextBlock} from '@sanity/types'
 import FocusLock from 'react-focus-lock'
 import {Stack} from '@sanity/ui'
@@ -47,6 +47,7 @@ export interface CommentInputHandle {
   discardDialogController: CommentDiscardDialogController
   focus: () => void
   scrollTo: () => void
+  reset: () => void
 }
 
 /**
@@ -79,15 +80,26 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     const editorContainerRef = useRef<HTMLDivElement | null>(null)
     const [showDiscardDialog, setShowDiscardDialog] = useState<boolean>(false)
 
+    // A unique (React) key for the editor instance.
+    const [editorInstanceKey, setEditorInstanceKey] = useState(keyGenerator())
+
+    const requestFocus = useCallback(() => {
+      requestAnimationFrame(() => {
+        if (!editorRef.current) return
+        PortableTextEditor.focus(editorRef.current)
+      })
+    }, [])
+
+    const resetEditorInstance = useCallback(() => {
+      setEditorInstanceKey(keyGenerator())
+    }, [])
+
     const handleChange = useCallback(
       (change: EditorChange) => {
         // Focus the editor when ready if focusOnMount is true
         if (change.type === 'ready') {
-          if (focusOnMount && editorRef.current) {
-            requestAnimationFrame(() => {
-              if (!editorRef.current) return
-              PortableTextEditor.focus(editorRef.current)
-            })
+          if (focusOnMount) {
+            requestFocus()
           }
         }
         if (change.type === 'focus') {
@@ -101,17 +113,22 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
         // Update the comment value whenever the comment is edited by the user.
         if (change.type === 'patch' && editorRef.current) {
           const editorStateValue = PortableTextEditor.getValue(editorRef.current)
-          if (editorStateValue) {
-            onChange(editorStateValue)
-          }
+          onChange(editorStateValue || EMPTY_ARRAY)
         }
       },
-      [focusOnMount, onChange],
+      [focusOnMount, onChange, requestFocus],
     )
 
     const scrollToEditor = useCallback(() => {
       editorContainerRef.current?.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
     }, [])
+
+    const handleSubmit = useCallback(() => {
+      onSubmit()
+      resetEditorInstance()
+      requestFocus()
+      scrollToEditor()
+    }, [onSubmit, requestFocus, resetEditorInstance, scrollToEditor])
 
     // The way a user a comment can be discarded varies from the context it is used in.
     // This controller is used to take care of the main logic of the discard process, while
@@ -119,42 +136,34 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     const discardDialogController = useMemo(() => {
       return {
         open: () => {
-          if (editorRef?.current) {
-            PortableTextEditor.blur(editorRef.current)
-          }
-
           setShowDiscardDialog(true)
         },
         close: () => {
           setShowDiscardDialog(false)
-
-          if (editorRef?.current) {
-            PortableTextEditor.focus(editorRef.current)
-          }
+          requestFocus()
         },
       } satisfies CommentDiscardDialogController
-    }, [])
+    }, [requestFocus])
 
     useImperativeHandle(
       ref,
       () => {
         return {
-          focus() {
-            if (editorRef?.current) {
-              PortableTextEditor.focus(editorRef.current)
-            }
-          },
+          focus: requestFocus,
           blur() {
-            if (editorRef?.current) {
+            if (editorRef.current) {
               PortableTextEditor.blur(editorRef.current)
             }
           },
           scrollTo: scrollToEditor,
+          reset: () => {
+            setEditorInstanceKey(keyGenerator())
+          },
 
           discardDialogController,
         }
       },
-      [discardDialogController, scrollToEditor],
+      [discardDialogController, requestFocus, scrollToEditor],
     )
 
     return (
@@ -165,6 +174,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
 
         <Stack ref={editorContainerRef} data-testid="comment-input">
           <PortableTextEditor
+            key={editorInstanceKey}
             onChange={handleChange}
             readOnly={readOnly}
             ref={editorRef}
@@ -191,7 +201,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
                   onBlur={onBlur}
                   onEscapeKeyDown={onEscapeKeyDown}
                   onFocus={onFocus}
-                  onSubmit={onSubmit}
+                  onSubmit={handleSubmit}
                   placeholder={placeholder}
                   withAvatar={withAvatar}
                 />

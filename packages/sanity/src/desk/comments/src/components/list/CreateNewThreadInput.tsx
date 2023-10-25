@@ -34,7 +34,6 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   const handleSubmit = useCallback(() => {
     onNewThreadCreate?.(value)
     setValue(EMPTY_ARRAY)
-    commentInputHandle.current?.focus()
   }, [onNewThreadCreate, value])
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
@@ -42,7 +41,6 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   const startDiscard = useCallback(() => {
     if (!hasValue) {
       onEditDiscard?.()
-      commentInputHandle.current?.focus()
       return
     }
 
@@ -50,15 +48,15 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   }, [hasValue, onEditDiscard])
 
   const confirmDiscard = useCallback(() => {
-    commentInputHandle.current?.discardDialogController.close()
     setValue(EMPTY_ARRAY)
-    onEditDiscard?.()
+    commentInputHandle.current?.reset()
+    commentInputHandle.current?.discardDialogController.close()
     commentInputHandle.current?.focus()
+    onEditDiscard?.()
   }, [onEditDiscard])
 
   const cancelDiscard = useCallback(() => {
     commentInputHandle.current?.discardDialogController.close()
-    commentInputHandle.current?.focus()
   }, [])
 
   const placeholder = (

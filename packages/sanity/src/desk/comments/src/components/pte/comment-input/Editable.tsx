@@ -53,6 +53,7 @@ interface EditableProps {
   focusLock?: boolean
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
+  onSubmit?: () => void
   placeholder?: React.ReactNode
 }
 
@@ -61,7 +62,7 @@ export interface EditableHandle {
 }
 
 export function Editable(props: EditableProps) {
-  const {focusLock, placeholder = 'Create a new comment', onFocus, onBlur} = props
+  const {focusLock, placeholder = 'Create a new comment', onFocus, onBlur, onSubmit} = props
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
   const editableRef = useRef<HTMLDivElement | null>(null)
@@ -69,6 +70,7 @@ export function Editable(props: EditableProps) {
   const selection = usePortableTextEditorSelection()
 
   const {
+    canSubmit,
     closeMentions,
     focusEditor,
     insertMention,
@@ -116,12 +118,27 @@ export function Editable(props: EditableProps) {
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      switch (event.code) {
+      switch (event.key) {
         case 'Enter':
+          // Shift enter is used to insert a new line,
+          // keep the default behavior
+          if (event.shiftKey) {
+            break
+          }
+          // Enter is being used both to select something from the mentionsMenu
+          // or to submit the comment. Prevent the default behavior.
+          event.preventDefault()
+          event.stopPropagation()
+
+          // If the mention menu is open close it, but don't submit.
           if (mentionsMenuOpen) {
-            // Stop the event from creating a new block in the editor here
-            event.preventDefault()
-            event.stopPropagation()
+            closeMentions()
+            break
+          }
+
+          // Submit the comment if eligible for submission
+          if (onSubmit && canSubmit) {
+            onSubmit()
           }
           break
         case 'Escape':
@@ -135,7 +152,7 @@ export function Editable(props: EditableProps) {
         default:
       }
     },
-    [closeMentions, focusEditor, mentionsMenuOpen],
+    [canSubmit, closeMentions, focusEditor, mentionsMenuOpen, onSubmit],
   )
 
   const initialSelectionAtEndOfContent: EditorSelection | undefined = useMemo(() => {

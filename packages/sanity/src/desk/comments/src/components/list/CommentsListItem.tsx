@@ -123,8 +123,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
 
     onReply?.(nextComment)
     setValue(EMPTY_ARRAY)
-
-    replyInputRef.current?.focus()
   }, [
     onReply,
     parentComment._id,
@@ -149,7 +147,9 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
 
   const confirmDiscard = useCallback(() => {
     replyInputRef.current?.discardDialogController.close()
+    replyInputRef.current?.reset()
     setValue(EMPTY_ARRAY)
+    replyInputRef.current?.focus()
   }, [])
 
   const handleThreadRootClick = useCallback(() => {
