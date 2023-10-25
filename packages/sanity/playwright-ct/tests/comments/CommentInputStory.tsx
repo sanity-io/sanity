@@ -16,9 +16,18 @@ const currentUser: CurrentUser = {
 
 const SCHEMA_TYPES: [] = []
 
-export function CommentsInputStory() {
-  const [value, setValue] = useState<PortableTextBlock[] | null>(null)
-
+export function CommentsInputStory({
+  onDiscardCancel = noop,
+  onDiscardConfirm = noop,
+  onSubmit = noop,
+  value = null,
+}: {
+  onDiscardCancel?: () => void
+  onDiscardConfirm?: () => void
+  onSubmit?: () => void
+  value?: PortableTextBlock[] | null
+}) {
+  const [valueState, setValueState] = useState<PortableTextBlock[] | null>(value)
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <CommentInput
@@ -26,12 +35,12 @@ export function CommentsInputStory() {
         placeholder="Your comment..."
         focusLock
         currentUser={currentUser}
-        onChange={setValue}
-        value={value}
+        onChange={setValueState}
+        value={valueState}
         mentionOptions={{data: [], error: null, loading: false}}
-        onDiscardConfirm={noop}
-        onDiscardCancel={noop}
-        onSubmit={noop}
+        onDiscardConfirm={onDiscardConfirm}
+        onDiscardCancel={onDiscardCancel}
+        onSubmit={onSubmit}
       />
     </TestWrapper>
   )
