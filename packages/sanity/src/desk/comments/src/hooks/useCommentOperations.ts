@@ -35,6 +35,8 @@ export interface CommentOperationsHookOptions {
   onEdit?: (id: string, comment: CommentEditPayload) => void
   onRemove?: (id: string) => void
   onUpdate?: (id: string, comment: Partial<CommentCreatePayload>) => void
+
+  runSetup: (comment: CommentPostPayload) => Promise<void>
 }
 
 export function useCommentOperations(
@@ -53,6 +55,7 @@ export function useCommentOperations(
     onRemove,
     onUpdate,
     projectId,
+    runSetup,
     workspace,
   } = opts
 
@@ -127,18 +130,26 @@ export function useCommentOperations(
         },
       } satisfies CommentPostPayload
 
-      // We still want to run the `onCreate` callback even if the client is not defined.
-      // This is because, if this is the first comment being created, we'll want to
-      // handle creation of the client in the `CommentsProvider` and then post the comment.
       onCreate?.(nextComment)
 
-      if (!client) return
+      // If we don't have a client, that means that the dataset doesn't have an addon dataset.
+      // Therefore, when the first comment is created, we need to create the addon dataset and create
+      // a client for it and then post the comment. We do this here, since we know that we have a
+      // comment to create.
+      if (!client) {
+        try {
+          await runSetup(nextComment)
+        } catch (err) {
+          onCreateError?.(nextComment._id, err)
+          throw err
+        }
+        return
+      }
 
       try {
         await client.create(nextComment)
       } catch (err) {
         onCreateError?.(nextComment._id, err)
-
         throw err
       }
     },
@@ -154,6 +165,7 @@ export function useCommentOperations(
       onCreate,
       onCreateError,
       projectId,
+      runSetup,
       workspace,
     ],
   )
