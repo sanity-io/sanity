@@ -70,8 +70,8 @@
     "debug": "^3.2.7",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.21",
-    "slate": "0.94.1",
-    "slate-react": "0.98.1"
+    "slate": "0.100.0",
+    "slate-react": "0.100.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.38.1",
