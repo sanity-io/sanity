@@ -3882,10 +3882,10 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.2", "@sanity/client@^6.4.9":
-  version "6.4.9"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.4.9.tgz#453fc7127cc959cbb929b91d3990cf3943362973"
-  integrity sha512-9y/exbu9kBgIuXouUWlHLGfPm3/jxRP8bSaysteILTQknLQZHExSyjFsYD/CxH3Xk43NzELqktvEXlP1/kZ6LA==
+"@sanity/client@^6.1.2", "@sanity/client@^6.7.0":
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.7.0.tgz#f38a9097a5e28541ed058fa9e2d46941bbb367ec"
+  integrity sha512-nQGIuXXhdtP5FDsdBjuPRpeV6jOHU6Eq5xr52KyUUi29SgC5h5XUzRIu7d1sF8N+ONqTngYueFuB8JDsdSo1Ng==
   dependencies:
     "@sanity/eventsource" "^5.0.0"
     get-it "^8.4.3"
