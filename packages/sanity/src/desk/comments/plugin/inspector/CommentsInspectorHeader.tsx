@@ -1,9 +1,9 @@
 import {CheckmarkIcon, ChevronDownIcon, DoubleChevronRightIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Menu, MenuButton, MenuItem, Text} from '@sanity/ui'
+import {Button, Card, Flex, Menu, MenuButton, MenuItem, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
-import React, {useCallback} from 'react'
+import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
-import {CommentStatus} from '../../src'
+import {BetaBadge, CommentStatus} from '../../src'
 
 const Root = styled(Card)({
   position: 'relative',
@@ -28,20 +28,26 @@ interface CommentsInspectorHeaderProps {
   view: CommentStatus
 }
 
-export function CommentsInspectorHeader(props: CommentsInspectorHeaderProps) {
+export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHeader(
+  props: CommentsInspectorHeaderProps,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
   const {onClose, onViewChange, view} = props
 
   const handleSetOpenView = useCallback(() => onViewChange('open'), [onViewChange])
   const handleSetResolvedView = useCallback(() => onViewChange('resolved'), [onViewChange])
 
   return (
-    <Root>
+    <Root ref={ref}>
       <Flex padding={2}>
-        <Box flex={1} padding={3}>
+        <Flex align="center" flex={1} gap={2} paddingY={2} padding={3}>
           <Text as="h1" size={1} weight="semibold">
             Comments
           </Text>
-        </Box>
+
+          <BetaBadge />
+        </Flex>
+
         <Flex flex="none" padding={1} gap={2}>
           <MenuButton
             id="comment-status-menu-button"
@@ -86,4 +92,4 @@ export function CommentsInspectorHeader(props: CommentsInspectorHeaderProps) {
       </Flex>
     </Root>
   )
-}
+})
