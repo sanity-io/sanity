@@ -207,32 +207,8 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
           _state: hasError ? {type: 'createRetrying'} : undefined,
         },
       })
-
-      // If we don't have a client, that means that the dataset doesn't have an addon dataset.
-      // Therefore, when the first comment is created, we need to create the addon dataset and create
-      // a client for it and then post the comment. We do this here, since we know that we have a
-      // comment to create.
-      if (!client) {
-        try {
-          await runSetup(payload)
-        } catch (err) {
-          // If we fail to create the addon dataset, we update the comment state to `createError`.
-          // This will make the comment appear in the UI as a comment that failed to be created.
-          // The user can then retry the comment creation.
-          dispatch({
-            type: 'COMMENT_UPDATED',
-            payload: {
-              _id: payload._id,
-              _state: {
-                error: err,
-                type: 'createError',
-              },
-            },
-          })
-        }
-      }
     },
-    [client, data, dispatch, runSetup],
+    [data, dispatch],
   )
 
   const handleOnUpdate = useCallback(
@@ -293,6 +269,10 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
           schemaType,
           workspace: workspaceName,
           getThreadLength,
+          // This function runs when the first comment creation is executed.
+          // It is used to create the addon dataset and configure a client for
+          // the addon dataset.
+          runSetup,
           // The following callbacks runs when the comment operations are executed.
           // They are used to update the local state of the comments immediately after
           // a comment operation has been executed. This is done to avoid waiting for
@@ -314,6 +294,7 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
         schemaType,
         workspaceName,
         getThreadLength,
+        runSetup,
         handleOnCreate,
         handleOnCreateError,
         handleOnEdit,
