@@ -95,7 +95,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     continue-on-error: ${{ matrix.experimental }}
-    needs: [install]
+    # needs: [install]
 
     strategy:
       # we want to know if a test fails on a specific node version
