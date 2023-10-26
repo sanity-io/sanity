@@ -172,10 +172,7 @@ jobs:
 
       - name: Test
         id: test
-        run: |
-          node -v
-          npm -v
-          yarn test:ci
+        run: yarn test:ci
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
