@@ -77,6 +77,7 @@ interface CommentsListItemProps {
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
+  onKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onPathSelect?: (path: Path) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
@@ -95,6 +96,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     onCreateRetry,
     onDelete,
     onEdit,
+    onKeyDown,
     onPathSelect,
     onReply,
     onStatusChange,
@@ -141,14 +143,37 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     replyInputRef.current?.discardDialogController.open()
   }, [hasValue])
 
+  const handleInputKeyDown = useCallback(
+    (event: React.KeyboardEvent<Element>) => {
+      // Don't act if the input already prevented this event
+      if (event.isDefaultPrevented()) {
+        return
+      }
+      // Discard input text with Escape
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        startDiscard()
+      }
+      // TODO: this would be cool
+      // Edit last comment if current user is the owner and pressing arrowUp
+      // if (event.key === 'ArrowUp') {
+      //   const lastReply = replies.splice(-1)[0]
+      //   if (lastReply?.authorId === currentUser.id && !hasValue) {
+      //
+      //   }
+      // }
+    },
+    [startDiscard],
+  )
+
   const cancelDiscard = useCallback(() => {
     replyInputRef.current?.discardDialogController.close()
   }, [])
 
   const confirmDiscard = useCallback(() => {
-    replyInputRef.current?.discardDialogController.close()
-    replyInputRef.current?.reset()
     setValue(EMPTY_ARRAY)
+    replyInputRef.current?.discardDialogController.close()
     replyInputRef.current?.focus()
   }, [])
 
@@ -197,6 +222,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
             hasError={reply._state?.type === 'createError'}
             isRetrying={reply._state?.type === 'createRetrying'}
             mentionOptions={mentionOptions}
+            onInputKeyDown={handleInputKeyDown}
             onCopyLink={onCopyLink}
             onCreateRetry={onCreateRetry}
             onDelete={onDelete}
@@ -207,6 +233,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       )),
     [
       currentUser,
+      handleInputKeyDown,
       mentionOptions,
       onCopyLink,
       onCreateRetry,
@@ -247,6 +274,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onCreateRetry={onCreateRetry}
               onDelete={onDelete}
               onEdit={onEdit}
+              onInputKeyDown={onKeyDown}
               onStatusChange={onStatusChange}
               readOnly={readOnly}
             />
@@ -269,7 +297,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
           )}
 
           {renderedReplies}
-
           {canReply && (
             <CommentInput
               currentUser={currentUser}
@@ -278,7 +305,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onChange={setValue}
               onDiscardCancel={cancelDiscard}
               onDiscardConfirm={confirmDiscard}
-              onEscapeKeyDown={startDiscard}
+              onKeyDown={handleInputKeyDown}
               onSubmit={handleReplySubmit}
               placeholder="Reply"
               readOnly={readOnly}

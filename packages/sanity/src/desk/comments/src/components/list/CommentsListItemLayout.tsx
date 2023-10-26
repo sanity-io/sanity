@@ -117,6 +117,7 @@ interface CommentsListItemLayoutProps {
   onCreateRetry?: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, message: CommentEditPayload) => void
+  onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
 }
@@ -137,6 +138,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     onCreateRetry,
     onDelete,
     onEdit,
+    onInputKeyDown,
     onStatusChange,
     readOnly,
   } = props
@@ -146,7 +148,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const [value, setValue] = useState<CommentMessage>(message)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const [mentionMenuOpen, setMentionMenuOpen] = useState<boolean>(false)
   const startMessage = useRef<CommentMessage>(message)
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
 
@@ -184,9 +185,26 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       cancelEdit()
       return
     }
-
     commentInputRef.current?.discardDialogController.open()
   }, [cancelEdit, hasChanges, hasValue])
+
+  const handleInputKeyDown = useCallback(
+    (event: React.KeyboardEvent<Element>) => {
+      // Don't act if the input already prevented this event
+      if (event.isDefaultPrevented()) {
+        return
+      }
+      // Discard the input text
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        startDiscard()
+      }
+      // Call parent handler
+      if (onInputKeyDown) onInputKeyDown(event)
+    },
+    [onInputKeyDown, startDiscard],
+  )
 
   const cancelDiscard = useCallback(() => {
     commentInputRef.current?.discardDialogController.close()
@@ -215,7 +233,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   })
 
   useGlobalKeyDown((event) => {
-    if (event.key === 'Escape' && !mentionMenuOpen && !hasChanges) {
+    if (event.key === 'Escape' && !hasChanges) {
       cancelEdit()
     }
   })
@@ -223,7 +241,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   useClickOutside(() => {
     if (!hasChanges) {
       cancelEdit()
-      commentInputRef.current?.blur()
     }
   }, [rootElement])
 
@@ -294,8 +311,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 onChange={setValue}
                 onDiscardCancel={cancelDiscard}
                 onDiscardConfirm={confirmDiscard}
-                onEscapeKeyDown={startDiscard}
-                onMentionMenuOpenChange={setMentionMenuOpen}
+                onKeyDown={handleInputKeyDown}
                 onSubmit={handleEditSubmit}
                 readOnly={readOnly}
                 ref={commentInputRef}

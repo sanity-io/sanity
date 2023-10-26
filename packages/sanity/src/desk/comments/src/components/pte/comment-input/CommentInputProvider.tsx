@@ -73,16 +73,14 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
     setMentionsMenuOpen(false)
     setMentionsSearchTerm('')
     setSelectionAtMentionInsert(null)
-    focusEditor()
-  }, [focusEditor])
+  }, [])
 
   const openMentions = useCallback(() => {
     setMentionsMenuOpen(true)
     setMentionsSearchTerm('')
     setMentionsMenuOpen(true)
     setSelectionAtMentionInsert(PortableTextEditor.getSelection(editor))
-    focusEditor()
-  }, [focusEditor, editor])
+  }, [editor])
 
   // This function activates or deactivates the mentions menu and updates
   // the mention search term when the user types into the Portable Text Editor.

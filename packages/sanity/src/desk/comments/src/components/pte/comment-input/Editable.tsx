@@ -53,6 +53,7 @@ interface EditableProps {
   focusLock?: boolean
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<Element>) => void
   onSubmit?: () => void
   placeholder?: React.ReactNode
 }
@@ -62,7 +63,14 @@ export interface EditableHandle {
 }
 
 export function Editable(props: EditableProps) {
-  const {focusLock, placeholder = 'Create a new comment', onFocus, onBlur, onSubmit} = props
+  const {
+    focusLock,
+    placeholder = 'Create a new comment',
+    onFocus,
+    onBlur,
+    onKeyDown,
+    onSubmit,
+  } = props
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
   const editableRef = useRef<HTMLDivElement | null>(null)
@@ -72,7 +80,6 @@ export function Editable(props: EditableProps) {
   const {
     canSubmit,
     closeMentions,
-    focusEditor,
     insertMention,
     mentionOptions,
     mentionsMenuOpen,
@@ -145,14 +152,18 @@ export function Editable(props: EditableProps) {
         case 'ArrowLeft':
         case 'ArrowRight':
           if (mentionsMenuOpen) {
+            // stop these events if the menu is open
+            event.preventDefault()
+            event.stopPropagation()
             closeMentions()
-            focusEditor()
           }
           break
         default:
       }
+      // Call parent key handler
+      if (onKeyDown) onKeyDown(event)
     },
-    [canSubmit, closeMentions, focusEditor, mentionsMenuOpen, onSubmit],
+    [canSubmit, closeMentions, mentionsMenuOpen, onKeyDown, onSubmit],
   )
 
   const initialSelectionAtEndOfContent: EditorSelection | undefined = useMemo(() => {
