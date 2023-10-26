@@ -27,8 +27,8 @@ export interface CommentInputProps {
   onChange: (value: PortableTextBlock[]) => void
   onDiscardCancel: () => void
   onDiscardConfirm: () => void
-  onEscapeKeyDown?: () => void
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<Element>) => void
   onMentionMenuOpenChange?: (open: boolean) => void
   onSubmit: () => void
   placeholder?: React.ReactNode
@@ -66,8 +66,8 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       onChange,
       onDiscardCancel,
       onDiscardConfirm,
-      onEscapeKeyDown,
       onFocus,
+      onKeyDown,
       onMentionMenuOpenChange,
       onSubmit,
       placeholder,
@@ -130,6 +130,11 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       scrollToEditor()
     }, [onSubmit, requestFocus, resetEditorInstance, scrollToEditor])
 
+    const handleDiscardConfirm = useCallback(() => {
+      onDiscardConfirm()
+      resetEditorInstance()
+    }, [onDiscardConfirm, resetEditorInstance])
+
     // The way a user a comment can be discarded varies from the context it is used in.
     // This controller is used to take care of the main logic of the discard process, while
     // specific behavior is handled by the consumer.
@@ -156,20 +161,18 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
             }
           },
           scrollTo: scrollToEditor,
-          reset: () => {
-            setEditorInstanceKey(keyGenerator())
-          },
+          reset: resetEditorInstance,
 
           discardDialogController,
         }
       },
-      [discardDialogController, requestFocus, scrollToEditor],
+      [discardDialogController, requestFocus, resetEditorInstance, scrollToEditor],
     )
 
     return (
       <>
         {showDiscardDialog && (
-          <CommentInputDiscardDialog onClose={onDiscardCancel} onConfirm={onDiscardConfirm} />
+          <CommentInputDiscardDialog onClose={onDiscardCancel} onConfirm={handleDiscardConfirm} />
         )}
 
         <Stack ref={editorContainerRef} data-testid="comment-input">
@@ -199,8 +202,8 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
                   currentUser={currentUser}
                   focusLock={focusLock}
                   onBlur={onBlur}
-                  onEscapeKeyDown={onEscapeKeyDown}
                   onFocus={onFocus}
+                  onKeyDown={onKeyDown}
                   onSubmit={handleSubmit}
                   placeholder={placeholder}
                   withAvatar={withAvatar}

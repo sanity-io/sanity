@@ -77,36 +77,20 @@ interface CommentInputInnerProps {
   currentUser: CurrentUser
   focusLock?: boolean
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
-  onEscapeKeyDown?: () => void
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<Element>) => void
   onSubmit: () => void
   placeholder?: React.ReactNode
   withAvatar?: boolean
 }
 
 export function CommentInputInner(props: CommentInputInnerProps) {
-  const {
-    currentUser,
-    focusLock,
-    onBlur,
-    onEscapeKeyDown,
-    onFocus,
-    onSubmit,
-    placeholder,
-    withAvatar,
-  } = props
+  const {currentUser, focusLock, onBlur, onFocus, onKeyDown, onSubmit, placeholder, withAvatar} =
+    props
 
   const [user] = useUser(currentUser.id)
-  const {
-    canSubmit,
-    expandOnFocus,
-    focused,
-    hasChanges,
-    insertAtChar,
-    mentionsMenuOpen,
-    openMentions,
-    readOnly,
-  } = useCommentInput()
+  const {canSubmit, expandOnFocus, focused, hasChanges, insertAtChar, openMentions, readOnly} =
+    useCommentInput()
 
   const avatar = withAvatar ? <CommentsAvatar user={user} /> : null
 
@@ -119,21 +103,8 @@ export function CommentInputInner(props: CommentInputInnerProps) {
     [insertAtChar, openMentions],
   )
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === 'Escape') {
-        e.stopPropagation()
-        e.preventDefault()
-        if (mentionsMenuOpen) return
-
-        onEscapeKeyDown?.()
-      }
-    },
-    [mentionsMenuOpen, onEscapeKeyDown],
-  )
-
   return (
-    <Flex align="flex-start" gap={2} onKeyDown={handleKeyDown}>
+    <Flex align="flex-start" gap={2}>
       {avatar}
 
       <RootCard
@@ -150,6 +121,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               focusLock={focusLock}
               onBlur={onBlur}
               onFocus={onFocus}
+              onKeyDown={onKeyDown}
               onSubmit={onSubmit}
               placeholder={placeholder}
             />
