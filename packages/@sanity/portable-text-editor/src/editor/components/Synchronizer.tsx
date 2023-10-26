@@ -28,7 +28,7 @@ const debugVerbose = debug.enabled && false
 
 // The editor will commit changes in a throttled fashion in order
 // not to overload the network and degrade performance while typing.
-const FLUSH_PATCHES_THROTTLED_MS = process.env.NODE_ENV === 'test' ? 50 : 1000
+const FLUSH_PATCHES_THROTTLED_MS = process.env.NODE_ENV === 'test' ? 100 : 1000
 
 /**
  * @internal
