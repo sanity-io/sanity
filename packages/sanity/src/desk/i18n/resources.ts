@@ -170,11 +170,11 @@ const deskLocaleStrings = {
 
   /** The text to display when type is missing */
   'panes.unknown-pane-type.missing-type.text':
-    'Structure item is missing required <code>type</code> property.',
+    'Structure item is missing required <Code>type</Code> property.',
 
   /** The text to display when type is unknown */
   'panes.unknown-pane-type.unknown-type.text':
-    'Structure item of type <code>{{type}}</code> is not a known entity.',
+    'Structure item of type <Code>{{type}}</Code> is not a known entity.',
 }
 
 /**
