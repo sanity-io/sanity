@@ -188,6 +188,12 @@ const deskLocaleStrings = {
 
   /** The text for the view documentation link for the structured error card */
   'desk-tool.structured-error.view-doc': 'View documentation',
+
+  /** The text for the insufficient permissions message tooltip when it is loading data */
+  'desk-tool.insufficient-permissions-message-tooltip.loading': 'Loading…',
+
+  /** The label for the pane header create button */
+  'desk-tool.pane-header-create-button.label': 'Create',
 }
 
 /**

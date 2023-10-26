@@ -5,6 +5,8 @@ import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 import {IntentLink} from 'sanity/router'
+import {deskLocaleNamespace} from '../../i18n'
+
 import {
   useTemplatePermissions,
   TemplatePermissionsResult,
@@ -12,6 +14,7 @@ import {
   InitialValueTemplateItem,
   useSchema,
   useTemplates,
+  useTranslation,
 } from 'sanity'
 
 export type PaneHeaderIntentProps = React.ComponentProps<typeof IntentButton>['intent']
@@ -72,6 +75,8 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     )
   }, [templatePermissions])
 
+  const {t} = useTranslation(deskLocaleNamespace)
+
   if (nothingGranted) {
     return (
       <InsufficientPermissionsMessageTooltip reveal loading={isTemplatePermissionsLoading}>
@@ -117,14 +122,14 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       menu={
         <Menu>
           <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-            <Label muted>Create</Label>
+            <Label muted>{t('desk-tool.pane-header-create-button.label')}</Label>
           </Box>
 
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
             const intent = getIntent(schema, templates, item)
-            const template = templates.find((t) => t.id === item.templateId)
+            const template = templates.find((temp) => temp.id === item.templateId)
             if (!template || !intent) return null
 
             const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>
