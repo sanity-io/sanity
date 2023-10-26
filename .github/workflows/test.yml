@@ -162,7 +162,7 @@ jobs:
         run: |
           node -v
           npm -v
-          yarn test --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
+          yarn turbo run test
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
