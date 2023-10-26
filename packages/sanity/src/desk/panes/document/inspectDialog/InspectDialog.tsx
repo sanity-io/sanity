@@ -46,13 +46,10 @@ export function InspectDialog(props: InspectDialogProps) {
       header={
         isDocumentLike(value) ? (
           <>
-            Inspecting{' '}
-            <em>
-              <DocTitle document={value} />
-            </em>
+            Inspecting <DocTitle document={value} />
           </>
         ) : (
-          <em>No value</em>
+          'No value'
         )
       }
       onClose={onInspectClose}
