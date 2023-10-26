@@ -71,6 +71,8 @@ withDefaultClient((context) => {
       currentExpectedValue = nextExpectedValue
       expect(await field.inputValue()).toBe(currentExpectedValue)
       expect(await getRemoteValue()).toBe(currentExpectedValue)
+
+      context.teardown()
     })
   })
 })
