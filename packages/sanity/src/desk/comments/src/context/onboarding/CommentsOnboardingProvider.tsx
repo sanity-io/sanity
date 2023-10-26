@@ -3,7 +3,7 @@ import {CommentsOnboardingContext} from './CommentsOnboardingContext'
 import {CommentsOnboardingContextValue} from './types'
 
 const VERSION = 1
-const LOCAL_STORAGE_KEY = `sanity.comments.onboarding.dismissed.v${VERSION}`
+const LOCAL_STORAGE_KEY = `sanityStudio:comments:inspector:onboarding:dismissed:v${VERSION}`
 
 const setLocalStorage = (value: boolean) => {
   window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(value))
