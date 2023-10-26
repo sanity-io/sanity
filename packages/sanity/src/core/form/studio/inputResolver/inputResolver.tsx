@@ -58,6 +58,10 @@ export function defaultResolveInputComponent(
   // using an object + Object.values to de-dupe the type chain by type name
   const subType = Object.values(deduped).find((t) => defaultInputs[t.name])
 
+  if (!subType) {
+    return defaultInputs.object
+  }
+
   if (subType) {
     return defaultInputs[subType.name]
   }

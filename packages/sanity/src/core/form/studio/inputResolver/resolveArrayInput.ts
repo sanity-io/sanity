@@ -45,10 +45,10 @@ export function resolveArrayInput(type: ArraySchemaType): ComponentType<any> {
     return ArrayOfPrimitivesInput
   }
 
-  // Use Portable Text editor if portable text.
-  if (isPortableText(type)) {
-    return PortableTextInput
-  }
+  // // Use Portable Text editor if portable text.
+  // if (isPortableText(type)) {
+  //   return PortableTextInput
+  // }
 
   return ArrayOfObjectsInput
 }
