@@ -23,7 +23,7 @@ export const Tooltip = forwardRef(function Tooltip(
   if (typeof content === 'string') {
     return (
       <UITooltip
-        content={<Text size={1}>{content}</Text>}
+        content={<Text size={1} weight="medium">{content}</Text>}
         delay={{open: 500}}
         ref={ref}
         {...rest}
