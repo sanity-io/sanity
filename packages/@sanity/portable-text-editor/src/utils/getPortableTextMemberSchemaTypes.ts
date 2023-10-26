@@ -73,9 +73,9 @@ function resolveEnabledDecorators(spanType: ObjectSchemaType) {
 }
 
 function resolveEnabledListItems(blockType: ObjectSchemaType) {
-  const listField = blockType.fields?.find((btField) => btField.name === 'list')
+  const listField = blockType.fields?.find((btField) => btField.name === 'listItem')
   if (!listField) {
-    throw new Error("A field with name 'list' is not defined in the block type (required).")
+    throw new Error("A field with name 'listItem' is not defined in the block type (required).")
   }
   const listItems =
     listField.type.options?.list &&

@@ -151,7 +151,7 @@ export function isBlockStyleObjectField(field: unknown): field is BlockStyleObje
 /** @internal */
 export function isBlockListObjectField(field: unknown): field is BlockListObjectField {
   if (!isRecord(field)) return false
-  if (field.name !== 'list') return false
+  if (field.name !== 'listItem') return false
   return isRecord(field.type) && field.type.jsonType === 'string'
 }
 
