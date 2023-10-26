@@ -8,9 +8,9 @@ on:
     branches: [next]
 
 jobs:
-  test:
+  install:
     timeout-minutes: 60
-    name: Test (${{ matrix.os }} / node ${{ matrix.node }})
+    name: Install (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -18,7 +18,6 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
 
     strategy:
-      # we want to know if a test fails on a specific node version
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
@@ -51,6 +50,19 @@ jobs:
             ${{ runner.os }}-modules-
             ${{ runner.os }}-
 
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-build
+        with:
+          path: './*'
+          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
@@ -75,11 +87,82 @@ jobs:
       - name: Build CLI
         run: yarn build:cli # Needed for CLI tests
 
+  test:
+    timeout-minutes: 60
+    name: Test (${{ matrix.os }} / node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    continue-on-error: ${{ matrix.experimental }}
+    needs: [install]
+
+    strategy:
+      # we want to know if a test fails on a specific node version
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [18, 20]
+        experimental: [false]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+        # include:
+        #   - os: windows-latest
+        #     node: 16
+        #     experimental: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: actions/cache@v3
+        id: restore-node-modules
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v3
+        id: restore-build
+        env:
+          cache-name: cache-build
+        with:
+          path: ./*
+          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
+
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Store Playwright's Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
       - name: Test
         id: test
         run: |
           node -v
           npm -v
-          yarn test --silent
+          yarn test --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
+          GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}

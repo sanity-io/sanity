@@ -7,4 +7,5 @@ module.exports = createJestConfig({
   globalSetup: '<rootDir>/test/setup/global.ts',
   setupFiles: ['<rootDir>/test/setup/environment.ts'],
   setupFilesAfterEnv: ['<rootDir>/test/setup/afterEnv.ts'],
+  modulePathIgnorePatterns: ['<rootDir>/playwright-ct'],
 })

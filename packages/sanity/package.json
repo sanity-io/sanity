@@ -238,6 +238,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.0.16",
+    "@types/connect-history-api-fallback": "^1.5.2",
     "@types/lodash": "^4.14.149",
     "@types/log-symbols": "^2.0.0",
     "@types/raf": "^3.4.0",
