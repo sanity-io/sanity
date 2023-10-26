@@ -59,17 +59,16 @@ exports.createJestConfig = function createJestConfig(
       '<rootDir>/coverage/',
       '<rootDir>/lib/',
     ],
+    resolver: path.resolve(__dirname, './resolver.cjs'),
+    testEnvironment: path.resolve(__dirname, './jsdom.jest.env.ts'),
     setupFiles: [...setupFiles, path.resolve(__dirname, './setup.ts')],
-    testEnvironment: 'jsdom',
+    // testEnvironment: 'jsdom',
     testEnvironmentOptions: {
       url: 'http://localhost:3333',
     },
-    /**
-     * Normally jest would look for test filenames matching {spec|test}.{js,ts,tsx}
-     * Currently component tests using playwright "owns" test files with the .spec.tsx ending
-     * while unit tests with jest "owns" test files with the .test.{ts|tsx} ending.
-     */
-    testMatch: [...testMatch, '<rootDir>/**/*.test.{js,ts,tsx}'],
+    testMatch: [...testMatch, '<rootDir>/**/*.{test,spec}.{js,ts,tsx}'],
+    transformIgnorePatterns: ['/node_modules/(?!(get-random-values-esm)/)'],
+    testPathIgnorePatterns: ['/node_modules/', '/.yalc/'],
     transform: {
       ...transform,
       '\\.[jt]sx?$': [
@@ -77,6 +76,10 @@ exports.createJestConfig = function createJestConfig(
         // rootMode upwards makes use of the global babel.config.js
         {rootMode: 'upward'},
       ],
+    },
+    snapshotFormat: {
+      escapeString: true,
+      printBasicPrototype: true,
     },
     ...restOfInputConfig,
   }
