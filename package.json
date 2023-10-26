@@ -61,6 +61,7 @@
     "release-notes": "node -r esbuild-register scripts/printReleaseNotesTemplate",
     "start": "yarn dev:test-studio",
     "test": "jest --forceExit",
+    "test:ci": "turbo run --filter=@sanity/* --filter=groq --filter=sanity test",
     "test:e2e": "playwright test",
     "perf:test": "cd perf && yarn perf:test",
     "perf:studio": "cd perf && yarn studio",
