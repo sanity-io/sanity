@@ -24,8 +24,8 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
             </Text>
 
             <Text size={1}>
-              All comments on this document are found here, and are grouped by the field they refer
-              to.
+              Add a comment on any field. All comments for this document will be here, grouped by
+              field.
             </Text>
 
             <Flex justify="flex-end" marginTop={2}>
