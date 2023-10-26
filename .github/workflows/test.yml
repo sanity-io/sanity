@@ -133,19 +133,6 @@ jobs:
             ${{ runner.os }}-modules-
             ${{ runner.os }}-
 
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-build
-        with:
-          path: './*'
-          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
