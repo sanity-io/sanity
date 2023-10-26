@@ -5,6 +5,8 @@ import styled from 'styled-components'
 import {SyncIcon} from '@sanity/icons'
 import {SerializeError} from '../../structureBuilder'
 import {PaneResolutionError} from '../../structureResolvers'
+import {deskLocaleNamespace} from '../../i18n'
+import {useTranslation} from 'sanity'
 
 const PathSegment = styled.span`
   &:not(:last-child)::after {
@@ -51,15 +53,17 @@ export function StructureError({error}: StructureErrorProps) {
     window.location.reload()
   }, [])
 
+  const {t} = useTranslation(deskLocaleNamespace)
+
   return (
     <Card height="fill" overflow="auto" padding={4} sizing="border" tone="critical">
       <Container>
-        <Heading as="h2">Encountered an error while reading structure</Heading>
+        <Heading as="h2">{t('desk-tool.structured-error.title')}</Heading>
 
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
             <Stack space={2}>
-              <Label>Structure path</Label>
+              <Label>{t('desk-tool.structured-error.structure-label')}</Label>
               <Code>
                 {/* TODO: it seems like the path is off by one and includes */}
                 {/* `root` twice  */}
@@ -72,7 +76,7 @@ export function StructureError({error}: StructureErrorProps) {
           )}
 
           <Stack marginTop={4} space={2}>
-            <Label>Error</Label>
+            <Label>{t('desk-tool.structured-error.error-label')}</Label>
             <Code>{showStack ? formatStack(stack) : error.message}</Code>
           </Stack>
 
@@ -80,7 +84,7 @@ export function StructureError({error}: StructureErrorProps) {
             <Box marginTop={4}>
               <Text>
                 <a href={generateHelpUrl(helpId)} rel="noopener noreferrer" target="_blank">
-                  View documentation
+                  {t('desk-tool.structured-error.view-doc')}
                 </a>
               </Text>
             </Box>

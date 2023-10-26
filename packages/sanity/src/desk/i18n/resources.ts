@@ -165,6 +165,29 @@ const deskLocaleStrings = {
 
   /** --- "PRODUCTION PREVIEW", eg link to content --- */
   'production-preview.menu-item.title': 'Open preview',
+
+  /** -- DESK TOOL -- */
+  /** The title for the no document types screen */
+  'desk-tool.no-document-types-screen.title': 'No document types',
+
+  /** The body for the no document types screen */
+  'desk-tool.no-document-types-screen.body':
+    'Please define at least one document type in your schema.',
+
+  /** The text for the learn more link for the no document types screen */
+  'desk-tool.no-document-types-screen.learn-more': 'Learn how to add a document type',
+
+  /** The title for the structured error card */
+  'desk-tool.structured-error.title': 'Encountered an error while reading structure',
+
+  /** The label for the structure field for the structured error card */
+  'desk-tool.structured-error.structure-label': 'Structure path',
+
+  /** The label for the error field for the structured error card */
+  'desk-tool.structured-error.error-label': 'Error',
+
+  /** The text for the view documentation link for the structured error card */
+  'desk-tool.structured-error.view-doc': 'View documentation',
 }
 
 /**
