@@ -6,6 +6,10 @@ export interface TooltipProps extends UITooltipProps {
   ref?: React.ForwardedRef<HTMLDivElement>
 }
 
+const TOOLTIP_DELAY_PROPS = {
+  open: 500,
+}
+
 /**
  * Studio UI <Tooltip>.
  *
@@ -20,16 +24,20 @@ export const Tooltip = forwardRef(function Tooltip(
 ) {
   const {content, ...rest} = props
 
-  if (typeof content === 'string') {
-    return (
-      <UITooltip
-        content={<Text size={1} weight="medium">{content}</Text>}
-        delay={{open: 500}}
-        ref={ref}
-        {...rest}
-      />
-    )
-  }
-
-  return <UITooltip delay={{open: 500}} ref={ref} content={content} {...rest} />
+  return (
+    <UITooltip
+      content={
+        typeof content === 'string' || typeof content === 'number' ? (
+          <Text size={1} weight="medium">
+            {content}
+          </Text>
+        ) : (
+          content
+        )
+      }
+      delay={TOOLTIP_DELAY_PROPS}
+      ref={ref}
+      {...rest}
+    />
+  )
 })
