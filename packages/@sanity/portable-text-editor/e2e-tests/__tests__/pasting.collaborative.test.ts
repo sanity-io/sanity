@@ -1,4 +1,4 @@
-/** @jest-environment ./test/setup/collaborative.jest.env.ts */
+/** @jest-environment ./e2e-tests/setup/collaborative.jest.env.ts */
 import os from 'os'
 import '../setup/globals.jest'
 import {noop} from 'lodash'

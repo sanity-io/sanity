@@ -1,4 +1,4 @@
-/** @jest-environment ./test/setup/collaborative.jest.env.ts */
+/** @jest-environment ./e2e-tests/setup/collaborative.jest.env.ts */
 
 import '../setup/globals.jest'
 import type {PortableTextBlock} from '@sanity/types'

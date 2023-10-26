@@ -59,6 +59,7 @@
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
     "dev": "cd ./test/ && ts-node serve",
     "test": "jest",
+    "test:e2e": "PTE_E2E=true jest e2e-tests/__tests__",
     "test:watch": "jest --watch",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },

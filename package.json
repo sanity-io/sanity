@@ -150,5 +150,8 @@
     "node-notifier": "^10.0.0"
   },
   "packageManager": "yarn@1.22.19",
-  "isSanityMonorepo": true
+  "isSanityMonorepo": true,
+  "dependencies": {
+    "yarn": "^1.22.19"
+  }
 }
