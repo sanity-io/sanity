@@ -256,7 +256,7 @@ function CommentFieldInner(props: FieldProps) {
         ...SCROLL_INTO_VIEW_OPTIONS,
         boundary: boundaryElement,
         scrollMode: 'if-needed',
-        block: 'center',
+        block: 'start',
       }) satisfies Options,
     [boundaryElement],
   )

@@ -1,5 +1,5 @@
 import {Flex, useToast} from '@sanity/ui'
-import React, {Fragment, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
+import React, {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {usePaneRouter} from '../../../components'
@@ -215,28 +215,28 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const handleScrollToComment = useCallback(
     (id: string, fieldPath: string) => {
       if (fieldPath) {
-        setSelectedPath({
-          fieldPath,
-          origin: 'inspector',
-          threadId: null,
-        })
-
         requestAnimationFrame(() => {
+          setSelectedPath({
+            fieldPath,
+            origin: 'inspector',
+            threadId: null,
+          })
+
           commentsListHandleRef.current?.scrollToComment(id)
-        })
 
-        setParams({
-          ...params,
-          comment: undefined,
-        })
+          setParams({
+            ...params,
+            comment: undefined,
+          })
 
-        commentIdParamRef.current = undefined
+          commentIdParamRef.current = undefined
+        })
       }
     },
     [params, setParams, setSelectedPath],
   )
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const path = getCommentPath(commentIdParamRef.current || '')
 
     if (path && !loading && commentIdParamRef.current) {
