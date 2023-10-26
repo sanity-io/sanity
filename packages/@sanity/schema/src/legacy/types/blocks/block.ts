@@ -43,7 +43,7 @@ export const BlockType = {
 
     const childrenField = createChildrenField(marks, of)
     const styleField = createStyleField(styles)
-    const listField = createListField(lists)
+    const listItemField = createListItemField(lists)
 
     const markDefsField = {
       name: 'markDefs',
@@ -52,11 +52,22 @@ export const BlockType = {
       of: marks?.annotations || DEFAULT_ANNOTATIONS,
     }
 
+    const levelField = {
+      name: 'level',
+      title: 'Indentation',
+      type: 'number',
+    }
+
     // NOTE: if you update this (EVEN THE ORDER OF FIELDS) you _NEED TO_ also
     // update `BlockSchemaType`, `isBlockSchemaType` and similar in `@sanity/types`
-    const fields = [childrenField, styleField, listField, markDefsField].concat(
-      subTypeDef.fields || [],
-    )
+    const fields = [
+      childrenField,
+      levelField,
+      listItemField,
+      markDefsField,
+      styleField,
+      levelField,
+    ].concat(subTypeDef.fields || [])
 
     const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {
       type: BLOCK_CORE,
@@ -113,9 +124,9 @@ function createStyleField(styles) {
   }
 }
 
-function createListField(lists) {
+function createListItemField(lists) {
   return {
-    name: 'list',
+    name: 'listItem',
     title: 'List type',
     type: 'string',
     options: {
