@@ -10,8 +10,8 @@ interface CreateNewThreadInputProps {
   fieldName: string
   mentionOptions: MentionOptionsHookValue
   onBlur?: CommentInputProps['onBlur']
-  onEditDiscard?: () => void
   onFocus?: CommentInputProps['onFocus']
+  onKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onNewThreadCreate: (payload: CommentMessage) => void
   readOnly?: boolean
 }
@@ -22,8 +22,8 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     fieldName,
     mentionOptions,
     onBlur,
-    onEditDiscard,
     onFocus,
+    onKeyDown,
     onNewThreadCreate,
     readOnly,
   } = props
@@ -40,20 +40,34 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
 
   const startDiscard = useCallback(() => {
     if (!hasValue) {
-      onEditDiscard?.()
       return
     }
-
     commentInputHandle.current?.discardDialogController.open()
-  }, [hasValue, onEditDiscard])
+  }, [hasValue])
+
+  const handleInputKeyDown = useCallback(
+    (event: React.KeyboardEvent<Element>) => {
+      // Don't act if the input already prevented this event
+      if (event.isDefaultPrevented()) {
+        return
+      }
+      // Discard the input text
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        startDiscard()
+      }
+      // Call parent handler
+      if (onKeyDown) onKeyDown(event)
+    },
+    [onKeyDown, startDiscard],
+  )
 
   const confirmDiscard = useCallback(() => {
     setValue(EMPTY_ARRAY)
-    commentInputHandle.current?.reset()
     commentInputHandle.current?.discardDialogController.close()
     commentInputHandle.current?.focus()
-    onEditDiscard?.()
-  }, [onEditDiscard])
+  }, [])
 
   const cancelDiscard = useCallback(() => {
     commentInputHandle.current?.discardDialogController.close()
@@ -74,7 +88,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       onChange={setValue}
       onDiscardCancel={cancelDiscard}
       onDiscardConfirm={confirmDiscard}
-      onEscapeKeyDown={startDiscard}
+      onKeyDown={handleInputKeyDown}
       onFocus={onFocus}
       onSubmit={handleSubmit}
       placeholder={placeholder}

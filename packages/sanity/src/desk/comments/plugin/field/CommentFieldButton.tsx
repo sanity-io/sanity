@@ -58,6 +58,7 @@ interface CommentFieldButtonProps {
   onClick?: () => void
   onCommentAdd: () => void
   onDiscard: () => void
+  onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
   open: boolean
   setOpen: (open: boolean) => void
   value: CommentMessage
@@ -74,11 +75,11 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     onClick,
     onCommentAdd,
     onDiscard,
+    onInputKeyDown,
     open,
     setOpen,
     value,
   } = props
-  const [mentionMenuOpen, setMentionMenuOpen] = useState<boolean>(false)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
   const hasComments = Boolean(count > 0)
@@ -93,15 +94,31 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
   const startDiscard = useCallback(() => {
-    if (mentionMenuOpen) return
-
     if (!hasValue) {
       closePopover()
       return
     }
 
     commentInputHandle.current?.discardDialogController.open()
-  }, [closePopover, hasValue, mentionMenuOpen])
+  }, [closePopover, hasValue])
+
+  const handleInputKeyDown = useCallback(
+    (event: React.KeyboardEvent<Element>) => {
+      // Don't act if the input already prevented this event
+      if (event.isDefaultPrevented()) {
+        return
+      }
+      // Discard the input text
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        startDiscard()
+      }
+      // Call parent handler
+      if (onInputKeyDown) onInputKeyDown(event)
+    },
+    [onInputKeyDown, startDiscard],
+  )
 
   const handleDiscardCancel = useCallback(() => {
     commentInputHandle.current?.discardDialogController.close()
@@ -132,8 +149,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
           onChange={onChange}
           onDiscardCancel={handleDiscardCancel}
           onDiscardConfirm={handleDiscardConfirm}
-          onEscapeKeyDown={startDiscard}
-          onMentionMenuOpenChange={setMentionMenuOpen}
+          onKeyDown={handleInputKeyDown}
           onSubmit={handleSubmit}
           placeholder={placeholder}
           readOnly={isRunningSetup}
