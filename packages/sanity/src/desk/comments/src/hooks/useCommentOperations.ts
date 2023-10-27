@@ -98,7 +98,7 @@ export function useCommentOperations(
         workspaceTitle,
       }
 
-      const nextComment = {
+      const nextComment: CommentPostPayload = {
         _id: commentId,
         _type: 'comment',
         authorId: authorId || '', // improve
@@ -128,7 +128,7 @@ export function useCommentOperations(
           },
           documentType,
         },
-      } satisfies CommentPostPayload
+      }
 
       onCreate?.(nextComment)
 

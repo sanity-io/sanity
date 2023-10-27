@@ -138,7 +138,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     // The way a user a comment can be discarded varies from the context it is used in.
     // This controller is used to take care of the main logic of the discard process, while
     // specific behavior is handled by the consumer.
-    const discardDialogController = useMemo(() => {
+    const discardDialogController = useMemo((): CommentDiscardDialogController => {
       return {
         open: () => {
           setShowDiscardDialog(true)
@@ -147,7 +147,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
           setShowDiscardDialog(false)
           requestFocus()
         },
-      } satisfies CommentDiscardDialogController
+      }
     }, [requestFocus])
 
     useImperativeHandle(

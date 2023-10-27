@@ -36,32 +36,32 @@ export function useCommentsEnabled(opts: CommentsEnabledHookOptions): CommentsEn
   const {enabled} = useSource().document.unstable_comments
   const enabledFromConfig = enabled({documentType, documentId: getPublishedId(documentId)})
 
-  const commentsEnabled = useMemo(() => {
+  const commentsEnabled = useMemo((): CommentsEnabled => {
     if (isLoading) {
       return {
         isEnabled: false,
         reason: 'loading',
-      } satisfies CommentsEnabled
+      }
     }
 
     if (!featureEnabled) {
       return {
         isEnabled: false,
         reason: 'plan-upgrade-required',
-      } satisfies CommentsEnabled
+      }
     }
 
     if (!enabledFromConfig) {
       return {
         isEnabled: false,
         reason: 'disabled-by-config',
-      } satisfies CommentsEnabled
+      }
     }
 
     return {
       isEnabled: true,
       reason: null,
-    } satisfies CommentsEnabled
+    }
   }, [enabledFromConfig, featureEnabled, isLoading])
 
   return commentsEnabled

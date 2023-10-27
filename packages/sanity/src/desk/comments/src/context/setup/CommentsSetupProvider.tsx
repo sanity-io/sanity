@@ -115,12 +115,11 @@ export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
   }, [getAddonDatasetName, handleCreateClient])
 
   const ctxValue = useMemo(
-    () =>
-      ({
-        client: addonDatasetClient,
-        runSetup: handleRunSetup,
-        isRunningSetup,
-      }) satisfies CommentsSetupContextValue,
+    (): CommentsSetupContextValue => ({
+      client: addonDatasetClient,
+      runSetup: handleRunSetup,
+      isRunningSetup,
+    }),
     [addonDatasetClient, handleRunSetup, isRunningSetup],
   )
 

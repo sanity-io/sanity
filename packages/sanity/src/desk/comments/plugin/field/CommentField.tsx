@@ -194,13 +194,13 @@ function CommentFieldInner(props: FieldProps) {
       const newThreadId = uuid()
 
       // Construct the comment payload
-      const nextComment = {
+      const nextComment: CommentCreatePayload = {
         fieldPath: PathUtils.toString(props.path),
         message: value,
         parentCommentId: undefined,
         status: 'open',
         threadId: newThreadId,
-      } satisfies CommentCreatePayload
+      }
 
       // Execute the create mutation
       create.execute(nextComment)

@@ -36,11 +36,10 @@ export function CommentsOnboardingProvider(props: CommentsOnboardingProviderProp
   }, [setDismissed])
 
   const ctxValue = useMemo(
-    () =>
-      ({
-        setDismissed: handleDismiss,
-        isDismissed: dismissed,
-      }) satisfies CommentsOnboardingContextValue,
+    (): CommentsOnboardingContextValue => ({
+      setDismissed: handleDismiss,
+      isDismissed: dismissed,
+    }),
     [handleDismiss, dismissed],
   )
 

@@ -128,7 +128,7 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
   })
 
   const mentionOptions = useMentionOptions(
-    useMemo(() => ({documentValue}) satisfies MentionHookOptions, [documentValue]),
+    useMemo((): MentionHookOptions => ({documentValue}), [documentValue]),
   )
 
   const schemaType = useSchema().get(documentType)
@@ -258,32 +258,31 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
 
   const {operation} = useCommentOperations(
     useMemo(
-      () =>
-        ({
-          client,
-          currentUser,
-          dataset,
-          documentId: publishedId,
-          documentType,
-          projectId,
-          schemaType,
-          workspace: workspaceName,
-          getThreadLength,
-          // This function runs when the first comment creation is executed.
-          // It is used to create the addon dataset and configure a client for
-          // the addon dataset.
-          runSetup,
-          // The following callbacks runs when the comment operations are executed.
-          // They are used to update the local state of the comments immediately after
-          // a comment operation has been executed. This is done to avoid waiting for
-          // the real time listener to update the comments and make the UI feel more
-          // responsive. The comment will be updated again when we receive an mutation
-          // event from the real time listener.
-          onCreate: handleOnCreate,
-          onCreateError: handleOnCreateError,
-          onEdit: handleOnEdit,
-          onUpdate: handleOnUpdate,
-        }) satisfies CommentOperationsHookOptions,
+      (): CommentOperationsHookOptions => ({
+        client,
+        currentUser,
+        dataset,
+        documentId: publishedId,
+        documentType,
+        projectId,
+        schemaType,
+        workspace: workspaceName,
+        getThreadLength,
+        // This function runs when the first comment creation is executed.
+        // It is used to create the addon dataset and configure a client for
+        // the addon dataset.
+        runSetup,
+        // The following callbacks runs when the comment operations are executed.
+        // They are used to update the local state of the comments immediately after
+        // a comment operation has been executed. This is done to avoid waiting for
+        // the real time listener to update the comments and make the UI feel more
+        // responsive. The comment will be updated again when we receive an mutation
+        // event from the real time listener.
+        onCreate: handleOnCreate,
+        onCreateError: handleOnCreateError,
+        onEdit: handleOnEdit,
+        onUpdate: handleOnUpdate,
+      }),
       [
         client,
         currentUser,
@@ -304,38 +303,37 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
   )
 
   const ctxValue = useMemo(
-    () =>
-      ({
-        setSelectedPath: handleSetSelectedPath,
-        selectedPath,
+    (): CommentsContextValue => ({
+      setSelectedPath: handleSetSelectedPath,
+      selectedPath,
 
-        isRunningSetup,
+      isRunningSetup,
 
-        status,
-        setStatus,
+      status,
+      setStatus,
 
-        getComment,
-        getCommentPath,
+      getComment,
+      getCommentPath,
 
-        comments: {
-          data: threadItemsByStatus,
-          error,
-          loading: loading || isRunningSetup,
-        },
-        create: {
-          execute: operation.create,
-        },
-        remove: {
-          execute: operation.remove,
-        },
-        edit: {
-          execute: operation.edit,
-        },
-        update: {
-          execute: operation.update,
-        },
-        mentionOptions,
-      }) satisfies CommentsContextValue,
+      comments: {
+        data: threadItemsByStatus,
+        error,
+        loading: loading || isRunningSetup,
+      },
+      create: {
+        execute: operation.create,
+      },
+      remove: {
+        execute: operation.remove,
+      },
+      edit: {
+        execute: operation.edit,
+      },
+      update: {
+        execute: operation.update,
+      },
+      mentionOptions,
+    }),
     [
       handleSetSelectedPath,
       selectedPath,
