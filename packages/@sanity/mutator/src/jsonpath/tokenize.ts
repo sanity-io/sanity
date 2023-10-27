@@ -14,8 +14,10 @@ const attributeCharMatcher = /^[a-zA-Z0-9_]$/
 const attributeFirstCharMatcher = /^[a-zA-Z_]$/
 
 const symbols: Record<SymbolClass, string[]> = {
+  // NOTE: These are compared against in order of definition,
+  // thus '==' must come before '=', '>=' before '>', etc.
   operator: ['..', '.', ',', ':', '?'],
-  comparator: ['>', '>=', '<', '<=', '==', '!='],
+  comparator: ['>=', '<=', '<', '>', '==', '!='],
   keyword: ['$', '@'],
   boolean: ['true', 'false'],
   paren: ['[', ']'],
