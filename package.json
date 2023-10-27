@@ -91,7 +91,6 @@
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.23.0",
     "@bjoerge/mutiny": "^0.0.2",
-    "@jest/test-sequencer": "^29.7.0",
     "@optimize-lodash/rollup-plugin": "^4.0.4",
     "@playwright/test": "^1.38.1",
     "@sanity/client": "^6.7.0",
