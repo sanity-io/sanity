@@ -126,6 +126,78 @@ const examples: PatchExample[] = [
     },
   },
   {
+    name: 'Set new deep key',
+    before: {},
+    patch: {
+      id: 'a',
+      set: {
+        'a.b.c': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: {
+          c: 'hello',
+        },
+      },
+    },
+  },
+  {
+    name: 'Set deep key on previous string value',
+    before: {
+      a: 'stringValue',
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a.b.c': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: {
+          c: 'hello',
+        },
+      },
+    },
+  },
+  {
+    name: 'Set deep key on previous number value',
+    before: {
+      a: 123,
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a.b.c': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: {
+          c: 'hello',
+        },
+      },
+    },
+  },
+  {
+    name: 'Set key on previous number value',
+    before: {
+      a: 123,
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a.b': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: 'hello',
+      },
+    },
+  },
+  {
     name: 'Set range',
     before: {
       a: [0, 1, 2, 3, 4, 5, 6, 7],

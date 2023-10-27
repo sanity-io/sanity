@@ -60,7 +60,80 @@ const examples: PatchExample[] = [
         {b: 7, p: 'Thorvald Meyers gt.', zz: {yyy: 55, zzz: 10}},
       ],
     },
-  }, // Potentially redundant, added to exactly match a test case from @sanity/form-builder that was failing.
+  },
+  {
+    name: 'Set new deep key',
+    before: {},
+    patch: {
+      id: 'a',
+      setIfMissing: {
+        'a.b.c': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: {
+          c: 'hello',
+        },
+      },
+    },
+  },
+  {
+    name: 'Set deep key on previous string value',
+    before: {
+      a: 'stringValue',
+    },
+    patch: {
+      id: 'a',
+      setIfMissing: {
+        'a.b.c': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: {
+          c: 'hello',
+        },
+      },
+    },
+  },
+  {
+    name: 'Set deep key on previous number value',
+    before: {
+      a: 123,
+    },
+    patch: {
+      id: 'a',
+      setIfMissing: {
+        'a.b.c': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: {
+          c: 'hello',
+        },
+      },
+    },
+  },
+  {
+    name: 'Set key on previous number value',
+    before: {
+      a: 123,
+    },
+    patch: {
+      id: 'a',
+      setIfMissing: {
+        'a.b': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: 'hello',
+      },
+    },
+  },
+  // Potentially redundant, added to exactly match a test case from @sanity/form-builder that was failing.
   {
     name: 'Set if missing by key',
     before: {
