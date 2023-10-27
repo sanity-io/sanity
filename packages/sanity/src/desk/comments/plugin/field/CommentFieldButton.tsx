@@ -10,7 +10,7 @@ import {
   TooltipProps,
   useClickOutside,
 } from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {
   CommentMessage,
   CommentInput,
@@ -31,22 +31,6 @@ const TooltipText = styled(Text)`
 const ContentStack = styled(Stack)`
   width: 320px;
 `
-
-const StyledPopover = styled(Popover)(({theme}) => {
-  const {space} = theme.sanity
-  const offsetX = space[1] * 2
-  const offsetY = -3
-
-  return css`
-    /* &[data-placement='right-start'] {
-      transform: translate(${offsetX}px, ${offsetY}px);
-    }
-
-    &[data-placement='left-start'] {
-      transform: translate(-${offsetX}px, ${offsetY}px);
-    } */
-  `
-})
 
 interface CommentFieldButtonProps {
   count: number
@@ -160,7 +144,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     )
 
     return (
-      <StyledPopover
+      <Popover
         constrainSize
         content={content}
         fallbackPlacements={['left-start']}
@@ -193,7 +177,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
             />
           </Tooltip>
         </div>
-      </StyledPopover>
+      </Popover>
     )
   }
 
