@@ -3,8 +3,9 @@ import {Button, Card, Container, Flex, Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
-import {useDocumentOperation} from 'sanity'
+import {useDocumentOperation, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
+import {deskLocaleNamespace} from '../../../i18n'
 
 const Root = styled(Card)`
   position: relative;
@@ -25,6 +26,7 @@ export function DeletedDocumentBanner({revisionId}: DeletedDocumentBannerProps) 
       navigateIntent('edit', {id: documentId, type: documentType})
     }
   }, [documentId, documentType, navigateIntent, restore, revisionId])
+  const {t} = useTranslation(deskLocaleNamespace)
 
   return (
     <Root data-testid="deleted-document-banner" shadow={1} tone="transparent">
@@ -35,7 +37,7 @@ export function DeletedDocumentBanner({revisionId}: DeletedDocumentBannerProps) 
           </Text>
 
           <Flex align="center" gap={2} flex={1} marginLeft={3}>
-            <Text size={1}>This document has been deleted.</Text>
+            <Text size={1}>{t('banners.deleted-document-banner.text')}</Text>
             {revisionId && (
               <Button
                 fontSize={1}
@@ -43,7 +45,7 @@ export function DeletedDocumentBanner({revisionId}: DeletedDocumentBannerProps) 
                 mode="bleed"
                 tone="primary"
                 onClick={handleRestore}
-                text="Restore most recent version"
+                text={t('banners.deleted-document-banner.restore-button.text')}
               />
             )}
           </Flex>

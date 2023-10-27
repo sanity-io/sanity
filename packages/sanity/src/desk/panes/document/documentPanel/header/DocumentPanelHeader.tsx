@@ -14,7 +14,8 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {useDeskTool} from '../../../../useDeskTool'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {useFieldActions, useTimelineSelector} from 'sanity'
+import {deskLocaleNamespace} from '../../../../i18n'
+import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentPanelHeaderProps {}
@@ -74,6 +75,7 @@ export const DocumentPanelHeader = memo(
     // and if the back button is not showing (the back button and the close
     // button) do the same thing and shouldn't be shown at the same time)
     const showPaneGroupCloseButton = !showSplitPaneCloseButton && !features.backButton
+    const {t} = useTranslation(deskLocaleNamespace)
 
     return (
       <PaneHeader
@@ -113,7 +115,7 @@ export const DocumentPanelHeader = memo(
               <Tooltip
                 content={
                   <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                    Split pane right
+                    {t('document-panel-header.split-pane-button.tooltip')}
                   </Text>
                 }
                 padding={2}

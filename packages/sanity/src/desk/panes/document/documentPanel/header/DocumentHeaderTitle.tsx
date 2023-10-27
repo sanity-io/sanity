@@ -1,6 +1,7 @@
 import React, {ReactElement} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
-import {unstable_useValuePreview as useValuePreview} from 'sanity'
+import {deskLocaleNamespace} from '../../../../i18n'
+import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
 export function DocumentHeaderTitle(): ReactElement {
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
@@ -11,6 +12,7 @@ export function DocumentHeaderTitle(): ReactElement {
     schemaType,
     value: documentValue,
   })
+  const {t} = useTranslation(deskLocaleNamespace)
 
   if (connectionState !== 'connected') {
     return <></>
@@ -21,12 +23,24 @@ export function DocumentHeaderTitle(): ReactElement {
   }
 
   if (!documentValue) {
-    return <>New {schemaType?.title || schemaType?.name}</>
+    return (
+      <>
+        {t('header.document-header-title.new.text', {item: schemaType?.title || schemaType?.name})}
+      </>
+    )
   }
 
   if (error) {
-    return <>Error: {error.message}</>
+    return <>{t('header.document-header-title.error.text', {error: error.message})}</>
   }
 
-  return <>{value?.title || <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}</>
+  return (
+    <>
+      {value?.title || (
+        <span style={{color: 'var(--card-muted-fg-color)'}}>
+          {t('header.document-header-title.untitled.text')}
+        </span>
+      )}
+    </>
+  )
 }

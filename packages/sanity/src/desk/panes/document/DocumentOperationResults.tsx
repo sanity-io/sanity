@@ -1,35 +1,34 @@
 import {useToast} from '@sanity/ui'
 import React, {memo, useEffect, useRef} from 'react'
 import {useDocumentPane} from './useDocumentPane'
-import {useDocumentOperationEvent} from 'sanity'
+import {useDocumentOperationEvent, useTranslation} from 'sanity'
 import {usePaneRouter} from '../../components'
+import {deskLocaleNamespace} from '../../i18n'
 
 function getOpErrorTitle(op: string): string {
   if (op === 'delete') {
-    return `An error occurred while attempting to delete this document.
-      This usually means that there are other documents that refers to it.`
+    return 'panes.document-operation-results.delete-operation.error'
   }
   if (op === 'unpublish') {
-    return `An error occurred while attempting to unpublish this document.
-      This usually means that there are other documents that refers to it.`
+    return 'panes.document-operation-results.unpublish-operation.error'
   }
-  return `An error occurred during ${op}`
+  return 'panes.document-operation-results.generic-operation.error'
 }
 
 function getOpSuccessTitle(op: string): string {
   if (op === 'publish') {
-    return `The document was published`
+    return 'panes.document-operation-results.publish-operation.success'
   }
   if (op === 'unpublish') {
-    return `The document was unpublished. A draft has been created from the latest published version.`
+    return 'panes.document-operation-results.unpublish-operation.success'
   }
   if (op === 'discardChanges') {
-    return `All changes since last publish has now been discarded. The discarded draft can still be recovered from history`
+    return 'panes.document-operation-results.discard-changes-operation.success'
   }
   if (op === 'delete') {
-    return `The document was successfully deleted`
+    return 'panes.document-operation-results.delete-operation.success'
   }
-  return `Successfully performed ${op} on document`
+  return 'panes.document-operation-results.generic-operation.success'
 }
 
 const IGNORE_OPS = ['patch', 'commit']
@@ -40,6 +39,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   const event: any = useDocumentOperationEvent(documentId, documentType)
   const prevEvent = useRef(event)
   const paneRouter = usePaneRouter()
+  const {t} = useTranslation(deskLocaleNamespace)
 
   useEffect(() => {
     if (!event || event === prevEvent.current) return
@@ -51,10 +51,10 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
         closable: true,
         duration: 30000, // 30s
         status: 'error',
-        title: getOpErrorTitle(event.op),
+        title: t(getOpErrorTitle(event.op), {op: event.op}),
         description: (
           <details>
-            <summary>Details</summary>
+            <summary>{t('panes.document-operation-results.error.summary.title')}</summary>
             {event.error.message}
           </details>
         ),
@@ -65,7 +65,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
       pushToast({
         closable: true,
         status: 'success',
-        title: getOpSuccessTitle(event.op),
+        title: t(getOpSuccessTitle(event.op), {op: event.op}),
       })
     }
 
@@ -81,7 +81,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
 
     // eslint-disable-next-line consistent-return
     return () => clearTimeout(cleanupId)
-  }, [event, paneRouter, pushToast])
+  }, [event, paneRouter, pushToast, t])
 
   return null
 })
