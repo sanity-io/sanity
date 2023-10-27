@@ -6,12 +6,20 @@ const VERSION = 1
 const LOCAL_STORAGE_KEY = `sanityStudio:comments:inspector:onboarding:dismissed:v${VERSION}`
 
 const setLocalStorage = (value: boolean) => {
-  window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(value))
+  try {
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(value))
+  } catch (_) {
+    // Fail silently
+  }
 }
 
 const getLocalStorage = (): boolean => {
-  const value = window.localStorage.getItem(LOCAL_STORAGE_KEY)
-  return value ? JSON.parse(value) : false
+  try {
+    const value = window.localStorage.getItem(LOCAL_STORAGE_KEY)
+    return value ? JSON.parse(value) : false
+  } catch (_) {
+    return false
+  }
 }
 
 interface CommentsOnboardingProviderProps {
