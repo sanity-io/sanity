@@ -12,7 +12,6 @@ import {defaultDocumentNode, newDocumentOptions, structure} from 'sanity-test-st
 import {presenceTool} from 'sanity-test-studio/plugins/presence'
 import {copyAction} from 'sanity-test-studio/fieldActions/copyAction'
 import {assistFieldActionGroup} from 'sanity-test-studio/fieldActions/assistFieldActionGroup'
-import {commentAction} from 'sanity-test-studio/fieldActions/commentFieldAction'
 import {customInspector} from 'sanity-test-studio/inspectors/custom'
 import {pasteAction} from 'sanity-test-studio/fieldActions/pasteAction'
 import {Branding} from './components/Branding'
@@ -45,7 +44,7 @@ const sharedSettings = definePlugin({
     },
     unstable_fieldActions: (prev, ctx) => {
       if (['fieldActionsTest', 'stringsTest'].includes(ctx.documentType)) {
-        return [...prev, commentAction, assistFieldActionGroup, copyAction, pasteAction]
+        return [...prev, assistFieldActionGroup, copyAction, pasteAction]
       }
 
       return prev
