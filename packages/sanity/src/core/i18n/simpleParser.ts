@@ -13,7 +13,7 @@ export type TextToken = {
 }
 export type Token = OpenTagToken | CloseTagToken | TextToken
 
-const OPEN_TAG_RE = /<(?<tag>[^\s\d][^/?><]+)\/?>/
+const OPEN_TAG_RE = /^<(?<tag>[^\s\d<][^/?><]+)\/?>/
 const CLOSE_TAG_RE = /<\/(?<tag>[^>]+)>/
 const SELF_CLOSING_RE = /<[^>]+\/>/
 const VALID_COMPONENT_NAME_RE = /^[A-Z][A-Za-z0-9]+$/
@@ -78,7 +78,7 @@ export function simpleParser(input: string): Token[] {
         text += remainder[0]
         remainder = remainder.substring(1)
       }
-    } else if (openTag && remainder[0] === '<') {
+    } else if (openTag && remainder[0] === '<' && remainder[1] !== '<') {
       const match = matchCloseTag(remainder)
       if (match) {
         const tagName = match.groups!.tag

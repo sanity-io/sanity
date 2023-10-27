@@ -13,6 +13,39 @@ describe('simpleParser', () => {
       {type: 'text', text: 'foo is greater than (>) bar'},
     ])
   })
+  test('< character before opening tag', () => {
+    expect(simpleParser('what is the <<Code>tagName</Code>')).toMatchObject([
+      {type: 'text', text: 'what is the <'},
+      {type: 'tagOpen', name: 'Code'},
+      {type: 'text', text: 'tagName'},
+      {type: 'tagClose', name: 'Code'},
+    ])
+  })
+  test('> character after opening tag', () => {
+    expect(simpleParser('what is the <Code>>tagName</Code>')).toMatchObject([
+      {type: 'text', text: 'what is the '},
+      {type: 'tagOpen', name: 'Code'},
+      {type: 'text', text: '>tagName'},
+      {type: 'tagClose', name: 'Code'},
+    ])
+  })
+  test('< character before closing tag', () => {
+    expect(simpleParser('what is the <Code>tagName<</Code>')).toMatchObject([
+      {type: 'text', text: 'what is the '},
+      {type: 'tagOpen', name: 'Code'},
+      {type: 'text', text: 'tagName<'},
+      {type: 'tagClose', name: 'Code'},
+    ])
+  })
+  test('> character after closing tag', () => {
+    expect(simpleParser('what is the <Code>tagName</Code>>')).toMatchObject([
+      {type: 'text', text: 'what is the '},
+      {type: 'tagOpen', name: 'Code'},
+      {type: 'text', text: 'tagName'},
+      {type: 'tagClose', name: 'Code'},
+      {type: 'text', text: '>'},
+    ])
+  })
   test('self closing tags', () => {
     expect(simpleParser('foo <Is/> greater than (>) bar')).toMatchObject([
       {type: 'text', text: 'foo '},
