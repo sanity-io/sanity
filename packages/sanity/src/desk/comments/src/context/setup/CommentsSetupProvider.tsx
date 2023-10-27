@@ -3,9 +3,9 @@ import {SanityClient} from '@sanity/client'
 import {CommentPostPayload} from '../../types'
 import {CommentsSetupContext} from './CommentsSetupContext'
 import {CommentsSetupContextValue} from './types'
-import {useWorkspace, useClient, DEFAULT_STUDIO_CLIENT_OPTIONS} from 'sanity'
+import {useWorkspace, useClient, DEFAULT_STUDIO_CLIENT_OPTIONS, useFeatureEnabled} from 'sanity'
 
-interface CommentsClientProviderProps {
+interface CommentsSetupProviderProps {
   children: React.ReactNode
 }
 
@@ -13,7 +13,7 @@ interface CommentsClientProviderProps {
  * @beta
  * @hidden
  */
-export function CommentsSetupProvider(props: CommentsClientProviderProps) {
+export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
   const {children} = props
   const {dataset, projectId} = useWorkspace()
   const originalClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
