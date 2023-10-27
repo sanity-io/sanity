@@ -23,6 +23,7 @@ export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
   const getAddonDatasetName = useCallback(async (): Promise<string | undefined> => {
     const res = await originalClient.withConfig({apiVersion: 'vX'}).request({
       uri: `/projects/${projectId}/datasets?datasetProfile=comments&addonFor=${dataset}`,
+      tag: 'sanity.studio',
     })
 
     // The response is an array containing the addon dataset. We only expect
