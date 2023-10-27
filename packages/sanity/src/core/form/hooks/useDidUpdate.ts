@@ -13,9 +13,7 @@ import {usePrevious} from './usePrevious'
  *   }
  * })
  * ```
- */
-
-/**
+ *
  * @beta
  * @hidden
  */
