@@ -1,4 +1,4 @@
-import {Element, Operation, InsertNodeOperation, Text as SlateText, Transforms} from 'slate'
+import {Element, Text as SlateText, Transforms} from 'slate'
 import {
   isPortableTextTextBlock,
   PortableTextTextBlock,

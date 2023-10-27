@@ -96,9 +96,13 @@ export function createOperationToPatches(types: PortableTextMemberSchemaTypes): 
           const blockKey = block._key
           const childKey = child._key
           const patches: Patch[] = []
-          Object.keys(operation.newProperties).forEach((keyName) => {
-            const val = get(operation.newProperties, keyName)
-            patches.push(set(val, [{_key: blockKey}, 'children', {_key: childKey}, keyName]))
+          Object.keys(operation.newProperties).forEach((propertyName) => {
+            // Use index over keyed path if _key is undefined,
+            // or we are actually setting the _key with this patch.
+            const keyOrIndex =
+              !childKey || propertyName === '_key' ? operation.path[1] : {_key: childKey}
+            const val = get(operation.newProperties, propertyName)
+            patches.push(set(val, [{_key: blockKey}, 'children', keyOrIndex, propertyName]))
           })
           return patches
         }

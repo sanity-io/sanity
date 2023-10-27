@@ -19,7 +19,6 @@ describe('values: normalization', () => {
             text: 'Hello',
           },
         ],
-        markDefs: [],
       },
     ]
     const onChange = jest.fn()

@@ -320,7 +320,7 @@ function _updateBlock(
             debug('Updating changed inline object child', currentBlockChild)
             Transforms.setNodes(
               slateEditor,
-              {_key: `${currentBlock._key}-void-child`},
+              {_key: `void-child`},
               {
                 at: [...path, 0],
                 voids: true,

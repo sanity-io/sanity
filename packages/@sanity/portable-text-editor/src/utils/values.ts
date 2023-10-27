@@ -35,9 +35,9 @@ export function toSlateValue(
   if (value && Array.isArray(value)) {
     return value.map((block) => {
       const {_type, _key, ...rest} = block
-      const voidChildren = [{_key: `${_key}-void-child`, _type: 'span', text: '', marks: []}]
+      const voidChildren = [{_key: `void-child`, _type: 'span', text: '', marks: []}]
       const isPortableText = block && block._type === schemaTypes.block.name
-      if (isPortableText) {
+      if (isPortableText && Array.isArray(block.children)) {
         const textBlock = block as PortableTextTextBlock
         let hasInlines = false
         const hasMissingStyle = typeof textBlock.style === 'undefined'

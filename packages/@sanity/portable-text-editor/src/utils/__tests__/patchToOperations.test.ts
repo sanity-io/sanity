@@ -23,7 +23,7 @@ const createDefaultValue = (): Descendant[] => [
     _key: 'c01739b0d03b',
     children: [
       {
-        _key: 'c01739b0d03b-void-child',
+        _key: 'void-child',
         _type: 'span',
         text: '',
         marks: [],
@@ -70,7 +70,7 @@ describe('operationToPatches', () => {
           "_type": "image",
           "children": Array [
             Object {
-              "_key": "c01739b0d03b-void-child",
+              "_key": "void-child",
               "_type": "span",
               "marks": Array [],
               "text": "",
@@ -93,7 +93,7 @@ describe('operationToPatches', () => {
         _key: 'c01739b0d03b',
         children: [
           {
-            _key: 'c01739b0d03b-void-child',
+            _key: 'void-child',
             _type: 'span',
             text: '',
             marks: [],
@@ -123,7 +123,7 @@ describe('operationToPatches', () => {
           "_type": "someType",
           "children": Array [
             Object {
-              "_key": "c01739b0d03b-void-child",
+              "_key": "void-child",
               "_type": "span",
               "marks": Array [],
               "text": "",
@@ -147,7 +147,7 @@ describe('operationToPatches', () => {
         _key: 'c01739b0d03b',
         children: [
           {
-            _key: 'c01739b0d03b-void-child',
+            _key: 'void-child',
             _type: 'span',
             text: '',
             marks: [],
@@ -182,7 +182,7 @@ describe('operationToPatches', () => {
           "_type": "someType",
           "children": Array [
             Object {
-              "_key": "c01739b0d03b-void-child",
+              "_key": "void-child",
               "_type": "span",
               "marks": Array [],
               "text": "",

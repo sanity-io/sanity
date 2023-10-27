@@ -117,7 +117,7 @@ describe('toSlateValue', () => {
               "_type": "image",
               "children": Array [
                 Object {
-                  "_key": "123-void-child",
+                  "_key": "void-child",
                   "_type": "span",
                   "marks": Array [],
                   "text": "",
