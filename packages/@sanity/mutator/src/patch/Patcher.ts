@@ -3,6 +3,8 @@ import {Matcher} from '../jsonpath'
 import {parsePatch} from './parse'
 import {ImmutableAccessor} from './ImmutableAccessor'
 import {PatchTypes, SingleDocumentPatch} from './types'
+import {SetPatch} from './SetPatch'
+import {SetIfMissingPatch} from './SetIfMissingPatch'
 
 export interface Patch {
   id: string
@@ -57,6 +59,9 @@ export class Patcher {
 // a patch to be the payload. When matchers report a delivery, the
 // apply(targets, accessor) is called on the patch
 function process(matcher: Matcher, accessor: ImmutableAccessor) {
+  const isSetPatch =
+    matcher.payload instanceof SetPatch || matcher.payload instanceof SetIfMissingPatch
+
   let result = accessor
   // Every time we execute the matcher a new set of leads is generated. Each lead
   // is a target (being an index, an attribute name or a range) in the form of an
@@ -75,7 +80,20 @@ function process(matcher: Matcher, accessor: ImmutableAccessor) {
         result = result.setIndexAccessor(i, process(lead.matcher, item))
       })
     } else if (lead.target.isAttributeReference()) {
-      const oldValueAccessor = result.getAttribute(lead.target.name())
+      // `set`/`setIfMissing` on a primitive value overwrites it
+      if (isSetPatch && result.containerType() === 'primitive') {
+        result = result.set({})
+      }
+
+      let oldValueAccessor = result.getAttribute(lead.target.name())
+
+      // If the patch is a set/setIfMissing patch, we allow deeply setting properties,
+      // creating missing segments as we go.
+      if (!oldValueAccessor && isSetPatch) {
+        result = result.setAttribute(lead.target.name(), {})
+        oldValueAccessor = result.getAttribute(lead.target.name())
+      }
+
       if (!oldValueAccessor) {
         // Don't follow lead, no such attribute
         return
