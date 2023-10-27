@@ -3,7 +3,7 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {startTransition, useCallback, useMemo, useState} from 'react'
 import {Path, isKeySegment, isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {CommentMessage, MentionOptionsHookValue} from '../../../types'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
@@ -12,6 +12,7 @@ import {useDidUpdate} from 'sanity'
 export interface CommentInputContextValue {
   canSubmit?: boolean
   closeMentions: () => void
+  closeToolbarMenu: () => void
   editor: PortableTextEditor
   expandOnFocus?: boolean
   focused: boolean
@@ -25,6 +26,8 @@ export interface CommentInputContextValue {
   mentionsSearchTerm: string
   onBeforeInput: (event: InputEvent) => void
   openMentions: () => void
+  openToolbarMenu: () => void
+  toolbarMenuOpen: boolean
   readOnly: boolean
   value: CommentMessage
 }
@@ -59,6 +62,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
   const [mentionsMenuOpen, setMentionsMenuOpen] = useState<boolean>(false)
   const [mentionsSearchTerm, setMentionsSearchTerm] = useState<string>('')
   const [selectionAtMentionInsert, setSelectionAtMentionInsert] = useState<EditorSelection>(null)
+  const [toolbarMenuOpen, setToolbarMenuOpen] = useState<boolean>(false)
 
   const canSubmit = useMemo(() => hasCommentMessageValue(value), [value])
 
@@ -81,6 +85,14 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
     setMentionsMenuOpen(true)
     setSelectionAtMentionInsert(PortableTextEditor.getSelection(editor))
   }, [editor])
+
+  const closeToolbarMenu = useCallback(() => {
+    requestAnimationFrame(() => setToolbarMenuOpen(false))
+  }, [])
+
+  const openToolbarMenu = useCallback(() => {
+    requestAnimationFrame(() => setToolbarMenuOpen(true))
+  }, [])
 
   // This function activates or deactivates the mentions menu and updates
   // the mention search term when the user types into the Portable Text Editor.
@@ -207,6 +219,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
       ({
         canSubmit,
         closeMentions,
+        closeToolbarMenu,
         editor,
         expandOnFocus,
         focused,
@@ -220,12 +233,15 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
         mentionsSearchTerm,
         onBeforeInput,
         openMentions,
+        openToolbarMenu,
         readOnly: Boolean(readOnly),
+        toolbarMenuOpen,
         value,
       }) satisfies CommentInputContextValue,
     [
       canSubmit,
       closeMentions,
+      closeToolbarMenu,
       editor,
       expandOnFocus,
       focused,
@@ -239,7 +255,9 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
       mentionsSearchTerm,
       onBeforeInput,
       openMentions,
+      openToolbarMenu,
       readOnly,
+      toolbarMenuOpen,
       value,
     ],
   )

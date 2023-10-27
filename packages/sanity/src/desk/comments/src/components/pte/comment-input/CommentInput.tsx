@@ -96,6 +96,9 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
 
     const handleChange = useCallback(
       (change: EditorChange) => {
+        if (!editorRef.current) {
+          return
+        }
         // Focus the editor when ready if focusOnMount is true
         if (change.type === 'ready') {
           if (focusOnMount) {
@@ -111,7 +114,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
         }
 
         // Update the comment value whenever the comment is edited by the user.
-        if (change.type === 'patch' && editorRef.current) {
+        if (change.type === 'patch') {
           const editorStateValue = PortableTextEditor.getValue(editorRef.current)
           onChange(editorStateValue || EMPTY_ARRAY)
         }

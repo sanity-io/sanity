@@ -3,7 +3,11 @@ import {useState, useMemo, useEffect, useCallback} from 'react'
 const EVENT_LISTENER_OPTIONS: AddEventListenerOptions = {passive: true}
 
 interface CursorElementHookOptions {
-  disabled: boolean
+  disabled:
+    | boolean
+    | 'collapsed'
+    | 'expanded'
+    | (({selectionType}: {selectionType: 'collapsed' | 'expanded'}) => boolean)
   rootElement: HTMLElement | null
 }
 
@@ -23,14 +27,25 @@ export function useCursorElement(opts: CursorElementHookOptions): HTMLElement | 
   }, [cursorRect])
 
   const handleSelectionChange = useCallback(() => {
-    if (disabled) {
+    if (typeof disabled === 'boolean' && disabled) {
       setCursorRect(null)
       return
     }
 
     const sel = window.getSelection()
 
-    if (!sel || !sel.isCollapsed || sel.rangeCount === 0) return
+    if (!sel || sel.rangeCount === 0) {
+      setCursorRect(null)
+      return
+    }
+
+    if (
+      typeof disabled === 'function' &&
+      disabled({selectionType: sel.isCollapsed ? 'collapsed' : 'expanded'})
+    ) {
+      setCursorRect(null)
+      return
+    }
 
     const range = sel.getRangeAt(0)
     const isWithinRoot = rootElement?.contains(range.commonAncestorContainer)

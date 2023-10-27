@@ -9,9 +9,11 @@ import styled, {css} from 'styled-components'
 import {isEqual} from 'lodash'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {MentionsMenu, MentionsMenuHandle} from '../../mentions'
-import {renderBlock, renderChild} from '../render'
+import {renderAnnotation, renderBlock, renderChild} from '../render'
+import {renderDecorator} from '../render/renderDecorator'
 import {useCommentInput} from './useCommentInput'
 import {useCursorElement} from './useCursorElement'
+import {FloatingToolbar} from './toolbar/FloatingToolbar'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 
@@ -213,6 +215,8 @@ export function Editable(props: EditableProps) {
         />
       </PortalProvider>
 
+      <FloatingToolbar rootElement={rootElementRef.current} />
+
       <EditableWrapStack ref={rootElementRef} data-ui="EditableWrapStack">
         <PortableTextEditable
           data-testid="comment-input-editable"
@@ -223,7 +227,9 @@ export function Editable(props: EditableProps) {
           onKeyDown={handleKeyDown}
           ref={editableRef}
           renderBlock={renderBlock}
+          renderDecorator={renderDecorator}
           renderChild={renderChild}
+          renderAnnotation={renderAnnotation}
           renderPlaceholder={renderPlaceholder}
           selection={initialSelectionAtEndOfContent}
           style={INLINE_STYLE}

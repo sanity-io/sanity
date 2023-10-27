@@ -1,3 +1,4 @@
+import {BoldIcon, ItalicIcon, LinkIcon} from '@sanity/icons'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField} from '@sanity/types'
 
@@ -18,6 +19,40 @@ const blockType = defineField({
   of: [mentionObject],
   styles: [{title: 'Normal', value: 'normal'}],
   lists: [],
+  marks: {
+    decorators: [
+      {
+        title: 'Strong',
+        value: 'strong',
+        icon: BoldIcon,
+      },
+      {
+        title: 'Emphasis',
+        value: 'em',
+        icon: ItalicIcon,
+      },
+    ],
+    annotations: [
+      {
+        type: 'object',
+        name: 'link',
+        icon: LinkIcon,
+        fields: [
+          {
+            name: 'href',
+            type: 'url',
+            title: 'Link',
+            description: 'A valid web, email, phone, or relative link.',
+            validation: (Rule) =>
+              Rule.uri({
+                scheme: ['http', 'https', 'tel', 'mailto'],
+                allowRelative: true,
+              }),
+          },
+        ],
+      },
+    ],
+  },
 })
 
 const portableTextType = defineArrayMember({

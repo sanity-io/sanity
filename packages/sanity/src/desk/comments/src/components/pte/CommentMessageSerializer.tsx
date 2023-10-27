@@ -17,6 +17,10 @@ const PortableTextWrap = styled(Stack)(() => {
   `
 })
 
+export const Strong = styled('span')`
+  font-weight: 600;
+`
+
 const EMPTY_ARRAY: [] = []
 
 const components: PortableTextComponents = {
@@ -44,13 +48,16 @@ const components: PortableTextComponents = {
     checkmarks: ({children}) => <NormalBlock>{children}</NormalBlock>,
   },
   marks: {
-    // Since we do not offer any formatting options, we can just use the normal block for all of these.
-    strong: ({children}) => <>{children}</>,
+    strong: Strong,
     em: ({children}) => <>{children}</>,
     code: ({children}) => <>{children}</>,
     underline: ({children}) => <>{children}</>,
     strikeThrough: ({children}) => <>{children}</>,
-    link: ({children}) => <>{children}</>,
+    link: ({children, value}) => (
+      <a href={value.href} target="_blank" rel="noreferrer">
+        {children}
+      </a>
+    ),
   },
   types: {
     mention: (props) => {
