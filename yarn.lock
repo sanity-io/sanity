@@ -3458,9 +3458,9 @@
   integrity sha512-uyIOtGA4Duf+68I3BSbYHY5P+WGftn3QtNJD2Pn7h9WPGYsSrWViIPebE9yRN8N0NHhYj+hDQXaMpVdjG7r+zA==
 
 "@sanity/assist@^1.0.8":
-  version "1.2.9"
-  resolved "https://registry.yarnpkg.com/@sanity/assist/-/assist-1.2.9.tgz#d9826d51eaada17b6df335b439fa2c435f09384c"
-  integrity sha512-/ITzJ/iwBCHB9AhVM2fo7/Sj1xGktvWvNuuQF4atxqUsczM/oiA9k8dd1+HjqutCRCaVOj4/a+ejea6ZJNJNAg==
+  version "1.2.11"
+  resolved "https://registry.yarnpkg.com/@sanity/assist/-/assist-1.2.11.tgz#6ff10fd2b292e7342fa694fdc79961561a67716e"
+  integrity sha512-gjfKOsA9ttaWXBJRvOAkeHNOi4nNpVzJdbDHHQC80b0CnB52BKGEtzDbHF5wT2TsScvDtRsnyxRre9UtA4N9mQ==
   dependencies:
     "@sanity/icons" "^2.4.0"
     "@sanity/incompatible-plugin" "^1.0.4"
