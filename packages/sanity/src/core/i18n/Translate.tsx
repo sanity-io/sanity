@@ -19,7 +19,10 @@ const RECOGNIZED_HTML_TAGS = [
   'sup',
 ]
 
-type ComponentMap = Record<
+/**
+ * @beta
+ */
+export type TranslateComponentMap = Record<
   string,
   ComponentType<{children?: ReactNode}> | keyof JSX.IntrinsicElements
 >
@@ -30,12 +33,13 @@ type ComponentMap = Record<
 export interface TranslationProps {
   t: TFunction
   i18nKey: string
+
+  components?: TranslateComponentMap
   context?: string
-  values?: Record<string, number | string | string[]>
-  components?: ComponentMap
+  values?: Record<string, string | string[] | number | undefined>
 }
 
-function render(tokens: Token[], componentMap: ComponentMap): ReactNode {
+function render(tokens: Token[], componentMap: TranslateComponentMap): ReactNode {
   const [head, ...tail] = tokens
   if (!head) {
     return null
