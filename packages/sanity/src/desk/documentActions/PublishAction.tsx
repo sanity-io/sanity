@@ -1,7 +1,6 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
-import {TimeAgo} from '../components'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
   DocumentActionComponent,
@@ -11,6 +10,7 @@ import {
   useDocumentPairPermissions,
   useEditState,
   useSyncState,
+  useTimeAgo,
   useValidationStatus,
 } from 'sanity'
 
@@ -28,9 +28,7 @@ function getDisabledReason(
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return (
       <>
-        <span>
-          Published <TimeAgo time={publishedAt} />
-        </span>
+        <span>Published {publishedAt}</span>
       </>
     )
   }
@@ -63,9 +61,15 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const currentUser = useCurrentUser()
 
+  const lastPublishedTime = published?._updatedAt ? published?._updatedAt : ''
+  const lastPublishedTimeAgo = useTimeAgo(lastPublishedTime, {
+    minimal: true,
+    agoSuffix: true,
+  })
+
   // eslint-disable-next-line no-nested-ternary
   const title = publish.disabled
-    ? getDisabledReason(publish.disabled, (published || {})._updatedAt) || ''
+    ? getDisabledReason(publish.disabled, lastPublishedTimeAgo) || ''
     : hasValidationErrors
     ? 'There are validation errors that need to be fixed before this document can be published'
     : ''
