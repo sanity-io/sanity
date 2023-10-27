@@ -10,7 +10,8 @@ import {FieldCommentsProps} from '../../types'
 const Root = styled(Flex)`
   /* Prevent buttons from taking up extra vertical space */
   line-height: 1;
-  position: relative; /* For floating actions menu */
+  /* For floating actions menu */
+  position: relative;
 `
 
 const PresenceBox = styled(Box)<{$right: number}>(({theme, $right}) => {
@@ -91,20 +92,26 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   const [slotWidth, setSlotWidth] = useState<number>(0)
 
   // Extract comment related data with default values
-  const {hasComments = false, button = null, isAddingComment = false} = comments || {}
+  const {
+    hasComments = false,
+    button: commentButton = null,
+    isAddingComment = false,
+  } = comments || {}
 
   // Determine if actions exist and if field actions should be shown
   const hasActions = actions && actions.length > 0
   const showFieldActions = fieldFocused || fieldHovered || menuOpen || isAddingComment
 
-  // Determine if floating card with actions should be shown
-  const shouldShowFloatingCard = showFieldActions || hasComments
-
   // Determine the shadow level for the card
   const shadow = (showFieldActions && hasActions) || !hasComments ? 3 : undefined
 
-  // Determine if there are no comments or actions
-  const noCommentsOrActions = !comments?.button && !hasActions
+  // Determine if there's a comment button or actions to show.
+  // We check for `comments.button` since that's the visual element that should be
+  // used for comments. If no button is provided, we don't have anything to show for comments.
+  const hasCommentsButtonOrActions = comments?.button || hasActions
+
+  // Determine if floating card with actions should be shown
+  const shouldShowFloatingCard = showFieldActions || hasComments
 
   // Calculate floating card's width
   useEffect(() => {
@@ -151,7 +158,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
       {slotEl}
 
-      {shouldShowFloatingCard && !noCommentsOrActions && (
+      {shouldShowFloatingCard && hasCommentsButtonOrActions && (
         <FieldActionsFloatingCard
           display="flex"
           radius={2}
@@ -163,7 +170,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
             <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
           )}
 
-          {button}
+          {commentButton}
         </FieldActionsFloatingCard>
       )}
     </Root>
