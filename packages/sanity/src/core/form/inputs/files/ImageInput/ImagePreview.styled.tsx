@@ -32,11 +32,11 @@ export const SpinnerWrapper = styled(Spinner)`
 `
 
 export const Overlay = styled(Flex)<{
-  tone: Exclude<CardTone, 'inherit'>
-  drag: boolean
-}>(({tone, drag}) => {
-  const textColor = studioTheme.color.light[tone].card.enabled.fg
-  const backgroundColor = rgba(studioTheme.color.light[tone].card.enabled.bg, 0.8)
+  $drag: boolean
+  $tone: Exclude<CardTone, 'inherit'>
+}>(({$drag, $tone}) => {
+  const textColor = studioTheme.color.light[$tone].card.enabled.fg
+  const backgroundColor = rgba(studioTheme.color.light[$tone].card.enabled.bg, 0.8)
 
   return css`
     position: absolute;
@@ -44,9 +44,9 @@ export const Overlay = styled(Flex)<{
     left: 0;
     right: 0;
     bottom: 0;
-    backdrop-filter: ${drag ? 'blur(10px)' : ''};
-    color: ${tone ? textColor : ''};
-    background-color: ${drag ? backgroundColor : 'transparent'};
+    backdrop-filter: ${$drag ? 'blur(10px)' : ''};
+    color: ${$tone ? textColor : ''};
+    background-color: ${$drag ? backgroundColor : 'transparent'};
   `
 })
 

@@ -132,7 +132,7 @@ function OverlayComponent({
   content: React.ReactNode
 }) {
   return (
-    <Overlay justify="flex-end" padding={3} tone={cardTone} drag={drag}>
+    <Overlay justify="flex-end" padding={3} $drag={drag} $tone={cardTone}>
       <FlexOverlay direction="column" align="center" justify="center">
         {content}
       </FlexOverlay>
