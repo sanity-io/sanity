@@ -5,7 +5,6 @@ import {
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {Tooltip} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
   BlockProps,
@@ -24,6 +23,7 @@ import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {Tooltip} from '../../../../../ui'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
@@ -186,7 +186,7 @@ export const InlineObject = (props: InlineObjectProps) => {
   const toolTipContent = useMemo(
     () =>
       (tooltipEnabled && (
-        <TooltipBox padding={2}>
+        <TooltipBox>
           <Markers
             markers={markers}
             validation={validation}

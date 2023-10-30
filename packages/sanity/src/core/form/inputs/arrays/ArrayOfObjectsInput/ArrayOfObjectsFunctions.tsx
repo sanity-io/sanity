@@ -1,9 +1,9 @@
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React, {useId, useCallback} from 'react'
-import {Box, Button, Grid, Menu, MenuButton, Tooltip, Text, MenuButtonProps} from '@sanity/ui'
+import {Button, Grid, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import {ArrayInputFunctionsProps, ObjectItem} from '../../../types'
-import {MenuItem} from '../../../../../ui'
+import {MenuItem, Tooltip} from '../../../../../ui'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -36,14 +36,7 @@ export function ArrayOfObjectsFunctions<
 
   if (readOnly) {
     return (
-      <Tooltip
-        portal
-        content={
-          <Box padding={2} sizing="border">
-            <Text size={1}>This field is read-only</Text>
-          </Box>
-        }
-      >
+      <Tooltip portal content="This field is read-only">
         <Grid>
           <Button
             icon={AddIcon}

@@ -1,24 +1,23 @@
 import React, {createElement, ReactNode, useMemo} from 'react'
 import {CrossDatasetType, PreviewValue} from '@sanity/types'
-import {Box, Flex, Inline, Label, Text, Tooltip} from '@sanity/ui'
+import {Box, Flex, Inline, Label, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {isImageSource} from '@sanity/asset-utils'
 import {DocumentAvailability} from '../../../preview'
 import {DefaultPreview, PreviewMediaDimensions, TextWithTone} from '../../../components'
+import {Tooltip} from '../../../../ui'
 import {FIXME} from '../../../FIXME'
 
 import {StyledPreviewFlex, TooltipContent} from './CrossDatasetReferencePreview.styled'
 
 function UnavailableMessage(props: {children: ReactNode}) {
   return (
-    <TooltipContent padding={3}>
+    <TooltipContent>
       <Box flex={1}>
-        <Box>
-          <Text as="p" size={1}>
-            {props.children}
-          </Text>
-        </Box>
+        <Text as="p" size={1}>
+          {props.children}
+        </Text>
       </Box>
     </TooltipContent>
   )
@@ -141,7 +140,7 @@ export function CrossDatasetReferencePreview(props: {
               <Tooltip
                 portal
                 content={
-                  <TooltipContent padding={2}>
+                  <TooltipContent>
                     {hasStudioUrl ? (
                       <Text size={1}>This document opens in a new tab</Text>
                     ) : (

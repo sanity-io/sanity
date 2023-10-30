@@ -1,7 +1,8 @@
-import {Box, Flex, Tooltip, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
+import {Tooltip} from '../../../../ui'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -22,7 +23,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
     if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null
 
     return (
-      <Flex padding={2} style={{maxWidth: 300}} align="center">
+      <Flex style={{maxWidth: 300}} align="center">
         <Text size={1}>{firstActionState.title}</Text>
         {firstActionState.shortcut && (
           <Box marginLeft={firstActionState.title ? 2 : 0}>

@@ -1,7 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import {rem, Flex, Text, Box, Tooltip, Container, Inline} from '@sanity/ui'
+import {rem, Flex, Text, Box, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'
+import {Tooltip} from '../../../ui'
 
 export const ChevronWrapper = styled(Box)`
   margin-left: auto;
@@ -60,16 +61,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
       <Tooltip
         portal
         placement="top"
-        content={
-          <Container width={0}>
-            <Box padding={2}>
-              <Text size={1}>
-                We can't show metadata about these references because no token with access to the
-                datasets they are in was found.
-              </Text>
-            </Box>
-          </Container>
-        }
+        content="We can't show metadata about these references because no token with access to the datasets they are in was found."
       >
         <Text size={1} muted>
           <InfoOutlineIcon />

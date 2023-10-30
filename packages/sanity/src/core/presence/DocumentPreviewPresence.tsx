@@ -1,9 +1,10 @@
-import {AvatarStack, Box, Card, Text, Theme, Tooltip, TooltipProps} from '@sanity/ui'
+import {AvatarStack, Box, Card, Text, Theme} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled, {css, useTheme} from 'styled-components'
 import {usePreviewCard, UserAvatar} from '../components'
 import {DocumentPresence} from '../store'
 import {isNonNullable} from '../util'
+import {Tooltip, TooltipProps} from '../../ui'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {
@@ -59,7 +60,7 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
 
   const tooltipContent = useMemo(() => {
     return (
-      <TooltipContentBox padding={2}>
+      <TooltipContentBox>
         <Text align="center" size={1}>
           {getTooltipText(uniqueUsers)}
         </Text>

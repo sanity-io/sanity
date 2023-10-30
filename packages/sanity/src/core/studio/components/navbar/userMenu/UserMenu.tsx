@@ -11,7 +11,6 @@ import {
   MenuDivider,
   Stack,
   Text,
-  Tooltip,
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
@@ -25,7 +24,7 @@ import {
 } from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
-import {MenuItem} from '../../../../../ui'
+import {MenuItem, Tooltip} from '../../../../../ui'
 import {LoginProviderLogo} from './LoginProviderLogo'
 
 const AVATAR_SIZE = 1
@@ -106,17 +105,7 @@ export function UserMenu() {
         <StyledMenu>
           <Card padding={2}>
             <Flex align="center">
-              <Tooltip
-                disabled={!providerTitle}
-                portal
-                content={
-                  providerTitle && (
-                    <Box padding={2}>
-                      <Text size={1}>Signed in with {providerTitle}</Text>
-                    </Box>
-                  )
-                }
-              >
+              <Tooltip disabled={!providerTitle} portal content={`Signed in with ${providerTitle}`}>
                 <AvatarBox marginRight={3}>
                   <UserAvatar size={AVATAR_SIZE} user="me" />
                   {currentUser?.provider && <LoginProviderLogo provider={currentUser.provider} />}

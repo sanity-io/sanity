@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Box, Button, Menu, MenuButton, PopoverProps, Tooltip, Text} from '@sanity/ui'
+import {Button, Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import React, {useCallback, useRef, useState, useMemo, useId} from 'react'
-import {MenuItem} from '../../../../ui/'
+import {MenuItem, Tooltip} from '../../../../ui/'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 
@@ -92,13 +92,9 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
   const menuItemContent = useCallback(
     (item: React.JSX.Element) => {
       // TODO: Once the tooltip changes land, we can use the new `content` prop instead
-      const tooltipContent = actionState.title && (
-        <Box padding={2}>
-          <Text size={1}>{actionState.title}</Text>
-        </Box>
-      )
+
       return (
-        <Tooltip content={tooltipContent} disabled={!tooltipContent} placement="top" portal>
+        <Tooltip content={actionState.title} disabled={!actionState.title} placement="top" portal>
           {item}
         </Tooltip>
       )
