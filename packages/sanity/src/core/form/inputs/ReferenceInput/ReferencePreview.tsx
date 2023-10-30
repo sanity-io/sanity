@@ -110,11 +110,9 @@ export function ReferencePreview(props: {
                 content={
                   <Box padding={2}>
                     <Text size={1}>
-                      <Text size={1}>
-                        {preview.draft?._updatedAt
-                          ? `Edited ${timeSinceEdited}`
-                          : 'No unpublished edits'}
-                      </Text>
+                      {preview.draft?._updatedAt
+                        ? `Edited ${timeSinceEdited}`
+                        : 'No unpublished edits'}
                     </Text>
                   </Box>
                 }
