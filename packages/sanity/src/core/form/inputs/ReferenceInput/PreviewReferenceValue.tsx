@@ -1,10 +1,11 @@
 import React, {ComponentType, ReactNode, Fragment} from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label, Stack, Text, Tooltip} from '@sanity/ui'
+import {Box, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
 import {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
 import {TextWithTone} from '../../../components'
+import {Tooltip} from '../../../../ui'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'
@@ -142,12 +143,10 @@ export function PreviewReferenceValue(props: {
 function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
   const Icon = props.icon
   return (
-    <Flex padding={3}>
-      <Box>
-        <Text size={1}>
-          <Icon />
-        </Text>
-      </Box>
+    <Flex>
+      <Text size={1}>
+        <Icon />
+      </Text>
       <Box flex={1} marginLeft={3}>
         <Text size={1} weight="semibold">
           {props.title}
@@ -177,7 +176,7 @@ function InvalidType(props: {documentId: string; actualType: string; declaredTyp
         <Tooltip
           portal
           content={
-            <Stack space={3} padding={3}>
+            <Stack space={3}>
               <Text size={1}>
                 Referenced document (<code>{props.documentId}</code>) is of type{' '}
                 <code>{props.actualType}</code>.

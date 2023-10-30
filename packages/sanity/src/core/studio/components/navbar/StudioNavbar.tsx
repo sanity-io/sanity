@@ -8,8 +8,6 @@ import {
   Layer,
   LayerProvider,
   PortalProvider,
-  Text,
-  Tooltip,
   useMediaIndex,
   useRootTheme,
 } from '@sanity/ui'

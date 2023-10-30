@@ -1,5 +1,5 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Button, Flex, Text, Tooltip} from '@sanity/ui'
+import {Button, Flex, Text} from '@sanity/ui'
 import React, {createElement, memo, forwardRef, useMemo} from 'react'
 import {
   PaneContextMenuButton,
@@ -12,6 +12,7 @@ import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
+import {Tooltip} from '../../../../../ui'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useFieldActions, useTimelineSelector} from 'sanity'
@@ -110,16 +111,7 @@ export const DocumentPanelHeader = memo(
             <PaneContextMenuButton nodes={contextMenuNodes} key="context-menu" />
 
             {showSplitPaneButton && (
-              <Tooltip
-                content={
-                  <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                    Split pane right
-                  </Text>
-                }
-                padding={2}
-                placement="bottom"
-                portal
-              >
+              <Tooltip content="Split pane right" placement="bottom" portal>
                 <Button
                   aria-label="Split pane right"
                   icon={SplitVerticalIcon}

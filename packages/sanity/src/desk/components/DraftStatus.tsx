@@ -1,7 +1,7 @@
 import React from 'react'
 import {EditIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
-import {Box, Text, Tooltip} from '@sanity/ui'
+import {Tooltip} from '../../ui'
 import {TextWithTone, useTimeAgo} from 'sanity'
 
 export function DraftStatus(props: {document?: PreviewValue | Partial<SanityDocument> | null}) {
@@ -12,14 +12,7 @@ export function DraftStatus(props: {document?: PreviewValue | Partial<SanityDocu
   const lastUpdatedTimeAgo = useTimeAgo(updatedAt || '', {minimal: true, agoSuffix: true})
 
   return (
-    <Tooltip
-      portal
-      content={
-        <Box padding={2}>
-          <Text size={1}>{document ? `Edited ${lastUpdatedTimeAgo}` : 'No unpublished edits'}</Text>
-        </Box>
-      }
-    >
+    <Tooltip portal content={document ? `Edited ${lastUpdatedTimeAgo}` : 'No unpublished edits'}>
       <TextWithTone tone="caution" dimmed={!document} muted={!document} size={1}>
         <EditIcon />
       </TextWithTone>

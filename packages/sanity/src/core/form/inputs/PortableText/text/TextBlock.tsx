@@ -1,4 +1,4 @@
-import {Box, Flex, ResponsivePaddingProps, Tooltip, Text} from '@sanity/ui'
+import {Box, Flex, ResponsivePaddingProps, Text} from '@sanity/ui'
 import React, {RefObject, useCallback, useMemo, useState} from 'react'
 import {ObjectSchemaType, Path, PortableTextTextBlock} from '@sanity/types'
 import {
@@ -29,6 +29,7 @@ import {debugRender} from '../debugRender'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {useFormCallbacks} from '../../../studio'
+import {Tooltip} from '../../../../../ui'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
@@ -249,7 +250,7 @@ export function TextBlock(props: TextBlockProps) {
   const toolTipContent = useMemo(
     () =>
       (tooltipEnabled && (
-        <TooltipBox padding={2}>
+        <TooltipBox>
           <Markers
             markers={markers}
             renderCustomMarkers={renderCustomMarkers}

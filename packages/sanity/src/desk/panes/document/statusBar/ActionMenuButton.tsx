@@ -8,7 +8,6 @@ import {
   MenuItem,
   PopoverProps,
   Text,
-  Tooltip,
 } from '@sanity/ui'
 import React, {
   createElement,
@@ -20,6 +19,7 @@ import React, {
   useId,
 } from 'react'
 import {isValidElementType} from 'react-is'
+import {Tooltip} from '../../../../ui'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, Hotkeys, LegacyLayerProvider} from 'sanity'
 
@@ -107,12 +107,6 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
     if (onHandle) onHandle()
   }, [index, onAction, onHandle])
 
-  const tooltipContent = actionState.title && (
-    <Box padding={2}>
-      <Text size={1}>{actionState.title}</Text>
-    </Box>
-  )
-
   return (
     <MenuItem
       data-testid={`action-${actionState.label.replace(' ', '')}`}
@@ -122,8 +116,8 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
       tone={actionState.tone}
     >
       <Tooltip
-        content={tooltipContent}
-        disabled={!tooltipContent}
+        content={actionState.title}
+        disabled={!actionState.title}
         fallbackPlacements={['left', 'bottom']}
         placement="top"
         portal

@@ -1,6 +1,7 @@
 import React from 'react'
 import {UnpublishIcon} from '@sanity/icons'
-import {Text, Tooltip} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {Tooltip} from '../../ui'
 
 export function NotPublishedStatus() {
   return (

@@ -1,7 +1,7 @@
 import React from 'react'
 import {PublishIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
-import {Box, Text, Tooltip} from '@sanity/ui'
+import {Tooltip} from '../../ui'
 import {TextWithTone, useTimeAgo} from 'sanity'
 
 export function PublishedStatus(props: {document?: PreviewValue | Partial<SanityDocument> | null}) {
@@ -13,14 +13,7 @@ export function PublishedStatus(props: {document?: PreviewValue | Partial<Sanity
   const lastUpdatedTimeAgo = useTimeAgo(updatedAt || '', {minimal: true, agoSuffix: true})
 
   return (
-    <Tooltip
-      portal
-      content={
-        <Box padding={2}>
-          <Text size={1}>{document ? `Published ${lastUpdatedTimeAgo}` : 'Not published'}</Text>
-        </Box>
-      }
-    >
+    <Tooltip portal content={document ? `Published ${lastUpdatedTimeAgo}` : 'Not published'}>
       <TextWithTone tone="positive" dimmed={!document} muted={!document} size={1}>
         <PublishIcon aria-label={statusLabel} />
       </TextWithTone>
