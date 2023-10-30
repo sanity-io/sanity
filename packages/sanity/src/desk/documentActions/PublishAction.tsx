@@ -61,8 +61,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const currentUser = useCurrentUser()
 
-  const lastPublishedTime = published?._updatedAt ? published?._updatedAt : ''
-  const lastPublishedTimeAgo = useTimeAgo(lastPublishedTime, {
+  const lastPublishedTimeAgo = useTimeAgo(published?._updatedAt || '', {
     minimal: true,
     agoSuffix: true,
   })

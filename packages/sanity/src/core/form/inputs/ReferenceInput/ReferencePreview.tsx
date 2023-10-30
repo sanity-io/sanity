@@ -4,9 +4,9 @@ import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
 import {EditIcon, PublishIcon} from '@sanity/icons'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey, TextWithTone} from '../../../components'
+import {useTimeAgo} from '../../../hooks'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {TimeAgo} from './utils/TimeAgo'
 import {ReferenceInfo} from './types'
 
 /**
@@ -53,6 +53,16 @@ export function ReferencePreview(props: {
     [layout, previewStub, refType],
   )
 
+  const timeSincePublished = useTimeAgo(preview.published?._updatedAt || '', {
+    minimal: true,
+    agoSuffix: true,
+  })
+
+  const timeSinceEdited = useTimeAgo(preview.draft?._updatedAt || '', {
+    minimal: true,
+    agoSuffix: true,
+  })
+
   return (
     <Flex align="center">
       <Box flex={1}>{renderPreview(previewProps)}</Box>
@@ -76,13 +86,9 @@ export function ReferencePreview(props: {
                 content={
                   <Box padding={2}>
                     <Text size={1}>
-                      {preview.published?._updatedAt ? (
-                        <>
-                          Published <TimeAgo time={preview.published._updatedAt} />
-                        </>
-                      ) : (
-                        <>Not published</>
-                      )}
+                      {preview.published?._updatedAt
+                        ? `Published ${timeSincePublished}`
+                        : 'Not published'}
                     </Text>
                   </Box>
                 }
@@ -104,13 +110,11 @@ export function ReferencePreview(props: {
                 content={
                   <Box padding={2}>
                     <Text size={1}>
-                      {preview.draft?._updatedAt ? (
-                        <>
-                          Edited <TimeAgo time={preview.draft._updatedAt} />
-                        </>
-                      ) : (
-                        <>No unpublished edits</>
-                      )}
+                      <Text size={1}>
+                        {preview.draft?._updatedAt
+                          ? `Edited ${timeSinceEdited}`
+                          : 'No unpublished edits'}
+                      </Text>
                     </Text>
                   </Box>
                 }
