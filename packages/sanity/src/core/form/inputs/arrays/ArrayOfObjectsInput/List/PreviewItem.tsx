@@ -1,15 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Spinner,
-  Text,
-} from '@sanity/ui'
+import {Box, Button, Card, CardTone, Flex, Menu, MenuButton, Spinner, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
@@ -27,6 +16,7 @@ import {RowLayout} from '../../layouts/RowLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {InsertMenu} from '../InsertMenu'
 import {EditPortal} from '../../../../components/EditPortal'
+import {MenuItem} from '../../../../../../ui'
 
 type PreviewItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 

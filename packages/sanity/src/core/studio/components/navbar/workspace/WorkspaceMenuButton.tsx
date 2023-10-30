@@ -2,7 +2,6 @@ import {SelectIcon} from '@sanity/icons'
 import {
   Button,
   MenuButton,
-  MenuItem,
   Menu,
   MenuButtonProps,
   Box,
@@ -16,6 +15,7 @@ import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
+import {MenuItem} from '../../../../../ui'
 import {useWorkspaceAuthStates} from './hooks'
 import {WorkspacePreview} from './WorkspacePreview'
 import {useRouter} from 'sanity/router'
@@ -112,9 +112,10 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
                       key={workspace.name}
                       // eslint-disable-next-line react/jsx-no-bind
                       onClick={handleSelectWorkspace}
-                      padding={2}
                       pressed={workspace.name === activeWorkspace.name}
                     >
+                      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                      {/* @ts-ignore - Workspace preview hasn't been redesigned for facelift */}
                       <WorkspacePreview
                         icon={workspace?.icon}
                         selected={workspace.name === activeWorkspace.name}

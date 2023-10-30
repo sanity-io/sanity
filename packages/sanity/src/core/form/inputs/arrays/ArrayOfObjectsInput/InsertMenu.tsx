@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-no-bind */
 import {SchemaType} from '@sanity/types'
 import React, {ComponentProps, memo} from 'react'
-import {MenuGroup, MenuItem, PopoverProps} from '@sanity/ui'
+import {MenuGroup, PopoverProps} from '@sanity/ui'
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
+import {MenuItem} from '../../../../../ui'
 
 interface Props {
   types?: SchemaType[]

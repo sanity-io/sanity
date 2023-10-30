@@ -1,14 +1,5 @@
 import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuButtonProps,
-  MenuItem,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {Box, Button, Flex, Menu, MenuButton, MenuButtonProps, useGlobalKeyDown} from '@sanity/ui'
 import React, {
   forwardRef,
   ReactElement,
@@ -20,6 +11,7 @@ import React, {
   PropsWithChildren,
 } from 'react'
 import {PortableTextBlock, isReference} from '@sanity/types'
+import {MenuItem} from '../../../../../ui'
 import {IntentLink} from 'sanity/router'
 
 interface BlockObjectActionsMenuProps extends PropsWithChildren {

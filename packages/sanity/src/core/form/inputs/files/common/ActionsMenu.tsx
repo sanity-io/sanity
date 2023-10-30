@@ -1,7 +1,8 @@
 import React, {MouseEventHandler, useCallback} from 'react'
 
 import {UploadIcon, CopyIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
-import {Box, MenuItem, MenuDivider, Label, useToast} from '@sanity/ui'
+import {Box, MenuDivider, Label, useToast} from '@sanity/ui'
+import {MenuItem} from '../../../../../ui'
 import {FileInputMenuItem} from './FileInputMenuItem/FileInputMenuItem'
 
 interface Props {
@@ -40,7 +41,6 @@ export function ActionsMenu(props: Props) {
         text="Upload"
         data-testid="file-input-upload-button"
         disabled={readOnly || !directUploads}
-        fontSize={2}
       />
       {browse}
 

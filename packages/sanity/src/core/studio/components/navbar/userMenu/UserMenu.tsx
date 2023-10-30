@@ -9,7 +9,6 @@ import {
   MenuButton,
   MenuButtonProps,
   MenuDivider,
-  MenuItem,
   Stack,
   Text,
   Tooltip,
@@ -26,6 +25,7 @@ import {
 } from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
+import {MenuItem} from '../../../../../ui'
 import {LoginProviderLogo} from './LoginProviderLogo'
 
 const AVATAR_SIZE = 1

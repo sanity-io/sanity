@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Text} from '@sanity/ui'
+import {Button, Menu, MenuButton, MenuButtonProps, Text} from '@sanity/ui'
 import {SelectIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {
@@ -13,6 +13,7 @@ import {
   BlockQuote,
   Normal,
 } from '../text/textStyles'
+import {MenuItem} from '../../../../../ui'
 import {useActiveStyleKeys, useFocusBlock} from './hooks'
 import {BlockStyleItem} from './types'
 
@@ -145,6 +146,8 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
               // eslint-disable-next-line react/jsx-no-bind
               onClick={_disabled ? undefined : () => handleChange(item)}
             >
+              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+              {/* @ts-ignore: This item uses a specific render of the menu item.*/}
               {renderOption(item.style, item?.title || item.style)}
             </StyledMenuItem>
           )
