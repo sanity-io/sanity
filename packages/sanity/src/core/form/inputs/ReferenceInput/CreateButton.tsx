@@ -1,7 +1,8 @@
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
-import {Box, Button, Menu, MenuButton, MenuButtonProps, MenuItem, Tooltip} from '@sanity/ui'
+import {Button, Menu, MenuButton, MenuButtonProps, MenuItem} from '@sanity/ui'
 import {InsufficientPermissionsMessage} from '../../../components'
+import {Tooltip} from '../../../../ui'
 import {CreateReferenceOption} from './types'
 
 interface Props extends ComponentProps<typeof Button> {
@@ -30,13 +31,7 @@ export function CreateButton(props: Props) {
   const canCreateAny = createOptions.some((option) => option.permission.granted)
   if (!canCreateAny) {
     return (
-      <Tooltip
-        content={
-          <Box padding={2}>
-            <InsufficientPermissionsMessage operationLabel="create a new reference" />
-          </Box>
-        }
-      >
+      <Tooltip content={<InsufficientPermissionsMessage operationLabel="create a new reference" />}>
         {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
         <div style={INLINE_BLOCK_STYLE}>
           <Button text="Create new" mode="ghost" disabled icon={AddIcon} style={FULL_WIDTH} />
@@ -64,9 +59,7 @@ export function CreateButton(props: Props) {
               disabled={createOption.permission.granted}
               key={createOption.id}
               content={
-                <Box padding={2}>
-                  <InsufficientPermissionsMessage operationLabel="create this type of document" />
-                </Box>
+                <InsufficientPermissionsMessage operationLabel="create this type of document" />
               }
               portal
             >

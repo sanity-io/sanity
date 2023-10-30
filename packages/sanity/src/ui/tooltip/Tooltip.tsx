@@ -1,16 +1,13 @@
-import {
-  Text,
-  Tooltip as UITooltip,
-  TooltipProps as UITooltipProps,
-  HotkeysProps as UIHotkeysProps,
-} from '@sanity/ui'
-import React from 'react'
+import {Tooltip as UITooltip, TooltipProps as UITooltipProps, Text} from '@sanity/ui'
+import React, {forwardRef} from 'react'
 
 /** @internal */
-export interface TooltipProps
-  extends Pick<UITooltipProps, 'children' | 'disabled' | 'placement' | 'scheme'>,
-    Pick<UIHotkeysProps, 'keys'> {
-  text: string
+export interface TooltipProps extends UITooltipProps {
+  ref?: React.ForwardedRef<HTMLDivElement>
+}
+
+const TOOLTIP_DELAY_PROPS = {
+  open: 500,
 }
 
 /**
@@ -21,15 +18,26 @@ export interface TooltipProps
  *
  * @internal
  */
-export const Tooltip = ({text, ...rest}: TooltipProps) => {
+export const Tooltip = forwardRef(function Tooltip(
+  props: TooltipProps,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
+  const {content, ...rest} = props
+
   return (
     <UITooltip
       content={
-        <Text size={1} weight="medium">
-          {text}
-        </Text>
+        typeof content === 'string' || typeof content === 'number' ? (
+          <Text size={1} weight="medium">
+            {content}
+          </Text>
+        ) : (
+          content
+        )
       }
+      delay={TOOLTIP_DELAY_PROPS}
+      ref={ref}
       {...rest}
     />
   )
-}
+})

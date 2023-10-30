@@ -1,5 +1,6 @@
-import {Button, ButtonProps, TooltipProps} from '@sanity/ui'
+import {Button, ButtonProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
+import {TooltipProps} from '../../../ui'
 
 /** @internal */
 export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {

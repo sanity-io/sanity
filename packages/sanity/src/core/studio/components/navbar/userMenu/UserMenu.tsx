@@ -12,13 +12,13 @@ import {
   MenuItem,
   Stack,
   Text,
-  Tooltip,
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
 import {type StudioThemeColorSchemeKey} from '../../../../theme'
+import {Tooltip} from '../../../../../ui'
 import {
   useColorSchemeOptions,
   useColorSchemeSetValue,
@@ -106,17 +106,7 @@ export function UserMenu() {
         <StyledMenu>
           <Card padding={2}>
             <Flex align="center">
-              <Tooltip
-                disabled={!providerTitle}
-                portal
-                content={
-                  providerTitle && (
-                    <Box padding={2}>
-                      <Text size={1}>Signed in with {providerTitle}</Text>
-                    </Box>
-                  )
-                }
-              >
+              <Tooltip disabled={!providerTitle} portal content={`Signed in with ${providerTitle}`}>
                 <AvatarBox marginRight={3}>
                   <UserAvatar size={AVATAR_SIZE} user="me" />
                   {currentUser?.provider && <LoginProviderLogo provider={currentUser.provider} />}

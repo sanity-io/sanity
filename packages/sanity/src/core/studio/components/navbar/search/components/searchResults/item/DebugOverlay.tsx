@@ -1,7 +1,8 @@
-import {Box, Card, CardTone, Code, Inline, Stack, Tooltip} from '@sanity/ui'
+import {Card, CardTone, Code, Inline, Stack} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 import type {WeightedHit} from '../../../../../../../search'
+import {Tooltip} from '../../../../../../../../ui'
 
 interface DebugScoreProps {
   data: WeightedHit
@@ -30,24 +31,22 @@ export function DebugOverlay({data}: DebugScoreProps) {
     <>
       <Tooltip
         content={
-          <Box padding={2}>
-            <Stack space={2}>
-              {matchingStories.length ? (
-                <>
-                  {matchingStories.map((story) => (
-                    <Inline key={story.path} space={3}>
-                      <Code size={0} weight="semibold">
-                        {story.path}
-                      </Code>
-                      <Code size={0}>{story.why}</Code>
-                    </Inline>
-                  ))}
-                </>
-              ) : (
-                <Code size={0}>No matches</Code>
-              )}
-            </Stack>
-          </Box>
+          <Stack space={2}>
+            {matchingStories.length ? (
+              <>
+                {matchingStories.map((story) => (
+                  <Inline key={story.path} space={3}>
+                    <Code size={0} weight="semibold">
+                      {story.path}
+                    </Code>
+                    <Code size={0}>{story.why}</Code>
+                  </Inline>
+                ))}
+              </>
+            ) : (
+              <Code size={0}>No matches</Code>
+            )}
+          </Stack>
         }
         placement="bottom-start"
         portal

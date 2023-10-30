@@ -1,8 +1,9 @@
-import {Card, Code, Flex, Inline, Label, Stack, Text, Tooltip} from '@sanity/ui'
+import {Card, Code, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
 import {startCase, uniq} from 'lodash'
 import React, {ReactElement, useMemo} from 'react'
 import {useSchema} from '../../../../../../../../hooks'
 import {isNonNullable} from '../../../../../../../../util'
+import {Tooltip} from '../../../../../../../../../ui'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {SearchFieldDefinition} from '../../../../definitions/fields'
 import type {SearchFilterDefinition} from '../../../../definitions/filters'
@@ -75,7 +76,7 @@ export function FilterTooltip({
     <Tooltip
       content={
         <Card tone="default" radius={2} style={{maxWidth: '250px'}}>
-          <Stack padding={3} space={4}>
+          <Stack space={4}>
             {/* Field name */}
             {fieldDefinition && (
               <Stack space={2}>
