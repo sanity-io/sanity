@@ -1,8 +1,9 @@
 import {CurrentUser} from '@sanity/types'
-import {Tooltip, Box, Card, Text} from '@sanity/ui'
+import {Box, Card, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
+import {Tooltip} from '../../../../../ui'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {useIntentLink} from 'sanity/router'
 
@@ -48,7 +49,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
       key={option.id}
       portal
       content={
-        <TooltipContentBox padding={2}>
+        <TooltipContentBox>
           <InsufficientPermissionsMessage
             currentUser={currentUser}
             operationLabel="create this document"

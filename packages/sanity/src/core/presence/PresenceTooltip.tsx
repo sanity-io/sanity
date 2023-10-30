@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react'
-import {Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {UserAvatar} from '../components/userAvatar'
+import {Tooltip} from '../../ui'
 import {FormNodePresence} from './types'
 
 interface PresenceTooltipProps {
@@ -19,7 +20,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
 
   const content = useMemo(
     () => (
-      <Stack padding={1} sizing="border">
+      <Stack sizing="border">
         {items.map((item) => (
           <Flex align="center" gap={2} padding={1} key={item.user.id}>
             <div>

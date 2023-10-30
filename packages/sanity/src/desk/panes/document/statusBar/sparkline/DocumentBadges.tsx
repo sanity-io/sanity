@@ -1,7 +1,8 @@
-import {Badge, BadgeTone, Box, Inline, Text, Tooltip} from '@sanity/ui'
+import {Badge, BadgeTone, Inline, Text} from '@sanity/ui'
 import React from 'react'
 import {RenderBadgeCollectionState} from '../../../../components'
 import {useDocumentPane} from '../../useDocumentPane'
+import {Tooltip} from '../../../../../ui'
 import {DocumentBadgeDescription} from 'sanity'
 
 interface DocumentBadgesInnerProps {
@@ -20,13 +21,7 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
     <Inline space={1}>
       {states.map((badge, index) => (
         <Tooltip
-          content={
-            badge.title && (
-              <Box padding={2}>
-                <Text size={1}>{badge.title}</Text>
-              </Box>
-            )
-          }
+          content={badge.title}
           disabled={!badge.title}
           key={String(index)}
           placement="top"
