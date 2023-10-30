@@ -55,45 +55,69 @@ const examples: [Record<string, unknown>, MatchResult][] = [
   [
     {},
     {
-      nodes: [],
-      missing: ['bar'],
-      remaining: [],
+      type: 'error',
+      node,
+      missingKeys: ['bar'],
+      unmappableStateKeys: [],
     },
   ],
   [
     {bar: 'bar'},
     {
-      nodes: [node],
-      missing: [],
-      remaining: [],
+      type: 'ok',
+      node: node,
+      matchedState: {bar: 'bar'},
+      child: undefined,
+      searchParams: [],
     },
   ],
   [
     {bar: 'bar', animal: 'cat'},
     {
-      nodes: [node, (node.children as RouterNode[])[0]],
-      remaining: [],
-      missing: [],
+      node,
+      type: 'ok',
+      child: {
+        type: 'ok',
+        child: undefined,
+        matchedState: {
+          animal: 'cat',
+        },
+        node: expect.objectContaining({children: expect.any(Object), route: expect.any(Object)}),
+        searchParams: [],
+      },
+      matchedState: {
+        bar: 'bar',
+      },
+      searchParams: [],
     },
   ],
   [
     {bar: 'bar', animal: 'cat', snargh: 'gnargh'},
     {
-      nodes: [
-        node,
-        (node.children as RouterNode[])[1],
-        ((node.children as RouterNode[])[1].children as RouterNode[])[0],
-      ],
-      remaining: [],
-      missing: [],
+      type: 'ok',
+      node,
+      child: {
+        type: 'ok',
+        child: expect.any(Object),
+        matchedState: {
+          animal: 'cat',
+        },
+        node: expect.objectContaining({children: expect.any(Object), route: expect.any(Object)}),
+        searchParams: [],
+      },
+      matchedState: {
+        bar: 'bar',
+      },
+      searchParams: [],
     },
   ],
   [
     {bar: 'bar', creature: 'cat'},
     {
-      nodes: [],
-      remaining: ['creature'],
-      missing: [],
+      type: 'error',
+      node,
+      unmappableStateKeys: ['creature'],
+      missingKeys: [],
     },
   ],
 ]

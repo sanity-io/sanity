@@ -25,7 +25,7 @@ test('scopes all the way down', () => {
   expect('/foo/bar').toBe(router.encode({first: {bar: 'bar'}}))
 
   expect({first: {bar: 'bar', second: {qux: 'qux'}}}).toEqual(router.decode('/foo/bar/baz/qux'))
-  expect('/foo/bar/baz/qux').toBe(router.encode({first: {bar: 'bar', second: {qux: 'qux'}}}))
+  expect(router.encode({first: {bar: 'bar', second: {qux: 'qux'}}})).toBe('/foo/bar/baz/qux')
 
   expect({
     first: {

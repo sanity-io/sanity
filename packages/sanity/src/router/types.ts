@@ -126,11 +126,32 @@ export interface Router extends RouterNode {
 }
 
 /** @internal */
-export interface MatchResult {
-  nodes: RouterNode[]
-  missing: string[]
-  remaining: string[]
+export type InternalSearchParam = [scopedPath: string[], value: string]
+
+/** @internal */
+export interface MatchOk {
+  type: 'ok'
+  node: RouterNode
+  matchedState: Record<string, string>
+  searchParams: InternalSearchParam[]
+  child: MatchOk | undefined
 }
+
+/** @internal */
+export interface MatchError {
+  type: 'error'
+  node: RouterNode
+  /**
+   * Parameters found in the route string but not provided as a key in the state object
+   */
+  missingKeys: string[]
+  /**
+   * These are keys found in the state object but not in the route definition (and can't be mapped to a child route)
+   */
+  unmappableStateKeys: string[]
+}
+/** @internal */
+export type MatchResult = MatchError | MatchOk
 
 /**
  * @public
@@ -178,7 +199,12 @@ export type IntentParameters = BaseIntentParams | [BaseIntentParams, IntentJsonP
 /**
  * @public
  */
-export type RouterState = Record<string, unknown>
+export type SearchParam = [key: string, value: string]
+
+/**
+ * @public
+ */
+export type RouterState = Record<string, unknown> & {_searchParams?: SearchParam[]}
 
 /**
  * @public

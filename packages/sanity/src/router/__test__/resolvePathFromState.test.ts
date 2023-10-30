@@ -9,10 +9,17 @@ test('resolves empty state to fixed base path', () => {
   expect(_resolvePathFromState(rootRoute, {})).toEqual('/root')
 })
 
-test('throws on unresolvable state', () => {
+test('throws if state is missing required params', () => {
+  const rootRoute = route.create('/base/:one/:another')
+  expect(() => _resolvePathFromState(rootRoute, {})).toThrow(
+    'Unable to find matching route for state. State object is missing the following keys defined in route: "one", "another"',
+  )
+})
+
+test('throws on state values that dont map to url params', () => {
   const rootRoute = route.create('/root', [route.create('/:page', [route.create('/:productId')])])
   expect(() => _resolvePathFromState(rootRoute, {foo: 'bar'})).toThrow(
-    'Unable to find matching route for state. Could not map the following state key to a valid url: foo',
+    'Unable to find matching route for state. Could not map the following state key to a valid url: "foo"',
   )
 })
 
@@ -37,7 +44,7 @@ test('points to unmapped keys', () => {
     },
   }
   expect(() => _resolvePathFromState(routesDef, state)).toThrow(
-    'Unable to find matching route for state. Could not map the following state keys to a valid url: tool, foo',
+    'Unable to find matching route for state. Could not map the following state keys to a valid url: "tool", "foo"',
   )
 })
 
