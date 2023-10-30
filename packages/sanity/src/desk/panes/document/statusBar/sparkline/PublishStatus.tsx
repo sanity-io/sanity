@@ -1,7 +1,8 @@
-import {Box, Button, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
+import {Tooltip} from '../../../../../ui'
 import {useTimeAgo} from 'sanity'
 
 interface PublishStatusProps {
@@ -42,7 +43,7 @@ export function PublishStatus(props: PublishStatusProps) {
         placement="top"
         portal
         content={
-          <Stack padding={3} space={3}>
+          <Stack space={3}>
             <Text size={1}>
               {liveEdit ? (
                 <>

@@ -1,6 +1,5 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
-import {Tooltip} from '@sanity/ui'
 import React, {ComponentType, useCallback, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
 import {pathToString} from '../../../../field'
@@ -22,6 +21,7 @@ import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {debugRender} from '../debugRender'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {EMPTY_ARRAY} from '../../../../util'
+import {Tooltip} from '../../../../../ui'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 import {Root, TooltipBox} from './Annotation.styles'
 import {ObjectEditModal} from './modals/ObjectEditModal'
@@ -122,7 +122,7 @@ export function Annotation(props: AnnotationProps) {
           placement="bottom"
           portal="default"
           content={
-            <TooltipBox padding={2}>
+            <TooltipBox>
               <Markers
                 markers={markers}
                 renderCustomMarkers={renderCustomMarkers}

@@ -1,12 +1,13 @@
 import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
+import {Box, Flex, Inline, Label, Text, useRootTheme} from '@sanity/ui'
 import {EditIcon, PublishIcon} from '@sanity/icons'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey, TextWithTone} from '../../../components'
 import {useTimeAgo} from '../../../hooks'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
+import {Tooltip} from '../../../../ui'
 import {ReferenceInfo} from './types'
 
 /**

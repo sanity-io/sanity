@@ -3,9 +3,10 @@
 import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {FormNodeValidation} from '@sanity/types'
-import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
+import {Box, Flex, Placement, Stack, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
+import {Tooltip} from '../../../../ui'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
@@ -98,7 +99,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   return (
     <Tooltip
       content={
-        <StyledStack padding={3} space={3}>
+        <StyledStack space={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
