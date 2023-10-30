@@ -29,7 +29,7 @@ export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
     // The response is an array containing the addon dataset. We only expect
     // one addon dataset to be returned, so we return the name of the first
     // addon dataset in the array.
-    return Array.isArray(res) && res[0].name ? res[0].name : undefined
+    return res?.[0]?.name
   }, [dataset, originalClient, projectId])
 
   const handleCreateClient = useCallback(
