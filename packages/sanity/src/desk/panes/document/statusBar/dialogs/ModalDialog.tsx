@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 import React, {useId} from 'react'
-import {Dialog} from '../../../../../ui/dialog'
+import {Dialog} from '../../../../../ui'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {DocumentActionModalDialogProps, LegacyLayerProvider} from 'sanity'
 

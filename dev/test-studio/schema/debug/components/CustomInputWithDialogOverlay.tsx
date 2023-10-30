@@ -2,7 +2,7 @@ import React from 'react'
 import {DocumentPresence, FieldPresence, PresenceOverlay, setIfMissing} from 'sanity'
 import {Button} from '@sanity/ui'
 import {ObjectSchemaType, Path} from '@sanity/types'
-import {Dialog} from '../../../../../packages/sanity/src/ui/dialog'
+import {Dialog} from '../../../../../packages/sanity/src/ui'
 
 export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInputWithDialogOverlay(
   props: {

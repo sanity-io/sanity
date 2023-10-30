@@ -1,7 +1,7 @@
 import React, {useCallback, useState, useId} from 'react'
 import {Box, Heading, Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
-import {Dialog} from '../../../../../ui/dialog'
+import {Dialog} from '../../../../../ui'
 import {useSchema} from '../../../../hooks'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 import {useColorScheme} from '../../../colorScheme'

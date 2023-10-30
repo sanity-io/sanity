@@ -1,7 +1,7 @@
 import {CurrentUser} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
-import {Dialog} from '../../../ui/dialog'
+import {Dialog} from '../../../ui'
 import {getProviderTitle} from '../../store'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 

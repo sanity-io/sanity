@@ -1,6 +1,6 @@
 import {Box, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import {Dialog} from '../../../../ui/dialog'
+import {Dialog} from '../../../../ui'
 
 export function InitialValueTemplateError({errors}: {errors: Error[]}) {
   return (
