@@ -276,6 +276,11 @@ export interface DocumentPluginOptions {
    * @beta
    */
   newDocumentOptions?: NewDocumentOptionsResolver
+
+  /** @internal */
+  unstable_comments?: {
+    enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
+  }
 }
 
 /**
@@ -461,6 +466,12 @@ export interface DocumentInspectorContext extends ConfigContext {
   documentType: string
 }
 
+/** @hidden @beta */
+export interface DocumentCommentsEnabledContext {
+  documentId?: string
+  documentType: string
+}
+
 /**
  * @hidden
  * @beta
@@ -564,6 +575,11 @@ export interface Source {
      * @beta
      */
     inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
+
+    /** @internal */
+    unstable_comments: {
+      enabled: (props: DocumentCommentsEnabledContext) => boolean
+    }
   }
 
   /**
