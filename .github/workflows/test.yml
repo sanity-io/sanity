@@ -57,11 +57,12 @@ jobs:
           cache-name: cache-build
         with:
           path: './*'
-          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          # Unique key for a workflow run. Should be invalidated in the next run
+          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
 
       - name: Build CLI
         run: yarn build:cli # Needed for CLI tests
@@ -99,24 +100,30 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/cache@v3
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v3
         id: restore-node-modules
         env:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
 
-      - uses: actions/cache@v3
+      - name: Restore build cache
+        uses: actions/cache/restore@v3
         id: restore-build
         env:
           cache-name: cache-build
         with:
           path: ./*
-          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
+          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Install project dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        if: steps.restore-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
 
       - name: Test
@@ -128,3 +135,34 @@ jobs:
         env:
           SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
+
+  cleanup:
+    timeout-minutes: 60
+    name: Cleanup (${{ matrix.os }} / node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+    needs: [test]
+
+    strategy:
+      # we want to know if a test fails on a specific node version
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [18, 20]
+        experimental: [false]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # Delete the cache so it is only used once
+      - name: Delete Cache
+        run: gh cache delete ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}-${{ github.run_attempt }}
+        env:
+          cache-name: cache-build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
