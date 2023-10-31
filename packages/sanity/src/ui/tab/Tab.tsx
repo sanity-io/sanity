@@ -3,6 +3,10 @@ import React, {forwardRef} from 'react'
 
 /**
  * @internal
+ *
+ * Icons are not supported in the Studio UI <Tab> component.
+ * Padding and font size are fixed.
+ *
  */
 export type TabProps = Pick<
   UITabProps,
