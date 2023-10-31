@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Be sure to update `pr-cleanup.yml` if updated
+        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
         project: [chromium, firefox]
     steps:
       - uses: actions/checkout@v4
@@ -103,7 +103,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Be sure to update `pr-cleanup.yml` if updated
+        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
         project: [chromium, firefox]
         # Add more shards here if needed
         shardIndex: [1, 2]
@@ -235,6 +235,28 @@ jobs:
           name: html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
           retention-days: 30
+
+  cleanup:
+    timeout-minutes: 30
+    name: Cleanup (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    needs: [playwright-test]
+
+    strategy:
+      # we want to know if a test fails on a specific node version
+      fail-fast: false
+      matrix:
+        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
+        project: [chromium, firefox]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
       # Delete the cache so it is only used once
       - name: Delete Cache
