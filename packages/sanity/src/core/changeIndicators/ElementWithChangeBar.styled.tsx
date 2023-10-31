@@ -6,54 +6,54 @@ interface ThemeContext {
 }
 
 interface RootProps {
-  focus: boolean
-  hover: boolean
-  changed?: boolean
-  isReviewChangeOpen: boolean
-  disabled?: boolean
+  $changed?: boolean
+  $disabled?: boolean
+  $isReviewChangeOpen: boolean
   $withHoverEffect?: boolean
 }
 
 const animationSpeed = 250
 
-export const ChangeBarWrapper = styled.div<RootProps>(({changed, disabled, isReviewChangeOpen}) => {
-  if (disabled)
+export const ChangeBarWrapper = styled.div<RootProps>(
+  ({$changed, $disabled, $isReviewChangeOpen}) => {
+    if ($disabled)
+      return css`
+        ${ChangeBar} {
+          display: none;
+        }
+      `
+
     return css`
-      ${ChangeBar} {
-        display: none;
+      --change-bar-offset: 2px;
+
+      display: flex;
+      position: relative;
+
+      @media (hover: hover) {
+        &:hover {
+          z-index: 10;
+        }
       }
+
+      /* hide when field is not changed */
+      ${!$changed &&
+      css`
+        ${ChangeBar} {
+          opacity: 0;
+          pointer-events: none;
+        }
+      `}
+
+      /* hide hover effect when review changes is open */
+      ${$isReviewChangeOpen &&
+      css`
+        ${ChangeBarButton} {
+          opacity: 0;
+        }
+      `}
     `
-
-  return css`
-    --change-bar-offset: 2px;
-
-    display: flex;
-    position: relative;
-
-    @media (hover: hover) {
-      &:hover {
-        z-index: 10;
-      }
-    }
-
-    /* hide when field is not changed */
-    ${!changed &&
-    css`
-      ${ChangeBar} {
-        opacity: 0;
-        pointer-events: none;
-      }
-    `}
-
-    /* hide hover effect when review changes is open */
-    ${isReviewChangeOpen &&
-    css`
-      ${ChangeBarButton} {
-        opacity: 0;
-      }
-    `}
-  `
-})
+  },
+)
 
 export const FieldWrapper = styled.div`
   flex-grow: 1;

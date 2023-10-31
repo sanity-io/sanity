@@ -32,14 +32,14 @@ function DocumentHeaderTab(props: {
   tabPanelId: string
   viewId: string | null
 }) {
-  const {isActive, tabPanelId, viewId} = props
+  const {isActive, tabPanelId, viewId, ...rest} = props
   const {ready} = useDocumentPane()
   const {setView} = usePaneRouter()
   const handleClick = useCallback(() => setView(viewId), [setView, viewId])
 
   return (
     <Tab
-      {...props} // required to enable <TabList> keyboard navigation
+      {...rest} // required to enable <TabList> keyboard navigation
       aria-controls={tabPanelId}
       disabled={!ready}
       fontSize={1}

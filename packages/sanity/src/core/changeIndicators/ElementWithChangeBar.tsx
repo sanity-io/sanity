@@ -1,29 +1,24 @@
 import {useLayer} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useMemo} from 'react'
 import {ConnectorContext} from './ConnectorContext'
 import {
+  ChangeBar,
+  ChangeBarButton,
+  ChangeBarMarker,
   ChangeBarWrapper,
   FieldWrapper,
-  ChangeBar,
-  ChangeBarMarker,
-  ChangeBarButton,
 } from './ElementWithChangeBar.styled'
 
 export function ElementWithChangeBar(props: {
   children: React.ReactNode
   disabled?: boolean
-  hasFocus: boolean
   isChanged?: boolean
   withHoverEffect?: boolean
 }) {
-  const {children, disabled, hasFocus, isChanged, withHoverEffect = true} = props
+  const {children, disabled, isChanged, withHoverEffect = true} = props
 
-  const [hover, setHover] = useState(false)
   const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
   const {zIndex} = useLayer()
-
-  const handleMouseEnter = useCallback(() => setHover(true), [])
-  const handleMouseLeave = useCallback(() => setHover(false), [])
 
   const changeBar = useMemo(
     () =>
@@ -35,34 +30,21 @@ export function ElementWithChangeBar(props: {
             aria-label="Review changes"
             data-testid="change-bar__button"
             onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
             tabIndex={-1}
             type="button"
             $withHoverEffect={withHoverEffect}
           />
         </ChangeBar>
       ),
-    [
-      disabled,
-      isChanged,
-      zIndex,
-      isReviewChangesOpen,
-      onOpenReviewChanges,
-      handleMouseEnter,
-      handleMouseLeave,
-      withHoverEffect,
-    ],
+    [disabled, isChanged, zIndex, isReviewChangesOpen, onOpenReviewChanges, withHoverEffect],
   )
 
   return (
     <ChangeBarWrapper
-      changed={isChanged}
       data-testid="change-bar-wrapper"
-      disabled={disabled}
-      focus={hasFocus}
-      hover={hover}
-      isReviewChangeOpen={isReviewChangesOpen}
+      $changed={isChanged}
+      $disabled={disabled}
+      $isReviewChangeOpen={isReviewChangesOpen}
     >
       <FieldWrapper data-testid="change-bar__field-wrapper">{children}</FieldWrapper>
       {changeBar}
