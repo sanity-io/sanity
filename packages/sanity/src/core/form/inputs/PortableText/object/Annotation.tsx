@@ -278,7 +278,6 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     }
     return 'default'
   }, [isLink, hasError, hasWarning])
-
   return (
     <Root
       $toneKey={toneKey}

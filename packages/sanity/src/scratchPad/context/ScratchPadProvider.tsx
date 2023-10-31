@@ -59,6 +59,20 @@ export function ScratchPadProvider(props: ScratchPadProviderProps) {
           },
         ],
       },
+      {
+        _key: '456',
+        _type: 'block',
+        style: 'normal',
+        markDefs: [],
+        children: [
+          {
+            _key: 'def',
+            _type: 'span',
+            text: 'Something something',
+            marks: [],
+          },
+        ],
+      },
     ],
   })
 
@@ -103,17 +117,9 @@ export function ScratchPadProvider(props: ScratchPadProviderProps) {
     // console.log('On editor beforeInput')
   }, [])
 
-  const onAssistanceRangeSelect = useCallback(
-    (selection: EditorSelection): void => {
-      setAssistanceSelection(selection)
-      setTimeout(() => {
-        if (selection) {
-          focusAssistantPrompt()
-        }
-      }, 100)
-    },
-    [focusAssistantPrompt],
-  )
+  const onAssistanceRangeSelect = useCallback((selection: EditorSelection): void => {
+    setAssistanceSelection(selection)
+  }, [])
 
   useEffect(() => {
     if (assistanceSelection && editor) {

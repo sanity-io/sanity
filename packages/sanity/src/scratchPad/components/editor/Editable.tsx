@@ -1,6 +1,8 @@
-import React, {PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Stack} from '@sanity/ui'
+import React, {PropsWithChildren, useCallback, useEffect, useMemo, useRef} from 'react'
+import {BoundaryElementProvider, Stack} from '@sanity/ui'
 import {
+  BlockAnnotationRenderProps,
+  BlockChildRenderProps,
   BlockDecoratorRenderProps,
   BlockRenderProps,
   BlockStyleRenderProps,
@@ -12,17 +14,18 @@ import {
 } from '@sanity/portable-text-editor'
 import styled, {css} from 'styled-components'
 import {debounce} from 'lodash'
-import isHotkey from 'is-hotkey'
+import {PortableTextTextBlock} from '@sanity/types'
 import {useScratchPad} from '../../hooks/useScratchPad'
 import {ScratchPadContextValue} from '../../context/ScratchPadProvider'
 import {PortableTextInputProps} from '../../../core'
-import {TextBlock} from '../rendering/renderBlock'
 import {Style} from '../../../core/form/inputs/PortableText/text/Style'
 import {Decorator} from '../../../core/form/inputs/PortableText/text'
+import {Annotation} from '../../../core/form/inputs/PortableText/object/Annotation'
+import {InlineObject} from '../../../core/form/inputs/PortableText/object/InlineObject'
+import {TextBlock} from '../../../core/form/inputs/PortableText/text/TextBlock'
 import {AssistanceRange} from './AssistanceRange'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
-const MODIFIER_KEY = 'Alt+Control'
 
 const EditableWrapStack = styled(Stack)(() => {
   return css`
@@ -48,7 +51,6 @@ export function Editable(props: EditableProps) {
   const editableRef = useRef<HTMLDivElement | null>(null)
   const editor = usePortableTextEditor()
   const editorSelection = usePortableTextEditorSelection()
-  const [modifierKeyPressed, setIsModifierKeyPressed] = useState(false)
 
   const {onEditorBeforeInput, onAssistanceRangeSelect, assistanceSelection, editorFocused} =
     useScratchPad()
@@ -68,47 +70,69 @@ export function Editable(props: EditableProps) {
 
   const renderPlaceholder = useCallback(() => <span>{placeholder}</span>, [placeholder])
 
-  const handleSetAssistantRangeKey = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (isHotkey(MODIFIER_KEY, event)) {
-      setIsModifierKeyPressed(true)
-    }
-  }, [])
-
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
-      handleSetAssistantRangeKey(event)
       if (onKeyDown) {
         onKeyDown(event)
       }
     },
-    [handleSetAssistantRangeKey, onKeyDown],
+    [onKeyDown],
   )
 
-  const handleKeyUp = useCallback(() => {
-    setIsModifierKeyPressed(false)
-  }, [])
-
-  // Update the assistance selection when user is done selecting something, and modifier key is pressed
+  // Update the assistance selection when user is 'done' selecting something
   useEffect(() => {
     createAssistSelectionDebounced(editor, onAssistanceRangeSelect)
-  }, [editor, modifierKeyPressed, onAssistanceRangeSelect])
+  }, [editor, onAssistanceRangeSelect, editorSelection])
 
-  // These render functions piggybacks on the PT-input's rendering components
+  // These render functions starting with a underscore piggybacks on the PT-input's rendering components
   const _renderBlock = useCallback(
     (editorRenderProps: BlockRenderProps) => {
-      if (!rootElementRef.current) {
-        return <></>
-      }
       return (
         <TextBlock
-          formProps={formProps}
-          blockProps={editorRenderProps}
-          boundaryElement={rootElementRef.current}
-          scrollElement={rootElementRef.current}
-        />
+          floatingBoundary={editorRenderProps.editorElementRef.current}
+          focused={editorRenderProps.focused}
+          isFullscreen
+          // eslint-disable-next-line react/jsx-handler-names
+          onItemClose={formProps.onItemClose}
+          // eslint-disable-next-line react/jsx-handler-names
+          onItemOpen={formProps.onItemOpen}
+          // eslint-disable-next-line react/jsx-handler-names
+          onItemRemove={formProps.onItemRemove}
+          // eslint-disable-next-line react/jsx-handler-names
+          onPathFocus={formProps.onPathFocus}
+          path={formProps.path.concat(editorRenderProps.path)}
+          readOnly={formProps.readOnly}
+          referenceBoundary={rootElementRef.current}
+          renderAnnotation={formProps.renderAnnotation}
+          renderField={formProps.renderField}
+          renderInlineBlock={formProps.renderInlineBlock}
+          renderInput={formProps.renderInput}
+          renderItem={formProps.renderItem}
+          renderPreview={formProps.renderPreview}
+          renderBlock={formProps.renderBlock}
+          schemaType={editorRenderProps.schemaType}
+          selected={editorRenderProps.selected}
+          value={editorRenderProps.value as PortableTextTextBlock}
+        >
+          {editorRenderProps.children}
+        </TextBlock>
       )
     },
-    [formProps],
+    [
+      formProps.onItemClose,
+      formProps.onItemOpen,
+      formProps.onItemRemove,
+      formProps.onPathFocus,
+      formProps.path,
+      formProps.readOnly,
+      formProps.renderAnnotation,
+      formProps.renderBlock,
+      formProps.renderField,
+      formProps.renderInlineBlock,
+      formProps.renderInput,
+      formProps.renderItem,
+      formProps.renderPreview,
+    ],
   )
 
   const _renderDecorator = useCallback((editorRenderProps: BlockDecoratorRenderProps) => {
@@ -119,24 +143,125 @@ export function Editable(props: EditableProps) {
     return <Style {...editorRenderProps} />
   }, [])
 
+  const _renderAnnotation = useCallback(
+    (editorRenderProps: BlockAnnotationRenderProps) => {
+      return (
+        <Annotation
+          floatingBoundary={editorRenderProps.editorElementRef.current}
+          editorNodeFocused={editorFocused}
+          focused={editorRenderProps.focused}
+          // eslint-disable-next-line react/jsx-handler-names
+          onItemClose={formProps.onItemClose}
+          // eslint-disable-next-line react/jsx-handler-names
+          onItemOpen={formProps.onItemOpen}
+          // eslint-disable-next-line react/jsx-handler-names
+          onPathFocus={formProps.onPathFocus}
+          path={formProps.path.concat(editorRenderProps.path)}
+          referenceBoundary={rootElementRef.current}
+          renderAnnotation={formProps.renderAnnotation}
+          renderField={formProps.renderField}
+          renderInput={formProps.renderInput}
+          renderItem={formProps.renderItem}
+          renderPreview={formProps.renderPreview}
+          selected={editorRenderProps.selected}
+          schemaType={editorRenderProps.schemaType}
+          value={editorRenderProps.value}
+        >
+          {editorRenderProps.children}
+        </Annotation>
+      )
+    },
+    [
+      editorFocused,
+      formProps.onItemClose,
+      formProps.onItemOpen,
+      formProps.onPathFocus,
+      formProps.path,
+      formProps.renderAnnotation,
+      formProps.renderField,
+      formProps.renderInput,
+      formProps.renderItem,
+      formProps.renderPreview,
+    ],
+  )
+
+  const _renderChild = useCallback(
+    (editorRenderProps: BlockChildRenderProps) => {
+      const {
+        children,
+        focused: childFocused,
+        path: childPath,
+        selected,
+        schemaType: childSchemaType,
+        value: child,
+      } = editorRenderProps
+      const isSpan = child._type === editor.schemaTypes.span.name
+      if (isSpan) {
+        return children
+      }
+      return (
+        <InlineObject
+          floatingBoundary={editorRenderProps.editorElementRef.current}
+          focused={childFocused}
+          // eslint-disable-next-line react/jsx-handler-names
+          onItemClose={formProps.onItemClose}
+          // eslint-disable-next-line react/jsx-handler-names
+          onItemOpen={formProps.onItemOpen}
+          // eslint-disable-next-line react/jsx-handler-names
+          onPathFocus={formProps.onPathFocus}
+          path={formProps.path.concat(childPath)}
+          readOnly={formProps.readOnly}
+          referenceBoundary={rootElementRef.current}
+          relativePath={childPath}
+          renderAnnotation={formProps.renderAnnotation}
+          renderBlock={formProps.renderBlock}
+          renderField={formProps.renderField}
+          renderInlineBlock={formProps.renderInlineBlock}
+          renderInput={formProps.renderInput}
+          renderItem={formProps.renderItem}
+          renderPreview={formProps.renderPreview}
+          schemaType={childSchemaType}
+          selected={selected}
+          value={child}
+        />
+      )
+    },
+    [
+      editor.schemaTypes.span.name,
+      formProps.onItemClose,
+      formProps.onItemOpen,
+      formProps.onPathFocus,
+      formProps.path,
+      formProps.readOnly,
+      formProps.renderAnnotation,
+      formProps.renderBlock,
+      formProps.renderField,
+      formProps.renderInlineBlock,
+      formProps.renderInput,
+      formProps.renderItem,
+      formProps.renderPreview,
+    ],
+  )
+
   return (
     <EditableWrapStack ref={rootElementRef} data-ui="EditableWrapStack">
-      <PortableTextEditable
-        onBeforeInput={onEditorBeforeInput}
-        onBlur={onBlur}
-        onFocus={onFocus}
-        onKeyDown={handleKeyDown}
-        onKeyUp={handleKeyUp}
-        ref={editableRef}
-        renderBlock={_renderBlock}
-        renderDecorator={_renderDecorator}
-        // renderChild={renderChild}
-        // renderAnnotation={renderAnnotation}
-        renderStyle={_renderStyle}
-        rangeDecorations={rangeDecorations}
-        renderPlaceholder={renderPlaceholder}
-        style={INLINE_STYLE}
-      />
+      <BoundaryElementProvider element={rootElementRef.current}>
+        <PortableTextEditable
+          onBeforeInput={onEditorBeforeInput}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          onKeyDown={handleKeyDown}
+          ref={editableRef}
+          renderBlock={_renderBlock}
+          renderDecorator={_renderDecorator}
+          renderChild={_renderChild}
+          renderAnnotation={_renderAnnotation}
+          renderStyle={_renderStyle}
+          rangeDecorations={rangeDecorations}
+          renderPlaceholder={renderPlaceholder}
+          style={INLINE_STYLE}
+        />
+      </BoundaryElementProvider>
     </EditableWrapStack>
   )
 }
