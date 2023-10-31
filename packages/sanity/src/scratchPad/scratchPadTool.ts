@@ -1,22 +1,30 @@
 import {BulbFilledIcon} from '@sanity/icons'
 import {lazy} from 'react'
-import {definePlugin} from 'sanity'
+import {definePlugin, isArrayOfBlocksSchemaType} from 'sanity'
 
 const ScratchPadRoot = lazy(() => import('./components/Root'))
 
+/**
+ * @alpha
+ */
 export interface ScratchPadToolOptions {
   icon?: React.ComponentType
   name?: string
   title?: string
 }
-
+/**
+ * @alpha
+ */
 export const scratchPadTool = definePlugin<ScratchPadToolOptions | void>((options) => ({
   name: '@sanity/scratchpad-tool',
   form: {
     components: {
-      // No field like field
       field: (fieldProps) => {
-        return fieldProps.children
+        // No 'chrome' for the PT field
+        if (isArrayOfBlocksSchemaType(fieldProps.schemaType)) {
+          return fieldProps.children
+        }
+        return fieldProps.renderDefault(fieldProps)
       },
     },
   },

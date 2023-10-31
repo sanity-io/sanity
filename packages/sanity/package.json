@@ -132,7 +132,7 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
-    "clean": "rimraf _internal.js cli.js desk.js lib router.js",
+    "clean": "rimraf _internal.js cli.js desk.js lib router.js scratchPad.js",
     "coverage": "jest --coverage",
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",

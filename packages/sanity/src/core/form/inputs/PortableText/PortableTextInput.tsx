@@ -235,6 +235,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
+      if (editorRef.current && onEditorChange) {
+        onEditorChange(change, editorRef.current)
+      }
       switch (change.type) {
         case 'mutation':
           onChange(toFormPatches(change.patches))
@@ -279,7 +282,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onBlur, onChange, onPathFocus, toast],
+    [onBlur, onChange, onEditorChange, onPathFocus, toast],
   )
 
   useEffect(() => {

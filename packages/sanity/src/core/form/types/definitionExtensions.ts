@@ -23,6 +23,7 @@ import {
   BooleanInputProps,
   NumberInputProps,
   ObjectInputProps,
+  PortableTextInputProps,
   StringInputProps,
 } from './inputProps'
 import {ObjectItem, ObjectItemProps, PrimitiveItemProps} from './itemProps'
@@ -45,7 +46,7 @@ export interface ArrayOfObjectsComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ArrayFieldProps>
   inlineBlock?: ComponentType<BlockProps>
-  input?: ComponentType<ArrayOfObjectsInputProps | PortableTextInputProps>
+  input?: ComponentType<ArrayOfObjectsInputProps>
   item?: ComponentType<ObjectItemProps>
   preview?: ComponentType<PreviewProps>
 }

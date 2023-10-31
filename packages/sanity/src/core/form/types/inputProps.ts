@@ -20,6 +20,7 @@ import {
   HotkeyOptions,
   OnCopyFn,
   OnPasteFn,
+  PortableTextEditor,
   RangeDecoration,
 } from '@sanity/portable-text-editor'
 import {FormPatch, PatchEvent} from '../patch'
@@ -497,7 +498,7 @@ export interface PortableTextInputProps
   /**
    * Returns changes from the underlying editor
    */
-  onEditorChange?: (change: EditorChange) => void
+  onEditorChange?: (change: EditorChange, editor: PortableTextEditor) => void
   /**
    * Custom copy function
    */
