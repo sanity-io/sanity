@@ -100,6 +100,7 @@
     "@sanity/client": "^6.10.0",
     "@sanity/eslint-config-i18n": "^1.0.0",
     "@sanity/pkg-utils": "^3.3.2",
+    "@sanity/test": "3.19.1",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/uuid": "^3.0.2",
     "@types/jest": "^29.5.6",

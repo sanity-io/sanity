@@ -2951,7 +2951,7 @@
     "@playwright/experimental-ct-core" "1.39.0"
     "@vitejs/plugin-react" "^4.0.0"
 
-"@playwright/test@^1.37.0", "@playwright/test@^1.39.0":
+"@playwright/test@^1.39.0":
   version "1.39.0"
   resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.39.0.tgz#d10ba8e38e44104499e25001945f07faa9fa91cd"
   integrity sha512-3u1iFqgzl7zr004bGPYiN/5EZpRUSFddQBra8Rqll5N0/vfpqlP9I9EXqAoGacuAbX6c9Ulg/Cjqglp5VkK6UQ==
