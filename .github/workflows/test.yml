@@ -58,7 +58,7 @@ jobs:
         with:
           path: './*'
           # Unique key for a workflow run. Should be invalidated in the next run
-          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -120,7 +120,7 @@ jobs:
           cache-name: cache-build
         with:
           path: ./*
-          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
 
       - name: Install project dependencies
         if: steps.restore-node-modules.outputs.cache-hit != 'true'
@@ -162,7 +162,7 @@ jobs:
 
       # Delete the cache so it is only used once
       - name: Delete Cache
-        run: gh cache delete ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: gh cache delete ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
         env:
           cache-name: cache-build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
