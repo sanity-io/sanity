@@ -1,6 +1,5 @@
 import React, {forwardRef} from 'react'
 import {Tab} from '../../../../../ui'
-//import {Tab} from '@sanity/ui'
 
 interface GroupType {
   'aria-controls': string
