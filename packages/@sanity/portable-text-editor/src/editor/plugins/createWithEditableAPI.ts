@@ -484,6 +484,9 @@ export function createWithEditableAPI(
         editor.insertBreak()
         editor.onChange()
       },
+      getFragment: () => {
+        return fromSlateValue(editor.getFragment(), types.block.name)
+      },
     })
     return editor
   }

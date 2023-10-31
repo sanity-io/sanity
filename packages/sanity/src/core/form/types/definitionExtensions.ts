@@ -45,7 +45,7 @@ export interface ArrayOfObjectsComponents {
   diff?: ComponentType<any>
   field?: ComponentType<ArrayFieldProps>
   inlineBlock?: ComponentType<BlockProps>
-  input?: ComponentType<ArrayOfObjectsInputProps>
+  input?: ComponentType<ArrayOfObjectsInputProps | PortableTextInputProps>
   item?: ComponentType<ObjectItemProps>
   preview?: ComponentType<PreviewProps>
 }

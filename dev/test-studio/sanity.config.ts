@@ -17,6 +17,7 @@ import {schemaTypes} from './schema'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {workshopTool} from './workshop'
 import {presenceTool} from './plugins/presence'
+import {scratchPadTool} from 'sanity/scratchPad'
 import {
   CustomLayout,
   CustomLogo,
@@ -85,6 +86,7 @@ const sharedSettings = definePlugin({
       structure,
       defaultDocumentNode,
     }),
+    scratchPadTool(),
     languageFilter({
       defaultLanguages: ['nb'],
       supportedLanguages: [
