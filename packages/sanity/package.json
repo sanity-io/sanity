@@ -77,6 +77,17 @@
       "import": "./lib/router.esm.js",
       "default": "./lib/router.esm.js"
     },
+    "./scratchPad": {
+      "types": "./lib/exports/scratchPad.d.ts",
+      "source": "./exports/scratchPad.ts",
+      "require": "./lib/scratchPad.js",
+      "node": {
+        "import": "./lib/scratchPad.cjs.mjs",
+        "require": "./lib/scratchPad.js"
+      },
+      "import": "./lib/scratchPad.esm.js",
+      "default": "./lib/scratchPad.esm.js"
+    },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
@@ -94,6 +105,9 @@
       "desk": [
         "./lib/exports/desk.d.ts"
       ],
+      "scratchPad": [
+        "./lib/exports/scratchPad.d.ts"
+      ],
       "router": [
         "./lib/exports/router.d.ts"
       ]
@@ -107,6 +121,7 @@
     "bin",
     "cli.js",
     "desk.js",
+    "scratchPad.js",
     "lib",
     "router.js",
     "src",

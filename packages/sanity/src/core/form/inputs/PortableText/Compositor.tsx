@@ -163,6 +163,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      scrollElement,
     ],
   )
 
@@ -410,7 +411,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       ariaDescribedBy,
       editorHotkeys,
-      editorHotkeys,
       isActive,
       isFullscreen,
       onItemOpen,
@@ -423,15 +423,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
-      handleToggleFullscreen,
       initialSelection,
-      isActive,
-      isFullscreen,
-      onCopy,
-      onItemOpen,
-      onPaste,
-      path,
-      readOnly,
       scrollElement,
     ],
   )

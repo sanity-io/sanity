@@ -18,7 +18,8 @@ import {
 import {Subject, Observable} from 'rxjs'
 import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from 'slate-react'
-import {FocusEvent} from 'react'
+import {FocusEvent, PropsWithChildren, ReactElement} from 'react'
+import {DOMNode} from 'slate-react/dist/utils/dom'
 import type {Patch} from '../types/patch'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 
@@ -42,6 +43,7 @@ export interface EditableAPI {
   focusBlock: () => PortableTextBlock | undefined
   focusChild: () => PortableTextChild | undefined
   getSelection: () => EditorSelection
+  getFragment: () => PortableTextBlock[] | undefined
   getValue: () => PortableTextBlock[] | undefined
   hasBlockStyle: (style: string) => boolean
   hasListStyle: (listStyle: string) => boolean
