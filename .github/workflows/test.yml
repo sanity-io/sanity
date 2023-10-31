@@ -121,6 +121,8 @@ jobs:
         with:
           path: ./*
           key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
+          # If the cached build from the pervious step is not available. Fail the build
+          fail-on-cache-miss: true
 
       - name: Install project dependencies
         if: steps.restore-node-modules.outputs.cache-hit != 'true'
