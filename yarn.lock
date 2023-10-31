@@ -3770,10 +3770,10 @@
     segmented-property "^3.0.3"
     vite "^4.4.9"
 
-"@sanity/ui@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-alpha.5.tgz#6532cd744dd9701579f7591696d30ecc411a55c0"
-  integrity sha512-Xc7wh1l7Gsux6p+ImIlvksU1qbkFsZE7KBQEdShH60tALV0Wq/NXbK/033WSqvwkvrP2oDczsHMqR2VH00hAng==
+"@sanity/ui@2.0.0-alpha.12":
+  version "2.0.0-alpha.12"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-alpha.12.tgz#b67dbd332dfdf98c8968f01a08b43abc7864764f"
+  integrity sha512-zOECfM8ihM4wZCkPRL3ERiqtwBYUiEhUJ9m3tS0HYlPYoTH9JoZOvja/LvId2rdFOUizhloxs2QTv+JrxM22wA==
   dependencies:
     "@floating-ui/react-dom" "2.0.0"
     "@sanity/color" "3.0.0-beta.5"
@@ -8322,7 +8322,16 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^10.0.0, framer-motion@^10.16.1, framer-motion@^10.16.2, framer-motion@^10.16.5:
+framer-motion@^10.0.0, framer-motion@^10.16.1, framer-motion@^10.16.2:
+  version "10.16.4"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.4.tgz#30279ef5499b8d85db3a298ee25c83429933e9f8"
+  integrity sha512-p9V9nGomS3m6/CALXqv6nFGMuFOxbWsmaOrdmhyQimMIlLl3LC7h7l86wge/Js/8cRu5ktutS/zlzgR7eBOtFA==
+  dependencies:
+    tslib "^2.4.0"
+  optionalDependencies:
+    "@emotion/is-prop-valid" "^0.8.2"
+
+framer-motion@^10.16.5:
   version "10.16.5"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.5.tgz#f1ad625adf213a8906f1ea52a31a4ef222f056d5"
   integrity sha512-GEzVjOYP2MIpV9bT/GbhcsBNoImG3/2X3O/xVNWmktkv9MdJ7P/44zELm/7Fjb+O3v39SmKFnoDQB32giThzpg==
