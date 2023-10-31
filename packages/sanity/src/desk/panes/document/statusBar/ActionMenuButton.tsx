@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Flex,
-  Hotkeys,
   Menu,
   MenuButton,
   MenuItem,
@@ -22,7 +21,7 @@ import React, {
 } from 'react'
 import {isValidElementType} from 'react-is'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription, LegacyLayerProvider} from 'sanity'
+import {DocumentActionDescription, Hotkeys, LegacyLayerProvider} from 'sanity'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]
