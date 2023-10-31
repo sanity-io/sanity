@@ -44,7 +44,6 @@ const GroupTabs = ({
           aria-controls={`${inputId}-field-group-fields`}
           autoFocus={shouldAutoFocus && group.selected}
           disabled={disabled || group.disabled}
-          icon={group?.icon}
           key={`${inputId}-${group.name}-tab`}
           name={group.name}
           onClick={onClick}

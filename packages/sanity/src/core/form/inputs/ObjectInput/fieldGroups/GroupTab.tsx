@@ -1,11 +1,11 @@
 import React, {forwardRef} from 'react'
-import {Tab} from '@sanity/ui'
+import {Tab} from '../../../../../ui'
+//import {Tab} from '@sanity/ui'
 
 interface GroupType {
   'aria-controls': string
   autoFocus?: boolean
   disabled?: boolean
-  icon?: React.ComponentType
   name: string
   onClick?: (value: string) => void
   selected: boolean
@@ -27,7 +27,6 @@ export const GroupTab = forwardRef(function GroupTab(
   return (
     <Tab
       data-testid={`group-tab-${name}`}
-      size={1}
       id={`${props.name}-tab`}
       label={props.title}
       ref={ref}
