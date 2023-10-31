@@ -91,7 +91,7 @@ jobs:
         with:
           path: './*'
           # Unique key for a workflow run. Should be invalidated in the next run
-          key: ${{ runner.os }}-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
+          key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
 
   playwright-test:
     timeout-minutes: 30
@@ -155,7 +155,7 @@ jobs:
           cache-name: cache-e2e-build
         with:
           path: ./*
-          key: ${{ runner.os }}-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
+          key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
           # If the cached build from the pervious step is not available. Fail the build
           fail-on-cache-miss: true
 
@@ -238,7 +238,7 @@ jobs:
 
       # Delete the cache so it is only used once
       - name: Delete Cache
-        run: gh cache delete ${{ runner.os }}-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
+        run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
         env:
           cache-name: cache-e2e-build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
