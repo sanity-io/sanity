@@ -7466,6 +7466,11 @@ eslint-plugin-jsx-a11y@^6.7.1:
     object.fromentries "^2.0.6"
     semver "^6.3.0"
 
+eslint-plugin-no-attribute-string-literals@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-no-attribute-string-literals/-/eslint-plugin-no-attribute-string-literals-1.0.0.tgz#8b09178922fa20047d1b23166f4e3839acc649f1"
+  integrity sha512-agpa3mK8H3e/nvlGzgIPc8kz6/lQIK9M1CiEQO5H3Rj3ujyhl39016oGz1wJjB4EKf2KoKowcfbUoWWh0G70Cw==
+
 eslint-plugin-prettier@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-5.0.0.tgz#6887780ed95f7708340ec79acfdf60c35b9be57a"
