@@ -1,8 +1,12 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
+import {deskLocaleNamespace} from '../../i18n'
+import {useTranslation} from 'sanity'
 
 export function NoDocumentTypesScreen() {
+  const {t} = useTranslation(deskLocaleNamespace)
+
   return (
     <Card height="fill">
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
@@ -16,10 +20,10 @@ export function NoDocumentTypesScreen() {
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
                 <Text as="h1" size={1} weight="bold">
-                  No document types
+                  {t('no-document-types-screen.title')}
                 </Text>
                 <Text as="p" muted size={1}>
-                  Please define at least one document type in your schema.
+                  {t('no-document-types-screen.subtitle')}
                 </Text>
                 <Text as="p" muted size={1}>
                   <a
@@ -27,7 +31,7 @@ export function NoDocumentTypesScreen() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Learn how to add a document type &rarr;
+                    {t('no-document-types-screen.link-text')}
                   </a>
                 </Text>
               </Stack>

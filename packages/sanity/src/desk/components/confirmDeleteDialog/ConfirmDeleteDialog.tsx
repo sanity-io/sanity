@@ -2,8 +2,10 @@ import React, {useMemo, useId} from 'react'
 import styled from 'styled-components'
 import {Box, Dialog, Button, Text, Spinner, Grid, Flex} from '@sanity/ui'
 import {DocTitle} from '../DocTitle'
+import {deskLocaleNamespace} from '../../i18n'
 import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
+import {useTranslation} from 'sanity'
 
 /** @internal */
 export const DialogBody = styled(Box).attrs({
@@ -37,7 +39,7 @@ export interface ConfirmDeleteDialogProps {
    * The name of the action being done. (e.g. the `'unpublish'` action requires
    * the same document deletion confirmation).
    */
-  action?: string
+  action?: 'delete' | 'unpublish'
   onCancel: () => void
   onConfirm: () => void
 }
@@ -56,6 +58,7 @@ export function ConfirmDeleteDialog({
   onCancel,
   onConfirm,
 }: ConfirmDeleteDialogProps) {
+  const {t} = useTranslation(deskLocaleNamespace)
   const dialogId = `deletion-confirmation-${useId()}`
   const {
     internalReferences,
@@ -66,8 +69,6 @@ export function ConfirmDeleteDialog({
     datasetNames,
     hasUnknownDatasetNames,
   } = useReferringDocuments(id)
-  const capitalizedAction = `${action.substring(0, 1).toUpperCase()}${action.substring(1)}`
-
   const documentTitle = <DocTitle document={useMemo(() => ({_id: id, _type: type}), [id, type])} />
   const showConfirmButton = !isLoading
 
@@ -75,15 +76,23 @@ export function ConfirmDeleteDialog({
     <Dialog
       width={1}
       id={dialogId}
-      header={`${capitalizedAction} document?`}
+      header={t('confirm-delete-dialog.header.text', {context: action})}
       footer={
         <Grid columns={showConfirmButton ? 2 : 1} gap={2} paddingX={4} paddingY={3}>
-          <Button mode="ghost" onClick={onCancel} text="Cancel" />
+          <Button
+            mode="ghost"
+            onClick={onCancel}
+            text={t('confirm-delete-dialog.cancel-button.text')}
+          />
 
           {showConfirmButton && (
             <Button
               data-testid="confirm-delete-button"
-              text={totalCount > 0 ? `${capitalizedAction} anyway` : `${capitalizedAction} now`}
+              text={
+                totalCount > 0
+                  ? t('confirm-delete-dialog.confirm-anyway-button.text', {context: action})
+                  : t('confirm-delete-dialog.confirm-button.text', {context: action})
+              }
               tone="critical"
               onClick={onConfirm}
             />
@@ -112,7 +121,7 @@ export function ConfirmDeleteDialog({
             <Spinner muted />
             <Box marginTop={3}>
               <Text align="center" muted size={1}>
-                Looking for referring documents…
+                {t('confirm-delete-dialog.loading.text')}
               </Text>
             </Box>
           </LoadingContainer>
