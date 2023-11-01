@@ -321,7 +321,6 @@ const deskLocaleStrings = {
   'inputs.inspect-dialog.search.placeholder': 'Search',
 
   /** -- UNKNOWN PANE TYPE */
-
   /** The text to display when type is missing */
   'panes.unknown-pane-type.missing-type.text':
     'Structure item is missing required <Code>type</Code> property.',
@@ -332,6 +331,173 @@ const deskLocaleStrings = {
 
   /** The title of the unknown pane */
   'panes.unknown-pane-type.title': 'Unknown pane type',
+
+  /** --- DOCUMENT TITLE --- */
+  /** The text shown if a document's title via a preview value cannot be determined due to an unknown schema type */
+  'doc-title.unknown-schema-type.text': 'Unknown schema type: {{schemaType}}',
+
+  /** The text shown if there was an error while getting the document's title via a preview value */
+  'doc-title.error.text': 'Error: {{errorMessage}}',
+
+  /** The text shown if the preview value for a document is non-existent or empty */
+  'doc-title.fallback.text': 'Untitled',
+
+  /** --- PANE ITEM --- */
+  /** The text shown in the tooltip of pane item previews of documents if there are unpublished edits */
+  'pane-item.draft-status.has-draft.tooltip': 'Edited <RelativeTime/>',
+
+  /** The text shown in the tooltip of pane item previews of documents if there are no unpublished edits */
+  'pane-item.draft-status.no-draft.tooltip': 'No unpublished edits',
+
+  /** The text shown in the tooltip of pane item previews of documents if there are unpublished edits */
+  'pane-item.published-status.has-published.tooltip': 'Published <RelativeTime/>',
+
+  /** The text shown in the tooltip of pane item previews of documents if there are no unpublished edits */
+  'pane-item.published-status.no-published.tooltip': 'No unpublished edits',
+
+  /** The title tor pane item previews if there isn't a matching schema type found */
+  'pane-item.missing-schema-type.title': 'No schema found for type <Code>{{documentType}}</Code>',
+
+  /** The subtitle tor pane item previews if there isn't a matching schema type found */
+  'pane-item.missing-schema-type.subtitle': 'Document: <Code>{{documentId}}</Code>',
+
+  /** --- CONFIRM DELETE DIALOG e.g. when trying to delete or unpublished a document --- */
+  /** The header of the confirm delete dialog */
+  'confirm-delete-dialog.header.text_delete': 'Delete document?',
+  /** The header of the confirm delete dialog */
+  'confirm-delete-dialog.header.text_unpublish': 'Unpublish document?',
+
+  /** The text that appears while the referring documents are queried */
+  'confirm-delete-dialog.loading.text': 'Looking for referring documents…',
+
+  /** The text in the "Cancel" button in the confirm delete dialog that cancels the action and closes the dialog */
+  'confirm-delete-dialog.cancel-button.text': 'Cancel',
+
+  /** The text in the "Delete now" button in the confirm delete dialog that confirms the action */
+  'confirm-delete-dialog.confirm-button.text_delete': 'Delete now',
+  /** The text in the "Unpublish now" button in the confirm delete dialog that confirms the action */
+  'confirm-delete-dialog.confirm-button.text_unpublish': 'Unpublish now',
+  /** The text in the "Delete anyway" button in the confirm delete dialog that confirms the action */
+  'confirm-delete-dialog.confirm-anyway-button.text_delete': 'Delete anyway',
+  /** The text in the "Unpublish anyway" button in the confirm delete dialog that confirms the action */
+  'confirm-delete-dialog.confirm-anyway-button.text_unpublish': 'Unpublish anyway',
+
+  /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
+  'confirm-delete-dialog.confirmation.text_delete':
+    'Are you sure you want to delete <DocumentTitle/>?',
+  /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
+  'confirm-delete-dialog.confirmation.text_unpublish':
+    'Are you sure you want to unpublish <DocumentTitle/>?',
+
+  /** Tells the user the count of how many other referring documents there are before listing them. (singular) */
+  'confirm-delete-dialog.referring-document-count.text_one':
+    '1 document refers to “<DocumentTitle/>”',
+  /** Tells the user the count of how many other referring documents there are before listing them. (plural) */
+  'confirm-delete-dialog.referring-document-count.text_other':
+    '{{count}} documents refer to “<DocumentTitle/>”',
+
+  /** Describes the list of documents that refer to the one trying to be deleted (delete) */
+  'confirm-delete-dialog.referring-documents-descriptor.text_delete':
+    'You may not be able to delete “<DocumentTitle/>” because the following documents refer to it:',
+  /** Describes the list of documents that refer to the one trying to be deleted (unpublish) */
+  'confirm-delete-dialog.referring-documents-descriptor.text_unpublish':
+    'You may not be able to unpublish “<DocumentTitle/>” because the following documents refer to it:',
+
+  /** Warns the user of affects to other documents if the action is confirmed (delete) */
+  'confirm-delete-dialog.referential-integrity-disclaimer.text_delete':
+    'If you delete this document, documents that refer to it will no longer be able to access it.',
+  /** Warns the user of affects to other documents if the action is confirmed (unpublish) */
+  'confirm-delete-dialog.referential-integrity-disclaimer.text_unpublish':
+    'If you unpublish this document, documents that refer to it will no longer be able to access it.',
+
+  /** The header for the project ID column in the list of cross-dataset references found */
+  'confirm-delete-dialog.cdr-table.project-id.label': 'Project ID',
+  /** The header for the dataset column in the list of cross-dataset references found */
+  'confirm-delete-dialog.cdr-table.dataset.label': 'Dataset',
+  /** The header for the document ID column in the list of cross-dataset references found */
+  'confirm-delete-dialog.cdr-table.document-id.label': 'Document ID',
+
+  /** Appears when hovering over the copy button to copy */
+  'confirm-delete-dialog.cdr-table.copy-id-button.tooltip': 'Copy ID to clipboard',
+  /** The toast title when the copy button has been clicked */
+  'confirm-delete-dialog.cdr-table.id-copied-toast.title': 'Copied document ID to clipboard!',
+
+  /** Appears when unable to render a document preview in the referring document list */
+  'confirm-delete-dialog.preview-item.preview-unavailable.title': 'Preview unavailable',
+  /** Appears when unable to render a document preview in the referring document list */
+  'confirm-delete-dialog.preview-item.preview-unavailable.subtitle': 'ID: {{documentId}}',
+
+  /** The text that appears in the title `<summary>` that includes the list of CDRs (singular) */
+  'confirm-delete-dialog.cdr-summary.title_one': '{{documentCount}} in another dataset',
+  /** The text that appears in the title `<summary>` that includes the list of CDRs (plural) */
+  'confirm-delete-dialog.cdr-summary.title_other': '{{documentCount}} in {{count}} datasets',
+
+  /** Used in `confirm-delete-dialog.cdr-summary.title` */
+  'confirm-delete-dialog.cdr-summary.document-count_one': '1 document',
+  /** Used in `confirm-delete-dialog.cdr-summary.title` */
+  'confirm-delete-dialog.cdr-summary.document-count_other': '{{count}} documents',
+
+  /** The text that appears in the subtitle `<summary>` that lists the datasets below the title */
+  'confirm-delete-dialog.cdr-summary.subtitle_one': 'Dataset: {{datasets}}',
+  /** The text that appears in the subtitle `<summary>` that lists the datasets below the title */
+  'confirm-delete-dialog.cdr-summary.subtitle_other': 'Datasets: {{datasets}}',
+  /** The text that appears in the subtitle `<summary>` that lists the datasets below the title */
+  'confirm-delete-dialog.cdr-summary.subtitle_unavailable_one': 'Unavailable dataset',
+  /** The text that appears in the subtitle `<summary>` that lists the datasets below the title */
+  'confirm-delete-dialog.cdr-summary.subtitle_unavailable_other': 'Unavailable datasets',
+
+  /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
+  'confirm-delete-dialog.other-reference-count.title_one': '1 other reference not show',
+  /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
+  'confirm-delete-dialog.other-reference-count.title_other': '{{count}} other references not shown',
+  /** Text in the tooltip of this component if hovering over the info icon */
+  'confirm-delete-dialog.other-reference-count.tooltip':
+    "We can't display metadata for these references due to a missing access token for the related datasets.",
+
+  /** The header of the confirm delete dialog if an error occurred while the confirm delete dialog was open. */
+  'confirm-delete-dialog.error.title.text': 'Error',
+
+  /** The text in the retry button of the confirm delete dialog if an error occurred. */
+  'confirm-delete-dialog.error.retry-button.text': 'Retry',
+
+  /** The text body of the error dialog. */
+  'confirm-delete-dialog.error.message.text':
+    'An error occurred while loading referencing documents.',
+
+  /** --- NO DOCUMENT TYPES SCREEN i.e. appears when there are no document types defined and the desk tool has nothing to render --- */
+  /** The title of the no document type screen */
+  'no-document-types-screen.title': 'No document types',
+
+  /** The subtitle of the no document type screen that appears directly below the title */
+  'no-document-types-screen.subtitle': 'Please define at least one document type in your schema.',
+
+  /** The link text of the no document type screen that appears directly below the subtitle */
+  'no-document-types-screen.link-text': 'Learn how to add a document type →',
+
+  /** --- STRUCTURE ERROR SCREEN i.e. appears if there was an error while rendering the structure from the structure builder --- */
+  /** The header that appears at the top of the error screen */
+  'structure-error.header.text': 'Encountered an error while reading structure',
+
+  /** Labels the structure path of the structure error screen */
+  'structure-error.structure-path.label': 'Structure path',
+  /** Labels the error message or error stack of the structure error screen */
+  'structure-error.error.label': 'Error',
+
+  /** The text that appears in side the documentation link */
+  'structure-error.docs-link.text': 'View documentation',
+
+  /** The text in the reload button to retry rendering the structure */
+  'structure-error.reload-button.text': 'Reload',
+
+  /** --- PANE HEADER MENU --- */
+  /** tooltip text (via `title` attribute) for the menu button */
+  'pane-header.context-menu-button.tooltip': 'Show menu',
+
+  /** The `aria-label` for the disabled button in the pane header if create permissions are granted */
+  'pane-header.disabled-created-button.aria-label': 'Insufficient permissions',
+
+  /** Appears in a document list pane header if there are more than one option for create. This is the label for that menu */
+  'pane-header.create-menu.label': 'Create',
 }
 
 /**

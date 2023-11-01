@@ -2,13 +2,14 @@ import React from 'react'
 import {PublishIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Box, Text, Tooltip} from '@sanity/ui'
-import {TimeAgo} from './TimeAgo'
-import {TextWithTone} from 'sanity'
+import {deskLocaleNamespace} from '../i18n'
+import {RelativeTime, TextWithTone, Translate, useTranslation} from 'sanity'
 
 export function PublishedStatus(props: {document?: PreviewValue | Partial<SanityDocument> | null}) {
   const {document} = props
   const updatedAt = document && '_updatedAt' in document && document._updatedAt
   const statusLabel = document ? 'Published' : 'Not published'
+  const {t} = useTranslation(deskLocaleNamespace)
 
   return (
     <Tooltip
@@ -17,9 +18,17 @@ export function PublishedStatus(props: {document?: PreviewValue | Partial<Sanity
         <Box padding={2}>
           <Text size={1}>
             {document ? (
-              <>Published {updatedAt && <TimeAgo time={updatedAt} />}</>
+              <Translate
+                t={t}
+                i18nKey="pane-item.published-status.has-published.tooltip"
+                components={{
+                  RelativeTime: () => (
+                    <>{updatedAt && <RelativeTime time={updatedAt} useTemporalPhrase />}</>
+                  ),
+                }}
+              />
             ) : (
-              <>Not published</>
+              t('pane-item.published-status.no-published.tooltip')
             )}
           </Text>
         </Box>

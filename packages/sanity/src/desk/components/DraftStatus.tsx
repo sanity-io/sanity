@@ -2,12 +2,13 @@ import React from 'react'
 import {EditIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Box, Text, Tooltip} from '@sanity/ui'
-import {TimeAgo} from './TimeAgo'
-import {TextWithTone} from 'sanity'
+import {deskLocaleNamespace} from '../i18n'
+import {TextWithTone, Translate, useTranslation, RelativeTime} from 'sanity'
 
 export function DraftStatus(props: {document?: PreviewValue | Partial<SanityDocument> | null}) {
   const {document} = props
   const updatedAt = document && '_updatedAt' in document && document._updatedAt
+  const {t} = useTranslation(deskLocaleNamespace)
 
   return (
     <Tooltip
@@ -16,9 +17,17 @@ export function DraftStatus(props: {document?: PreviewValue | Partial<SanityDocu
         <Box padding={2}>
           <Text size={1}>
             {document ? (
-              <>Edited {updatedAt && <TimeAgo time={updatedAt} />}</>
+              <Translate
+                i18nKey="pane-item.draft-status.has-draft.tooltip"
+                t={t}
+                components={{
+                  RelativeTime: () => (
+                    <>{updatedAt && <RelativeTime time={updatedAt} useTemporalPhrase />}</>
+                  ),
+                }}
+              />
             ) : (
-              <>No unpublished edits</>
+              t('pane-item.draft-status.no-draft.tooltip')
             )}
           </Text>
         </Box>
