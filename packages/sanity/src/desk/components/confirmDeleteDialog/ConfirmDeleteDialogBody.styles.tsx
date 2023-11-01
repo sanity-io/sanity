@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import {rem, Flex, Text, Box, Tooltip, Container, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'
+import {deskLocaleNamespace} from '../../i18n'
+import {useTranslation} from 'sanity'
 
 export const ChevronWrapper = styled(Box)`
   margin-left: auto;
@@ -47,6 +49,7 @@ export const DocumentIdFlex = styled(Flex)`
 `
 
 export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
+  const {t} = useTranslation(deskLocaleNamespace)
   const difference = props.totalCount - props.references.length
 
   if (!difference) return null
@@ -54,7 +57,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
   return (
     <Inline space={2}>
       <Text size={1} muted>
-        {difference} other reference{difference === 1 ? '' : 's'} not shown{' '}
+        {t('confirm-delete-dialog.other-reference-count.title', {count: difference})}
       </Text>
 
       <Tooltip
@@ -63,10 +66,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
         content={
           <Container width={0}>
             <Box padding={2}>
-              <Text size={1}>
-                We can't show metadata about these references because no token with access to the
-                datasets they are in was found.
-              </Text>
+              <Text size={1}>{t('confirm-delete-dialog.other-reference-count.tooltip')}</Text>
             </Box>
           </Container>
         }

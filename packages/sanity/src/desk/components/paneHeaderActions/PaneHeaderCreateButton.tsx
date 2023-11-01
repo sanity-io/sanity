@@ -3,6 +3,7 @@ import React, {useMemo, forwardRef} from 'react'
 import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
 import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
+import {deskLocaleNamespace} from '../../i18n'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 import {IntentLink} from 'sanity/router'
 import {
@@ -12,6 +13,7 @@ import {
   InitialValueTemplateItem,
   useSchema,
   useTemplates,
+  useTranslation,
 } from 'sanity'
 
 export type PaneHeaderIntentProps = React.ComponentProps<typeof IntentButton>['intent']
@@ -49,6 +51,7 @@ interface PaneHeaderCreateButtonProps {
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const schema = useSchema()
   const templates = useTemplates()
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
@@ -76,7 +79,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     return (
       <InsufficientPermissionsMessageTooltip reveal loading={isTemplatePermissionsLoading}>
         <Button
-          aria-label="Insufficient permissions"
+          aria-label={t('pane-header.disabled-created-button.aria-label')}
           icon={ComposeIcon}
           mode="bleed"
           disabled
@@ -117,14 +120,14 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       menu={
         <Menu>
           <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-            <Label muted>Create</Label>
+            <Label muted>{t('pane-header.create-menu.label')}</Label>
           </Box>
 
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
             const intent = getIntent(schema, templates, item)
-            const template = templates.find((t) => t.id === item.templateId)
+            const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 
             const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>
