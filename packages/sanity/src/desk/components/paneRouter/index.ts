@@ -1,4 +1,5 @@
 export * from './BackLink'
+export * from './PaneRouterContext'
 export * from './PaneRouterProvider'
 export * from './types'
 export * from './usePaneRouter'
