@@ -37,6 +37,42 @@ export const commentsDebug = defineType({
       ],
     },
     {
+      name: 'arrayWithAnonymousObject',
+      type: 'array',
+      title: 'Array with anonymous object',
+      of: [
+        {
+          type: 'object',
+          title: 'Anonymous object',
+          fields: [
+            {
+              name: 'anonymousString',
+              type: 'string',
+              title: 'Anonymous string',
+            },
+            {
+              type: 'array',
+              name: 'nestedArrayWithAnonymousObject',
+              title: 'Nested array with anonymous object',
+              of: [
+                {
+                  type: 'object',
+                  title: 'Nested anonymous object',
+                  fields: [
+                    {
+                      name: 'nestedAnonymousString',
+                      type: 'string',
+                      title: 'Nested anonymous string',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
       type: 'array',
       name: 'arrayOfObjects',
       title: 'Array 1',
