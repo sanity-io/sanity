@@ -48,6 +48,10 @@ interface CommentFieldButtonProps {
   value: CommentMessage
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentFieldButton(props: CommentFieldButtonProps) {
   const {
     count,

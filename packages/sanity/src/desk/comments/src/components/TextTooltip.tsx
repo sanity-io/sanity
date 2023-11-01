@@ -13,6 +13,10 @@ interface TextTooltipProps {
   text?: string
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function TextTooltip(props: TextTooltipProps) {
   const {children, text} = props
 

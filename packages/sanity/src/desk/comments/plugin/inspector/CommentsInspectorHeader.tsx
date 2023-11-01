@@ -29,6 +29,10 @@ interface CommentsInspectorHeaderProps {
   view: CommentStatus
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHeader(
   props: CommentsInspectorHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>,

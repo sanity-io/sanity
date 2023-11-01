@@ -26,6 +26,10 @@ interface CommentsAvatarProps extends AvatarProps {
   user: User | undefined | null
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentsAvatar(props: CommentsAvatarProps) {
   const {user: userProp, ...restProps} = props
   const user = userProp as User

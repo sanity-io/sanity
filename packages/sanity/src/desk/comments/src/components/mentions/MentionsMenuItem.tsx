@@ -14,6 +14,10 @@ interface MentionsItemProps {
   onSelect: (userId: string) => void
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function MentionsMenuItem(props: MentionsItemProps) {
   const {user, onSelect} = props
   const [loadedUser] = useUser(user.id)

@@ -17,6 +17,10 @@ const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
   inline: 'center',
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentInputProps {
   currentUser: CurrentUser
   expandOnFocus?: boolean
@@ -42,6 +46,10 @@ interface CommentDiscardDialogController {
   close: () => void
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentInputHandle {
   blur: () => void
   discardDialogController: CommentDiscardDialogController

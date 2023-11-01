@@ -16,6 +16,10 @@ interface CreateNewThreadInputProps {
   readOnly?: boolean
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   const {
     currentUser,

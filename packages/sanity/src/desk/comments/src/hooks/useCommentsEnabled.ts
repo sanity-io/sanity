@@ -24,7 +24,8 @@ interface CommentsEnabledHookOptions {
 }
 
 /**
- * @internal
+ * @beta
+ * @hidden
  */
 export function useCommentsEnabled(opts: CommentsEnabledHookOptions): CommentsEnabled {
   const {documentId, documentType} = opts

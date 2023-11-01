@@ -84,6 +84,10 @@ interface CommentInputInnerProps {
   withAvatar?: boolean
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentInputInner(props: CommentInputInnerProps) {
   const {currentUser, focusLock, onBlur, onFocus, onKeyDown, onSubmit, placeholder, withAvatar} =
     props

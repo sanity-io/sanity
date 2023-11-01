@@ -9,6 +9,10 @@ import {CommentMessage, MentionOptionsHookValue} from '../../../types'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
 import {useDidUpdate} from 'sanity'
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentInputContextValue {
   canSubmit?: boolean
   closeMentions: () => void
@@ -29,6 +33,10 @@ export interface CommentInputContextValue {
   value: CommentMessage
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export const CommentInputContext = React.createContext<CommentInputContextValue | null>(null)
 
 interface CommentInputProviderProps {
@@ -42,6 +50,10 @@ interface CommentInputProviderProps {
   value: CommentMessage
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentInputProvider(props: CommentInputProviderProps) {
   const {
     children,

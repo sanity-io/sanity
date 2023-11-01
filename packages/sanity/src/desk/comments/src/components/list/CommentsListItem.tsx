@@ -87,6 +87,10 @@ interface CommentsListItemProps {
   replies: CommentDocument[] | undefined
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
   const {
     canReply,

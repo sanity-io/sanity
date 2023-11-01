@@ -7,6 +7,10 @@ interface CursorElementHookOptions {
   rootElement: HTMLElement | null
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function useCursorElement(opts: CursorElementHookOptions): HTMLElement | null {
   const {disabled, rootElement} = opts
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)

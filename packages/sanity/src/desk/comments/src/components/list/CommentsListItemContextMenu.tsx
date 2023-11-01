@@ -58,6 +58,10 @@ interface CommentsListItemContextMenuProps {
   status: CommentStatus
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentsListItemContextMenu(props: CommentsListItemContextMenuProps) {
   const {
     canDelete,

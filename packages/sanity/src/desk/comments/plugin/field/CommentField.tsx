@@ -30,6 +30,10 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
   },
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentField(props: FieldProps) {
   const {documentId, documentType} = useDocumentPane()
 

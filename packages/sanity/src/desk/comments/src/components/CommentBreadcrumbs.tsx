@@ -2,6 +2,10 @@ import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text, Tooltip, TooltipProps} from '@sanity/ui'
 import React, {Fragment, useMemo} from 'react'
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentBreadcrumbsProps {
   titlePath: string[]
   maxLength: number
@@ -30,6 +34,10 @@ const renderItem = (item: string, index: number) => {
   )
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
   const {titlePath, maxLength} = props
 

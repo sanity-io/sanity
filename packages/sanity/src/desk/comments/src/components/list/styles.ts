@@ -1,6 +1,10 @@
 import {Card, CardProps} from '@sanity/ui'
 import styled from 'styled-components'
 
+/**
+ * @beta
+ * @hidden
+ */
 export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
   padding: 3,
   radius: 3,

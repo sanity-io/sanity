@@ -19,12 +19,20 @@ const INITIAL_STATE: MentionOptionsHookValue = {
   loading: true,
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface MentionHookOptions {
   documentValue: SanityDocument | null
 }
 
 let cachedSystemGroups: [] | null = null
 
+/**
+ * @beta
+ * @hidden
+ */
 export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookValue {
   const {documentValue} = opts
 

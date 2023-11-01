@@ -24,7 +24,10 @@ interface NotificationTargetHookValue {
   getNotificationValue: ({commentId}: {commentId: string}) => CommentContext['notification']
 }
 
-/** @internal */
+/**
+ * @beta
+ * @hidden
+ */
 export function useNotificationTarget(
   opts: NotificationTargetHookOptions,
 ): NotificationTargetHookValue {

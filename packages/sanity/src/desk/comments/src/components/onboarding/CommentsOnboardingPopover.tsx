@@ -26,6 +26,10 @@ interface CommentsOnboardingPopoverProps extends Omit<PopoverProps, 'content'> {
   onDismiss: () => void
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps) {
   const {onDismiss} = props
 

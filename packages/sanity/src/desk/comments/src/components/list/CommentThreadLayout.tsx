@@ -42,6 +42,10 @@ interface CommentThreadLayoutProps {
   readOnly?: boolean
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   const {
     breadcrumbs,

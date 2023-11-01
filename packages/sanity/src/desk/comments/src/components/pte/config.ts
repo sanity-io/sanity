@@ -1,6 +1,10 @@
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField} from '@sanity/types'
 
+/**
+ * @beta
+ * @hidden
+ */
 export const mentionObject = defineField({
   name: 'mention',
   type: 'object',
@@ -31,4 +35,8 @@ const schema = Schema.compile({
   types: [portableTextType],
 })
 
+/**
+ * @beta
+ * @hidden
+ */
 export const editorSchemaType = schema.get('body')

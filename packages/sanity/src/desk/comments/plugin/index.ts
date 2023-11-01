@@ -3,6 +3,10 @@ import {CommentField} from './field'
 import {CommentsLayout} from './layout'
 import {definePlugin} from 'sanity'
 
+/**
+ * @beta
+ * @hidden
+ */
 export const comments = definePlugin({
   name: 'sanity/desk/comments',
   document: {

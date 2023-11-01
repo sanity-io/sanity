@@ -11,6 +11,9 @@ interface BuildCommentThreadItemsProps {
 }
 
 /**
+ * @beta
+ * @hidden
+ *
  * This function formats comments into a structure that is easier to work with in the UI.
  * It also validates each comment against the document value and schema type to ensure
  * that the comment is valid. If the comment is invalid, it will be omitted from the

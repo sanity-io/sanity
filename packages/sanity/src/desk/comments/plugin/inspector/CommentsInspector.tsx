@@ -26,6 +26,10 @@ interface CommentToDelete {
   isParent: boolean
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentsInspector(props: DocumentInspectorProps) {
   const {onClose} = props
 

@@ -35,6 +35,10 @@ interface CommentsListStatusProps {
   status: CommentStatus
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentsListStatus(props: CommentsListStatusProps) {
   const {status, error, loading, hasNoComments} = props
 

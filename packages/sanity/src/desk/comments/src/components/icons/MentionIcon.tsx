@@ -1,5 +1,9 @@
 import React, {forwardRef} from 'react'
 
+/**
+ * @beta
+ * @hidden
+ */
 export const MentionIcon = forwardRef(function Icon(
   props: React.SVGProps<SVGSVGElement>,
   ref: React.Ref<SVGSVGElement>,

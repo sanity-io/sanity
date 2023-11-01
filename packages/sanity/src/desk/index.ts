@@ -27,6 +27,8 @@ export * from './structureBuilder'
 
 export * from './useDeskTool'
 
+export * from './comments'
+
 export * from './panes/document'
 
 export * from './panes/documentList'

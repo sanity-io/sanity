@@ -13,10 +13,18 @@ import {useNotificationTarget} from './useNotificationTarget'
 import {useWorkspace} from 'sanity'
 import {useRouterState} from 'sanity/router'
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentOperationsHookValue {
   operation: CommentOperations
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentOperationsHookOptions {
   client: SanityClient | null
 
@@ -39,6 +47,10 @@ export interface CommentOperationsHookOptions {
   runSetup: (comment: CommentPostPayload) => Promise<void>
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function useCommentOperations(
   opts: CommentOperationsHookOptions,
 ): CommentOperationsHookValue {

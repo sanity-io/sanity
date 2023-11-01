@@ -25,6 +25,10 @@ interface CommentReceivedAction {
   type: 'COMMENT_RECEIVED'
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export type CommentsReducerAction =
   | CommentAddedAction
   | CommentDeletedAction
@@ -32,6 +36,10 @@ export type CommentsReducerAction =
   | CommentsSetAction
   | CommentReceivedAction
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentsReducerState {
   comments: Record<string, CommentDocument>
 }
@@ -50,6 +58,10 @@ function createCommentsSet(comments: CommentDocument[]) {
   return commentsById
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function commentsReducer(
   state: CommentsReducerState,
   action: CommentsReducerAction,

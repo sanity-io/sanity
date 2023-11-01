@@ -133,6 +133,10 @@ interface CommentsListItemLayoutProps {
 
 const TIME_AGO_OPTS: TimeAgoOpts = {agoSuffix: true}
 
+/**
+ * @beta
+ * @hidden
+ */
 export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const {
     canDelete,

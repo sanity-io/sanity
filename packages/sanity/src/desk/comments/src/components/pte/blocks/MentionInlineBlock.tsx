@@ -30,6 +30,10 @@ interface MentionInlineBlockProps {
   selected: boolean
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function MentionInlineBlock(props: MentionInlineBlockProps) {
   const {selected, userId} = props
   const [user, loading] = useUser(userId)

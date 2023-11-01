@@ -2,6 +2,10 @@ import React from 'react'
 import {RenderChildFunction, BlockChildRenderProps} from '@sanity/portable-text-editor'
 import {MentionInlineBlock} from '../blocks'
 
+/**
+ * @beta
+ * @hidden
+ */
 export const renderChild: RenderChildFunction = (childProps: BlockChildRenderProps) => {
   const {children, value, selected} = childProps
 

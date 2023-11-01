@@ -25,6 +25,10 @@ const EditableWrapStack = styled(Stack)(() => {
   `
 })
 
+/**
+ * @beta
+ * @hidden
+ */
 export const StyledPopover = styled(Popover)(({theme}) => {
   const {space, radius} = theme.sanity
 
@@ -58,10 +62,18 @@ interface EditableProps {
   placeholder?: React.ReactNode
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface EditableHandle {
   setShowMentionOptions: (show: boolean) => void
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export function Editable(props: EditableProps) {
   const {
     focusLock,

@@ -20,6 +20,10 @@ const FlexWrap = styled(Flex)({
   maxHeight: ITEM_HEIGHT * MAX_ITEMS + LIST_PADDING * 2 + ITEM_HEIGHT / 2,
 })
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface MentionsMenuHandle {
   setSearchTerm: (term: string) => void
 }
@@ -30,6 +34,10 @@ interface MentionsMenuProps {
   options: MentionOptionUser[] | null
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export const MentionsMenu = React.forwardRef(function MentionsMenu(
   props: MentionsMenuProps,
   ref: React.Ref<MentionsMenuHandle>,
