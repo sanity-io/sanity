@@ -8,6 +8,7 @@ import {
 } from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
+import {deskLocaleNamespace} from '../../i18n'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {
@@ -18,11 +19,11 @@ import {
   ChevronWrapper,
   DocumentIdFlex,
 } from './ConfirmDeleteDialogBody.styles'
-import {SanityDefaultPreview, useSchema} from 'sanity'
+import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
 
 type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentTitle: React.ReactNode
-  action: string
+  action: 'unpublish' | 'delete'
   onReferenceLinkClick?: () => void
 }
 
@@ -42,6 +43,7 @@ export function ConfirmDeleteDialogBody({
 }: DeletionConfirmationDialogBodyProps) {
   const schema = useSchema()
   const toast = useToast()
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const renderPreviewItem = useCallback(
     (item: any) => {
@@ -55,28 +57,30 @@ export function ConfirmDeleteDialogBody({
         <Box padding={2}>
           <SanityDefaultPreview
             icon={UnknownIcon}
-            title="Preview Unavailable"
-            subtitle={`ID: ${item._id}`}
+            title={t('confirm-delete-dialog.preview-item.preview-unavailable.title')}
+            subtitle={t('confirm-delete-dialog.preview-item.preview-unavailable.subtitle', {
+              documentId: item._id,
+            })}
             layout="default"
           />
         </Box>
       )
     },
-    [schema, onReferenceLinkClick],
+    [schema, t, onReferenceLinkClick],
   )
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
     return (
       <Text as="p">
-        Are you sure you want to {action} <strong>“{documentTitle}”</strong>?
+        <Translate
+          t={t}
+          i18nKey="confirm-delete-dialog.confirmation.text"
+          components={{DocumentTitle: () => <strong>“{documentTitle}”</strong>}}
+          values={{context: action}}
+        />
       </Text>
     )
   }
-
-  const documentCount =
-    crossDatasetReferences.totalCount === 1
-      ? '1 document'
-      : `${crossDatasetReferences.totalCount.toLocaleString()} documents`
 
   // We do some extra checks to handle cases where you have unavailable dataset
   // name(s) due to permissions, both alone and in combination with known datasets
@@ -86,19 +90,12 @@ export function ConfirmDeleteDialogBody({
     ...datasetNames,
     ...(hasUnknownDatasetNames ? ['unavailable'] : []),
   ]
-  const datasetsCount =
-    normalizedDatasetNames.length === 1
-      ? 'another dataset'
-      : `${normalizedDatasetNames.length} datasets`
 
-  let datasetNameList = `Dataset${
-    normalizedDatasetNames.length === 1 ? '' : 's'
-  }: ${normalizedDatasetNames.join(', ')}`
-
-  // We only have one dataset, and it is unavailable due to permissions
-  if (hasUnknownDatasetNames && normalizedDatasetNames.length === 1) {
-    datasetNameList = 'Unavailable dataset'
-  }
+  const datasetSubtitle = t('confirm-delete-dialog.cdr-summary.subtitle', {
+    count: normalizedDatasetNames.length,
+    datasets: normalizedDatasetNames.join(', '),
+    context: hasUnknownDatasetNames && normalizedDatasetNames.length ? 'unavailable' : '',
+  })
 
   return (
     <Card>
@@ -109,13 +106,12 @@ export function ConfirmDeleteDialogBody({
           </Text>
           <Box flex={1} marginLeft={3}>
             <Text size={1}>
-              {totalCount === 1 ? (
-                <>1 document refers to “{documentTitle}”</>
-              ) : (
-                <>
-                  {totalCount.toLocaleString()} documents refer to “{documentTitle}”
-                </>
-              )}
+              <Translate
+                i18nKey="confirm-delete-dialog.referring-document-count.text"
+                components={{DocumentTitle: () => documentTitle}}
+                t={t}
+                values={{count: totalCount}}
+              />
             </Text>
           </Box>
         </Flex>
@@ -123,8 +119,12 @@ export function ConfirmDeleteDialogBody({
 
       <Box flex="none" marginBottom={4}>
         <Text>
-          You may not be able to {action} “{documentTitle}” because the following documents refer to
-          it:
+          <Translate
+            i18nKey="confirm-delete-dialog.referring-documents-descriptor.text"
+            t={t}
+            components={{DocumentTitle: () => documentTitle}}
+            values={{context: action}}
+          />
         </Text>
       </Box>
 
@@ -168,12 +168,17 @@ export function ConfirmDeleteDialogBody({
                     <Flex marginRight={4} direction="column">
                       <Box marginBottom={2}>
                         <Text>
-                          {documentCount} in {datasetsCount}
+                          {t('confirm-delete-dialog.cdr-summary.title', {
+                            count: normalizedDatasetNames.length,
+                            documentCount: t('confirm-delete-dialog.cdr-summary.document-count', {
+                              count: crossDatasetReferences.totalCount,
+                            }),
+                          })}
                         </Text>
                       </Box>
                       <Box>
-                        <Text title={datasetNameList} textOverflow="ellipsis" size={1} muted>
-                          {datasetNameList}
+                        <Text title={datasetSubtitle} textOverflow="ellipsis" size={1} muted>
+                          {datasetSubtitle}
                         </Text>
                       </Box>
                     </Flex>
@@ -192,17 +197,17 @@ export function ConfirmDeleteDialogBody({
                     <tr>
                       <th>
                         <Label muted size={0} style={{minWidth: '5rem'}}>
-                          Project ID
+                          {t('confirm-delete-dialog.cdr-table.project-id.label')}
                         </Label>
                       </th>
                       <th>
                         <Label muted size={0}>
-                          Dataset
+                          {t('confirm-delete-dialog.cdr-table.dataset.label')}
                         </Label>
                       </th>
                       <th>
                         <Label muted size={0}>
-                          Document ID
+                          {t('confirm-delete-dialog.cdr-table.document-id.label')}
                         </Label>
                       </th>
                     </tr>
@@ -231,15 +236,18 @@ export function ConfirmDeleteDialogBody({
                                   text={documentId}
                                   // eslint-disable-next-line react/jsx-no-bind
                                   onCopy={() => {
-                                    // TODO: this isn't visible with the dialog open
                                     toast.push({
-                                      title: 'Copied document ID to clipboard!',
+                                      title: t(
+                                        'confirm-delete-dialog.cdr-table.id-copied-toast.title',
+                                      ),
                                       status: 'success',
                                     })
                                   }}
                                 >
                                   <Button
-                                    title="Copy ID to clipboard"
+                                    title={t(
+                                      'confirm-delete-dialog.cdr-table.copy-id-button.title',
+                                    )}
                                     mode="bleed"
                                     icon={CopyIcon}
                                     fontSize={0}
@@ -264,8 +272,12 @@ export function ConfirmDeleteDialogBody({
 
       <Box flex="none">
         <Text>
-          If you {action} this document, documents that refer to it will no longer be able to access
-          it.
+          <Translate
+            i18nKey="confirm-delete-dialog.referential-integrity-disclaimer.text"
+            t={t}
+            components={{DocumentTitle: () => documentTitle}}
+            values={{context: action}}
+          />
         </Text>
       </Box>
     </Card>
