@@ -73,7 +73,7 @@ const arrayWithAnonymousObjectField = defineField({
 
 const arrayWithAnonymousObjectFieldWithHiddenCallback = defineField({
   name: 'myArrayWithAnonymousObjectFieldWithHiddenCallback',
-  title: 'My array with anonymous object title with hidden callback title',
+  title: 'My array with anonymous object field with hidden callback title',
   type: 'array',
   of: [
     {
@@ -306,12 +306,10 @@ describe('comments: buildCommentBreadcrumbs', () => {
         myArrayWithAnonymousObject: [
           {
             _key: 'key1',
-            _type: 'object',
             anonymousString: 'Hello world',
           },
           {
             _key: 'key2',
-            _type: 'object',
             anonymousString: 'Hello world',
           },
         ],
@@ -334,12 +332,10 @@ describe('comments: buildCommentBreadcrumbs', () => {
         myArrayWithAnonymousObject: [
           {
             _key: 'key1',
-            _type: 'object',
             anonymousString: 'Hello world',
           },
           {
             _key: 'key2',
-            _type: 'object',
             anonymousString: 'Hello world',
           },
         ],
@@ -362,12 +358,10 @@ describe('comments: buildCommentBreadcrumbs', () => {
         myArrayWithAnonymousObjectFieldWithHiddenCallback: [
           {
             _key: 'key1',
-            _type: 'object',
             anonymousStringWithHiddenCallback: 'Hello world',
           },
           {
             _key: 'key2',
-            _type: 'object',
             anonymousStringWithHiddenCallback: 'Hello world',
           },
         ],
@@ -381,7 +375,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
       {
         invalid: false,
         isArrayItem: false,
-        title: 'My array with anonymous object title with hidden callback title',
+        title: 'My array with anonymous object field with hidden callback title',
       },
       {invalid: false, isArrayItem: true, title: '#2'},
       {invalid: true, isArrayItem: false, title: 'Anonymous string with hidden callback title'},
