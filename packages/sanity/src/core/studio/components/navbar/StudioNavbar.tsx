@@ -1,3 +1,8 @@
+/**
+ * Facelift project:
+ * The Navbar component will be updated
+ */
+
 import {MenuIcon, SearchIcon} from '@sanity/icons'
 import {
   BoundaryElementProvider,
