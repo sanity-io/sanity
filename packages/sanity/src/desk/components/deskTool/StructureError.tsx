@@ -5,6 +5,8 @@ import styled from 'styled-components'
 import {SyncIcon} from '@sanity/icons'
 import {SerializeError} from '../../structureBuilder'
 import {PaneResolutionError} from '../../structureResolvers'
+import {deskLocaleNamespace} from '../../i18n'
+import {useTranslation} from 'sanity'
 
 const PathSegment = styled.span`
   &:not(:last-child)::after {
@@ -36,6 +38,7 @@ export function StructureError({error}: StructureErrorProps) {
     throw error
   }
   const {cause} = error
+  const {t} = useTranslation(deskLocaleNamespace)
 
   // Serialize errors are well-formatted and should be readable, in these cases a stack trace is
   // usually not helpful. Build errors in dev (with HMR) usually also contains a bunch of garbage
@@ -54,12 +57,12 @@ export function StructureError({error}: StructureErrorProps) {
   return (
     <Card height="fill" overflow="auto" padding={4} sizing="border" tone="critical">
       <Container>
-        <Heading as="h2">Encountered an error while reading structure</Heading>
+        <Heading as="h2">{t('structure-error.header.text')}</Heading>
 
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
             <Stack space={2}>
-              <Label>Structure path</Label>
+              <Label>{t('structure-error.structure-path.label')}</Label>
               <Code>
                 {/* TODO: it seems like the path is off by one and includes */}
                 {/* `root` twice  */}
@@ -72,7 +75,7 @@ export function StructureError({error}: StructureErrorProps) {
           )}
 
           <Stack marginTop={4} space={2}>
-            <Label>Error</Label>
+            <Label>{t('structure-error.error.label')}</Label>
             <Code>{showStack ? formatStack(stack) : error.message}</Code>
           </Stack>
 
@@ -80,14 +83,19 @@ export function StructureError({error}: StructureErrorProps) {
             <Box marginTop={4}>
               <Text>
                 <a href={generateHelpUrl(helpId)} rel="noopener noreferrer" target="_blank">
-                  View documentation
+                  {t('structure-error.docs-link.text')}
                 </a>
               </Text>
             </Box>
           )}
 
           <Box marginTop={4}>
-            <Button text="Reload" icon={SyncIcon} tone="primary" onClick={handleReload} />
+            <Button
+              text={t('structure-error.reload-button.text')}
+              icon={SyncIcon}
+              tone="primary"
+              onClick={handleReload}
+            />
           </Box>
         </Card>
       </Container>

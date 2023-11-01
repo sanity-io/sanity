@@ -1,31 +1,41 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {SanityDocument} from '@sanity/types'
 import React from 'react'
-import {GeneralPreviewLayoutKey, SanityDefaultPreview} from 'sanity'
+import {deskLocaleNamespace} from '../i18n'
+import {GeneralPreviewLayoutKey, SanityDefaultPreview, Translate, useTranslation} from 'sanity'
 
 export interface MissingSchemaTypeProps {
   layout?: GeneralPreviewLayoutKey
   value: SanityDocument
 }
 
-const getUnknownTypeFallback = (id: string, typeName: string) => ({
-  title: (
-    <em>
-      No schema found for type <code>{typeName}</code>
-    </em>
-  ),
-  subtitle: (
-    <em>
-      Document: <code>{id}</code>
-    </em>
-  ),
-  media: () => <WarningOutlineIcon />,
-})
-
 export function MissingSchemaType(props: MissingSchemaTypeProps) {
+  const {t} = useTranslation(deskLocaleNamespace)
   const {layout, value} = props
 
   return (
-    <SanityDefaultPreview {...getUnknownTypeFallback(value._id, value._type)} layout={layout} />
+    <SanityDefaultPreview
+      title={
+        <em>
+          <Translate
+            t={t}
+            i18nKey="pane-item.missing-schema-type.title"
+            components={{Code: 'code'}}
+            values={{documentType: value._type}}
+          />
+        </em>
+      }
+      subtitle={
+        <Translate
+          t={t}
+          i18nKey="pane-item.missing-schema-type.subtitle"
+          components={{Code: 'code'}}
+          values={{documentId: value._id}}
+        />
+      }
+      // eslint-disable-next-line react/jsx-no-bind
+      media={() => <WarningOutlineIcon />}
+      layout={layout}
+    />
   )
 }

@@ -2,7 +2,10 @@ import React, {ComponentType, ReactNode, useMemo} from 'react'
 import type {TFunction} from 'i18next'
 import {CloseTagToken, simpleParser, TextToken, Token} from './simpleParser'
 
-type ComponentMap = Record<string, ComponentType<{children?: ReactNode}>>
+type ComponentMap = Record<
+  string,
+  ComponentType<{children?: ReactNode}> | keyof JSX.IntrinsicElements
+>
 
 /**
  * @beta
@@ -11,7 +14,7 @@ export interface TranslationProps {
   t: TFunction
   i18nKey: string
   components: ComponentMap
-  values?: Record<string, string | string[]>
+  values?: Record<string, number | string | string[]>
 }
 
 function render(tokens: Token[], componentMap: ComponentMap): ReactNode {
