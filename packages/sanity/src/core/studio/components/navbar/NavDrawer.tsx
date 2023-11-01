@@ -45,7 +45,7 @@ const Root = styled(Layer)`
   height: 100%;
 `
 
-const Backdrop = styled(motion(Card))`
+const BackdropMotion = styled(motion(Card))`
   position: absolute;
   top: 0;
   left: 0;
@@ -54,7 +54,7 @@ const Backdrop = styled(motion(Card))`
   background: var(--card-shadow-penumbra-color);
 `
 
-const InnerCard = styled(motion(Card))`
+const InnerCardMotion = styled(motion(Card))`
   position: relative;
   pointer-events: all;
   flex-direction: column;
@@ -131,7 +131,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
       {isOpen && (
         <TrapFocus autoFocus returnFocus>
           <Root onKeyDown={handleKeyDown}>
-            <Backdrop
+            <BackdropMotion
               animate="open"
               data-open={isOpen}
               exit="closed"
@@ -140,7 +140,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               transition={ANIMATION_TRANSITION}
               variants={BACKDROP_VARIANTS}
             />
-            <InnerCard
+            <InnerCardMotion
               animate="open"
               data-open={isOpen}
               display="flex"
@@ -244,7 +244,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   </Stack>
                 </Card>
               )}
-            </InnerCard>
+            </InnerCardMotion>
           </Root>
         </TrapFocus>
       )}
