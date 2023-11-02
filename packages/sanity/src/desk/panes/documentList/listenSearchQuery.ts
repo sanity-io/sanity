@@ -1,27 +1,26 @@
-import {SanityClient, SanityDocument} from '@sanity/client'
+import type {SanityClient, SanityDocument} from '@sanity/client'
 import {
   asyncScheduler,
   defer,
+  filter as filterEvents,
   merge,
   mergeMap,
   Observable,
   of,
-  partition,
   share,
-  take,
   throttleTime,
   throwError,
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {SortOrder} from './types'
+import type {SortOrder} from './types'
 import {
   createSearchQuery,
-  Schema,
-  SearchableType,
-  SearchOptions,
-  SearchTerms,
-  WeightedSearchOptions,
+  type Schema,
+  type SearchableType,
+  type SearchOptions,
+  type SearchTerms,
+  type WeightedSearchOptions,
 } from 'sanity'
 
 interface ListenQueryOptions {
@@ -69,12 +68,11 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
     share(),
   )
 
-  const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
-
   return merge(
-    welcome$.pipe(take(1)),
-    mutationAndReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true})),
+    of({type: 'welcome', visibility: null}),
+    events$.pipe(filterEvents((ev) => ev.type !== 'welcome')),
   ).pipe(
+    throttleTime(1000, asyncScheduler, {leading: true, trailing: true}),
     exhaustMapWithTrailing((event) => {
       // Get the types names to use for searching.
       // If we have a static list of types, we can skip fetching the types and use the static list.
