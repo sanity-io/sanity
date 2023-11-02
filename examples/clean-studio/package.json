@@ -24,6 +24,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "main": "package.json",
   "scripts": {
+    "lint": "eslint .",
     "start": "sanity dev --port 3338"
   },
   "dependencies": {

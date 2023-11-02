@@ -27,6 +27,7 @@
     "src"
   ],
   "scripts": {
+    "lint": "eslint .",
     "test": "jest"
   },
   "dependencies": {

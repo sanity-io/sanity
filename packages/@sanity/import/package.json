@@ -28,6 +28,7 @@
   ],
   "scripts": {
     "coverage": "jest --coverage",
+    "lint": "eslint .",
     "test": "jest"
   },
   "dependencies": {

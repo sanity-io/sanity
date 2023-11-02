@@ -16,6 +16,7 @@
     "build": {
       "outputs": ["lib/**", "index.js"],
       "dependsOn": ["^build"]
-    }
+    },
+    "lint": {}
   }
 }

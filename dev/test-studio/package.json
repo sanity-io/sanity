@@ -8,6 +8,7 @@
     "build": "run-s workshop:build sanity:build",
     "clean": "rimraf .sanity dist",
     "dev": "run-p workshop:dev sanity:dev",
+    "lint": "eslint .",
     "sanity:build": "../.bin/sanity build --source-maps",
     "sanity:dev": "../.bin/sanity dev",
     "start": "../.bin/sanity start",

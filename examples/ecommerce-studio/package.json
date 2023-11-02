@@ -25,6 +25,7 @@
   "main": "package.json",
   "scripts": {
     "clean": "rimraf lib dest",
+    "lint": "eslint .",
     "start": "sanity dev --port 3337"
   },
   "dependencies": {

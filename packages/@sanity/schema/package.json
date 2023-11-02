@@ -66,6 +66,7 @@
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf _internal.js lib",
+    "lint": "eslint .",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"

@@ -53,6 +53,7 @@
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
+    "lint": "eslint .",
     "pretest": "run-s build",
     "test": "node test/groq.test.cjs && node test/groq.test.mjs ",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"

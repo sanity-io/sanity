@@ -8,6 +8,7 @@
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "../.bin/sanity dev",
+    "lint": "eslint .",
     "start": "../.bin/sanity start"
   },
   "dependencies": {

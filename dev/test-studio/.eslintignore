@@ -1,0 +1,19 @@
+# default
+/etc
+/.sanity
+/public
+/build
+/.next
+/static
+/coverage
+/lib
+/node_modules
+/dist
+
+*.json
+*.css
+*.snap
+*.md
+
+# Package specific
+sanity.theme.mjs
