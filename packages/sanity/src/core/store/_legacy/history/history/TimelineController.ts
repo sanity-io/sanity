@@ -322,7 +322,7 @@ export class TimelineController {
       return
     }
 
-    if (count < limit) {
+    if (count <= limit) {
       this._aligner.didReachEarliestEntry()
     }
 
