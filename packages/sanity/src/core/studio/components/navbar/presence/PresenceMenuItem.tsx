@@ -63,13 +63,12 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
 
   return (
     <MenuItem
-      size="large"
       as={lastActiveLocation ? LinkComponent : 'div'}
       data-as={lastActiveLocation ? 'a' : 'div'}
       onFocus={handleFocus}
       ref={setMenuItemElement}
       text={presence.user.displayName}
-      subText={hasLink ? undefined : 'Not in a document'}
+      subtitle={hasLink ? undefined : 'Not in a document'}
       preview={
         <UserAvatar
           size={1}

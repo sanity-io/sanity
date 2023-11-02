@@ -29,12 +29,11 @@ function CustomMenuItem({
 
   return (
     <MenuItem
-      size="large"
       onClick={handleClick}
       pressed={selected}
       tone="default"
       text={title}
-      subText={value ? `${value}` : undefined}
+      subtitle={value ? `${value}` : undefined}
     />
   )
 }

@@ -92,22 +92,19 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
                       navigateUrl({path: workspace.basePath})
                     }
                   }
-
+                  const isSelected = workspace.name === activeWorkspace.name
                   return (
                     <MenuItem
-                      size="large"
                       key={workspace.name}
                       // eslint-disable-next-line react/jsx-no-bind
                       onClick={handleSelectWorkspace}
-                      pressed={workspace.name === activeWorkspace.name}
-                      selected={workspace.name === activeWorkspace.name}
-                      iconRight={
-                        workspace.name === activeWorkspace.name ? CheckmarkIcon : undefined
-                      }
+                      pressed={isSelected}
+                      selected={isSelected}
+                      iconRight={isSelected ? CheckmarkIcon : undefined}
                       badgeText={STATE_TITLES[state]}
                       preview={<WorkspacePreviewIcon icon={workspace.icon} size="large" />}
                       text={workspace?.title || workspace.name}
-                      subText={workspace?.subtitle}
+                      subtitle={workspace?.subtitle}
                     />
                   )
                 })}
