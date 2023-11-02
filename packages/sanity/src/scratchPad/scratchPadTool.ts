@@ -1,8 +1,17 @@
 import {BulbFilledIcon} from '@sanity/icons'
-import {lazy} from 'react'
+
+import ScratchPadRoot from './components/Root'
 import {definePlugin, isArrayOfBlocksSchemaType} from 'sanity'
 
-const ScratchPadRoot = lazy(() => import('./components/Root'))
+/**
+ * @alpha
+ */
+export {ScratchPadInput} from './components/editor/Input'
+
+/**
+ * @alpha
+ */
+export {ScratchPadProvider} from './context/ScratchPadProvider'
 
 /**
  * @alpha

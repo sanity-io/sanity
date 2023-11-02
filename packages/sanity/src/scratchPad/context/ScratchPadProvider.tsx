@@ -4,9 +4,9 @@ import {PortableTextBlock, SanityDocument} from '@sanity/types'
 import {PatchChannel, createPatchChannel} from '../../core'
 
 export interface ScratchPadContextValue {
-  assistantPromptRef: React.MutableRefObject<HTMLTextAreaElement | null>
   assistanceFragment: PortableTextBlock[] | undefined
   assistanceSelection: EditorSelection
+  assistantPromptRef: React.MutableRefObject<HTMLTextAreaElement | null>
   closeEditorToolbarMenu: () => void
   document: SanityDocument
   editorFocused: boolean

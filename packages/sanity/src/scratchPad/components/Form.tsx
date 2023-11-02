@@ -15,6 +15,12 @@ import {
   useFormState,
 } from 'sanity'
 
+/**
+ * Form for editing the Portable Text object members
+ * as annotations, inline objects, and object blocks.
+ *
+ * @internal
+ */
 export function ScratchPadForm({schema}: {schema: Schema}) {
   const [validation, setValidation] = useState<ValidationMarker[]>([])
   const [openPath, onSetOpenPath] = useState<Path>([])
@@ -164,7 +170,6 @@ export function ScratchPadForm({schema}: {schema: Schema}) {
       validation,
     ],
   )
-
   return <FormBuilder {...formBuilderProps} />
 }
 

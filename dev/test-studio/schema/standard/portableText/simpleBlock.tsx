@@ -1,11 +1,16 @@
-import React from 'react'
+import React, {useRef} from 'react'
 import {defineArrayMember, defineType} from 'sanity'
 import {toPlainText} from '@portabletext/react'
+import {ScratchPadInput, ScratchPadProvider} from 'sanity/scratchPad'
+import {PortableTextEditor} from '@sanity/portable-text-editor'
+import {position} from 'polished'
+import styled from 'styled-components'
 import {CalloutPreview} from './components/CalloutPreview'
 
 const linkType = defineArrayMember({
   type: 'object',
   name: 'link',
+  title: 'Lanky',
   fields: [
     {
       type: 'string',
@@ -16,7 +21,7 @@ const linkType = defineArrayMember({
   options: {
     modal: {
       type: 'popover',
-      width: 2,
+      width: [1, 2],
     },
   },
 })
@@ -39,6 +44,10 @@ export default defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
+      components: {
+        input: () => null,
+        field: (props) => props.children,
+      },
     },
     {
       name: 'body',
@@ -48,53 +57,7 @@ export default defineType({
         defineArrayMember({
           type: 'block',
           marks: {
-            annotations: [
-              {
-                name: 'link',
-                type: 'object',
-                title: 'link',
-                fields: [
-                  {
-                    name: 'url',
-                    type: 'url',
-                    validation: (Rule) =>
-                      Rule.regex(/https:\/\/(www\.|)(portabletext\.org|sanity\.io)\/.*/gi, {
-                        name: 'internal url',
-                        invert: true,
-                      }).warning(
-                        `This is not an external link. Consider using internal links instead.`,
-                      ),
-                  },
-                ],
-              },
-              {
-                name: 'internalLink',
-                type: 'object',
-                title: 'Internal link',
-                fields: [
-                  {
-                    name: 'reference',
-                    type: 'reference',
-                    to: [{type: 'book'}],
-                  },
-                  {
-                    name: 'reference1',
-                    type: 'reference',
-                    to: [{type: 'author'}],
-                  },
-                  {
-                    name: 'reference2',
-                    type: 'reference',
-                    to: [{type: 'author'}],
-                  },
-                  {
-                    name: 'reference3',
-                    type: 'reference',
-                    to: [{type: 'author'}],
-                  },
-                ],
-              },
-            ],
+            annotations: [linkType],
           },
           of: [
             {type: 'image', name: 'image'},
@@ -168,6 +131,17 @@ export default defineType({
           ],
         },
       ],
+      components: {
+        input: (inputProps: any) => {
+          const editorRef = useRef<PortableTextEditor | null>(null)
+          const assistantPromptRef = useRef<HTMLTextAreaElement | null>(null)
+          return (
+            <ScratchPadProvider editorRef={editorRef} assistantPromptRef={assistantPromptRef}>
+              <ScratchPadInput {...inputProps} />
+            </ScratchPadProvider>
+          )
+        },
+      },
     },
     {
       name: 'notes',

@@ -17,13 +17,14 @@ import {debounce} from 'lodash'
 import {PortableTextTextBlock} from '@sanity/types'
 import {useScratchPad} from '../../hooks/useScratchPad'
 import {ScratchPadContextValue} from '../../context/ScratchPadProvider'
-import {PortableTextInputProps} from '../../../core'
+import {PortableTextInputProps, RenderAnnotationCallback} from '../../../core'
 import {Style} from '../../../core/form/inputs/PortableText/text/Style'
 import {Decorator} from '../../../core/form/inputs/PortableText/text'
 import {Annotation} from '../../../core/form/inputs/PortableText/object/Annotation'
 import {InlineObject} from '../../../core/form/inputs/PortableText/object/InlineObject'
 import {TextBlock} from '../../../core/form/inputs/PortableText/text/TextBlock'
 import {AssistanceRange} from './AssistanceRange'
+import {FloatingToolbar} from './toolbar/FloatingToolbar'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 
@@ -143,47 +144,9 @@ export function Editable(props: EditableProps) {
     return <Style {...editorRenderProps} />
   }, [])
 
-  const _renderAnnotation = useCallback(
-    (editorRenderProps: BlockAnnotationRenderProps) => {
-      return (
-        <Annotation
-          floatingBoundary={editorRenderProps.editorElementRef.current}
-          editorNodeFocused={editorFocused}
-          focused={editorRenderProps.focused}
-          // eslint-disable-next-line react/jsx-handler-names
-          onItemClose={formProps.onItemClose}
-          // eslint-disable-next-line react/jsx-handler-names
-          onItemOpen={formProps.onItemOpen}
-          // eslint-disable-next-line react/jsx-handler-names
-          onPathFocus={formProps.onPathFocus}
-          path={formProps.path.concat(editorRenderProps.path)}
-          referenceBoundary={rootElementRef.current}
-          renderAnnotation={formProps.renderAnnotation}
-          renderField={formProps.renderField}
-          renderInput={formProps.renderInput}
-          renderItem={formProps.renderItem}
-          renderPreview={formProps.renderPreview}
-          selected={editorRenderProps.selected}
-          schemaType={editorRenderProps.schemaType}
-          value={editorRenderProps.value}
-        >
-          {editorRenderProps.children}
-        </Annotation>
-      )
-    },
-    [
-      editorFocused,
-      formProps.onItemClose,
-      formProps.onItemOpen,
-      formProps.onPathFocus,
-      formProps.path,
-      formProps.renderAnnotation,
-      formProps.renderField,
-      formProps.renderInput,
-      formProps.renderItem,
-      formProps.renderPreview,
-    ],
-  )
+  const _renderAnnotation = useCallback((editorRenderProps: BlockAnnotationRenderProps) => {
+    return editorRenderProps.children
+  }, [])
 
   const _renderChild = useCallback(
     (editorRenderProps: BlockChildRenderProps) => {
@@ -246,6 +209,7 @@ export function Editable(props: EditableProps) {
   return (
     <EditableWrapStack ref={rootElementRef} data-ui="EditableWrapStack">
       <BoundaryElementProvider element={rootElementRef.current}>
+        <FloatingToolbar rootElement={rootElementRef.current} />
         <PortableTextEditable
           onBeforeInput={onEditorBeforeInput}
           onBlur={onBlur}

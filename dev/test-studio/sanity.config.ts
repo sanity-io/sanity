@@ -7,6 +7,7 @@ import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {tsdoc} from '@sanity/tsdoc/studio'
+import {scratchPadTool} from 'sanity/scratchPad'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
@@ -17,7 +18,6 @@ import {schemaTypes} from './schema'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {workshopTool} from './workshop'
 import {presenceTool} from './plugins/presence'
-import {scratchPadTool} from 'sanity/scratchPad'
 import {
   CustomLayout,
   CustomLogo,

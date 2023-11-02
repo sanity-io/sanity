@@ -16,3 +16,5 @@ export * from './useFormValue'
 export * from './utils/mutationPatch'
 export * from './utils/path'
 export * from './utils/TransformPatches'
+
+export {useCursorElement} from './hooks/useCursorElement'
