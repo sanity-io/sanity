@@ -1,19 +1,2 @@
-# default
-/etc
-/.sanity
-/public
-/build
-/.next
-/static
-/coverage
-/lib
-/node_modules
-/dist
-
-*.json
-*.css
-*.snap
-*.md
-
 # package specific
 _internal.js
