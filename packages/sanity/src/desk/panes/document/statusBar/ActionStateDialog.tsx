@@ -62,6 +62,7 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
     >
       <Box padding={4}>
         {unknownModal.content || (
+          // eslint-disable-next-line i18next/no-literal-string
           <>
             Unexpected modal type (<code>{unknownModal.type}</code>)
           </>
