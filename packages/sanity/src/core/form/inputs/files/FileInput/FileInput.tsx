@@ -13,16 +13,7 @@ import {
   UploadState,
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Menu,
-  MenuButton,
-  MenuItem,
-  ThemeColorToneKey,
-  ToastParams,
-} from '@sanity/ui'
+import {Box, Button, Card, Menu, MenuButton, ThemeColorToneKey, ToastParams} from '@sanity/ui'
 import {SanityClient} from '@sanity/client'
 import {isFileSource} from '@sanity/asset-utils'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
@@ -38,6 +29,7 @@ import {InputProps, ObjectInputProps} from '../../../types'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {ImperativeToast} from '../../../../components'
+import {MenuItem} from '../../../../../ui'
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {CardOverlay, FlexContainer} from './styles'
 import {FileActionsMenu} from './FileActionsMenu'

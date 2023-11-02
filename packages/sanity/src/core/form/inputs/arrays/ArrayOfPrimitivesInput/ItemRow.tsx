@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo} from 'react'
-import {Box, Button, Flex, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {Box, Button, Flex, Menu, MenuButton} from '@sanity/ui'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
 import {FormFieldValidationStatus} from '../../../components/formField'
@@ -7,6 +7,7 @@ import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {RowLayout} from '../layouts/RowLayout'
 import {FieldPresence} from '../../../../presence'
+import {MenuItem} from '../../../../../ui'
 import {getEmptyValue} from './getEmptyValue'
 
 export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {

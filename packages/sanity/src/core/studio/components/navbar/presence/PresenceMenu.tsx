@@ -7,7 +7,6 @@ import {
   Menu,
   MenuButton,
   MenuDivider,
-  MenuItem,
   Stack,
   Text,
 } from '@sanity/ui'
@@ -16,6 +15,7 @@ import styled from 'styled-components'
 import {StatusButton, UserAvatar} from '../../../../components'
 import {useGlobalPresence} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
+import {MenuItem} from '../../../../../ui'
 import {useWorkspace} from '../../../workspace'
 import {PresenceMenuItem} from './PresenceMenuItem'
 
@@ -131,7 +131,6 @@ export function PresenceMenu(props: PresenceMenuProps) {
               href={`https://sanity.io/manage/project/${projectId}`}
               iconRight={CogIcon}
               onFocus={handleClearFocusedItem}
-              paddingY={4}
               rel="noopener noreferrer"
               target="_blank"
               text="Manage members"

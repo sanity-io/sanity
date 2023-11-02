@@ -1,6 +1,6 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
 import type {AssetFromSource, AssetSource, ReferenceValue} from '@sanity/types'
-import {Box, Button, Flex, Menu, MenuButton, MenuItem, Portal, Stack} from '@sanity/ui'
+import {Box, Button, Flex, Menu, MenuButton, Portal, Stack} from '@sanity/ui'
 import {get} from 'lodash'
 import React, {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
@@ -11,6 +11,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioCl
 import {useSource} from '../../../../../../../../source'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {MenuItem} from '../../../../../../../../../../ui'
 import {AssetSourceError} from './AssetSourceError'
 import {AssetPreview} from './preview/AssetPreview'
 
@@ -149,7 +150,6 @@ export function SearchFilterAssetInput(type?: AssetType) {
                       <Menu>
                         {assetSources.map((source) => (
                           <MenuItem
-                            fontSize={fontSize}
                             icon={source.icon || ImageIcon}
                             key={source.name}
                             // eslint-disable-next-line react/jsx-no-bind

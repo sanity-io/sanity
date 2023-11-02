@@ -9,7 +9,6 @@ import {
   MenuButton,
   MenuButtonProps,
   MenuDivider,
-  MenuItem,
   Stack,
   Text,
 } from '@sanity/ui'
@@ -18,7 +17,6 @@ import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
 import {type StudioThemeColorSchemeKey} from '../../../../theme'
-import {Tooltip} from '../../../../../ui'
 import {
   useColorSchemeOptions,
   useColorSchemeSetValue,
@@ -26,6 +24,7 @@ import {
 } from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
+import {MenuItem, Tooltip} from '../../../../../ui'
 import {LoginProviderLogo} from './LoginProviderLogo'
 
 const AVATAR_SIZE = 1
