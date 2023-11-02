@@ -167,8 +167,17 @@ const deskLocaleStrings = {
   'production-preview.menu-item.title': 'Open preview',
 
   /** -- DESK PANES -- */
-  /** The tool tipe for the split pane button on the document panel header */
+  /** The tool tip for the split pane button on the document panel header */
   'buttons.split-pane-button.tooltip': 'Split pane right',
+
+  /** The aria-label for the split pane button on the document panel header */
+  'buttons.split-pane-button.aria-label': 'Split pane right',
+
+  /** The title for the close button on the split pane on the document panel header */
+  'buttons.split-pane-close-button.title': 'Close split pane',
+
+  /** The title for the close group button on the split pane on the document panel header */
+  'buttons.split-pane-close-group-button.title': 'Close pane group',
 
   /** The text content for the deleted document banner */
   'banners.deleted-document-banner.text': 'This document has been deleted.',
@@ -254,6 +263,9 @@ const deskLocaleStrings = {
   /** The error text on the document list pane */
   'panes.document-list-pane.error.text': 'Error: <Code>{{error}}</Code>',
 
+  /** The text for the retry button on the document list pane */
+  'panes.document-list-pane.error.retry-button.text': 'Retry',
+
   /** The summary title when displaying an error for a document operation result */
   'panes.document-operation-results.error.summary.title': 'Details',
 
@@ -296,6 +308,18 @@ const deskLocaleStrings = {
   /** The text used in the document header title if no other title can be determined */
   'panes.document-header-title.untitled.text': 'Untitled',
 
+  /** The aria-label for the search input on the document list pane */
+  'panes.document-list-pane.search-input.aria-label': 'Search list',
+
+  /** The search input for the search input on the document list pane */
+  'panes.document-list-pane.search-input.placeholder': 'Search list',
+
+  /** The action menu button aria-label */
+  'buttons.action-menu-button.aria-label': 'Open document actions',
+
+  /** the placeholder text for the search input on the inspect dialog */
+  'inputs.inspect-dialog.search.placeholder': 'Search',
+
   /** -- UNKNOWN PANE TYPE */
 
   /** The text to display when type is missing */
@@ -305,6 +329,9 @@ const deskLocaleStrings = {
   /** The text to display when type is unknown */
   'panes.unknown-pane-type.unknown-type.text':
     'Structure item of type <Code>{{type}}</Code> is not a known entity.',
+
+  /** The title of the unknown pane */
+  'panes.unknown-pane-type.title': 'Unknown pane type',
 }
 
 /**

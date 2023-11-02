@@ -123,7 +123,7 @@ export const DocumentPanelHeader = memo(
                 portal
               >
                 <Button
-                  aria-label="Split pane right"
+                  aria-label={t('buttons.split-pane-button.aria-label')}
                   icon={SplitVerticalIcon}
                   key="split-pane-button"
                   mode="bleed"
@@ -138,7 +138,7 @@ export const DocumentPanelHeader = memo(
                 key="close-view-button"
                 mode="bleed"
                 onClick={onPaneClose}
-                title="Close split pane"
+                title={t('buttons.split-pane-close-button.title')}
               />
             )}
 
@@ -147,7 +147,7 @@ export const DocumentPanelHeader = memo(
                 icon={CloseIcon}
                 key="close-view-button"
                 mode="bleed"
-                title="Close pane group"
+                title={t('buttons.split-pane-close-group-button.title')}
                 as={BackLink}
               />
             )}

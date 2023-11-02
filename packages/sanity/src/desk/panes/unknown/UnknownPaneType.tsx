@@ -19,7 +19,7 @@ export function UnknownPane(props: UnknownPaneProps) {
   const {t} = useTranslation(deskLocaleNamespace)
   return (
     <Pane id={paneKey} selected={isSelected}>
-      <PaneHeader title="Unknown pane type" />
+      <PaneHeader title={t('panes.unknown-pane-type.title')} />
       <PaneContent>
         <Box padding={4}>
           {typeof type === 'string' ? (

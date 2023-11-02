@@ -204,7 +204,12 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
               {onRetry && (
                 <Box>
-                  <Button icon={SyncIcon} onClick={onRetry} text="Retry" tone="primary" />
+                  <Button
+                    icon={SyncIcon}
+                    onClick={onRetry}
+                    text={t('panes.document-list-pane.error.retry-button.text')}
+                    tone="primary"
+                  />
                 </Box>
               )}
             </Stack>
