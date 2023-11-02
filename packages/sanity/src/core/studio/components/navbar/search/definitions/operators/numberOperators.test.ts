@@ -37,10 +37,10 @@ describe('numberOperators', () => {
 
   it('should create a valid filter for numberRange', () => {
     const valueRange: OperatorNumberRangeValue = {
-      max: 10,
-      min: 5,
+      to: 10,
+      from: 5,
     }
     const filter = numberOperators.numberRange.groqFilter({fieldPath, value: valueRange})
-    expect(filter).toEqual(`${fieldPath} > ${valueRange.min} && ${fieldPath} < ${valueRange.max}`)
+    expect(filter).toEqual(`${fieldPath} > ${valueRange.from} && ${fieldPath} < ${valueRange.to}`)
   })
 })

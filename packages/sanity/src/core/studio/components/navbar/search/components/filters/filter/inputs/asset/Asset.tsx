@@ -102,7 +102,9 @@ export function SearchFilterAssetInput(type?: AssetType) {
 
     const fontSize = fullscreen ? 2 : 1
 
-    const buttonText = value ? `Change ${type}` : `Select ${type}`
+    const buttonText = t(value ? 'search.filter-asset-change' : 'search.filter-asset-select', {
+      context: type,
+    })
 
     const accept = get(type, 'options.accept', type === 'image' ? 'image/*' : '')
 

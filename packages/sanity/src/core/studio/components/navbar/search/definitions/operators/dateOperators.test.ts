@@ -45,21 +45,21 @@ describe('dateOperators', () => {
 
     describe('dateLast', () => {
       it('should create a valid filter for dateLast (days)', () => {
-        const value: OperatorDateLastValue = {unit: 'days', unitValue: 7}
+        const value: OperatorDateLastValue = {unit: 'day', unitValue: 7}
         const filter = dateOperators.dateLast.groqFilter({fieldPath, value})
         const timestampAgo = sub(new Date(), {days: 7}).toISOString().split('T')[0]
         expect(filter).toEqual(`${fieldPath} > "${timestampAgo}"`)
       })
 
       it('should create a valid filter for dateLast (months)', () => {
-        const value: OperatorDateLastValue = {unit: 'months', unitValue: 7}
+        const value: OperatorDateLastValue = {unit: 'month', unitValue: 7}
         const filter = dateOperators.dateLast.groqFilter({fieldPath, value})
         const timestampAgo = sub(new Date(), {months: 7}).toISOString().split('T')[0]
         expect(filter).toEqual(`${fieldPath} > "${timestampAgo}"`)
       })
 
       it('should create a valid filter for dateLast (years)', () => {
-        const value: OperatorDateLastValue = {unit: 'years', unitValue: 7}
+        const value: OperatorDateLastValue = {unit: 'year', unitValue: 7}
         const filter = dateOperators.dateLast.groqFilter({fieldPath, value})
         const timestampAgo = sub(new Date(), {years: 7}).toISOString().split('T')[0]
         expect(filter).toEqual(`${fieldPath} > "${timestampAgo}"`)
@@ -74,13 +74,11 @@ describe('dateOperators', () => {
 
     it('should create a valid filter for dateRange', () => {
       const value: OperatorDateRangeValue = {
-        dateMax: '2001-01-20',
-        dateMin: '2000-01-20',
+        to: '2001-01-20',
+        from: '2000-01-20',
       }
       const filter = dateOperators.dateRange.groqFilter({fieldPath, value})
-      expect(filter).toEqual(
-        `${fieldPath} >= "${value.dateMin}" && ${fieldPath} <= "${value.dateMax}"`,
-      )
+      expect(filter).toEqual(`${fieldPath} >= "${value.from}" && ${fieldPath} <= "${value.to}"`)
     })
   })
 
@@ -127,21 +125,21 @@ describe('dateOperators', () => {
 
     describe('dateTimeLast', () => {
       it('should create a valid filter for dateTimeLast (days)', () => {
-        const value: OperatorDateLastValue = {unit: 'days', unitValue: 7}
+        const value: OperatorDateLastValue = {unit: 'day', unitValue: 7}
         const filter = dateOperators.dateTimeLast.groqFilter({fieldPath, value})
         const timestampAgo = sub(new Date(), {days: 7}).toISOString()
         expect(filter).toEqual(`dateTime(${fieldPath}) > dateTime("${timestampAgo}")`)
       })
 
       it('should create a valid filter for dateTimeLast (months)', () => {
-        const value: OperatorDateLastValue = {unit: 'months', unitValue: 7}
+        const value: OperatorDateLastValue = {unit: 'month', unitValue: 7}
         const filter = dateOperators.dateTimeLast.groqFilter({fieldPath, value})
         const timestampAgo = sub(new Date(), {months: 7}).toISOString()
         expect(filter).toEqual(`dateTime(${fieldPath}) > dateTime("${timestampAgo}")`)
       })
 
       it('should create a valid filter for dateTimeLast (years)', () => {
-        const value: OperatorDateLastValue = {unit: 'years', unitValue: 7}
+        const value: OperatorDateLastValue = {unit: 'year', unitValue: 7}
         const filter = dateOperators.dateTimeLast.groqFilter({fieldPath, value})
         const timestampAgo = sub(new Date(), {years: 7}).toISOString()
         expect(filter).toEqual(`dateTime(${fieldPath}) > dateTime("${timestampAgo}")`)
@@ -178,12 +176,12 @@ describe('dateOperators', () => {
 
     it('should create a valid filter for dateTimeRange', () => {
       const value: OperatorDateRangeValue = {
-        dateMax: '2001-01-20T00:00:00.000Z',
-        dateMin: '2000-01-20T00:00:00.000Z',
+        to: '2001-01-20T00:00:00.000Z',
+        from: '2000-01-20T00:00:00.000Z',
       }
       const filter = dateOperators.dateTimeRange.groqFilter({fieldPath, value})
       expect(filter).toEqual(
-        `dateTime(${fieldPath}) >= dateTime("${value.dateMin}") && dateTime(${fieldPath}) <= dateTime("${value.dateMax}")`,
+        `dateTime(${fieldPath}) >= dateTime("${value.from}") && dateTime(${fieldPath}) <= dateTime("${value.to}")`,
       )
     })
   })

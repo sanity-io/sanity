@@ -12,6 +12,7 @@ import React, {
   useState,
 } from 'react'
 import styled, {css} from 'styled-components'
+import {Translate, useTranslation} from '../../../../../../../../../i18n'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'
 
@@ -68,10 +69,8 @@ export function ParsedDateTextInput({
   value,
   ...rest
 }: ParsedDateTextInputProps) {
-  const dateFormat = useMemo(
-    () => (isDateTimeFormat ? FORMAT.datetime.pattern : FORMAT.date.pattern),
-    [isDateTimeFormat],
-  )
+  const {t} = useTranslation()
+  const dateFormat = isDateTimeFormat ? FORMAT.datetime.pattern : FORMAT.date.pattern
 
   const [customValidity, setCustomValidity] = useState<string | undefined>(undefined)
   const [inputValue, setInputValue] = useState<string>(() => {
@@ -168,10 +167,16 @@ export function ParsedDateTextInput({
             <ErrorOutlineIcon />
           </IconTextCritical>
           <Text muted size={1}>
-            Must be in the format{' '}
-            <Emphasis>
-              {isDateTimeFormat ? FORMAT.datetime.exampleDate : FORMAT.date.exampleDate}
-            </Emphasis>
+            <Translate
+              t={t}
+              i18nKey="calendar.error.must-be-in-format"
+              components={{Emphasis}}
+              values={{
+                exampleDate: isDateTimeFormat
+                  ? FORMAT.datetime.exampleDate
+                  : FORMAT.date.exampleDate,
+              }}
+            />
           </Text>
         </Flex>
       }
