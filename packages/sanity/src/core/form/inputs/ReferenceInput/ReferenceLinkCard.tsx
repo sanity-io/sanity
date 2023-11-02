@@ -29,14 +29,7 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
   props: ReferenceLinkCardProps & React.HTMLProps<HTMLElement>,
   ref: React.ForwardedRef<HTMLElement>,
 ) {
-  const {
-    as: asProp,
-    // We exclude `documentId` from spread props to avoid passing it to the Card component
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    documentId,
-    documentType,
-    ...cardProps
-  } = props
+  const {as: asProp, documentId, documentType, ...cardProps} = props
   const dataAs = documentType ? 'a' : undefined
 
   // If the child link is clicked without a document type, an error will be thrown.
@@ -48,6 +41,7 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
     <StyledCard
       {...cardProps}
       data-as={dataAs}
+      documentId={documentId}
       documentType={documentType}
       forwardedAs={as}
       ref={ref as unknown as React.ForwardedRef<HTMLDivElement>}
