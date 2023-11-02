@@ -14,7 +14,8 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {useDeskTool} from '../../../../useDeskTool'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {useFieldActions, useTimelineSelector} from 'sanity'
+import {deskLocaleNamespace} from '../../../../i18n'
+import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentPanelHeaderProps {}
@@ -74,6 +75,7 @@ export const DocumentPanelHeader = memo(
     // and if the back button is not showing (the back button and the close
     // button) do the same thing and shouldn't be shown at the same time)
     const showPaneGroupCloseButton = !showSplitPaneCloseButton && !features.backButton
+    const {t} = useTranslation(deskLocaleNamespace)
 
     return (
       <PaneHeader
@@ -113,7 +115,7 @@ export const DocumentPanelHeader = memo(
               <Tooltip
                 content={
                   <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                    Split pane right
+                    {t('buttons.split-pane-button.tooltip')}
                   </Text>
                 }
                 padding={2}
@@ -121,7 +123,7 @@ export const DocumentPanelHeader = memo(
                 portal
               >
                 <Button
-                  aria-label="Split pane right"
+                  aria-label={t('buttons.split-pane-button.aria-label')}
                   icon={SplitVerticalIcon}
                   key="split-pane-button"
                   mode="bleed"
@@ -136,7 +138,7 @@ export const DocumentPanelHeader = memo(
                 key="close-view-button"
                 mode="bleed"
                 onClick={onPaneClose}
-                title="Close split pane"
+                title={t('buttons.split-pane-close-button.title')}
               />
             )}
 
@@ -145,7 +147,7 @@ export const DocumentPanelHeader = memo(
                 icon={CloseIcon}
                 key="close-view-button"
                 mode="bleed"
-                title="Close pane group"
+                title={t('buttons.split-pane-close-group-button.title')}
                 as={BackLink}
               />
             )}

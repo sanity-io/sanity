@@ -14,14 +14,15 @@ import React, {
   createElement,
   isValidElement,
   useCallback,
+  useId,
+  useMemo,
   useRef,
   useState,
-  useMemo,
-  useId,
 } from 'react'
 import {isValidElementType} from 'react-is'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription, Hotkeys, LegacyLayerProvider} from 'sanity'
+import {DocumentActionDescription, Hotkeys, LegacyLayerProvider, useTranslation} from 'sanity'
+import {deskLocaleNamespace} from '../../../i18n'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]
@@ -49,6 +50,7 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
   )
 
   const currentAction = actionStates[actionIndex]
+  const {t} = useTranslation(deskLocaleNamespace)
 
   return (
     <>
@@ -57,7 +59,7 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
         button={
           <Button
             data-testid="action-menu-button"
-            aria-label="Open document actions"
+            aria-label={t('buttons.action-menu-button.aria-label')}
             disabled={disabled}
             icon={ChevronDownIcon}
             mode="ghost"

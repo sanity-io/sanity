@@ -84,7 +84,7 @@ function ValidationCard(props: {
     <ErrorBoundary onCatch={setErrorInfo}>
       {errorInfo && (
         <Card padding={3} radius={2} tone="critical">
-          <Text size={1}>ERROR: {errorInfo.error.message}</Text>
+          <Text size={1}>{errorInfo.error.message}</Text>
         </Card>
       )}
 

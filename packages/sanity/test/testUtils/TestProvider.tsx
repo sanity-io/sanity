@@ -3,6 +3,7 @@ import {SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {
   LocaleProviderBase,
+  LocaleResourceBundle,
   ResourceCacheProvider,
   SingleWorkspace,
   SourceProvider,
@@ -16,9 +17,14 @@ import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 interface TestProviderOptions {
   config?: SingleWorkspace
   client?: SanityClient
+  resources?: LocaleResourceBundle[]
 }
 
-export async function createTestProvider({client, config}: TestProviderOptions = {}) {
+export async function createTestProvider({
+  client,
+  config,
+  resources = [studioDefaultLocaleResources],
+}: TestProviderOptions = {}) {
   const workspace = await getMockWorkspace({client, config})
 
   const locales = [usEnglishLocale]
@@ -26,7 +32,7 @@ export async function createTestProvider({client, config}: TestProviderOptions =
     projectId: 'test',
     dataset: 'test',
     name: 'test',
-    i18n: {bundles: [studioDefaultLocaleResources]},
+    i18n: {bundles: resources},
   })
 
   await i18next.init()
