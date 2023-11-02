@@ -1,11 +1,10 @@
 import type {Reference} from '@sanity/types'
-import {format, isValid} from 'date-fns'
-import pluralize from 'pluralize-esm'
+import {isValid} from 'date-fns'
 import React from 'react'
 import {useSchema} from '../../../../../../../hooks'
-import type {OperatorNumberRangeValue} from '../../../definitions/operators/common'
+import {useUnitFormatter} from '../../../../../../../hooks/useUnitFormatter'
+import {useIntlDateTimeFormat} from '../../../../../../../i18n/hooks/useIntlDateTimeFormat'
 import type {
-  OperatorDateDirectionValue,
   OperatorDateEqualValue,
   OperatorDateLastValue,
   OperatorDateRangeValue,
@@ -24,75 +23,40 @@ export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentPr
 export function SearchButtonValueDate({
   value,
 }: OperatorButtonValueComponentProps<OperatorDateEqualValue>) {
+  const dateFormat = useIntlDateTimeFormat({
+    dateStyle: 'medium',
+    timeStyle: value.includeTime ? 'short' : undefined,
+  })
   const date = value?.date ? new Date(value.date) : null
   if (!date || !isValid(date)) {
     return null
   }
-  return <>{format(date, DEFAULT_DATE_FORMAT)}</>
-}
-
-export function SearchButtonValueDateDirection({
-  value,
-}: OperatorButtonValueComponentProps<OperatorDateDirectionValue>) {
-  const date = value?.date ? new Date(value.date) : null
-  if (!date || !isValid(date)) {
-    return null
-  }
-  return <>{format(date, DEFAULT_DATE_FORMAT)}</>
+  return <>{dateFormat.format(date)}</>
 }
 
 export function SearchButtonValueDateLast({
   value,
 }: OperatorButtonValueComponentProps<OperatorDateLastValue>) {
-  return (
-    <>
-      {Math.floor(value?.unitValue ?? 0)} {value.unit}
-    </>
-  )
+  const formatUnit = useUnitFormatter()
+  return <>{formatUnit(Math.floor(value?.unitValue ?? 0), value.unit)}</>
 }
 
 export function SearchButtonValueDateRange({
   value,
 }: OperatorButtonValueComponentProps<OperatorDateRangeValue>) {
-  const startDate = value?.dateMin ? new Date(value.dateMin) : null
-  const endDate = value?.dateMax ? new Date(value.dateMax) : null
+  const dateFormat = useIntlDateTimeFormat({
+    dateStyle: 'medium',
+    timeStyle: value.includeTime ? 'short' : undefined,
+  })
+  const startDate = value?.from ? new Date(value.from) : null
+  const endDate = value?.to ? new Date(value.to) : null
   if (!endDate || !startDate || !isValid(endDate) || !isValid(startDate)) {
     return null
   }
-  return (
-    <>
-      {format(startDate, DEFAULT_DATE_FORMAT)} → {format(endDate, DEFAULT_DATE_FORMAT)}
-    </>
-  )
-}
 
-export function SearchButtonValueNumber({value}: OperatorButtonValueComponentProps<number>) {
-  return <>{value}</>
-}
-
-export function SearchButtonValueNumberCount({value}: OperatorButtonValueComponentProps<number>) {
-  return (
-    <>
-      {value} {pluralize('item', value)}
-    </>
-  )
-}
-
-export function SearchButtonValueNumberRange({
-  value,
-}: OperatorButtonValueComponentProps<OperatorNumberRangeValue>) {
-  return (
-    <>
-      {value.min} → {value.max}
-    </>
-  )
-}
-
-export function SearchButtonValueNumberCountRange({
-  value,
-}: OperatorButtonValueComponentProps<OperatorNumberRangeValue>) {
-  const {t} = useTranslation()
-  return <>{t('search.number-items-range', {min: value.min, max: value.max})}</>
+  const from = dateFormat.format(startDate)
+  const to = dateFormat.format(endDate)
+  return <>{`${from} → ${to}`}</>
 }
 
 export function SearchButtonValueReference({value}: OperatorButtonValueComponentProps<Reference>) {
@@ -103,10 +67,4 @@ export function SearchButtonValueReference({value}: OperatorButtonValueComponent
     return null
   }
   return <ReferencePreviewTitle documentId={documentId} schemaType={schemaType} />
-}
-
-export function SearchButtonValueString({
-  value,
-}: OperatorButtonValueComponentProps<string | number>) {
-  return <>{value}</>
 }

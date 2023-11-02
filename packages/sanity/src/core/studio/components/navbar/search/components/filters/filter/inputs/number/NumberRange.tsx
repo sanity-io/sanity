@@ -9,35 +9,35 @@ export function SearchFilterNumberRangeInput({
   onChange,
   value,
 }: OperatorInputComponentProps<OperatorNumberRangeValue>) {
-  const [max, setMax] = useState(value?.max ?? '')
-  const [min, setMin] = useState(value?.min ?? '')
+  const [to, setTo] = useState(value?.to ?? '')
+  const [from, setFrom] = useState(value?.from ?? '')
 
   const {
     state: {fullscreen},
   } = useSearchState()
   const {t} = useTranslation()
 
-  const handleMaxChange = useCallback(
+  const handleToChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      setMax(event.currentTarget.value)
+      setTo(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
       onChange({
-        max: Number.isFinite(numValue) ? numValue : null,
-        min: value?.min ?? null,
+        to: Number.isFinite(numValue) ? numValue : null,
+        from: value?.from ?? null,
       })
     },
-    [value?.min, onChange],
+    [value?.from, onChange],
   )
-  const handleMinChange = useCallback(
+  const handleFromChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      setMin(event.currentTarget.value)
+      setFrom(event.currentTarget.value)
       const numValue = parseFloat(event.currentTarget.value)
       onChange({
-        max: value?.max ?? null,
-        min: Number.isFinite(numValue) ? numValue : null,
+        to: value?.to ?? null,
+        from: Number.isFinite(numValue) ? numValue : null,
       })
     },
-    [value?.max, onChange],
+    [value?.to, onChange],
   )
 
   return (
@@ -45,23 +45,23 @@ export function SearchFilterNumberRangeInput({
       <Box flex={1}>
         <TextInput
           fontSize={fullscreen ? 2 : 1}
-          onChange={handleMinChange}
+          onChange={handleFromChange}
           placeholder={t('search.filter-number-min-value-placeholder')}
           radius={2}
           step="any"
           type="number"
-          value={min}
+          value={from}
         />
       </Box>
       <Box flex={1}>
         <TextInput
           fontSize={fullscreen ? 2 : 1}
-          onChange={handleMaxChange}
+          onChange={handleToChange}
           placeholder={t('search.filter-number-max-value-placeholder')}
           radius={2}
           step="any"
           type="number"
-          value={max}
+          value={to}
         />
       </Box>
     </Flex>

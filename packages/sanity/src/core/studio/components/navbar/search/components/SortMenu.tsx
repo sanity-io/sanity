@@ -14,6 +14,7 @@ import {
 import isEqual from 'lodash/isEqual'
 import React, {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../../i18n'
 import {ORDERINGS} from '../definitions/orderings'
 import {useSearchState} from '../contexts/search/useSearchState'
 import type {SearchOrdering} from '../types'
@@ -41,6 +42,7 @@ function isSearchDivider(item: SearchDivider | SearchOrdering): item is SearchDi
 }
 
 function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
+  const {t} = useTranslation()
   const {
     dispatch,
     state: {ordering: currentOrdering},
@@ -56,7 +58,7 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
     <MenuItem onClick={handleClick} padding={3} pressed={isSelected} tone="default">
       <Flex align="center" justify="space-between" paddingRight={2}>
         <Text size={1} weight="medium">
-          {ordering.title}
+          {t(ordering.titleKey)}
         </Text>
       </Flex>
     </MenuItem>
@@ -64,6 +66,7 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
 }
 
 export function SortMenu() {
+  const {t} = useTranslation()
   const {
     state: {ordering},
   } = useSearchState()
@@ -92,7 +95,7 @@ export function SortMenu() {
                 </Box>
                 <Inline space={2}>
                   <Text size={1} weight="medium">
-                    {currentMenuItem.title}
+                    {t(currentMenuItem.titleKey)}
                   </Text>
                 </Inline>
               </Flex>

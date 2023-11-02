@@ -58,12 +58,26 @@ export interface SearchFilter {
 /**
  * @internal
  */
+export type SearchFilterValues = {
+  count?: number
+  value?: string | number
+  from?: string | number
+  to?: string | number
+}
+
+/**
+ * @internal
+ */
 export interface SearchOrdering {
   customMeasurementLabel?: string
   ignoreScore?: boolean
   sort: SearchSort
-  title: string
+  /**
+   * i18n key for title
+   */
+  titleKey: `search.ordering.${string}-label`
 }
+
 /**
  * @internal
  */

@@ -1,4 +1,4 @@
 export interface OperatorNumberRangeValue {
-  max: number | null
-  min: number | null
+  from: number | null
+  to: number | null
 }

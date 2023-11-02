@@ -26,7 +26,7 @@ export default function CommonDateRangeStory() {
               Start:
             </Text>
             <Text muted size={1}>
-              {value?.dateMin ? value.dateMin : <em>Empty</em>}
+              {value?.from ? value.from : <em>Empty</em>}
             </Text>
           </Inline>
           <Inline space={1}>
@@ -34,7 +34,7 @@ export default function CommonDateRangeStory() {
               End:
             </Text>
             <Text muted size={1}>
-              {value?.dateMax ? value.dateMax : <em>Empty</em>}
+              {value?.to ? value.to : <em>Empty</em>}
             </Text>
           </Inline>
         </Stack>
