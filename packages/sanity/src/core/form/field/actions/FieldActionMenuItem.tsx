@@ -1,8 +1,9 @@
-import {MenuItem, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {CheckmarkIcon} from '@sanity/icons'
 import {TooltipOfDisabled} from '../../../components'
 import {DocumentFieldActionItem} from '../../../config'
+import {MenuItem} from '../../../../ui'
 
 export function FieldActionMenuItem(props: {action: DocumentFieldActionItem}) {
   const {action} = props
@@ -19,13 +20,10 @@ export function FieldActionMenuItem(props: {action: DocumentFieldActionItem}) {
     <TooltipOfDisabled content={disabledTooltipContent} placement="left">
       <MenuItem
         disabled={Boolean(action.disabled)}
-        fontSize={1}
         icon={action.icon}
         iconRight={action.iconRight || (action.selected ? CheckmarkIcon : undefined)}
         onClick={handleClick}
-        padding={3}
         pressed={action.selected}
-        space={3}
         text={action.title}
         tone={action.tone}
       />

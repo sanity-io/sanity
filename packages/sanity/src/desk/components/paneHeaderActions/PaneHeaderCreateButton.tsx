@@ -1,8 +1,9 @@
 import {ComposeIcon} from '@sanity/icons'
 import React, {useMemo, forwardRef} from 'react'
-import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
+import {Box, Button, Label, Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
+import {MenuItem} from '../../../ui'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 import {IntentLink} from 'sanity/router'
 import {

@@ -17,7 +17,6 @@ import {
   Menu,
   MenuButton,
   MenuDivider,
-  MenuItem,
   Stack,
   Text,
 } from '@sanity/ui'
@@ -36,6 +35,7 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFormPublishedId} from '../../useFormPublishedId'
+import {MenuItem} from '../../../../ui'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
