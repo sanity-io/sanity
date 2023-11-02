@@ -1,11 +1,12 @@
 import {SelectIcon} from '@sanity/icons'
-import {Box, Button, Flex, Inline, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
-import React, {createElement, useCallback, useId} from 'react'
+import {Box, Button, Flex, Inline, Menu, MenuButton, MenuDivider, Text} from '@sanity/ui'
+import React, {useCallback, useId} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperatorDefinition, SearchOperatorDefinition} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
+import {MenuItem} from '../../../../../../../../ui'
 
 interface OperatorsMenuButtonProps {
   filter: SearchFilter
@@ -24,20 +25,13 @@ function CustomMenuItem({
   const handleClick = useCallback(() => onClick(operator.type), [onClick, operator.type])
 
   return (
-    <MenuItem onClick={handleClick} padding={3} pressed={selected} tone="default">
-      <Flex align="center" justify="space-between" gap={3}>
-        <Box paddingRight={2}>
-          <Text size={1} weight="regular">
-            {operator.label}
-          </Text>
-        </Box>
-        {operator?.icon && (
-          <Text muted size={1}>
-            {createElement(operator.icon)}
-          </Text>
-        )}
-      </Flex>
-    </MenuItem>
+    <MenuItem
+      onClick={handleClick}
+      pressed={selected}
+      tone="default"
+      text={operator.label}
+      iconRight={operator?.icon}
+    />
   )
 }
 

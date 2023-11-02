@@ -8,7 +8,6 @@ import {
   Menu,
   MenuButton,
   MenuDivider,
-  MenuItem,
   Spinner,
   Stack,
   Text,
@@ -36,6 +35,7 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {set, unset} from '../../patch'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
+import {MenuItem} from '../../../../ui'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {useReferenceInput} from './useReferenceInput'

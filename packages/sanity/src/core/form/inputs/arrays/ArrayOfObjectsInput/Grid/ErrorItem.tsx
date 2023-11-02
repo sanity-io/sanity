@@ -1,10 +1,11 @@
 import React, {useCallback, useId} from 'react'
 import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {Button, Menu, MenuButton} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
 import {PatchEvent, unset} from '../../../../patch'
 import {CellLayout} from '../../layouts/CellLayout'
+import {MenuItem} from '../../../../../../ui'
 import {IncompatibleItemType} from './IncompatibleItemType'
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const

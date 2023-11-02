@@ -1,6 +1,7 @@
 import React from 'react'
 import {LinkIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {Button, Menu, MenuItem, MenuButton} from '@sanity/ui'
+import {Button, Menu, MenuButton} from '@sanity/ui'
+import {MenuItem} from '../../../../ui'
 import {AssetMenuAction} from './types'
 
 export function AssetMenu({

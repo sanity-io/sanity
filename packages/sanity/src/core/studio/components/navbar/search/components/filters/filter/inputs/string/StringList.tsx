@@ -1,6 +1,6 @@
 import {SelectIcon} from '@sanity/icons'
 import {isTitledListValue, StringOptions, TitledListValue} from '@sanity/types'
-import {Box, Button, Code, Flex, Menu, MenuButton, MenuItem, Stack, Text} from '@sanity/ui'
+import {Box, Button, Code, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
 import {capitalize, uniq} from 'lodash'
 import React, {useCallback, useId, useMemo} from 'react'
 import {useSchema} from '../../../../../../../../../hooks'
@@ -8,6 +8,7 @@ import {isNonNullable} from '../../../../../../../../../util'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
+import {MenuItem} from '../../../../../../../../../../ui'
 
 interface TitledListValueGroup extends Omit<TitledListValue<number | string>, 'title'> {
   title: (number | string)[]
@@ -27,20 +28,13 @@ function CustomMenuItem({
   const handleClick = useCallback(() => onClick(value), [onClick, value])
 
   return (
-    <MenuItem onClick={handleClick} padding={3} pressed={selected} tone="default">
-      <Flex align="center" justify="space-between" gap={3}>
-        <Stack paddingRight={2} space={2}>
-          <Text size={1} weight="regular">
-            {title}
-          </Text>
-          {value && (
-            <Code muted size={0}>
-              {value}
-            </Code>
-          )}
-        </Stack>
-      </Flex>
-    </MenuItem>
+    <MenuItem
+      onClick={handleClick}
+      pressed={selected}
+      tone="default"
+      text={title}
+      subtitle={value ? `${value}` : undefined}
+    />
   )
 }
 

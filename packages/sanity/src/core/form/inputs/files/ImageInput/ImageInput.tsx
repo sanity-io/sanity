@@ -9,7 +9,6 @@ import {
   Menu,
   MenuButton,
   MenuButtonProps,
-  MenuItem,
   Stack,
   ToastParams,
 } from '@sanity/ui'
@@ -52,6 +51,7 @@ import {PresenceOverlay} from '../../../../presence'
 import {FIXME} from '../../../../FIXME'
 import {ImperativeToast} from '../../../../components'
 import {ChangeIndicator} from '../../../../changeIndicators'
+import {MenuItem} from '../../../../../ui'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
