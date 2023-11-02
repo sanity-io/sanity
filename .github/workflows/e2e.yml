@@ -6,7 +6,7 @@ on:
   push:
     branches: [next]
 jobs:
-  playwright-test:
+  install:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
@@ -15,10 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
         project: [chromium, firefox]
-        # Add more shards here if needed
-        shardIndex: [1, 2]
-        shardTotal: [2]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -73,6 +71,94 @@ jobs:
           SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
         run: yarn e2e:setup && yarn e2e:build
 
+      - name: Build E2E test studio on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
+          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
+          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
+          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
+          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
+          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+        run: yarn e2e:setup && yarn e2e:build
+
+      # Caches build from either PR or next
+      - name: Cache build
+        id: cache-e2e-build
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-e2e-build
+        with:
+          path: './*'
+          # Unique key for a workflow run. Should be invalidated in the next run
+          key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
+
+  playwright-test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs: [install]
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
+        project: [chromium, firefox]
+        # Add more shards here if needed
+        shardIndex: [1, 2]
+        shardTotal: [2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache/restore@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ env.cache-name }}-
+            ${{ runner.os }}-modules-
+            ${{ runner.os }}-
+
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Store Playwright's Version
+        run: |
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache/restore@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Restore build cache
+        uses: actions/cache/restore@v3
+        id: restore-build
+        env:
+          cache-name: cache-e2e-build
+        with:
+          path: ./*
+          key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
+          # If the cached build from the pervious step is not available. Fail the build
+          fail-on-cache-miss: true
+
       - name: Run E2E tests on next
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
         env:
@@ -87,17 +173,6 @@ jobs:
           SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
         run: yarn test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - name: Build E2E test studio on PR
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          # Update the SANITY_E2E_SESSION_TOKEN on github to the new value once this is merged to next
-          # Change the below to `secrets.SANITY_E2E_SESSION_TOKEN`
-          # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
-          SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
-          SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ github.event.number }}
-        run: yarn e2e:setup && yarn e2e:build
-
       - name: Run E2E tests on PR
         if: ${{ github.event_name == 'pull_request' }}
         env:
@@ -109,7 +184,7 @@ jobs:
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ github.event.number }}
+          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
         run: yarn test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v3
@@ -130,7 +205,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -160,3 +235,32 @@ jobs:
           name: html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
           retention-days: 30
+
+  cleanup:
+    timeout-minutes: 30
+    name: Cleanup (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    needs: [playwright-test]
+
+    strategy:
+      # we want to know if a test fails on a specific node version
+      fail-fast: false
+      matrix:
+        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
+        project: [chromium, firefox]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # Delete the cache so it is only used once
+      - name: Delete Cache
+        run: gh cache delete ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
+        env:
+          cache-name: cache-e2e-build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
