@@ -4,6 +4,61 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /* Relative time, just now */
   'relative-time.just-now': 'akkurat nå',
 
+  /** --- Calendar (date input, search filters...) --- */
+
+  /** Action message for navigating to next month */
+  'calendar.action.go-to-next-month': 'Gå til neste måned',
+  /** Action message for navigating to previous month */
+  'calendar.action.go-to-previous-month': 'Gå til forrige måned',
+  /** Action message for navigating to next year */
+  'calendar.action.go-to-next-year': 'Gå til neste år',
+  /** Action message for navigating to previous year */
+  'calendar.action.go-to-previous-year': 'Gå til forrige år',
+  /** Action message for setting to the current time */
+  'calendar.action.set-to-current-time': 'Sett til nå',
+  /** Action message for selecting the hour */
+  'calendar.action.select-hour': 'Velg time',
+  /** Action message for selecting the minute */
+  'calendar.action.select-minute': 'Velg minutt',
+
+  /** Month names */
+  'calendar.month-names.january': 'Januar',
+  'calendar.month-names.february': 'Februar',
+  'calendar.month-names.march': 'Mars',
+  'calendar.month-names.april': 'April',
+  'calendar.month-names.may': 'Mai',
+  'calendar.month-names.june': 'Juni',
+  'calendar.month-names.july': 'Juli',
+  'calendar.month-names.august': 'August',
+  'calendar.month-names.september': 'September',
+  'calendar.month-names.october': 'Oktober',
+  'calendar.month-names.november': 'November',
+  'calendar.month-names.december': 'Desember',
+
+  /** Short weekday names */
+  'calendar.weekday-names.short.monday': 'Man',
+  'calendar.weekday-names.short.tuesday': 'Tir',
+  'calendar.weekday-names.short.wednesday': 'Ons',
+  'calendar.weekday-names.short.thursday': 'Tor',
+  'calendar.weekday-names.short.friday': 'Fre',
+  'calendar.weekday-names.short.saturday': 'Lør',
+  'calendar.weekday-names.short.sunday': 'Søn',
+
+  /* Label for navigating the calendar to "today", without _selecting_ today. Short form, eg `Today`, not `Go to today` */
+  'calendar.action.go-to-today': 'I dag',
+
+  /* Accessibility label for navigating the calendar to "today", without _selecting_ today */
+  'calendar.action.go-to-today-aria-label': 'Gå til i dag',
+
+  /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
+  'calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
+
+  /** Label for switch that controls whether or not to include time in given timestamp */
+  'calendar.action.include-time-label': 'Med klokkeslett',
+
+  /** Error message displayed in calendar when entered date is not the correct format */
+  'calendar.error.must-be-in-format': 'Må være i formatet <Emphasis>{{exampleDate}}</Emphasis>',
+
   /** --- Review Changes --- */
 
   /** Title for the Review Changes pane */
@@ -111,49 +166,6 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Action message for generating the slug */
   'inputs.slug.action.generate': `Generer`,
-
-  /** --- DateTime (and Date) Input --- */
-
-  /** Action message for navigating to next month */
-  'inputs.datetime.calendar.action.go-to-next-month': 'Gå til forrige måned',
-  /** Action message for navigating to previous month */
-  'inputs.datetime.calendar.action.go-to-previous-month': 'Gå til neste måned',
-  /** Action message for navigating to next year */
-  'inputs.datetime.calendar.action.go-to-next-year': 'Gå til neste år',
-  /** Action message for navigating to previous year */
-  'inputs.datetime.calendar.action.go-to-previous-year': 'Gå til forrige år',
-  /** Action message for setting to the current time */
-  'inputs.datetime.calendar.action.set-to-current-time': 'Sett til nå',
-  /** Action message for selecting the hour */
-  'inputs.datetime.calendar.action.select-hour': 'Velg time',
-  /** Action message for selecting the minute */
-  'inputs.datetime.calendar.action.select-minute': 'Velg minutt',
-
-  /** Month names */
-  'inputs.datetime.calendar.month-names.january': 'Januar',
-  'inputs.datetime.calendar.month-names.february': 'Februar',
-  'inputs.datetime.calendar.month-names.march': 'Mars',
-  'inputs.datetime.calendar.month-names.april': 'April',
-  'inputs.datetime.calendar.month-names.may': 'Mai',
-  'inputs.datetime.calendar.month-names.june': 'Juni',
-  'inputs.datetime.calendar.month-names.july': 'Juli',
-  'inputs.datetime.calendar.month-names.august': 'August',
-  'inputs.datetime.calendar.month-names.september': 'September',
-  'inputs.datetime.calendar.month-names.october': 'Oktober',
-  'inputs.datetime.calendar.month-names.november': 'November',
-  'inputs.datetime.calendar.month-names.december': 'Desember',
-
-  /** Short weekday names */
-  'inputs.datetime.calendar.weekday-names.short.monday': 'Man',
-  'inputs.datetime.calendar.weekday-names.short.tuesday': 'Tir',
-  'inputs.datetime.calendar.weekday-names.short.wednesday': 'Ons',
-  'inputs.datetime.calendar.weekday-names.short.thursday': 'Tor',
-  'inputs.datetime.calendar.weekday-names.short.friday': 'Fre',
-  'inputs.datetime.calendar.weekday-names.short.saturday': 'Lør',
-  'inputs.datetime.calendar.weekday-names.short.sunday': 'Søn',
-
-  /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
-  'inputs.datetime.calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
 
   /** --- File (Image, File and ImageTool) Inputs --- */
 
@@ -535,6 +547,21 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Label for when no document types matching the filter are found */
   'search.document-types-no-matches-found': 'Ingen dokumenttyper funnet',
 
+  /** Label for the "Best match" search ordering type */
+  'search.ordering.best-match-label': 'Beste treff',
+
+  /** Label for the "Created: Oldest first" search ordering type */
+  'search.ordering.created-ascending-label': 'Opprettet: Eldste først',
+
+  /** Label for the "Created: Newest first" search ordering type */
+  'search.ordering.created-descending-label': 'Opprettet: Nyeste først',
+
+  /** Label for the "Updated: Oldest first" search ordering type */
+  'search.ordering.updated-ascending-label': 'Oppdatert: Eldste først',
+
+  /** Label for the "Updated: Newest first" search ordering type */
+  'search.ordering.updated-descending-label': 'Oppdatert: Nyeste først',
+
   /** Accessibility label for action to clear all currently applied document type filters */
   'search.action.clear-type-filters-aria-label': 'Fjern valgte filtre',
 
@@ -554,7 +581,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'search.filter-field-tooltip-name': 'Feltnavn',
 
   /** Label for "field description" shown in tooltip when navigating list of possible fields to filter */
-  'search.filter-field-tooltip-description': 'Feltopplysninger',
+  'search.filter-field-tooltip-description': 'Feltbeskrivelse',
 
   /** Label for "Used in document types", a list of the document types a field appears in. Shown in tooltip when navigating list of possible fields to filter */
   'search.filter-field-tooltip-used-in-document-types': 'Brukt i dokumenttyper',
@@ -578,10 +605,10 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'search.filter-number-value-placeholder': 'Verdi',
 
   /** Placeholder value for minimum numeric value filter */
-  'search.filter-number-min-value-placeholder': 'Min verdi',
+  'search.filter-number-min-value-placeholder': 'Minimumverdi',
 
   /** Placeholder value for maximum numeric value filter */
-  'search.filter-number-max-value-placeholder': 'Maks verdi',
+  'search.filter-number-max-value-placeholder': 'Maksverdi',
 
   /** Label/placeholder prompting user to select one of the predefined, allowed values for a string field */
   'search.filter-string-value-select-predefined-value': 'Velg…',
@@ -589,12 +616,306 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Label for the action of clearing the currently selected asset in an image/file filter */
   'search.filter-asset-clear': 'Fjern',
 
+  /** Label for the action of changing from one image to a different image in asset search filter */
+  'search.filter-asset-change_image': 'Bytt bilde',
+
+  /** Label for the action of changing from one file to a different file in asset search filter */
+  'search.filter-asset-change_file': 'Bytt fil',
+
+  /** Label for the action of selecting an image in asset search filter */
+  'search.filter-asset-select_image': 'Velg bilde',
+
+  /** Label for the action of selecting a file in asset search filter */
+  'search.filter-asset-select_file': 'Velg fil',
+
   /** Label for the action of clearing the currently selected document in a reference filter */
   'search.filter-reference-clear': 'Fjern',
 
-  /** Label for search value in a range of numbers */
-  // @todo Part of `arrayOperators` - needs `<Translate />` refactoring
-  'search.filter-number-items-range': `{{min}} → {{max}} elementer`,
+  /** Accessibility label for selecting start date on the date range search filter */
+  'search.filter-date-range-start-date-aria-label': 'Fra dato',
+
+  /** Accessibility label for selecting end date on the date range search filter */
+  'search.filter-date-range-end-date-aria-label': 'Til dato',
+
+  /** Accessibility label for the input value (days/months/years) when adding "X days ago" search filter */
+  'search.filter-date-value-aria-label': 'Enhetsverdi',
+
+  /** Accessibility label for selecting the unit (day/month/year) when adding "X days ago" search filter */
+  'search.filter-date-unit-aria-label': 'Velg enhet',
+
+  /**
+   * Label for "Days"/"Months"/"Years" when selecting it as unit in "X days ago" search filter.
+   * Capitalized, as it would be listed in a dropdown.
+   */
+  'search.filter-date-unit_days': 'Dager',
+  'search.filter-date-unit_months': 'Måneder',
+  'search.filter-date-unit_years': 'År',
+
+  /**
+   * Individual search operators.
+   *
+   * The `name` variant is the form we use when the user is building a query, and selecting from a
+   * list of available operators for a field. Keep in mind that since the user knows what the field
+   * represents, we do not need to contextualize too much, and that the user may not be a developer
+   * eg prefer "quantity is" over "array has length". Additionally, (if applicable in language) use
+   * lowercased names.
+   *
+   * The `description` variant is the form shown once the filter has enough information to apply,
+   * and is shown in the list of applied filters. It is passed components that _should_ be used to
+   * compose the filter string, and to format them correctly:
+   *
+   * `<Field/>` - eg "Bird species", "Category", "Date of birth"
+   * `<Operator>operator text</Operator>` - eg "has ≤", "includes", "is"
+   * `<Value>{{value}}</Value>` - eg "Hawk", "Sparrow", "Eagle"
+   *
+   * Where applicable, a `count` is passed, allowing you to pluralize where needed, by using
+   * suffixes such as `_zero`, `_one`, `_other` etc.
+   *
+   * Prefer (reasonable) brevity since many filters may be applied. For instance:
+   * `<Field/> has ≤ <Value/>` may be better than
+   * `<Field/> has less than eller lik <Value/>`
+   **/
+  /* Array should have a count the given filter value */
+  'search.operator.array-count-equal.name': 'antall er',
+  'search.operator.array-count-equal.description_one':
+    '<Field/> <Operator>har</Operator> <Value>{{count}} element</Value>',
+  'search.operator.array-count-equal.description_other':
+    '<Field/> <Operator>har</Operator> <Value>{{count}} elementer</Value>',
+  /* Array should have a count greater than given filter value */
+  'search.operator.array-count-gt.name': 'antall større enn',
+  'search.operator.array-count-gt.description_one':
+    '<Field/> <Operator>har ></Operator> <Value>{{count}} element</Value>',
+  'search.operator.array-count-gt.description_other':
+    '<Field/> <Operator>har ></Operator> <Value>{{count}} elementer</Value>',
+  /* Array should have a count greater than or the given filter value */
+  'search.operator.array-count-gte.name': 'antall større enn eller lik',
+  'search.operator.array-count-gte.description_one':
+    '<Field/> <Operator>har ≥</Operator> <Value>{{count}} element</Value>',
+  'search.operator.array-count-gte.description_other':
+    '<Field/> <Operator>har ≥</Operator> <Value>{{count}} elementer</Value>',
+  /* Array should have a count less than given filter value */
+  'search.operator.array-count-lt.name': 'antall mindre enn',
+  'search.operator.array-count-lt.description_one':
+    '<Field/> <Operator>har <</Operator> <Value>{{count}} element</Value>',
+  'search.operator.array-count-lt.description_other':
+    '<Field/> <Operator>har <</Operator> <Value>{{count}} elementer</Value>',
+  /* Array should have a count less than or the given filter value */
+  'search.operator.array-count-lte.name': 'antall mindre enn eller lik',
+  'search.operator.array-count-lte.description_one':
+    '<Field/> <Operator>har ≤</Operator> <Value>{{count}} element</Value>',
+  'search.operator.array-count-lte.description_other':
+    '<Field/> <Operator>har ≤</Operator> <Value>{{count}} elementer</Value>',
+  /* Array should have a count not the given filter value */
+  'search.operator.array-count-not-equal.name': 'antall er ikke',
+  'search.operator.array-count-not-equal.description_one':
+    '<Field/> <Operator>antall er ikke</Operator> <Value>{{count}} element</Value>',
+  'search.operator.array-count-not-equal.description_other':
+    '<Field/> <Operator>antall er ikke</Operator> <Value>{{count}} elementer</Value>',
+  /**
+   * Array should have a count within the range of given filter values.
+   * Gets passed `{{from}}` and `{{to}}` values.
+   **/
+  'search.operator.array-count-range.name': 'antall er mellom',
+  'search.operator.array-count-range.description':
+    '<Field/> <Operator>har mellom</Operator> <Value>{{from}} → {{to}} elementer</Value>',
+  /* Array should include the given value */
+  'search.operator.array-list-includes.name': 'inneholder',
+  'search.operator.array-list-includes.description':
+    '<Field/> <Operator>inneholder</Operator> <Value>{{value}}</Value>',
+  /* Array should not include the given value */
+  'search.operator.array-list-not-includes.name': 'inneholder ikke',
+  'search.operator.array-list-not-includes.description':
+    '<Field/> <Operator>inneholder ikke</Operator> <Value>{{value}}</Value>',
+  /* Array should include the given reference */
+  'search.operator.array-reference-includes.name': 'inneholder',
+  'search.operator.array-reference-includes.description':
+    '<Field/> <Operator>inneholder</Operator> <Value>{{value}}</Value>',
+  /* Array should not include the given reference */
+  'search.operator.array-reference-not-includes.name': 'inneholder ikke',
+  'search.operator.array-reference-not-includes.description':
+    '<Field/> <Operator>inneholder ikke</Operator> <Value>{{value}}</Value>',
+  /* Asset (file) should be the selected asset */
+  'search.operator.asset-file-equal.name': 'er',
+  'search.operator.asset-file-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* Asset (file) should not be the selected asset */
+  'search.operator.asset-file-not-equal.name': 'er ikke',
+  'search.operator.asset-file-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /* Asset (image) should be the selected asset */
+  'search.operator.asset-image-equal.name': 'er',
+  'search.operator.asset-image-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* Asset (image) should not be the selected asset */
+  'search.operator.asset-image-not-equal.name': 'er ikke',
+  'search.operator.asset-image-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /**
+   * Boolean value should be the given filter value (true/false).
+   * Context passed is `true` and `false`, allowing for more specific translations:
+   * - `search.operator.boolean-equal.description_true`
+   * - `search.operator.boolean-equal.description_false`
+   */
+  'search.operator.boolean-equal.name': 'er',
+  'search.operator.boolean-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* Date should be after (later than) given filter value */
+  'search.operator.date-after.name': 'etter',
+  'search.operator.date-after.description':
+    '<Field/> <Operator>er etter</Operator> <Value>{{value}}</Value>',
+  /* Date should be before (earlier than) given filter value */
+  'search.operator.date-before.name': 'før',
+  'search.operator.date-before.description':
+    '<Field/> <Operator>er før</Operator> <Value>{{value}}</Value>',
+  /* Date should be the given filter value */
+  'search.operator.date-equal.name': 'er',
+  'search.operator.date-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* Date should be within the given filter value range (eg "within the last X days") */
+  'search.operator.date-last.name': 'siste',
+  'search.operator.date-last.description':
+    '<Field/> <Operator>er innenfor siste</Operator> <Value>{{value}}</Value>',
+  /* Date should not be the given filter value */
+  'search.operator.date-not-equal.name': 'er ikke',
+  'search.operator.date-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /* Date should be within the range of given filter values */
+  'search.operator.date-range.name': 'er mellom',
+  'search.operator.date-range.description': '<Field/> <Operator>er mellom</Operator> <Value/>',
+  /* Date and time should be after (later than) given filter value */
+  'search.operator.date-time-after.name': 'etter',
+  'search.operator.date-time-after.description':
+    '<Field/> <Operator>er etter</Operator> <Value>{{value}}</Value>',
+  /* Date and time should be before (earlier than) given filter value */
+  'search.operator.date-time-before.name': 'før',
+  'search.operator.date-time-before.description':
+    '<Field/> <Operator>er før</Operator> <Value>{{value}}</Value>',
+  /* Date and time should be the given filter value */
+  'search.operator.date-time-equal.name': 'er',
+  'search.operator.date-time-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* Date and time should be within the given filter value range (eg "within the last X days") */
+  'search.operator.date-time-last.name': 'siste',
+  'search.operator.date-time-last.description':
+    '<Field/> <Operator>er innenfor siste</Operator> <Value>{{value}}</Value>',
+  /* Date and time should not be the given filter value */
+  'search.operator.date-time-not-equal.name': 'er ikke',
+  'search.operator.date-time-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /* Date and time should be within the range of given filter values */
+  'search.operator.date-time-range.name': 'er mellom',
+  'search.operator.date-time-range.description': '<Field/> <Operator>er mellom</Operator> <Value/>',
+  /* Value should be defined */
+  'search.operator.defined.name': 'er definert',
+  'search.operator.defined.description': '<Field/> <Operator>er</Operator> <Value>definert</Value>',
+  /* Value should not be defined */
+  'search.operator.not-defined.name': 'ikke definert',
+  'search.operator.not-defined.description':
+    '<Field/> <Operator>er</Operator> <Value>ikke definert</Value>',
+  /* Number should be the given filter value */
+  'search.operator.number-equal.name': 'er',
+  'search.operator.number-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* Number should be greater than given filter value */
+  'search.operator.number-gt.name': 'større enn',
+  'search.operator.number-gt.description':
+    '<Field/> <Operator>></Operator> <Value>{{value}}</Value>',
+  /* Number should be greater than or the given filter value */
+  'search.operator.number-gte.name': 'større enn eller lik',
+  'search.operator.number-gte.description':
+    '<Field/> <Operator>≥</Operator> <Value>{{value}}</Value>',
+  /* Number should be less than given filter value */
+  'search.operator.number-lt.name': 'mindre enn',
+  'search.operator.number-lt.description':
+    '<Field/> <Operator><</Operator> <Value>{{value}}</Value>',
+  /* Number should be less than or the given filter value */
+  'search.operator.number-lte.name': 'mindre enn eller lik',
+  'search.operator.number-lte.description':
+    '<Field/> <Operator>≤</Operator> <Value>{{value}}</Value>',
+  /* Number should not be the given filter value */
+  'search.operator.number-not-equal.name': 'er ikke',
+  'search.operator.number-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /* Number should be within the range of given filter values */
+  'search.operator.number-range.name': 'er mellom',
+  'search.operator.number-range.description':
+    '<Field/> <Operator>er mellom</Operator> <Value>{{from}} → {{to}}</Value>',
+  /* Portable Text should be the given filter value */
+  'search.operator.portable-text-equal.name': 'er',
+  'search.operator.portable-text-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* Portable Text should contain the given filter value */
+  'search.operator.portable-text-contains.name': 'inneholder',
+  'search.operator.portable-text-contains.description':
+    '<Field/> <Operator>inneholder</Operator> <Value>{{value}}</Value>',
+  /* Portable Text should not be the given filter value */
+  'search.operator.portable-text-not-equal.name': 'er ikke',
+  'search.operator.portable-text-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /* Portable Text should not contain the given filter value */
+  'search.operator.portable-text-not-contains.name': 'inneholder ikke',
+  'search.operator.portable-text-not-contains.description':
+    '<Field/> <Operator>inneholder ikke</Operator> <Value>{{value}}</Value>',
+  /* Reference should be the given document */
+  'search.operator.reference-equal.name': 'er',
+  'search.operator.reference-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* Reference should not be the given document */
+  'search.operator.reference-not-equal.name': 'er ikke',
+  'search.operator.reference-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /* References the given asset (file) */
+  'search.operator.reference-asset-file.name': 'fil',
+  'search.operator.reference-asset-file.description':
+    '<Field/> <Operator>→</Operator> <Value>{{value}}</Value>',
+  /* References the given asset (image) */
+  'search.operator.reference-asset-image.name': 'bilde',
+  'search.operator.reference-asset-image.description':
+    '<Field/> <Operator>→</Operator> <Value>{{value}}</Value>',
+  /* References the given document */
+  'search.operator.reference-document.name': 'dokument',
+  'search.operator.reference-document.description':
+    '<Field/> <Operator>→</Operator> <Value>{{value}}</Value>',
+  /* Slug equals the given filter value */
+  'search.operator.slug-equal.name': 'er',
+  'search.operator.slug-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* Slug contains the given value */
+  'search.operator.slug-contains.name': 'inneholder',
+  'search.operator.slug-contains.description':
+    '<Field/> <Operator>inneholder</Operator> <Value>{{value}}</Value>',
+  /* Slug does not equal the given filter value */
+  'search.operator.slug-not-equal.name': 'er ikke',
+  'search.operator.slug-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /* Slug does not contain the given value */
+  'search.operator.slug-not-contains.name': 'inneholder ikke',
+  'search.operator.slug-not-contains.description':
+    '<Field/> <Operator>inneholder ikke</Operator> <Value>{{value}}</Value>',
+  /* String equals the given filter value */
+  'search.operator.string-equal.name': 'er',
+  'search.operator.string-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* String equals one of the predefined allowed values */
+  'search.operator.string-list-equal.name': 'er',
+  'search.operator.string-list-equal.description':
+    '<Field/> <Operator>er</Operator> <Value>{{value}}</Value>',
+  /* String does not equal one of the predefined allowed values */
+  'search.operator.string-list-not-equal.name': 'er ikke',
+  'search.operator.string-list-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /* String contains the given filter value */
+  'search.operator.string-contains.name': 'inneholder',
+  'search.operator.string-contains.description':
+    '<Field/> <Operator>inneholder</Operator> <Value>{{value}}</Value>',
+  /* String does not equal the given filter value */
+  'search.operator.string-not-equal.name': 'er ikke',
+  'search.operator.string-not-equal.description':
+    '<Field/> <Operator>er ikke</Operator> <Value>{{value}}</Value>',
+  /* String does not contain the given filter value */
+  'search.operator.string-not-contains.name': 'inneholder ikke',
+  'search.operator.string-not-contains.description':
+    '<Field/> <Operator>inneholder ikke</Operator> <Value>{{value}}</Value>',
 
   /** Title label for when no search results are found */
   'search.no-results-title': 'Ingen resultater funnet',

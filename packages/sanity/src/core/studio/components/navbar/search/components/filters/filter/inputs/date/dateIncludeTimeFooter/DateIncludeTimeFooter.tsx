@@ -1,8 +1,7 @@
 import {Flex, Stack, Switch, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-
-const INCLUDE_TIME_LABEL = 'Include time'
+import {useTranslation} from '../../../../../../../../../../i18n'
 
 interface DateIncludeTimeFooterProps {
   onChange: () => void
@@ -14,14 +13,15 @@ const TimeLabelText = styled(Text)`
 `
 
 export function DateIncludeTimeFooter({onChange, value}: DateIncludeTimeFooterProps) {
+  const {t} = useTranslation()
   return (
     <Flex align="center" gap={2} justify="flex-end" marginTop={1}>
       <Stack>
         <TimeLabelText muted onClick={onChange} size={1} weight="medium">
-          {INCLUDE_TIME_LABEL}
+          {t('calendar.action.include-time-label')}
         </TimeLabelText>
       </Stack>
-      <Switch checked={value} label={INCLUDE_TIME_LABEL} onChange={onChange} />
+      <Switch checked={value} label={t('calendar.action.include-time-label')} onChange={onChange} />
     </Flex>
   )
 }
