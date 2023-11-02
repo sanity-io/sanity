@@ -43,12 +43,12 @@ describe('arrayOperators', () => {
 
   it('should create a valid filter for arrayCountRange', () => {
     const value: OperatorNumberRangeValue = {
-      max: 10,
-      min: 5,
+      to: 10,
+      from: 5,
     }
     const filter = arrayOperators.arrayCountRange.groqFilter({fieldPath, value})
     expect(filter).toEqual(
-      `count(${fieldPath}) > ${value.min} && count(${fieldPath}) < ${value.max}`,
+      `count(${fieldPath}) > ${value.from} && count(${fieldPath}) < ${value.to}`,
     )
   })
 

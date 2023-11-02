@@ -4,6 +4,7 @@ import React, {useCallback, useMemo} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateRangeValue} from '../../../../../definitions/operators/dateOperators'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {useTranslation} from '../../../../../../../../../i18n'
 import {DateIncludeTimeFooter} from './dateIncludeTimeFooter/DateIncludeTimeFooter'
 import {DatePicker} from './datePicker/DatePicker'
 import {ParsedDateTextInput} from './ParsedDateTextInput'
@@ -18,6 +19,7 @@ export function CommonDateRangeInput({
 }: OperatorInputComponentProps<OperatorDateRangeValue> & {
   isDateTime: boolean
 }) {
+  const {t} = useTranslation()
   const {
     state: {fullscreen},
   } = useSearchState()
@@ -47,8 +49,8 @@ export function CommonDateRangeInput({
     const includeTime = !value?.includeTime
     onChange(
       getStartAndEndDate({
-        date: value?.dateMin ? new Date(value.dateMin) : null,
-        endDate: value?.dateMax ? new Date(value.dateMax) : null,
+        date: value?.from ? new Date(value.from) : null,
+        endDate: value?.to ? new Date(value.to) : null,
         includeTime,
         isDateTime,
       }),
@@ -59,8 +61,8 @@ export function CommonDateRangeInput({
     (date: string | null) => {
       onChange({
         includeTime: value?.includeTime,
-        dateMax: date || null,
-        dateMin: value?.dateMin || null,
+        to: date || null,
+        from: value?.from || null,
       })
     },
     [onChange, value],
@@ -70,8 +72,8 @@ export function CommonDateRangeInput({
     (date: string | null) => {
       onChange({
         includeTime: value?.includeTime,
-        dateMax: value?.dateMax || null,
-        dateMin: date || null,
+        to: value?.to || null,
+        from: date || null,
       })
     },
     [onChange, value],
@@ -83,30 +85,30 @@ export function CommonDateRangeInput({
         <Flex direction="column" gap={3}>
           {/* Start date */}
           <ParsedDateTextInput
-            aria-label="Start date"
+            aria-label={t('search.filter-date-range-start-date-aria-label')}
             fontSize={fullscreen ? 2 : 1}
             isDateTime={isDateTime}
             isDateTimeFormat={isDateTime && value?.includeTime}
             onChange={handleTextStartDateChange}
             placeholderDate={placeholderStartDate}
             radius={2}
-            value={value?.dateMin}
+            value={value?.from}
           />
           {/* End date */}
           <ParsedDateTextInput
-            aria-label="End date"
+            aria-label={t('search.filter-date-range-end-date-aria-label')}
             fontSize={fullscreen ? 2 : 1}
             isDateTime={isDateTime}
             isDateTimeFormat={isDateTime && value?.includeTime}
             onChange={handleTextEndDateChange}
             placeholderDate={placeholderEndDate}
             radius={2}
-            value={value?.dateMax}
+            value={value?.to}
           />
         </Flex>
         <DatePicker
-          date={value?.dateMin ? new Date(value.dateMin) : undefined}
-          endDate={value?.dateMax ? new Date(value.dateMax) : undefined}
+          date={value?.from ? new Date(value.from) : undefined}
+          endDate={value?.to ? new Date(value.to) : undefined}
           onChange={handleDatePickerChange}
           selectRange
           selectTime={isDateTime}
@@ -132,26 +134,22 @@ function getStartAndEndDate({
   isDateTime?: boolean
 }): {
   includeTime?: boolean
-  dateMax: string | null
-  dateMin: string | null
+  to: string | null
+  from: string | null
 } {
   if (includeTime) {
     return {
       includeTime,
-      dateMax: endDate
+      to: endDate
         ? getDateISOString({date: endDate, dateOnly: !isDateTime, roundDay: 'start'})
         : null,
-      dateMin: date
-        ? getDateISOString({date: date, dateOnly: !isDateTime, roundDay: 'start'})
-        : null,
+      from: date ? getDateISOString({date: date, dateOnly: !isDateTime, roundDay: 'start'}) : null,
     }
   }
 
   return {
     includeTime,
-    dateMax: endDate
-      ? getDateISOString({date: endDate, dateOnly: !isDateTime, roundDay: 'end'})
-      : null,
-    dateMin: date ? getDateISOString({date, dateOnly: !isDateTime, roundDay: 'start'}) : null,
+    to: endDate ? getDateISOString({date: endDate, dateOnly: !isDateTime, roundDay: 'end'}) : null,
+    from: date ? getDateISOString({date, dateOnly: !isDateTime, roundDay: 'start'}) : null,
   }
 }

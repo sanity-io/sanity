@@ -1,13 +1,31 @@
 import {ComponentType} from 'react'
 import type {SearchFieldDefinition} from '../fields'
+import {LocaleSource} from '../../../../../../i18n'
+
+/**
+ * @alpha
+ */
+export type I18nSearchOperatorNameKey = `search.operator.${Lowercase<string>}.name`
+
+/**
+ * @alpha
+ */
+export type I18nSearchOperatorDescriptionKey = `search.operator.${Lowercase<string>}.description`
 
 /**
  * @alpha
  */
 export interface SearchOperatorBase {
-  buttonLabel?: string
-  label: string
+  /** i18n resource key for the "name", eg `quantity is` or `contains` */
+  nameKey: I18nSearchOperatorNameKey
+
+  /** i18n resource key for the "name", eg `quantity is` or `contains` */
+  descriptionKey: I18nSearchOperatorDescriptionKey
+
+  /** icon for explaining the operator (React component) */
   icon?: ComponentType
+
+  /** name/type of operator, eg `arrayCountEqual` or `numberGt` */
   type: string
 }
 
@@ -52,8 +70,15 @@ export type ValuelessSearchOperatorParams = {fieldPath?: string}
 /**
  * @alpha
  */
+export type SearchValueFormatterContext = {
+  i18n: LocaleSource
+}
+
+/**
+ * @alpha
+ */
 export interface SearchOperatorBuilder<TType extends string, TValue> extends SearchOperatorBase {
-  buttonValueComponent: SearchOperatorButtonValue<TValue>
+  buttonValueComponent?: SearchOperatorButtonValue<TValue>
   groqFilter: (params: SearchOperatorParams<TValue>) => string | null
   initialValue: TValue | null
   inputComponent: SearchOperatorInput<TValue>

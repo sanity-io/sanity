@@ -1,14 +1,18 @@
+import {upperFirst} from 'lodash'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Button, Flex, Inline, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {useTranslation} from '../../../../../../../../../../../i18n'
+import {useIntlDateTimeFormat} from '../../../../../../../../../../../i18n/hooks/useIntlDateTimeFormat'
 import {useCalendar} from './contexts/useDatePicker'
-import {MONTH_NAMES} from './constants'
 
 export function CalendarHeader(props: {
   fontSize?: number
   moveFocusedDate: (by: number) => void
   onNowClick: () => void
 }) {
+  const {t} = useTranslation()
+  const monthFormatter = useIntlDateTimeFormat({month: 'long', year: 'numeric'})
   const {focusedDate} = useCalendar()
 
   const {fontSize, moveFocusedDate, onNowClick} = props
@@ -20,21 +24,27 @@ export function CalendarHeader(props: {
   return (
     <Flex align="center" flex={1} justify="space-between">
       <Inline paddingLeft={2} space={1}>
-        <Text weight="medium">{MONTH_NAMES[focusedDate.getMonth()]}</Text>
-        <Text weight="medium">{focusedDate.getFullYear()}</Text>
+        {/* Technically not correct to simply uppercase first here, but simplifying for now */}
+        <Text weight="medium">{upperFirst(monthFormatter.format(focusedDate))}</Text>
       </Inline>
       <Box>
-        <Button fontSize={fontSize} text="Today" mode="bleed" onClick={onNowClick} />
         <Button
-          aria-label="Go to previous month"
-          onClick={handlePrevMonthClick}
+          aria-label={t('calendar.action.go-to-today-aria-label')}
+          fontSize={fontSize}
           mode="bleed"
-          icon={ChevronLeftIcon}
+          onClick={onNowClick}
+          text={t('calendar.action.go-to-today')}
         />
         <Button
-          aria-label="Go to next month"
+          aria-label={t('calendar.action.go-to-previous-month')}
+          icon={ChevronLeftIcon}
           mode="bleed"
+          onClick={handlePrevMonthClick}
+        />
+        <Button
+          aria-label={t('calendar.action.go-to-next-month')}
           icon={ChevronRightIcon}
+          mode="bleed"
           onClick={handleNextMonthClick}
         />
       </Box>
