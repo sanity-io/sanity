@@ -1,21 +1,30 @@
 import {range} from 'lodash'
+import type {StudioLocaleResourceKeys} from '../../../../../../../../../../../i18n'
 
-export const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+export const MONTH_NAME_KEYS: StudioLocaleResourceKeys[] = [
+  'calendar.month-names.january',
+  'calendar.month-names.february',
+  'calendar.month-names.march',
+  'calendar.month-names.april',
+  'calendar.month-names.may',
+  'calendar.month-names.june',
+  'calendar.month-names.july',
+  'calendar.month-names.august',
+  'calendar.month-names.september',
+  'calendar.month-names.october',
+  'calendar.month-names.november',
+  'calendar.month-names.december',
 ]
 
-export const WEEK_DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+export const SHORT_WEEK_DAY_KEYS: StudioLocaleResourceKeys[] = [
+  'calendar.weekday-names.short.sunday',
+  'calendar.weekday-names.short.monday',
+  'calendar.weekday-names.short.tuesday',
+  'calendar.weekday-names.short.wednesday',
+  'calendar.weekday-names.short.thursday',
+  'calendar.weekday-names.short.friday',
+  'calendar.weekday-names.short.saturday',
+]
 
 export const HOURS_24 = range(0, 24)
 

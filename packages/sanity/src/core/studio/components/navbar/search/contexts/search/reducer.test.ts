@@ -16,7 +16,7 @@ const mockUser: CurrentUser = {
 
 const mockOrdering: SearchOrdering = {
   sort: {direction: 'desc', field: '_createdAt'},
-  title: 'Created: Newest first',
+  titleKey: 'search.ordering.created-descending-label',
 }
 
 const mockSearchableType: SearchableType = {
