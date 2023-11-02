@@ -1,4 +1,4 @@
-import {SelectIcon} from '@sanity/icons'
+import {CheckmarkIcon, SelectIcon} from '@sanity/icons'
 import {Button, MenuButton, Menu, MenuButtonProps, Box, Label, Stack, Card} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
@@ -101,6 +101,9 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
                       onClick={handleSelectWorkspace}
                       pressed={workspace.name === activeWorkspace.name}
                       selected={workspace.name === activeWorkspace.name}
+                      iconRight={
+                        workspace.name === activeWorkspace.name ? CheckmarkIcon : undefined
+                      }
                       badgeText={STATE_TITLES[state]}
                       preview={<WorkspacePreviewIcon icon={workspace.icon} size="large" />}
                       text={workspace?.title || workspace.name}

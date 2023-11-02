@@ -122,6 +122,12 @@ export const MenuItem = forwardRef(function MenuItem(
               {badgeText}
             </Badge>
           )}
+          {iconRight && (
+            <Text size={FONT_SIZE}>
+              {isValidElement(iconRight) && iconRight}
+              {isValidElementType(iconRight) && createElement(iconRight)}
+            </Text>
+          )}
         </Flex>
       )
     }
