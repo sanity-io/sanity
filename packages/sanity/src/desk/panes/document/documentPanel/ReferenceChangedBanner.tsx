@@ -9,7 +9,8 @@ import {concat, Observable, of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
 import {RouterPaneGroup} from '../../../types'
 import {usePaneRouter} from '../../../components'
-import {DocumentAvailability, useDocumentPreviewStore, getPublishedId} from 'sanity'
+import {deskLocaleNamespace} from '../../../i18n'
+import {DocumentAvailability, useDocumentPreviewStore, getPublishedId, useTranslation} from 'sanity'
 
 const Root = styled(Card)`
   position: relative;
@@ -44,6 +45,7 @@ export const ReferenceChangedBanner = memo(() => {
   const parentRefPath = useMemo(() => {
     return (params?.parentRefPath && pathFromString(params.parentRefPath)) || null
   }, [params?.parentRefPath])
+  const {t} = useTranslation(deskLocaleNamespace)
 
   /**
    * Loads information regarding the reference field of the parent pane. This
@@ -148,8 +150,11 @@ export const ReferenceChangedBanner = memo(() => {
           {referenceInfo.result?.refValue ? (
             <>
               <Box flex={1} marginLeft={3}>
-                <TextOneLine title="This reference has changed since you opened it." size={1}>
-                  This reference has changed since you opened it.
+                <TextOneLine
+                  title={t('banners.reference-changed-banner.reason-changed.text')}
+                  size={1}
+                >
+                  {t('banners.reference-changed-banner.reason-changed.text')}
                 </TextOneLine>
               </Box>
               <Box marginLeft={3}>
@@ -160,15 +165,18 @@ export const ReferenceChangedBanner = memo(() => {
                   mode="ghost"
                   padding={2}
                   space={2}
-                  text="Reload reference"
+                  text={t('banners.reference-changed-banner.reason-changed.reload-button.text')}
                 />
               </Box>
             </>
           ) : (
             <>
               <Box flex={1} marginLeft={3}>
-                <TextOneLine title="This reference has been removed since you opened it." size={1}>
-                  This reference has been removed since you opened it.
+                <TextOneLine
+                  title={t('banners.reference-changed-banner.reason-removed.text')}
+                  size={1}
+                >
+                  {t('banners.reference-changed-banner.reason-removed.text')}
                 </TextOneLine>
               </Box>
               <Box marginLeft={3}>
@@ -179,7 +187,7 @@ export const ReferenceChangedBanner = memo(() => {
                   mode="ghost"
                   padding={2}
                   space={2}
-                  text="Close reference"
+                  text={t('banners.reference-changed-banner.reason-removed.close-button.text')}
                 />
               </Box>
             </>

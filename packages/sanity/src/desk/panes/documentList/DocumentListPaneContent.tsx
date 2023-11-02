@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
 import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
+import {deskLocaleNamespace} from '../../i18n'
 import {
   CommandList,
   CommandListRenderItemCallback,
@@ -13,6 +14,8 @@ import {
   SanityDefaultPreview,
   getPublishedId,
   useSchema,
+  useTranslation,
+  Translate,
 } from 'sanity'
 
 const RootBox = styled(Box)`
@@ -87,6 +90,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
+  const {t} = useTranslation(deskLocaleNamespace)
 
   const handleEndReached = useCallback(() => {
     if (isLoading || isLazyLoading || !shouldRender) return
@@ -138,14 +142,14 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
           {showMaxItemsMessage && (
             <Box marginY={1} paddingX={3} paddingY={4}>
               <Text align="center" muted size={1}>
-                Displaying a maximum of {FULL_LIST_LIMIT} documents
+                {t('panes.document-list-pane.max-items.text', {limit: FULL_LIST_LIMIT})}
               </Text>
             </Box>
           )}
         </>
       )
     },
-    [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading],
+    [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading, t],
   )
 
   const noDocumentsContent = useMemo(() => {
@@ -155,7 +159,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
           <Container width={1}>
             <Box paddingX={4} paddingY={5}>
               <Text align="center" muted>
-                No results found
+                {t('panes.document-list-pane.no-documents.text')}
               </Text>
             </Box>
           </Container>
@@ -168,13 +172,15 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <Container width={1}>
           <Box paddingX={4} paddingY={5}>
             <Text align="center" muted>
-              {filterIsSimpleTypeConstraint ? 'No documents of this type' : 'No matching documents'}
+              {filterIsSimpleTypeConstraint
+                ? t('panes.document-list-pane.no-documents-of-type.text')
+                : t('panes.document-list-pane.no-matching-documents.text')}
             </Text>
           </Box>
         </Container>
       </Flex>
     )
-  }, [filterIsSimpleTypeConstraint, hasSearchQuery])
+  }, [filterIsSimpleTypeConstraint, hasSearchQuery, t])
 
   const mainContent = useMemo(() => {
     if (!shouldRender) {
@@ -186,14 +192,24 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <Flex align="center" direction="column" height="fill" justify="center">
           <Container width={1}>
             <Stack paddingX={4} paddingY={5} space={4}>
-              <Heading as="h3">Could not fetch list items</Heading>
+              <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
               <Text as="p">
-                Error: <code>{error.message}</code>
+                <Translate
+                  t={t}
+                  i18nKey="panes.document-list-pane.error.text"
+                  components={{Code: ({children}) => <code>{children}</code>}}
+                  values={{error: error.message}}
+                />
               </Text>
 
               {onRetry && (
                 <Box>
-                  <Button icon={SyncIcon} onClick={onRetry} text="Retry" tone="primary" />
+                  <Button
+                    icon={SyncIcon}
+                    onClick={onRetry}
+                    text={t('panes.document-list-pane.error.retry-button.text')}
+                    tone="primary"
+                  />
                 </Box>
               )}
             </Stack>

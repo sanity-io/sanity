@@ -97,7 +97,7 @@ export const Timeline = ({
         <ListWrapper direction="column">
           <CommandList
             activeItemDataAttr="data-hovered"
-            ariaLabel="Document revisions"
+            ariaLabel={t('timeline.list.aria-label')}
             autoFocus="list"
             initialIndex={selectedIndex}
             initialScrollAlign="center"

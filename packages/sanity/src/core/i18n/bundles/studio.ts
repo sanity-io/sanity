@@ -68,6 +68,9 @@ export const studioLocaleStrings = {
   /** Label for loading history */
   'timeline.loading-history': 'Loading history',
 
+  /** The aria-label for the list of revisions in the timeline */
+  'timeline.list.aria-label': 'Document revisions',
+
   /**
    * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter.

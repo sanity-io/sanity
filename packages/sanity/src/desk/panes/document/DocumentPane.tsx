@@ -31,15 +31,18 @@ import {
   DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
   DOCUMENT_PANEL_MIN_WIDTH,
 } from './constants'
+import {deskLocaleNamespace} from '../../i18n'
 import {
   ChangeConnectorRoot,
   ReferenceInputOptionsProvider,
   SourceProvider,
   isDev,
+  Translate,
   useDocumentType,
   useSource,
   useTemplatePermissions,
   useTemplates,
+  useTranslation,
   useZIndex,
 } from 'sanity'
 import {CommentsEnabledProvider} from '../../comments'
@@ -122,8 +125,17 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       : {path: [], state: 'none'}
   }, [parentRefPath, groupIndex, routerPanesStateLength])
 
+  const {t} = useTranslation(deskLocaleNamespace)
+
   if (options.type === '*' && !isLoaded) {
-    return <LoadingPane flex={2.5} minWidth={320} paneKey={paneKey} title="Loading document…" />
+    return (
+      <LoadingPane
+        flex={2.5}
+        minWidth={320}
+        paneKey={paneKey}
+        title={t('panes.document-pane.document-not-found.loading')}
+      />
+    )
   }
 
   if (!documentType) {
@@ -132,12 +144,16 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         flex={2.5}
         minWidth={320}
         paneKey={paneKey}
-        title={<>The document was not found</>}
+        title={t('panes.document-pane.document-not-found.title')}
       >
         <Stack space={4}>
           <Text as="p">
-            The document type is not defined, and a document with the <code>{options.id}</code>{' '}
-            identifier could not be found.
+            <Translate
+              t={t}
+              i18nKey="panes.document-pane.document-not-found.text"
+              components={{Code: ({children}) => <code>{children}</code>}}
+              values={{id: options.id}}
+            />
           </Text>
         </Stack>
       </ErrorPane>
@@ -246,6 +262,7 @@ function InnerDocumentPane() {
     DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
 
   const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
+  const {t} = useTranslation(deskLocaleNamespace)
 
   if (!schemaType) {
     return (
@@ -255,27 +272,33 @@ function InnerDocumentPane() {
         minWidth={minWidth}
         paneKey={paneKey}
         title={
-          <>
-            Unknown document type: <code>{documentType}</code>
-          </>
+          <Translate
+            t={t}
+            i18nKey="panes.document-pane.document-unknown-type.title"
+            components={{Code: ({children}) => <code>{children}</code>}}
+            values={{documentType}}
+          />
         }
         tone="caution"
       >
         <Stack space={4}>
           {documentType && (
             <Text as="p">
-              This document has the schema type <code>{documentType}</code>, which is not defined as
-              a type in the local content studio schema.
+              <Translate
+                t={t}
+                i18nKey="panes.document-pane.document-unknown-type.text"
+                components={{Code: ({children}) => <code>{children}</code>}}
+                values={{documentType}}
+              />
             </Text>
           )}
 
           {!documentType && (
-            <Text as="p">
-              This document does not exist, and no schema type was specified for it.
-            </Text>
+            <Text as="p">{t('panes.document-pane.document-unknown-type.without-schema.text')}</Text>
           )}
 
           {isDev && value && (
+            /* eslint-disable i18next/no-literal-string */
             <>
               <Text as="p">Here is the JSON representation of the document:</Text>
               <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
@@ -284,6 +307,7 @@ function InnerDocumentPane() {
                 </Code>
               </Card>
             </>
+            /* eslint-enable i18next/no-literal-string */
           )}
         </Stack>
       </ErrorPane>

@@ -2,7 +2,8 @@ import React from 'react'
 import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {useCurrentUser} from 'sanity'
+import {deskLocaleNamespace} from '../../../i18n'
+import {useCurrentUser, useTranslation} from 'sanity'
 
 const Root = styled(Card)`
   position: relative;
@@ -22,6 +23,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
     currentUser?.roles?.map((r) => <code key={r.name}>{r.title}</code>) || [],
     ', ',
   )
+  const {t} = useTranslation(deskLocaleNamespace)
 
   if (granted) return null
 
@@ -35,8 +37,15 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
 
           <Box flex={1} marginLeft={3}>
             <Text size={1}>
-              Your role{plural && 's'} {roles} {plural ? 'do' : 'does'} not have permissions to{' '}
-              {requiredPermission} this document.
+              {plural
+                ? t('banners.permission-check-banner.plural-roles.text', {
+                    roles,
+                    requiredPermission,
+                  })
+                : t('banners.permission-check-banner.singular-role.text', {
+                    roles,
+                    requiredPermission,
+                  })}
             </Text>
           </Box>
         </Flex>

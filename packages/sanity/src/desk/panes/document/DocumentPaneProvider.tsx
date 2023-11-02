@@ -662,10 +662,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       pushToast({
         id: 'sanity/desk/reconnecting',
         status: 'warning',
-        title: <>Connection lost. Reconnecting…</>,
+        title: t('panes.document-pane-provider.reconnecting.title'),
       })
     }
-  }, [connectionState, pushToast])
+  }, [connectionState, pushToast, t])
 
   const disableBlurRef = useRef(false)
 
