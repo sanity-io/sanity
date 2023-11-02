@@ -295,6 +295,16 @@ const deskLocaleStrings = {
 
   /** The text used in the document header title if no other title can be determined */
   'panes.document-header-title.untitled.text': 'Untitled',
+
+  /** -- UNKNOWN PANE TYPE */
+
+  /** The text to display when type is missing */
+  'panes.unknown-pane-type.missing-type.text':
+    'Structure item is missing required <Code>type</Code> property.',
+
+  /** The text to display when type is unknown */
+  'panes.unknown-pane-type.unknown-type.text':
+    'Structure item of type <Code>{{type}}</Code> is not a known entity.',
 }
 
 /**
