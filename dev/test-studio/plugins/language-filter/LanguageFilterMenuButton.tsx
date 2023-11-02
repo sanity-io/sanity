@@ -1,7 +1,8 @@
 import {TranslateIcon} from '@sanity/icons'
-import {Box, Button, Card, Checkbox, Flex, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
+import {Box, Card, Checkbox, Flex, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
 import React, {FormEvent, useCallback, useState} from 'react'
 import {ObjectSchemaType} from 'sanity'
+import {Button} from '../../../../packages/sanity/src/ui'
 import {LanguageFilterPluginOptions} from './types'
 import {usePaneLanguages} from './usePaneLanguages'
 

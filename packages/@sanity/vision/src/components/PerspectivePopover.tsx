@@ -1,6 +1,7 @@
 import React, {useCallback, useState} from 'react'
-import {Popover, Stack, Inline, Text, Card, Badge, Button, useClickOutside} from '@sanity/ui'
+import {Popover, Stack, Inline, Text, Card, Badge, useClickOutside} from '@sanity/ui'
 import {HelpCircleIcon} from '@sanity/icons'
+import {Button} from '../../../../sanity/src/ui'
 import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 
 export function PerspectivePopover() {
@@ -49,9 +50,8 @@ export function PerspectivePopover() {
       <Button
         icon={HelpCircleIcon}
         mode="bleed"
-        padding={2}
+        size="small"
         tone="primary"
-        fontSize={1}
         ref={setButtonEl}
         onClick={handleClick}
         selected={open}

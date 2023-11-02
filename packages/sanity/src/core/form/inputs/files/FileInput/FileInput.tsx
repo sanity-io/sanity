@@ -13,19 +13,11 @@ import {
   UploadState,
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Menu,
-  MenuButton,
-  MenuItem,
-  ThemeColorToneKey,
-  ToastParams,
-} from '@sanity/ui'
+import {Box, Card, Menu, MenuButton, MenuItem, ThemeColorToneKey, ToastParams} from '@sanity/ui'
 import {SanityClient} from '@sanity/client'
 import {isFileSource} from '@sanity/asset-utils'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
+import {Button} from '../../../../../ui'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
 import {FileInfo, FileTarget} from '../common/styles'
 import {UploadProgress} from '../common/UploadProgress'
@@ -531,7 +523,6 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
 
     return (
       <Button
-        fontSize={2}
         text="Browse"
         icon={SearchIcon}
         mode="ghost"

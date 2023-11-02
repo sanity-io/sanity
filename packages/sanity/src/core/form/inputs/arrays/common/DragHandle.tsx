@@ -1,8 +1,8 @@
 import styled from 'styled-components'
-import {Button, ButtonProps} from '@sanity/ui'
 import React, {useContext} from 'react'
 import {DragHandleIcon} from '@sanity/icons'
 import {useSortable} from '@dnd-kit/sortable'
+import {Button, ButtonProps} from '../../../../../ui'
 
 const DragHandleButton = styled(Button)<{grid?: boolean}>`
   cursor: ${(props) => (props.grid ? 'move' : 'ns-resize')};

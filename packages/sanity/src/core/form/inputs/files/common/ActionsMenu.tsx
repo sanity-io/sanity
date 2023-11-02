@@ -34,13 +34,12 @@ export function ActionsMenu(props: Props) {
       </Box>
       <FileInputMenuItem
         icon={UploadIcon}
-        mode="bleed"
         onSelect={onUpload}
         accept={accept}
         text="Upload"
         data-testid="file-input-upload-button"
         disabled={readOnly || !directUploads}
-        fontSize={2}
+        fontSize={1}
       />
       {browse}
 

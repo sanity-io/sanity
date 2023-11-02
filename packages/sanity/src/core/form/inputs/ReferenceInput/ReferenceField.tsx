@@ -10,7 +10,6 @@ import React, {
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {
   Box,
-  Button,
   Card,
   CardTone,
   Flex,
@@ -36,6 +35,7 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFormPublishedId} from '../../useFormPublishedId'
+import {Button} from '../../../../ui'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -250,7 +250,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button paddingY={3} paddingX={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={<Button mode="bleed" icon={EllipsisVerticalIcon} />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu>

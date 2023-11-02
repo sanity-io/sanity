@@ -1,9 +1,10 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {AddIcon} from '@sanity/icons'
-import {Button, PopoverProps} from '@sanity/ui'
+import {PopoverProps} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {upperFirst} from 'lodash'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
+import {Button} from '../../../../../ui'
 import {BlockItem} from './types'
 import {useFocusBlock} from './hooks'
 
@@ -36,7 +37,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
       return (
         <CollapseMenuButton
           aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
-          padding={2}
+          size="small"
           mode="bleed"
           disabled={disabled || (isVoidFocus && item.inline === true)}
           icon={item.icon}
@@ -57,7 +58,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
 
   const menuButtonProps = useMemo(
     () => ({
-      button: <Button icon={AddIcon} mode="bleed" padding={2} disabled={disabled} />,
+      button: <Button icon={AddIcon} mode="bleed" size="small" disabled={disabled} />,
       popover: MENU_POPOVER_PROPS,
     }),
 

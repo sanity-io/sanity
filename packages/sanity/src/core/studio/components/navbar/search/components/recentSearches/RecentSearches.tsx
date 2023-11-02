@@ -1,4 +1,4 @@
-import {Box, Button, Card, Label, Text, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Label, Text, useMediaIndex} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {
@@ -6,6 +6,7 @@ import {
   CommandListHandle,
   CommandListRenderItemCallback,
 } from '../../../../../../components'
+import {Button} from '../../../../../../../ui'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {RecentSearch} from '../../datastores/recentSearches'
 import {Instructions} from '../Instructions'
@@ -96,17 +97,13 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
           </Box>
           <Box paddingBottom={2} paddingTop={1} paddingX={2}>
             <Button
-              fontSize={1}
-              justify="flex-start"
               mode="bleed"
               onClick={handleClearRecentSearchesClick}
-              padding={2}
+              size="small"
               tone="default"
-            >
-              <Text muted size={1}>
-                Clear recent searches
-              </Text>
-            </Button>
+              text="Clear recent searches"
+              muted
+            />
           </Box>
         </>
       ) : (

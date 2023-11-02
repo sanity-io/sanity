@@ -188,11 +188,7 @@ export function Calendar(props: CalendarProps) {
         {/* Select month and year */}
         <Flex>
           <Box flex={1}>
-            <CalendarHeader
-              fontSize={fontSize}
-              moveFocusedDate={moveFocusedDate}
-              onNowClick={handleNowClick}
-            />
+            <CalendarHeader moveFocusedDate={moveFocusedDate} onNowClick={handleNowClick} />
           </Box>
         </Flex>
 

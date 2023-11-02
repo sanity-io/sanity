@@ -1,21 +1,11 @@
 import {SelectIcon} from '@sanity/icons'
-import {
-  Button,
-  MenuButton,
-  MenuItem,
-  Menu,
-  MenuButtonProps,
-  Box,
-  Label,
-  Text,
-  Stack,
-} from '@sanity/ui'
+import {MenuButton, MenuItem, Menu, MenuButtonProps, Box, Label, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip, Button} from '../../../../../ui'
 import {useWorkspaceAuthStates} from './hooks'
 import {WorkspacePreview} from './WorkspacePreview'
 import {useRouter} from 'sanity/router'

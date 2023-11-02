@@ -1,20 +1,10 @@
 import {SortIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Inline,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  Text,
-} from '@sanity/ui'
+import {Card, Flex, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
 import isEqual from 'lodash/isEqual'
 import React, {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
 import {ORDERINGS} from '../definitions/orderings'
+import {Button} from '../../../../../../ui'
 import {useSearchState} from '../contexts/search/useSearchState'
 import type {SearchOrdering} from '../types'
 
@@ -82,22 +72,7 @@ export function SortMenu() {
     <Card borderBottom>
       <SortMenuContentFlex align="center" flex={1} padding={2}>
         <MenuButton
-          button={
-            <Button mode="bleed" padding={2}>
-              <Flex align="center" gap={1} justify="space-between">
-                <Box marginRight={1}>
-                  <Text size={1}>
-                    <SortIcon />
-                  </Text>
-                </Box>
-                <Inline space={2}>
-                  <Text size={1} weight="medium">
-                    {currentMenuItem.title}
-                  </Text>
-                </Inline>
-              </Flex>
-            </Button>
-          }
+          button={<Button mode="bleed" size="small" icon={SortIcon} text={currentMenuItem.title} />}
           id={menuButtonId || ''}
           menu={
             <Menu>

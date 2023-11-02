@@ -1,14 +1,16 @@
+// TODO: Verify after merge with MenuItems changes
 import React, {createElement, isValidElement, useId} from 'react'
 import {isValidElementType} from 'react-is'
-import {Box, ButtonProps, Flex, Text} from '@sanity/ui'
+import {Box, Flex, MenuItemProps, Text, TextProps} from '@sanity/ui'
 import {FileMenuItem} from './FileInputMenuItem.styled'
 
-export interface FileInputMenuItemProps extends ButtonProps {
+export interface FileInputMenuItemProps extends MenuItemProps {
   accept?: string
   capture?: 'user' | 'environment'
   multiple?: boolean
   onSelect?: (files: File[]) => void
   disabled?: boolean
+  textAlign?: TextProps['align']
 }
 
 export const FileInputMenuItem = React.forwardRef(function FileInputMenuItem(

@@ -1,5 +1,6 @@
 import React, {useCallback, useContext, useMemo, useState} from 'react'
-import {Box, Stack, Button, Grid, Text, useClickOutside} from '@sanity/ui'
+import {Box, Stack, Grid, Text, useClickOutside} from '@sanity/ui'
+import {Button} from '../../../../ui'
 import {useDocumentOperation} from '../../../hooks'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
@@ -94,12 +95,8 @@ export function GroupChange(
                 <Box>
                   Are you sure you want to revert the changes?
                   <Grid columns={2} gap={2} marginTop={2}>
-                    <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                      <Text align="center">Cancel</Text>
-                    </Button>
-                    <Button tone="critical" onClick={handleRevertChanges}>
-                      <Text align="center">Revert change</Text>
-                    </Button>
+                    <Button mode="ghost" onClick={closeRevertChangesConfirmDialog} text="Cancel" />
+                    <Button tone="critical" onClick={handleRevertChanges} text="Revert change" />
                   </Grid>
                 </Box>
               }

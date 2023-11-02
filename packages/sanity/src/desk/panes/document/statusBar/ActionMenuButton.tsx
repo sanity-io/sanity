@@ -1,15 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Flex,
-  Hotkeys,
-  Menu,
-  MenuButton,
-  MenuItem,
-  PopoverProps,
-  Text,
-} from '@sanity/ui'
+import {Box, Flex, Hotkeys, Menu, MenuButton, MenuItem, PopoverProps, Text} from '@sanity/ui'
 import React, {
   createElement,
   isValidElement,
@@ -20,7 +10,7 @@ import React, {
   useId,
 } from 'react'
 import {isValidElementType} from 'react-is'
-import {Tooltip} from '../../../../ui'
+import {Tooltip, Button} from '../../../../ui'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 

@@ -3,7 +3,6 @@
 
 import {
   Box,
-  Button,
   Card,
   Dialog,
   Menu,
@@ -46,6 +45,7 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImageToolInput} from '../ImageToolInput'
+import {Button} from '../../../../../ui'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {PresenceOverlay} from '../../../../presence'
@@ -594,7 +594,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     return (
       <Button
-        fontSize={2}
         text="Select"
         icon={SearchIcon}
         mode="ghost"

@@ -1,6 +1,7 @@
 import React from 'react'
 import {LinkIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {Button, Menu, MenuItem, MenuButton} from '@sanity/ui'
+import {Menu, MenuItem, MenuButton} from '@sanity/ui'
+import {Button} from '../../../../ui'
 import {AssetMenuAction} from './types'
 
 export function AssetMenu({
@@ -19,7 +20,7 @@ export function AssetMenu({
     <MenuButton
       button={
         <Button
-          padding={2}
+          size="small"
           mode={border ? 'ghost' : triggerButtonMode}
           icon={EllipsisVerticalIcon}
           tone={border ? 'default' : triggerButtonTone}

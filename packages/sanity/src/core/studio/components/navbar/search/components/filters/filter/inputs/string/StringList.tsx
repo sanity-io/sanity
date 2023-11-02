@@ -1,6 +1,6 @@
 import {SelectIcon} from '@sanity/icons'
 import {isTitledListValue, StringOptions, TitledListValue} from '@sanity/types'
-import {Box, Button, Code, Flex, Menu, MenuButton, MenuItem, Stack, Text} from '@sanity/ui'
+import {Box, Code, Flex, Menu, MenuButton, MenuItem, Stack, Text} from '@sanity/ui'
 import {capitalize, uniq} from 'lodash'
 import React, {useCallback, useId, useMemo} from 'react'
 import {useSchema} from '../../../../../../../../../hooks'
@@ -8,6 +8,7 @@ import {isNonNullable} from '../../../../../../../../../util'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
+import {Button} from '../../../../../../../../../../ui'
 
 interface TitledListValueGroup extends Omit<TitledListValue<number | string>, 'title'> {
   title: (number | string)[]
@@ -106,20 +107,7 @@ export function SearchFilterStringListInput({
 
   return (
     <MenuButton
-      button={
-        <Button mode="ghost" padding={3}>
-          <Flex align="center" gap={2} justify="space-between">
-            <Text size={1} weight="regular">
-              {value ? value : 'Select...'}
-            </Text>
-            <Box marginLeft={1}>
-              <Text size={1}>
-                <SelectIcon />
-              </Text>
-            </Box>
-          </Flex>
-        </Button>
-      }
+      button={<Button mode="ghost" icon={SelectIcon} text={value ?? 'Select...'} />}
       id={menuButtonId || ''}
       menu={
         <Menu>

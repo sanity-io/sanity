@@ -1,5 +1,6 @@
 import React, {useCallback, useState, useId} from 'react'
-import {Box, Flex, Button, Dialog, Text, ErrorBoundary} from '@sanity/ui'
+import {Box, Flex, Dialog, Text, ErrorBoundary} from '@sanity/ui'
+import {Button} from '../../../ui'
 import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
 
 export type {ConfirmDeleteDialogProps}

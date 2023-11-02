@@ -1,4 +1,12 @@
-import {Text, Box, Button, Theme, Flex, rem} from '@sanity/ui'
+import {
+  Text,
+  Box,
+  Theme,
+  Flex,
+  rem,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling and children behavior.
+} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export interface IconWrapperProps {

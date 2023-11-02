@@ -1,5 +1,5 @@
 import {Schema} from '@sanity/types'
-import {Box, Button, Flex, Label, MenuDivider, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Label, MenuDivider, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
@@ -14,6 +14,7 @@ import type {SearchableType} from '../../../../../../../search'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
+import {Button} from '../../../../../../../../ui'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
@@ -181,10 +182,8 @@ function ClearButton({
           aria-label="Clear checked filters"
           data-name="type-filter-button"
           disabled={selectedTypes.length === 0}
-          fontSize={1}
           mode="bleed"
           onClick={onClick}
-          padding={3}
           text="Clear"
           tone="primary"
         />

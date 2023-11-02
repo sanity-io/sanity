@@ -6,8 +6,9 @@ import {
   UnknownIcon,
   ChevronDownIcon,
 } from '@sanity/icons'
-import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
+import {useToast, Text, Box, Flex, Label, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
+import {Button} from '../../../ui'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {
@@ -242,7 +243,6 @@ export function ConfirmDeleteDialogBody({
                                     title="Copy ID to clipboard"
                                     mode="bleed"
                                     icon={CopyIcon}
-                                    fontSize={0}
                                   />
                                 </CopyToClipboard>
                               )}

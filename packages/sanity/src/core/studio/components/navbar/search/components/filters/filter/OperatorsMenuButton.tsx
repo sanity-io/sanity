@@ -1,7 +1,8 @@
 import {SelectIcon} from '@sanity/icons'
-import {Box, Button, Flex, Inline, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
+import {Box, Flex, Inline, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
 import React, {createElement, useCallback, useId} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
+import {Button} from '../../../../../../../../ui'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperatorDefinition, SearchOperatorDefinition} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
@@ -65,20 +66,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
   return (
     <Inline>
       <MenuButton
-        button={
-          <Button mode="ghost" padding={3}>
-            <Flex align="center" gap={2} justify="space-between">
-              <Text size={state.fullscreen ? 2 : 1} weight="regular">
-                {operator.label}
-              </Text>
-              <Box marginLeft={1}>
-                <Text size={1}>
-                  <SelectIcon />
-                </Text>
-              </Box>
-            </Flex>
-          </Button>
-        }
+        button={<Button mode="ghost" icon={SelectIcon} text={operator.label} />}
         id={menuButtonId || ''}
         menu={
           <Menu>

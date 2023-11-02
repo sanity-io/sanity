@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
-import {Box, Button, ButtonProps, Flex, Stack, Text} from '@sanity/ui'
-import {Tooltip} from '../../../../../../ui'
+import {Stack, Text} from '@sanity/ui'
+import {Tooltip, Button, ButtonProps} from '../../../../../../ui'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 import {useTimeAgo} from 'sanity'
 
@@ -70,20 +70,9 @@ const ReviewButton = React.forwardRef(function ReviewButton(
         data-testid="review-changes-button"
         ref={ref}
         aria-label="Review changes"
-      >
-        <Flex align="center">
-          <Box marginRight={collapsed ? 0 : 3} aria-hidden="true">
-            <Text>
-              <AnimatedStatusIcon status={status} />
-            </Text>
-          </Box>
-          {!collapsed && (
-            <Text size={1} weight="medium">
-              {buttonProps?.text}
-            </Text>
-          )}
-        </Flex>
-      </Button>
+        icon={<AnimatedStatusIcon status={status} />}
+        text={!collapsed && buttonProps?.text}
+      />
     </Tooltip>
   )
 })

@@ -137,7 +137,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   if (liveEdit) {
     return {
-      tone: 'positive',
+      tone: 'default',
       label: 'Publish',
       title:
         'Live Edit is enabled for this content type and publishing happens automatically as you make changes',
@@ -147,7 +147,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   if (!isPermissionsLoading && !permissions?.granted) {
     return {
-      tone: 'positive',
+      tone: 'default',
       label: 'Publish',
       title: (
         <InsufficientPermissionsMessage
@@ -170,7 +170,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   return {
     disabled: disabled || isPermissionsLoading,
-    tone: 'positive',
+    tone: 'default',
     label:
       // eslint-disable-next-line no-nested-ternary
       publishState === 'published'
