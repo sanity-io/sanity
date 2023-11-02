@@ -1,4 +1,4 @@
-import {Box, Button, Card, Flex, Stack} from '@sanity/ui'
+import {Button, Card, Flex, Stack} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {omit} from 'lodash'
 import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
@@ -45,13 +45,11 @@ export function WorkspaceAuth() {
 
         <Layout
           header={
-            <Box padding={3}>
-              <WorkspacePreview
-                icon={selectedWorkspace.icon}
-                title={selectedWorkspace.title}
-                subtitle={selectedWorkspace?.subtitle}
-              />
-            </Box>
+            <WorkspacePreview
+              icon={selectedWorkspace.icon}
+              title={selectedWorkspace.title}
+              subtitle={selectedWorkspace?.subtitle}
+            />
           }
         >
           <Stack padding={2} paddingBottom={3} paddingTop={4}>
@@ -83,7 +81,7 @@ export function WorkspaceAuth() {
         </Stack>
       }
     >
-      <Stack space={1} paddingX={1} paddingY={2}>
+      <Stack space={1} paddingY={1}>
         {workspaces.map((workspace) => {
           const authState = authStates[workspace.name]
           // eslint-disable-next-line no-nested-ternary
@@ -108,7 +106,6 @@ export function WorkspaceAuth() {
               as="button"
               radius={2}
               key={workspace.name}
-              padding={2}
               // eslint-disable-next-line react/jsx-no-bind
               onClick={handleSelectWorkspace}
             >

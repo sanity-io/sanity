@@ -5,6 +5,7 @@ import {GlobalPresence} from '../../../../store'
 import {UserAvatar} from '../../../../components'
 import {MenuItem} from '../../../../../ui'
 import {IntentLink} from 'sanity/router'
+import {PreviewMenuItem} from '../../../../../ui/previewMenuItem'
 
 interface PresenceListRowProps {
   focused: boolean
@@ -62,15 +63,11 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
   )
 
   return (
-    <MenuItem
-      size="large"
+    <PreviewMenuItem
       as={lastActiveLocation ? LinkComponent : 'div'}
       data-as={lastActiveLocation ? 'a' : 'div'}
       onFocus={handleFocus}
-      ref={setMenuItemElement}
-      text={presence.user.displayName}
-      subText={hasLink ? undefined : 'Not in a document'}
-      avatar={
+      preview={
         <UserAvatar
           size={1}
           key={presence.user.id}
@@ -78,6 +75,9 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
           status={hasLink ? 'editing' : 'inactive'}
         />
       }
+      ref={setMenuItemElement}
+      subtitle={hasLink ? undefined : 'Not in a document'}
+      text={presence.user.displayName}
     />
   )
 })

@@ -1,11 +1,18 @@
 import {SelectIcon} from '@sanity/icons'
-import {Button, MenuButton, Menu, MenuButtonProps, Box, Label, Stack} from '@sanity/ui'
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuButtonProps,
+  MenuItem, // eslint-disable-line no-restricted-imports
+  Stack,
+} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
-import {Tooltip, MenuItem} from '../../../../../ui'
+import {Tooltip} from '../../../../../ui'
 import {useWorkspaceAuthStates} from './hooks'
 import {WorkspacePreview} from './WorkspacePreview'
 import {useRouter} from 'sanity/router'
@@ -65,12 +72,6 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
           id="workspace-menu"
           menu={
             <StyledMenu>
-              <Box paddingX={3} paddingY={3}>
-                <Label size={1} muted>
-                  Workspaces
-                </Label>
-              </Box>
-
               {authStates &&
                 workspaces.map((workspace) => {
                   const authState = authStates[workspace.name]
@@ -98,10 +99,9 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
                       key={workspace.name}
                       // eslint-disable-next-line react/jsx-no-bind
                       onClick={handleSelectWorkspace}
+                      padding={0}
                       pressed={workspace.name === activeWorkspace.name}
                     >
-                      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                      {/* @ts-ignore - Workspace preview hasn't been redesigned for facelift */}
                       <WorkspacePreview
                         icon={workspace?.icon}
                         selected={workspace.name === activeWorkspace.name}

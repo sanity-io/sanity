@@ -1,5 +1,5 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {Flex, Stack, Box, Text, Card} from '@sanity/ui'
+import {Flex, Stack, Box, Text, Card, Badge} from '@sanity/ui'
 import React, {createElement, isValidElement, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
@@ -35,6 +35,11 @@ export interface WorkspacePreviewProps {
   title: string
 }
 
+/**
+ * This Workspace preview component is used in multiple places:
+ * 1. As separate buttons in the workspace selector (pre-auth)
+ * 2. Within <MenuItems> in the navbar workspace <Menu> (once logged in)
+ */
 export function WorkspacePreview(props: WorkspacePreviewProps) {
   const {state, subtitle, selected, title, icon, iconRight} = props
 
@@ -42,13 +47,13 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
   const iconRightComponent = useMemo(() => createIcon(iconRight), [iconRight])
 
   return (
-    <Flex align="center" flex="none" gap={3}>
+    <Flex align="center" flex="none" gap={3} padding={3}>
       <MediaCard radius={2} tone="transparent">
         {iconComponent}
       </MediaCard>
 
       <Stack flex={1} space={2}>
-        <Text textOverflow="ellipsis" weight="medium">
+        <Text size={1} textOverflow="ellipsis" weight="medium">
           {title}
         </Text>
 
@@ -59,13 +64,7 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
         )}
       </Stack>
 
-      {state && STATE_TITLES[state] && (
-        <Box paddingLeft={1}>
-          <Text size={1} muted textOverflow="ellipsis">
-            {STATE_TITLES[state]}
-          </Text>
-        </Box>
-      )}
+      {state && STATE_TITLES[state] && <Badge marginLeft={1}>{STATE_TITLES[state]}</Badge>}
 
       {(selected || iconRightComponent) && (
         <Flex align="center" gap={4} paddingLeft={3} paddingRight={2}>
