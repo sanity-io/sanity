@@ -168,7 +168,7 @@ const deskLocaleStrings = {
 
   /** -- DESK PANES -- */
   /** The tool tipe for the split pane button on the document panel header */
-  'document-panel-header.split-pane-button.tooltip': 'Split pane right',
+  'buttons.split-pane-button.tooltip': 'Split pane right',
 
   /** The text content for the deleted document banner */
   'banners.deleted-document-banner.text': 'This document has been deleted.',
@@ -212,7 +212,7 @@ const deskLocaleStrings = {
     'Please hold tight while the document is synced. This usually happens right after the document has been published, and it should not take more than a few seconds',
 
   /** The title of the reconnecting toast */
-  'panes.document-pane-provider.reconnecting-toast.title': 'Connection lost. Reconnecting…',
+  'panes.document-pane-provider.reconnecting.title': 'Connection lost. Reconnecting…',
 
   /** The loading message for the document not found pane */
   'panes.document-pane.document-not-found.loading': 'Loading document…',
@@ -258,43 +258,43 @@ const deskLocaleStrings = {
   'panes.document-operation-results.error.summary.title': 'Details',
 
   /** The text when a delete operation failed  */
-  'panes.document-operation-results.delete-operation.error':
+  'panes.document-operation-results.operation-error_delete':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refers to it.',
 
   /** The text when an unpublish operation failed  */
-  'panes.document-operation-results.unpublish-operation.error':
+  'panes.document-operation-results.operation-error_unpublish':
     'An error occurred while attempting to unpublish this document. This usually means that there are other documents that refers to it.',
 
   /** The text when a generic operation failed  */
-  'panes.document-operation-results.generic-operation.error': 'An error occurred during {{op}}',
+  'panes.document-operation-results.operation-error': 'An error occurred during {{context}}',
 
   /** The text when a publish operation succeded  */
-  'panes.document-operation-results.publish-operation.success': 'The document was published',
+  'panes.document-operation-results.operation-success_publish': 'The document was published',
 
   /** The text when an unpublish operation succeded  */
-  'panes.document-operation-results.unpublish-operation.success':
+  'panes.document-operation-results.operation-success_unpublish':
     'The document was unpublished. A draft has been created from the latest published version.',
 
   /** The text when a discard changes operation succeded  */
-  'panes.document-operation-results.discard-changes-operation.success':
+  'panes.document-operation-results.operation-success_discardChanges':
     'All changes since last publish has now been discarded. The discarded draft can still be recovered from history',
 
   /** The text when a delete operation succeded  */
-  'panes.document-operation-results.delete-operation.success':
+  'panes.document-operation-results.operation-success_delete':
     'The document was successfully deleted',
 
   /** The text when a generic operation succeded  */
-  'panes.document-operation-results.generic-operation.success':
-    'Successfully performed {{op}} on document',
+  'panes.document-operation-results.operation-success':
+    'Successfully performed {{context}} on document',
 
   /** The text used in the document header title if creating a new item */
-  'header.document-header-title.new.text': 'New {{item}}',
+  'panes.document-header-title.new.text': 'New {{schemaType}}',
 
   /** The text used in the document header title if there is an error */
-  'header.document-header-title.error.text': 'Error: {{error}}',
+  'panes.document-header-title.error.text': 'Error: {{error}}',
 
   /** The text used in the document header title if no other title can be determined */
-  'header.document-header-title.untitled.text': 'Untitled',
+  'panes.document-header-title.untitled.text': 'Untitled',
 }
 
 /**

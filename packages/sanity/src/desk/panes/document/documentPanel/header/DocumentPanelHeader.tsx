@@ -115,7 +115,7 @@ export const DocumentPanelHeader = memo(
               <Tooltip
                 content={
                   <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                    {t('document-panel-header.split-pane-button.tooltip')}
+                    {t('buttons.split-pane-button.tooltip')}
                   </Text>
                 }
                 padding={2}

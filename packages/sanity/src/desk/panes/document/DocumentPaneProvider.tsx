@@ -643,7 +643,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       pushToast({
         id: 'sanity/desk/reconnecting',
         status: 'warning',
-        title: t('panes.document-pane-provider.reconnecting-toast.title'),
+        title: t('panes.document-pane-provider.reconnecting.title'),
       })
     }
   }, [connectionState, pushToast, t])

@@ -5,32 +5,6 @@ import {useDocumentOperationEvent, useTranslation} from 'sanity'
 import {usePaneRouter} from '../../components'
 import {deskLocaleNamespace} from '../../i18n'
 
-function getOpErrorTitle(op: string): string {
-  if (op === 'delete') {
-    return 'panes.document-operation-results.delete-operation.error'
-  }
-  if (op === 'unpublish') {
-    return 'panes.document-operation-results.unpublish-operation.error'
-  }
-  return 'panes.document-operation-results.generic-operation.error'
-}
-
-function getOpSuccessTitle(op: string): string {
-  if (op === 'publish') {
-    return 'panes.document-operation-results.publish-operation.success'
-  }
-  if (op === 'unpublish') {
-    return 'panes.document-operation-results.unpublish-operation.success'
-  }
-  if (op === 'discardChanges') {
-    return 'panes.document-operation-results.discard-changes-operation.success'
-  }
-  if (op === 'delete') {
-    return 'panes.document-operation-results.delete-operation.success'
-  }
-  return 'panes.document-operation-results.generic-operation.success'
-}
-
 const IGNORE_OPS = ['patch', 'commit']
 
 export const DocumentOperationResults = memo(function DocumentOperationResults() {
@@ -51,7 +25,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
         closable: true,
         duration: 30000, // 30s
         status: 'error',
-        title: t(getOpErrorTitle(event.op), {op: event.op}),
+        title: t('panes.document-operation-results.operation-error', {context: event.op}),
         description: (
           <details>
             <summary>{t('panes.document-operation-results.error.summary.title')}</summary>
@@ -65,7 +39,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
       pushToast({
         closable: true,
         status: 'success',
-        title: t(getOpSuccessTitle(event.op), {op: event.op}),
+        title: t('panes.document-operation-results.operation-success', {context: event.op}),
       })
     }
 

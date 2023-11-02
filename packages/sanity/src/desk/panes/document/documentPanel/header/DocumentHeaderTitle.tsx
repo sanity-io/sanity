@@ -25,20 +25,22 @@ export function DocumentHeaderTitle(): ReactElement {
   if (!documentValue) {
     return (
       <>
-        {t('header.document-header-title.new.text', {item: schemaType?.title || schemaType?.name})}
+        {t('panes.document-header-title.new.text', {
+          schemaType: schemaType?.title || schemaType?.name,
+        })}
       </>
     )
   }
 
   if (error) {
-    return <>{t('header.document-header-title.error.text', {error: error.message})}</>
+    return <>{t('panes.document-header-title.error.text', {error: error.message})}</>
   }
 
   return (
     <>
       {value?.title || (
         <span style={{color: 'var(--card-muted-fg-color)'}}>
-          {t('header.document-header-title.untitled.text')}
+          {t('panes.document-header-title.untitled.text')}
         </span>
       )}
     </>
