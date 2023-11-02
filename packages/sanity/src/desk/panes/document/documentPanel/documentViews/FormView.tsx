@@ -6,6 +6,7 @@ import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 import {useConditionalToast} from './useConditionalToast'
+import {deskLocaleNamespace} from '../../../../i18n'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
@@ -16,6 +17,7 @@ import {
   fromMutationPatches,
   useDocumentPresence,
   useDocumentStore,
+  useTranslation,
 } from 'sanity'
 
 interface FormViewProps {
@@ -57,13 +59,14 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
   const isLocked = editState?.transactionSyncLock?.enabled
+  const {t} = useTranslation(deskLocaleNamespace)
 
   useConditionalToast({
     id: `sync-lock-${documentId}`,
     status: 'warning',
     enabled: isLocked,
-    title: `Syncing document…`,
-    description: `Please hold tight while the document is synced. This usually happens right after the document has been published, and it shouldn't take more than a few seconds`,
+    title: t('document-view.form-view.sync-lock-toast.title'),
+    description: t('document-view.form-view.sync-lock-toast.description'),
   })
 
   useEffect(() => {
@@ -152,7 +155,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
           {ready ? (
             formState === null ? (
               <Box padding={2}>
-                <Text>This form is hidden</Text>
+                <Text>{t('document-view.form-view.form-hidden')}</Text>
               </Box>
             ) : (
               <FormBuilder
@@ -186,7 +189,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 <Spinner muted />
                 <Box marginTop={3}>
                   <Text align="center" muted size={1}>
-                    Loading document
+                    {t('document-view.form-view.loading')}
                   </Text>
                 </Box>
               </Flex>

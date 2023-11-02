@@ -21,7 +21,15 @@ import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
 import {LoadingVariant, SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
-import {GeneralPreviewLayoutKey, SourceProvider, useSchema, useSource, useUnique} from 'sanity'
+import {deskLocaleNamespace} from '../../i18n'
+import {
+  GeneralPreviewLayoutKey,
+  SourceProvider,
+  useSchema,
+  useSource,
+  useTranslation,
+  useUnique,
+} from 'sanity'
 
 type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
 
@@ -213,11 +221,13 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     return 'initial'
   }, [isLoading, items.length])
 
+  const {t} = useTranslation(deskLocaleNamespace)
+
   const searchInput = (
     <Box paddingX={2} paddingBottom={2}>
       <SearchCard radius={4} tone="transparent">
         <TextInput
-          aria-label="Search list"
+          aria-label={t('panes.document-list-pane.search-input.aria-label')}
           autoComplete="off"
           border={false}
           clearButton={Boolean(searchQuery)}
@@ -227,7 +237,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           onChange={handleQueryChange}
           onClear={handleClearSearch}
           onKeyDown={handleSearchKeyDown}
-          placeholder="Search list"
+          placeholder={t('panes.document-list-pane.search-input.placeholder')}
           radius={2}
           ref={setSearchInputElement}
           spellCheck={false}

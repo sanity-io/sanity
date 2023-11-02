@@ -166,6 +166,160 @@ const deskLocaleStrings = {
   /** --- "PRODUCTION PREVIEW", eg link to content --- */
   'production-preview.menu-item.title': 'Open preview',
 
+  /** -- DESK PANES -- */
+  /** The tool tip for the split pane button on the document panel header */
+  'buttons.split-pane-button.tooltip': 'Split pane right',
+
+  /** The aria-label for the split pane button on the document panel header */
+  'buttons.split-pane-button.aria-label': 'Split pane right',
+
+  /** The title for the close button on the split pane on the document panel header */
+  'buttons.split-pane-close-button.title': 'Close split pane',
+
+  /** The title for the close group button on the split pane on the document panel header */
+  'buttons.split-pane-close-group-button.title': 'Close pane group',
+
+  /** The text content for the deleted document banner */
+  'banners.deleted-document-banner.text': 'This document has been deleted.',
+
+  /** The text for the restore button on the deleted document banner */
+  'banners.deleted-document-banner.restore-button.text': 'Restore most recent version',
+
+  /** The text for the reference change banner if the reason is that the reference has been changed */
+  'banners.reference-changed-banner.reason-changed.text':
+    'This reference has changed since you opened it.',
+
+  /** The text for the reload button */
+  'banners.reference-changed-banner.reason-changed.reload-button.text': 'Reload reference',
+
+  /** The text for the reference change banner if the reason is that the reference has been deleted */
+  'banners.reference-changed-banner.reason-removed.text':
+    'This reference has been removed since you opened it.',
+
+  /** The text for the close button */
+  'banners.reference-changed-banner.reason-removed.close-button.text': 'Close reference',
+
+  /** The text for the permission check banner if there is only one role */
+  'banners.permission-check-banner.singular-role.text':
+    'Your role {{roles}} does not have permissions to {{requiredPermission}} this document.',
+
+  /** The text for the permission check banner if there is are multiple roles */
+  'banners.permission-check-banner.plural-roles.text':
+    'Your roles {{roles}} do not have permissions to {{requiredPermission}} this document.',
+
+  /** The text for when a form is hidden */
+  'document-view.form-view.form-hidden': 'This form is hidden',
+
+  /** The text for when the form view is loading a document */
+  'document-view.form-view.loading': 'Loading document',
+
+  /** The title of the sync lock toast on the form view */
+  'document-view.form-view.sync-lock-toast.title': 'Syncing document…',
+
+  /** The description of the sync lock toast on the form view */
+  'document-view.form-view.sync-lock-toast.description':
+    'Please hold tight while the document is synced. This usually happens right after the document has been published, and it should not take more than a few seconds',
+
+  /** The title of the reconnecting toast */
+  'panes.document-pane-provider.reconnecting.title': 'Connection lost. Reconnecting…',
+
+  /** The loading message for the document not found pane */
+  'panes.document-pane.document-not-found.loading': 'Loading document…',
+
+  /** The title of the document not found pane if the schema is known */
+  'panes.document-pane.document-not-found.title': 'The document was not found',
+
+  /** The text of the document not found pane if the schema is known */
+  'panes.document-pane.document-not-found.text':
+    'The document type is not defined, and a document with the <Code>{{id}}</Code> identifier could not be found.',
+
+  /** The title of the document not found pane if the schema is not found or unknown */
+  'panes.document-pane.document-unknown-type.title':
+    'Unknown document type: <Code>{{documentType}}</Code>',
+
+  /** The text of the document not found pane if the schema is not found */
+  'panes.document-pane.document-unknown-type.text':
+    'This document has the schema type <Code>{{documentType}}</Code>, which is not defined as a type in the local content studio schema.',
+
+  /** The title of the document not found pane if the schema is unknown */
+  'panes.document-pane.document-unknown-type.without-schema.text':
+    'This document does not exist, and no schema type was specified for it.',
+
+  /** The text of the document list pane if more than a maximum number of documents are returned */
+  'panes.document-list-pane.max-items.text': 'Displaying a maximum of {{limit}} documents',
+
+  /** The text of the document list pane if no documents are found */
+  'panes.document-list-pane.no-documents.text': 'No results found',
+
+  /** The text of the document list pane if no documents are found matching specified criteria */
+  'panes.document-list-pane.no-matching-documents.text': 'No matching documents',
+
+  /** The text of the document list pane if no documents are found for a specified type */
+  'panes.document-list-pane.no-documents-of-type.text': 'No documents of this type',
+
+  /** The error title on the document list pane */
+  'panes.document-list-pane.error.title': 'Could not fetch list items',
+
+  /** The error text on the document list pane */
+  'panes.document-list-pane.error.text': 'Error: <Code>{{error}}</Code>',
+
+  /** The text for the retry button on the document list pane */
+  'panes.document-list-pane.error.retry-button.text': 'Retry',
+
+  /** The summary title when displaying an error for a document operation result */
+  'panes.document-operation-results.error.summary.title': 'Details',
+
+  /** The text when a delete operation failed  */
+  'panes.document-operation-results.operation-error_delete':
+    'An error occurred while attempting to delete this document. This usually means that there are other documents that refers to it.',
+
+  /** The text when an unpublish operation failed  */
+  'panes.document-operation-results.operation-error_unpublish':
+    'An error occurred while attempting to unpublish this document. This usually means that there are other documents that refers to it.',
+
+  /** The text when a generic operation failed  */
+  'panes.document-operation-results.operation-error': 'An error occurred during {{context}}',
+
+  /** The text when a publish operation succeded  */
+  'panes.document-operation-results.operation-success_publish': 'The document was published',
+
+  /** The text when an unpublish operation succeded  */
+  'panes.document-operation-results.operation-success_unpublish':
+    'The document was unpublished. A draft has been created from the latest published version.',
+
+  /** The text when a discard changes operation succeded  */
+  'panes.document-operation-results.operation-success_discardChanges':
+    'All changes since last publish has now been discarded. The discarded draft can still be recovered from history',
+
+  /** The text when a delete operation succeded  */
+  'panes.document-operation-results.operation-success_delete':
+    'The document was successfully deleted',
+
+  /** The text when a generic operation succeded  */
+  'panes.document-operation-results.operation-success':
+    'Successfully performed {{context}} on document',
+
+  /** The text used in the document header title if creating a new item */
+  'panes.document-header-title.new.text': 'New {{schemaType}}',
+
+  /** The text used in the document header title if there is an error */
+  'panes.document-header-title.error.text': 'Error: {{error}}',
+
+  /** The text used in the document header title if no other title can be determined */
+  'panes.document-header-title.untitled.text': 'Untitled',
+
+  /** The aria-label for the search input on the document list pane */
+  'panes.document-list-pane.search-input.aria-label': 'Search list',
+
+  /** The search input for the search input on the document list pane */
+  'panes.document-list-pane.search-input.placeholder': 'Search list',
+
+  /** The action menu button aria-label */
+  'buttons.action-menu-button.aria-label': 'Open document actions',
+
+  /** the placeholder text for the search input on the inspect dialog */
+  'inputs.inspect-dialog.search.placeholder': 'Search',
+
   /** -- UNKNOWN PANE TYPE */
 
   /** The text to display when type is missing */
@@ -175,6 +329,9 @@ const deskLocaleStrings = {
   /** The text to display when type is unknown */
   'panes.unknown-pane-type.unknown-type.text':
     'Structure item of type <Code>{{type}}</Code> is not a known entity.',
+
+  /** The title of the unknown pane */
+  'panes.unknown-pane-type.title': 'Unknown pane type',
 }
 
 /**
