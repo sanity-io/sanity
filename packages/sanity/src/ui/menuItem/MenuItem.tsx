@@ -10,12 +10,13 @@ import {
 } from '@sanity/ui'
 import React, {createElement, forwardRef, isValidElement, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
+import styled from 'styled-components'
 
 interface LargeMenuItem {
   size: 'large'
   subText?: string
   badgeText?: string
-  avatar?: React.ReactNode
+  preview?: React.ReactNode
   /**
    * Hotkeys are only supported in `size="small"` menu items.
    */
@@ -38,12 +39,12 @@ interface SmallMenuItem {
    */
   badgeText?: undefined
   /**
-   * Avatar is only supported in `size="large"` menu items.
+   * preview is only supported in `size="large"` menu items.
    */
-  avatar?: undefined
+  preview?: undefined
 }
 
-const fontSize = 1
+const FONT_SIZE = 1
 
 /** @internal */
 export type MenuItemProps = Pick<
@@ -67,6 +68,13 @@ export type MenuItemProps = Pick<
     children?: undefined
   }
 
+const PreviewWrapper = styled.div`
+  width: 41px;
+  height: 41px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
 /**
  * Studio UI <MenuItem>.
  *
@@ -81,7 +89,7 @@ export const MenuItem = forwardRef(function MenuItem(
     badgeText,
     subText,
     text,
-    avatar = null,
+    preview = null,
     icon,
     iconRight,
     hotkeys,
@@ -94,23 +102,23 @@ export const MenuItem = forwardRef(function MenuItem(
     if (size === 'large') {
       return (
         <Flex gap={3} align="center">
-          {avatar}
+          {preview && <PreviewWrapper>{preview}</PreviewWrapper>}
           {(text || subText) && (
             <Stack flex={1} space={2}>
               {text && (
-                <Text size={fontSize} textOverflow="ellipsis" weight="medium">
+                <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
                   {text}
                 </Text>
               )}
               {subText && (
-                <Text size={fontSize} textOverflow="ellipsis" weight={'regular'} muted>
+                <Text size={FONT_SIZE} textOverflow="ellipsis" weight={'regular'} muted>
                   {subText}
                 </Text>
               )}
             </Stack>
           )}
           {badgeText && (
-            <Badge fontSize={fontSize} mode="default">
+            <Badge fontSize={FONT_SIZE} mode="default">
               {badgeText}
             </Badge>
           )}
@@ -121,7 +129,7 @@ export const MenuItem = forwardRef(function MenuItem(
     return (
       <Flex as="span" gap={3} align="center">
         {icon && (
-          <Text size={fontSize}>
+          <Text size={FONT_SIZE}>
             {isValidElement(icon) && icon}
             {isValidElementType(icon) && createElement(icon)}
           </Text>
@@ -129,25 +137,25 @@ export const MenuItem = forwardRef(function MenuItem(
 
         {text && (
           <Box flex={1}>
-            <Text size={fontSize} textOverflow="ellipsis" weight="medium">
+            <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>
           </Box>
         )}
 
         {hotkeys && (
-          <Hotkeys fontSize={fontSize} keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />
+          <Hotkeys fontSize={FONT_SIZE} keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />
         )}
 
         {iconRight && (
-          <Text size={fontSize}>
+          <Text size={FONT_SIZE}>
             {isValidElement(iconRight) && iconRight}
             {isValidElementType(iconRight) && createElement(iconRight)}
           </Text>
         )}
       </Flex>
     )
-  }, [size, icon, text, hotkeys, iconRight, avatar, subText, badgeText])
+  }, [size, icon, text, hotkeys, iconRight, preview, subText, badgeText])
 
   return (
     <UIMenuItem ref={ref} {...props}>

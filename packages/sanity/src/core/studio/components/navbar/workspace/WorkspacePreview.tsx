@@ -4,21 +4,42 @@ import React, {createElement, isValidElement, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
 
-const STATE_TITLES = {
+export const STATE_TITLES = {
   'logged-in': '',
   'logged-out': 'Signed out',
   'no-access': '',
 }
 
-export const MediaCard = styled(Card)`
-  width: 35px;
-  height: 35px;
+type PreviewIconSize = 'small' | 'large'
+interface MediaCardProps {
+  $size: PreviewIconSize
+}
+
+export const MediaCard = styled(Card)<MediaCardProps>`
+  width: ${(props) => (props.$size === 'small' ? '35px' : '41px')};
+  height: ${(props) => (props.$size === 'small' ? '35px' : '41px')};
 
   svg {
     width: 100%;
     height: 100%;
   }
 `
+
+export const WorkspacePreviewIcon = ({
+  icon,
+  size = 'small',
+}: {
+  icon: React.ComponentType | React.ReactNode
+  size: PreviewIconSize
+}) => {
+  const iconComponent = useMemo(() => createIcon(icon), [icon])
+
+  return (
+    <MediaCard radius={2} tone="transparent" $size={size}>
+      {iconComponent}
+    </MediaCard>
+  )
+}
 
 const createIcon = (icon: React.ComponentType | React.ReactNode) => {
   if (isValidElementType(icon)) return createElement(icon)
@@ -38,14 +59,11 @@ export interface WorkspacePreviewProps {
 export function WorkspacePreview(props: WorkspacePreviewProps) {
   const {state, subtitle, selected, title, icon, iconRight} = props
 
-  const iconComponent = useMemo(() => createIcon(icon), [icon])
   const iconRightComponent = useMemo(() => createIcon(iconRight), [iconRight])
 
   return (
     <Flex align="center" flex="none" gap={3}>
-      <MediaCard radius={2} tone="transparent">
-        {iconComponent}
-      </MediaCard>
+      <WorkspacePreviewIcon icon={icon} size="small" />
 
       <Stack flex={1} space={2}>
         <Text textOverflow="ellipsis" weight="medium">

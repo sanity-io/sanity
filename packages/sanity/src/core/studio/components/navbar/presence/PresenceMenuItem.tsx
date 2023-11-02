@@ -70,7 +70,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
       ref={setMenuItemElement}
       text={presence.user.displayName}
       subText={hasLink ? undefined : 'Not in a document'}
-      avatar={
+      preview={
         <UserAvatar
           size={1}
           key={presence.user.id}
