@@ -1,5 +1,5 @@
 import {CheckmarkIcon, SelectIcon} from '@sanity/icons'
-import {Button, MenuButton, Menu, MenuButtonProps, Box, Label, Stack, Card} from '@sanity/ui'
+import {Button, MenuButton, Menu, MenuButtonProps, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
@@ -65,12 +65,6 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
           id="workspace-menu"
           menu={
             <StyledMenu>
-              <Box paddingX={3} paddingY={3}>
-                <Label size={1} muted>
-                  Workspaces
-                </Label>
-              </Box>
-
               {authStates &&
                 workspaces.map((workspace) => {
                   const authState = authStates[workspace.name]
