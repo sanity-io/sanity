@@ -127,7 +127,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         {filteredMenuItems.length == 0 && (
           <Box padding={3}>
             <Text muted size={1} textOverflow="ellipsis">
-              No matches for '{titleFilter}'
+              No matches for &quot;{titleFilter}&quot;
             </Text>
           </Box>
         )}

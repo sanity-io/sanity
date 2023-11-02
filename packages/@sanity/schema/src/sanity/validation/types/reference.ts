@@ -1,5 +1,5 @@
-import {error, HELP_IDS} from '../createValidationResult'
 import {flatten, isPlainObject} from 'lodash'
+import {error, HELP_IDS} from '../createValidationResult'
 import {getDupes} from '../utils/getDupes'
 import {SchemaValidationResult} from '../../typedefs'
 

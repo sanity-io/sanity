@@ -72,6 +72,7 @@ export default {
       description: (
         <span>
           Subtitle description <span style={{color: 'red'}}>x ← x - (JᵀJ + λIₙ༝ₙ)⁻¹ Jᵀr</span>
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
           <script>window.alert('👻')</script>
         </span>
       ),

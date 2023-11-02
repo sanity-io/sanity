@@ -64,8 +64,8 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
           <Container width={0}>
             <Box padding={2}>
               <Text size={1}>
-                We can't show metadata about these references because no token with access to the
-                datasets they are in was found.
+                We can&apos;t show metadata about these references because no token with access to
+                the datasets they are in was found.
               </Text>
             </Box>
           </Container>

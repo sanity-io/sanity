@@ -1,6 +1,6 @@
+import {Observable} from 'rxjs'
 import {CollectionBuilder, Collection, SerializeOptions} from './StructureNodes'
 import {StructureContext} from './types'
-import {Observable} from 'rxjs'
 
 /**
  * Interface for child resolver options

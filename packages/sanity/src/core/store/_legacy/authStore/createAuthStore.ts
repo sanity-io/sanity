@@ -8,12 +8,12 @@ import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs
 import {isEqual, memoize} from 'lodash'
 import type {AuthConfig} from '../../../config'
 import {CorsOriginError} from '../cors'
+import {isRecord} from '../../../util'
 import {AuthState, AuthStore} from './types'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {createLoginComponent} from './createLoginComponent'
-import {isRecord} from '../../../util'
 
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {

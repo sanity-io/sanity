@@ -1,5 +1,6 @@
 import React from 'react'
 import {PreviewAny} from './PreviewAny'
+
 type Props = {
   value: Array<any>
   maxDepth?: number

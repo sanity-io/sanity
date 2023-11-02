@@ -3,6 +3,7 @@
 import {TrashIcon} from '@sanity/icons'
 import React, {useCallback, useState} from 'react'
 import {ConfirmDeleteDialog} from '../components'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -10,7 +11,6 @@ import {
   useDocumentOperation,
   useDocumentPairPermissions,
 } from 'sanity'
-import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_TITLE = {
   NOTHING_TO_DELETE: 'This document doesn’t yet exist or is already deleted',

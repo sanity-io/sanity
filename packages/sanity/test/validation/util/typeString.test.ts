@@ -4,7 +4,7 @@ describe('typeString', () => {
   it('returns the a type string of built in types', () => {
     expect(typeString({})).toBe('Object')
     expect(
-      typeString(function () {
+      typeString(() => {
         // intentionally blank
       }),
     ).toBe('Function')

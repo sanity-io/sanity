@@ -57,7 +57,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                 <Text size={1} weight="semibold">
                   {schemaType ? (
                     <>
-                      {capitalize(schemaType.type)} type "{schemaType.name}"
+                      {capitalize(schemaType.type)} type &quot;{schemaType.name}&quot;
                     </>
                   ) : null}
                 </Text>

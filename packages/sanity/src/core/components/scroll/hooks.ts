@@ -1,6 +1,6 @@
 import React from 'react'
-import {ScrollContext} from './scrollContext'
 import {Subscriber} from 'nano-pubsub'
+import {ScrollContext} from './scrollContext'
 
 /** @internal */
 export function useOnScroll(callback: Subscriber<Event>) {

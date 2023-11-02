@@ -1,8 +1,8 @@
 import {useToast} from '@sanity/ui'
 import React, {memo, useEffect, useRef} from 'react'
+import {usePaneRouter} from '../../components'
 import {useDocumentPane} from './useDocumentPane'
 import {useDocumentOperationEvent} from 'sanity'
-import {usePaneRouter} from '../../components'
 
 function getOpErrorTitle(op: string): string {
   if (op === 'delete') {
