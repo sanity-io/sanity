@@ -165,6 +165,16 @@ const deskLocaleStrings = {
 
   /** --- "PRODUCTION PREVIEW", eg link to content --- */
   'production-preview.menu-item.title': 'Open preview',
+
+  /** -- UNKNOWN PANE TYPE */
+
+  /** The text to display when type is missing */
+  'panes.unknown-pane-type.missing-type.text':
+    'Structure item is missing required <Code>type</Code> property.',
+
+  /** The text to display when type is unknown */
+  'panes.unknown-pane-type.unknown-type.text':
+    'Structure item of type <Code>{{type}}</Code> is not a known entity.',
 }
 
 /**
