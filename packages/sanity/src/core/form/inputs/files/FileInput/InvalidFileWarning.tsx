@@ -2,6 +2,7 @@ import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../i18n'
 
 type Props = {
   onClearValue?: () => void
@@ -12,6 +13,7 @@ const ButtonWrapper = styled(Button)`
 `
 
 export function InvalidFileWarning({onClearValue}: Props) {
+  const {t} = useTranslation('sanity')
   return (
     <Card tone="caution" padding={4} border radius={2}>
       <Flex gap={4} marginBottom={4}>
@@ -22,15 +24,17 @@ export function InvalidFileWarning({onClearValue}: Props) {
         </Box>
         <Stack space={3}>
           <Text size={1} weight="semibold">
-            Invalid file value
+            {t('inputs.files.file-input.invalid-file-warning.title')}
           </Text>
-          <Text size={1}>
-            The value of this field is not a valid file. Resetting this field will let you choose a
-            new file.
-          </Text>
+          <Text size={1}>{t('inputs.files.file-input.invalid-file-warning.description')}</Text>
         </Stack>
       </Flex>
-      <ButtonWrapper icon={ResetIcon} text="Reset value" onClick={onClearValue} mode="ghost" />
+      <ButtonWrapper
+        icon={ResetIcon}
+        text={t('inputs.files.file-input.invalid-file-warning.reest-button.text')}
+        onClick={onClearValue}
+        mode="ghost"
+      />
     </Card>
   )
 }

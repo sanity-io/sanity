@@ -29,7 +29,12 @@ export function InvalidImageWarning({onClearValue}: Props) {
           <Text size={1}>{t('inputs.files.image.invalid-image-warning.description')}</Text>
         </Stack>
       </Flex>
-      <ButtonWrapper icon={ResetIcon} text="Reset value" onClick={onClearValue} mode="ghost" />
+      <ButtonWrapper
+        icon={ResetIcon}
+        text={t('inputs.files.image.invalid-image-warning.reset-button.text')}
+        onClick={onClearValue}
+        mode="ghost"
+      />
     </Card>
   )
 }
