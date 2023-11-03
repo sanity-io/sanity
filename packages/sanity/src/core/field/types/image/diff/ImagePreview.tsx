@@ -6,12 +6,13 @@ import {Box, Card, Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {hues} from '@sanity/color'
 import {useClient} from '../../../../hooks'
+import {useTranslation} from '../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {MetaInfo} from '../../../diff'
 import {useDocumentValues} from '../../../../store'
 import {getDeviceDpr, simpleHash} from './helpers'
 import {HotspotCropSVG} from './HotspotCropSVG'
-import {ImagePreviewProps, MinimalAsset} from './types'
+import type {ImagePreviewProps, MinimalAsset} from './types'
 
 const ASSET_FIELDS = ['originalFilename']
 
@@ -21,15 +22,18 @@ const ASSET_FIELDS = ['originalFilename']
 // To trigger deleted state, set `id` to valid, non-existant image asset ID,
 // eg: 'image-1217bc35db5030739b7be571c79d3c401551911d-300x200-png'
 
-export const NoImagePreview = () => (
-  <Card flex={1} tone="transparent" padding={4} radius={2} height="stretch">
-    <Flex align="center" justify="center" height="fill">
-      <Text size={1} muted>
-        (no image)
-      </Text>
-    </Flex>
-  </Card>
-)
+export const NoImagePreview = () => {
+  const {t} = useTranslation()
+  return (
+    <Card flex={1} tone="transparent" padding={4} radius={2} height="stretch">
+      <Flex align="center" justify="center" height="fill">
+        <Text size={1} muted>
+          {t('changes.image.no-image-placeholder')}
+        </Text>
+      </Flex>
+    </Card>
+  )
+}
 
 const ImageWrapper = styled.div`
   height: 100%;
@@ -92,6 +96,7 @@ const HotspotDiff = styled.div`
 
 export function ImagePreview(props: ImagePreviewProps): React.ReactElement {
   const {id, action, diff, hotspot, crop, is} = props
+  const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [imageError, setImageError] = React.useState<SyntheticEvent<HTMLImageElement, Event>>()
   const {value: asset} = useDocumentValues<MinimalAsset>(id, ASSET_FIELDS)
@@ -101,7 +106,7 @@ export function ImagePreview(props: ImagePreviewProps): React.ReactElement {
   // undefined = still loading, null = its gone
   const assetIsDeleted = asset === null
 
-  const title = (asset && asset.originalFilename) || 'Untitled'
+  const title = asset && asset.originalFilename
   const imageSource = imageBuilder
     .image(id)
     .height(190) // Should match container max-height
@@ -109,6 +114,11 @@ export function ImagePreview(props: ImagePreviewProps): React.ReactElement {
     .fit('max')
 
   const assetChanged = diff.fromValue?.asset?._ref !== diff.toValue?.asset?._ref
+
+  let printAction
+  if (action && action !== 'changed') {
+    printAction = t(action === 'added' ? 'changes.added-label' : 'changes.removed-label')
+  }
 
   const metaAction = action === 'changed' ? undefined : action
 
@@ -135,7 +145,7 @@ export function ImagePreview(props: ImagePreviewProps): React.ReactElement {
           {(assetIsDeleted || imageError) && (
             <Box paddingY={5}>
               <Text size={1} muted align="center">
-                {assetIsDeleted ? 'Image is deleted' : 'Error loading image'}
+                {t(assetIsDeleted ? 'changes.image.deleted' : 'changes.image.error-loading-image')}
               </Text>
             </Box>
           )}
@@ -153,9 +163,13 @@ export function ImagePreview(props: ImagePreviewProps): React.ReactElement {
         </Flex>
       </Box>
 
-      <MetaInfo title={title} icon={ImageIcon} markRemoved={assetChanged && is === 'from'}>
-        {metaAction ? (
-          <div>{metaAction}</div>
+      <MetaInfo
+        title={title || t('changes.image.meta-info-fallback-title')}
+        icon={ImageIcon}
+        markRemoved={assetChanged && is === 'from'}
+      >
+        {printAction ? (
+          <div>{printAction}</div>
         ) : (
           <div>
             {dimensions.width} × {dimensions.height}

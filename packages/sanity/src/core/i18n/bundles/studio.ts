@@ -104,6 +104,29 @@ export const studioLocaleStrings = {
   /** Loading author of change in the differences tooltip in the review changes pane */
   'changes.loading-author': 'Loading…',
 
+  /** --- Review Changes: Specific types --- */
+
+  /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
+  'changes.image.crop-changed': 'Crop changed',
+
+  /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
+  'changes.image.hotspot-changed': 'Hotspot changed',
+
+  /** Image diff: Text shown if no asset has been set for the field (but has metadata changes) */
+  'changes.image.no-asset-set': 'Image not set',
+
+  /** Image diff: Text shown when the from/to state has/had no image */
+  'changes.image.no-image-placeholder': '(no image)',
+
+  /** Image diff: Fallback title for the meta info section when there is no original filename to use  */
+  'changes.image.meta-info-fallback-title': 'Untitled',
+
+  /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */
+  'changes.image.deleted': 'Image deleted',
+
+  /** Image diff: Text shown if the image failed to be loaded when previewing it */
+  'changes.image.error-loading-image': 'Error loading image',
+
   /** --- Review Changes: Field + Group --- */
 
   /** Prompt for reverting changes for a field change */
