@@ -60,11 +60,9 @@ export function ConfirmDeleteDialogBody({
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
     return (
-      <Box paddingY={5}>
-        <Text as="p">
-          Are you sure you want to {action} “{documentTitle}”?
-        </Text>
-      </Box>
+      <Text as="p" size={1}>
+        Are you sure you want to {action} “{documentTitle}”?
+      </Text>
     )
   }
 

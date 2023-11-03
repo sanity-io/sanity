@@ -49,7 +49,7 @@ const buildFilterQuery = (acceptParam: string) => {
   The extension and mimeType work when the arrays are empty returning the right values so they are kept in the query */
   return `&&
   (
-    ${typesForFilter.wildcards} 
+    ${typesForFilter.wildcards}
     extension in [${typesForFilter.extensions}] ||
     mimeType in [${typesForFilter.mimes}]
   )`
@@ -265,12 +265,13 @@ const DefaultAssetSource = function DefaultAssetSource(
       id={_elementId.current}
       onClickOutside={handleClose}
       onClose={handleClose}
+      padding={false}
       ref={ref}
       width={2}
     >
       {showAcceptMessage && !isImageOnlyWildCard && (
-        <Card tone="primary" marginX={4} border radius={2}>
-          <Flex gap={[3, 4]} align="center">
+        <Card border marginX={4} padding={4} radius={2} tone="primary">
+          <Flex align="center" gap={3}>
             <Text>
               <InfoOutlineIcon />
             </Text>

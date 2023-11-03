@@ -1,5 +1,5 @@
 import React, {useCallback, useState, useId} from 'react'
-import {Box, Text, ErrorBoundary} from '@sanity/ui'
+import {Text, ErrorBoundary} from '@sanity/ui'
 import {Dialog} from '../../../ui'
 import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
 
@@ -28,9 +28,7 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
       }}
       onClose={props.onCancel}
     >
-      <Box padding={4}>
-        <Text>An error occurred while loading referencing documents.</Text>
-      </Box>
+      <Text size={1}>An error occurred while loading referencing documents.</Text>
     </Dialog>
   ) : (
     <ErrorBoundary onCatch={setError}>

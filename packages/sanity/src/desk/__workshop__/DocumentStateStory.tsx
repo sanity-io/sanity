@@ -115,7 +115,7 @@ function Debug(props: {documentId: string; documentType: string}) {
                   // eslint-disable-next-line react/jsx-handler-names
                   onClose={actionItem.dialog.onClose}
                 >
-                  <Box padding={4}>{actionItem.dialog.content}</Box>
+                  {actionItem.dialog.content}
                 </Dialog>
               )
             }

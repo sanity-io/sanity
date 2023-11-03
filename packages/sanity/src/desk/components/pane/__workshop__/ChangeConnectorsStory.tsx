@@ -226,9 +226,7 @@ function StringField(props: {
       {open && (
         <DialogProvider position="absolute">
           <Dialog id={`${path.join('-')}-dialog`} onClickOutside={handleClose}>
-            <Box padding={4}>
-              <Text>Dialog</Text>
-            </Box>
+            <Text size={1}>Dialog</Text>
           </Dialog>
         </DialogProvider>
       )}

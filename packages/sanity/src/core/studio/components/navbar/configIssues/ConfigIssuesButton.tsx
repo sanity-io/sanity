@@ -1,5 +1,5 @@
 import React, {useCallback, useState, useId} from 'react'
-import {Box, Heading, Stack, Text} from '@sanity/ui'
+import {Heading, Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Dialog} from '../../../../../ui'
 import {useSchema} from '../../../../hooks'
@@ -58,7 +58,7 @@ export function ConfigIssuesButton() {
           scheme={scheme}
           id={dialogId}
         >
-          <Stack space={4} paddingX={4} paddingY={3}>
+          <Stack space={4}>
             <Stack space={3}>
               <Heading as="h2" size={1}>
                 Found {groupsWithWarnings.length} schema warnings

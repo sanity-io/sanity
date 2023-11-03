@@ -37,9 +37,7 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
           scrollElement={contentElement}
           containerElement={containerElement}
         >
-          <Box padding={5} ref={containerElement}>
-            {children}
-          </Box>
+          <Box ref={containerElement}>{children}</Box>
         </VirtualizerScrollInstanceProvider>
       </PresenceOverlay>
     </Dialog>

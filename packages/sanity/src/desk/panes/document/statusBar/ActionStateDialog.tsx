@@ -1,4 +1,4 @@
-import {Box, usePortal, PortalProvider} from '@sanity/ui'
+import {usePortal, PortalProvider, Text} from '@sanity/ui'
 import React, {useId} from 'react'
 import {Dialog} from '../../../../ui'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
@@ -59,15 +59,13 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
       onClose={unknownModal.onClose}
       // eslint-disable-next-line react/jsx-handler-names
       onClickOutside={unknownModal.onClose}
-      width={2}
+      width={1}
     >
-      <Box padding={4}>
-        {unknownModal.content || (
-          <>
-            Unexpected modal type (<code>{unknownModal.type}</code>)
-          </>
-        )}
-      </Box>
+      {unknownModal.content || (
+        <Text size={1}>
+          Unexpected modal type (<code>{unknownModal.type}</code>)
+        </Text>
+      )}
     </Dialog>
   )
 }

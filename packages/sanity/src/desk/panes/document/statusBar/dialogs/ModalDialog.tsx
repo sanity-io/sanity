@@ -1,4 +1,3 @@
-import {Box} from '@sanity/ui'
 import React, {useId} from 'react'
 import {Dialog} from '../../../../../ui'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
@@ -21,7 +20,7 @@ export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
         onClickOutside={dialog.onClose}
         width={dialog.width === undefined ? 1 : DIALOG_WIDTH_TO_UI_WIDTH[dialog.width]}
       >
-        <Box padding={4}>{dialog.content}</Box>
+        {dialog.content}
       </Dialog>
     </LegacyLayerProvider>
   )

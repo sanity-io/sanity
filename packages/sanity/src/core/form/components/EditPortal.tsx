@@ -35,9 +35,7 @@ export function EditPortal(props: Props): React.ReactElement {
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
-      <Box ref={containerElement} padding={5}>
-        {children}
-      </Box>
+      <Box ref={containerElement}>{children}</Box>
     </PresenceOverlay>
   )
 

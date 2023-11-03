@@ -1,14 +1,21 @@
-import {Button, Flex, Dialog as UIDialog, DialogProps as UIDialogProps, Box} from '@sanity/ui'
+import {
+  Button,
+  Flex,
+  Dialog as UIDialog,
+  DialogProps as UIDialogProps,
+  Box,
+  BoxHeight,
+} from '@sanity/ui'
 import React, {ComponentProps, forwardRef} from 'react'
 
 /** @internal */
 export interface DialogProps
   extends Pick<
     UIDialogProps,
-    | 'header'
-    | 'contentRef'
     | '__unstable_autoFocus'
     | '__unstable_hideCloseButton'
+    | 'contentRef'
+    | 'header'
     | 'id'
     | 'onActivate'
     | 'onClickOutside'
@@ -18,16 +25,23 @@ export interface DialogProps
     | 'scheme'
     | 'width'
   > {
+  /**
+   * Dialog body height.
+   * Set this to 'fill' (i.e. 100%) if you want overflow body content to be contained
+   * and not trigger dynamic border visibility.
+   */
+  bodyHeight?: BoxHeight
   children?: React.ReactNode
   footer?: {
     // TODO: When `@sanity/ui` has `Button` component, use those props instead.
+    // TODO: Omit style-specific props, e.g. fontSize, padding etc
     cancelButton?: ComponentProps<typeof Button>
     confirmButton?: ComponentProps<typeof Button>
   }
+  padding?: boolean
 }
 
 /**
-
  * Studio UI <Dialog>.
  *
  * Studio UI components are opinionated `@sanity/ui` components meant for internal use only.
@@ -36,7 +50,7 @@ export interface DialogProps
  * @internal
  */
 export const Dialog = forwardRef(function Dialog(
-  {footer, children, ...props}: DialogProps,
+  {bodyHeight, children, footer, padding = true, ...props}: DialogProps,
   ref: React.Ref<HTMLDivElement>,
 ) {
   return (
@@ -62,7 +76,9 @@ export const Dialog = forwardRef(function Dialog(
         )
       }
     >
-      <Box paddingX={3}>{children}</Box>
+      <Box height={bodyHeight} marginX={padding ? 1 : 0} padding={padding ? 4 : 0}>
+        {children}
+      </Box>
     </UIDialog>
   )
 })

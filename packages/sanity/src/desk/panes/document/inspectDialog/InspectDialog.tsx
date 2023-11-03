@@ -42,6 +42,7 @@ export function InspectDialog(props: InspectDialogProps) {
 
   return (
     <Dialog
+      bodyHeight="fill"
       id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentLike(value) ? (
@@ -54,10 +55,11 @@ export function InspectDialog(props: InspectDialogProps) {
       }
       onClose={onInspectClose}
       onClickOutside={onInspectClose}
+      padding={false}
       width={3}
     >
       <Flex direction="column" height="fill">
-        <Card padding={3} style={{position: 'sticky', bottom: 0, zIndex: 3}}>
+        <Card borderBottom padding={3} style={{position: 'sticky', bottom: 0, zIndex: 3}}>
           <TabList space={1}>
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}

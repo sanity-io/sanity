@@ -47,7 +47,7 @@ export function NotAuthenticatedScreen() {
           },
         }}
       >
-        <Stack paddingX={4} paddingY={5} space={4}>
+        <Stack space={4}>
           <Text>
             You are not authorized to access this studio. Maybe you could ask someone to invite you
             to collaborate on this project?

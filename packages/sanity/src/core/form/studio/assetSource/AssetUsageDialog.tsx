@@ -38,7 +38,6 @@ export function AssetUsageDialog({
   const showActionFooter = mode === MODE_CONFIRM_DELETE
   const hasResults = publishedDocuments.length > 0
   const showDocumentList = mode === MODE_LIST_USAGE || hasResults
-  const noPaddingOnStack = mode === MODE_CONFIRM_DELETE && !hasResults
 
   useEffect(() => {
     const drafts = referringDocuments.reduce<string[]>(
@@ -86,11 +85,7 @@ export function AssetUsageDialog({
       )}
 
       {!isLoadingParent && (
-        <Stack
-          paddingX={noPaddingOnStack ? 0 : [2, 3, 4]}
-          paddingY={noPaddingOnStack ? 0 : [3, 3, 3, 4]}
-          space={1}
-        >
+        <Stack space={1}>
           {mode === MODE_CONFIRM_DELETE && (
             <ConfirmMessage asset={asset} assetType={assetType} hasResults={hasResults} />
           )}

@@ -199,6 +199,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
             id="create-new-document-dialog"
             onClickOutside={handleClose}
             onClose={handleClose}
+            padding={false}
             ref={setDialogElement}
             scheme={scheme}
             width={1}

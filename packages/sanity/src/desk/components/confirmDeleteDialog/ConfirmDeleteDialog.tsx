@@ -7,9 +7,7 @@ import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 
 /** @internal */
-export const DialogBody = styled(Box).attrs({
-  paddingX: 3,
-})`
+export const DialogBody = styled(Box)`
   box-sizing: border-box;
 `
 
@@ -74,7 +72,7 @@ export function ConfirmDeleteDialog({
 
   return (
     <Dialog
-      width={0}
+      width={1}
       id={dialogId}
       header={`${capitalizedAction} document?`}
       footer={{
@@ -105,7 +103,7 @@ export function ConfirmDeleteDialog({
         ) : (
           <LoadingContainer data-testid="loading-container">
             <Spinner muted />
-            <Box marginTop={3}>
+            <Box marginTop={4}>
               <Text align="center" muted size={1}>
                 Looking for referring documents…
               </Text>

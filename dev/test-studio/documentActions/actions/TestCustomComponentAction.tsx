@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {DocumentActionComponent} from 'sanity'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {Dialog} from '../../../../packages/sanity/src/ui'
 
 export const TestCustomComponentAction: DocumentActionComponent = () => {
@@ -28,9 +28,7 @@ export const TestCustomComponentAction: DocumentActionComponent = () => {
             },
           }}
         >
-          <Card padding={5}>
-            <Text>This dialog is rendered using a custom dialog component.</Text>
-          </Card>
+          <Text size={1}>This dialog is rendered using a custom dialog component.</Text>
         </Dialog>
       ),
     },
