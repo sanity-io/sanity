@@ -53,6 +53,43 @@ const nestedArrayOfObjectsField = defineField({
   ],
 })
 
+const arrayWithAnonymousObjectField = defineField({
+  name: 'myArrayWithAnonymousObject',
+  title: 'My array with anonymous object title',
+  type: 'array',
+  of: [
+    {
+      type: 'object',
+      fields: [
+        {
+          name: 'anonymousString',
+          type: 'string',
+          title: 'Anonymous string title',
+        },
+      ],
+    },
+  ],
+})
+
+const arrayWithAnonymousObjectFieldWithHiddenCallback = defineField({
+  name: 'myArrayWithAnonymousObjectFieldWithHiddenCallback',
+  title: 'My array with anonymous object field with hidden callback title',
+  type: 'array',
+  of: [
+    {
+      type: 'object',
+      fields: [
+        {
+          name: 'anonymousStringWithHiddenCallback',
+          type: 'string',
+          title: 'Anonymous string with hidden callback title',
+          hidden: () => true,
+        },
+      ],
+    },
+  ],
+})
+
 const schema = Schema.compile({
   name: 'default',
   types: [
@@ -67,6 +104,8 @@ const schema = Schema.compile({
         stringWithHiddenCallback,
         arrayOfObjectsField,
         nestedArrayOfObjectsField,
+        arrayWithAnonymousObjectField,
+        arrayWithAnonymousObjectFieldWithHiddenCallback,
       ],
     },
   ],
@@ -257,6 +296,89 @@ describe('comments: buildCommentBreadcrumbs', () => {
       {invalid: false, isArrayItem: false, title: 'My array title'},
       {invalid: false, isArrayItem: true, title: '#2'},
       {invalid: true, isArrayItem: false, title: 'String With Hidden Callback'},
+    ])
+  })
+
+  it('should build breadcrumbs for array of anonymous objects', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {
+        myArrayWithAnonymousObject: [
+          {
+            _key: 'key1',
+            anonymousString: 'Hello world',
+          },
+          {
+            _key: 'key2',
+            anonymousString: 'Hello world',
+          },
+        ],
+      },
+      fieldPath: 'myArrayWithAnonymousObject[_key=="key2"].anonymousString',
+      schemaType: schema.get('testDocument'),
+    })
+
+    expect(crumbs).toEqual([
+      {invalid: false, isArrayItem: false, title: 'My array with anonymous object title'},
+      {invalid: false, isArrayItem: true, title: '#2'},
+      {invalid: false, isArrayItem: false, title: 'Anonymous string title'},
+    ])
+  })
+
+  it('should invalidate the breadcrumb if the array item is not found in an array of anonymous objects', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {
+        myArrayWithAnonymousObject: [
+          {
+            _key: 'key1',
+            anonymousString: 'Hello world',
+          },
+          {
+            _key: 'key2',
+            anonymousString: 'Hello world',
+          },
+        ],
+      },
+      fieldPath: 'myArrayWithAnonymousObject[_key=="key3"].anonymousString',
+      schemaType: schema.get('testDocument'),
+    })
+
+    expect(crumbs).toEqual([
+      {invalid: false, isArrayItem: false, title: 'My array with anonymous object title'},
+      {invalid: true, isArrayItem: true, title: 'Unknown array item'},
+      {invalid: true, isArrayItem: false, title: 'Unknown field'},
+    ])
+  })
+
+  it('should invalidate the breadcrumb if the array item is hidden in an array of anonymous objects', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {
+        myArrayWithAnonymousObjectFieldWithHiddenCallback: [
+          {
+            _key: 'key1',
+            anonymousStringWithHiddenCallback: 'Hello world',
+          },
+          {
+            _key: 'key2',
+            anonymousStringWithHiddenCallback: 'Hello world',
+          },
+        ],
+      },
+      fieldPath:
+        'myArrayWithAnonymousObjectFieldWithHiddenCallback[_key=="key2"].anonymousStringWithHiddenCallback',
+      schemaType: schema.get('testDocument'),
+    })
+
+    expect(crumbs).toEqual([
+      {
+        invalid: false,
+        isArrayItem: false,
+        title: 'My array with anonymous object field with hidden callback title',
+      },
+      {invalid: false, isArrayItem: true, title: '#2'},
+      {invalid: true, isArrayItem: false, title: 'Anonymous string with hidden callback title'},
     ])
   })
 })

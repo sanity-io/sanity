@@ -146,8 +146,33 @@ export function buildCommentBreadcrumbs(
         (f) => f.name === seg,
       ) as ObjectField<SchemaType>
 
-      // If we don't find the object field, we'll mark it as invalid.
-      // This can happen if the object field has been removed from the schema type.
+      // If we don't find the `_type` property in the document value, that
+      // means that the field is an anonymous object field and don't have a
+      // name defined in the schema type.
+      // In this case, we try to find all the fields of the current schema type
+      // and check if the field name from the path segment matches any of them.
+      // If we find a match, we'll use the field's type to get the title.
+      if (!objectType && currentValue) {
+        const allCurrentFields = currentSchemaType?.of
+          ?.map((o: any) => o?.fields)
+          .filter(Boolean)
+          .flat()
+
+        const anonymousField = allCurrentFields?.find((f) => f?.name === seg)
+        const hidden = resolveConditionalProperty(anonymousField?.type?.hidden, conditionalContext)
+
+        if (anonymousField) {
+          fieldPaths.push({
+            invalid: hidden,
+            isArrayItem: false,
+            title: getSchemaTypeTitle(anonymousField?.type),
+          })
+
+          currentSchemaType = anonymousField?.type
+        }
+        return
+      }
+
       if (!currentField) {
         fieldPaths.push({
           invalid: true,

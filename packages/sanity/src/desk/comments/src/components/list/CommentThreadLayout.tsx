@@ -22,6 +22,10 @@ const BreadcrumbsButton = styled(Button)(({theme}) => {
   const fg = theme.sanity.color.base.fg
   return css`
     --card-fg-color: ${fg};
+
+    // The width is needed to make the text ellipsis work
+    // in the breadcrumbs component
+    max-width: 100%;
   `
 })
 
