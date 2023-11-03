@@ -18,7 +18,7 @@ export function AssetSourceError(props: ResponsivePaddingProps) {
             Currently, only the default asset source is supported.
           </TextWithTone>
           <TextWithTone size={1} tone="caution">
-            Please ensure it's enabled in your studio configuration file.
+            Please ensure it&apos;s enabled in your studio configuration file.
           </TextWithTone>
         </Stack>
       </Flex>

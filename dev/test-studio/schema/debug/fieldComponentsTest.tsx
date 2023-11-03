@@ -72,7 +72,7 @@ export default {
       description: (
         <span>
           Subtitle description <span style={{color: 'red'}}>x ← x - (JᵀJ + λIₙ༝ₙ)⁻¹ Jᵀr</span>
-          <script>window.alert('👻')</script>
+          <script>window.alert(&apos;👻&apos;)</script>
         </span>
       ),
       type: 'string',

@@ -207,7 +207,8 @@ const FormInputInner = memo(function FormInputInner(
       const key = (relativePath[0] as any)._key
       return (
         <div>
-          No array item with _key <code>"{key}"</code> found at path {JSON.stringify(props.path)}
+          No array item with _key <code>&quot;{key}&quot;</code> found at path{' '}
+          {JSON.stringify(props.path)}
         </div>
       )
     }
@@ -238,8 +239,8 @@ const FormInputInner = memo(function FormInputInner(
       const fieldName = childPath[0]
       return (
         <div>
-          Field {JSON.stringify(fieldName)} not found among members – please verify that it's both
-          defined in the schema and that it has not been conditionally hidden.
+          Field {JSON.stringify(fieldName)} not found among members – please verify that it&apos;s
+          both defined in the schema and that it has not been conditionally hidden.
         </div>
       )
     }

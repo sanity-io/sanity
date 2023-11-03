@@ -42,7 +42,7 @@ export function DropMessage(props: Props) {
                 </Text>
                 <Text muted size={1}>
                   {rejectedFilesCount} file
-                  {rejectedFilesCount > 1 ? 's' : ''} can't be uploaded here
+                  {rejectedFilesCount > 1 ? 's' : ''} can&apos;t be uploaded here
                 </Text>
               </Inline>
             </Box>
@@ -54,7 +54,7 @@ export function DropMessage(props: Props) {
             <AccessDeniedIcon />
           </Text>
           <Text>
-            Can't upload {hoveringFiles.length > 1 ? 'any of these files' : 'this file'} here
+            Can&apos;t upload {hoveringFiles.length > 1 ? 'any of these files' : 'this file'} here
           </Text>
         </Inline>
       )}
