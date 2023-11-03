@@ -26,6 +26,6 @@ const DecoratorWrapper = styled.span<{decoration: string}>`
   }}
 `
 
-export default function Decorator({mark, children}: {mark: string; children: JSX.Element}) {
+export function Decorator({mark, children}: {mark: string; children: JSX.Element}) {
   return <DecoratorWrapper decoration={mark}>{children}</DecoratorWrapper>
 }

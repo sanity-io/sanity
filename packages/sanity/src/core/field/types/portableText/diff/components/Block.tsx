@@ -11,7 +11,7 @@ import Paragraph from './Paragraph'
 
 const EMPTY_PATH: Path = []
 
-export default function Block(props: {
+export function Block(props: {
   diff: PortableTextDiff
   block: PortableTextTextBlock
   children: JSX.Element

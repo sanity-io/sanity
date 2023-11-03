@@ -80,11 +80,14 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'changes.no-changes-description':
     'Rediger dokumentet eller velg en eldre versjon i tidslinjen for å se en liste over endringer i dette panelet.',
 
-  /** Label for when a field was cleared, eg the contents was removed - for references, assets and similar */
+  /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
   'changes.removed-label': 'Fjernet',
 
-  /** Label for when a field was given a value where it was previously empty - for references, assets and similar */
+  /** Label for when the action of the change was to set something that was previously empty, eg a field was given a value, an array item was added, an asset was selected or similar */
   'changes.added-label': 'Lagt til',
+
+  /** Label for when the action of the change was _not_ an add/remove, eg a text field changed value, an image was changed from one asset to another or similar */
+  'changes.changed-label': 'Endret',
 
   /** Prompt for reverting all changes in document in Review Changes pane. Includes a count of changes. */
   'changes.action.revert-all-description': `Er du sikker på at du vil angre alle {{count}} endringer?`,
@@ -99,6 +102,43 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'changes.loading-author': 'Laster…',
 
   /** --- Review Changes: Specific types --- */
+
+  /** Array diff: An item was added in a given position (`{{position}}`) */
+  'changes.array.item-added-in-position': 'Lagt til i posisjon {{position}}',
+
+  /** Array diff: An item was removed from a given position (`{{position}}`) */
+  'changes.array.item-removed-from-position': 'Fjernet fra posisjon {{position}}',
+
+  /**
+   * Array diff: An item was moved within the array.
+   * Receives `{{count}}` representing number of positions it moved.
+   * Context is the direction of the move, either `up` or `down`.
+   */
+  'change.array.item-moved_up_one': 'Flyttet {{count}} posisjon opp',
+  'change.array.item-moved_up_other': 'Flyttet {{count}} posisjoner opp',
+  'change.array.item-moved_down_one': 'Flyttet {{count}} posisjon ned',
+  'change.array.item-moved_down_other': 'Flyttet {{count}} posisjoner ned',
+
+  /** Portable Text diff: Removed a block containing no text (eg empty block) */
+  'change.portable-text.empty-text_removed': 'Fjernet tomt avsnitt',
+
+  /** Portable Text diff: Added a block containing no text (eg empty block) */
+  'change.portable-text.empty-text_added': 'La til tomt avsnitt',
+
+  /** Portable Text diff: Changed a block that contained no text (eg empty block) */
+  'change.portable-text.empty-text_changed': 'Endret tomt avsnitt',
+
+  /** Portable Text diff: Added a chunk of text */
+  'change.portable-text.text_added': 'La til tekst',
+
+  /** Portable Text diff: Removed a chunk of text */
+  'change.portable-text.text_removed': 'Fjernet tekst',
+
+  /** Portable Text diff: Change formatting of text (setting/unsetting marks, eg bold/italic etc) */
+  'change.portable-text.changed-formatting': 'Endret formattering',
+
+  /** File diff: Fallback title for the meta info section when there is no original filename to use  */
+  'changes.file.meta-info-fallback-title': 'Navnløs fil',
 
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
   'changes.image.crop-changed': 'Beskjæring endret',

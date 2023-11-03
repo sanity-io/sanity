@@ -55,7 +55,10 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
 
   const from = prev && (
     <DiffCard as="del" diff={diff} path="asset._ref" style={cardStyles}>
-      <MetaInfo title={prev.originalFilename || 'Untitled'} icon={DocumentIcon}>
+      <MetaInfo
+        title={prev.originalFilename || t('changes.file.meta-info-fallback-title')}
+        icon={DocumentIcon}
+      >
         <Text size={0} style={{color: 'inherit'}}>
           {prevSize}
         </Text>
@@ -65,7 +68,10 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
 
   const to = next && (
     <DiffCard as="ins" diff={diff} path="asset._ref" style={cardStyles}>
-      <MetaInfo title={next.originalFilename || 'Untitled'} icon={DocumentIcon}>
+      <MetaInfo
+        title={next.originalFilename || t('changes.file.meta-info-fallback-title')}
+        icon={DocumentIcon}
+      >
         <Flex align="center">
           <Text size={0} style={{color: 'inherit'}}>
             {nextSize}

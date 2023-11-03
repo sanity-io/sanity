@@ -1,8 +1,8 @@
-import {isKeySegment, Path} from '@sanity/types'
-import React, {SyntheticEvent, useCallback, useMemo} from 'react'
-import {startCase} from 'lodash'
+import {isKeySegment, type Path} from '@sanity/types'
+import React, {type SyntheticEvent, useCallback, useMemo, useContext} from 'react'
+import {useTranslation} from '../../../../../i18n'
 import {DiffCard, DiffContext} from '../../../../diff'
-import {ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
+import type {ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
 import {ConnectorContext} from '../../../../../changeIndicators'
 import {InlineBox} from './styledComponents'
 
@@ -36,9 +36,10 @@ export function Text({
 }
 
 export function TextWithDiff({diff, childDiff, children, path, segment, ...restProps}: TextProps) {
-  const {onSetFocus} = React.useContext(ConnectorContext)
-  const {path: fullPath} = React.useContext(DiffContext)
+  const {onSetFocus} = useContext(ConnectorContext)
+  const {path: fullPath} = useContext(DiffContext)
   const spanSegment = useMemo(() => path.slice(-2, 1)[0], [path])
+  const {t} = useTranslation()
   const isRemoved = diff && diff.action === 'removed'
   const prefix = fullPath.slice(
     0,
@@ -58,22 +59,24 @@ export function TextWithDiff({diff, childDiff, children, path, segment, ...restP
     },
     [focusPath, isRemoved, onSetFocus],
   )
-  const realSeg = diff && diff.segments.find((rSeg: any) => rSeg.text === segment.text)
+  const realSeg = diff && diff.segments.find((rSeg) => rSeg.text === segment.text)
 
   const diffWithFallback = realSeg || diff || childDiff
   const annotation =
     (diffWithFallback && diffWithFallback.action !== 'unchanged' && diffWithFallback.annotation) ||
     null
+
   const diffCard =
     annotation && segment.action !== 'unchanged' ? (
       <DiffCard
         annotation={annotation}
         as={segment.action === 'removed' ? 'del' : 'ins'}
-        tooltip={{description: `${startCase(segment.action)} text`}}
+        tooltip={{description: t('change.portable-text.text', {context: segment.action})}}
       >
         {children}
       </DiffCard>
     ) : null
+
   return (
     <InlineBox {...restProps} onClick={handleClick} data-changed="">
       <span>
