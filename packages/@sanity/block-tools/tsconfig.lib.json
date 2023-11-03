@@ -14,7 +14,7 @@
     "outDir": "./lib/dts",
     "declarationDir": "./lib/dts",
 
-    "jsx": "react"
+    "jsx": "react-jsx"
   },
   "references": [{"path": "../schema/tsconfig.lib.json"}, {"path": "../types/tsconfig.lib.json"}]
 }

@@ -1,7 +1,5 @@
 'use client'
 
-/* eslint-disable react/react-in-jsx-scope */
-
 import {useMemo} from 'react'
 import {defineConfig, Studio, StudioProps} from 'sanity'
 import {deskTool} from 'sanity/desk'

@@ -1,5 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
-
 import type {AppProps} from 'next/app'
 
 // eslint-disable-next-line import/no-unassigned-import

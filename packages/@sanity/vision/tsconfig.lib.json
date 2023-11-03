@@ -6,7 +6,7 @@
     "rootDir": ".",
     "outDir": "./lib/dts",
 
-    "jsx": "react"
+    "jsx": "react-jsx"
   },
   "references": [{"path": "../types/tsconfig.lib.json"}, {"path": "../../sanity/tsconfig.lib.json"}]
 }

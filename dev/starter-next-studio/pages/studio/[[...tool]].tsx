@@ -1,5 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
-
 import {useRouter} from 'next/router'
 import {useState} from 'react'
 import Studio from '../../components/Studio'

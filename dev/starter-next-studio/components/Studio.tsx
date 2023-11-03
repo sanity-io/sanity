@@ -1,5 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
-
 import {useMemo} from 'react'
 import {defineConfig, Studio} from 'sanity'
 import {deskTool} from 'sanity/desk'

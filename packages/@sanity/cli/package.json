@@ -28,8 +28,7 @@
       "source": "./src/index.ts",
       "require": "./lib/index.js",
       "node": {
-        "import": "./lib/index.cjs.mjs",
-        "require": "./lib/index.js"
+        "import": "./lib/index.cjs.mjs"
       },
       "import": "./lib/index.esm.js",
       "default": "./lib/index.esm.js"

@@ -32,6 +32,8 @@ const baseConfig = {
         additionalHooks: '(useMemoObservable|useObservableCallback|useAsync)',
       },
     ],
+    'react/no-unescaped-entities': 'off',
+    'react/jsx-uses-react': 'warn',
   },
   settings: {
     'import/extensions': ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx'],

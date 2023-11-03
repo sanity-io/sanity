@@ -1,5 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
-
 import Studio from '../../Studio'
 
 export default function StudioPage() {

@@ -27,8 +27,7 @@
       "source": "./src/_exports/index.ts",
       "require": "./lib/_exports/index.js",
       "node": {
-        "import": "./lib/_exports/index.cjs.mjs",
-        "require": "./lib/_exports/index.js"
+        "import": "./lib/_exports/index.cjs.mjs"
       },
       "import": "./lib/_exports/index.esm.js",
       "default": "./lib/_exports/index.esm.js"
@@ -38,8 +37,7 @@
       "source": "./src/_exports/_internal.ts",
       "require": "./lib/_exports/_internal.js",
       "node": {
-        "import": "./lib/_exports/index.cjs.mjs",
-        "require": "./lib/_exports/index.js"
+        "import": "./lib/_exports/_internal.cjs.mjs"
       },
       "import": "./lib/_exports/_internal.esm.js",
       "default": "./lib/_exports/_internal.esm.js"
