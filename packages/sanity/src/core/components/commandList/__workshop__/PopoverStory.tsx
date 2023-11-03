@@ -58,7 +58,6 @@ export default function PopoverStory() {
     (item) => {
       return (
         <Button
-          fontSize={1}
           mode="bleed"
           // eslint-disable-next-line react/jsx-no-bind
           onClick={() => handleChildClick(item)}

@@ -2,7 +2,7 @@ import React, {useCallback, useId} from 'react'
 import {MenuItemProps} from '../../../../../../ui'
 import {FileMenuItem} from './FileInputMenuItem.styled'
 
-export type FileInputMenuItemProps = MenuItemProps & {
+export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {
   accept?: string
   capture?: 'user' | 'environment'
   multiple?: boolean

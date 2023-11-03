@@ -1,10 +1,9 @@
 import React from 'react'
-import {Tooltip, Flex, Text, TooltipProps} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CommentsAvatar} from '../../avatars'
+import {Tooltip} from '../../../../../../ui'
 import {useCurrentUser, useUser} from 'sanity'
-
-const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500, close: 0}
 
 const Span = styled.span(({theme}) => {
   const {regular} = theme.sanity.fonts?.text.weights
@@ -40,8 +39,6 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
   return (
     <Tooltip
       portal
-      open={selected}
-      delay={TOOLTIP_DELAY}
       content={
         <Flex align="center" padding={2} gap={1}>
           <Flex>
