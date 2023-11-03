@@ -16,7 +16,8 @@ export type Token = OpenTagToken | CloseTagToken | TextToken
 const OPEN_TAG_RE = /<(?<tag>[^\s\d][^/?><]+)\/?>/
 const CLOSE_TAG_RE = /<\/(?<tag>[^>]+)>/
 const SELF_CLOSING_RE = /<[^>]+\/>/
-const VALID_TAG_NAME = /^[A-Z][A-Za-z0-9]+$/
+const VALID_COMPONENT_NAME_RE = /^[A-Z][A-Za-z0-9]+$/
+const VALID_HTML_TAG_NAME_RE = /^[a-z]+$/
 
 function isSelfClosing(tag: string) {
   return SELF_CLOSING_RE.test(tag)
@@ -26,6 +27,24 @@ function matchOpenTag(input: string) {
 }
 function matchCloseTag(input: string) {
   return input.match(CLOSE_TAG_RE)
+}
+
+function validateTagName(tagName: string) {
+  const isValidComponentName = VALID_COMPONENT_NAME_RE.test(tagName)
+  if (isValidComponentName) {
+    return
+  }
+
+  const isValidHtmlTagName = VALID_HTML_TAG_NAME_RE.test(tagName)
+  if (isValidHtmlTagName) {
+    return
+  }
+
+  throw new Error(
+    tagName.trim() === tagName
+      ? `Invalid tag "<${tagName}>". Tag names must be lowercase HTML tags or start with an uppercase letter and can only include letters and numbers.`
+      : `Invalid tag "<${tagName}>". No whitespace allowed in tags.`,
+  )
 }
 
 /**
@@ -42,13 +61,7 @@ export function simpleParser(input: string): Token[] {
       const match = matchOpenTag(remainder)
       if (match) {
         const tagName = match.groups!.tag
-        if (!VALID_TAG_NAME.test(tagName)) {
-          throw new Error(
-            tagName.trim() === tagName
-              ? `Invalid tag "<${tagName}>". Tag names must start with an uppercase letter and can only include letters and numbers."`
-              : `Invalid tag "<${tagName}>". No whitespace allowed in tags."`,
-          )
-        }
+        validateTagName(tagName)
         if (text) {
           tokens.push({type: 'text', text})
           text = ''

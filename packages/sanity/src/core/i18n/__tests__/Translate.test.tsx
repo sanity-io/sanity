@@ -20,25 +20,30 @@ function createBundle(resources: LocaleResourceRecord) {
   })
 }
 
-function TestProviders(props: {children: React.ReactNode; bundles: LocaleResourceBundle[]}) {
+async function getWrapper(bundles: LocaleResourceBundle[]) {
   const {i18next} = prepareI18n({
     projectId: 'test',
     dataset: 'test',
     name: 'test',
-    i18n: {bundles: props.bundles},
+    i18n: {bundles: bundles},
   })
-  return (
-    <ThemeProvider theme={studioTheme}>
-      <LocaleProviderBase
-        locales={[{id: 'en-US', title: 'English'}]}
-        i18next={i18next}
-        projectId="test"
-        sourceId="test"
-      >
-        {props.children}
-      </LocaleProviderBase>
-    </ThemeProvider>
-  )
+
+  await i18next.init()
+
+  return function wrapper({children}: {children: React.ReactNode}) {
+    return (
+      <ThemeProvider theme={studioTheme}>
+        <LocaleProviderBase
+          locales={[{id: 'en-US', title: 'English'}]}
+          i18next={i18next}
+          projectId="test"
+          sourceId="test"
+        >
+          {children}
+        </LocaleProviderBase>
+      </ThemeProvider>
+    )
+  }
 }
 
 function TestComponent(props: TestComponentProps) {
@@ -57,39 +62,38 @@ function TestComponent(props: TestComponentProps) {
 
 describe('Translate component', () => {
   it('it translates a key', async () => {
-    const {findByTestId} = render(
-      <TestProviders bundles={[createBundle({title: 'English title'})]}>
-        <TestComponent i18nKey="title" components={{}} />
-      </TestProviders>,
-    )
+    const wrapper = await getWrapper([createBundle({title: 'English title'})])
+    const {findByTestId} = render(<TestComponent i18nKey="title" components={{}} />, {wrapper})
     expect((await findByTestId('output')).innerHTML).toEqual('English title')
   })
   it('it renders the key as-is if translation is missing', async () => {
-    const {findByTestId} = render(
-      <TestProviders bundles={[createBundle({title: 'English title'})]}>
-        <TestComponent i18nKey="does-not-exist" components={{}} />
-      </TestProviders>,
-    )
+    const wrapper = await getWrapper([createBundle({title: 'English title'})])
+    const {findByTestId} = render(<TestComponent i18nKey="does-not-exist" components={{}} />, {
+      wrapper,
+    })
     expect((await findByTestId('output')).innerHTML).toEqual('does-not-exist')
   })
+  it('it allows using basic, known HTML tags', async () => {
+    const wrapper = await getWrapper([createBundle({title: 'An <code>embedded</code> thing'})])
+    const {findByTestId} = render(<TestComponent i18nKey="title" components={{}} />, {wrapper})
+    expect(await findByTestId('output')).toHaveTextContent('An embedded thing')
+  })
   it('it supports providing a component map to use for customizing message rendering', async () => {
+    const wrapper = await getWrapper([
+      createBundle({
+        message: 'Your search for "<Red>{{keyword}}</Red>" took <Bold>{{duration}}ms</Bold>',
+      }),
+    ])
     const {findByTestId} = render(
-      <TestProviders
-        bundles={[
-          createBundle({
-            message: 'Your search for "<Red>{{keyword}}</Red>" took <Bold>{{duration}}ms</Bold>',
-          }),
-        ]}
-      >
-        <TestComponent
-          i18nKey="message"
-          components={{
-            Red: ({children}) => <span style={{color: 'red'}}>{children}</span>,
-            Bold: ({children}) => <b>{children}</b>,
-          }}
-          values={{keyword: 'something', duration: '123'}}
-        />
-      </TestProviders>,
+      <TestComponent
+        i18nKey="message"
+        components={{
+          Red: ({children}) => <span style={{color: 'red'}}>{children}</span>,
+          Bold: ({children}) => <b>{children}</b>,
+        }}
+        values={{keyword: 'something', duration: '123'}}
+      />,
+      {wrapper},
     )
     expect((await findByTestId('output')).innerHTML).toEqual(
       `Your search for "<span style="color: red;">something</span>" took <b>123ms</b>`,

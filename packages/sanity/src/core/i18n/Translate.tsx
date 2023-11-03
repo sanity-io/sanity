@@ -2,6 +2,23 @@ import React, {ComponentType, ReactNode, useMemo} from 'react'
 import type {TFunction} from 'i18next'
 import {CloseTagToken, simpleParser, TextToken, Token} from './simpleParser'
 
+const COMPONENT_NAME_RE = /^[A-Z]/
+const RECOGNIZED_HTML_TAGS = [
+  'abbr',
+  'address',
+  'cite',
+  'code',
+  'del',
+  'em',
+  'ins',
+  'kbd',
+  'q',
+  'samp',
+  'strong',
+  'sub',
+  'sup',
+]
+
 type ComponentMap = Record<
   string,
   ComponentType<{children?: ReactNode}> | keyof JSX.IntrinsicElements
@@ -13,8 +30,9 @@ type ComponentMap = Record<
 export interface TranslationProps {
   t: TFunction
   i18nKey: string
-  components: ComponentMap
+  context?: string
   values?: Record<string, number | string | string[]>
+  components?: ComponentMap
 }
 
 function render(tokens: Token[], componentMap: ComponentMap): ReactNode {
@@ -52,14 +70,25 @@ function render(tokens: Token[], componentMap: ComponentMap): ReactNode {
       }
     }
     const Component = componentMap[head.name]
-    if (!Component) {
-      throw new Error(`Component not found: ${head.name}`)
+    if (!Component && COMPONENT_NAME_RE.test(head.name)) {
+      throw new Error(`Component not defined: ${head.name}`)
     }
+
+    if (!Component && !RECOGNIZED_HTML_TAGS.includes(head.name)) {
+      throw new Error(`HTML tag "${head.name}" is not allowed`)
+    }
+
     const children = tail.slice(0, nextCloseIdx) as TextToken[]
     const remaining = tail.slice(nextCloseIdx + 1)
-    return (
+
+    return Component ? (
       <>
         <Component>{render(children, componentMap)}</Component>
+        {render(remaining, componentMap)}
+      </>
+    ) : (
+      <>
+        {React.createElement(head.name, {}, render(children, componentMap))}
         {render(remaining, componentMap)}
       </>
     )
@@ -71,7 +100,7 @@ function render(tokens: Token[], componentMap: ComponentMap): ReactNode {
  * @beta
  */
 export function Translate(props: TranslationProps) {
-  const translated = props.t(props.i18nKey, props.values)
+  const translated = props.t(props.i18nKey, {context: props.context, replace: props.values})
 
   const tokens = useMemo(() => simpleParser(translated), [translated])
 
