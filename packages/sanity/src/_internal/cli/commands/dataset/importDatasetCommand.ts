@@ -149,6 +149,18 @@ const importDatasetCommand: CliCommandDefinition = {
 
     const importClient = client.clone().config({dataset: targetDataset})
 
+    // Print information about what projectId and dataset it is being imported to
+    const {projectId, dataset} = importClient.config()
+
+    output.print('╭───────────────────────────────────────────────╮')
+    output.print('│                                               │')
+    output.print('│ Importing from:                               │')
+    output.print(`│ ${chalk.bold('projectId')}: ${chalk.cyan(projectId).padEnd(44)} │`)
+    output.print(`│ ${chalk.bold('dataset')}: ${chalk.cyan(dataset).padEnd(46)} │`)
+    output.print('│                                               │')
+    output.print('╰───────────────────────────────────────────────╯')
+    output.print('')
+
     let currentStep: string | undefined
     let currentProgress: ReturnType<CliOutputter['spinner']> | undefined
     let stepStart: number | undefined
