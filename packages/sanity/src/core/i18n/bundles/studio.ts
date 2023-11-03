@@ -86,6 +86,12 @@ export const studioLocaleStrings = {
   'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
 
+  /** Label for when a field was cleared, eg the contents was removed - for references, assets and similar */
+  'changes.removed-label': 'Removed',
+
+  /** Label for when a field was given a value where it was previously empty - for references, assets and similar */
+  'changes.added-label': 'Added',
+
   /** Prompt for reverting all changes in document in Review Changes pane. Includes a count of changes. */
   'changes.action.revert-all-description': `Are you sure you want to revert all {{count}} changes?`,
 

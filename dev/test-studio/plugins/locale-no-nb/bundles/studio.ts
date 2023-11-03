@@ -80,6 +80,12 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'changes.no-changes-description':
     'Rediger dokumentet eller velg en eldre versjon i tidslinjen for å se en liste over endringer i dette panelet.',
 
+  /** Label for when a field was cleared, eg the contents was removed - for references, assets and similar */
+  'changes.removed-label': 'Fjernet',
+
+  /** Label for when a field was given a value where it was previously empty - for references, assets and similar */
+  'changes.added-label': 'Lagt til',
+
   /** Prompt for reverting all changes in document in Review Changes pane. Includes a count of changes. */
   'changes.action.revert-all-description': `Er du sikker på at du vil angre alle {{count}} endringer?`,
 
