@@ -5,7 +5,7 @@ import {PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import scrollIntoViewIfNeeded, {Options} from 'scroll-into-view-if-needed'
-import {useInView, motion, AnimatePresence, Variants} from 'framer-motion'
+import {motion, AnimatePresence, Variants} from 'framer-motion'
 import {hues} from '@sanity/color'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
@@ -88,12 +88,8 @@ function CommentFieldInner(props: FieldProps) {
   const {comments, create, isRunningSetup, mentionOptions, setStatus, status} = useComments()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 
-  const inView = useInView(rootElementRef)
-
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
   const currentComments = useMemo(() => comments.data[status], [comments.data, status])
-
-  const [shouldHighlight, setShouldHighlight] = useState<boolean>(false)
 
   const commentsInspectorOpen = useMemo(() => {
     return inspector?.name === COMMENTS_INSPECTOR_NAME
@@ -268,18 +264,6 @@ function CommentFieldInner(props: FieldProps) {
     }
   }, [boundaryElement, isSelected, props.path, scrollIntoViewIfNeededOpts])
 
-  useEffect(() => {
-    const showHighlight = inView && isSelected
-
-    setShouldHighlight(showHighlight)
-
-    const timer = setTimeout(() => {
-      setShouldHighlight(false)
-    }, 1200)
-
-    return () => clearTimeout(timer)
-  }, [currentComments, inView, isSelected, props.path])
-
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({
       button: currentUser && (
@@ -318,8 +302,14 @@ function CommentFieldInner(props: FieldProps) {
 
   return (
     <FieldStack ref={rootElementRef}>
+      {props.renderDefault({
+        ...props,
+        // eslint-disable-next-line camelcase
+        __internal_comments: internalComments,
+      })}
+
       <AnimatePresence>
-        {shouldHighlight && (
+        {isSelected && (
           <HighlightDiv
             animate="animate"
             exit="exit"
@@ -328,12 +318,6 @@ function CommentFieldInner(props: FieldProps) {
           />
         )}
       </AnimatePresence>
-
-      {props.renderDefault({
-        ...props,
-        // eslint-disable-next-line camelcase
-        __internal_comments: internalComments,
-      })}
     </FieldStack>
   )
 }
