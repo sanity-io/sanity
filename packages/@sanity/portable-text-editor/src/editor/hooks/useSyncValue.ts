@@ -7,7 +7,7 @@ import {useSlate} from 'slate-react'
 import {PortableTextEditor} from '../PortableTextEditor'
 import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
-import {toSlateValue} from '../../utils/values'
+import {VOID_CHILD_KEY, toSlateValue} from '../../utils/values'
 import {withoutSaving} from '../plugins/createWithUndoRedo'
 import {withPreserveKeys} from '../../utils/withPreserveKeys'
 import {withoutPatching} from '../../utils/withoutPatching'
@@ -320,7 +320,7 @@ function _updateBlock(
             debug('Updating changed inline object child', currentBlockChild)
             Transforms.setNodes(
               slateEditor,
-              {_key: `${currentBlock._key}-void-child`},
+              {_key: VOID_CHILD_KEY},
               {
                 at: [...path, 0],
                 voids: true,
