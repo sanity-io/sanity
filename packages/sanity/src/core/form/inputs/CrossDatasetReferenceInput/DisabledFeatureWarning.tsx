@@ -47,8 +47,8 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
                 </a>
               </Text>
               <Text as="p" size={1}>
-                You can still clear this field's existing reference, but that cannot be revoked as
-                long as the feature is disabled.
+                You can still clear this field&apos;s existing reference, but that cannot be revoked
+                as long as the feature is disabled.
               </Text>
             </Stack>
           )}

@@ -1,9 +1,9 @@
-import {CheckmarkIcon, CircleIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Avatar, Box, Card, Container, Menu, MenuDivider, Text, Flex} from '@sanity/ui'
+import {hues} from '@sanity/color'
+import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
+import {Avatar, Box, Card, Container, Menu, MenuDivider, Text} from '@sanity/ui'
 import {useString} from '@sanity/ui-workshop'
 import React from 'react'
 import {MenuItem} from '../menuItem'
-import {hues} from '@sanity/color'
 
 const HOTKEYS = ['Ctrl', 'Alt', 'P']
 const AVATAR_INITIALS = 'A.W.'
@@ -42,20 +42,20 @@ export default function MenuItemStory() {
             <Text size={1}>Not recommended</Text>
           </Box>
           <Box paddingX={2} paddingTop={2}>
-            <Text size={0}> Don't use left icons in large menu items</Text>
+            <Text size={0}> Don&apos;t use left icons in large menu items</Text>
           </Box>
 
           <MenuItem icon={CircleIcon} text={text} subtitle={subtitle} />
           <Box paddingX={2} paddingTop={2}>
-            <Text size={0}>Don't use keyboard shortcuts with large menu items</Text>
+            <Text size={0}>Don&apos;t use keyboard shortcuts with large menu items</Text>
           </Box>
           <MenuItem text={text} hotkeys={HOTKEYS} subtitle={subtitle} />
           <Box paddingX={2} paddingTop={2}>
-            <Text size={0}>Don't use badges in small menu items</Text>
+            <Text size={0}>Don&apos;t use badges in small menu items</Text>
           </Box>
           <MenuItem text={text} badgeText={'badge'} />
           <Box paddingX={2} paddingTop={2}>
-            <Text size={0}>Don't use icons and previews in the same item</Text>
+            <Text size={0}>Don&apos;t use icons and previews in the same item</Text>
           </Box>
           <MenuItem
             icon={CircleIcon}
@@ -69,19 +69,19 @@ export default function MenuItemStory() {
             subtitle={subtitle}
           />
           <Box paddingX={2} paddingTop={2}>
-            <Text size={0}>Don't use icon right and hotkeys in the same item</Text>
+            <Text size={0}>Don&apos;t use icon right and hotkeys in the same item</Text>
           </Box>
           <MenuItem icon={CircleIcon} text={text} iconRight={CheckmarkIcon} hotkeys={HOTKEYS} />
           <Box paddingX={2} paddingTop={2}>
-            <Text size={0}>Don't use icon right and badge in the same item</Text>
+            <Text size={0}>Don&apos;t use icon right and badge in the same item</Text>
           </Box>
           <MenuItem icon={CircleIcon} text={text} iconRight={CheckmarkIcon} badgeText={'badge'} />
           <Box paddingX={2} paddingTop={2}>
-            <Text size={0}>Don't use hotkeys and badge in the same item</Text>
+            <Text size={0}>Don&apos;t use hotkeys and badge in the same item</Text>
           </Box>
           <MenuItem icon={CircleIcon} text={text} hotkeys={HOTKEYS} badgeText={'badge'} />
           <Box paddingX={2} paddingTop={2}>
-            <Text size={0}>Don't use everything at once</Text>
+            <Text size={0}>Don&apos;t use everything at once</Text>
           </Box>
           <MenuItem
             icon={CircleIcon}

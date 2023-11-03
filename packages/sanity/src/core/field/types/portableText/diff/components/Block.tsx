@@ -69,7 +69,7 @@ export default function Block(props: {
             diff={diff.origin.fields.style}
           >
             <Text size={0}>
-              Changed block style from '{fromStyle}' to '{block.style}'
+              Changed block style from &apos;{fromStyle}&apos; to &apos;{block.style}&apos;
             </Text>
           </DiffTooltip>
           <Box style={style}>{returned}</Box>

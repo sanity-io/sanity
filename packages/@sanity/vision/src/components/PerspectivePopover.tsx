@@ -25,8 +25,8 @@ export function PerspectivePopover() {
 
             <Card>
               <Text muted>
-                Perspectives allow your query to run against different "views" of the content in
-                your dataset
+                Perspectives allow your query to run against different &quot;views&quot; of the
+                content in your dataset
               </Text>
             </Card>
 
