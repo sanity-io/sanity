@@ -41,8 +41,8 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
               <WarningOutlineIcon />
             </Text>
             <Text size={1}>
-              {filenamePlaceholder} cannot be deleted because it's being used. In order to delete
-              the {assetType} you need the remove all uses of it.
+              {filenamePlaceholder} cannot be deleted because it&apos;s being used. In order to
+              delete the {assetType} you need the remove all uses of it.
             </Text>
           </Flex>
           {isImage && (

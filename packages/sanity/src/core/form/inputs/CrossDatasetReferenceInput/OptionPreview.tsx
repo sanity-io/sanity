@@ -59,7 +59,8 @@ export function OptionPreview(props: {
   if (!refType) {
     return (
       <Stack space={2} padding={1}>
-        Search returned a type that's not valid for this reference: "${referenceInfo.type}"
+        Search returned a type that&apos;s not valid for this reference: &quot;${referenceInfo.type}
+        &quot;
       </Stack>
     )
   }

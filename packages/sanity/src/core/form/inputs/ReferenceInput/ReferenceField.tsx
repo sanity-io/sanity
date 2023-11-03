@@ -186,13 +186,21 @@ export function ReferenceField(props: ReferenceFieldProps) {
               {schemaType.weak ? (
                 <>
                   It will not be possible to delete the{' '}
-                  {preview?.title ? <>"{preview?.title}"-document</> : <>referenced document</>}{' '}
+                  {preview?.title ? (
+                    <>&quot;{preview?.title}&quot;-document</>
+                  ) : (
+                    <>referenced document</>
+                  )}{' '}
                   without first removing this reference.
                 </>
               ) : (
                 <>
                   This makes it possible to delete the{' '}
-                  {preview?.title ? <>"{preview?.title}"-document</> : <>referenced document</>}{' '}
+                  {preview?.title ? (
+                    <>&quot;{preview?.title}&quot;-document</>
+                  ) : (
+                    <>referenced document</>
+                  )}{' '}
                   without first deleting this reference, leaving this field referencing a
                   nonexisting document.
                 </>
