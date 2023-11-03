@@ -1,4 +1,5 @@
 import React from 'react'
+// eslint-disable-next-line no-restricted-imports
 import {Button} from '@sanity/ui'
 
 interface LogoButtonProps {

@@ -1,8 +1,8 @@
-import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
-import {Tooltip} from '../../../../../ui'
+import {Button, Tooltip} from '../../../../../ui'
 import {useTimeAgo} from 'sanity'
 
 interface PublishStatusProps {
@@ -63,30 +63,19 @@ export function PublishStatus(props: PublishStatusProps) {
       >
         <Button
           mode="bleed"
-          tone={liveEdit ? 'critical' : 'positive'}
+          tone={liveEdit ? 'critical' : 'primary'}
           tabIndex={-1}
           disabled={disabled}
           aria-label={a11yLabel}
-        >
-          <Flex align="center">
-            <Box marginRight={collapsed ? 0 : 3}>
-              <Text size={2} aria-hidden="true">
-                {liveEdit ? <PlayIcon /> : <PublishIcon />}
-              </Text>
-            </Box>
-            {!collapsed && (
-              <Text size={1} weight="medium">
-                {liveEdit ? (
-                  <abbr aria-label={a11yLabel}>
-                    {lastUpdated ? lastUpdatedTime : lastPublishedTime}
-                  </abbr>
-                ) : (
-                  <abbr aria-label={a11yLabel}>{lastPublishedTime}</abbr>
-                )}
-              </Text>
-            )}
-          </Flex>
-        </Button>
+          icon={liveEdit ? PlayIcon : PublishIcon}
+          text={
+            collapsed ? null : (
+              <abbr aria-label={a11yLabel}>
+                {liveEdit && lastUpdated ? lastUpdatedTime : lastPublishedTime}
+              </abbr>
+            )
+          }
+        />
       </Tooltip>
     </Root>
   )

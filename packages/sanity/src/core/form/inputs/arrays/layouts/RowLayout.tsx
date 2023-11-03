@@ -64,7 +64,7 @@ export function RowLayout(props: RowLayoutProps) {
         <Flex align="center">
           {dragHandle && (
             <Box marginRight={1} paddingY={1}>
-              <DragHandle paddingX={1} paddingY={3} />
+              <DragHandle size="small" />
             </Box>
           )}
 

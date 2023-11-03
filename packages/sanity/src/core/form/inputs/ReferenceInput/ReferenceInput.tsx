@@ -4,7 +4,7 @@
 import React, {KeyboardEvent, FocusEvent, useCallback, useRef, useState, useMemo} from 'react'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import {Box, Button, Stack, Text, useToast} from '@sanity/ui'
+import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import styled from 'styled-components'
@@ -14,6 +14,7 @@ import {PreviewCard} from '../../../components'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
+import {Button} from '../../../../ui'
 import {useReferenceInput} from './useReferenceInput'
 import {
   CreateReferenceOption,

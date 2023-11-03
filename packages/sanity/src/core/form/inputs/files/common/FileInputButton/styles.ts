@@ -1,5 +1,6 @@
-import {Button, Theme} from '@sanity/ui'
+import {Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {Button} from '../../../../../../ui'
 import {focusRingStyle} from '../../../../components/withFocusRing/helpers'
 
 export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
@@ -15,7 +16,7 @@ export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
         }
       }
 
-      & input {
+      & > span:nth-child(2) {
         overflow: hidden;
         overflow: clip;
         top: 0;

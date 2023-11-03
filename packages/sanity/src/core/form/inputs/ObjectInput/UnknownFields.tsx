@@ -1,7 +1,8 @@
 import React, {useCallback} from 'react'
-import {Box, Button, Card, Code, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import {TrashIcon} from '@sanity/icons'
 import {FormPatch, PatchEvent, unset} from '../../patch'
+import {Button} from '../../../../ui'
 import {Details} from '../../components/Details'
 import {Alert} from '../../components/Alert'
 import {isDev} from '../../../environment'
@@ -117,12 +118,7 @@ function UnknownField({
         )}
 
         {!readOnly && (
-          <Button
-            icon={TrashIcon}
-            onClick={handleUnsetClick}
-            tone="critical"
-            text={<>Remove field</>}
-          />
+          <Button icon={TrashIcon} onClick={handleUnsetClick} tone="critical" text="Remove field" />
         )}
       </Stack>
     </Card>

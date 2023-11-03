@@ -1,8 +1,9 @@
 import {EllipsisVerticalIcon, SelectIcon} from '@sanity/icons'
-import {Button, Container, Stack, Tab, TabList, Text} from '@sanity/ui'
+import {Container, Stack, Tab, TabList, Text} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import {Pane} from '../Pane'
+import {Button} from '../../../../ui'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'
 import {PaneHeader} from '../PaneHeader'
@@ -63,9 +64,7 @@ export default function ExampleStory() {
       <Pane id="example-pane" minWidth={320} tone={tone}>
         <PaneHeader
           actions={actions}
-          subActions={
-            <Button fontSize={1} iconRight={SelectIcon} mode="bleed" padding={2} text="Latest" />
-          }
+          subActions={<Button iconRight={SelectIcon} mode="bleed" text="Latest" size="small" />}
           tabs={tabs}
           title={<>Header</>}
         />

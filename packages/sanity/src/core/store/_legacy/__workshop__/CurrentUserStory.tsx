@@ -1,5 +1,6 @@
 import React from 'react'
-import {Box, Button, Code, Text} from '@sanity/ui'
+import {Box, Code, Text} from '@sanity/ui'
+import {Button} from '../../../../ui'
 import {useSource} from '../../../studio'
 
 export default function CurrentUserStory() {

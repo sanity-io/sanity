@@ -1,18 +1,9 @@
 import {CloseIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  CSSObject,
-  Flex,
-  isHTMLElement,
-  rem,
-  Text,
-  Theme,
-  useForwardedRef,
-} from '@sanity/ui'
+import {Box, Card, Flex, isHTMLElement, rem, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
+import type {CSSObject} from 'styled-components'
+import {Button} from '../../../../ui'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
@@ -313,7 +304,7 @@ function Tag(props: {
 
         {enabled && (
           <Box marginLeft={1}>
-            <Button icon={CloseIcon} mode="bleed" onClick={handleRemoveClick} padding={1} />
+            <Button icon={CloseIcon} mode="bleed" onClick={handleRemoveClick} size="small" />
           </Box>
         )}
       </Flex>

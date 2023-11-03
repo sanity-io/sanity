@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
-import {Box, Button, Card, Code, Flex, Grid, Label, Stack, TextArea} from '@sanity/ui'
+import {Card, Code, Grid, Label, Stack, TextArea} from '@sanity/ui'
 import styled from 'styled-components'
+import {Button} from '../../../../ui'
 
 const ExampleCode = styled(Code)`
   cursor: pointer;

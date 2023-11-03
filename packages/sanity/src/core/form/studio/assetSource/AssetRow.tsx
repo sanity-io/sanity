@@ -1,13 +1,24 @@
 import type {Subscription} from 'rxjs'
 import React, {useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {Button, Box, Card, Flex, Stack, Label, Text, Grid, useToast} from '@sanity/ui'
+import {
+  Box,
+  Card,
+  Flex,
+  Stack,
+  Label,
+  Text,
+  Grid,
+  useToast,
+  // eslint-disable-next-line no-restricted-imports
+  Button as SanityUIButton, // Button with custom behavior
+} from '@sanity/ui'
 import {DocumentIcon, ChevronUpIcon, ChevronDownIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Asset as AssetType} from '@sanity/types'
 import {FIXME} from '../../../FIXME'
 import {useClient, useTimeAgo} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {Tooltip} from '../../../../ui'
+import {Tooltip, Button} from '../../../../ui'
 import {prettyBytes} from './prettyBytes'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
@@ -45,7 +56,7 @@ const CustomCard = styled(Card)<RowProps>`
     `}
 `
 
-const RowButton = styled(Button)<RowProps>`
+const RowButton = styled(SanityUIButton)<RowProps>`
   box-shadow: none;
   min-width: 0;
   cursor: pointer;
@@ -231,8 +242,7 @@ export const AssetRow = (props: RowProps) => {
           <Flex justify="flex-end" align="center" paddingRight={1} style={STYLES_ASSETMENU_WRAPPER}>
             <Button
               mode="bleed"
-              fontSize={1}
-              padding={2}
+              size="small"
               onClick={handleToggleOpen}
               icon={isOpen ? ChevronUpIcon : ChevronDownIcon}
             />
@@ -268,7 +278,6 @@ export const AssetRow = (props: RowProps) => {
             </Grid>
             <Stack space={2} marginTop={3}>
               <Button
-                fontSize={1}
                 tone="default"
                 mode="ghost"
                 text="Show uses"
@@ -277,7 +286,6 @@ export const AssetRow = (props: RowProps) => {
               />
 
               <Button
-                fontSize={1}
                 tone="critical"
                 mode="ghost"
                 text="Delete"

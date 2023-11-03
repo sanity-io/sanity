@@ -1,16 +1,8 @@
 import React, {useState, useRef, useMemo, useEffect, useCallback} from 'react'
-import {
-  Box,
-  Button,
-  Inline,
-  Popover,
-  PopoverProps,
-  Text,
-  useGlobalKeyDown,
-  useTheme,
-} from '@sanity/ui'
+import {Box, Inline, Popover, PopoverProps, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import styled from 'styled-components'
 import {EditIcon, TrashIcon} from '@sanity/icons'
+import {Button} from '../../../../../ui'
 
 const ToolbarPopover = styled(Popover)`
   &[data-popper-reference-hidden='true'] {
@@ -170,14 +162,14 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               icon={EditIcon}
               mode="bleed"
               onClick={handleEditButtonClicked}
-              padding={2}
+              size="small"
               alt="Edit annotation"
               tabIndex={0}
             />
             <Button
               icon={TrashIcon}
               mode="bleed"
-              padding={2}
+              size="small"
               onClick={handleRemoveButtonClicked}
               tone="critical"
               alt="Remove annotation"

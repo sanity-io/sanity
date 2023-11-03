@@ -1,7 +1,8 @@
-import {Box, Button, Card, Flex, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {omit} from 'lodash'
 import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {Button} from '../../../../../../ui'
 import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../../workspaces'
 import {WorkspacePreview} from '../WorkspacePreview'
@@ -33,11 +34,10 @@ export function WorkspaceAuth() {
         {workspaces.length > 1 && (
           <Flex>
             <Button
-              fontSize={1}
               icon={ArrowLeftIcon}
               mode="bleed"
               onClick={handleBack}
-              padding={2}
+              size="small"
               text="Choose another workspace"
             />
           </Flex>
@@ -74,7 +74,6 @@ export function WorkspaceAuth() {
             as="a"
             href={WORKSPACES_DOCS_URL}
             icon={AddIcon}
-            justify="flex-start"
             mode="bleed"
             rel="noopener noreferrer"
             target="__blank"

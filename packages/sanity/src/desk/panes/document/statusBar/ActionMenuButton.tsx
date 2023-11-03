@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Button, Menu, MenuButton, PopoverProps} from '@sanity/ui'
+import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import React, {useCallback, useRef, useState, useMemo, useId} from 'react'
-import {MenuItem, Tooltip} from '../../../../ui/'
+import {Tooltip, Button, MenuItem} from '../../../../ui'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 

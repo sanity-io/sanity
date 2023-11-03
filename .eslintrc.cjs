@@ -222,6 +222,8 @@ module.exports = {
               {
                 name: '@sanity/ui',
                 importNames: [
+                  'Button',
+                  'ButtonProps',
                   'Dialog',
                   'DialogProps',
                   'MenuItem',

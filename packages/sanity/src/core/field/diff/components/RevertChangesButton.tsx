@@ -1,7 +1,7 @@
 import {RevertIcon} from '@sanity/icons'
-import {Button, ButtonProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 import styled from 'styled-components'
+import {Button, ButtonProps} from '../../../../ui'
 
 const Root = styled(Button)`
   [data-ui='Text'] {
@@ -37,9 +37,7 @@ export const RevertChangesButton = forwardRef(function RevertChangesButton(
       selected={selected}
       text="Revert changes"
       mode="bleed"
-      padding={1}
-      fontSize={1}
-      space={2}
+      size="small"
       ref={ref}
       {...restProps}
     />

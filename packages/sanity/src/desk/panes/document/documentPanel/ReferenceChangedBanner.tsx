@@ -1,4 +1,4 @@
-import {Box, Button, Card, Container, Flex, Text} from '@sanity/ui'
+import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {WarningOutlineIcon, SyncIcon, CloseIcon} from '@sanity/icons'
 import React, {memo, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
@@ -9,6 +9,7 @@ import {concat, Observable, of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
 import {RouterPaneGroup} from '../../../types'
 import {usePaneRouter} from '../../../components'
+import {Button} from '../../../../ui'
 import {DocumentAvailability, useDocumentPreviewStore, getPublishedId} from 'sanity'
 
 const Root = styled(Card)`
@@ -156,10 +157,8 @@ export const ReferenceChangedBanner = memo(() => {
                 <Button
                   onClick={handleReloadReference}
                   icon={SyncIcon}
-                  fontSize={1}
                   mode="ghost"
-                  padding={2}
-                  space={2}
+                  size="small"
                   text="Reload reference"
                 />
               </Box>
@@ -175,10 +174,8 @@ export const ReferenceChangedBanner = memo(() => {
                 <Button
                   as={BackLink}
                   icon={CloseIcon}
-                  fontSize={1}
                   mode="ghost"
-                  padding={2}
-                  space={2}
+                  size="small"
                   text="Close reference"
                 />
               </Box>

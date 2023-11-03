@@ -7,7 +7,6 @@ import {concat, Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {
   Box,
-  Button,
   Card,
   Flex,
   Inline,
@@ -26,6 +25,7 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
+import {Button} from '../../../../ui'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {PreviewCard} from '../../../components'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -385,7 +385,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                     <MenuButton
                       button={
                         <Button
-                          padding={2}
                           mode="bleed"
                           icon={EllipsisVerticalIcon}
                           data-testid="menu-button"

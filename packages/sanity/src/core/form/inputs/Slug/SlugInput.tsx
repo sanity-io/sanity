@@ -9,7 +9,8 @@ import {
   SlugValue,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {Box, Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Button} from '../../../../ui'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {ObjectInputProps} from '../../types'
 import {useFormBuilder} from '../../useFormBuilder'

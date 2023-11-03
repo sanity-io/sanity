@@ -1,18 +1,10 @@
 import {SelectIcon} from '@sanity/icons'
-import {
-  Button,
-  Card,
-  Flex,
-  Inline,
-  Popover,
-  Stack,
-  useClickOutside,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {Card, Flex, Inline, Popover, Stack, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import {CommandList} from '../CommandList'
 import {CommandListRenderItemCallback} from '../types'
+import {Button} from '../../../../ui'
 
 const ITEMS = [...Array(50000).keys()]
 

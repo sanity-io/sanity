@@ -8,18 +8,7 @@ import React, {
   useState,
 } from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
-import {
-  Box,
-  Button,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import {Box, Card, CardTone, Flex, Menu, MenuButton, MenuDivider, Stack, Text} from '@sanity/ui'
 import {
   EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
@@ -35,7 +24,7 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFormPublishedId} from '../../useFormPublishedId'
-import {MenuItem} from '../../../../ui'
+import {Button, MenuItem} from '../../../../ui'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -258,7 +247,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button paddingY={3} paddingX={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={<Button mode="bleed" icon={EllipsisVerticalIcon} />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu>

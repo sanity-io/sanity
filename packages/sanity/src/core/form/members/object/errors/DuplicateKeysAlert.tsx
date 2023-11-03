@@ -1,6 +1,7 @@
-import {Button, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {FormField} from '../../../components/formField'
+import {Button} from '../../../../../ui'
 import {Alert} from '../../../components/Alert'
 import {DuplicateKeysError} from '../../../store/types/memberErrors'
 import {PatchEvent, set} from '../../../patch'
