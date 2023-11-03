@@ -184,6 +184,9 @@ export const studioLocaleStrings = {
   /** Open image options menu */
   'inputs.files.image.actions-menu.options.label': 'Open image options menu',
 
+  /** Open file options menu */
+  'inputs.files.image.actions-menu.files.aria-label': 'Open file options menu',
+
   /** The upload could not be completed at this time. */
   'inputs.files.image.upload-error.description': 'The upload could not be completed at this time.',
 
@@ -211,6 +214,15 @@ export const studioLocaleStrings = {
   /** The value of this field is not a valid image. Resetting this field will let you choose a new image. */
   'inputs.files.image.invalid-image-warning.description':
     'The value of this field is not a valid image. Resetting this field will let you choose a new image.',
+
+  /** Reset value */
+  'inputs.files.image.invalid-image-warning.reset-button.text': 'Reset value',
+
+  /** Select */
+  'inputs.files.image.browse-menu.text': 'Select',
+
+  /** Unknown member kind: `{{kind}}` */
+  'inputs.files.image.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
 
   /** The URL is copied to the clipboard */
   'inputs.files.common.actions-menu.notification.url-copied': 'The URL is copied to the clipboard',
@@ -261,8 +273,23 @@ export const studioLocaleStrings = {
   /** Drop to upload `{{count}}` files */
   'inputs.files.common.drop-message.drop-to-upload-multi_other': 'Drop to upload {{count}} files',
 
+  /** `{{count}}` file can't be uploaded here */
+  'inputs.files.common.drop-message.drop-to-upload.rejected-file-message_one': `{{count}} file can't be uploaded here`,
+
+  /** `{{count}}` files can't be uploaded here */
+  'inputs.files.common.drop-message.drop-to-upload.rejected-file-message_other': `{{count}} files can't be uploaded here`,
+
+  /** Can't upload this file here */
+  'inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message_one': `Can't upload this file here`,
+
+  /** Can't upload any of these files here */
+  'inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message_other': `Can't upload any of these files here`,
+
   /** Uploading <FileName/> */
   'input.files.common.upload-progress': 'Uploading <FileName/>',
+
+  /** Text for file input button in upload placeholder */
+  'input.files.common.upload-placeholder.file-input-button.text': 'Upload',
 
   /** Incomplete upload */
   'inputs.files.common.stale-upload-warning.title': 'Incomplete upload',
@@ -280,6 +307,41 @@ export const studioLocaleStrings = {
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
   'inputs.files.imagetool.field.description':
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
+
+  /** Loading image… */
+  'inputs.files.imagetool.field.loading': 'Loading image…',
+
+  /** Error: `{{errorMessage}}` */
+  'inputs.files.imagetool.field.load-error': 'Error: {{errorMessage}}',
+
+  /** Select file */
+  'inputs.files.file-input.dialog.tile': 'Select file',
+
+  /** Browse */
+  'inputs.files.file-input.browse-button.text': 'Browse',
+
+  /** Select */
+  'inputs.files.file-input.multi-browse-button.text': 'Select',
+
+  /** Unknown member kind: `{{kind}}` */
+  'inputs.files.file-input.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
+
+  /** Invalid file value */
+  'inputs.files.file-input.invalid-file-warning.title': 'Invalid file value',
+
+  /** The value of this field is not a valid file. Resetting this field will let you choose a new file. */
+  'inputs.files.file-input.invalid-file-warning.description':
+    'The value of this field is not a valid file. Resetting this field will let you choose a new file.',
+
+  /** Reset value */
+  'inputs.files.file-input.invalid-file-warning.reest-button.text': 'Reset value',
+
+  /** The upload could not be completed at this time. */
+  'inputs.files.file-input.upload-failed.description':
+    'The upload could not be completed at this time.',
+
+  /** Upload failed */
+  'inputs.files.file-input.upload-failed.title': 'Upload failed',
 
   /** --- Reference (and Cross-Dataset Reference) Input --- */
 

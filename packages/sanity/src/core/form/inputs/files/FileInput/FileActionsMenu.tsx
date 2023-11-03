@@ -13,6 +13,7 @@ import {
   useGlobalKeyDown,
 } from '@sanity/ui'
 import {formatBytes} from '../../common/helper'
+import {useTranslation} from '../../../../i18n'
 
 type Props = {
   children: ReactNode
@@ -87,6 +88,8 @@ export function FileActionsMenu(props: Props) {
     }
   }, [isMenuOpen, menuElement])
 
+  const {t} = useTranslation('sanity')
+
   return (
     <Flex wrap="nowrap" justify="space-between" align="center">
       <Card
@@ -126,7 +129,7 @@ export function FileActionsMenu(props: Props) {
             constrainSize
           >
             <Button
-              aria-label="Open file options menu"
+              aria-label={t('inputs.files.image.actions-menu.files.aria-label')}
               data-testid="options-menu-button"
               icon={EllipsisVerticalIcon}
               mode="bleed"

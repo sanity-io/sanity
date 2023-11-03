@@ -135,10 +135,14 @@ export function ImageToolInput(props: ImageToolInputProps) {
                 <LoadStatus>
                   {imageLoadError ? (
                     <Card padding={4} radius={2} tone="critical" border>
-                      <Text>Error: {imageLoadError.message}</Text>
+                      <Text>
+                        {t('inputs.files.imagetool.field.load-error', {
+                          errorMessage: imageLoadError.message,
+                        })}
+                      </Text>
                     </Card>
                   ) : (
-                    <Text muted>Loading image… </Text>
+                    <Text muted>{t('inputs.files.imagetool.field.loading')}</Text>
                   )}
                 </LoadStatus>
               )}

@@ -52,7 +52,6 @@ import {PresenceOverlay} from '../../../../presence'
 import {FIXME} from '../../../../FIXME'
 import {ImperativeToast} from '../../../../components'
 import {ChangeIndicator} from '../../../../changeIndicators'
-import {TFunction} from '../../../../i18n'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
@@ -470,6 +469,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
       directUploads,
       imageUrlBuilder,
       observeAsset,
+      t,
     } = this.props
 
     const asset = value?.asset
@@ -485,7 +485,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
       assetSources && assetSources.length === 0 ? null : (
         <MenuItem
           icon={SearchIcon}
-          text="Select"
+          text={t('inputs.files.image.browse-menu.text')}
           onClick={() => {
             this.setState({isMenuOpen: false})
             this.handleSelectImageFromAssetSource(assetSources[0])
@@ -552,7 +552,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   }
 
   renderBrowser() {
-    const {assetSources, readOnly, directUploads, id} = this.props
+    const {assetSources, readOnly, directUploads, id, t} = this.props
 
     if (assetSources && assetSources.length === 0) return null
 
@@ -567,7 +567,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               icon={SearchIcon}
               iconRight={ChevronDownIcon}
               mode="ghost"
-              text="Select"
+              text={t('inputs.files.image.browse-menu.text')}
             />
           }
           menu={
@@ -597,7 +597,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     return (
       <Button
         fontSize={2}
-        text="Select"
+        text={t('inputs.files.image.browse-menu.text')}
         icon={SearchIcon}
         mode="ghost"
         onClick={() => {
@@ -851,7 +851,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
             return <MemberFieldError key={member.key} member={member} />
           }
           //@ts-expect-error all possible cases should be covered
-          return <>Unknown member kind: ${member.kind}</>
+          return <>{t('inputs.files.image.error.unknown-member-kind', {kind: member.kind})}</>
         })}
         {hotspotField?.open && (
           <FormInput

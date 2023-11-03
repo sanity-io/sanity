@@ -36,6 +36,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
 
   // Adjust the layout in narrow containers
   const collapsed = rect?.border && rect.border.width < 440
+  const {t} = useTranslation()
 
   return (
     <Flex
@@ -65,7 +66,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
           icon={UploadIcon}
           mode="ghost"
           onSelect={onUpload}
-          text="Upload"
+          text={t('input.files.common.upload-placeholder.file-input-button.text')}
         />
 
         {browse}
