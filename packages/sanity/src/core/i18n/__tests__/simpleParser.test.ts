@@ -90,14 +90,14 @@ describe('simpleParser - errors', () => {
       'Expected closing tag for <Red>, but found closing tag </Blue> instead. Make sure each opening tag has a matching closing tag.',
     )
   })
-  test('tags must be title cased', () => {
-    expect(() => simpleParser('foo <red> bar</Blue>')).toThrow(
-      'Invalid tag "<red>". Tag names must start with an uppercase letter and can only include letters and numbers.',
+  test('does not allow camelCased tag names', () => {
+    expect(() => simpleParser('foo <camelCased>bar</camelCased>')).toThrow(
+      'Invalid tag "<camelCased>". Tag names must be lowercase HTML tags or start with an uppercase letter and can only include letters and numbers.',
     )
   })
   test('tags cant contain whitespace or special characters', () => {
     expect(() => simpleParser('foo <Em@ail> bar</Em@ail>')).toThrow(
-      'Invalid tag "<Em@ail>". Tag names must start with an uppercase letter and can only include letters and numbers.',
+      'Invalid tag "<Em@ail>". Tag names must be lowercase HTML tags or start with an uppercase letter and can only include letters and numbers.',
     )
     expect(() => simpleParser('foo <Bold >bar</Bold>')).toThrow(
       'Invalid tag "<Bold >". No whitespace allowed in tags.',
@@ -112,5 +112,47 @@ describe('simpleParser - errors', () => {
     expect(() => simpleParser('<foo < or > bar>')).not.toThrow()
     expect(() => simpleParser('a < 1 < or > bar>')).not.toThrow()
     expect(() => simpleParser('0 <2 > 1')).not.toThrow()
+  })
+  test('regular, lowercase html tag names', () => {
+    expect(
+      simpleParser('the type <code>author</code> is not <em>explicitly</em> allowed'),
+    ).toMatchObject([
+      {
+        text: 'the type ',
+        type: 'text',
+      },
+      {
+        name: 'code',
+        type: 'tagOpen',
+      },
+      {
+        text: 'author',
+        type: 'text',
+      },
+      {
+        name: 'code',
+        type: 'tagClose',
+      },
+      {
+        text: ' is not ',
+        type: 'text',
+      },
+      {
+        name: 'em',
+        type: 'tagOpen',
+      },
+      {
+        text: 'explicitly',
+        type: 'text',
+      },
+      {
+        name: 'em',
+        type: 'tagClose',
+      },
+      {
+        text: ' allowed',
+        type: 'text',
+      },
+    ])
   })
 })

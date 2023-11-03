@@ -7,6 +7,7 @@ const enUSStrings = {
   'structure.root.title': 'Content 🇺🇸',
   'translate.example':
     '<Icon/> Your search for "<Red>{{keyword}}</Red>" took <Bold>{{duration}}ms</Bold>',
+  'use-translation.with-html': 'Apparently, <code>code</code> is an HTML element?',
 }
 
 const enUS = defineLocaleResourceBundle({
@@ -23,6 +24,7 @@ const noNB = defineLocaleResourceBundle({
     'structure.root.title': 'Innhold 🇳🇴',
     'translate.example':
       '<Icon/> Ditt søk på "<Red>{{keyword}}</Red>" tok <Bold>{{duration}}</Bold> millisekunder',
+    'use-translation.with-html': 'Faktisk er <code>code</code> et HTML-element?',
   },
 })
 
