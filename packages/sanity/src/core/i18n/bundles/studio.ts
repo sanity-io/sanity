@@ -127,6 +127,10 @@ export const studioLocaleStrings = {
   /** Label for the "to" value in the change inspector */
   'changes.inspector.to-label': 'To',
 
+  /** Error message shown when the value of a field is not the expected one */
+  'changes.error.incorrect-type-message':
+    'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
+
   /** --- Document timeline, for navigating different revisions of a document --- */
 
   /** Error prompt when revision cannot be loaded */

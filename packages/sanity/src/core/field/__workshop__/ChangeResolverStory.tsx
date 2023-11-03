@@ -39,23 +39,6 @@ export default function ChangeResolverStory() {
     [],
   )
 
-  // export interface FieldChangeNode {
-  //   type: 'field'
-  //   diff: Diff
-  //   itemDiff?: ItemDiff
-  //   parentDiff?: ObjectDiff | ArrayDiff
-  //   key: string
-  //   path: Path
-  //   error?: FieldValueError
-  //   titlePath: ChangeTitlePath
-  //   schemaType: ObjectFieldType
-  //   showHeader: boolean
-  //   showIndex: boolean
-  //   diffComponent?: DiffComponent
-  //   parentSchema?: ArraySchemaType | ObjectSchemaType
-  //   readOnly?: ConditionalProperty
-  //   hidden?: ConditionalProperty
-  // }
   const change: FieldChangeNode = useMemo(
     () => ({
       type: 'field',

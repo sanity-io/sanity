@@ -122,6 +122,10 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Label for the "to" value in the change inspector */
   'changes.inspector.to-label': 'Til',
 
+  /** Error message shown when the value of a field is not the expected one */
+  'changes.error.incorrect-type-message':
+    'Verdifeil: Vedien har typen «<code>{{actualType}}</code>», forventet «<code>{{expectedType}}</code>»',
+
   /** --- Document timeline, for navigating different revisions of a document --- */
 
   /** Error prompt when revision cannot be loaded */
