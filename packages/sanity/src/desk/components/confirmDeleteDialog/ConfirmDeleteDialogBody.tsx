@@ -1,5 +1,11 @@
 import React, {useCallback} from 'react'
-import {DocumentsIcon, CopyIcon, UnknownIcon, ChevronDownIcon} from '@sanity/icons'
+import {
+  DocumentsIcon,
+  CopyIcon,
+  UnknownIcon,
+  ChevronDownIcon,
+  WarningOutlineIcon,
+} from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
@@ -28,6 +34,7 @@ export function ConfirmDeleteDialogBody({
   crossDatasetReferences,
   internalReferences,
   documentTitle,
+  totalCount,
   action,
   datasetNames,
   hasUnknownDatasetNames,
@@ -94,14 +101,31 @@ export function ConfirmDeleteDialogBody({
   }
 
   return (
-    <Flex paddingY={4} direction="column" gap={4}>
+    <Flex direction="column" gap={4}>
+      <Card padding={3} radius={2} tone="caution" flex="none">
+        <Flex>
+          <Text aria-hidden="true" size={1}>
+            <WarningOutlineIcon />
+          </Text>
+          <Box flex={1} marginLeft={3}>
+            <Text size={1}>
+              {totalCount === 1 ? (
+                <>1 document refers to “{documentTitle}”</>
+              ) : (
+                <>
+                  {totalCount.toLocaleString()} documents refer to “{documentTitle}”
+                </>
+              )}
+            </Text>
+          </Box>
+        </Flex>
+      </Card>
       <Box flex="none">
         <Text size={1}>
           You may not be able to {action} “{documentTitle}” because the following documents refer to
           it:
         </Text>
       </Box>
-
       <Card radius={2} shadow={1} flex="auto" padding={1}>
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
@@ -236,7 +260,6 @@ export function ConfirmDeleteDialogBody({
           )}
         </Flex>
       </Card>
-
       <Box flex="none">
         <Text size={1}>
           If you {action} this document, documents that refer to it will no longer be able to access
