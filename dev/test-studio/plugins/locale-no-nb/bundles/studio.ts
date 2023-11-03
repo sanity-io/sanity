@@ -106,6 +106,13 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Revert for confirming revert (plural) label for field change action */
   'changes.action.revert-changes-confirm-change_other': `Angre endringer`,
 
+  /** Text shown when a diff component crashes during rendering, triggering the error boundary */
+  'changes.error-boundary.title': 'En feil oppsto under visning av endringer',
+
+  /** Additional text shown in development mode when a diff component crashes during rendering */
+  'changes.error-boundary.developer-info':
+    'Sjekk konsollen i utviklerverktøyet for mer informasjon',
+
   /** --- Document timeline, for navigating different revisions of a document --- */
 
   /** Error prompt when revision cannot be loaded */

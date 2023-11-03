@@ -112,6 +112,12 @@ export const studioLocaleStrings = {
   /** Revert for confirming revert (plural) label for field change action */
   'changes.action.revert-changes-confirm-change_other': `Revert changes`,
 
+  /** Text shown when a diff component crashes during rendering, triggering the error boundary */
+  'changes.error-boundary.title': 'Rendering the changes to this field caused an error',
+
+  /** Additional text shown in development mode when a diff component crashes during rendering */
+  'changes.error-boundary.developer-info': 'Check the developer console for more information',
+
   /** --- Document timeline, for navigating different revisions of a document --- */
 
   /** Error prompt when revision cannot be loaded */
