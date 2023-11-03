@@ -384,10 +384,10 @@ const deskLocaleStrings = {
 
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_delete':
-    'Are you sure you want to delete <DocumentTitle/>?',
+    'Are you sure you want to delete “<DocumentTitle/>”?',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_unpublish':
-    'Are you sure you want to unpublish <DocumentTitle/>?',
+    'Are you sure you want to unpublish “<DocumentTitle/>“?',
 
   /** Tells the user the count of how many other referring documents there are before listing them. (singular) */
   'confirm-delete-dialog.referring-document-count.text_one':
