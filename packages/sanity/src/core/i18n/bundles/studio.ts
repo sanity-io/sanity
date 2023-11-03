@@ -118,6 +118,15 @@ export const studioLocaleStrings = {
   /** Additional text shown in development mode when a diff component crashes during rendering */
   'changes.error-boundary.developer-info': 'Check the developer console for more information',
 
+  /** Label for the "meta" (field path, action etc) information in the change inspector */
+  'changes.inspector.meta-label': 'Meta',
+
+  /** Label for the "from" value in the change inspector */
+  'changes.inspector.from-label': 'From',
+
+  /** Label for the "to" value in the change inspector */
+  'changes.inspector.to-label': 'To',
+
   /** --- Document timeline, for navigating different revisions of a document --- */
 
   /** Error prompt when revision cannot be loaded */

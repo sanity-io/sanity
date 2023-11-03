@@ -113,6 +113,15 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'changes.error-boundary.developer-info':
     'Sjekk konsollen i utviklerverktøyet for mer informasjon',
 
+  /** Label for the "meta" (field path, action etc) information in the change inspector */
+  'changes.inspector.meta-label': 'Meta',
+
+  /** Label for the "from" value in the change inspector */
+  'changes.inspector.from-label': 'Fra',
+
+  /** Label for the "to" value in the change inspector */
+  'changes.inspector.to-label': 'Til',
+
   /** --- Document timeline, for navigating different revisions of a document --- */
 
   /** Error prompt when revision cannot be loaded */
