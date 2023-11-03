@@ -36,9 +36,13 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
 
   const list$ = useMemo(() => {
     // 1. Get the project members and filter out the robot users
-    const members$: Observable<ProjectData['members']> = projectStore
-      .get()
-      .pipe(map((res: ProjectData) => res.members?.filter((m) => !m.isRobot)))
+    const members$: Observable<ProjectData['members']> = projectStore.get().pipe(
+      map(
+        (res: ProjectData) =>
+          // Filter out robot users and the current user
+          res.members?.filter((m) => !m.isRobot).filter((m) => !m.isCurrentUser),
+      ),
+    )
 
     // 2. Map the members to users to get more data of the users such as displayName (used for filtering)
     const users$: Observable<MentionOptionUser[]> = members$.pipe(
