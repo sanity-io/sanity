@@ -5,18 +5,7 @@ import {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sani
 import {EllipsisVerticalIcon, ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import {
-  Box,
-  Card,
-  Flex,
-  Inline,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  Text,
-  useToast,
-} from '@sanity/ui'
+import {Box, Card, Flex, Inline, Menu, MenuButton, Stack, Text, useToast} from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {ObjectInputProps} from '../../types'
@@ -25,7 +14,7 @@ import {AlertStrip} from '../../components/AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
-import {Button} from '../../../../ui'
+import {Button, MenuItem} from '../../../../ui'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {PreviewCard} from '../../../components'
 import {useDidUpdate} from '../../hooks/useDidUpdate'

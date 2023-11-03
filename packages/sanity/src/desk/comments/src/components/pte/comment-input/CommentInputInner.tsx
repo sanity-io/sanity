@@ -1,9 +1,10 @@
 import React, {useCallback} from 'react'
-import {Flex, Button, MenuDivider, Box, Card, Stack} from '@sanity/ui'
+import {Flex, MenuDivider, Box, Card, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
 import {MentionIcon, SendIcon} from '../../icons'
 import {CommentsAvatar} from '../../avatars/CommentsAvatar'
+import {Button} from '../../../../../../ui'
 import {useCommentInput} from './useCommentInput'
 import {Editable} from './Editable'
 import {useUser} from 'sanity'
@@ -17,13 +18,6 @@ const ButtonDivider = styled(MenuDivider)({
   height: 20,
   width: 1,
 })
-
-const ActionButton = styled(Button).attrs({
-  fontSize: 1,
-  padding: 2,
-})`
-  /* border-radius: 50%; */
-`
 
 const RootCard = styled(Card)(({theme}) => {
   const radii = theme.sanity.radius[2]
@@ -128,7 +122,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
           </EditableWrap>
 
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
-            <ActionButton
+            <Button
               aria-label="Mention user"
               disabled={readOnly}
               icon={MentionIcon}
@@ -138,7 +132,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
 
             <ButtonDivider />
 
-            <ActionButton
+            <Button
               aria-label="Send comment"
               disabled={!canSubmit || !hasChanges || readOnly}
               icon={SendIcon}

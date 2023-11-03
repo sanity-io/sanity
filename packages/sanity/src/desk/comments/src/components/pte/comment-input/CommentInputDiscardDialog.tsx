@@ -1,7 +1,6 @@
 import {
   Dialog,
   Grid,
-  Button,
   Stack,
   Text,
   ThemeColorProvider,
@@ -10,6 +9,7 @@ import {
   DialogProvider,
 } from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Button} from '../../../../../../ui'
 
 const Z_OFFSET = 9999999 // Change to appropriate z-offset
 

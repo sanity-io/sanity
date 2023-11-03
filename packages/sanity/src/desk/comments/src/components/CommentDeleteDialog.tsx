@@ -1,5 +1,6 @@
-import {Dialog, Grid, Button, Stack, Text} from '@sanity/ui'
+import {Dialog, Grid, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Button} from '../../../../ui'
 import {TextWithTone} from 'sanity'
 
 const DIALOG_COPY: Record<

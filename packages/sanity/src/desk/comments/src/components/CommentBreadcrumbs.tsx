@@ -1,6 +1,7 @@
 import {ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Stack, Text, Tooltip, TooltipProps} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React, {Fragment, useMemo} from 'react'
+import {Tooltip} from '../../../../ui'
 
 export interface CommentBreadcrumbsProps {
   titlePath: string[]
@@ -8,11 +9,6 @@ export interface CommentBreadcrumbsProps {
 }
 
 type Item = string | string[]
-
-const TOOLTIP_DELAY: TooltipProps['delay'] = {
-  close: 0,
-  open: 500,
-}
 
 const separator = (
   <Text muted>
@@ -58,7 +54,6 @@ export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
         return (
           <Fragment key={key}>
             <Tooltip
-              delay={TOOLTIP_DELAY}
               content={
                 <Stack space={2} padding={2}>
                   {item.map(renderItem)}

@@ -1,12 +1,6 @@
 import React from 'react'
-import {Flex, Text, Tooltip, TooltipProps} from '@sanity/ui'
-import styled from 'styled-components'
-
-const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500}
-
-const ContextText = styled(Text)`
-  min-width: max-content;
-`
+import {Flex} from '@sanity/ui'
+import {Tooltip} from '../../../../ui'
 
 interface TextTooltipProps {
   children: React.ReactNode
@@ -17,15 +11,7 @@ export function TextTooltip(props: TextTooltipProps) {
   const {children, text} = props
 
   return (
-    <Tooltip
-      delay={TOOLTIP_DELAY}
-      portal
-      placement="top"
-      // @todo: there appears to be an issue with `fallbackPlacements` and tooltips in sanity UI `1.8.2`
-      // fallbackPlacements={['bottom']}
-      content={<ContextText size={1}>{text}</ContextText>}
-      padding={2}
-    >
+    <Tooltip portal placement="top" content={text}>
       <Flex>{children}</Flex>
     </Tooltip>
   )

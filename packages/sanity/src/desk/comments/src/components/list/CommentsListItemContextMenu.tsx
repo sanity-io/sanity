@@ -11,15 +11,14 @@ import {
   TooltipDelayGroupProviderProps,
   MenuButtonProps,
   TooltipDelayGroupProvider,
-  Button,
   MenuButton,
   Menu,
-  MenuItem,
   MenuDivider,
   Layer,
   Card,
 } from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {Button, MenuItem} from '../../../../../ui'
 import {CommentStatus} from '../../types'
 import {TextTooltip} from '../TextTooltip'
 
@@ -84,11 +83,10 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               <Button
                 aria-label="Mark comment as resolved"
                 disabled={readOnly}
-                fontSize={1}
                 icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
                 mode="bleed"
                 onClick={onStatusChange}
-                padding={2}
+                size="small"
               />
             </TextTooltip>
           )}
@@ -99,11 +97,10 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               <Button
                 aria-label="Open comment actions menu"
                 disabled={readOnly}
-                fontSize={1}
                 hidden={!showMenuButton}
                 icon={EllipsisVerticalIcon}
                 mode="bleed"
-                padding={2}
+                size="small"
               />
             }
             onOpen={onMenuOpen}
@@ -111,7 +108,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
             menu={
               <Menu>
                 <MenuItem
-                  fontSize={1}
                   hidden={!canEdit}
                   icon={EditIcon}
                   onClick={onEditStart}
@@ -119,7 +115,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                 />
 
                 <MenuItem
-                  fontSize={1}
                   hidden={!canDelete}
                   icon={TrashIcon}
                   onClick={onDeleteStart}
@@ -130,7 +125,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                 <MenuDivider hidden={!canDelete && !canEdit} />
 
                 <MenuItem
-                  fontSize={1}
                   hidden={!onCopyLink}
                   icon={LinkIcon}
                   onClick={onCopyLink}

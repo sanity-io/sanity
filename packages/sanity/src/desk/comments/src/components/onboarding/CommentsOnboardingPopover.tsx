@@ -1,6 +1,7 @@
-import {Box, Button, Flex, Popover, PopoverProps, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Popover, PopoverProps, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
+import {Button} from '../../../../../ui'
 
 const Root = styled(Box)`
   max-width: 280px;
@@ -29,7 +30,7 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
             </Text>
 
             <Flex justify="flex-end" marginTop={2}>
-              <Button fontSize={1} padding={2} text="Got it" tone="primary" onClick={onDismiss} />
+              <Button size="small" text="Got it" tone="primary" onClick={onDismiss} />
             </Flex>
           </Stack>
         </Root>
