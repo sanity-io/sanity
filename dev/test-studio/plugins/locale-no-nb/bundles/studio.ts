@@ -134,8 +134,48 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Portable Text diff: Removed a chunk of text */
   'change.portable-text.text_removed': 'Fjernet tekst',
 
+  /** Portable Text diff: An annotation was added */
+  'change.portable-text.annotation_added': 'La til berikelse',
+
+  /** Portable Text diff: An annotation was removed */
+  'change.portable-text.annotation_removed': 'Fjernet berikelse',
+
+  /** Portable Text diff: An annotation was changed */
+  'change.portable-text.annotation_changed': 'Endret berikelse',
+
+  /** Portable Text diff: An annotation was left unchanged */
+  'change.portable-text.annotation_unchanged': 'Uendret berikelse',
+
+  /** Portable Text diff: An inline object was added */
+  'change.portable-text.inline-object_added': 'La til inline objekt',
+
+  /** Portable Text diff: An inline object was removed */
+  'change.portable-text.inline-object_removed': 'Fjernet inline objekt',
+
+  /** Portable Text diff: An inline object was changed */
+  'change.portable-text.inline-object_changed': 'Endet inline objekt',
+
+  /** Portable Text diff: An inline object was left unchanged */
+  'change.portable-text.inline-object_unchanged': 'Uendret inline object',
+
   /** Portable Text diff: Change formatting of text (setting/unsetting marks, eg bold/italic etc) */
   'change.portable-text.changed-formatting': 'Endret formattering',
+
+  /** Portable Text diff: A block changed from one style to another (eg `normal` to `h1` or similar) */
+  'change.portable-text.block-style-changed':
+    'Endret blokkstil fra "{{fromStyle}}" til "{{toStyle}}"',
+
+  /** Portable Text diff: Annotation has an unknown schema type */
+  'change.portable-text.unknown-annotation-schema-type': 'Ukjent skjematype',
+
+  /** Portable Text diff: Inline object has an unknown schema type */
+  'change.portable-text.unknown-inline-object-schema-type': 'Ukjent skjematype',
+
+  /** Portable Text diff: An empty object is the result of adding/removing an annotation */
+  'change.portable-text.empty-object-annotation': 'Tom {{annotationType}}',
+
+  /** Portable Text diff: An empty inline object is part of a change */
+  'change.portable-text.empty-inline-object': 'Tom {{inlineObjectType}}',
 
   /** File diff: Fallback title for the meta info section when there is no original filename to use  */
   'changes.file.meta-info-fallback-title': 'Navnløs fil',

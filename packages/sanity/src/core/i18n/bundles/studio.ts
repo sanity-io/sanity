@@ -140,8 +140,48 @@ export const studioLocaleStrings = {
   /** Portable Text diff: Removed a chunk of text */
   'change.portable-text.text_removed': 'Removed text',
 
+  /** Portable Text diff: An annotation was added */
+  'change.portable-text.annotation_added': 'Added annotation',
+
+  /** Portable Text diff: An annotation was removed */
+  'change.portable-text.annotation_removed': 'Removed annotation',
+
+  /** Portable Text diff: An annotation was changed */
+  'change.portable-text.annotation_changed': 'Changed annotation',
+
+  /** Portable Text diff: An annotation was left unchanged */
+  'change.portable-text.annotation_unchanged': 'Unchanged annotation',
+
+  /** Portable Text diff: An inline object was added */
+  'change.portable-text.inline-object_added': 'Added inline object',
+
+  /** Portable Text diff: An inline object was removed */
+  'change.portable-text.inline-object_removed': 'Removed inline object',
+
+  /** Portable Text diff: An inline object was changed */
+  'change.portable-text.inline-object_changed': 'Changed inline object',
+
+  /** Portable Text diff: An inline object was left unchanged */
+  'change.portable-text.inline-object_unchanged': 'Unchanged inline object',
+
   /** Portable Text diff: Change formatting of text (setting/unsetting marks, eg bold/italic etc) */
   'change.portable-text.changed-formatting': 'Changed formatting',
+
+  /** Portable Text diff: A block changed from one style to another (eg `normal` to `h1` or similar) */
+  'change.portable-text.block-style-changed':
+    'Changed block style from "{{fromStyle}}" to "{{toStyle}}"',
+
+  /** Portable Text diff: Annotation has an unknown schema type */
+  'change.portable-text.unknown-annotation-schema-type': 'Unknown schema type',
+
+  /** Portable Text diff: Inline object has an unknown schema type */
+  'change.portable-text.unknown-inline-object-schema-type': 'Unknown schema type',
+
+  /** Portable Text diff: An empty object is the result of adding/removing an annotation */
+  'change.portable-text.empty-object-annotation': 'Empty {{annotationType}}',
+
+  /** Portable Text diff: An empty inline object is part of a change */
+  'change.portable-text.empty-inline-object': 'Empty {{inlineObjectType}}',
 
   /** File diff: Fallback title for the meta info section when there is no original filename to use  */
   'changes.file.meta-info-fallback-title': 'Untitled',

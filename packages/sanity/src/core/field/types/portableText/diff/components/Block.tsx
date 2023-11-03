@@ -1,13 +1,14 @@
 import {Box, Card, Stack, Text} from '@sanity/ui'
-import {Path, PortableTextTextBlock} from '@sanity/types'
+import type {Path, PortableTextTextBlock} from '@sanity/types'
 import React, {useCallback, useContext} from 'react'
 import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
-import {isHeader} from '../helpers'
-import {PortableTextDiff} from '../types'
 import {ConnectorContext} from '../../../../../changeIndicators'
-import Blockquote from './Blockquote'
-import Header from './Header'
-import Paragraph from './Paragraph'
+import {useTranslation} from '../../../../../i18n'
+import {isHeader} from '../helpers'
+import type {PortableTextDiff} from '../types'
+import {Blockquote} from './Blockquote'
+import {Header} from './Header'
+import {Paragraph} from './Paragraph'
 
 const EMPTY_PATH: Path = []
 
@@ -20,11 +21,12 @@ export function Block(props: {
   const color = useDiffAnnotationColor(diff, EMPTY_PATH)
   const {path: fullPath} = useContext(DiffContext)
   const {onSetFocus} = useContext(ConnectorContext)
+  const {t} = useTranslation()
   const isRemoved = diff.action === 'removed'
   let returned = children
 
   const handleClick = useCallback(
-    (event: any) => {
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       event.stopPropagation()
 
       if (!isRemoved) {
@@ -69,7 +71,7 @@ export function Block(props: {
             diff={diff.origin.fields.style}
           >
             <Text size={0}>
-              Changed block style from '{fromStyle}' to '{block.style}'
+              {t('change.portable-text.block-style-changed', {fromStyle, toStyle: block.style})}
             </Text>
           </DiffTooltip>
           <Box style={style}>{returned}</Box>

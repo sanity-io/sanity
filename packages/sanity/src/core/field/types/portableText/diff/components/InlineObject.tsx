@@ -1,17 +1,18 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {
   isKeySegment,
-  ObjectSchemaType,
-  Path,
-  PortableTextChild,
-  PortableTextObject,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextChild,
+  type PortableTextObject,
 } from '@sanity/types'
 import {Card, Flex, Label, Popover, useClickOutside} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import React, {useCallback, useContext, useState, useEffect, useMemo} from 'react'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
-import {ObjectDiff} from '../../../../types'
+import type {ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
 import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
 import {Preview} from '../../../../../preview/components/Preview'
@@ -42,10 +43,11 @@ const InlineObjectWrapper = styled(Card)`
 `
 
 export function InlineObject({diff, object, schemaType, ...restProps}: InlineObjectProps) {
+  const {t} = useTranslation()
   if (!schemaType) {
     return (
       <InlineObjectWrapper {...restProps} border radius={1}>
-        Unknown schema type: {object._type}
+        {t('change.portable-text.unknown-inline-object-schema-type', {schemaType: object._type})}
       </InlineObjectWrapper>
     )
   }
@@ -79,6 +81,7 @@ function InlineObjectWithDiff({
 }: InlineObjectWithDiffProps) {
   const {path: fullPath} = useContext(DiffContext)
   const {onSetFocus} = useContext(ConnectorContext)
+  const {t} = useTranslation()
   const color = useDiffAnnotationColor(diff, [])
   const style = useMemo(
     () => (color ? {background: color.background, color: color.text} : {}),
@@ -106,7 +109,7 @@ function InlineObjectWithDiff({
   }, [focusPath, isEditing, onSetFocus])
 
   const handleOpenPopup = useCallback(
-    (event: any) => {
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {
@@ -147,7 +150,10 @@ function InlineObjectWithDiff({
     >
       <Popover content={popoverContent} open={open} portal>
         <PreviewContainer>
-          <DiffTooltip annotations={annotations} description={`${diff.action} inline object`}>
+          <DiffTooltip
+            annotations={annotations}
+            description={t('change.portable-text.inline-object', {context: diff.action})}
+          >
             <InlineBox>
               <Preview schemaType={schemaType} value={object} layout="inline" />
               <Flex align="center" paddingX={1}>
@@ -174,22 +180,18 @@ function PopoverContent({
   onClose: () => void
   schemaType: ObjectSchemaType
 }) {
+  const {t} = useTranslation()
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
-  // const {isTopLayer} = useLayer()
 
-  const handleClickOutside = useCallback(() => {
-    // Popover doesn't close at all when using this condition
-    // if (!isTopLayer) return
-    onClose()
-  }, [onClose])
-
-  useClickOutside(handleClickOutside, [popoverElement])
+  useClickOutside(onClose, [popoverElement])
 
   return (
     <PopoverContainer ref={setPopoverElement} padding={3}>
       {emptyObject && (
         <Label size={1} muted>
-          Empty {schemaType.title}
+          {t('change.portable-text.empty-inline-object', {
+            inlineObjectType: schemaType.title || schemaType.name,
+          })}
         </Label>
       )}
       {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
