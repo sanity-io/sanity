@@ -154,7 +154,7 @@ const importDatasetCommand: CliCommandDefinition = {
 
     output.print('╭───────────────────────────────────────────────╮')
     output.print('│                                               │')
-    output.print('│ Importing from:                               │')
+    output.print('│ Importing to:                                 │')
     output.print(`│ ${chalk.bold('projectId')}: ${chalk.cyan(projectId).padEnd(44)} │`)
     output.print(`│ ${chalk.bold('dataset')}: ${chalk.cyan(dataset).padEnd(46)} │`)
     output.print('│                                               │')
