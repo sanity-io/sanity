@@ -49,6 +49,7 @@
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
     "coverage": "NODE_ENV=test jest --coverage",
+    "lint": "eslint .",
     "test": "NODE_ENV=test jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },

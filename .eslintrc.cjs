@@ -14,6 +14,22 @@ const baseConfig = {
   ],
   parser: '@typescript-eslint/parser',
   plugins: ['import', '@typescript-eslint', 'prettier', 'react', 'tsdoc'],
+  ignorePatterns: [
+    '**/etc/*',
+    '**/.sanity/*',
+    '**/public/*',
+    '**/build/*',
+    '**/.next/*',
+    '**/static/*',
+    '**/coverage/*',
+    '**/lib/*',
+    '**/node_modules/*',
+    '**/dist/*',
+    '*.json',
+    '*.css',
+    '*.snap',
+    '*.md',
+  ],
   rules: {
     '@typescript-eslint/no-var-requires': 'off', // prefer import/no-dynamic-require
     'import/extensions': ['error', {pattern: {cjs: 'always', json: 'always'}}],

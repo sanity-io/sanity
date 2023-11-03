@@ -114,6 +114,7 @@
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
     "clean": "rimraf _internal.js cli.js desk.js lib router.js",
     "coverage": "jest --coverage",
+    "lint": "eslint .",
     "prepublishOnly": "run-s write:version write:ui-version",
     "test": "pkg-utils --strict && jest",
     "test:ct": "playwright test -c playwright-ct.config.ts",

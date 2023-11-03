@@ -54,7 +54,7 @@
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
-    "eslint": "eslint 'src/**/*.{ts,js,tsx}'",
+    "lint": "eslint .",
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
     "dev": "cd ./test/ && ts-node serve",
     "test": "jest",

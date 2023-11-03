@@ -5,9 +5,10 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
+    "build": "sanity build",
     "dev": "sanity dev --port 3339",
-    "start": "sanity start --port 3339",
-    "build": "sanity build"
+    "lint": "eslint .",
+    "start": "sanity start --port 3339"
   },
   "keywords": [
     "sanity"

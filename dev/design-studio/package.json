@@ -27,6 +27,7 @@
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "../.bin/sanity dev --port 4000",
+    "lint": "eslint .",
     "start": "../.bin/sanity start --port 4000"
   },
   "dependencies": {

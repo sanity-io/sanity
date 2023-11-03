@@ -48,6 +48,7 @@
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
+    "lint": "eslint .",
     "perf": "node ./perf/run.js",
     "test": "jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"

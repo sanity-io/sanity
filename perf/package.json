@@ -10,6 +10,7 @@
     "perf:codegen": "ts-node --files -r dotenv/config codegen",
     "perf:test": "ts-node --files cli",
     "perf:test:ci": "ts-node --files cli",
+    "lint": "eslint .",
     "studio": "yarn --cwd studio build && yarn --cwd studio start",
     "studio:dev": "SANITY_STUDIO_DATASET=dev yarn --cwd studio dev"
   },
