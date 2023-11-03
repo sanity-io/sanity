@@ -1,9 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Flex, Stack} from '@sanity/ui'
+import {Button, Flex, Stack, useClickOutside} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {CurrentUser, Path} from '@sanity/types'
+import {CurrentUser} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
-import * as PathUtils from '@sanity/util/paths'
 import {CommentInput, CommentInputHandle} from '../pte'
 import {
   CommentCreatePayload,
@@ -17,6 +16,7 @@ import {SpacerAvatar} from '../avatars'
 import {hasCommentMessageValue} from '../../helpers'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
+import {CommentsSelectedPath} from '../../context'
 
 const EMPTY_ARRAY: [] = []
 
@@ -78,13 +78,13 @@ interface CommentsListItemProps {
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void
-  onPathSelect?: (path: Path) => void
+  onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   parentComment: CommentDocument
   readOnly?: boolean
   replies: CommentDocument[] | undefined
-  selected?: boolean
+  selectedPath?: CommentsSelectedPath
 }
 
 export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
@@ -103,7 +103,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     parentComment,
     readOnly,
     replies = EMPTY_ARRAY,
-    selected,
+    selectedPath,
   } = props
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
@@ -112,6 +112,13 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const replyInputRef = useRef<CommentInputHandle>(null)
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
+
+  const [threadCardElement, setThreadCardElement] = useState<HTMLDivElement | null>(null)
+
+  const threadIsSelected = selectedPath?.threadId === parentComment.threadId
+  const fieldIsSelect = selectedPath?.fieldPath === parentComment.target.path.field
+  const isSelected =
+    fieldIsSelect && threadIsSelected && selectedPath.selectedFrom !== 'new-thread-item'
 
   const handleReplySubmit = useCallback(() => {
     const nextComment: CommentCreatePayload = {
@@ -155,14 +162,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         event.stopPropagation()
         startDiscard()
       }
-      // TODO: this would be cool
-      // Edit last comment if current user is the owner and pressing arrowUp
-      // if (event.key === 'ArrowUp') {
-      //   const lastReply = replies.splice(-1)[0]
-      //   if (lastReply?.authorId === currentUser.id && !hasValue) {
-      //
-      //   }
-      // }
     },
     [startDiscard],
   )
@@ -178,9 +177,13 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   }, [])
 
   const handleThreadRootClick = useCallback(() => {
-    const path = PathUtils.fromString(parentComment.target.path.field)
-    onPathSelect?.(path)
-  }, [onPathSelect, parentComment.target.path.field])
+    onPathSelect?.({
+      fieldPath: parentComment.target.path.field,
+      target: 'comment-item',
+      selectedFrom: 'comment-item',
+      threadId: parentComment.threadId,
+    })
+  }, [onPathSelect, parentComment.target.path.field, parentComment.threadId])
 
   const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -203,6 +206,18 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
     }`
   }, [replies?.length])
+
+  const handleClickOutside = useCallback(
+    (e: MouseEvent) => {
+      const isInside = rootRef.current?.contains(e.target as Node)
+      if (isInside || !isSelected) return
+
+      onPathSelect?.(null)
+    },
+    [onPathSelect, isSelected],
+  )
+
+  useClickOutside(handleClickOutside, [threadCardElement])
 
   useEffect(() => {
     if (replies.length > MAX_COLLAPSED_REPLIES && !didExpand.current) {
@@ -247,9 +262,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   return (
     <Stack space={2} ref={rootRef}>
       <StyledThreadCard
-        data-active={selected ? 'true' : 'fase'}
+        data-active={isSelected ? 'true' : 'false'}
         onClick={handleThreadRootClick}
-        tone={selected ? 'primary' : undefined}
+        ref={setThreadCardElement}
+        tone={isSelected ? 'primary' : undefined}
       >
         <GhostButton data-ui="GhostButton" aria-label="Go to field" />
 

@@ -6,24 +6,6 @@ import {
   MentionOptionsHookValue,
 } from '../../types'
 
-interface SelectedPathValue {
-  /**
-   * The path to the field that is selected
-   */
-  fieldPath: string
-  /**
-   * The origin of where the path was selected from
-   */
-  origin: 'inspector' | 'field'
-
-  /**
-   * The id of the thread that is selected. If null, there is no specific thread selected.
-   */
-  threadId: string | null
-}
-
-export type SelectedPath = SelectedPathValue | null
-
 /**
  * @beta
  * @hidden
@@ -63,7 +45,4 @@ export interface CommentsContextValue {
 
   status: CommentStatus
   setStatus: (status: CommentStatus) => void
-
-  setSelectedPath: (payload: SelectedPath) => void
-  selectedPath: SelectedPath
 }

@@ -1,6 +1,6 @@
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useState} from 'react'
 import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
-import {CurrentUser, Path} from '@sanity/types'
+import {CurrentUser} from '@sanity/types'
 import {
   CommentCreatePayload,
   CommentEditPayload,
@@ -8,7 +8,7 @@ import {
   CommentThreadItem,
   MentionOptionsHookValue,
 } from '../../types'
-import {SelectedPath} from '../../context/comments/types'
+import {CommentsSelectedPath} from '../../context'
 import {CommentsListItem} from './CommentsListItem'
 import {CommentThreadLayout} from './CommentThreadLayout'
 import {CommentsListStatus} from './CommentsListStatus'
@@ -52,11 +52,11 @@ export interface CommentsListProps {
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
   onNewThreadCreate: (payload: CommentCreatePayload) => void
-  onPathSelect?: (path: Path, threadId?: string) => void
+  onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
-  selectedPath: SelectedPath
+  selectedPath: CommentsSelectedPath
   status: CommentStatus
 }
 
@@ -97,13 +97,6 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
         commentElement.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
       }
     }, [])
-
-    const handleListItemPathSelect = useCallback(
-      (path: Path, threadId?: string) => {
-        onPathSelect?.(path, threadId)
-      },
-      [onPathSelect],
-    )
 
     useImperativeHandle(
       ref,
@@ -160,15 +153,18 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                 return (
                   <Stack as="li" key={fieldPath} data-group-id={firstThreadId} paddingTop={3}>
                     <CommentThreadLayout
+                      // eslint-disable-next-line react/jsx-no-bind
                       breadcrumbs={breadcrumbs}
                       canCreateNewThread={status === 'open'}
                       currentUser={currentUser}
                       fieldPath={fieldPath}
                       key={fieldPath}
                       mentionOptions={mentionOptions}
+                      // eslint-disable-next-line react/jsx-no-bind
                       onNewThreadCreate={onNewThreadCreate}
                       onPathSelect={onPathSelect}
                       readOnly={readOnly}
+                      selectedPath={selectedPath}
                     >
                       {group.map((item) => {
                         // The default sort order is by date, descending (newest first).
@@ -182,12 +178,6 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                           item.parentComment._state?.type !== 'createError' &&
                           item.parentComment._state?.type !== 'createRetrying'
 
-                        // Check if the current field is selected
-                        const hasSelectedThread = selectedPath?.threadId
-                        const threadIsSelected = selectedPath?.threadId === item.threadId
-                        const fieldIsSelect = selectedPath?.fieldPath === item.fieldPath
-                        const isSelected = threadIsSelected || (fieldIsSelect && !hasSelectedThread)
-
                         return (
                           <CommentsListItem
                             canReply={canReply}
@@ -198,14 +188,13 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                             onCreateRetry={onCreateRetry}
                             onDelete={onDelete}
                             onEdit={onEdit}
-                            // eslint-disable-next-line react/jsx-no-bind
-                            onPathSelect={(path) => handleListItemPathSelect(path, item.threadId)}
+                            onPathSelect={onPathSelect}
                             onReply={onReply}
                             onStatusChange={onStatusChange}
                             parentComment={item.parentComment}
                             readOnly={readOnly}
                             replies={replies}
-                            selected={isSelected}
+                            selectedPath={selectedPath}
                           />
                         )
                       })}

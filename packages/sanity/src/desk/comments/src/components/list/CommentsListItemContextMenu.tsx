@@ -16,19 +16,20 @@ import {
   Menu,
   MenuItem,
   MenuDivider,
-  Layer,
   Card,
+  Flex,
 } from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CommentStatus} from '../../types'
 import {TextTooltip} from '../TextTooltip'
 
 const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
-const POPOVER_PROPS: MenuButtonProps['popover'] = {placement: 'bottom-end'}
-
-const FloatingLayer = styled(Layer)`
-  display: flex;
-`
+const POPOVER_PROPS: MenuButtonProps['popover'] = {
+  placement: 'bottom-end',
+  // We don't have to use portal since that interferes with click outside handling.
+  // This is because the element will be rendered outside root element if we use portal.
+  portal: false,
+}
 
 const FloatingCard = styled(Card)(({theme}) => {
   const {space} = theme.sanity
@@ -77,7 +78,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
 
   return (
     <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
-      <FloatingLayer data-root-menu={isParent ? 'true' : 'false'} {...rest}>
+      <Flex data-root-menu={isParent ? 'true' : 'false'} {...rest}>
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
           {isParent && (
             <TextTooltip text={status === 'open' ? 'Mark as resolved' : 'Re-open'}>
@@ -141,7 +142,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
             popover={POPOVER_PROPS}
           />
         </FloatingCard>
-      </FloatingLayer>
+      </Flex>
     </TooltipDelayGroupProvider>
   )
 }

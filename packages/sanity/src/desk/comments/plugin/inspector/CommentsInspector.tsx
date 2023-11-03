@@ -1,6 +1,5 @@
 import {Flex, useToast} from '@sanity/ui'
 import React, {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {usePaneRouter} from '../../../components'
 import {EMPTY_PARAMS} from '../../../constants'
@@ -15,6 +14,8 @@ import {
   CommentsList,
   CommentsOnboardingPopover,
   useCommentsOnboarding,
+  CommentsSelectedPath,
+  useCommentsSelectedPath,
 } from '../../src'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {DocumentInspectorProps, useCurrentUser, useUnique} from 'sanity'
@@ -52,8 +53,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     isRunningSetup,
     mentionOptions,
     remove,
-    selectedPath,
-    setSelectedPath,
+
     setStatus,
     status,
     update,
@@ -68,6 +68,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     // that the document is ready before we allow the user to interact with the comments.
     return comments.loading || !ready
   }, [comments.loading, ready])
+
+  const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 
   const handleChangeView = useCallback(
     (nextView: CommentStatus) => {
@@ -135,13 +137,13 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   }, [deleteLoading])
 
   const handlePathSelect = useCallback(
-    (path: Path, threadId?: string) => {
-      onPathOpen(path)
-      setSelectedPath({
-        fieldPath: PathUtils.toString(path),
-        origin: 'inspector',
-        threadId: threadId || null,
-      })
+    (nextPath: CommentsSelectedPath) => {
+      setSelectedPath(nextPath)
+
+      if (nextPath) {
+        const path = PathUtils.fromString(nextPath.fieldPath)
+        onPathOpen(path)
+      }
     },
     [onPathOpen, setSelectedPath],
   )
@@ -152,7 +154,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
       setSelectedPath({
         fieldPath: payload.fieldPath,
-        origin: 'inspector',
+        selectedFrom: 'new-thread-item',
+        target: 'comment-item',
         threadId: payload.threadId,
       })
     },
@@ -218,8 +221,9 @@ export function CommentsInspector(props: DocumentInspectorProps) {
         requestAnimationFrame(() => {
           setSelectedPath({
             fieldPath,
-            origin: 'inspector',
-            threadId: null,
+            target: 'comment-item',
+            selectedFrom: null,
+            threadId: getComment(id)?.threadId || null,
           })
 
           commentsListHandleRef.current?.scrollToComment(id)
@@ -233,7 +237,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
         })
       }
     },
-    [params, setParams, setSelectedPath],
+    [getComment, params, setParams, setSelectedPath],
   )
 
   useEffect(() => {

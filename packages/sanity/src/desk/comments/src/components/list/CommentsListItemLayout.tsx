@@ -8,6 +8,7 @@ import {
   useGlobalKeyDown,
   useClickOutside,
   Box,
+  Layer,
 } from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {CurrentUser} from '@sanity/types'
@@ -28,14 +29,16 @@ import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {TimeAgoOpts, useTimeAgo, useUser, useDidUpdate} from 'sanity'
 
-export function StopPropagation(props: React.PropsWithChildren) {
+const ContextMenuLayer = styled(Layer)``
+
+function StopPropagationLayer(props: React.PropsWithChildren) {
   const {children} = props
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation()
   }, [])
 
-  return <Stack onClick={handleClick}>{children}</Stack>
+  return <ContextMenuLayer onClick={handleClick}>{children}</ContextMenuLayer>
 }
 
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
@@ -71,8 +74,6 @@ const RetryCardButton = styled(Card)`
   }
 `
 
-const StyledCommentsListItemContextMenu = styled(CommentsListItemContextMenu)``
-
 const RootStack = styled(Stack)(({theme}) => {
   const {space} = theme.sanity
 
@@ -82,7 +83,7 @@ const RootStack = styled(Stack)(({theme}) => {
     // Only show the floating layer on hover when hover is supported.
     // Else, the layer is always visible.
     @media (hover: hover) {
-      ${StyledCommentsListItemContextMenu} {
+      ${ContextMenuLayer} {
         opacity: 0;
         position: absolute;
         right: 0;
@@ -91,21 +92,21 @@ const RootStack = styled(Stack)(({theme}) => {
         transform: translate(${space[1]}px, -${space[1]}px);
       }
 
-      ${StyledCommentsListItemContextMenu} {
+      ${ContextMenuLayer} {
         &:focus-within {
           opacity: 1;
         }
       }
 
       &:hover {
-        ${StyledCommentsListItemContextMenu} {
+        ${ContextMenuLayer} {
           opacity: 1;
         }
       }
     }
 
     &[data-menu-open='true'] {
-      ${StyledCommentsListItemContextMenu} {
+      ${ContextMenuLayer} {
         opacity: 1;
       }
     }
@@ -289,8 +290,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           </Flex>
 
           {!isEditing && !displayError && (
-            <StopPropagation>
-              <StyledCommentsListItemContextMenu
+            <StopPropagationLayer>
+              <CommentsListItemContextMenu
                 canDelete={canDelete}
                 canEdit={canEdit}
                 isParent={isParent}
@@ -303,7 +304,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 readOnly={readOnly}
                 status={comment.status}
               />
-            </StopPropagation>
+            </StopPropagationLayer>
           )}
         </Flex>
 

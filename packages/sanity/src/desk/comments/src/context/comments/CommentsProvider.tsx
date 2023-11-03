@@ -18,7 +18,7 @@ import {
 import {useCommentsStore} from '../../store'
 import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
 import {CommentsContext} from './CommentsContext'
-import {CommentsContextValue, SelectedPath} from './types'
+import {CommentsContextValue} from './types'
 import {getPublishedId, useEditState, useSchema, useCurrentUser, useWorkspace} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
@@ -72,8 +72,6 @@ const COMMENTS_DISABLED_CONTEXT: CommentsContextValue = {
   isRunningSetup: false,
   mentionOptions: EMPTY_MENTION_OPTIONS,
   remove: noopOperation,
-  selectedPath: null,
-  setSelectedPath: noop,
   setStatus: noop,
   status: 'open',
   update: noopOperation,
@@ -106,7 +104,6 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
   props: Omit<CommentsProviderProps, 'enabled'>,
 ) {
   const {children, documentId, documentType} = props
-  const [selectedPath, setSelectedPath] = useState<SelectedPath>(null)
   const [status, setStatus] = useState<CommentStatus>('open')
 
   const {client, runSetup, isRunningSetup} = useCommentsSetup()
@@ -175,23 +172,6 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
     },
     [getComment],
   )
-
-  const handleSetSelectedPath = useCallback((nextPath: SelectedPath) => {
-    // If the path is being set to null, immediately set the selected path to null.
-    if (nextPath === null) {
-      setSelectedPath(null)
-      return
-    }
-
-    // Sometimes, a path is cleared (set to null) but at the same time a new path is set.
-    // In this case, we want to make sure that the selected path is set to the new path
-    // and not the cleared path. Therefore, we set the selected path in a timeout to make
-    // sure that the selected path is set after the cleared path.
-    // todo: can this be done in a better way?
-    setTimeout(() => {
-      setSelectedPath(nextPath)
-    })
-  }, [])
 
   const handleOnCreate = useCallback(
     async (payload: CommentPostPayload) => {
@@ -304,9 +284,6 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
 
   const ctxValue = useMemo(
     (): CommentsContextValue => ({
-      setSelectedPath: handleSetSelectedPath,
-      selectedPath,
-
       isRunningSetup,
 
       status,
@@ -335,8 +312,6 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
       mentionOptions,
     }),
     [
-      handleSetSelectedPath,
-      selectedPath,
       isRunningSetup,
       status,
       getComment,

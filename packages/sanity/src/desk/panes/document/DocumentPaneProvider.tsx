@@ -51,7 +51,7 @@ import {
   useUnique,
   useValidationStatus,
 } from 'sanity'
-import {CommentsProvider} from '../../comments'
+import {CommentsProvider, CommentsSelectedPathProvider} from '../../comments'
 
 /**
  * @internal
@@ -685,7 +685,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
       <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
         <CommentsProvider documentId={documentId} documentType={documentType}>
-          {children}
+          <CommentsSelectedPathProvider>{children}</CommentsSelectedPathProvider>
         </CommentsProvider>
       </FieldActionsProvider>
     </DocumentPaneContext.Provider>

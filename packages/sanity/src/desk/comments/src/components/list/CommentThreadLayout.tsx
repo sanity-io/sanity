@@ -1,9 +1,8 @@
-import {CurrentUser, Path} from '@sanity/types'
-import {Button, Flex, Stack} from '@sanity/ui'
+import {CurrentUser} from '@sanity/types'
+import {Button, Flex, Stack, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {uuid} from '@sanity/uuid'
 import styled, {css} from 'styled-components'
-import * as PathUtils from '@sanity/util/paths'
 import {
   CommentMessage,
   CommentCreatePayload,
@@ -11,6 +10,7 @@ import {
   CommentListBreadcrumbs,
 } from '../../types'
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
+import {CommentsSelectedPath} from '../../context'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './styles'
 
@@ -37,8 +37,9 @@ interface CommentThreadLayoutProps {
   fieldPath: string
   mentionOptions: MentionOptionsHookValue
   onNewThreadCreate: (payload: CommentCreatePayload) => void
-  onPathSelect?: (path: Path) => void
+  onPathSelect?: (nextPath: CommentsSelectedPath) => void
   readOnly?: boolean
+  selectedPath: CommentsSelectedPath
 }
 
 export function CommentThreadLayout(props: CommentThreadLayoutProps) {
@@ -52,11 +53,10 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     onNewThreadCreate,
     onPathSelect,
     readOnly,
+    selectedPath,
   } = props
 
-  const selectPath = useCallback(() => {
-    onPathSelect?.(PathUtils.fromString(fieldPath))
-  }, [fieldPath, onPathSelect])
+  const [threadCardElement, setThreadCardElement] = React.useState<HTMLDivElement | null>(null)
 
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
@@ -74,6 +74,35 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     [onNewThreadCreate, fieldPath],
   )
 
+  const handleBreadcrumbsClick = useCallback(() => {
+    onPathSelect?.({
+      fieldPath,
+      target: null,
+      selectedFrom: 'breadcrumbs',
+      threadId: null,
+    })
+  }, [fieldPath, onPathSelect])
+
+  const handleClickOutsideThreadCard = useCallback(() => {
+    const isSelected =
+      selectedPath?.fieldPath === fieldPath && selectedPath.target === 'new-thread-item'
+
+    if (isSelected) {
+      onPathSelect?.(null)
+    }
+  }, [fieldPath, onPathSelect, selectedPath])
+
+  const handleNewThreadClick = useCallback(() => {
+    onPathSelect?.({
+      fieldPath,
+      target: 'new-thread-item',
+      selectedFrom: 'new-thread-item',
+      threadId: null,
+    })
+  }, [fieldPath, onPathSelect])
+
+  useClickOutside(handleClickOutsideThreadCard, [threadCardElement])
+
   const crumbsTitlePath = useMemo(() => breadcrumbs?.map((p) => p.title) || [], [breadcrumbs])
   const lastCrumb = crumbsTitlePath[crumbsTitlePath.length - 1]
 
@@ -85,7 +114,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
             <BreadcrumbsButton
               aria-label={`Go to ${lastCrumb} field`}
               mode="bleed"
-              onClick={selectPath}
+              onClick={handleBreadcrumbsClick}
               padding={2}
             >
               <CommentBreadcrumbs maxLength={3} titlePath={crumbsTitlePath} />
@@ -95,7 +124,16 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       </HeaderFlex>
 
       {canCreateNewThread && (
-        <ThreadCard>
+        <ThreadCard
+          onClick={handleNewThreadClick}
+          ref={setThreadCardElement}
+          tone={
+            selectedPath?.fieldPath === fieldPath &&
+            selectedPath?.selectedFrom === 'new-thread-item'
+              ? 'primary'
+              : undefined
+          }
+        >
           <CreateNewThreadInput
             currentUser={currentUser}
             fieldName={lastCrumb}
