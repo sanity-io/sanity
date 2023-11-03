@@ -321,6 +321,7 @@ function CalendarMonthSelect(props: {
         onClick={handlePrevMonthClick}
         mode="bleed"
         icon={ChevronLeftIcon}
+        size="small"
       />
       <Box flex={1}>
         <Select radius={0} value={value} onChange={onChange}>
@@ -337,6 +338,7 @@ function CalendarMonthSelect(props: {
         mode="bleed"
         icon={ChevronRightIcon}
         onClick={handleNextMonthClick}
+        size="small"
       />
     </Flex>
   )
@@ -360,6 +362,7 @@ function CalendarYearSelect(props: {
         onClick={handlePrevYearClick}
         mode="bleed"
         icon={ChevronLeftIcon}
+        size="small"
       />
       <YearInput value={value} onChange={onChange} radius={0} style={{width: 65}} />
       <Button
@@ -367,6 +370,7 @@ function CalendarYearSelect(props: {
         onClick={handleNextYearClick}
         mode="bleed"
         icon={ChevronRightIcon}
+        size="small"
       />
     </Flex>
   )

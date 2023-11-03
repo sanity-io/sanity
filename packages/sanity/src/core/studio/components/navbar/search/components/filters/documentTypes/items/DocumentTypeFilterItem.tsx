@@ -42,7 +42,6 @@ export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
         mode="bleed"
         onClick={handleClick}
         width="fill"
-        style={{width: '100%'}}
         tabIndex={-1}
         text={type.title ?? type.name}
         tone={selected ? 'primary' : 'default'}

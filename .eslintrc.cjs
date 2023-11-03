@@ -216,7 +216,7 @@ module.exports = {
       files: ['!packages/sanity/src/ui/**'],
       rules: {
         'no-restricted-imports': [
-          'warn',
+          'error',
           {
             paths: [
               {

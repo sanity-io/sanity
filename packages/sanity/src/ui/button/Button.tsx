@@ -19,7 +19,7 @@ export type ButtonProps = Pick<
   width?: 'fill' // remove once @sanity/ui is updated
 }
 
-const largeButtonProps = {
+const defaultButton = {
   space: 3,
   padding: 3,
 }
@@ -47,7 +47,7 @@ export const Button = forwardRef(function Button(
   return (
     <UIButton
       {...props}
-      {...(size === 'default' ? largeButtonProps : smallButtonProps)}
+      {...(size === 'default' ? defaultButton : smallButtonProps)}
       ref={ref}
       mode={mode}
       tone={tone}

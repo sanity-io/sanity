@@ -374,6 +374,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                     <MenuButton
                       button={
                         <Button
+                          size="small"
                           mode="bleed"
                           icon={EllipsisVerticalIcon}
                           data-testid="menu-button"

@@ -20,7 +20,7 @@ export default function CollapseMenuStory() {
           collapsed={collapsed}
           collapseText={collapseText}
           menuButtonProps={{
-            button: <Button icon={EllipsisVerticalIcon} mode="bleed" />,
+            button: <Button icon={EllipsisVerticalIcon} mode="bleed" size="small" />,
           }}
         >
           {[...Array(5).keys()].map((num) => (

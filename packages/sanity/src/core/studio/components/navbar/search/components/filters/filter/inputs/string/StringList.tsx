@@ -100,7 +100,7 @@ export function SearchFilterStringListInput({
 
   return (
     <MenuButton
-      button={<Button mode="ghost" icon={SelectIcon} text={value ?? 'Select...'} />}
+      button={<Button mode="ghost" iconRight={SelectIcon} text={value ?? 'Select...'} />}
       id={menuButtonId || ''}
       menu={
         <Menu>

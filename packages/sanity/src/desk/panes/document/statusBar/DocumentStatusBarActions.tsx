@@ -39,22 +39,20 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   }, [firstActionState])
 
   return (
-    <Flex>
+    <Flex flex={1} justify={'flex-end'} gap={2}>
       {firstActionState && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} portal placement="top">
-            <Stack flex={1}>
-              <Button
-                data-testid={`action-${firstActionState.label}`}
-                disabled={disabled || Boolean(firstActionState.disabled)}
-                icon={firstActionState.icon}
-                // eslint-disable-next-line react/jsx-handler-names
-                onClick={firstActionState.onHandle}
-                ref={setButtonElement}
-                text={firstActionState.label}
-                tone={firstActionState.tone || 'primary'}
-              />
-            </Stack>
+            <Button
+              data-testid={`action-${firstActionState.label}`}
+              disabled={disabled || Boolean(firstActionState.disabled)}
+              icon={firstActionState.icon}
+              // eslint-disable-next-line react/jsx-handler-names
+              onClick={firstActionState.onHandle}
+              ref={setButtonElement}
+              text={firstActionState.label}
+              tone={firstActionState.tone || 'primary'}
+            />
           </Tooltip>
         </LayerProvider>
       )}

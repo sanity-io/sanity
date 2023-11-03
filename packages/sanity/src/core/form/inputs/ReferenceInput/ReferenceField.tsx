@@ -247,7 +247,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={<Button mode="bleed" icon={EllipsisVerticalIcon} size="small" />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu>

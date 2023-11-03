@@ -1,8 +1,11 @@
 import {ObjectInputProps, set, setIfMissing, unset, useClient} from 'sanity'
 import imageUrlBuilder from '@sanity/image-url'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
-// eslint-disable-next-line no-restricted-imports
-import {Spinner, Button} from '@sanity/ui'
+import {
+  Spinner,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with children as an image, not supported by StudioUI
+} from '@sanity/ui'
 import React, {forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import styles from './AuthorReferenceInput.module.css'
 
@@ -19,7 +22,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   ref: React.ForwardedRef<any>,
 ) {
   // @todo fix
-  const {inputProps = {}, type, value} = props
+  const {inputProps, type, value} = props
   const {readOnly} = inputProps
   const client = useClient({apiVersion: '2022-09-09'})
   const current = value && value._ref

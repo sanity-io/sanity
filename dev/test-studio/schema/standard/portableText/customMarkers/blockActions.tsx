@@ -37,14 +37,14 @@ function CommentButton(props: {set: (block: PortableTextBlock) => void; value: P
           Comment
         </Text>
         <TextArea onChange={handleCommentChange} value={comment} />
-        <Button onClick={handleSubmit} text="Post comment" tone="primary" />
+        <Button onClick={handleSubmit} text="Post comment" tone="primary" size="small" />
       </Stack>
     </Box>
   )
 
   return (
     <Popover content={content} open={open} portal="default">
-      <Button icon={CommentIcon} mode="bleed" onClick={handleClick} />
+      <Button icon={CommentIcon} mode="bleed" onClick={handleClick} size="small" />
     </Popover>
   )
 }

@@ -16,6 +16,7 @@ export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
         }
       }
 
+      // The button children adds a span element, hide that one, which contains the input.
       & > span:nth-child(2) {
         overflow: hidden;
         overflow: clip;

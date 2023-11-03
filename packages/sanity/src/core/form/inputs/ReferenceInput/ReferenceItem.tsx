@@ -197,7 +197,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={<Button mode="bleed" icon={EllipsisVerticalIcon} size="small" />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu ref={menuRef}>

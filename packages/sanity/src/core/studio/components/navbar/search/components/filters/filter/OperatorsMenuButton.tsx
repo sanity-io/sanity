@@ -59,7 +59,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
   return (
     <Inline>
       <MenuButton
-        button={<Button mode="ghost" icon={SelectIcon} text={operator.label} />}
+        button={<Button mode="ghost" iconRight={SelectIcon} text={operator.label} />}
         id={menuButtonId || ''}
         menu={
           <Menu>

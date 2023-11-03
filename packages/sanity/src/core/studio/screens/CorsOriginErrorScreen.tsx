@@ -77,7 +77,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
             rel="noopener noreferrer"
             tone="primary"
             text="Continue"
-            icon={LaunchIcon}
+            iconRight={LaunchIcon}
           />
         </Stack>
       </Dialog>

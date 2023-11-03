@@ -42,7 +42,7 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
             aria-label="Open document actions"
             disabled={disabled}
             icon={ChevronDownIcon}
-            mode="ghost"
+            mode="bleed"
             ref={buttonRef}
           />
         }
