@@ -5,7 +5,6 @@ import {deskTool} from 'sanity/desk'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {imageAssetSource} from './assetSources'
@@ -40,7 +39,6 @@ import {vercelTheme} from './themes/vercel'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {copyAction} from './fieldActions/copyAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
-import {commentAction} from './fieldActions/commentFieldAction'
 import {customInspector} from './inspectors/custom'
 import {pasteAction} from './fieldActions/pasteAction'
 
@@ -71,12 +69,15 @@ const sharedSettings = definePlugin({
     },
     unstable_fieldActions: (prev, ctx) => {
       if (['fieldActionsTest', 'stringsTest'].includes(ctx.documentType)) {
-        return [...prev, commentAction, assistFieldActionGroup, copyAction, pasteAction]
+        return [...prev, assistFieldActionGroup, copyAction, pasteAction]
       }
 
       return prev
     },
     newDocumentOptions,
+    unstable_comments: {
+      enabled: true,
+    },
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [

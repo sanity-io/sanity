@@ -40,7 +40,7 @@ export interface Location {
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface FormNodePresence {
   user: User
   path: Path

@@ -7,7 +7,6 @@ import {
   Menu,
   MenuButton,
   MenuDivider,
-  MenuItem,
   Spinner,
   Stack,
   Text,
@@ -28,7 +27,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {randomKey} from '../../utils/randomKey'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
 import {FieldPresence} from '../../../presence'
-import {Button} from '../../../../ui'
+import {Button, MenuItem} from '../../../../ui'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {RowLayout} from '../arrays/layouts/RowLayout'
 import {AlertStrip} from '../../components/AlertStrip'
@@ -307,13 +306,21 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               {schemaType.weak ? (
                 <>
                   It will not be possible to delete the{' '}
-                  {preview?.title ? <>"{preview?.title}"-document</> : <>referenced document</>}{' '}
+                  {preview?.title ? (
+                    <>&quot;{preview?.title}&quot;-document</>
+                  ) : (
+                    <>referenced document</>
+                  )}{' '}
                   without first removing this reference.
                 </>
               ) : (
                 <>
                   This makes it possible to delete the{' '}
-                  {preview?.title ? <>"{preview?.title}"-document</> : <>referenced document</>}{' '}
+                  {preview?.title ? (
+                    <>&quot;{preview?.title}&quot;-document</>
+                  ) : (
+                    <>referenced document</>
+                  )}{' '}
                   without first deleting this reference, leaving this field referencing a
                   nonexisting document.
                 </>

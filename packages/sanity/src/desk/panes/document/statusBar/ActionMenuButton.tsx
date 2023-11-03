@@ -1,16 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Box, Flex, Hotkeys, Menu, MenuButton, MenuItem, PopoverProps, Text} from '@sanity/ui'
-import React, {
-  createElement,
-  isValidElement,
-  useCallback,
-  useRef,
-  useState,
-  useMemo,
-  useId,
-} from 'react'
-import {isValidElementType} from 'react-is'
-import {Tooltip, Button} from '../../../../ui'
+import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
+import React, {useCallback, useRef, useState, useMemo, useId} from 'react'
+import {Tooltip, Button, MenuItem} from '../../../../ui'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 
@@ -98,46 +89,34 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
     if (onHandle) onHandle()
   }, [index, onAction, onHandle])
 
+  const menuItemContent = useCallback(
+    (item: React.JSX.Element) => {
+      // TODO: Once the tooltip changes land, we can use the new `content` prop instead
+
+      return (
+        <Tooltip content={actionState.title} disabled={!actionState.title} placement="top" portal>
+          {item}
+        </Tooltip>
+      )
+    },
+    [actionState.title],
+  )
   return (
     <MenuItem
       data-testid={`action-${actionState.label.replace(' ', '')}`}
       disabled={disabled || Boolean(actionState.disabled)}
       onClick={handleClick}
-      padding={0}
       tone={actionState.tone}
-    >
-      <Tooltip
-        content={actionState.title}
-        disabled={!actionState.title}
-        fallbackPlacements={['left', 'bottom']}
-        placement="top"
-        portal
-      >
-        <Flex align="center" paddingX={3}>
-          <Flex flex={1} paddingY={3}>
-            {actionState.icon && (
-              <Box marginRight={3}>
-                <Text>
-                  {isValidElement(actionState.icon) && actionState.icon}
-                  {isValidElementType(actionState.icon) && createElement(actionState.icon)}
-                </Text>
-              </Box>
-            )}
-
-            <Text>{actionState.label}</Text>
-          </Flex>
-
-          {actionState.shortcut && (
-            <Box marginLeft={3}>
-              <Hotkeys
-                keys={String(actionState.shortcut)
-                  .split('+')
-                  .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))}
-              />
-            </Box>
-          )}
-        </Flex>
-      </Tooltip>
-    </MenuItem>
+      icon={actionState.icon}
+      text={actionState.label}
+      hotkeys={
+        actionState.shortcut
+          ? String(actionState.shortcut)
+              .split('+')
+              .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))
+          : undefined
+      }
+      renderMenuItem={menuItemContent}
+    />
   )
 }

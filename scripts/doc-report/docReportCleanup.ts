@@ -1,9 +1,9 @@
 import {sanityIdify} from '../utils/sanityIdify'
 import {startTimer} from '../utils/startTimer'
-import {createDocClient} from './docClient'
-import {readEnv} from './envVars'
+import {readEnv} from '../utils/envVars'
+import {KnownEnvVar, createDocClient} from './docClient'
 
-const DATASET = readEnv('DOCS_REPORT_DATASET')
+const DATASET = readEnv<KnownEnvVar>('DOCS_REPORT_DATASET')
 const studioMetricsClient = createDocClient(DATASET)
 
 const timer = startTimer(`Deleting dataset ${DATASET}`)

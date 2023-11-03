@@ -32,4 +32,5 @@ export const PaneRouterContext = createContext<PaneRouterContextValue>({
   setParams: () => missingContext(),
   setPayload: () => missingContext(),
   navigateIntent: () => missingContext(),
+  createPathWithParams: () => missingContext(),
 })

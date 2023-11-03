@@ -3,7 +3,7 @@ import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {PortableTextBlock} from '@sanity/types'
 import {PatchEvent} from '../../patch'
-import {RenderBlockActionsCallback, RenderBlockActionsProps} from './types'
+import {RenderBlockActionsCallback, RenderBlockActionsProps} from '../../types/_transitional'
 import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
 
 interface BlockActionsProps {

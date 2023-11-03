@@ -646,5 +646,52 @@ export default Schema.compile({
         },
       ],
     },
+    {
+      title: 'Person in another dataset',
+      name: 'cdrPersonReference',
+      type: 'crossDatasetReference',
+      dataset: 'production',
+      to: [
+        {
+          type: 'person',
+          preview: {
+            select: {
+              title: 'name',
+              media: 'image',
+            },
+          },
+        },
+      ],
+    },
+    {
+      title: 'Document with CDR Field',
+      name: 'documentWithCdrField',
+      type: 'document',
+      fields: [
+        {
+          name: 'cdrFieldInline',
+          type: 'crossDatasetReference',
+          dataset: 'production',
+          to: [
+            {
+              type: 'person',
+              preview: {
+                select: {title: 'name'},
+              },
+            },
+            {
+              type: 'place',
+              preview: {
+                select: {title: 'name'},
+              },
+            },
+          ],
+        },
+        {
+          name: 'cdrFieldNamed',
+          type: 'cdrPersonReference',
+        },
+      ],
+    },
   ],
 })

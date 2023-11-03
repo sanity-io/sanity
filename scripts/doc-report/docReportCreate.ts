@@ -16,8 +16,8 @@ import readPackages from '../utils/readPackages'
 import type {PackageManifest} from '../types'
 import {sanityIdify} from '../utils/sanityIdify'
 import {startTimer} from '../utils/startTimer'
-import {createDocClient} from './docClient'
-import {readEnv} from './envVars'
+import {readEnv} from '../utils/envVars'
+import {KnownEnvVar, createDocClient} from './docClient'
 
 const ALLOWED_TAGS = ['public', 'alpha', 'beta', 'internal', 'experimental', 'deprecated']
 interface Package {
@@ -194,9 +194,9 @@ function getPackageMutations(pkg: Package): Mutation[] {
   })
 }
 
-const dataset = sanityIdify(readEnv('DOCS_REPORT_DATASET'))
+const dataset = sanityIdify(readEnv<KnownEnvVar>('DOCS_REPORT_DATASET'))
 
-const studioMetricsClient = createDocClient(readEnv('DOCS_REPORT_DATASET'))
+const studioMetricsClient = createDocClient(readEnv<KnownEnvVar>('DOCS_REPORT_DATASET'))
 
 studioMetricsClient.datasets.list().then(async (datasets) => {
   // If the dataset doesn't exist, create it

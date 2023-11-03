@@ -57,7 +57,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                 <Text size={1} weight="semibold">
                   {schemaType ? (
                     <>
-                      {capitalize(schemaType.type)} type "{schemaType.name}"
+                      {capitalize(schemaType.type)} type &quot;{schemaType.name}&quot;
                     </>
                   ) : null}
                 </Text>
@@ -74,18 +74,17 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                 >
                   {group.path.map((segment, j) => {
                     if (segment.kind === 'type') {
+                      const text = `${_renderSegmentName(segment.name)}:${segment.type}`
                       return (
-                        <Text key={j} size={1}>
-                          <SegmentSpan>{`${_renderSegmentName(segment.name)}:${
-                            segment.type
-                          }`}</SegmentSpan>
+                        <Text title={text} key={j} size={1} textOverflow="ellipsis">
+                          <SegmentSpan>{text}</SegmentSpan>
                         </Text>
                       )
                     }
 
                     if (segment.kind === 'property') {
                       return (
-                        <Text key={j} size={1}>
+                        <Text title={segment.name} key={j} size={1} textOverflow="ellipsis">
                           <SegmentSpan>{segment.name}</SegmentSpan>
                         </Text>
                       )

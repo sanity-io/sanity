@@ -39,10 +39,8 @@ const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
     },
 
     // hovered
-    '@media(hover:hover)': {
-      '&:not([data-disabled]):not([data-read-only]):hover': {
-        borderColor: color.default.hovered.border,
-      },
+    '@media(hover:hover):not([data-disabled]):not([data-read-only]):hover': {
+      borderColor: color.default.hovered.border,
     },
 
     // focused

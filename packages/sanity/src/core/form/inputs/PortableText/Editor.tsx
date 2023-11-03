@@ -8,14 +8,12 @@ import {
   OnPasteFn,
   OnCopyFn,
   EditorSelection,
-  PortableTextEditor,
-  usePortableTextEditor,
   RenderStyleFunction,
   RenderListItemFunction,
 } from '@sanity/portable-text-editor'
 import {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
 import {
@@ -34,7 +32,6 @@ import {ListItem} from './text/ListItem'
 const noOutlineStyle = {outline: 'none'} as const
 
 interface EditorProps {
-  hasFocus: boolean
   hotkeys: HotkeyOptions
   initialSelection?: EditorSelection
   isActive: boolean
@@ -65,10 +62,11 @@ const renderStyle: RenderStyleFunction = (props) => {
 const renderListItem: RenderListItemFunction = (props) => {
   return <ListItem {...props} />
 }
-
+/**
+ * @internal
+ */
 export function Editor(props: EditorProps) {
   const {
-    hasFocus,
     hotkeys,
     initialSelection,
     isActive,
@@ -89,7 +87,6 @@ export function Editor(props: EditorProps) {
   } = props
   const {isTopLayer} = useLayer()
   const editableRef = useRef<HTMLDivElement | null>(null)
-  const editor = usePortableTextEditor()
 
   const {element: boundaryElement} = useBoundaryElement()
 
@@ -115,22 +112,6 @@ export function Editor(props: EditorProps) {
   const spellcheck = useSpellcheck()
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
-
-  // Re-focus/blur the editor when toggling fullscreen.
-  // The hasFocus is kept in ref so focus or blur is called only
-  // when `isFullscreen` changes (and not when `hasFocus` changes)
-  // This is important to avoid focus/blur loops when opening up
-  // object blocks for editing where the form focus and
-  // the editor selection share the same path.
-  const focusRef = useRef(hasFocus)
-  useEffect(() => {
-    focusRef.current = hasFocus
-  }, [hasFocus])
-  useEffect(() => {
-    if (focusRef.current) {
-      PortableTextEditor.focus(editor)
-    }
-  }, [editor, isFullscreen])
 
   const editable = useMemo(
     () => (

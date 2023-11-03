@@ -1,9 +1,9 @@
 import React, {useId} from 'react'
 import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {Box, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {Box, Menu, MenuButton} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'
 import {RowLayout} from '../../layouts/RowLayout'
-import {Button} from '../../../../../../ui'
+import {Button, MenuItem} from '../../../../../../ui'
 import {IncompatibleItemType} from './IncompatibleItemType'
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const

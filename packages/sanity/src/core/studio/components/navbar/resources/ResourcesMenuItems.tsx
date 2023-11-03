@@ -1,6 +1,7 @@
-import {Box, Card, Flex, Label, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
+import {Box, Card, Flex, Label, MenuDivider, Spinner, Text} from '@sanity/ui'
 import React from 'react'
 import {SANITY_VERSION} from '../../../../version'
+import {MenuItem} from '../../../../../ui'
 import {ResourcesResponse, Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
@@ -54,26 +55,20 @@ const fallbackLinks = (
     <MenuItem
       as="a"
       text="Join our community"
-      size={0}
       href="https://www.sanity.io/exchange/community"
       target="_blank"
-      muted={false}
     />
     <MenuItem
       as="a"
       text="Help and support"
-      size={0}
       href="https://www.sanity.io/contact/support"
       target="_blank"
-      muted={false}
     />
     <MenuItem
       as="a"
       text="Contact sales"
-      size={0}
       href="https://www.sanity.io/contact/sales?ref=studio"
       target="_blank"
-      muted={false}
     />
     <MenuDivider />
   </>
@@ -100,7 +95,6 @@ function SubSection({subSection}: {subSection: Section}) {
                 tone="default"
                 key={item._key}
                 text={item.title}
-                size={0}
                 href={item.url}
                 target="_blank"
               />
@@ -108,9 +102,7 @@ function SubSection({subSection}: {subSection: Section}) {
           case 'internalAction': // TODO: Add support for internal actions (MVI-2)
             if (!item.type) return null
             return (
-              item.type === 'show-welcome-modal' && (
-                <MenuItem key={item._key} text={item.title} size={0} />
-              )
+              item.type === 'show-welcome-modal' && <MenuItem key={item._key} text={item.title} />
             )
 
           default:

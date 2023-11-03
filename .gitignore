@@ -71,11 +71,15 @@ etc
 /test/e2e/report
 /test/e2e/results
 /test/e2e/state
+blob-report
 
 # Temporary files made by yarn when running canary releases
 .yarn
 .yarnrc
 .turbo
+.yalc
+yalc.lock
 
 ## Documentation Report
 scripts/docs-report.md
+

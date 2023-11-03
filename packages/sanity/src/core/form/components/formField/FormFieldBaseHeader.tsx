@@ -1,58 +1,44 @@
-import {Box, Card, Flex, Theme} from '@sanity/ui'
 import React, {useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
+import {Box, Card, Flex, Theme} from '@sanity/ui'
 import {FieldPresence, FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field'
+import {FieldCommentsProps} from '../../types'
 
-const Root = styled(Flex)({
-  // This prevents the buttons from taking up extra vertical space in the flex layout,
-  // due to their default vertical alignment being baseline.
-  lineHeight: 1,
+const Root = styled(Flex)`
+  /* Prevent buttons from taking up extra vertical space */
+  line-height: 1;
+  /* For floating actions menu */
+  position: relative;
+`
 
-  // This is needed for the floating actions menu
-  position: 'relative',
-})
-
-const PresenceBox = styled(Box)(({theme, $right}: {theme: Theme; $right: number}) => {
+const PresenceBox = styled(Box)<{$right: number}>(({theme, $right}) => {
   const {space} = theme.sanity
-
   return css`
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
     right: ${$right + space[1]}px;
   `
 })
 
-const ContentBox = styled(Box)(({
-  theme,
-  $presenceMaxWidth,
-}: {
-  theme: Theme
+const ContentBox = styled(Box)<{
   $presenceMaxWidth: number
-}) => {
+}>(({theme, $presenceMaxWidth}) => {
   const {space} = theme.sanity
-
   return css`
-    // Limit the width to preserve space for presence avatars
     max-width: calc(100% - ${$presenceMaxWidth + space[1]}px);
     min-width: 75%;
   `
 })
 
-const SlotBox = styled(Box)(({
-  theme,
-  $right,
-  $fieldActionsVisible,
-}: {
-  theme: Theme
+const SlotBox = styled(Box)<{
   $right: number
   $fieldActionsVisible: boolean
-}) => {
+}>(({theme, $right, $fieldActionsVisible}) => {
   const {space} = theme.sanity
   const right = $fieldActionsVisible ? $right + space[1] : $right
-
   return css`
     position: absolute;
     bottom: 0;
@@ -60,22 +46,22 @@ const SlotBox = styled(Box)(({
   `
 })
 
-const FieldActionsFloatingCard = styled(Card)(({theme}) => {
+const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
   const {space} = theme.sanity
-
   return css`
-    position: absolute;
     bottom: 0;
-    right: 0;
+    gap: ${space[1] / 2}px;
     padding: ${space[1] / 2}px;
+    position: absolute;
+    right: 0;
   `
 })
 
 const MAX_AVATARS = 4
 
 interface FormFieldBaseHeaderProps {
-  /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
-  __internal_slot?: React.ReactNode
+  __internal_comments?: FieldCommentsProps // DO NOT USE
+  __internal_slot?: React.ReactNode // ONLY USED BY AI ASSIST PLUGIN
   actions?: DocumentFieldActionNode[]
   content: React.ReactNode
   fieldFocused: boolean
@@ -83,27 +69,51 @@ interface FormFieldBaseHeaderProps {
   presence?: FormNodePresence[]
 }
 
-/** @internal */
 export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
-  const {__internal_slot: slot, actions, content, presence, fieldFocused, fieldHovered} = props
+  const {
+    __internal_comments: comments,
+    __internal_slot: slot,
+    actions,
+    content,
+    fieldFocused,
+    fieldHovered,
+    presence,
+  } = props
 
-  // The state refers to if a group field action menu is open
+  // State for if an actions menu is open
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
 
+  // States for floating card element and its width
   const [floatingCardElement, setFloatingCardElement] = useState<HTMLDivElement | null>(null)
-
-  const [slotElement, setSlotElement] = useState<HTMLDivElement | null>(null)
-
-  // The amount the presence box should be offset to the right
   const [floatingCardWidth, setFloatingCardWidth] = useState<number>(0)
+
+  // States for slot element and its width
+  const [slotElement, setSlotElement] = useState<HTMLDivElement | null>(null)
   const [slotWidth, setSlotWidth] = useState<number>(0)
 
+  // Extract comment related data with default values
+  const {
+    hasComments = false,
+    button: commentButton = null,
+    isAddingComment = false,
+  } = comments || {}
+
+  // Determine if actions exist and if field actions should be shown
   const hasActions = actions && actions.length > 0
-  const showFieldActions = hasActions && (fieldFocused || fieldHovered || menuOpen)
+  const showFieldActions = fieldFocused || fieldHovered || menuOpen || isAddingComment
 
-  const presenceMaxWidth = calcAvatarStackWidth(MAX_AVATARS)
+  // Determine the shadow level for the card
+  const shadow = (showFieldActions && hasActions) || !hasComments ? 3 : undefined
 
-  // Use the width of the floating card to offset the presence box
+  // Determine if there's a comment button or actions to show.
+  // We check for `comments.button` since that's the visual element that should be
+  // used for comments. If no button is provided, we don't have anything to show for comments.
+  const hasCommentsButtonOrActions = comments?.button || hasActions
+
+  // Determine if floating card with actions should be shown
+  const shouldShowFloatingCard = showFieldActions || hasComments
+
+  // Calculate floating card's width
   useEffect(() => {
     if (floatingCardElement) {
       const {width} = floatingCardElement.getBoundingClientRect()
@@ -111,6 +121,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
     }
   }, [floatingCardElement, showFieldActions])
 
+  // Calculate slot element's width
   useEffect(() => {
     if (slotElement) {
       const {width} = slotElement.getBoundingClientRect()
@@ -118,6 +129,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
     }
   }, [slotElement])
 
+  // Construct the slot element if slot is provided
   const slotEl = useMemo(() => {
     if (!slot) return null
 
@@ -134,7 +146,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
   return (
     <Root align="flex-end">
-      <ContentBox flex={1} paddingY={2} $presenceMaxWidth={presenceMaxWidth}>
+      <ContentBox flex={1} paddingY={2} $presenceMaxWidth={calcAvatarStackWidth(MAX_AVATARS)}>
         {content}
       </ContentBox>
 
@@ -146,15 +158,19 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
       {slotEl}
 
-      {showFieldActions && (
+      {shouldShowFloatingCard && hasCommentsButtonOrActions && (
         <FieldActionsFloatingCard
           display="flex"
           radius={2}
           ref={setFloatingCardElement}
-          shadow={2}
+          shadow={shadow}
           sizing="border"
         >
-          <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
+          {showFieldActions && hasActions && (
+            <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
+          )}
+
+          {commentButton}
         </FieldActionsFloatingCard>
       )}
     </Root>

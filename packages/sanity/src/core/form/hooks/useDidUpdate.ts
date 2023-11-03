@@ -13,6 +13,9 @@ import {usePrevious} from './usePrevious'
  *   }
  * })
  * ```
+ *
+ * @beta
+ * @hidden
  */
 export function useDidUpdate<T>(
   /** The value you want to respond to changes in. */

@@ -29,13 +29,13 @@ import {Button} from '../../../../ui'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {PreviewCard} from '../../../components'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {useFeatureEnabled} from '../../../hooks'
 import {CrossDatasetReferenceInfo, CrossDatasetSearchHit, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {DisabledFeatureWarning} from './DisabledFeatureWarning'
-import {useFeatureEnabled} from './useFeatureEnabled'
 import {useProjectId} from './utils/useProjectId'
 
 const INITIAL_SEARCH_STATE: SearchState = {
@@ -434,14 +434,14 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       <Text as="p" muted size={1}>
                         {schemaType.weak ? (
                           <>
-                            It will not be possible to delete the "{preview?.title}"-document
-                            without first removing this reference.
+                            It will not be possible to delete the &quot;{preview?.title}
+                            &quot;-document without first removing this reference.
                           </>
                         ) : (
                           <>
-                            This makes it possible to delete the "{preview?.title}"-document without
-                            first deleting this reference, leaving this field referencing a
-                            nonexisting document.
+                            This makes it possible to delete the &quot;{preview?.title}
+                            &quot;-document without first deleting this reference, leaving this
+                            field referencing a nonexisting document.
                           </>
                         )}
                       </Text>

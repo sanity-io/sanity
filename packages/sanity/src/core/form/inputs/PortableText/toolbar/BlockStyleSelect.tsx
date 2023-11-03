@@ -1,6 +1,13 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {Menu, MenuButton, MenuButtonProps, MenuItem, Text} from '@sanity/ui'
+import {
+  Menu,
+  MenuButton,
+  MenuButtonProps,
+  // eslint-disable-next-line no-restricted-imports
+  MenuItem,
+  Text,
+} from '@sanity/ui'
 import {SelectIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {

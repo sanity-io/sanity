@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.17.0",
+  "version": "3.19.1",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,19 +20,19 @@
     "@react-three/drei": "^9.80.1",
     "@react-three/fiber": "^8.13.6",
     "@sanity/assist": "^1.0.8",
-    "@sanity/block-tools": "3.17.0",
+    "@sanity/block-tools": "3.19.1",
     "@sanity/color": "^2.1.20",
     "@sanity/google-maps-input": "^3.0.1",
-    "@sanity/icons": "^2.4.0",
+    "@sanity/icons": "^2.6.0",
     "@sanity/image-url": "^1.0.2",
-    "@sanity/portable-text-editor": "3.17.0",
+    "@sanity/portable-text-editor": "3.19.1",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/types": "3.17.0",
     "@sanity/ui": "2.0.0-alpha.5",
     "@sanity/ui-workshop": "^1.0.0",
-    "@sanity/util": "3.17.0",
+    "@sanity/util": "3.19.1",
     "@sanity/uuid": "^3.0.1",
-    "@sanity/vision": "3.17.0",
+    "@sanity/vision": "3.19.1",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "@types/three": "^0.150.0",
@@ -48,14 +48,14 @@
     "react-refractor": "^2.1.6",
     "refractor": "^3.6.0",
     "rxjs": "^7.8.0",
-    "sanity": "3.17.0",
+    "sanity": "3.19.1",
     "sanity-plugin-mux-input": "^2.2.1",
-    "styled-components": "^5.2.0",
+    "styled-components": "^6.1.0",
     "three": "^0.157.0",
     "three-stdlib": "^2.24.2"
   },
   "devDependencies": {
     "chokidar": "^3.5.3",
-    "vite": "^4.4.8"
+    "vite": "^4.5.0"
   }
 }

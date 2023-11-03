@@ -45,6 +45,10 @@ export interface ConvertedType {
   interfaces?: string[]
   originalName?: string
   isReference?: boolean
+  crossDatasetReferenceMetadata?: {
+    dataset: string
+    typeNames: string[]
+  }
 }
 
 export interface ConvertedDocumentType extends ConvertedType {

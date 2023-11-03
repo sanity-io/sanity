@@ -24,7 +24,7 @@ export type PreviewLayoutKey = GeneralPreviewLayoutKey | PortableTextPreviewLayo
 
 /**
  * @hidden
- * @beta
+ * @public
  */
 export interface PreviewMediaDimensions {
   aspect?: number

@@ -1,22 +1,43 @@
 import {createClient} from '@sanity/client'
-import {SANITY_E2E_SESSION_TOKEN} from '../env'
-import {STALE_TEST_THRESHOLD_MS, STUDIO_DATASET_NAME, STUDIO_PROJECT_ID} from './constants'
+import {uuid} from '@sanity/uuid'
+import {SANITY_E2E_SESSION_TOKEN, SANITY_E2E_DATASET, SANITY_E2E_PROJECT_ID} from '../env'
+import {SanityClient} from 'sanity'
 
-export const testSanityClient = createClient({
-  projectId: STUDIO_PROJECT_ID,
-  dataset: STUDIO_DATASET_NAME,
+export class TestContext {
+  client: SanityClient
+
+  constructor(client: SanityClient) {
+    this.client = client
+  }
+
+  documentIds = new Set<string>()
+
+  getUniqueDocumentId(): string {
+    const documentId = uuid()
+    this.documentIds.add(documentId)
+    return documentId
+  }
+
+  teardown(): void {
+    this.client.delete({
+      query: '*[_id in $ids]',
+      params: {ids: [...this.documentIds].map((id) => `drafts.${id}`)},
+    })
+  }
+}
+
+const testSanityClient = createClient({
+  projectId: SANITY_E2E_PROJECT_ID,
+  dataset: SANITY_E2E_DATASET,
   token: SANITY_E2E_SESSION_TOKEN,
   useCdn: false,
   apiVersion: '2021-08-31',
 })
 
-export function deleteDocumentsForRun(
-  typeName: string,
-  runId: string,
-): {query: string; params: Record<string, unknown>} {
-  const threshold = new Date(Date.now() - STALE_TEST_THRESHOLD_MS).toISOString()
-  return {
-    query: `*[_type == $typeName && (runId == $runId || _createdAt < "${threshold}")]`,
-    params: {typeName, runId},
-  }
+/* eslint-disable callback-return*/
+export function withDefaultClient(callback: (context: TestContext) => void): void {
+  const context = new TestContext(testSanityClient)
+  callback(context)
+
+  context.teardown()
 }

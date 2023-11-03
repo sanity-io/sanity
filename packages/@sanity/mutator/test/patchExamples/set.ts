@@ -113,6 +113,52 @@ const examples: PatchExample[] = [
     },
   },
   {
+    name: 'Attribute greater than or equal filter',
+    before: {
+      variants: [
+        {name: 'a', stock: 20},
+        {name: 'b', stock: 30},
+        {name: 'c', stock: 10},
+      ],
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'variants[stock >= 20].stock': 5,
+      },
+    },
+    after: {
+      variants: [
+        {name: 'a', stock: 5},
+        {name: 'b', stock: 5},
+        {name: 'c', stock: 10},
+      ],
+    },
+  },
+  {
+    name: 'Attribute less than or equal filter',
+    before: {
+      variants: [
+        {name: 'x', stock: 99},
+        {name: 'y', stock: 50},
+        {name: 'z', stock: 10},
+      ],
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'variants[stock <= 50].stock': 5,
+      },
+    },
+    after: {
+      variants: [
+        {name: 'x', stock: 99},
+        {name: 'y', stock: 5},
+        {name: 'z', stock: 5},
+      ],
+    },
+  },
+  {
     name: 'Set new key',
     before: {},
     patch: {
@@ -123,6 +169,78 @@ const examples: PatchExample[] = [
     },
     after: {
       a: 'hello',
+    },
+  },
+  {
+    name: 'Set new deep key',
+    before: {},
+    patch: {
+      id: 'a',
+      set: {
+        'a.b.c': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: {
+          c: 'hello',
+        },
+      },
+    },
+  },
+  {
+    name: 'Set deep key on previous string value',
+    before: {
+      a: 'stringValue',
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a.b.c': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: {
+          c: 'hello',
+        },
+      },
+    },
+  },
+  {
+    name: 'Set deep key on previous number value',
+    before: {
+      a: 123,
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a.b.c': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: {
+          c: 'hello',
+        },
+      },
+    },
+  },
+  {
+    name: 'Set key on previous number value',
+    before: {
+      a: 123,
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a.b': 'hello',
+      },
+    },
+    after: {
+      a: {
+        b: 'hello',
+      },
     },
   },
   {

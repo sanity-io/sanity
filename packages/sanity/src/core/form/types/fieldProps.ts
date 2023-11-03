@@ -26,12 +26,21 @@ import {
   StringInputProps,
 } from './inputProps'
 
+/** @internal @deprecated DO NOT USE */
+export interface FieldCommentsProps {
+  hasComments: boolean
+  button: React.ReactNode
+  isAddingComment: boolean
+}
+
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface BaseFieldProps {
   /** @beta */
   actions?: DocumentFieldAction[]
+  /** @internal @deprecated DO NOT USE */
+  __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
   __internal_slot?: React.ReactNode
   schemaType: SchemaType
@@ -55,7 +64,7 @@ export interface BaseFieldProps {
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface ObjectFieldProps<T = Record<string, any>> extends BaseFieldProps {
   schemaType: ObjectSchemaType
   value: {[field in string]: unknown} | undefined
@@ -71,7 +80,7 @@ export interface ObjectFieldProps<T = Record<string, any>> extends BaseFieldProp
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface ArrayFieldProps extends BaseFieldProps {
   schemaType: ArraySchemaType
   value: unknown[] | undefined
@@ -84,7 +93,7 @@ export interface ArrayFieldProps extends BaseFieldProps {
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
   schemaType: ArraySchemaType
   value: unknown[] | undefined
@@ -97,7 +106,7 @@ export interface ArrayOfPrimitivesFieldProps extends BaseFieldProps {
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface NumberFieldProps extends BaseFieldProps {
   schemaType: NumberSchemaType
   value: number | undefined
@@ -106,7 +115,7 @@ export interface NumberFieldProps extends BaseFieldProps {
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface BooleanFieldProps extends BaseFieldProps {
   schemaType: BooleanSchemaType
   value: boolean | undefined
@@ -115,7 +124,7 @@ export interface BooleanFieldProps extends BaseFieldProps {
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface StringFieldProps extends BaseFieldProps {
   schemaType: StringSchemaType
   value: string | undefined
@@ -127,7 +136,7 @@ export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringF
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export type FieldProps =
   | ObjectFieldProps
   | ObjectFieldProps<CrossDatasetReferenceValue>

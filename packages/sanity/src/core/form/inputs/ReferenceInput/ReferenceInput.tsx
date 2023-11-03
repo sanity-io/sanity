@@ -298,7 +298,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             }
           >
             <Text size={1}>
-              This field is currently referencing a document that doesn't exist (ID:
+              This field is currently referencing a document that doesn&apos;t exist (ID:
               <code>{value._ref}</code>). You can either remove the reference or replace it with
               another document.
             </Text>

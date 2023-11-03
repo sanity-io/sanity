@@ -154,7 +154,7 @@ export function DocumentTypesPopoverContent() {
         {!documentTypeItems.length && (
           <Box padding={3}>
             <Text muted size={1} textOverflow="ellipsis">
-              No matches for '{typeFilter}'
+              No matches for &apos;{typeFilter}&apos;
             </Text>
           </Box>
         )}

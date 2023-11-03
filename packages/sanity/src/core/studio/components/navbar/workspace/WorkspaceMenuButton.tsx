@@ -1,13 +1,13 @@
 import {SelectIcon} from '@sanity/icons'
-import {MenuButton, MenuItem, Menu, MenuButtonProps, Box, Label, Stack} from '@sanity/ui'
+import {MenuButton, Menu, MenuButtonProps, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
-import {Tooltip, Button} from '../../../../../ui'
+import {Tooltip, MenuItem, Button} from '../../../../../ui'
 import {useWorkspaceAuthStates} from './hooks'
-import {WorkspacePreview} from './WorkspacePreview'
+import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 import {useRouter} from 'sanity/router'
 
 const StyledMenu = styled(Menu)`
@@ -65,12 +65,6 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
           id="workspace-menu"
           menu={
             <StyledMenu>
-              <Box paddingX={3} paddingY={3}>
-                <Label size={1} muted>
-                  Workspaces
-                </Label>
-              </Box>
-
               {authStates &&
                 workspaces.map((workspace) => {
                   const authState = authStates[workspace.name]
@@ -92,23 +86,20 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
                       navigateUrl({path: workspace.basePath})
                     }
                   }
-
+                  const isSelected = workspace.name === activeWorkspace.name
                   return (
                     <MenuItem
                       key={workspace.name}
                       // eslint-disable-next-line react/jsx-no-bind
                       onClick={handleSelectWorkspace}
-                      padding={2}
-                      pressed={workspace.name === activeWorkspace.name}
-                    >
-                      <WorkspacePreview
-                        icon={workspace?.icon}
-                        selected={workspace.name === activeWorkspace.name}
-                        state={state}
-                        subtitle={workspace?.subtitle}
-                        title={workspace?.title || workspace.name}
-                      />
-                    </MenuItem>
+                      pressed={isSelected}
+                      selected={isSelected}
+                      iconRight={isSelected ? CheckmarkIcon : undefined}
+                      badgeText={STATE_TITLES[state]}
+                      preview={<WorkspacePreviewIcon icon={workspace.icon} size="large" />}
+                      text={workspace?.title || workspace.name}
+                      subtitle={workspace?.subtitle}
+                    />
                   )
                 })}
             </StyledMenu>

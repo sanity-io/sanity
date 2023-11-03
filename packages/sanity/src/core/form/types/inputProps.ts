@@ -28,7 +28,7 @@ import {
 
 import {UploaderResolver} from '../studio'
 import {FormFieldGroup} from '../store'
-import {RenderBlockActionsCallback} from '../inputs'
+import {RenderBlockActionsCallback} from '../types'
 import {
   RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
@@ -43,14 +43,14 @@ import {ArrayInputFunctionsProps, PortableTextMarker, RenderCustomMarkers} from 
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface BaseInputProps {
   renderDefault: (props: InputProps) => React.ReactElement
 }
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface ObjectInputProps<
   T = Record<string, any>,
   S extends ObjectSchemaType = ObjectSchemaType,
@@ -149,7 +149,7 @@ export interface ObjectInputProps<
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType,
@@ -285,7 +285,7 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface ArrayOfPrimitivesInputProps<
   T extends string | boolean | number = string | boolean | number,
   S extends ArraySchemaType = ArraySchemaType,
@@ -382,7 +382,7 @@ export interface ArrayOfPrimitivesInputProps<
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface PrimitiveInputElementProps {
   value?: string
   id: string
@@ -408,7 +408,7 @@ export interface ComplexElementProps {
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   extends BaseInputProps,
     StringFormNode<S> {
@@ -425,7 +425,7 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   extends BaseInputProps,
     NumberFormNode<S> {
@@ -442,7 +442,7 @@ export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
   extends BaseInputProps,
     BooleanFormNode<S> {
@@ -470,21 +470,49 @@ export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaTy
 export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberInputProps
 
 /**
- * @hidden
- * @beta */
+ * Component props for the {@link PortableTextInput} React component.
+ *
+ * Extends {@link ArrayOfObjectsInputProps}.
+ *
+ * @public
+ * */
 export interface PortableTextInputProps
   extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
+  /**
+   * Assign hotkeys that can be attached to custom editing functions
+   */
   hotkeys?: HotkeyOptions
+  /**
+   * Array of {@link PortableTextMarker} with meta data connected to the content.
+   * @deprecated will be removed in the next major version of Sanity Studio.
+   * Use the `renderBlock` interface instead.
+   */
   markers?: PortableTextMarker[]
+  /**
+   * Custom copy function
+   */
   onCopy?: OnCopyFn
+  /**
+   * Custom paste function
+   */
   onPaste?: OnPasteFn
+  /**
+   * Function to render custom block actions
+   * @deprecated will be removed in the next major version of Sanity Studio.
+   * Use the `renderBlock` interface instead.
+   */
   renderBlockActions?: RenderBlockActionsCallback
+  /**
+   * Function to render custom markers
+   * @deprecated will be removed in the next major version of Sanity Studio.
+   * Use the `renderBlock` interface instead.
+   */
   renderCustomMarkers?: RenderCustomMarkers
 }
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export type InputProps =
   | ArrayOfObjectsInputProps
   | ArrayOfPrimitivesInputProps

@@ -18,21 +18,42 @@ import {
 
 const NOOP = () => null
 
-export function TestForm() {
+export function TestForm({
+  focusPath: focusPathFromProps,
+  document: documentFromProps,
+}: {
+  focusPath?: Path
+  document?: SanityDocument
+}) {
   const [validation, setValidation] = useState<ValidationMarker[]>([])
   const [openPath, onSetOpenPath] = useState<Path>([])
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
-  const [document, setDocument] = useState<SanityDocument>({
-    _id: '123',
-    _type: 'test',
-    _createdAt: new Date().toISOString(),
-    _updatedAt: new Date().toISOString(),
-    _rev: '123',
-  })
-  const [focusPath, setFocusPath] = useState<Path>(() => ['title'])
+  const [document, setDocument] = useState<SanityDocument>(
+    documentFromProps || {
+      _id: '123',
+      _type: 'test',
+      _createdAt: new Date().toISOString(),
+      _updatedAt: new Date().toISOString(),
+      _rev: '123',
+    },
+  )
+  const [focusPath, setFocusPath] = useState<Path>(() => focusPathFromProps || [])
   const patchChannel = useMemo(() => createPatchChannel(), [])
+
+  useEffect(() => {
+    if (documentFromProps) {
+      setDocument(documentFromProps)
+    }
+  }, [documentFromProps])
+
+  useEffect(() => {
+    if (focusPathFromProps) {
+      setFocusPath(focusPathFromProps)
+      onSetOpenPath(focusPathFromProps)
+    }
+  }, [focusPathFromProps])
 
   useEffect(() => {
     patchChannel.publish({
@@ -59,11 +80,11 @@ export function TestForm() {
 
   const formState = useFormState(schemaType, {
     focusPath,
-    collapsedPaths: collapsedPaths,
-    collapsedFieldSets: collapsedFieldSets,
+    collapsedPaths,
+    collapsedFieldSets,
     comparisonValue: null,
-    fieldGroupState: fieldGroupState,
-    openPath: openPath,
+    fieldGroupState,
+    openPath,
     presence: EMPTY_ARRAY,
     validation,
     value: document,

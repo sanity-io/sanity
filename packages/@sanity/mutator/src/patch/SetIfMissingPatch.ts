@@ -16,9 +16,14 @@ export class SetIfMissingPatch {
     let result = accessor
     targets.forEach((target) => {
       if (target.isIndexReference()) {
-        // setIfMissing do not apply to arrays, since Gradient will reject nulls in arrays
+        // setIfMissing do not apply to arrays, since Content Lake will reject nulls in arrays
       } else if (target.isAttributeReference()) {
-        if (!result.hasAttribute(target.name())) {
+        // setting a subproperty on a primitive value overwrites it, eg
+        // `{setIfMissing: {'address.street': 'California St'}}` on `{address: 'Fiction St'}` will
+        // result in `{address: {street: 'California St'}}`
+        if (result.containerType() === 'primitive') {
+          result = result.set({[target.name()]: this.value})
+        } else if (!result.hasAttribute(target.name())) {
           result = accessor.setAttribute(target.name(), this.value)
         }
       } else {

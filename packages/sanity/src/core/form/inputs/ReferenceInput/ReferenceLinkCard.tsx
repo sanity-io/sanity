@@ -29,7 +29,7 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
   props: ReferenceLinkCardProps & React.HTMLProps<HTMLElement>,
   ref: React.ForwardedRef<HTMLElement>,
 ) {
-  const {documentType, as: asProp, ...restProps} = props
+  const {as: asProp, documentId, documentType, ...cardProps} = props
   const dataAs = documentType ? 'a' : undefined
 
   // If the child link is clicked without a document type, an error will be thrown.
@@ -39,11 +39,12 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
 
   return (
     <StyledCard
-      {...restProps}
+      {...cardProps}
       data-as={dataAs}
+      documentId={documentId}
       documentType={documentType}
       forwardedAs={as}
-      ref={ref}
+      ref={ref as unknown as React.ForwardedRef<HTMLDivElement>}
     />
   )
 })

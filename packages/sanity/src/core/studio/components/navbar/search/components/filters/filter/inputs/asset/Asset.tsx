@@ -1,11 +1,11 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
 import type {AssetFromSource, AssetSource, ReferenceValue} from '@sanity/types'
-import {Box, Flex, Menu, MenuButton, MenuItem, Portal, Stack} from '@sanity/ui'
+import {Box, Flex, Menu, MenuButton, Portal, Stack} from '@sanity/ui'
 import {get} from 'lodash'
 import React, {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {Source} from '../../../../../../../../../config'
-import {Button} from '../../../../../../../../../../ui'
+import {Button, MenuItem} from '../../../../../../../../../../ui'
 import {FileSource, ImageSource} from '../../../../../../../../../form/studio/assetSource'
 import {useClient} from '../../../../../../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioClient'
@@ -149,7 +149,6 @@ export function SearchFilterAssetInput(type?: AssetType) {
                       <Menu>
                         {assetSources.map((source) => (
                           <MenuItem
-                            fontSize={fontSize}
                             icon={source.icon || ImageIcon}
                             key={source.name}
                             // eslint-disable-next-line react/jsx-no-bind

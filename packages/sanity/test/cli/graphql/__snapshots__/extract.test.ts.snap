@@ -166,6 +166,51 @@ Object {
       "type": "Object",
     },
     Object {
+      "crossDatasetReferenceMetadata": Object {
+        "dataset": "production",
+        "typeNames": Array [
+          "person",
+        ],
+      },
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_dataset",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_projectId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "CdrPersonReference",
+      "originalName": "cdrPersonReference",
+      "type": "Object",
+    },
+    Object {
       "description": undefined,
       "fields": Array [
         Object {
@@ -337,6 +382,74 @@ Object {
       "kind": "Type",
       "name": "DocumentActionsTest",
       "originalName": "documentActionsTest",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "crossDatasetReferenceMetadata": Object {
+            "dataset": "production",
+            "typeNames": Array [
+              "person",
+              "place",
+            ],
+          },
+          "fieldName": "cdrFieldInline",
+          "type": "CrossDatasetReference",
+        },
+        Object {
+          "crossDatasetReferenceMetadata": Object {
+            "dataset": "production",
+            "typeNames": Array [
+              "person",
+            ],
+          },
+          "fieldName": "cdrFieldNamed",
+          "type": "CdrPersonReference",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "DocumentWithCdrField",
+      "originalName": "documentWithCdrField",
       "type": "Object",
     },
     Object {

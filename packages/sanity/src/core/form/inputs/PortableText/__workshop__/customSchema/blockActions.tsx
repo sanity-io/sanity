@@ -2,7 +2,7 @@ import React, {memo, useCallback} from 'react'
 import {CopyIcon} from '@sanity/icons'
 import {keyGenerator} from '@sanity/portable-text-editor'
 import {PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
-import {RenderBlockActionsCallback} from '../../types'
+import {RenderBlockActionsCallback} from '../../../../types/_transitional'
 import {Tooltip, Button} from '../../../../../../ui'
 
 const BlockActions = memo(function BlockActions(props: {

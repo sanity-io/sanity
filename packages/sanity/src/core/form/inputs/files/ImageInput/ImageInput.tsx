@@ -1,17 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
-import {
-  Box,
-  Card,
-  Dialog,
-  Menu,
-  MenuButton,
-  MenuButtonProps,
-  MenuItem,
-  Stack,
-  ToastParams,
-} from '@sanity/ui'
+import {Box, Card, Dialog, Menu, MenuButton, MenuButtonProps, Stack, ToastParams} from '@sanity/ui'
 import {get} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
@@ -45,7 +35,7 @@ import {handleSelectAssetFromSource} from '../common/assetSource'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImageToolInput} from '../ImageToolInput'
-import {Button} from '../../../../../ui'
+import {Button, MenuItem} from '../../../../../ui'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {PresenceOverlay} from '../../../../presence'

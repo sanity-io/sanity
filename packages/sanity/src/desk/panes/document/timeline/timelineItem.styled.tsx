@@ -1,7 +1,6 @@
 import {
   Text,
   Box,
-  Theme,
   Flex,
   rem,
   // eslint-disable-next-line no-restricted-imports
@@ -9,11 +8,7 @@ import {
 } from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
-export interface IconWrapperProps {
-  theme: Theme
-}
-
-export const IconWrapper = styled(Flex)(({theme}: IconWrapperProps) => {
+export const IconWrapper = styled(Flex)(({theme}) => {
   const borderColor = theme.sanity.color.base.skeleton?.from
 
   return css`
@@ -36,13 +31,10 @@ export const IconWrapper = styled(Flex)(({theme}: IconWrapperProps) => {
   `
 })
 
-export const Root = styled(Button)(({
-  $selected,
-  $disabled,
-}: {
+export const Root = styled(Button)<{
   $selected: boolean
   $disabled: boolean
-}) => {
+}>(({$selected, $disabled}) => {
   return css`
     position: relative;
     width: 100%;

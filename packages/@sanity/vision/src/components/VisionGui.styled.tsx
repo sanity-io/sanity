@@ -142,7 +142,7 @@ export const TimingsContainer = styled(Box)`
 
 export const TimingsTextContainer = styled(Flex)`
   height: 100%;
-  min-height: ${({theme}: {theme: Theme}) =>
+  min-height: ${({theme}) =>
     rem(
       theme.sanity.space[3] * 2 +
         theme.sanity.fonts.text.sizes[2].lineHeight -

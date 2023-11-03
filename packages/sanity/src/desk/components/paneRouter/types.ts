@@ -154,6 +154,12 @@ export interface PaneRouterContextValue {
   setPayload: (payload: unknown) => void
 
   /**
+   * A function that creates a path with the given parameters without navigating to it.
+   * Useful for creating links that can be e.g. copied to clipboard and shared.
+   */
+  createPathWithParams: (params: Record<string, string | undefined>) => string
+
+  /**
    * Proxied navigation to a given intent. Consider just exposing `router` instead?
    */
   navigateIntent: (

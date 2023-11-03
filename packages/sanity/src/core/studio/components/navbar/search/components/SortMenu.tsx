@@ -1,10 +1,10 @@
 import {SortIcon} from '@sanity/icons'
-import {Card, Flex, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
+import {Card, Flex, Menu, MenuButton, MenuDivider} from '@sanity/ui'
 import isEqual from 'lodash/isEqual'
 import React, {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
 import {ORDERINGS} from '../definitions/orderings'
-import {Button} from '../../../../../../ui'
+import {Button, MenuItem} from '../../../../../../ui'
 import {useSearchState} from '../contexts/search/useSearchState'
 import type {SearchOrdering} from '../types'
 
@@ -43,13 +43,7 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   const isSelected = useMemo(() => isEqual(currentOrdering, ordering), [currentOrdering, ordering])
 
   return (
-    <MenuItem onClick={handleClick} padding={3} pressed={isSelected} tone="default">
-      <Flex align="center" justify="space-between" paddingRight={2}>
-        <Text size={1} weight="medium">
-          {ordering.title}
-        </Text>
-      </Flex>
-    </MenuItem>
+    <MenuItem onClick={handleClick} pressed={isSelected} tone="default" text={ordering.title} />
   )
 }
 

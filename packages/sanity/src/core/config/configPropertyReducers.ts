@@ -14,7 +14,10 @@ import type {
   NewDocumentOptionsContext,
   ResolveProductionUrlContext,
   Tool,
+  DocumentCommentsEnabledContext,
+  PluginOptions,
 } from './types'
+import {flattenConfig} from './flattenConfig'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
@@ -238,4 +241,32 @@ export const documentInspectorsReducer: ConfigPropertyReducer<
       resolveInspectorsFilter,
     )}`,
   )
+}
+
+export const documentCommentsEnabledReducer = (opts: {
+  config: PluginOptions
+  context: DocumentCommentsEnabledContext
+  initialValue: boolean
+}): boolean => {
+  const {config, context, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  // There is no concept of 'previous value' in this API. We only care about the final value.
+  // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
+  // The last plugin 'wins'.
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.document?.unstable_comments?.enabled
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'function') return resolver(context)
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`document.unstable_comments.enabled\` to be a boolean or a function, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
 }

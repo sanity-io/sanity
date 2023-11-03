@@ -82,13 +82,16 @@ function prepareStudios() {
       await mkdir(destinationPath, {recursive: true})
       await copy(`${sourceStudioPath}/**/{*,.*}`, destinationPath, {dereference: true})
 
-      const flags = version === 'v2' ? ['--legacy-peer-deps'] : []
-      await exec(npmPath, ['install', '--no-package-lock', ...flags], {cwd: destinationPath})
-
+      if (version === 'v2') {
+        await exec(npmPath, ['install', '--no-package-lock', '--legacy-peer-deps'], {
+          cwd: destinationPath,
+        })
+      }
       if (version === 'v3') {
-        // We'll want to test the actual integration with the `sanity` module,
-        // instead of the version that is available on npm
+        // We'll want to test the actual integration with the monorepo packages,
+        // instead of the versions that is available on npm, so we'll symlink them before running npm install
         await exec(nodePath, [SYMLINK_SCRIPT, destinationPath], {cwd: destinationPath})
+        await exec(npmPath, ['install', '--no-package-lock'], {cwd: destinationPath})
 
         // Make a copy of the studio and include a custom document component, in order to see
         // that it resolves. We "cannot" use the same studio as it would _always_ use the
@@ -98,8 +101,10 @@ function prepareStudios() {
           `${customDocStudioPath}/components/EnvDocument.tsx`,
           `${customDocStudioPath}/_document.tsx`,
         )
-        await exec(npmPath, ['install', '--no-package-lock'], {cwd: customDocStudioPath})
+        // We'll want to test the actual integration with the monorepo packages,
+        // instead of the versions that is available on npm, so we'll symlink them before running npm install
         await exec(nodePath, [SYMLINK_SCRIPT, customDocStudioPath], {cwd: customDocStudioPath})
+        await exec(npmPath, ['install', '--no-package-lock'], {cwd: customDocStudioPath})
       }
     }),
   )

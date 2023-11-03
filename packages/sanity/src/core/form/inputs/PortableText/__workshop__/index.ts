@@ -23,11 +23,6 @@ export default defineScope({
       component: lazy(() => import('./listCounter')),
     },
     {
-      name: 'edit-objects',
-      title: 'Edit objects',
-      component: lazy(() => import('./editObjects')),
-    },
-    {
       name: 'text-blocks',
       title: 'Text blocks',
       component: lazy(() => import('./textBlocks')),

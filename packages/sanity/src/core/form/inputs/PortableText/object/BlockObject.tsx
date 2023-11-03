@@ -18,7 +18,7 @@ import {
   RenderInputCallback,
   RenderPreviewCallback,
 } from '../../../types'
-import {RenderBlockActionsCallback} from '../types'
+import {RenderBlockActionsCallback} from '../../../types/_transitional'
 import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {useFormBuilder} from '../../../useFormBuilder'

@@ -12,8 +12,9 @@ import {LiveEditBadge} from './documentBadges'
 import {getIntentState} from './getIntentState'
 import {router} from './router'
 import {DeskToolOptions} from './types'
-import {validationInspector} from './panes/document/inspectors/validation'
+import {comments} from './comments'
 import {changesInspector} from './panes/document/inspectors/changes'
+import {validationInspector} from './panes/document/inspectors/validation'
 import {definePlugin} from 'sanity'
 
 const documentActions = [
@@ -94,6 +95,9 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
       return Array.from(new Set([...prevInspectors, ...inspectors]))
     },
   },
+
+  plugins: [comments()],
+
   tools: [
     {
       name: options?.name || 'desk',

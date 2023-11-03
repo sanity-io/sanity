@@ -3,8 +3,8 @@ import {
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
-import {useEffect} from 'react'
+import {Path, KeyedObject, isKeyedObject} from '@sanity/types'
+import {useLayoutEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {isEqual} from '@sanity/util/paths'
 import {usePortableTextMemberItems} from './usePortableTextMembers'
@@ -22,14 +22,9 @@ export function useTrackFocusPath(props: Props): void {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Don't do anything if no focusPath
     if (focusPath.length === 0) {
-      return
-    }
-
-    // Don't do anything if the selection focus path already is the focusPath
-    if (selection?.focus.path && isEqual(selection.focus.path, focusPath)) {
       return
     }
 
@@ -52,41 +47,68 @@ export function useTrackFocusPath(props: Props): void {
           inline: 'start',
         })
       }
-      const isBlockFocusPath = focusPath.length === 1
+
+      // Don't do anything if the selection focus path is already equal to the focusPath
+      if (selection?.focus.path && isEqual(selection.focus.path, focusPath)) {
+        return
+      }
+
       const isTextBlock = openItem.kind === 'textBlock'
-      // Handle paths coming from the outside that are ending on `.text`
-      // when pointing to span nodes. 'Click to edit' does this for instance.
-      const isSpanTextFocusPath =
-        isTextBlock &&
-        focusPath.length === 4 &&
-        focusPath[1] === 'children' &&
-        focusPath[3] === 'text'
-      // This is a normal span node path
-      const isSpanFocusPath = isTextBlock && focusPath.length === 3 && focusPath[1] === 'children'
+      const isBlockFocusPath = focusPath.length === 1
 
-      // If the focusPath i targeting a text block (with focusPath on the block itself),
-      // ensure that an editor selection is pointing to it's first child and then focus the editor.
-      if (openItem.kind === 'textBlock') {
-        const editorPath =
-          isSpanFocusPath || isSpanTextFocusPath
-            ? focusPath.slice(0, 3) // focusPath pointing to known span (slice so that the path doesn't include `.text`)
-            : [
-                focusPath[0],
-                'children',
-                (Array.isArray(openItem.node.value?.children) &&
-                  openItem.node.value?.children[0]._key && {
-                    _key: openItem.node.value?.children[0]._key,
-                  }) ||
-                  0,
-              ] // unknown span (just a block key given as focusPath), select the first span
+      // Track focus and selection for focusPaths that are either inside text blocks,
+      // or is pointing to the block itself (text and object blocks)
+      if (isTextBlock || isBlockFocusPath) {
+        const textBlockChildKey =
+          isTextBlock && isKeyedObject(focusPath[2]) ? focusPath[2]._key : undefined
+        const child =
+          textBlockChildKey && Array.isArray(openItem.node.value?.children)
+            ? (openItem.node.value?.children.find((c) => c._key === textBlockChildKey) as
+                | KeyedObject
+                | undefined)
+            : undefined
 
-        // Make an editor selection if we have a child path, and not have focus inside of it
-        if (isBlockFocusPath || isSpanFocusPath || isSpanTextFocusPath) {
+        // Is the focusPath pointing to span's `.text` property?
+        const isSpanTextFocusPath =
+          (child &&
+            child._type === 'span' &&
+            focusPath.length === 4 &&
+            focusPath[1] === 'children' &&
+            focusPath[3] === 'text') ||
+          false
+
+        // Is focus directly on a text block child?
+        const isTextChildFocusPath =
+          isTextBlock &&
+          ((focusPath.length === 3 && focusPath[1] === 'children') || isSpanTextFocusPath)
+
+        let path: Path = []
+        // Known text block child
+        if (isTextChildFocusPath) {
+          path = focusPath.slice(0, 3)
+        } else if (
+          // Known text block, but unknown child. Select first child in that block.
+          isTextBlock &&
+          isBlockFocusPath &&
+          Array.isArray(openItem.node.value?.children)
+        ) {
+          path = [focusPath[0], 'children', {_key: openItem.node.value?.children[0]._key}]
+          // Directly pointing to a non-text block
+        } else if (isBlockFocusPath) {
+          path = [{_key: openItem.key}]
+        }
+
+        // Select and focus the editor if we produced a path
+        if (path.length) {
           PortableTextEditor.select(editor, {
-            anchor: {path: editorPath, offset: 0},
-            focus: {path: editorPath, offset: 0},
+            anchor: {path, offset: 0},
+            focus: {path, offset: 0},
           })
-          PortableTextEditor.focus(editor)
+          // Object blocks will have their interface opened when focused,
+          // so only call focus for regular text blocks
+          if (isTextBlock) {
+            PortableTextEditor.focus(editor)
+          }
         }
       }
     }

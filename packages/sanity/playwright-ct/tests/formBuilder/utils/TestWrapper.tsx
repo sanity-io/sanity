@@ -4,7 +4,6 @@ import React, {useEffect, useState} from 'react'
 import {Pane, PaneContent, PaneLayout} from '../../../../src/desk/components'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
-import {TestForm} from './TestForm'
 import {
   ResourceCacheProvider,
   SchemaTypeDefinition,
@@ -17,7 +16,13 @@ import {
  * @description This component is used to wrap all tests in the providers it needs to be able to run successfully.
  * It provides a mock Sanity client and a mock workspace.
  */
-export const TestWrapper = ({schemaTypes}: {schemaTypes: SchemaTypeDefinition[]}) => {
+export const TestWrapper = ({
+  children,
+  schemaTypes,
+}: {
+  children?: React.ReactNode
+  schemaTypes: SchemaTypeDefinition[]
+}) => {
   const [mockWorkspace, setMockWorkspace] = useState<Workspace | null>(null)
 
   useEffect(() => {
@@ -53,9 +58,7 @@ export const TestWrapper = ({schemaTypes}: {schemaTypes: SchemaTypeDefinition[]}
                 <PaneLayout height="fill">
                   <Pane id="test-pane">
                     <PaneContent>
-                      <Card padding={3}>
-                        <TestForm />
-                      </Card>
+                      <Card padding={3}>{children}</Card>
                     </PaneContent>
                   </Pane>
                 </PaneLayout>

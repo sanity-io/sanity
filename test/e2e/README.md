@@ -1,8 +1,12 @@
 # E2E Testing in the Studio
 
-Before you get started with writing and running tests, you need to get hold of a token - either using your own Sanity user token (`sanity debug --secrets` will give you the CLI token), or by creating a project API token using https://sanity.io/manage.
+## Required Env Variables
 
-The tests expects to find the token in an environment variable named `SANITY_E2E_SESSION_TOKEN`. Either define it in your shell, or add it to the `.env.local` file in the repository root.
+The tests expects to find the below env variables. Either define it in your shell, or add it to the `.env.local` file in the repository root.
+
+- `SANITY_E2E_SESSION_TOKEN`: Before you get started with writing and running tests, you need to get hold of a token - either using your own Sanity user token (`sanity debug --secrets` will give you the CLI token provided you are logged in `sanity login`), or by creating a project API token using https://sanity.io/manage.
+- `SANITY_E2E_PROJECT_ID`: Project ID of the studio
+- `SANITY_E2E_DATASET`: Dataset name of the studio
 
 ## Running tests
 

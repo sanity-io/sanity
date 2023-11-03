@@ -82,7 +82,7 @@ export default function createGDocsRules(
           const span = {
             ...DEFAULT_SPAN,
             marks: [] as string[],
-            text: (el as HTMLElement).innerText,
+            text: el.textContent,
           }
           if (isStrong(el)) {
             span.marks.push('strong')

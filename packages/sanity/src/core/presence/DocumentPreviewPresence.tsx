@@ -1,4 +1,4 @@
-import {AvatarStack, Box, Card, Text, Theme} from '@sanity/ui'
+import {AvatarStack, Box, Card, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled, {css, useTheme} from 'styled-components'
 import {usePreviewCard, UserAvatar} from '../components'
@@ -15,7 +15,7 @@ const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
   portal: true,
 }
 
-const AvatarStackCard = styled(Card)(({theme, $selected}: {theme: Theme; $selected?: boolean}) => {
+const AvatarStackCard = styled(Card)<{$selected?: boolean}>(({theme, $selected}) => {
   const {color} = theme.sanity
 
   return css`

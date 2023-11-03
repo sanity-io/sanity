@@ -7,6 +7,7 @@ import {
   BlockRenderProps as EditorBlockRenderProps,
   BlockChildRenderProps as EditorChildRenderProps,
   BlockAnnotationRenderProps,
+  EditorSelection,
 } from '@sanity/portable-text-editor'
 import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
@@ -14,18 +15,18 @@ import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../../util'
 import {ChangeIndicator} from '../../../changeIndicators'
+import {RenderBlockActionsCallback} from '../../types/_transitional'
 import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {TextBlock} from './text'
-import {RenderBlockActionsCallback} from './types'
 import {Editor} from './Editor'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
-  hasFocus: boolean
+  hasFocusWithin: boolean
   hotkeys?: HotkeyOptions
   isActive: boolean
   isFullscreen: boolean
@@ -47,7 +48,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     changed,
     focused,
     focusPath = EMPTY_ARRAY,
-    hasFocus,
+    hasFocusWithin,
     hotkeys,
     isActive,
     isFullscreen,
@@ -352,11 +353,38 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     ],
   )
   const ariaDescribedBy = props.elementProps['aria-describedby']
+
+  // Create an initial editor selection based on the focusPath
+  // at the time that the editor mounts. Any updates to the
+  // focusPath later will be handled by the useTrackFocusPath hook.
+  // The initial selection is handled explicitly as a separate
+  // prop to the Editable PTE component (initialSelection) so that
+  // selections can be set initially even though the editor value
+  // might not be fully propagated or rendered yet.
+  const initialSelection: EditorSelection | undefined = useMemo(() => {
+    // We can be sure that the focusPath is pointing directly to
+    // editor content when hasFocusWithin is true.
+    if (hasFocusWithin) {
+      return {
+        anchor: {
+          path: focusPath,
+          offset: 0,
+        },
+        focus: {
+          path: focusPath,
+          offset: 0,
+        },
+      }
+    }
+    return undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only at mount time!
+
   const editorNode = useMemo(
     () => (
       <Editor
         ariaDescribedBy={ariaDescribedBy}
-        hasFocus={hasFocus}
+        initialSelection={initialSelection}
         hotkeys={editorHotkeys}
         isActive={isActive}
         isFullscreen={isFullscreen}
@@ -377,13 +405,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
     // Keep only stable ones here!
     [
-      scrollElement,
+      ariaDescribedBy,
       editorHotkeys,
-      handleToggleFullscreen,
-      hasFocus,
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
+      handleToggleFullscreen,
+      initialSelection,
       isActive,
       isFullscreen,
       onCopy,
@@ -391,7 +419,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       onPaste,
       path,
       readOnly,
-      ariaDescribedBy,
+      scrollElement,
     ],
   )
 
@@ -414,6 +442,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onItemClose,
   })
 
+  // The editor should have a focus ring when the field itself is focused,
+  // or focus is pointing directly to a node inside the editor
+  // (as opposed to focus on fields inside object nodes like annotations, inline blocks etc.)
+  const editorFocused = focused || hasFocusWithin
+
   return (
     <PortalProvider __unstable_elements={portalElements}>
       <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
@@ -423,7 +456,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           isChanged={changed}
           path={path}
         >
-          <Root data-focused={hasFocus ? '' : undefined} data-read-only={readOnly ? '' : undefined}>
+          <Root
+            data-focused={editorFocused ? '' : undefined}
+            data-read-only={readOnly ? '' : undefined}
+          >
             <Box data-wrapper="" ref={setWrapperElement}>
               <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
                 {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
