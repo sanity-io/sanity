@@ -5,6 +5,7 @@ import {createApplyPatch} from '../applyPatch'
 import {withPlugins} from '../../editor/plugins'
 import {keyGenerator, Patch, PortableTextEditor} from '../..'
 import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
+import {VOID_CHILD_KEY} from '../values'
 
 const schemaTypes = getPortableTextMemberSchemaTypes(schemaType)
 
@@ -23,7 +24,7 @@ const createDefaultValue = (): Descendant[] => [
     _key: 'c01739b0d03b',
     children: [
       {
-        _key: 'c01739b0d03b-void-child',
+        _key: VOID_CHILD_KEY,
         _type: 'span',
         text: '',
         marks: [],
@@ -70,7 +71,7 @@ describe('operationToPatches', () => {
           "_type": "image",
           "children": Array [
             Object {
-              "_key": "c01739b0d03b-void-child",
+              "_key": "${VOID_CHILD_KEY}",
               "_type": "span",
               "marks": Array [],
               "text": "",
@@ -93,7 +94,7 @@ describe('operationToPatches', () => {
         _key: 'c01739b0d03b',
         children: [
           {
-            _key: 'c01739b0d03b-void-child',
+            _key: VOID_CHILD_KEY,
             _type: 'span',
             text: '',
             marks: [],
@@ -123,7 +124,7 @@ describe('operationToPatches', () => {
           "_type": "someType",
           "children": Array [
             Object {
-              "_key": "c01739b0d03b-void-child",
+              "_key": "${VOID_CHILD_KEY}",
               "_type": "span",
               "marks": Array [],
               "text": "",
@@ -147,7 +148,7 @@ describe('operationToPatches', () => {
         _key: 'c01739b0d03b',
         children: [
           {
-            _key: 'c01739b0d03b-void-child',
+            _key: VOID_CHILD_KEY,
             _type: 'span',
             text: '',
             marks: [],
@@ -182,7 +183,7 @@ describe('operationToPatches', () => {
           "_type": "someType",
           "children": Array [
             Object {
-              "_key": "c01739b0d03b-void-child",
+              "_key": "${VOID_CHILD_KEY}",
               "_type": "span",
               "marks": Array [],
               "text": "",

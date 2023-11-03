@@ -11,6 +11,8 @@ import {PortableTextMemberSchemaTypes} from '../types/editor'
 
 const EMPTY_MARKDEFS: PortableTextObject[] = []
 
+export const VOID_CHILD_KEY = 'void-child'
+
 type Partial<T> = {
   [P in keyof T]?: T[P]
 }
@@ -35,7 +37,7 @@ export function toSlateValue(
   if (value && Array.isArray(value)) {
     return value.map((block) => {
       const {_type, _key, ...rest} = block
-      const voidChildren = [{_key: `${_key}-void-child`, _type: 'span', text: '', marks: []}]
+      const voidChildren = [{_key: VOID_CHILD_KEY, _type: 'span', text: '', marks: []}]
       const isPortableText = block && block._type === schemaTypes.block.name
       if (isPortableText) {
         const textBlock = block as PortableTextTextBlock

@@ -59,7 +59,7 @@ export const withPlugins = <T extends Editor>(
   }
   const operationToPatches = createOperationToPatches(schemaTypes)
   const withObjectKeys = createWithObjectKeys(schemaTypes, keyGenerator)
-  const withSchemaTypes = createWithSchemaTypes(schemaTypes)
+  const withSchemaTypes = createWithSchemaTypes({schemaTypes, keyGenerator})
   const withEditableAPI = createWithEditableAPI(portableTextEditor, schemaTypes, keyGenerator)
   const withPatches = createWithPatches({
     change$,

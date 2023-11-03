@@ -1,4 +1,12 @@
-import {Text, Range, Transforms, Editor, Element as SlateElement, Node} from 'slate'
+import {
+  Text,
+  Range,
+  Transforms,
+  Editor,
+  Element as SlateElement,
+  Node,
+  Path as SlatePath,
+} from 'slate'
 import {
   ObjectSchemaType,
   Path,
@@ -111,10 +119,17 @@ export function createWithEditableAPI(
         const [focusBlock] = Array.from(
           Editor.nodes(editor, {
             at: editor.selection.focus.path.slice(0, 1),
+            match: (n) => n._type === types.block.name,
           }),
         )[0] || [undefined]
         if (!focusBlock) {
-          throw new Error('No focus block')
+          throw new Error('No focused text block')
+        }
+        if (
+          type.name !== types.span.name &&
+          !types.inlineObjects.some((t) => t.name === type.name)
+        ) {
+          throw new Error('This type cannot be inserted as a child to a text block')
         }
         const block = toSlateValue(
           [
@@ -133,7 +148,21 @@ export function createWithEditableAPI(
           portableTextEditor,
         )[0] as unknown as SlateElement
         const child = block.children[0]
-        Editor.insertNode(editor, child as Node)
+        const focusChildPath = editor.selection.focus.path.slice(0, 2)
+        const isSpanNode = child._type === types.span.name
+        const focusNode = Node.get(editor, focusChildPath)
+
+        // If we are inserting a span, and currently have focus on an inline object,
+        // move the selection to the next span (guaranteed by normalizing rules) before inserting it.
+        if (isSpanNode && focusNode._type !== types.span.name) {
+          debug('Inserting span child next to inline object child, moving selection + 1')
+          editor.move({distance: 1, unit: 'character'})
+        }
+
+        Transforms.insertNodes(editor, child, {
+          select: true,
+          at: editor.selection,
+        })
         editor.onChange()
         return (
           toPortableTextRange(

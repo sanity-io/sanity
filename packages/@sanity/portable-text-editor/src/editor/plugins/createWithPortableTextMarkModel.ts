@@ -223,6 +223,7 @@ export function createWithPortableTextMarkModel(
               {marks: marksWithoutAnnotationMarks},
               {at: Path.next(selection.focus.path)},
             )
+            debug('Inserting text at end of annotation')
             return
           }
         }
