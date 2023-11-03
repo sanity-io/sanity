@@ -86,7 +86,7 @@ export function ConfirmDeleteDialog({
       onClose={onCancel}
       onClickOutside={onCancel}
     >
-      <DialogBody data-id="confirm-delete-dialog-body">
+      <DialogBody>
         {crossDatasetReferences && internalReferences && !isLoading ? (
           <ConfirmDeleteDialogBody
             crossDatasetReferences={crossDatasetReferences}

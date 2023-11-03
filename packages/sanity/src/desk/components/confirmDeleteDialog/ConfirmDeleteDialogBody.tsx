@@ -126,10 +126,10 @@ export function ConfirmDeleteDialogBody({
           it:
         </Text>
       </Box>
-      <Card radius={2} shadow={1} flex="auto" padding={1}>
+      <Card radius={2} shadow={1} flex="auto" padding={2}>
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" space={2} data-testid="internal-references">
+            <Stack as="ul" marginBottom={2} space={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box as="li" key={item._id}>
                   {renderPreviewItem(item)}
@@ -148,7 +148,6 @@ export function ConfirmDeleteDialogBody({
             <CrossDatasetReferencesDetails
               data-testid="cross-dataset-references"
               style={{
-                marginTop: '8px',
                 // only add the border if needed
                 borderTop:
                   internalReferences.totalCount > 0
@@ -157,9 +156,15 @@ export function ConfirmDeleteDialogBody({
               }}
             >
               <CrossDatasetReferencesSummary>
-                <Card as="a" margin={2} radius={2} shadow={1} paddingY={1}>
-                  <Flex align="center" margin={2}>
-                    <Box marginLeft={3} marginRight={4}>
+                <Card
+                  as="a"
+                  marginTop={internalReferences.totalCount > 0 ? 2 : 0}
+                  radius={2}
+                  shadow={1}
+                  paddingY={1}
+                >
+                  <Flex align="center" margin={2} marginRight={3}>
+                    <Box marginLeft={3} marginRight={3}>
                       <Text size={3}>
                         <DocumentsIcon />
                       </Text>
@@ -185,7 +190,7 @@ export function ConfirmDeleteDialogBody({
                 </Card>
               </CrossDatasetReferencesSummary>
 
-              <Box overflow="auto" paddingBottom={2} paddingX={2}>
+              <Box overflow="auto" paddingTop={2}>
                 <Table>
                   <thead>
                     <tr>
@@ -252,9 +257,7 @@ export function ConfirmDeleteDialogBody({
                   </tbody>
                 </Table>
 
-                <Box padding={2}>
-                  <OtherReferenceCount {...crossDatasetReferences} />
-                </Box>
+                <OtherReferenceCount {...crossDatasetReferences} />
               </Box>
             </CrossDatasetReferencesDetails>
           )}
