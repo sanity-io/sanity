@@ -3,9 +3,7 @@ import {Tooltip as UITooltip, TooltipProps as UITooltipProps, Text} from '@sanit
 import React, {forwardRef} from 'react'
 
 /** @internal */
-export interface TooltipProps extends UITooltipProps {
-  ref?: React.ForwardedRef<HTMLDivElement>
-}
+export type TooltipProps = Omit<UITooltipProps, 'padding'>
 
 const TOOLTIP_DELAY_PROPS = {
   open: 400,
