@@ -3,7 +3,6 @@ import {
   Box,
   Card,
   Flex,
-  Label,
   Menu,
   MenuButton,
   MenuButtonProps,
@@ -48,12 +47,6 @@ function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSc
   return (
     <>
       <MenuDivider />
-
-      <Box padding={2}>
-        <Label size={1} muted>
-          Appearance
-        </Label>
-      </Box>
 
       {options.map(({icon, label, name, onSelect, selected, title}) => (
         <MenuItem
