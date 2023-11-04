@@ -8,7 +8,7 @@ export interface TooltipProps extends UITooltipProps {
 }
 
 const TOOLTIP_DELAY_PROPS = {
-  open: 500,
+  open: 400,
 }
 
 /**
