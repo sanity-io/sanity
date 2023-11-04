@@ -1,8 +1,7 @@
 import {DocumentActionComponent, DocumentActionDescription} from 'sanity'
 import {CheckmarkCircleIcon, CloseCircleIcon} from '@sanity/icons'
-import {Text, useToast} from '@sanity/ui'
+import {Button, Text, useToast} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import {Button} from '../../../../packages/sanity/src/ui'
 
 export const TestConfirmDialogAction: DocumentActionComponent = (props) => {
   const {onComplete} = props

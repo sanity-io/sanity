@@ -1,7 +1,6 @@
-import {Grid} from '@sanity/ui'
+import {Button, Grid} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef} from 'react'
 import {defineField, ObjectInputProps, Path, set, unset} from 'sanity'
-import {Button} from '../../../../packages/sanity/src/ui'
 
 /**
  * This document renders a custom input component which patches `testValue.b` whenever the value

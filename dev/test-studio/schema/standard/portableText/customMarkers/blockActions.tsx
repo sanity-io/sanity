@@ -1,9 +1,8 @@
 import {CommentIcon} from '@sanity/icons'
 import {PortableTextBlock} from '@sanity/portable-text-editor'
-import {Box, Popover, Stack, Text, TextArea} from '@sanity/ui'
+import {Box, Button, Popover, Stack, Text, TextArea} from '@sanity/ui'
 import React, {ChangeEvent, useCallback, useState} from 'react'
 import {RenderBlockActionsCallback} from 'sanity'
-import {Button} from '../../../../../../packages/sanity/src/ui'
 
 export const renderBlockActions: RenderBlockActionsCallback = (props) => {
   const {block, set} = props
@@ -37,14 +36,20 @@ function CommentButton(props: {set: (block: PortableTextBlock) => void; value: P
           Comment
         </Text>
         <TextArea onChange={handleCommentChange} value={comment} />
-        <Button onClick={handleSubmit} text="Post comment" tone="primary" size="small" />
+        <Button
+          fontSize={1}
+          onClick={handleSubmit}
+          padding={2}
+          text="Post comment"
+          tone="primary"
+        />
       </Stack>
     </Box>
   )
 
   return (
     <Popover content={content} open={open} portal="default">
-      <Button icon={CommentIcon} mode="bleed" onClick={handleClick} size="small" />
+      <Button icon={CommentIcon} mode="bleed" onClick={handleClick} padding={1} />
     </Popover>
   )
 }

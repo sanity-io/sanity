@@ -1,11 +1,7 @@
 import {ObjectInputProps, set, setIfMissing, unset, useClient} from 'sanity'
 import imageUrlBuilder from '@sanity/image-url'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
-import {
-  Spinner,
-  // eslint-disable-next-line no-restricted-imports
-  Button, // Button with children as an image, not supported by StudioUI
-} from '@sanity/ui'
+import {Button, Spinner} from '@sanity/ui'
 import React, {forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import styles from './AuthorReferenceInput.module.css'
 

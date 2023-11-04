@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import {Button as UIButton, ButtonProps as UIButtonProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 

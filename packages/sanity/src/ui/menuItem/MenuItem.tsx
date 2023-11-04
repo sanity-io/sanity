@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import {
   Flex,
   MenuItem as UIMenuItem,
