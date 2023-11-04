@@ -1,10 +1,10 @@
 import React, {useCallback} from 'react'
 import {
-  WarningOutlineIcon,
   DocumentsIcon,
   CopyIcon,
   UnknownIcon,
   ChevronDownIcon,
+  WarningOutlineIcon,
 } from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
@@ -67,8 +67,8 @@ export function ConfirmDeleteDialogBody({
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
     return (
-      <Text as="p">
-        Are you sure you want to {action} <strong>“{documentTitle}”</strong>?
+      <Text as="p" size={1}>
+        Are you sure you want to {action} “{documentTitle}”?
       </Text>
     )
   }
@@ -101,8 +101,8 @@ export function ConfirmDeleteDialogBody({
   }
 
   return (
-    <Card>
-      <Card padding={3} radius={2} tone="caution" marginBottom={4} flex="none">
+    <Flex direction="column" gap={4}>
+      <Card padding={3} radius={2} tone="caution" flex="none">
         <Flex>
           <Text aria-hidden="true" size={1}>
             <WarningOutlineIcon />
@@ -120,18 +120,16 @@ export function ConfirmDeleteDialogBody({
           </Box>
         </Flex>
       </Card>
-
-      <Box flex="none" marginBottom={4}>
-        <Text>
+      <Box flex="none">
+        <Text size={1}>
           You may not be able to {action} “{documentTitle}” because the following documents refer to
           it:
         </Text>
       </Box>
-
-      <Card radius={2} shadow={1} marginBottom={4} flex="auto">
+      <Card radius={2} shadow={1} flex="auto" padding={2}>
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" padding={2} space={3} data-testid="internal-references">
+            <Stack as="ul" marginBottom={2} space={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box as="li" key={item._id}>
                   {renderPreviewItem(item)}
@@ -158,9 +156,15 @@ export function ConfirmDeleteDialogBody({
               }}
             >
               <CrossDatasetReferencesSummary>
-                <Card as="a" margin={2} radius={2} shadow={1} paddingY={1}>
-                  <Flex align="center" margin={2}>
-                    <Box marginLeft={3} marginRight={4}>
+                <Card
+                  as="a"
+                  marginTop={internalReferences.totalCount > 0 ? 2 : 0}
+                  radius={2}
+                  shadow={1}
+                  paddingY={1}
+                >
+                  <Flex align="center" margin={2} marginRight={3}>
+                    <Box marginLeft={3} marginRight={3}>
                       <Text size={3}>
                         <DocumentsIcon />
                       </Text>
@@ -186,7 +190,7 @@ export function ConfirmDeleteDialogBody({
                 </Card>
               </CrossDatasetReferencesSummary>
 
-              <Box overflow="auto" paddingBottom={2} paddingX={2}>
+              <Box overflow="auto" paddingTop={2}>
                 <Table>
                   <thead>
                     <tr>
@@ -253,21 +257,18 @@ export function ConfirmDeleteDialogBody({
                   </tbody>
                 </Table>
 
-                <Box padding={2}>
-                  <OtherReferenceCount {...crossDatasetReferences} />
-                </Box>
+                <OtherReferenceCount {...crossDatasetReferences} />
               </Box>
             </CrossDatasetReferencesDetails>
           )}
         </Flex>
       </Card>
-
       <Box flex="none">
-        <Text>
+        <Text size={1}>
           If you {action} this document, documents that refer to it will no longer be able to access
           it.
         </Text>
       </Box>
-    </Card>
+    </Flex>
   )
 }

@@ -1,6 +1,7 @@
 import {CurrentUser} from '@sanity/types'
-import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
+import {Dialog} from '../../../ui'
 import {getProviderTitle} from '../../store'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 
@@ -38,13 +39,15 @@ export function NotAuthenticatedScreen() {
         id="not-authorized-dialog"
         header="Not authorized"
         width={1}
-        footer={
-          <Stack paddingX={3} paddingY={2}>
-            <Button text="Sign out" onClick={handleLogout} />
-          </Stack>
-        }
+        footer={{
+          confirmButton: {
+            text: 'Sign out',
+            onClick: handleLogout,
+            tone: 'default',
+          },
+        }}
       >
-        <Stack paddingX={4} paddingY={5} space={4}>
+        <Stack space={4}>
           <Text>
             You are not authorized to access this studio. Maybe you could ask someone to invite you
             to collaborate on this project?

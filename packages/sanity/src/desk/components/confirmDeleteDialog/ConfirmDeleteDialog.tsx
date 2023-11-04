@@ -1,14 +1,13 @@
 import React, {useMemo, useId} from 'react'
 import styled from 'styled-components'
-import {Box, Dialog, Button, Text, Spinner, Grid, Flex} from '@sanity/ui'
+import {Box, Text, Spinner, Flex} from '@sanity/ui'
+import {Dialog} from '../../../ui'
 import {DocTitle} from '../DocTitle'
 import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 
 /** @internal */
-export const DialogBody = styled(Box).attrs({
-  padding: 4,
-})`
+export const DialogBody = styled(Box)`
   box-sizing: border-box;
 `
 
@@ -18,7 +17,7 @@ export const LoadingContainer = styled(Flex).attrs({
   direction: 'column',
   justify: 'center',
 })`
-  height: 300px;
+  height: 110px;
 `
 
 /** @internal */
@@ -76,20 +75,14 @@ export function ConfirmDeleteDialog({
       width={1}
       id={dialogId}
       header={`${capitalizedAction} document?`}
-      footer={
-        <Grid columns={showConfirmButton ? 2 : 1} gap={2} paddingX={4} paddingY={3}>
-          <Button mode="ghost" onClick={onCancel} text="Cancel" />
-
-          {showConfirmButton && (
-            <Button
-              data-testid="confirm-delete-button"
-              text={totalCount > 0 ? `${capitalizedAction} anyway` : `${capitalizedAction} now`}
-              tone="critical"
-              onClick={onConfirm}
-            />
-          )}
-        </Grid>
-      }
+      footer={{
+        confirmButton: showConfirmButton
+          ? {
+              text: 'Delete',
+              onClick: onConfirm,
+            }
+          : undefined,
+      }}
       onClose={onCancel}
       onClickOutside={onCancel}
     >
@@ -110,7 +103,7 @@ export function ConfirmDeleteDialog({
         ) : (
           <LoadingContainer data-testid="loading-container">
             <Spinner muted />
-            <Box marginTop={3}>
+            <Box marginTop={4}>
               <Text align="center" muted size={1}>
                 Looking for referring documents…
               </Text>

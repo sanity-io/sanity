@@ -1,7 +1,8 @@
 import {SanityDocument} from '@sanity/types'
-import {Card, Code, Dialog, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
+import {Card, Code, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
+import {Dialog} from '../../../../ui'
 import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
 import {useDocumentPane} from '../useDocumentPane'
@@ -41,25 +42,24 @@ export function InspectDialog(props: InspectDialogProps) {
 
   return (
     <Dialog
+      bodyHeight="fill"
       id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentLike(value) ? (
           <>
-            Inspecting{' '}
-            <em>
-              <DocTitle document={value} />
-            </em>
+            Inspecting <DocTitle document={value} />
           </>
         ) : (
-          <em>No value</em>
+          'No value'
         )
       }
       onClose={onInspectClose}
       onClickOutside={onInspectClose}
+      padding={false}
       width={3}
     >
       <Flex direction="column" height="fill">
-        <Card padding={3} shadow={1} style={{position: 'sticky', bottom: 0, zIndex: 3}}>
+        <Card borderBottom padding={3} style={{position: 'sticky', bottom: 0, zIndex: 3}}>
           <TabList space={1}>
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}

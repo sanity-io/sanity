@@ -1,8 +1,4 @@
 import {
-  Dialog,
-  Grid,
-  Button,
-  Stack,
   Text,
   ThemeColorProvider,
   useBoundaryElement,
@@ -10,6 +6,7 @@ import {
   DialogProvider,
 } from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Dialog} from '../../../../../../ui'
 
 const Z_OFFSET = 9999999 // Change to appropriate z-offset
 
@@ -56,22 +53,24 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
       <PortalProvider __unstable_elements={{boundary: portal.element}}>
         <DialogProvider zOffset={Z_OFFSET}>
           <Dialog
+            footer={{
+              cancelButton: {
+                onClick: handleCancelClick,
+              },
+              confirmButton: {
+                onClick: handleConfirmClick,
+                text: 'Discard',
+                tone: 'critical',
+              },
+            }}
             portal="boundary"
             header="Discard comment?"
             id="discard-comment-dialog"
             onClose={onClose}
             width={0}
             onClickOutside={onClose}
-            footer={
-              <Grid columns={2} padding={2} gap={2}>
-                <Button text="Cancel" mode="ghost" onClick={handleCancelClick} />
-                <Button onClick={handleConfirmClick} text="Discard" tone="critical" />
-              </Grid>
-            }
           >
-            <Stack padding={4}>
-              <Text>Do you want to discard the comment?</Text>
-            </Stack>
+            <Text size={1}>Do you want to discard the comment?</Text>
           </Dialog>
         </DialogProvider>
       </PortalProvider>
