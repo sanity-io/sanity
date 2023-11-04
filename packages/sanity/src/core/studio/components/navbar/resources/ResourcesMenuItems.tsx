@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Label, MenuDivider, Spinner, Text} from '@sanity/ui'
+import {Box, Flex, MenuDivider, Spinner, Text} from '@sanity/ui'
 import React from 'react'
 import {SANITY_VERSION} from '../../../../version'
 import {MenuItem} from '../../../../../ui'
@@ -77,13 +77,6 @@ const fallbackLinks = (
 function SubSection({subSection}: {subSection: Section}) {
   return (
     <>
-      {subSection.sectionTitle && (
-        <Card padding={2} paddingTop={3} marginLeft={1}>
-          <Label muted size={1}>
-            {subSection.sectionTitle}
-          </Label>
-        </Card>
-      )}
       {subSection?.items?.map((item) => {
         if (!item || !item.title) return null
         switch (item._type) {

@@ -237,13 +237,6 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
         >
           <PopoverHeaderCard sizing="border">
             <Stack>
-              <Box paddingX={3} paddingY={3}>
-                <Box paddingY={1}>
-                  <Label size={1} muted>
-                    {title}
-                  </Label>
-                </Box>
-              </Box>
               <Card borderTop borderBottom padding={1}>
                 <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
               </Card>
