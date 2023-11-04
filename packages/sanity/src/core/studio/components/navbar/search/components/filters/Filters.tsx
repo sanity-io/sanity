@@ -1,8 +1,9 @@
-import {Button, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef} from 'react'
 import {DEBUG_MODE} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getFilterKey} from '../../utils/filterUtils'
+import {Button} from '../../../../../../../ui'
 import {AddFilterButton} from './addFilter/AddFilterButton'
 import {DebugDocumentTypesNarrowed} from './debug/_DebugDocumentTypesNarrowed'
 import {DebugFilterQuery} from './debug/_DebugFilterQuery'
@@ -37,10 +38,9 @@ export function Filters() {
 
   const ClearFiltersButton = () => (
     <Button
-      fontSize={1}
       mode="bleed"
       onClick={handleClear}
-      padding={fullscreen ? 3 : 2}
+      size={fullscreen ? 'default' : 'small'}
       text="Clear filters"
       tone="critical"
     />

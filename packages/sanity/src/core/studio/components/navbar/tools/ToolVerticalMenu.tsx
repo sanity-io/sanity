@@ -1,7 +1,8 @@
 import {PlugIcon} from '@sanity/icons'
-import {Button, Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {forwardRef, useMemo} from 'react'
+import {Button} from '../../../../../ui'
 import {Tool} from '../../../../config'
 import {ToolLink, ToolLinkProps} from './ToolLink'
 

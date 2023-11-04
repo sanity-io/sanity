@@ -2,13 +2,14 @@ import {CogIcon, UsersIcon} from '@sanity/icons'
 import {
   AvatarStack,
   Box,
-  Button,
   Card,
   Menu,
   MenuButton,
   MenuDivider,
   Stack,
   Text,
+  // eslint-disable-next-line no-restricted-imports
+  Button,
 } from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'

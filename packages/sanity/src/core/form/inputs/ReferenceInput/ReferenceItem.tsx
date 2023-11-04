@@ -1,7 +1,6 @@
 /* eslint-disable complexity */
 import {
   Box,
-  Button,
   Card,
   CardTone,
   Flex,
@@ -28,14 +27,13 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {randomKey} from '../../utils/randomKey'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
 import {FieldPresence} from '../../../presence'
-
+import {Button, MenuItem} from '../../../../ui'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {RowLayout} from '../arrays/layouts/RowLayout'
 import {AlertStrip} from '../../components/AlertStrip'
 import {set, unset} from '../../patch'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
-import {MenuItem} from '../../../../ui'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {useReferenceInput} from './useReferenceInput'
@@ -199,7 +197,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button paddingY={3} paddingX={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={<Button mode="bleed" icon={EllipsisVerticalIcon} size="small" />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu ref={menuRef}>

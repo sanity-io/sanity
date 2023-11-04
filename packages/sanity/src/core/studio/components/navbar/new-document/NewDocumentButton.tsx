@@ -5,19 +5,17 @@ import {
   useClickOutside,
   Stack,
   TextInput,
-  ButtonProps,
   TextInputProps,
   Label,
   Card,
   Flex,
-  Button,
 } from '@sanity/ui'
 import {ComposeIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
-import {Tooltip, TooltipProps} from '../../../../../ui'
+import {Tooltip, TooltipProps, Button, ButtonProps} from '../../../../../ui'
 import {NewDocumentList, NewDocumentListProps} from './NewDocumentList'
 import {ModalType, NewDocumentOption} from './types'
 import {filterOptions} from './filter'

@@ -1,15 +1,5 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {
-  Box,
-  Button,
-  Flex,
-  Popover,
-  Stack,
-  Text,
-  Tooltip,
-  TooltipProps,
-  useClickOutside,
-} from '@sanity/ui'
+import {Flex, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
 import styled from 'styled-components'
 import {
   CommentMessage,
@@ -20,13 +10,8 @@ import {
   CommentIcon,
   MentionOptionsHookValue,
 } from '../../src'
+import {Button, Tooltip} from '../../../../ui'
 import {CurrentUser, PortableTextBlock} from 'sanity'
-
-const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500}
-
-const TooltipText = styled(Text)`
-  width: max-content;
-`
 
 const ContentStack = styled(Stack)`
   width: 320px;
@@ -174,26 +159,15 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
         onKeyDown={handlePopoverKeyDown}
       >
         <div>
-          <Tooltip
-            delay={TOOLTIP_DELAY}
-            disabled={open}
-            portal
-            placement="top"
-            content={
-              <Box padding={2}>
-                <Text size={1}>Add comment</Text>
-              </Box>
-            }
-          >
+          <Tooltip disabled={open} portal placement="top" content="Add comment">
             <Button
               aria-label="Add comment"
               disabled={isRunningSetup}
-              fontSize={1}
               icon={AddCommentIcon}
               mode="bleed"
               onClick={onClick}
-              padding={2}
               ref={setAddCommentButtonElement}
+              size="small"
               selected={open}
             />
           </Tooltip>
@@ -206,15 +180,10 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     <Tooltip
       portal
       placement="top"
-      content={
-        <Box padding={2} sizing="border">
-          <TooltipText size={1}>View comment{count > 1 ? 's' : ''}</TooltipText>
-        </Box>
-      }
-      delay={TOOLTIP_DELAY}
+      content={`View comment${count > 1 ? 's' : ''}`}
       fallbackPlacements={['bottom']}
     >
-      <Button aria-label="Open comments" mode="bleed" onClick={onClick} padding={2}>
+      <Button aria-label="Open comments" mode="bleed" onClick={onClick} size="small">
         <Flex align="center" gap={2}>
           <Text size={1}>
             <CommentIcon />

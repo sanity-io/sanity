@@ -1,5 +1,6 @@
-import {Box, Button, Code, Text} from '@sanity/ui'
+import {Box, Code, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
+import {Button} from '../../../../ui'
 import {useDocumentStore} from '../datastores'
 import {RemoteSnapshotVersionEvent} from '../document/document-pair/checkoutPair'
 

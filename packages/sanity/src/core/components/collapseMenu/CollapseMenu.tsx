@@ -1,5 +1,5 @@
 import {EllipsisVerticalIcon} from '@sanity/icons'
-import {Button, Flex, MenuButtonProps} from '@sanity/ui'
+import {Flex, MenuButtonProps} from '@sanity/ui'
 import React, {
   Children,
   cloneElement,
@@ -15,7 +15,7 @@ import React, {
 } from 'react'
 import styled, {css} from 'styled-components'
 import {difference} from 'lodash'
-import {Tooltip} from '../../../ui'
+import {Button, Tooltip} from '../../../ui'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'
 import {CollapseMenuDivider} from './CollapseMenuDivider'

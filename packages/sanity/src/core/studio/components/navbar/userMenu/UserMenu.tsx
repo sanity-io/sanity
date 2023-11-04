@@ -1,7 +1,6 @@
 import {LeaveIcon, ChevronDownIcon, CogIcon, CheckmarkIcon, UsersIcon} from '@sanity/icons'
 import {
   Box,
-  Button,
   Card,
   Flex,
   Label,
@@ -11,6 +10,8 @@ import {
   MenuDivider,
   Stack,
   Text,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling, user avatar .
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'

@@ -1,8 +1,8 @@
-import {Box, Flex, Stack, Button, Hotkeys, LayerProvider, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
-import {Tooltip} from '../../../../ui'
+import {Button, Tooltip} from '../../../../ui'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -39,32 +39,26 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   }, [firstActionState])
 
   return (
-    <Flex>
+    <Flex flex={1} justify="flex-end" gap={2}>
       {firstActionState && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} portal placement="top">
-            <Stack flex={1}>
-              <Button
-                data-testid={`action-${firstActionState.label}`}
-                disabled={disabled || Boolean(firstActionState.disabled)}
-                icon={firstActionState.icon}
-                // eslint-disable-next-line react/jsx-handler-names
-                onClick={firstActionState.onHandle}
-                ref={setButtonElement}
-                text={firstActionState.label}
-                tone={firstActionState.tone || 'primary'}
-              />
-            </Stack>
+            <Button
+              data-testid={`action-${firstActionState.label}`}
+              disabled={disabled || Boolean(firstActionState.disabled)}
+              icon={firstActionState.icon}
+              // eslint-disable-next-line react/jsx-handler-names
+              onClick={firstActionState.onHandle}
+              ref={setButtonElement}
+              text={firstActionState.label}
+              tone={firstActionState.tone || 'primary'}
+            />
           </Tooltip>
         </LayerProvider>
       )}
-
       {showMenu && menuActionStates.length > 0 && (
-        <Box marginLeft={1}>
-          <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
-        </Box>
+        <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
-
       {firstActionState && firstActionState.dialog && (
         <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
       )}

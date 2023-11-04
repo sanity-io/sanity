@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
-import {Box, Button, Card, Menu, MenuButton, MenuButtonProps, Stack, ToastParams} from '@sanity/ui'
+import {Box, Card, Menu, MenuButton, MenuButtonProps, Stack, ToastParams} from '@sanity/ui'
 import {get} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
@@ -17,7 +17,7 @@ import {
 import React, {ReactNode} from 'react'
 import {SanityClient} from '@sanity/client'
 import {isImageSource} from '@sanity/asset-utils'
-import {Dialog, MenuItem} from '../../../../../ui'
+import {Button, Dialog, MenuItem} from '../../../../../ui'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FieldMember} from '../../../store'
 import {InputProps, ObjectInputProps} from '../../../types'
@@ -580,7 +580,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     return (
       <Button
-        fontSize={2}
         text="Select"
         icon={SearchIcon}
         mode="ghost"
