@@ -1,10 +1,11 @@
 import type {Subscription} from 'rxjs'
 import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
+import {Box, Button, Card, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
+import {Dialog} from '../../../../ui'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {AssetThumb} from './AssetThumb'
@@ -48,7 +49,7 @@ const buildFilterQuery = (acceptParam: string) => {
   The extension and mimeType work when the arrays are empty returning the right values so they are kept in the query */
   return `&&
   (
-    ${typesForFilter.wildcards} 
+    ${typesForFilter.wildcards}
     extension in [${typesForFilter.extensions}] ||
     mimeType in [${typesForFilter.mimes}]
   )`
@@ -264,12 +265,13 @@ const DefaultAssetSource = function DefaultAssetSource(
       id={_elementId.current}
       onClickOutside={handleClose}
       onClose={handleClose}
+      padding={false}
       ref={ref}
       width={2}
     >
       {showAcceptMessage && !isImageOnlyWildCard && (
-        <Card tone="primary" marginTop={4} marginX={4} padding={[3, 3, 4]} border radius={2}>
-          <Flex gap={[3, 4]} align="center">
+        <Card border marginX={4} padding={4} radius={2} tone="primary">
+          <Flex align="center" gap={3}>
             <Text>
               <InfoOutlineIcon />
             </Text>
