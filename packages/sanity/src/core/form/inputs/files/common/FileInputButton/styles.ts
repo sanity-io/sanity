@@ -16,7 +16,10 @@ export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
         }
       }
 
-      // The button children adds a span element, hide that one, which contains the input.
+      // The underyling file input is rendered as children within a Sanity UI <Button> component.
+      // The below visibly hides it by targeting the input's parent <span> element, which is
+      // added by the <Button> component.
+      // TODO: refactor, avoid nth-child selector usage
       & > span:nth-child(2) {
         overflow: hidden;
         overflow: clip;

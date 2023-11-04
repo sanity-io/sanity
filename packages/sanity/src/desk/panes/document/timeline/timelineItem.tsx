@@ -11,7 +11,7 @@ import {ChunkType, Chunk} from 'sanity'
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonProps['tone']> = {
   initial: 'primary',
   create: 'primary',
-  publish: 'default',
+  publish: 'positive',
   editLive: 'caution',
   editDraft: 'caution',
   unpublish: 'critical',

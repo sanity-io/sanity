@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useMemo, useState} from 'react'
-import {Box, Stack, Grid, Text, useClickOutside} from '@sanity/ui'
+import {Box, Stack, Grid, useClickOutside} from '@sanity/ui'
 import {Button} from '../../../../ui'
 import {useDocumentOperation} from '../../../hooks'
 import {undoChange} from '../changes/undoChange'

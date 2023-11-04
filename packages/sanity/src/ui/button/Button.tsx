@@ -5,26 +5,26 @@ import React, {forwardRef} from 'react'
 /** @internal */
 export type ButtonProps = Pick<
   UIButtonProps,
+  | 'as'
   | 'icon'
   | 'iconRight'
-  | 'as'
+  | 'justify'
   | 'loading'
+  | 'mode'
   | 'selected'
   | 'text'
-  | 'type'
   | 'tone'
-  | 'mode'
-  | 'justify'
+  | 'type'
+  | 'width'
 > & {
   size?: 'default' | 'small'
-  width?: 'fill' // remove once @sanity/ui is updated
 }
 
-const defaultButton = {
+const DEFAULT_BUTTON_PROPS = {
   space: 3,
   padding: 3,
 }
-const smallButtonProps = {
+const SMALL_BUTTON_PROPS = {
   space: 2,
   padding: 2,
 }
@@ -48,7 +48,7 @@ export const Button = forwardRef(function Button(
   return (
     <UIButton
       {...props}
-      {...(size === 'default' ? defaultButton : smallButtonProps)}
+      {...(size === 'default' ? DEFAULT_BUTTON_PROPS : SMALL_BUTTON_PROPS)}
       ref={ref}
       mode={mode}
       tone={tone}

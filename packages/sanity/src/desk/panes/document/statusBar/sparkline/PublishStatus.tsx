@@ -1,4 +1,4 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
@@ -63,7 +63,7 @@ export function PublishStatus(props: PublishStatusProps) {
       >
         <Button
           mode="bleed"
-          tone={liveEdit ? 'critical' : 'primary'}
+          tone={liveEdit ? 'critical' : 'positive'}
           tabIndex={-1}
           disabled={disabled}
           aria-label={a11yLabel}

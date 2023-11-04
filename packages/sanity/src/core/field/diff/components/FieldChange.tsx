@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useState} from 'react'
-import {Stack, Box, Text, Grid, useClickOutside} from '@sanity/ui'
+import {Stack, Box, Grid, useClickOutside} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {useDocumentOperation} from '../../../hooks'
 import {Button} from '../../../../ui'

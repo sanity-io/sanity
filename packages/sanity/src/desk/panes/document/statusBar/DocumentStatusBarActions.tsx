@@ -39,7 +39,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   }, [firstActionState])
 
   return (
-    <Flex flex={1} justify={'flex-end'} gap={2}>
+    <Flex flex={1} justify="flex-end" gap={2}>
       {firstActionState && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} portal placement="top">
@@ -56,13 +56,9 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
           </Tooltip>
         </LayerProvider>
       )}
-
       {showMenu && menuActionStates.length > 0 && (
-        <Box marginLeft={1}>
-          <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
-        </Box>
+        <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
-
       {firstActionState && firstActionState.dialog && (
         <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
       )}
