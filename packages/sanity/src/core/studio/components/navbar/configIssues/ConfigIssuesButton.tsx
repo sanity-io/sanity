@@ -1,6 +1,7 @@
 import React, {useCallback, useState, useId} from 'react'
-import {Dialog, Heading, Stack, Text} from '@sanity/ui'
+import {Heading, Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
+import {Dialog} from '../../../../../ui'
 import {useSchema} from '../../../../hooks'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 import {useColorScheme} from '../../../colorScheme'
@@ -49,15 +50,7 @@ export function ConfigIssuesButton() {
 
       {isDialogOpen && (
         <Dialog
-          header={
-            <Stack space={3}>
-              <Text weight="semibold">Configuration issues</Text>
-              <Text muted size={1}>
-                Configuration checks are only performed during development and will not be visible
-                in production builds
-              </Text>
-            </Stack>
-          }
+          header="Configuration issues"
           width={2}
           onClickOutside={handleClose}
           onClose={handleClose}
@@ -65,10 +58,16 @@ export function ConfigIssuesButton() {
           scheme={scheme}
           id={dialogId}
         >
-          <Stack space={4} padding={4}>
-            <Heading as="h2" size={1}>
-              Found {groupsWithWarnings.length} schema warnings
-            </Heading>
+          <Stack space={4}>
+            <Stack space={3}>
+              <Heading as="h2" size={1}>
+                Found {groupsWithWarnings.length} schema warnings
+              </Heading>{' '}
+              <Text muted size={1}>
+                Configuration checks are only performed during development and will not be visible
+                in production builds
+              </Text>
+            </Stack>
             <SchemaProblemGroups problemGroups={groupsWithWarnings} />
           </Stack>
         </Dialog>

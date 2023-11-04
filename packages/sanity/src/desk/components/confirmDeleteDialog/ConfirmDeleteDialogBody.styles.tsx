@@ -53,20 +53,22 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
   if (!difference) return null
 
   return (
-    <Inline space={2}>
-      <Text size={1} muted>
-        {difference} other reference{difference === 1 ? '' : 's'} not shown{' '}
-      </Text>
-
-      <Tooltip
-        portal
-        placement="top"
-        content="We can't show metadata about these references because no token with access to the datasets they are in was found."
-      >
+    <Box padding={2}>
+      <Inline space={2}>
         <Text size={1} muted>
-          <InfoOutlineIcon />
+          {difference} other reference{difference === 1 ? '' : 's'} not shown{' '}
         </Text>
-      </Tooltip>
-    </Inline>
+
+        <Tooltip
+          portal
+          placement="top"
+          content="We can't show metadata about these references because no token with access to the datasets they are in was found."
+        >
+          <Text size={1} muted>
+            <InfoOutlineIcon />
+          </Text>
+        </Tooltip>
+      </Inline>
+    </Box>
   )
 }

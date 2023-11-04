@@ -24,7 +24,7 @@ export const DocumentList = ({
 
   if (!hasResults) {
     return (
-      <Text size={[1, 1, 2, 2]} as="h2" weight="regular">
+      <Text size={1} as="h2" weight="regular">
         No documents are using {filenamePlaceholder}
       </Text>
     )
@@ -33,7 +33,7 @@ export const DocumentList = ({
   return (
     <>
       <Card borderBottom marginTop={2} paddingBottom={2} marginBottom={1}>
-        <Text as="h2" size={[1, 1, 2, 2]} weight="regular" textOverflow="ellipsis">
+        <Text as="h2" size={1} weight="regular" textOverflow="ellipsis">
           {count} {count === 1 ? `document is` : `documents are`} using {filenamePlaceholder}
         </Text>
       </Card>

@@ -1,5 +1,6 @@
 import React, {useCallback, useState, useId} from 'react'
-import {Box, Flex, Button, Dialog, Text, ErrorBoundary} from '@sanity/ui'
+import {Text, ErrorBoundary} from '@sanity/ui'
+import {Dialog} from '../../../ui'
 import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
 
 export type {ConfirmDeleteDialogProps}
@@ -18,16 +19,16 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
       id={`dialog-error-${id}`}
       data-testid="confirm-delete-error-dialog"
       header="Error"
-      footer={
-        <Flex paddingX={4} paddingY={3} direction="column">
-          <Button mode="ghost" text="Retry" onClick={handleRetry} />
-        </Flex>
-      }
+      footer={{
+        confirmButton: {
+          text: 'Retry',
+          onClick: handleRetry,
+          tone: 'default',
+        },
+      }}
       onClose={props.onCancel}
     >
-      <Box padding={4}>
-        <Text>An error occurred while loading referencing documents.</Text>
-      </Box>
+      <Text size={1}>An error occurred while loading referencing documents.</Text>
     </Dialog>
   ) : (
     <ErrorBoundary onCatch={setError}>
