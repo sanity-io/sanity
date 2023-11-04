@@ -1,4 +1,4 @@
-import {Layer, Card, Flex, Text, Box, Stack, Label} from '@sanity/ui'
+import {Layer, Card, Flex, Text, Box, Stack} from '@sanity/ui'
 import {CheckmarkIcon, CloseIcon, CogIcon, LeaveIcon, UsersIcon} from '@sanity/icons'
 import React, {memo, useCallback} from 'react'
 import styled from 'styled-components'
@@ -71,13 +71,7 @@ function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSc
   return (
     <>
       <Card borderTop flex="none" padding={3} overflow="auto">
-        <Box padding={2}>
-          <Label size={1} muted>
-            Appearance
-          </Label>
-        </Box>
-
-        <Stack as="ul" marginTop={1} space={1}>
+        <Stack as="ul" space={1}>
           {options.map(({icon, label, name, onSelect, selected, title}) => (
             <Stack as="li" key={name}>
               <Button
