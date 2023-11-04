@@ -1,6 +1,7 @@
-import {Button, Card, Container, Flex} from '@sanity/ui'
+import {Card, Container, Flex} from '@sanity/ui'
 import React from 'react'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
+import {Button} from '../../../../../ui'
 
 export default function UploadPlaceholderStory() {
   return (

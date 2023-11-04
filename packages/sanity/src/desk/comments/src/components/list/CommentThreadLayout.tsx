@@ -1,8 +1,9 @@
 import {CurrentUser} from '@sanity/types'
-import {Button, Flex, Stack} from '@sanity/ui'
+import {Flex, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {uuid} from '@sanity/uuid'
 import styled, {css} from 'styled-components'
+import {Button} from '../../../../../ui'
 import {
   CommentMessage,
   CommentCreatePayload,
@@ -114,7 +115,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
               aria-label={`Go to ${lastCrumb} field`}
               mode="bleed"
               onClick={handleBreadcrumbsClick}
-              padding={2}
+              size="small"
             >
               <CommentBreadcrumbs maxLength={3} titlePath={crumbsTitlePath} />
             </BreadcrumbsButton>

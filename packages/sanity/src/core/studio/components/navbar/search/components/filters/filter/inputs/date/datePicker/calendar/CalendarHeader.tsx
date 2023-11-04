@@ -1,17 +1,17 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Button, Flex, Inline, Text} from '@sanity/ui'
+import {Box, Flex, Inline, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Button} from '../../../../../../../../../../../../ui'
 import {useCalendar} from './contexts/useDatePicker'
 import {MONTH_NAMES} from './constants'
 
 export function CalendarHeader(props: {
-  fontSize?: number
   moveFocusedDate: (by: number) => void
   onNowClick: () => void
 }) {
   const {focusedDate} = useCalendar()
 
-  const {fontSize, moveFocusedDate, onNowClick} = props
+  const {moveFocusedDate, onNowClick} = props
 
   const handlePrevMonthClick = useCallback(() => moveFocusedDate(-1), [moveFocusedDate])
 
@@ -24,7 +24,7 @@ export function CalendarHeader(props: {
         <Text weight="medium">{focusedDate.getFullYear()}</Text>
       </Inline>
       <Box>
-        <Button fontSize={fontSize} text="Today" mode="bleed" onClick={onNowClick} />
+        <Button text="Today" mode="bleed" onClick={onNowClick} />
         <Button
           aria-label="Go to previous month"
           onClick={handlePrevMonthClick}

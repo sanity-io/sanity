@@ -1,7 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {
   Box,
-  Button,
   Flex,
   Layer,
   Popover,
@@ -14,6 +13,7 @@ import {
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import TrapFocus from 'react-focus-lock'
+import {Button} from '../../../ui'
 import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {

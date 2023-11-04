@@ -229,17 +229,19 @@ module.exports = {
       env: {jest: true},
     },
 
-    // Prefer local components vs certain @sanity/ui imports (in all non-ui folders)
+    // Prefer local components vs certain @sanity/ui imports (in all sanity packages)
     {
-      files: ['!packages/sanity/src/ui/**'],
+      files: ['packages/**'],
       rules: {
         'no-restricted-imports': [
-          'warn',
+          'error',
           {
             paths: [
               {
                 name: '@sanity/ui',
                 importNames: [
+                  'Button',
+                  'ButtonProps',
                   'Dialog',
                   'DialogProps',
                   'MenuItem',

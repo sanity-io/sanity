@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import {Tooltip as UITooltip, TooltipProps as UITooltipProps, Text} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 

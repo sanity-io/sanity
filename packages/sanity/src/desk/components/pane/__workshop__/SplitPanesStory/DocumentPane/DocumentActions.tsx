@@ -1,7 +1,7 @@
 import {ChevronDownIcon, PublishIcon} from '@sanity/icons'
-import {Button, Flex, Menu, MenuButton, MenuButtonProps, Stack, useToast} from '@sanity/ui'
+import {Flex, Menu, MenuButton, MenuButtonProps, Stack, useToast} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {MenuItem} from '../../../../../../ui'
+import {Button, MenuItem} from '../../../../../../ui'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -19,7 +19,7 @@ export function DocumentActions() {
   return (
     <Flex gap={1}>
       <Stack flex={1}>
-        <Button icon={PublishIcon} onClick={publish} text="Publish" tone="positive" />
+        <Button icon={PublishIcon} onClick={publish} text="Publish" tone="default" />
       </Stack>
       <MenuButton
         button={<Button icon={ChevronDownIcon} mode="ghost" />}

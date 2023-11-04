@@ -1,9 +1,9 @@
 import {HelpCircleIcon} from '@sanity/icons'
-import {Button, Flex, Menu, MenuButton, Text} from '@sanity/ui'
+import {Flex, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useColorScheme} from '../../../colorScheme'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip, Button} from '../../../../../ui'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 
@@ -32,14 +32,7 @@ export function ResourcesButton() {
       >
         <div>
           <MenuButton
-            button={
-              <Button
-                aria-label="Help and resources"
-                icon={HelpCircleIcon}
-                mode="bleed"
-                fontSize={2}
-              />
-            }
+            button={<Button aria-label="Help and resources" icon={HelpCircleIcon} mode="bleed" />}
             id="menu-button-resources"
             menu={
               <StyledMenu>

@@ -1,17 +1,13 @@
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
+import {Card, Flex, Box, Text, Stack} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import styled from 'styled-components'
 import {CrossDatasetReferenceValue} from '@sanity/types'
+import {Button} from '../../../../ui'
 
 type Props = {
   value?: CrossDatasetReferenceValue
   onClearValue?: () => void
 }
-
-const ButtonWrapper = styled(Button)`
-  width: 100%;
-`
 
 export function DisabledFeatureWarning({value, onClearValue}: Props) {
   const hasRef = useMemo(() => Boolean(value?._ref), [value?._ref])
@@ -67,7 +63,13 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
         </Stack>
       </Flex>
       {onClearValue && hasRef && (
-        <ButtonWrapper icon={ResetIcon} text="Reset value" onClick={onClearValue} mode="ghost" />
+        <Button
+          width="fill"
+          icon={ResetIcon}
+          text="Reset value"
+          onClick={onClearValue}
+          mode="ghost"
+        />
       )}
     </Card>
   )

@@ -2,8 +2,6 @@ import {AddIcon, CloseIcon, RestoreIcon} from '@sanity/icons'
 import {Path} from '@sanity/types'
 import {
   BoundaryElementProvider,
-  Box,
-  Button,
   Card,
   Container,
   DialogProvider,
@@ -18,7 +16,7 @@ import {
 import {useAction} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {Dialog} from '../../../../ui'
+import {Button, Dialog} from '../../../../ui'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'

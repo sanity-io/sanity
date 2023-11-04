@@ -1,6 +1,7 @@
 import {InvalidValueResolution} from '@sanity/portable-text-editor'
-import {Box, Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Grid, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Button} from '../../../../ui'
 import {Alert} from '../../components/Alert'
 
 interface InvalidValueProps {

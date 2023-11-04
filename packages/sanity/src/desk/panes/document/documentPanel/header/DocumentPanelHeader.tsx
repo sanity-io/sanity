@@ -1,5 +1,5 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Button, Flex, Text} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import React, {createElement, memo, forwardRef, useMemo} from 'react'
 import {
   PaneContextMenuButton,
@@ -12,7 +12,7 @@ import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip, Button} from '../../../../../ui'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useFieldActions, useTimelineSelector} from 'sanity'
@@ -86,7 +86,7 @@ export const DocumentPanelHeader = memo(
         backButton={
           features.backButton &&
           index > 0 && (
-            <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" padding={2} />
+            <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" size="small" />
           )
         }
         subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}

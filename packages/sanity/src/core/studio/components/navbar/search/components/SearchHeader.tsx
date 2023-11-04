@@ -1,7 +1,8 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
+import {Box, Card, Flex, Theme} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
+import {Button} from '../../../../../../ui'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {CustomTextInput} from './common/CustomTextInput'
 
@@ -123,7 +124,6 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
               icon={ControlsIcon}
               mode="bleed"
               onClick={handleFiltersToggle}
-              padding={3}
               selected={filtersVisible}
               tone="default"
             />

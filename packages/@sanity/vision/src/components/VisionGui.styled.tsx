@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components'
-import {Button, Card, Box, Flex, Label, Theme, rem} from '@sanity/ui'
+import {Card, Box, Flex, Label, Theme, rem} from '@sanity/ui'
 
 export const Root = styled(Flex)`
   .sidebarPanes .Pane {
@@ -153,8 +153,4 @@ export const TimingsTextContainer = styled(Flex)`
 
 export const ControlsContainer = styled(Box)`
   border-top: 1px solid var(--card-border-color);
-`
-
-export const ButtonFullWidth = styled(Button)`
-  width: 100%;
 `

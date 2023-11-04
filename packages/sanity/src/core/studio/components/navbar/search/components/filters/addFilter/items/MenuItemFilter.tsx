@@ -1,4 +1,10 @@
-import {Box, Button, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
+import {
+  Box,
+  ResponsiveMarginProps,
+  ResponsivePaddingProps,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling and children.
+} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {FilterMenuItemFilter} from '../../../../types'
