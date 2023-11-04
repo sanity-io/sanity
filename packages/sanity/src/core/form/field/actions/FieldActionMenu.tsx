@@ -112,13 +112,12 @@ const RootFieldActionMenuNode = memo(function RootFieldActionMenuNode(props: {
   if (node.type === 'action') {
     return (
       <StatusButton
-        fontSize={1}
         icon={node.icon}
         // Do not show tooltip if menu is open
         label={open ? undefined : node.title}
         mode="bleed"
+        size="small"
         onClick={node.onAction}
-        padding={2}
         tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
       />
     )
@@ -146,12 +145,11 @@ function RootFieldActionMenuGroup(props: {
     <MenuButton
       button={
         <StatusButton
-          fontSize={1}
           icon={node.icon}
           label={open ? undefined : node.title}
           mode="bleed"
-          padding={2}
           tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
+          size="small"
         />
       }
       id={useId()}

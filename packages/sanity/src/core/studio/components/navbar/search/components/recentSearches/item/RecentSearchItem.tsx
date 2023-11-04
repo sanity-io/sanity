@@ -1,13 +1,14 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {
   Box,
-  Button,
   Flex,
   Inline,
   rem,
   ResponsiveMarginProps,
   ResponsivePaddingProps,
   Text,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling and children behavior.
 } from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'

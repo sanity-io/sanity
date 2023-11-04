@@ -1,9 +1,10 @@
 import type {AuthProvider, AuthProviderResponse, SanityClient} from '@sanity/client'
-import {Button, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
+import {Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
 import type {Observable} from 'rxjs'
 import type {AuthConfig} from '../../../config'
 import {createHookFromObservableFactory} from '../../../util'
+import {Button} from '../../../../ui'
 import {CustomLogo, providerLogos} from './providerLogos'
 import type {LoginComponentProps} from './types'
 

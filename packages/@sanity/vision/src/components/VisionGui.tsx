@@ -14,11 +14,10 @@ import {
   Text,
   TextInput,
   Grid,
-  Button,
   ToastContextValue,
   Inline,
 } from '@sanity/ui'
-import {Tooltip} from '../../../../sanity/src/ui'
+import {Tooltip, Button} from '../../../../sanity/src/ui'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {getLocalStorage, LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
@@ -49,7 +48,6 @@ import {
   ResultContainer,
   Result,
   ControlsContainer,
-  ButtonFullWidth,
   TimingsFooter,
   TimingsCard,
   TimingsTextContainer,
@@ -857,7 +855,8 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                               placement="top"
                               portal
                             >
-                              <ButtonFullWidth
+                              <Button
+                                width="fill"
                                 onClick={this.handleQueryExecution}
                                 type="button"
                                 icon={queryInProgress ? StopIcon : PlayIcon}
@@ -868,7 +867,8 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                             </Tooltip>
                           </Box>
                           <Box flex={1} marginLeft={3}>
-                            <ButtonFullWidth
+                            <Button
+                              width="fill"
                               onClick={this.handleListenExecution}
                               type="button"
                               icon={listenInProgress ? StopIcon : PlayIcon}

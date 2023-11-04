@@ -1,18 +1,10 @@
 import {SelectIcon} from '@sanity/icons'
-import {
-  Button,
-  Card,
-  Flex,
-  Inline,
-  Popover,
-  Stack,
-  useClickOutside,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {Card, Flex, Inline, Popover, Stack, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import {CommandList} from '../CommandList'
 import {CommandListRenderItemCallback} from '../types'
+import {Button} from '../../../../ui'
 
 const ITEMS = [...Array(50000).keys()]
 
@@ -66,7 +58,6 @@ export default function PopoverStory() {
     (item) => {
       return (
         <Button
-          fontSize={1}
           mode="bleed"
           // eslint-disable-next-line react/jsx-no-bind
           onClick={() => handleChildClick(item)}

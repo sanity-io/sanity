@@ -1,17 +1,10 @@
-import {Layer, Card, Flex, Text, Box, Button, Stack, Label} from '@sanity/ui'
-import {
-  CheckmarkIcon,
-  CloseIcon,
-  CogIcon,
-  LeaveIcon,
-  UsersIcon,
-  HelpCircleIcon,
-  CommentIcon,
-} from '@sanity/icons'
+import {Layer, Card, Flex, Text, Box, Stack, Label} from '@sanity/ui'
+import {CheckmarkIcon, CloseIcon, CogIcon, LeaveIcon, UsersIcon} from '@sanity/icons'
 import React, {memo, useCallback} from 'react'
 import styled from 'styled-components'
 import TrapFocus from 'react-focus-lock'
 import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
+import {Button} from '../../../../ui'
 import {useWorkspace} from '../../workspace'
 import {Tool} from '../../../config'
 import {useToolMenuComponent} from '../../studio-components-hooks'

@@ -1,10 +1,11 @@
 import {SelectIcon} from '@sanity/icons'
-import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {Placement, Popover, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {format} from 'date-fns'
 import {upperFirst} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
+import {Button} from '../../../../ui'
 import {TimelineError} from './TimelineError'
 import {formatTimelineEventLabel} from './helpers'
 import {Timeline} from './timeline'
@@ -157,8 +158,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
       <Button
         disabled={!ready}
         mode="bleed"
-        fontSize={1}
-        padding={2}
+        size="small"
         iconRight={SelectIcon}
         onClick={open ? handleClose : handleOpen}
         ref={setButton}

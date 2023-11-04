@@ -1,53 +1,42 @@
-import {Box, Button, ButtonMode, ButtonProps, Flex, Hotkeys, Text, useTheme} from '@sanity/ui'
-import React, {
-  createElement,
-  isValidElement,
-  useMemo,
-  HTMLProps,
-  forwardRef,
-  ForwardedRef,
-  ReactNode,
-} from 'react'
-import {isValidElementType} from 'react-is'
+import {Flex, Hotkeys, Text, useTheme} from '@sanity/ui'
+import React, {useMemo, HTMLProps, forwardRef, ForwardedRef, ReactNode} from 'react'
 import styled from 'styled-components'
-import {Tooltip, TooltipProps} from '../../ui'
+import {Tooltip, TooltipProps, Button, ButtonProps} from '../../ui'
 
 /** @hidden @beta */
 export interface StatusButtonProps extends Omit<ButtonProps, 'iconRight'> {
   disabled?: boolean | {reason: ReactNode}
   hotkey?: string[]
   label?: string
-  mode?: ButtonMode
+  mode?: ButtonProps['mode']
   tooltip?: Omit<TooltipProps, 'content' | 'disabled' | 'portal'>
 }
 
-const IconBox = styled(Box)({
+const ButtonWrapper = styled.div({
   position: 'relative',
 })
 
 const Dot = styled.div({
   position: 'absolute',
-  top: -4,
-  right: -4,
-  width: 6,
-  height: 6,
+  top: 6,
+  right: 6,
+  width: 4,
+  height: 4,
   borderRadius: 3,
   boxShadow: '0 0 0 1px var(--card-bg-color)',
 })
 
 /** @hidden @beta */
 export const StatusButton = forwardRef(function StatusButton(
-  props: StatusButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref'>,
+  props: StatusButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref' | 'size'>,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const {
     disabled: disabledProp,
-    fontSize,
     hotkey,
     icon,
     label,
     mode = 'bleed',
-    space = 3,
     text,
     tone,
     tooltip,
@@ -70,7 +59,7 @@ export const StatusButton = forwardRef(function StatusButton(
 
   return (
     <Tooltip placement="bottom" {...tooltip} content={tooltipContent} disabled={!label} portal>
-      <div>
+      <ButtonWrapper>
         <Button
           data-ui="StatusButton"
           {...restProps}
@@ -78,23 +67,11 @@ export const StatusButton = forwardRef(function StatusButton(
           disabled={disabled}
           mode={mode}
           ref={ref}
-        >
-          <Flex gap={space}>
-            <IconBox>
-              <Text size={fontSize}>
-                {isValidElement(icon) && icon}
-                {isValidElementType(icon) && createElement(icon)}
-              </Text>
-              {tone && <Dot style={dotStyle} />}
-            </IconBox>
-            {text && (
-              <Box flex={1}>
-                <Text size={fontSize}>{text}</Text>
-              </Box>
-            )}
-          </Flex>
-        </Button>
-      </div>
+          text={text}
+          icon={icon}
+        />
+        {tone && <Dot style={dotStyle} />}
+      </ButtonWrapper>
     </Tooltip>
   )
 })

@@ -1,6 +1,7 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import React from 'react'
+import {Button} from '../../../../../../ui'
 import {PaneHeader} from '../../../PaneHeader'
 import {usePane} from '../../../usePane'
 

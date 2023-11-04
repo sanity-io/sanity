@@ -1,6 +1,7 @@
 import {isArraySchemaType, isReferenceSchemaType, ReferenceValue} from '@sanity/types'
-import {Box, Button, Card, Stack} from '@sanity/ui'
+import {Box, Card, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
+import {Button} from '../../../../../../../../../../ui'
 import {useSchema} from '../../../../../../../../../hooks'
 import {SearchableType} from '../../../../../../../../../search'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
@@ -16,7 +17,7 @@ export function SearchFilterReferenceInput({
 }: OperatorInputComponentProps<ReferenceValue>) {
   const {
     onClose,
-    state: {documentTypesNarrowed, fullscreen},
+    state: {documentTypesNarrowed},
   } = useSearchState()
   const schema = useSchema()
 
@@ -72,13 +73,7 @@ export function SearchFilterReferenceInput({
               onClick={handleClick}
             />
           </Card>
-          <Button
-            fontSize={fullscreen ? 2 : 1}
-            mode="ghost"
-            onClick={handleClear}
-            text="Clear"
-            tone="critical"
-          />
+          <Button mode="ghost" onClick={handleClear} text="Clear" tone="critical" />
         </Stack>
       ) : (
         <ReferenceAutocomplete onSelect={handleChange} types={searchableTypes} value={value} />

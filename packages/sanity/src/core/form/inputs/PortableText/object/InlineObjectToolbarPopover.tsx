@@ -1,16 +1,8 @@
 import React, {useRef, useCallback, useMemo} from 'react'
-import {
-  Box,
-  Button,
-  Inline,
-  Popover,
-  PopoverProps,
-  Text,
-  useGlobalKeyDown,
-  useTheme,
-} from '@sanity/ui'
+import {Box, Inline, Popover, PopoverProps, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import styled from 'styled-components'
 import {EditIcon, TrashIcon} from '@sanity/icons'
+import {Button} from '../../../../../ui'
 
 const ToolbarPopover = styled(Popover)`
   &[data-popper-reference-hidden='true'] {
@@ -95,7 +87,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             icon={EditIcon}
             mode="bleed"
             onClick={onEdit}
-            padding={2}
+            size="small"
             ref={editButtonRef}
             alt="Edit object"
           />
@@ -103,7 +95,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             ref={deleteButtonRef}
             icon={TrashIcon}
             mode="bleed"
-            padding={2}
+            size="small"
             onClick={handleDelete}
             tone="critical"
             alt="Remove object"

@@ -1,8 +1,9 @@
 import {CheckmarkIcon, ChevronDownIcon, DoubleChevronRightIcon} from '@sanity/icons'
-import {Button, Card, Flex, Menu, MenuButton, MenuItem, Text} from '@sanity/ui'
+import {Card, Flex, Menu, MenuButton, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
+import {MenuItem, Button} from '../../../../ui'
 import {BetaBadge, CommentStatus} from '../../src'
 
 const Root = styled(Card)({
@@ -54,23 +55,19 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
             button={
               <Button
                 text={startCase(view)}
-                fontSize={1}
-                padding={2}
+                size="small"
                 mode="bleed"
                 iconRight={ChevronDownIcon}
-                space={2}
               />
             }
             menu={
               <Menu style={{width: '180px'}}>
                 <MenuItem
-                  fontSize={1}
                   iconRight={view === 'open' ? CheckmarkIcon : undefined}
                   onClick={handleSetOpenView}
                   text="Open comments"
                 />
                 <MenuItem
-                  fontSize={1}
                   iconRight={view === 'resolved' ? CheckmarkIcon : undefined}
                   onClick={handleSetResolvedView}
                   text="Resolved comments"
@@ -82,11 +79,10 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
 
           <Button
             aria-label="Close comments"
-            fontSize={1}
             icon={DoubleChevronRightIcon}
             mode="bleed"
             onClick={onClose}
-            padding={2}
+            size="small"
           />
         </Flex>
       </Flex>

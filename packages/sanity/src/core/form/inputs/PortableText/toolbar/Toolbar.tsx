@@ -6,12 +6,12 @@ import {
 } from '@sanity/portable-text-editor'
 import React, {memo, useCallback, useMemo, useState} from 'react'
 import {ObjectSchemaType, Path, SchemaType} from '@sanity/types'
-import {Box, Button, Flex, Hotkeys, Text, useElementRect, useToast} from '@sanity/ui'
+import {Box, Flex, Hotkeys, Text, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {useRovingFocus} from '../../../../components'
 import {useResolveInitialValueForType} from '../../../../store'
-import {Tooltip} from '../../../../../ui'
+import {Button, Tooltip} from '../../../../../ui'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'
@@ -143,7 +143,7 @@ const InnerToolbar = memo(function InnerToolbar({
           portal="default"
         >
           <Button
-            padding={2}
+            size="small"
             icon={isFullscreen ? CollapseIcon : ExpandIcon}
             mode="bleed"
             onClick={onToggleFullscreen}

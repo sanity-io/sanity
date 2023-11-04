@@ -1,9 +1,8 @@
-import React, {createElement, isValidElement, useCallback, useId} from 'react'
-import {isValidElementType} from 'react-is'
-import {Box, ButtonProps, Flex, Text} from '@sanity/ui'
+import React, {useCallback, useId} from 'react'
+import {MenuItemProps} from '../../../../../../ui'
 import {FileMenuItem} from './FileInputMenuItem.styled'
 
-export interface FileInputMenuItemProps extends ButtonProps {
+export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {
   accept?: string
   capture?: 'user' | 'environment'
   multiple?: boolean

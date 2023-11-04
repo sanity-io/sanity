@@ -1,15 +1,11 @@
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
+import {Card, Flex, Box, Text, Stack} from '@sanity/ui'
 import React from 'react'
-import styled from 'styled-components'
+import {Button} from '../../../../../ui'
 
 type Props = {
   onClearValue?: () => void
 }
-
-const ButtonWrapper = styled(Button)`
-  width: 100%;
-`
 
 export function InvalidImageWarning({onClearValue}: Props) {
   return (
@@ -30,7 +26,13 @@ export function InvalidImageWarning({onClearValue}: Props) {
           </Text>
         </Stack>
       </Flex>
-      <ButtonWrapper icon={ResetIcon} text="Reset value" onClick={onClearValue} mode="ghost" />
+      <Button
+        width="fill"
+        icon={ResetIcon}
+        text="Reset value"
+        onClick={onClearValue}
+        mode="ghost"
+      />
     </Card>
   )
 }

@@ -1,7 +1,8 @@
 import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
-import {Button, Inline, Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {Inline, Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import styled from 'styled-components'
+import {Button} from '../../../../../ui'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;

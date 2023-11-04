@@ -35,7 +35,6 @@ export function ActionsMenu(props: Props) {
       </Box>
       <FileInputMenuItem
         icon={UploadIcon}
-        mode="bleed"
         onSelect={onUpload}
         accept={accept}
         text="Upload"

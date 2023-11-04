@@ -1,17 +1,17 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
 import type {AssetFromSource, AssetSource, ReferenceValue} from '@sanity/types'
-import {Box, Button, Flex, Menu, MenuButton, Portal, Stack} from '@sanity/ui'
+import {Box, Flex, Menu, MenuButton, Portal, Stack} from '@sanity/ui'
 import {get} from 'lodash'
 import React, {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {Source} from '../../../../../../../../../config'
+import {Button, MenuItem} from '../../../../../../../../../../ui'
 import {FileSource, ImageSource} from '../../../../../../../../../form/studio/assetSource'
 import {useClient} from '../../../../../../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioClient'
 import {useSource} from '../../../../../../../../source'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
-import {MenuItem} from '../../../../../../../../../../ui'
 import {AssetSourceError} from './AssetSourceError'
 import {AssetPreview} from './preview/AssetPreview'
 
@@ -137,11 +137,10 @@ export function SearchFilterAssetInput(type?: AssetType) {
                   <MenuButton
                     button={
                       <Button
-                        fontSize={fontSize}
                         icon={value ? UndoIcon : SearchIcon}
                         iconRight={ChevronDownIcon}
                         mode="ghost"
-                        style={{flex: value ? 1 : 0}}
+                        width={value ? 'fill' : undefined}
                         text={buttonText}
                       />
                     }
@@ -167,12 +166,11 @@ export function SearchFilterAssetInput(type?: AssetType) {
                   />
                 ) : (
                   <Button
-                    fontSize={fontSize}
                     icon={value ? UndoIcon : SearchIcon}
                     mode="ghost"
                     // eslint-disable-next-line react/jsx-no-bind
                     onClick={() => handleSelectAssetSource(assetSources[0])}
-                    style={{flex: value ? 1 : 0}}
+                    width={value ? 'fill' : undefined}
                     text={buttonText}
                   />
                 )}
@@ -182,10 +180,9 @@ export function SearchFilterAssetInput(type?: AssetType) {
             {/* Clear selected asset */}
             {value && (
               <Button
-                fontSize={fullscreen ? 2 : 1}
                 mode="ghost"
                 onClick={handleClear}
-                style={{flex: 1}}
+                width="fill"
                 text="Clear"
                 tone="critical"
               />

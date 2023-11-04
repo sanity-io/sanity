@@ -1,7 +1,12 @@
 import type {Subscription} from 'rxjs'
 import React, {useState, useEffect, useRef, useCallback} from 'react'
 import styled from 'styled-components'
-import {Button, Card, useToast} from '@sanity/ui'
+import {
+  Card,
+  useToast,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button for media thumb, different look and  behavior
+} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'

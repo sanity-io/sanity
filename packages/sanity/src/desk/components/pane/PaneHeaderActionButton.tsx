@@ -1,5 +1,5 @@
 import React, {MouseEvent, useCallback, useId} from 'react'
-import {ButtonProps, Menu, MenuButton, Text} from '@sanity/ui'
+import {Menu, MenuButton, Text} from '@sanity/ui'
 import {UnknownIcon} from '@sanity/icons'
 import {Intent} from '../../structureBuilder'
 import {_PaneMenuGroup, _PaneMenuItem} from './types'
@@ -9,18 +9,17 @@ import {useIntentLink} from 'sanity/router'
 
 export interface PaneHeaderActionButtonProps {
   node: _PaneMenuItem | _PaneMenuGroup
-  padding?: ButtonProps['padding']
 }
 
 export function PaneHeaderActionButton(props: PaneHeaderActionButtonProps) {
-  const {node, padding} = props
+  const {node} = props
 
   if (node.type === 'item') {
-    return <PaneHeaderMenuItemActionButton node={node} padding={padding} />
+    return <PaneHeaderMenuItemActionButton node={node} />
   }
 
   if (node.type === 'group') {
-    return <PaneHeaderMenuGroupActionButton node={node} padding={padding} />
+    return <PaneHeaderMenuGroupActionButton node={node} />
   }
 
   console.warn('unknown menu node (expected `type: "item" | "group"`):', node)
@@ -30,11 +29,10 @@ export function PaneHeaderActionButton(props: PaneHeaderActionButtonProps) {
 
 export interface PaneHeaderMenuItemActionButtonProps {
   node: _PaneMenuItem
-  padding?: ButtonProps['padding']
 }
 
 export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
-  const {node, padding} = props
+  const {node} = props
 
   if (node.intent) {
     return <PaneHeaderActionIntentButton {...props} intent={node.intent} />
@@ -53,7 +51,6 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
         label={disabledTooltipContent ? undefined : node.title}
         // eslint-disable-next-line react/jsx-handler-names
         onClick={node.onAction}
-        padding={padding}
         selected={node.selected}
         tone={node.tone}
       />
@@ -61,12 +58,8 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
   )
 }
 
-function PaneHeaderActionIntentButton(props: {
-  intent: Intent
-  node: _PaneMenuItem
-  padding?: ButtonProps['padding']
-}) {
-  const {intent, node, padding} = props
+function PaneHeaderActionIntentButton(props: {intent: Intent; node: _PaneMenuItem}) {
+  const {intent, node} = props
   const disabledTooltipContent = typeof node.disabled === 'object' && (
     <Text size={1}>{node.disabled.reason}</Text>
   )
@@ -90,7 +83,6 @@ function PaneHeaderActionIntentButton(props: {
         icon={node.icon}
         label={disabledTooltipContent ? undefined : node.title}
         onClick={handleClick}
-        padding={padding}
         selected={node.selected}
         tone={node.tone}
       />
@@ -100,21 +92,15 @@ function PaneHeaderActionIntentButton(props: {
 
 export interface PaneHeaderMenuGroupActionButtonProps {
   node: _PaneMenuGroup
-  padding?: ButtonProps['padding']
 }
 
 function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonProps) {
-  const {node, padding} = props
+  const {node} = props
 
   return (
     <MenuButton
       button={
-        <StatusButton
-          disabled={node.disabled}
-          icon={node.icon ?? UnknownIcon}
-          label={node.title}
-          padding={padding}
-        />
+        <StatusButton disabled={node.disabled} icon={node.icon ?? UnknownIcon} label={node.title} />
       }
       id={useId()}
       menu={

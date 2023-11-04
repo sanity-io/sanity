@@ -2,7 +2,6 @@ import {MenuIcon, SearchIcon} from '@sanity/icons'
 import {
   BoundaryElementProvider,
   Box,
-  Button,
   Card,
   Flex,
   Layer,
@@ -16,6 +15,7 @@ import {startCase} from 'lodash'
 import styled from 'styled-components'
 import {isDev} from '../../../environment'
 import {useWorkspace} from '../../workspace'
+import {Button} from '../../../../ui'
 import {useColorScheme} from '../../colorScheme'
 import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
@@ -218,7 +218,7 @@ export function StudioNavbar() {
             </Box>
           )}
 
-          <Flex gap={2}>
+          <Flex gap={2} align="center">
             {(shouldRender.configIssues || shouldRender.resources) && (
               <Card borderRight>
                 <Flex gap={1} paddingX={2}>

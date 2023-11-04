@@ -1,7 +1,8 @@
 import React, {useCallback, useMemo, useState} from 'react'
-import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
+import {Stack, Box, Grid, useClickOutside} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {useDocumentOperation} from '../../../hooks'
+import {Button} from '../../../../ui'
 import {FieldChangeNode, FieldOperationsAPI} from '../../types'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
@@ -109,12 +110,16 @@ export function FieldChange(
                     <Box padding={3} sizing="border">
                       Are you sure you want to revert the changes?
                       <Grid columns={2} gap={2} marginTop={2}>
-                        <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                          <Text align="center">Cancel</Text>
-                        </Button>
-                        <Button tone="critical" onClick={handleRevertChanges}>
-                          <Text align="center">Revert change</Text>
-                        </Button>
+                        <Button
+                          mode="ghost"
+                          onClick={closeRevertChangesConfirmDialog}
+                          text="Cancel"
+                        />
+                        <Button
+                          tone="critical"
+                          onClick={handleRevertChanges}
+                          text="Revert change"
+                        />
                       </Grid>
                     </Box>
                   }

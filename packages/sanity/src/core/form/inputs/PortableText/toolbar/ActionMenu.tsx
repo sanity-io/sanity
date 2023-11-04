@@ -1,8 +1,9 @@
 import React, {memo, useCallback, useMemo} from 'react'
-import {Button, ButtonProps, PopoverProps} from '@sanity/ui'
+import {PopoverProps} from '@sanity/ui'
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
+import {Button} from '../../../../../ui'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'
@@ -10,7 +11,6 @@ import {getActionIcon} from './helpers'
 const CollapseMenuMemo = memo(CollapseMenu)
 
 const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true, portal: true}
-const COLLAPSE_BUTTON_PROPS: ButtonProps = {padding: 2, mode: 'bleed'}
 
 interface ActionMenuProps {
   disabled: boolean
@@ -64,7 +64,8 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
           <CollapseMenuButton
             data-testid={`action-button-${action.key}`}
             disabled={disabled || annotationDisabled}
-            {...COLLAPSE_BUTTON_PROPS}
+            mode="bleed"
+            size="small"
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
             key={action.key}
@@ -86,7 +87,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   const menuButtonProps = useMemo(
     () => ({
-      button: <Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} disabled={disabled} />,
+      button: <Button icon={EllipsisVerticalIcon} mode="bleed" size="small" disabled={disabled} />,
       popover: MENU_POPOVER_PROPS,
     }),
 
