@@ -177,7 +177,6 @@ export function ParsedDateTextInput({
         </Flex>
       }
       disabled={!customValidity}
-      padding={3}
       placement="top"
       portal
     >
