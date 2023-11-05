@@ -1,15 +1,5 @@
 import React, {useCallback, useMemo, useState} from 'react'
-import {
-  Box,
-  Text,
-  useClickOutside,
-  Stack,
-  TextInput,
-  TextInputProps,
-  Label,
-  Card,
-  Flex,
-} from '@sanity/ui'
+import {Text, useClickOutside, Stack, TextInput, TextInputProps, Card, Flex} from '@sanity/ui'
 import {ComposeIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
@@ -25,7 +15,6 @@ import {
   RootFlex,
   StyledDialog,
   StyledPopover,
-  TooltipContentBox,
   PopoverListFlex,
 } from './NewDocumentButton.style'
 import {INLINE_PREVIEW_HEIGHT} from './NewDocumentListOption'
@@ -172,7 +161,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   // Shared tooltip props for the popover and dialog
   const sharedTooltipProps: TooltipProps = useMemo(
     () => ({
-      content: <TooltipContentBox>{tooltipContent}</TooltipContentBox>,
+      content: tooltipContent,
       disabled: loading || open,
       placement: 'bottom',
       portal: true,

@@ -85,13 +85,9 @@ export function ReferencePreview(props: {
               <Tooltip
                 portal
                 content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {preview.published?._updatedAt
-                        ? `Published ${timeSincePublished}`
-                        : 'Not published'}
-                    </Text>
-                  </Box>
+                  preview.published?._updatedAt
+                    ? `Published ${timeSincePublished}`
+                    : 'Not published'
                 }
               >
                 <TextWithTone
@@ -109,13 +105,7 @@ export function ReferencePreview(props: {
               <Tooltip
                 portal
                 content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {preview.draft?._updatedAt
-                        ? `Edited ${timeSinceEdited}`
-                        : 'No unpublished edits'}
-                    </Text>
-                  </Box>
+                  preview.draft?._updatedAt ? `Edited ${timeSinceEdited}` : 'No unpublished edits'
                 }
               >
                 <TextWithTone
