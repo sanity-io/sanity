@@ -71,7 +71,7 @@ export const FormFieldSetLegend = memo(function FormFieldSetLegend(props: FormFi
   const {collapsed, collapsible, onClick, title} = props
 
   const text = (
-    <Text weight="semibold" size={1}>
+    <Text weight="medium" size={1}>
       {title || <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}
     </Text>
   )
