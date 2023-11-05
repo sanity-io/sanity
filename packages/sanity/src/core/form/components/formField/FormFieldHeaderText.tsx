@@ -34,7 +34,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   return (
     <Stack space={2}>
       <Flex>
-        <Text as="label" htmlFor={inputId} weight="semibold" size={1}>
+        <Text as="label" htmlFor={inputId} weight="medium" size={1}>
           {title || <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}
         </Text>
 
