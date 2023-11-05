@@ -128,6 +128,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               icon={MentionIcon}
               mode="bleed"
               onClick={handleMentionButtonClicked}
+              size="small"
             />
 
             <ButtonDivider />
@@ -138,6 +139,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               icon={SendIcon}
               mode={hasChanges && canSubmit ? 'default' : 'bleed'}
               onClick={onSubmit}
+              size="small"
               tone={hasChanges && canSubmit ? 'primary' : 'default'}
             />
           </Flex>
