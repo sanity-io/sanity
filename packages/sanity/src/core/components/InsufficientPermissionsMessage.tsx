@@ -27,10 +27,10 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
         <Text size={1}>
           <AccessDeniedIcon />
         </Text>
-        <Text weight="semibold">{title}</Text>
+        <Text weight="medium">{title}</Text>
       </Inline>
       <Inline marginTop={4}>
-        <Text size={1}>
+        <Text size={1} weight="medium">
           {roles.length === 0 ? (
             <>You have no role that grants you permission to {operationLabel}</>
           ) : (

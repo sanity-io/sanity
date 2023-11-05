@@ -25,10 +25,6 @@ const AvatarStackCard = styled(Card)<{$selected?: boolean}>(({theme, $selected})
   `
 })
 
-const TooltipContentBox = styled(Box)`
-  max-width: 150px;
-`
-
 const getTooltipText = (presence: Omit<DocumentPresence, 'path'>[]) => {
   if (presence.length === 1) {
     return `${presence[0].user.displayName} is editing this document`
@@ -58,15 +54,7 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
     [presence],
   )
 
-  const tooltipContent = useMemo(() => {
-    return (
-      <TooltipContentBox>
-        <Text align="center" size={1}>
-          {getTooltipText(uniqueUsers)}
-        </Text>
-      </TooltipContentBox>
-    )
-  }, [uniqueUsers])
+  const tooltipContent = useMemo(() => getTooltipText(uniqueUsers), [uniqueUsers])
 
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>

@@ -27,10 +27,6 @@ export const StyledDialog = styled(Dialog)(() => {
   `
 })
 
-export const TooltipContentBox = styled(Box)`
-  max-width: 300px;
-`
-
 export const RootFlex = styled(Flex)``
 
 export const PopoverHeaderCard = styled(Card)`
