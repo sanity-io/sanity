@@ -1,15 +1,10 @@
 import {CurrentUser} from '@sanity/types'
-import {Box, Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import styled from 'styled-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {Tooltip} from '../../../../../ui'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {useIntentLink} from 'sanity/router'
-
-const TooltipContentBox = styled(Box)`
-  max-width: 300px;
-`
 
 // This value is used to calculate the max-height of the popover and for the virtual list item size.
 // This value is not used anywhere in this file, but it is exported
@@ -49,12 +44,10 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
       key={option.id}
       portal
       content={
-        <TooltipContentBox>
-          <InsufficientPermissionsMessage
-            currentUser={currentUser}
-            operationLabel="create this document"
-          />
-        </TooltipContentBox>
+        <InsufficientPermissionsMessage
+          currentUser={currentUser}
+          operationLabel="create this document"
+        />
       }
     >
       <div>
