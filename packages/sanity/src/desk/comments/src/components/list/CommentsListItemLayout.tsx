@@ -65,6 +65,12 @@ const RetryCardButton = styled(Card)`
 
 const StyledCommentsListItemContextMenu = styled(CommentsListItemContextMenu)``
 
+// Container which displays comment dates in gray.
+// Transparent tone cards still contain a background, which we unset to ensure parent colors take precedence.
+const TransparentDateCard = styled(Card).attrs({tone: 'transparent'})`
+  background: unset;
+`
+
 const RootStack = styled(Stack)(({theme}) => {
   const {space} = theme.sanity
 
@@ -265,17 +271,19 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               <Box flex={1}>{name}</Box>
 
               {!displayError && (
-                <Flex align="center" gap={1}>
-                  <TimeText size={0} muted title={formattedCreatedAt}>
-                    {createdTimeAgo}
-                  </TimeText>
-
-                  {formattedLastEditAt && (
-                    <TimeText size={0} muted title={formattedLastEditAt}>
-                      (edited)
+                <TransparentDateCard>
+                  <Flex align="center" gap={1}>
+                    <TimeText muted size={0} title={formattedCreatedAt}>
+                      {createdTimeAgo}
                     </TimeText>
-                  )}
-                </Flex>
+
+                    {formattedLastEditAt && (
+                      <TimeText muted size={0} title={formattedLastEditAt}>
+                        (edited)
+                      </TimeText>
+                    )}
+                  </Flex>
+                </TransparentDateCard>
               )}
             </Flex>
           </Flex>
