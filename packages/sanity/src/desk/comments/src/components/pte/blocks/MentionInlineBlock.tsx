@@ -43,7 +43,7 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
       open={selected}
       delay={TOOLTIP_DELAY}
       content={
-        <Flex align="center" padding={2} gap={1}>
+        <Flex align="center" padding={2} gap={2}>
           <Flex>
             <CommentsAvatar user={user} />
           </Flex>
