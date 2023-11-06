@@ -49,6 +49,7 @@ const SlotBox = styled(Box)<{
 const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
   const {space} = theme.sanity
   return css`
+    align-items: center;
     bottom: 0;
     gap: ${space[1] / 2}px;
     padding: ${space[1] / 2}px;
