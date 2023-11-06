@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import {expect, test} from '@playwright/experimental-ct-react'
 import React from 'react'
 import {testHelpers} from '../utils/testHelpers'
@@ -26,6 +27,10 @@ test.describe('Comments', () => {
       await $editable.waitFor({state: 'visible'})
       await page.keyboard.type('@')
       await expect(page.getByTestId('comments-mentions-menu')).toBeVisible()
+      await page.keyboard.press('Enter')
+      await expect(page.getByTestId('comments-mentions-menu')).not.toBeVisible()
+      // TODO: find a way to mock `useUser`!
+      await expect($editable).toHaveText('@Loading')
     })
 
     test('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async ({

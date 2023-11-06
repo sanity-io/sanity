@@ -4,7 +4,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo, useState} from 'react'
-import {Path, isKeySegment, isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
+import {Path, isPortableTextSpan} from '@sanity/types'
 import {CommentMessage, MentionOptionsHookValue} from '../../../types'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
 import {useDidUpdate} from 'sanity'
@@ -170,33 +170,10 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
             },
             {mode: 'selected'},
           )
-          mentionPath = PortableTextEditor.insertChild(editor, mentionSchemaType, {
-            _type: 'mention',
+          PortableTextEditor.insertChild(editor, mentionSchemaType, {
             userId: userId,
           })
-        }
-
-        const focusBlock = PortableTextEditor.focusBlock(editor)
-
-        // Set the focus on the next text node after the mention object
-        if (focusBlock && isPortableTextTextBlock(focusBlock) && mentionPath) {
-          const mentionKeyPathSegment = mentionPath?.slice(-1)[0]
-          const nextChildKey =
-            focusBlock.children[
-              focusBlock.children.findIndex(
-                (c) => isKeySegment(mentionKeyPathSegment) && c._key === mentionKeyPathSegment._key,
-              ) + 1
-            ]?._key
-
-          if (nextChildKey) {
-            const path: Path = [{_key: focusBlock._key}, 'children', {_key: nextChildKey}]
-            const sel: EditorSelection = {
-              anchor: {path, offset: 0},
-              focus: {path, offset: 0},
-            }
-            PortableTextEditor.select(editor, sel)
-            PortableTextEditor.focus(editor)
-          }
+          PortableTextEditor.insertChild(editor, editor.schemaTypes.span, {text: ' '})
         }
       }
     },
