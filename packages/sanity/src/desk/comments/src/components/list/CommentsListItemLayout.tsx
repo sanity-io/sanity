@@ -1,3 +1,4 @@
+import {hues} from '@sanity/color'
 import {
   TextSkeleton,
   Flex,
@@ -39,9 +40,16 @@ export function StopPropagation(props: React.PropsWithChildren) {
 
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 
-const TimeText = styled(Text)`
-  min-width: max-content;
-`
+const TimeText = styled(Text)(({theme}) => {
+  const isDark = theme.sanity.color.dark
+  const fg = hues.gray[isDark ? 200 : 800].hex
+
+  return css`
+    min-width: max-content;
+    --card-fg-color: ${fg};
+    color: var(--card-fg-color);
+  `
+})
 
 const InnerStack = styled(Stack)`
   transition: opacity 200ms ease;
@@ -64,12 +72,6 @@ const RetryCardButton = styled(Card)`
 `
 
 const StyledCommentsListItemContextMenu = styled(CommentsListItemContextMenu)``
-
-// Container which displays comment dates in gray.
-// Transparent tone cards still contain a background, which we unset to ensure parent colors take precedence.
-const TransparentDateCard = styled(Card).attrs({tone: 'transparent'})`
-  background: unset;
-`
 
 const RootStack = styled(Stack)(({theme}) => {
   const {space} = theme.sanity
@@ -271,19 +273,17 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               <Box flex={1}>{name}</Box>
 
               {!displayError && (
-                <TransparentDateCard>
-                  <Flex align="center" gap={1}>
-                    <TimeText muted size={0} title={formattedCreatedAt}>
-                      {createdTimeAgo}
-                    </TimeText>
+                <Flex align="center" gap={1}>
+                  <TimeText muted size={0} title={formattedCreatedAt}>
+                    {createdTimeAgo}
+                  </TimeText>
 
-                    {formattedLastEditAt && (
-                      <TimeText muted size={0} title={formattedLastEditAt}>
-                        (edited)
-                      </TimeText>
-                    )}
-                  </Flex>
-                </TransparentDateCard>
+                  {formattedLastEditAt && (
+                    <TimeText muted size={0} title={formattedLastEditAt}>
+                      (edited)
+                    </TimeText>
+                  )}
+                </Flex>
               )}
             </Flex>
           </Flex>
