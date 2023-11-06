@@ -1,4 +1,4 @@
-import React, {ComponentType, ReactNode, useMemo} from 'react'
+import React, {type ComponentType, type ReactNode, useMemo} from 'react'
 import type {TFunction} from 'i18next'
 import {CloseTagToken, simpleParser, TextToken, Token} from './simpleParser'
 
