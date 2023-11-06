@@ -85,7 +85,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
     <MenuActionsWrapper data-buttons space={1} padding={2}>
       {showEdit && (
         <Button
-          aria-label={t('inputs.files.image.actions-menu.edit-details.label')}
+          aria-label={t('inputs.image.actions-menu.edit-details.label')}
           data-testid="options-menu-edit-details"
           icon={CropIcon}
           mode="ghost"
@@ -103,7 +103,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
         constrainSize
       >
         <Button
-          aria-label={t('inputs.files.image.actions-menu.options.label')}
+          aria-label={t('inputs.image.actions-menu.options.label')}
           data-testid="options-menu-button"
           icon={EllipsisVerticalIcon}
           mode="ghost"
