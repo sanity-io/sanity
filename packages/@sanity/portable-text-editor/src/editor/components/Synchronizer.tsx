@@ -77,24 +77,17 @@ export function Synchronizer(props: SynchronizerProps) {
     IS_PROCESSING_LOCAL_CHANGES.set(slateEditor, false)
   }, [slateEditor, portableTextEditor, onChange])
 
-  const flush = useCallback(
-    (flushFn: () => void) => {
-      // If the editor is normalizing (each operation) it means that it's not in the middle of a bigger transform,
-      // wait until we buffer up the whole set of patches for the transformation.
-      if (Editor.isNormalizing(slateEditor)) {
-        onFlushPendingPatches()
-        return
-      }
-      // If it's not normalizing, it's probably in the middle of something. Retry until normalizing again.
-      flushFn()
-    },
-    [onFlushPendingPatches, slateEditor],
-  )
-
   const onFlushPendingPatchesThrottled = useMemo(() => {
     return throttle(
       () => {
-        flush(onFlushPendingPatchesThrottled)
+        // If the editor is normalizing (each operation) it means that it's not in the middle of a bigger transform,
+        // and we can flush these changes immediately.
+        if (Editor.isNormalizing(slateEditor)) {
+          onFlushPendingPatches()
+          return
+        }
+        // If it's in the middle of something, try again.
+        onFlushPendingPatchesThrottled()
       },
       FLUSH_PATCHES_THROTTLED_MS,
       {
@@ -102,7 +95,7 @@ export function Synchronizer(props: SynchronizerProps) {
         trailing: true,
       },
     )
-  }, [flush])
+  }, [onFlushPendingPatches, slateEditor])
 
   // Flush pending patches immediately on unmount
   useEffect(() => {
