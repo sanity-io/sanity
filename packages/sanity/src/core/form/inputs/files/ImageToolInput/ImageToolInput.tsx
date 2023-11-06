@@ -112,9 +112,9 @@ export function ImageToolInput(props: ImageToolInputProps) {
   const {t} = useTranslation()
   return (
     <FormField
-      title={t('inputs.files.imagetool.field.title')}
+      title={t('inputs.files.imagetool.title')}
       level={level}
-      description={t('inputs.files.imagetool.field.description')}
+      description={t('inputs.files.imagetool.description')}
       __unstable_presence={presence}
     >
       <div>
@@ -136,13 +136,13 @@ export function ImageToolInput(props: ImageToolInputProps) {
                   {imageLoadError ? (
                     <Card padding={4} radius={2} tone="critical" border>
                       <Text>
-                        {t('inputs.files.imagetool.field.load-error', {
+                        {t('inputs.files.imagetool.load-error', {
                           errorMessage: imageLoadError.message,
                         })}
                       </Text>
                     </Card>
                   ) : (
-                    <Text muted>{t('inputs.files.imagetool.field.loading')}</Text>
+                    <Text muted>{t('inputs.files.imagetool.loading')}</Text>
                   )}
                 </LoadStatus>
               )}

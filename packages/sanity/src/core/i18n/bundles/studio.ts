@@ -302,17 +302,17 @@ export const studioLocaleStrings = {
   'inputs.files.common.stale-upload-warning.clear': 'Clear upload',
 
   /** Hotspot & Crop */
-  'inputs.files.imagetool.field.title': 'Hotspot & Crop',
+  'inputs.files.imagetool.title': 'Hotspot & Crop',
 
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
-  'inputs.files.imagetool.field.description':
+  'inputs.files.imagetool.description':
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
 
   /** Loading image… */
-  'inputs.files.imagetool.field.loading': 'Loading image…',
+  'inputs.files.imagetool.loading': 'Loading image…',
 
   /** Error: `{{errorMessage}}` */
-  'inputs.files.imagetool.field.load-error': 'Error: {{errorMessage}}',
+  'inputs.files.imagetool.load-error': 'Error: {{errorMessage}}',
 
   /** Select file */
   'inputs.file.dialog.title': 'Select file',
