@@ -3,10 +3,12 @@ import React, {useMemo} from 'react'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {DiffCard, DiffTooltip, FromTo, MetaInfo, ChangeList} from '../../../diff'
-import {DiffComponent, ObjectDiff} from '../../../types'
+import {useTranslation} from '../../../../i18n'
+import type {DiffComponent, ObjectDiff} from '../../../types'
+import {useUnitFormatter} from '../../../../hooks'
 import {useRefValue} from '../../../diff/hooks'
-import {getSizeDiff} from './helpers'
-import {File, FileAsset} from './types'
+import {getHumanFriendlyBytes, getSizeDiff} from './helpers'
+import type {File, FileAsset} from './types'
 
 const SizeDiff = styled.div`
   ${({theme}) => `
@@ -30,8 +32,10 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   const {fromValue, toValue, fields} = diff
   const fromAsset = fromValue?.asset
   const toAsset = toValue?.asset
+  const {t} = useTranslation()
   const prev = useRefValue<FileAsset>(fromAsset?._ref)
   const next = useRefValue<FileAsset>(toAsset?._ref)
+  const formatUnit = useUnitFormatter({unitDisplay: 'short', maximumFractionDigits: 2})
 
   const changedFields = Object.entries(fields)
     .filter(([name, field]) => field.isChanged && name !== '_type')
@@ -43,33 +47,39 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
     .filter((field) => field.name !== 'asset' && changedFields.includes(field.name))
     .map((field) => field.name)
 
-  // Sizes in MB TODO: improve. Apple uses 1000^2
-  const prevSize = prev?.size && prev.size / 1000 / 1000
-  const nextSize = next?.size && next.size / 1000 / 1000
-  const pctDiff = getSizeDiff(prevSize, nextSize)
-
-  const roundedPrevSize = prevSize ? prevSize.toFixed(2) : undefined
-  const roundedNextSize = nextSize ? nextSize.toFixed(2) : undefined
+  const pctDiff = getSizeDiff(prev?.size, next?.size)
+  const prevSize = prev?.size && getHumanFriendlyBytes(prev.size, formatUnit)
+  const nextSize = next?.size && getHumanFriendlyBytes(next.size, formatUnit)
 
   const cardStyles = useMemo(() => ({display: 'block', flex: 1}), [])
 
   const from = prev && (
     <DiffCard as="del" diff={diff} path="asset._ref" style={cardStyles}>
-      <MetaInfo title={prev.originalFilename || 'Untitled'} icon={DocumentIcon}>
-        <Text size={0} style={{color: 'inherit'}}>{`${roundedPrevSize}MB`}</Text>
+      <MetaInfo
+        title={prev.originalFilename || t('changes.file.meta-info-fallback-title')}
+        icon={DocumentIcon}
+      >
+        <Text size={0} style={{color: 'inherit'}}>
+          {prevSize}
+        </Text>
       </MetaInfo>
     </DiffCard>
   )
 
   const to = next && (
     <DiffCard as="ins" diff={diff} path="asset._ref" style={cardStyles}>
-      <MetaInfo title={next.originalFilename || 'Untitled'} icon={DocumentIcon}>
+      <MetaInfo
+        title={next.originalFilename || t('changes.file.meta-info-fallback-title')}
+        icon={DocumentIcon}
+      >
         <Flex align="center">
-          <Text size={0} style={{color: 'inherit'}}>{`${roundedNextSize}MB`}</Text>
+          <Text size={0} style={{color: 'inherit'}}>
+            {nextSize}
+          </Text>
           {pctDiff !== 0 && (
             <Card radius={2} padding={1} as={SizeDiff} marginLeft={2}>
               <Text size={0} data-number={pctDiff > 0 ? 'positive' : 'negative'}>
-                {pctDiff > 0 && '+'}
+                {pctDiff > 0 ? '+' : '-'}
                 {pctDiff}%
               </Text>
             </Card>
@@ -83,7 +93,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
     <>
       {/* Removed only */}
       {from && !to && (
-        <DiffTooltip diff={diff} path="asset._ref" description="Removed">
+        <DiffTooltip diff={diff} path="asset._ref" description={t('changes.removed-label')}>
           {from}
         </DiffTooltip>
       )}
@@ -97,7 +107,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
 
       {/* Added only */}
       {!from && to && (
-        <DiffTooltip diff={diff} path="asset._ref" description="Added">
+        <DiffTooltip diff={diff} path="asset._ref" description={t('changes.added-label')}>
           {to}
         </DiffTooltip>
       )}

@@ -1,11 +1,18 @@
 import {Box} from '@sanity/ui'
-import {useText} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import {ValueError} from '../diff/components/ValueError'
+import type {FieldValueError} from '../validation'
 
 export default function ValueErrorStory() {
-  const message = useText('Message', 'Error message')!
-  const error = useMemo(() => ({message, value: 123}), [message])
+  const error: FieldValueError = useMemo(
+    () => ({
+      value: 123,
+      actualType: 'number',
+      expectedType: 'string',
+      messageKey: 'changes.error.incorrect-type-message',
+    }),
+    [],
+  )
 
   return (
     <Box padding={4}>

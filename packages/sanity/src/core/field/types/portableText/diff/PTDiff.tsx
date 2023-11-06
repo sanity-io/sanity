@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
-import {DiffComponent, ObjectDiff} from '../../../types'
-import PortableText from './components/PortableText'
+import type {DiffComponent, ObjectDiff} from '../../../types'
+import {PortableText} from './components/PortableText'
 import {createPortableTextDiff} from './helpers'
 
 export const PTDiff: DiffComponent<ObjectDiff> = (props) => {

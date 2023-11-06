@@ -52,6 +52,7 @@ export function ChangeResolver(props: ChangeResolverProps) {
   }
 
   return (
+    // eslint-disable-next-line i18next/no-literal-string
     <Text>
       Unknown change type: <code>{(change as any).type || 'undefined'}</code>
     </Text>

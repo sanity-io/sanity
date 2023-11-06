@@ -1,7 +1,8 @@
 import {Text, Card, rem} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import {StringDiffSegment, StringDiff} from '../../types'
+import {useTranslation} from '../../../i18n'
+import type {StringDiffSegment, StringDiff} from '../../types'
 import {DiffCard} from './DiffCard'
 
 const RoundedCard = styled.span`
@@ -36,13 +37,14 @@ const ChangeSegment = styled(Text)`
 export function DiffStringSegment(props: {segment: StringDiffSegment}): React.ReactElement {
   const {segment} = props
   const {text} = segment
+  const {t} = useTranslation()
 
   if (segment.action === 'added') {
     return (
       <DiffCard
         annotation={segment.annotation}
         disableHoverEffect
-        tooltip={{description: 'Added'}}
+        tooltip={{description: t('change.added-label')}}
         as={RoundedCard}
       >
         <ChangeSegment as="ins" style={{textDecoration: 'none'}}>
@@ -58,7 +60,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.Re
         annotation={segment.annotation}
         as={RoundedCard}
         disableHoverEffect
-        tooltip={{description: 'Removed'}}
+        tooltip={{description: t('change.removed-label')}}
       >
         <ChangeSegment as="del">{text}</ChangeSegment>
       </DiffCard>

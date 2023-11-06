@@ -1,11 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {useClickOutside, Label, Popover, Flex} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
-import {isKeySegment, ObjectSchemaType, Path, PortableTextChild} from '@sanity/types'
-import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
+import React, {useCallback, useContext, useEffect, useMemo, useState, type ReactNode} from 'react'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
-import {ObjectDiff} from '../../../../types'
+import type {ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
 import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
@@ -15,7 +16,7 @@ interface AnnotationProps {
   object: PortableTextChild
   schemaType?: ObjectSchemaType
   path: Path
-  children: React.ReactNode
+  children: ReactNode
 }
 
 const AnnotationWrapper = styled.div`
@@ -51,8 +52,13 @@ export function Annotation({
   path,
   ...restProps
 }: AnnotationProps) {
+  const {t} = useTranslation()
   if (!schemaType) {
-    return <AnnotationWrapper {...restProps}>Unknown schema type</AnnotationWrapper>
+    return (
+      <AnnotationWrapper {...restProps}>
+        {t('change.portable-text.unknown-annotation-schema-type')}
+      </AnnotationWrapper>
+    )
   }
   if (diff && diff.action !== 'unchanged') {
     return (
@@ -75,7 +81,7 @@ interface AnnnotationWithDiffProps {
   object: PortableTextChild
   schemaType: ObjectSchemaType
   path: Path
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 function AnnnotationWithDiff({
@@ -89,6 +95,7 @@ function AnnnotationWithDiff({
   const {onSetFocus} = useContext(ConnectorContext)
   const {path: fullPath} = useContext(DiffContext)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const {t} = useTranslation()
   const color = useDiffAnnotationColor(diff, [])
   const style = useMemo(
     () => (color ? {background: color.background, color: color.text} : {}),
@@ -126,7 +133,7 @@ function AnnnotationWithDiff({
   }, [isEditing, myPath, onSetFocus, open])
 
   const handleOpenPopup = useCallback(
-    (event: any) => {
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {
@@ -155,7 +162,9 @@ function AnnnotationWithDiff({
         <div>
           {emptyObject && (
             <Label size={1} muted>
-              Empty {schemaType.title}
+              {t('change.portable-text.empty-object-annotation', {
+                annotationType: schemaType.title || schemaType.name,
+              })}
             </Label>
           )}
           {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
@@ -174,7 +183,10 @@ function AnnnotationWithDiff({
     >
       <Popover content={popoverContent} open={open} ref={setPopoverElement} portal>
         <PreviewContainer paddingLeft={1}>
-          <DiffTooltip annotations={annotations} description={`${diff.action} annotation`}>
+          <DiffTooltip
+            annotations={annotations}
+            description={t('change.portable-text.annotation', {context: diff.action})}
+          >
             <InlineBox style={{display: 'inline-flex'}}>
               <span>{children}</span>
               <Flex align="center" paddingX={1}>

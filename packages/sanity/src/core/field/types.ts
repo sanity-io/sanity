@@ -1,4 +1,4 @@
-import {
+import type {
   Path,
   Reference,
   ArraySchemaType,
@@ -11,8 +11,8 @@ import {
   SchemaType,
   PatchOperations,
 } from '@sanity/types'
-import {ComponentType} from 'react'
-import {
+import type {ComponentType} from 'react'
+import type {
   ArrayDiff as AgnosticArrayDiff,
   BooleanDiff as AgnosticBooleanDiff,
   ItemDiff as AgnosticItemDiff,
@@ -24,8 +24,7 @@ import {
   StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
   TypeChangeDiff as AgnosticTypeChangeDiff,
 } from '@sanity/diff'
-import {FormInsertPatch} from '../form'
-import {FieldValueError} from './validation'
+import type {FieldValueError} from './validation'
 
 /**
  * History timeline / chunking

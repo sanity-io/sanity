@@ -6,7 +6,10 @@ import {useCurrentLocale} from '../i18n/hooks/useLocale'
  *
  * @public
  */
-export type UseUnitFormatterOptions = Omit<Intl.NumberFormatOptions, 'unit'>
+export type UseUnitFormatterOptions = Pick<
+  Intl.NumberFormatOptions,
+  'notation' | 'signDisplay' | 'unitDisplay' | 'maximumFractionDigits' | 'minimumFractionDigits'
+>
 
 /**
  * Available measurement units
@@ -59,6 +62,16 @@ export type FormattableMeasurementUnit =
   | 'year'
 
 /**
+ * Formats a number using the specified unit, using the currently active locale.
+ *
+ * @param value - The number to format
+ * @param unit - The unit to format the number as
+ * @returns The formatted number
+ * @public
+ */
+export type UnitFormatter = (value: number, unit: FormattableMeasurementUnit) => string
+
+/**
  * Returns a formatter with the given options. Function takes a number and the unit to format as
  * the second argument. The formatter will yield localized output, based on the users' selected
  * locale.
@@ -82,9 +95,7 @@ export type FormattableMeasurementUnit =
  * @returns Formatter function
  * @public
  */
-export function useUnitFormatter(
-  options: UseUnitFormatterOptions = {},
-): (value: number, unit: FormattableMeasurementUnit) => string {
+export function useUnitFormatter(options: UseUnitFormatterOptions = {}): UnitFormatter {
   const currentLocale = useCurrentLocale()
   const defaultOptions: Intl.NumberFormatOptions = {
     unitDisplay: 'long',
