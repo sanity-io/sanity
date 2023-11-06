@@ -1,12 +1,12 @@
 import {
-  IndexTuple,
   isIndexSegment,
   isIndexTuple,
   isKeyedObject,
   isKeySegment,
-  KeyedSegment,
-  Path,
-  PathSegment,
+  type IndexTuple,
+  type KeyedSegment,
+  type Path,
+  type PathSegment,
 } from '@sanity/types'
 import {isRecord} from '../../util'
 
@@ -21,23 +21,22 @@ export function pathToString(path: Path): string {
   }
 
   return path.reduce<string>((target, segment, i) => {
-    const segmentType = typeof segment
-    if (segmentType === 'number') {
+    if (isIndexSegment(segment)) {
       return `${target}[${segment}]`
-    }
-
-    if (segmentType === 'string') {
-      const separator = i === 0 ? '' : '.'
-      return `${target}${separator}${segment}`
     }
 
     if (isKeySegment(segment) && segment._key) {
       return `${target}[_key=="${segment._key}"]`
     }
 
-    if (Array.isArray(segment)) {
+    if (isIndexTuple(segment)) {
       const [from, to] = segment
       return `${target}[${from}:${to}]`
+    }
+
+    if (typeof segment === 'string') {
+      const separator = i === 0 ? '' : '.'
+      return `${target}${separator}${segment}`
     }
 
     throw new Error(`Unsupported path segment \`${JSON.stringify(segment)}\``)
