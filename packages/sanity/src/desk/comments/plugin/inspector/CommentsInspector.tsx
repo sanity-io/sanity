@@ -39,6 +39,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const uniqueParams = useUnique(params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
   const commentIdParamRef = useRef<string | undefined>(uniqueParams?.comment)
 
+  const didScrollToCommentFromParam = useRef<boolean>(false)
+
   const pushToast = useToast().push
   const {onPathOpen, ready} = useDocumentPane()
 
@@ -175,15 +177,6 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     [edit],
   )
 
-  const handleStatusChange = useCallback(
-    (id: string, nextStatus: CommentStatus) => {
-      update.execute(id, {
-        status: nextStatus,
-      })
-    },
-    [update],
-  )
-
   const onDeleteStart = useCallback(
     (id: string) => {
       const parent = currentComments.find((c) => c.parentComment?._id === id)
@@ -215,37 +208,58 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   )
 
   const handleScrollToComment = useCallback(
-    (id: string, fieldPath: string) => {
-      if (fieldPath) {
-        requestAnimationFrame(() => {
-          setSelectedPath({
-            fieldPath,
-            target: 'comment-item',
-            selectedFrom: null,
-            threadId: getComment(id)?.threadId || null,
-          })
+    (id: string) => {
+      const comment = getComment(id)
 
+      if (comment) {
+        setSelectedPath({
+          fieldPath: comment.target.path.field || null,
+          target: 'comment-item',
+          selectedFrom: null,
+          threadId: comment.threadId || null,
+        })
+
+        setTimeout(() => {
           commentsListHandleRef.current?.scrollToComment(id)
-
-          setParams({
-            ...params,
-            comment: undefined,
-          })
-
-          commentIdParamRef.current = undefined
         })
       }
     },
-    [getComment, params, setParams, setSelectedPath],
+    [getComment, setSelectedPath],
+  )
+
+  const handleStatusChange = useCallback(
+    (id: string, nextStatus: CommentStatus) => {
+      update.execute(id, {
+        status: nextStatus,
+      })
+
+      // If the comment is being opened, we want to change to the "open" view
+      // and scroll to the comment
+      if (nextStatus === 'open') {
+        setStatus('open')
+        handleScrollToComment(id)
+      }
+    },
+    [handleScrollToComment, setStatus, update],
   )
 
   useEffect(() => {
-    const path = getCommentPath(commentIdParamRef.current || '')
+    // Make sure that the comment exists before we try to scroll to it.
+    // We can't solely rely on the comment id from the url since the comment might not be loaded yet.
+    const commentToScrollTo = getComment(commentIdParamRef.current || '')
 
-    if (path && !loading && commentIdParamRef.current) {
-      handleScrollToComment(commentIdParamRef.current, path)
+    if (!loading && commentToScrollTo && didScrollToCommentFromParam.current === false) {
+      handleScrollToComment(commentToScrollTo._id)
+
+      didScrollToCommentFromParam.current = true
+      commentIdParamRef.current = undefined
+
+      setParams({
+        ...params,
+        comment: undefined,
+      })
     }
-  }, [getCommentPath, handleScrollToComment, loading])
+  }, [getComment, getCommentPath, handleScrollToComment, loading, params, setParams])
 
   return (
     <Fragment>
