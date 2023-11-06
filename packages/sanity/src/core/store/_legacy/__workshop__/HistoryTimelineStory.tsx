@@ -131,7 +131,7 @@ export default function HistoryTimelineStory() {
           <Flex gap={1}>
             <Stack flex={1} space={1}>
               <Box padding={3}>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="medium">
                   Revision
                 </Text>
               </Box>
@@ -157,7 +157,7 @@ export default function HistoryTimelineStory() {
             {changesOpen && (
               <Stack flex={1} space={1}>
                 <Box padding={3}>
-                  <Text size={1} weight="semibold">
+                  <Text size={1} weight="medium">
                     Changes since
                   </Text>
                 </Box>

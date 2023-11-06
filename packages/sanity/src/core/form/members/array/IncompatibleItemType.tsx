@@ -43,10 +43,10 @@ export function IncompatibleItemType(props: Props) {
       content={
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
           <Stack space={4}>
-            <Text weight="semibold">
+            <Text weight="medium">
               Item of type <code>{typeName}</code> not valid for this list
             </Text>
-            <Text size={1} weight="semibold">
+            <Text size={1} weight="medium">
               Why is this happening?
             </Text>
             <Text size={1}>
@@ -61,7 +61,7 @@ export function IncompatibleItemType(props: Props) {
               </Text>
             </Box>
             <Stack space={2}>
-              <Text size={1} weight="semibold">
+              <Text size={1} weight="medium">
                 JSON representation of this item:
               </Text>
               <Card padding={2} overflow="auto" border>

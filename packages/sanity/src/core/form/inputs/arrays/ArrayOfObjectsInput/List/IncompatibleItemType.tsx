@@ -44,7 +44,7 @@ export function IncompatibleItemType(props: Props) {
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
           <Stack space={4}>
             <Box>
-              <Text weight="semibold">Why is this happening?</Text>
+              <Text weight="medium">Why is this happening?</Text>
             </Box>
             <Text size={1}>
               The current schema does not declare items of type <code>{typeName}</code> as valid for
@@ -58,7 +58,7 @@ export function IncompatibleItemType(props: Props) {
               </Text>
             </Box>
             <Stack space={2}>
-              <Text size={1} weight="semibold">
+              <Text size={1} weight="medium">
                 JSON representation of this item:
               </Text>
               <Card padding={2} overflow="auto" border>

@@ -11,7 +11,7 @@ export function AssetSourceError(props: ResponsivePaddingProps) {
           <WarningOutlineIcon />
         </TextWithTone>
         <Stack space={4}>
-          <TextWithTone size={1} tone="caution" weight="semibold">
+          <TextWithTone size={1} tone="caution" weight="medium">
             No valid asset sources found.
           </TextWithTone>
           <TextWithTone size={1} tone="caution">

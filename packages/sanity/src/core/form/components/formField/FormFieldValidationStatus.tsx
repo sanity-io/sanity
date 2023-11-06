@@ -117,7 +117,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       fallbackPlacements={['bottom', 'right', 'left']}
     >
       <div>
-        <Text muted size={fontSize} weight="semibold" style={{color: statusColor}}>
+        <Text muted size={fontSize} weight="medium" style={{color: statusColor}}>
           {statusIcon}
         </Text>
       </div>

@@ -20,7 +20,7 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
       content={
         <Root padding={4}>
           <Stack space={3}>
-            <Text weight="semibold" size={1}>
+            <Text weight="medium" size={1}>
               Collaborate in One Place
             </Text>
 
