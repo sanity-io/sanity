@@ -3,7 +3,8 @@ import React, {isValidElement} from 'react'
 import {isNumber, isString} from 'lodash'
 import {Inline} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
-import {DraftStatus, PublishedStatus} from '../../../ui'
+import {DraftStatus} from '../../../ui/draftStatus'
+import {PublishedStatus} from '../../../ui/publishedStatus'
 import type {PaneItemPreviewState} from './types'
 import {
   DocumentPresence,
