@@ -10,7 +10,7 @@ import React, {
 import {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Card, CardTone, Flex, Menu, MenuButton, MenuDivider, Stack, Text} from '@sanity/ui'
 import {
-  EllipsisVerticalIcon,
+  EllipsisHorizontalIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
@@ -247,7 +247,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button mode="bleed" icon={EllipsisVerticalIcon} size="small" />}
+            button={<Button mode="bleed" icon={EllipsisHorizontalIcon} size="small" />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu>

@@ -2,7 +2,11 @@
 
 import React, {useCallback, useMemo, useRef, useState, useId} from 'react'
 import {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
-import {EllipsisVerticalIcon, ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
+import {
+  EllipsisHorizontalIcon,
+  ResetIcon as ClearIcon,
+  SyncIcon as ReplaceIcon,
+} from '@sanity/icons'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Box, Card, Flex, Inline, Menu, MenuButton, Stack, Text, useToast} from '@sanity/ui'
@@ -376,7 +380,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                         <Button
                           size="small"
                           mode="bleed"
-                          icon={EllipsisVerticalIcon}
+                          icon={EllipsisHorizontalIcon}
                           data-testid="menu-button"
                         />
                       }

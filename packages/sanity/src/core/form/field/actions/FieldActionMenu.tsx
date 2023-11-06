@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-handler-names */
 
-import {EllipsisVerticalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Card, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import React, {memo, useCallback, useId, useMemo, useState} from 'react'
 import {StatusButton, StatusButtonProps} from '../../../components'
@@ -60,7 +60,7 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
             {
               type: 'group',
               children: menuNodes,
-              icon: EllipsisVerticalIcon,
+              icon: EllipsisHorizontalIcon,
               title: 'Field actions',
             },
           ] satisfies DocumentFieldActionNode[])

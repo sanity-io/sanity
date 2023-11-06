@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {PopoverProps} from '@sanity/ui'
-import {EllipsisVerticalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {Button} from '../../../../../ui'
@@ -87,7 +87,9 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   const menuButtonProps = useMemo(
     () => ({
-      button: <Button icon={EllipsisVerticalIcon} mode="bleed" size="small" disabled={disabled} />,
+      button: (
+        <Button icon={EllipsisHorizontalIcon} mode="bleed" size="small" disabled={disabled} />
+      ),
       popover: MENU_POPOVER_PROPS,
     }),
 

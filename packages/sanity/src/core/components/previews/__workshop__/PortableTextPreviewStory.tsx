@@ -1,4 +1,4 @@
-import {DocumentIcon, EditIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import {DocumentIcon, EditIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
 import React, {ComponentType, createElement, useMemo} from 'react'
@@ -72,7 +72,7 @@ export default function PortableTextPreviewStory() {
 
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
-      actions: withActions && <Button icon={EllipsisVerticalIcon} mode="bleed" size="small" />,
+      actions: withActions && <Button icon={EllipsisHorizontalIcon} mode="bleed" size="small" />,
       isPlaceholder,
       media,
       status: status && (
