@@ -27,9 +27,7 @@ export const Tooltip = forwardRef(function Tooltip(
     <UITooltip
       content={
         typeof content === 'string' || typeof content === 'number' ? (
-          <Text size={1} weight="medium">
-            {content}
-          </Text>
+          <Text size={1}>{content}</Text>
         ) : (
           content
         )
