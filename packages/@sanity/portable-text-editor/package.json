@@ -74,7 +74,7 @@
     "slate-react": "0.98.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.38.1",
+    "@playwright/test": "^1.39.0",
     "@portabletext/toolkit": "^2.0.10",
     "@sanity/diff-match-patch": "^3.1.1",
     "@sanity/ui": "^1.8.3",
