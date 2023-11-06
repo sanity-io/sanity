@@ -223,8 +223,8 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
         console.error(err)
         this.toast?.push({
           status: 'error',
-          description: t('inputs.files.file-input.upload-failed.description'),
-          title: t('inputs.files.file-input.upload-failed.title'),
+          description: t('inputs.file.upload-failed.description'),
+          title: t('inputs.file.upload-failed.title'),
         })
         this.clearUploadStatus()
       },
@@ -268,7 +268,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
               selectionType="single"
               assetType="file"
               accept={accept}
-              dialogHeaderTitle={t('inputs.files.file-input.dialog.title')}
+              dialogHeaderTitle={t('inputs.file.dialog.title')}
               onClose={this.handleAssetSourceClosed}
               onSelect={this.handleSelectAssetFromSource}
             />
@@ -282,7 +282,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
         selectionType="single"
         assetType="file"
         accept={accept}
-        dialogHeaderTitle={t('inputs.files.file-input.dialog.title')}
+        dialogHeaderTitle={t('inputs.file.dialog.title')}
         onClose={this.handleAssetSourceClosed}
         onSelect={this.handleSelectAssetFromSource}
       />
@@ -394,7 +394,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
       assetSources && assetSources?.length === 0 ? null : (
         <MenuItem
           icon={SearchIcon}
-          text={t('inputs.files.file-input.browse-button.text')}
+          text={t('inputs.file.browse-button.text')}
           onClick={() => {
             this.setState({isMenuOpen: false})
             this.handleSelectFileFromAssetSource(assetSources[0])
@@ -500,7 +500,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
           button={
             <Button
               mode="ghost"
-              text={t('inputs.files.file-input.multi-browse-button.text')}
+              text={t('inputs.file.multi-browse-button.text')}
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
             />
@@ -532,7 +532,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     return (
       <Button
         fontSize={2}
-        text={t('inputs.files.file-input.browse-button.text')}
+        text={t('inputs.file.browse-button.text')}
         icon={SearchIcon}
         mode="ghost"
         onClick={() => {
@@ -667,7 +667,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
             return <MemberFieldError key={member.key} member={member} />
           }
           //@ts-expect-error all possible cases should be covered
-          return <>{t('inputs.files.file-input.error.unknown-member-kind', {kind: member.kind})}</>
+          return <>{t('inputs.file.error.unknown-member-kind', {kind: member.kind})}</>
         })}
         {selectedAssetSource && this.renderAssetSource()}
       </>

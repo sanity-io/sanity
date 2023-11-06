@@ -24,14 +24,14 @@ export function InvalidImageWarning({onClearValue}: Props) {
         </Box>
         <Stack space={3}>
           <Text size={1} weight="semibold">
-            {t('inputs.files.image.invalid-image-warning.title')}
+            {t('inputs.image.invalid-image-warning.title')}
           </Text>
-          <Text size={1}>{t('inputs.files.image.invalid-image-warning.description')}</Text>
+          <Text size={1}>{t('inputs.image.invalid-image-warning.description')}</Text>
         </Stack>
       </Flex>
       <ButtonWrapper
         icon={ResetIcon}
-        text={t('inputs.files.image.invalid-image-warning.reset-button.text')}
+        text={t('inputs.image.invalid-image-warning.reset-button.text')}
         onClick={onClearValue}
         mode="ghost"
       />

@@ -24,14 +24,14 @@ export function InvalidFileWarning({onClearValue}: Props) {
         </Box>
         <Stack space={3}>
           <Text size={1} weight="semibold">
-            {t('inputs.files.file-input.invalid-file-warning.title')}
+            {t('inputs.file.invalid-file-warning.title')}
           </Text>
-          <Text size={1}>{t('inputs.files.file-input.invalid-file-warning.description')}</Text>
+          <Text size={1}>{t('inputs.file.invalid-file-warning.description')}</Text>
         </Stack>
       </Flex>
       <ButtonWrapper
         icon={ResetIcon}
-        text={t('inputs.files.file-input.invalid-file-warning.reest-button.text')}
+        text={t('inputs.file.invalid-file-warning.reest-button.text')}
         onClick={onClearValue}
         mode="ghost"
       />

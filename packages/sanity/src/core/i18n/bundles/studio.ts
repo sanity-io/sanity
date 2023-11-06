@@ -179,50 +179,50 @@ export const studioLocaleStrings = {
   /** --- File (Image, File and ImageTool) Inputs --- */
 
   /** Open image edit dialog */
-  'inputs.files.image.actions-menu.edit-details.label': 'Open image edit dialog',
+  'inputs.image.actions-menu.edit-details.label': 'Open image edit dialog',
 
   /** Open image options menu */
-  'inputs.files.image.actions-menu.options.label': 'Open image options menu',
+  'inputs.image.actions-menu.options.label': 'Open image options menu',
 
   /** Open file options menu */
-  'inputs.files.image.actions-menu.files.aria-label': 'Open file options menu',
+  'inputs.files.actions-menu.files.aria-label': 'Open file options menu',
 
   /** The upload could not be completed at this time. */
-  'inputs.files.image.upload-error.description': 'The upload could not be completed at this time.',
+  'inputs.image.upload-error.description': 'The upload could not be completed at this time.',
 
   /** Upload failed */
-  'inputs.files.image.upload-error.title': 'Upload failed',
+  'inputs.image.upload-error.title': 'Upload failed',
 
   /** Edit hotspot and crop */
-  'inputs.files.image.hotspot-dialog.title': 'Edit hotspot and crop',
+  'inputs.image.hotspot-dialog.title': 'Edit hotspot and crop',
 
   /** Preview of uploaded image */
-  'inputs.files.image.preview-uploaded-image': 'Preview of uploaded image',
+  'inputs.image.preview-uploaded-image': 'Preview of uploaded image',
 
   /** Cannot upload this file here */
-  'inputs.files.image.drag-overlay.cannot-upload-here': 'Cannot upload this file here',
+  'inputs.image.drag-overlay.cannot-upload-here': 'Cannot upload this file here',
 
   /** This field is read only */
-  'inputs.files.image.drag-overlay.this-field-is-read-only': 'This field is read only',
+  'inputs.image.drag-overlay.this-field-is-read-only': 'This field is read only',
 
   /** Drop image to upload */
-  'inputs.files.image.drag-overlay.drop-to-upload-image': 'Drop image to upload',
+  'inputs.image.drag-overlay.drop-to-upload-image': 'Drop image to upload',
 
   /** Invalid image value */
-  'inputs.files.image.invalid-image-warning.title': 'Invalid image value',
+  'inputs.image.invalid-image-warning.title': 'Invalid image value',
 
   /** The value of this field is not a valid image. Resetting this field will let you choose a new image. */
-  'inputs.files.image.invalid-image-warning.description':
+  'inputs.image.invalid-image-warning.description':
     'The value of this field is not a valid image. Resetting this field will let you choose a new image.',
 
   /** Reset value */
-  'inputs.files.image.invalid-image-warning.reset-button.text': 'Reset value',
+  'inputs.image.invalid-image-warning.reset-button.text': 'Reset value',
 
   /** Select */
-  'inputs.files.image.browse-menu.text': 'Select',
+  'inputs.image.browse-menu.text': 'Select',
 
   /** Unknown member kind: `{{kind}}` */
-  'inputs.files.image.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
+  'inputs.image.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
 
   /** The URL is copied to the clipboard */
   'inputs.files.common.actions-menu.notification.url-copied': 'The URL is copied to the clipboard',
@@ -315,33 +315,32 @@ export const studioLocaleStrings = {
   'inputs.files.imagetool.field.load-error': 'Error: {{errorMessage}}',
 
   /** Select file */
-  'inputs.files.file-input.dialog.title': 'Select file',
+  'inputs.file.dialog.title': 'Select file',
 
   /** Browse */
-  'inputs.files.file-input.browse-button.text': 'Browse',
+  'inputs.file.browse-button.text': 'Browse',
 
   /** Select */
-  'inputs.files.file-input.multi-browse-button.text': 'Select',
+  'inputs.file.multi-browse-button.text': 'Select',
 
   /** Unknown member kind: `{{kind}}` */
-  'inputs.files.file-input.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
+  'inputs.file.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
 
   /** Invalid file value */
-  'inputs.files.file-input.invalid-file-warning.title': 'Invalid file value',
+  'inputs.file.invalid-file-warning.title': 'Invalid file value',
 
   /** The value of this field is not a valid file. Resetting this field will let you choose a new file. */
-  'inputs.files.file-input.invalid-file-warning.description':
+  'inputs.file.invalid-file-warning.description':
     'The value of this field is not a valid file. Resetting this field will let you choose a new file.',
 
   /** Reset value */
-  'inputs.files.file-input.invalid-file-warning.reest-button.text': 'Reset value',
+  'inputs.file.invalid-file-warning.reest-button.text': 'Reset value',
 
   /** The upload could not be completed at this time. */
-  'inputs.files.file-input.upload-failed.description':
-    'The upload could not be completed at this time.',
+  'inputs.file.upload-failed.description': 'The upload could not be completed at this time.',
 
   /** Upload failed */
-  'inputs.files.file-input.upload-failed.title': 'Upload failed',
+  'inputs.file.upload-failed.title': 'Upload failed',
 
   /** --- Reference (and Cross-Dataset Reference) Input --- */
 
