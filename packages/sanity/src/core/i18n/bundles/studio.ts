@@ -570,6 +570,42 @@ export const studioLocaleStrings = {
   'inputs.array.error.cannot-resolve-initial-value-title':
     'Unable to resolve initial value for type: {{schemaTypeTitle}}: {{errorMessage}}.',
 
+  /** --- Forms / form fields --- */
+
+  /** Fallback title shown above field if it has no defined title */
+  'form.field.untitled-field-label': 'Untitled',
+
+  /** Fallback title shown above fieldset if it has no defined title */
+  'form.field.untitled-fieldset-label': 'Untitled',
+
+  /** Error text shown when form is unable to find an array item at a given keyed path */
+  'form.error.no-array-item-at-key':
+    'No array item with `_key` <code>"{{key}}"</code> found at path <code>{{path}}</code>',
+
+  /** Error text shown when form is unable to find an array item at a given indexed path */
+  'form.error.no-array-item-at-index':
+    'No array item at index <code>{{index}}</code> found at path <code>{{path}}</code>',
+
+  /** Error text shown when a field with a given name cannot be found in the schema or is conditionally hidden but explicitly told to render  */
+  'form.error.field-not-found': `Field "{{fieldName}}" not found among members – verify that it is defined in the schema and that it has not been conditionally hidden.`,
+
+  /** Accessibility label for the icon that indicates the field has a validation error */
+  'form.validation.has-error-aria-label': 'Has error',
+
+  /** Accessibility label for the icon that indicates the field has a validation warning */
+  'form.validation.has-warning-aria-label': 'Has warning',
+
+  /** Accessibility label for the icon that indicates the field has validation information */
+  'form.validation.has-info-aria-label': 'Has information',
+
+  /** Text shown when summarizing validation information, when the field has one or more errors */
+  'form.validation.summary.errors-count_one': '{{count}} error',
+  'form.validation.summary.errors-count_other': '{{count}} errors',
+
+  /** Text shown when summarizing validation information, when the field has one or more warnings */
+  'form.validation.summary.warnings-count_one': '{{count}} warning',
+  'form.validation.summary.warnings-count_other': '{{count}} warnings',
+
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */
