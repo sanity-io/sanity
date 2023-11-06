@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components'
-import {Card, Box, Flex, Label, Theme, rem} from '@sanity/ui'
+import {Card, Box, Flex, Label, rem} from '@sanity/ui'
 
 export const Root = styled(Flex)`
   .sidebarPanes .Pane {
