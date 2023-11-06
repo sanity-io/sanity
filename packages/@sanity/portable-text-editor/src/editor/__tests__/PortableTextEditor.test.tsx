@@ -128,7 +128,7 @@ describe('initialization', () => {
     await waitFor(() => {
       if (editorRef.current) {
         PortableTextEditor.focus(editorRef.current)
-        expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(initialSelection)
+        expect(PortableTextEditor.getSelection(editorRef.current)).toStrictEqual(initialSelection)
       }
     })
   })
