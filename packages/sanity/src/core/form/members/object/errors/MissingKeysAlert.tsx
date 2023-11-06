@@ -7,6 +7,7 @@ import {Alert} from '../../../components/Alert'
 import {PatchEvent, setIfMissing} from '../../../patch'
 import {FormField} from '../../../components/formField'
 import {isDev} from '../../../../environment'
+import {Translate, useTranslation} from '../../../../i18n'
 
 interface Props {
   error: MissingKeysError
@@ -21,31 +22,42 @@ export function MissingKeysAlert(props: Props) {
     )
   }, [error.value, onChange])
 
+  const {t} = useTranslation()
+
   return (
     <FormField title={error.schemaType.title} description={error.schemaType.description}>
       <Alert
         status="warning"
         suffix={
           <Stack padding={2}>
-            <Button onClick={handleFixMissingKeys} text="Add missing keys" tone="caution" />
+            <Button
+              onClick={handleFixMissingKeys}
+              text={t('form.error.missing-keys-alert.add-button.text')}
+              tone="caution"
+            />
           </Stack>
         }
-        title={<>Missing keys</>}
+        title={t('form.error.missing-keys-alert.title')}
       >
         <Text as="p" muted size={1}>
-          Some items in the list are missing their keys. This must be fixed in order to edit the
-          list.
+          {t('form.error.missing-keys-alert.summary')}
         </Text>
 
-        <Details marginTop={4} open={isDev} title={<>Developer info</>}>
+        <Details
+          marginTop={4}
+          open={isDev}
+          title={t('form.error.missing-keys-alert.details.title')}
+        >
           <Stack space={3}>
             <Text as="p" muted size={1}>
-              This usually happens when items are created using an API client, and the{' '}
-              <code>_key</code> property has not been included.
+              <Translate t={t} i18nKey="form.error.missing-keys-alert.details.description" />
             </Text>
 
             <Text as="p" muted size={1}>
-              The value of the <code>_key</code> property must be a unique string.
+              <Translate
+                t={t}
+                i18nKey="form.error.missing-keys-alert.details.additional-description"
+              />
             </Text>
           </Stack>
         </Details>

@@ -7,6 +7,7 @@ import {isDev} from '../../../../environment'
 import {PatchEvent, unset} from '../../../patch'
 import {FormField} from '../../../components/formField'
 import {MixedArrayError} from '../../../store'
+import {useTranslation} from '../../../../i18n'
 
 interface Props {
   error: MixedArrayError
@@ -25,6 +26,8 @@ export function MixedArrayAlert(props: Props) {
     onChange(PatchEvent.from(patches))
   }
 
+  const {t} = useTranslation()
+
   return (
     <FormField title={error.schemaType.title} description={error.schemaType.description}>
       <Alert
@@ -33,22 +36,21 @@ export function MixedArrayAlert(props: Props) {
           <Stack padding={2}>
             <Button
               onClick={handleRemoveNonObjectValues}
-              text="Remove non-object values"
+              text={t('form.error.mixed-array-alert.remove-button.text')}
               tone="critical"
             />
           </Stack>
         }
-        title={<>Invalid list values</>}
+        title={t('form.error.mixed-array-alert.title')}
       >
         <Text as="p" muted size={1}>
-          Some items in this list are not objects. This must be fixed in order to edit the list.
+          {t('form.error.mixed-array-alert.summary')}
         </Text>
 
-        <Details marginTop={4} open={isDev} title={<>Developer info</>}>
+        <Details marginTop={4} open={isDev} title={t('form.error.mixed-array-alert.details.title')}>
           <Stack space={3}>
             <Text as="p" muted size={1}>
-              This usually happens when items are created using an API client, or when a custom
-              input component has added invalid data to the list.
+              {t('form.error.mixed-array-alert.details.description')}
             </Text>
           </Stack>
           {/* TODO: render array items and highlight the wrong items (sc-26255) */}

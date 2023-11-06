@@ -7,6 +7,7 @@ import {InvalidValueInput} from '../../inputs/InvalidValueInput'
 import {MissingKeysAlert} from './errors/MissingKeysAlert'
 import {DuplicateKeysAlert} from './errors/DuplicateKeysAlert'
 import {MixedArrayAlert} from './errors/MixedArrayAlert'
+import {useTranslation} from '../../../i18n'
 
 /** @internal */
 export function MemberFieldError(props: {member: FieldError}) {
@@ -19,6 +20,9 @@ export function MemberFieldError(props: {member: FieldError}) {
     },
     [onChange, member.fieldName],
   )
+
+  const {t} = useTranslation()
+
   if (member.error.type === 'INCOMPATIBLE_TYPE') {
     return (
       <InvalidValueInput
@@ -38,5 +42,5 @@ export function MemberFieldError(props: {member: FieldError}) {
   if (member.error.type === 'MIXED_ARRAY') {
     return <MixedArrayAlert onChange={handleChange} error={member.error} />
   }
-  return <Box>Unexpected error: {props.member.error.type}</Box>
+  return <Box>{t('member-field-error.unexpected-error', {error: props.member.error.type})}</Box>
 }

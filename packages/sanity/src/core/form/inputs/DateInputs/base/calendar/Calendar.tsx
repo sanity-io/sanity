@@ -176,9 +176,19 @@ export const Calendar = forwardRef(function Calendar(
         {/* Day presets */}
         {features.dayPresets && (
           <Grid columns={3} data-ui="CalendaryDayPresets" gap={1}>
-            <Button text="Yesterday" mode="bleed" fontSize={1} onClick={handleYesterdayClick} />
-            <Button text="Today" mode="bleed" fontSize={1} onClick={handleTodayClick} />
-            <Button text="Tomorrow" mode="bleed" fontSize={1} onClick={handleTomorrowClick} />
+            <Button
+              text={labels.goToPreviousDay}
+              mode="bleed"
+              fontSize={1}
+              onClick={handleYesterdayClick}
+            />
+            <Button text={labels.goToToday} mode="bleed" fontSize={1} onClick={handleTodayClick} />
+            <Button
+              text={labels.goToNextDay}
+              mode="bleed"
+              fontSize={1}
+              onClick={handleTomorrowClick}
+            />
           </Grid>
         )}
 
