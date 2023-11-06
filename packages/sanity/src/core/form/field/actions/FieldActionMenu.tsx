@@ -1,9 +1,8 @@
 /* eslint-disable react/jsx-handler-names */
 
 import {EllipsisVerticalIcon} from '@sanity/icons'
-import {Card, Flex, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
+import {Card, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import React, {memo, useCallback, useId, useMemo, useState} from 'react'
-import styled, {css} from 'styled-components'
 import {StatusButton, StatusButtonProps} from '../../../components'
 import {DocumentFieldActionGroup, DocumentFieldActionNode} from '../../../config'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
@@ -17,16 +16,6 @@ export interface FieldActionMenuProps {
 const STATUS_BUTTON_TOOLTIP_PROPS: StatusButtonProps['tooltip'] = {
   placement: 'top',
 }
-
-const RootFlex = styled(Flex)(({theme}) => {
-  const {space} = theme.sanity
-
-  return css`
-    height: 25;
-    line-height: 0;
-    gap: ${space[1] / 2}px;
-  `
-})
 
 function renderAsButton(node: DocumentFieldActionNode) {
   return 'renderAsButton' in node && node.renderAsButton
@@ -82,7 +71,7 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
   )
 
   return (
-    <RootFlex>
+    <>
       {rootNodes.map((node, idx) => (
         <RootFieldActionMenuNode
           // eslint-disable-next-line react/no-array-index-key
@@ -93,7 +82,7 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
           open={open}
         />
       ))}
-    </RootFlex>
+    </>
   )
 })
 
