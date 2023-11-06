@@ -268,7 +268,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
               selectionType="single"
               assetType="file"
               accept={accept}
-              dialogHeaderTitle={t('inputs.files.file-input.dialog.tile')}
+              dialogHeaderTitle={t('inputs.files.file-input.dialog.title')}
               onClose={this.handleAssetSourceClosed}
               onSelect={this.handleSelectAssetFromSource}
             />
@@ -282,7 +282,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
         selectionType="single"
         assetType="file"
         accept={accept}
-        dialogHeaderTitle={t('inputs.files.file-input.dialog.tile')}
+        dialogHeaderTitle={t('inputs.files.file-input.dialog.title')}
         onClose={this.handleAssetSourceClosed}
         onSelect={this.handleSelectAssetFromSource}
       />

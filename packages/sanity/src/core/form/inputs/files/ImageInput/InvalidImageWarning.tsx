@@ -13,7 +13,7 @@ const ButtonWrapper = styled(Button)`
 `
 
 export function InvalidImageWarning({onClearValue}: Props) {
-  const {t} = useTranslation('sanity')
+  const {t} = useTranslation()
   return (
     <Card tone="caution" padding={4} border radius={2}>
       <Flex gap={4} marginBottom={4}>

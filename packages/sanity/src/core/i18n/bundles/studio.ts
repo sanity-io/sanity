@@ -315,7 +315,7 @@ export const studioLocaleStrings = {
   'inputs.files.imagetool.field.load-error': 'Error: {{errorMessage}}',
 
   /** Select file */
-  'inputs.files.file-input.dialog.tile': 'Select file',
+  'inputs.files.file-input.dialog.title': 'Select file',
 
   /** Browse */
   'inputs.files.file-input.browse-button.text': 'Browse',

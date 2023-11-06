@@ -88,7 +88,7 @@ export function FileActionsMenu(props: Props) {
     }
   }, [isMenuOpen, menuElement])
 
-  const {t} = useTranslation('sanity')
+  const {t} = useTranslation()
 
   return (
     <Flex wrap="nowrap" justify="space-between" align="center">
