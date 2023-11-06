@@ -270,10 +270,10 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.files.common.stale-upload-warning.clear': 'Fjern opplasting',
 
   /** Hotspot & Crop */
-  'inputs.files.imagetool.title': 'Fokuspunkt & beskjæring',
+  'inputs.imagetool.title': 'Fokuspunkt & beskjæring',
 
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
-  'inputs.files.imagetool.description':
+  'inputs.imagetool.description':
     'Juster rektangelet for å beskjære bildet. Juster sirkelen for å spesifisere området som alltid skal være synlig.',
 
   /** --- Reference (and Cross-Dataset Reference) Input --- */
