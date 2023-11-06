@@ -203,9 +203,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   }, [replies?.length])
 
   const handleClickOutside = useCallback(() => {
-    if (isSelected) return
-
-    onPathSelect?.(null)
+    // Only on `onPathSelect` on click outside if selected
+    if (isSelected) {
+      onPathSelect?.(null)
+    }
   }, [onPathSelect, isSelected])
 
   useClickOutside(handleClickOutside, [threadCardElement])
