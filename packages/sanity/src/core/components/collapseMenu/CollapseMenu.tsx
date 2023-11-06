@@ -1,4 +1,4 @@
-import {EllipsisVerticalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Flex, MenuButtonProps, useElementRect} from '@sanity/ui'
 import React, {cloneElement, forwardRef, useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
@@ -94,7 +94,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
   }, [hiddenRowEl, rootEl, rootRect])
 
   const menuButton = useMemo(
-    () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
+    () => menuButtonProps?.button || <Button icon={EllipsisHorizontalIcon} mode="bleed" />,
     [menuButtonProps],
   )
 

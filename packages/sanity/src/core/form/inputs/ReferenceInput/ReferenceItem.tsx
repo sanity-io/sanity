@@ -16,7 +16,7 @@ import {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import {
   CloseIcon,
   CopyIcon as DuplicateIcon,
-  EllipsisVerticalIcon,
+  EllipsisHorizontalIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
@@ -197,7 +197,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button mode="bleed" icon={EllipsisVerticalIcon} size="small" />}
+            button={<Button mode="bleed" icon={EllipsisHorizontalIcon} size="small" />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu ref={menuRef}>

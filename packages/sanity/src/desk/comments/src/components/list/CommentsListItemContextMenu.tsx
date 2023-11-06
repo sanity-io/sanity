@@ -2,7 +2,7 @@ import React from 'react'
 import {
   CheckmarkCircleIcon,
   UndoIcon,
-  EllipsisVerticalIcon,
+  EllipsisHorizontalIcon,
   EditIcon,
   TrashIcon,
   LinkIcon,
@@ -98,7 +98,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                 aria-label="Open comment actions menu"
                 disabled={readOnly}
                 hidden={!showMenuButton}
-                icon={EllipsisVerticalIcon}
+                icon={EllipsisHorizontalIcon}
                 mode="bleed"
                 size="small"
               />

@@ -1,4 +1,4 @@
-import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuButton, MenuButtonProps, useGlobalKeyDown} from '@sanity/ui'
 import React, {
   forwardRef,
@@ -92,7 +92,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
           button={
             <Button
               aria-label="Open menu"
-              iconRight={EllipsisVerticalIcon}
+              iconRight={EllipsisHorizontalIcon}
               mode="bleed"
               size="small"
               tabIndex={focused ? 0 : 1}

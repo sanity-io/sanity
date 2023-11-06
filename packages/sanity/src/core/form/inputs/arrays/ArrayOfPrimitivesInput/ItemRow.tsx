@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
 import {Box, Flex, Menu, MenuButton} from '@sanity/ui'
 import {SchemaType} from '@sanity/types'
-import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {CopyIcon as DuplicateIcon, EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
 import {FormFieldValidationStatus} from '../../../components/formField'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {PrimitiveItemProps} from '../../../types/itemProps'
@@ -62,7 +62,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
 
   const menu = (
     <MenuButton
-      button={<Button size="small" mode="bleed" icon={EllipsisVerticalIcon} />}
+      button={<Button size="small" mode="bleed" icon={EllipsisHorizontalIcon} />}
       id={`${inputId}-menuButton`}
       popover={MENU_BUTTON_POPOVER_PROPS}
       menu={
