@@ -1,4 +1,4 @@
-import {EllipsisVerticalIcon, SelectIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon, SelectIcon} from '@sanity/icons'
 import {Container, Stack, Tab, TabList, Text} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
@@ -22,7 +22,7 @@ export default function ExampleStory() {
   const manyTabs = useBoolean('Many tabs', false, 'Props')
   const tone = useSelect('Tone', PANE_TONE_OPTIONS, 'default', 'Props')
 
-  const actions = useMemo(() => <Button icon={EllipsisVerticalIcon} mode="bleed" />, [])
+  const actions = useMemo(() => <Button icon={EllipsisHorizontalIcon} mode="bleed" />, [])
   const tabs = useMemo(
     () =>
       manyTabs ? (

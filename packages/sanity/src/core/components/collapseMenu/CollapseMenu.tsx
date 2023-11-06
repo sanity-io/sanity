@@ -1,4 +1,4 @@
-import {EllipsisVerticalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Flex, MenuButtonProps} from '@sanity/ui'
 import React, {
   Children,
@@ -94,7 +94,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
 
   const menuOptions = useMemo(() => Children.toArray(children).filter(_isReactElement), [children])
   const menuButton = useMemo(
-    () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
+    () => menuButtonProps?.button || <Button icon={EllipsisHorizontalIcon} mode="bleed" />,
     [menuButtonProps],
   )
 

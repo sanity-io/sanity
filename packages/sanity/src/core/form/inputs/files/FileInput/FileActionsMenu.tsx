@@ -1,4 +1,4 @@
-import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import {BinaryDocumentIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import {
   Box,
@@ -128,7 +128,7 @@ export function FileActionsMenu(props: Props) {
             <Button
               aria-label="Open file options menu"
               data-testid="options-menu-button"
-              icon={EllipsisVerticalIcon}
+              icon={EllipsisHorizontalIcon}
               mode="bleed"
               onClick={handleClick}
               ref={setOptionsButtonRef}

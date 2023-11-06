@@ -1,4 +1,4 @@
-import {EllipsisVerticalIcon, IceCreamIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon, IceCreamIcon} from '@sanity/icons'
 import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React from 'react'
@@ -20,7 +20,7 @@ export default function CollapseMenuStory() {
           collapsed={collapsed}
           collapseText={collapseText}
           menuButtonProps={{
-            button: <Button icon={EllipsisVerticalIcon} mode="bleed" size="small" />,
+            button: <Button icon={EllipsisHorizontalIcon} mode="bleed" size="small" />,
           }}
         >
           {[...Array(5).keys()].map((num) => (

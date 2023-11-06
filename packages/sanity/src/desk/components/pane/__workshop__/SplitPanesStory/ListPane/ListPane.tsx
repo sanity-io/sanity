@@ -1,4 +1,4 @@
-import {ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import {ArrowLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {Button} from '../../../../../../ui'
@@ -25,7 +25,7 @@ export function ListPane(props: {
   return (
     <Pane currentMaxWidth={350} flex={1} id={String(index)} minWidth={320} maxWidth={640}>
       <PaneHeader
-        actions={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
+        actions={<Button icon={EllipsisHorizontalIcon} mode="bleed" />}
         backButton={
           index > 0 &&
           layoutCollapsed && <Button icon={ArrowLeftIcon} mode="bleed" onClick={handleBackClick} />

@@ -1,5 +1,5 @@
 import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
-import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon, CropIcon} from '@sanity/icons'
 import {
   Button,
   Inline,
@@ -114,7 +114,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
         <Button
           aria-label="Open image options menu"
           data-testid="options-menu-button"
-          icon={EllipsisVerticalIcon}
+          icon={EllipsisHorizontalIcon}
           mode="ghost"
           onClick={handleClick}
           ref={setOptionsButtonRef}

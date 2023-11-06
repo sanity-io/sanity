@@ -1,5 +1,5 @@
 import React, {useCallback, useId} from 'react'
-import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
 import {Menu, MenuButton} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
@@ -26,7 +26,7 @@ export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
       style={{height: '100%'}}
       menu={
         <MenuButton
-          button={<Button size="small" mode="bleed" icon={EllipsisVerticalIcon} />}
+          button={<Button size="small" mode="bleed" icon={EllipsisHorizontalIcon} />}
           id={`${id}-menuButton`}
           menu={
             <Menu>

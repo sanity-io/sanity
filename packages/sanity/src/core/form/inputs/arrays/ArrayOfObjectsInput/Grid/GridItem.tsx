@@ -1,7 +1,7 @@
 import {Box, Card, CardTone, Flex, Menu, MenuButton, Spinner, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
-import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {CopyIcon as DuplicateIcon, EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {getSchemaTypeTitle} from '../../../../../schema'
 import {Button, MenuItem} from '../../../../../../ui'
@@ -141,7 +141,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<Button size="small" mode="bleed" icon={EllipsisVerticalIcon} />}
+          button={<Button size="small" mode="bleed" icon={EllipsisHorizontalIcon} />}
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>

@@ -1,5 +1,5 @@
 import React, {useId} from 'react'
-import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
 import {Box, Menu, MenuButton} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'
 import {RowLayout} from '../../layouts/RowLayout'
@@ -23,7 +23,7 @@ export function ErrorItem(props: {
         tone="caution"
         menu={
           <MenuButton
-            button={<Button size="small" mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={<Button size="small" mode="bleed" icon={EllipsisHorizontalIcon} />}
             id={`${id}-menuButton`}
             menu={
               <Menu>

@@ -1,4 +1,4 @@
-import {EllipsisVerticalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import React, {useId} from 'react'
 import {_PaneMenuItem, _PaneMenuNode} from './types'
@@ -40,7 +40,7 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
     <MenuButton
       button={
         <StatusButton
-          icon={EllipsisVerticalIcon}
+          icon={EllipsisHorizontalIcon}
           mode="bleed"
           title="Show menu"
           // eslint-disable-next-line no-nested-ternary
