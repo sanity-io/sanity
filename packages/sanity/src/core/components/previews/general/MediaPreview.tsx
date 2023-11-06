@@ -55,7 +55,7 @@ export function MediaPreview(props: MediaPreviewProps) {
     return (
       <TooltipContentStack>
         {title && (
-          <Text align="center" size={1} weight="semibold">
+          <Text align="center" size={1} weight="medium">
             {renderPreviewNode(title, 'media')}
           </Text>
         )}

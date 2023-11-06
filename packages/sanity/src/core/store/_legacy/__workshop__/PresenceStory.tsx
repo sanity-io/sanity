@@ -15,7 +15,7 @@ export default function PresenceStory() {
 
   return (
     <Box padding={4}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         <code>{`presenceStore.globalPresence$`}</code>
       </Text>
 

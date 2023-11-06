@@ -19,7 +19,7 @@ export function SearchError() {
           <WarningOutlineIcon />
         </TextWithTone>
       </Box>
-      <TextWithTone size={2} tone="critical" weight="semibold">
+      <TextWithTone size={2} tone="critical" weight="medium">
         Something went wrong while searching
       </TextWithTone>
       <TextWithTone size={1} tone="critical">

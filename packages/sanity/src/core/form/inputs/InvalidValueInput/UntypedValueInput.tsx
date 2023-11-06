@@ -109,7 +109,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
           )}
 
           <Stack space={2}>
-            <Text as="h4" weight="semibold" size={1}>
+            <Text as="h4" weight="medium" size={1}>
               Current value (<code>object</code>):
             </Text>
 

@@ -53,7 +53,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
       disabled={status !== 'changes'}
       content={
         <Stack space={3}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="medium">
             Review changes
           </Text>
           <Text size={1} muted>

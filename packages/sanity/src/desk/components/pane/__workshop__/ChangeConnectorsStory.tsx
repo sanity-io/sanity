@@ -210,7 +210,7 @@ function StringField(props: {
 
   return (
     <Stack space={2}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         String
       </Text>
       <DebugFormField path={path} focusPath={focusPath} value={value} compareValue={compareValue}>
@@ -261,7 +261,7 @@ function DebugDiffField(props: {children?: React.ReactNode; path: Path}) {
 
   return (
     <Stack space={2}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         String
       </Text>
       <ChangeFieldWrapper hasHover={hovered} path={path}>

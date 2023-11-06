@@ -36,7 +36,7 @@ export function DebugOverlay({data}: DebugScoreProps) {
               <>
                 {matchingStories.map((story) => (
                   <Inline key={story.path} space={3}>
-                    <Code size={0} weight="semibold">
+                    <Code size={0} weight="medium">
                       {story.path}
                     </Code>
                     <Code size={0}>{story.why}</Code>

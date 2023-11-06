@@ -17,7 +17,7 @@ export function InvalidFileWarning({onClearValue}: Props) {
           </Text>
         </Box>
         <Stack space={3}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="medium">
             Invalid file value
           </Text>
           <Text size={1}>

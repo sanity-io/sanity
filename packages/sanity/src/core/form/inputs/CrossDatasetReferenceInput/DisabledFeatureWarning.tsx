@@ -27,7 +27,7 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
           </Text>
         </Box>
         <Stack space={3}>
-          <Text as="h2" size={1} weight="semibold">
+          <Text as="h2" size={1} weight="medium">
             Unavailable feature: Cross dataset reference
           </Text>
           {hasRef && (

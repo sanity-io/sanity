@@ -28,7 +28,7 @@ export default function DocumentPairStory() {
 
   return (
     <Box padding={4}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         <code>{`documentStore.checkoutPair({draftId: string, publishedId: string})`}</code>
       </Text>
 

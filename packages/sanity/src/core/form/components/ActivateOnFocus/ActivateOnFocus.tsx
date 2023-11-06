@@ -64,7 +64,7 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       activateVerb += ' or press space'
     }
     const text = message || `${activateVerb} to activate`
-    return <Text weight="semibold">{text}</Text>
+    return <Text weight="medium">{text}</Text>
   }, [focused, message])
 
   return (

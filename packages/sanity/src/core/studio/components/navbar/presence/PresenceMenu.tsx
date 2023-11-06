@@ -113,7 +113,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
           {!hasPresence && (
             <Box paddingX={3} paddingY={4}>
               <Stack space={3}>
-                <Text weight="semibold" size={2}>
+                <Text weight="medium" size={2}>
                   No one else is here
                 </Text>
 
