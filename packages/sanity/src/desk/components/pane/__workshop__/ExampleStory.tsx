@@ -1,9 +1,9 @@
 import {EllipsisHorizontalIcon, SelectIcon} from '@sanity/icons'
-import {Container, Stack, Tab, TabList, Text} from '@sanity/ui'
+import {Container, Stack, TabList, Text} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
+import {Button, Tab} from '../../../../ui'
 import {Pane} from '../Pane'
-import {Button} from '../../../../ui'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'
 import {PaneHeader} from '../PaneHeader'
@@ -27,33 +27,21 @@ export default function ExampleStory() {
     () =>
       manyTabs ? (
         <TabList space={1}>
-          <Tab
-            aria-controls="content-panel"
-            fontSize={1}
-            id="content-tab"
-            label="Content"
-            selected
-          />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
+          <Tab aria-controls="content-panel" id="content-tab" label="Content" selected />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
         </TabList>
       ) : (
         <TabList space={1}>
-          <Tab
-            aria-controls="content-panel"
-            fontSize={1}
-            id="content-tab"
-            label="Content"
-            selected
-          />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
+          <Tab aria-controls="content-panel" id="content-tab" label="Content" selected />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
         </TabList>
       ),
     [manyTabs],
