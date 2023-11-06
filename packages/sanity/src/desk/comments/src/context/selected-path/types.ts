@@ -1,7 +1,7 @@
 interface CommentsSelectedPathValue {
   target: 'comment-item' | 'form-field' | 'new-thread-item' | null
   selectedFrom: 'comment-item' | 'form-field' | 'new-thread-item' | 'breadcrumbs' | null
-  fieldPath: string
+  fieldPath: string | null
   threadId: string | null
 }
 

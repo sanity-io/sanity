@@ -53,7 +53,6 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     isRunningSetup,
     mentionOptions,
     remove,
-
     setStatus,
     status,
     update,
@@ -140,7 +139,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     (nextPath: CommentsSelectedPath) => {
       setSelectedPath(nextPath)
 
-      if (nextPath) {
+      if (nextPath?.fieldPath) {
         const path = PathUtils.fromString(nextPath.fieldPath)
         onPathOpen(path)
       }

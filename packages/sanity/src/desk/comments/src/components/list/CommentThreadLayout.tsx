@@ -35,11 +35,11 @@ interface CommentThreadLayoutProps {
   children: React.ReactNode
   currentUser: CurrentUser
   fieldPath: string
+  isSelected: boolean
   mentionOptions: MentionOptionsHookValue
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   readOnly?: boolean
-  selectedPath: CommentsSelectedPath
 }
 
 export function CommentThreadLayout(props: CommentThreadLayoutProps) {
@@ -49,11 +49,11 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     children,
     currentUser,
     fieldPath,
+    isSelected,
     mentionOptions,
     onNewThreadCreate,
     onPathSelect,
     readOnly,
-    selectedPath,
   } = props
 
   const [threadCardElement, setThreadCardElement] = React.useState<HTMLDivElement | null>(null)
@@ -84,13 +84,10 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   }, [fieldPath, onPathSelect])
 
   const handleClickOutsideThreadCard = useCallback(() => {
-    const isSelected =
-      selectedPath?.fieldPath === fieldPath && selectedPath.target === 'new-thread-item'
-
     if (isSelected) {
       onPathSelect?.(null)
     }
-  }, [fieldPath, onPathSelect, selectedPath])
+  }, [isSelected, onPathSelect])
 
   const handleNewThreadClick = useCallback(() => {
     onPathSelect?.({
@@ -127,12 +124,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         <ThreadCard
           onClick={handleNewThreadClick}
           ref={setThreadCardElement}
-          tone={
-            selectedPath?.fieldPath === fieldPath &&
-            selectedPath?.selectedFrom === 'new-thread-item'
-              ? 'primary'
-              : undefined
-          }
+          tone={isSelected ? 'primary' : undefined}
         >
           <CreateNewThreadInput
             currentUser={currentUser}

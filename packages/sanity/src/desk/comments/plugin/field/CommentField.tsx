@@ -85,6 +85,7 @@ function CommentFieldInner(props: FieldProps) {
 
   const {openInspector, inspector} = useDocumentPane()
   const currentUser = useCurrentUser()
+
   const {comments, create, isRunningSetup, mentionOptions, setStatus, status} = useComments()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 

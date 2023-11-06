@@ -14,9 +14,9 @@ import {
 } from '../../types'
 import {SpacerAvatar} from '../avatars'
 import {hasCommentMessageValue} from '../../helpers'
+import {CommentsSelectedPath} from '../../context'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
-import {CommentsSelectedPath} from '../../context'
 
 const EMPTY_ARRAY: [] = []
 
@@ -72,6 +72,7 @@ const GhostButton = styled(Button)`
 interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
+  isSelected: boolean
   mentionOptions: MentionOptionsHookValue
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
@@ -84,13 +85,13 @@ interface CommentsListItemProps {
   parentComment: CommentDocument
   readOnly?: boolean
   replies: CommentDocument[] | undefined
-  selectedPath?: CommentsSelectedPath
 }
 
 export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
   const {
     canReply,
     currentUser,
+    isSelected,
     mentionOptions,
     onCopyLink,
     onCreateRetry,
@@ -103,7 +104,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     parentComment,
     readOnly,
     replies = EMPTY_ARRAY,
-    selectedPath,
   } = props
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
@@ -114,11 +114,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
   const [threadCardElement, setThreadCardElement] = useState<HTMLDivElement | null>(null)
-
-  const threadIsSelected = selectedPath?.threadId === parentComment.threadId
-  const fieldIsSelect = selectedPath?.fieldPath === parentComment.target.path.field
-  const isSelected =
-    fieldIsSelect && threadIsSelected && selectedPath.selectedFrom !== 'new-thread-item'
 
   const handleReplySubmit = useCallback(() => {
     const nextComment: CommentCreatePayload = {
@@ -207,15 +202,11 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     }`
   }, [replies?.length])
 
-  const handleClickOutside = useCallback(
-    (e: MouseEvent) => {
-      const isInside = rootRef.current?.contains(e.target as Node)
-      if (isInside || !isSelected) return
+  const handleClickOutside = useCallback(() => {
+    if (isSelected) return
 
-      onPathSelect?.(null)
-    },
-    [onPathSelect, isSelected],
-  )
+    onPathSelect?.(null)
+  }, [onPathSelect, isSelected])
 
   useClickOutside(handleClickOutside, [threadCardElement])
 
@@ -313,6 +304,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
           )}
 
           {renderedReplies}
+
           {canReply && (
             <CommentInput
               currentUser={currentUser}

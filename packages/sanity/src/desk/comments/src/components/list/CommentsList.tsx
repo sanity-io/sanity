@@ -150,21 +150,22 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                 // in the group.
                 const firstThreadId = group[0].threadId
 
+                const newThreadSelected =
+                  selectedPath?.fieldPath === fieldPath && selectedPath.target === 'new-thread-item'
+
                 return (
                   <Stack as="li" key={fieldPath} data-group-id={firstThreadId} paddingTop={3}>
                     <CommentThreadLayout
-                      // eslint-disable-next-line react/jsx-no-bind
                       breadcrumbs={breadcrumbs}
                       canCreateNewThread={status === 'open'}
                       currentUser={currentUser}
                       fieldPath={fieldPath}
+                      isSelected={newThreadSelected}
                       key={fieldPath}
                       mentionOptions={mentionOptions}
-                      // eslint-disable-next-line react/jsx-no-bind
                       onNewThreadCreate={onNewThreadCreate}
                       onPathSelect={onPathSelect}
                       readOnly={readOnly}
-                      selectedPath={selectedPath}
                     >
                       {group.map((item) => {
                         // The default sort order is by date, descending (newest first).
@@ -178,10 +179,16 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                           item.parentComment._state?.type !== 'createError' &&
                           item.parentComment._state?.type !== 'createRetrying'
 
+                        const isSelected =
+                          selectedPath?.threadId === item.parentComment.threadId &&
+                          selectedPath?.fieldPath === item.parentComment.target.path.field &&
+                          selectedPath.target === 'comment-item'
+
                         return (
                           <CommentsListItem
                             canReply={canReply}
                             currentUser={currentUser}
+                            isSelected={isSelected}
                             key={item.parentComment._id}
                             mentionOptions={mentionOptions}
                             onCopyLink={onCopyLink}
@@ -194,7 +201,6 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                             parentComment={item.parentComment}
                             readOnly={readOnly}
                             replies={replies}
-                            selectedPath={selectedPath}
                           />
                         )
                       })}
