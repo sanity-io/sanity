@@ -130,6 +130,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
             <ActionButton
               aria-label="Mention user"
+              data-testid="comment-mention-button"
               disabled={readOnly}
               icon={MentionIcon}
               mode="bleed"
