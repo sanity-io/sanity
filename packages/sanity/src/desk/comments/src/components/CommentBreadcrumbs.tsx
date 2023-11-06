@@ -19,7 +19,7 @@ const separator = (
 const renderItem = (item: string, index: number) => {
   return (
     <Box as="li" key={`${item}-${index}`}>
-      <Text textOverflow="ellipsis" size={1} weight="semibold">
+      <Text textOverflow="ellipsis" size={1} weight="medium">
         {item}
       </Text>
     </Box>

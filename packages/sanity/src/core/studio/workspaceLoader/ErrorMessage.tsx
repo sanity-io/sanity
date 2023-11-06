@@ -24,7 +24,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
   return (
     <ErrorMessageRoot forwardedAs={Flex} direction="column" gap={4}>
       <Flex direction="column" gap={2}>
-        <Text weight="semibold" size={3}>
+        <Text weight="medium" size={3}>
           {startCase(last.type)} Error
         </Text>
       </Flex>

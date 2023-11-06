@@ -68,7 +68,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
             <Box padding={2} paddingLeft={3}>
               <Flex align="center" gap={2}>
                 <Box flex={1}>
-                  <Text textOverflow="ellipsis" weight="semibold">
+                  <Text textOverflow="ellipsis" weight="medium">
                     {header}
                   </Text>
                 </Box>

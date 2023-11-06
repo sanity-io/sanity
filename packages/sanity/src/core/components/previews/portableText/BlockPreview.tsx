@@ -39,7 +39,7 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
         {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 
         <Box flex={1} paddingLeft={media ? 2 : 1}>
-          <Text size={1} textOverflow="ellipsis" weight="semibold">
+          <Text size={1} textOverflow="ellipsis" weight="medium">
             {title ? renderPreviewNode(title, 'block') : 'Untitled'}
           </Text>
 

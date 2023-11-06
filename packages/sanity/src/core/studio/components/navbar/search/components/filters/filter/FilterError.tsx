@@ -11,7 +11,7 @@ export function FilterError(props: ResponsivePaddingProps) {
           <ErrorOutlineIcon />
         </TextWithTone>
         <Stack space={4}>
-          <TextWithTone size={1} tone="critical" weight="semibold">
+          <TextWithTone size={1} tone="critical" weight="medium">
             An error occurred whilst displaying this filter.
           </TextWithTone>
           <TextWithTone size={1} tone="critical">

@@ -11,5 +11,13 @@ export const GlobalStyle = createGlobalStyle(({theme}) => {
     '#sanity': {
       fontFamily: fonts.text.family,
     },
+
+    b: {
+      fontWeight: fonts.text.weights.medium,
+    },
+
+    strong: {
+      fontWeight: fonts.text.weights.medium,
+    },
   }
 })

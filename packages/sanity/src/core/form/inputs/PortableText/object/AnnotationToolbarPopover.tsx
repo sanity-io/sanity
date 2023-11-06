@@ -154,7 +154,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         <Box padding={1} data-testid="annotation-toolbar-popover">
           <Inline space={1}>
             <Box padding={2}>
-              <Text weight="semibold" size={1}>
+              <Text weight="medium" size={1}>
                 {title}
               </Text>
             </Box>

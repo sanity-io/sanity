@@ -10,7 +10,7 @@ export function TimelineError() {
         <ErrorOutlineIcon />
       </TextWithTone>
       <Stack space={4}>
-        <TextWithTone size={1} tone="critical" weight="semibold">
+        <TextWithTone size={1} tone="critical" weight="medium">
           An error occurred whilst retrieving document changes.
         </TextWithTone>
         <TextWithTone size={1} tone="critical">

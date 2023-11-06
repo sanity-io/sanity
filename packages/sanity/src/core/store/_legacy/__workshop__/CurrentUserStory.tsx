@@ -8,7 +8,7 @@ export default function CurrentUserStory() {
 
   return (
     <Box padding={4}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         <code>{`userStore.me`}</code>
       </Text>
 

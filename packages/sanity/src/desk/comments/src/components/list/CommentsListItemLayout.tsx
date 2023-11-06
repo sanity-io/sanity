@@ -259,7 +259,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   useClickOutside(handleClickOutside, [rootElement])
 
   const name = user?.displayName ? (
-    <Text size={1} weight="semibold" textOverflow="ellipsis" title={user.displayName}>
+    <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
       {user.displayName}
     </Text>
   ) : (

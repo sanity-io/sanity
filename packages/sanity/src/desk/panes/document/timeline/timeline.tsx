@@ -83,7 +83,7 @@ export const Timeline = ({
     >
       {filteredChunks.length === 0 && (
         <StackWrapper padding={3} space={3}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="medium">
             No document history
           </Text>
           <Text muted size={1}>

@@ -115,7 +115,7 @@ export const InvalidValueInput = forwardRef(
             )}
 
             <Stack marginTop={2} space={2}>
-              <Text size={1} weight="semibold">
+              <Text size={1} weight="medium">
                 The current value (<code>{actualType}</code>)
               </Text>
 

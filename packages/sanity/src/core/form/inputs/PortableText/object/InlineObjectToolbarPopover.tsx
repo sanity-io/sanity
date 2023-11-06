@@ -79,7 +79,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
       <Box padding={1}>
         <Inline space={1}>
           <Box padding={2}>
-            <Text weight="semibold" size={1}>
+            <Text weight="medium" size={1}>
               {title}
             </Text>
           </Box>
