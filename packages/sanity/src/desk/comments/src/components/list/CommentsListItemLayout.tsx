@@ -1,3 +1,4 @@
+import {hues} from '@sanity/color'
 import {
   TextSkeleton,
   Flex,
@@ -39,9 +40,16 @@ export function StopPropagation(props: React.PropsWithChildren) {
 
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 
-const TimeText = styled(Text)`
-  min-width: max-content;
-`
+const TimeText = styled(Text)(({theme}) => {
+  const isDark = theme.sanity.color.dark
+  const fg = hues.gray[isDark ? 200 : 800].hex
+
+  return css`
+    min-width: max-content;
+    --card-fg-color: ${fg};
+    color: var(--card-fg-color);
+  `
+})
 
 const InnerStack = styled(Stack)`
   transition: opacity 200ms ease;
@@ -266,12 +274,12 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
               {!displayError && (
                 <Flex align="center" gap={1}>
-                  <TimeText size={0} muted title={formattedCreatedAt}>
+                  <TimeText muted size={0} title={formattedCreatedAt}>
                     {createdTimeAgo}
                   </TimeText>
 
                   {formattedLastEditAt && (
-                    <TimeText size={0} muted title={formattedLastEditAt}>
+                    <TimeText muted size={0} title={formattedLastEditAt}>
                       (edited)
                     </TimeText>
                   )}

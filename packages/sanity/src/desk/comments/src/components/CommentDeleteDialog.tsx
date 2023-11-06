@@ -8,7 +8,7 @@ const DIALOG_COPY: Record<
 > = {
   thread: {
     title: 'Delete this comment thread?',
-    body: 'All comments in this thread will be deleted, and once deleted cannot be recovered.',
+    body: 'This comment and its replies will be deleted, and once deleted cannot be recovered.',
     confirmButtonText: 'Delete thread',
   },
   comment: {

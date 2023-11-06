@@ -20,11 +20,11 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
         <Root padding={4}>
           <Stack space={3}>
             <Text weight="semibold" size={1}>
-              Collaborate in One Place
+              Document fields now have comments
             </Text>
 
             <Text size={1}>
-              Add a comment on any field. All comments for this document will be here, grouped by
+              You can add comments to any field in a document. They'll show up here, grouped by
               field.
             </Text>
 
