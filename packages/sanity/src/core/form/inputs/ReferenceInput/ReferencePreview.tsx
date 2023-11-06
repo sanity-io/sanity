@@ -5,8 +5,9 @@ import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey} from '../../../components'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {DraftStatus, PublishedStatus} from '../../../../ui'
 import {ReferenceInfo} from './types'
+import {DraftStatus} from '../../../../ui/draftStatus'
+import {PublishedStatus} from '../../../../ui/publishedStatus'
 
 /**
  * Used to preview a referenced type
