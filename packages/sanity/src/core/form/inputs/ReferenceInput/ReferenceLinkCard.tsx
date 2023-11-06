@@ -29,21 +29,25 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
   props: ReferenceLinkCardProps & React.HTMLProps<HTMLElement>,
   ref: React.ForwardedRef<HTMLElement>,
 ) {
-  const {as: asProp, documentId, documentType, ...cardProps} = props
-  const dataAs = documentType ? 'a' : undefined
+  const {as, documentId, documentType, ...cardProps} = props
 
   // If the child link is clicked without a document type, an error will be thrown.
   // This usually happens when the link is clicked before the document type has been resolved.
-  // In this case, we don't want to pass the `as` prop to the Card component, as it will throw an error.
-  const as = documentType ? asProp : 'div'
+  // In this case, we don't want to pass the `as`/`forwardedAs` props to the Card component, as it will throw an error.
+  const linkProps = documentId &&
+    documentType && {
+      // this will make @sanity/ui style it as a link
+      'data-as': 'a',
+      // this determines the actual tag inserted into the DOM (either a React.HTML element or a component)
+      forwardedAs: as,
+      documentId: documentId,
+      documentType: documentType,
+    }
 
   return (
     <StyledCard
       {...cardProps}
-      data-as={dataAs}
-      documentId={documentId}
-      documentType={documentType}
-      forwardedAs={as}
+      {...linkProps}
       ref={ref as unknown as React.ForwardedRef<HTMLDivElement>}
     />
   )
