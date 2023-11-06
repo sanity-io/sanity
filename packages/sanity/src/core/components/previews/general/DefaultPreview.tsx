@@ -107,7 +107,13 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         paddingRight={status ? 0 : 1}
         space={2}
       >
-        <Text className={styles?.title} style={{color: 'inherit'}} textOverflow="ellipsis">
+        <Text
+          className={styles?.title}
+          size={1}
+          style={{color: 'inherit'}}
+          textOverflow="ellipsis"
+          weight="medium"
+        >
           {title && renderPreviewNode(title, 'default')}
           {!title && <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}
         </Text>

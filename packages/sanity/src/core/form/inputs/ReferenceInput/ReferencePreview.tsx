@@ -1,13 +1,11 @@
 import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label, Text, useRootTheme} from '@sanity/ui'
-import {EditIcon, PublishIcon} from '@sanity/icons'
+import {Box, Flex, Inline, Label} from '@sanity/ui'
 import {RenderPreviewCallback} from '../../types'
-import {PreviewLayoutKey, TextWithTone} from '../../../components'
-import {useTimeAgo} from '../../../hooks'
+import {PreviewLayoutKey} from '../../../components'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {Tooltip} from '../../../../ui'
+import {DraftStatus, PublishedStatus} from '../../../../ui'
 import {ReferenceInfo} from './types'
 
 /**
@@ -24,7 +22,6 @@ export function ReferencePreview(props: {
 }) {
   const {id, layout, preview, refType, renderPreview, showTypeLabel} = props
 
-  const theme = useRootTheme()
   const documentPresence = useDocumentPresence(id)
 
   const previewId =
@@ -54,16 +51,6 @@ export function ReferencePreview(props: {
     [layout, previewStub, refType],
   )
 
-  const timeSincePublished = useTimeAgo(preview.published?._updatedAt || '', {
-    minimal: true,
-    agoSuffix: true,
-  })
-
-  const timeSinceEdited = useTimeAgo(preview.draft?._updatedAt || '', {
-    minimal: true,
-    agoSuffix: true,
-  })
-
   return (
     <Flex align="center">
       <Box flex={1}>{renderPreview(previewProps)}</Box>
@@ -81,43 +68,8 @@ export function ReferencePreview(props: {
           )}
 
           <Inline space={4}>
-            <Box>
-              <Tooltip
-                portal
-                content={
-                  preview.published?._updatedAt
-                    ? `Published ${timeSincePublished}`
-                    : 'Not published'
-                }
-              >
-                <TextWithTone
-                  tone={theme.tone === 'default' ? 'positive' : 'default'}
-                  size={1}
-                  dimmed={!preview.published}
-                  muted={!preview.published}
-                >
-                  <PublishIcon aria-label={preview.published ? 'Published' : 'Not published'} />
-                </TextWithTone>
-              </Tooltip>
-            </Box>
-
-            <Box>
-              <Tooltip
-                portal
-                content={
-                  preview.draft?._updatedAt ? `Edited ${timeSinceEdited}` : 'No unpublished edits'
-                }
-              >
-                <TextWithTone
-                  tone={theme.tone === 'default' ? 'caution' : 'default'}
-                  size={1}
-                  dimmed={!preview.draft}
-                  muted={!preview.draft}
-                >
-                  <EditIcon aria-label={preview.draft ? 'Edited' : 'No unpublished edits'} />
-                </TextWithTone>
-              </Tooltip>
-            </Box>
+            <PublishedStatus document={preview.published} />
+            <DraftStatus document={preview.draft} />
           </Inline>
         </Inline>
       </Box>
