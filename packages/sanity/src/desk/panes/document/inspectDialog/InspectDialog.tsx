@@ -1,8 +1,8 @@
 import {SanityDocument} from '@sanity/types'
-import {Card, Code, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
+import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
-import {Dialog} from '../../../../ui'
+import {Dialog, Tab} from '../../../../ui'
 import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
 import {useDocumentPane} from '../useDocumentPane'
@@ -63,7 +63,6 @@ export function InspectDialog(props: InspectDialogProps) {
           <TabList space={1}>
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
-              fontSize={1}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_PARSED.id}`}
               label={VIEW_MODE_PARSED.title}
               onClick={setParsedViewMode}
@@ -71,7 +70,6 @@ export function InspectDialog(props: InspectDialogProps) {
             />
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
-              fontSize={1}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_RAW.id}`}
               label={VIEW_MODE_RAW.title}
               onClick={setRawViewMode}

@@ -1,28 +1,25 @@
+/* eslint-disable no-restricted-imports */
 import {Tab as UITab, TabProps as UITabProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 
 /**
  * @internal
  *
- * Icons are not supported in the Studio UI <Tab> component.
- * Padding and font size are fixed.
- *
+ * Padding and font sizes are fixed in Studio UI <Tab> components.
  */
 export type TabProps = Pick<
   UITabProps,
-  'id' | 'label' | 'aria-controls' | 'tone' | 'selected' | 'focused'
+  'aria-controls' | 'focused' | 'icon' | 'id' | 'label' | 'selected' | 'tone'
 > & {
   size?: 'default' | 'small'
 }
 
-const smallTabProps = {
+const SMALL_TAB_PROPS = {
   padding: 2,
-  muted: true,
 }
 
-const defaultTabProps = {
+const DEFAULT_TAB_PROPS = {
   padding: 3,
-  muted: true,
 }
 
 /**
@@ -36,7 +33,7 @@ const defaultTabProps = {
 export const Tab = forwardRef(function Tab(
   {
     size = 'default',
-    tone = 'primary',
+    tone = 'default',
     ...props
   }: TabProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'size'>,
   ref: React.ForwardedRef<HTMLButtonElement>,
@@ -44,9 +41,10 @@ export const Tab = forwardRef(function Tab(
   return (
     <UITab
       {...props}
-      {...(size === 'default' ? defaultTabProps : smallTabProps)}
-      tone={tone}
+      {...(size === 'default' ? DEFAULT_TAB_PROPS : SMALL_TAB_PROPS)}
+      muted
       ref={ref}
+      tone={tone}
     />
   )
 })

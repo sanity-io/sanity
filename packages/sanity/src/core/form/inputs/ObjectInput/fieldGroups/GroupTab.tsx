@@ -5,6 +5,7 @@ interface GroupType {
   'aria-controls': string
   autoFocus?: boolean
   disabled?: boolean
+  icon?: React.ComponentType
   name: string
   onClick?: (value: string) => void
   selected: boolean
@@ -29,6 +30,7 @@ export const GroupTab = forwardRef(function GroupTab(
       id={`${props.name}-tab`}
       label={props.title}
       ref={ref}
+      size="small"
       {...props}
       onClick={handleClick}
     />
