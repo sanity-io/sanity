@@ -1,7 +1,8 @@
 import React from 'react'
 import {Box, rem, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {FromToIndex, Annotation, FieldChangeNode} from '../../types'
+import {useTranslation} from '../../../i18n'
+import type {FromToIndex, Annotation, FieldChangeNode} from '../../types'
 import {getAnnotationAtPath} from '../annotations'
 import {DiffCard} from './DiffCard'
 
@@ -68,8 +69,9 @@ function CreatedTitleSegment(props: {
   toIndex?: number
 }) {
   const {annotation: annotationProp, change, toIndex = 0} = props
+  const {t} = useTranslation()
   const readableIndex = toIndex + 1
-  const description = `Added in position ${readableIndex}`
+  const description = t('changes.array.item-added-in-position', {position: readableIndex})
   const content = <>#{readableIndex}</>
   const diffAnnotation = change?.diff ? getAnnotationAtPath(change.diff, []) : undefined
   const annotation = diffAnnotation || annotationProp
@@ -98,8 +100,9 @@ function CreatedTitleSegment(props: {
 
 function DeletedTitleSegment(props: {annotation: Annotation | undefined; fromIndex?: number}) {
   const {annotation, fromIndex = 0} = props
+  const {t} = useTranslation()
   const readableIndex = fromIndex + 1
-  const description = `Removed from position ${readableIndex}`
+  const description = t('changes.array.item-removed-from-position', {position: readableIndex})
   return (
     <DiffCard annotation={annotation || null} as={RoundedCard} tooltip={{description}}>
       <AnnotationText size={1} weight="semibold" forwardedAs="del">
@@ -115,12 +118,15 @@ function MovedTitleSegment(props: {
   toIndex: number
 }) {
   const {annotation, fromIndex, toIndex} = props
+  const {t} = useTranslation()
   const indexDiff = toIndex - fromIndex
   const indexSymbol = indexDiff < 0 ? '↑' : '↓'
   const positions = Math.abs(indexDiff)
-  const description = `Moved ${positions} position${positions === 1 ? '' : 's'} ${
-    indexDiff < 0 ? 'up' : 'down'
-  }`
+  const direction = indexDiff < 0 ? 'up' : 'down'
+  const description = t('change.array.item-moved', {
+    count: positions,
+    context: direction,
+  })
 
   return (
     <>

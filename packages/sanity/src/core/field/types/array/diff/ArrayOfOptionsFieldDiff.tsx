@@ -1,9 +1,10 @@
-import {ArraySchemaType, isKeyedObject, SchemaType, TypedObject} from '@sanity/types'
+import {type ArraySchemaType, type SchemaType, type TypedObject, isKeyedObject} from '@sanity/types'
 import {Box, Flex} from '@sanity/ui'
 import React from 'react'
 import {useUserColorManager} from '../../../../user-color'
 import {DiffTooltip, FromToArrow, getAnnotationColor} from '../../../diff'
-import {Annotation, ArrayDiff, Diff, DiffComponent, ItemDiff} from '../../../types'
+import type {Annotation, ArrayDiff, Diff, DiffComponent, ItemDiff} from '../../../types'
+import {useTranslation} from '../../../../i18n'
 import {Checkbox} from '../../boolean/preview'
 import {isEqual} from '../util/arrayUtils'
 import {Preview} from '../../../../preview/components/Preview'
@@ -25,6 +26,7 @@ interface NormalizedListOption {
 export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaType}) => {
   const options = schemaType.options?.list
   const colorManager = useUserColorManager()
+  const {t} = useTranslation()
   if (!Array.isArray(options)) {
     // Shouldn't happen, because the resolver should only resolve here if it does
     return null
@@ -39,7 +41,7 @@ export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaT
         .map((item, index) => {
           const {annotation, isPresent, value, memberType, title} = item
           const color = getAnnotationColor(colorManager, annotation)
-          const action = isPresent ? 'Added' : 'Removed'
+          const action = isPresent ? t('changes.added-label') : t('changes.removed-label')
           return (
             <Flex align="center" key={getItemKey(diff, index)}>
               <DiffTooltip annotations={annotation ? [annotation] : []} description={action}>

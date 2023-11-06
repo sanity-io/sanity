@@ -1,8 +1,9 @@
-import {Image} from '@sanity/types'
+import type {Image} from '@sanity/types'
 import React from 'react'
 import {Box, Card, Text} from '@sanity/ui'
 import {DiffCard, DiffTooltip, ChangeList, getAnnotationAtPath} from '../../../diff'
-import {DiffComponent, ObjectDiff} from '../../../types'
+import {type TFunction, useTranslation} from '../../../../i18n'
+import type {DiffComponent, ObjectDiff} from '../../../types'
 import {FromTo} from '../../../diff/components'
 import {ImagePreview, NoImagePreview} from './ImagePreview'
 
@@ -14,6 +15,8 @@ const CARD_STYLES = {
 }
 
 export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaType}) => {
+  const {t} = useTranslation()
+
   const {fromValue, toValue, fields, isChanged} = diff
   const fromRef = fromValue?.asset?._ref
   const toRef = toValue?.asset?._ref
@@ -79,7 +82,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
     return (
       <Card padding={4} radius={2} tone="transparent">
         <Text muted size={1} align="center">
-          Image not set
+          {t('changes.image.no-asset-set')}
         </Text>
       </Card>
     )
@@ -101,7 +104,7 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
         (didAssetChange ? (
           <DiffTooltip
             annotations={assetAnnotation ? [assetAnnotation] : []}
-            description={`${assetAction[0].toUpperCase()}${assetAction.slice(1)}`}
+            description={getChangeDescription(assetAction, t)}
           >
             {imageDiff}
           </DiffTooltip>
@@ -115,4 +118,18 @@ export const ImageFieldDiff: DiffComponent<ObjectDiff<Image>> = ({diff, schemaTy
       )}
     </>
   )
+}
+
+function getChangeDescription(action: 'changed' | 'added' | 'removed', t: TFunction): string {
+  switch (action) {
+    case 'changed':
+      return t('changes.changed-label')
+    case 'added':
+      return t('changes.added-label')
+    case 'removed':
+      return t('changes.removed-label')
+    default:
+      // Should never happen, but for linters' sake
+      return 'Unknown change'
+  }
 }

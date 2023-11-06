@@ -95,7 +95,7 @@ export function FieldChange(
               {change.error ? (
                 <ValueError error={change.error} />
               ) : (
-                <DiffErrorBoundary>
+                <DiffErrorBoundary t={t}>
                   <DiffContext.Provider value={{path: change.path}}>
                     <DiffComponent
                       diff={change.diff}

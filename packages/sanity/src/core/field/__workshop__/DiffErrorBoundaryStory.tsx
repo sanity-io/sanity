@@ -1,11 +1,13 @@
 import {Box, Button} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {DiffErrorBoundary} from '../diff/components/DiffErrorBoundary'
+import {useTranslation} from '../../i18n'
 
 export default function DiffErrorBoundaryStory() {
+  const {t} = useTranslation()
   return (
     <Box padding={4}>
-      <DiffErrorBoundary>
+      <DiffErrorBoundary t={t}>
         <Test />
       </DiffErrorBoundary>
     </Box>

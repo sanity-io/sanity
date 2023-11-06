@@ -1,8 +1,27 @@
 import {SchemaType, ObjectSchemaType} from '@sanity/types'
+import {getPrintableType} from '../../util/getPrintableType'
+import {StudioLocaleResourceKeys} from '../../i18n'
 
 /** @internal */
 export interface FieldValueError {
-  message: string
+  /**
+   * i18n key for the error message
+   */
+  messageKey: StudioLocaleResourceKeys
+
+  /**
+   * The expected type of the value
+   */
+  expectedType: string
+
+  /**
+   * The actual type of the value
+   */
+  actualType: string
+
+  /**
+   * The actual value of the field
+   */
   value: unknown
 }
 
@@ -16,7 +35,12 @@ export function getValueError(value: unknown, schemaType: SchemaType): FieldValu
   }
 
   if (valueType !== jsonType) {
-    return {message: `Value is ${valueType}, expected ${jsonType}`, value}
+    return {
+      messageKey: 'changes.error.incorrect-type-message',
+      value,
+      expectedType: jsonType,
+      actualType: getPrintableType(value),
+    }
   }
 
   if (isObjectType(schemaType) && isObjectValue(value)) {
