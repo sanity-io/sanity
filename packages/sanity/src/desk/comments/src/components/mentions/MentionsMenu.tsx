@@ -66,9 +66,20 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
   const filteredOptions = useMemo(() => {
     if (!searchTerm) return options || EMPTY_ARRAY
 
-    const filtered = options?.filter((option) => {
-      return option?.displayName?.toLowerCase().includes(searchTerm.toLowerCase())
-    })
+    const filtered = options
+      ?.filter((option) => {
+        return option?.displayName?.toLowerCase().includes(searchTerm.toLowerCase())
+      })
+      // Sort by whether the displayName starts with the search term to get more relevant results first
+      ?.sort((a, b) => {
+        const matchA = a.displayName?.toLowerCase().startsWith(searchTerm.toLowerCase())
+        const matchB = b.displayName?.toLowerCase().startsWith(searchTerm.toLowerCase())
+
+        if (matchA && !matchB) return -1
+        if (!matchA && matchB) return 1
+
+        return 0
+      })
 
     return filtered || EMPTY_ARRAY
   }, [options, searchTerm])
