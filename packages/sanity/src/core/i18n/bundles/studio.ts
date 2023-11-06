@@ -185,7 +185,7 @@ export const studioLocaleStrings = {
   'inputs.image.actions-menu.options.label': 'Open image options menu',
 
   /** Open file options menu */
-  'inputs.files.actions-menu.files.aria-label': 'Open file options menu',
+  'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
 
   /** The upload could not be completed at this time. */
   'inputs.image.upload-error.description': 'The upload could not be completed at this time.',

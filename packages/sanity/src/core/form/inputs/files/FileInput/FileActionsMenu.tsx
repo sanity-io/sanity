@@ -129,7 +129,7 @@ export function FileActionsMenu(props: Props) {
             constrainSize
           >
             <Button
-              aria-label={t('inputs.files.actions-menu.files.aria-label')}
+              aria-label={t('inputs.file.actions-menu.file-options.aria-label')}
               data-testid="options-menu-button"
               icon={EllipsisVerticalIcon}
               mode="bleed"
