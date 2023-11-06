@@ -228,6 +228,8 @@ module.exports = {
                   'DialogProps',
                   'MenuItem',
                   'MenuItemProps',
+                  'Tab',
+                  'TabProps',
                   'Tooltip',
                   'TooltipProps',
                 ],
