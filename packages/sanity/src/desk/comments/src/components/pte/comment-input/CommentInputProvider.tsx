@@ -4,7 +4,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import React, {useCallback, useMemo, useState} from 'react'
-import {Path, isKeySegment, isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
+import {Path, isPortableTextSpan} from '@sanity/types'
 import {CommentMessage, MentionOptionsHookValue} from '../../../types'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
 import {useDidUpdate} from 'sanity'
