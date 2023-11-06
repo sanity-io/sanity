@@ -86,6 +86,15 @@ export const studioLocaleStrings = {
   'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
 
+  /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
+  'changes.removed-label': 'Removed',
+
+  /** Label for when the action of the change was to set something that was previously empty, eg a field was given a value, an array item was added, an asset was selected or similar */
+  'changes.added-label': 'Added',
+
+  /** Label for when the action of the change was _not_ an add/remove, eg a text field changed value, an image was changed from one asset to another or similar */
+  'changes.changed-label': 'Changed',
+
   /** Prompt for reverting all changes in document in Review Changes pane. Includes a count of changes. */
   'changes.action.revert-all-description': `Are you sure you want to revert all {{count}} changes?`,
 
@@ -97,6 +106,106 @@ export const studioLocaleStrings = {
 
   /** Loading author of change in the differences tooltip in the review changes pane */
   'changes.loading-author': 'Loading…',
+
+  /** --- Review Changes: Specific types --- */
+
+  /** Array diff: An item was added in a given position (`{{position}}`) */
+  'changes.array.item-added-in-position': 'Added in position {{position}}',
+
+  /** Array diff: An item was removed from a given position (`{{position}}`) */
+  'changes.array.item-removed-from-position': 'Removed from position {{position}}',
+
+  /**
+   * Array diff: An item was moved within the array.
+   * Receives `{{count}}` representing number of positions it moved.
+   * Context is the direction of the move, either `up` or `down`.
+   */
+  'change.array.item-moved_up_one': 'Moved {{count}} position up',
+  'change.array.item-moved_up_other': 'Moved {{count}} positions up',
+  'change.array.item-moved_down_one': 'Moved {{count}} position down',
+  'change.array.item-moved_down_other': 'Moved {{count}} positions down',
+
+  /** Portable Text diff: Removed a block containing no text (eg empty block) */
+  'change.portable-text.empty-text_removed': 'Removed empty text',
+
+  /** Portable Text diff: Added a block containing no text (eg empty block) */
+  'change.portable-text.empty-text_added': 'Added empty text',
+
+  /** Portable Text diff: Changed a block that contained no text (eg empty block) */
+  'change.portable-text.empty-text_changed': 'Changed empty text',
+
+  /** Portable Text diff: Added a chunk of text */
+  'change.portable-text.text_added': 'Added text',
+
+  /** Portable Text diff: Removed a chunk of text */
+  'change.portable-text.text_removed': 'Removed text',
+
+  /** Portable Text diff: An annotation was added */
+  'change.portable-text.annotation_added': 'Added annotation',
+
+  /** Portable Text diff: An annotation was removed */
+  'change.portable-text.annotation_removed': 'Removed annotation',
+
+  /** Portable Text diff: An annotation was changed */
+  'change.portable-text.annotation_changed': 'Changed annotation',
+
+  /** Portable Text diff: An annotation was left unchanged */
+  'change.portable-text.annotation_unchanged': 'Unchanged annotation',
+
+  /** Portable Text diff: An inline object was added */
+  'change.portable-text.inline-object_added': 'Added inline object',
+
+  /** Portable Text diff: An inline object was removed */
+  'change.portable-text.inline-object_removed': 'Removed inline object',
+
+  /** Portable Text diff: An inline object was changed */
+  'change.portable-text.inline-object_changed': 'Changed inline object',
+
+  /** Portable Text diff: An inline object was left unchanged */
+  'change.portable-text.inline-object_unchanged': 'Unchanged inline object',
+
+  /** Portable Text diff: Change formatting of text (setting/unsetting marks, eg bold/italic etc) */
+  'change.portable-text.changed-formatting': 'Changed formatting',
+
+  /** Portable Text diff: A block changed from one style to another (eg `normal` to `h1` or similar) */
+  'change.portable-text.block-style-changed':
+    'Changed block style from "{{fromStyle}}" to "{{toStyle}}"',
+
+  /** Portable Text diff: Annotation has an unknown schema type */
+  'change.portable-text.unknown-annotation-schema-type': 'Unknown schema type',
+
+  /** Portable Text diff: Inline object has an unknown schema type */
+  'change.portable-text.unknown-inline-object-schema-type': 'Unknown schema type',
+
+  /** Portable Text diff: An empty object is the result of adding/removing an annotation */
+  'change.portable-text.empty-object-annotation': 'Empty {{annotationType}}',
+
+  /** Portable Text diff: An empty inline object is part of a change */
+  'change.portable-text.empty-inline-object': 'Empty {{inlineObjectType}}',
+
+  /** File diff: Fallback title for the meta info section when there is no original filename to use  */
+  'changes.file.meta-info-fallback-title': 'Untitled',
+
+  /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
+  'changes.image.crop-changed': 'Crop changed',
+
+  /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
+  'changes.image.hotspot-changed': 'Hotspot changed',
+
+  /** Image diff: Text shown if no asset has been set for the field (but has metadata changes) */
+  'changes.image.no-asset-set': 'Image not set',
+
+  /** Image diff: Text shown when the from/to state has/had no image */
+  'changes.image.no-image-placeholder': '(no image)',
+
+  /** Image diff: Fallback title for the meta info section when there is no original filename to use  */
+  'changes.image.meta-info-fallback-title': 'Untitled',
+
+  /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */
+  'changes.image.deleted': 'Image deleted',
+
+  /** Image diff: Text shown if the image failed to be loaded when previewing it */
+  'changes.image.error-loading-image': 'Error loading image',
 
   /** --- Review Changes: Field + Group --- */
 
@@ -111,6 +220,25 @@ export const studioLocaleStrings = {
 
   /** Revert for confirming revert (plural) label for field change action */
   'changes.action.revert-changes-confirm-change_other': `Revert changes`,
+
+  /** Text shown when a diff component crashes during rendering, triggering the error boundary */
+  'changes.error-boundary.title': 'Rendering the changes to this field caused an error',
+
+  /** Additional text shown in development mode when a diff component crashes during rendering */
+  'changes.error-boundary.developer-info': 'Check the developer console for more information',
+
+  /** Label for the "meta" (field path, action etc) information in the change inspector */
+  'changes.inspector.meta-label': 'Meta',
+
+  /** Label for the "from" value in the change inspector */
+  'changes.inspector.from-label': 'From',
+
+  /** Label for the "to" value in the change inspector */
+  'changes.inspector.to-label': 'To',
+
+  /** Error message shown when the value of a field is not the expected one */
+  'changes.error.incorrect-type-message':
+    'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
 
   /** --- Document timeline, for navigating different revisions of a document --- */
 

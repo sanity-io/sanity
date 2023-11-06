@@ -1,12 +1,12 @@
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 import {Tooltip, TooltipProps, Text, Stack, Flex, Inline, Label} from '@sanity/ui'
 import React from 'react'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useRelativeTime} from '../../../hooks'
 import {useUser} from '../../../store'
-import {AnnotationDetails, Diff} from '../../types'
-import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {useTranslation} from '../../../i18n'
+import type {AnnotationDetails, Diff} from '../../types'
+import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
@@ -25,18 +25,19 @@ export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
 
 /** @internal */
 export function DiffTooltip(props: DiffTooltipProps | DiffTooltipWithAnnotationsProps) {
-  if ('diff' in props) {
-    const {diff, path = [], ...restProps} = props
-    const annotation = getAnnotationAtPath(diff, path)
-
-    return <DiffTooltipWithAnnotation {...restProps} annotations={annotation ? [annotation] : []} />
+  if (!('diff' in props)) {
+    return <DiffTooltipWithAnnotation {...props} />
   }
 
-  return <DiffTooltipWithAnnotation {...props} />
+  const {diff, path = [], ...restProps} = props
+  const annotation = getAnnotationAtPath(diff, path)
+
+  return <DiffTooltipWithAnnotation {...restProps} annotations={annotation ? [annotation] : []} />
 }
 
 function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
-  const {annotations, children, description = 'Changed', ...restProps} = props
+  const {annotations, children, description, ...restProps} = props
+  const {t} = useTranslation()
 
   if (!annotations) {
     return children
@@ -45,7 +46,7 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   const content = (
     <Stack padding={3} space={2}>
       <Label size={1} style={{textTransform: 'uppercase'}}>
-        {description}
+        {description || t('changes.changed-label')}
       </Label>
       <Stack space={2}>
         {annotations.map((annotation, idx) => (
