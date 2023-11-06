@@ -229,9 +229,9 @@ module.exports = {
       env: {jest: true},
     },
 
-    // Prefer local components vs certain @sanity/ui imports (in all sanity packages)
+    // Prefer local components vs certain @sanity/ui imports (in sanity package)
     {
-      files: ['packages/**'],
+      files: ['packages/sanity/**'],
       rules: {
         'no-restricted-imports': [
           'error',

@@ -13,11 +13,12 @@ import {
   Select,
   Text,
   TextInput,
+  Tooltip,
   Grid,
+  Button,
   ToastContextValue,
   Inline,
 } from '@sanity/ui'
-import {Tooltip, Button} from '../../../../sanity/src/ui'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {getLocalStorage, LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
