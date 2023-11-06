@@ -3,6 +3,7 @@ import {CurrentUser, PortableTextBlock} from '@sanity/types'
 import {noop} from 'lodash'
 import {CommentInput} from '../../../src/desk/comments/src/components/pte/comment-input/CommentInput'
 import {TestWrapper} from '../formBuilder/utils/TestWrapper'
+import {MentionOptionsHookValue} from '../../../src/desk/comments'
 
 const currentUser: CurrentUser = {
   email: '',
@@ -15,6 +16,19 @@ const currentUser: CurrentUser = {
 }
 
 const SCHEMA_TYPES: [] = []
+
+const MENTION_DATA: MentionOptionsHookValue = {
+  data: [
+    {
+      id: 'l33t',
+      displayName: 'Test Person',
+      email: 'test@test.com',
+      canBeMentioned: true,
+    },
+  ],
+  loading: false,
+  error: null,
+}
 
 export function CommentsInputStory({
   onDiscardCancel = noop,
@@ -37,7 +51,7 @@ export function CommentsInputStory({
         currentUser={currentUser}
         onChange={setValueState}
         value={valueState}
-        mentionOptions={{data: [], error: null, loading: false}}
+        mentionOptions={MENTION_DATA}
         onDiscardConfirm={onDiscardConfirm}
         onDiscardCancel={onDiscardCancel}
         onSubmit={onSubmit}
