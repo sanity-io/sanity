@@ -28,6 +28,19 @@ test.describe('Comments', () => {
       await expect(page.getByTestId('comments-mentions-menu')).toBeVisible()
     })
 
+    test('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async ({
+      mount,
+      page,
+    }) => {
+      await mount(<CommentsInputStory />)
+      const $editable = page.getByTestId('comment-input-editable')
+      await $editable.waitFor({state: 'visible'})
+      const $mentionButton = page.getByTestId('comment-mention-button')
+      await $mentionButton.click()
+      await expect(page.getByTestId('comments-mentions-menu')).toBeVisible()
+      await expect($editable).toBeFocused()
+    })
+
     test('Should be able to submit', async ({mount, page}) => {
       const {insertPortableText} = testHelpers({page})
       let submitted = false

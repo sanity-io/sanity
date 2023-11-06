@@ -142,6 +142,7 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
 
   const insertAtChar = useCallback(() => {
     setMentionsMenuOpen(true)
+    PortableTextEditor.focus(editor)
     PortableTextEditor.insertChild(editor, editor.schemaTypes.span, {text: '@'})
     setSelectionAtMentionInsert(PortableTextEditor.getSelection(editor))
   }, [editor])
