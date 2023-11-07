@@ -7,7 +7,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "lint": "next lint",
+    "lint": "eslint .",
     "start": "next start"
   },
   "dependencies": {
@@ -16,5 +16,8 @@
     "react-dom": "^18.2.0",
     "sanity": "3.19.1",
     "styled-components": "^6.1.0"
+  },
+  "devDependencies": {
+    "eslint-config-next": "^14.0.1"
   }
 }
