@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Card, Flex, Grid, Label, Spinner, Stack, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Flex, Grid, Spinner, Stack, Text, useMediaIndex} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
 import {AssetRow} from './AssetRow'
 
@@ -26,32 +26,32 @@ export function TableList(props: Props) {
         {isMobile ? (
           <Grid style={STYLES_GRID}>
             <Box flex={2} paddingLeft={5}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 Filename
-              </Label>
+              </Text>
             </Box>
           </Grid>
         ) : (
           <Grid gap={1} style={STYLES_GRID}>
             <Box flex={2} style={STYLES_FILENAME}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 Filename
-              </Label>
+              </Text>
             </Box>
             <Box flex={1}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 Size
-              </Label>
+              </Text>
             </Box>
             <Box flex={1}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 Type
-              </Label>
+              </Text>
             </Box>
             <Box flex={1}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 Date added
-              </Label>
+              </Text>
             </Box>
           </Grid>
         )}

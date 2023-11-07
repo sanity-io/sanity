@@ -1,13 +1,13 @@
 import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label} from '@sanity/ui'
+import {Badge, Box, Flex, Inline} from '@sanity/ui'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey} from '../../../components'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {ReferenceInfo} from './types'
 import {DraftStatus} from '../../../../ui/draftStatus'
 import {PublishedStatus} from '../../../../ui/publishedStatus'
+import {ReferenceInfo} from './types'
 
 /**
  * Used to preview a referenced type
@@ -58,11 +58,7 @@ export function ReferencePreview(props: {
 
       <Box paddingLeft={3}>
         <Inline space={3}>
-          {showTypeLabel && (
-            <Label size={1} muted>
-              {refType.title}
-            </Label>
-          )}
+          {showTypeLabel && <Badge>{refType.title}</Badge>}
 
           {documentPresence && documentPresence.length > 0 && (
             <DocumentPreviewPresence presence={documentPresence} />
