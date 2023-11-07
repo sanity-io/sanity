@@ -8,13 +8,14 @@ import {FileLike} from '../uploads/types'
 import {useDocumentPreviewStore} from '../../../store'
 import {useClient} from '../../../hooks'
 import {observeFileAsset} from './client-adapters/assets'
+import {useTranslation} from '../../../i18n'
 
 /**
  * @hidden
  * @beta */
 export type FileInputProps = Omit<
   BaseFileInputProps,
-  'assetSources' | 'directUploads' | 'observeAsset' | 'resolveUploader' | 'client'
+  'assetSources' | 'directUploads' | 'observeAsset' | 'resolveUploader' | 'client' | 't'
 >
 
 /**
@@ -25,6 +26,7 @@ export function StudioFileInput(props: FileInputProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {file: fileConfig} = useFormBuilder().__internal
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const {t} = useTranslation()
 
   const resolveUploader = useCallback(
     (type: SchemaType, file: FileLike) => {
@@ -50,6 +52,7 @@ export function StudioFileInput(props: FileInputProps) {
   return (
     <BaseFileInput
       {...props}
+      t={t}
       client={client}
       assetSources={assetSources}
       directUploads={fileConfig.directUploads}

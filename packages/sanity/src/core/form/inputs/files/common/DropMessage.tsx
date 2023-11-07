@@ -41,8 +41,9 @@ export function DropMessage(props: Props) {
                   <AccessDeniedIcon />
                 </Text>
                 <Text muted size={1}>
-                  {rejectedFilesCount} file
-                  {rejectedFilesCount > 1 ? 's' : ''} can't be uploaded here
+                  {t('inputs.files.common.drop-message.drop-to-upload.rejected-file-message', {
+                    count: rejectedFilesCount,
+                  })}
                 </Text>
               </Inline>
             </Box>
@@ -54,7 +55,9 @@ export function DropMessage(props: Props) {
             <AccessDeniedIcon />
           </Text>
           <Text>
-            Can't upload {hoveringFiles.length > 1 ? 'any of these files' : 'this file'} here
+            {t('inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message', {
+              count: hoveringFiles.length,
+            })}
           </Text>
         </Inline>
       )}
