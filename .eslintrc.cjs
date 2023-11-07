@@ -317,6 +317,15 @@ const config = {
         'no-attribute-string-literals/no-attribute-string-literals': 'off',
       },
     },
+
+    // Ignore i18n in Comments files for now. This will need to be removed before Comments feature is GA
+    {
+      files: ['**/*/Comment*.{js,ts,tsx}'],
+      rules: {
+        'i18next/no-literal-string': 'off',
+        'no-attribute-string-literals/no-attribute-string-literals': 'off',
+      },
+    },
   ],
 }
 
