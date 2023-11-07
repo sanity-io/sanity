@@ -48,7 +48,7 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
       label: t('action.duplicate.label'),
       title: (
         <InsufficientPermissionsMessage
-          operationLabel="duplicate this document"
+          operationLabel={t('insufficient-permissions-message.operation-label.duplicate-document')}
           currentUser={currentUser}
         />
       ),

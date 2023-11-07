@@ -35,7 +35,11 @@ export function CreateButton(props: Props) {
       <Tooltip
         content={
           <Box padding={2}>
-            <InsufficientPermissionsMessage operationLabel="create a new reference" />
+            <InsufficientPermissionsMessage
+              operationLabel={t(
+                'insufficient-permissions-message.operation-label.create-new-reference',
+              )}
+            />
           </Box>
         }
       >
@@ -73,7 +77,11 @@ export function CreateButton(props: Props) {
               key={createOption.id}
               content={
                 <Box padding={2}>
-                  <InsufficientPermissionsMessage operationLabel="create this type of document" />
+                  <InsufficientPermissionsMessage
+                    operationLabel={t(
+                      'insufficient-permissions-message.operation-label.create-document-type',
+                    )}
+                  />
                 </Box>
               }
               portal
@@ -84,6 +92,7 @@ export function CreateButton(props: Props) {
                   disabled={!createOption.permission.granted}
                   icon={createOption.icon}
                   text={createOption.title}
+                  // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => onCreate(createOption)}
                 />
               </div>
@@ -99,6 +108,7 @@ export function CreateButton(props: Props) {
       text={t('inputs.reference.action-create-new-document')}
       mode="ghost"
       disabled={!createOptions[0].permission.granted || props.readOnly}
+      // eslint-disable-next-line react/jsx-no-bind
       onClick={() => onCreate(createOptions[0])}
       icon={AddIcon}
     />

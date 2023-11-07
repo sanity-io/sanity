@@ -977,10 +977,6 @@ export const studioLocaleStrings = {
   /** Accessibility label for the list displaying options in the new document menu */
   'new-document.new-document-aria-label': 'New document',
 
-  /** Error label for when a user is unable to create a document */
-  // @todo refactor InsufficientPermissionsMessage
-  'new-document.error.unable-to-create-document': 'create this document',
-
   /** --- Search --- */
 
   /** Placeholder text for the omnisearch input field */
@@ -1587,6 +1583,39 @@ export const studioLocaleStrings = {
 
   /** Alternative text for image being shown while image is being uploaded, in previews */
   'preview.image.file-is-being-uploaded.alt-text': 'The image currently being uploaded',
+
+  /** --- Insufficient permissions message --- */
+
+  /** The title for the insufficient permissions message component */
+  'insufficient-permissions-message.title': 'Insufficient permissions',
+
+  /** The insufficient permissions messages when the user has no roles */
+  'insufficient-permissions-message.no-roles':
+    'You have no role that grants you permission to {{operationLabel}}',
+
+  /** The insufficient permissions messages when the user has one role */
+  'insufficient-permissions-message.has-roles_one':
+    'Your role <Roles/> does not have permission to {{operationLabel}}',
+
+  /** The insufficient permissions messages when the user has more than one role */
+  'insufficient-permissions-message.has-roles_other':
+    'Your roles <Roles/> do not have permission to {{operationLabel}}',
+
+  /** The default `{{operationLabel}}`. Refer to `insufficient-permissions-message.has-roles`. */
+  'insufficient-permissions-message.default-operation-label': 'access this feature',
+
+  /** The operation label when unable to create a new reference */
+  'insufficient-permissions-message.operation-label.create-new-reference': 'create a new reference',
+
+  /** The operation label when unable to create a particular type of document */
+  'insufficient-permissions-message.operation-label.create-document-type':
+    'create this type of document',
+
+  /** The operation label when unable to create any document */
+  'insufficient-permissions-message.operation-label.create-any-document': 'create any document',
+
+  /** The operation label when unable to create a particular document */
+  'insufficient-permissions-message.operation-label.create-document': 'create this document',
 }
 
 /**

@@ -498,6 +498,26 @@ const deskLocaleStrings = {
 
   /** Appears in a document list pane header if there are more than one option for create. This is the label for that menu */
   'pane-header.create-menu.label': 'Create',
+
+  /** --- Insufficient permissions message --- */
+  /** the loading messaging for when the tooltip is still loading permission info */
+  'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
+
+  /** The operation label when unable to delete a particular document */
+  'insufficient-permissions-message.operation-label.delete-document': 'delete this document',
+
+  /** The operation label when unable to discard changes in a particular document */
+  'insufficient-permissions-message.operation-label.discard-changes':
+    'discard changes in this document',
+
+  /** The operation label when unable to duplicate a particular document */
+  'insufficient-permissions-message.operation-label.duplicate-document': 'duplicate this document',
+
+  /** The operation label when unable to publish a particular document */
+  'insufficient-permissions-message.operation-label.publish-document': 'publish this document',
+
+  /** The operation label when unable to unpublish a particular document */
+  'insufficient-permissions-message.operation-label.unpublish-document': 'unpublish this document',
 }
 
 /**

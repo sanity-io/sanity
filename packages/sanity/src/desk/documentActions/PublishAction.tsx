@@ -155,7 +155,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       label: 'Publish',
       title: (
         <InsufficientPermissionsMessage
-          operationLabel="publish this document"
+          operationLabel={t('insufficient-permissions-message.operation-label.publish-document')}
           currentUser={currentUser}
         />
       ),

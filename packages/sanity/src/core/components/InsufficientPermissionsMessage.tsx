@@ -2,24 +2,26 @@ import {AccessDeniedIcon} from '@sanity/icons'
 import {CurrentUser} from '@sanity/types'
 import {Text, Inline, Box} from '@sanity/ui'
 import React from 'react'
+// note: these are both available from the `../i18n` export but importing through
+// that export fails the build. may be due to a circular reference.
+import {useTranslation} from '../i18n/hooks/useTranslation'
+import {Translate} from '../i18n/Translate'
 
 /** @internal */
 export interface InsufficientPermissionsMessageProps {
-  title?: string
   operationLabel?: string
   currentUser?: CurrentUser | null
 }
 
 /** @internal */
 export function InsufficientPermissionsMessage(props: InsufficientPermissionsMessageProps) {
+  const {t} = useTranslation()
   const {
     currentUser,
-    title = 'Insufficient permissions',
-    operationLabel = 'access this feature',
+    operationLabel = t('insufficient-permissions-message.default-operation-label'),
   } = props
 
   const roles = currentUser?.roles || []
-  const plural = roles.length !== 1
 
   return (
     <Box padding={2}>
@@ -27,21 +29,25 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
         <Text size={1}>
           <AccessDeniedIcon />
         </Text>
-        <Text weight="semibold">{title}</Text>
+        <Text weight="semibold">{t('insufficient-permissions-message.title')}</Text>
       </Inline>
       <Inline marginTop={4}>
         <Text size={1}>
           {roles.length === 0 ? (
-            <>You have no role that grants you permission to {operationLabel}</>
+            t('insufficient-permissions-message.no-roles', {operationLabel})
           ) : (
-            <>
-              Your role{plural && 's'}{' '}
-              {join(
-                roles.map((r) => <code key={r.name}>{r.title}</code>),
-                <>, </>,
-              )}{' '}
-              do{plural || 'es'} not have permissions to {operationLabel}
-            </>
+            <Translate
+              i18nKey="insufficient-permissions-message.has-roles"
+              t={t}
+              components={{
+                Roles: () =>
+                  join(
+                    roles.map((r) => <code key={r.name}>{r.title}</code>),
+                    <>, </>,
+                  ),
+              }}
+              values={{operationLabel, count: roles.length}}
+            />
           )}
         </Text>
       </Inline>
