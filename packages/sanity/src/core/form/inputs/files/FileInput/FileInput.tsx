@@ -64,6 +64,7 @@ export interface BaseFileInputProps extends ObjectInputProps<BaseFileInputValue,
   observeAsset: (documentId: string) => Observable<FileAsset>
   resolveUploader: UploaderResolver
   client: SanityClient
+  t: (key: string, values?: Record<string, string>) => string
 }
 
 /** @internal */
@@ -201,7 +202,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     file: globalThis.File,
     assetDocumentProps: UploadOptions = {},
   ) => {
-    const {schemaType, onChange, client} = this.props
+    const {schemaType, onChange, client, t} = this.props
     const {source} = assetDocumentProps
     const options = {
       metadata: get(schemaType, 'options.metadata'),
@@ -222,8 +223,8 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
         console.error(err)
         this.toast?.push({
           status: 'error',
-          description: 'The upload could not be completed at this time.',
-          title: 'Upload failed',
+          description: t('inputs.file.upload-failed.description'),
+          title: t('inputs.file.upload-failed.title'),
         })
         this.clearUploadStatus()
       },
@@ -247,11 +248,10 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, schemaType, observeAsset} = this.props
+    const {value, schemaType, observeAsset, t} = this.props
     if (!selectedAssetSource) {
       return null
     }
-
     const accept = get(schemaType, 'options.accept', '')
 
     const Component = selectedAssetSource.component
@@ -268,7 +268,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
               selectionType="single"
               assetType="file"
               accept={accept}
-              dialogHeaderTitle="Select file"
+              dialogHeaderTitle={t('inputs.file.dialog.title')}
               onClose={this.handleAssetSourceClosed}
               onSelect={this.handleSelectAssetFromSource}
             />
@@ -282,7 +282,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
         selectionType="single"
         assetType="file"
         accept={accept}
-        dialogHeaderTitle="Select file"
+        dialogHeaderTitle={t('inputs.file.dialog.title')}
         onClose={this.handleAssetSourceClosed}
         onSelect={this.handleSelectAssetFromSource}
       />
@@ -381,7 +381,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
   }
 
   renderPreview() {
-    const {value, readOnly, assetSources, schemaType, directUploads, observeAsset} = this.props
+    const {value, readOnly, assetSources, schemaType, directUploads, observeAsset, t} = this.props
     const {isMenuOpen} = this.state
     const asset = value?.asset
     if (!asset) {
@@ -394,7 +394,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
       assetSources && assetSources?.length === 0 ? null : (
         <MenuItem
           icon={SearchIcon}
-          text="Browse"
+          text={t('inputs.file.browse-button.text')}
           onClick={() => {
             this.setState({isMenuOpen: false})
             this.handleSelectFileFromAssetSource(assetSources[0])
@@ -488,7 +488,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
   }
 
   renderBrowser() {
-    const {assetSources, readOnly, directUploads, id} = this.props
+    const {assetSources, readOnly, directUploads, id, t} = this.props
 
     if (assetSources.length === 0) return null
 
@@ -500,7 +500,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
           button={
             <Button
               mode="ghost"
-              text="Select"
+              text={t('inputs.file.multi-browse-button.text')}
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
             />
@@ -532,7 +532,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     return (
       <Button
         fontSize={2}
-        text="Browse"
+        text={t('inputs.file.browse-button.text')}
         icon={SearchIcon}
         mode="ghost"
         onClick={() => {
@@ -619,6 +619,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
       renderInput,
       renderField,
       renderPreview,
+      t,
     } = this.props
     const {selectedAssetSource} = this.state
 
@@ -666,7 +667,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
             return <MemberFieldError key={member.key} member={member} />
           }
           //@ts-expect-error all possible cases should be covered
-          return <>Unknown member kind: ${member.kind}</>
+          return <>{t('inputs.file.error.unknown-member-kind', {kind: member.kind})}</>
         })}
         {selectedAssetSource && this.renderAssetSource()}
       </>
