@@ -71,7 +71,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'changes.changes-by-author': 'Endringer av',
 
   /** Loading changes in Review Changes Pane */
-  'changes.loading-changes': 'Laster endringer',
+  'changes.loading-changes': 'Laster endringer…',
 
   /** No Changes title in the Review Changes pane */
   'changes.no-changes-title': 'Det er ingen endringer',
@@ -244,7 +244,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'timeline.latest-version': 'Siste versjon',
 
   /** Label for loading history */
-  'timeline.loading-history': 'Laster historikk',
+  'timeline.loading-history': 'Laster historikk…',
 
   /**
    * Label for determining since which version the changes for timeline menu dropdown are showing.
@@ -688,6 +688,116 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Text shown when summarizing validation information, when the field has one or more warnings */
   'form.validation.summary.warnings-count_one': '{{count}} advarsel',
   'form.validation.summary.warnings-count_other': '{{count}} advarsler',
+
+  /** --- Default asset sources --- */
+
+  /** Text displayed on button or menu invoking the image asset source */
+  'asset-source.image.title': 'Opplastede bilder',
+
+  /** Text displayed on button or menu invoking the file asset source */
+  'asset-source.file.title': 'Opplastede filer',
+
+  /** Keys shared between both image asset source and file asset source */
+  /** Select asset dialog title for files */
+  'asset-source.dialog.default-title_file': 'Velg fil',
+  /** Select asset dialog title for images */
+  'asset-source.dialog.default-title_image': 'Velg bilde',
+  /** Select asset dialog load more items */
+  'asset-source.dialog.load-more': 'Last inn flere',
+  /** Text shown when the list of assets only include a specific set of types */
+  'asset-source.dialog.accept-message':
+    'Viser kun media av godkjente typer: <strong>{{acceptTypes}}</strong>',
+  /** Text shown when selecting an image but there's no images to select from */
+  'asset-source.dialog.no-assets_image': 'Ingen bilder',
+  /** Text shown when selecting a file but there's no files to select from */
+  'asset-source.dialog.no-assets_file': 'Ingen filer',
+  /** Menu item for showing where a particular asset is used */
+  'asset-source.asset-list.menu.show-usage': 'Vis bruk',
+  /** Menu item for deleting the asset */
+  'asset-source.asset-list.menu.delete': 'Slett',
+
+  /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *named* image **/
+  'asset-source.usage-list.documents-using-image_named_zero':
+    'Ingen dokumenter bruker bildet <code>{{filename}}</code>',
+  'asset-source.usage-list.documents-using-image_named_one':
+    'Ett dokument bruker bildet <code>{{filename}}</code>',
+  'asset-source.usage-list.documents-using-image_named_other':
+    '{{count}} dokumenter bruker bildet <code>{{filename}}</code>',
+
+  /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *unnamed* image **/
+  'asset-source.usage-list.documents-using-image_unnamed_zero':
+    'Ingen dokumenter bruker dette bildet',
+  'asset-source.usage-list.documents-using-image_unnamed_one': 'Ett dokument bruker dette bildet',
+  'asset-source.usage-list.documents-using-image_unnamed_other':
+    '{{count}} dokumenter bruker dette bildet',
+
+  /** Text shown in usage dialog for a file asset when there are zero, one or more documents using the *named* file **/
+  'asset-source.usage-list.documents-using-file_named_zero':
+    'Ingen dokumenter bruker filen <code>{{filename}}</code>',
+  'asset-source.usage-list.documents-using-file_named_one':
+    'Ett dokument bruker filen <code>{{filename}}</code>',
+  'asset-source.usage-list.documents-using-file_named_other':
+    '{{count}} dokumenter bruker filen <code>{{filename}}</code>',
+
+  /** Text shown in usage dialog for a file asset when there are zero, one or more documents using the *unnamed* file **/
+  'asset-source.usage-list.documents-using-file_unnamed_zero':
+    'Ingen dokumenter bruker denne filen',
+  'asset-source.usage-list.documents-using-file_unnamed_one': 'Ett dokument bruker denne filen',
+  'asset-source.usage-list.documents-using-file_unnamed_other':
+    '{{count}} dokumenter bruker denne filen',
+
+  /** Header in usage dialog for image assets */
+  'asset-source.asset-usage-dialog.header_image': 'Dokumenter som bruker bildet',
+  /** Header in usage dialog for file assets */
+  'asset-source.asset-usage-dialog.header_file': 'Dokumenter som bruker filen',
+  /** Text shown in usage dialog when loading documents using the selected asset */
+  'asset-source.asset-usage-dialog.loading': 'Laster…',
+
+  /** Dialog header for delete-asset dialog when deleting an image */
+  'asset-source.delete-dialog.header_image': 'Slett bilde',
+  /** Dialog header for delete-asset dialog when deleting a file */
+  'asset-source.delete-dialog.header_file': 'Slett fil',
+  /** Text shown in delete dialog when loading documents using the selected asset */
+  'asset-source.delete-dialog.loading': 'Laster…',
+  /** Text for cancel action in delete-asset dialog */
+  'asset-source.delete-dialog.action.cancel': 'Avbryt',
+  /** Text for "confirm delete" action in delete-asset dialog */
+  'asset-source.delete-dialog.action.delete': 'Slett',
+
+  /** Warning message showing when *named* file can't be deleted because it is in use */
+  'asset-source.delete-dialog.usage-list.warning-file-is-in-use_named':
+    '{{filename}} kan ikke slettes fordi det er i bruk. For å slette denne filen må du først fjerne all bruk av den.',
+
+  /** Warning message showing when *unnamed* file can't be deleted because it is in use */
+  'asset-source.delete-dialog.usage-list.warning-file-is-in-use_unnamed':
+    'Denne filen kan ikke slettes fordi den er i bruk. For å slette må du først fjerne all bruk av den.',
+
+  /** Warning message showing when *named* image can't be deleted because it is in use */
+  'asset-source.delete-dialog.usage-list.warning-image-is-in-use_named':
+    '{{filename}} kan ikke slettes fordi det er i bruk. For å slette dette bildet må du først fjerne all bruk av det.',
+
+  /** Warning message showing when *unnamed* image can't be deleted because it is in use */
+  'asset-source.delete-dialog.usage-list.warning-image-is-in-use_unnamed':
+    'Dette bildet kan ikke slettes fordi det er i bruk. For å slette må du først fjerne all bruk av det.',
+
+  /** Alt text showing on image preview in delete asset dialog  */
+  'asset-source.delete-dialog.usage-list.image-preview-alt': 'Forhåndsvisning av bildet',
+
+  /** Message confirming to delete *named* file */
+  'asset-source.delete-dialog.usage-list.confirm-delete-file_named':
+    'Du er i ferd med å slette filen <strong>{{filename}}}</strong> med tilhørende metadata. Er du sikker?',
+
+  /** Message confirming to delete *unnamed* file */
+  'asset-source.delete-dialog.usage-list.confirm-delete-file_unnamed':
+    'Du er i ferd med å slette filen med tilhørende metadata. Er du sikker?',
+
+  /** Message confirming to delete *named* image */
+  'asset-source.delete-dialog.usage-list.confirm-delete-image_named':
+    'Du er i ferd med å slette bildet <strong>{{filename}}</strong> med tilhørende metadata. Er du sikker?',
+
+  /** Message confirming to delete *unnamed* image */
+  'asset-source.delete-dialog.usage-list.confirm-delete-image_unnamed':
+    'Du er i ferd med å slette bildet og tilhørende metadata. Er du sikker?',
 
   /** --- Workspace menu --- */
 
