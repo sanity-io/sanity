@@ -56,6 +56,12 @@ export const studioLocaleStrings = {
   /* Accessibility label for navigating the calendar to "today", without _selecting_ today */
   'calendar.action.go-to-today-aria-label': 'Go to today',
 
+  /* Label for navigating the calendar to "yesterday", without _selecting_ yesterday. Short form, eg `Yesterday`, not `Go to yesterday` */
+  'calendar.action.go-to-yesterday': 'Yesterday',
+
+  /* Label for navigating the calendar to "tomorrow", without _selecting_ tomorrow. Short form, eg `Tomorrow`, not `Go to tomorrow` */
+  'calendar.action.go-to-tomorrow': 'Tomorrow',
+
   /** Label for selecting an hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
   'calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
 
@@ -633,6 +639,161 @@ export const studioLocaleStrings = {
   /** Error label for toast when array could not resolve the initial value */
   'inputs.array.error.cannot-resolve-initial-value-title':
     'Unable to resolve initial value for type: {{schemaTypeTitle}}: {{errorMessage}}.',
+
+  /** -- Object Input -- */
+
+  /** Unknown field found */
+  'inputs.object.unknown-fields.warning.title_one': 'Unknown field found',
+  'inputs.object.unknown-fields.warning.title_other': 'Unknown fields found',
+
+  /** Encountered `{{count}}` fields that are not defined in the schema. */
+  'inputs.object.unknown-fields.warning.description_one':
+    'Encountered a field that is not defined in the schema.',
+  'inputs.object.unknown-fields.warning.description_other':
+    'Encountered {{count}} fields that are not defined in the schema.',
+
+  /** Developer info */
+  'inputs.object.unknown-fields.warning.details.title': 'Developer info',
+
+  /** Detailed description of unknown field warning */
+  'inputs.object.unknown-fields.warning.details.description_one':
+    'This field is not defined in the schema, which could mean that the field definition has been removed or that someone else has added it to their own local project and have not deployed their changes yet.',
+  'inputs.object.unknown-fields.warning.details.description_other':
+    'These fields are not defined in the document’s schema, which could mean that the field definitions have been removed or that someone else has added them to their own local project and have not deployed their changes yet.',
+
+  /** Read-only field description */
+  'inputs.object.unknown-fields.read-only.description':
+    'This field is <strong>read only</strong> according to the document’s schema and cannot be unset. If you want to be able to unset this in Studio, make sure you remove the <code>readOnly</code> field from the enclosing type in the schema.',
+
+  /** Remove field */
+  'inputs.object.unknown-fields.remove-field-button.text': 'Remove field',
+
+  /** Field groups */
+  'inputs.object.field-group-tabs.aria-label': 'Field groups',
+
+  /** -- Invalid Value Input -- */
+
+  /** Reset value */
+  'inputs.invalid-value.reset-button.text': 'Reset value',
+
+  /** Invalid property value */
+  'inputs.invalid-value.title': 'Invalid property value',
+
+  /** Developer info */
+  'inputs.invalid-value.details.title': 'Developer info',
+
+  /** The property value is stored as a value type that does not match the expected type. */
+  'inputs.invalid-value.description':
+    'The property value is stored as a value type that does not match the expected type.',
+
+  /** The value of this property must be of type <code>`{{validType}}`</code> according to the schema. */
+  'inputs.invalid-value.details.description':
+    'The value of this property must be of type <code>{{validType}}</code> according to the schema.',
+
+  /** Mismatching value types typically occur when the schema has recently been changed. */
+  'inputs.invalid-value.details.possible-reason':
+    'Mismatching value types typically occur when the schema has recently been changed.',
+
+  /** Only the following types are valid here according to schema: */
+  'inputs.invalid-value.details.multi-type-description':
+    'Only the following types are valid here according to schema:',
+
+  /** The current value (<code>`{{actualType}}`</code>) */
+  'inputs.invalid-value.current-type': 'The current value (<code>{{actualType}}</code>)',
+
+  /** Convert to <code>`{{targetType}}`</code> */
+  'inputs.invalid-value.convert-button.text': 'Convert to <code>{{targetType}}</code>',
+
+  /** Convert to <code>`{{targetType}}`</code> */
+  'inputs.untyped-value.convert-button.text': 'Convert to <code>{{targetType}}</code>',
+
+  /** Unset value */
+  'inputs.untyped-value.unset-item-button.text': 'Unset value',
+
+  /** Property value missing <code>_type</code> */
+  'inputs.untyped-value.title': 'Property value missing <code>_type</code>',
+
+  /** Developer info */
+  'inputs.untyped-value.details.title': 'Developer info',
+
+  /** Encountered an object value without a <code>_type</code> property. */
+  'inputs.untyped-value.description':
+    'Encountered an object value without a <code>_type</code> property.',
+
+  /** Either remove the <code>name</code> property of the object declaration, or set <code>_type</code> property on items. */
+  'inputs.untyped-value.details.description':
+    'Either remove the <code>name</code> property of the object declaration, or set <code>_type</code> property on items.',
+
+  /** The following types are valid here according to schema: */
+  'inputs.untyped-value.details.multi-type-description':
+    'The following types are valid here according to schema:',
+
+  /** Current value (<code>object</code>): */
+  'inputs.untyped-value.details.json-dump-prefix': 'Current value (<code>object</code>):',
+
+  /** -- Form Member Errors -- */
+
+  /** Unexpected error: `{{error}}` */
+  'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
+
+  /**  Remove non-object values */
+  'form.error.mixed-array-alert.remove-button.text': 'Remove non-object values',
+
+  /** Invalid list values */
+  'form.error.mixed-array-alert.title': 'Invalid list values',
+
+  /** Some items in this list are not objects. This must be fixed in order to edit the list. */
+  'form.error.mixed-array-alert.summary':
+    'Some items in this list are not objects. This must be fixed in order to edit the list.',
+
+  /** Developer info */
+  'form.error.mixed-array-alert.details.title': 'Developer info',
+
+  /** This usually happens when items are created using an API client, or when a custom input component has added invalid data to the list. */
+  'form.error.mixed-array-alert.details.description':
+    'This usually happens when items are created using an API client, or when a custom input component has added invalid data to the list.',
+
+  /** Add missing keys */
+  'form.error.missing-keys-alert.add-button.text': 'Add missing keys',
+
+  /** Missing keys */
+  'form.error.missing-keys-alert.title': 'Missing keys',
+
+  /** Some items in the list are missing their keys. This must be fixed in order to edit the list. */
+  'form.error.missing-keys-alert.summary':
+    'Some items in the list are missing their keys. This must be fixed in order to edit the list.',
+
+  /** Developer info */
+  'form.error.missing-keys-alert.details.title': 'Developer info',
+
+  /** This usually happens when items are created using an API client, and the <code>_key</code> property has not been included. */
+  'form.error.missing-keys-alert.details.description':
+    'This usually happens when items are created using an API client, and the <code>_key</code> property has not been included.',
+
+  /** The value of the <code>_key</code> property must be a unique string. */
+  'form.error.missing-keys-alert.details.additional-description':
+    'The value of the <code>_key</code> property must be a unique string.',
+
+  /** Generate unique keys */
+  'form.error.duplicate-keys-alert.generate-button.text': 'Generate unique keys',
+
+  /** Non-unique keys */
+  'form.error.duplicate-keys-alert.title': 'Non-unique keys',
+
+  /** Several items in this list share the same identifier (key). Every item must have an unique identifier. */
+  'form.error.duplicate-keys-alert.summary':
+    'Several items in this list share the same identifier (key). Every item must have an unique identifier.',
+
+  /** Developer info */
+  'form.error.duplicate-keys-alert.details.title': 'Developer info',
+
+  /** This usually happens when items are created using an API client, and the <code>_key</code> property of each elements has been generated non-uniquely. */
+  'form.error.duplicate-keys-alert.details.description':
+    'This usually happens when items are created using an API client, and the <code>_key</code> property of each elements has been generated non-uniquely.',
+
+  /** The value of the <code>_key</code> property must be a unique string. */
+  'form.error.duplicate-keys-alert.details.additional-description':
+    'The value of the <code>_key</code> property must be a unique string.',
 
   /** --- Forms / form fields --- */
 

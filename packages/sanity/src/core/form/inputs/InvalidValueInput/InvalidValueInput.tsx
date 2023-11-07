@@ -7,6 +7,7 @@ import {isDev} from '../../../environment'
 import {converters as CONVERTERS, ValueConverter} from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
 import {isPlainObject} from 'lodash'
+import {useTranslation, Translate} from '../../../i18n'
 
 interface Converter extends ValueConverter {
   from: string
@@ -60,6 +61,8 @@ export const InvalidValueInput = forwardRef(
       [value, actualType, validTypes],
     )
 
+    const {t} = useTranslation()
+
     if (isPlainObject(value) && !('_type' in (value as object))) {
       return (
         <UntypedValueInput
@@ -72,34 +75,43 @@ export const InvalidValueInput = forwardRef(
 
     const suffix = (
       <Stack padding={2}>
-        <Button onClick={handleClearClick} tone="critical" text="Reset value" />
+        <Button
+          onClick={handleClearClick}
+          tone="critical"
+          text={t('inputs.invalid-value.reset-button.text')}
+        />
       </Stack>
     )
 
     return (
-      <Alert status="error" suffix={suffix} title={<>Invalid property value</>}>
+      <Alert status="error" suffix={suffix} title={t('inputs.invalid-value.title')}>
         <Text as="p" muted size={1}>
-          The property value is stored as a value type that does not match the expected type.
+          {t('inputs.invalid-value.description')}
         </Text>
 
-        <Details marginTop={4} open={isDev} title={<>Developer info</>}>
+        <Details marginTop={4} open={isDev} title={t('inputs.invalid-value.details.title')}>
           <Stack space={3}>
             {validTypes.length === 1 && (
               <Text as="p" muted size={1}>
-                The value of this property must be of type <code>{validTypes[0]}</code> according to
-                the schema.
+                <Translate
+                  t={t}
+                  i18nKey="inputs.invalid-value.details.description"
+                  values={{
+                    validType: validTypes[0],
+                  }}
+                />
               </Text>
             )}
 
             {validTypes.length === 1 && (
               <Text as="p" muted size={1}>
-                Mismatching value types typically occur when the schema has recently been changed.
+                {t('inputs.invalid-value.details.possible-reason')}
               </Text>
             )}
 
             {validTypes.length !== 1 && (
               <Text as="p" muted size={1}>
-                Only the following types are valid here according to schema:
+                {t('inputs.invalid-value.details.multi-type-description')}
               </Text>
             )}
 
@@ -115,7 +127,13 @@ export const InvalidValueInput = forwardRef(
 
             <Stack marginTop={2} space={2}>
               <Text size={1} weight="semibold">
-                The current value (<code>{actualType}</code>)
+                <Translate
+                  t={t}
+                  i18nKey="inputs.invalid-value.current-type"
+                  values={{
+                    actualType: actualType,
+                  }}
+                />
               </Text>
 
               <Card border padding={2} radius={2} tone="inherit">
@@ -160,12 +178,20 @@ function ConvertButton({
     [converter, onConvert, value],
   )
 
+  const {t} = useTranslation()
+
   return (
     <Button
       onClick={handleClick}
       text={
         <>
-          Convert to <code>{converter.to}</code>
+          <Translate
+            t={t}
+            i18nKey="inputs.invalid-value.convert-button.text"
+            values={{
+              targetType: converter.to,
+            }}
+          />
         </>
       }
     />

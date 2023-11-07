@@ -1,4 +1,7 @@
 export interface CalendarLabels {
+  goToTomorrow: string
+  goToToday: string
+  goToYesterday: string
   goToPreviousYear: string
   goToNextYear: string
   goToPreviousMonth: string

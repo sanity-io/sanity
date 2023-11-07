@@ -8,6 +8,9 @@ export function getCalendarLabels(
   t: (key: string, values?: Record<string, unknown>) => string,
 ): CalendarLabels {
   return {
+    goToTomorrow: t('calendar.action.go-to-tomorrow'),
+    goToToday: t('calendar.action.go-to-today'),
+    goToYesterday: t('calendar.action.go-to-yesterday'),
     goToNextMonth: t('calendar.action.go-to-next-month'),
     goToPreviousMonth: t('calendar.action.go-to-previous-month'),
     goToNextYear: t('calendar.action.go-to-next-year'),
