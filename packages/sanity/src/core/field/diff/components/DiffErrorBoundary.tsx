@@ -1,11 +1,13 @@
 import React from 'react'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
+import type {TFunction} from '../../../i18n'
 import {isDev} from '../../../environment'
 
 /** @internal */
 export interface DiffErrorBoundaryProps {
   children: React.ReactNode
+  t: TFunction
 }
 
 /** @internal */
@@ -31,6 +33,7 @@ export class DiffErrorBoundary extends React.Component<
   }
 
   render() {
+    const {t} = this.props
     const {error} = this.state
 
     if (!error) {
@@ -46,13 +49,13 @@ export class DiffErrorBoundary extends React.Component<
 
           <Box paddingLeft={3}>
             <Text as="h3" size={1} weight="medium">
-              Rendering the changes to this field caused an error
+              {t('changes.error-boundary.title')}
             </Text>
 
             {isDev && (
               <Box marginTop={2}>
                 <Text as="p" size={1}>
-                  Check the developer console for more information
+                  {t('changes.error-boundary.developer-info')}
                 </Text>
               </Box>
             )}

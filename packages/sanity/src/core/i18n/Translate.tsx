@@ -1,4 +1,4 @@
-import React, {ComponentType, ReactNode, useMemo} from 'react'
+import React, {type ComponentType, type ReactNode, useMemo} from 'react'
 import type {TFunction} from 'i18next'
 import {CloseTagToken, simpleParser, TextToken, Token} from './simpleParser'
 
@@ -104,7 +104,27 @@ function render(tokens: Token[], componentMap: TranslateComponentMap): ReactNode
  * @beta
  */
 export function Translate(props: TranslationProps) {
-  const translated = props.t(props.i18nKey, {context: props.context, replace: props.values})
+  /**
+   * The i18next API is kinda weird - the second parameter to `t` is a mixture of options and
+   * replacement values. All of the following properties are options for the `t` function, at
+   * the time of writing:
+   *
+   * 'defaultValue', 'ordinal', 'context', 'replace', 'lng', 'lngs', 'fallbackLng', 'ns',
+   * 'keySeparator', 'nsSeparator', 'returnObjects', 'returnDetails', 'joinArrays',
+   * 'postProcess', 'interpolation'.
+   *
+   * Because we are explicitly receiving the interpolation values we want through `values`,
+   * it is safer to explicitly pass these to the `replace` parameter, in order to avoid unexpected
+   * behavior with built-in options.
+   */
+  const translated = props.t(props.i18nKey, {
+    context: props.context,
+    replace: props.values,
+    count:
+      props.values && 'count' in props.values && typeof props.values.count === 'number'
+        ? props.values.count
+        : undefined,
+  })
 
   const tokens = useMemo(() => simpleParser(translated), [translated])
 

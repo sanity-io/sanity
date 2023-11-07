@@ -1,7 +1,8 @@
-import {Image, ImageCrop, ImageHotspot} from '@sanity/types'
+import type {Image, ImageCrop, ImageHotspot} from '@sanity/types'
 import React from 'react'
 import {DiffTooltip, useDiffAnnotationColor} from '../../../diff'
-import {ObjectDiff} from '../../../types'
+import {useTranslation} from '../../../../i18n'
+import type {ObjectDiff} from '../../../types'
 import {hexToRgba} from './helpers'
 
 interface HotspotCropSVGProps {
@@ -17,6 +18,7 @@ export function HotspotCropSVG(
   props: HotspotCropSVGProps & Omit<React.SVGProps<SVGElement>, 'ref' | 'width' | 'height'>,
 ) {
   const {crop, diff, hash, hotspot, width = 100, height = 100, ...restProps} = props
+  const {t} = useTranslation()
   const cropColor = useDiffAnnotationColor(diff, 'crop')
   const hotspotColor = useDiffAnnotationColor(diff, 'hotspot')
 
@@ -46,7 +48,7 @@ export function HotspotCropSVG(
       </defs>
 
       {crop && (
-        <DiffTooltip diff={diff} path="crop" description="Crop changed">
+        <DiffTooltip diff={diff} path="crop" description={t('changes.image.crop-changed')}>
           <g>
             <CropSVG
               crop={crop}
@@ -62,7 +64,7 @@ export function HotspotCropSVG(
       )}
 
       {hotspot && (
-        <DiffTooltip diff={diff} path="hotspot" description="Hotspot changed">
+        <DiffTooltip diff={diff} path="hotspot" description={t('changes.image.crop-changed')}>
           <g>
             <HotspotSVG
               hotspot={hotspot}

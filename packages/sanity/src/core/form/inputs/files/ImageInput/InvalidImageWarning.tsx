@@ -13,7 +13,7 @@ const ButtonWrapper = styled(Button)`
 `
 
 export function InvalidImageWarning({onClearValue}: Props) {
-  const {t} = useTranslation('sanity')
+  const {t} = useTranslation()
   return (
     <Card tone="caution" padding={4} border radius={2}>
       <Flex gap={4} marginBottom={4}>
@@ -24,12 +24,17 @@ export function InvalidImageWarning({onClearValue}: Props) {
         </Box>
         <Stack space={3}>
           <Text size={1} weight="semibold">
-            {t('inputs.files.image.invalid-image-warning.title')}
+            {t('inputs.image.invalid-image-warning.title')}
           </Text>
-          <Text size={1}>{t('inputs.files.image.invalid-image-warning.description')}</Text>
+          <Text size={1}>{t('inputs.image.invalid-image-warning.description')}</Text>
         </Stack>
       </Flex>
-      <ButtonWrapper icon={ResetIcon} text="Reset value" onClick={onClearValue} mode="ghost" />
+      <ButtonWrapper
+        icon={ResetIcon}
+        text={t('inputs.image.invalid-image-warning.reset-button.text')}
+        onClick={onClearValue}
+        mode="ghost"
+      />
     </Card>
   )
 }

@@ -1,8 +1,8 @@
-import {Path, SchemaType} from '@sanity/types'
+import type {Path, SchemaType} from '@sanity/types'
 import React, {createElement, CSSProperties} from 'react'
-import {FieldPreviewComponent} from '../../preview'
-import {Diff} from '../../types'
-import {getChangeVerb} from '../helpers'
+import type {FieldPreviewComponent} from '../../preview'
+import type {Diff} from '../../types'
+import {useChangeVerb} from '../hooks/useChangeVerb'
 import {DiffCard} from './DiffCard'
 import {DiffTooltip} from './DiffTooltip'
 import {FromTo} from './FromTo'
@@ -29,7 +29,7 @@ const cardStyles: CSSProperties = {
 export function DiffFromTo(props: DiffFromToProps) {
   const {align, cardClassName, diff, layout, path, previewComponent, schemaType} = props
   const {action} = diff
-  const changeVerb = getChangeVerb(diff)
+  const changeVerb = useChangeVerb(diff)
 
   if (action === 'unchanged') {
     return (

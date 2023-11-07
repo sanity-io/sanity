@@ -1,15 +1,16 @@
 import {
   isPortableTextSpan,
-  ObjectSchemaType,
-  PortableTextChild,
-  PortableTextTextBlock,
-  SpanSchemaType,
+  type ObjectSchemaType,
+  type PortableTextChild,
+  type PortableTextTextBlock,
+  type SpanSchemaType,
 } from '@sanity/types'
-import {startCase, uniq, xor} from 'lodash'
+import {uniq, xor} from 'lodash'
 import React, {ReactElement, useCallback, useMemo} from 'react'
+import {type TFunction, useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
-import {ArrayDiff, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
-import {PortableTextDiff} from '../types'
+import type {ArrayDiff, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
+import type {PortableTextDiff} from '../types'
 
 import * as TextSymbols from '../symbols'
 
@@ -25,9 +26,9 @@ import {
   isDecorator,
 } from '../helpers'
 
-import Block from './Block'
+import {Block} from './Block'
 import {Annotation} from './Annotation'
-import Decorator from './Decorator'
+import {Decorator} from './Decorator'
 import {InlineObject} from './InlineObject'
 import {Text} from './Text'
 
@@ -47,9 +48,10 @@ type Props = {
   schemaType: ObjectSchemaType
 }
 
-export default function PortableText(props: Props): JSX.Element {
+export function PortableText(props: Props): JSX.Element {
   const {diff, schemaType} = props
   const block = (diff.origin.toValue || diff.origin.fromValue) as PortableTextTextBlock
+  const {t} = useTranslation()
 
   const inlineObjects = useMemo(
     () => (diff.origin.toValue ? getInlineObjects(diff.origin) : []),
@@ -84,7 +86,7 @@ export default function PortableText(props: Props): JSX.Element {
                 as={textDiff.action === 'removed' ? 'del' : 'ins'}
                 key={`empty-block-${block._key}`}
                 tooltip={{
-                  description: `${startCase(textDiff.action)} empty text`,
+                  description: t('change.portable-text.empty-text', {context: textDiff.action}),
                 }}
               >
                 <span>{TextSymbols.EMPTY_BLOCK_SYMBOL}</span>
@@ -177,6 +179,7 @@ export default function PortableText(props: Props): JSX.Element {
                   seg,
                   segIndex,
                   spanSchemaType,
+                  t,
                 })}
               </Text>
             )
@@ -226,7 +229,7 @@ export default function PortableText(props: Props): JSX.Element {
       }
       throw new Error("'span' schemaType not found")
     },
-    [block, diff, inlineObjects, schemaType],
+    [block, diff, inlineObjects, schemaType, t],
   )
 
   return (
@@ -243,6 +246,7 @@ function renderTextSegment({
   seg,
   segIndex,
   spanSchemaType,
+  t,
 }: {
   diff: PortableTextDiff
   child: PortableTextChild
@@ -250,6 +254,7 @@ function renderTextSegment({
   seg: StringDiffSegment
   segIndex: number
   spanSchemaType: SpanSchemaType
+  t: TFunction
 }): JSX.Element {
   // Newlines
   if (seg.text === '\n') {
@@ -274,6 +279,7 @@ function renderTextSegment({
       segIndex,
       spanDiff,
       spanSchemaType,
+      t,
     })
   }
   // Render the segment with the active marks
@@ -301,6 +307,7 @@ function renderDecorators({
   segIndex,
   spanDiff,
   spanSchemaType,
+  t,
 }: {
   activeMarks: string[]
   decoratorTypes: {title: string; value: string}[]
@@ -310,6 +317,7 @@ function renderDecorators({
   segIndex: number
   spanDiff: ObjectDiff
   spanSchemaType: SpanSchemaType
+  t: TFunction
 }): JSX.Element {
   let returned = <span key={`text-segment-${segIndex}`}>{children}</span>
   const fromPtDiffText: string =
@@ -371,7 +379,7 @@ function renderDecorators({
         key={`diffcard-annotation-${segIndex}-${marksChanged.join('-')}`}
         as={'ins'}
         tooltip={{
-          description: 'Changed formatting',
+          description: t('change.portable-text.changed-formatting'),
         }}
       >
         {returned}

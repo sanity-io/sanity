@@ -4,7 +4,7 @@ import type {i18n} from 'i18next'
 import {useSource} from '../../studio'
 import {LoadingScreen} from '../../studio/screens'
 import {storePreferredLocale} from '../localeStore'
-import {LocaleContext, LocaleContextValue} from '../LocaleContext'
+import {LocaleContext, type LocaleContextValue} from '../LocaleContext'
 
 /**
  * @internal

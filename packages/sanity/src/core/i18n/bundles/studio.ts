@@ -92,6 +92,15 @@ export const studioLocaleStrings = {
   'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
 
+  /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
+  'changes.removed-label': 'Removed',
+
+  /** Label for when the action of the change was to set something that was previously empty, eg a field was given a value, an array item was added, an asset was selected or similar */
+  'changes.added-label': 'Added',
+
+  /** Label for when the action of the change was _not_ an add/remove, eg a text field changed value, an image was changed from one asset to another or similar */
+  'changes.changed-label': 'Changed',
+
   /** Prompt for reverting all changes in document in Review Changes pane. Includes a count of changes. */
   'changes.action.revert-all-description': `Are you sure you want to revert all {{count}} changes?`,
 
@@ -103,6 +112,106 @@ export const studioLocaleStrings = {
 
   /** Loading author of change in the differences tooltip in the review changes pane */
   'changes.loading-author': 'Loading…',
+
+  /** --- Review Changes: Specific types --- */
+
+  /** Array diff: An item was added in a given position (`{{position}}`) */
+  'changes.array.item-added-in-position': 'Added in position {{position}}',
+
+  /** Array diff: An item was removed from a given position (`{{position}}`) */
+  'changes.array.item-removed-from-position': 'Removed from position {{position}}',
+
+  /**
+   * Array diff: An item was moved within the array.
+   * Receives `{{count}}` representing number of positions it moved.
+   * Context is the direction of the move, either `up` or `down`.
+   */
+  'change.array.item-moved_up_one': 'Moved {{count}} position up',
+  'change.array.item-moved_up_other': 'Moved {{count}} positions up',
+  'change.array.item-moved_down_one': 'Moved {{count}} position down',
+  'change.array.item-moved_down_other': 'Moved {{count}} positions down',
+
+  /** Portable Text diff: Removed a block containing no text (eg empty block) */
+  'change.portable-text.empty-text_removed': 'Removed empty text',
+
+  /** Portable Text diff: Added a block containing no text (eg empty block) */
+  'change.portable-text.empty-text_added': 'Added empty text',
+
+  /** Portable Text diff: Changed a block that contained no text (eg empty block) */
+  'change.portable-text.empty-text_changed': 'Changed empty text',
+
+  /** Portable Text diff: Added a chunk of text */
+  'change.portable-text.text_added': 'Added text',
+
+  /** Portable Text diff: Removed a chunk of text */
+  'change.portable-text.text_removed': 'Removed text',
+
+  /** Portable Text diff: An annotation was added */
+  'change.portable-text.annotation_added': 'Added annotation',
+
+  /** Portable Text diff: An annotation was removed */
+  'change.portable-text.annotation_removed': 'Removed annotation',
+
+  /** Portable Text diff: An annotation was changed */
+  'change.portable-text.annotation_changed': 'Changed annotation',
+
+  /** Portable Text diff: An annotation was left unchanged */
+  'change.portable-text.annotation_unchanged': 'Unchanged annotation',
+
+  /** Portable Text diff: An inline object was added */
+  'change.portable-text.inline-object_added': 'Added inline object',
+
+  /** Portable Text diff: An inline object was removed */
+  'change.portable-text.inline-object_removed': 'Removed inline object',
+
+  /** Portable Text diff: An inline object was changed */
+  'change.portable-text.inline-object_changed': 'Changed inline object',
+
+  /** Portable Text diff: An inline object was left unchanged */
+  'change.portable-text.inline-object_unchanged': 'Unchanged inline object',
+
+  /** Portable Text diff: Change formatting of text (setting/unsetting marks, eg bold/italic etc) */
+  'change.portable-text.changed-formatting': 'Changed formatting',
+
+  /** Portable Text diff: A block changed from one style to another (eg `normal` to `h1` or similar) */
+  'change.portable-text.block-style-changed':
+    'Changed block style from "{{fromStyle}}" to "{{toStyle}}"',
+
+  /** Portable Text diff: Annotation has an unknown schema type */
+  'change.portable-text.unknown-annotation-schema-type': 'Unknown schema type',
+
+  /** Portable Text diff: Inline object has an unknown schema type */
+  'change.portable-text.unknown-inline-object-schema-type': 'Unknown schema type',
+
+  /** Portable Text diff: An empty object is the result of adding/removing an annotation */
+  'change.portable-text.empty-object-annotation': 'Empty {{annotationType}}',
+
+  /** Portable Text diff: An empty inline object is part of a change */
+  'change.portable-text.empty-inline-object': 'Empty {{inlineObjectType}}',
+
+  /** File diff: Fallback title for the meta info section when there is no original filename to use  */
+  'changes.file.meta-info-fallback-title': 'Untitled',
+
+  /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
+  'changes.image.crop-changed': 'Crop changed',
+
+  /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
+  'changes.image.hotspot-changed': 'Hotspot changed',
+
+  /** Image diff: Text shown if no asset has been set for the field (but has metadata changes) */
+  'changes.image.no-asset-set': 'Image not set',
+
+  /** Image diff: Text shown when the from/to state has/had no image */
+  'changes.image.no-image-placeholder': '(no image)',
+
+  /** Image diff: Fallback title for the meta info section when there is no original filename to use  */
+  'changes.image.meta-info-fallback-title': 'Untitled',
+
+  /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */
+  'changes.image.deleted': 'Image deleted',
+
+  /** Image diff: Text shown if the image failed to be loaded when previewing it */
+  'changes.image.error-loading-image': 'Error loading image',
 
   /** --- Review Changes: Field + Group --- */
 
@@ -117,6 +226,25 @@ export const studioLocaleStrings = {
 
   /** Revert for confirming revert (plural) label for field change action */
   'changes.action.revert-changes-confirm-change_other': `Revert changes`,
+
+  /** Text shown when a diff component crashes during rendering, triggering the error boundary */
+  'changes.error-boundary.title': 'Rendering the changes to this field caused an error',
+
+  /** Additional text shown in development mode when a diff component crashes during rendering */
+  'changes.error-boundary.developer-info': 'Check the developer console for more information',
+
+  /** Label for the "meta" (field path, action etc) information in the change inspector */
+  'changes.inspector.meta-label': 'Meta',
+
+  /** Label for the "from" value in the change inspector */
+  'changes.inspector.from-label': 'From',
+
+  /** Label for the "to" value in the change inspector */
+  'changes.inspector.to-label': 'To',
+
+  /** Error message shown when the value of a field is not the expected one */
+  'changes.error.incorrect-type-message':
+    'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
 
   /** --- Document timeline, for navigating different revisions of a document --- */
 
@@ -185,38 +313,50 @@ export const studioLocaleStrings = {
   /** --- File (Image, File and ImageTool) Inputs --- */
 
   /** Open image edit dialog */
-  'inputs.files.image.actions-menu.edit-details.label': 'Open image edit dialog',
+  'inputs.image.actions-menu.edit-details.label': 'Open image edit dialog',
 
   /** Open image options menu */
-  'inputs.files.image.actions-menu.options.label': 'Open image options menu',
+  'inputs.image.actions-menu.options.label': 'Open image options menu',
+
+  /** Open file options menu */
+  'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
 
   /** The upload could not be completed at this time. */
-  'inputs.files.image.upload-error.description': 'The upload could not be completed at this time.',
+  'inputs.image.upload-error.description': 'The upload could not be completed at this time.',
 
   /** Upload failed */
-  'inputs.files.image.upload-error.title': 'Upload failed',
+  'inputs.image.upload-error.title': 'Upload failed',
 
   /** Edit hotspot and crop */
-  'inputs.files.image.hotspot-dialog.title': 'Edit hotspot and crop',
+  'inputs.image.hotspot-dialog.title': 'Edit hotspot and crop',
 
   /** Preview of uploaded image */
-  'inputs.files.image.preview-uploaded-image': 'Preview of uploaded image',
+  'inputs.image.preview-uploaded-image': 'Preview of uploaded image',
 
   /** Cannot upload this file here */
-  'inputs.files.image.drag-overlay.cannot-upload-here': 'Cannot upload this file here',
+  'inputs.image.drag-overlay.cannot-upload-here': 'Cannot upload this file here',
 
   /** This field is read only */
-  'inputs.files.image.drag-overlay.this-field-is-read-only': 'This field is read only',
+  'inputs.image.drag-overlay.this-field-is-read-only': 'This field is read only',
 
   /** Drop image to upload */
-  'inputs.files.image.drag-overlay.drop-to-upload-image': 'Drop image to upload',
+  'inputs.image.drag-overlay.drop-to-upload-image': 'Drop image to upload',
 
   /** Invalid image value */
-  'inputs.files.image.invalid-image-warning.title': 'Invalid image value',
+  'inputs.image.invalid-image-warning.title': 'Invalid image value',
 
   /** The value of this field is not a valid image. Resetting this field will let you choose a new image. */
-  'inputs.files.image.invalid-image-warning.description':
+  'inputs.image.invalid-image-warning.description':
     'The value of this field is not a valid image. Resetting this field will let you choose a new image.',
+
+  /** Reset value */
+  'inputs.image.invalid-image-warning.reset-button.text': 'Reset value',
+
+  /** Select */
+  'inputs.image.browse-menu.text': 'Select',
+
+  /** Unknown member kind: `{{kind}}` */
+  'inputs.image.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
 
   /** The URL is copied to the clipboard */
   'inputs.files.common.actions-menu.notification.url-copied': 'The URL is copied to the clipboard',
@@ -267,8 +407,23 @@ export const studioLocaleStrings = {
   /** Drop to upload `{{count}}` files */
   'inputs.files.common.drop-message.drop-to-upload-multi_other': 'Drop to upload {{count}} files',
 
+  /** `{{count}}` file can't be uploaded here */
+  'inputs.files.common.drop-message.drop-to-upload.rejected-file-message_one': `{{count}} file can't be uploaded here`,
+
+  /** `{{count}}` files can't be uploaded here */
+  'inputs.files.common.drop-message.drop-to-upload.rejected-file-message_other': `{{count}} files can't be uploaded here`,
+
+  /** Can't upload this file here */
+  'inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message_one': `Can't upload this file here`,
+
+  /** Can't upload any of these files here */
+  'inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message_other': `Can't upload any of these files here`,
+
   /** Uploading <FileName/> */
   'input.files.common.upload-progress': 'Uploading <FileName/>',
+
+  /** Text for file input button in upload placeholder */
+  'input.files.common.upload-placeholder.file-input-button.text': 'Upload',
 
   /** Incomplete upload */
   'inputs.files.common.stale-upload-warning.title': 'Incomplete upload',
@@ -281,11 +436,45 @@ export const studioLocaleStrings = {
   'inputs.files.common.stale-upload-warning.clear': 'Clear upload',
 
   /** Hotspot & Crop */
-  'inputs.files.imagetool.field.title': 'Hotspot & Crop',
+  'inputs.imagetool.title': 'Hotspot & Crop',
 
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
-  'inputs.files.imagetool.field.description':
+  'inputs.imagetool.description':
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
+
+  /** Loading image… */
+  'inputs.imagetool.loading': 'Loading image…',
+
+  /** Error: `{{errorMessage}}` */
+  'inputs.imagetool.load-error': 'Error: {{errorMessage}}',
+
+  /** Select file */
+  'inputs.file.dialog.title': 'Select file',
+
+  /** Browse */
+  'inputs.file.browse-button.text': 'Browse',
+
+  /** Select */
+  'inputs.file.multi-browse-button.text': 'Select',
+
+  /** Unknown member kind: `{{kind}}` */
+  'inputs.file.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
+
+  /** Invalid file value */
+  'inputs.file.invalid-file-warning.title': 'Invalid file value',
+
+  /** The value of this field is not a valid file. Resetting this field will let you choose a new file. */
+  'inputs.file.invalid-file-warning.description':
+    'The value of this field is not a valid file. Resetting this field will let you choose a new file.',
+
+  /** Reset value */
+  'inputs.file.invalid-file-warning.reset-button.text': 'Reset value',
+
+  /** The upload could not be completed at this time. */
+  'inputs.file.upload-failed.description': 'The upload could not be completed at this time.',
+
+  /** Upload failed */
+  'inputs.file.upload-failed.title': 'Upload failed',
 
   /** --- Reference (and Cross-Dataset Reference) Input --- */
 
@@ -602,6 +791,42 @@ export const studioLocaleStrings = {
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',
+
+  /** --- Forms / form fields --- */
+
+  /** Fallback title shown above field if it has no defined title */
+  'form.field.untitled-field-label': 'Untitled',
+
+  /** Fallback title shown above fieldset if it has no defined title */
+  'form.field.untitled-fieldset-label': 'Untitled',
+
+  /** Error text shown when form is unable to find an array item at a given keyed path */
+  'form.error.no-array-item-at-key':
+    'No array item with `_key` <code>"{{key}}"</code> found at path <code>{{path}}</code>',
+
+  /** Error text shown when form is unable to find an array item at a given indexed path */
+  'form.error.no-array-item-at-index':
+    'No array item at index <code>{{index}}</code> found at path <code>{{path}}</code>',
+
+  /** Error text shown when a field with a given name cannot be found in the schema or is conditionally hidden but explicitly told to render  */
+  'form.error.field-not-found': `Field "{{fieldName}}" not found among members – verify that it is defined in the schema and that it has not been conditionally hidden.`,
+
+  /** Accessibility label for the icon that indicates the field has a validation error */
+  'form.validation.has-error-aria-label': 'Has error',
+
+  /** Accessibility label for the icon that indicates the field has a validation warning */
+  'form.validation.has-warning-aria-label': 'Has warning',
+
+  /** Accessibility label for the icon that indicates the field has validation information */
+  'form.validation.has-info-aria-label': 'Has information',
+
+  /** Text shown when summarizing validation information, when the field has one or more errors */
+  'form.validation.summary.errors-count_one': '{{count}} error',
+  'form.validation.summary.errors-count_other': '{{count}} errors',
+
+  /** Text shown when summarizing validation information, when the field has one or more warnings */
+  'form.validation.summary.warnings-count_one': '{{count}} warning',
+  'form.validation.summary.warnings-count_other': '{{count}} warnings',
 
   /** --- Workspace menu --- */
 

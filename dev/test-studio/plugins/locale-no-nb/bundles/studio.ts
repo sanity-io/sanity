@@ -80,6 +80,15 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'changes.no-changes-description':
     'Rediger dokumentet eller velg en eldre versjon i tidslinjen for å se en liste over endringer i dette panelet.',
 
+  /** Label for when the action of the change was a removal, eg a field was cleared, an array item was removed, an asset was deselected or similar */
+  'changes.removed-label': 'Fjernet',
+
+  /** Label for when the action of the change was to set something that was previously empty, eg a field was given a value, an array item was added, an asset was selected or similar */
+  'changes.added-label': 'Lagt til',
+
+  /** Label for when the action of the change was _not_ an add/remove, eg a text field changed value, an image was changed from one asset to another or similar */
+  'changes.changed-label': 'Endret',
+
   /** Prompt for reverting all changes in document in Review Changes pane. Includes a count of changes. */
   'changes.action.revert-all-description': `Er du sikker på at du vil angre alle {{count}} endringer?`,
 
@@ -91,6 +100,106 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Loading author of change in the differences tooltip in the review changes pane */
   'changes.loading-author': 'Laster…',
+
+  /** --- Review Changes: Specific types --- */
+
+  /** Array diff: An item was added in a given position (`{{position}}`) */
+  'changes.array.item-added-in-position': 'Lagt til i posisjon {{position}}',
+
+  /** Array diff: An item was removed from a given position (`{{position}}`) */
+  'changes.array.item-removed-from-position': 'Fjernet fra posisjon {{position}}',
+
+  /**
+   * Array diff: An item was moved within the array.
+   * Receives `{{count}}` representing number of positions it moved.
+   * Context is the direction of the move, either `up` or `down`.
+   */
+  'change.array.item-moved_up_one': 'Flyttet {{count}} posisjon opp',
+  'change.array.item-moved_up_other': 'Flyttet {{count}} posisjoner opp',
+  'change.array.item-moved_down_one': 'Flyttet {{count}} posisjon ned',
+  'change.array.item-moved_down_other': 'Flyttet {{count}} posisjoner ned',
+
+  /** Portable Text diff: Removed a block containing no text (eg empty block) */
+  'change.portable-text.empty-text_removed': 'Fjernet tomt avsnitt',
+
+  /** Portable Text diff: Added a block containing no text (eg empty block) */
+  'change.portable-text.empty-text_added': 'La til tomt avsnitt',
+
+  /** Portable Text diff: Changed a block that contained no text (eg empty block) */
+  'change.portable-text.empty-text_changed': 'Endret tomt avsnitt',
+
+  /** Portable Text diff: Added a chunk of text */
+  'change.portable-text.text_added': 'La til tekst',
+
+  /** Portable Text diff: Removed a chunk of text */
+  'change.portable-text.text_removed': 'Fjernet tekst',
+
+  /** Portable Text diff: An annotation was added */
+  'change.portable-text.annotation_added': 'La til berikelse',
+
+  /** Portable Text diff: An annotation was removed */
+  'change.portable-text.annotation_removed': 'Fjernet berikelse',
+
+  /** Portable Text diff: An annotation was changed */
+  'change.portable-text.annotation_changed': 'Endret berikelse',
+
+  /** Portable Text diff: An annotation was left unchanged */
+  'change.portable-text.annotation_unchanged': 'Uendret berikelse',
+
+  /** Portable Text diff: An inline object was added */
+  'change.portable-text.inline-object_added': 'La til inline objekt',
+
+  /** Portable Text diff: An inline object was removed */
+  'change.portable-text.inline-object_removed': 'Fjernet inline objekt',
+
+  /** Portable Text diff: An inline object was changed */
+  'change.portable-text.inline-object_changed': 'Endet inline objekt',
+
+  /** Portable Text diff: An inline object was left unchanged */
+  'change.portable-text.inline-object_unchanged': 'Uendret inline object',
+
+  /** Portable Text diff: Change formatting of text (setting/unsetting marks, eg bold/italic etc) */
+  'change.portable-text.changed-formatting': 'Endret formattering',
+
+  /** Portable Text diff: A block changed from one style to another (eg `normal` to `h1` or similar) */
+  'change.portable-text.block-style-changed':
+    'Endret blokkstil fra "{{fromStyle}}" til "{{toStyle}}"',
+
+  /** Portable Text diff: Annotation has an unknown schema type */
+  'change.portable-text.unknown-annotation-schema-type': 'Ukjent skjematype',
+
+  /** Portable Text diff: Inline object has an unknown schema type */
+  'change.portable-text.unknown-inline-object-schema-type': 'Ukjent skjematype',
+
+  /** Portable Text diff: An empty object is the result of adding/removing an annotation */
+  'change.portable-text.empty-object-annotation': 'Tom {{annotationType}}',
+
+  /** Portable Text diff: An empty inline object is part of a change */
+  'change.portable-text.empty-inline-object': 'Tom {{inlineObjectType}}',
+
+  /** File diff: Fallback title for the meta info section when there is no original filename to use  */
+  'changes.file.meta-info-fallback-title': 'Navnløs fil',
+
+  /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
+  'changes.image.crop-changed': 'Beskjæring endret',
+
+  /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
+  'changes.image.hotspot-changed': 'Fokuspunkt endret',
+
+  /** Image diff: Text shown if no asset has been set for the field (but has metadata changes) */
+  'changes.image.no-asset-set': 'Bilde ikke satt',
+
+  /** Image diff: Text shown when the from/to state has/had no image */
+  'changes.image.no-image-placeholder': '(ingen bilde)',
+
+  /** Image diff: Fallback title for the meta info section when there is no original filename to use  */
+  'changes.image.meta-info-fallback-title': 'Navnløst bilde',
+
+  /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */
+  'changes.image.deleted': 'Bilde slettet',
+
+  /** Image diff: Text shown if the image failed to be loaded when previewing it */
+  'changes.image.error-loading-image': 'Feil under lasting av bilde',
 
   /** --- Review Changes: Field + Group --- */
 
@@ -105,6 +214,26 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Revert for confirming revert (plural) label for field change action */
   'changes.action.revert-changes-confirm-change_other': `Angre endringer`,
+
+  /** Text shown when a diff component crashes during rendering, triggering the error boundary */
+  'changes.error-boundary.title': 'En feil oppsto under visning av endringer',
+
+  /** Additional text shown in development mode when a diff component crashes during rendering */
+  'changes.error-boundary.developer-info':
+    'Sjekk konsollen i utviklerverktøyet for mer informasjon',
+
+  /** Label for the "meta" (field path, action etc) information in the change inspector */
+  'changes.inspector.meta-label': 'Meta',
+
+  /** Label for the "from" value in the change inspector */
+  'changes.inspector.from-label': 'Fra',
+
+  /** Label for the "to" value in the change inspector */
+  'changes.inspector.to-label': 'Til',
+
+  /** Error message shown when the value of a field is not the expected one */
+  'changes.error.incorrect-type-message':
+    'Verdifeil: Vedien har typen «<code>{{actualType}}</code>», forventet «<code>{{expectedType}}</code>»',
 
   /** --- Document timeline, for navigating different revisions of a document --- */
 
@@ -170,38 +299,38 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** --- File (Image, File and ImageTool) Inputs --- */
 
   /** Open image edit dialog */
-  'inputs.files.image.actions-menu.edit-details.label': 'Åpne bilderedigeringsdialog',
+  'inputs.image.actions-menu.edit-details.label': 'Åpne bilderedigeringsdialog',
 
   /** Open image options menu */
-  'inputs.files.image.actions-menu.options.label': 'Åpne bildeinnstillingsmeny',
+  'inputs.image.actions-menu.options.label': 'Åpne bildeinnstillingsmeny',
 
   /** The upload could not be completed at this time. */
-  'inputs.files.image.upload-error.description':
+  'inputs.image.upload-error.description':
     'Opplastingen kunne ikke fullføres på dette tidspunktet.',
 
   /** Upload failed */
-  'inputs.files.image.upload-error.title': 'Opplasting mislyktes',
+  'inputs.image.upload-error.title': 'Opplasting mislyktes',
 
   /** Edit hotspot and crop */
-  'inputs.files.image.hotspot-dialog.title': 'Rediger fokuspunkt og beskjær',
+  'inputs.image.hotspot-dialog.title': 'Rediger fokuspunkt og beskjær',
 
   /** Preview of uploaded image */
-  'inputs.files.image.preview-uploaded-image': 'Forhåndsvisning av opplastet bilde',
+  'inputs.image.preview-uploaded-image': 'Forhåndsvisning av opplastet bilde',
 
   /** Cannot upload this file here */
-  'inputs.files.image.drag-overlay.cannot-upload-here': 'Kan ikke laste opp denne filen her',
+  'inputs.image.drag-overlay.cannot-upload-here': 'Kan ikke laste opp denne filen her',
 
   /** This field is read only */
-  'inputs.files.image.drag-overlay.this-field-is-read-only': 'Dette feltet er skrivebeskyttet',
+  'inputs.image.drag-overlay.this-field-is-read-only': 'Dette feltet er skrivebeskyttet',
 
   /** Drop image to upload */
-  'inputs.files.image.drag-overlay.drop-to-upload-image': 'Slipp bilde for å laste opp',
+  'inputs.image.drag-overlay.drop-to-upload-image': 'Slipp bilde for å laste opp',
 
   /** Invalid image value */
-  'inputs.files.image.invalid-image-warning.title': 'Ugyldig bildeverdi',
+  'inputs.image.invalid-image-warning.title': 'Ugyldig bildeverdi',
 
   /** The value of this field is not a valid image. Resetting this field will let you choose a new image. */
-  'inputs.files.image.invalid-image-warning.description':
+  'inputs.image.invalid-image-warning.description':
     'Verdien i dette feltet er ikke et gyldig bilde. Ved å tilbakestille dette feltet kan du velge et nytt bilde.',
 
   /** The URL is copied to the clipboard */
@@ -270,10 +399,10 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.files.common.stale-upload-warning.clear': 'Fjern opplasting',
 
   /** Hotspot & Crop */
-  'inputs.files.imagetool.field.title': 'Fokuspunkt & beskjæring',
+  'inputs.imagetool.title': 'Fokuspunkt & beskjæring',
 
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
-  'inputs.files.imagetool.field.description':
+  'inputs.imagetool.description':
     'Juster rektangelet for å beskjære bildet. Juster sirkelen for å spesifisere området som alltid skal være synlig.',
 
   /** --- Reference (and Cross-Dataset Reference) Input --- */
@@ -436,6 +565,42 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Error label for toast when array could not resolve the initial value */
   'inputs.array.error.cannot-resolve-initial-value-title':
     'Kan ikke finne startverdi for type: {{schemaTypeTitle}}: {{errorMessage}}.',
+
+  /** --- Forms / form fields --- */
+
+  /** Fallback title shown above field if it has no defined title */
+  'form.field.untitled-field-label': 'Uten navn',
+
+  /** Fallback title shown above fieldset if it has no defined title */
+  'form.field.untitled-fieldset-label': 'Uten navn',
+
+  /** Error text shown when form is unable to find an array item at a given keyed path */
+  'form.error.no-array-item-at-key':
+    'Ingen element med `_key` <code>"{{key}}"</code> funnet i stien <code>{{path}}</code>',
+
+  /** Error text shown when form is unable to find an array item at a given indexed path */
+  'form.error.no-array-item-at-index':
+    'Ingen element med posisjon <code>{{index}}</code> funnet i stien <code>{{path}}</code>',
+
+  /** Error text shown when a field with a given name cannot be found in the schema or is conditionally hidden but explicitly told to render  */
+  'form.error.field-not-found': `Feltet "{{fieldName}}" ble ikke funnet som mulighet – sjekk at det er definert i skjemaet, og at det ikke er skjult.`,
+
+  /** Accessibility label for the icon that indicates the field has a validation error */
+  'form.validation.has-error-aria-label': 'Har feil',
+
+  /** Accessibility label for the icon that indicates the field has a validation warning */
+  'form.validation.has-warning-aria-label': 'Har advarsel',
+
+  /** Accessibility label for the icon that indicates the field has validation information */
+  'form.validation.has-info-aria-label': 'Har informasjon',
+
+  /** Text shown when summarizing validation information, when the field has one or more errors */
+  'form.validation.summary.errors-count_one': '{{count}} feil',
+  'form.validation.summary.errors-count_other': '{{count}} feil',
+
+  /** Text shown when summarizing validation information, when the field has one or more warnings */
+  'form.validation.summary.warnings-count_one': '{{count}} advarsel',
+  'form.validation.summary.warnings-count_other': '{{count}} advarsler',
 
   /** --- Workspace menu --- */
 

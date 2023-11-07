@@ -1,5 +1,5 @@
 import {useContext} from 'react'
-import {LocaleContext, LocaleContextValue} from '../LocaleContext'
+import {LocaleContext, type LocaleContextValue} from '../LocaleContext'
 
 /**
  * @internal

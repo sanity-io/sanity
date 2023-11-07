@@ -1,19 +1,4 @@
-import {ChangeNode, Diff, FieldChangeNode, GroupChangeNode, ItemDiff} from '../types'
-
-/** @internal */
-export function getChangeVerb(diff: Diff): 'Added' | 'Removed' | 'Changed' {
-  const hadPrevValue = hasValue(diff.fromValue)
-  const hasNextValue = hasValue(diff.toValue)
-  if (!hadPrevValue && hasNextValue) {
-    return 'Added'
-  }
-
-  if (!hasNextValue && hadPrevValue) {
-    return 'Removed'
-  }
-
-  return 'Changed'
-}
+import type {ChangeNode, Diff, FieldChangeNode, GroupChangeNode, ItemDiff} from '../types'
 
 /** @internal */
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -46,9 +31,4 @@ export function isRemovedItemDiff(
 /** @internal */
 export function isUnchangedDiff(diff: Diff): diff is Diff & {action: 'unchanged'} {
   return diff.action === 'unchanged'
-}
-
-/** @internal */
-function hasValue(value: unknown) {
-  return value !== null && typeof value !== 'undefined' && value !== ''
 }
