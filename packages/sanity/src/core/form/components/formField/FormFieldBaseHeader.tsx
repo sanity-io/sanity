@@ -1,11 +1,22 @@
 import React, {useEffect, useMemo, useState} from 'react'
-import styled, {css} from 'styled-components'
+import styled, {css, keyframes} from 'styled-components'
 import {Box, Card, Flex, Theme} from '@sanity/ui'
 import {FieldPresence, FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field'
 import {FieldCommentsProps} from '../../types'
+
+const fadeInKeyFrame = keyframes`
+  from {
+    opacity: 0;
+    pointer-events: none;
+  }
+  to {
+    opacity: 1;
+    pointer-events: auto;
+  }
+`
 
 const Root = styled(Flex)`
   /* Prevent buttons from taking up extra vertical space */
@@ -46,6 +57,9 @@ const SlotBox = styled(Box)<{
   `
 })
 
+const FADE_IN_DURATION_MS = 200
+const FADE_IN_DELAY_MS = 300
+
 const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
   const {space} = theme.sanity
   return css`
@@ -55,8 +69,57 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
     padding: ${space[1] / 2}px;
     position: absolute;
     right: 0;
+
+    // Hide/show the floating card only if hover is supported (ie not on touch devices)
+    @media (hover: hover) {
+      opacity: 0;
+      pointer-events: none;
+
+      &[data-actions-visible='false']:not(:focus-within) {
+        // Remove the shadow when the field actions are not visible
+        box-shadow: none;
+        // The field actions will always be present in the DOM – which leads to that the
+        // width of the floating card will be affected by the width of the field actions
+        // even if the field actions are not visible. To avoid this, we set the background of
+        // the floating card to transparent when the field actions are not visible to.
+        background: transparent;
+      }
+
+      &[data-visible='true'] {
+        &[data-delayed='true'] {
+          animation: ${fadeInKeyFrame} ${FADE_IN_DURATION_MS}ms ${FADE_IN_DELAY_MS}ms forwards;
+        }
+
+        &[data-delayed='false'] {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+
+      &:focus-within {
+        opacity: 1;
+
+        [data-ui='FieldActionsFlex'] {
+          opacity: 1;
+        }
+      }
+    }
   `
 })
+
+const FieldActionsFlex = styled(Flex)`
+  // Inherit the gap from the parent (FieldActionsFloatingCard)
+  gap: inherit;
+
+  // Hide/show the floating card only if hover is supported (ie not on touch devices)
+  @media (hover: hover) {
+    opacity: 0;
+
+    &[data-visible='true'] {
+      opacity: 1;
+    }
+  }
+`
 
 const MAX_AVATARS = 4
 
@@ -103,16 +166,10 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   const hasActions = actions && actions.length > 0
   const showFieldActions = fieldFocused || fieldHovered || menuOpen || isAddingComment
 
-  // Determine the shadow level for the card
-  const shadow = (showFieldActions && hasActions) || !hasComments ? 3 : undefined
-
   // Determine if there's a comment button or actions to show.
   // We check for `comments.button` since that's the visual element that should be
   // used for comments. If no button is provided, we don't have anything to show for comments.
   const hasCommentsButtonOrActions = comments?.button || hasActions
-
-  // Determine if floating card with actions should be shown
-  const shouldShowFloatingCard = showFieldActions || hasComments
 
   // Calculate floating card's width
   useEffect(() => {
@@ -159,16 +216,25 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
       {slotEl}
 
-      {shouldShowFloatingCard && hasCommentsButtonOrActions && (
+      {(hasCommentsButtonOrActions || hasComments) && (
         <FieldActionsFloatingCard
+          data-actions-visible={showFieldActions ? 'true' : 'false'}
+          data-delayed={fieldFocused || isAddingComment || menuOpen ? 'false' : 'true'}
+          data-visible={showFieldActions || hasComments ? 'true' : 'false'}
           display="flex"
           radius={2}
           ref={setFloatingCardElement}
-          shadow={shadow}
+          shadow={2}
           sizing="border"
         >
-          {showFieldActions && hasActions && (
-            <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
+          {hasActions && (
+            <FieldActionsFlex
+              align="center"
+              data-ui="FieldActionsFlex"
+              data-visible={showFieldActions ? 'true' : 'false'}
+            >
+              <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
+            </FieldActionsFlex>
           )}
 
           {commentButton}
