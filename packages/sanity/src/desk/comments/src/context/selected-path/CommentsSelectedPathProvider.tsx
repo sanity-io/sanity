@@ -2,10 +2,12 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {CommentsSelectedPathContext} from './CommentsSelectedPathContext'
 import {CommentsSelectedPath, CommentsSelectedPathContextValue} from './types'
 
-interface CommentsSelectedPathProviderProps {
+/** @internal */
+export interface CommentsSelectedPathProviderProps {
   children: React.ReactNode
 }
 
+/** @internal */
 export const CommentsSelectedPathProvider = React.memo(function CommentsSelectedPathProvider(
   props: CommentsSelectedPathProviderProps,
 ) {
