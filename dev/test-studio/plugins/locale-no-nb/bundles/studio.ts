@@ -566,6 +566,42 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.array.error.cannot-resolve-initial-value-title':
     'Kan ikke finne startverdi for type: {{schemaTypeTitle}}: {{errorMessage}}.',
 
+  /** --- Forms / form fields --- */
+
+  /** Fallback title shown above field if it has no defined title */
+  'form.field.untitled-field-label': 'Uten navn',
+
+  /** Fallback title shown above fieldset if it has no defined title */
+  'form.field.untitled-fieldset-label': 'Uten navn',
+
+  /** Error text shown when form is unable to find an array item at a given keyed path */
+  'form.error.no-array-item-at-key':
+    'Ingen element med `_key` <code>"{{key}}"</code> funnet i stien <code>{{path}}</code>',
+
+  /** Error text shown when form is unable to find an array item at a given indexed path */
+  'form.error.no-array-item-at-index':
+    'Ingen element med posisjon <code>{{index}}</code> funnet i stien <code>{{path}}</code>',
+
+  /** Error text shown when a field with a given name cannot be found in the schema or is conditionally hidden but explicitly told to render  */
+  'form.error.field-not-found': `Feltet "{{fieldName}}" ble ikke funnet som mulighet – sjekk at det er definert i skjemaet, og at det ikke er skjult.`,
+
+  /** Accessibility label for the icon that indicates the field has a validation error */
+  'form.validation.has-error-aria-label': 'Har feil',
+
+  /** Accessibility label for the icon that indicates the field has a validation warning */
+  'form.validation.has-warning-aria-label': 'Har advarsel',
+
+  /** Accessibility label for the icon that indicates the field has validation information */
+  'form.validation.has-info-aria-label': 'Har informasjon',
+
+  /** Text shown when summarizing validation information, when the field has one or more errors */
+  'form.validation.summary.errors-count_one': '{{count}} feil',
+  'form.validation.summary.errors-count_other': '{{count}} feil',
+
+  /** Text shown when summarizing validation information, when the field has one or more warnings */
+  'form.validation.summary.warnings-count_one': '{{count}} advarsel',
+  'form.validation.summary.warnings-count_other': '{{count}} advarsler',
+
   /** --- Workspace menu --- */
 
   /** Title for Workplaces dropdown menu */
