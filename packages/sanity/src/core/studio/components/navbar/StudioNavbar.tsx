@@ -1,4 +1,4 @@
-import {MenuIcon, SearchIcon} from '@sanity/icons'
+import {MenuIcon} from '@sanity/icons'
 import {
   BoundaryElementProvider,
   Box,
@@ -20,8 +20,9 @@ import {Button} from '../../../../ui'
 import {useColorScheme} from '../../colorScheme'
 import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
-import {useLogoComponent, useToolMenuComponent} from '../../studio-components-hooks'
+import {useToolMenuComponent} from '../../studio-components-hooks'
 import {StudioTheme} from '../../../theme'
+import {useActiveWorkspace} from '../../activeWorkspaceMatcher'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
@@ -29,11 +30,14 @@ import {NavDrawer} from './NavDrawer'
 import {WorkspaceMenuButton} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {LogoButton} from './LogoButton'
-import {SearchDialog, SearchField} from './search'
+import {SearchButton, SearchDialog} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {SanityLogo} from './SanityLogo'
+import {SearchPopover} from './search/components/SearchPopover'
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
+
+const LOGO_MARK_SIZE = 33 // width and height, px
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -47,6 +51,14 @@ const RootLayer = styled(Layer)`
 
 const RootCard = styled(Card)`
   line-height: 0;
+`
+
+const LogoMarkContainer = styled(Card).attrs({
+  overflow: 'hidden',
+  radius: 2,
+})`
+  height: ${LOGO_MARK_SIZE}px;
+  width: ${LOGO_MARK_SIZE}px;
 `
 
 /**
@@ -64,10 +76,14 @@ export function StudioNavbar() {
 
   const newDocumentOptions = useNewDocumentOptions()
 
-  const {onSearchFullscreenOpenChange, searchFullscreenOpen, searchFullscreenPortalEl} =
-    useContext(NavbarContext)
+  const {
+    onSearchFullscreenOpenChange,
+    onSearchOpenChange,
+    searchFullscreenOpen,
+    searchFullscreenPortalEl,
+    searchOpen,
+  } = useContext(NavbarContext)
 
-  const Logo = useLogoComponent()
   const ToolMenu = useToolMenuComponent()
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
@@ -88,14 +104,16 @@ export function StudioNavbar() {
   const [drawerButtonEl, setDrawerButtonEl] = useState<HTMLButtonElement | null>(null)
   const [searchOpenButtonEl, setSearchOpenButtonEl] = useState<HTMLButtonElement | null>(null)
 
+  const {activeWorkspace} = useActiveWorkspace()
+
   const shouldRender = useMemo(
     () => ({
-      brandingCenter: mediaIndex <= 1,
       resources: mediaIndex > 1,
       collapsedPresenceMenu: mediaIndex <= 1,
       loginStatus: mediaIndex > 1,
       searchFullscreen: mediaIndex <= 1,
       configIssues: mediaIndex > 1 && isDev,
+      newDocumentFullscreen: mediaIndex <= 1,
       workspaces: mediaIndex >= 3 && workspaces.length > 1,
       tools: mediaIndex >= 3,
     }),
@@ -115,9 +133,17 @@ export function StudioNavbar() {
     }
   }, [onSearchFullscreenOpenChange, shouldRender.searchFullscreen])
 
+  const handleOpenSearch = useCallback(() => {
+    onSearchOpenChange(true)
+  }, [onSearchOpenChange])
+
   const handleOpenSearchFullscreen = useCallback(() => {
     onSearchFullscreenOpenChange(true)
   }, [onSearchFullscreenOpenChange])
+
+  const handleCloseSearch = useCallback(() => {
+    onSearchOpenChange(false)
+  }, [onSearchOpenChange])
 
   const handleCloseSearchFullscreen = useCallback(() => {
     onSearchFullscreenOpenChange(false)
@@ -136,79 +162,69 @@ export function StudioNavbar() {
   return (
     <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
       <RootCard
+        borderBottom
         data-testid="navbar"
         data-ui="Navbar"
         padding={2}
-        border
         shadow={theme.__legacy || scheme === 'dark' ? 1 : undefined}
         sizing="border"
       >
+        {/** Left flex */}
         <Flex align="center" justify="space-between">
-          {/** Left flex */}
           <Flex align="center" gap={2}>
-            {!shouldRender.tools && (
-              <Box marginRight={1}>
+            <Flex align="center" gap={1}>
+              {/* Menu button */}
+              {!shouldRender.tools && (
                 <Button
                   mode="bleed"
                   icon={MenuIcon}
                   onClick={handleOpenDrawer}
                   ref={setDrawerButtonEl}
                 />
-              </Box>
-            )}
+              )}
 
-            {!shouldRender.brandingCenter && (
-              <Box marginRight={1}>
-                <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
-                  <Flex align="center" gap={2}>
-                    <SanityLogo />
-                    <Text weight="medium" muted>
-                      Sanity Studio
+              {/* Logo mark */}
+              <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
+                <Flex align="center">
+                  <LogoMarkContainer>
+                    <Flex align="center" height="fill" justify="center">
+                      <SanityLogo />
+                    </Flex>
+                  </LogoMarkContainer>
+                  <Box paddingX={2}>
+                    <Text size={1} weight="medium">
+                      {activeWorkspace.title}
                     </Text>
-                  </Flex>
-                </LogoButton>
-              </Box>
-            )}
+                  </Box>
+                </Flex>
+              </LogoButton>
 
-            {shouldRender.workspaces && (
-              <Box marginRight={2}>
-                <WorkspaceMenuButton collapsed />
-              </Box>
-            )}
+              {/* Workspace menu button */}
+              {shouldRender.workspaces && <WorkspaceMenuButton collapsed />}
+            </Flex>
 
-            <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
-              <NewDocumentButton
-                {...newDocumentOptions}
-                modal={shouldRender.brandingCenter ? 'dialog' : 'popover'}
-              />
-            </Box>
+            {/* New document button */}
+            <NewDocumentButton
+              {...newDocumentOptions}
+              modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
+            />
           </Flex>
 
           {/** Center flex */}
           <Flex align="center">
             {shouldRender.tools && (
-              <Card flex={1} marginX={2} overflow="visible">
-                <ToolMenu
-                  activeToolName={activeToolName}
-                  closeSidebar={handleCloseDrawer}
-                  context="topbar"
-                  isSidebarOpen={false}
-                  tools={tools}
-                />
-              </Card>
+              <ToolMenu
+                activeToolName={activeToolName}
+                closeSidebar={handleCloseDrawer}
+                context="topbar"
+                isSidebarOpen={false}
+                tools={tools}
+              />
             )}
           </Flex>
 
           {/** Right flex */}
-          <Flex align="center" gap={3}>
-            {shouldRender.brandingCenter && (
-              <Box marginX={1}>
-                <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
-                  <Logo title={title} />
-                </LogoButton>
-              </Box>
-            )}
-
+          <Flex align="center" gap={3} style={{flexShrink: 0}}>
             {/* Search */}
             <LayerProvider>
               <SearchProvider fullscreen={shouldRender.searchFullscreen}>
@@ -222,24 +238,27 @@ export function StudioNavbar() {
                       />
                     )}
                   </PortalProvider>
-                  {!shouldRender.searchFullscreen && <SearchField />}
+                  <SearchPopover
+                    onClose={handleCloseSearch}
+                    onOpen={handleOpenSearch}
+                    open={searchOpen}
+                  />
                 </BoundaryElementProvider>
               </SearchProvider>
             </LayerProvider>
 
+            {/* Search button (desktop) */}
+            {!shouldRender.searchFullscreen && (
+              <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+            )}
+
             {shouldRender.configIssues && <ConfigIssuesButton />}
             {shouldRender.resources && <ResourcesButton />}
-
             <PresenceMenu />
             {shouldRender.tools && <UserMenu />}
+            {/* Search button (mobile) */}
             {shouldRender.searchFullscreen && (
-              <Button
-                aria-label="Open search"
-                icon={SearchIcon}
-                mode="bleed"
-                onClick={handleOpenSearchFullscreen}
-                ref={setSearchOpenButtonEl}
-              />
+              <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
             )}
           </Flex>
         </Flex>
