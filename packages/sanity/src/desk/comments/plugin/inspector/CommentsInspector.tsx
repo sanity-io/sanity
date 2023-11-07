@@ -252,6 +252,12 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     }
   }, [selectedPath, setSelectedPath])
 
+  const handleRootClick = useCallback(() => {
+    if (selectedPath) {
+      setSelectedPath(null)
+    }
+  }, [selectedPath, setSelectedPath])
+
   useClickOutside(onClickOutsideRoot, [rootRef.current])
 
   useEffect(() => {
@@ -284,7 +290,13 @@ export function CommentsInspector(props: DocumentInspectorProps) {
         />
       )}
 
-      <Flex direction="column" overflow="hidden" height="fill" ref={rootRef}>
+      <Flex
+        direction="column"
+        overflow="hidden"
+        height="fill"
+        ref={rootRef}
+        onClick={handleRootClick}
+      >
         <CommentsOnboardingPopover
           onDismiss={setDismissed}
           open={!isDismissed}

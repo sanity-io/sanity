@@ -56,8 +56,6 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     readOnly,
   } = props
 
-  const [threadCardElement, setThreadCardElement] = React.useState<HTMLDivElement | null>(null)
-
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
       const nextComment: CommentCreatePayload = {
@@ -74,23 +72,33 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     [onNewThreadCreate, fieldPath],
   )
 
-  const handleBreadcrumbsClick = useCallback(() => {
-    onPathSelect?.({
-      fieldPath,
-      target: null,
-      selectedFrom: 'breadcrumbs',
-      threadId: null,
-    })
-  }, [fieldPath, onPathSelect])
+  const handleBreadcrumbsClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
 
-  const handleNewThreadClick = useCallback(() => {
-    onPathSelect?.({
-      fieldPath,
-      target: 'new-thread-item',
-      selectedFrom: 'new-thread-item',
-      threadId: null,
-    })
-  }, [fieldPath, onPathSelect])
+      onPathSelect?.({
+        fieldPath,
+        target: null,
+        selectedFrom: 'breadcrumbs',
+        threadId: null,
+      })
+    },
+    [fieldPath, onPathSelect],
+  )
+
+  const handleNewThreadClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation()
+
+      onPathSelect?.({
+        fieldPath,
+        target: 'new-thread-item',
+        selectedFrom: 'new-thread-item',
+        threadId: null,
+      })
+    },
+    [fieldPath, onPathSelect],
+  )
 
   const crumbsTitlePath = useMemo(() => breadcrumbs?.map((p) => p.title) || [], [breadcrumbs])
   const lastCrumb = crumbsTitlePath[crumbsTitlePath.length - 1]
@@ -113,11 +121,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       </HeaderFlex>
 
       {canCreateNewThread && (
-        <ThreadCard
-          onClick={handleNewThreadClick}
-          ref={setThreadCardElement}
-          tone={isSelected ? 'primary' : undefined}
-        >
+        <ThreadCard onClick={handleNewThreadClick} tone={isSelected ? 'primary' : undefined}>
           <CreateNewThreadInput
             currentUser={currentUser}
             fieldName={lastCrumb}

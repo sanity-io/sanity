@@ -168,14 +168,19 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     replyInputRef.current?.focus()
   }, [])
 
-  const handleThreadRootClick = useCallback(() => {
-    onPathSelect?.({
-      fieldPath: parentComment.target.path.field,
-      target: 'comment-item',
-      selectedFrom: 'comment-item',
-      threadId: parentComment.threadId,
-    })
-  }, [onPathSelect, parentComment.target.path.field, parentComment.threadId])
+  const handleThreadRootClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation()
+
+      onPathSelect?.({
+        fieldPath: parentComment.target.path.field,
+        target: 'comment-item',
+        selectedFrom: 'comment-item',
+        threadId: parentComment.threadId,
+      })
+    },
+    [onPathSelect, parentComment.target.path.field, parentComment.threadId],
+  )
 
   const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
