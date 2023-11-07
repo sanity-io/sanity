@@ -196,7 +196,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
               <FocusLock
                 as={Stack}
                 disabled={!focusLock || showDiscardDialog}
-                // returnFocus // This causes issues with focusing the dialog
+                returnFocus={focusLock}
               >
                 <CommentInputInner
                   currentUser={currentUser}
