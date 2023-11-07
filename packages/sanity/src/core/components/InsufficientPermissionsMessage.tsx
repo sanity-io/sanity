@@ -33,22 +33,18 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
       </Inline>
       <Inline marginTop={4}>
         <Text size={1}>
-          {roles.length === 0 ? (
-            t('insufficient-permissions-message.no-roles', {operationLabel})
-          ) : (
-            <Translate
-              i18nKey="insufficient-permissions-message.has-roles"
-              t={t}
-              components={{
-                Roles: () =>
-                  join(
-                    roles.map((r) => <code key={r.name}>{r.title}</code>),
-                    <>, </>,
-                  ),
-              }}
-              values={{operationLabel, count: roles.length}}
-            />
-          )}
+          <Translate
+            i18nKey="insufficient-permissions-message.roles"
+            t={t}
+            components={{
+              Roles: () =>
+                join(
+                  roles.map((r) => <code key={r.name}>{r.title}</code>),
+                  <>, </>,
+                ),
+            }}
+            values={{operationLabel, count: roles.length}}
+          />
         </Text>
       </Inline>
     </Box>

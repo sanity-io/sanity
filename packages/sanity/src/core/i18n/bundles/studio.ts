@@ -1590,15 +1590,15 @@ export const studioLocaleStrings = {
   'insufficient-permissions-message.title': 'Insufficient permissions',
 
   /** The insufficient permissions messages when the user has no roles */
-  'insufficient-permissions-message.no-roles':
+  'insufficient-permissions-message.roles_zero':
     'You have no role that grants you permission to {{operationLabel}}',
 
   /** The insufficient permissions messages when the user has one role */
-  'insufficient-permissions-message.has-roles_one':
+  'insufficient-permissions-message.roles_one':
     'Your role <Roles/> does not have permission to {{operationLabel}}',
 
   /** The insufficient permissions messages when the user has more than one role */
-  'insufficient-permissions-message.has-roles_other':
+  'insufficient-permissions-message.roles_other':
     'Your roles <Roles/> do not have permission to {{operationLabel}}',
 
   /** The default `{{operationLabel}}`. Refer to `insufficient-permissions-message.has-roles`. */
