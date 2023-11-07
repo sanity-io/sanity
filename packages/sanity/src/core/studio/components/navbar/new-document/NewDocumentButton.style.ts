@@ -1,4 +1,4 @@
-import {Box, Popover, Flex, Card} from '@sanity/ui'
+import {Popover, Flex, Card} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {Dialog} from '../../../../../ui'
 

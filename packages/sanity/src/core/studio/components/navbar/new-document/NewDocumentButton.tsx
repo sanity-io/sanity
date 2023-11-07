@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {Text, useClickOutside, Stack, TextInput, TextInputProps, Card, Flex} from '@sanity/ui'
-import {AddIcon, ChevronDownIcon, ComposeIcon, SearchIcon} from '@sanity/icons'
+import {AddIcon, ChevronDownIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
@@ -229,7 +229,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
         >
           <PopoverHeaderCard sizing="border">
             <Stack>
-              <Card borderTop borderBottom padding={1}>
+              <Card borderBottom padding={1}>
                 <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
               </Card>
             </Stack>
