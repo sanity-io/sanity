@@ -161,14 +161,7 @@ export function StudioNavbar() {
 
   return (
     <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
-      <RootCard
-        borderBottom
-        data-testid="navbar"
-        data-ui="Navbar"
-        padding={2}
-        shadow={theme.__legacy || scheme === 'dark' ? 1 : undefined}
-        sizing="border"
-      >
+      <RootCard borderBottom data-testid="navbar" data-ui="Navbar" padding={2} sizing="border">
         {/** Left flex */}
         <Flex align="center" justify="space-between">
           <Flex align="center" gap={2}>
