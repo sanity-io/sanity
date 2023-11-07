@@ -29,13 +29,8 @@ const CardIconWrapper = styled.span`
 
 // These are here because using vanilla UI components caused a type issue inside of styled-components
 const CustomFlex = styled(Flex)``
-const CustomText = styled(Text)``
-const CustomCard = styled(Card)<RowProps>`
-  &:hover-within ${CustomText} {
-    --card-muted-fg-color: var(--card-muted-fg-color);
-    --card-fg-color: var(--card-fg-color);
-  }
 
+const CustomCard = styled(Card)<RowProps>`
   ${(props) =>
     props.isSelected &&
     css`
