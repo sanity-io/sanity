@@ -116,13 +116,13 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
 
   useClickOutside(startDiscard, [popoverElement])
 
-  const placeholder = (
-    <>
-      Add comment to <b>{fieldTitle}</b>
-    </>
-  )
-
   if (!hasComments) {
+    const placeholder = (
+      <>
+        Add comment to <b>{fieldTitle}</b>
+      </>
+    )
+
     const content = (
       <ContentStack padding={2} space={4}>
         <CommentInput

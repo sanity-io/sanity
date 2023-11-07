@@ -5,11 +5,16 @@ import {PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import scrollIntoViewIfNeeded, {Options} from 'scroll-into-view-if-needed'
-import {useInView, motion, AnimatePresence, Variants} from 'framer-motion'
+import {motion, AnimatePresence, Variants} from 'framer-motion'
 import {hues} from '@sanity/color'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
-import {useCommentsEnabled, useComments, CommentCreatePayload} from '../../src'
+import {
+  useCommentsEnabled,
+  useComments,
+  CommentCreatePayload,
+  useCommentsSelectedPath,
+} from '../../src'
 import {CommentFieldButton} from './CommentFieldButton'
 import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
 
@@ -80,23 +85,12 @@ function CommentFieldInner(props: FieldProps) {
 
   const {openInspector, inspector} = useDocumentPane()
   const currentUser = useCurrentUser()
-  const {
-    comments,
-    create,
-    isRunningSetup,
-    mentionOptions,
-    selectedPath,
-    setSelectedPath,
-    setStatus,
-    status,
-  } = useComments()
 
-  const inView = useInView(rootElementRef)
+  const {comments, create, isRunningSetup, mentionOptions, setStatus, status} = useComments()
+  const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
   const currentComments = useMemo(() => comments.data[status], [comments.data, status])
-
-  const [shouldHighlight, setShouldHighlight] = useState<boolean>(false)
 
   const commentsInspectorOpen = useMemo(() => {
     return inspector?.name === COMMENTS_INSPECTOR_NAME
@@ -105,9 +99,9 @@ function CommentFieldInner(props: FieldProps) {
   // Determine if the current field is selected
   const isSelected = useMemo(() => {
     if (!commentsInspectorOpen) return false
-    if (selectedPath?.origin === 'field') return false
+    if (selectedPath?.origin === 'form') return false
     return selectedPath?.fieldPath === PathUtils.toString(props.path)
-  }, [commentsInspectorOpen, props.path, selectedPath?.fieldPath, selectedPath?.origin])
+  }, [commentsInspectorOpen, props.path, selectedPath])
 
   // Get the most recent thread ID for the current field. This is used to query the
   // DOM for the thread in order to be able to scroll to it.
@@ -173,8 +167,8 @@ function CommentFieldInner(props: FieldProps) {
       handleScrollToThread(currentThreadId)
       setSelectedPath({
         fieldPath: PathUtils.toString(props.path),
-        origin: 'field',
-        threadId: null,
+        origin: 'form',
+        threadId: currentThreadId,
       })
     }
   }, [
@@ -224,7 +218,7 @@ function CommentFieldInner(props: FieldProps) {
         // Set the path as selected so that the new comment is highlighted
         setSelectedPath({
           fieldPath: PathUtils.toString(props.path),
-          origin: 'field',
+          origin: 'form',
           threadId: newThreadId,
         })
 
@@ -267,19 +261,7 @@ function CommentFieldInner(props: FieldProps) {
     if (isSelected && rootElementRef.current) {
       scrollIntoViewIfNeeded(rootElementRef.current, scrollIntoViewIfNeededOpts)
     }
-  }, [boundaryElement, isSelected, props.path, scrollIntoViewIfNeededOpts, selectedPath])
-
-  useEffect(() => {
-    const showHighlight = inView && isSelected
-
-    setShouldHighlight(showHighlight)
-
-    const timer = setTimeout(() => {
-      setShouldHighlight(false)
-    }, 1200)
-
-    return () => clearTimeout(timer)
-  }, [currentComments, inView, isSelected, props.path, selectedPath])
+  }, [boundaryElement, isSelected, props.path, scrollIntoViewIfNeededOpts])
 
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({
@@ -319,8 +301,14 @@ function CommentFieldInner(props: FieldProps) {
 
   return (
     <FieldStack ref={rootElementRef}>
+      {props.renderDefault({
+        ...props,
+        // eslint-disable-next-line camelcase
+        __internal_comments: internalComments,
+      })}
+
       <AnimatePresence>
-        {shouldHighlight && (
+        {isSelected && (
           <HighlightDiv
             animate="animate"
             exit="exit"
@@ -329,12 +317,6 @@ function CommentFieldInner(props: FieldProps) {
           />
         )}
       </AnimatePresence>
-
-      {props.renderDefault({
-        ...props,
-        // eslint-disable-next-line camelcase
-        __internal_comments: internalComments,
-      })}
     </FieldStack>
   )
 }

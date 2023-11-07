@@ -1,9 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {Button, Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {CurrentUser, Path} from '@sanity/types'
+import {CurrentUser} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
-import * as PathUtils from '@sanity/util/paths'
 import {CommentInput, CommentInputHandle} from '../pte'
 import {
   CommentCreatePayload,
@@ -15,6 +14,7 @@ import {
 } from '../../types'
 import {SpacerAvatar} from '../avatars'
 import {hasCommentMessageValue} from '../../helpers'
+import {CommentsSelectedPath} from '../../context'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 
@@ -72,25 +72,26 @@ const GhostButton = styled(Button)`
 interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
+  isSelected: boolean
   mentionOptions: MentionOptionsHookValue
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentEditPayload) => void
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void
-  onPathSelect?: (path: Path) => void
+  onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   parentComment: CommentDocument
   readOnly?: boolean
   replies: CommentDocument[] | undefined
-  selected?: boolean
 }
 
 export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
   const {
     canReply,
     currentUser,
+    isSelected,
     mentionOptions,
     onCopyLink,
     onCreateRetry,
@@ -103,12 +104,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     parentComment,
     readOnly,
     replies = EMPTY_ARRAY,
-    selected,
   } = props
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const didExpand = useRef<boolean>(false)
-  const rootRef = useRef<HTMLDivElement | null>(null)
   const replyInputRef = useRef<CommentInputHandle>(null)
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
@@ -155,14 +154,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         event.stopPropagation()
         startDiscard()
       }
-      // TODO: this would be cool
-      // Edit last comment if current user is the owner and pressing arrowUp
-      // if (event.key === 'ArrowUp') {
-      //   const lastReply = replies.splice(-1)[0]
-      //   if (lastReply?.authorId === currentUser.id && !hasValue) {
-      //
-      //   }
-      // }
     },
     [startDiscard],
   )
@@ -177,10 +168,18 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     replyInputRef.current?.focus()
   }, [])
 
-  const handleThreadRootClick = useCallback(() => {
-    const path = PathUtils.fromString(parentComment.target.path.field)
-    onPathSelect?.(path)
-  }, [onPathSelect, parentComment.target.path.field])
+  const handleThreadRootClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation()
+
+      onPathSelect?.({
+        fieldPath: parentComment.target.path.field,
+        origin: 'inspector',
+        threadId: parentComment.threadId,
+      })
+    },
+    [onPathSelect, parentComment.target.path.field, parentComment.threadId],
+  )
 
   const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -245,11 +244,11 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   )
 
   return (
-    <Stack space={2} ref={rootRef}>
+    <Stack space={2}>
       <StyledThreadCard
-        data-active={selected ? 'true' : 'fase'}
+        data-active={isSelected ? 'true' : 'false'}
         onClick={handleThreadRootClick}
-        tone={selected ? 'primary' : undefined}
+        tone={isSelected ? 'primary' : undefined}
       >
         <GhostButton data-ui="GhostButton" aria-label="Go to field" />
 
@@ -297,6 +296,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
           )}
 
           {renderedReplies}
+
           {canReply && (
             <CommentInput
               currentUser={currentUser}

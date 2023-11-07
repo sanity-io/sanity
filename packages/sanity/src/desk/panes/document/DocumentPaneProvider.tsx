@@ -8,6 +8,7 @@ import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
+import {CommentsProvider, CommentsSelectedPathProvider} from '../../comments'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
@@ -51,7 +52,6 @@ import {
   useUnique,
   useValidationStatus,
 } from 'sanity'
-import {CommentsProvider} from '../../comments'
 
 /**
  * @internal
@@ -685,7 +685,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
       <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
         <CommentsProvider documentId={documentId} documentType={documentType}>
-          {children}
+          <CommentsSelectedPathProvider>{children}</CommentsSelectedPathProvider>
         </CommentsProvider>
       </FieldActionsProvider>
     </DocumentPaneContext.Provider>

@@ -1,6 +1,5 @@
-import {Flex, useToast} from '@sanity/ui'
+import {Flex, useClickOutside, useToast} from '@sanity/ui'
 import React, {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {usePaneRouter} from '../../../components'
 import {EMPTY_PARAMS} from '../../../constants'
@@ -15,6 +14,8 @@ import {
   CommentsList,
   CommentsOnboardingPopover,
   useCommentsOnboarding,
+  CommentsSelectedPath,
+  useCommentsSelectedPath,
 } from '../../src'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {DocumentInspectorProps, useCurrentUser, useUnique} from 'sanity'
@@ -33,10 +34,14 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const [deleteError, setDeleteError] = useState<Error | null>(null)
   const commentsListHandleRef = useRef<CommentsListHandle>(null)
 
+  const rootRef = useRef<HTMLDivElement | null>(null)
+
   const currentUser = useCurrentUser()
   const {params, createPathWithParams, setParams} = usePaneRouter()
   const uniqueParams = useUnique(params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
   const commentIdParamRef = useRef<string | undefined>(uniqueParams?.comment)
+
+  const didScrollToCommentFromParam = useRef<boolean>(false)
 
   const pushToast = useToast().push
   const {onPathOpen, ready} = useDocumentPane()
@@ -52,8 +57,6 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     isRunningSetup,
     mentionOptions,
     remove,
-    selectedPath,
-    setSelectedPath,
     setStatus,
     status,
     update,
@@ -68,6 +71,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     // that the document is ready before we allow the user to interact with the comments.
     return comments.loading || !ready
   }, [comments.loading, ready])
+
+  const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 
   const handleChangeView = useCallback(
     (nextView: CommentStatus) => {
@@ -135,13 +140,13 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   }, [deleteLoading])
 
   const handlePathSelect = useCallback(
-    (path: Path, threadId?: string) => {
-      onPathOpen(path)
-      setSelectedPath({
-        fieldPath: PathUtils.toString(path),
-        origin: 'inspector',
-        threadId: threadId || null,
-      })
+    (nextPath: CommentsSelectedPath) => {
+      setSelectedPath(nextPath)
+
+      if (nextPath?.fieldPath) {
+        const path = PathUtils.fromString(nextPath.fieldPath)
+        onPathOpen(path)
+      }
     },
     [onPathOpen, setSelectedPath],
   )
@@ -171,15 +176,6 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       edit.execute(id, payload)
     },
     [edit],
-  )
-
-  const handleStatusChange = useCallback(
-    (id: string, nextStatus: CommentStatus) => {
-      update.execute(id, {
-        status: nextStatus,
-      })
-    },
-    [update],
   )
 
   const onDeleteStart = useCallback(
@@ -213,36 +209,72 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   )
 
   const handleScrollToComment = useCallback(
-    (id: string, fieldPath: string) => {
-      if (fieldPath) {
-        requestAnimationFrame(() => {
-          setSelectedPath({
-            fieldPath,
-            origin: 'inspector',
-            threadId: null,
-          })
+    (id: string) => {
+      const comment = getComment(id)
 
+      if (comment) {
+        setSelectedPath({
+          fieldPath: comment.target.path.field || null,
+          origin: 'inspector',
+          threadId: comment.threadId || null,
+        })
+
+        setTimeout(() => {
           commentsListHandleRef.current?.scrollToComment(id)
-
-          setParams({
-            ...params,
-            comment: undefined,
-          })
-
-          commentIdParamRef.current = undefined
         })
       }
     },
-    [params, setParams, setSelectedPath],
+    [getComment, setSelectedPath],
   )
 
-  useEffect(() => {
-    const path = getCommentPath(commentIdParamRef.current || '')
+  const handleStatusChange = useCallback(
+    (id: string, nextStatus: CommentStatus) => {
+      update.execute(id, {
+        status: nextStatus,
+      })
 
-    if (path && !loading && commentIdParamRef.current) {
-      handleScrollToComment(commentIdParamRef.current, path)
+      // If the comment is being opened, we want to change to the "open" view
+      // and scroll to the comment
+      if (nextStatus === 'open') {
+        setStatus('open')
+        handleScrollToComment(id)
+      }
+    },
+    [handleScrollToComment, setStatus, update],
+  )
+
+  const onClickOutsideRoot = useCallback(() => {
+    // Clear the selected path when clicking outside the comments inspector
+    if (selectedPath) {
+      setSelectedPath(null)
     }
-  }, [getCommentPath, handleScrollToComment, loading])
+  }, [selectedPath, setSelectedPath])
+
+  const handleRootClick = useCallback(() => {
+    if (selectedPath) {
+      setSelectedPath(null)
+    }
+  }, [selectedPath, setSelectedPath])
+
+  useClickOutside(onClickOutsideRoot, [rootRef.current])
+
+  useEffect(() => {
+    // Make sure that the comment exists before we try to scroll to it.
+    // We can't solely rely on the comment id from the url since the comment might not be loaded yet.
+    const commentToScrollTo = getComment(commentIdParamRef.current || '')
+
+    if (!loading && commentToScrollTo && didScrollToCommentFromParam.current === false) {
+      handleScrollToComment(commentToScrollTo._id)
+
+      didScrollToCommentFromParam.current = true
+      commentIdParamRef.current = undefined
+
+      setParams({
+        ...params,
+        comment: undefined,
+      })
+    }
+  }, [getComment, getCommentPath, handleScrollToComment, loading, params, setParams])
 
   return (
     <Fragment>
@@ -256,7 +288,13 @@ export function CommentsInspector(props: DocumentInspectorProps) {
         />
       )}
 
-      <Flex direction="column" overflow="hidden" height="fill">
+      <Flex
+        direction="column"
+        overflow="hidden"
+        height="fill"
+        ref={rootRef}
+        onClick={handleRootClick}
+      >
         <CommentsOnboardingPopover
           onDismiss={setDismissed}
           open={!isDismissed}
