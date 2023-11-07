@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Flex, Stack, useClickOutside} from '@sanity/ui'
+import {Button, Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
@@ -108,12 +108,9 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const didExpand = useRef<boolean>(false)
-  const rootRef = useRef<HTMLDivElement | null>(null)
   const replyInputRef = useRef<CommentInputHandle>(null)
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
-
-  const [threadCardElement, setThreadCardElement] = useState<HTMLDivElement | null>(null)
 
   const handleReplySubmit = useCallback(() => {
     const nextComment: CommentCreatePayload = {
@@ -202,15 +199,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     }`
   }, [replies?.length])
 
-  const handleClickOutside = useCallback(() => {
-    // Only on `onPathSelect` on click outside if selected
-    if (isSelected) {
-      onPathSelect?.(null)
-    }
-  }, [onPathSelect, isSelected])
-
-  useClickOutside(handleClickOutside, [threadCardElement])
-
   useEffect(() => {
     if (replies.length > MAX_COLLAPSED_REPLIES && !didExpand.current) {
       setCollapsed(true)
@@ -252,11 +240,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   )
 
   return (
-    <Stack space={2} ref={rootRef}>
+    <Stack space={2}>
       <StyledThreadCard
         data-active={isSelected ? 'true' : 'false'}
         onClick={handleThreadRootClick}
-        ref={setThreadCardElement}
         tone={isSelected ? 'primary' : undefined}
       >
         <GhostButton data-ui="GhostButton" aria-label="Go to field" />

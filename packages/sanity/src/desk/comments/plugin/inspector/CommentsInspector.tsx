@@ -1,4 +1,4 @@
-import {Flex, useToast} from '@sanity/ui'
+import {Flex, useClickOutside, useToast} from '@sanity/ui'
 import React, {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import * as PathUtils from '@sanity/util/paths'
 import {usePaneRouter} from '../../../components'
@@ -33,6 +33,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
   const [deleteError, setDeleteError] = useState<Error | null>(null)
   const commentsListHandleRef = useRef<CommentsListHandle>(null)
+
+  const rootRef = useRef<HTMLDivElement | null>(null)
 
   const currentUser = useCurrentUser()
   const {params, createPathWithParams, setParams} = usePaneRouter()
@@ -243,6 +245,15 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     [handleScrollToComment, setStatus, update],
   )
 
+  const onClickOutsideRoot = useCallback(() => {
+    // Clear the selected path when clicking outside the comments inspector
+    if (selectedPath) {
+      setSelectedPath(null)
+    }
+  }, [selectedPath, setSelectedPath])
+
+  useClickOutside(onClickOutsideRoot, [rootRef.current])
+
   useEffect(() => {
     // Make sure that the comment exists before we try to scroll to it.
     // We can't solely rely on the comment id from the url since the comment might not be loaded yet.
@@ -273,7 +284,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
         />
       )}
 
-      <Flex direction="column" overflow="hidden" height="fill">
+      <Flex direction="column" overflow="hidden" height="fill" ref={rootRef}>
         <CommentsOnboardingPopover
           onDismiss={setDismissed}
           open={!isDismissed}

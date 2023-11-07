@@ -1,5 +1,5 @@
 import {CurrentUser} from '@sanity/types'
-import {Button, Flex, Stack, useClickOutside} from '@sanity/ui'
+import {Button, Flex, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {uuid} from '@sanity/uuid'
 import styled, {css} from 'styled-components'
@@ -83,12 +83,6 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     })
   }, [fieldPath, onPathSelect])
 
-  const handleClickOutsideThreadCard = useCallback(() => {
-    if (isSelected) {
-      onPathSelect?.(null)
-    }
-  }, [isSelected, onPathSelect])
-
   const handleNewThreadClick = useCallback(() => {
     onPathSelect?.({
       fieldPath,
@@ -97,8 +91,6 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       threadId: null,
     })
   }, [fieldPath, onPathSelect])
-
-  useClickOutside(handleClickOutsideThreadCard, [threadCardElement])
 
   const crumbsTitlePath = useMemo(() => breadcrumbs?.map((p) => p.title) || [], [breadcrumbs])
   const lastCrumb = crumbsTitlePath[crumbsTitlePath.length - 1]

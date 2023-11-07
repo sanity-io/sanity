@@ -237,23 +237,32 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     setIsEditing((v) => !v)
   }, [])
 
-  useDidUpdate(isEditing, () => {
-    setMenuOpen(false)
-  })
+  useDidUpdate(
+    isEditing,
+    useCallback(() => {
+      setMenuOpen(false)
+    }, []),
+  )
 
-  useGlobalKeyDown((event) => {
-    if (event.key === 'Escape' && !hasChanges) {
-      cancelEdit()
-    }
-  })
+  useGlobalKeyDown(
+    useCallback(
+      (event) => {
+        if (event.key === 'Escape' && !hasChanges) {
+          cancelEdit()
+        }
+      },
+      [cancelEdit, hasChanges],
+    ),
+  )
 
-  useClickOutside(() => {
-    if (!hasChanges) {
-      cancelEdit()
-    }
-  }, [rootElement])
-
-  const avatar = <CommentsAvatar user={user} />
+  useClickOutside(
+    useCallback(() => {
+      if (!hasChanges) {
+        cancelEdit()
+      }
+    }, [cancelEdit, hasChanges]),
+    [rootElement],
+  )
 
   const name = user?.displayName ? (
     <Text size={1} weight="semibold" textOverflow="ellipsis" title={user.displayName}>
@@ -267,7 +276,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     <RootStack data-menu-open={menuOpen ? 'true' : 'false'} ref={setRootElement} space={4}>
       <InnerStack space={1} data-muted={displayError}>
         <Flex align="center" gap={FLEX_GAP} flex={1}>
-          {avatar}
+          <CommentsAvatar user={user} />
 
           <Flex align="center" paddingBottom={1} sizing="border" flex={1}>
             <Flex align="flex-end" gap={2}>

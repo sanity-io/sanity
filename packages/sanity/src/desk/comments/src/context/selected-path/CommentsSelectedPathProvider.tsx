@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {CommentsSelectedPathContext} from './CommentsSelectedPathContext'
 import {CommentsSelectedPath, CommentsSelectedPathContextValue} from './types'
 
@@ -12,12 +12,16 @@ export const CommentsSelectedPathProvider = React.memo(function CommentsSelected
   const {children} = props
   const [selectedPath, setSelectedPath] = useState<CommentsSelectedPath>(null)
 
+  const handleSelectPath = useCallback((nextPath: CommentsSelectedPath) => {
+    setSelectedPath(nextPath)
+  }, [])
+
   const ctxValue = useMemo(
     (): CommentsSelectedPathContextValue => ({
       selectedPath,
-      setSelectedPath,
+      setSelectedPath: handleSelectPath,
     }),
-    [selectedPath],
+    [selectedPath, handleSelectPath],
   )
 
   return (
