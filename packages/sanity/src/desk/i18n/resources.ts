@@ -280,14 +280,14 @@ const deskLocaleStrings = {
   /** The text when a generic operation failed  */
   'panes.document-operation-results.operation-error': 'An error occurred during {{context}}',
 
-  /** The text when a publish operation succeded  */
+  /** The text when a publish operation succeeded  */
   'panes.document-operation-results.operation-success_publish': 'The document was published',
 
-  /** The text when an unpublish operation succeded  */
+  /** The text when an unpublish operation succeeded  */
   'panes.document-operation-results.operation-success_unpublish':
     'The document was unpublished. A draft has been created from the latest published version.',
 
-  /** The text when a discard changes operation succeded  */
+  /** The text when a discard changes operation succeeded  */
   'panes.document-operation-results.operation-success_discardChanges':
     'All changes since last publish has now been discarded. The discarded draft can still be recovered from history',
 
