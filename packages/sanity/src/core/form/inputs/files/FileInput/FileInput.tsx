@@ -2,7 +2,7 @@
 
 import React, {ReactNode} from 'react'
 import {Observable, Subscription} from 'rxjs'
-import {get} from 'lodash'
+import {get, startCase} from 'lodash'
 import {
   AssetFromSource,
   AssetSource,
@@ -409,7 +409,10 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
         return (
           <MenuItem
             key={assetSource.name}
-            text={assetSource.title}
+            text={
+              (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
+              startCase(assetSource.name)
+            }
             onClick={() => {
               this.setState({isMenuOpen: false})
               this.handleSelectFileFromAssetSource(assetSource)

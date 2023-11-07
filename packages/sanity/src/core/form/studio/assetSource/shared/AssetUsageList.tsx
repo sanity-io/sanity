@@ -3,6 +3,7 @@ import {Card, Flex, Text} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {useSchema} from '../../../../hooks'
 import {Preview} from '../../../../preview/components/Preview'
+import {Translate, useTranslation} from '../../../../i18n'
 import {IntentLink} from 'sanity/router'
 
 export const AssetUsageList = ({
@@ -14,18 +15,18 @@ export const AssetUsageList = ({
   assetType: 'image' | 'file'
   referringDocuments: SanityDocument[]
 }) => {
+  const {t} = useTranslation()
   const count = referringDocuments.length
-
-  const filenamePlaceholder = asset.originalFilename ? (
-    <strong>{asset.originalFilename}</strong>
-  ) : (
-    `this ${assetType}`
-  )
   return (
     <>
       <Card borderBottom marginTop={2} paddingBottom={2} marginBottom={1}>
-        <Text as="h2" size={[1, 1, 2, 2]} weight="regular" textOverflow="ellipsis">
-          {count} {count === 1 ? `document is` : `documents are`} using {filenamePlaceholder}
+        <Text size={[1, 1, 2, 2]} as="h2" weight="regular">
+          <Translate
+            t={t}
+            i18nKey={`asset-source.usage-list.documents-using-${assetType}`}
+            context={asset.originalFilename ? 'named' : 'unnamed'}
+            values={{filename: asset.originalFilename, count}}
+          />
         </Text>
       </Card>
       {referringDocuments.map((document: SanityDocument) => (

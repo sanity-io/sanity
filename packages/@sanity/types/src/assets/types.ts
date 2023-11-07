@@ -160,7 +160,10 @@ export type AssetMetadataType =
 /** @public */
 export interface AssetSource {
   name: string
-  title: string
+  /** @deprecated provide `i18nKey` instead */
+  title?: string
+
+  i18nKey?: string
   component: ComponentType<AssetSourceComponentProps>
   icon?: ComponentType<EmptyProps>
 }
