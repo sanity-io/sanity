@@ -31,7 +31,7 @@ export function InvalidFileWarning({onClearValue}: Props) {
       </Flex>
       <ButtonWrapper
         icon={ResetIcon}
-        text={t('inputs.file.invalid-file-warning.reest-button.text')}
+        text={t('inputs.file.invalid-file-warning.reset-button.text')}
         onClick={onClearValue}
         mode="ghost"
       />

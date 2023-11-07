@@ -334,7 +334,7 @@ export const studioLocaleStrings = {
     'The value of this field is not a valid file. Resetting this field will let you choose a new file.',
 
   /** Reset value */
-  'inputs.file.invalid-file-warning.reest-button.text': 'Reset value',
+  'inputs.file.invalid-file-warning.reset-button.text': 'Reset value',
 
   /** The upload could not be completed at this time. */
   'inputs.file.upload-failed.description': 'The upload could not be completed at this time.',
