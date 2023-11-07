@@ -1,8 +1,12 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
-import {isKeySegment, Path} from '@sanity/types'
-import {FieldMember} from '../store'
-import {
+import {isIndexSegment, isKeySegment, type Path} from '@sanity/types'
+import {pathToString} from '../../field'
+import {Translate, useTranslation} from '../../i18n'
+import {isArrayInputProps, isObjectInputProps} from '../utils/asserters'
+import {MemberField, ArrayOfObjectsItem, MemberItemError} from '../members'
+import type {FieldMember} from '../store'
+import type {
   ArrayOfObjectsInputProps,
   ObjectInputProps,
   RenderAnnotationCallback,
@@ -12,8 +16,6 @@ import {
   RenderInputCallback,
   RenderPreviewCallback,
 } from '../types'
-import {isArrayInputProps, isObjectInputProps} from '../utils/asserters'
-import {MemberField, ArrayOfObjectsItem, MemberItemError} from '../members'
 
 const pass = ({children}: {children: React.ReactNode}) => children
 
@@ -49,6 +51,8 @@ export const FormInput = memo(function FormInput(
   // was introduced as optional InputProps after the initial
   // release of v3, in order to not introduce breaking changes.
   // They are still required in this inner internal component.
+  // Ignoring string literal because it is a developer error
+  // eslint-disable-next-line i18next/no-literal-string
   const nullRender = useCallback(() => <>Missing destination render function</>, [])
 
   return (
@@ -93,6 +97,8 @@ const FormInputInner = memo(function FormInputInner(
     destinationRenderItem,
     destinationRenderPreview,
   } = props
+
+  const {t} = useTranslation()
 
   const renderInput: RenderInputCallback = useCallback(
     (inputProps) => {
@@ -203,17 +209,29 @@ const FormInputInner = memo(function FormInputInner(
     )
 
     if (!itemMember) {
+      const path = pathToString(props.path)
       const relativePath = trimLeft(props.path, absolutePath)
-      const key = (relativePath[0] as any)._key
+      if (isKeySegment(relativePath[0])) {
+        const key = relativePath[0]._key
+        return (
+          <div>
+            <Translate t={t} i18nKey="form.error.no-array-item-at-key" values={{key, path}} />
+          </div>
+        )
+      }
+
+      const index = isIndexSegment(relativePath[0]) ? relativePath[0] : relativePath[0][0]
       return (
         <div>
-          No array item with _key <code>"{key}"</code> found at path {JSON.stringify(props.path)}
+          <Translate t={t} i18nKey="form.error.no-array-item-at-index" values={{index, path}} />
         </div>
       )
     }
+
     if (itemMember.kind === 'error') {
       return <MemberItemError member={itemMember} />
     }
+
     return (
       <ArrayOfObjectsItem
         member={itemMember}
@@ -235,13 +253,10 @@ const FormInputInner = memo(function FormInputInner(
     )
 
     if (!fieldMember) {
-      const fieldName = childPath[0]
-      return (
-        <div>
-          Field {JSON.stringify(fieldName)} not found among members – please verify that it's both
-          defined in the schema and that it has not been conditionally hidden.
-        </div>
-      )
+      const fieldName =
+        typeof childPath[0] === 'string' ? childPath[0] : JSON.stringify(childPath[0])
+
+      return <div>{t('form.error.field-not-found', {fieldName})}</div>
     }
 
     return (
@@ -257,5 +272,6 @@ const FormInputInner = memo(function FormInputInner(
       />
     )
   }
+
   throw new Error('FormInput can only be used with arrays or objects')
 })
