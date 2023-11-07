@@ -237,32 +237,26 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     setIsEditing((v) => !v)
   }, [])
 
-  useDidUpdate(
-    isEditing,
-    useCallback(() => {
-      setMenuOpen(false)
-    }, []),
-  )
+  const handleCloseMenu = useCallback(() => setMenuOpen(false), [])
 
-  useGlobalKeyDown(
-    useCallback(
-      (event) => {
-        if (event.key === 'Escape' && !hasChanges) {
-          cancelEdit()
-        }
-      },
-      [cancelEdit, hasChanges],
-    ),
-  )
+  const handleClickOutside = useCallback(() => {
+    if (!hasChanges) {
+      cancelEdit()
+    }
+  }, [cancelEdit, hasChanges])
 
-  useClickOutside(
-    useCallback(() => {
-      if (!hasChanges) {
+  const handleRootKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Escape' && !hasChanges) {
         cancelEdit()
       }
-    }, [cancelEdit, hasChanges]),
-    [rootElement],
+    },
+    [cancelEdit, hasChanges],
   )
+
+  useDidUpdate(isEditing, handleCloseMenu)
+
+  useClickOutside(handleClickOutside, [rootElement])
 
   const name = user?.displayName ? (
     <Text size={1} weight="semibold" textOverflow="ellipsis" title={user.displayName}>
@@ -273,7 +267,12 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   )
 
   return (
-    <RootStack data-menu-open={menuOpen ? 'true' : 'false'} ref={setRootElement} space={4}>
+    <RootStack
+      data-menu-open={menuOpen ? 'true' : 'false'}
+      onKeyDown={handleRootKeyDown}
+      ref={setRootElement}
+      space={4}
+    >
       <InnerStack space={1} data-muted={displayError}>
         <Flex align="center" gap={FLEX_GAP} flex={1}>
           <CommentsAvatar user={user} />
