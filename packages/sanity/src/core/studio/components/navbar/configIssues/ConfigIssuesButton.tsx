@@ -1,5 +1,5 @@
 import React, {useCallback, useState, useId} from 'react'
-import {Heading, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Dialog} from '../../../../../ui'
 import {useSchema} from '../../../../hooks'
@@ -60,9 +60,9 @@ export function ConfigIssuesButton() {
         >
           <Stack space={4}>
             <Stack space={3}>
-              <Heading as="h2" size={1}>
+              <Text as="h2" size={2} weight="medium">
                 Found {groupsWithWarnings.length} schema warnings
-              </Heading>{' '}
+              </Text>{' '}
               <Text muted size={1}>
                 Configuration checks are only performed during development and will not be visible
                 in production builds
