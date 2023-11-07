@@ -1,4 +1,4 @@
-import {Box, Card, Label, Text, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Text, useMediaIndex} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import styled from 'styled-components'
 import {
@@ -78,9 +78,9 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
       {recentSearches.length ? (
         <>
           <Box paddingBottom={2} paddingTop={4} paddingX={3}>
-            <Label muted size={1}>
+            <Text muted size={1} weight="medium">
               Recent searches
-            </Label>
+            </Text>
           </Box>
           <Box>
             <CommandList

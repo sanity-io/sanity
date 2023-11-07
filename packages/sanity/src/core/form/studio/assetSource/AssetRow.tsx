@@ -6,7 +6,6 @@ import {
   Card,
   Flex,
   Stack,
-  Label,
   Text,
   Grid,
   useToast,
@@ -252,25 +251,25 @@ export const AssetRow = (props: RowProps) => {
           <>
             <Grid marginTop={3} columns={3} gap={1}>
               <Stack space={2}>
-                <Label size={1} muted>
+                <Text size={1} muted weight="medium">
                   Size
-                </Label>
+                </Text>
                 <Text size={1} muted>
                   {formattedSize}
                 </Text>
               </Stack>
               <Stack space={2}>
-                <Label size={1} muted>
+                <Text size={1} muted weight="medium">
                   Type
-                </Label>
+                </Text>
                 <Text size={1} muted>
                   {formattedMimeType}
                 </Text>
               </Stack>
               <Stack space={2}>
-                <Label size={1} muted>
+                <Text size={1} muted weight="medium">
                   Date added
-                </Label>
+                </Text>
                 <Text size={1} muted>
                   {formattedTime}
                 </Text>

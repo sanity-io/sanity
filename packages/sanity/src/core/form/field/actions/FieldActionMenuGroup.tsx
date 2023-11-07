@@ -1,4 +1,4 @@
-import {Box, Label, MenuGroup, MenuGroupProps} from '@sanity/ui'
+import {Box, MenuGroup, MenuGroupProps, Text} from '@sanity/ui'
 import React from 'react'
 import {DocumentFieldActionGroup} from '../../../config'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
@@ -14,10 +14,10 @@ export function FieldActionMenuGroup(props: {group: DocumentFieldActionGroup}) {
   if (group.expanded) {
     return (
       <>
-        <Box padding={2} paddingBottom={1}>
-          <Label muted size={0}>
+        <Box padding={2} paddingTop={3}>
+          <Text muted size={1} weight="medium">
             {group.title}
-          </Label>
+          </Text>
         </Box>
 
         {group.children.map((item, idx) => (

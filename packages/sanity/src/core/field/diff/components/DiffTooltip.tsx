@@ -1,5 +1,5 @@
 import {Path} from '@sanity/types'
-import {Text, Stack, Flex, Inline, Label} from '@sanity/ui'
+import {Text, Stack, Flex, Inline} from '@sanity/ui'
 import React from 'react'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useTimeAgo} from '../../../hooks'
@@ -44,9 +44,9 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 
   const content = (
     <Stack space={2}>
-      <Label size={1} style={{textTransform: 'uppercase'}}>
+      <Text muted size={1} weight="medium">
         {description}
-      </Label>
+      </Text>
       <Stack space={2}>
         {annotations.map((annotation, idx) => (
           <AnnotationItem annotation={annotation} key={idx} />

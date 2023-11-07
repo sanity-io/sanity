@@ -1,4 +1,4 @@
-import {Card, Code, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
+import {Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {startCase, uniq} from 'lodash'
 import React, {ReactElement, useMemo} from 'react'
 import {useSchema} from '../../../../../../../../hooks'
@@ -80,12 +80,12 @@ export function FilterTooltip({
             {/* Field name */}
             {fieldDefinition && (
               <Stack space={2}>
-                <Label muted size={0}>
+                <Text muted size={1} weight="medium">
                   Field name
-                </Label>
+                </Text>
                 <Inline>
                   <Card tone="caution" padding={1} radius={2}>
-                    <Code size={0}>{fieldDefinition?.name}</Code>
+                    <Code size={1}>{fieldDefinition?.name}</Code>
                   </Card>
                 </Inline>
               </Stack>
@@ -94,10 +94,10 @@ export function FilterTooltip({
             {/* Field description */}
             {fieldDefinitionDescription && (
               <Stack space={3}>
-                <Label muted size={0}>
+                <Text muted size={1} weight="medium">
                   Field description
-                </Label>
-                <Text muted size={0}>
+                </Text>
+                <Text muted size={1}>
                   {truncateString(fieldDefinitionDescription)}
                 </Text>
               </Stack>
@@ -105,7 +105,7 @@ export function FilterTooltip({
 
             {/* Filter description */}
             {filterDefinition?.description && (
-              <Text muted size={0}>
+              <Text muted size={1}>
                 {truncateString(filterDefinition.description)}
               </Text>
             )}
@@ -114,16 +114,16 @@ export function FilterTooltip({
             {!documentTypesNarrowed.length && fieldDefinitionDocumentTypeTitles.length > 0 && (
               <Stack space={2}>
                 <Flex align="center" gap={1}>
-                  <Label muted size={0}>
+                  <Text muted size={1} weight="medium">
                     Used in document types
-                  </Label>
+                  </Text>
                   <Card padding={1} radius={2} tone="transparent">
-                    <Text size={0} muted>
+                    <Text size={1} muted>
                       {fieldDefinitionDocumentTypeTitles.length}
                     </Text>
                   </Card>
                 </Flex>
-                <Text size={0} weight="regular" muted>
+                <Text size={1} weight="regular" muted>
                   {fieldDefinitionDocumentTypeTitles.slice(0, MAX_VISIBLE_TYPES).join(', ')}
                   {fieldDefinitionDocumentTypeTitles?.length > MAX_VISIBLE_TYPES
                     ? ` +${fieldDefinitionDocumentTypeTitles.length - MAX_VISIBLE_TYPES} more`

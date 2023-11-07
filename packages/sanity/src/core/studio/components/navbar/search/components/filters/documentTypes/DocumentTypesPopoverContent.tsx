@@ -1,5 +1,5 @@
 import {Schema} from '@sanity/types'
-import {Box, Flex, Label, MenuDivider, Stack, Text} from '@sanity/ui'
+import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
@@ -89,10 +89,10 @@ export function DocumentTypesPopoverContent() {
     }
     if (item.type === 'header') {
       return (
-        <Box margin={1} paddingBottom={2} paddingTop={3}>
-          <Label muted size={0}>
+        <Box margin={2} padding={1}>
+          <Text muted size={1} weight="medium">
             {item.title}
-          </Label>
+          </Text>
         </Box>
       )
     }

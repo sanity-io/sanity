@@ -1,4 +1,4 @@
-import {Box, BoxProps, Card, Code, Label, Stack} from '@sanity/ui'
+import {Box, BoxProps, Card, Code, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import styled, {type ExecutionProps} from 'styled-components'
 import {pathToString} from '../../paths'
@@ -54,9 +54,9 @@ export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): R
 
 const MetaLabel = ({title}: {title: string}) => (
   <Box padding={3} display="inline-block" as={Meta}>
-    <Label size={1} muted>
+    <Text muted size={1} weight="medium">
       {title}
-    </Label>
+    </Text>
   </Box>
 )
 
