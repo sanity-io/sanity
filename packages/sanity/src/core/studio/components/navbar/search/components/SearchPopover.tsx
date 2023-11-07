@@ -1,7 +1,7 @@
 import {Card, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {supportsTouch} from '../../../../../util'
 import {useColorScheme} from '../../../../colorScheme'
 import {
@@ -18,17 +18,14 @@ import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
 import {SearchResults} from './searchResults/SearchResults'
 
-export type PopoverPosition = {
-  x: number | null
-  y: number
-}
 export interface SearchPopoverProps {
   disableFocusLock?: boolean
   onClose: () => void
   onOpen: () => void
   open: boolean
-  position: PopoverPosition
 }
+
+const Y_POSITION = 8 // px
 
 const Overlay = styled.div`
   background-color: ${({theme}: {theme: Theme}) => theme.sanity.color.base.shadow.ambient};
@@ -39,32 +36,21 @@ const Overlay = styled.div`
   top: 0;
 `
 
-const SearchPopoverCard = styled(Card)<{$position: PopoverPosition}>`
-  ${({$position}) =>
-    $position.x
-      ? css`
-          left: ${$position.x}px;
-        `
-      : css`
-          left: 50%;
-          transform: translateX(-50%);
-        `}
+const SearchPopoverCard = styled(Card)`
   display: flex !important;
   flex-direction: column;
-  max-height: ${({$position}) =>
-    `min(calc(100vh - ${$position.y}px - ${POPOVER_INPUT_PADDING}px), ${POPOVER_MAX_HEIGHT}px)`};
+  left: 50%;
+  max-height: min(
+    calc(100vh - ${Y_POSITION}px - ${POPOVER_INPUT_PADDING}px),
+    ${POPOVER_MAX_HEIGHT}px
+  );
   position: absolute;
-  top: ${({$position}) => $position.y}px;
+  top: ${Y_POSITION}px;
+  transform: translateX(-50%);
   width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
 `
 
-export function SearchPopover({
-  disableFocusLock,
-  onClose,
-  onOpen,
-  open,
-  position,
-}: SearchPopoverProps) {
+export function SearchPopover({disableFocusLock, onClose, onOpen, open}: SearchPopoverProps) {
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
 
@@ -96,7 +82,6 @@ export function SearchPopover({
           <Overlay style={{zIndex}} />
 
           <SearchPopoverCard
-            $position={position}
             overflow="hidden"
             radius={POPOVER_RADIUS}
             ref={setPopoverElement}

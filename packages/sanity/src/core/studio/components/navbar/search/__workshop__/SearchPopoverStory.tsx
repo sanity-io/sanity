@@ -14,7 +14,6 @@ export default function SearchFieldStory() {
           onClose={noop}
           onOpen={noop}
           open
-          position={{x: 0, y: 0}}
         />
       </SearchProvider>
     </LayerProvider>

@@ -31,15 +31,19 @@ const SearchFullscreenPortalCard = styled(Card)`
 /** @internal */
 export interface NavbarContextValue {
   onSearchFullscreenOpenChange: (open: boolean) => void
+  onSearchOpenChange: (open: boolean) => void
   searchFullscreenOpen: boolean
   searchFullscreenPortalEl: HTMLElement | null
+  searchOpen: boolean
 }
 
 /** @internal */
 export const NavbarContext = createContext<NavbarContextValue>({
   onSearchFullscreenOpenChange: () => '',
+  onSearchOpenChange: () => '',
   searchFullscreenOpen: false,
   searchFullscreenPortalEl: null,
+  searchOpen: false,
 })
 
 /**
@@ -79,6 +83,7 @@ export function StudioLayout() {
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null,
   )
+  const [searchOpen, setSearchOpen] = useState<boolean>(false)
 
   const documentTitle = useMemo(() => {
     const mainTitle = title || startCase(name)
@@ -102,13 +107,25 @@ export function StudioLayout() {
     setSearchFullscreenOpen(open)
   }, [])
 
+  const handleSearchOpenChange = useCallback((open: boolean) => {
+    setSearchOpen(open)
+  }, [])
+
   const navbarContextValue = useMemo(
     () => ({
       searchFullscreenOpen,
       searchFullscreenPortalEl,
+      searchOpen,
       onSearchFullscreenOpenChange: handleSearchFullscreenOpenChange,
+      onSearchOpenChange: handleSearchOpenChange,
     }),
-    [searchFullscreenOpen, searchFullscreenPortalEl, handleSearchFullscreenOpenChange],
+    [
+      searchFullscreenOpen,
+      searchFullscreenPortalEl,
+      searchOpen,
+      handleSearchFullscreenOpenChange,
+      handleSearchOpenChange,
+    ],
   )
 
   const Navbar = useNavbarComponent()

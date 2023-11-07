@@ -1,4 +1,4 @@
-import {LeaveIcon, ChevronDownIcon, CogIcon, CheckmarkIcon, UsersIcon} from '@sanity/icons'
+import {LeaveIcon, CogIcon, CheckmarkIcon, UsersIcon} from '@sanity/icons'
 import {
   Box,
   Card,
@@ -88,9 +88,7 @@ export function UserMenu() {
         <Button mode="bleed" padding={0} paddingX={1}>
           <Flex align="center" gap={1}>
             <UserAvatar user="me" size={1} />
-            <Text size={AVATAR_SIZE} muted>
-              <ChevronDownIcon />
-            </Text>
+            <Text size={AVATAR_SIZE} muted />
           </Flex>
         </Button>
       }

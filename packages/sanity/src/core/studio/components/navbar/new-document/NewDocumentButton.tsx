@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useState} from 'react'
 import {Text, useClickOutside, Stack, TextInput, TextInputProps, Card, Flex} from '@sanity/ui'
-import {ComposeIcon, SearchIcon} from '@sanity/icons'
+import {AddIcon, ChevronDownIcon, ComposeIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
@@ -131,11 +131,14 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     () => ({
       'aria-label': title,
       disabled: disabled || loading,
-      icon: ComposeIcon,
-      mode: 'bleed',
+      iconRight: ChevronDownIcon,
+      icon: AddIcon,
+      text: 'Create',
+      mode: 'ghost',
       onClick: handleToggleOpen,
       ref: setButtonElement,
       selected: open,
+      size: 'small',
     }),
     [disabled, handleToggleOpen, loading, open, title],
   )

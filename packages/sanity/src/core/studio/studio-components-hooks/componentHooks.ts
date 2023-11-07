@@ -32,6 +32,7 @@ export function useNavbarComponent(): ComponentType<Omit<NavbarProps, 'renderDef
 
 /**
  * @internal
+ * @deprecated Use `useLogoMarkComponent` instead.
  */
 export function useLogoComponent(): ComponentType<Omit<LogoProps, 'renderDefault'>> {
   return useMiddlewareComponents({
