@@ -75,12 +75,14 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
 ) {
   const {user, animateArrowFrom, position, size, status, tone, ...restProps} = props
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
+  const userColor = useUserColor(user.id)
   const imageUrl = imageLoadError ? undefined : user?.imageUrl
 
   return (
     <Avatar
       animateArrowFrom={animateArrowFrom}
       arrowPosition={position}
+      color={userColor.name}
       data-legacy-tone={tone}
       initials={user?.displayName && nameToInitials(user.displayName)}
       src={imageUrl}
