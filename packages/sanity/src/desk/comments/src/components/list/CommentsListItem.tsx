@@ -174,8 +174,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
 
       onPathSelect?.({
         fieldPath: parentComment.target.path.field,
-        target: 'comment-item',
-        selectedFrom: 'comment-item',
+        origin: 'inspector',
         threadId: parentComment.threadId,
       })
     },

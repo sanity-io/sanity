@@ -78,8 +78,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
       onPathSelect?.({
         fieldPath,
-        target: null,
-        selectedFrom: 'breadcrumbs',
+        origin: 'inspector',
         threadId: null,
       })
     },
@@ -89,11 +88,14 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   const handleNewThreadClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
+      // Skip if the click was triggered from "Enter" keydown.
+      // This because we don't want to trigger `onPathSelect` when
+      // submitting the new thread form.
+      if (e.detail === 0) return
 
       onPathSelect?.({
         fieldPath,
-        target: 'new-thread-item',
-        selectedFrom: 'new-thread-item',
+        origin: 'inspector',
         threadId: null,
       })
     },

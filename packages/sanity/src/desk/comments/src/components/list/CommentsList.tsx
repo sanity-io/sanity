@@ -150,8 +150,10 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                 // in the group.
                 const firstThreadId = group[0].threadId
 
+                // The new thread is selected if the field path matches the selected path and
+                // there is no thread ID selected.
                 const newThreadSelected =
-                  selectedPath?.fieldPath === fieldPath && selectedPath.target === 'new-thread-item'
+                  selectedPath?.fieldPath === fieldPath && !selectedPath.threadId
 
                 return (
                   <Stack as="li" key={fieldPath} data-group-id={firstThreadId} paddingTop={3}>
@@ -179,16 +181,17 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                           item.parentComment._state?.type !== 'createError' &&
                           item.parentComment._state?.type !== 'createRetrying'
 
-                        const isSelected =
+                        // The thread is selected if the thread ID and field path matches the
+                        // selected path.
+                        const threadIsSelected =
                           selectedPath?.threadId === item.parentComment.threadId &&
-                          selectedPath?.fieldPath === item.parentComment.target.path.field &&
-                          selectedPath.target === 'comment-item'
+                          selectedPath?.fieldPath === item.parentComment.target.path.field
 
                         return (
                           <CommentsListItem
                             canReply={canReply}
                             currentUser={currentUser}
-                            isSelected={isSelected}
+                            isSelected={threadIsSelected}
                             key={item.parentComment._id}
                             mentionOptions={mentionOptions}
                             onCopyLink={onCopyLink}

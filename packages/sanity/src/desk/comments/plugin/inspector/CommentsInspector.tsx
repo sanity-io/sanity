@@ -157,8 +157,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
       setSelectedPath({
         fieldPath: payload.fieldPath,
-        selectedFrom: 'new-thread-item',
-        target: 'comment-item',
+        origin: 'inspector',
         threadId: payload.threadId,
       })
     },
@@ -216,8 +215,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       if (comment) {
         setSelectedPath({
           fieldPath: comment.target.path.field || null,
-          target: 'comment-item',
-          selectedFrom: null,
+          origin: 'inspector',
           threadId: comment.threadId || null,
         })
 

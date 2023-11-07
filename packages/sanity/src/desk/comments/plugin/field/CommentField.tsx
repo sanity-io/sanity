@@ -99,9 +99,9 @@ function CommentFieldInner(props: FieldProps) {
   // Determine if the current field is selected
   const isSelected = useMemo(() => {
     if (!commentsInspectorOpen) return false
-    if (selectedPath?.selectedFrom === 'form-field') return false
+    if (selectedPath?.origin === 'form') return false
     return selectedPath?.fieldPath === PathUtils.toString(props.path)
-  }, [commentsInspectorOpen, props.path, selectedPath?.fieldPath, selectedPath?.selectedFrom])
+  }, [commentsInspectorOpen, props.path, selectedPath])
 
   // Get the most recent thread ID for the current field. This is used to query the
   // DOM for the thread in order to be able to scroll to it.
@@ -167,8 +167,7 @@ function CommentFieldInner(props: FieldProps) {
       handleScrollToThread(currentThreadId)
       setSelectedPath({
         fieldPath: PathUtils.toString(props.path),
-        target: 'comment-item',
-        selectedFrom: 'form-field',
+        origin: 'form',
         threadId: currentThreadId,
       })
     }
@@ -219,8 +218,7 @@ function CommentFieldInner(props: FieldProps) {
         // Set the path as selected so that the new comment is highlighted
         setSelectedPath({
           fieldPath: PathUtils.toString(props.path),
-          selectedFrom: 'form-field',
-          target: 'comment-item',
+          origin: 'form',
           threadId: newThreadId,
         })
 
