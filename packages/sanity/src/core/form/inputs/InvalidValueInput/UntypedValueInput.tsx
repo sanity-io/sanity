@@ -5,6 +5,7 @@ import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
 import {useSchema} from '../../../hooks'
 import {isDev} from '../../../environment'
+import {useTranslation, Translate} from '../../../i18n'
 
 interface UntypedValueInputProps {
   validTypes: string[]
@@ -28,12 +29,20 @@ function SetMissingTypeButton({
     [itemValue, onChange, targetType],
   )
 
+  const {t} = useTranslation()
+
   return (
     <Button
       onClick={handleClick}
       text={
         <>
-          Convert to <code>{targetType}</code>
+          <Translate
+            t={t}
+            i18nKey="inputs.untyped-value.convert-button.text"
+            values={{
+              targetType: targetType,
+            }}
+          />
         </>
       }
     />
@@ -57,7 +66,15 @@ function UnsetItemButton({
     [itemValue, onChange],
   )
 
-  return <Button onClick={handleClick} tone="critical" text="Unset value" />
+  const {t} = useTranslation()
+
+  return (
+    <Button
+      onClick={handleClick}
+      tone="critical"
+      text={t('inputs.untyped-value.unset-item-button.text')}
+    />
+  )
 }
 
 /**
@@ -69,31 +86,32 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
   const isSingleValidType = validTypes.length === 1
   const isHoistedType = schema.has(validTypes[0])
 
+  const {t} = useTranslation()
+
   return (
     <Alert
       status="warning"
       title={
         <>
-          Property value missing <code>_type</code>
+          <Translate t={t} i18nKey="inputs.untyped-value.title" />
         </>
       }
     >
-      <Details open={isDev} title={<>Developer info</>}>
+      <Details open={isDev} title={t('inputs.untyped-value.details.title')}>
         <Stack space={3}>
           <Text as="p" muted size={1}>
-            Encountered an object value without a <code>_type</code> property.
+            <Translate t={t} i18nKey="inputs.untyped-value.description" />
           </Text>
 
           {isSingleValidType && !isHoistedType && (
             <Text as="p" muted size={1}>
-              Either remove the <code>name</code> property of the object declaration, or set{' '}
-              <code>_type</code> property on items.
+              <Translate t={t} i18nKey="inputs.untyped-value.details.description" />
             </Text>
           )}
 
           {!isSingleValidType && (
             <Text as="p" muted size={1}>
-              The following types are valid here according to schema:
+              {t('inputs.untyped-value.details.multi-type-description')}
             </Text>
           )}
 
@@ -109,7 +127,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
 
           <Stack space={2}>
             <Text as="h4" weight="semibold" size={1}>
-              Current value (<code>object</code>):
+              {t('inputs.untyped-value.details.json-dump-prefix')}
             </Text>
 
             <Card border overflow="auto" padding={2} radius={2} tone="inherit">

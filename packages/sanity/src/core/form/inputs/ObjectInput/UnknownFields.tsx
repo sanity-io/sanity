@@ -5,6 +5,7 @@ import {FormPatch, PatchEvent, unset} from '../../patch'
 import {Details} from '../../components/Details'
 import {Alert} from '../../components/Alert'
 import {isDev} from '../../../environment'
+import {useTranslation, Translate} from '../../../i18n'
 
 type Props = {
   fieldNames: string[]
@@ -26,40 +27,25 @@ export function UnknownFields(props: Props) {
     [onChange],
   )
 
+  const {t} = useTranslation()
+
   return (
     <Alert
       status="warning"
-      title={
-        <>
-          {fieldsLen === 1 && <>Unknown field found</>}
-          {fieldsLen > 1 && <>Unknown fields found</>}
-        </>
-      }
+      title={<>{t('inputs.object.unknown-fields.warning.title', {count: fieldsLen})}</>}
     >
       <Text as="p" muted size={1}>
-        {fieldsLen === 1 ? (
-          <>Encountered a field that is not defined in the schema.</>
-        ) : (
-          <>Encountered {fieldsLen} fields that are not defined in the schema.</>
-        )}
+        <>{t('inputs.object.unknown-fields.warning.description', {count: fieldsLen})}</>
       </Text>
 
-      <Details marginTop={4} open={isDev} title={<>Developer info</>}>
+      <Details
+        marginTop={4}
+        open={isDev}
+        title={t('inputs.object.unknown-fields.warning.details.title')}
+      >
         <Box marginBottom={3}>
           <Text as="p" muted size={1}>
-            {fieldsLen === 1 ? (
-              <>
-                This field is not defined in the schema, which could mean that the field definition
-                has been removed or that someone else has added it to their own local project and
-                have not deployed their changes yet.
-              </>
-            ) : (
-              <>
-                These fields are not defined in the document’s schema, which could mean that the
-                field definitions have been removed or that someone else has added them to their own
-                local project and have not deployed their changes yet.
-              </>
-            )}
+            <>{t('inputs.object.unknown-fields.warning.details.description', {count: fieldsLen})}</>
           </Text>
         </Box>
 
@@ -96,6 +82,8 @@ function UnknownField({
     onUnsetClick(fieldName)
   }, [fieldName, onUnsetClick])
 
+  const {t} = useTranslation()
+
   return (
     <Card as="li" padding={3} radius={2} shadow={1} tone="caution">
       <Stack space={2}>
@@ -110,9 +98,7 @@ function UnknownField({
 
         {readOnly && (
           <Text as="p" muted size={1}>
-            This field is <strong>read only</strong> according to the document’s schema and cannot
-            be unset. If you want to be able to unset this in Studio, make sure you remove the{' '}
-            <code>readOnly</code> field from the enclosing type in the schema.
+            <Translate t={t} i18nKey="inputs.object.unknown-fields.read-only.description" />
           </Text>
         )}
 
@@ -121,7 +107,7 @@ function UnknownField({
             icon={TrashIcon}
             onClick={handleUnsetClick}
             tone="critical"
-            text={<>Remove field</>}
+            text={t('inputs.object.unknown-fields.remove-field-button.text')}
           />
         )}
       </Stack>
