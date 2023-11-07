@@ -1,7 +1,7 @@
 import React, {MouseEventHandler, useCallback} from 'react'
 
 import {UploadIcon, CopyIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
-import {Box, MenuDivider, Label, useToast} from '@sanity/ui'
+import {MenuDivider, useToast} from '@sanity/ui'
 import {MenuItem} from '../../../../../ui'
 import {FileInputMenuItem} from './FileInputMenuItem/FileInputMenuItem'
 
@@ -28,11 +28,6 @@ export function ActionsMenu(props: Props) {
 
   return (
     <>
-      <Box padding={2}>
-        <Label muted size={1}>
-          Replace
-        </Label>
-      </Box>
       <FileInputMenuItem
         icon={UploadIcon}
         onSelect={onUpload}

@@ -1,6 +1,6 @@
 import React, {createElement, ReactNode, useMemo} from 'react'
 import {CrossDatasetType, PreviewValue} from '@sanity/types'
-import {Box, Flex, Inline, Label, Text} from '@sanity/ui'
+import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {isImageSource} from '@sanity/asset-utils'
@@ -104,11 +104,7 @@ export function CrossDatasetReferencePreview(props: {
 
       <Box paddingLeft={3}>
         <Inline space={4}>
-          {refType && showTypeLabel && (
-            <Label size={1} muted>
-              {refType.title || refType.type}
-            </Label>
-          )}
+          {refType && showTypeLabel && <Badge>{refType.title || refType.type}</Badge>}
 
           {(insufficientPermissions || notFound) && (
             <Box>

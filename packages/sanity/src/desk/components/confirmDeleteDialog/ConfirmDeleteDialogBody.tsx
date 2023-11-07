@@ -6,7 +6,7 @@ import {
   ChevronDownIcon,
   WarningOutlineIcon,
 } from '@sanity/icons'
-import {useToast, Text, Box, Flex, Label, Card, Stack} from '@sanity/ui'
+import {useToast, Text, Box, Flex, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {Button} from '../../../ui'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
@@ -196,19 +196,19 @@ export function ConfirmDeleteDialogBody({
                   <thead>
                     <tr>
                       <th>
-                        <Label muted size={0} style={{minWidth: '5rem'}}>
+                        <Text muted size={1} style={{minWidth: '5rem'}} weight="medium">
                           Project ID
-                        </Label>
+                        </Text>
                       </th>
                       <th>
-                        <Label muted size={0}>
+                        <Text muted size={1} weight="medium">
                           Dataset
-                        </Label>
+                        </Text>
                       </th>
                       <th>
-                        <Label muted size={0}>
+                        <Text muted size={1} weight="medium">
                           Document ID
-                        </Label>
+                        </Text>
                       </th>
                     </tr>
                   </thead>

@@ -1,6 +1,6 @@
 import {ComposeIcon} from '@sanity/icons'
 import React, {useMemo, forwardRef} from 'react'
-import {Box, Label, Menu, MenuButton, PopoverProps} from '@sanity/ui'
+import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import {Schema} from '@sanity/types'
 import {Button, MenuItem} from '../../../ui'
 import {IntentButton} from '../IntentButton'
@@ -117,10 +117,6 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       id="create-menu"
       menu={
         <Menu>
-          <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-            <Label muted>Create</Label>
-          </Box>
-
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted

@@ -1,6 +1,6 @@
 import React, {useCallback, createElement, useMemo} from 'react'
 
-import {Box, Card, Flex, Label, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {ButtonProps} from '../../../../ui'
 import {formatTimelineEventLabel, getTimelineEventIconComponent} from './helpers'
@@ -94,9 +94,9 @@ export function TimelineItem({
                   shadow={1}
                   tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
                 >
-                  <Label muted size={0}>
+                  <Text muted size={0} weight="medium">
                     Latest
-                  </Label>
+                  </Text>
                 </Card>
               </Flex>
             )}

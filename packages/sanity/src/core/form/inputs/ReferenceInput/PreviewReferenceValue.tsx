@@ -1,6 +1,6 @@
 import React, {ComponentType, ReactNode, Fragment} from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
 import {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
@@ -59,13 +59,7 @@ export function PreviewReferenceValue(props: {
           })}
         </Box>
         <Box>
-          <Inline space={4}>
-            {showTypeLabel && (
-              <Label size={1} muted>
-                {refType.title}
-              </Label>
-            )}
-          </Inline>
+          <Inline space={4}>{showTypeLabel && <Badge>{refType.title}</Badge>}</Inline>
         </Box>
       </Flex>
     )
