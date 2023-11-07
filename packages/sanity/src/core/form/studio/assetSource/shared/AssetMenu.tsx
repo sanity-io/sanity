@@ -1,7 +1,7 @@
-import React from 'react'
 import {EllipsisVerticalIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {AssetMenuAction} from '../types'
+import {useTranslation} from '../../../../i18n'
 
 const MENU_POPOVER_PROPS = {portal: true, placement: 'right'} as const
 
@@ -17,6 +17,7 @@ export function AssetMenu({
   const triggerButtonMode = isSelected ? 'default' : 'bleed'
   const triggerButtonTone = isSelected ? 'primary' : 'default'
 
+  const {t} = useTranslation()
   return (
     <MenuButton
       button={
@@ -31,14 +32,14 @@ export function AssetMenu({
       menu={
         <Menu>
           <MenuItem
-            text="Show uses"
+            text={t('asset-source.asset-list.menu.show-usage')}
             icon={LinkIcon}
             onClick={() => {
               onAction({type: 'showUsage'})
             }}
           />
           <MenuItem
-            text="Delete"
+            text={t('asset-source.asset-list.menu.delete')}
             icon={TrashIcon}
             tone="critical"
             onClick={() => {

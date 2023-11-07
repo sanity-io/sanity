@@ -1,7 +1,7 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
 import type {AssetFromSource, AssetSource, ReferenceValue} from '@sanity/types'
 import {Box, Button, Flex, Menu, MenuButton, MenuItem, Portal, Stack} from '@sanity/ui'
-import {get} from 'lodash'
+import {get, startCase} from 'lodash'
 import React, {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {Source} from '../../../../../../../../../config'
@@ -158,7 +158,10 @@ export function SearchFilterAssetInput(type?: AssetType) {
                             key={source.name}
                             // eslint-disable-next-line react/jsx-no-bind
                             onClick={() => handleSelectAssetSource(source)}
-                            text={source.title}
+                            text={
+                              (source.i18nKey ? t(source.i18nKey) : source.title) ||
+                              startCase(source.name)
+                            }
                           />
                         ))}
                       </Menu>

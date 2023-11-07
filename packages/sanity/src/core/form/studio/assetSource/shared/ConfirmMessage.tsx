@@ -1,6 +1,7 @@
 import React, {CSSProperties} from 'react'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Grid, Text} from '@sanity/ui'
+import {Translate, useTranslation} from '../../../../i18n'
 import {UsageDialogProps} from './AssetDeleteDialog'
 
 type ConfirmMessageProps = Omit<UsageDialogProps, 'onClose' | 'onDelete'> & {
@@ -24,13 +25,7 @@ const STYLE_IMAGE_WRAPPER: CSSProperties = {height: '100%'}
 
 export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMessageProps) => {
   const isImage = assetType === 'image'
-  const filenamePlaceholder = asset.originalFilename ? (
-    <>
-      The {assetType} <strong>{asset.originalFilename}</strong>
-    </>
-  ) : (
-    `this ${assetType}`
-  )
+  const {t} = useTranslation()
 
   if (hasResults) {
     return (
@@ -41,8 +36,10 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
               <WarningOutlineIcon />
             </Text>
             <Text size={1}>
-              {filenamePlaceholder} cannot be deleted because it's being used. In order to delete
-              the {assetType} you need the remove all uses of it.
+              {t(`asset-source.delete-dialog.usage-list.warning-${assetType}-is-in-use`, {
+                context: asset.originalFilename ? 'named' : 'unnamed',
+                filename: asset.originalFilename,
+              })}
             </Text>
           </Flex>
           {isImage && (
@@ -51,7 +48,7 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
                 <img
                   src={`${asset.url}?w=200`}
                   style={STYLE_ASSET_IMAGE}
-                  alt="Preview of image"
+                  alt={t('asset-source.usage-list.image-alt')}
                   referrerPolicy="strict-origin-when-cross-origin"
                 />
               </Flex>
@@ -67,17 +64,12 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
       <Grid columns={3} gap={3}>
         <Flex style={{gridColumn: isImage ? 'span 2' : 'span 3'}} align="center">
           <Text>
-            You are about to delete the {assetType}
-            {asset.originalFilename && (
-              <>
-                {' '}
-                <strong>{asset.originalFilename}</strong>
-              </>
-            )}{' '}
-            and its metadata.
-            <br />
-            <br />
-            Are you sure?
+            <Translate
+              t={t}
+              i18nKey={`asset-source.delete-dialog.usage-list.confirm-delete-${assetType}`}
+              context={asset.originalFilename ? 'named' : 'unnamed'}
+              values={{filename: asset.originalFilename}}
+            />
           </Text>
         </Flex>
         {isImage && (
@@ -86,7 +78,7 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
               <img
                 src={`${asset.url}?w=200`}
                 style={STYLE_ASSET_IMAGE}
-                alt="Preview of image"
+                alt={t('asset-source.asset-list.table.preview-alt')}
                 referrerPolicy="strict-origin-when-cross-origin"
               />
             </Flex>

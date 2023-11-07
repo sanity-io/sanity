@@ -4,6 +4,7 @@ import {Box, Button, Dialog, Grid, Stack} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
 import {SpinnerWithText} from '../../../components/SpinnerWithText'
 import {useReferringDocuments} from '../../../../hooks/useReferringDocuments'
+import {useTranslation} from '../../../../i18n'
 import {AssetUsageList} from './AssetUsageList'
 import {ConfirmMessage} from './ConfirmMessage'
 
@@ -35,12 +36,18 @@ export function AssetDeleteDialog({
 
   const hasResults = publishedDocuments.length > 0
 
+  const {t} = useTranslation()
+
   const footer = useMemo(
     () => (
       <Grid padding={2} gap={2} columns={2}>
-        <Button mode="bleed" text="Cancel" onClick={onClose} />
         <Button
-          text="Delete"
+          mode="bleed"
+          text={t('asset-source.delete-dialog.action.cancel')}
+          onClick={onClose}
+        />
+        <Button
+          text={t('asset-source.delete-dialog.action.delete')}
           tone="critical"
           icon={TrashIcon}
           onClick={onDelete}
@@ -49,14 +56,14 @@ export function AssetDeleteDialog({
         />
       </Grid>
     ),
-    [hasResults, isDeleting, onClose, onDelete],
+    [hasResults, isDeleting, onClose, onDelete, t],
   )
 
   return (
     <Dialog
       __unstable_autoFocus={isLoading}
       footer={footer}
-      header={`Delete ${assetType}`}
+      header={t('asset-source.delete-dialog.header', {context: assetType})}
       id="asset-dialog"
       onClickOutside={onClose}
       onClose={onClose}
@@ -64,7 +71,7 @@ export function AssetDeleteDialog({
     >
       {isLoading ? (
         <Box padding={4}>
-          <SpinnerWithText text="Loading" />
+          <SpinnerWithText text={t('asset-source.delete-dialog.loading')} />
         </Box>
       ) : (
         <Stack
