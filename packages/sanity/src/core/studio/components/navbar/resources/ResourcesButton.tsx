@@ -1,4 +1,4 @@
-import {HelpCircleIcon} from '@sanity/icons'
+import {InfoOutlineIcon} from '@sanity/icons'
 import {Flex, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
@@ -32,7 +32,7 @@ export function ResourcesButton() {
       >
         <div>
           <MenuButton
-            button={<Button aria-label="Help and resources" icon={HelpCircleIcon} mode="bleed" />}
+            button={<Button aria-label="Help and resources" icon={InfoOutlineIcon} mode="bleed" />}
             id="menu-button-resources"
             menu={
               <StyledMenu>
