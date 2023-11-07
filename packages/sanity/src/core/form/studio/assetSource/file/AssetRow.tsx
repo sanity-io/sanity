@@ -4,14 +4,15 @@ import styled, {css} from 'styled-components'
 import {Box, Button, Card, Flex, Grid, Label, Stack, Text, Tooltip, useToast} from '@sanity/ui'
 import {ChevronDownIcon, ChevronUpIcon, DocumentIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Asset as AssetType} from '@sanity/types'
-import {useClient, useRelativeTime} from '../../../../hooks'
+import {useClient, useRelativeTime, useUnitFormatter} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {prettyBytes} from '../utils/prettyBytes'
 import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
 import {AssetMenu} from '../shared/AssetMenu'
 import {AssetMenuAction} from '../types'
 import {formatMimeType} from '../utils/mimeType'
 import {AssetUsageDialog} from '../shared/AssetUsageDialog'
+import {useTranslation} from '../../../../i18n'
+import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
 
 interface RowProps {
   isMobile?: boolean
@@ -115,8 +116,6 @@ const STYLES_ASSETMENU_WRAPPER = {
   marginBottom: '-0.5rem',
 }
 
-const DISABLED_DELETE_TITLE = 'Cannot delete current file'
-
 export const AssetRow = (props: RowProps) => {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
@@ -129,9 +128,13 @@ export const AssetRow = (props: RowProps) => {
   const {originalFilename, _id, mimeType, size, _createdAt} = asset
   const formattedTime = useRelativeTime(_createdAt, {useTemporalPhrase: true})
   const formattedMimeType = formatMimeType(mimeType)
-  const formattedSize = prettyBytes(size)
+
+  const formatUnit = useUnitFormatter({unitDisplay: 'short', maximumFractionDigits: 2})
+  const formattedSize = getHumanFriendlyBytes(size, formatUnit)
+
   const showTooltip = (originalFilename || '').length > 37
 
+  const {t} = useTranslation()
   const handleConfirmDelete = useCallback(() => {
     setShowDeleteDialog(true)
   }, [])
@@ -141,19 +144,19 @@ export const AssetRow = (props: RowProps) => {
       toast.push({
         closable: true,
         status: 'error',
-        title: 'File could not be deleted',
+        title: t('asset-source.file.asset-list.delete-failed'),
         description: error.message,
       })
     },
-    [toast],
+    [t, toast],
   )
 
   const handleDeleteSuccess = useCallback(() => {
     toast.push({
       status: 'success',
-      title: 'File was deleted',
+      title: t('asset-source.file.asset-list.delete-successful'),
     })
-  }, [toast])
+  }, [t, toast])
 
   const handleDeleteAsset = useCallback(() => {
     setIsDeleting(true)
@@ -271,7 +274,7 @@ export const AssetRow = (props: RowProps) => {
             <Grid marginTop={3} columns={3} gap={1}>
               <Stack space={2}>
                 <Label size={1} muted>
-                  Size
+                  {t('asset-source.asset-list.details.size')}
                 </Label>
                 <Text size={1} muted>
                   {formattedSize}
@@ -279,7 +282,7 @@ export const AssetRow = (props: RowProps) => {
               </Stack>
               <Stack space={2}>
                 <Label size={1} muted>
-                  Type
+                  {t('asset-source.asset-list.details.type')}
                 </Label>
                 <Text size={1} muted>
                   {formattedMimeType}
@@ -287,7 +290,7 @@ export const AssetRow = (props: RowProps) => {
               </Stack>
               <Stack space={2}>
                 <Label size={1} muted>
-                  Date added
+                  {t('asset-source.asset-list.details.date-added')}
                 </Label>
                 <Text size={1} muted>
                   {formattedTime}
@@ -299,7 +302,7 @@ export const AssetRow = (props: RowProps) => {
                 fontSize={1}
                 tone="default"
                 mode="ghost"
-                text="Show uses"
+                text={t('asset-source.asset-list.actions.show-uses')}
                 onClick={handleToggleUsageDialog}
                 icon={LinkIcon}
               />
@@ -308,10 +311,14 @@ export const AssetRow = (props: RowProps) => {
                 fontSize={1}
                 tone="critical"
                 mode="ghost"
-                text="Delete"
+                text={t('asset-source.file.asset-list.action.delete.title')}
                 icon={TrashIcon}
                 disabled={isSelected}
-                title={isSelected ? DISABLED_DELETE_TITLE : 'Delete file'}
+                title={t(
+                  isSelected
+                    ? 'asset-source.file.asset-list.action.delete.disabled-cannot-delete-current-file'
+                    : 'asset-source.file.asset-list.action.delete.title',
+                )}
                 onClick={handleConfirmDelete}
               />
             </Stack>
@@ -350,7 +357,9 @@ export const AssetRow = (props: RowProps) => {
           onClick={onClick}
           padding={0}
           onKeyPress={onKeyPress}
-          title={`Select the file ${originalFilename}`}
+          title={t('asset-source.file.asset-list.item.select-file-tooltip', {
+            filename: originalFilename,
+          })}
           isSelected={isSelected}
         >
           <CustomFlex
@@ -361,7 +370,6 @@ export const AssetRow = (props: RowProps) => {
             onClick={onClick}
             onKeyPress={onKeyPress}
             data-id={_id}
-            title={`Select the file ${originalFilename}`}
           >
             <Card
               as={CardIconWrapper}

@@ -83,7 +83,7 @@ export const studioLocaleStrings = {
   'changes.changes-by-author': 'Changes by',
 
   /** Loading changes in Review Changes Pane */
-  'changes.loading-changes': 'Loading changes',
+  'changes.loading-changes': 'Loading changes…',
 
   /** No Changes title in the Review Changes pane */
   'changes.no-changes-title': 'There are no changes',
@@ -255,7 +255,7 @@ export const studioLocaleStrings = {
   'timeline.latest-version': 'Latest version',
 
   /** Label for loading history */
-  'timeline.loading-history': 'Loading history',
+  'timeline.loading-history': 'Loading history…',
 
   /** The aria-label for the list of revisions in the timeline */
   'timeline.list.aria-label': 'Document revisions',
@@ -827,6 +827,133 @@ export const studioLocaleStrings = {
   /** Text shown when summarizing validation information, when the field has one or more warnings */
   'form.validation.summary.warnings-count_one': '{{count}} warning',
   'form.validation.summary.warnings-count_other': '{{count}} warnings',
+
+  /** --- Default asset sources --- */
+
+  /** Text displayed on button or menu invoking the image asset source */
+  'asset-source.image.title': 'Uploaded images',
+
+  /** Text displayed on button or menu invoking the file asset source */
+  'asset-source.file.title': 'Uplaoded files',
+
+  /** Keys shared between both image asset source and file asset source */
+  /** Select asset dialog title for files */
+  'asset-source.dialog.default-title_file': 'Select file',
+  /** Select asset dialog title for images */
+  'asset-source.dialog.default-title_image': 'Select image',
+  /** Select asset dialog load more items */
+  'asset-source.dialog.load-more': 'Load more',
+  /** Text shown when the list of assets only include a specific set of types */
+  'asset-source.dialog.accept-message':
+    'Only showing assets of accepted types: <strong>{{acceptTypes}}</strong>',
+  /** Text shown when selecting an image but there's no images to select from */
+  'asset-source.dialog.no-assets_image': 'No images',
+  /** Text shown when selecting a file but there's no files to select from */
+  'asset-source.dialog.no-assets_file': 'No files',
+  /** Menu item for showing where a particular asset is used */
+  'asset-source.asset-list.menu.show-usage': 'Show usage',
+  /** Menu item for deleting the asset */
+  'asset-source.asset-list.menu.delete': 'Delete',
+
+  /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *named* image **/
+  'asset-source.usage-list.documents-using-image_named_zero':
+    'No documents are using image <code>{{filename}}</code>',
+  'asset-source.usage-list.documents-using-image_named_one':
+    'One document is using image <code>{{filename}}</code>',
+  'asset-source.usage-list.documents-using-image_named_other':
+    '{{count}} documents are using image <code>{{filename}}</code>',
+
+  /** Text shown in usage dialog for an image asset when there are zero, one or more documents using the *unnamed* image **/
+  'asset-source.usage-list.documents-using-image_unnamed_zero': 'No documents are using this image',
+  'asset-source.usage-list.documents-using-image_unnamed_one': 'One document is using this image',
+  'asset-source.usage-list.documents-using-image_unnamed_other':
+    '{{count}} documents are using this image',
+
+  /** Text shown in usage dialog for a file asset when there are zero, one or more documents using the *named* file **/
+  'asset-source.usage-list.documents-using-file_named_zero':
+    'No documents are using file <code>{{filename}}</code>',
+  'asset-source.usage-list.documents-using-file_named_one':
+    'One document is using file <code>{{filename}}</code>',
+  'asset-source.usage-list.documents-using-file_named_other':
+    '{{count}} documents are using file <code>{{filename}}</code>',
+
+  /** Text shown in usage dialog for a file asset when there are zero, one or more documents using the *unnamed* file **/
+  'asset-source.usage-list.documents-using-file_unnamed_zero': 'No documents are using this file',
+  'asset-source.usage-list.documents-using-file_unnamed_one': 'One document is using this file',
+  'asset-source.usage-list.documents-using-file_unnamed_other':
+    '{{count}} documents are using this file',
+
+  /** Header in usage dialog for image assets */
+  'asset-source.asset-usage-dialog.header_image': 'Documents using image',
+  /** Header in usage dialog for file assets */
+  'asset-source.asset-usage-dialog.header_file': 'Documents using file',
+  /** Text shown in usage dialog when loading documents using the selected asset */
+  'asset-source.asset-usage-dialog.loading': 'Loading…',
+
+  /** Dialog header for delete-asset dialog when deleting an image */
+  'asset-source.delete-dialog.header_image': 'Delete image',
+  /** Dialog header for delete-asset dialog when deleting a file */
+  'asset-source.delete-dialog.header_file': 'Delete file',
+  /** Text shown in delete dialog when loading documents using the selected asset */
+  'asset-source.delete-dialog.loading': 'Loading…',
+  /** Text for cancel action in delete-asset dialog */
+  'asset-source.delete-dialog.action.cancel': 'Cancel',
+  /** Text for "confirm delete" action in delete-asset dialog */
+  'asset-source.delete-dialog.action.delete': 'Delete',
+
+  /** Warning message showing when *named* file can't be deleted because it is in use */
+  'asset-source.delete-dialog.usage-list.warning-file-is-in-use_named':
+    "{{filename}} cannot be deleted because it's being used. In order to delete this file, you first need to remove all uses of it.",
+
+  /** Warning message showing when *unnamed* file can't be deleted because it is in use */
+  'asset-source.delete-dialog.usage-list.warning-file-is-in-use_unnamed':
+    "This file cannot be deleted because it's being used. In order to delete it, you first need to remove all uses of it.",
+
+  /** Warning message showing when *named* image can't be deleted because it is in use */
+  'asset-source.delete-dialog.usage-list.warning-image-is-in-use_named':
+    "{{filename}} cannot be deleted because it's being used. In order to delete this image, you first need to remove all uses of it.",
+
+  /** Warning message showing when *unnamed* image can't be deleted because it is in use */
+  'asset-source.delete-dialog.usage-list.warning-image-is-in-use_unnamed':
+    "This image cannot be deleted because it's being used. In order to delete it, you first need to remove all uses of it.",
+
+  /** Alt text showing on image preview in delete asset dialog  */
+  'asset-source.delete-dialog.usage-list.image-preview-alt': 'Preview of image',
+
+  /** Message confirming to delete *named* file */
+  'asset-source.delete-dialog.usage-list.confirm-delete-file_named':
+    'You are about to delete the file <strong>{{filename}}}</strong> and its metadata. Are you sure?',
+
+  /** Message confirming to delete *unnamed* file */
+  'asset-source.delete-dialog.usage-list.confirm-delete-file_unnamed':
+    'You are about to delete the file and its metadata. Are you sure?',
+
+  /** Message confirming to delete *named* image */
+  'asset-source.delete-dialog.usage-list.confirm-delete-image_named':
+    'You are about to delete the image <strong>{{filename}}</strong> and its metadata. Are you sure?',
+
+  /** Message confirming to delete *unnamed* image */
+  'asset-source.delete-dialog.usage-list.confirm-delete-image_unnamed':
+    'You are about to delete the image and its metadata. Are you sure?',
+
+  /** Image asset source */
+  'asset-source.image.asset-list.delete-successful': 'Image was deleted',
+  'asset-source.image.asset-list.delete-failed': 'Image could not be deleted',
+
+  /** File asset source */
+  'asset-source.file.asset-list.header.filename': 'Filename',
+  'asset-source.file.asset-list.header.size': 'Size',
+  'asset-source.file.asset-list.header.type': 'Type',
+  'asset-source.file.asset-list.header.date-added': 'Date added',
+
+  'asset-source.file.asset-list.action.select-file.title': 'Select the file {{filename}}',
+  'asset-source.file.asset-list.action.delete.text': 'Delete',
+  'asset-source.file.asset-list.action.delete.title': 'Delete file',
+  'asset-source.file.asset-list.action.delete.disabled-cannot-delete-current-file':
+    'Cannot delete currently selected file',
+
+  'asset-source.file.asset-list.delete-successful': 'File was deleted',
+  'asset-source.file.asset-list.delete-failed': 'File could not be deleted',
 
   /** --- Workspace menu --- */
 

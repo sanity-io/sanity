@@ -6,10 +6,11 @@ import {Asset} from '@sanity/types'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FullscreenSpinner} from '../../../components/FullscreenSpinner'
-import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
 import {AssetMenu} from '../shared/AssetMenu'
-import {AssetMenuAction} from '../types'
 import {AssetUsageDialog} from '../shared/AssetUsageDialog'
+import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
+import {AssetMenuAction} from '../types'
+import {useTranslation} from '../../../../i18n'
 
 interface AssetProps {
   asset: Asset
@@ -86,6 +87,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
   const [showUsageDialog, setShowUsageDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const {t} = useTranslation()
 
   useEffect(() => {
     return () => {
@@ -113,19 +115,19 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
       toast.push({
         closable: true,
         status: 'error',
-        title: 'Image could not be deleted',
+        title: t('asset-source.image.asset-list.delete-failed'),
         description: error.message,
       })
     },
-    [toast],
+    [t, toast],
   )
 
   const handleDeleteSuccess = useCallback(() => {
     toast.push({
       status: 'success',
-      title: 'Image was deleted',
+      title: t('asset-source.image.asset-list.delete-successful'),
     })
-  }, [toast])
+  }, [t, toast])
 
   const handleDeleteAsset = useCallback(() => {
     setIsDeleting(true)

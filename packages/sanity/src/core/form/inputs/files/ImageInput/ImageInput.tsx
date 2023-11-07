@@ -13,7 +13,7 @@ import {
   Stack,
   ToastParams,
 } from '@sanity/ui'
-import {get} from 'lodash'
+import {get, startCase} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {
@@ -500,7 +500,10 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         return (
           <MenuItem
             key={assetSource.name}
-            text={assetSource.title}
+            text={
+              (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
+              startCase(assetSource.name)
+            }
             onClick={() => {
               this.setState({isMenuOpen: false})
               this.handleSelectImageFromAssetSource(assetSource)
@@ -576,7 +579,10 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
                 return (
                   <MenuItem
                     key={assetSource.name}
-                    text={assetSource.title}
+                    text={
+                      (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
+                      startCase(assetSource.name)
+                    }
                     onClick={() => {
                       this.setState({isMenuOpen: false})
                       this.handleSelectImageFromAssetSource(assetSource)

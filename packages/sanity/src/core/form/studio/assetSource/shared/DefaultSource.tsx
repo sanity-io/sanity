@@ -7,6 +7,7 @@ import {uniqueId} from 'lodash'
 import styled from 'styled-components'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {Translate, useIntlListFormat, useTranslation} from '../../../../i18n'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
 
@@ -93,6 +94,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   const versionedClient = useMemo(() => client.withConfig({apiVersion: '2023-02-14'}), [client])
   const _elementId = useRef(`default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
+  const {t} = useTranslation()
   const fetch$ = useRef<Subscription>()
   const [assets, setAssets] = useState<Asset[]>([])
   const [isLastPage, setIsLastPage] = useState(false)
@@ -101,13 +103,6 @@ const DefaultAssetSource = function DefaultAssetSource(
   const {selectedAssets, assetType = 'image', dialogHeaderTitle, onClose, onSelect, accept} = props
 
   const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
-  const acceptTypes = accept
-    ? accept
-        .split(',')
-        .map((a) => a.trim())
-        .join(', ')
-    : ''
-  const showAcceptMessage = !isLoading && accept && accept.length > 0
   const fetchPage = useCallback(
     (pageNumber: number) => {
       const start = pageNumber * PER_PAGE
@@ -210,24 +205,37 @@ const DefaultAssetSource = function DefaultAssetSource(
     }
   }, [isLoading])
 
+  const listFormat = useIntlListFormat({style: 'narrow'})
+
   return (
     <Dialog
       __unstable_autoFocus={hasResetAutoFocus}
-      header={dialogHeaderTitle}
+      header={
+        dialogHeaderTitle ||
+        t('asset-source.dialog.default-title', {
+          context: assetType,
+        })
+      }
       id={_elementId.current}
       onClickOutside={handleClose}
       onClose={handleClose}
       ref={ref}
       width={2}
     >
-      {showAcceptMessage && !isImageOnlyWildCard && (
+      {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
         <Card tone="primary" marginTop={4} marginX={4} padding={[3, 3, 4]} border radius={2}>
           <Flex gap={[3, 4]} align="center">
             <Text>
               <InfoOutlineIcon />
             </Text>
             <Text size={1}>
-              Only showing assets of accepted types: <b>{acceptTypes}</b>
+              <Translate
+                t={t}
+                i18nKey="asset-source.dialog.accept-message"
+                values={{
+                  acceptedTypes: listFormat.format(accept.split(',').map((type) => type.trim())),
+                }}
+              />
             </Text>
           </Flex>
         </Card>
@@ -260,7 +268,7 @@ const DefaultAssetSource = function DefaultAssetSource(
               icon={DownloadIcon}
               loading={isLoading}
               onClick={handleFetchNextPage}
-              text="Load more"
+              text={t('asset-source.dialog.load-more')}
               tone="primary"
             />
           </Flex>
