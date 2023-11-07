@@ -3,6 +3,7 @@ import {ElementQuery, Select, TabList} from '@sanity/ui'
 import styled from 'styled-components'
 import {FormFieldGroup} from '../../../store'
 import {GroupOption, GroupTab} from './GroupTab'
+import {useTranslation} from '../../../../i18n'
 
 interface FieldGroupTabsProps {
   disabled?: boolean
@@ -71,9 +72,11 @@ const GroupSelect = ({
     [onSelect],
   )
 
+  const {t} = useTranslation()
+
   return (
     <Select
-      aria-label="Field groups"
+      aria-label={t('inputs.object.field-group-tabs.aria-label')}
       autoFocus={shouldAutoFocus}
       data-testid="field-group-select"
       disabled={disabled}
