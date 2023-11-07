@@ -51,6 +51,7 @@ export async function renderFileInput(options: {
       ...restProps,
       assetSources,
       client,
+      t: (key: string, values?: Record<string, string>) => key,
       directUploads: true,
       observeAsset,
       resolveUploader,

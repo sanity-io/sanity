@@ -299,41 +299,41 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** --- File (Image, File and ImageTool) Inputs --- */
 
   /** Accessibility label for button to open image edit dialog */
-  'inputs.files.image.actions-menu.edit-details.aria-label': 'Åpne bilderedigeringsdialog',
+  'inputs.image.actions-menu.edit-details.aria-label': 'Åpne bilderedigeringsdialog',
 
   /** Open image options menu */
-  'inputs.files.image.actions-menu.options.label': 'Åpne bildeinnstillingsmeny',
+  'inputs.image.actions-menu.options.label': 'Åpne bildeinnstillingsmeny',
 
   /** Tooltip text for action to crop image */
-  'inputs.files.image.actions-menu.crop-image-tooltip': 'Beskjær bilde',
+  'inputs.image.actions-menu.crop-image-tooltip': 'Beskjær bilde',
 
   /** The upload could not be completed at this time. */
-  'inputs.files.image.upload-error.description':
+  'inputs.image.upload-error.description':
     'Opplastingen kunne ikke fullføres på dette tidspunktet.',
 
   /** Upload failed */
-  'inputs.files.image.upload-error.title': 'Opplasting mislyktes',
+  'inputs.image.upload-error.title': 'Opplasting mislyktes',
 
   /** Edit hotspot and crop */
-  'inputs.files.image.hotspot-dialog.title': 'Rediger fokuspunkt og beskjær',
+  'inputs.image.hotspot-dialog.title': 'Rediger fokuspunkt og beskjær',
 
   /** Preview of uploaded image */
-  'inputs.files.image.preview-uploaded-image': 'Forhåndsvisning av opplastet bilde',
+  'inputs.image.preview-uploaded-image': 'Forhåndsvisning av opplastet bilde',
 
   /** Cannot upload this file here */
-  'inputs.files.image.drag-overlay.cannot-upload-here': 'Kan ikke laste opp denne filen her',
+  'inputs.image.drag-overlay.cannot-upload-here': 'Kan ikke laste opp denne filen her',
 
   /** This field is read only */
-  'inputs.files.image.drag-overlay.this-field-is-read-only': 'Dette feltet er skrivebeskyttet',
+  'inputs.image.drag-overlay.this-field-is-read-only': 'Dette feltet er skrivebeskyttet',
 
   /** Drop image to upload */
-  'inputs.files.image.drag-overlay.drop-to-upload-image': 'Slipp bilde for å laste opp',
+  'inputs.image.drag-overlay.drop-to-upload-image': 'Slipp bilde for å laste opp',
 
   /** Invalid image value */
-  'inputs.files.image.invalid-image-warning.title': 'Ugyldig bildeverdi',
+  'inputs.image.invalid-image-warning.title': 'Ugyldig bildeverdi',
 
   /** The value of this field is not a valid image. Resetting this field will let you choose a new image. */
-  'inputs.files.image.invalid-image-warning.description':
+  'inputs.image.invalid-image-warning.description':
     'Verdien i dette feltet er ikke et gyldig bilde. Ved å tilbakestille dette feltet kan du velge et nytt bilde.',
 
   /** The URL is copied to the clipboard */
@@ -402,10 +402,10 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.files.common.stale-upload-warning.clear': 'Fjern opplasting',
 
   /** Hotspot & Crop */
-  'inputs.files.imagetool.field.title': 'Fokuspunkt & beskjæring',
+  'inputs.imagetool.title': 'Fokuspunkt & beskjæring',
 
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
-  'inputs.files.imagetool.field.description':
+  'inputs.imagetool.description':
     'Juster rektangelet for å beskjære bildet. Juster sirkelen for å spesifisere området som alltid skal være synlig.',
 
   /** --- Reference (and Cross-Dataset Reference) Input --- */
