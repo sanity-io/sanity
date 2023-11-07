@@ -30,8 +30,8 @@ function serialize(date: Date): string {
 }
 
 const CALENDAR_LABELS: CalendarLabels = {
-  goToNextDay: 'Tomorrow',
-  goToPreviousDay: 'Yesterday',
+  goToTomorrow: 'Tomorrow',
+  goToYesterday: 'Yesterday',
   goToToday: 'Today',
   goToPreviousYear: 'Previous year',
   goToNextYear: 'Next year',

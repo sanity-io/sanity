@@ -57,10 +57,10 @@ export const studioLocaleStrings = {
   'calendar.action.go-to-today-aria-label': 'Go to today',
 
   /* Label for navigating the calendar to "yesterday", without _selecting_ yesterday. Short form, eg `Yesterday`, not `Go to yesterday` */
-  'calendar.action.go-to-previous-day': 'Yesterday',
+  'calendar.action.go-to-yesterday': 'Yesterday',
 
   /* Label for navigating the calendar to "tomorrow", without _selecting_ tomorrow. Short form, eg `Tomorrow`, not `Go to tomorrow` */
-  'calendar.action.go-to-nextday': 'Tomorrow',
+  'calendar.action.go-to-tomorrow': 'Tomorrow',
 
   /** Label for selecting an hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
   'calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
