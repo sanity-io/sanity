@@ -1,30 +1,21 @@
 import {CogIcon, UsersIcon} from '@sanity/icons'
 import {
-  AvatarStack,
   Box,
-  Card,
   Menu,
   MenuButton,
   MenuDivider,
   Stack,
   Text,
   // eslint-disable-next-line no-restricted-imports
-  Button,
 } from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {StatusButton, UserAvatar} from '../../../../components'
+import {StatusButton} from '../../../../components'
 import {useGlobalPresence} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
 import {MenuItem} from '../../../../../ui'
 import {useWorkspace} from '../../../workspace'
 import {PresenceMenuItem} from './PresenceMenuItem'
-
-const MAX_AVATARS = 4
-
-const AvatarStackCard = styled(Card)`
-  background: transparent;
-`
 
 const StyledMenu = styled(Menu)`
   max-width: 350px;
@@ -36,12 +27,7 @@ const FooterStack = styled(Stack)`
   bottom: 0;
 `
 
-interface PresenceMenuProps {
-  collapse?: boolean
-}
-
-export function PresenceMenu(props: PresenceMenuProps) {
-  const {collapse} = props
+export function PresenceMenu() {
   const presence = useGlobalPresence()
   const {projectId} = useWorkspace()
   const {scheme} = useColorScheme()
@@ -62,24 +48,10 @@ export function PresenceMenu(props: PresenceMenuProps) {
   }, [])
 
   const button = useMemo(() => {
-    if (collapse) {
-      return (
-        <StatusButton icon={UsersIcon} mode="bleed" tone={hasPresence ? 'positive' : undefined} />
-      )
-    }
-
     return (
-      <Button mode="bleed" padding={1}>
-        <AvatarStackCard>
-          <AvatarStack maxLength={MAX_AVATARS} aria-label="Who is here">
-            {presence.map((item) => (
-              <UserAvatar key={item.user.id} user={item.user} />
-            ))}
-          </AvatarStack>
-        </AvatarStackCard>
-      </Button>
+      <StatusButton icon={UsersIcon} mode="bleed" tone={hasPresence ? 'positive' : undefined} />
     )
-  }, [collapse, hasPresence, presence])
+  }, [hasPresence])
 
   const popoverProps = useMemo(
     () => ({

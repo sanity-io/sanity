@@ -5,6 +5,7 @@ import React, {forwardRef, KeyboardEvent as ReactKeyboardEvent, Ref, useCallback
 import styled from 'styled-components'
 import {GLOBAL_SEARCH_KEY, GLOBAL_SEARCH_KEY_MODIFIER} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
+import {Button} from '../../../../../../ui'
 
 const KeyboardShortcutFlex = styled(Flex)`
   position: absolute;
@@ -14,16 +15,6 @@ const KeyboardShortcutFlex = styled(Flex)`
   & > :first-child {
     margin-right: 1px;
   }
-`
-
-const PlaceholderSearchInputFlex = styled(Flex)`
-  min-width: 253px;
-  max-width: 350px;
-  position: relative;
-`
-
-const PlaceholderTextInput = styled(TextInput)`
-  padding-right: 60px;
 `
 
 export const PlaceholderSearchInput = forwardRef(function DummyInput(
@@ -53,26 +44,16 @@ export const PlaceholderSearchInput = forwardRef(function DummyInput(
   )
 
   return (
-    <PlaceholderSearchInputFlex align="center">
-      <PlaceholderTextInput
-        aria-autocomplete="list"
-        aria-expanded="false"
-        autoComplete="off"
-        icon={SearchIcon}
-        data-testid="studio-search"
-        onChange={handleChange}
-        onClick={onOpen}
-        onKeyDown={handleKeyDown}
-        placeholder="Search"
-        radius={2}
-        ref={ref}
-        role="combobox"
-        value={terms.query}
-      />
-      <KeyboardShortcutFlex align="center" height="fill" marginRight={2}>
-        <KBD>{GLOBAL_SEARCH_KEY_MODIFIER}</KBD>
-        <KBD>{GLOBAL_SEARCH_KEY.toUpperCase()}</KBD>
-      </KeyboardShortcutFlex>
-    </PlaceholderSearchInputFlex>
+    <Button
+      icon={SearchIcon}
+      data-testid="studio-search"
+      //onChange={handleChange}
+      onClick={onOpen}
+      mode="bleed"
+      //onKeyDown={handleKeyDown}
+      ref={ref}
+      role="combobox"
+      value={terms.query}
+    />
   )
 })

@@ -60,6 +60,7 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
               disabled={!authStates}
               aria-label={ariaLabel}
               justify={collapsed ? undefined : 'flex-start'}
+              size="small"
             />
           }
           id="workspace-menu"

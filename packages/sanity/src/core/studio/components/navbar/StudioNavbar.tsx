@@ -141,7 +141,6 @@ export function StudioNavbar() {
         data-testid="navbar"
         data-ui="Navbar"
         padding={2}
-        scheme="dark"
         shadow={theme.__legacy || scheme === 'dark' ? 1 : undefined}
         sizing="border"
       >
@@ -179,26 +178,8 @@ export function StudioNavbar() {
               />
             </Box>
 
-            {/* Search */}
-            <LayerProvider>
-              <SearchProvider fullscreen={shouldRender.searchFullscreen}>
-                <BoundaryElementProvider element={document.body}>
-                  <PortalProvider element={searchFullscreenPortalEl}>
-                    {shouldRender.searchFullscreen && (
-                      <SearchDialog
-                        onClose={handleCloseSearchFullscreen}
-                        onOpen={handleOpenSearchFullscreen}
-                        open={searchFullscreenOpen}
-                      />
-                    )}
-                  </PortalProvider>
-                  {!shouldRender.searchFullscreen && <SearchField />}
-                </BoundaryElementProvider>
-              </SearchProvider>
-            </LayerProvider>
-
             {shouldRender.tools && (
-              <Card flex={1} marginX={2} overflow="visible" paddingRight={1}>
+              <Card flex={1} marginX={2} overflow="visible">
                 <ToolMenu
                   activeToolName={activeToolName}
                   closeSidebar={handleCloseDrawer}
@@ -218,10 +199,28 @@ export function StudioNavbar() {
             </Box>
           )}
 
-          <Flex gap={2} align="center">
+          {/* Search */}
+          <LayerProvider>
+            <SearchProvider fullscreen={shouldRender.searchFullscreen}>
+              <BoundaryElementProvider element={document.body}>
+                <PortalProvider element={searchFullscreenPortalEl}>
+                  {shouldRender.searchFullscreen && (
+                    <SearchDialog
+                      onClose={handleCloseSearchFullscreen}
+                      onOpen={handleOpenSearchFullscreen}
+                      open={searchFullscreenOpen}
+                    />
+                  )}
+                </PortalProvider>
+                {!shouldRender.searchFullscreen && <SearchField />}
+              </BoundaryElementProvider>
+            </SearchProvider>
+          </LayerProvider>
+
+          <Flex align="center">
             {(shouldRender.configIssues || shouldRender.resources) && (
-              <Card borderRight>
-                <Flex gap={1} paddingX={2}>
+              <Card>
+                <Flex gap={1}>
                   {shouldRender.configIssues && <ConfigIssuesButton />}
                   {shouldRender.resources && <ResourcesButton />}
                 </Flex>
@@ -229,7 +228,7 @@ export function StudioNavbar() {
             )}
 
             <Flex align="center" gap={1}>
-              <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
+              <PresenceMenu />
               {shouldRender.tools && <UserMenu />}
               {shouldRender.searchFullscreen && (
                 <Button
