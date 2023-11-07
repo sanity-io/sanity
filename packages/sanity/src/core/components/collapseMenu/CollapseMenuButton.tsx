@@ -1,7 +1,5 @@
 import React, {forwardRef} from 'react'
-// eslint-disable-next-line no-restricted-imports
-import {Button, ButtonProps} from '@sanity/ui'
-import {TooltipProps} from '../../../ui'
+import {Button, ButtonProps, TooltipProps} from '../../../ui'
 
 /** @internal */
 export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {
@@ -39,16 +37,5 @@ export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
     ...rest
   } = props
 
-  // @todo: to revisit once we have direction on responsive behaviour
-  return (
-    <Button
-      data-ui="CollapseMenuButton"
-      {...rest}
-      fontSize={1}
-      icon={undefined} // temporarily disabling all icons
-      padding={2}
-      radius="full"
-      ref={ref}
-    />
-  )
+  return <Button data-ui="CollapseMenuButton" {...rest} ref={ref} />
 })
