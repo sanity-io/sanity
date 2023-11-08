@@ -60,25 +60,24 @@ export function PopoverDialog(props: PopoverDialogProps) {
     referenceElement?.focus()
   }, [onClose, referenceElement])
 
+  // @todo: these use the same styles as dialogs, can this be shared?
   const content = (
     <PopoverContainer width={width}>
       <TrapFocus autoFocus>
         <Stack ref={containerRef}>
           <StickyLayer>
-            <Box padding={2} paddingLeft={3}>
+            <Box padding={2} paddingLeft={4}>
               <Flex align="center" gap={2}>
                 <Box flex={1}>
-                  <Text textOverflow="ellipsis" weight="medium">
+                  <Text size={1} textOverflow="ellipsis" weight="medium">
                     {header}
                   </Text>
                 </Box>
-
                 <Button icon={CloseIcon} mode="bleed" onClick={handleClose} />
               </Flex>
             </Box>
           </StickyLayer>
-
-          {children}
+          <Box padding={4}>{children}</Box>
         </Stack>
       </TrapFocus>
     </PopoverContainer>
