@@ -54,7 +54,6 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     create,
     edit,
     getComment,
-    getCommentPath,
     isRunningSetup,
     mentionOptions,
     remove,
@@ -275,7 +274,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
         comment: undefined,
       })
     }
-  }, [getComment, getCommentPath, handleScrollToComment, loading, params, setParams])
+  }, [getComment, handleScrollToComment, loading, params, setParams])
 
   return (
     <Fragment>

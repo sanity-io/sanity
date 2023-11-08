@@ -68,7 +68,6 @@ const COMMENTS_DISABLED_CONTEXT: CommentsContextValue = {
   create: noopOperation,
   edit: noopOperation,
   getComment: () => undefined,
-  getCommentPath: () => null,
   isRunningSetup: false,
   mentionOptions: EMPTY_MENTION_OPTIONS,
   remove: noopOperation,
@@ -162,16 +161,6 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
   )
 
   const getComment = useCallback((id: string) => data?.find((c) => c._id === id), [data])
-
-  const getCommentPath = useCallback(
-    (id: string) => {
-      const comment = getComment(id)
-      if (!comment) return null
-
-      return comment.target.path.field
-    },
-    [getComment],
-  )
 
   const handleOnCreate = useCallback(
     async (payload: CommentPostPayload) => {
@@ -290,7 +279,6 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
       setStatus,
 
       getComment,
-      getCommentPath,
 
       comments: {
         data: threadItemsByStatus,
@@ -315,7 +303,6 @@ const CommentsProviderInner = memo(function CommentsProviderInner(
       isRunningSetup,
       status,
       getComment,
-      getCommentPath,
       threadItemsByStatus,
       error,
       loading,
