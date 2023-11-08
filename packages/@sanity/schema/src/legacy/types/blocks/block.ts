@@ -60,14 +60,9 @@ export const BlockType = {
 
     // NOTE: if you update this (EVEN THE ORDER OF FIELDS) you _NEED TO_ also
     // update `BlockSchemaType`, `isBlockSchemaType` and similar in `@sanity/types`
-    const fields = [
-      childrenField,
-      levelField,
-      listItemField,
-      markDefsField,
-      styleField,
-      levelField,
-    ].concat(subTypeDef.fields || [])
+    const fields = [childrenField, styleField, listItemField, markDefsField, levelField].concat(
+      subTypeDef.fields || [],
+    )
 
     const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {
       type: BLOCK_CORE,
