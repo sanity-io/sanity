@@ -5,8 +5,14 @@ export const Root = styled(Box)`
   position: relative;
 `
 
-export const Title = styled.h6(
-  ({theme, $titleHeight, $muted}: {theme: Theme; $titleHeight?: number; $muted?: boolean}) => {
+interface TitleProps {
+  $titleHeight?: number
+  $muted?: boolean
+  theme: Theme
+}
+
+export const Title = styled.h6<TitleProps>`
+  ${({$titleHeight, $muted, theme}) => {
     const {fontSize, lineHeight} = theme.sanity.fonts.heading.sizes[5]
 
     return css`
@@ -20,5 +26,5 @@ export const Title = styled.h6(
       height: ${$titleHeight ? `${$titleHeight}px` : 'auto'};
       ${$muted ? `color: ${theme.sanity.color.card.disabled.fg};` : ''}
     `
-  },
-)
+  }}
+`
