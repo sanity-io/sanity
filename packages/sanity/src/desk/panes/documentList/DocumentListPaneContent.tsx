@@ -1,9 +1,10 @@
 import {SyncIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import styled from 'styled-components'
 import {Button} from '../../../ui'
+import {LoadingBlock} from '../../../ui/loadingBlock'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
 import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
@@ -130,11 +131,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             value={item}
           />
 
-          {showSpinner && (
-            <Flex align="center" justify="center" padding={4}>
-              <Spinner muted />
-            </Flex>
-          )}
+          {showSpinner && <LoadingBlock hideText />}
 
           {showMaxItemsMessage && (
             <Box marginY={1} paddingX={3} paddingY={4}>

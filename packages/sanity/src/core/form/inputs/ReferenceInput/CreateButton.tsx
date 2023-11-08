@@ -1,13 +1,8 @@
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
-import {
-  Menu,
-  MenuButton,
-  MenuButtonProps,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import {InsufficientPermissionsMessage} from '../../../components'
-import {Button, MenuItem} from '../../../../ui'
+import {Button, MenuItem, TooltipWithNodes} from '../../../../ui'
 import {CreateReferenceOption} from './types'
 
 interface Props extends ComponentProps<typeof Button> {
@@ -36,12 +31,14 @@ export function CreateButton(props: Props) {
   const canCreateAny = createOptions.some((option) => option.permission.granted)
   if (!canCreateAny) {
     return (
-      <Tooltip content={<InsufficientPermissionsMessage operationLabel="create a new reference" />}>
+      <TooltipWithNodes
+        content={<InsufficientPermissionsMessage operationLabel="create a new reference" />}
+      >
         {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
         <div style={INLINE_BLOCK_STYLE}>
           <Button text="Create new" mode="ghost" disabled icon={AddIcon} style={FULL_WIDTH} />
         </div>
-      </Tooltip>
+      </TooltipWithNodes>
     )
   }
 
@@ -60,7 +57,7 @@ export function CreateButton(props: Props) {
       menu={
         <Menu ref={props.menuRef}>
           {createOptions.map((createOption) => (
-            <Tooltip
+            <TooltipWithNodes
               disabled={createOption.permission.granted}
               key={createOption.id}
               content={
@@ -77,7 +74,7 @@ export function CreateButton(props: Props) {
                   onClick={() => onCreate(createOption)}
                 />
               </div>
-            </Tooltip>
+            </TooltipWithNodes>
           ))}
         </Menu>
       }

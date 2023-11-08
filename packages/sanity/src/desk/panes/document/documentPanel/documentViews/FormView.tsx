@@ -1,10 +1,8 @@
-/* eslint-disable no-nested-ternary */
-
-import {Box, Container, Flex, Spinner, Text, focusFirstDescendant} from '@sanity/ui'
-import React, {forwardRef, useEffect, useMemo, useRef, type Ref, useCallback, useState} from 'react'
+import {Box, Container, Text, focusFirstDescendant} from '@sanity/ui'
+import React, {forwardRef, useEffect, useMemo, useCallback, useState} from 'react'
 import {tap} from 'rxjs/operators'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {useDocumentPane} from '../../useDocumentPane'
-import {Delay} from '../../../../components/Delay'
 import {useConditionalToast} from './useConditionalToast'
 import {
   DocumentMutationEvent,
@@ -138,6 +136,11 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   //     ),
   //   [documentId]
   // )
+
+  if (!ready) {
+    return <LoadingBlock />
+  }
+
   return (
     <Container
       hidden={hidden}
@@ -149,48 +152,35 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     >
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
-          {ready ? (
-            formState === null ? (
-              <Box padding={2}>
-                <Text>This form is hidden</Text>
-              </Box>
-            ) : (
-              <FormBuilder
-                __internal_fieldActions={fieldActions}
-                __internal_patchChannel={patchChannel}
-                collapsedFieldSets={collapsedFieldSets}
-                collapsedPaths={collapsedPaths}
-                focusPath={formState.focusPath}
-                changed={formState.changed}
-                focused={formState.focused}
-                groups={formState.groups}
-                id="root"
-                members={formState.members}
-                onChange={onChange}
-                onFieldGroupSelect={onSetActiveFieldGroup}
-                onPathBlur={onBlur}
-                onPathFocus={onFocus}
-                onPathOpen={onPathOpen}
-                onSetFieldSetCollapsed={onSetCollapsedFieldSet}
-                onSetPathCollapsed={onSetCollapsedPath}
-                presence={presence}
-                readOnly={formState.readOnly}
-                schemaType={formState.schemaType}
-                validation={validation}
-                value={formState.value}
-              />
-            )
+          {formState === null ? (
+            <Box padding={2}>
+              <Text>This form is hidden</Text>
+            </Box>
           ) : (
-            <Delay ms={300}>
-              <Flex align="center" direction="column" height="fill" justify="center">
-                <Spinner muted />
-                <Box marginTop={3}>
-                  <Text align="center" muted size={1}>
-                    Loading document
-                  </Text>
-                </Box>
-              </Flex>
-            </Delay>
+            <FormBuilder
+              __internal_fieldActions={fieldActions}
+              __internal_patchChannel={patchChannel}
+              collapsedFieldSets={collapsedFieldSets}
+              collapsedPaths={collapsedPaths}
+              focusPath={formState.focusPath}
+              changed={formState.changed}
+              focused={formState.focused}
+              groups={formState.groups}
+              id="root"
+              members={formState.members}
+              onChange={onChange}
+              onFieldGroupSelect={onSetActiveFieldGroup}
+              onPathBlur={onBlur}
+              onPathFocus={onFocus}
+              onPathOpen={onPathOpen}
+              onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+              onSetPathCollapsed={onSetCollapsedPath}
+              presence={presence}
+              readOnly={formState.readOnly}
+              schemaType={formState.schemaType}
+              validation={validation}
+              value={formState.value}
+            />
           )}
         </Box>
       </PresenceOverlay>

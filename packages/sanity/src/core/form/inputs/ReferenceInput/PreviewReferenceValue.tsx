@@ -1,15 +1,8 @@
 import React, {ComponentType, ReactNode, Fragment} from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
-import {
-  Badge,
-  Box,
-  Flex,
-  Inline,
-  Stack,
-  Text,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
+import {TooltipWithNodes} from '../../../../ui'
 import {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
 import {TextWithTone} from '../../../components'
@@ -88,7 +81,7 @@ export function PreviewReferenceValue(props: {
         </Box>
         {insufficientPermissions || notFound ? (
           <Box>
-            <Tooltip
+            <TooltipWithNodes
               portal
               content={
                 notFound ? (
@@ -107,7 +100,7 @@ export function PreviewReferenceValue(props: {
               <TextWithTone tone="default">
                 <HelpCircleIcon />
               </TextWithTone>
-            </Tooltip>
+            </TooltipWithNodes>
           </Box>
         ) : null}
       </Inline>
@@ -174,7 +167,7 @@ function InvalidType(props: {documentId: string; actualType: string; declaredTyp
         </Flex>
       </Box>
       <Box>
-        <Tooltip
+        <TooltipWithNodes
           portal
           content={
             <Stack space={3}>
@@ -198,7 +191,7 @@ function InvalidType(props: {documentId: string; actualType: string; declaredTyp
               <HelpCircleIcon />
             </TextWithTone>
           </Box>
-        </Tooltip>
+        </TooltipWithNodes>
       </Box>
     </Flex>
   )

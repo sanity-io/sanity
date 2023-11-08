@@ -8,15 +8,12 @@ import {
   TooltipProps as UITooltipProps,
 } from '@sanity/ui'
 import React, {forwardRef} from 'react'
+import {TOOLTIP_DELAY_PROPS} from './constants'
 
 /** @internal */
 export type TooltipProps = Omit<UITooltipProps, 'content' | 'padding'> & {
   content?: string | null
   hotkeys?: HotkeysProps['keys']
-}
-
-const TOOLTIP_DELAY_PROPS = {
-  open: 400,
 }
 
 /**

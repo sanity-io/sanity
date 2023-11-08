@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {Box, Flex, Spinner, Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
+import {LoadingBlock} from '../../../../ui/loadingBlock'
 import {TimelineItem} from './timelineItem'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {Chunk, CommandList, CommandListRenderItemCallback} from 'sanity'
@@ -55,11 +56,7 @@ export const Timeline = ({
             timestamp={chunk.endTimestamp}
             type={chunk.type}
           />
-          {activeIndex === filteredChunks.length - 1 && hasMoreChunks && (
-            <Flex align="center" justify="center" padding={4}>
-              <Spinner muted />
-            </Flex>
-          )}
+          {activeIndex === filteredChunks.length - 1 && hasMoreChunks && <LoadingBlock hideText />}
         </Box>
       )
     },

@@ -1,11 +1,6 @@
 import {hues} from '@sanity/color'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {
-  Flex,
-  Text,
-  Theme,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Flex, Text, Theme} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import React, {
   ChangeEvent,
@@ -17,6 +12,7 @@ import React, {
   useState,
 } from 'react'
 import styled, {css} from 'styled-components'
+import {TooltipWithNodes} from '../../../../../../../../../../ui'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'
 
@@ -166,7 +162,7 @@ export function ParsedDateTextInput({
   }, [dateFormat, processInputString, isDateTimeFormat, value])
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       content={
         <Flex gap={2}>
           <IconTextCritical size={1}>
@@ -198,6 +194,6 @@ export function ParsedDateTextInput({
           value={inputValue}
         />
       </div>
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }

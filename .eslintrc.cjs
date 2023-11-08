@@ -250,9 +250,16 @@ module.exports = {
                   'TabProps',
                   'Tooltip',
                   'TooltipProps',
+                  'TooltipWithNodes',
                 ],
                 message:
                   'Please use the (more opinionated) exported components in sanity/src/ui instead.',
+              },
+              {
+                name: '@sanity/ui',
+                importNames: ['Spinner'],
+                message:
+                  'Please consider using the shared `LoadingBlock` component for generic loading screens.',
               },
             ],
           },

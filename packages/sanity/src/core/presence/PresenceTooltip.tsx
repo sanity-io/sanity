@@ -1,10 +1,6 @@
 import React, {useMemo} from 'react'
-import {
-  Flex,
-  Stack,
-  Text,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
+import {TooltipWithNodes} from '../../ui'
 import {UserAvatar} from '../components/userAvatar'
 import {FormNodePresence} from './types'
 
@@ -40,8 +36,8 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
   )
 
   return (
-    <Tooltip content={content} placement="top" portal="documentScrollElement">
+    <TooltipWithNodes content={content} placement="top" portal="documentScrollElement">
       {children}
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }

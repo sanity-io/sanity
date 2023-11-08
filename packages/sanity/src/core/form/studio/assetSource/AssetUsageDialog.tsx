@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {TrashIcon} from '@sanity/icons'
-import {Box, Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {Dialog} from '../../../../ui'
-import {SpinnerWithText} from '../../components/SpinnerWithText'
+import {LoadingBlock} from '../../../../ui/loadingBlock'
 import {useReferringDocuments} from '../../../hooks/useReferringDocuments'
 import {DocumentList} from './DocumentList'
 import {ConfirmMessage} from './ConfirmMessage'
@@ -78,11 +78,7 @@ export function AssetUsageDialog({
       onClose={onClose}
       width={1}
     >
-      {isLoadingParent && (
-        <Box padding={4}>
-          <SpinnerWithText text="Loading..." />
-        </Box>
-      )}
+      {isLoadingParent && <LoadingBlock />}
 
       {!isLoadingParent && (
         <Stack space={1}>

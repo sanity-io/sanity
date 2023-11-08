@@ -1,21 +1,11 @@
 import React, {useCallback, useMemo, useState} from 'react'
-import {
-  Text,
-  useClickOutside,
-  Stack,
-  TextInput,
-  TextInputProps,
-  Tooltip, // eslint-disable-line no-restricted-imports
-  TooltipProps, // eslint-disable-line no-restricted-imports
-  Card,
-  Flex,
-} from '@sanity/ui'
+import {Text, useClickOutside, Stack, TextInput, TextInputProps, Card, Flex} from '@sanity/ui'
 import {AddIcon, ChevronDownIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
-import {Button, ButtonProps} from '../../../../../ui'
+import {Button, ButtonProps, TooltipWithNodes, TooltipWithNodesProps} from '../../../../../ui'
 import {NewDocumentList, NewDocumentListProps} from './NewDocumentList'
 import {ModalType, NewDocumentOption} from './types'
 import {filterOptions} from './filter'
@@ -154,7 +144,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   )
 
   // Tooltip content for the open button
-  const tooltipContent: TooltipProps['content'] = useMemo(() => {
+  const tooltipContent: TooltipWithNodesProps['content'] = useMemo(() => {
     if (!hasNewDocumentOptions) {
       return <Text size={1}>No document types</Text>
     }
@@ -172,7 +162,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   }, [canCreateDocument, currentUser, hasNewDocumentOptions])
 
   // Shared tooltip props for the popover and dialog
-  const sharedTooltipProps: TooltipProps = useMemo(
+  const sharedTooltipProps: TooltipWithNodesProps = useMemo(
     () => ({
       content: tooltipContent,
       disabled: loading || open,
@@ -187,11 +177,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   if (modal === 'dialog') {
     return (
       <>
-        <Tooltip {...sharedTooltipProps}>
+        <TooltipWithNodes {...sharedTooltipProps}>
           <div>
             <Button {...sharedOpenButtonProps} />
           </div>
-        </Tooltip>
+        </TooltipWithNodes>
 
         {open && (
           <StyledDialog
@@ -257,7 +247,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       }
     >
       <div>
-        <Tooltip {...sharedTooltipProps}>
+        <TooltipWithNodes {...sharedTooltipProps}>
           <div>
             <Button
               {...sharedOpenButtonProps}
@@ -266,7 +256,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
               onKeyDown={handleOpenButtonKeyDown}
             />
           </div>
-        </Tooltip>
+        </TooltipWithNodes>
       </div>
     </StyledPopover>
   )
