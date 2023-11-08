@@ -1,50 +1,90 @@
-import {flatten} from 'lodash'
 import {_findMatchingRoutes} from './_findMatchingRoutes'
-import {RouterNode, MatchResult} from './types'
+import {InternalSearchParam, MatchOk, RouterNode, RouterState, SearchParam} from './types'
 import {debug} from './utils/debug'
 
 /** @internal */
-export function _resolvePathFromState(node: RouterNode, state: Record<string, unknown>): string {
-  debug('Resolving path from state %o', state)
+export function _resolvePathFromState(node: RouterNode, _state: RouterState): string {
+  debug('Resolving path from state %o', _state)
 
-  const match: MatchResult = _findMatchingRoutes(node, state)
-
-  if (match.remaining.length > 0) {
-    const remaining = match.remaining
+  const match = _findMatchingRoutes(node, _state)
+  if (match.type === 'error') {
+    const unmappable = match.unmappableStateKeys
+    if (unmappable.length > 0) {
+      throw new Error(
+        `Unable to find matching route for state. Could not map the following state key${
+          unmappable.length == 1 ? '' : 's'
+        } to a valid url: ${unmappable.map(quote).join(', ')}`,
+      )
+    }
+    const missingKeys = match.missingKeys
     throw new Error(
-      `Unable to find matching route for state. Could not map the following state key${
-        remaining.length == 1 ? '' : 's'
-      } to a valid url: ${remaining.join(', ')}`,
+      `Unable to find matching route for state. State object is missing the following key${
+        missingKeys.length == 1 ? '' : 's'
+      } defined in route: ${missingKeys.map(quote).join(', ')}`,
     )
   }
 
-  if (match.nodes.length === 0) {
-    throw new Error(`Unable to resolve path from given state: ${JSON.stringify(state)}`)
+  const {path, searchParams} = pathFromMatchResult(match)
+
+  const search =
+    searchParams.length > 0 ? new URLSearchParams(encodeParams(searchParams)).toString() : ''
+
+  return `/${path.join('/')}${search ? `?${search}` : ''}`
+}
+
+function bracketify(value: string): string {
+  return `[${value}]`
+}
+
+function encodeParamPath(paramPath: string[]): string {
+  const [head, ...tail] = paramPath
+
+  return tail.length > 0 ? [head, ...tail.map(bracketify)].join('') : head
+}
+function encodeParams(params: InternalSearchParam[]): SearchParam[] {
+  return params.map(([key, value]): SearchParam => [encodeParamPath(key), value])
+}
+
+function pathFromMatchResult(match: MatchOk): {
+  path: string[]
+  searchParams: InternalSearchParam[]
+} {
+  const matchedState = match.matchedState
+
+  const base = match.node.route.segments.map((segment) => {
+    if (segment.type === 'dir') {
+      return segment.name
+    }
+
+    const transform = match.node.transform && match.node.transform[segment.name]
+
+    return transform
+      ? transform.toPath(matchedState[segment.name] as any)
+      : matchedState[segment.name]
+  })
+
+  const childMatch = match.child ? pathFromMatchResult(match.child) : undefined
+
+  const searchParams = childMatch?.searchParams
+    ? [...match.searchParams, ...childMatch.searchParams]
+    : match.searchParams
+
+  return {
+    searchParams: addNodeScope(match.node, searchParams),
+    path: [...(base || []), ...(childMatch?.path || [])],
   }
+}
 
-  let scopedState: Record<string, unknown> = state
+function addNodeScope(
+  node: RouterNode,
+  searchParams: InternalSearchParam[],
+): InternalSearchParam[] {
+  const scope = node.scope
+  return scope
+    ? searchParams.map(([namespaces, value]) => [[scope, ...namespaces], value])
+    : searchParams
+}
 
-  const relative = flatten(
-    match.nodes.map((matchNode) => {
-      if (matchNode.scope && matchNode.scope in scopedState) {
-        scopedState = scopedState[matchNode.scope] as Record<string, unknown>
-      }
-
-      return matchNode.route.segments.map((segment) => {
-        if (segment.type === 'dir') {
-          return segment.name
-        }
-
-        const transform = matchNode.transform && matchNode.transform[segment.name]
-
-        return transform
-          ? transform.toPath(scopedState[segment.name] as any)
-          : scopedState[segment.name]
-      })
-    }),
-  ).join('/')
-
-  debug('Resolved to /%s', relative)
-
-  return `/${relative}`
+function quote(value: string): string {
+  return `"${value}"`
 }

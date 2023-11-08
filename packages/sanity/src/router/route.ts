@@ -90,7 +90,7 @@ export interface RouteObject {
  */
 export const route: RouteObject = {
   create: (routeOrOpts, childrenOrOpts, children) =>
-    createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children)),
+    _createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children)),
   intents: (base: string) => {
     const basePath = normalize(base).join('/')
 
@@ -121,7 +121,7 @@ export const route: RouteObject = {
   scope: (scopeName, ...rest) => {
     const options = normalizeArgs(...rest)
 
-    return createNode({
+    return _createNode({
       ...options,
       scope: scopeName,
     })
@@ -175,7 +175,11 @@ function isRoot(pathname: string): boolean {
   return pathname.split('/').every((segment) => !segment)
 }
 
-function createNode(options: RouteNodeOptions): Router {
+/**
+ * @internal
+ * @param options - Route node options
+ */
+export function _createNode(options: RouteNodeOptions): Router {
   const {path, scope, transform, children} = options
 
   if (!path) {

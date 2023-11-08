@@ -57,7 +57,7 @@ function useRouterFromWorkspaceHistory(
       routerBasePath === '/' ? true : routerBasePathRegex.test(pathname)
     return {
       subscribe: (onStoreChange: () => void) => history.listen(onStoreChange),
-      getSnapshot: () => history.location.pathname,
+      getSnapshot: () => history.location.pathname + history.location.search ?? '',
       // Always return null for the server snapshot, as we can't know how to resolve intents until after authentication is done, which is browser-only
       getServerSnapshot: () => null,
       selector: (pathname: string | null) =>

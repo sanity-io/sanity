@@ -1,29 +1,44 @@
 import {difference, intersection, isPlainObject, pick} from 'lodash'
-import {RouterNode, MatchResult} from './types'
+import {
+  InternalSearchParam,
+  MatchError,
+  MatchOk,
+  MatchResult,
+  RouterNode,
+  RouterState,
+} from './types'
 import {arrayify} from './utils/arrayify'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)
 }
 
-function createMatchResult(
-  nodes: RouterNode[],
-  missing: string[],
-  remaining: string[],
-): MatchResult {
-  return {nodes, missing, remaining}
+function createMatchError(
+  node: RouterNode,
+  missingKeys: string[],
+  unmappableStateKeys: string[],
+): MatchError {
+  return {type: 'error', node, missingKeys, unmappableStateKeys}
+}
+
+function createMatchOk(
+  node: RouterNode,
+  matchedState: Record<string, string>,
+  searchParams: InternalSearchParam[],
+  child?: MatchOk | undefined,
+): MatchOk {
+  return {type: 'ok', node, matchedState, searchParams, child}
 }
 
 /** @internal */
-export function _findMatchingRoutes(
-  node: RouterNode,
-  _state?: Record<string, unknown>,
-): MatchResult {
+export function _findMatchingRoutes(node: RouterNode, _state?: RouterState): MatchResult {
   if (!_state) {
-    return createMatchResult([], [], [])
+    return createMatchOk(node, {}, [])
   }
 
-  const state = node.scope ? _state[node.scope] : _state
+  const scopedState = node.scope ? (_state[node.scope] as RouterState) : _state
+
+  const {_searchParams: searchParams = [], ...state} = scopedState || {}
 
   const requiredParams = node.route.segments
     .filter((seg) => seg.type === 'param')
@@ -31,16 +46,25 @@ export function _findMatchingRoutes(
 
   const stateKeys = isRecord(state) ? Object.keys(state) : []
 
+  // These are params found in both the state and the route definition
   const consumedParams = intersection(stateKeys, requiredParams)
+
+  // these are params found in the route definition but not in the state, can't map them to a route
   const missingParams = difference(requiredParams, consumedParams)
+
+  // these are params found in the state but not in the route definition
   const remainingParams = difference(stateKeys, consumedParams)
 
   if (missingParams.length > 0) {
-    return createMatchResult([], missingParams, [])
+    return createMatchError(node, missingParams, [])
   }
 
+  const scopedParams = searchParams.map(([key, value]): InternalSearchParam => [[key], value])
+
+  const consumedState = pick(state, consumedParams) as Record<string, string>
+
   if (remainingParams.length === 0) {
-    return createMatchResult([node], [], [])
+    return createMatchOk(node, consumedState, scopedParams)
   }
 
   const children = arrayify(
@@ -50,25 +74,17 @@ export function _findMatchingRoutes(
   )
 
   if (remainingParams.length > 0 && children.length === 0) {
-    return createMatchResult([], remainingParams, [])
+    // our state includes extra keys that's not consumed by child routes
+    return createMatchError(node, [], remainingParams)
   }
 
   const remainingState = pick(state, remainingParams)
 
-  let matchingChild: MatchResult = {nodes: [], remaining: [], missing: []}
+  const childResult = children.map((childNode) => _findMatchingRoutes(childNode, remainingState))
 
-  arrayify(children).some((childNode) => {
-    matchingChild = _findMatchingRoutes(childNode, remainingState)
-    return matchingChild.nodes.length > 0
-  })
-
-  if (matchingChild.nodes.length === 0) {
-    return createMatchResult([], missingParams, remainingParams)
-  }
-
-  return createMatchResult(
-    [node, ...matchingChild.nodes],
-    matchingChild.missing,
-    matchingChild.remaining,
-  )
+  // Look for a matching route
+  const found = childResult.find((res): res is MatchOk => res.type === 'ok')
+  return found
+    ? createMatchOk(node, consumedState, scopedParams, found)
+    : createMatchError(node, [], remainingParams)
 }
