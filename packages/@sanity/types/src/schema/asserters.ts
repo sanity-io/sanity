@@ -132,8 +132,9 @@ export function isSpanSchemaType(type: unknown): type is SpanSchemaType {
 export function isBlockSchemaType(type: unknown): type is BlockSchemaType {
   if (!isRecord(type)) return false
   if (!Array.isArray(type.fields)) return false
-
-  const [maybeSpanChildren, maybeStyle, maybeList] = type.fields
+  const maybeSpanChildren = type.fields.find(isBlockChildrenObjectField)
+  const maybeStyle = type.fields.find(isBlockStyleObjectField)
+  const maybeList = type.fields.find(isBlockListObjectField)
   return (
     isBlockChildrenObjectField(maybeSpanChildren) &&
     isBlockStyleObjectField(maybeStyle) &&
@@ -151,7 +152,7 @@ export function isBlockStyleObjectField(field: unknown): field is BlockStyleObje
 /** @internal */
 export function isBlockListObjectField(field: unknown): field is BlockListObjectField {
   if (!isRecord(field)) return false
-  if (field.name !== 'list') return false
+  if (field.name !== 'listItem') return false
   return isRecord(field.type) && field.type.jsonType === 'string'
 }
 

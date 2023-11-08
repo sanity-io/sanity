@@ -391,7 +391,7 @@ Object {
               },
             },
             Object {
-              "name": "list",
+              "name": "listItem",
               "type": Object {
                 "jsonType": "string",
                 "name": "string",
@@ -504,6 +504,23 @@ Object {
                   "jsonType": "array",
                   "name": "array",
                   "of": Array [],
+                  "type": null,
+                },
+              },
+            },
+            Object {
+              "name": "level",
+              "type": Object {
+                "jsonType": "number",
+                "name": "number",
+                "preview": Object {
+                  "prepare": [Function],
+                },
+                "title": "Indentation",
+                "type": Object {
+                  "jsonType": "number",
+                  "name": "number",
+                  "title": "Number",
                   "type": null,
                 },
               },
@@ -1863,7 +1880,7 @@ Object {
               },
             },
             Object {
-              "name": "list",
+              "name": "listItem",
               "type": Object {
                 "jsonType": "string",
                 "name": "string",
@@ -2194,6 +2211,23 @@ Object {
                   "jsonType": "array",
                   "name": "array",
                   "of": Array [],
+                  "type": null,
+                },
+              },
+            },
+            Object {
+              "name": "level",
+              "type": Object {
+                "jsonType": "number",
+                "name": "number",
+                "preview": Object {
+                  "prepare": [Function],
+                },
+                "title": "Indentation",
+                "type": Object {
+                  "jsonType": "number",
+                  "name": "number",
+                  "title": "Number",
                   "type": null,
                 },
               },
@@ -2647,7 +2681,7 @@ Object {
                 },
               },
               Object {
-                "name": "list",
+                "name": "listItem",
                 "type": Object {
                   "jsonType": "string",
                   "name": "string",
@@ -2978,6 +3012,23 @@ Object {
                     "jsonType": "array",
                     "name": "array",
                     "of": Array [],
+                    "type": null,
+                  },
+                },
+              },
+              Object {
+                "name": "level",
+                "type": Object {
+                  "jsonType": "number",
+                  "name": "number",
+                  "preview": Object {
+                    "prepare": [Function],
+                  },
+                  "title": "Indentation",
+                  "type": Object {
+                    "jsonType": "number",
+                    "name": "number",
+                    "title": "Number",
                     "type": null,
                   },
                 },
