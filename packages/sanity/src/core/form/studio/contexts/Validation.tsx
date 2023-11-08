@@ -2,8 +2,6 @@
 import React, {createContext, useContext, useMemo} from 'react'
 import {FormNodeValidation, Path, ValidationMarker} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
-import {of} from 'rxjs'
-import {mergeMapTo} from 'rxjs/operators'
 
 const ValidationContext = createContext<ValidationMarker[]>([])
 

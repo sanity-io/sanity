@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {Path} from '@sanity/types'
-import React, {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {decodePath, encodePath} from '../../utils/path'
 
 /** @internal */

@@ -1,25 +1,25 @@
 import type {Subscription} from 'rxjs'
-import React, {useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {Button, Box, Card, Flex, Stack, Label, Text, Tooltip, Grid, useToast} from '@sanity/ui'
-import {DocumentIcon, ChevronUpIcon, ChevronDownIcon, LinkIcon, TrashIcon} from '@sanity/icons'
+import {Box, Button, Card, Flex, Grid, Label, Stack, Text, Tooltip, useToast} from '@sanity/ui'
+import {ChevronDownIcon, ChevronUpIcon, DocumentIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Asset as AssetType} from '@sanity/types'
-import {FIXME} from '../../../FIXME'
-import {useClient, useRelativeTime} from '../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {prettyBytes} from './prettyBytes'
-import {AssetUsageDialog} from './AssetUsageDialog'
-import {AssetMenu} from './AssetMenu'
-import {AssetMenuAction} from './types'
-import {formatMimeType} from './utils/mimeType'
+import {useClient, useRelativeTime} from '../../../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {prettyBytes} from '../utils/prettyBytes'
+import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
+import {AssetMenu} from '../shared/AssetMenu'
+import {AssetMenuAction} from '../types'
+import {formatMimeType} from '../utils/mimeType'
+import {AssetUsageDialog} from '../shared/AssetUsageDialog'
 
 interface RowProps {
   isMobile?: boolean
   asset: AssetType
   isSelected?: boolean
-  onClick?: (...args: any[]) => any
-  onKeyPress?: (...args: any[]) => any
-  onDeleteFinished?: (...args: any[]) => any
+  onClick?: (event: React.MouseEvent) => void
+  onKeyPress?: (event: React.KeyboardEvent) => void
+  onDeleteFinished?: (assetId: string) => void
 }
 
 const CardIconWrapper = styled.span`
@@ -103,7 +103,10 @@ const TypeText = styled(Text)`
   overflow-wrap: anywhere;
 `
 
-const STYLES_ROW_CARD = {position: 'relative' as FIXME}
+const STYLES_ROW_CARD = {
+  position: 'relative',
+} as const
+
 const STYLES_ICON_CARD = {flexShrink: 0}
 const STYLES_BUTTON_TEXT = {minWidth: 0}
 const STYLES_ASSETMENU_WRAPPER = {
@@ -129,27 +132,30 @@ export const AssetRow = (props: RowProps) => {
   const formattedSize = prettyBytes(size)
   const showTooltip = (originalFilename || '').length > 37
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = useCallback(() => {
     setShowDeleteDialog(true)
-  }
+  }, [])
 
-  const handleDeleteError = (error: Error) => {
-    toast.push({
-      closable: true,
-      status: 'error',
-      title: 'File could not be deleted',
-      description: error.message,
-    })
-  }
+  const handleDeleteError = useCallback(
+    (error: Error) => {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: 'File could not be deleted',
+        description: error.message,
+      })
+    },
+    [toast],
+  )
 
-  const handleDeleteSuccess = () => {
+  const handleDeleteSuccess = useCallback(() => {
     toast.push({
       status: 'success',
       title: 'File was deleted',
     })
-  }
+  }, [toast])
 
-  const handleDeleteAsset = () => {
+  const handleDeleteAsset = useCallback(() => {
     setIsDeleting(true)
 
     deleteRef$.current = versionedClient.observable.delete(asset._id).subscribe({
@@ -166,7 +172,13 @@ export const AssetRow = (props: RowProps) => {
         console.error('Could not delete asset', err)
       },
     })
-  }
+  }, [
+    asset._id,
+    handleDeleteError,
+    handleDeleteSuccess,
+    onDeleteFinished,
+    versionedClient.observable,
+  ])
 
   const handleDialogClose = () => {
     setShowUsageDialog(false)
@@ -190,6 +202,28 @@ export const AssetRow = (props: RowProps) => {
       handleToggleUsageDialog()
     }
   }
+
+  const usageDialog = useMemo(() => {
+    return (
+      showUsageDialog && (
+        <AssetUsageDialog assetType="file" asset={asset} onClose={handleDialogClose} />
+      )
+    )
+  }, [asset, showUsageDialog])
+
+  const deleteDialog = useMemo(() => {
+    return (
+      showDeleteDialog && (
+        <AssetDeleteDialog
+          assetType="file"
+          asset={asset}
+          onClose={handleDialogClose}
+          onDelete={handleDeleteAsset}
+          isDeleting={isDeleting}
+        />
+      )
+    )
+  }, [asset, handleDeleteAsset, isDeleting, showDeleteDialog])
 
   if (isMobile) {
     return (
@@ -283,17 +317,7 @@ export const AssetRow = (props: RowProps) => {
             </Stack>
           </>
         )}
-
-        {(showUsageDialog || showDeleteDialog) && (
-          <AssetUsageDialog
-            assetType="file"
-            asset={asset}
-            mode={showDeleteDialog ? 'confirmDelete' : 'listUsage'}
-            onClose={handleDialogClose}
-            onDelete={handleDeleteAsset}
-            isDeleting={isDeleting}
-          />
-        )}
+        {usageDialog || deleteDialog}
       </Card>
     )
   }
@@ -401,16 +425,7 @@ export const AssetRow = (props: RowProps) => {
           <AssetMenu border={false} isSelected={false} onAction={handleMenuAction} />
         </CustomFlex>
       </Grid>
-      {(showUsageDialog || showDeleteDialog) && (
-        <AssetUsageDialog
-          assetType="file"
-          asset={asset}
-          mode={showDeleteDialog ? 'confirmDelete' : 'listUsage'}
-          onClose={handleDialogClose}
-          onDelete={handleDeleteAsset}
-          isDeleting={isDeleting}
-        />
-      )}
+      {usageDialog || deleteDialog}
     </CustomCard>
   )
 }

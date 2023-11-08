@@ -1,21 +1,22 @@
 import type {Subscription} from 'rxjs'
-import React, {useState, useEffect, useRef, useCallback} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {Button, Card, useToast} from '@sanity/ui'
-import {Asset as AssetType} from '@sanity/types'
-import {useClient} from '../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {FullscreenSpinner} from '../../components/FullscreenSpinner'
-import {AssetUsageDialog} from './AssetUsageDialog'
-import {AssetMenu} from './AssetMenu'
-import {AssetMenuAction} from './types'
+import {Asset} from '@sanity/types'
+import {useClient} from '../../../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {FullscreenSpinner} from '../../../components/FullscreenSpinner'
+import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
+import {AssetMenu} from '../shared/AssetMenu'
+import {AssetMenuAction} from '../types'
+import {AssetUsageDialog} from '../shared/AssetUsageDialog'
 
 interface AssetProps {
-  asset: AssetType
+  asset: Asset
   isSelected: boolean
-  onClick?: (...args: any[]) => any
-  onKeyPress?: (...args: any[]) => any
-  onDeleteFinished: (...args: any[]) => any
+  onClick?: (event: React.MouseEvent) => void
+  onKeyPress?: (event: React.KeyboardEvent) => void
+  onDeleteFinished: (assetId: string) => void
 }
 
 // Get pixel density of the current device
@@ -108,7 +109,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
   }, [setShowUsageDialog])
 
   const handleDeleteError = useCallback(
-    (error: any) => {
+    (error: {message: string}) => {
       toast.push({
         closable: true,
         status: 'error',
@@ -164,6 +165,28 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
     [handleConfirmDelete, handleToggleUsageDialog],
   )
 
+  const usageDialog = useMemo(() => {
+    return (
+      showUsageDialog && (
+        <AssetUsageDialog assetType="file" asset={asset} onClose={handleDialogClose} />
+      )
+    )
+  }, [asset, handleDialogClose, showUsageDialog])
+
+  const deleteDialog = useMemo(() => {
+    return (
+      showDeleteDialog && (
+        <AssetDeleteDialog
+          assetType="file"
+          asset={asset}
+          onClose={handleDialogClose}
+          onDelete={handleDeleteAsset}
+          isDeleting={isDeleting}
+        />
+      )
+    )
+  }, [asset, handleDeleteAsset, handleDialogClose, isDeleting, showDeleteDialog])
+
   // const {asset, onClick, onKeyPress, isSelected} = props
   const {originalFilename, _id, url} = asset
   const imgH = 200 * Math.max(1, DPI)
@@ -194,15 +217,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
       <MenuContainer>
         <AssetMenu isSelected={isSelected} onAction={handleMenuAction} />
       </MenuContainer>
-      {(showUsageDialog || showDeleteDialog) && (
-        <AssetUsageDialog
-          asset={asset}
-          mode={showDeleteDialog ? 'confirmDelete' : 'listUsage'}
-          onClose={handleDialogClose}
-          onDelete={handleDeleteAsset}
-          isDeleting={isDeleting}
-        />
-      )}
+      {usageDialog || deleteDialog}
     </Root>
   )
 })

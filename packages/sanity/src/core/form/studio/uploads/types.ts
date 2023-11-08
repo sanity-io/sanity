@@ -1,7 +1,8 @@
 import {SanityClient} from '@sanity/client'
-import {AssetSourceSpec, SchemaType, AssetMetadataType} from '@sanity/types'
+import {AssetMetadataType, AssetSourceSpec, SchemaType} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {FormPatch} from '../../patch'
+
 /**
  *
  * @hidden
