@@ -4,7 +4,6 @@ export {DocumentInspectorHeader} from './panes/document/documentInspector'
 
 // Export `DocumentPaneProvider`
 export {type DocumentPaneProviderProps} from './panes/document/types'
-export * from './panes/document/DocumentPaneProvider'
 
 export * from './panes/document/useDocumentPane'
 
@@ -12,13 +11,12 @@ export * from './types'
 
 export * from './DeskToolProvider'
 
-export {ConfirmDeleteDialog, usePaneRouter} from './components'
-
-export type {ConfirmDeleteDialogProps} from './components'
+export {ConfirmDeleteDialog, PaneLayout, PaneRouterContext, usePaneRouter} from './components'
 
 export type {
   BackLinkProps,
   ChildLinkProps,
+  ConfirmDeleteDialogProps,
   EditReferenceOptions,
   PaneRouterContextValue,
   ParameterizedLinkProps,
@@ -28,3 +26,7 @@ export type {
 export * from './structureBuilder'
 
 export * from './useDeskTool'
+
+export * from './panes/document'
+
+export * from './panes/documentList'

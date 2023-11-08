@@ -23,8 +23,8 @@ interface DeskToolPaneProps {
 // TODO: audit this creates separate chunks
 const paneMap = {
   component: lazy(() => import('./userComponent')),
-  document: lazy(() => import('./document')),
-  documentList: lazy(() => import('./documentList')),
+  document: lazy(() => import('./document/pane')),
+  documentList: lazy(() => import('./documentList/pane')),
   list: lazy(() => import('./list')),
 }
 

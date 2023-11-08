@@ -23,7 +23,10 @@ import {LoadingVariant, SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
 import {GeneralPreviewLayoutKey, SourceProvider, useSchema, useSource, useUnique} from 'sanity'
 
-type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
+/**
+ * @internal
+ */
+export type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
 
 const EMPTY_ARRAY: never[] = []
 
