@@ -7,8 +7,8 @@ import {useFormBuilder} from '../../useFormBuilder'
 import {FileLike} from '../uploads/types'
 import {useDocumentPreviewStore} from '../../../store'
 import {useClient} from '../../../hooks'
-import {observeFileAsset} from './client-adapters/assets'
 import {useTranslation} from '../../../i18n'
+import {observeFileAsset} from './client-adapters/assets'
 
 /**
  * @hidden
