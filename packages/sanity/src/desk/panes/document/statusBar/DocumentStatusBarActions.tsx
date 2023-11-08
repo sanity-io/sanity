@@ -1,15 +1,8 @@
-import {
-  Box,
-  Flex,
-  Hotkeys,
-  LayerProvider,
-  Text,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Box, Flex, Hotkeys, LayerProvider, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
-import {Button} from '../../../../ui'
+import {Button, TooltipWithNodes} from '../../../../ui'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -49,7 +42,12 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
     <Flex flex={1} justify="flex-end" gap={2}>
       {firstActionState && (
         <LayerProvider zOffset={200}>
-          <Tooltip disabled={!tooltipContent} content={tooltipContent} portal placement="top">
+          <TooltipWithNodes
+            disabled={!tooltipContent}
+            content={tooltipContent}
+            portal
+            placement="top"
+          >
             <Button
               data-testid={`action-${firstActionState.label}`}
               disabled={disabled || Boolean(firstActionState.disabled)}
@@ -60,7 +58,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
               text={firstActionState.label}
               tone={firstActionState.tone || 'primary'}
             />
-          </Tooltip>
+          </TooltipWithNodes>
         </LayerProvider>
       )}
       {showMenu && menuActionStates.length > 0 && (

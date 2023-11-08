@@ -5,12 +5,12 @@ import {
   Card,
   useToast,
   // eslint-disable-next-line no-restricted-imports
-  Button, // Button for media thumb, different look and  behavior
+  Button, // Button for media thumb, different look and behavior
 } from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
+import {LoadingBlock} from '../../../../ui/loadingBlock'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {FullscreenSpinner} from '../../components/FullscreenSpinner'
 import {AssetUsageDialog} from './AssetUsageDialog'
 import {AssetMenu} from './AssetMenu'
 import {AssetMenuAction} from './types'
@@ -193,7 +193,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
       >
         <Container __unstable_checkered>
           <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />
-          {isDeleting && <FullscreenSpinner />}
+          {isDeleting && <LoadingBlock hideText />}
         </Container>
       </Button>
       <MenuContainer>

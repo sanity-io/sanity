@@ -1,16 +1,5 @@
 /* eslint-disable complexity */
-import {
-  Box,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  Spinner,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import {Box, CardTone, Menu, MenuButton, MenuDivider, Stack, Text} from '@sanity/ui'
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
 import {
@@ -21,6 +10,7 @@ import {
   SyncIcon as ReplaceIcon,
   TrashIcon,
 } from '@sanity/icons'
+import {LoadingBlock} from '../../../../ui/loadingBlock'
 import {ObjectItem, ObjectItemProps} from '../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -67,14 +57,6 @@ function getTone({
   return hasWarnings ? 'caution' : 'default'
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
-const INITIAL_VALUE_CARD_STYLE = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  opacity: 0.6,
-} as const
 
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
   props: ReferenceItemProps<Item>,
@@ -403,23 +385,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               renderPreview={renderPreview}
               type={schemaType}
             />
-            {resolvingInitialValue && (
-              <Card
-                style={INITIAL_VALUE_CARD_STYLE}
-                tone="transparent"
-                radius={2}
-                as={Flex}
-                // @ts-expect-error composed from as={Flex}
-                justify="center"
-              >
-                <Flex align="center" justify="center" padding={3}>
-                  <Box marginX={3}>
-                    <Spinner muted />
-                  </Box>
-                  <Text>Resolving initial value…</Text>
-                </Flex>
-              </Card>
-            )}
+            {resolvingInitialValue && <LoadingBlock fill hideText />}
           </ReferenceLinkCard>
         )}
       </RowLayout>

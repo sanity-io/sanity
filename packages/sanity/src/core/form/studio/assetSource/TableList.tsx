@@ -1,6 +1,7 @@
 import React from 'react'
-import {Box, Card, Flex, Grid, Spinner, Stack, Text, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Grid, Stack, Text, useMediaIndex} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
+import {LoadingBlock} from '../../../../ui/loadingBlock'
 import {AssetRow} from './AssetRow'
 
 interface Props {
@@ -57,13 +58,8 @@ export function TableList(props: Props) {
         )}
       </Card>
       <Stack>
-        {isLoading && assets.length === 0 && (
-          <Box paddingTop={4} paddingBottom={2}>
-            <Flex justify="center">
-              <Spinner muted />
-            </Flex>
-          </Box>
-        )}
+        {isLoading && assets.length === 0 && <LoadingBlock />}
+
         {assets.map((asset) => (
           <AssetRow
             key={asset._id}

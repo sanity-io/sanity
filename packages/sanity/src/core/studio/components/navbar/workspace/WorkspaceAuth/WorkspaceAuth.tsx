@@ -3,11 +3,11 @@ import React, {useCallback, useState} from 'react'
 import {omit} from 'lodash'
 import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Button} from '../../../../../../ui'
+import {LoadingBlock} from '../../../../../../ui/loadingBlock'
 import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../../workspaces'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {useWorkspaceAuthStates} from '../hooks'
-import {LoadingScreen} from '../../../../screens'
 import {WORKSPACES_DOCS_URL} from '../constants'
 import {Layout} from './Layout'
 
@@ -26,7 +26,7 @@ export function WorkspaceAuth() {
 
   const handleBack = useCallback(() => setSelectedWorkspaceName(null), [])
 
-  if (!authStates) return <LoadingScreen />
+  if (!authStates) return <LoadingBlock />
 
   if (LoginComponent && selectedWorkspace) {
     return (

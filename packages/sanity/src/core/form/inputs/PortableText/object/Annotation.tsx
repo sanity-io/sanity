@@ -1,10 +1,8 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
 import React, {ComponentType, useCallback, useMemo, useState} from 'react'
-import {
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
+import {TooltipWithNodes} from '../../../../../ui'
 import {pathToString} from '../../../../field'
 import {
   BlockAnnotationProps,
@@ -120,7 +118,7 @@ export function Annotation(props: AnnotationProps) {
   const markersToolTip = useMemo(
     () =>
       validation.length > 0 || markers.length > 0 ? (
-        <Tooltip
+        <TooltipWithNodes
           placement="bottom"
           portal="default"
           content={
@@ -134,7 +132,7 @@ export function Annotation(props: AnnotationProps) {
           }
         >
           {text}
-        </Tooltip>
+        </TooltipWithNodes>
       ) : undefined,
     [Markers, markers, renderCustomMarkers, text, validation],
   )

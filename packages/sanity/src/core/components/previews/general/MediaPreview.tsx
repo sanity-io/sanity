@@ -1,9 +1,7 @@
 import React, {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {
-  Text,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {TooltipWithNodes} from '../../../../ui'
 import {CircularProgress} from '../../progress'
 import {Media} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
@@ -75,7 +73,7 @@ export function MediaPreview(props: MediaPreviewProps) {
     <RootBox data-testid="media-preview" overflow="hidden" flex={1}>
       <div style={STYLES_PADDER} />
 
-      <Tooltip content={tooltipContent} disabled={!tooltipContent} placement="top" portal>
+      <TooltipWithNodes content={tooltipContent} disabled={!tooltipContent} placement="top" portal>
         <MediaFlex>
           {isPlaceholder ? (
             <MediaSkeleton />
@@ -96,7 +94,7 @@ export function MediaPreview(props: MediaPreviewProps) {
             </ProgressFlex>
           )}
         </MediaFlex>
-      </Tooltip>
+      </TooltipWithNodes>
 
       {children}
     </RootBox>

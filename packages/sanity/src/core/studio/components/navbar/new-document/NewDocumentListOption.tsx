@@ -1,10 +1,7 @@
 import {CurrentUser} from '@sanity/types'
-import {
-  Card,
-  Text,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
+import {TooltipWithNodes} from '../../../../../ui'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {useIntentLink} from 'sanity/router'
@@ -42,7 +39,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   )
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       disabled={option.hasPermission}
       key={option.id}
       portal
@@ -66,6 +63,6 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
           <Text size={preview === 'inline' ? 1 : undefined}>{option.title}</Text>
         </Card>
       </div>
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }

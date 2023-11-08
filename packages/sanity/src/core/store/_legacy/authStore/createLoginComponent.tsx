@@ -1,10 +1,11 @@
 import type {AuthProvider, AuthProviderResponse, SanityClient} from '@sanity/client'
-import {Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
+import {Heading, Stack} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
 import type {Observable} from 'rxjs'
 import type {AuthConfig} from '../../../config'
 import {createHookFromObservableFactory} from '../../../util'
 import {Button} from '../../../../ui'
+import {LoadingBlock} from '../../../../ui/loadingBlock'
 import {CustomLogo, providerLogos} from './providerLogos'
 import type {LoginComponentProps} from './types'
 
@@ -130,19 +131,7 @@ export function createLoginComponent({
     }, [redirectUrl])
 
     if (loading) {
-      return (
-        <Flex
-          align="center"
-          direction="column"
-          gap={4}
-          justify="center"
-          padding={6}
-          sizing="border"
-        >
-          <Text muted>Loading…</Text>
-          <Spinner muted />
-        </Flex>
-      )
+      return <LoadingBlock />
     }
 
     return (

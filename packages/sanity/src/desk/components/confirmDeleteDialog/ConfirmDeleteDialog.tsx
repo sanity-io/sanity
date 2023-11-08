@@ -1,6 +1,7 @@
 import React, {useMemo, useId} from 'react'
 import styled from 'styled-components'
-import {Box, Text, Spinner, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui'
+import {LoadingBlock} from '../../../ui/loadingBlock'
 import {Dialog} from '../../../ui'
 import {DocTitle} from '../DocTitle'
 import {useReferringDocuments} from './useReferringDocuments'
@@ -102,12 +103,7 @@ export function ConfirmDeleteDialog({
           />
         ) : (
           <LoadingContainer data-testid="loading-container">
-            <Spinner muted />
-            <Box marginTop={4}>
-              <Text align="center" muted size={1}>
-                Looking for referring documents…
-              </Text>
-            </Box>
+            <LoadingBlock title="Looking for referring documents" />
           </LoadingContainer>
         )}
       </DialogBody>

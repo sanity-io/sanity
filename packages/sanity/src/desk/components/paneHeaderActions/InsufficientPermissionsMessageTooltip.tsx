@@ -1,7 +1,5 @@
-import {
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
 import React from 'react'
+import {TooltipWithNodes} from '../../../ui'
 import {useCurrentUser, InsufficientPermissionsMessage} from 'sanity'
 
 interface InsufficientPermissionsMessageTooltipProps {
@@ -22,13 +20,13 @@ export function InsufficientPermissionsMessageTooltip({
   }
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       content={loading ? 'Loading…' : <InsufficientPermissionsMessage currentUser={currentUser} />}
       portal
     >
       {/* this wrapping div is to allow mouse events */}
       {/* while the child element is disabled */}
       <div>{children}</div>
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }

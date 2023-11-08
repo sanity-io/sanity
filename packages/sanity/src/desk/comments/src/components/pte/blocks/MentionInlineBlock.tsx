@@ -1,10 +1,7 @@
 import React from 'react'
-import {
-  Flex,
-  Text,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {TooltipWithNodes} from '../../../../../../ui'
 import {CommentsAvatar} from '../../avatars'
 import {useCurrentUser, useUser} from 'sanity'
 
@@ -40,7 +37,7 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
   if (!user || loading) return <Span>@Loading</Span> // todo: improve
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       portal
       content={
         <Flex align="center" padding={2} gap={2}>
@@ -55,6 +52,6 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
       <Span data-selected={selected} data-active={currentUser?.id === userId}>
         @{user.displayName}
       </Span>
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }

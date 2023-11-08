@@ -1,4 +1,4 @@
-import {Card, Flex, Spinner, Text} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {
   createContext,
@@ -10,6 +10,7 @@ import React, {
   useState,
 } from 'react'
 import styled from 'styled-components'
+import {LoadingBlock} from '../../ui/loadingBlock'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useNavbarComponent} from './studio-components-hooks'
@@ -148,23 +149,13 @@ export function StudioLayout() {
         <Card flex={1} hidden={searchFullscreenOpen}>
           {activeTool && activeToolName && (
             <RouteScope scope={activeToolName}>
-              <Suspense fallback={<LoadingTool />}>
+              <Suspense fallback={<LoadingBlock />}>
                 {createElement(activeTool.component, {tool: activeTool})}
               </Suspense>
             </RouteScope>
           )}
         </Card>
       </StudioErrorBoundary>
-    </Flex>
-  )
-}
-
-// @TODO re-use `LoadingComponent`, which is `LoadingScreen` by default, to reduce "popping" during initial load
-function LoadingTool() {
-  return (
-    <Flex justify="center" align="center" height="fill" direction="column" gap={4}>
-      <Text muted>Loading…</Text>
-      <Spinner muted />
     </Flex>
   )
 }

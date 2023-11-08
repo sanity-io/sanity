@@ -1,13 +1,7 @@
 import {Path} from '@sanity/types'
-import {
-  Text,
-  Stack,
-  Flex,
-  Inline,
-  Tooltip, // eslint-disable-line no-restricted-imports
-  TooltipProps, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Text, Stack, Flex, Inline} from '@sanity/ui'
 import React from 'react'
+import {TooltipWithNodes, TooltipWithNodesProps} from '../../../../ui'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useTimeAgo} from '../../../hooks'
 import {useUser} from '../../../store'
@@ -15,7 +9,7 @@ import {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
 /** @internal */
-export interface DiffTooltipProps extends TooltipProps {
+export interface DiffTooltipProps extends TooltipWithNodesProps {
   children: React.ReactElement
   description?: React.ReactNode
   diff: Diff
@@ -23,7 +17,7 @@ export interface DiffTooltipProps extends TooltipProps {
 }
 
 /** @internal */
-export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
+export interface DiffTooltipWithAnnotationsProps extends TooltipWithNodesProps {
   annotations: AnnotationDetails[]
   children: React.ReactElement
   description?: React.ReactNode
@@ -63,9 +57,9 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 
   return (
     <LegacyLayerProvider zOffset="paneFooter">
-      <Tooltip content={content} portal {...restProps}>
+      <TooltipWithNodes content={content} portal {...restProps}>
         {children}
-      </Tooltip>
+      </TooltipWithNodes>
     </LegacyLayerProvider>
   )
 }

@@ -1,7 +1,8 @@
-import {Box, Flex, MenuDivider, Spinner, Text} from '@sanity/ui'
+import {Box, MenuDivider, Text} from '@sanity/ui'
 import React from 'react'
 import {SANITY_VERSION} from '../../../../version'
 import {MenuItem} from '../../../../../ui'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {ResourcesResponse, Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
@@ -15,11 +16,7 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
   const latestStudioVersion = value?.latestVersion
 
   if (isLoading) {
-    return (
-      <Flex align="center" justify="center" padding={3}>
-        <Spinner />
-      </Flex>
-    )
+    return <LoadingBlock />
   }
 
   return (

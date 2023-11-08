@@ -1,14 +1,7 @@
-import {
-  Card,
-  Code,
-  Flex,
-  Inline,
-  Stack,
-  Text,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+import {Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {startCase, uniq} from 'lodash'
 import React, {ReactElement, useMemo} from 'react'
+import {TooltipWithNodes} from '../../../../../../../../../ui'
 import {useSchema} from '../../../../../../../../hooks'
 import {isNonNullable} from '../../../../../../../../util'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
@@ -80,7 +73,7 @@ export function FilterTooltip({
   }, [fieldDefinition?.documentTypes, fieldDefinition?.fieldPath, schema])
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       content={
         <Card tone="default" radius={2} style={{maxWidth: '250px'}}>
           <Stack space={4}>
@@ -147,7 +140,7 @@ export function FilterTooltip({
       portal
     >
       {children}
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }
 

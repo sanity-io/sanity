@@ -1,14 +1,7 @@
-import {
-  Flex,
-  Hotkeys,
-  Text,
-  Tooltip, // eslint-disable-line no-restricted-imports
-  TooltipProps, // eslint-disable-line no-restricted-imports
-  useTheme,
-} from '@sanity/ui'
+import {Flex, Hotkeys, Text, useTheme} from '@sanity/ui'
 import React, {useMemo, HTMLProps, forwardRef, ForwardedRef, ReactNode} from 'react'
 import styled from 'styled-components'
-import {Button, ButtonProps} from '../../ui'
+import {Button, ButtonProps, TooltipWithNodes, TooltipWithNodesProps} from '../../ui'
 
 /** @hidden @beta */
 export interface StatusButtonProps extends Omit<ButtonProps, 'iconRight'> {
@@ -16,7 +9,7 @@ export interface StatusButtonProps extends Omit<ButtonProps, 'iconRight'> {
   hotkey?: string[]
   label?: string
   mode?: ButtonProps['mode']
-  tooltip?: Omit<TooltipProps, 'content' | 'disabled' | 'portal'>
+  tooltip?: Omit<TooltipWithNodesProps, 'content' | 'disabled' | 'portal'>
 }
 
 const ButtonWrapper = styled.div({
@@ -65,7 +58,13 @@ export const StatusButton = forwardRef(function StatusButton(
     )
 
   return (
-    <Tooltip placement="bottom" {...tooltip} content={tooltipContent} disabled={!label} portal>
+    <TooltipWithNodes
+      placement="bottom"
+      {...tooltip}
+      content={tooltipContent}
+      disabled={!label}
+      portal
+    >
       <ButtonWrapper>
         <Button
           data-ui="StatusButton"
@@ -79,6 +78,6 @@ export const StatusButton = forwardRef(function StatusButton(
         />
         {tone && <Dot style={dotStyle} />}
       </ButtonWrapper>
-    </Tooltip>
+    </TooltipWithNodes>
   )
 })

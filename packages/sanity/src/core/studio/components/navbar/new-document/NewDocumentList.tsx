@@ -1,9 +1,10 @@
-import {Flex, Inline, Spinner, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {CurrentUser} from '@sanity/types'
 import styled from 'styled-components'
 import {CommandList} from '../../../../components'
 import {supportsTouch} from '../../../../util'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {INLINE_PREVIEW_HEIGHT, NewDocumentListOption} from './NewDocumentListOption'
 
@@ -56,24 +57,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
 
   // Render loading state
   if (loading) {
-    return (
-      <ContentFlex
-        align="center"
-        flex={1}
-        height="fill"
-        justify="center"
-        padding={4}
-        sizing="border"
-      >
-        <Inline space={2}>
-          <Spinner muted size={1} />
-
-          <Text muted size={1}>
-            Loading…
-          </Text>
-        </Inline>
-      </ContentFlex>
-    )
+    return <LoadingBlock />
   }
 
   // Render no search results state

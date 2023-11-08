@@ -1,4 +1,4 @@
-import {Box, Card, CardTone, Flex, Menu, MenuButton, Spinner, Text} from '@sanity/ui'
+import {Box, Card, CardTone, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
@@ -19,6 +19,7 @@ import {createProtoArrayValue} from '../createProtoArrayValue'
 import {InsertMenu} from '../InsertMenu'
 import {FIXME} from '../../../../../FIXME'
 import {EditPortal} from '../../../../components/EditPortal'
+import {LoadingBlock} from '../../../../../../ui/loadingBlock'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 
@@ -57,13 +58,6 @@ function getTone({
   return hasWarnings ? 'caution' : 'default'
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
-const INITIAL_VALUE_CARD_STYLE = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-} as const
 
 export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemProps<Item>) {
   const {
@@ -192,18 +186,8 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           withBorder: false,
           withShadow: false,
         })}
-        {resolvingInitialValue && (
-          <Card as={Flex} style={INITIAL_VALUE_CARD_STYLE}>
-            <Flex align="center" justify="center" gap={1} padding={1}>
-              <Box padding={3}>
-                <Spinner muted />
-              </Box>
-              <Text muted size={1}>
-                Resolving initial value…
-              </Text>
-            </Flex>
-          </Card>
-        )}
+
+        {resolvingInitialValue && <LoadingBlock fill />}
       </PreviewCard>
     </CellLayout>
   )

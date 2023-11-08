@@ -1,10 +1,6 @@
 import React, {useMemo} from 'react'
-import {
-  Stack,
-  Text,
-  Tooltip, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
-import {Button, ButtonProps} from '../../../../../../ui'
+import {Stack, Text} from '@sanity/ui'
+import {Button, ButtonProps, TooltipWithNodes} from '../../../../../../ui'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 import {useTimeAgo} from 'sanity'
 
@@ -51,7 +47,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
   }
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       placement="top"
       portal
       disabled={status !== 'changes'}
@@ -77,7 +73,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
         icon={<AnimatedStatusIcon status={status} />}
         text={!collapsed && buttonProps?.text}
       />
-    </Tooltip>
+    </TooltipWithNodes>
   )
 })
 
