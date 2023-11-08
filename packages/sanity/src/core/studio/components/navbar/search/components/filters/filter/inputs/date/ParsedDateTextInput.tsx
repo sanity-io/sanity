@@ -1,6 +1,11 @@
 import {hues} from '@sanity/color'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Flex, Text, Theme} from '@sanity/ui'
+import {
+  Flex,
+  Text,
+  Theme,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import React, {
   ChangeEvent,
@@ -13,7 +18,6 @@ import React, {
 } from 'react'
 import styled, {css} from 'styled-components'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
-import {Tooltip} from '../../../../../../../../../../ui'
 import {getDateISOString} from './utils/getDateISOString'
 
 interface ParsedDateTextInputProps

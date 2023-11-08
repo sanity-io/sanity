@@ -1,8 +1,11 @@
 import {CurrentUser} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {
+  Card,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {InsufficientPermissionsMessage} from '../../../../components'
-import {Tooltip} from '../../../../../ui'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {useIntentLink} from 'sanity/router'
 

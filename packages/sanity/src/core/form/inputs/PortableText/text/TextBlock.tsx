@@ -1,4 +1,10 @@
-import {Box, Flex, ResponsivePaddingProps, Text} from '@sanity/ui'
+import {
+  Box,
+  Flex,
+  ResponsivePaddingProps,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import React, {RefObject, useCallback, useMemo, useState} from 'react'
 import {ObjectSchemaType, Path, PortableTextTextBlock} from '@sanity/types'
 import {
@@ -29,7 +35,6 @@ import {debugRender} from '../debugRender'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {useFormCallbacks} from '../../../studio'
-import {Tooltip} from '../../../../../ui'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,

@@ -1,6 +1,10 @@
 import React, {useMemo} from 'react'
-import {Stack, Text} from '@sanity/ui'
-import {Tooltip, Button, ButtonProps} from '../../../../../../ui'
+import {
+  Stack,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
+import {Button, ButtonProps} from '../../../../../../ui'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 import {useTimeAgo} from 'sanity'
 

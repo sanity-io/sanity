@@ -1,12 +1,18 @@
 import React, {createElement, ReactNode, useMemo} from 'react'
 import {CrossDatasetType, PreviewValue} from '@sanity/types'
-import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
+import {
+  Badge,
+  Box,
+  Flex,
+  Inline,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {isImageSource} from '@sanity/asset-utils'
 import {DocumentAvailability} from '../../../preview'
 import {DefaultPreview, PreviewMediaDimensions, TextWithTone} from '../../../components'
-import {Tooltip} from '../../../../ui'
 import {FIXME} from '../../../FIXME'
 
 import {StyledPreviewFlex, TooltipContent} from './CrossDatasetReferencePreview.styled'
@@ -108,6 +114,7 @@ export function CrossDatasetReferencePreview(props: {
 
           {(insufficientPermissions || notFound) && (
             <Box>
+              {/* @todo: possible candidate to promote to Studio UI tooltip */}
               <Tooltip
                 portal
                 content={

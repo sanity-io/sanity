@@ -1,8 +1,13 @@
-import {Flex, Stack, Text} from '@sanity/ui'
+import {
+  Flex,
+  Stack,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
-import {Button, Tooltip} from '../../../../../ui'
+import {Button} from '../../../../../ui'
 import {useTimeAgo} from 'sanity'
 
 interface PublishStatusProps {
@@ -39,6 +44,7 @@ export function PublishStatus(props: PublishStatusProps) {
 
   return (
     <Root align="center" data-ui="SessionLayout" sizing="border">
+      {/* @todo: possible candidate for migrating to Studio UI tooltip */}
       <Tooltip
         placement="top"
         portal

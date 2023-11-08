@@ -1,7 +1,11 @@
 import React, {useMemo} from 'react'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {
+  Flex,
+  Stack,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import {UserAvatar} from '../components/userAvatar'
-import {Tooltip} from '../../ui'
 import {FormNodePresence} from './types'
 
 interface PresenceTooltipProps {

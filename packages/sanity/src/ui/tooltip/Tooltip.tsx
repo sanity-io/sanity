@@ -1,9 +1,19 @@
 /* eslint-disable no-restricted-imports */
-import {Tooltip as UITooltip, TooltipProps as UITooltipProps, Text} from '@sanity/ui'
+import {
+  Flex,
+  Hotkeys,
+  HotkeysProps,
+  Text,
+  Tooltip as UITooltip,
+  TooltipProps as UITooltipProps,
+} from '@sanity/ui'
 import React, {forwardRef} from 'react'
 
 /** @internal */
-export type TooltipProps = Omit<UITooltipProps, 'padding'>
+export type TooltipProps = Omit<UITooltipProps, 'content' | 'padding'> & {
+  content?: string | null
+  hotkeys?: HotkeysProps['keys']
+}
 
 const TOOLTIP_DELAY_PROPS = {
   open: 400,
@@ -21,16 +31,17 @@ export const Tooltip = forwardRef(function Tooltip(
   props: TooltipProps,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const {content, ...rest} = props
+  const {content, hotkeys, ...rest} = props
 
   return (
     <UITooltip
       content={
-        typeof content === 'string' || typeof content === 'number' ? (
+        <Flex align="center" gap={3}>
           <Text size={1}>{content}</Text>
-        ) : (
-          content
-        )
+          {hotkeys && (
+            <Hotkeys fontSize={1} keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />
+          )}
+        </Flex>
       }
       delay={TOOLTIP_DELAY_PROPS}
       ref={ref}

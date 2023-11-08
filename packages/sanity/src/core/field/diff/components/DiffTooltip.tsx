@@ -1,12 +1,18 @@
 import {Path} from '@sanity/types'
-import {Text, Stack, Flex, Inline} from '@sanity/ui'
+import {
+  Text,
+  Stack,
+  Flex,
+  Inline,
+  Tooltip, // eslint-disable-line no-restricted-imports
+  TooltipProps, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import React from 'react'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useTimeAgo} from '../../../hooks'
 import {useUser} from '../../../store'
 import {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
-import {Tooltip, TooltipProps} from '../../../../ui'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {

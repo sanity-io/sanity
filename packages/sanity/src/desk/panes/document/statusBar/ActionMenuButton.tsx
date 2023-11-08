@@ -1,7 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
+import {
+  Menu,
+  MenuButton,
+  PopoverProps,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import React, {useCallback, useRef, useState, useMemo, useId} from 'react'
-import {Tooltip, Button, MenuItem} from '../../../../ui'
+import {Button, MenuItem} from '../../../../ui'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 
@@ -91,8 +96,6 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
 
   const menuItemContent = useCallback(
     (item: React.JSX.Element) => {
-      // TODO: Once the tooltip changes land, we can use the new `content` prop instead
-
       return (
         <Tooltip content={actionState.title} disabled={!actionState.title} placement="top" portal>
           {item}

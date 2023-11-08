@@ -1,8 +1,14 @@
-import {Card, CardTone, Code, Inline, Stack} from '@sanity/ui'
+import {
+  Card,
+  CardTone,
+  Code,
+  Inline,
+  Stack,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 import type {WeightedHit} from '../../../../../../../search'
-import {Tooltip} from '../../../../../../../../ui'
 
 interface DebugScoreProps {
   data: WeightedHit

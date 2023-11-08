@@ -1,7 +1,14 @@
-import {Flex, Hotkeys, Text, useTheme} from '@sanity/ui'
+import {
+  Flex,
+  Hotkeys,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+  TooltipProps, // eslint-disable-line no-restricted-imports
+  useTheme,
+} from '@sanity/ui'
 import React, {useMemo, HTMLProps, forwardRef, ForwardedRef, ReactNode} from 'react'
 import styled from 'styled-components'
-import {Tooltip, TooltipProps, Button, ButtonProps} from '../../ui'
+import {Button, ButtonProps} from '../../ui'
 
 /** @hidden @beta */
 export interface StatusButtonProps extends Omit<ButtonProps, 'iconRight'> {
