@@ -60,7 +60,9 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
   min-height: 0;
   min-width: 0;
 `
-
+/**
+ * @internal
+ */
 export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
   const {name: parentSourceName} = useSource()
 

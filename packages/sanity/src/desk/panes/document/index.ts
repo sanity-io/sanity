@@ -1,2 +1,2 @@
-export {DocumentPane as default} from './DocumentPane'
+export * from './DocumentPane'
 export * from './DocumentPaneProvider'
