@@ -15,7 +15,7 @@ export const MediaSkeleton = styled(Skeleton).attrs({animated: true, radius: 2})
   height: ${rem(PREVIEW_MEDIA_SIZE.detail.height)};
 `
 
-export const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1})`
+export const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
   max-width: ${rem(160)}; /* 80% of 200px */
   width: 80%;
 `
