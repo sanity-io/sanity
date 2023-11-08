@@ -132,8 +132,9 @@ export function isSpanSchemaType(type: unknown): type is SpanSchemaType {
 export function isBlockSchemaType(type: unknown): type is BlockSchemaType {
   if (!isRecord(type)) return false
   if (!Array.isArray(type.fields)) return false
-
-  const [maybeSpanChildren, maybeStyle, maybeList] = type.fields
+  const maybeSpanChildren = type.fields.find(isBlockChildrenObjectField)
+  const maybeStyle = type.fields.find(isBlockStyleObjectField)
+  const maybeList = type.fields.find(isBlockListObjectField)
   return (
     isBlockChildrenObjectField(maybeSpanChildren) &&
     isBlockStyleObjectField(maybeStyle) &&
