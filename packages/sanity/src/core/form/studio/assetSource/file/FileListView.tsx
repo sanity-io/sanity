@@ -1,21 +1,21 @@
 import React from 'react'
 import {Box, Card, Flex, Grid, Label, Spinner, Stack, useMediaIndex} from '@sanity/ui'
-import {Asset as AssetType} from '@sanity/types'
+import {Asset} from '@sanity/types'
 import {AssetRow} from './AssetRow'
 
 interface Props {
-  onClick?: (...args: any[]) => any
-  onKeyPress?: (...args: any[]) => any
-  onDeleteFinished: (...args: any[]) => any
-  assets: AssetType[]
+  onClick?: (event: React.MouseEvent) => void
+  onKeyPress?: (event: React.KeyboardEvent) => void
+  onDeleteFinished: (assetId: string) => void
+  assets: Asset[]
   isLoading?: boolean
-  selectedAssets: AssetType[]
+  selectedAssets: Asset[]
 }
 
 const STYLES_FILENAME = {paddingLeft: '2.2rem'}
 const STYLES_GRID = {gridTemplateColumns: '3fr 1fr 1fr 2fr 30px'}
 
-export function TableList(props: Props) {
+export function FileListView(props: Props) {
   const mediaIndex = useMediaIndex()
   const isMobile = mediaIndex < 2
   const {assets, onClick, onKeyPress, onDeleteFinished, selectedAssets, isLoading} = props
