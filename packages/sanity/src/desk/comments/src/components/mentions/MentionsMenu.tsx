@@ -1,6 +1,7 @@
 import {Box, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import React, {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import {deburr} from 'lodash'
 import {MentionOptionUser} from '../../types'
 import {MentionsMenuItem} from './MentionsMenuItem'
 import {CommandList, CommandListHandle} from 'sanity'
@@ -66,9 +67,29 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
   const filteredOptions = useMemo(() => {
     if (!searchTerm) return options || EMPTY_ARRAY
 
-    const filtered = options?.filter((option) => {
-      return option?.displayName?.toLowerCase().includes(searchTerm.toLowerCase())
-    })
+    // We deburr the search term and the display names so that when searching
+    // for e.g "bjorge" we also get results for "bjørge"
+    const deburredSearchTerm = deburr(searchTerm).toLocaleLowerCase()
+
+    const deburredOptions = options?.map((option) => ({
+      ...option,
+      displayName: deburr(option.displayName || '').toLocaleLowerCase(),
+    }))
+
+    const filtered = deburredOptions
+      ?.filter((option) => {
+        return option?.displayName?.includes(deburredSearchTerm)
+      })
+      // Sort by whether the displayName starts with the search term to get more relevant results first
+      ?.sort((a, b) => {
+        const matchA = a.displayName?.startsWith(deburredSearchTerm)
+        const matchB = b.displayName?.startsWith(deburredSearchTerm)
+
+        if (matchA && !matchB) return -1
+        if (!matchA && matchB) return 1
+
+        return 0
+      })
 
     return filtered || EMPTY_ARRAY
   }, [options, searchTerm])
