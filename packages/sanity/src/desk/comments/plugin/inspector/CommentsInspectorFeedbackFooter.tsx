@@ -3,7 +3,7 @@ import {Card, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 
-const FEEDBACK_FORM_LINK = 'https://forms.gle/17z6cZCDaqgMvdpt7'
+const FEEDBACK_FORM_LINK = 'https://snty.link/comments-beta-feedback'
 
 const Span = styled.span`
   margin-right: 0.2em;
