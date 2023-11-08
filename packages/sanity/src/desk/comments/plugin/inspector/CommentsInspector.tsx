@@ -19,6 +19,7 @@ import {
 } from '../../src'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {DocumentInspectorProps, useCurrentUser, useUnique} from 'sanity'
+import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 
 interface CommentToDelete {
   commentId: string
@@ -328,6 +329,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
             status={status}
           />
         )}
+
+        <CommentsInspectorFeedbackFooter />
       </Flex>
     </Fragment>
   )
