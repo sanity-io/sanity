@@ -173,23 +173,41 @@ export interface NavigateOptions {
 }
 
 /**
+ * Base intent parameters
+ *
  * @public
- * @todo dedupe with intent types in core
+ * @todo dedupe with core/desk
  */
 export interface BaseIntentParams {
-  /* Intent type */
+  /**
+   * Document schema type name to create/edit.
+   * Required for `create` intents, optional for `edit` (but encouraged, safer and faster)
+   */
   type?: string
-  /* Intent Id */
+
+  /**
+   * ID of the document to create/edit.
+   * Required for `edit` intents, optional for `create`.
+   */
   id?: string
-  /* Intent template */
+
+  /* Name (ID) of initial value template to use for `create` intent. Optional.  */
   template?: string
+
   /**
    * Experimental field path
+   *
    * @beta
    * @experimental
    * @hidden
    */
   path?: string
+
+  /**
+   * Optional "mode" to use for edit intent.
+   * Known modes are `structured` and `visual`.
+   */
+  mode?: string
 }
 
 /**
