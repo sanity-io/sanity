@@ -37,7 +37,7 @@ const Root = styled(Flex)`
   height: ${rem(PREVIEW_MEDIA_SIZE.default.height)};
 `
 
-const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1})`
+const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
   max-width: ${rem(160)};
   width: 80%;
 `
@@ -75,7 +75,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         <Stack
           data-testid="default-preview__heading"
           flex={1}
-          paddingLeft={media === false ? 1 : 2}
+          paddingLeft={1}
           paddingRight={status ? 0 : 1}
           space={2}
         >
@@ -103,7 +103,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         className={styles?.heading}
         data-testid="default-preview__header"
         flex={1}
-        paddingLeft={media ? 2 : 1}
+        paddingLeft={media ? 3 : 1}
         paddingRight={status ? 0 : 1}
         space={2}
       >

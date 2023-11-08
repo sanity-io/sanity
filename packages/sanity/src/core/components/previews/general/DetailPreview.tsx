@@ -53,7 +53,7 @@ export function DetailPreview(props: DetailPreviewProps) {
       <RootFlex data-testid="detail-preview">
         {media !== false && <MediaSkeleton data-testid="detail-preview__media" />}
 
-        <Box flex={1} paddingLeft={media === false ? 1 : 2}>
+        <Box flex={1} paddingLeft={media === false ? 1 : 3}>
           <Flex align="center" data-testid="detail-preview__header">
             <Stack flex={1} space={2}>
               <TitleSkeleton />
@@ -79,10 +79,10 @@ export function DetailPreview(props: DetailPreviewProps) {
         <Media dimensions={mediaDimensions} layout="detail" media={media as any} />
       )}
 
-      <Box flex={1} paddingLeft={media === false ? 1 : 2}>
+      <Box flex={1} paddingLeft={media === false ? 1 : 3}>
         <Flex align="center" data-testid="detail-preview__header">
           <Stack flex={1} space={2}>
-            <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
+            <Text textOverflow="ellipsis" size={1} style={{color: 'inherit'}} weight="medium">
               {title && renderPreviewNode(title, 'detail')}
               {!title && <>Untitled</>}
             </Text>
