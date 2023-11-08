@@ -105,17 +105,38 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
       icon: options?.icon || MasterDetailIcon,
       component: lazy(() => import('./components/deskTool')),
       canHandleIntent: (intent, params) => {
-        return Boolean(
-          (intent === 'edit' && params.id) ||
-            (intent === 'create' && params.type) ||
-            (intent === 'create' && params.template),
-        )
+        if (intent === 'create') return canHandleCreateIntent(params)
+        if (intent === 'edit') return canHandleEditIntent(params)
+        return false
       },
+      getIntentState,
       // Controlled by sanity/src/desk/components/deskTool/DeskTitle.tsx
       controlsDocumentTitle: true,
-      getIntentState,
       options,
       router,
     },
   ],
 }))
+
+function canHandleCreateIntent(params: Record<string, unknown>) {
+  // We can't handle create intents without a `type` parameter
+  if (!('type' in params)) {
+    return false
+  }
+
+  // We can handle any create intent as long as it has a `type` parameter,
+  // but we also know how to deal with templates, where other tools might not
+  return 'template' in params ? {template: true} : true
+}
+
+function canHandleEditIntent(params: Record<string, unknown>) {
+  // We can't handle edit intents without an `id` parameter
+  if (!('id' in params)) {
+    return false
+  }
+
+  // We can handle any edit intent with a document ID, but we're best at `structured` mode
+  // This ensures that other tools that can handle modes such as `visual` or `batch` can
+  // take precedence over the desk tool
+  return 'mode' in params ? {mode: params.mode === 'structured'} : true
+}
