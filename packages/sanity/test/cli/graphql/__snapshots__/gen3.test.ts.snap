@@ -705,7 +705,12 @@ Object {
         },
         Object {
           "description": undefined,
-          "fieldName": "list",
+          "fieldName": "level",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "listItem",
           "type": "String",
         },
         Object {
