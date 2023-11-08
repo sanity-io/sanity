@@ -5,7 +5,7 @@ import {Tooltip} from '../../ui'
 
 export function NotPublishedStatus() {
   return (
-    <Tooltip content={<>Not published</>}>
+    <Tooltip content="Not published">
       <Text muted>
         <UnpublishIcon aria-label="Not published" />
       </Text>

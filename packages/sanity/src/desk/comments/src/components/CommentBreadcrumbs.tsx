@@ -1,7 +1,12 @@
 import {ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {
+  Box,
+  Flex,
+  Stack,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import React, {Fragment, useMemo} from 'react'
-import {Tooltip} from '../../../../ui'
 
 export interface CommentBreadcrumbsProps {
   titlePath: string[]

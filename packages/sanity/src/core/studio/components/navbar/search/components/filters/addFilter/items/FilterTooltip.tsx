@@ -1,9 +1,16 @@
-import {Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {
+  Card,
+  Code,
+  Flex,
+  Inline,
+  Stack,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import {startCase, uniq} from 'lodash'
 import React, {ReactElement, useMemo} from 'react'
 import {useSchema} from '../../../../../../../../hooks'
 import {isNonNullable} from '../../../../../../../../util'
-import {Tooltip} from '../../../../../../../../../ui'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {SearchFieldDefinition} from '../../../../definitions/fields'
 import type {SearchFilterDefinition} from '../../../../definitions/filters'

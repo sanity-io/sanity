@@ -1,8 +1,13 @@
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
-import {Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
+import {
+  Menu,
+  MenuButton,
+  MenuButtonProps,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import {InsufficientPermissionsMessage} from '../../../components'
-import {Button, Tooltip, MenuItem} from '../../../../ui'
+import {Button, MenuItem} from '../../../../ui'
 import {CreateReferenceOption} from './types'
 
 interface Props extends ComponentProps<typeof Button> {

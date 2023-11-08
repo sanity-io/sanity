@@ -1,11 +1,18 @@
 import React, {ComponentType, ReactNode, Fragment} from 'react'
 import {Reference, ReferenceSchemaType} from '@sanity/types'
-import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {
+  Badge,
+  Box,
+  Flex,
+  Inline,
+  Stack,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
 import {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
 import {TextWithTone} from '../../../components'
-import {Tooltip} from '../../../../ui'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import {ReferenceInfo} from './types'

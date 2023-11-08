@@ -3,6 +3,9 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
+import {
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
@@ -23,7 +26,6 @@ import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
-import {Tooltip} from '../../../../../ui'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'

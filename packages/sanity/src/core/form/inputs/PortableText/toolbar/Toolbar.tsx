@@ -6,7 +6,7 @@ import {
 } from '@sanity/portable-text-editor'
 import React, {memo, useCallback, useMemo, useState} from 'react'
 import {ObjectSchemaType, Path, SchemaType} from '@sanity/types'
-import {Box, Flex, Hotkeys, Text, useElementRect, useToast} from '@sanity/ui'
+import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {useRovingFocus} from '../../../../components'
@@ -129,16 +129,8 @@ const InnerToolbar = memo(function InnerToolbar({
       </Flex>
       <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
         <Tooltip
-          content={
-            <Flex align="center">
-              <Box flex={1} paddingX={1}>
-                <Text size={1}>{`${isFullscreen ? 'Collapse' : 'Expand'} editor`}</Text>
-              </Box>
-              <Box marginLeft={1}>
-                <Hotkeys keys={[`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter']} />
-              </Box>
-            </Flex>
-          }
+          content={`${isFullscreen ? 'Collapse' : 'Expand'} editor`}
+          hotkeys={[`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter']}
           placement={isFullscreen ? 'bottom' : 'top'}
           portal="default"
         >

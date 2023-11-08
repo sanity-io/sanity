@@ -1,11 +1,21 @@
 import React, {useCallback, useMemo, useState} from 'react'
-import {Text, useClickOutside, Stack, TextInput, TextInputProps, Card, Flex} from '@sanity/ui'
+import {
+  Text,
+  useClickOutside,
+  Stack,
+  TextInput,
+  TextInputProps,
+  Tooltip, // eslint-disable-line no-restricted-imports
+  TooltipProps, // eslint-disable-line no-restricted-imports
+  Card,
+  Flex,
+} from '@sanity/ui'
 import {AddIcon, ChevronDownIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
-import {Tooltip, TooltipProps, Button, ButtonProps} from '../../../../../ui'
+import {Button, ButtonProps} from '../../../../../ui'
 import {NewDocumentList, NewDocumentListProps} from './NewDocumentList'
 import {ModalType, NewDocumentOption} from './types'
 import {filterOptions} from './filter'

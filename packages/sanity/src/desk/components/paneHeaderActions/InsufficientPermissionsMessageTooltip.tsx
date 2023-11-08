@@ -1,6 +1,7 @@
-import {Text} from '@sanity/ui'
+import {
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import React from 'react'
-import {Tooltip} from '../../../ui'
 import {useCurrentUser, InsufficientPermissionsMessage} from 'sanity'
 
 interface InsufficientPermissionsMessageTooltipProps {

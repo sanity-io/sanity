@@ -1,8 +1,11 @@
 import React from 'react'
-import {Flex, Text} from '@sanity/ui'
+import {
+  Flex,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CommentsAvatar} from '../../avatars'
-import {Tooltip} from '../../../../../../ui'
 import {useCurrentUser, useUser} from 'sanity'
 
 const Span = styled.span(({theme}) => {

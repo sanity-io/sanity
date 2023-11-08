@@ -1,9 +1,11 @@
 import React, {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {Text} from '@sanity/ui'
+import {
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import {CircularProgress} from '../../progress'
 import {Media} from '../_common/Media'
-import {Tooltip} from '../../../../ui'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'

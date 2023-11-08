@@ -1,8 +1,15 @@
-import {Box, Flex, Stack, Hotkeys, LayerProvider, Text} from '@sanity/ui'
+import {
+  Box,
+  Flex,
+  Hotkeys,
+  LayerProvider,
+  Text,
+  Tooltip, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
-import {Button, Tooltip} from '../../../../ui'
+import {Button} from '../../../../ui'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'

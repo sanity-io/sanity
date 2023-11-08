@@ -1,5 +1,8 @@
 import React, {forwardRef} from 'react'
-import {Tooltip, TooltipProps} from '../../ui'
+import {
+  Tooltip, // eslint-disable-line no-restricted-imports
+  TooltipProps, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 
 /** @internal */
 export const TooltipOfDisabled = forwardRef<HTMLDivElement, TooltipProps>(function DisabledTooltip(
