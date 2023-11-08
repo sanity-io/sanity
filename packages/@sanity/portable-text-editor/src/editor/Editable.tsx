@@ -44,6 +44,8 @@ const PLACEHOLDER_STYLE: React.CSSProperties = {
   position: 'absolute',
   userSelect: 'none',
   pointerEvents: 'none',
+  left: 0,
+  right: 0,
 }
 
 const EMPTY_DECORATORS: BaseRange[] = []
