@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-imports */
 import {Card, Layer, Spinner, Text} from '@sanity/ui'
-import {motion} from 'framer-motion'
 import React from 'react'
 import styled, {css} from 'styled-components'
 
@@ -20,9 +19,6 @@ interface LoadingTestProps {
    */
   title?: string | null
 }
-
-const MotionSpinner = motion(Spinner)
-const MotionText = motion(Text)
 
 const StyledCard = styled(Card)<{$fill?: boolean}>(({$fill}) => {
   return css`
@@ -65,6 +61,50 @@ const StyledCard = styled(Card)<{$fill?: boolean}>(({$fill}) => {
   `
 })
 
+const StyledSpinner = styled(Spinner)`
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-15px);
+    }
+  }
+  animation:
+    500ms ease-out 500ms 1 normal both running fadeIn,
+    600ms ease-out 2000ms 1 normal both running slideUp;
+`
+
+const StyledText = styled(Text)`
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slideDown {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(15px);
+    }
+  }
+  animation:
+    600ms ease-out 2000ms 1 normal both running fadeIn,
+    600ms ease-out 2000ms 1 normal both running slideDown;
+`
+
 /**
  * A generic loading container which displays a spinner and text.
  * The spinner won't initially be visible and fades in after a short delay.
@@ -73,27 +113,12 @@ const StyledCard = styled(Card)<{$fill?: boolean}>(({$fill}) => {
 export function LoadingBlock({fill, hideText, title = 'Loading'}: LoadingTestProps) {
   return (
     <StyledCard $fill={fill} as={fill ? Layer : 'div'}>
-      <MotionSpinner
-        animate={{
-          opacity: 1,
-          ...(hideText ? {} : {y: -15}),
-        }}
-        initial={{opacity: 0}}
-        muted
-        transition={{
-          opacity: {delay: 0.5},
-          ...(hideText ? {} : {y: {delay: 2, duration: 0.6, ease: 'easeOut'}}),
-        }}
-      />
-      <MotionText
-        animate={{opacity: 1, y: 15}}
-        initial={{opacity: 0}}
-        muted
-        size={1}
-        transition={{delay: 2, duration: 0.6, ease: 'easeOut'}}
-      >
-        {title}
-      </MotionText>
+      <StyledSpinner muted />
+      {!hideText && (
+        <StyledText muted size={1}>
+          {title}
+        </StyledText>
+      )}
     </StyledCard>
   )
 }
