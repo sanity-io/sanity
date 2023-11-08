@@ -1,14 +1,14 @@
 import type {Subscription} from 'rxjs'
-import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Box, Button, Card, Dialog, Flex, Grid, Spinner, Text} from '@sanity/ui'
-import {Asset as AssetType, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
+import {Button, Card, Dialog, Flex, Text} from '@sanity/ui'
+import {Asset, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
-import {useClient} from '../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {AssetThumb} from './AssetThumb'
-import {TableList} from './TableList'
+import {useClient} from '../../../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {FileListView} from '../file/FileListView'
+import {ImageListView} from '../image/ImageListView'
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
@@ -48,7 +48,7 @@ const buildFilterQuery = (acceptParam: string) => {
   The extension and mimeType work when the arrays are empty returning the right values so they are kept in the query */
   return `&&
   (
-    ${typesForFilter.wildcards} 
+    ${typesForFilter.wildcards}
     extension in [${typesForFilter.extensions}] ||
     mimeType in [${typesForFilter.mimes}]
   )`
@@ -78,10 +78,6 @@ const buildQuery = (
 `
 }
 
-const ThumbGrid = styled(Grid)`
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-`
-
 const CardLoadMore = styled(Card)`
   border-top: 1px solid var(--card-border-color);
   position: sticky;
@@ -98,18 +94,13 @@ const DefaultAssetSource = function DefaultAssetSource(
   const _elementId = useRef(`default-asset-source-${uniqueId()}`)
   const currentPageNumber = useRef(0)
   const fetch$ = useRef<Subscription>()
-  const [assets, setAssets] = useState<AssetType[]>([])
+  const [assets, setAssets] = useState<Asset[]>([])
   const [isLastPage, setIsLastPage] = useState(false)
   const [hasResetAutoFocus, setHasResetFocus] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const {
-    selectedAssets,
-    assetType = 'image',
-    dialogHeaderTitle = 'Select image',
-    onClose,
-    onSelect,
-    accept,
-  } = props
+  const {selectedAssets, assetType = 'image', dialogHeaderTitle, onClose, onSelect, accept} = props
+
+  const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
   const acceptTypes = accept
     ? accept
         .split(',')
@@ -117,8 +108,6 @@ const DefaultAssetSource = function DefaultAssetSource(
         .join(', ')
     : ''
   const showAcceptMessage = !isLoading && accept && accept.length > 0
-  const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
-
   const fetchPage = useCallback(
     (pageNumber: number) => {
       const start = pageNumber * PER_PAGE
@@ -134,7 +123,6 @@ const DefaultAssetSource = function DefaultAssetSource(
           .fetch(buildQuery(start, end, assetTypeParam, accept), {}, {tag})
           .subscribe((result) => {
             setIsLastPage(result.length < PER_PAGE)
-            // eslint-disable-next-line max-nested-callbacks
             setAssets((prevState) => prevState.concat(result))
             setIsLoading(false)
           })
@@ -144,7 +132,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   )
 
   const handleDeleteFinished = useCallback(
-    (id: any) => {
+    (id: string) => {
       // eslint-disable-next-line max-nested-callbacks
       setAssets((prevState) => prevState.filter((asset) => asset._id !== id))
     },
@@ -152,7 +140,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   )
 
   const select = useCallback(
-    (id: any) => {
+    (id: string) => {
       const selected = assets.find((doc) => doc._id === id)
 
       if (selected) {
@@ -167,8 +155,11 @@ const DefaultAssetSource = function DefaultAssetSource(
   const handleItemClick = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault()
-
-      select(event.currentTarget.getAttribute('data-id'))
+      const id = event.currentTarget.getAttribute('data-id')
+      if (!id) {
+        throw new Error('Missing data-id attribute on item')
+      }
+      select(id)
     },
     [select],
   )
@@ -177,7 +168,11 @@ const DefaultAssetSource = function DefaultAssetSource(
     (event: React.KeyboardEvent) => {
       if (event.key === 'Enter') {
         event.preventDefault()
-        select(event.currentTarget.getAttribute('data-id'))
+        const id = event.currentTarget.getAttribute('data-id')
+        if (!id) {
+          throw new Error('Missing data-id attribute on item')
+        }
+        select(id)
       }
     },
     [select],
@@ -190,7 +185,7 @@ const DefaultAssetSource = function DefaultAssetSource(
   }, [onClose])
 
   const handleFetchNextPage = useCallback(
-    (event: any) => {
+    (event: React.MouseEvent) => {
       event.preventDefault()
       fetchPage(++currentPageNumber.current)
     },
@@ -215,48 +210,6 @@ const DefaultAssetSource = function DefaultAssetSource(
     }
   }, [isLoading])
 
-  const renderedThumbView = useMemo(() => {
-    return (
-      <Box padding={4}>
-        <ThumbGrid gap={2}>
-          {assets.map((asset) => (
-            <AssetThumb
-              key={asset._id}
-              asset={asset}
-              isSelected={selectedAssets.some((selected) => selected._id === asset._id)}
-              onClick={handleItemClick}
-              onKeyPress={handleItemKeyPress}
-              onDeleteFinished={handleDeleteFinished}
-            />
-          ))}
-        </ThumbGrid>
-        {isLoading && assets.length === 0 && (
-          <Flex justify="center">
-            <Spinner muted />
-          </Flex>
-        )}
-        {!isLoading && assets.length === 0 && (
-          <Text align="center" muted>
-            No images
-          </Text>
-        )}
-      </Box>
-    )
-  }, [assets, handleDeleteFinished, handleItemClick, handleItemKeyPress, isLoading, selectedAssets])
-
-  const renderedTableView = useMemo(() => {
-    return (
-      <TableList
-        isLoading={isLoading}
-        assets={assets}
-        selectedAssets={selectedAssets}
-        onClick={handleItemClick}
-        onKeyPress={handleItemKeyPress}
-        onDeleteFinished={handleDeleteFinished}
-      />
-    )
-  }, [isLoading, assets, selectedAssets, handleItemClick, handleItemKeyPress, handleDeleteFinished])
-
   return (
     <Dialog
       __unstable_autoFocus={hasResetAutoFocus}
@@ -279,8 +232,26 @@ const DefaultAssetSource = function DefaultAssetSource(
           </Flex>
         </Card>
       )}
-      {assetType === 'image' && renderedThumbView}
-      {assetType === 'file' && renderedTableView}
+      {assetType === 'file' && (
+        <FileListView
+          assets={assets}
+          onDeleteFinished={handleDeleteFinished}
+          onClick={handleItemClick}
+          onKeyPress={handleItemKeyPress}
+          isLoading={isLoading}
+          selectedAssets={selectedAssets}
+        />
+      )}
+      {assetType === 'image' && (
+        <ImageListView
+          assets={assets}
+          onDeleteFinished={handleDeleteFinished}
+          onItemClick={handleItemClick}
+          onItemKeyPress={handleItemKeyPress}
+          isLoading={isLoading}
+          selectedAssets={selectedAssets}
+        />
+      )}
       {assets.length > 0 && !isLastPage && (
         <CardLoadMore tone="default" padding={4}>
           <Flex direction="column">

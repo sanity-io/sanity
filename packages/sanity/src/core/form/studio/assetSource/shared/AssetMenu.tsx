@@ -1,7 +1,9 @@
 import React from 'react'
-import {LinkIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {Button, Menu, MenuItem, MenuButton} from '@sanity/ui'
-import {AssetMenuAction} from './types'
+import {EllipsisVerticalIcon, LinkIcon, TrashIcon} from '@sanity/icons'
+import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {AssetMenuAction} from '../types'
+
+const MENU_POPOVER_PROPS = {portal: true, placement: 'right'} as const
 
 export function AssetMenu({
   isSelected,
@@ -26,7 +28,6 @@ export function AssetMenu({
         />
       }
       id="asset-menu"
-      portal
       menu={
         <Menu>
           <MenuItem
@@ -46,7 +47,7 @@ export function AssetMenu({
           />
         </Menu>
       }
-      placement="right"
+      popover={MENU_POPOVER_PROPS}
     />
   )
 }

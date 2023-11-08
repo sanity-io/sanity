@@ -1,11 +1,11 @@
 import React, {useCallback} from 'react'
-import {Card, Text, Flex} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
-import {useSchema} from '../../../hooks'
-import {Preview} from '../../../preview/components/Preview'
+import {useSchema} from '../../../../hooks'
+import {Preview} from '../../../../preview/components/Preview'
 import {IntentLink} from 'sanity/router'
 
-export const DocumentList = ({
+export const AssetUsageList = ({
   asset,
   assetType,
   referringDocuments,
@@ -15,21 +15,12 @@ export const DocumentList = ({
   referringDocuments: SanityDocument[]
 }) => {
   const count = referringDocuments.length
-  const hasResults = count > 0
+
   const filenamePlaceholder = asset.originalFilename ? (
     <strong>{asset.originalFilename}</strong>
   ) : (
     `this ${assetType}`
   )
-
-  if (!hasResults) {
-    return (
-      <Text size={[1, 1, 2, 2]} as="h2" weight="regular">
-        No documents are using {filenamePlaceholder}
-      </Text>
-    )
-  }
-
   return (
     <>
       <Card borderBottom marginTop={2} paddingBottom={2} marginBottom={1}>

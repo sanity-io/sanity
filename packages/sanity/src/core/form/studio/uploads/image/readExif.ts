@@ -1,5 +1,5 @@
-import {Observable, of as observableOf, from as observableFrom} from 'rxjs'
-import {map, catchError} from 'rxjs/operators'
+import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
+import {catchError, map} from 'rxjs/operators'
 import exif from 'exif-component'
 
 function readFileAsArrayBuffer(
