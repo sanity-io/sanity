@@ -99,7 +99,6 @@ export function PreviewReferenceValue(props: {
                     <Translate
                       i18nKey="inputs.reference.error.nonexistent-document-description"
                       t={t}
-                      components={{Code: ({children}) => <code>{children}</code>}}
                       values={{documentId: value._ref}}
                     />
                   </UnavailableMessage>
@@ -206,7 +205,6 @@ function InvalidType({
                   values={{documentId, actualType}}
                   components={{
                     AllowedTypes: () => <HumanizedList values={declaredTypes} />,
-                    Code: ({children}) => <code>{children}</code>,
                   }}
                 />
               </Text>

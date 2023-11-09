@@ -170,9 +170,6 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
                             t={t}
                             i18nKey="new-document.no-results"
                             values={{searchQuery: searchState.terms.query}}
-                            components={{
-                              QueryString: ({children}) => <strong>{children}</strong>,
-                            }}
                           />
                         </StyledText>
                       </Flex>
