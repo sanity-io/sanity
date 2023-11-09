@@ -147,9 +147,9 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
       <Popover
         constrainSize
         content={content}
-        fallbackPlacements={['left-start']}
+        fallbackPlacements={['bottom-end']}
         open={open}
-        placement="bottom-end"
+        placement="right-start"
         portal
         ref={setPopoverElement}
       >
