@@ -23,6 +23,8 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
+const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
+
 export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormView(props, ref) {
   const {hidden, margins} = props
 
@@ -152,37 +154,39 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       width={1}
     >
       <PresenceOverlay margins={margins}>
-        <FormTitle title={title} ready={ready} />
-        {formState === null ? (
-          <Box padding={2}>
-            <Text>This form is hidden</Text>
-          </Box>
-        ) : (
-          <FormBuilder
-            __internal_fieldActions={fieldActions}
-            __internal_patchChannel={patchChannel}
-            collapsedFieldSets={collapsedFieldSets}
-            collapsedPaths={collapsedPaths}
-            focusPath={formState.focusPath}
-            changed={formState.changed}
-            focused={formState.focused}
-            groups={formState.groups}
-            id="root"
-            members={formState.members}
-            onChange={onChange}
-            onFieldGroupSelect={onSetActiveFieldGroup}
-            onPathBlur={onBlur}
-            onPathFocus={onFocus}
-            onPathOpen={onPathOpen}
-            onSetFieldSetCollapsed={onSetCollapsedFieldSet}
-            onSetPathCollapsed={onSetCollapsedPath}
-            presence={presence}
-            readOnly={formState.readOnly}
-            schemaType={formState.schemaType}
-            validation={validation}
-            value={formState.value}
-          />
-        )}
+        <Box as="form" onSubmit={preventDefault} ref={setRef}>
+          <FormTitle title={title} ready={ready} />
+          {formState === null ? (
+            <Box padding={2}>
+              <Text>This form is hidden</Text>
+            </Box>
+          ) : (
+            <FormBuilder
+              __internal_fieldActions={fieldActions}
+              __internal_patchChannel={patchChannel}
+              collapsedFieldSets={collapsedFieldSets}
+              collapsedPaths={collapsedPaths}
+              focusPath={formState.focusPath}
+              changed={formState.changed}
+              focused={formState.focused}
+              groups={formState.groups}
+              id="root"
+              members={formState.members}
+              onChange={onChange}
+              onFieldGroupSelect={onSetActiveFieldGroup}
+              onPathBlur={onBlur}
+              onPathFocus={onFocus}
+              onPathOpen={onPathOpen}
+              onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+              onSetPathCollapsed={onSetCollapsedPath}
+              presence={presence}
+              readOnly={formState.readOnly}
+              schemaType={formState.schemaType}
+              validation={validation}
+              value={formState.value}
+            />
+          )}
+        </Box>
       </PresenceOverlay>
     </Container>
   )
