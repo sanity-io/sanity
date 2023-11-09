@@ -48,11 +48,10 @@ export interface BaseIntentParams {
   mode?: string
 
   /**
-   * Arbitrary/custom parameters should be prefixed with an underscore (`_`), to signal that they
-   * do not have any defined semantics to the intent itself, but to some implementer. Implementers
-   * are free to ignore these if they want to.
+   * Arbitrary/custom parameters are generally discouraged - try to keep them to a minimum,
+   * or use `payload` (arbitrary JSON-serializable object) instead.
    */
-  [key: `_${string}`]: string
+  [key: string]: string | undefined
 }
 
 /** @internal */
