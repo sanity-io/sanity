@@ -24,6 +24,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   },
   ref: React.ForwardedRef<HTMLInputElement>,
 ) {
+  const {searchString, loading, portalRef, referenceElement, ...restProps} = props
   const {t} = useTranslation()
   const hasResults = props.options && props.options.length > 0
   const renderPopover = useCallback(
@@ -62,8 +63,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
                     <Translate
                       t={t}
                       i18nKey="inputs.reference.no-results-for-query"
-                      components={{SearchTerm: ({children}) => <strong>{children}</strong>}}
-                      values={{searchTerm: props.searchString || ''}}
+                      values={{searchTerm: searchString || ''}}
                     />
                   </StyledText>
                 </Flex>
@@ -71,14 +71,14 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
             )}
           </div>
         }
-        open={!props.loading && !hidden}
-        ref={props.portalRef}
+        open={!loading && !hidden}
+        ref={portalRef}
         portal
-        referenceElement={props.referenceElement || inputElement}
+        referenceElement={referenceElement || inputElement}
         matchReferenceWidth
       />
     ),
-    [hasResults, t, props.searchString, props.loading, props.portalRef, props.referenceElement],
+    [hasResults, t, searchString, loading, portalRef, referenceElement],
   )
-  return <Autocomplete {...props} ref={ref} renderPopover={renderPopover} />
+  return <Autocomplete {...restProps} ref={ref} renderPopover={renderPopover} />
 })
