@@ -10,7 +10,7 @@ export function StudioLogo(props: LogoProps) {
 
   return (
     <Box padding={3}>
-      <Text weight="bold">{title}</Text>
+      <Text weight="medium">{title}</Text>
     </Box>
   )
 }
