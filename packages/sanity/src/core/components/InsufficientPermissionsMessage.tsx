@@ -1,27 +1,48 @@
 import {AccessDeniedIcon} from '@sanity/icons'
 import {CurrentUser} from '@sanity/types'
 import {Text, Inline, Box} from '@sanity/ui'
-import React from 'react'
+import React, {Fragment, useCallback} from 'react'
+import {startCase} from 'lodash'
 // note: these are both available from the `../i18n` export but importing through
 // that export fails the build. may be due to a circular reference.
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {Translate} from '../i18n/Translate'
+import {useIntlListFormat} from '../i18n/hooks/useIntlListFormat'
 
 /** @internal */
 export interface InsufficientPermissionsMessageProps {
-  operationLabel?: string
   currentUser?: CurrentUser | null
+  action: string
 }
+
+const EMPTY_ARRAY = [] as never[]
 
 /** @internal */
 export function InsufficientPermissionsMessage(props: InsufficientPermissionsMessageProps) {
   const {t} = useTranslation()
-  const {
-    currentUser,
-    operationLabel = t('insufficient-permissions-message.default-operation-label'),
-  } = props
+  const {currentUser, action} = props
 
-  const roles = currentUser?.roles || []
+  const list = useIntlListFormat({style: 'short', type: 'unit'})
+  const roles = currentUser?.roles || EMPTY_ARRAY
+
+  const Roles = useCallback(
+    () => (
+      <>
+        {list
+          .formatToParts(roles.map((role) => role.title || startCase(role.name)))
+          .map((i, index) =>
+            i.type === 'element' ? (
+              // eslint-disable-next-line react/no-array-index-key
+              <code key={`${i.value}-${index}`}>{i.value}</code>
+            ) : (
+              // eslint-disable-next-line react/no-array-index-key
+              <Fragment key={`${i.value}-${index}`}>{i.value}</Fragment>
+            ),
+          )}
+      </>
+    ),
+    [roles, list],
+  )
 
   return (
     <Box padding={2}>
@@ -34,26 +55,17 @@ export function InsufficientPermissionsMessage(props: InsufficientPermissionsMes
       <Inline marginTop={4}>
         <Text size={1}>
           <Translate
-            i18nKey="insufficient-permissions-message.roles"
+            i18nKey="insufficient-permissions-message.not-authorized"
             t={t}
-            components={{
-              Roles: () =>
-                join(
-                  roles.map((r) => <code key={r.name}>{r.title}</code>),
-                  <>, </>,
-                ),
-            }}
-            values={{operationLabel, count: roles.length}}
+            values={{action}}
           />
         </Text>
       </Inline>
+      <Inline marginTop={4} marginBottom={1}>
+        <Text size={1}>
+          <Translate i18nKey="insufficient-permissions-message.roles" t={t} components={{Roles}} />
+        </Text>
+      </Inline>
     </Box>
-  )
-}
-
-function join(array: React.ReactElement[], sep: React.ReactElement) {
-  return array.reduce<React.ReactElement[] | null>(
-    (result, item) => (result === null ? [item] : [...result, sep, item]),
-    null,
   )
 }

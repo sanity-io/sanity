@@ -1589,33 +1589,23 @@ export const studioLocaleStrings = {
   /** The title for the insufficient permissions message component */
   'insufficient-permissions-message.title': 'Insufficient permissions',
 
-  /** The insufficient permissions messages when the user has no roles */
-  'insufficient-permissions-message.roles_zero':
-    'You have no role that grants you permission to {{operationLabel}}',
+  /** Informs the users that their current roles do not have the required permissions to do a particular action */
+  'insufficient-permissions-message.not-authorized': 'Not authorized to {{action}}.',
 
-  /** The insufficient permissions messages when the user has one role */
-  'insufficient-permissions-message.roles_one':
-    'Your role <Roles/> does not have permission to {{operationLabel}}',
+  /** Appears after the not-authorized message. Lists the current roles. */
+  'insufficient-permissions-message.roles': 'Your roles: <Roles/>',
 
-  /** The insufficient permissions messages when the user has more than one role */
-  'insufficient-permissions-message.roles_other':
-    'Your roles <Roles/> do not have permission to {{operationLabel}}',
+  /** The action when unable to create a new reference */
+  'insufficient-permissions-message.action.create-new-reference': 'create a new reference',
 
-  /** The default `{{operationLabel}}`. Refer to `insufficient-permissions-message.has-roles`. */
-  'insufficient-permissions-message.default-operation-label': 'access this feature',
+  /** The action when unable to create a particular type of document */
+  'insufficient-permissions-message.action.create-document-type': 'create this kind of document',
 
-  /** The operation label when unable to create a new reference */
-  'insufficient-permissions-message.operation-label.create-new-reference': 'create a new reference',
+  /** The action when unable to create any document */
+  'insufficient-permissions-message.action.create-any-document': 'create any document',
 
-  /** The operation label when unable to create a particular type of document */
-  'insufficient-permissions-message.operation-label.create-document-type':
-    'create this type of document',
-
-  /** The operation label when unable to create any document */
-  'insufficient-permissions-message.operation-label.create-any-document': 'create any document',
-
-  /** The operation label when unable to create a particular document */
-  'insufficient-permissions-message.operation-label.create-document': 'create this document',
+  /** The action when unable to create a particular document */
+  'insufficient-permissions-message.action.create-document': 'create this document',
 }
 
 /**

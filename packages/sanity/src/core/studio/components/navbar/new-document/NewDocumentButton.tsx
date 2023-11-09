@@ -170,7 +170,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     return (
       <InsufficientPermissionsMessage
         currentUser={currentUser}
-        operationLabel={t('insufficient-permissions-message.operation-label.create-any-document')}
+        action={t('insufficient-permissions-message.action.create-any-document')}
       />
     )
   }, [canCreateDocument, currentUser, hasNewDocumentOptions, t])

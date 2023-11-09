@@ -503,21 +503,23 @@ const deskLocaleStrings = {
   /** the loading messaging for when the tooltip is still loading permission info */
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 
-  /** The operation label when unable to delete a particular document */
-  'insufficient-permissions-message.operation-label.delete-document': 'delete this document',
+  /** The action when unable to delete a particular document */
+  'insufficient-permissions-message.action.delete-document': 'delete this document',
 
-  /** The operation label when unable to discard changes in a particular document */
-  'insufficient-permissions-message.operation-label.discard-changes':
-    'discard changes in this document',
+  /** The action when unable to discard changes in a particular document */
+  'insufficient-permissions-message.action.discard-changes': 'discard changes in this document',
 
-  /** The operation label when unable to duplicate a particular document */
-  'insufficient-permissions-message.operation-label.duplicate-document': 'duplicate this document',
+  /** The action when unable create a particular kind of document in the document list pane header */
+  'insufficient-permissions-message.action.create-document-type': 'create this kind of document',
 
-  /** The operation label when unable to publish a particular document */
-  'insufficient-permissions-message.operation-label.publish-document': 'publish this document',
+  /** The action when unable to duplicate a particular document */
+  'insufficient-permissions-message.action.duplicate-document': 'duplicate this document',
 
-  /** The operation label when unable to unpublish a particular document */
-  'insufficient-permissions-message.operation-label.unpublish-document': 'unpublish this document',
+  /** The action when unable to publish a particular document */
+  'insufficient-permissions-message.action.publish-document': 'publish this document',
+
+  /** The action when unable to unpublish a particular document */
+  'insufficient-permissions-message.action.unpublish-document': 'unpublish this document',
 }
 
 /**

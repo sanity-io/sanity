@@ -36,9 +36,7 @@ export function CreateButton(props: Props) {
         content={
           <Box padding={2}>
             <InsufficientPermissionsMessage
-              operationLabel={t(
-                'insufficient-permissions-message.operation-label.create-new-reference',
-              )}
+              action={t('insufficient-permissions-message.action.create-new-reference')}
             />
           </Box>
         }
@@ -78,9 +76,7 @@ export function CreateButton(props: Props) {
               content={
                 <Box padding={2}>
                   <InsufficientPermissionsMessage
-                    operationLabel={t(
-                      'insufficient-permissions-message.operation-label.create-document-type',
-                    )}
+                    action={t('insufficient-permissions-message.action.create-document-type')}
                   />
                 </Box>
               }
