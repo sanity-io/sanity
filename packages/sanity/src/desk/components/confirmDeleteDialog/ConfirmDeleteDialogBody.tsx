@@ -75,8 +75,8 @@ export function ConfirmDeleteDialogBody({
         <Translate
           t={t}
           i18nKey="confirm-delete-dialog.confirmation.text"
+          context={action}
           components={{DocumentTitle: () => <strong>{documentTitle}</strong>}}
-          values={{context: action}}
         />
       </Text>
     )
@@ -122,8 +122,8 @@ export function ConfirmDeleteDialogBody({
           <Translate
             i18nKey="confirm-delete-dialog.referring-documents-descriptor.text"
             t={t}
+            context={action}
             components={{DocumentTitle: () => documentTitle}}
-            values={{context: action}}
           />
         </Text>
       </Box>
@@ -275,8 +275,8 @@ export function ConfirmDeleteDialogBody({
           <Translate
             i18nKey="confirm-delete-dialog.referential-integrity-disclaimer.text"
             t={t}
+            context={action}
             components={{DocumentTitle: () => documentTitle}}
-            values={{context: action}}
           />
         </Text>
       </Box>
