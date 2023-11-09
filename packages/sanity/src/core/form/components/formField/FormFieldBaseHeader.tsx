@@ -1,11 +1,20 @@
 import React, {useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {Box, Card, Flex, Theme} from '@sanity/ui'
+import {
+  Box,
+  Card,
+  Flex,
+  Theme,
+  TooltipDelayGroupProvider,
+  TooltipDelayGroupProviderProps,
+} from '@sanity/ui'
 import {FieldPresence, FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field'
 import {FieldCommentsProps} from '../../types'
+
+const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
 
 const Root = styled(Flex)`
   /* Prevent buttons from taking up extra vertical space */
@@ -47,16 +56,65 @@ const SlotBox = styled(Box)<{
 })
 
 const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
-  const {space} = theme.sanity
+  const space = theme.sanity.space[1] / 2
+
   return css`
     align-items: center;
     bottom: 0;
-    gap: ${space[1] / 2}px;
-    padding: ${space[1] / 2}px;
+    gap: ${space}px;
+    padding: ${space}px;
     position: absolute;
     right: 0;
+
+    @media (hover: hover) {
+      // If hover is supported, we hide the floating card by default
+      // and only show it when it has focus within or when the field is hovered or focused.
+      opacity: 0;
+
+      [data-ui='FieldActionFlex'] {
+        opacity: 0;
+      }
+
+      &[data-actions-visible='false']:not(:focus-within) {
+        // Remove the shadow when the field actions are not visible
+        box-shadow: none;
+
+        // Since the field actions always will be present in the DOM (to make them focusable) –
+        // they will always affect the width of the floating card, even when they are not visible.
+        // Therefore, we remove the background of the floating card when the field actions are not visible.
+        background: transparent;
+      }
+
+      // Remove the shadow when the field has comments but no actions
+      &[data-has-comments='true']:not([data-has-actions='true']) {
+        box-shadow: none;
+      }
+
+      // Show the floating card when it has focus within (ie when field actions are focused).
+      &:focus-within {
+        opacity: 1;
+
+        [data-ui='FieldActionFlex'] {
+          opacity: 1;
+        }
+      }
+    }
+
+    &[data-visible='true'] {
+      opacity: 1;
+    }
+
+    &[data-actions-visible='true'] {
+      [data-ui='FieldActionFlex'] {
+        opacity: 1;
+      }
+    }
   `
 })
+
+const FieldActionsFlex = styled(Flex)`
+  gap: inherit;
+`
 
 const MAX_AVATARS = 4
 
@@ -102,9 +160,6 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   // Determine if actions exist and if field actions should be shown
   const hasActions = actions && actions.length > 0
   const showFieldActions = fieldFocused || fieldHovered || menuOpen || isAddingComment
-
-  // Determine the shadow level for the card
-  const shadow = (showFieldActions && hasActions) || !hasComments ? 3 : undefined
 
   // Determine if there's a comment button or actions to show.
   // We check for `comments.button` since that's the visual element that should be
@@ -159,20 +214,28 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
       {slotEl}
 
-      {shouldShowFloatingCard && hasCommentsButtonOrActions && (
-        <FieldActionsFloatingCard
-          display="flex"
-          radius={2}
-          ref={setFloatingCardElement}
-          shadow={shadow}
-          sizing="border"
-        >
-          {showFieldActions && hasActions && (
-            <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
-          )}
+      {(hasCommentsButtonOrActions || hasComments) && (
+        <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
+          <FieldActionsFloatingCard
+            data-actions-visible={showFieldActions ? 'true' : 'false'}
+            data-has-actions={hasActions ? 'true' : 'false'}
+            data-has-comments={hasComments ? 'true' : 'false'}
+            data-visible={shouldShowFloatingCard ? 'true' : 'false'}
+            display="flex"
+            radius={2}
+            ref={setFloatingCardElement}
+            shadow={2}
+            sizing="border"
+          >
+            {hasActions && (
+              <FieldActionsFlex align="center" data-ui="FieldActionFlex">
+                <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
+              </FieldActionsFlex>
+            )}
 
-          {commentButton}
-        </FieldActionsFloatingCard>
+            {commentButton}
+          </FieldActionsFloatingCard>
+        </TooltipDelayGroupProvider>
       )}
     </Root>
   )
