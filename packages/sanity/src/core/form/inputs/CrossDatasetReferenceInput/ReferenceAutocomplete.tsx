@@ -1,6 +1,7 @@
 import React, {forwardRef, useCallback} from 'react'
 import {Autocomplete, Box, Flex, Placement, Popover, Text} from '@sanity/ui'
 import styled from 'styled-components'
+import {Translate, useTranslation} from '../../../i18n'
 
 const StyledPopover = styled(Popover)`
   & > div {
@@ -23,6 +24,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   },
   ref: React.ForwardedRef<HTMLInputElement>,
 ) {
+  const {t} = useTranslation()
   const hasResults = props.options && props.options.length > 0
   const renderPopover = useCallback(
     (
@@ -57,7 +59,12 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
               <Box padding={4}>
                 <Flex align="center" height="fill" justify="center">
                   <StyledText align="center" muted>
-                    No results for <strong>“{props.searchString}”</strong>
+                    <Translate
+                      t={t}
+                      i18nKey="inputs.reference.no-results-for-query"
+                      components={{SearchTerm: ({children}) => <strong>{children}</strong>}}
+                      values={{searchTerm: props.searchString || ''}}
+                    />
                   </StyledText>
                 </Flex>
               </Box>
@@ -71,7 +78,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
         matchReferenceWidth
       />
     ),
-    [hasResults, props.searchString, props.loading, props.portalRef, props.referenceElement],
+    [hasResults, t, props.searchString, props.loading, props.portalRef, props.referenceElement],
   )
   return <Autocomplete {...props} ref={ref} renderPopover={renderPopover} />
 })

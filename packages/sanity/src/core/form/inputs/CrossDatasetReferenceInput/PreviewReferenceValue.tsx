@@ -1,8 +1,9 @@
 import React from 'react'
-import {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
+import type {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Translate, useTranslation} from '../../../i18n'
 import {Loadable} from './useReferenceInfo'
-import {CrossDatasetReferenceInfo} from './types'
+import type {CrossDatasetReferenceInfo} from './types'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
 import {useProjectId} from './utils/useProjectId'
 
@@ -14,6 +15,7 @@ export function PreviewReferenceValue(props: {
   referenceInfo: Loadable<CrossDatasetReferenceInfo>
 }) {
   const {value, type, showStudioUrlIcon, hasStudioUrl, referenceInfo} = props
+  const {t} = useTranslation()
   const projectId = useProjectId()
 
   if (referenceInfo.isLoading || referenceInfo.error) {
@@ -33,8 +35,12 @@ export function PreviewReferenceValue(props: {
     return (
       <Stack space={2} padding={2}>
         <Text as="p">
-          The referenced document is of invalid type: ({refTypeName || 'unknown'})
-          <pre>{JSON.stringify(value, null, 2)}</pre>
+          <Translate
+            t={t}
+            i18nKey="inputs.reference.cross-dataset.invalid-type"
+            values={{typeName: refTypeName || 'unknown'}}
+            components={{JsonValue: () => <pre>{JSON.stringify(value, null, 2)}</pre>}}
+          />
         </Text>
       </Stack>
     )
