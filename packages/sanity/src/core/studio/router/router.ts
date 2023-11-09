@@ -6,10 +6,7 @@ export function createRouter(opts: {basePath?: string; tools: Tool[]}): Router {
 
   const toolRoute = route.create('/:tool', (toolParams) => {
     const tool = tools.find((current) => current.name === toolParams.tool)
-    return tool
-      ? // eslint-disable-next-line camelcase
-        route.scope(tool.name, '/', tool.router)
-      : route.create('/')
+    return tool ? route.scope(tool.name, '/', tool.router) : route.create('/')
   })
 
   return route.create(basePath, [route.intents('/intent'), toolRoute])
