@@ -306,13 +306,11 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
   }
 
   handleOpenDialog = () => {
-    const {onFieldOpen} = this.props
-    onFieldOpen('hotspot')
+    this.props.onPathFocus(['hotspot'])
   }
 
   handleCloseDialog = () => {
-    const {onFieldClose} = this.props
-    onFieldClose('hotspot')
+    this.props.onPathFocus([])
 
     // Set focus on hotspot button in `ImageActionsMenu` when closing the dialog
     this.state.hotspotButtonElement?.focus()
@@ -787,6 +785,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
   render() {
     const {
+      focusPath,
       members,
       renderAnnotation,
       renderBlock,
@@ -851,7 +850,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           //@ts-expect-error all possible cases should be covered
           return <>Unknown member kind: ${member.kind}</>
         })}
-        {hotspotField?.open && (
+
+        {hotspotField && focusPath[0] === 'hotspot' && (
           <FormInput
             {...this.props}
             absolutePath={hotspotField.field.path}

@@ -1,6 +1,15 @@
 import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
 import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
-import {Button, Inline, Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {
+  Button,
+  Inline,
+  Menu,
+  Popover,
+  Text,
+  Tooltip,
+  useClickOutside,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const MenuActionsWrapper = styled(Inline)`
@@ -82,14 +91,16 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
       {showEdit && (
-        <Button
-          aria-label="Open image edit dialog"
-          data-testid="options-menu-edit-details"
-          icon={CropIcon}
-          mode="ghost"
-          onClick={onEdit}
-          ref={setHotspotButtonElement}
-        />
+        <Tooltip content={<Text size={1}>Crop image</Text>} padding={2}>
+          <Button
+            aria-label="Open image edit dialog"
+            data-testid="options-menu-edit-details"
+            icon={CropIcon}
+            mode="ghost"
+            onClick={onEdit}
+            ref={setHotspotButtonElement}
+          />
+        </Tooltip>
       )}
       {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
      and break replacing an uploaded file. */}
