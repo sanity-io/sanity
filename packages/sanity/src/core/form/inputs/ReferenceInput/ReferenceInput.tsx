@@ -309,7 +309,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
               <Translate
                 i18nKey="inputs.reference.error.nonexistent-document-description"
                 t={t}
-                components={{Code: ({children}) => <code>{children}</code>}}
                 values={{documentId: value._ref}}
               />
             </Text>

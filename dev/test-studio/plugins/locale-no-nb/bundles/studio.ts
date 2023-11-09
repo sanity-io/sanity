@@ -417,7 +417,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.reference.error.nonexistent-document-title': 'Ikke funnet',
 
   /** Error description for when the current reference value points to a document that does not exist (on weak references) */
-  'inputs.reference.error.nonexistent-document-description': `Det refererte dokumentet eksisterer ikke (ID: <Code>{{documentId}}</Code>). Du kan enten fjerne referansen eller erstatte den med et annet dokument.`,
+  'inputs.reference.error.nonexistent-document-description': `Det refererte dokumentet eksisterer ikke (ID: <code>{{documentId}}</code>). Du kan enten fjerne referansen eller erstatte den med et annet dokument.`,
 
   /** Label for button that clears the reference when it points to a document that does not exist (on weak references) */
   'inputs.reference.error.nonexistent-document.clear-button-label': 'Tøm',
@@ -442,7 +442,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.reference.error.invalid-type-title': 'Dokument av ugyldig type',
 
   /** Error description for when the document referenced is not one of the types declared as allowed target types in schema */
-  'inputs.reference.error.invalid-type-description': `Referert dokument (<Code>{{documentId}}</Code>) er av type <Code>{{actualType}}</Code>. Ifølge skjemaet kan refererte dokumenter bare være av type <AllowedTypes />.`,
+  'inputs.reference.error.invalid-type-description': `Referert dokument (<code>{{documentId}}</code>) er av type <code>{{actualType}}</code>. Ifølge skjemaet kan refererte dokumenter bare være av type <AllowedTypes />.`,
 
   /** Placeholder shown in a reference input with no current value */
   'inputs.reference.search-placeholder': 'Skriv for å søke',
@@ -631,11 +631,11 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.array.error.type-is-incompatible-title': 'Hvorfor skjer dette?',
 
   /** Error description for the array item tooltip that explains what the error means with more context */
-  'inputs.array.error.type-is-incompatible-prompt': `Typen <Code>{{typeName}}</Code> er ikke gyldig for denne listen`,
+  'inputs.array.error.type-is-incompatible-prompt': `Typen <code>{{typeName}}</code> er ikke gyldig for denne listen`,
 
   /** Error description for the array item tooltip that explains that the current type item is not valid for the list  */
   'inputs.array.error.current-schema-not-declare-description':
-    'Den nåværende skjemaet erklærer ikke typen <Code>{{typeName}}</Code> som gyldig for denne listen. Dette kan bety at typen har blitt fjernet som en gyldig type, eller at noen andre har lagt den til i sitt eget lokale skjema som ennå ikke er distribuert.',
+    'Den nåværende skjemaet erklærer ikke typen <code>{{typeName}}</code> som gyldig for denne listen. Dette kan bety at typen har blitt fjernet som en gyldig type, eller at noen andre har lagt den til i sitt eget lokale skjema som ennå ikke er distribuert.',
 
   /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
   'inputs.array.error.can-delete-but-no-edit-description':
@@ -747,7 +747,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'new-document.create-new-document-label': 'Nytt dokument…',
 
   /** Message for when no results are found for a specific search query in the new document menu */
-  'new-document.no-results': 'Ingen resultater for <QueryString>«{{searchQuery}}»</QueryString>',
+  'new-document.no-results': 'Ingen resultater for <strong>«{{searchQuery}}»</strong>',
 
   /** Message for when there are no document type options in the new document menu */
   'new-document.no-document-types-found': 'Ingen dokumenttyper funnet',
