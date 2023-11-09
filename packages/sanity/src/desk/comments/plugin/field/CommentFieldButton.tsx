@@ -65,10 +65,17 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     value,
   } = props
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+  const [addCommentButtonElement, setAddCommentButtonElement] = useState<HTMLButtonElement | null>(
+    null,
+  )
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
   const hasComments = Boolean(count > 0)
 
-  const closePopover = useCallback(() => setOpen(false), [setOpen])
+  const closePopover = useCallback(() => {
+    if (!open) return
+    setOpen(false)
+    addCommentButtonElement?.focus()
+  }, [addCommentButtonElement, open, setOpen])
 
   const handleSubmit = useCallback(() => {
     onCommentAdd()
@@ -92,16 +99,11 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
       if (event.isDefaultPrevented()) {
         return
       }
-      // Discard the input text
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        event.stopPropagation()
-        startDiscard()
-      }
+
       // Call parent handler
       if (onInputKeyDown) onInputKeyDown(event)
     },
-    [onInputKeyDown, startDiscard],
+    [onInputKeyDown],
   )
 
   const handleDiscardCancel = useCallback(() => {
@@ -114,7 +116,24 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
     onDiscard()
   }, [closePopover, onDiscard])
 
-  useClickOutside(startDiscard, [popoverElement])
+  const handlePopoverKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        startDiscard()
+      }
+    },
+    [startDiscard],
+  )
+
+  const handleClickOutside = useCallback(() => {
+    if (!open) return
+
+    startDiscard()
+  }, [open, startDiscard])
+
+  useClickOutside(handleClickOutside, [popoverElement])
 
   if (!hasComments) {
     const placeholder = (
@@ -152,6 +171,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
         placement="bottom-end"
         portal
         ref={setPopoverElement}
+        onKeyDown={handlePopoverKeyDown}
       >
         <div>
           <Tooltip
@@ -173,6 +193,7 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
               mode="bleed"
               onClick={onClick}
               padding={2}
+              ref={setAddCommentButtonElement}
               selected={open}
             />
           </Tooltip>
