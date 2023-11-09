@@ -519,8 +519,7 @@ export const studioLocaleStrings = {
   'inputs.reference.search-placeholder': 'Type to search',
 
   /** Message shown when no documents were found that matched the given search string */
-  'inputs.reference.no-results-for-query':
-    'No results for <SearchTerm>“{{searchTerm}}”</SearchTerm>',
+  'inputs.reference.no-results-for-query': 'No results for <strong>“{{searchTerm}}”</strong>',
 
   /** Label for action to create a new document from the reference input */
   'inputs.reference.action.create-new-document': 'Create new',
