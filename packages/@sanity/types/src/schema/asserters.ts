@@ -1,5 +1,5 @@
 import type {CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
-import {TitledListValue} from './definition'
+import type {TitledListValue} from './definition'
 import type {
   ArraySchemaType,
   BlockChildrenObjectField,

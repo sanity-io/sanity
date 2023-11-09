@@ -1,12 +1,12 @@
 import type {ComponentType} from 'react'
-import {SanityClient} from '@sanity/client'
+import type {SanityClient} from '@sanity/client'
 import type {Rule} from '../validation'
 import type {SanityDocument} from '../documents'
 import type {CurrentUser} from '../user'
 import type {PreviewConfig} from './preview'
-import {SchemaTypeDefinition} from './definition/schemaDefinition'
-import {ArrayOptions} from './definition/type/array'
-import {
+import type {SchemaTypeDefinition} from './definition/schemaDefinition'
+import type {ArrayOptions} from './definition/type/array'
+import type {
   BlockDecoratorDefinition,
   BlockOptions,
   BooleanOptions,

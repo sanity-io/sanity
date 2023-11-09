@@ -1,10 +1,9 @@
 import type {SanityClient} from '@sanity/client'
 import type {Path} from '../paths'
-import type {Schema, SchemaType, SchemaValidationValue} from '../schema'
+import type {Schema, SchemaType, SchemaValidationValue, SlugSchemaType} from '../schema'
 import type {SanityDocument} from '../documents'
 import type {ValidationMarker} from '../markers'
-import {SlugSchemaType} from '../schema'
-import {SlugParent} from '../slug'
+import type {SlugParent} from '../slug'
 
 /** @public */
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'

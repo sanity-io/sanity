@@ -1,8 +1,8 @@
-import {PreviewConfig} from '../../preview'
-import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import {InitialValueProperty} from '../../types'
-import {FieldDefinition} from '../schemaDefinition'
-import {BaseSchemaDefinition, FieldGroupDefinition, FieldsetDefinition} from './common'
+import type {PreviewConfig} from '../../preview'
+import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
+import type {InitialValueProperty} from '../../types'
+import type {FieldDefinition} from '../schemaDefinition'
+import type {BaseSchemaDefinition, FieldGroupDefinition, FieldsetDefinition} from './common'
 
 /** @public */
 export interface ObjectOptions {

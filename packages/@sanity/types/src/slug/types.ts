@@ -1,9 +1,8 @@
-import {SanityClient} from '@sanity/client'
-import type {SlugSchemaType} from '../schema'
-import {Schema} from '../schema'
+import type {SanityClient} from '@sanity/client'
+import type {SlugSchemaType, Schema} from '../schema'
 import type {SanityDocument} from '../documents'
 import type {Path} from '../paths'
-import {CurrentUser} from '../user'
+import type {CurrentUser} from '../user'
 
 /**
  * A slug object, currently holding a `current` property

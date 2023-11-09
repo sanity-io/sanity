@@ -1,7 +1,7 @@
-import {ComponentType, ReactNode} from 'react'
-import {PreviewConfig} from '../preview'
-import {InitialValueProperty, SchemaValidationValue} from '../types'
-import {
+import type {ComponentType, ReactNode} from 'react'
+import type {PreviewConfig} from '../preview'
+import type {InitialValueProperty, SchemaValidationValue} from '../types'
+import type {
   ArrayDefinition,
   BlockDefinition,
   BooleanDefinition,
@@ -21,7 +21,7 @@ import {
   UrlDefinition,
   EmailDefinition,
 } from './type'
-import {BaseSchemaDefinition} from './type/common'
+import type {BaseSchemaDefinition} from './type/common'
 
 /**
  * `IntrinsicDefinitions` is a lookup map for "predefined" schema definitions.

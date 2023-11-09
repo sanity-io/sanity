@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {
+import type {
   BooleanDefinition,
   FieldDefinition,
   FieldDefinitionBase,
