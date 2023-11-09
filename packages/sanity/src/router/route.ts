@@ -27,6 +27,14 @@ export interface RouteNodeOptions {
    * The scope of the route node.
    */
   scope?: string
+
+  /**
+   * Optionally disable scoping of search params
+   * Scoped search params will be represented as scope[param]=value in the url
+   * Disabling this will still scope search params based on any parent scope unless the parent scope also has disabled search params scoping
+   * Caution: enabling this can cause conflicts with multiple plugins defining search params with the same name
+   */
+  __unsafe_disableScopedSearchParams?: boolean
 }
 
 /**
@@ -56,7 +64,12 @@ export interface RouteObject {
    * Creates a new router scope.
    * Returns {@link Router}
    */
-  scope: (scopeName: string, ...rest: any[]) => Router
+  scope(
+    scopeName: string,
+    routeOrOpts: RouteNodeOptions | string,
+    childrenOrOpts?: RouteNodeOptions | RouteChildren | null,
+    children?: Router | RouteChildren,
+  ): Router
 }
 
 /**
@@ -118,8 +131,13 @@ export const route: RouteObject = {
       ),
     ])
   },
-  scope: (scopeName, ...rest) => {
-    const options = normalizeArgs(...rest)
+  scope(
+    scopeName: string,
+    routeOrOpts: RouteNodeOptions | string,
+    childrenOrOpts?: RouteNodeOptions | RouteChildren | null,
+    children?: Router | RouteChildren,
+  ) {
+    const options = normalizeArgs(routeOrOpts, childrenOrOpts, children)
 
     return _createNode({
       ...options,
@@ -180,7 +198,8 @@ function isRoot(pathname: string): boolean {
  * @param options - Route node options
  */
 export function _createNode(options: RouteNodeOptions): Router {
-  const {path, scope, transform, children} = options
+  // eslint-disable-next-line camelcase
+  const {path, scope, transform, children, __unsafe_disableScopedSearchParams} = options
 
   if (!path) {
     throw new TypeError('Missing path')
@@ -191,6 +210,8 @@ export function _createNode(options: RouteNodeOptions): Router {
   return {
     _isRoute: true, // todo: make a Router class instead
     scope,
+    // eslint-disable-next-line camelcase
+    __unsafe_disableScopedSearchParams,
     route: parsedRoute,
     children: children || [],
     transform,
