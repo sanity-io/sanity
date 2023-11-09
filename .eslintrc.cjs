@@ -311,7 +311,7 @@ const config = {
 
     // Files to disable i18n literals,
     {
-      files: ['./**/*/__workshop__/**/*', './dev/**/*', './examples/**/*'],
+      files: ['./**/*/__workshop__/**/*', './dev/**/*', './examples/**/*', '**/*/debug/**/*'],
       rules: {
         'i18next/no-literal-string': 'off',
         'no-attribute-string-literals/no-attribute-string-literals': 'off',
@@ -320,7 +320,7 @@ const config = {
 
     // Ignore i18n in Comments files for now. This will need to be removed before Comments feature is GA
     {
-      files: ['**/*/Comment*.{js,ts,tsx}'],
+      files: ['**/*/Comment*.{js,ts,tsx}', '**/*/comments/**/*'],
       rules: {
         'i18next/no-literal-string': 'off',
         'no-attribute-string-literals/no-attribute-string-literals': 'off',
