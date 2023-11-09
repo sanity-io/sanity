@@ -18,8 +18,8 @@ import {
   useCommentsSelectedPath,
 } from '../../src'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
-import {DocumentInspectorProps, useCurrentUser, useUnique} from 'sanity'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
+import {DocumentInspectorProps, useCurrentUser, useUnique} from 'sanity'
 
 interface CommentToDelete {
   commentId: string
@@ -264,6 +264,9 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     const commentToScrollTo = getComment(commentIdParamRef.current || '')
 
     if (!loading && commentToScrollTo && didScrollToCommentFromParam.current === false) {
+      // Make sure we have the correct status set before we scroll to the comment
+      setStatus(commentToScrollTo.status || 'open')
+
       handleScrollToComment(commentToScrollTo._id)
 
       didScrollToCommentFromParam.current = true
@@ -274,7 +277,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
         comment: undefined,
       })
     }
-  }, [getComment, handleScrollToComment, loading, params, setParams])
+  }, [getComment, handleScrollToComment, loading, params, setParams, setStatus])
 
   return (
     <Fragment>
