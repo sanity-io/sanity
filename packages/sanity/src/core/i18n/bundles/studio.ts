@@ -491,7 +491,7 @@ export const studioLocaleStrings = {
   'inputs.reference.error.nonexistent-document.clear-button-label': 'Clear',
 
   /** Error description for when the current reference value points to a document that does not exist (on weak references) */
-  'inputs.reference.error.nonexistent-document-description': `The referenced document does not exist (ID: <Code>{{documentId}}</Code>). You can either remove the reference or replace it with another document.`,
+  'inputs.reference.error.nonexistent-document-description': `The referenced document does not exist (ID: <code>{{documentId}}</code>). You can either remove the reference or replace it with another document.`,
 
   /** Error title for when the referenced document failed to be loaded */
   'inputs.reference.error.failed-to-load-document-title': 'Failed to load referenced document',
@@ -513,7 +513,7 @@ export const studioLocaleStrings = {
   'inputs.reference.error.invalid-type-title': 'Document of invalid type',
 
   /** Error description for when the document referenced is not one of the types declared as allowed target types in schema */
-  'inputs.reference.error.invalid-type-description': `Referenced document (<Code>{{documentId}}</Code>) is of type <Code>{{actualType}}</Code>. According to the schema, referenced documents can only be of type <AllowedTypes />.`,
+  'inputs.reference.error.invalid-type-description': `Referenced document (<code>{{documentId}}</code>) is of type <code>{{actualType}}</code>. According to the schema, referenced documents can only be of type <AllowedTypes />.`,
 
   /** Placeholder shown in a reference input with no current value */
   'inputs.reference.search-placeholder': 'Type to search',
@@ -701,11 +701,11 @@ export const studioLocaleStrings = {
   'inputs.array.error.type-is-incompatible-title': 'Why is this happening?',
 
   /** Error description for the array item tooltip that explains what the error means with more context */
-  'inputs.array.error.type-is-incompatible-prompt': `Item of type <Code>{{typeName}}</Code> not valid for this list`,
+  'inputs.array.error.type-is-incompatible-prompt': `Item of type <code>{{typeName}}</code> not valid for this list`,
 
   /** Error description for the array item tooltip that explains that the current type item is not valid for the list  */
   'inputs.array.error.current-schema-not-declare-description':
-    'The current schema does not declare items of type <Code>{{typeName}}</Code> as valid for this list. This could mean that the type has been removed as a valid item type, or that someone else has added it to their own local schema that is not yet deployed.',
+    'The current schema does not declare items of type <code>{{typeName}}</code> as valid for this list. This could mean that the type has been removed as a valid item type, or that someone else has added it to their own local schema that is not yet deployed.',
 
   /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
   'inputs.array.error.can-delete-but-no-edit-description':
@@ -972,7 +972,7 @@ export const studioLocaleStrings = {
   'new-document.create-new-document-label': 'New document…',
 
   /** Message for when no results are found for a specific search query in the new document menu */
-  'new-document.no-results': 'No results for <QueryString>{{searchQuery}}</QueryString>',
+  'new-document.no-results': 'No results for <strong>{{searchQuery}}</strong>',
 
   /** Message for when there are no document type options in the new document menu */
   'new-document.no-document-types-found': 'No document types found',

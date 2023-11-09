@@ -27,17 +27,12 @@ export function UnknownPane(props: UnknownPaneProps) {
               <Translate
                 t={t}
                 i18nKey="panes.unknown-pane-type.unknown-type.text"
-                components={{Code: ({children}) => <code>{children}</code>}}
                 values={{type}}
               />
             </Text>
           ) : (
             <Text as="p" muted>
-              <Translate
-                t={t}
-                i18nKey="panes.unknown-pane-type.missing-type.text"
-                components={{Code: ({children}) => <code>{children}</code>}}
-              />
+              <Translate t={t} i18nKey="panes.unknown-pane-type.missing-type.text" />
             </Text>
           )}
         </Box>

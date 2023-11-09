@@ -151,7 +151,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
             <Translate
               t={t}
               i18nKey="panes.document-pane.document-not-found.text"
-              components={{Code: ({children}) => <code>{children}</code>}}
               values={{id: options.id}}
             />
           </Text>
@@ -275,7 +274,6 @@ function InnerDocumentPane() {
           <Translate
             t={t}
             i18nKey="panes.document-pane.document-unknown-type.title"
-            components={{Code: ({children}) => <code>{children}</code>}}
             values={{documentType}}
           />
         }
@@ -287,7 +285,6 @@ function InnerDocumentPane() {
               <Translate
                 t={t}
                 i18nKey="panes.document-pane.document-unknown-type.text"
-                components={{Code: ({children}) => <code>{children}</code>}}
                 values={{documentType}}
               />
             </Text>
