@@ -1,7 +1,11 @@
-/* eslint-disable complexity */
-/* eslint-disable max-nested-callbacks,no-nested-ternary */
-
-import React, {KeyboardEvent, FocusEvent, useCallback, useRef, useState, useMemo} from 'react'
+import React, {
+  type KeyboardEvent,
+  type FocusEvent,
+  useCallback,
+  useRef,
+  useState,
+  useMemo,
+} from 'react'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Box, Button, Stack, Text, useToast} from '@sanity/ui'
@@ -294,7 +298,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
             title={t('inputs.reference.error.nonexistent-document-title')}
             suffix={
               <Stack padding={2}>
-                <Button text="Clear" onClick={handleClear} />
+                <Button
+                  text={t('inputs.reference.error.nonexistent-document.clear-button-label')}
+                  onClick={handleClear}
+                />
               </Stack>
             }
           >

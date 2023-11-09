@@ -1,10 +1,10 @@
-/* eslint-disable max-nested-callbacks,no-nested-ternary */
 import React from 'react'
-import {CrossDatasetReferenceSchemaType} from '@sanity/types'
-import {Stack, TextSkeleton} from '@sanity/ui'
-import {Observable} from 'rxjs'
+import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import type {CrossDatasetReferenceSchemaType} from '@sanity/types'
+import type {Observable} from 'rxjs'
+import {useTranslation} from '../../../i18n'
 import {Alert} from '../../components/Alert'
-import {CrossDatasetReferenceInfo} from './types'
+import type {CrossDatasetReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
 import {useProjectId} from './utils/useProjectId'
@@ -13,6 +13,8 @@ import {useProjectId} from './utils/useProjectId'
  * Used to preview a referenced type
  * Takes as props the referenced document, the reference type and a hook to subscribe to
  * in order to listen for the reference info
+ *
+ * @internal
  */
 export function OptionPreview(props: {
   document: {_id: string; _type: string}
@@ -24,6 +26,7 @@ export function OptionPreview(props: {
     result: referenceInfo,
     error,
   } = useReferenceInfo(props.document, props.getReferenceInfo)
+  const {t} = useTranslation()
   const projectId = useProjectId()
 
   if (isLoading) {
@@ -38,7 +41,11 @@ export function OptionPreview(props: {
   if (error) {
     return (
       <Stack space={2} padding={1}>
-        <Alert title="Failed to load referenced document">Error: {error.message}</Alert>
+        <Alert title={t('inputs.reference.error.failed-to-load-document-title')}>
+          <Text muted size={1}>
+            {error.message}
+          </Text>
+        </Alert>
       </Stack>
     )
   }
@@ -50,7 +57,7 @@ export function OptionPreview(props: {
   if (referenceInfo.availability?.reason === 'PERMISSION_DENIED') {
     return (
       <Stack space={2} padding={1}>
-        Insufficient permissions to view this document
+        {t('inputs.reference.error.missing-read-permissions-description')}
       </Stack>
     )
   }
@@ -59,7 +66,9 @@ export function OptionPreview(props: {
   if (!refType) {
     return (
       <Stack space={2} padding={1}>
-        Search returned a type that's not valid for this reference: "${referenceInfo.type}"
+        {t('inputs.reference.error.invalid-search-result-type-title', {
+          returnedType: referenceInfo.type,
+        })}
       </Stack>
     )
   }

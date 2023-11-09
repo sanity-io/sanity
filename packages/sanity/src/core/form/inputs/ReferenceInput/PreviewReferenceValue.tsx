@@ -1,14 +1,14 @@
 import React, {ComponentType, ReactNode, Fragment} from 'react'
-import {Reference, ReferenceSchemaType} from '@sanity/types'
+import type {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Flex, Inline, Label, Stack, Text, Tooltip} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
-import {RenderPreviewCallback} from '../../types'
+import type {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
 import {Translate, useIntlListFormat, useTranslation} from '../../../i18n'
 import {TextWithTone} from '../../../components'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
-import {ReferenceInfo} from './types'
+import type {ReferenceInfo} from './types'
 
 export function PreviewReferenceValue(props: {
   referenceInfo: Loadable<ReferenceInfo>

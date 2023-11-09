@@ -484,6 +484,9 @@ export const studioLocaleStrings = {
   /** Error title for when the current reference value points to a document that does not exist (on weak references) */
   'inputs.reference.error.nonexistent-document-title': 'Not found',
 
+  /** Label for button that clears the reference when it points to a document that does not exist (on weak references) */
+  'inputs.reference.error.nonexistent-document.clear-button-label': 'Clear',
+
   /** Error description for when the current reference value points to a document that does not exist (on weak references) */
   'inputs.reference.error.nonexistent-document-description': `The referenced document does not exist (ID: <Code>{{documentId}}</Code>). You can either remove the reference or replace it with another document.`,
 
@@ -563,6 +566,90 @@ export const studioLocaleStrings = {
 
   /** Accessibility label for icon indicating that document does _not_ have any unpublished changes */
   'inputs.reference.preview.has-no-unpublished-changes-aria-label': 'No unpublished edits',
+
+  /** Title for alert shown when a reference in a live-edit document is marked as being weak, the referenced document exists, AND the reference is supposed to be have been strengthened on publish */
+  'inputs.reference.incomplete-reference.finalize-action-title': 'Finalize reference',
+
+  /** Description for alert shown when a reference in a live-edit document is marked as being weak, the referenced document exists, AND the reference is supposed to be have been strengthened on publish */
+  'inputs.reference.incomplete-reference.finalize-action-description':
+    '<strong>{{referencedDocument}}</strong> is published and this reference should now be finalized.',
+
+  /** Title for alert shown when a reference in a live-edit document points to a document that exists and has been published, but the reference is still marked as weak */
+  'inputs.reference.incomplete-reference.strengthen-action-title': 'Convert to strong reference',
+
+  /** Description for alert shown when a reference in a live-edit document points to a document that exists and has been published, but the reference is still marked as weak */
+  'inputs.reference.incomplete-reference.strengthen-action-description':
+    '<strong>{{referencedDocument}}</strong> is published and this reference should now be converted to a strong reference.',
+
+  /** Label for button that triggers the action that strengthen a reference */
+  'inputs.reference.incomplete-reference.strengthen-button-label': 'Convert to strong reference',
+
+  /** Title for alert shown when a reference is supposed to be weak/strong, but the actual value is the opposite of what it is supposed to be */
+  'inputs.reference.strength-mismatch.title': 'Reference strength mismatch',
+
+  /** Description for alert shown when a reference is supposed to be weak, but the actual value is strong */
+  'inputs.reference.strength-mismatch.is-strong-description':
+    'This reference is <em>strong</em>, but according to the current schema it should be <em>weak</em>.',
+
+  /** Explanation of the consequences of leaving the reference as strong instead of weak */
+  'inputs.reference.strength-mismatch.is-strong-consquences':
+    'It will not be possible to delete the reference document without first removing this reference or converting it to weak.',
+
+  /** Description for alert shown when a reference is supposed to be strong, but the actual value is weak */
+  'inputs.reference.strength-mismatch.is-weak-description':
+    'This reference is <em>weak</em>, but according to the current schema it should be <em>strong</em>.',
+
+  /** Explanation of the consequences of leaving the reference as weak instead of strong */
+  'inputs.reference.strength-mismatch.is-weak-consquences':
+    'This makes it possible to delete the referenced document without first deleting this reference, leaving this field referencing a nonexisting document.',
+
+  /** Label for button that triggers the action that strengthens a reference on strength mismatch */
+  'inputs.reference.strength-mismatch.strengthen-button-label': 'Convert to strong reference',
+
+  /** Label for button that triggers the action that weakens a reference on strength mismatch */
+  'inputs.reference.strength-mismatch.weaken-button-label': 'Convert to weak reference',
+
+  /** Title for alert shown when reference metadata fails to be loaded */
+  'inputs.reference.metadata-error.title': 'Unable to load reference metadata',
+
+  /** Label for button that triggers a retry attempt for reference metadata  */
+  'inputs.reference.metadata-error.retry-button-label': 'Retry',
+
+  /** Label for when the reference input is resolving the initial value for an item */
+  'inputs.reference.resolving-initial-value': 'Resolving initial value…',
+
+  /** Alternative text for the image shown in cross-dataset reference input */
+  'inputs.reference.image-preview-alt-text': 'Image preview of referenced document',
+
+  /** The referenced document no longer exist and might have been deleted (for weak references) */
+  'inputs.reference.referenced-document-does-not-exist':
+    'The referenced document no longer exist and might have been deleted (document ID: <code>{{documentId}}</code>).',
+
+  /** The referenced document could not be displayed to the user because of insufficient permissions */
+  'inputs.reference.referenced-document-insufficient-permissions':
+    'The referenced document could not be accessed due to insufficient permissions',
+
+  /** The referenced document will open in a new tab (due to external studio) */
+  'inputs.reference.document-opens-in-new-tab': 'This document opens in a new tab',
+
+  /** The referenced document cannot be opened, because the URL failed to be resolved */
+  'input.reference.document-cannot-be-opened.failed-to-resolve-url':
+    'This document cannot be opened (unable to resolve URL to Studio)',
+
+  /** Title for a warning telling the user that the current project does not have the "cross dataset references" feature */
+  'inputs.reference.cross-dataset.feature-unavailable-title':
+    'Unavailable feature: Cross dataset reference',
+
+  /** A cross-dataset reference field exists but the feature has been disabled. A <DocumentationLink> component is available. */
+  'inputs.reference.cross-dataset.feature-disabled-description':
+    'This feature has been disabled. Read how to enable it in <DocumentationLink>the documentation</DocumentationLink>.',
+
+  /** The cross-dataset reference field currently has a reference, but the feature has been disabled since it was created. This explains what can/cannot be done in its current state. */
+  'inputs.reference.cross-dataset.feature-disabled-actions': `You can still clear this field's existing reference, but it cannot be changed to a different document as long as the feature is disabled.`,
+
+  /** The cross-dataset reference points to a document with an invalid type  */
+  'inputs.reference.cross-dataset.invalid-type':
+    'The referenced document is of invalid type ({{typeName}}) <JsonValue/>',
 
   /** --- Array Input --- */
 

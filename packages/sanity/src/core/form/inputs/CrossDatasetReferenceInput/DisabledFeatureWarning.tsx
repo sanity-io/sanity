@@ -1,8 +1,9 @@
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
+import type {CrossDatasetReferenceValue} from '@sanity/types'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
-import {CrossDatasetReferenceValue} from '@sanity/types'
+import {Translate, useTranslation} from '../../../i18n'
 
 type Props = {
   value?: CrossDatasetReferenceValue
@@ -15,6 +16,25 @@ const ButtonWrapper = styled(Button)`
 
 export function DisabledFeatureWarning({value, onClearValue}: Props) {
   const hasRef = useMemo(() => Boolean(value?._ref), [value?._ref])
+  const {t} = useTranslation()
+
+  const description = (
+    <Translate
+      t={t}
+      i18nKey="inputs.reference.cross-dataset.feature-disabled-description"
+      components={{
+        DocumentationLink: ({children}) => (
+          <a
+            href="https://www.sanity.io/docs/cross-dataset-references"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {children}
+          </a>
+        ),
+      }}
+    />
+  )
 
   return (
     <Card
@@ -32,42 +52,32 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
         </Box>
         <Stack space={3}>
           <Text as="h2" size={1} weight="semibold">
-            Unavailable feature: Cross dataset reference
+            {t('inputs.reference.cross-dataset.feature-unavailable-title')}
           </Text>
           {hasRef && (
             <Stack space={3}>
               <Text as="p" size={1}>
-                This feature has been disabled. Read how to enable it in{' '}
-                <a
-                  href="https://www.sanity.io/docs/cross-dataset-references"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  documentation
-                </a>
+                {description}
               </Text>
               <Text as="p" size={1}>
-                You can still clear this field's existing reference, but that cannot be revoked as
-                long as the feature is disabled.
+                {t('inputs.reference.cross-dataset.feature-disabled-actions')}
               </Text>
             </Stack>
           )}
           {!hasRef && (
             <Text as="p" size={1}>
-              Read how to enable it in{' '}
-              <a
-                href="https://www.sanity.io/docs/cross-dataset-references"
-                target="_blank"
-                rel="noreferrer"
-              >
-                documentation
-              </a>
+              {description}
             </Text>
           )}
         </Stack>
       </Flex>
       {onClearValue && hasRef && (
-        <ButtonWrapper icon={ResetIcon} text="Reset value" onClick={onClearValue} mode="ghost" />
+        <ButtonWrapper
+          icon={ResetIcon}
+          text={t('inputs.reference.action.clear')}
+          onClick={onClearValue}
+          mode="ghost"
+        />
       )}
     </Card>
   )

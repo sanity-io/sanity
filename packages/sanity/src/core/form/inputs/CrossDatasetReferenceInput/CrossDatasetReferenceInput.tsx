@@ -1,9 +1,8 @@
 /* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
-
 import React, {useCallback, useMemo, useRef, useState, useId} from 'react'
-import {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
+import type {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {EllipsisVerticalIcon, ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
-import {concat, Observable, of} from 'rxjs'
+import {concat, of, type Observable} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {
   Box,
@@ -15,14 +14,12 @@ import {
   MenuButton,
   MenuItem,
   Stack,
-  Text,
   useToast,
 } from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import {ObjectInputProps} from '../../types'
+import type {ObjectInputProps} from '../../types'
 import {set, unset} from '../../patch'
-import {AlertStrip} from '../../components/AlertStrip'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
@@ -30,7 +27,10 @@ import {ChangeIndicator} from '../../../changeIndicators'
 import {PreviewCard} from '../../../components'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useFeatureEnabled} from '../../../hooks'
-import {CrossDatasetReferenceInfo, CrossDatasetSearchHit, SearchState} from './types'
+import {useTranslation} from '../../../i18n'
+import {ReferenceStrengthMismatchAlertStrip} from '../ReferenceInput/ReferenceStrengthMismatchAlertStrip'
+import {ReferenceMetadataLoadErrorAlertStrip} from '../ReferenceInput/ReferenceMetadataLoadFailure'
+import type {CrossDatasetReferenceInfo, CrossDatasetSearchHit, SearchState} from './types'
 import {OptionPreview} from './OptionPreview'
 import {GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -76,6 +76,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     elementProps,
   } = props
 
+  const {t} = useTranslation()
   const projectId = useProjectId()
 
   const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
@@ -125,9 +126,8 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   }, [onChange])
 
   const handleAutocompleteKeyDown = useCallback(
-    (event: any) => {
-      // escape
-      if (event.keyCode === 27) {
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'Escape') {
         onPathFocus?.([])
       }
     },
@@ -161,7 +161,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     }
   })
 
-  const weakIs = value?._weak ? 'weak' : 'strong'
+  const actualStrength = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = schemaType.weak === true ? 'weak' : 'strong'
 
   const hasRef = Boolean(value?._ref)
@@ -175,7 +175,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const handleFocus = useCallback(
-    (event: FIXME) => {
+    (event: React.FocusEvent<HTMLDivElement>) => {
       if (event.currentTarget === elementProps.ref.current) {
         onPathFocus?.([FOCUS_TERMINATOR])
       }
@@ -184,7 +184,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   )
 
   const handleAutocompleteFocus = useCallback(
-    (event: FIXME) => {
+    (event: React.FocusEvent<HTMLInputElement>) => {
       if (event.currentTarget === elementProps.ref.current) {
         onPathFocus?.(REF_PATH)
       }
@@ -237,7 +237,8 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     handleQueryChange('')
   }, [handleQueryChange])
 
-  const showWeakRefMismatch = !loadableReferenceInfo.isLoading && hasRef && weakIs !== weakShouldBe
+  const showWeakRefMismatch =
+    !loadableReferenceInfo.isLoading && hasRef && actualStrength !== weakShouldBe
 
   const studioUrl =
     (value?._ref &&
@@ -248,7 +249,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     null
 
   const renderOption = useCallback(
-    (option: any) => {
+    (option: FIXME) => {
       return (
         <PreviewCard as="button" type="button" radius={2}>
           <Box paddingX={3} paddingY={1}>
@@ -263,8 +264,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     },
     [schemaType, getReferenceInfoMemo],
   )
-
-  const preview = loadableReferenceInfo.result?.preview.published
 
   const isEditing = hasFocusAtRef || !value?._ref
 
@@ -305,7 +304,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                     }))}
                     onFocus={handleAutocompleteFocus}
                     radius={1}
-                    placeholder="Type to search"
+                    placeholder={t('inputs.reference.search-placeholder')}
                     onKeyDown={handleAutocompleteKeyDown}
                     readOnly={readOnly}
                     disabled={loadableReferenceInfo.isLoading}
@@ -397,7 +396,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                           {!readOnly && (
                             <>
                               <MenuItem
-                                text="Clear"
+                                text={t('inputs.reference.action.clear')}
                                 tone="critical"
                                 icon={ClearIcon}
                                 data-testid="menu-item-clear"
@@ -405,7 +404,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                               />
 
                               <MenuItem
-                                text="Replace"
+                                text={t('inputs.reference.action.replace')}
                                 icon={ReplaceIcon}
                                 data-testid="menu-item-replace"
                                 onClick={handleReplace}
@@ -420,59 +419,17 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                   </Inline>
                 </Flex>
                 {showWeakRefMismatch && (
-                  <AlertStrip
-                    padding={1}
-                    title="Reference strength mismatch"
-                    status="warning"
-                    data-testid="alert-reference-strength-mismatch"
-                  >
-                    <Stack space={3}>
-                      <Text as="p" muted size={1}>
-                        This reference is <em>{weakIs}</em>, but according to the current schema it
-                        should be <em>{weakShouldBe}.</em>
-                      </Text>
-
-                      <Text as="p" muted size={1}>
-                        {schemaType.weak ? (
-                          <>
-                            It will not be possible to delete the "{preview?.title}"-document
-                            without first removing this reference.
-                          </>
-                        ) : (
-                          <>
-                            This makes it possible to delete the "{preview?.title}"-document without
-                            first deleting this reference, leaving this field referencing a
-                            nonexisting document.
-                          </>
-                        )}
-                      </Text>
-                      <Button
-                        onClick={handleFixStrengthMismatch}
-                        text={<>Convert to {weakShouldBe} reference</>}
-                        tone="caution"
-                      />
-                    </Stack>
-                  </AlertStrip>
+                  <ReferenceStrengthMismatchAlertStrip
+                    actualStrength={actualStrength}
+                    handleFixStrengthMismatch={handleFixStrengthMismatch}
+                  />
                 )}
 
                 {loadableReferenceInfo.error && (
-                  <AlertStrip
-                    padding={1}
-                    title="Unable to load reference metadata"
-                    status="warning"
-                    data-testid="alert-reference-info-failed"
-                  >
-                    <Stack space={3}>
-                      <Text as="p" muted size={1}>
-                        Error: {loadableReferenceInfo.error.message}
-                      </Text>
-                      <Button
-                        onClick={loadableReferenceInfo.retry!}
-                        text={<>Retry</>}
-                        tone="primary"
-                      />
-                    </Stack>
-                  </AlertStrip>
+                  <ReferenceMetadataLoadErrorAlertStrip
+                    errorMessage={loadableReferenceInfo.error.message}
+                    onHandleRetry={loadableReferenceInfo.retry!}
+                  />
                 )}
               </Card>
             </ChangeIndicator>
