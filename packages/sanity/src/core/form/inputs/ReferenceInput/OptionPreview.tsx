@@ -12,6 +12,8 @@ import {ReferencePreview} from './ReferencePreview'
 /**
  * Used to preview a referenced type
  * Takes the reference type as props
+ *
+ * @internal
  */
 export function OptionPreview(props: {
   id: string
@@ -37,7 +39,7 @@ export function OptionPreview(props: {
       <Stack space={2} padding={1}>
         <Alert title={t('inputs.reference.error.failed-to-load-document-title')}>
           <Text muted size={1}>
-            Error: {error.message}
+            {error.message}
           </Text>
         </Alert>
       </Stack>

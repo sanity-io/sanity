@@ -1,13 +1,13 @@
 import React, {createElement, ReactNode, useMemo} from 'react'
-import {CrossDatasetType, PreviewValue} from '@sanity/types'
+import type {CrossDatasetType, PreviewValue} from '@sanity/types'
 import {Box, Flex, Inline, Label, Text, Tooltip} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {isImageSource} from '@sanity/asset-utils'
-import {DocumentAvailability} from '../../../preview'
-import {DefaultPreview, PreviewMediaDimensions, TextWithTone} from '../../../components'
+import {useTranslation} from '../../../i18n'
+import type {DocumentAvailability} from '../../../preview'
+import {DefaultPreview, TextWithTone, type PreviewMediaDimensions} from '../../../components'
 import {FIXME} from '../../../FIXME'
-
 import {StyledPreviewFlex, TooltipContent} from './CrossDatasetReferencePreview.styled'
 
 function UnavailableMessage(props: {children: ReactNode}) {
@@ -27,6 +27,8 @@ function UnavailableMessage(props: {children: ReactNode}) {
 /**
  * Used to preview a referenced type
  * Takes the reference type as props
+ *
+ * @internal
  */
 export function CrossDatasetReferencePreview(props: {
   availability: DocumentAvailability | null
@@ -54,6 +56,7 @@ export function CrossDatasetReferencePreview(props: {
   const insufficientPermissions = availability?.reason === 'PERMISSION_DENIED'
 
   const previewMedia = preview.published?.media
+  const {t} = useTranslation()
 
   const media = useMemo(() => {
     if (previewMedia) {
@@ -74,14 +77,14 @@ export function CrossDatasetReferencePreview(props: {
               .image(previewMedia as FIXME)
               .withOptions(dimensions)
               .url()}
-            alt="Image preview of referenced document"
+            alt={t('inputs.reference.image-preview-alt-text')}
             referrerPolicy="strict-origin-when-cross-origin"
           />
         )
       }
     }
     return refType?.icon ? createElement(refType.icon) : null
-  }, [previewMedia, dataset, projectId, refType?.icon])
+  }, [previewMedia, dataset, projectId, refType?.icon, t])
 
   return (
     <StyledPreviewFlex align="center" justify="center" flex={1} data-testid="preview">
@@ -97,7 +100,7 @@ export function CrossDatasetReferencePreview(props: {
         <Box flex={1}>
           <Flex align="center">
             <Box flex={1} paddingY={2}>
-              <Text muted>Document unavailable</Text>
+              <Text muted>{t('inputs.reference.error.document-unavailable-title')}</Text>
             </Box>
           </Flex>
         </Box>
@@ -116,17 +119,14 @@ export function CrossDatasetReferencePreview(props: {
               <Tooltip
                 portal
                 content={
-                  notFound ? (
-                    <UnavailableMessage>
-                      The referenced document no longer exist and might have been deleted.
-                      <br />
-                      (id: <code>{id}</code>)
-                    </UnavailableMessage>
-                  ) : (
-                    <UnavailableMessage>
-                      The referenced document could not be accessed due to insufficient permissions
-                    </UnavailableMessage>
-                  )
+                  <UnavailableMessage>
+                    {t(
+                      notFound
+                        ? 'inputs.reference.referenced-document-does-not-exist'
+                        : 'inputs.reference.referenced-document-insufficient-permissions',
+                      {documentId: id},
+                    )}
+                  </UnavailableMessage>
                 }
               >
                 <TextWithTone tone="default">
@@ -142,13 +142,13 @@ export function CrossDatasetReferencePreview(props: {
                 portal
                 content={
                   <TooltipContent padding={2}>
-                    {hasStudioUrl ? (
-                      <Text size={1}>This document opens in a new tab</Text>
-                    ) : (
-                      <Text size={1}>
-                        This document cannot be opened <br /> (unable to resolve URL to Studio)
-                      </Text>
-                    )}
+                    <Text size={1}>
+                      {t(
+                        hasStudioUrl
+                          ? 'inputs.reference.document-opens-in-new-tab'
+                          : 'input.reference.document-cannot-be-opened.failed-to-resolve-url',
+                      )}
+                    </Text>
                   </TooltipContent>
                 }
               >
