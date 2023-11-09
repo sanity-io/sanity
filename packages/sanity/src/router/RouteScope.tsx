@@ -29,6 +29,14 @@ export interface RouteScopeProps {
    * The scope for the nested routes.
    */
   scope: string
+
+  /**
+   * Optionally disable scoping of search params
+   * Scoped search params will be represented as scope[param]=value in the url
+   * Disabling this will still scope search params based on any parent scope unless the parent scope also has disabled search params scoping
+   * Caution: enabling this can cause conflicts with multiple plugins defining search params with the same name
+   */
+  __unsafe_disableScopedSearchParams?: boolean
   /**
    * The content to display inside the route scope.
    */
@@ -57,7 +65,7 @@ export interface RouteScopeProps {
  * ```
  */
 export function RouteScope(props: RouteScopeProps): React.ReactElement {
-  const {children, scope} = props
+  const {children, scope, __unsafe_disableScopedSearchParams} = props
   const parent = useRouter()
   const {resolvePathFromState: parent_resolvePathFromState, navigate: parent_navigate} = parent
 
@@ -66,33 +74,48 @@ export function RouteScope(props: RouteScopeProps): React.ReactElement {
   parentStateRef.current = parent.state
 
   const resolvePathFromState = useCallback(
-    (nextState: Record<string, any>): string => {
-      const nextStateScoped: Record<string, any> = isEmpty(nextState)
-        ? {}
-        : addScope(parentStateRef.current, scope, nextState)
-
-      return parent_resolvePathFromState(nextStateScoped)
+    (_nextState: Record<string, any>) => {
+      const {_searchParams, ...nextState} = _nextState
+      const nextScopedState = addScope(parentStateRef.current, scope, nextState)
+      if (__unsafe_disableScopedSearchParams) {
+        // Move search params to parent scope
+        nextScopedState._searchParams = _searchParams
+      } else {
+        nextScopedState[scope]._searchParams = _searchParams
+      }
+      return parent_resolvePathFromState(nextScopedState)
     },
-    [parent_resolvePathFromState, scope],
+    [scope, __unsafe_disableScopedSearchParams, parent_resolvePathFromState],
   )
 
   const navigate = useCallback(
-    (nextState: Record<string, any>, options?: NavigateOptions): void => {
+    (_nextState: Record<string, any>, options?: NavigateOptions): void => {
+      const {_searchParams, ...nextState} = _nextState
       const nextScopedState = addScope(parentStateRef.current, scope, nextState)
+      if (__unsafe_disableScopedSearchParams) {
+        // move search params to parent scope
+        nextScopedState._searchParams = _searchParams
+      } else {
+        nextScopedState[scope]._searchParams = _searchParams
+      }
       parent_navigate(nextScopedState, options)
     },
-    [parent_navigate, scope],
+    [scope, __unsafe_disableScopedSearchParams, parent_navigate],
   )
 
-  const scopedRouter: RouterContextValue = useMemo(
-    () => ({
+  const scopedRouter: RouterContextValue = useMemo(() => {
+    const parentState = parent.state
+    const scopedState = {...(parentState[scope] || {})} as Record<string, unknown>
+    if (__unsafe_disableScopedSearchParams) {
+      scopedState._searchParams = parentState._searchParams
+    }
+    return {
       ...parent,
       navigate,
       resolvePathFromState,
-      state: parent.state[scope] as any,
-    }),
-    [navigate, parent, resolvePathFromState, scope],
-  )
+      state: scopedState,
+    }
+  }, [navigate, parent, __unsafe_disableScopedSearchParams, resolvePathFromState, scope])
 
   return <RouterContext.Provider value={scopedRouter}>{children}</RouterContext.Provider>
 }

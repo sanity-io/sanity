@@ -80,7 +80,7 @@ function addNodeScope(
   searchParams: InternalSearchParam[],
 ): InternalSearchParam[] {
   const scope = node.scope
-  return scope
+  return scope && !node.__unsafe_disableScopedSearchParams
     ? searchParams.map(([namespaces, value]) => [[scope, ...namespaces], value])
     : searchParams
 }
