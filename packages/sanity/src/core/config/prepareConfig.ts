@@ -177,6 +177,7 @@ export function prepareConfig(
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
       schema: resolvedSources[0].schema,
+      customIcon: !!rootSource.icon,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,

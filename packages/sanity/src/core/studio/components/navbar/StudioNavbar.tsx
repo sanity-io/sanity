@@ -8,7 +8,6 @@ import {
   LayerProvider,
   PortalProvider,
   useMediaIndex,
-  useRootTheme,
   Text,
 } from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
@@ -17,17 +16,15 @@ import styled from 'styled-components'
 import {isDev} from '../../../environment'
 import {useWorkspace} from '../../workspace'
 import {Button} from '../../../../ui'
-import {useColorScheme} from '../../colorScheme'
 import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
-import {StudioTheme} from '../../../theme'
 import {useActiveWorkspace} from '../../activeWorkspaceMatcher'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
 import {NavDrawer} from './NavDrawer'
-import {WorkspaceMenuButton} from './workspace'
+import {WorkspaceMenuButton, WorkspacePreviewIcon} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {LogoButton} from './LogoButton'
 import {SearchButton, SearchDialog} from './search'
@@ -66,10 +63,8 @@ const LogoMarkContainer = styled(Card).attrs({
  * @beta */
 export function StudioNavbar() {
   const {name, tools, ...workspace} = useWorkspace()
-  const theme = useRootTheme().theme as StudioTheme
   const workspaces = useWorkspaces()
   const routerState = useRouterState()
-  const {scheme} = useColorScheme()
   const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
@@ -121,6 +116,7 @@ export function StudioNavbar() {
   )
   const formattedName = typeof name === 'string' && name !== 'root' ? startCase(name) : null
   const title = workspace.title || formattedName || 'Studio'
+  const multipleWorkspaces = workspaces.length > 1
 
   useEffect(() => {
     onSearchFullscreenOpenChange(searchFullscreenOpen)
@@ -176,12 +172,17 @@ export function StudioNavbar() {
                 />
               )}
 
-              {/* Logo mark */}
+              {/* Workspace icon / studio logo */}
               <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
                 <Flex align="center">
                   <LogoMarkContainer>
                     <Flex align="center" height="fill" justify="center">
-                      <SanityLogo />
+                      {/* Display the Sanity logo only if one workspace is active and no custom icon is defined */}
+                      {multipleWorkspaces || activeWorkspace.customIcon ? (
+                        <WorkspacePreviewIcon icon={activeWorkspace.icon} size="small" />
+                      ) : (
+                        <SanityLogo />
+                      )}
                     </Flex>
                   </LogoMarkContainer>
                   <Box paddingX={2}>
