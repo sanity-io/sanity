@@ -135,8 +135,8 @@ function canHandleEditIntent(params: Record<string, unknown>) {
     return false
   }
 
-  // We can handle any edit intent with a document ID, but we're best at `structured` mode
-  // This ensures that other tools that can handle modes such as `visual` or `batch` can
-  // take precedence over the desk tool
-  return 'mode' in params ? {mode: params.mode === 'structured'} : true
+  // We can handle any edit intent with a document ID, but we're best at `structure` mode
+  // This ensures that other tools that can handle modes such as `presentation` or `batch`
+  // can take precedence over the desk tool
+  return 'mode' in params ? {mode: params.mode === 'structure'} : true
 }

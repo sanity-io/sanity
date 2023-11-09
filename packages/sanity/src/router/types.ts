@@ -205,9 +205,16 @@ export interface BaseIntentParams {
 
   /**
    * Optional "mode" to use for edit intent.
-   * Known modes are `structured` and `visual`.
+   * Known modes are `structure` and `presentation`.
    */
   mode?: string
+
+  /**
+   * Arbitrary/custom parameters should be prefixed with an underscore (`_`), to signal that they
+   * do not have any defined semantics to the intent itself, but to some implementer. Implementers
+   * are free to ignore these if they want to.
+   */
+  [key: `_${string}`]: string
 }
 
 /**
