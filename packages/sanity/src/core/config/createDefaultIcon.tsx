@@ -12,9 +12,9 @@ function pseudoRandomNumber(seed: string) {
 }
 
 const SvgText = styled.text`
-  font-family: ${({theme}) => theme.sanity.fonts.heading.family};
-  font-weight: ${({theme}) => theme.sanity.fonts.heading.weights.bold};
-  font-size: 16px;
+  font-family: ${({theme}) => theme.sanity.fonts.text.family};
+  font-weight: ${({theme}) => theme.sanity.fonts.text.weights.medium};
+  font-size: ${({theme}) => theme.sanity.fonts.text.sizes[1].fontSize}px;
   transform: translateY(1px);
 `
 
