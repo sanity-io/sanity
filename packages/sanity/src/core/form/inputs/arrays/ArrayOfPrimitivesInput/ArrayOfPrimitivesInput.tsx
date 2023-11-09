@@ -1,26 +1,30 @@
 import React from 'react'
 import {get} from 'lodash'
-import {Card, Stack, Text} from '@sanity/ui'
-import {ArrayOfPrimitivesInputProps} from '../../../types'
-import {Item, List} from '../common/list'
-import {PrimitiveItemProps} from '../../../types/itemProps'
+import {Card, Stack} from '@sanity/ui'
+import type {ArrayOfPrimitivesInputProps} from '../../../types'
+import type {PrimitiveItemProps} from '../../../types/itemProps'
 import {ArrayOfPrimitivesItem} from '../../../members'
+import {ChangeIndicator} from '../../../../changeIndicators'
+import {Item, List} from '../common/list'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {UploadTargetCard} from '../common/UploadTargetCard'
-import {ChangeIndicator} from '../../../../changeIndicators'
 import {getEmptyValue} from './getEmptyValue'
-import {PrimitiveValue} from './types'
+import type {PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
 import {ItemRow} from './ItemRow'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
+import {NoItemsPlaceholder} from './NoItemsPlaceholder'
 
 interface State {
   disableTransition: boolean
 }
-// Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
+
 /**
+ * Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
+ *
  * @hidden
- * @beta */
+ * @beta
+ */
 export class ArrayOfPrimitivesInput extends React.PureComponent<
   ArrayOfPrimitivesInputProps,
   State
@@ -176,11 +180,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
         >
           <Stack space={1}>
             {membersWithSortIds.length === 0 ? (
-              <Card padding={3} border style={{borderStyle: 'dashed'}} radius={2}>
-                <Text align="center" muted size={1}>
-                  {schemaType.placeholder || <>No Items</>}
-                </Text>
-              </Card>
+              <NoItemsPlaceholder schemaType={schemaType} />
             ) : (
               <Card padding={1} border>
                 <List

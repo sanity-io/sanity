@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import {
   Box,
   Button,
@@ -10,7 +9,6 @@ import {
   MenuDivider,
   MenuItem,
   Spinner,
-  Stack,
   Text,
 } from '@sanity/ui'
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
@@ -32,7 +30,6 @@ import {FieldPresence} from '../../../presence'
 import {useTranslation} from '../../../i18n'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {RowLayout} from '../arrays/layouts/RowLayout'
-import {AlertStrip} from '../../components/AlertStrip'
 import {set, unset} from '../../patch'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
@@ -41,6 +38,9 @@ import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {useReferenceInput} from './useReferenceInput'
 import {ReferenceLinkCard} from './ReferenceLinkCard'
 import {ReferenceItemRefProvider} from './ReferenceItemRefProvider'
+import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
+import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAlertStrip'
+import {ReferenceMetadataLoadErrorAlertStrip} from './ReferenceMetadataLoadFailure'
 import {IntentLink} from 'sanity/router'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
@@ -236,7 +236,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                   <MenuItem
                     as={OpenLink}
                     data-as="a"
-                    text={'inputs.reference.action.open-in-new-tab'}
+                    text={t('inputs.reference.action.open-in-new-tab')}
                     icon={OpenInNewTabIcon}
                   />
                 )}
@@ -265,7 +265,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
   }, [onChange, schemaType])
 
-  const weakIs = value?._weak ? 'weak' : 'strong'
+  const actualStrength = value?._weak ? 'weak' : 'strong'
   const weakShouldBe = schemaType.weak === true ? 'weak' : 'strong'
 
   // If the reference value is marked with _strengthenOnPublish,
@@ -278,86 +278,28 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     !loadableReferenceInfo.isLoading &&
     loadableReferenceInfo.result?.availability.available &&
     hasRef &&
-    weakIs !== weakShouldBe &&
+    actualStrength !== weakShouldBe &&
     !weakWarningOverride
-
-  const preview =
-    loadableReferenceInfo.result?.preview.draft || loadableReferenceInfo.result?.preview.published
 
   const issues = (
     <>
       {isCurrentDocumentLiveEdit && publishedReferenceExists && value._strengthenOnPublish && (
-        <AlertStrip
-          padding={1}
-          title={schemaType.weak ? 'Finalize reference' : 'Convert to strong reference'}
-          status="info"
-          data-testid="alert-reference-published"
-        >
-          <Stack space={3}>
-            <Text as="p" muted size={1}>
-              <strong>{loadableReferenceInfo.result?.preview.published?.title}</strong> is published
-              and this reference should now be{' '}
-              {schemaType.weak ? <>finalized</> : <>converted to a strong reference</>}.
-            </Text>
-            <Button
-              onClick={handleRemoveStrengthenOnPublish}
-              text={<>Convert to strong reference</>}
-              tone="positive"
-            />
-          </Stack>
-        </AlertStrip>
+        <ReferenceFinalizeAlertStrip
+          schemaType={schemaType}
+          handleRemoveStrengthenOnPublish={handleRemoveStrengthenOnPublish}
+        />
       )}
       {showWeakRefMismatch && (
-        <AlertStrip
-          padding={1}
-          title="Reference strength mismatch"
-          status="warning"
-          data-testid="alert-reference-strength-mismatch"
-        >
-          <Stack space={3}>
-            <Text as="p" muted size={1}>
-              This reference is <em>{weakIs}</em>, but according to the current schema it should be{' '}
-              <em>{weakShouldBe}.</em>
-            </Text>
-
-            <Text as="p" muted size={1}>
-              {schemaType.weak ? (
-                <>
-                  It will not be possible to delete the{' '}
-                  {preview?.title ? <>"{preview?.title}"-document</> : <>referenced document</>}{' '}
-                  without first removing this reference.
-                </>
-              ) : (
-                <>
-                  This makes it possible to delete the{' '}
-                  {preview?.title ? <>"{preview?.title}"-document</> : <>referenced document</>}{' '}
-                  without first deleting this reference, leaving this field referencing a
-                  nonexisting document.
-                </>
-              )}
-            </Text>
-            <Button
-              onClick={handleFixStrengthMismatch}
-              text={<>Convert to {weakShouldBe} reference</>}
-              tone="caution"
-            />
-          </Stack>
-        </AlertStrip>
+        <ReferenceStrengthMismatchAlertStrip
+          actualStrength={actualStrength}
+          handleFixStrengthMismatch={handleFixStrengthMismatch}
+        />
       )}
       {loadableReferenceInfo.error && (
-        <AlertStrip
-          padding={1}
-          title="Unable to load reference metadata"
-          status="warning"
-          data-testid="alert-reference-info-failed"
-        >
-          <Stack space={3}>
-            <Text as="p" muted size={1}>
-              Error: {loadableReferenceInfo.error.message}
-            </Text>
-            <Button onClick={loadableReferenceInfo.retry!} text={<>Retry</>} tone="primary" />
-          </Stack>
-        </AlertStrip>
+        <ReferenceMetadataLoadErrorAlertStrip
+          errorMessage={loadableReferenceInfo.error.message}
+          onHandleRetry={loadableReferenceInfo.retry!}
+        />
       )}
     </>
   )
@@ -426,7 +368,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                   <Box marginX={3}>
                     <Spinner muted />
                   </Box>
-                  <Text>Resolving initial value…</Text>
+                  <Text>{t('inputs.reference.resolving-initial-value')}</Text>
                 </Flex>
               </Card>
             )}
