@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {isEmpty} from './utils/isEmpty'
 import {RouterContext} from './RouterContext'
 import {NavigateOptions, RouterContextValue} from './types'
@@ -61,23 +61,27 @@ export function RouteScope(props: RouteScopeProps): React.ReactElement {
   const parent = useRouter()
   const {resolvePathFromState: parent_resolvePathFromState, navigate: parent_navigate} = parent
 
+  const parentStateRef = useRef(parent.state)
+
+  parentStateRef.current = parent.state
+
   const resolvePathFromState = useCallback(
     (nextState: Record<string, any>): string => {
       const nextStateScoped: Record<string, any> = isEmpty(nextState)
         ? {}
-        : addScope(parent.state, scope, nextState)
+        : addScope(parentStateRef.current, scope, nextState)
 
       return parent_resolvePathFromState(nextStateScoped)
     },
-    [parent_resolvePathFromState, parent.state, scope],
+    [parent_resolvePathFromState, scope],
   )
 
   const navigate = useCallback(
     (nextState: Record<string, any>, options?: NavigateOptions): void => {
-      const nextScopedState = addScope(parent.state, scope, nextState)
+      const nextScopedState = addScope(parentStateRef.current, scope, nextState)
       parent_navigate(nextScopedState, options)
     },
-    [parent_navigate, parent.state, scope],
+    [parent_navigate, scope],
   )
 
   const scopedRouter: RouterContextValue = useMemo(
