@@ -90,6 +90,43 @@ describe('scoped url params', () => {
   })
 })
 
+describe('url params without opt-out scoping', () => {
+  const router = route.scope(
+    'pluginA',
+    '/pluginA/:id',
+    // eslint-disable-next-line camelcase
+    {__unsafe_disableScopedSearchParams: true},
+    [
+      route.scope('pluginAB', '/pluginAB/:qux', [
+        route.scope('pluginABC', '/pluginABC/space/:arg'),
+      ]),
+    ],
+  )
+
+  test('UrlSearchParams params with a simple route', () => {
+    expect(
+      router.encode({
+        pluginA: {
+          id: 'foo',
+          pluginAB: {
+            qux: 'something',
+            pluginABC: {
+              arg: 'hello',
+              _searchParams: [
+                ['a', 'b'],
+                ['c', 'd'],
+              ],
+            },
+          },
+        },
+      }),
+    ).toEqual(
+      `/pluginA/foo/pluginAB/something/pluginABC/space/hello?${new URLSearchParams(
+        'pluginAB[pluginABC][a]=b&pluginAB[pluginABC][c]=d',
+      )}`,
+    )
+  })
+})
 describe('encode with dynamically scoped url params', () => {
   const router = route.create('/tools/:tool', (state) =>
     route.scope(state.tool as string, '/edit/:documentId'),
