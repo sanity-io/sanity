@@ -18,7 +18,14 @@ export const ToolLink = forwardRef(function ToolLink(
 ) {
   const {name, ...rest} = props
   const state = useRouterState(
-    useCallback((routerState) => ({...routerState, tool: name, [name]: undefined}), [name]),
+    useCallback(
+      () => ({
+        tool: name,
+        // we want current tool state to reset when navigating to the current tool
+        [name]: undefined,
+      }),
+      [name],
+    ),
   )
 
   return <StateLink state={state} {...rest} ref={ref} />
