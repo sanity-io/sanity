@@ -1490,6 +1490,17 @@ export const studioLocaleStrings = {
 
   /** Message for when a user is not in a document (displayed in the global presence menu) */
   'presence.not-in-a-document': 'Not in a document',
+
+  /** --- Previews --- */
+
+  /** Fallback title shown when a preview does not provide a title */
+  'preview.default.title-fallback': 'Untitled',
+
+  /** Fallback preview value for types that have "no value" (eg null, undefined) */
+  'preview.fallback.no-value': '(no value)',
+
+  /** Alternative text for image being shown while image is being uploaded, in previews */
+  'preview.image.file-is-being-uploaded.alt-text': 'The image currently being uploaded',
 }
 
 /**
