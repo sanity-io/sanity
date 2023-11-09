@@ -14,7 +14,11 @@ Define the routes for your application and how they should map to application st
 ```js
 import {route} from 'sanity/router'
 
-const router = route.create('/', [route.create('/products/:productId'), route.create('/users/:userId'), route('/:page')])
+const router = route.create('/', [
+  route.create('/products/:productId'),
+  route.create('/users/:userId'),
+  route('/:page'),
+])
 
 router.encode({})
 // => '/'
@@ -81,7 +85,7 @@ function render(location) {
     >
       <App />
     </RouterProvider>,
-    document.getElementById('container')
+    document.getElementById('container'),
   )
 }
 history.listen(() => render(document.location))
@@ -135,7 +139,6 @@ const router = route('/', route('/:page'))
 
 Now, `/about` would resolve to the state `{page: 'about'}` which unambiguously can map back to `/page`, and an empty state can map to `/`. To figure out if you are on the index page, you can check for `state.page == null`, (and set the state.page to null to navigate back to the index)
 
-
 ## Search params
 
 URL search parameters will be decoded and made available on the special `_searchParams` key of the router state. This is which is an array of `[key: string, value: string]` tuples, similar to what you'd get from `URLSearchParams.entries()`.
@@ -153,7 +156,9 @@ const router = useRouter()
 
 console.log(router.state)
 ```
+
 Will log
+
 ```ts
 {
   someParam: 'something',
@@ -168,14 +173,18 @@ const router = useRouter()
 
 router.navigate({
   someParam: 'something',
-  _searchParams: [['foo', 'bar'], ['bar', 'baz']]
+  _searchParams: [
+    ['foo', 'bar'],
+    ['bar', 'baz'],
+  ],
 })
 ```
+
 Will navigate to:
+
 ```
 /path/to/something?foo=bar&bar=baz
 ```
-
 
 ### Transforming path parameters
 
@@ -205,7 +214,7 @@ const router = route(
       },
     },
   },
-  route('/other/:page')
+  route('/other/:page'),
 )
 ```
 
