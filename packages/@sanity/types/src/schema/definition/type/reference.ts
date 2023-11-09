@@ -1,9 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import {InitialValueProperty} from '../../types'
-import {SchemaTypeDefinition, TypeReference} from '../schemaDefinition'
-import {Reference, ReferenceBaseOptions, ReferenceFilterOptions} from '../../../reference'
-import {BaseSchemaDefinition} from './common'
+import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
+import type {InitialValueProperty} from '../../types'
+import type {SchemaTypeDefinition, TypeReference} from '../schemaDefinition'
+import type {Reference, ReferenceBaseOptions, ReferenceFilterOptions} from '../../../reference'
+import type {BaseSchemaDefinition} from './common'
 
 /** @public */
 export type ReferenceValue = Reference

@@ -1,8 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-import {ValidationBuilder} from '../../ruleBuilder'
-import {InitialValueProperty} from '../../types'
-import {BaseSchemaDefinition} from './common'
-import {StringOptions, StringRule} from './string'
+import type {ValidationBuilder} from '../../ruleBuilder'
+import type {InitialValueProperty} from '../../types'
+import type {BaseSchemaDefinition} from './common'
+import type {StringOptions, StringRule} from './string'
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

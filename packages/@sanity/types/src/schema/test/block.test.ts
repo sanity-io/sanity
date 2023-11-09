@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {BlockDefinition, BooleanDefinition} from '../definition'
+import type {BlockDefinition, BooleanDefinition} from '../definition'
 import {defineArrayMember, defineField, defineType} from '../types'
 
 describe('block types', () => {

@@ -1,9 +1,9 @@
-import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import {InitialValueProperty} from '../../types'
-import {FieldDefinition} from '../schemaDefinition'
-import {ImageCrop, ImageHotspot} from '../../../assets'
-import {FileOptions, FileValue} from './file'
-import {ObjectDefinition} from './object'
+import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
+import type {InitialValueProperty} from '../../types'
+import type {FieldDefinition} from '../schemaDefinition'
+import type {ImageCrop, ImageHotspot} from '../../../assets'
+import type {FileOptions, FileValue} from './file'
+import type {ObjectDefinition} from './object'
 
 /** @public */
 export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'location'

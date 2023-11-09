@@ -1,8 +1,12 @@
-import {FieldReference} from '../../../validation'
-import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import {InitialValueProperty, SchemaValidationValue} from '../../types'
-import {IntrinsicDefinitions, TypeAliasDefinition, IntrinsicTypeName} from '../schemaDefinition'
-import {BaseSchemaDefinition, TitledListValue} from './common'
+import type {FieldReference} from '../../../validation'
+import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
+import type {InitialValueProperty, SchemaValidationValue} from '../../types'
+import type {
+  IntrinsicDefinitions,
+  TypeAliasDefinition,
+  IntrinsicTypeName,
+} from '../schemaDefinition'
+import type {BaseSchemaDefinition, TitledListValue} from './common'
 
 /** @public */
 export interface ArrayOptions<V = unknown> {

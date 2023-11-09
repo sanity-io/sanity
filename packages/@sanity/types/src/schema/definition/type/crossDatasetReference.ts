@@ -1,7 +1,7 @@
-import {ComponentType} from 'react'
-import {PreviewConfig} from '../../preview'
-import {BaseSchemaDefinition} from './common'
-import {ReferenceOptions} from './reference'
+import type {ComponentType} from 'react'
+import type {PreviewConfig} from '../../preview'
+import type {BaseSchemaDefinition} from './common'
+import type {ReferenceOptions} from './reference'
 
 /** @public */
 export interface CrossDatasetReferenceDefinition extends BaseSchemaDefinition {

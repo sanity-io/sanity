@@ -1,9 +1,9 @@
-import {ComponentType, ReactNode} from 'react'
-import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import {InitialValueProperty} from '../../types'
-import {ArrayOfType} from './array'
-import {BaseSchemaDefinition} from './common'
-import {ObjectDefinition} from './object'
+import type {ComponentType, ReactNode} from 'react'
+import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
+import type {InitialValueProperty} from '../../types'
+import type {ArrayOfType} from './array'
+import type {BaseSchemaDefinition} from './common'
+import type {ObjectDefinition} from './object'
 
 /**
  * Schema options for a Block schema definition

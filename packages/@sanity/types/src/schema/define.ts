@@ -8,7 +8,7 @@ import type {
   WidenInitialValue,
   WidenValidation,
 } from './defineTypes'
-import {FieldDefinitionBase, IntrinsicTypeName} from './definition'
+import type {FieldDefinitionBase, IntrinsicTypeName} from './definition'
 
 /**
  * Helper function for defining a Sanity type definition. This function does not do anything on its own;

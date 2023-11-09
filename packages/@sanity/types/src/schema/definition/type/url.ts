@@ -1,7 +1,7 @@
-import {UriValidationOptions} from '../../../validation/types'
-import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import {InitialValueProperty} from '../../types'
-import {BaseSchemaDefinition} from './common'
+import type {UriValidationOptions} from '../../../validation/types'
+import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
+import type {InitialValueProperty} from '../../types'
+import type {BaseSchemaDefinition} from './common'
 
 /** @public */
 export interface UrlRule extends RuleDef<UrlRule, string> {

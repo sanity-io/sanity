@@ -1,11 +1,13 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-import {SanityDocument} from '../../../documents/types'
-import {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import {InitialValueProperty, SortOrdering} from '../../types'
-import {ObjectDefinition} from './object'
+import type {SanityDocument} from '../../../documents/types'
+import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
+import type {InitialValueProperty, SortOrdering} from '../../types'
+import type {ObjectDefinition} from './object'
 
-/** @public */
-// this exists only to allow for extensions using declaration-merging.
+/**
+ * This exists only to allow for extensions using declaration-merging.
+ *
+ * @public
+ */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentOptions {}
 
