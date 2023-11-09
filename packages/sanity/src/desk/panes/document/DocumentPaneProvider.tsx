@@ -681,13 +681,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         onFocusPath?.(pathFromUrl)
       }
 
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         disableBlurRef.current = false
       }, 0)
 
       // remove the `path`-param from url after we have consumed it as the initial focus path
       paneRouter.setParams(restParams)
+
+      return () => clearTimeout(timeout)
     }
+
+    return undefined
   }, [params, documentId, onFocusPath, setOpenPath, ready, paneRouter])
 
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
