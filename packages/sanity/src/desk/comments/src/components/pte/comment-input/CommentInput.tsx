@@ -1,8 +1,7 @@
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {EditorChange, PortableTextEditor, keyGenerator} from '@sanity/portable-text-editor'
 import {CurrentUser, PortableTextBlock} from '@sanity/types'
-import FocusLock from 'react-focus-lock'
-import {Stack} from '@sanity/ui'
+import {Stack, focusFirstDescendant, focusLastDescendant} from '@sanity/ui'
 import {editorSchemaType} from '../config'
 import {MentionOptionsHookValue} from '../../../types'
 import {CommentInputInner} from './CommentInputInner'
@@ -79,6 +78,10 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     const editorRef = useRef<PortableTextEditor | null>(null)
     const editorContainerRef = useRef<HTMLDivElement | null>(null)
     const [showDiscardDialog, setShowDiscardDialog] = useState<boolean>(false)
+
+    const preDivRef = useRef<HTMLDivElement | null>(null)
+    const postDivRef = useRef<HTMLDivElement | null>(null)
+    const innerRef = useRef<HTMLDivElement | null>(null)
 
     // A unique (React) key for the editor instance.
     const [editorInstanceKey, setEditorInstanceKey] = useState(keyGenerator())
@@ -169,13 +172,32 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       [discardDialogController, requestFocus, resetEditorInstance, scrollToEditor],
     )
 
+    const handleFocus = useCallback(
+      (event: React.FocusEvent<HTMLDivElement>) => {
+        if (!focusLock) return
+
+        const target = event.target
+        const innerEl = innerRef.current
+
+        if (innerEl && target === preDivRef.current) {
+          focusLastDescendant(innerEl)
+          return
+        }
+
+        if (innerEl && target === postDivRef.current) {
+          focusFirstDescendant(innerEl)
+        }
+      },
+      [focusLock],
+    )
+
     return (
       <>
         {showDiscardDialog && (
           <CommentInputDiscardDialog onClose={onDiscardCancel} onConfirm={handleDiscardConfirm} />
         )}
 
-        <Stack ref={editorContainerRef} data-testid="comment-input">
+        <Stack ref={editorContainerRef} data-testid="comment-input" onFocus={handleFocus}>
           <PortableTextEditor
             key={editorInstanceKey}
             onChange={handleChange}
@@ -193,11 +215,9 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
               readOnly={readOnly}
               value={value}
             >
-              <FocusLock
-                as={Stack}
-                disabled={!focusLock || showDiscardDialog}
-                // returnFocus // This causes issues with focusing the dialog
-              >
+              {focusLock && <div ref={preDivRef} tabIndex={0} />}
+
+              <Stack ref={innerRef}>
                 <CommentInputInner
                   currentUser={currentUser}
                   focusLock={focusLock}
@@ -208,7 +228,9 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
                   placeholder={placeholder}
                   withAvatar={withAvatar}
                 />
-              </FocusLock>
+              </Stack>
+
+              {focusLock && <div ref={postDivRef} tabIndex={0} />}
             </CommentInputProvider>
           </PortableTextEditor>
         </Stack>
