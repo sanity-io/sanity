@@ -3554,7 +3554,7 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.2", "@sanity/client@^6.10.0":
+"@sanity/client@^6.1.2", "@sanity/client@^6.10.0", "@sanity/client@^6.8.6":
   version "6.10.0"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.10.0.tgz#9f4161074afd1af1a01b6295be1032b62aaab0e7"
   integrity sha512-TavtxGB6NWjro2BTGXSkzXNMKFZbS2il1ItV3IdRvO0luLqS31eIz37+5X4CmCC8hGFe6fDoCjnH/iJ81vKM7g==
@@ -3733,6 +3733,16 @@
   integrity sha512-RCqGJpCGBdxUrZPHextJsDWtLJ2V7mZy96HboUI+E5OJ2tG042Ag32pJOQef70XgLE2ZBxKNNu1E6kBAE6wC1g==
   dependencies:
     "@sanity/uuid" "3.0.2"
+
+"@sanity/test@0.0.1-alpha.1":
+  version "0.0.1-alpha.1"
+  resolved "https://registry.yarnpkg.com/@sanity/test/-/test-0.0.1-alpha.1.tgz#35b0847b7b10a547f281ffe4615f53a8296e0bee"
+  integrity sha512-o2X2Veh9YWyVK/Iou/cToSS6ufcTLREoCVMcvBQbSqCFUIGaN1Ko3zxChJMWdf39dyaJ/ixMKtc8pciF/tL6Sw==
+  dependencies:
+    "@playwright/test" "^1.39.0"
+    "@sanity/client" "^6.8.6"
+    "@sanity/uuid" "^3.0.1"
+    cac "^6.7.12"
 
 "@sanity/tsdoc@1.0.0-alpha.38":
   version "1.0.0-alpha.38"

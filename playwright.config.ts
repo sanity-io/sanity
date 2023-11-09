@@ -1,6 +1,6 @@
 import {defineConfig} from '@playwright/test'
-import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
 import {createPlaywrightConfig} from '@sanity/test'
+import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
 
 loadEnvFiles()
 
