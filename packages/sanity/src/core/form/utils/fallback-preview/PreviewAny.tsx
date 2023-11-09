@@ -1,9 +1,13 @@
 import React from 'react'
+import {useTranslation} from '../../../i18n'
 import {PreviewPrimitive} from './PreviewPrimitive'
 import {PreviewObject} from './PreviewObject'
 import {PreviewArray} from './PreviewArray'
 
-const NO_VALUE = <PreviewPrimitive value="<no value>" />
+const NoValue = () => {
+  const {t} = useTranslation()
+  return <PreviewPrimitive value={t('preview.fallback.no-value')} />
+}
 
 export interface PreviewAnyProps {
   value: Array<unknown> | Record<string, unknown> | number | boolean | string
@@ -21,11 +25,11 @@ export function PreviewAny(props: PreviewAnyProps) {
       return <PreviewPrimitive {...rest} value={value} />
     }
     case 'undefined': {
-      return NO_VALUE
+      return <NoValue />
     }
     case 'object': {
       if (value === null) {
-        return NO_VALUE
+        return <NoValue />
       }
       if (Array.isArray(value)) {
         return <PreviewArray {...rest} value={value} />

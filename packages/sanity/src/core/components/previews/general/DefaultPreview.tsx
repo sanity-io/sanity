@@ -3,9 +3,10 @@ import {Box, Flex, Stack, Text, Skeleton, TextSkeleton, rem} from '@sanity/ui'
 import classNames from 'classnames'
 import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
+import {useTranslation} from '../../../i18n'
 import {Media} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
-import {PreviewMediaDimensions, PreviewProps} from '../types'
+import type {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
 
 /**
@@ -52,6 +53,7 @@ const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, 
  * @beta */
 export function DefaultPreview(props: DefaultPreviewProps) {
   const {title, subtitle, media, status, isPlaceholder, children, styles} = props
+  const {t} = useTranslation()
   const rootClassName = classNames(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
 
   const statusNode = status && (
@@ -109,7 +111,11 @@ export function DefaultPreview(props: DefaultPreviewProps) {
       >
         <Text className={styles?.title} style={{color: 'inherit'}} textOverflow="ellipsis">
           {title && renderPreviewNode(title, 'default')}
-          {!title && <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}
+          {!title && (
+            <span style={{color: 'var(--card-muted-fg-color)'}}>
+              {t('preview.default.title-fallback')}
+            </span>
+          )}
         </Text>
 
         {subtitle && (
