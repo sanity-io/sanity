@@ -74,21 +74,29 @@ export function resolveIntentState(
   )
 
   if (matchingTool?.getIntentState) {
-    const toolState = matchingTool.getIntentState(
+    const _toolState = matchingTool.getIntentState(
       intent,
       params as any,
       prevState && (prevState[matchingTool.name] as any),
       payload,
-    )
+    ) as Record<string, unknown>
 
+    const {_searchParams, ...toolState} = _toolState
+
+    const nextUrlState: Record<string, unknown> = {
+      ...prevState,
+      tool: matchingTool.name,
+      [matchingTool.name]: toolState,
+    }
+    if (matchingTool.router?.__unsafe_disableScopedSearchParams) {
+      nextUrlState._searchParams = _searchParams
+    } else {
+      toolState._searchParams = _searchParams
+    }
     return {
       type: 'state',
       isNotFound: false,
-      state: {
-        ...prevState,
-        tool: matchingTool.name,
-        [matchingTool.name]: toolState,
-      },
+      state: nextUrlState,
     }
   }
 
