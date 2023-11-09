@@ -81,7 +81,6 @@ export interface ConvertedField {
   description?: string
   isReference?: boolean
   isNullable?: boolean
-  isRawAlias?: boolean
   args?: FieldArg[]
   kind?: 'List'
 }

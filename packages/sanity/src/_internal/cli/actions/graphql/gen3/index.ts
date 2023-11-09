@@ -1,5 +1,3 @@
-import util from 'util'
-
 import {isUnion} from '../helpers'
 import type {
   ApiSpecification,

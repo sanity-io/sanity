@@ -26,7 +26,6 @@ import type {
 const skipTypes = ['document', 'reference']
 const allowedJsonTypes = ['object', 'array']
 const disallowedCustomizedMembers = ['object', 'array', 'image', 'file', 'block']
-const disabledBlockFields = ['markDefs']
 const scalars = ['string', 'number', 'boolean']
 
 function getBaseType(baseSchema: CompiledSchema, typeName: IntrinsicTypeName): SchemaType {
@@ -62,35 +61,6 @@ function isBaseType(type: SchemaType): boolean {
     !skipTypes.includes(type.name) &&
     !isReference(type)
   )
-}
-
-function isBlockType(typeDef: SchemaType | ObjectField): boolean {
-  if (typeDef.name === 'block') {
-    return true
-  }
-
-  if (typeDef.type) {
-    return isBlockType(typeDef.type)
-  }
-
-  return false
-}
-
-function hasBlockParent(typeDef: SchemaType): boolean {
-  if (typeDef.type && typeDef.type.name === 'block' && !typeDef.type.type) {
-    return true
-  }
-
-  return Boolean(typeDef.type && hasBlockParent(typeDef.type))
-}
-
-function isArrayOfBlocks(typeDef: SchemaType | ObjectField): boolean {
-  const type = typeDef.type || typeDef
-  if (!('jsonType' in type) || type.jsonType !== 'array') {
-    return false
-  }
-
-  return (type.of || []).some(hasBlockParent)
 }
 
 function isType(typeDef: SchemaType | ObjectField | ObjectFieldType, typeName: string): boolean {
@@ -239,7 +209,7 @@ export function extractFromSanitySchema(
       return getDocumentDefinition(type as ObjectSchemaType)
     }
 
-    if (name === 'block' || name === 'object') {
+    if (name === 'object') {
       return getObjectDefinition(type, parent)
     }
 
@@ -309,29 +279,12 @@ export function extractFromSanitySchema(
       fields.splice(firstUnprefixed + 1, 0, createStringField('_type'))
     }
 
-    const objectIsBlock = isBlockType(def)
-    const objectFields = objectIsBlock
-      ? fields.filter((field) => !disabledBlockFields.includes(field.name))
-      : fields
-
     return {
       kind: 'Type',
       name,
       type: 'Object',
       description: getDescription(def),
-      fields: objectFields.map((field) =>
-        isArrayOfBlocks(field)
-          ? buildRawField(field, name)
-          : (convertType(field, name, {fieldName: field.name}) as any),
-      ),
-    }
-  }
-
-  function buildRawField(field: ObjectField, parentName: string) {
-    return {
-      ...convertType(field, parentName, {fieldName: `${field.name}Raw`}),
-      type: 'JSON',
-      isRawAlias: true,
+      fields: fields.map((field) => convertType(field, name, {fieldName: field.name}) as any),
     }
   }
 
