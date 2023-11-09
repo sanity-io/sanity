@@ -25,6 +25,15 @@ const EditableWrapStack = styled(Stack)(() => {
   `
 })
 
+const PlaceholderWrapper = styled.span(() => {
+  return css`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    display: block;
+  `
+})
+
 export const StyledPopover = styled(Popover)(({theme}) => {
   const {space, radius} = theme.sanity
 
@@ -88,7 +97,10 @@ export function Editable(props: EditableProps) {
     value,
   } = useCommentInput()
 
-  const renderPlaceholder = useCallback(() => <span>{placeholder}</span>, [placeholder])
+  const renderPlaceholder = useCallback(
+    () => <PlaceholderWrapper>{placeholder}</PlaceholderWrapper>,
+    [placeholder],
+  )
 
   useClickOutside(
     useCallback(() => {
