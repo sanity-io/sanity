@@ -90,12 +90,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
         sizing="border"
       >
         <Text align="center" muted size={1}>
-          <Translate
-            t={t}
-            i18nKey="new-document.no-results"
-            components={{QueryString: ({children}) => <QueryString>{children}</QueryString>}}
-            values={{searchQuery}}
-          />
+          <Translate t={t} i18nKey="new-document.no-results" values={{searchQuery}} />
         </Text>
       </ContentFlex>
     )

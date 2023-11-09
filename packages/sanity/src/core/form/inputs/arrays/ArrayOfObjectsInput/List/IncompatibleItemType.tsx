@@ -53,7 +53,6 @@ export function IncompatibleItemType(props: Props) {
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.current-schema-not-declare-description"
-                components={{Code: ({children}) => <code>{children}</code>}}
                 values={{typeName}}
               />
             </Text>
@@ -102,7 +101,6 @@ export function IncompatibleItemType(props: Props) {
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.type-is-incompatible-prompt"
-                components={{Code: ({children}) => <code>{children}</code>}}
                 values={{typeName}}
               />
             </Text>

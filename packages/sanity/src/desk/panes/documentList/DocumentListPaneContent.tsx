@@ -197,7 +197,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
                 <Translate
                   t={t}
                   i18nKey="panes.document-list-pane.error.text"
-                  components={{Code: ({children}) => <code>{children}</code>}}
                   values={{error: error.message}}
                 />
               </Text>
