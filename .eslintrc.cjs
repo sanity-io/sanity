@@ -311,7 +311,7 @@ const config = {
 
     // Files to disable i18n literals,
     {
-      files: ['./**/*/__workshop__/**/*', './dev/**/*', './examples/**/*'],
+      files: ['./**/*/__workshop__/**/*', './dev/**/*', './examples/**/*', '**/*/debug/**/*'],
       rules: {
         'i18next/no-literal-string': 'off',
         'no-attribute-string-literals/no-attribute-string-literals': 'off',
