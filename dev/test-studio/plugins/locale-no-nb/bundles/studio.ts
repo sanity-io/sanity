@@ -445,8 +445,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.reference.search-placeholder': 'Skriv for å søke',
 
   /** Message shown when no documents were found that matched the given search string */
-  'inputs.reference.no-results-for-query':
-    'Ingen resultater for <SearchTerm>«{{searchTerm}}»</SearchTerm>',
+  'inputs.reference.no-results-for-query': 'Ingen resultater for <strong>«{{searchTerm}}»</strong>',
 
   /** Label for action to create a new document from the reference input */
   'inputs.reference.action.create-new-document': 'Opprett ny',
