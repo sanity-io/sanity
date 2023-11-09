@@ -1,14 +1,15 @@
 import React, {
-  ComponentType,
+  type ComponentType,
+  type CSSProperties,
+  type ReactElement,
   createElement,
-  CSSProperties,
-  ReactElement,
   useMemo,
   useState,
 } from 'react'
-import {RenderPreviewCallbackProps} from '../../form'
+import type {RenderPreviewCallbackProps} from '../../form'
 import {useVisibility} from '../useVisibility'
 
+import {useTranslation} from '../../i18n'
 import {unstable_useValuePreview as useValuePreview} from '../useValuePreview'
 import type {PreviewProps} from '../../components'
 import {_extractUploadState} from './_extractUploadState'
@@ -37,6 +38,7 @@ export function PreviewLoader(
     ...restProps
   } = props
 
+  const {t} = useTranslation()
   const [element, setElement] = useState<HTMLDivElement | null>(null)
 
   // Subscribe to visibility
@@ -65,7 +67,12 @@ export function PreviewLoader(
 
   const media: PreviewProps['media'] = useMemo(() => {
     if (uploadState?.previewImage) {
-      return <img alt="The image currently being uploaded" src={uploadState.previewImage} />
+      return (
+        <img
+          alt={t('preview.image.file-is-being-uploaded.alt-text')}
+          src={uploadState.previewImage}
+        />
+      )
     }
 
     if (!preview?.value?.media) {
@@ -74,7 +81,7 @@ export function PreviewLoader(
 
     // @todo: fix `TS2769: No overload matches this call.`
     return preview?.value?.media as any
-  }, [preview, schemaType, uploadState])
+  }, [preview, schemaType, uploadState, t])
 
   return (
     <div ref={setElement} style={style}>

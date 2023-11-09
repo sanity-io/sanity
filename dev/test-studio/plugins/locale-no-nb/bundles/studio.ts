@@ -1238,6 +1238,17 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Message for when a user is not in a document (displayed in the global presence menu) */
   'presence.not-in-a-document': 'Ikke i et dokument',
+
+  /** --- Previews --- */
+
+  /** Fallback title shown when a preview does not provide a title */
+  'preview.default.title-fallback': 'Uten navn',
+
+  /** Fallback preview value for types that have "no value" (eg null, undefined) */
+  'preview.fallback.no-value': '(ingen verdi)',
+
+  /** Alternative text for image being shown while image is being uploaded, in previews */
+  'preview.image.file-is-being-uploaded.alt-text': 'Bildet blir lastet opp',
 }
 
 export default studioResources
