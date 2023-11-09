@@ -1,9 +1,10 @@
 import React from 'react'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
+import {useTranslation} from '../../../i18n'
 import {Media} from '../_common/Media'
 import {PREVIEW_MEDIA_SIZE} from '../constants'
-import {PreviewMediaDimensions, PreviewProps} from '../types'
+import type {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
 import {
   DescriptionSkeleton,
@@ -41,6 +42,7 @@ export function DetailPreview(props: DetailPreviewProps) {
     children,
     isPlaceholder,
   } = props
+  const {t} = useTranslation()
 
   const statusNode = status && (
     <StatusBox marginLeft={3} paddingRight={1}>
@@ -84,7 +86,7 @@ export function DetailPreview(props: DetailPreviewProps) {
           <Stack flex={1} space={2}>
             <Text textOverflow="ellipsis" style={{color: 'inherit'}}>
               {title && renderPreviewNode(title, 'detail')}
-              {!title && <>Untitled</>}
+              {!title && <>{t('preview.default.title-fallback')}</>}
             </Text>
 
             {subtitle && (
