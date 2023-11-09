@@ -17,7 +17,7 @@ export function ToolNotFoundScreen(props: {toolName: string}) {
                 </Text>
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
-                <Text as="h1" size={1} weight="bold">
+                <Text as="h1" size={1} weight="medium">
                   Tool not found: <code>{toolName}</code>
                 </Text>
               </Stack>

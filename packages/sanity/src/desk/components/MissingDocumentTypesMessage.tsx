@@ -18,7 +18,7 @@ export function MissingDocumentTypesMessage() {
                 </Text>
               </Box>
               <Stack flex={1} marginLeft={3} space={3}>
-                <Text as="h1" size={1} weight="bold">
+                <Text as="h1" size={1} weight="medium">
                   No schema types in the <em>{sourceName}</em> source!
                 </Text>
                 <Text as="p" muted size={1}>
