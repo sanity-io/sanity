@@ -61,27 +61,29 @@ const StyledCard = styled(Card)<{$fill?: boolean}>(({$fill}) => {
   `
 })
 
-const StyledSpinner = styled(Spinner)`
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
+const StyledSpinner = styled(Spinner)<{$animatePosition: boolean}>(({$animatePosition = true}) => {
+  return css`
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
-    to {
-      opacity: 1;
+    @keyframes slideUp {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(-15px);
+      }
     }
-  }
-  @keyframes slideUp {
-    from {
-      transform: translateY(0);
-    }
-    to {
-      transform: translateY(-15px);
-    }
-  }
-  animation:
-    500ms ease-out 500ms 1 normal both running fadeIn,
-    600ms ease-out 2000ms 1 normal both running slideUp;
-`
+    animation: ${$animatePosition
+      ? '500ms ease-out 500ms 1 normal both running fadeIn, 750ms ease-out 2000ms 1 normal both running slideUp'
+      : '500ms ease-out 500ms 1 normal both running fadeIn'};
+  `
+})
 
 const StyledText = styled(Text)`
   @keyframes fadeIn {
@@ -101,8 +103,8 @@ const StyledText = styled(Text)`
     }
   }
   animation:
-    600ms ease-out 2000ms 1 normal both running fadeIn,
-    600ms ease-out 2000ms 1 normal both running slideDown;
+    1500ms ease-out 2000ms 1 normal both running fadeIn,
+    750ms ease-out 2000ms 1 normal both running slideDown;
 `
 
 /**
@@ -113,7 +115,7 @@ const StyledText = styled(Text)`
 export function LoadingBlock({fill, hideText, title = 'Loading'}: LoadingTestProps) {
   return (
     <StyledCard $fill={fill} as={fill ? Layer : 'div'}>
-      <StyledSpinner muted />
+      <StyledSpinner $animatePosition={!hideText} muted />
       {!hideText && (
         <StyledText muted size={1}>
           {title}
