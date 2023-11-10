@@ -38,7 +38,10 @@ function bracketify(value: string): string {
 
 function encodeParams(params: InternalSearchParam[]): string {
   return params
-    .map(([key, value]) => {
+    .flatMap(([key, value]) => {
+      if (value === undefined) {
+        return []
+      }
       return [encodeSearchParamKey(serializeScopedPath(key)), encodeSearchParamValue(value)].join(
         '=',
       )

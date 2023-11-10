@@ -42,6 +42,20 @@ describe('encode w/UrlSearchParams', () => {
       }),
     ).toEqual('/tools/desk?page=/main')
   })
+  test('Undefined in values are omitted', () => {
+    expect(
+      router.encode({
+        tool: 'desk',
+        _searchParams: [
+          ['include', 'yes'],
+          // @ts-expect-error - typescript should yell
+          ['invalid', undefined],
+          // @ts-expect-error - typescript should yell
+          ['also', undefined],
+        ],
+      }),
+    ).toEqual('/tools/desk?include=yes')
+  })
 })
 
 describe('scoped url params', () => {
