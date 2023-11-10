@@ -150,7 +150,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     }
 
     if (canCreateDocument) {
-      return <Text size={1}>New document...</Text>
+      return <Text size={1}>Create new document</Text>
     }
 
     return (
