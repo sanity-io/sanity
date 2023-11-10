@@ -84,8 +84,6 @@ const sharedSettings = definePlugin({
   plugins: [
     deskTool({
       icon: BookIcon,
-      name: 'content',
-      title: 'Content',
       structure,
       defaultDocumentNode,
     }),
