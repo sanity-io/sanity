@@ -131,14 +131,12 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     () => ({
       'aria-label': title,
       disabled: disabled || loading,
-      iconRight: ChevronDownIcon,
       icon: AddIcon,
       text: 'Create',
       mode: 'ghost',
       onClick: handleToggleOpen,
       ref: setButtonElement,
       selected: open,
-      size: 'small',
     }),
     [disabled, handleToggleOpen, loading, open, title],
   )
