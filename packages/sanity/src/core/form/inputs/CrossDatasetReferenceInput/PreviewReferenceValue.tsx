@@ -49,7 +49,6 @@ export function PreviewReferenceValue(props: {
       refType={refType}
       projectId={projectId}
       dataset={type.dataset}
-      id={value._ref}
       showTypeLabel={showTypeLabel}
     />
   )

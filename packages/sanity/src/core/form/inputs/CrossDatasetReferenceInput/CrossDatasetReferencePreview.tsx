@@ -1,26 +1,14 @@
-import React, {createElement, ReactNode, useMemo} from 'react'
+import React, {createElement, useMemo} from 'react'
 import {CrossDatasetType, PreviewValue} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {isImageSource} from '@sanity/asset-utils'
-import {TooltipWithNodes} from '../../../../ui'
+import {Tooltip} from '../../../../ui'
 import {DocumentAvailability} from '../../../preview'
 import {DefaultPreview, PreviewMediaDimensions, TextWithTone} from '../../../components'
 import {FIXME} from '../../../FIXME'
-import {StyledPreviewFlex, TooltipContent} from './CrossDatasetReferencePreview.styled'
-
-function UnavailableMessage(props: {children: ReactNode}) {
-  return (
-    <TooltipContent>
-      <Box flex={1}>
-        <Text as="p" size={1}>
-          {props.children}
-        </Text>
-      </Box>
-    </TooltipContent>
-  )
-}
+import {StyledPreviewFlex} from './CrossDatasetReferencePreview.styled'
 
 /**
  * Used to preview a referenced type
@@ -28,7 +16,6 @@ function UnavailableMessage(props: {children: ReactNode}) {
  */
 export function CrossDatasetReferencePreview(props: {
   availability: DocumentAvailability | null
-  id: string
   hasStudioUrl?: boolean
   showStudioUrlIcon?: boolean
   preview: {published: PreviewValue | undefined}
@@ -44,7 +31,6 @@ export function CrossDatasetReferencePreview(props: {
     showTypeLabel,
     availability,
     preview,
-    id,
     dataset,
     projectId,
   } = props
@@ -107,50 +93,35 @@ export function CrossDatasetReferencePreview(props: {
 
           {(insufficientPermissions || notFound) && (
             <Box>
-              {/* @todo: possible candidate to promote to Studio UI tooltip */}
-              <TooltipWithNodes
+              <Tooltip
                 portal
                 content={
-                  notFound ? (
-                    <UnavailableMessage>
-                      The referenced document no longer exist and might have been deleted.
-                      <br />
-                      (id: <code>{id}</code>)
-                    </UnavailableMessage>
-                  ) : (
-                    <UnavailableMessage>
-                      The referenced document could not be accessed due to insufficient permissions
-                    </UnavailableMessage>
-                  )
+                  notFound
+                    ? 'The referenced document no longer exists and may have been deleted'
+                    : 'The referenced document could not be accessed due to insufficient permissions'
                 }
               >
                 <TextWithTone tone="default">
                   {insufficientPermissions ? <AccessDeniedIcon /> : <HelpCircleIcon />}
                 </TextWithTone>
-              </TooltipWithNodes>
+              </Tooltip>
             </Box>
           )}
 
           {!(notFound || insufficientPermissions) && showStudioUrlIcon && (
             <Box>
-              <TooltipWithNodes
+              <Tooltip
                 portal
                 content={
-                  <TooltipContent>
-                    {hasStudioUrl ? (
-                      <Text size={1}>This document opens in a new tab</Text>
-                    ) : (
-                      <Text size={1}>
-                        This document cannot be opened <br /> (unable to resolve URL to Studio)
-                      </Text>
-                    )}
-                  </TooltipContent>
+                  hasStudioUrl
+                    ? 'This document opens in a new tab'
+                    : 'This document cannot be opened: unable to resolve URL to Studio'
                 }
               >
                 <TextWithTone size={1} tone="default" muted={!hasStudioUrl}>
                   <LaunchIcon />
                 </TextWithTone>
-              </TooltipWithNodes>
+              </Tooltip>
             </Box>
           )}
         </Inline>

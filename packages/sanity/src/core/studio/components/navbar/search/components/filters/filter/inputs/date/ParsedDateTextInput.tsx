@@ -1,6 +1,3 @@
-import {hues} from '@sanity/color'
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Flex, Text, Theme} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import React, {
   ChangeEvent,
@@ -11,8 +8,7 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import styled, {css} from 'styled-components'
-import {TooltipWithNodes} from '../../../../../../../../../../ui'
+import {Tooltip} from '../../../../../../../../../../ui'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'
 
@@ -50,16 +46,6 @@ const FORMAT: Record<
     pattern: 'MMM d, yyyy p',
   },
 }
-
-const Emphasis = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    font-weight: ${theme.sanity.fonts.text.weights.medium};
-  `
-})
-
-const IconTextCritical = styled(Text)`
-  color: ${hues.red[500].hex};
-`
 
 export function ParsedDateTextInput({
   isDateTime,
@@ -162,38 +148,26 @@ export function ParsedDateTextInput({
   }, [dateFormat, processInputString, isDateTimeFormat, value])
 
   return (
-    <TooltipWithNodes
-      content={
-        <Flex gap={2}>
-          <IconTextCritical size={1}>
-            <ErrorOutlineIcon />
-          </IconTextCritical>
-          <Text muted size={1}>
-            Must be in the format{' '}
-            <Emphasis>
-              {isDateTimeFormat ? FORMAT.datetime.exampleDate : FORMAT.date.exampleDate}
-            </Emphasis>
-          </Text>
-        </Flex>
-      }
+    <Tooltip
+      content={`Must be in the format: ${
+        isDateTimeFormat ? FORMAT.datetime.exampleDate : FORMAT.date.exampleDate
+      }`}
       disabled={!customValidity}
       placement="top"
       portal
     >
       {/* HACK: Wrapping element required for <Tooltip> to function */}
-      <div>
-        <CustomTextInput
-          {...rest}
-          clearButton={!!inputValue}
-          customValidity={customValidity}
-          onBlur={handleTextInputBlur}
-          onChange={handleTextInputChange}
-          onClear={handleTextInputClear}
-          onKeyDown={handleTextInputKeyDown}
-          placeholder={formattedPlaceholder}
-          value={inputValue}
-        />
-      </div>
-    </TooltipWithNodes>
+      <CustomTextInput
+        {...rest}
+        clearButton={!!inputValue}
+        customValidity={customValidity}
+        onBlur={handleTextInputBlur}
+        onChange={handleTextInputChange}
+        onClear={handleTextInputClear}
+        onKeyDown={handleTextInputKeyDown}
+        placeholder={formattedPlaceholder}
+        value={inputValue}
+      />
+    </Tooltip>
   )
 }
