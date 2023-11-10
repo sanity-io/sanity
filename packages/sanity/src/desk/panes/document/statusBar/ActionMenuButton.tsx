@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
+import {Menu, MenuButton, PopoverProps, Text} from '@sanity/ui'
 import React, {useCallback, useRef, useState, useMemo, useId} from 'react'
 import {Button, MenuItem, TooltipWithNodes} from '../../../../ui'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -93,7 +93,7 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
     (item: React.JSX.Element) => {
       return (
         <TooltipWithNodes
-          content={actionState.title}
+          content={<Text size={1}>{actionState.title}</Text>}
           disabled={!actionState.title}
           placement="top"
           portal
