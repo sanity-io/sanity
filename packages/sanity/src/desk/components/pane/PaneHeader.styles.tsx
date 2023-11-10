@@ -1,21 +1,32 @@
-import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme, Card} from '@sanity/ui'
+import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme, Card, LayerProps} from '@sanity/ui'
+import {HTMLProps, RefAttributes} from 'react'
 import styled, {css} from 'styled-components'
 
-export const Root = styled(Layer)`
-  line-height: 0;
-  position: sticky;
-  top: 0;
+interface CustomLayerProps extends LayerProps {
+  borderBottom?: boolean
+}
 
-  &:not([data-collapsed]):after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -1px;
-    border-bottom: 1px solid var(--card-shadow-outline-color);
-  }
-`
+export const Root = styled(Layer)((
+  props: CustomLayerProps & Omit<HTMLProps<HTMLDivElement>, 'as'> & RefAttributes<HTMLDivElement>,
+) => {
+  const {borderBottom = true} = props
+
+  return css`
+    line-height: 0;
+    position: sticky;
+    top: 0;
+
+    &:not([data-collapsed]):after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      border-bottom: ${borderBottom ? '1px solid var(--card-shadow-outline-color)' : 'none'};
+    }
+  `
+})
 
 export const Layout = styled(Flex)`
   transform-origin: calc(51px / 2);
