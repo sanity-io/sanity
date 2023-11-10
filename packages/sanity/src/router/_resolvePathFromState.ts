@@ -26,8 +26,7 @@ export function _resolvePathFromState(node: RouterNode, _state: RouterState): st
 
   const {path, searchParams} = pathFromMatchResult(match)
 
-  const search =
-    searchParams.length > 0 ? new URLSearchParams(encodeParams(searchParams)).toString() : ''
+  const search = searchParams.length > 0 ? encodeParams(searchParams) : ''
 
   return `/${path.join('/')}${search ? `?${search}` : ''}`
 }
@@ -36,13 +35,28 @@ function bracketify(value: string): string {
   return `[${value}]`
 }
 
-function encodeParamPath(paramPath: string[]): string {
-  const [head, ...tail] = paramPath
+function encodeParams(params: InternalSearchParam[]): string {
+  return params
+    .map(([key, value]) => {
+      return [encodeSearchParamKey(serializeScopedPath(key)), encodeSearchParamValue(value)].join(
+        '=',
+      )
+    })
+    .join('&')
+}
+
+function serializeScopedPath(scopedPath: string[]): string {
+  const [head, ...tail] = scopedPath
 
   return tail.length > 0 ? [head, ...tail.map(bracketify)].join('') : head
 }
-function encodeParams(params: InternalSearchParam[]): SearchParam[] {
-  return params.map(([key, value]): SearchParam => [encodeParamPath(key), value])
+
+function encodeSearchParamValue(value: string): string {
+  return encodeURIComponent(value)
+}
+
+function encodeSearchParamKey(value: string): string {
+  return encodeURIComponent(value)
 }
 
 function pathFromMatchResult(match: MatchOk): {
