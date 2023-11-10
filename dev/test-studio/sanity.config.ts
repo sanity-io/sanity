@@ -40,6 +40,8 @@ import {copyAction} from './fieldActions/copyAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {customInspector} from './inspectors/custom'
 import {pasteAction} from './fieldActions/pasteAction'
+import routerDebug from './plugins/router-debug/RouterDebug'
+import {routerDebugTool} from './plugins/router-debug'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -121,6 +123,7 @@ const sharedSettings = definePlugin({
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
     presenceTool(),
+    routerDebugTool(),
     tsdoc(),
   ],
 })
