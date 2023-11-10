@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 const onboardingDismissedKey = 'sanityStudio:desk:renameDismissed'
 
@@ -43,15 +43,21 @@ export function useDeskRenameOnboarding(): {
       }
     }
 
+    // Note: this will listen for changes in other tabs, not the tab that's actually dismissing
     window.addEventListener('storage', onStorageEvent)
     return () => {
       window.removeEventListener('storage', onStorageEvent)
     }
   }, [])
 
+  const handleDismissOnboarding = useCallback(() => {
+    setShowOnboarding(false)
+    dismissDeskRenameOnboarding()
+  }, [])
+
   return {
     showOnboarding,
-    dismissOnboarding: dismissDeskRenameOnboarding,
+    dismissOnboarding: handleDismissOnboarding,
   }
 }
 
