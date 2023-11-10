@@ -1,19 +1,11 @@
 import {CogIcon, UsersIcon} from '@sanity/icons'
-import {
-  Box,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  Stack,
-  Text,
-  // eslint-disable-next-line no-restricted-imports
-} from '@sanity/ui'
+import {Box, Menu, MenuButton, MenuDivider, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {StatusButton} from '../../../../components'
 import {useGlobalPresence} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
-import {MenuItem} from '../../../../../ui'
+import {MenuItem, Tooltip} from '../../../../../ui'
 import {useWorkspace} from '../../../workspace'
 import {PresenceMenuItem} from './PresenceMenuItem'
 
@@ -33,6 +25,8 @@ export function PresenceMenu() {
   const {scheme} = useColorScheme()
   const hasPresence = presence.length > 0
 
+  const [menuOpen, setMenuOpen] = useState(false)
+
   /**
    * This id is used as a workaround to keep focus on the selected menu item
    * when the list of users in the menu is updated
@@ -45,6 +39,12 @@ export function PresenceMenu() {
 
   const handleClearFocusedItem = useCallback(() => {
     setFocusedId('')
+  }, [])
+
+  const handleOpen = useCallback(() => setMenuOpen(true), [])
+  const handleClose = useCallback(() => {
+    setFocusedId('')
+    setMenuOpen(false)
   }, [])
 
   const button = useMemo(() => {
@@ -63,55 +63,60 @@ export function PresenceMenu() {
   )
 
   return (
-    <MenuButton
-      button={button}
-      id="global-presence-menu"
-      onClose={handleClearFocusedItem}
-      menu={
-        <StyledMenu padding={1}>
-          {hasPresence && (
-            <Stack>
-              {presence.map((item) => (
-                <PresenceMenuItem
-                  focused={focusedId === item.user.id}
-                  key={item.user.id}
-                  onFocus={handleItemFocus}
-                  presence={item}
+    <Tooltip content="Active users" disabled={menuOpen}>
+      <div>
+        <MenuButton
+          button={button}
+          id="global-presence-menu"
+          menu={
+            <StyledMenu padding={1}>
+              {hasPresence && (
+                <Stack>
+                  {presence.map((item) => (
+                    <PresenceMenuItem
+                      focused={focusedId === item.user.id}
+                      key={item.user.id}
+                      onFocus={handleItemFocus}
+                      presence={item}
+                    />
+                  ))}
+                </Stack>
+              )}
+
+              {!hasPresence && (
+                <Box paddingX={3} paddingY={4}>
+                  <Stack space={3}>
+                    <Text weight="medium" size={2}>
+                      No one else is here
+                    </Text>
+
+                    <Text size={1} muted>
+                      Invite people to the project to see their online status.
+                    </Text>
+                  </Stack>
+                </Box>
+              )}
+
+              <FooterStack space={1}>
+                <MenuDivider />
+
+                <MenuItem
+                  as="a"
+                  href={`https://sanity.io/manage/project/${projectId}`}
+                  iconRight={CogIcon}
+                  onFocus={handleClearFocusedItem}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  text="Manage members"
                 />
-              ))}
-            </Stack>
-          )}
-
-          {!hasPresence && (
-            <Box paddingX={3} paddingY={4}>
-              <Stack space={3}>
-                <Text weight="medium" size={2}>
-                  No one else is here
-                </Text>
-
-                <Text size={1} muted>
-                  Invite people to the project to see their online status.
-                </Text>
-              </Stack>
-            </Box>
-          )}
-
-          <FooterStack space={1}>
-            <MenuDivider />
-
-            <MenuItem
-              as="a"
-              href={`https://sanity.io/manage/project/${projectId}`}
-              iconRight={CogIcon}
-              onFocus={handleClearFocusedItem}
-              rel="noopener noreferrer"
-              target="_blank"
-              text="Manage members"
-            />
-          </FooterStack>
-        </StyledMenu>
-      }
-      popover={popoverProps}
-    />
+              </FooterStack>
+            </StyledMenu>
+          }
+          onClose={handleClose}
+          onOpen={handleOpen}
+          popover={popoverProps}
+        />
+      </div>
+    </Tooltip>
   )
 }
