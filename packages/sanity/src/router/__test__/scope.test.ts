@@ -8,11 +8,11 @@ test('toplevel', () => {
 
 test('toplevel, with params', () => {
   const router = route.scope('omg', '/foo/:bar')
-  expect(router.decode('/foo/bar?omg%5Bsomething%5D=xyz')).toEqual({
+  expect(router.decode('/foo/bar?omg[something]=xyz')).toEqual({
     omg: {bar: 'bar', _searchParams: [['something', 'xyz']]},
   })
   expect(router.encode({omg: {bar: 'bar', _searchParams: [['something', 'xyz']]}})).toBe(
-    '/foo/bar?omg%5Bsomething%5D=xyz',
+    '/foo/bar?omg[something]=xyz',
   )
 })
 
@@ -58,15 +58,15 @@ test('scopes all the way down, with params', () => {
     route.scope('second', '/baz/:qux', [route.scope('third', '/omg/:lol')]),
   ])
 
-  expect(router.decode('/foo/bar?first%5Ba%5D=b')).toEqual({
+  expect(router.decode('/foo/bar?first[a]=b')).toEqual({
     first: {bar: 'bar', _searchParams: [['a', 'b']]},
   })
 
   expect(router.encode({first: {bar: 'bar', _searchParams: [['a', 'b']]}})).toBe(
-    '/foo/bar?first%5Ba%5D=b',
+    '/foo/bar?first[a]=b',
   )
 
-  expect(router.decode('/foo/bar/baz/qux?first%5Ba%5D=b&first%5Bsecond%5D%5Bc%5D=d')).toEqual({
+  expect(router.decode('/foo/bar/baz/qux?first[a]=b&first[second][c]=d')).toEqual({
     first: {
       bar: 'bar',
       _searchParams: [['a', 'b']],
@@ -81,11 +81,11 @@ test('scopes all the way down, with params', () => {
         second: {qux: 'qux', _searchParams: [['c', 'd']]},
       },
     }),
-  ).toBe('/foo/bar/baz/qux?first%5Ba%5D=b&first%5Bsecond%5D%5Bc%5D=d')
+  ).toBe('/foo/bar/baz/qux?first[a]=b&first[second][c]=d')
 
   expect(
     router.decode(
-      '/foo/bar/baz/qux/omg/lol?first%5Bx%5D=1&first%5By%5D=2&first%5Bsecond%5D%5Ba%5D=0&first%5Bsecond%5D%5Bb%5D=1&first%5Bsecond%5D%5Bthird%5D%5Bfoo%5D=bar',
+      '/foo/bar/baz/qux/omg/lol?first[x]=1&first[y]=2&first[second][a]=0&first[second][b]=1&first[second][third][foo]=bar',
     ),
   ).toEqual({
     first: {
@@ -129,6 +129,6 @@ test('scopes all the way down, with params', () => {
       },
     }),
   ).toEqual(
-    '/foo/bar/baz/qux/omg/lol?first%5Bx%5D=1&first%5By%5D=2&first%5Bsecond%5D%5Ba%5D=0&first%5Bsecond%5D%5Bb%5D=1&first%5Bsecond%5D%5Bthird%5D%5Bfoo%5D=bar',
+    '/foo/bar/baz/qux/omg/lol?first[x]=1&first[y]=2&first[second][a]=0&first[second][b]=1&first[second][third][foo]=bar',
   )
 })
