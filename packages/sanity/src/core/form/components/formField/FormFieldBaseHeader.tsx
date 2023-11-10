@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {
   Box,
@@ -65,14 +65,18 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
     padding: ${space}px;
     position: absolute;
     right: 0;
+    width: 0;
+    will-change: opacity, width;
 
     @media (hover: hover) {
       // If hover is supported, we hide the floating card by default
       // and only show it when it has focus within or when the field is hovered or focused.
       opacity: 0;
+      width: 0;
 
-      [data-ui='FieldActionFlex'] {
+      [data-ui='FieldActionsFlex'] {
         opacity: 0;
+        width: 0;
       }
 
       &[data-actions-visible='false']:not(:focus-within) {
@@ -93,20 +97,24 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
       // Show the floating card when it has focus within (ie when field actions are focused).
       &:focus-within {
         opacity: 1;
+        width: max-content;
 
-        [data-ui='FieldActionFlex'] {
+        [data-ui='FieldActionsFlex'] {
           opacity: 1;
+          width: max-content;
         }
       }
     }
 
     &[data-visible='true'] {
       opacity: 1;
+      width: max-content;
     }
 
     &[data-actions-visible='true'] {
-      [data-ui='FieldActionFlex'] {
+      [data-ui='FieldActionsFlex'] {
         opacity: 1;
+        width: max-content;
       }
     }
   `
@@ -114,6 +122,7 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
 
 const FieldActionsFlex = styled(Flex)`
   gap: inherit;
+  will-change: opacity, width;
 `
 
 const MAX_AVATARS = 4
@@ -169,13 +178,28 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   // Determine if floating card with actions should be shown
   const shouldShowFloatingCard = showFieldActions || hasComments
 
-  // Calculate floating card's width
-  useEffect(() => {
+  const handleSetFloatingCardElementWidth = useCallback(() => {
     if (floatingCardElement) {
       const {width} = floatingCardElement.getBoundingClientRect()
       setFloatingCardWidth(width || 0)
     }
-  }, [floatingCardElement, showFieldActions])
+  }, [floatingCardElement])
+
+  // When a focus or blur event occurs on the floating card, we need to recalculate its width.
+  // This is because presence should be positioned relative to the floating card.
+  // We need this because we don't conditionally render the floating card and rely on CSS to
+  // show/hide it, and therefore the width calculation won't be triggered when the card is shown or hidden.
+  const handleFocusCapture = useCallback(handleSetFloatingCardElementWidth, [
+    handleSetFloatingCardElementWidth,
+  ])
+  const handleBlurCapture = useCallback(handleSetFloatingCardElementWidth, [
+    handleSetFloatingCardElementWidth,
+  ])
+
+  // Calculate floating card's width
+  useEffect(() => {
+    handleSetFloatingCardElementWidth()
+  }, [handleSetFloatingCardElementWidth, showFieldActions])
 
   // Calculate slot element's width
   useEffect(() => {
@@ -222,13 +246,15 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
             data-has-comments={hasComments ? 'true' : 'false'}
             data-visible={shouldShowFloatingCard ? 'true' : 'false'}
             display="flex"
+            onBlurCapture={handleBlurCapture}
+            onFocusCapture={handleFocusCapture}
             radius={2}
             ref={setFloatingCardElement}
             shadow={2}
             sizing="border"
           >
             {hasActions && (
-              <FieldActionsFlex align="center" data-ui="FieldActionFlex">
+              <FieldActionsFlex align="center" data-ui="FieldActionsFlex">
                 <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
               </FieldActionsFlex>
             )}
