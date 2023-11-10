@@ -1,4 +1,5 @@
 import React, {useLayoutEffect, useRef} from 'react'
+import {ElementQuery} from '@sanity/ui'
 import {Root, Title} from './styles'
 
 /**
@@ -28,9 +29,11 @@ export function FormTitle({title, ready}: FormTitleProps) {
 
   return (
     <Root marginBottom={4}>
-      <Title ref={titleRef} $muted={!title} $titleHeight={titleHeight}>
-        {title ?? 'Untitled'}
-      </Title>
+      <ElementQuery>
+        <Title ref={titleRef} $muted={!title} $titleHeight={titleHeight}>
+          {title ?? 'Untitled'}
+        </Title>
+      </ElementQuery>
     </Root>
   )
 }
