@@ -71,11 +71,11 @@ export function Synchronizer(props: SynchronizerProps) {
         debug(`Patches:\n${JSON.stringify(pendingPatches.current, null, 2)}`)
       }
       const snapshot = PortableTextEditor.getValue(portableTextEditor)
-      onChange({type: 'mutation', patches: pendingPatches.current, snapshot})
+      change$.next({type: 'mutation', patches: pendingPatches.current, snapshot})
       pendingPatches.current = []
     }
     IS_PROCESSING_LOCAL_CHANGES.set(slateEditor, false)
-  }, [slateEditor, portableTextEditor, onChange])
+  }, [slateEditor, portableTextEditor, change$])
 
   const onFlushPendingPatchesThrottled = useMemo(() => {
     return throttle(
@@ -131,14 +131,7 @@ export function Synchronizer(props: SynchronizerProps) {
       debug('Unsubscribing to changes$')
       sub.unsubscribe()
     }
-  }, [
-    change$,
-    onChange,
-    onFlushPendingPatches,
-    onFlushPendingPatchesThrottled,
-    slateEditor,
-    syncValue,
-  ])
+  }, [change$, onChange, onFlushPendingPatchesThrottled, slateEditor])
 
   // Sync the value when going online
   const handleOnline = useCallback(() => {
