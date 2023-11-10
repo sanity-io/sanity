@@ -68,7 +68,6 @@ export function OptionPreview(props: {
     referenceInfo &&
     refType && (
       <CrossDatasetReferencePreview
-        id={referenceInfo.id}
         availability={referenceInfo.availability}
         preview={referenceInfo.preview}
         refType={refType}
