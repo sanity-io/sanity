@@ -1,4 +1,3 @@
-import {PlugIcon} from '@sanity/icons'
 import {Stack} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {forwardRef, useMemo} from 'react'
@@ -32,7 +31,6 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
             <Stack as="li" key={tool.name}>
               <Button
                 as={Link}
-                icon={tool.icon || PlugIcon}
                 justify="flex-start"
                 mode="bleed"
                 selected={activeToolName === tool.name}
