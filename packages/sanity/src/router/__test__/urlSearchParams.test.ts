@@ -59,18 +59,14 @@ describe('scoped url params', () => {
         },
       }),
     ).toEqual(
-      `/pluginA/foo/pluginAB/something/pluginABC/space/hello?${new URLSearchParams(
-        'pluginA[pluginAB][pluginABC][a]=b&pluginA[pluginAB][pluginABC][c]=d',
-      )}`,
+      '/pluginA/foo/pluginAB/something/pluginABC/space/hello?pluginA[pluginAB][pluginABC][a]=b&pluginA[pluginAB][pluginABC][c]=d',
     )
   })
 
   test('UrlSearchParams params with a simple route', () => {
     expect(
       router.decode(
-        `/pluginA/foo/pluginAB/something/pluginABC/space/hello?${new URLSearchParams(
-          'pluginA[pluginAB][pluginABC][a]=b&pluginA[pluginAB][pluginABC][c]=d',
-        )}`,
+        '/pluginA/foo/pluginAB/something/pluginABC/space/hello?pluginA[pluginAB][pluginABC][a]=b&pluginA[pluginAB][pluginABC][c]=d',
       ),
     ).toEqual({
       pluginA: {
@@ -121,9 +117,7 @@ describe('url params without opt-out scoping', () => {
         },
       }),
     ).toEqual(
-      `/pluginA/foo/pluginAB/something/pluginABC/space/hello?${new URLSearchParams(
-        'pluginAB[pluginABC][a]=b&pluginAB[pluginABC][c]=d',
-      )}`,
+      '/pluginA/foo/pluginAB/something/pluginABC/space/hello?pluginAB[pluginABC][a]=b&pluginAB[pluginABC][c]=d',
     )
   })
 })
@@ -138,7 +132,7 @@ describe('encode with dynamically scoped url params', () => {
         tool: 'desk',
         desk: {documentId: '12', _searchParams: [['a', 'b']]},
       }),
-    ).toEqual(`/tools/desk/edit/12?desk%5Ba%5D=b`)
+    ).toEqual('/tools/desk/edit/12?desk[a]=b')
   })
 })
 

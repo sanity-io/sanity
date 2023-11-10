@@ -56,7 +56,7 @@ function encodeSearchParamValue(value: string): string {
 }
 
 function encodeSearchParamKey(value: string): string {
-  return encodeURIComponent(value)
+  return encodeURIComponent(value).replaceAll('%5B', '[').replaceAll('%5D', ']')
 }
 
 function pathFromMatchResult(match: MatchOk): {
