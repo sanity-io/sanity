@@ -3,8 +3,7 @@ import React, {isValidElement} from 'react'
 import {isNumber, isString} from 'lodash'
 import {Inline} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
-import {DraftStatus} from '../../../ui/draftStatus'
-import {PublishedStatus} from '../../../ui/publishedStatus'
+import {DocumentStatus} from '../../../ui/documentStatus'
 import type {PaneItemPreviewState} from './types'
 import {
   DocumentPresence,
@@ -45,8 +44,8 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const status = isLoading ? null : (
     <Inline space={4}>
       {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-      <PublishedStatus document={published} />
-      <DraftStatus document={draft} />
+      <DocumentStatus document={published} type="published" />
+      <DocumentStatus document={draft} type="draft" />
     </Inline>
   )
 

@@ -1,12 +1,11 @@
 import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {Badge, Box, Flex, Inline} from '@sanity/ui'
+import {DocumentStatus} from '../../../../ui/documentStatus'
 import {RenderPreviewCallback} from '../../types'
 import {PreviewLayoutKey} from '../../../components'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {DraftStatus} from '../../../../ui/draftStatus'
-import {PublishedStatus} from '../../../../ui/publishedStatus'
 import {ReferenceInfo} from './types'
 
 /**
@@ -65,8 +64,8 @@ export function ReferencePreview(props: {
           )}
 
           <Inline space={4}>
-            <PublishedStatus document={preview.published} />
-            <DraftStatus document={preview.draft} />
+            <DocumentStatus document={preview.published} type="published" />
+            <DocumentStatus document={preview.draft} type="draft" />
           </Inline>
         </Inline>
       </Box>
