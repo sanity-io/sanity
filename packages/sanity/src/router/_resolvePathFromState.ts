@@ -52,7 +52,7 @@ function serializeScopedPath(scopedPath: string[]): string {
 }
 
 function encodeSearchParamValue(value: string): string {
-  return encodeURIComponent(value)
+  return encodeURIComponent(value).replaceAll('%2F', '/')
 }
 
 function encodeSearchParamKey(value: string): string {
