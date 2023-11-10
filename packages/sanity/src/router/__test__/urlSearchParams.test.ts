@@ -34,6 +34,14 @@ describe('encode w/UrlSearchParams', () => {
       }),
     ).toEqual('/tools/desk?view=zen')
   })
+  test('Slashes in values are not encoded', () => {
+    expect(
+      router.encode({
+        tool: 'desk',
+        _searchParams: [['page', '/main']],
+      }),
+    ).toEqual('/tools/desk?page=/main')
+  })
 })
 
 describe('scoped url params', () => {
