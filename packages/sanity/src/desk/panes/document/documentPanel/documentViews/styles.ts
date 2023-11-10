@@ -16,7 +16,7 @@ export const Title = styled.h6<TitleProps>`
     return css`
       display: -webkit-box;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: ${$titleHeight ? Math.ceil($titleHeight / lineHeight) : 4};
+      -webkit-line-clamp: ${$titleHeight ? Math.ceil($titleHeight / lineHeight) : 'auto'};
       overflow: hidden;
       font-size: ${fontSize}px;
       margin: 0;
