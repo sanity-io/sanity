@@ -57,7 +57,7 @@ function encodeSearchParamValue(value: string): string {
 }
 
 function encodeSearchParamKey(value: string): string {
-  return encodeURIComponent(value)
+  return encodeURIComponentExcept(value, '[]')
 }
 
 function pathFromMatchResult(match: MatchOk): {
