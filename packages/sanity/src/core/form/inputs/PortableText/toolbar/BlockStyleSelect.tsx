@@ -99,11 +99,8 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
   const handleChange = useCallback(
     (item: BlockStyleItem): void => {
       if (focusBlock && item.style !== focusBlock.style) {
-        // This must be done in the next tick for the focus to stick
-        setTimeout(() => {
-          PortableTextEditor.toggleBlockStyle(editor, item.style)
-          PortableTextEditor.focus(editor)
-        })
+        PortableTextEditor.toggleBlockStyle(editor, item.style)
+        PortableTextEditor.focus(editor)
       }
     },
     [editor, focusBlock],
