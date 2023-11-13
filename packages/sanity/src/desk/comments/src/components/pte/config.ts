@@ -16,6 +16,9 @@ const blockType = defineField({
   type: 'block',
   name: 'block',
   of: [mentionObject],
+  marks: {
+    annotations: [],
+  },
   styles: [{title: 'Normal', value: 'normal'}],
   lists: [],
 })
