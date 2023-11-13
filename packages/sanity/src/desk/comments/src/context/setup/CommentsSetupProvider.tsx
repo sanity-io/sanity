@@ -3,7 +3,9 @@ import {SanityClient} from '@sanity/client'
 import {CommentPostPayload} from '../../types'
 import {CommentsSetupContext} from './CommentsSetupContext'
 import {CommentsSetupContextValue} from './types'
-import {useWorkspace, useClient, DEFAULT_STUDIO_CLIENT_OPTIONS, useFeatureEnabled} from 'sanity'
+import {useWorkspace, useClient, DEFAULT_STUDIO_CLIENT_OPTIONS} from 'sanity'
+
+const API_VERSION = 'v2023-11-13'
 
 interface CommentsSetupProviderProps {
   children: React.ReactNode
@@ -35,7 +37,7 @@ export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
   const handleCreateClient = useCallback(
     (addonDatasetName: string) => {
       const client = originalClient.withConfig({
-        apiVersion: 'v2022-05-09',
+        apiVersion: API_VERSION,
         dataset: addonDatasetName,
         projectId,
         requestTagPrefix: 'sanity.studio',
@@ -73,7 +75,7 @@ export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
 
       try {
         // 1. Create the addon dataset
-        const res = await originalClient.withConfig({apiVersion: 'vX'}).request({
+        const res = await originalClient.withConfig({apiVersion: API_VERSION}).request({
           uri: `/comments/${dataset}/setup`,
           method: 'POST',
         })
