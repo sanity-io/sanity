@@ -448,7 +448,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <PortalProvider __unstable_elements={portalElements}>
+    <PortalProvider __unstable_elements={portalElements} element={portal.element}>
       <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
         <ChangeIndicator
           disabled={isFullscreen}
