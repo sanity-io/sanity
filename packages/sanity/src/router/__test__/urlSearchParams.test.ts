@@ -34,6 +34,28 @@ describe('encode w/UrlSearchParams', () => {
       }),
     ).toEqual('/tools/desk?view=zen')
   })
+  test('Slashes in values are not encoded', () => {
+    expect(
+      router.encode({
+        tool: 'desk',
+        _searchParams: [['page', '/main']],
+      }),
+    ).toEqual('/tools/desk?page=/main')
+  })
+  test('Undefined in values are omitted', () => {
+    expect(
+      router.encode({
+        tool: 'desk',
+        _searchParams: [
+          ['include', 'yes'],
+          // @ts-expect-error - typescript should yell
+          ['invalid', undefined],
+          // @ts-expect-error - typescript should yell
+          ['also', undefined],
+        ],
+      }),
+    ).toEqual('/tools/desk?include=yes')
+  })
 })
 
 describe('scoped url params', () => {
@@ -59,18 +81,14 @@ describe('scoped url params', () => {
         },
       }),
     ).toEqual(
-      `/pluginA/foo/pluginAB/something/pluginABC/space/hello?${new URLSearchParams(
-        'pluginA[pluginAB][pluginABC][a]=b&pluginA[pluginAB][pluginABC][c]=d',
-      )}`,
+      '/pluginA/foo/pluginAB/something/pluginABC/space/hello?pluginA[pluginAB][pluginABC][a]=b&pluginA[pluginAB][pluginABC][c]=d',
     )
   })
 
   test('UrlSearchParams params with a simple route', () => {
     expect(
       router.decode(
-        `/pluginA/foo/pluginAB/something/pluginABC/space/hello?${new URLSearchParams(
-          'pluginA[pluginAB][pluginABC][a]=b&pluginA[pluginAB][pluginABC][c]=d',
-        )}`,
+        '/pluginA/foo/pluginAB/something/pluginABC/space/hello?pluginA[pluginAB][pluginABC][a]=b&pluginA[pluginAB][pluginABC][c]=d',
       ),
     ).toEqual({
       pluginA: {
@@ -101,7 +119,7 @@ describe('encode with dynamically scoped url params', () => {
         tool: 'desk',
         desk: {documentId: '12', _searchParams: [['a', 'b']]},
       }),
-    ).toEqual(`/tools/desk/edit/12?desk%5Ba%5D=b`)
+    ).toEqual('/tools/desk/edit/12?desk[a]=b')
   })
 })
 
