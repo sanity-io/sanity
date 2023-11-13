@@ -47,8 +47,14 @@ export function wrapIconInDeskRenamePrompt(Icon: React.ComponentType): React.Com
 function DeskRenamedCard(props: {onDismiss: () => void}) {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
+  const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    // prevent this from propagating upwards in the dom tree as this component is rendered inside an anchor element already,
+    // and we don't want the anchor element to handle clicks in here
+    event.stopPropagation()
+  }, [])
+
   return (
-    <Stack as="section" padding={3} space={3}>
+    <Stack as="section" padding={3} space={3} onClick={handleClick}>
       <Stack padding={2} space={4}>
         <Flex gap={2} align="center">
           <Text as="h1" size={1} weight="semibold">
