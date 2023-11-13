@@ -1,12 +1,10 @@
-interface CommentsSelectedPathValue {
-  origin: 'form' | 'inspector'
+export interface CommentsSelectedPath {
+  origin: 'form' | 'inspector' | 'url'
   fieldPath: string | null
   threadId: string | null
 }
 
-export type CommentsSelectedPath = CommentsSelectedPathValue | null
-
 export interface CommentsSelectedPathContextValue {
-  setSelectedPath: (nextSelectedPath: CommentsSelectedPath) => void
-  selectedPath: CommentsSelectedPath
+  setSelectedPath: (nextSelectedPath: CommentsSelectedPath | null) => void
+  selectedPath: CommentsSelectedPath | null
 }
