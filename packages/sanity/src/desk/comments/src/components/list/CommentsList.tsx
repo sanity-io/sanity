@@ -56,7 +56,7 @@ export interface CommentsListProps {
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
-  selectedPath: CommentsSelectedPath
+  selectedPath: CommentsSelectedPath | null
   status: CommentStatus
 }
 

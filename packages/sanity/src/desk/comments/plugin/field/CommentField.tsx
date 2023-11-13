@@ -48,7 +48,6 @@ export function CommentField(props: FieldProps) {
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
   behavior: 'smooth',
   block: 'start',
-  inline: 'nearest',
 }
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
@@ -78,7 +77,6 @@ const FieldStack = styled(Stack)`
 function CommentFieldInner(props: FieldProps) {
   const [open, setOpen] = useState<boolean>(false)
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
-  const [shouldScrollToThread, setShouldScrollToThread] = useState<boolean>(false)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
 
   const {element: boundaryElement} = useBoundaryElement()
@@ -90,7 +88,8 @@ function CommentFieldInner(props: FieldProps) {
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
-  const currentComments = useMemo(() => comments.data[status], [comments.data, status])
+
+  const [threadIdToScrollTo, setThreadIdToScrollTo] = useState<string | null>(null)
 
   const commentsInspectorOpen = useMemo(() => {
     return inspector?.name === COMMENTS_INSPECTOR_NAME
@@ -99,17 +98,9 @@ function CommentFieldInner(props: FieldProps) {
   // Determine if the current field is selected
   const isSelected = useMemo(() => {
     if (!commentsInspectorOpen) return false
-    if (selectedPath?.origin === 'form') return false
+    if (selectedPath?.origin === 'form' || selectedPath?.origin === 'url') return false
     return selectedPath?.fieldPath === PathUtils.toString(props.path)
   }, [commentsInspectorOpen, props.path, selectedPath])
-
-  // Get the most recent thread ID for the current field. This is used to query the
-  // DOM for the thread in order to be able to scroll to it.
-  const currentThreadId = useMemo(() => {
-    const pathString = PathUtils.toString(props.path)
-
-    return currentComments.find((comment) => comment.fieldPath === pathString)?.threadId
-  }, [currentComments, props.path])
 
   // Total number of comments for the current field
   const count = useMemo(() => {
@@ -124,61 +115,61 @@ function CommentFieldInner(props: FieldProps) {
 
   const hasComments = Boolean(count > 0)
 
-  // A function that scrolls to the thread group with the given ID
-  const handleScrollToThread = useCallback(
-    (threadId: string) => {
-      if (commentsInspectorOpen && shouldScrollToThread && threadId) {
-        const node = document.querySelector(`[data-group-id="${threadId}"]`)
-
-        if (node) {
-          node.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
-          setShouldScrollToThread(false)
-        }
-      }
-    },
-    [shouldScrollToThread, commentsInspectorOpen],
-  )
-
   const handleOpenInspector = useCallback(
     () => openInspector(COMMENTS_INSPECTOR_NAME),
     [openInspector],
   )
 
-  const handleClick = useCallback(() => {
-    // Since the button in the field only reflects the number of open comments, we
-    // want to switch to open comments when the user clicks the button so that
-    // the code below can scroll to the thread.
-    if (hasComments && status === 'resolved') {
-      setStatus('open')
-    }
-
-    if (hasComments) {
-      setOpen(false)
-      openInspector(COMMENTS_INSPECTOR_NAME)
-    } else {
-      setOpen((v) => !v)
-    }
-
-    // If the field has comments, we want to open the inspector, scroll to the comment
-    // thread and set the path as selected so that the comment is highlighted  when the
-    // user clicks the button.
-    if (currentThreadId) {
-      setShouldScrollToThread(true)
-      handleScrollToThread(currentThreadId)
+  const handleSetThreadToScrollTo = useCallback(
+    (threadId: string | null) => {
       setSelectedPath({
-        fieldPath: PathUtils.toString(props.path),
+        threadId,
         origin: 'form',
-        threadId: currentThreadId,
+        fieldPath: PathUtils.toString(props.path),
       })
+
+      setThreadIdToScrollTo(threadId)
+    },
+    [props.path, setSelectedPath],
+  )
+
+  const handleClick = useCallback(() => {
+    // When clicking a comment button when the field has comments, we want to:
+    if (hasComments) {
+      // 1. Change the status to 'open' if it's 'resolved'
+      if (status === 'resolved') {
+        setStatus('open')
+      }
+
+      // 2. Close the comment input if it's open
+      setOpen(false)
+
+      // 3. Open the comments inspector
+      openInspector(COMMENTS_INSPECTOR_NAME)
+
+      // 4. Find the latest comment thread ID for the current field
+      const scrollToThreadId = comments.data.open.find(
+        (c) => c.fieldPath === PathUtils.toString(props.path),
+      )?.threadId
+
+      // 5. Set the thread ID to scroll to in a state and then scroll to it
+      // in the `useEffect` below.
+      if (scrollToThreadId) {
+        handleSetThreadToScrollTo(scrollToThreadId)
+      }
+
+      return
     }
+
+    // Else, toggle the comment input open/closed
+    setOpen((v) => !v)
   }, [
-    hasComments,
     status,
-    currentThreadId,
+    hasComments,
+    handleSetThreadToScrollTo,
+    comments.data,
     setStatus,
     openInspector,
-    handleScrollToThread,
-    setSelectedPath,
     props.path,
   ])
 
@@ -204,45 +195,20 @@ function CommentFieldInner(props: FieldProps) {
       // Open the inspector when a new comment is added
       handleOpenInspector()
 
-      // Set the status to 'open' so that the comment is visible
-      setStatus('open')
+      if (status === 'resolved') {
+        // Set the status to 'open' so that the comment is visible
+        setStatus('open')
+      }
 
       // Reset the value
       setValue(null)
 
-      // Enable scrolling to the thread and scroll to the thread.
-      // New comments appear at the top, however, the user may have scrolled down
-      // to read older comments. Therefore, we scroll up to the thread so that
-      // the user can see the new comment.
-      requestAnimationFrame(() => {
-        // Set the path as selected so that the new comment is highlighted
-        setSelectedPath({
-          fieldPath: PathUtils.toString(props.path),
-          origin: 'form',
-          threadId: newThreadId,
-        })
-
-        setShouldScrollToThread(true)
-        handleScrollToThread(newThreadId)
-      })
+      // Set the thread ID to scroll to
+      handleSetThreadToScrollTo(newThreadId)
     }
-  }, [
-    create,
-    handleOpenInspector,
-    handleScrollToThread,
-    props.path,
-    setSelectedPath,
-    setStatus,
-    value,
-  ])
+  }, [create, handleOpenInspector, handleSetThreadToScrollTo, props.path, setStatus, status, value])
 
   const handleDiscard = useCallback(() => setValue(null), [])
-
-  useEffect(() => {
-    if (currentThreadId) {
-      handleScrollToThread(currentThreadId)
-    }
-  }, [currentThreadId, handleScrollToThread])
 
   const scrollIntoViewIfNeededOpts = useMemo(
     () =>
@@ -255,13 +221,24 @@ function CommentFieldInner(props: FieldProps) {
     [boundaryElement],
   )
 
+  // Effect that handles scroll the field into view when it's selected
   useEffect(() => {
-    // When the field is selected, we want to scroll it into
-    // view (if needed) and highlight it.
-    if (isSelected && rootElementRef.current) {
+    if (isSelected && rootElementRef.current && commentsInspectorOpen) {
       scrollIntoViewIfNeeded(rootElementRef.current, scrollIntoViewIfNeededOpts)
     }
-  }, [boundaryElement, isSelected, props.path, scrollIntoViewIfNeededOpts])
+  }, [boundaryElement, commentsInspectorOpen, isSelected, props.path, scrollIntoViewIfNeededOpts])
+
+  // // Effect that handles scroll the comment thread into view when it's selected
+  useEffect(() => {
+    if (commentsInspectorOpen && threadIdToScrollTo) {
+      const node = document.querySelector(`[data-group-id="${threadIdToScrollTo}"]`)
+
+      if (node) {
+        node.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
+        setThreadIdToScrollTo(null)
+      }
+    }
+  }, [commentsInspectorOpen, threadIdToScrollTo])
 
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({

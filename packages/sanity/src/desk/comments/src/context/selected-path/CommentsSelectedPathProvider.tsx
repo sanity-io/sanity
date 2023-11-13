@@ -10,9 +10,9 @@ export const CommentsSelectedPathProvider = React.memo(function CommentsSelected
   props: CommentsSelectedPathProviderProps,
 ) {
   const {children} = props
-  const [selectedPath, setSelectedPath] = useState<CommentsSelectedPath>(null)
+  const [selectedPath, setSelectedPath] = useState<CommentsSelectedPath | null>(null)
 
-  const handleSelectPath = useCallback((nextPath: CommentsSelectedPath) => {
+  const handleSelectPath = useCallback((nextPath: CommentsSelectedPath | null) => {
     setSelectedPath(nextPath)
   }, [])
 

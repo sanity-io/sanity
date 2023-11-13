@@ -209,13 +209,13 @@ export function CommentsInspector(props: DocumentInspectorProps) {
   )
 
   const handleScrollToComment = useCallback(
-    (id: string) => {
+    (id: string, origin?: CommentsSelectedPath['origin']) => {
       const comment = getComment(id)
 
       if (comment) {
         setSelectedPath({
           fieldPath: comment.target.path.field || null,
-          origin: 'inspector',
+          origin: origin || 'inspector',
           threadId: comment.threadId || null,
         })
 
@@ -267,7 +267,13 @@ export function CommentsInspector(props: DocumentInspectorProps) {
       // Make sure we have the correct status set before we scroll to the comment
       setStatus(commentToScrollTo.status || 'open')
 
-      handleScrollToComment(commentToScrollTo._id)
+      // The second argument sets the select path origin to 'url' which will prevent the field in the form
+      // the comment  refers to from being selected and scrolled to. This is because, on mount, we will in
+      // some cases attempt to perform two scrolls: one to the field and one to the comment.
+      // These scroll events seems to interfere with each other and the result is that the comment is not
+      // scrolled to. Therefore, when there's a comment id in the url, we prioritize scrolling to the comment
+      // and not the field.
+      handleScrollToComment(commentToScrollTo._id, 'url')
 
       didScrollToCommentFromParam.current = true
       commentIdParamRef.current = undefined
