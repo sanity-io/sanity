@@ -156,9 +156,9 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
           {/* This is the document title */}
-          <Box marginBottom={4}>
+          <Box marginBottom={5}>
             <ElementQuery>
-              <Title forwardedAs="h6" muted={!title} size={5}>
+              <Title forwardedAs="h2" muted={!title}>
                 {title ?? 'Untitled'}
               </Title>
             </ElementQuery>
