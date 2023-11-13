@@ -2,6 +2,7 @@ import type {ReferenceSchemaType} from '@sanity/types'
 import {Button, Stack, Text} from '@sanity/ui'
 import {AlertStrip} from '../../components/AlertStrip'
 import {Translate, useTranslation} from '../../../i18n'
+import React from 'react'
 
 /**
  * Alert strip that shows an explanation and action prompting the user to finalize a reference,
