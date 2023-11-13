@@ -40,6 +40,7 @@ import {copyAction} from './fieldActions/copyAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {customInspector} from './inspectors/custom'
 import {pasteAction} from './fieldActions/pasteAction'
+import {debugComposedDeskTool} from './plugins/debug-composed-desk-tool'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -122,6 +123,7 @@ const sharedSettings = definePlugin({
     muxInput({mp4_support: 'standard'}),
     presenceTool(),
     tsdoc(),
+    debugComposedDeskTool(),
   ],
 })
 

@@ -146,6 +146,29 @@ export default defineType({
                 ],
               },
             },
+            {
+              type: 'array',
+              name: 'links',
+              title: 'Links',
+              of: [
+                {
+                  type: 'object',
+                  name: 'link',
+                  fields: [
+                    {
+                      type: 'string',
+                      name: 'title',
+                      title: 'Title',
+                    },
+                    {
+                      type: 'string',
+                      name: 'href',
+                      title: 'Href',
+                    },
+                  ],
+                },
+              ],
+            },
           ],
           preview: {
             select: {
