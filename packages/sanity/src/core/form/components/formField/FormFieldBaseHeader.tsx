@@ -66,7 +66,6 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
     position: absolute;
     right: 0;
     width: 0;
-    will-change: opacity, width;
 
     @media (hover: hover) {
       // If hover is supported, we hide the floating card by default
@@ -122,7 +121,6 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
 
 const FieldActionsFlex = styled(Flex)`
   gap: inherit;
-  will-change: opacity, width;
 `
 
 const MAX_AVATARS = 4
