@@ -72,6 +72,7 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
       // and only show it when it has focus within or when the field is hovered or focused.
       opacity: 0;
       width: 0;
+      pointer-events: none;
 
       [data-ui='FieldActionsFlex'] {
         opacity: 0;
@@ -96,10 +97,12 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
       // Show the floating card when it has focus within (ie when field actions are focused).
       &:focus-within {
         opacity: 1;
+        pointer-events: auto;
         width: max-content;
 
         [data-ui='FieldActionsFlex'] {
           opacity: 1;
+          pointer-events: auto;
           width: max-content;
         }
       }
@@ -107,12 +110,14 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
 
     &[data-visible='true'] {
       opacity: 1;
+      pointer-events: auto;
       width: max-content;
     }
 
     &[data-actions-visible='true'] {
       [data-ui='FieldActionsFlex'] {
         opacity: 1;
+        pointer-events: auto;
         width: max-content;
       }
     }
