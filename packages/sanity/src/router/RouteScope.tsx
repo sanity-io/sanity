@@ -1,9 +1,8 @@
 /* eslint-disable camelcase */
 
 import React, {useCallback, useMemo, useRef} from 'react'
-import {isEmpty} from './utils/isEmpty'
 import {RouterContext} from './RouterContext'
-import {NavigateOptions, RouterContextValue} from './types'
+import {RouterContextValue, RouterState} from './types'
 import {useRouter} from './useRouter'
 
 function addScope(
@@ -29,6 +28,14 @@ export interface RouteScopeProps {
    * The scope for the nested routes.
    */
   scope: string
+
+  /**
+   * Optionally disable scoping of search params
+   * Scoped search params will be represented as scope[param]=value in the url
+   * Disabling this will still scope search params based on any parent scope unless the parent scope also has disabled search params scoping
+   * Caution: enabling this can cause conflicts with multiple plugins defining search params with the same name
+   */
+  __unsafe_disableScopedSearchParams?: boolean
   /**
    * The content to display inside the route scope.
    */
@@ -57,42 +64,53 @@ export interface RouteScopeProps {
  * ```
  */
 export function RouteScope(props: RouteScopeProps): React.ReactElement {
-  const {children, scope} = props
-  const parent = useRouter()
-  const {resolvePathFromState: parent_resolvePathFromState, navigate: parent_navigate} = parent
+  const {children, scope, __unsafe_disableScopedSearchParams} = props
+  const parentRouter = useRouter()
+  const {resolvePathFromState: parent_resolvePathFromState, navigate: parent_navigate} =
+    parentRouter
 
-  const parentStateRef = useRef(parent.state)
+  const parentStateRef = useRef(parentRouter.state)
 
-  parentStateRef.current = parent.state
+  parentStateRef.current = parentRouter.state
+
+  const resolveNextParentState = useCallback(
+    (_nextState: RouterState) => {
+      const {_searchParams, ...nextState} = _nextState
+      const nextParentState = addScope(parentStateRef.current, scope, nextState)
+      if (__unsafe_disableScopedSearchParams) {
+        // Move search params to parent scope
+        nextParentState._searchParams = _searchParams
+      } else {
+        nextParentState[scope]._searchParams = _searchParams
+      }
+      return nextParentState
+    },
+    [scope, __unsafe_disableScopedSearchParams],
+  )
 
   const resolvePathFromState = useCallback(
-    (nextState: Record<string, any>): string => {
-      const nextStateScoped: Record<string, any> = isEmpty(nextState)
-        ? {}
-        : addScope(parentStateRef.current, scope, nextState)
-
-      return parent_resolvePathFromState(nextStateScoped)
-    },
-    [parent_resolvePathFromState, scope],
+    (nextState: RouterState) => parent_resolvePathFromState(resolveNextParentState(nextState)),
+    [parent_resolvePathFromState, resolveNextParentState],
   )
 
   const navigate = useCallback(
-    (nextState: Record<string, any>, options?: NavigateOptions): void => {
-      const nextScopedState = addScope(parentStateRef.current, scope, nextState)
-      parent_navigate(nextScopedState, options)
-    },
-    [parent_navigate, scope],
+    (nextState: RouterState) => parent_navigate(resolveNextParentState(nextState)),
+    [parent_navigate, resolveNextParentState],
   )
 
-  const scopedRouter: RouterContextValue = useMemo(
-    () => ({
-      ...parent,
+  const childRouter: RouterContextValue = useMemo(() => {
+    const parentState = parentRouter.state
+    const childState = {...(parentState[scope] || {})} as RouterState
+    if (__unsafe_disableScopedSearchParams) {
+      childState._searchParams = parentState._searchParams
+    }
+    return {
+      ...parentRouter,
       navigate,
       resolvePathFromState,
-      state: parent.state[scope] as any,
-    }),
-    [navigate, parent, resolvePathFromState, scope],
-  )
+      state: childState,
+    }
+  }, [scope, parentRouter, navigate, resolvePathFromState, __unsafe_disableScopedSearchParams])
 
-  return <RouterContext.Provider value={scopedRouter}>{children}</RouterContext.Provider>
+  return <RouterContext.Provider value={childRouter}>{children}</RouterContext.Provider>
 }

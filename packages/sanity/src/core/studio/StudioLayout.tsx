@@ -130,7 +130,12 @@ export function StudioLayout() {
       <StudioErrorBoundary key={activeTool?.name} heading={`The ${activeTool?.name} tool crashed`}>
         <Card flex={1} hidden={searchFullscreenOpen}>
           {activeTool && activeToolName && (
-            <RouteScope scope={activeToolName}>
+            <RouteScope
+              scope={activeToolName}
+              __unsafe_disableScopedSearchParams={
+                activeTool.router?.__unsafe_disableScopedSearchParams
+              }
+            >
               <Suspense fallback={<LoadingTool />}>
                 {createElement(activeTool.component, {tool: activeTool})}
               </Suspense>
