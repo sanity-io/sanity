@@ -51,10 +51,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
       portal
       content={
         <TooltipContentBox padding={2}>
-          <InsufficientPermissionsMessage
-            currentUser={currentUser}
-            i18nKey="insufficient-permissions-message.action.create-document"
-          />
+          <InsufficientPermissionsMessage currentUser={currentUser} context="create-document" />
         </TooltipContentBox>
       }
     >

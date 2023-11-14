@@ -89,6 +89,7 @@ const config = {
               'autoFocus',
               'axis',
               'className',
+              'context',
               'direction',
               'display',
               'fill',

@@ -1589,23 +1589,47 @@ export const studioLocaleStrings = {
   /** The title for the insufficient permissions message component */
   'insufficient-permissions-message.title': 'Insufficient permissions',
 
-  /** Informs the users that their current roles do not have the required permissions to do a particular action */
-  'insufficient-permissions-message.not-authorized': 'Not authorized to {{action}}.',
+  /** The fallback explanation if no context is provided */
+  'insufficient-permissions-message.not-authorized-explanation':
+    'Your roles do not have permission to access this feature.',
+
+  'insufficient-permissions-message.not-authorized-explanation_create-new-reference':
+    'Your roles do not have permission to create a new reference.',
+
+  /** The explanation when unable to create a particular type of document */
+  'insufficient-permissions-message.not-authorized-explanation_create-document-type':
+    'Your roles do not have permission to create this kind of document.',
+
+  /** The explanation when unable to create any document at all */
+  'insufficient-permissions-message.not-authorized-explanation_create-any-document':
+    'Your roles do not have permission to create a document.',
+
+  /** The explanation when unable to create a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_create-document':
+    'Your roles do not have permission to create this document.',
+
+  /** The explanation when unable to delete a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_delete-document':
+    'Your roles do not have permission to delete this document.',
+
+  /** The explanation when unable to discard changes in a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_discard-changes':
+    'Your roles do not have permission to discard changes in this document.',
+
+  /** The explanation when unable to duplicate a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_duplicate-document':
+    'Your roles do not have permission to duplicate this document.',
+
+  /** The explanation when unable to publish a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_publish-document':
+    'Your roles do not have permission to publish this document.',
+
+  /** The explanation when unable to unpublish a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_unpublish-document':
+    'Your roles do not have permission to unpublish this document.',
 
   /** Appears after the not-authorized message. Lists the current roles. */
   'insufficient-permissions-message.roles': 'Your roles: <Roles/>',
-
-  /** The action when unable to create a new reference */
-  'insufficient-permissions-message.action.create-new-reference': 'create a new reference',
-
-  /** The action when unable to create a particular type of document */
-  'insufficient-permissions-message.action.create-document-type': 'create this kind of document',
-
-  /** The action when unable to create any document */
-  'insufficient-permissions-message.action.create-any-document': 'create any document',
-
-  /** The action when unable to create a particular document */
-  'insufficient-permissions-message.action.create-document': 'create this document',
 }
 
 /**

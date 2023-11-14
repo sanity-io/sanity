@@ -12,10 +12,16 @@ import {useIntlListFormat} from '../i18n/hooks/useIntlListFormat'
 /** @internal */
 export interface InsufficientPermissionsMessageProps {
   currentUser?: CurrentUser | null
-  /**
-   * the i18n key that represents the action the user is not allowed to do
-   */
-  i18nKey: string
+  context:
+    | 'create-new-reference'
+    | 'create-document-type'
+    | 'create-any-document'
+    | 'create-document'
+    | 'delete-document'
+    | 'discard-changes'
+    | 'duplicate-document'
+    | 'publish-document'
+    | 'unpublish-document'
 }
 
 const EMPTY_ARRAY = [] as never[]
@@ -23,7 +29,7 @@ const EMPTY_ARRAY = [] as never[]
 /** @internal */
 export function InsufficientPermissionsMessage({
   currentUser,
-  i18nKey: i18nActionKey,
+  context,
 }: InsufficientPermissionsMessageProps) {
   const {t} = useTranslation()
 
@@ -60,9 +66,9 @@ export function InsufficientPermissionsMessage({
       <Inline marginTop={4}>
         <Text size={1}>
           <Translate
-            i18nKey="insufficient-permissions-message.not-authorized"
+            i18nKey="insufficient-permissions-message.not-authorized-explanation"
             t={t}
-            values={{action: t(i18nActionKey)}}
+            context={context}
           />
         </Text>
       </Inline>

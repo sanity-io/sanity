@@ -6,17 +6,17 @@ import {useCurrentUser, InsufficientPermissionsMessage, useTranslation} from 'sa
 interface InsufficientPermissionsMessageTooltipProps {
   reveal: boolean
   /**
-   * delegates to `InsufficientPermissionsMessage`'s i18n key
+   * delegates to `InsufficientPermissionsMessage`'s `context` prop
    * @see InsufficientPermissionsMessage
    */
-  i18nKey: string
+  context: React.ComponentProps<typeof InsufficientPermissionsMessage>['context']
   loading: boolean
   children: React.ReactNode
 }
 
 export function InsufficientPermissionsMessageTooltip({
   reveal,
-  i18nKey,
+  context,
   loading,
   children,
 }: InsufficientPermissionsMessageTooltipProps) {
@@ -35,7 +35,7 @@ export function InsufficientPermissionsMessageTooltip({
             <Text>{t('insufficient-permissions-message-tooltip.loading-text')}</Text>
           </Box>
         ) : (
-          <InsufficientPermissionsMessage i18nKey={i18nKey} currentUser={currentUser} />
+          <InsufficientPermissionsMessage context={context} currentUser={currentUser} />
         )
       }
       portal

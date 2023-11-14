@@ -39,7 +39,7 @@ export function CreateButton(props: Props) {
           <Box padding={2}>
             <InsufficientPermissionsMessage
               currentUser={currentUser}
-              i18nKey="insufficient-permissions-message.action.create-new-reference"
+              context="create-new-reference"
             />
           </Box>
         }
@@ -80,7 +80,7 @@ export function CreateButton(props: Props) {
                 <Box padding={2}>
                   <InsufficientPermissionsMessage
                     currentUser={currentUser}
-                    i18nKey="insufficient-permissions-message.action.create-document-type"
+                    context="create-document-type"
                   />
                 </Box>
               }
