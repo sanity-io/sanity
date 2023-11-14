@@ -48,8 +48,9 @@ const RootFlex = styled(Flex)`
 const RowFlex = styled(Flex)`
   width: max-content;
   &[data-hidden='true'] {
-    position: absolute;
     visibility: hidden;
+    position: relative;
+    margin-top: -1px;
     height: 1px;
   }
 `
