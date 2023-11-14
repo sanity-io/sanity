@@ -114,6 +114,18 @@ const exportDatasetCommand: CliCommandDefinition<ExportFlags> = {
       throw new Error(`Dataset with name "${dataset}" not found`)
     }
 
+    // Print information about what projectId and dataset it is being exported from
+    const {projectId} = client.config()
+
+    output.print('╭───────────────────────────────────────────────╮')
+    output.print('│                                               │')
+    output.print('│ Exporting from:                               │')
+    output.print(`│ ${chalk.bold('projectId')}: ${chalk.cyan(projectId).padEnd(44)} │`)
+    output.print(`│ ${chalk.bold('dataset')}: ${chalk.cyan(dataset).padEnd(46)} │`)
+    output.print('│                                               │')
+    output.print('╰───────────────────────────────────────────────╯')
+    output.print('')
+
     let destinationPath = targetDestination
     if (!destinationPath) {
       destinationPath = await prompt.single({
