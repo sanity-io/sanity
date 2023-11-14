@@ -112,6 +112,7 @@ function InputDebugger(props: InputProps) {
     () => vercelStegaDecodeAll(JSON.stringify(stegaResult)),
     [stegaResult],
   )
+  if (!stegaEditLinks || stegaEditLinks.length < 1) return null
 
   return (
     <Card padding={2} tone="default" border>
