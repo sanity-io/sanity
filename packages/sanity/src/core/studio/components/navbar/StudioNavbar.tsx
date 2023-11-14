@@ -58,6 +58,14 @@ const LogoMarkContainer = styled(Card).attrs({
   width: ${LOGO_MARK_SIZE}px;
 `
 
+// Grid container which renders our navbar in a 3-column grid.
+// Where possible, we try and ensure the center column is always centered, regardless of the
+// amount of content in both LHS and RHS columns.
+const NavGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) 3fr minmax(max-content, 1fr);
+`
+
 /**
  * @hidden
  * @beta */
@@ -158,9 +166,9 @@ export function StudioNavbar() {
   return (
     <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
       <RootCard borderBottom data-testid="navbar" data-ui="Navbar" padding={2} sizing="border">
-        {/** Left flex */}
-        <Flex align="center" justify="space-between">
-          <Flex align="center" gap={2} style={{flexShrink: 0}}>
+        <NavGrid>
+          {/** Left flex */}
+          <Flex align="center" gap={2} justify="flex-start">
             <Flex align="center" gap={1}>
               {/* Menu button */}
               {!shouldRender.tools && (
@@ -196,7 +204,6 @@ export function StudioNavbar() {
               {/* Workspace menu button */}
               {shouldRender.workspaces && <WorkspaceMenuButton collapsed />}
             </Flex>
-
             {/* New document button */}
             <NewDocumentButton
               {...newDocumentOptions}
@@ -205,7 +212,7 @@ export function StudioNavbar() {
           </Flex>
 
           {/** Center flex */}
-          <Flex align="center">
+          <Flex align="center" justify="center">
             {shouldRender.tools && (
               <ToolMenu
                 activeToolName={activeToolName}
@@ -218,7 +225,7 @@ export function StudioNavbar() {
           </Flex>
 
           {/** Right flex */}
-          <Flex align="center" gap={3} style={{flexShrink: 0}}>
+          <Flex align="center" gap={3} justify="flex-end">
             {/* Search */}
             <LayerProvider>
               <SearchProvider fullscreen={shouldRender.searchFullscreen}>
@@ -255,7 +262,7 @@ export function StudioNavbar() {
               <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
             )}
           </Flex>
-        </Flex>
+        </NavGrid>
       </RootCard>
 
       {!shouldRender.tools && (
