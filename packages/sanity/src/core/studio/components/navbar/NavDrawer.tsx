@@ -149,7 +149,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                     <Flex flex={1} align="center" paddingRight={2}>
                       <Flex flex={1} align="center">
                         <Box>
-                          <UserAvatar size={1} user="me" />
+                          <UserAvatar hideInnerStroke size={1} user="me" />
                         </Box>
 
                         <Box
@@ -157,7 +157,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                           marginLeft={2}
                           title={currentUser?.name || currentUser?.email}
                         >
-                          <Text textOverflow="ellipsis">
+                          <Text size={1} textOverflow="ellipsis" weight="medium">
                             {currentUser?.name || currentUser?.email}
                           </Text>
                         </Box>
