@@ -10,8 +10,8 @@ import {Tooltip} from '../../../ui'
  * @hidden
  * @beta */
 export interface UserAvatarProps {
+  __unstable_hideInnerStroke?: AvatarProps['__unstable_hideInnerStroke']
   animateArrowFrom?: AvatarPosition
-  hideInnerStroke?: AvatarProps['hideInnerStroke']
   position?: AvatarPosition
   size?: AvatarSize
   status?: AvatarStatus
