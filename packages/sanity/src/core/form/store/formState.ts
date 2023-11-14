@@ -677,7 +677,12 @@ function prepareObjectInputState<T>(
 
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
-    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+    .map((v) => ({
+      level: v.level,
+      message: v.item.message,
+      path: v.path,
+      metaData: v.item.metaData,
+    }))
 
   const visibleMembers = members.filter(
     (member): member is ObjectMember => member.kind !== 'hidden',
@@ -1031,7 +1036,12 @@ function preparePrimitiveInputState<SchemaType extends PrimitiveSchemaType>(
 
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
-    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+    .map((v) => ({
+      level: v.level,
+      message: v.item.message,
+      path: v.path,
+      metaData: v.item.metaData,
+    }))
   return {
     schemaType: props.schemaType,
     changed: isChangedValue(props.value, props.comparisonValue),
