@@ -4,24 +4,24 @@ import React, {useEffect, useState} from 'react'
 interface ObserveElementProps {
   children: React.ReactElement
   options?: IntersectionObserverInit
-  callback: IntersectionObserverCallback
+  onIntersectionChange: IntersectionObserverCallback
 }
 
 export function ObserveElement(props: ObserveElementProps) {
-  const {callback, children, options, ...rest} = props
+  const {onIntersectionChange, children, options, ...rest} = props
   const [el, setEl] = useState<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (!el) return undefined
 
-    const io = new IntersectionObserver(callback, options)
+    const io = new IntersectionObserver(onIntersectionChange, options)
     io.observe(el)
 
     return () => {
       io.unobserve(el)
       io.disconnect()
     }
-  }, [el, callback, options])
+  }, [el, onIntersectionChange, options])
 
   return (
     <Flex ref={setEl} {...rest}>
