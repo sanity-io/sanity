@@ -61,7 +61,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
       label: t('action.delete.label'),
       title: (
         <InsufficientPermissionsMessage
-          action={t('insufficient-permissions-message.action.delete-document')}
+          i18nKey="insufficient-permissions-message.action.delete-document"
           currentUser={currentUser}
         />
       ),

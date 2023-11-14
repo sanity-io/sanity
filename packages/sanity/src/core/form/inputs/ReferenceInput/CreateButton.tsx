@@ -3,6 +3,7 @@ import {AddIcon} from '@sanity/icons'
 import {Box, Button, Menu, MenuButton, MenuButtonProps, MenuItem, Tooltip} from '@sanity/ui'
 import {useTranslation} from '../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../components'
+import {useCurrentUser} from '../../../store'
 import type {CreateReferenceOption} from './types'
 
 interface Props extends ComponentProps<typeof Button> {
@@ -27,6 +28,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 
 export function CreateButton(props: Props) {
   const {createOptions, onCreate, id, ...rest} = props
+  const currentUser = useCurrentUser()
 
   const {t} = useTranslation()
   const canCreateAny = createOptions.some((option) => option.permission.granted)
@@ -36,7 +38,8 @@ export function CreateButton(props: Props) {
         content={
           <Box padding={2}>
             <InsufficientPermissionsMessage
-              action={t('insufficient-permissions-message.action.create-new-reference')}
+              currentUser={currentUser}
+              i18nKey="insufficient-permissions-message.action.create-new-reference"
             />
           </Box>
         }
@@ -76,7 +79,8 @@ export function CreateButton(props: Props) {
               content={
                 <Box padding={2}>
                   <InsufficientPermissionsMessage
-                    action={t('insufficient-permissions-message.action.create-document-type')}
+                    currentUser={currentUser}
+                    i18nKey="insufficient-permissions-message.action.create-document-type"
                   />
                 </Box>
               }

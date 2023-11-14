@@ -79,7 +79,7 @@ export const UnpublishAction: DocumentActionComponent = ({
       label: 'Unpublish',
       title: (
         <InsufficientPermissionsMessage
-          action={t('insufficient-permissions-message.action.unpublish-document')}
+          i18nKey="insufficient-permissions-message.action.unpublish-document"
           currentUser={currentUser}
         />
       ),

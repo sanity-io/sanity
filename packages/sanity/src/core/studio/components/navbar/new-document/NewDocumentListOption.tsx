@@ -53,7 +53,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
         <TooltipContentBox padding={2}>
           <InsufficientPermissionsMessage
             currentUser={currentUser}
-            action={t('insufficient-permissions-message.action.create-document')}
+            i18nKey="insufficient-permissions-message.action.create-document"
           />
         </TooltipContentBox>
       }
