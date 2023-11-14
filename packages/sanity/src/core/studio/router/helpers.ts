@@ -1,8 +1,11 @@
-import {Tool} from '../../config'
 import {isRecord} from '../../util/isRecord'
-import {RouterEvent, RouterStateEvent} from './types'
+import type {Tool} from '../../config'
+import type {RouterEvent, RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
-import {RouterState, Router} from 'sanity/router'
+import type {RouterState, Router} from 'sanity/router'
+
+const WEIGHTED_CREATE_INTENT_PARAMS = ['template']
+const WEIGHTED_EDIT_INTENT_PARAMS = ['mode']
 
 function resolveUrlStateWithDefaultTool(tools: Tool[], state: Record<string, unknown> | null) {
   const orderedTools = getOrderedTools(tools)
@@ -65,12 +68,48 @@ export function resolveIntentState(
     ? orderedTools.find((tool) => tool.name === prevState.tool)
     : null
 
-  // If current tool can handle intent and if so, give it precedence
-  const matchingTool = (currentTool ? [currentTool, ...orderedTools] : orderedTools).find(
-    (tool) =>
-      tool &&
-      typeof tool.canHandleIntent === 'function' &&
-      tool.canHandleIntent(intent, params, prevState && prevState[tool.name]),
+  const otherTools = currentTool
+    ? orderedTools.filter((tool) => tool !== currentTool)
+    : orderedTools
+
+  let weightedParams: string[] = []
+  if (intent === 'create') {
+    weightedParams = WEIGHTED_CREATE_INTENT_PARAMS
+  } else if (intent === 'edit') {
+    weightedParams = WEIGHTED_EDIT_INTENT_PARAMS
+  }
+
+  // Rank tools by how well they can handle the intent, based on the params they support.
+  // Only the ones defined in `WEIGHTED_*_INTENT_PARAMS` are considered, and on ties in score,
+  // the first tool wins. Any active tool is considered first, then the rest.
+  const initialMatch: {score: number; tool: Tool<any> | null} = {score: -1, tool: null}
+  const {tool: matchingTool} = (currentTool ? [currentTool, ...otherTools] : orderedTools).reduce(
+    (prev, tool) => {
+      if (!tool || typeof tool.canHandleIntent !== 'function') {
+        return prev
+      }
+
+      const canHandle = tool.canHandleIntent(intent, params, prevState && prevState[tool.name])
+      if (typeof canHandle === 'boolean') {
+        // Treat `true` as a score of `0`, since an empty object also has that score
+        return canHandle && prev.score < 0 ? {score: 0, tool} : prev
+      }
+
+      // Skip unknown return values
+      if (!isRecord(canHandle)) {
+        return prev
+      }
+
+      // Rank by number of supported, weighted values
+      const score = weightedParams.reduce((prevScore, weightedParam) => {
+        return weightedParam in params && canHandle[weightedParam] === true
+          ? prevScore + 1
+          : prevScore
+      }, 0)
+
+      return score > prev.score ? {score, tool} : prev
+    },
+    initialMatch,
   )
 
   if (matchingTool?.getIntentState) {

@@ -1,11 +1,10 @@
-import {pickBy} from 'lodash'
 import {ComposeIcon} from '@sanity/icons'
 import {HELP_URL, SerializeError} from './SerializeError'
-import {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
-import {MenuItemBuilder, MenuItem} from './MenuItem'
-import {IntentParams} from './Intent'
-import {StructureContext} from './types'
-import {InitialValueTemplateItem} from 'sanity'
+import type {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
+import type {BaseIntentParams, IntentParams} from './Intent'
+import type {StructureContext} from './types'
+import {MenuItemBuilder, type MenuItem} from './MenuItem'
+import type {InitialValueTemplateItem} from 'sanity'
 
 /**
  * A `InitialValueTemplateItemBuilder` is used to build a document node with an initial value set.
@@ -204,10 +203,16 @@ export function menuItemsFromInitialValueTemplateItems(
   return templateItems.map((item) => {
     const template = templates.find((t) => t.id === item.templateId)
     const title = item.title || template?.title || 'Create new'
-    const params = pickBy(
-      {type: template && template.schemaType, template: item.templateId},
-      Boolean,
-    )
+
+    const params: BaseIntentParams = {}
+    if (template && template.schemaType) {
+      params.type = template.schemaType
+    }
+
+    if (item.templateId) {
+      params.template = item.templateId
+    }
+
     const intentParams: IntentParams = item.parameters ? [params, item.parameters] : params
     const schemaType = template && schema.get(template.schemaType)
 

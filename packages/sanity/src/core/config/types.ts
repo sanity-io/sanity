@@ -165,12 +165,22 @@ export interface Tool<Options = any> {
   /**
    * Determines whether the tool can handle the given intent.
    *
+   * Can either return a boolean, or an object where the keys represent the parameters that
+   * can/can not be handled. This will be used to determine whether or not a tool is the best
+   * suited to handle an intent. Note that an object of only `false` values (or an empty object)
+   * is treated as `true`, so you want to explicitly return `false` if you know the intent cannot
+   * fulfill the intent request.
+   *
    * @param intent - The intent to check.
    * @param params - The parameters for the intent.
    * @param payload - The payload for the intent.
-   * @returns `true` if the tool can handle the intent, `false` otherwise.
+   * @returns Boolean: whether it can handle the intent. Object: Values representing what specific parameters can be handled.
    */
-  canHandleIntent?: (intent: string, params: Record<string, unknown>, payload: unknown) => boolean
+  canHandleIntent?: (
+    intent: string,
+    params: Record<string, unknown>,
+    payload: unknown,
+  ) => boolean | {[key: string]: boolean}
 }
 
 /** @public */
