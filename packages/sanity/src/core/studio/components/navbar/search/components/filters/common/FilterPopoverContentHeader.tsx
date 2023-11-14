@@ -48,6 +48,8 @@ export const FilterPopoverContentHeader = forwardRef<
           spellCheck={false}
           radius={2}
           value={typeFilter}
+          // @ts-expect-error - remove once @sanity/ui is upgraded.
+          unstableDisableFocusRing
         />
       </SearchHeaderContentFlex>
     </SearchHeaderBox>

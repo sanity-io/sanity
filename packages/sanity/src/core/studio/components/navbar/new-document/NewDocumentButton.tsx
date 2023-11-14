@@ -228,7 +228,13 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
           <PopoverHeaderCard sizing="border">
             <Stack>
               <Card borderBottom padding={1}>
-                <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
+                <TextInput
+                  {...sharedTextInputProps}
+                  fontSize={1}
+                  radius={1}
+                  // @ts-expect-error - remove once @sanity/ui is upgraded.
+                  unstableDisableFocusRing
+                />
               </Card>
             </Stack>
           </PopoverHeaderCard>

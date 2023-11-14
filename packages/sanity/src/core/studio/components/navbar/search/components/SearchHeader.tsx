@@ -111,6 +111,8 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
             smallClearButton={fullscreen}
             spellCheck={false}
             value={query}
+            // @ts-expect-error - remove once @sanity/ui is upgraded.
+            unstableDisableFocusRing
           />
         </Box>
 
