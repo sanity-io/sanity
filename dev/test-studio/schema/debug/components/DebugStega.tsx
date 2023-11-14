@@ -104,8 +104,6 @@ function InputDebugger(props: InputProps) {
       stegaEncodeSourceMap({[sourcePath]: value}, resultSourceMap, {
         enabled: true,
         studioUrl: '/stega',
-        filter: () => true,
-        vercelStegaCombineSkip: false,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any),
     [resultSourceMap, value],
