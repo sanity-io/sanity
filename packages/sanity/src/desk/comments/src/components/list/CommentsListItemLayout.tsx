@@ -1,15 +1,5 @@
 import {hues} from '@sanity/color'
-import {
-  TextSkeleton,
-  Flex,
-  Stack,
-  Text,
-  Card,
-  useGlobalKeyDown,
-  useClickOutside,
-  Box,
-  Layer,
-} from '@sanity/ui'
+import {TextSkeleton, Flex, Stack, Text, Card, useClickOutside, Box, Layer} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {CurrentUser} from '@sanity/types'
 import styled, {css} from 'styled-components'
@@ -31,14 +21,18 @@ import {TimeAgoOpts, useTimeAgo, useUser, useDidUpdate} from 'sanity'
 
 const ContextMenuLayer = styled(Layer)``
 
-function StopPropagationLayer(props: React.PropsWithChildren) {
-  const {children} = props
+function StopPropagationLayer(props: React.PropsWithChildren<{isParent?: boolean}>) {
+  const {children, isParent} = props
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation()
   }, [])
 
-  return <ContextMenuLayer onClick={handleClick}>{children}</ContextMenuLayer>
+  return (
+    <ContextMenuLayer data-root-menu={isParent ? 'true' : 'false'} onClick={handleClick}>
+      {children}
+    </ContextMenuLayer>
+  )
 }
 
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
@@ -88,7 +82,6 @@ const RootStack = styled(Stack)(({theme}) => {
         position: absolute;
         right: 0;
         top: 0;
-
         transform: translate(${space[1]}px, -${space[1]}px);
       }
 
@@ -298,7 +291,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           </Flex>
 
           {!isEditing && !displayError && (
-            <StopPropagationLayer>
+            <StopPropagationLayer isParent={isParent}>
               <CommentsListItemContextMenu
                 canDelete={canDelete}
                 canEdit={canEdit}
