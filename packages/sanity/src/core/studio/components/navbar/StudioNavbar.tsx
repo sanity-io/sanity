@@ -160,7 +160,7 @@ export function StudioNavbar() {
       <RootCard borderBottom data-testid="navbar" data-ui="Navbar" padding={2} sizing="border">
         {/** Left flex */}
         <Flex align="center" justify="space-between">
-          <Flex align="center" gap={2}>
+          <Flex align="center" gap={2} style={{flexShrink: 0}}>
             <Flex align="center" gap={1}>
               {/* Menu button */}
               {!shouldRender.tools && (
