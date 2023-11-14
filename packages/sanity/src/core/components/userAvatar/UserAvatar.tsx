@@ -1,4 +1,4 @@
-import {Avatar, AvatarPosition, AvatarSize, AvatarStatus, Text} from '@sanity/ui'
+import {Avatar, AvatarPosition, AvatarProps, AvatarSize, AvatarStatus} from '@sanity/ui'
 import React, {forwardRef, useState} from 'react'
 import type {User} from '@sanity/types'
 import {useUser} from '../../store'
@@ -11,6 +11,7 @@ import {Tooltip} from '../../../ui'
  * @beta */
 export interface UserAvatarProps {
   animateArrowFrom?: AvatarPosition
+  hideInnerStroke?: AvatarProps['hideInnerStroke']
   position?: AvatarPosition
   size?: AvatarSize
   status?: AvatarStatus
