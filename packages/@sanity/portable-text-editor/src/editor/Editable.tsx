@@ -1,4 +1,4 @@
-import {BaseRange, Transforms, Text} from 'slate'
+import {BaseRange, Transforms, Text, select, Editor} from 'slate'
 import React, {useCallback, useMemo, useEffect, forwardRef, useState, KeyboardEvent} from 'react'
 import {
   Editable as SlateEditable,
@@ -303,6 +303,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
       if (!event.isDefaultPrevented()) {
         const selection = PortableTextEditor.getSelection(portableTextEditor)
+        // Create an editor selection if it does'nt exist
+        if (selection === null) {
+          Transforms.select(slateEditor, Editor.start(slateEditor, []))
+          slateEditor.onChange()
+        }
         change$.next({type: 'focus', event})
         const newSelection = PortableTextEditor.getSelection(portableTextEditor)
         // If the selection is the same, emit it explicitly here as there is no actual onChange event triggered.
@@ -314,7 +319,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         }
       }
     },
-    [change$, portableTextEditor, onFocus],
+    [onFocus, portableTextEditor, change$, slateEditor],
   )
 
   const handleOnBlur: React.FocusEventHandler<HTMLDivElement> = useCallback(

@@ -41,12 +41,6 @@ export function createWithEditableAPI(
   return function withEditableAPI(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     portableTextEditor.setEditable({
       focus: (): void => {
-        // Make a selection if missing
-        if (!editor.selection) {
-          const point = {path: [0, 0], offset: 0}
-          Transforms.select(editor, {focus: point, anchor: point})
-          editor.onChange()
-        }
         ReactEditor.focus(editor)
       },
       blur: (): void => {
