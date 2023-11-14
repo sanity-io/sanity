@@ -95,7 +95,7 @@ export function UserMenu() {
       id="user-menu"
       menu={
         <StyledMenu>
-          <Card padding={2}>
+          <Card padding={3}>
             <Flex align="center">
               <Tooltip disabled={!providerTitle} portal content={`Signed in with ${providerTitle}`}>
                 <AvatarBox marginRight={3}>
@@ -105,7 +105,7 @@ export function UserMenu() {
               </Tooltip>
 
               <Stack space={2} flex={1}>
-                <Text size={2} weight="medium" textOverflow="ellipsis">
+                <Text size={1} weight="medium" textOverflow="ellipsis">
                   {currentUser?.name}
                 </Text>
 
