@@ -1,6 +1,14 @@
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {Box, Button, Flex, MenuButtonProps, Text, Tooltip} from '@sanity/ui'
-import React, {cloneElement, forwardRef, ReactElement, useCallback, useMemo, useState} from 'react'
+import React, {
+  cloneElement,
+  forwardRef,
+  memo,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 import styled, {css} from 'styled-components'
 import {difference} from 'lodash'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
@@ -307,54 +315,20 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
               )
             })}
         </RowFlex>
-        {/* Rendered hidden in order to calculate intersections for expanded menu options */}
-        <RowFlex data-hidden aria-hidden="true" gap={gap} overflow="hidden">
-          {menuOptions.map((child, index) => {
-            const {dividerBefore} = child.props
-            return (
-              <React.Fragment key={child.key}>
-                {dividerBefore && index !== 0 && <CollapseMenuDivider hidden />}
-
-                <OptionObserveElement
-                  options={intersectionOptions}
-                  // eslint-disable-next-line react/jsx-no-bind
-                  onIntersectionChange={(e) => handleExpandedIntersection(e[0], child)}
-                >
-                  <Flex>
-                    {cloneElement(child, {
-                      disabled: true,
-                      'aria-hidden': true,
-                    })}
-                  </Flex>
-                </OptionObserveElement>
-              </React.Fragment>
-            )
-          })}
-        </RowFlex>
+        {/* Rendered hidden in order to calculate intersections for original (expanded) menu options */}
+        <RenderHidden
+          gap={gap}
+          elements={menuOptions}
+          intersectionOptions={intersectionOptions}
+          onIntersectionChange={handleExpandedIntersection}
+        />
         {/* Rendered hidden in order to calculate intersections for collapsed menu options */}
-        <RowFlex data-hidden aria-hidden="true" gap={gap} overflow="hidden">
-          {collapsedElements.map((child, index) => {
-            const {dividerBefore} = child.props
-            return (
-              <React.Fragment key={child.key}>
-                {dividerBefore && index !== 0 && <CollapseMenuDivider hidden />}
-
-                <OptionObserveElement
-                  options={intersectionOptions}
-                  // eslint-disable-next-line react/jsx-no-bind
-                  onIntersectionChange={(e) => handleCollapsedIntersection(e[0], child)}
-                >
-                  <Flex>
-                    {cloneElement(child, {
-                      disabled: true,
-                      'aria-hidden': true,
-                    })}
-                  </Flex>
-                </OptionObserveElement>
-              </React.Fragment>
-            )
-          })}
-        </RowFlex>
+        <RenderHidden
+          gap={gap}
+          elements={collapsedElements}
+          intersectionOptions={intersectionOptions}
+          onIntersectionChange={handleCollapsedIntersection}
+        />
       </RootFlex>
 
       {/* Show the collapsed items that doesn't fit in a menu */}
@@ -370,5 +344,39 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
         </Flex>
       )}
     </OuterFlex>
+  )
+})
+
+const RenderHidden = memo(function RenderHidden(props: {
+  elements: ReactElement[]
+  gap?: number | number[]
+  intersectionOptions: IntersectionObserverInit
+  onIntersectionChange: (e: IntersectionObserverEntry, child: React.ReactElement) => void
+}) {
+  const {elements, gap, intersectionOptions, onIntersectionChange} = props
+  return (
+    <RowFlex data-hidden aria-hidden="true" gap={gap} overflow="hidden">
+      {elements.map((element, index) => {
+        const {dividerBefore} = element.props
+        return (
+          <React.Fragment key={element.key}>
+            {dividerBefore && index !== 0 && <CollapseMenuDivider hidden />}
+
+            <OptionObserveElement
+              options={intersectionOptions}
+              // eslint-disable-next-line react/jsx-no-bind
+              onIntersectionChange={(e) => onIntersectionChange(e[0], element)}
+            >
+              <Flex>
+                {cloneElement(element, {
+                  disabled: true,
+                  'aria-hidden': true,
+                })}
+              </Flex>
+            </OptionObserveElement>
+          </React.Fragment>
+        )
+      })}
+    </RowFlex>
   )
 })
