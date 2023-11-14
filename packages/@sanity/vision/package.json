@@ -66,7 +66,7 @@
     "@rexxars/react-split-pane": "^0.1.93",
     "@sanity/color": "^2.1.20",
     "@sanity/icons": "^2.6.0",
-    "@sanity/ui": "2.0.0-alpha.18",
+    "@sanity/ui": "2.0.0-alpha.20",
     "@uiw/react-codemirror": "^4.11.4",
     "hashlru": "^2.3.0",
     "is-hotkey": "^0.1.6",
