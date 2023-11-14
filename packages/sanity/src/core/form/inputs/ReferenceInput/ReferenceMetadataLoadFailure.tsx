@@ -1,6 +1,7 @@
 import {Button, Stack, Text} from '@sanity/ui'
 import {useTranslation} from '../../../i18n'
 import {AlertStrip} from '../../components/AlertStrip'
+import React from 'react'
 
 /**
  * Alert strip that shows error encountered while fetching reference metadata, and allowing user

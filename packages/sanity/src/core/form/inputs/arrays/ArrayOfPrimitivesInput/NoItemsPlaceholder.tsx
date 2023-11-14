@@ -1,6 +1,7 @@
 import type {ArraySchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import {useTranslation} from '../../../../i18n'
+import React from 'react'
 
 const CARD_STYLE = {borderStyle: 'dashed'} as const
 
