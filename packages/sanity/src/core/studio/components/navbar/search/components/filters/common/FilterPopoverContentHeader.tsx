@@ -33,6 +33,7 @@ export const FilterPopoverContentHeader = forwardRef<
     <SearchHeaderBox>
       <SearchHeaderContentFlex align="center" flex={1} padding={1}>
         <CustomTextInput
+          __unstable_disableFocusRing
           aria-label={ariaInputLabel}
           autoComplete="off"
           border={false}

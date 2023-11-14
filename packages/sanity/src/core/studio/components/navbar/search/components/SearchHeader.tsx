@@ -96,6 +96,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
         {/* Search field */}
         <Box flex={1}>
           <CustomTextInput
+            __unstable_disableFocusRing
             aria-label={ariaInputLabel}
             autoComplete="off"
             background={fullscreen}
