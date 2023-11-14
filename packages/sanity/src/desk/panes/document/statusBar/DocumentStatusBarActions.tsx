@@ -1,4 +1,4 @@
-import {Box, Flex, Hotkeys, LayerProvider, Text} from '@sanity/ui'
+import {Box, Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -42,22 +42,19 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
     <Flex flex={1} justify="flex-end" gap={2}>
       {firstActionState && (
         <LayerProvider zOffset={200}>
-          <TooltipWithNodes
-            disabled={!tooltipContent}
-            content={tooltipContent}
-            portal
-            placement="top"
-          >
-            <Button
-              data-testid={`action-${firstActionState.label}`}
-              disabled={disabled || Boolean(firstActionState.disabled)}
-              icon={firstActionState.icon}
-              // eslint-disable-next-line react/jsx-handler-names
-              onClick={firstActionState.onHandle}
-              ref={setButtonElement}
-              text={firstActionState.label}
-              tone={firstActionState.tone || 'primary'}
-            />
+          <TooltipWithNodes disabled={!tooltipContent} content={tooltipContent} placement="top">
+            <Stack>
+              <Button
+                data-testid={`action-${firstActionState.label}`}
+                disabled={disabled || Boolean(firstActionState.disabled)}
+                icon={firstActionState.icon}
+                // eslint-disable-next-line react/jsx-handler-names
+                onClick={firstActionState.onHandle}
+                ref={setButtonElement}
+                text={firstActionState.label}
+                tone={firstActionState.tone || 'primary'}
+              />
+            </Stack>
           </TooltipWithNodes>
         </LayerProvider>
       )}
