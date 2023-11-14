@@ -1,20 +1,30 @@
-import {Box, Heading} from '@sanity/ui'
+import {Box} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export const Root = styled(Box)`
   position: relative;
 `
 
-export const Title = styled(Heading)`
+// Use CSS container queries to conditionally render headings at different sizes.
+// Hide if container queries are not supported.
+export const TitleContainer = styled(Box)`
   ${({theme}) => {
-    const fontSizeSmall = theme.sanity.fonts.heading.sizes[3].fontSize
-    const fontSizeLarge = theme.sanity.fonts.heading.sizes[4].fontSize
-
     return css`
-      overflow-wrap: break-word;
-      font-size: ${fontSizeSmall}px;
-      [data-eq-min~='1'] > & {
-        font-size: ${fontSizeLarge}px;
+      @supports not (container-type: inline-size) {
+        display: none !important;
+      }
+
+      container-type: inline-size;
+
+      [data-heading] {
+        font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize}px;
+        overflow-wrap: break-word;
+      }
+
+      @container (min-width: 550px) {
+        [data-heading] {
+          font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
+        }
       }
     `
   }}

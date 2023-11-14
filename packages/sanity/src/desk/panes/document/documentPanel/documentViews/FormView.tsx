@@ -1,11 +1,11 @@
-import {Box, Container, ElementQuery, Text, focusFirstDescendant} from '@sanity/ui'
+import {Box, Container, Heading, Text, focusFirstDescendant} from '@sanity/ui'
 import React, {forwardRef, useEffect, useMemo, useCallback, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useConditionalToast} from './useConditionalToast'
-import {Title} from './styles'
+import {TitleContainer} from './styles'
 import {
   DocumentMutationEvent,
   DocumentRebaseEvent,
@@ -155,14 +155,12 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     >
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
-          {/* This is the document title */}
-          <Box marginBottom={5}>
-            <ElementQuery>
-              <Title forwardedAs="h2" muted={!title}>
-                {title ?? 'Untitled'}
-              </Title>
-            </ElementQuery>
-          </Box>
+          {/* Large document title (hidden if container queries are not supported) */}
+          <TitleContainer marginBottom={5}>
+            <Heading as="h2" data-heading muted={!title}>
+              {title ?? 'Untitled'}
+            </Heading>
+          </TitleContainer>
           {formState === null ? (
             <Box padding={2}>
               <Text>This form is hidden</Text>
