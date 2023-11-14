@@ -87,15 +87,25 @@ describe('initialization', () => {
 `)
     })
   })
-  it('takes value from props', async () => {
+  it('takes value from props and confirms it by emitting value change event', async () => {
     const initialValue = [helloBlock]
     const onChange = jest.fn()
+    const editorRef = React.createRef<PortableTextEditor>()
     render(
-      <PortableTextEditorTester onChange={onChange} schemaType={schemaType} value={initialValue} />,
+      <PortableTextEditorTester
+        ref={editorRef}
+        onChange={onChange}
+        schemaType={schemaType}
+        value={initialValue}
+      />,
     )
+    const normalizedEditorValue = [{...initialValue[0], style: 'normal'}]
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
     })
+    if (editorRef.current) {
+      expect(PortableTextEditor.getValue(editorRef.current)).toStrictEqual(normalizedEditorValue)
+    }
   })
 
   it('takes initial selection from props', async () => {
@@ -118,7 +128,7 @@ describe('initialization', () => {
     await waitFor(() => {
       if (editorRef.current) {
         PortableTextEditor.focus(editorRef.current)
-        expect(PortableTextEditor.getSelection(editorRef.current)).toEqual(initialSelection)
+        expect(PortableTextEditor.getSelection(editorRef.current)).toStrictEqual(initialSelection)
       }
     })
   })

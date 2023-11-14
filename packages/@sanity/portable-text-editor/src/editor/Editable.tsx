@@ -26,7 +26,7 @@ import {
 import {HotkeyOptions} from '../types/options'
 import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {normalizeSelection} from '../utils/selection'
-import {removeAllDocumentSelectionRanges, toPortableTextRange, toSlateRange} from '../utils/ranges'
+import {toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {debugWithName} from '../utils/debug'
 import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
 import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
@@ -105,6 +105,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const readOnly = usePortableTextEditorReadOnlyStatus()
   const keyGenerator = usePortableTextEditorKeyGenerator()
   const ref = useForwardedRef(forwardedRef)
+  const [editableElement, setEditableElement] = useState<HTMLDivElement | null>(null)
   const [hasInvalidValue, setHasInvalidValue] = useState(false)
 
   const {change$, schemaTypes} = portableTextEditor
@@ -343,35 +344,80 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [onBeforeInput],
   )
 
-  const handleDOMChange = useCallback(() => {
-    let newDomRange: any = null
-    const currentSelection = slateEditor.selection
-    try {
-      newDomRange =
-        slateEditor.selection && ReactEditor.toDOMRange(slateEditor, slateEditor.selection)
-    } catch (error) {
-      removeAllDocumentSelectionRanges(true)
-      Transforms.deselect(slateEditor)
-      Transforms.select(slateEditor, [0, 0])
-      slateEditor.onChange()
-      debug(`Could not resolve selection (${JSON.stringify(currentSelection)}), unselecting`)
+  // This function will handle unexpected DOM changes inside the Editable rendering,
+  // and make sure that we can maintain a stable slateEditor.selection when that happens.
+  //
+  // For example, if this Editable is rendered inside something that might re-render
+  // this component (hidden contexts) while the user is still actively changing the
+  // contentEditable, this could interfere with the intermediate DOM selection,
+  // which again could be picked up by ReactEditor's event listeners.
+  // If that range is invalid at that point, the slate.editorSelection could be
+  // set either wrong, or invalid, to which slateEditor will throw exceptions
+  // that are impossible to recover properly from or result in a wrong selection.
+  //
+  // Also the other way around, when the ReactEditor will try to create a DOM Range
+  // from the current slateEditor.selection, it may throw unrecoverable errors
+  // if the current editor.selection is invalid according to the DOM.
+  // If this is the case, default to selecting the top of the document, if the
+  // user already had a selection.
+  const validateSelection = useCallback(() => {
+    if (!slateEditor.selection) {
+      return
     }
-  }, [slateEditor])
+    const root = ReactEditor.findDocumentOrShadowRoot(slateEditor)
+    const {activeElement} = root
+    // Return if the editor isn't the active element
+    if (ref.current !== activeElement) {
+      return
+    }
+    const window = ReactEditor.getWindow(slateEditor)
+    const domSelection = window.getSelection()
+    if (!domSelection) {
+      return
+    }
+    const existingDOMRange = domSelection.getRangeAt(0)
+    try {
+      const newDOMRange = ReactEditor.toDOMRange(slateEditor, slateEditor.selection)
+      if (
+        newDOMRange.startOffset !== existingDOMRange.startOffset ||
+        newDOMRange.endOffset !== existingDOMRange.endOffset
+      ) {
+        debug('DOM range out of sync, validating selection')
+        // Remove all ranges temporary
+        domSelection?.removeAllRanges()
+        // Set the correct range
+        domSelection.addRange(newDOMRange)
+      }
+    } catch (error) {
+      debug(`Could not resolve selection, selecting top document`)
+      // Deselect the editor
+      Transforms.deselect(slateEditor)
+      // Select top document if there is a top block to select
+      if (slateEditor.children.length > 0) {
+        Transforms.select(slateEditor, [0, 0])
+      }
+      slateEditor.onChange()
+    }
+  }, [ref, slateEditor])
 
+  // Observe mutations (child list and subtree) to this component's DOM,
+  // and make sure the editor selection is valid when that happens.
   useEffect(() => {
-    const mutationObserver = new MutationObserver(handleDOMChange)
-
-    if (ref.current) {
-      mutationObserver.observe(ref.current, {
+    if (editableElement) {
+      const mutationObserver = new MutationObserver(validateSelection)
+      mutationObserver.observe(editableElement, {
+        attributeOldValue: false,
+        attributes: false,
+        characterData: false,
         childList: true,
         subtree: true,
       })
+      return () => {
+        mutationObserver.disconnect()
+      }
     }
-
-    return () => {
-      mutationObserver.disconnect()
-    }
-  }, [handleDOMChange, ref])
+    return undefined
+  }, [validateSelection, editableElement])
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -420,8 +466,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [schemaTypes, slateEditor])
 
   // Set the forwarded ref to be the Slate editable DOM element
+  // Also set the editable element in a state so that the MutationObserver
+  // is setup when this element is ready.
   useEffect(() => {
     ref.current = ReactEditor.toDOMNode(slateEditor, slateEditor) as HTMLDivElement | null
+    setEditableElement(ref.current)
   }, [slateEditor, ref])
 
   if (!portableTextEditor) {

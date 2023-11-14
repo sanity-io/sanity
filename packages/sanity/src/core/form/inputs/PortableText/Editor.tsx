@@ -116,6 +116,7 @@ export function Editor(props: EditorProps) {
   const editable = useMemo(
     () => (
       <PortableTextEditable
+        aria-describedby={ariaDescribedBy}
         hotkeys={hotkeys}
         onCopy={onCopy}
         onPaste={onPaste}
@@ -129,12 +130,12 @@ export function Editor(props: EditorProps) {
         renderStyle={renderStyle}
         scrollSelectionIntoView={scrollSelectionIntoView}
         selection={initialSelection}
-        style={noOutlineStyle}
         spellCheck={spellcheck}
-        aria-describedby={ariaDescribedBy}
+        style={noOutlineStyle}
       />
     ),
     [
+      ariaDescribedBy,
       hotkeys,
       initialSelection,
       onCopy,
@@ -145,7 +146,6 @@ export function Editor(props: EditorProps) {
       renderPlaceholder,
       scrollSelectionIntoView,
       spellcheck,
-      ariaDescribedBy,
     ],
   )
 

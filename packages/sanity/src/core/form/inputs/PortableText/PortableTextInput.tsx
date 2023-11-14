@@ -191,18 +191,17 @@ export function PortableTextInput(props: PortableTextInputProps) {
     const items: PortableTextMemberItem[] = result.map((item) => {
       const key = pathToString(item.node.path)
       const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
+      const isObject = item.kind !== 'textBlock'
       let input: ReactNode
 
-      if (item.kind !== 'textBlock') {
-        input = <FormInput absolutePath={item.node.path} {...(props as FIXME)} />
+      // Only render the input if the item is open or new
+      if (isObject && (item.member.open || !existingItem)) {
+        const inputProps = {...(props as FIXME), absolutePath: item.node.path}
+        input = <FormInput {...inputProps} />
       }
 
       if (existingItem) {
-        // Only update the input if the node is open or the value has changed
-        // This is a performance optimization.
-        if (item.member.open || existingItem.node.value !== item.node.value) {
-          existingItem.input = input
-        }
+        existingItem.input = input
         existingItem.member = item.member
         existingItem.node = item.node
         return existingItem

@@ -209,6 +209,7 @@ export function createWithHotkeys(
           if (endAtEndOfNode) {
             Editor.insertNode(editor, createEmptyBlock())
             event.preventDefault()
+            editor.onChange()
             return
           }
         }
@@ -216,10 +217,13 @@ export function createWithHotkeys(
         if (focusBlock && Editor.isVoid(editor, focusBlock)) {
           Editor.insertNode(editor, createEmptyBlock())
           event.preventDefault()
+          editor.onChange()
           return
         }
+        // Default enter key behavior
         event.preventDefault()
         editor.insertBreak()
+        editor.onChange()
       }
 
       // Soft line breaks

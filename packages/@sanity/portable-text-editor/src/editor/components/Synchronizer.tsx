@@ -71,30 +71,23 @@ export function Synchronizer(props: SynchronizerProps) {
         debug(`Patches:\n${JSON.stringify(pendingPatches.current, null, 2)}`)
       }
       const snapshot = PortableTextEditor.getValue(portableTextEditor)
-      onChange({type: 'mutation', patches: pendingPatches.current, snapshot})
+      change$.next({type: 'mutation', patches: pendingPatches.current, snapshot})
       pendingPatches.current = []
     }
     IS_PROCESSING_LOCAL_CHANGES.set(slateEditor, false)
-  }, [slateEditor, portableTextEditor, onChange])
-
-  const flush = useCallback(
-    (flushFn: () => void) => {
-      // If the editor is normalizing (each operation) it means that it's not in the middle of a bigger transform,
-      // wait until we buffer up the whole set of patches for the transformation.
-      if (Editor.isNormalizing(slateEditor)) {
-        onFlushPendingPatches()
-        return
-      }
-      // If it's not normalizing, it's probably in the middle of something. Retry until normalizing again.
-      flushFn()
-    },
-    [onFlushPendingPatches, slateEditor],
-  )
+  }, [slateEditor, portableTextEditor, change$])
 
   const onFlushPendingPatchesThrottled = useMemo(() => {
     return throttle(
       () => {
-        flush(onFlushPendingPatchesThrottled)
+        // If the editor is normalizing (each operation) it means that it's not in the middle of a bigger transform,
+        // and we can flush these changes immediately.
+        if (Editor.isNormalizing(slateEditor)) {
+          onFlushPendingPatches()
+          return
+        }
+        // If it's in the middle of something, try again.
+        onFlushPendingPatchesThrottled()
       },
       FLUSH_PATCHES_THROTTLED_MS,
       {
@@ -102,7 +95,7 @@ export function Synchronizer(props: SynchronizerProps) {
         trailing: true,
       },
     )
-  }, [flush])
+  }, [onFlushPendingPatches, slateEditor])
 
   // Flush pending patches immediately on unmount
   useEffect(() => {
@@ -138,14 +131,7 @@ export function Synchronizer(props: SynchronizerProps) {
       debug('Unsubscribing to changes$')
       sub.unsubscribe()
     }
-  }, [
-    change$,
-    onChange,
-    onFlushPendingPatches,
-    onFlushPendingPatchesThrottled,
-    slateEditor,
-    syncValue,
-  ])
+  }, [change$, onChange, onFlushPendingPatchesThrottled, slateEditor])
 
   // Sync the value when going online
   const handleOnline = useCallback(() => {
