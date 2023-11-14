@@ -1,6 +1,7 @@
 import {Button, Stack, Text} from '@sanity/ui'
 import {AlertStrip} from '../../components/AlertStrip'
 import {Translate, useTranslation} from '../../../i18n'
+import React from 'react'
 
 /**
  * Alert strip that shows an explanation and action prompting the user to fix a mismatch in
