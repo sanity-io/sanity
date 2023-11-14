@@ -1,10 +1,14 @@
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {Box, Button, Flex, MenuButtonProps, Text, Tooltip} from '@sanity/ui'
 import React, {
+  Children,
   cloneElement,
+  ForwardedRef,
   forwardRef,
+  Fragment,
   memo,
   ReactElement,
+  ReactNode,
   useCallback,
   useMemo,
   useState,
@@ -17,14 +21,14 @@ import {CollapseMenuDivider} from './CollapseMenuDivider'
 
 /** @internal */
 export interface CollapseMenuProps {
-  children: React.ReactNode
+  children: ReactNode | ReactNode[]
   collapsed?: boolean
   collapseText?: boolean
   disableRestoreFocusOnClose?: boolean
   gap?: number | number[]
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
-    button?: React.ReactElement
+    button?: ReactElement
   }
   onMenuClose?: () => void
 }
@@ -67,36 +71,27 @@ const OptionObserveElement = styled(ObserveElement)`
   ${OPTION_STYLE}
 `
 
-function _isReactElement(node: unknown): node is React.ReactElement {
+function _isReactElement(node: unknown): node is ReactElement {
   return Boolean(node)
 }
 
 interface IntersectionEntry {
   intersects: boolean
   element: ReactElement
-  // todo: add bounding rects so we can calculate how many we can fit non-collapsed vs collapsed
+  // todo: potentially add bounding rects so we can calculate how many we can fit non-collapsed vs collapsed
 }
 
-type ChildIntersectionState = Record<string, IntersectionEntry>
+type ElementIntersections = Record<string, IntersectionEntry>
 
 /** @internal */
 export const CollapseMenu = forwardRef(function CollapseMenu(
   props: CollapseMenuProps,
-  ref: React.ForwardedRef<any>,
+  ref: ForwardedRef<any>,
 ) {
-  const {
-    children: childrenProp,
-    collapsed,
-    disableRestoreFocusOnClose,
-    onMenuClose,
-    menuButtonProps,
-    ...rest
-  } = props
+  const {children, collapsed, disableRestoreFocusOnClose, onMenuClose, menuButtonProps, ...rest} =
+    props
 
-  const menuOptions = useMemo(
-    () => React.Children.toArray(childrenProp).filter(_isReactElement),
-    [childrenProp],
-  )
+  const menuOptions = useMemo(() => Children.toArray(children).filter(_isReactElement), [children])
   const menuButton = useMemo(
     () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
     [menuButtonProps],
@@ -130,7 +125,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
 /** @internal */
 export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {menuOptions: ReactElement[]},
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     collapseText = true,
@@ -145,10 +140,10 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
 
   // We use this to keep track of intersections for expanded options
-  const [expandedIntersections, setExpandedIntersections] = useState<ChildIntersectionState>({})
+  const [expandedIntersections, setExpandedIntersections] = useState<ElementIntersections>({})
 
   // We use this to keep track of intersections for collapsed options
-  const [collapsedIntersections, setCollapsedIntersections] = useState<ChildIntersectionState>({})
+  const [collapsedIntersections, setCollapsedIntersections] = useState<ElementIntersections>({})
 
   const intersectionOptions = useMemo(
     () => ({
@@ -183,11 +178,11 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   )
 
   const handleExpandedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: React.ReactElement) => {
+    (e: IntersectionObserverEntry, element: ReactElement) => {
       setExpandedIntersections((current) => {
         const key = element.key
         if (key === null) {
-          throw new Error('Expected child element to have a non-null key')
+          throw new Error('Expected element to have a non-null key')
         }
         const nextState = {
           intersects: e.isIntersecting,
@@ -208,25 +203,24 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   )
 
   const handleCollapsedIntersection = useCallback(
-    (e: IntersectionObserverEntry, element: React.ReactElement) => {
+    (e: IntersectionObserverEntry, element: ReactElement) => {
       setCollapsedIntersections((current) => {
         const key = element.key
         if (key === null) {
           throw new Error('Expected child element to have a non-null key')
         }
-        const nextChildState = {
-          intersects: e.isIntersecting,
-          element: element,
-        }
+        const currentElementIntersection = current[key]
 
-        const currentChildState = current[key]
-        if (!currentChildState || currentChildState.intersects !== nextChildState.intersects) {
-          return {
-            ...current,
-            [key]: nextChildState,
-          }
+        const nextElementIntersection = {
+          intersects: e.isIntersecting,
+          element,
         }
-        return current
+        return currentElementIntersection?.intersects === nextElementIntersection.intersects
+          ? current
+          : {
+              ...current,
+              [key]: nextElementIntersection,
+            }
       })
     },
     [],
@@ -292,7 +286,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
                 !(optionElement.key in expandedIntersections) ||
                 overflowingCollapsedOptionElements.includes(optionElement)
               return (
-                <React.Fragment key={optionElement.key}>
+                <Fragment key={optionElement.key}>
                   {dividerBefore && index !== 0 && <CollapseMenuDivider hidden={hidden} />}
                   <Tooltip
                     portal
@@ -311,7 +305,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
                       })}
                     </Flex>
                   </Tooltip>
-                </React.Fragment>
+                </Fragment>
               )
             })}
         </RowFlex>
@@ -351,7 +345,7 @@ const RenderHidden = memo(function RenderHidden(props: {
   elements: ReactElement[]
   gap?: number | number[]
   intersectionOptions: IntersectionObserverInit
-  onIntersectionChange: (e: IntersectionObserverEntry, child: React.ReactElement) => void
+  onIntersectionChange: (e: IntersectionObserverEntry, element: ReactElement) => void
 }) {
   const {elements, gap, intersectionOptions, onIntersectionChange} = props
   return (
@@ -359,7 +353,7 @@ const RenderHidden = memo(function RenderHidden(props: {
       {elements.map((element, index) => {
         const {dividerBefore} = element.props
         return (
-          <React.Fragment key={element.key}>
+          <Fragment key={element.key}>
             {dividerBefore && index !== 0 && <CollapseMenuDivider hidden />}
 
             <OptionObserveElement
@@ -374,7 +368,7 @@ const RenderHidden = memo(function RenderHidden(props: {
                 })}
               </Flex>
             </OptionObserveElement>
-          </React.Fragment>
+          </Fragment>
         )
       })}
     </RowFlex>
