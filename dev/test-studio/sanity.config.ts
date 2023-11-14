@@ -41,6 +41,7 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {customInspector} from './inspectors/custom'
 import {pasteAction} from './fieldActions/pasteAction'
 import {routerDebugTool} from './plugins/router-debug'
+import {StegaDebugger} from './schema/debug/components/DebugStega'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -231,5 +232,18 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings(), assist()],
     basePath: '/ai-assist',
+  },
+  {
+    name: 'stega',
+    title: 'Debug Stega Studio',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/stega',
+    form: {
+      components: {
+        input: StegaDebugger,
+      },
+    },
   },
 ])
