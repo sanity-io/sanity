@@ -115,6 +115,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   // Shared text input props for the popover and dialog
   const sharedTextInputProps: TextInputProps = useMemo(
     () => ({
+      __unstable_disableFocusRing: true,
       border: false,
       defaultValue: searchQuery,
       disabled: loading,
