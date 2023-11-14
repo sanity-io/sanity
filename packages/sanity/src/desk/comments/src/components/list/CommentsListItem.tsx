@@ -35,17 +35,21 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
         0 0 0 3px var(--card-focus-ring-color);
     }
 
-    // When hovering over the thread root we want to display the parent comments menu.
-    // The data-root-menu attribute is used to target the menu and is applied in
-    // the CommentsListItemLayout component.
+    @media (hover: hover) {
+      &:hover {
+        // When hovering over the thread root we want to display the parent comments menu.
+        // The data-root-menu attribute is used to target the menu and is applied in
+        // the CommentsListItemLayout component.
+        [data-root-menu='true'] {
+          opacity: 1;
+        }
+      }
+    }
+
     &:not([data-active='true']) {
       @media (hover: hover) {
         &:hover {
           --card-bg-color: ${hovered.bg2};
-
-          [data-root-menu='true'] {
-            opacity: 1;
-          }
         }
       }
     }

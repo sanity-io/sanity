@@ -71,14 +71,13 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     onStatusChange,
     readOnly,
     status,
-    ...rest
   } = props
 
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
 
   return (
     <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
-      <Flex data-root-menu={isParent ? 'true' : 'false'} {...rest}>
+      <Flex>
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
           {isParent && (
             <TextTooltip text={status === 'open' ? 'Mark as resolved' : 'Re-open'}>
