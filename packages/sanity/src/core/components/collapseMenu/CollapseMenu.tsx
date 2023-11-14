@@ -1,7 +1,8 @@
 import {EllipsisVerticalIcon} from '@sanity/icons'
-import {Box, Button, Flex, MenuButtonProps, Text, Tooltip, useElementRect} from '@sanity/ui'
-import React, {cloneElement, forwardRef, useCallback, useMemo, useState} from 'react'
+import {Box, Button, Flex, MenuButtonProps, Text, Tooltip} from '@sanity/ui'
+import React, {cloneElement, forwardRef, ReactElement, useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
+import {difference} from 'lodash'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
@@ -46,10 +47,10 @@ const RootFlex = styled(Flex)`
 
 const RowFlex = styled(Flex)`
   width: max-content;
-
   &[data-hidden='true'] {
-    height: 0px;
+    position: absolute;
     visibility: hidden;
+    height: 1px;
   }
 `
 
@@ -57,119 +58,210 @@ const OptionObserveElement = styled(ObserveElement)`
   ${OPTION_STYLE}
 `
 
-const OptionHiddenFlex = styled(Flex)`
-  ${OPTION_STYLE}
-`
-
 function _isReactElement(node: unknown): node is React.ReactElement {
   return Boolean(node)
 }
 
+interface IntersectionEntry {
+  intersects: boolean
+  element: ReactElement
+  // todo: add bounding rects so we can calculate how many we can fit non-collapsed vs collapsed
+}
+
+type ChildIntersectionState = Record<string, IntersectionEntry>
+
 /** @internal */
 export const CollapseMenu = forwardRef(function CollapseMenu(
   props: CollapseMenuProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: React.ForwardedRef<any>,
 ) {
   const {
     children: childrenProp,
     collapsed,
-    collapseText = true,
     disableRestoreFocusOnClose,
-    gap,
-    menuButtonProps,
     onMenuClose,
+    menuButtonProps,
     ...rest
   } = props
-  const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
-  const [hiddenRowEl, setHiddenRowEl] = useState<HTMLDivElement | null>(null)
-  const rootRect = useElementRect(rootEl)
-  const [menuOptions, setMenuOptions] = useState<React.ReactElement[]>([])
 
-  const hasOverflow = useMemo(() => {
-    if (rootRect && rootEl && hiddenRowEl) {
-      return rootRect.width < hiddenRowEl.scrollWidth
-    }
-    return false
-  }, [hiddenRowEl, rootEl, rootRect])
-
+  const menuOptions = useMemo(
+    () => React.Children.toArray(childrenProp).filter(_isReactElement),
+    [childrenProp],
+  )
   const menuButton = useMemo(
     () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
     [menuButtonProps],
   )
 
+  if (collapsed) {
+    // We're showing everything collapsed (e.g. not auto-collapsing), so just delegate straight to the Menu
+    return (
+      <CollapseOverflowMenu
+        ref={ref}
+        disableRestoreFocusOnClose={disableRestoreFocusOnClose}
+        menuButton={menuButton}
+        menuButtonProps={menuButtonProps}
+        menuOptions={menuOptions}
+        onMenuClose={onMenuClose}
+      />
+    )
+  }
+  return (
+    <AutoCollapseMenu
+      {...rest}
+      ref={ref}
+      disableRestoreFocusOnClose={disableRestoreFocusOnClose}
+      menuButtonProps={menuButtonProps}
+      menuOptions={menuOptions}
+      onMenuClose={onMenuClose}
+    />
+  )
+})
+
+/** @internal */
+export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
+  props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {menuOptions: ReactElement[]},
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
+  const {
+    collapseText = true,
+    disableRestoreFocusOnClose,
+    gap,
+    menuOptions,
+    menuButtonProps,
+    onMenuClose,
+    ...rest
+  } = props
+
+  const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
+
+  // We use this to keep track of intersections for expanded options
+  const [expandedIntersections, setExpandedIntersections] = useState<ChildIntersectionState>({})
+
+  // We use this to keep track of intersections for collapsed options
+  const [collapsedIntersections, setCollapsedIntersections] = useState<ChildIntersectionState>({})
+
   const intersectionOptions = useMemo(
     () => ({
       root: rootEl,
-      threshold: 1,
+      // safari needs threshold to be < 1
+      threshold: 0.99,
       rootMargin: '2px',
     }),
     [rootEl],
   )
 
-  const children = useMemo(
-    () => React.Children.toArray(childrenProp).filter(_isReactElement),
-    [childrenProp],
+  // Make a list of all element keys of menu options
+  const menuOptionKeys = useMemo(() => menuOptions.map((child) => child.key), [menuOptions])
+
+  // List of intersections we have not yet received
+  const pendingIntersections = useMemo(
+    () => [
+      ...difference(menuOptionKeys, Object.keys(expandedIntersections)),
+      ...difference(menuOptionKeys, Object.keys(collapsedIntersections)),
+    ],
+    [menuOptionKeys, expandedIntersections, collapsedIntersections],
   )
 
-  const menuOptionsArray = useMemo(
-    // eslint-disable-next-line max-nested-callbacks
-    () => children.filter(({key}) => menuOptions.find((o: React.ReactElement) => o.key === key)),
-    [children, menuOptions],
-  )
-
-  const menuIsVisible = useMemo(
-    () => collapsed || menuOptionsArray.length > 0,
-    [collapsed, menuOptionsArray.length],
-  )
-
-  const isInMenu = useCallback(
-    (childKey: any) => menuOptionsArray.some((o) => o.key === childKey),
-    [menuOptionsArray],
-  )
-
-  const handleIntersection = useCallback(
-    (e: IntersectionObserverEntry, child: React.ReactElement) => {
-      const exists = isInMenu(child.key)
-
-      if (!e.isIntersecting && !exists) {
-        setMenuOptions((prev) => [child, ...prev])
-      }
-
-      if (e.isIntersecting && exists) {
-        const updatedOptions = menuOptionsArray.filter(({key}) => key !== child.key)
-
-        setMenuOptions(updatedOptions)
-      }
-    },
-    [isInMenu, menuOptionsArray],
-  )
-
-  const items = useMemo(
+  // Get a list of the expanded elements that are currently overflowing
+  const overflowingExpandedElements = useMemo(
     () =>
-      children.map((child) => {
-        const {collapsedProps, expandedProps} = child.props
-        const modeProps = hasOverflow ? collapsedProps : expandedProps
-        const text = hasOverflow && collapseText ? undefined : child.props.text
+      menuOptions.filter((optionElement) => {
+        const entry = expandedIntersections[optionElement.key as string]
+        return entry && !entry.intersects
+      }),
+    [expandedIntersections, menuOptions],
+  )
 
-        return cloneElement(child, {
+  const handleExpandedIntersection = useCallback(
+    (e: IntersectionObserverEntry, element: React.ReactElement) => {
+      setExpandedIntersections((current) => {
+        const key = element.key
+        if (key === null) {
+          throw new Error('Expected child element to have a non-null key')
+        }
+        const nextState = {
+          intersects: e.isIntersecting,
+          element: element,
+        }
+
+        const currentState = current[key]
+        if (!currentState || currentState.intersects !== nextState.intersects) {
+          return {
+            ...current,
+            [key]: nextState,
+          }
+        }
+        return current
+      })
+    },
+    [],
+  )
+
+  const handleCollapsedIntersection = useCallback(
+    (e: IntersectionObserverEntry, element: React.ReactElement) => {
+      setCollapsedIntersections((current) => {
+        const key = element.key
+        if (key === null) {
+          throw new Error('Expected child element to have a non-null key')
+        }
+        const nextChildState = {
+          intersects: e.isIntersecting,
+          element: element,
+        }
+
+        const currentChildState = current[key]
+        if (!currentChildState || currentChildState.intersects !== nextChildState.intersects) {
+          return {
+            ...current,
+            [key]: nextChildState,
+          }
+        }
+        return current
+      })
+    },
+    [],
+  )
+
+  // An array of children rendered in their collapsed state
+  const collapsedElements = useMemo(
+    () =>
+      menuOptions.map((optionElement) => {
+        const {collapsedProps} = optionElement.props
+        const modeProps = collapsedProps
+        const text = collapseText ? undefined : optionElement.props.text
+
+        return cloneElement(optionElement, {
           ...modeProps,
           text: text,
         })
       }),
-    [children, collapseText, hasOverflow],
+    [menuOptions, collapseText],
   )
 
-  if (collapsed) {
-    return (
-      <CollapseOverflowMenu
-        disableRestoreFocusOnClose={disableRestoreFocusOnClose}
-        menuButton={menuButton}
-        menuButtonProps={menuButtonProps}
-        menuOptionsArray={children}
-        onMenuClose={onMenuClose}
-      />
-    )
-  }
+  // Even if rendered collapsed, there might not be space to render all,
+  // so put the overflowing ones into the menu
+  const overflowingCollapsedOptionElements = useMemo(
+    () =>
+      menuOptions.filter((optionElement) => {
+        const intersection = collapsedIntersections[optionElement.key as string]
+        return intersection?.intersects === false
+      }),
+    [menuOptions, collapsedIntersections],
+  )
+
+  const shouldCollapse = overflowingExpandedElements.length > 0
+  const visibleMenuOptions = shouldCollapse
+    ? collapsedElements.filter((optionElement) => {
+        const intersection = collapsedIntersections[optionElement.key as string]
+        return intersection?.intersects === true
+      })
+    : menuOptions
+
+  const menuButton = useMemo(
+    () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
+    [menuButtonProps],
+  )
 
   return (
     <OuterFlex
@@ -181,23 +273,18 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
       {...rest}
     >
       <RootFlex direction="column" flex={1} justify="center" ref={setRootEl}>
-        {/* Content */}
+        {/* The actual visible options */}
         <RowFlex gap={gap}>
-          {items.map((child, index) => {
-            const {dividerBefore, tooltipText = '', tooltipProps = {}} = child.props
-            const hidden = isInMenu(child.key)
-
-            return (
-              <React.Fragment key={child.key}>
-                {dividerBefore && index !== 0 && <CollapseMenuDivider hidden={hidden} />}
-
-                <OptionObserveElement
-                  options={intersectionOptions}
-                  // eslint-disable-next-line react/jsx-no-bind
-                  callback={(e) => handleIntersection(e[0], child)}
-                  aria-hidden={hidden}
-                  data-hidden={hidden}
-                >
+          {pendingIntersections.length === 0 &&
+            visibleMenuOptions.map((optionElement, index) => {
+              const {dividerBefore, tooltipText = '', tooltipProps = {}} = optionElement.props
+              const hidden =
+                !optionElement.key ||
+                !(optionElement.key in expandedIntersections) ||
+                overflowingCollapsedOptionElements.includes(optionElement)
+              return (
+                <React.Fragment key={optionElement.key}>
+                  {dividerBefore && index !== 0 && <CollapseMenuDivider hidden={hidden} />}
                   <Tooltip
                     portal
                     disabled={!tooltipText}
@@ -209,45 +296,74 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
                     {...tooltipProps}
                   >
                     <Flex>
-                      {cloneElement(child, {
-                        disabled: child.props.disabled || hidden,
+                      {cloneElement(optionElement, {
+                        disabled: optionElement.props.disabled || hidden,
                         'aria-hidden': hidden,
                       })}
                     </Flex>
                   </Tooltip>
+                </React.Fragment>
+              )
+            })}
+        </RowFlex>
+        {/* Rendered hidden in order to calculate intersections for expanded menu options */}
+        <RowFlex data-hidden aria-hidden="true" gap={gap} overflow="hidden">
+          {menuOptions.map((child, index) => {
+            const {dividerBefore} = child.props
+            return (
+              <React.Fragment key={child.key}>
+                {dividerBefore && index !== 0 && <CollapseMenuDivider hidden />}
+
+                <OptionObserveElement
+                  options={intersectionOptions}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onIntersectionChange={(e) => handleExpandedIntersection(e[0], child)}
+                >
+                  <Flex>
+                    {cloneElement(child, {
+                      disabled: true,
+                      'aria-hidden': true,
+                    })}
+                  </Flex>
                 </OptionObserveElement>
               </React.Fragment>
             )
           })}
         </RowFlex>
-
-        {/* Hidden row used to detect when to collapse/collapse the layout  */}
-        <RowFlex data-hidden aria-hidden="true" gap={gap} ref={setHiddenRowEl}>
-          {children.map((child, index) => {
+        {/* Rendered hidden in order to calculate intersections for collapsed menu options */}
+        <RowFlex data-hidden aria-hidden="true" gap={gap} overflow="hidden">
+          {collapsedElements.map((child, index) => {
             const {dividerBefore} = child.props
-
             return (
               <React.Fragment key={child.key}>
-                {dividerBefore && index !== 0 && <CollapseMenuDivider />}
-                <OptionHiddenFlex key={child.key}>
-                  {cloneElement(child, {
-                    disabled: true,
-                    'aria-hidden': true,
-                  })}
-                </OptionHiddenFlex>
+                {dividerBefore && index !== 0 && <CollapseMenuDivider hidden />}
+
+                <OptionObserveElement
+                  options={intersectionOptions}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onIntersectionChange={(e) => handleCollapsedIntersection(e[0], child)}
+                >
+                  <Flex>
+                    {cloneElement(child, {
+                      disabled: true,
+                      'aria-hidden': true,
+                    })}
+                  </Flex>
+                </OptionObserveElement>
               </React.Fragment>
             )
           })}
         </RowFlex>
       </RootFlex>
 
-      {menuIsVisible && (
+      {/* Show the collapsed items that doesn't fit in a menu */}
+      {overflowingCollapsedOptionElements.length > 0 && (
         <Flex marginLeft={gap}>
           <CollapseOverflowMenu
             disableRestoreFocusOnClose={disableRestoreFocusOnClose}
             menuButton={menuButton}
             menuButtonProps={menuButtonProps}
-            menuOptionsArray={menuOptionsArray}
+            menuOptions={overflowingCollapsedOptionElements}
             onMenuClose={onMenuClose}
           />
         </Flex>

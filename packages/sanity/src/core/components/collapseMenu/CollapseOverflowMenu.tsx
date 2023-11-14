@@ -1,5 +1,5 @@
 import {Menu, MenuButton, MenuButtonProps, MenuDivider, MenuItem} from '@sanity/ui'
-import React from 'react'
+import React, {ForwardedRef, forwardRef} from 'react'
 import {CollapseMenuProps} from './CollapseMenu'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -7,26 +7,27 @@ const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
 }
 
-export function CollapseOverflowMenu(
+export const CollapseOverflowMenu = forwardRef(function CollapseOverflowMenu(
   props: Pick<
     CollapseMenuProps,
     'disableRestoreFocusOnClose' | 'menuButtonProps' | 'onMenuClose'
-  > & {menuOptionsArray: React.ReactElement[]; menuButton: React.ReactElement},
+  > & {menuOptions: React.ReactElement[]; menuButton: React.ReactElement},
+  forwardedRef: ForwardedRef<HTMLButtonElement>,
 ) {
-  const {disableRestoreFocusOnClose, menuButton, menuButtonProps, menuOptionsArray, onMenuClose} =
-    props
+  const {disableRestoreFocusOnClose, menuButton, menuButtonProps, menuOptions, onMenuClose} = props
 
   return (
     <MenuButton
       __unstable_disableRestoreFocusOnClose={disableRestoreFocusOnClose}
       id="menu-button"
+      ref={forwardedRef}
       onClose={onMenuClose}
       popover={MENU_BUTTON_POPOVER_PROPS}
       {...menuButtonProps}
       button={menuButton}
       menu={
         <Menu>
-          {menuOptionsArray.map((c, index) => {
+          {menuOptions.map((c, index) => {
             const {
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               collapsedProps = {},
@@ -59,4 +60,4 @@ export function CollapseOverflowMenu(
       }
     />
   )
-}
+})
