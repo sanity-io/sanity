@@ -17,13 +17,22 @@ export const TitleContainer = styled(Box)`
       container-type: inline-size;
 
       [data-heading] {
-        font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize}px;
+        font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize}px;
+        line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight}px;
         overflow-wrap: break-word;
       }
 
-      @container (min-width: 550px) {
+      @container (min-width: 420px) {
+        [data-heading] {
+          font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize}px;
+          line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight}px;
+        }
+      }
+
+      @container (min-width: 560px) {
         [data-heading] {
           font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
+          line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight}px;
         }
       }
     `
