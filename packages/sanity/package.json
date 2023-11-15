@@ -62,6 +62,16 @@
       "import": "./lib/desk.esm.js",
       "default": "./lib/desk.esm.js"
     },
+    "./presentation": {
+      "types": "./lib/exports/presentation.d.ts",
+      "source": "./exports/presentation.ts",
+      "require": "./lib/presentation.js",
+      "node": {
+        "import": "./lib/presentation.cjs.mjs"
+      },
+      "import": "./lib/presentation.esm.js",
+      "default": "./lib/presentation.esm.js"
+    },
     "./router": {
       "types": "./lib/exports/router.d.ts",
       "source": "./exports/router.ts",
@@ -89,6 +99,9 @@
       "desk": [
         "./lib/exports/desk.d.ts"
       ],
+      "presentation": [
+        "./lib/exports/presentation.d.ts"
+      ],
       "router": [
         "./lib/exports/router.d.ts"
       ]
@@ -104,6 +117,7 @@
     "desk.js",
     "lib",
     "router.js",
+    "presentation.js",
     "src",
     "static"
   ],
@@ -112,7 +126,7 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
-    "clean": "rimraf _internal.js cli.js desk.js lib router.js",
+    "clean": "rimraf _internal.js cli.js desk.js lib presentation.js router.js",
     "coverage": "jest --coverage",
     "lint": "eslint .",
     "prepublishOnly": "run-s write:version write:ui-version",
@@ -148,6 +162,7 @@
     "@sanity/logos": "^2.0.2",
     "@sanity/mutator": "3.19.3",
     "@sanity/portable-text-editor": "3.19.3",
+    "@sanity/presentation": "1.0.0",
     "@sanity/schema": "3.19.3",
     "@sanity/types": "3.19.3",
     "@sanity/ui": "^1.9.3",
