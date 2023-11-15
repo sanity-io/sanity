@@ -1,4 +1,4 @@
 {
   "//": "https://github.com/depcheck/depcheck/pull/756",
-  "ignore": ["https:"]
+  "ignore": ["https:", "@sanity/client", "@vercel/stega"]
 }
