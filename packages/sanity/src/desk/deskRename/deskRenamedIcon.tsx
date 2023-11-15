@@ -55,7 +55,7 @@ function DeskRenamedCard(props: {onDismiss: () => void}) {
     <Stack as="section" padding={3} space={3} onClick={handleClick}>
       <Stack padding={2} space={4}>
         <Flex gap={2} align="center">
-          <Text as="h1" size={1}>
+          <Text as="h1" size={1} weight="semibold">
             <strong>Desk</strong> is now <strong>Structure</strong>
           </Text>
         </Flex>
