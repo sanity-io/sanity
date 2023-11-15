@@ -114,6 +114,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
     items,
     onEndReached,
     onEndReachedIndexOffset = 0,
+    onListReady,
     onlyShowSelectionWhenActive,
     overscan,
     renderItem,
@@ -579,6 +580,16 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       focusElement(autoFocus)
     }
   }, [autoFocus, canReceiveFocus, focusListElement, focusInputElement, focusElement])
+
+  /**
+   * Trigger list ready callback once we know the list element has mounted and is queryable
+   * TODO: consider revising to `onReady` and passing the virtualizer instance
+   */
+  useEffect(() => {
+    if (virtualListElement) {
+      onListReady?.(virtualListElement)
+    }
+  }, [onListReady, virtualListElement])
 
   const rootTabIndex = canReceiveFocus ? 0 : -1
 
