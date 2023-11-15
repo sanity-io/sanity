@@ -79,7 +79,8 @@ jobs:
           # Delete `SANITY_E2E_SESSION_TOKEN_NEW` from github
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
-          SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
+          # FIXME: this is a temp fix to stop creating new datasets for the time being
+          SANITY_E2E_DATASET: pr-${{ secrets.SANITY_E2E_DATASET }}
         run: yarn e2e:setup && yarn e2e:build
 
       # Caches build from either PR or next
