@@ -15,6 +15,7 @@
 /_internal.js
 /cli.js
 /desk.js
+/presentation.js
 /router.js
 
 # Playwright-ct artifacts
