@@ -13,7 +13,6 @@ import React, {
   useCallback,
   useRef,
   useImperativeHandle,
-  createRef,
   ReactNode,
   startTransition,
 } from 'react'
@@ -23,16 +22,12 @@ import {SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
 import {EMPTY_ARRAY} from '../../../util'
-import {pathToString} from '../../../field'
-import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
-import {FormInput} from '../../components'
-import {FIXME} from '../../../FIXME'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
-import {isArrayOfObjectsFieldMember, isBlockType} from './_helpers'
+import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 
 /** @internal */
 export interface PortableTextMemberItem {
@@ -61,11 +56,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
     elementProps,
     hotkeys,
     markers = EMPTY_ARRAY,
-    members,
     onChange,
     onCopy,
-    onItemRemove,
     onInsert,
+    onItemRemove,
     onPaste,
     onPathFocus,
     path,
@@ -97,7 +91,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
 
   const toast = useToast()
-  const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
 
   // Memoized patch stream
   const patchSubject: Subject<{
@@ -128,99 +121,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     })
   }, [patchSubject, subscribe])
 
-  // Populate the portableTextMembers Map
-  const portableTextMemberItems: PortableTextMemberItem[] = useMemo(() => {
-    const result: {
-      kind: PortableTextMemberItem['kind']
-      member: ArrayOfObjectsItemMember
-      node: ObjectFormNode
-    }[] = []
-
-    for (const member of members) {
-      if (member.kind === 'item') {
-        const isObjectBlock = !isBlockType(member.item.schemaType)
-        if (isObjectBlock) {
-          result.push({kind: 'objectBlock', member, node: member.item})
-        } else {
-          // Also include regular text blocks with validation, presence or changes.
-          if (
-            member.item.validation.length > 0 ||
-            member.item.changed ||
-            member.item.presence?.length
-          ) {
-            result.push({kind: 'textBlock', member, node: member.item})
-          }
-          // Inline objects
-          const childrenField = member.item.members.find(
-            (f) => f.kind === 'field' && f.name === 'children',
-          )
-          if (
-            childrenField &&
-            childrenField.kind === 'field' &&
-            isMemberArrayOfObjects(childrenField)
-          ) {
-            // eslint-disable-next-line max-depth
-            for (const child of childrenField.field.members) {
-              // eslint-disable-next-line max-depth
-              if (child.kind === 'item' && child.item.schemaType.name !== 'span') {
-                result.push({kind: 'inlineObject', member: child, node: child.item})
-              }
-            }
-          }
-          // Markdefs
-          const markDefArrayMember = member.item.members
-            .filter(isArrayOfObjectsFieldMember)
-            .find((f) => f.name === 'markDefs')
-          if (markDefArrayMember) {
-            // eslint-disable-next-line max-depth
-            for (const child of markDefArrayMember.field.members) {
-              // eslint-disable-next-line max-depth
-              if (child.kind === 'item' && child.item.schemaType.jsonType === 'object') {
-                result.push({
-                  kind: 'annotation',
-                  member: child,
-                  node: child.item,
-                })
-              }
-            }
-          }
-        }
-      }
-    }
-
-    const items: PortableTextMemberItem[] = result.map((item) => {
-      const key = pathToString(item.node.path)
-      const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
-      const isObject = item.kind !== 'textBlock'
-      let input: ReactNode
-
-      // Only render the input if the item is open or new
-      if (isObject && (item.member.open || !existingItem)) {
-        const inputProps = {...(props as FIXME), absolutePath: item.node.path}
-        input = <FormInput {...inputProps} />
-      }
-
-      if (existingItem) {
-        existingItem.input = input
-        existingItem.member = item.member
-        existingItem.node = item.node
-        return existingItem
-      }
-
-      return {
-        kind: item.kind,
-        key,
-        member: item.member,
-        node: item.node,
-        elementRef: createRef<PortableTextEditorElement | null>(),
-        input,
-      }
-    })
-
-    portableTextMemberItemsRef.current = items
-
-    return items
-  }, [members, props])
+  const portableTextMemberItems = usePortableTextMemberItemsFromProps(props)
 
   // Set active if focused within the editor
   useEffect(() => {
