@@ -479,6 +479,10 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
 export interface PortableTextInputProps
   extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
   /**
+   * Open the input in fullscreen mode
+   */
+  fullscreen?: boolean
+  /**
    * Assign hotkeys that can be attached to custom editing functions
    */
   hotkeys?: HotkeyOptions
