@@ -2,6 +2,7 @@ import {EllipsisVerticalIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
 import {AssetMenuAction} from '../types'
 import {useTranslation} from '../../../../i18n'
+import React from 'react'
 
 const MENU_POPOVER_PROPS = {portal: true, placement: 'right'} as const
 
