@@ -1107,10 +1107,6 @@ export const studioLocaleStrings = {
   /** Accessibility label for the list displaying options in the new document menu */
   'new-document.new-document-aria-label': 'New document',
 
-  /** Error label for when a user is unable to create a document */
-  // @todo refactor InsufficientPermissionsMessage
-  'new-document.error.unable-to-create-document': 'create this document',
-
   /** --- Search --- */
 
   /** Placeholder text for the omnisearch input field */
@@ -1717,6 +1713,54 @@ export const studioLocaleStrings = {
 
   /** Alternative text for image being shown while image is being uploaded, in previews */
   'preview.image.file-is-being-uploaded.alt-text': 'The image currently being uploaded',
+
+  /** --- Insufficient permissions message --- */
+
+  /** The title for the insufficient permissions message component */
+  'insufficient-permissions-message.title': 'Insufficient permissions',
+
+  /** The fallback explanation if no context is provided */
+  'insufficient-permissions-message.not-authorized-explanation':
+    'You do not have permission to access this feature.',
+
+  /** The explanation when unable to create a new reference in a document */
+  'insufficient-permissions-message.not-authorized-explanation_create-new-reference':
+    'You do not have permission to create a new reference.',
+
+  /** The explanation when unable to create a particular type of document */
+  'insufficient-permissions-message.not-authorized-explanation_create-document-type':
+    'You do not have permission to create this kind of document.',
+
+  /** The explanation when unable to create any document at all */
+  'insufficient-permissions-message.not-authorized-explanation_create-any-document':
+    'You do not have permission to create a document.',
+
+  /** The explanation when unable to create a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_create-document':
+    'You do not have permission to create this document.',
+
+  /** The explanation when unable to delete a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_delete-document':
+    'You do not have permission to delete this document.',
+
+  /** The explanation when unable to discard changes in a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_discard-changes':
+    'You do not have permission to discard changes in this document.',
+
+  /** The explanation when unable to duplicate a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_duplicate-document':
+    'You do not have permission to duplicate this document.',
+
+  /** The explanation when unable to publish a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_publish-document':
+    'You do not have permission to publish this document.',
+
+  /** The explanation when unable to unpublish a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_unpublish-document':
+    'You do not have permission to unpublish this document.',
+
+  /** Appears after the not-authorized message. Lists the current roles. */
+  'insufficient-permissions-message.roles': 'Your roles: <Roles/>',
 }
 
 /**

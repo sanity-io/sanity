@@ -865,9 +865,6 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Accessibility label for the list displaying options in the new document menu */
   'new-document.new-document-aria-label': 'Nytt dokument',
 
-  /** Error label for when a user is unable to create a document */
-  'new-document.error.unable-to-create-document': 'opprette dette dokumentet',
-
   /** --- Search --- */
 
   /** Placeholder text for the omnisearch input field */

@@ -59,12 +59,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
       icon: TrashIcon,
       disabled: true,
       label: t('action.delete.label'),
-      title: (
-        <InsufficientPermissionsMessage
-          operationLabel="delete this document"
-          currentUser={currentUser}
-        />
-      ),
+      title: <InsufficientPermissionsMessage context="delete-document" currentUser={currentUser} />,
     }
   }
 
@@ -80,6 +75,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
       type: 'custom',
       component: (
         <ConfirmDeleteDialog
+          // eslint-disable-next-line no-attribute-string-literals/no-attribute-string-literals
           action="delete"
           id={draft?._id || id}
           type={type}
