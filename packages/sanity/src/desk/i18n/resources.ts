@@ -211,7 +211,7 @@ const deskLocaleStrings = {
   'document-view.form-view.form-hidden': 'This form is hidden',
 
   /** The text for when the form view is loading a document */
-  'document-view.form-view.loading': 'Loading document',
+  'document-view.form-view.loading': 'Loading document…',
 
   /** The title of the sync lock toast on the form view */
   'document-view.form-view.sync-lock-toast.title': 'Syncing document…',
@@ -277,7 +277,7 @@ const deskLocaleStrings = {
   'panes.document-operation-results.operation-error_unpublish':
     'An error occurred while attempting to unpublish this document. This usually means that there are other documents that refers to it.',
 
-  /** The text when a generic operation failed  */
+  /** The text when a generic operation failed (fallback, generally not shown)  */
   'panes.document-operation-results.operation-error': 'An error occurred during {{context}}',
 
   /** The text when a publish operation succeeded  */
@@ -295,7 +295,7 @@ const deskLocaleStrings = {
   'panes.document-operation-results.operation-success_delete':
     'The document was successfully deleted',
 
-  /** The text when a generic operation succeded  */
+  /** The text when a generic operation succeded (fallback, generally not shown)  */
   'panes.document-operation-results.operation-success':
     'Successfully performed {{context}} on document',
 
@@ -387,7 +387,7 @@ const deskLocaleStrings = {
     'Are you sure you want to delete “<DocumentTitle/>”?',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_unpublish':
-    'Are you sure you want to unpublish “<DocumentTitle/>“?',
+    'Are you sure you want to unpublish “<DocumentTitle/>”?',
 
   /** Tells the user the count of how many other referring documents there are before listing them. (singular) */
   'confirm-delete-dialog.referring-document-count.text_one':
