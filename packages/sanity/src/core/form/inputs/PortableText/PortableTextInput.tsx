@@ -19,6 +19,8 @@ import React, {
 } from 'react'
 import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
+import {pathFor} from '@sanity/util/paths'
+import {isEqual} from 'lodash'
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
@@ -64,14 +66,21 @@ export function PortableTextInput(props: PortableTextInputProps) {
     members,
     onChange,
     onCopy,
-    onItemRemove,
     onInsert,
+    onItemRemove,
     onPaste,
     onPathFocus,
     path,
     readOnly,
+    renderAnnotation,
+    renderBlock,
     renderBlockActions,
     renderCustomMarkers,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
     schemaType,
     value,
   } = props
@@ -194,16 +203,28 @@ export function PortableTextInput(props: PortableTextInputProps) {
       const isObject = item.kind !== 'textBlock'
       let input: ReactNode
 
-      // Only render the input if the item is open or new
-      if (isObject && (item.member.open || !existingItem)) {
-        const inputProps = {...(props as FIXME), absolutePath: item.node.path}
-        input = <FormInput {...inputProps} />
+      if (isObject && (!existingItem || !isEqual(item.member, existingItem?.member))) {
+        const inputProps = {
+          absolutePath: pathFor(item.node.path),
+          includeField: false,
+          members,
+          path: pathFor(path),
+          renderAnnotation,
+          renderBlock,
+          renderField,
+          renderInlineBlock,
+          renderInput,
+          renderItem,
+          renderPreview,
+          schemaType,
+        }
+        input = <FormInput {...(inputProps as FIXME)} />
       }
 
       if (existingItem) {
-        existingItem.input = input
         existingItem.member = item.member
         existingItem.node = item.node
+        existingItem.input = input || existingItem.input
         return existingItem
       }
 
@@ -220,7 +241,18 @@ export function PortableTextInput(props: PortableTextInputProps) {
     portableTextMemberItemsRef.current = items
 
     return items
-  }, [members, props])
+  }, [
+    members,
+    path,
+    renderAnnotation,
+    renderBlock,
+    renderField,
+    renderInlineBlock,
+    renderInput,
+    renderItem,
+    renderPreview,
+    schemaType,
+  ])
 
   // Set active if focused within the editor
   useEffect(() => {
