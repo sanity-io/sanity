@@ -6,9 +6,12 @@ import {
   ChevronDownIcon,
   WarningOutlineIcon,
 } from '@sanity/icons'
+import styled from 'styled-components'
+
 import {useToast, Text, Box, Flex, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {Button} from '../../../ui'
+import {fadeIn} from '../../../ui/animations'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {
@@ -20,6 +23,10 @@ import {
   DocumentIdFlex,
 } from './ConfirmDeleteDialogBody.styles'
 import {SanityDefaultPreview, useSchema} from 'sanity'
+
+const DialogBody = styled(Box)`
+  animation: ${fadeIn} 0.3s ease-out;
+`
 
 type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentTitle: React.ReactNode
@@ -68,9 +75,11 @@ export function ConfirmDeleteDialogBody({
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
     return (
-      <Text as="p" size={1}>
-        Are you sure you want to {action} “{documentTitle}”?
-      </Text>
+      <DialogBody>
+        <Text as="p" size={1}>
+          Are you sure you want to {action} “{documentTitle}”?
+        </Text>
+      </DialogBody>
     )
   }
 
@@ -102,173 +111,175 @@ export function ConfirmDeleteDialogBody({
   }
 
   return (
-    <Flex direction="column" gap={4}>
-      <Card padding={3} radius={2} tone="caution" flex="none">
-        <Flex>
-          <Text aria-hidden="true" size={1}>
-            <WarningOutlineIcon />
-          </Text>
-          <Box flex={1} marginLeft={3}>
-            <Text size={1}>
-              {totalCount === 1 ? (
-                <>1 document refers to “{documentTitle}”</>
-              ) : (
-                <>
-                  {totalCount.toLocaleString()} documents refer to “{documentTitle}”
-                </>
-              )}
+    <DialogBody>
+      <Flex direction="column" gap={4}>
+        <Card padding={3} radius={2} tone="caution" flex="none">
+          <Flex>
+            <Text aria-hidden="true" size={1}>
+              <WarningOutlineIcon />
             </Text>
-          </Box>
-        </Flex>
-      </Card>
-      <Box flex="none">
-        <Text size={1}>
-          You may not be able to {action} “{documentTitle}” because the following documents refer to
-          it:
-        </Text>
-      </Box>
-      <Card radius={2} shadow={1} flex="auto" padding={2}>
-        <Flex direction="column">
-          {internalReferences.totalCount > 0 && (
-            <Stack as="ul" marginBottom={2} space={2} data-testid="internal-references">
-              {internalReferences?.references.map((item) => (
-                <Box as="li" key={item._id}>
-                  {renderPreviewItem(item)}
-                </Box>
-              ))}
+            <Box flex={1} marginLeft={3}>
+              <Text size={1}>
+                {totalCount === 1 ? (
+                  <>1 document refers to “{documentTitle}”</>
+                ) : (
+                  <>
+                    {totalCount.toLocaleString()} documents refer to “{documentTitle}”
+                  </>
+                )}
+              </Text>
+            </Box>
+          </Flex>
+        </Card>
+        <Box flex="none">
+          <Text size={1}>
+            You may not be able to {action} “{documentTitle}” because the following documents refer
+            to it:
+          </Text>
+        </Box>
+        <Card radius={2} shadow={1} flex="auto" padding={2}>
+          <Flex direction="column">
+            {internalReferences.totalCount > 0 && (
+              <Stack as="ul" marginBottom={2} space={2} data-testid="internal-references">
+                {internalReferences?.references.map((item) => (
+                  <Box as="li" key={item._id}>
+                    {renderPreviewItem(item)}
+                  </Box>
+                ))}
 
-              {internalReferences.totalCount > internalReferences.references.length && (
-                <Box as="li" padding={3}>
-                  <OtherReferenceCount {...internalReferences} />
-                </Box>
-              )}
-            </Stack>
-          )}
+                {internalReferences.totalCount > internalReferences.references.length && (
+                  <Box as="li" padding={3}>
+                    <OtherReferenceCount {...internalReferences} />
+                  </Box>
+                )}
+              </Stack>
+            )}
 
-          {crossDatasetReferences.totalCount > 0 && (
-            <CrossDatasetReferencesDetails
-              data-testid="cross-dataset-references"
-              style={{
-                // only add the border if needed
-                borderTop:
-                  internalReferences.totalCount > 0
-                    ? '1px solid var(--card-shadow-outline-color)'
-                    : undefined,
-              }}
-            >
-              <CrossDatasetReferencesSummary>
-                <Card
-                  as="a"
-                  marginTop={internalReferences.totalCount > 0 ? 2 : 0}
-                  radius={2}
-                  shadow={1}
-                  paddingY={1}
-                >
-                  <Flex align="center" margin={2} marginRight={3}>
-                    <Box marginLeft={3} marginRight={3}>
-                      <Text size={3}>
-                        <DocumentsIcon />
-                      </Text>
-                    </Box>
-                    <Flex marginRight={4} direction="column">
-                      <Box marginBottom={2}>
-                        <Text>
-                          {documentCount} in {datasetsCount}
+            {crossDatasetReferences.totalCount > 0 && (
+              <CrossDatasetReferencesDetails
+                data-testid="cross-dataset-references"
+                style={{
+                  // only add the border if needed
+                  borderTop:
+                    internalReferences.totalCount > 0
+                      ? '1px solid var(--card-shadow-outline-color)'
+                      : undefined,
+                }}
+              >
+                <CrossDatasetReferencesSummary>
+                  <Card
+                    as="a"
+                    marginTop={internalReferences.totalCount > 0 ? 2 : 0}
+                    radius={2}
+                    shadow={1}
+                    paddingY={1}
+                  >
+                    <Flex align="center" margin={2} marginRight={3}>
+                      <Box marginLeft={3} marginRight={3}>
+                        <Text size={3}>
+                          <DocumentsIcon />
                         </Text>
                       </Box>
-                      <Box>
-                        <Text title={datasetNameList} textOverflow="ellipsis" size={1} muted>
-                          {datasetNameList}
+                      <Flex marginRight={4} direction="column">
+                        <Box marginBottom={2}>
+                          <Text>
+                            {documentCount} in {datasetsCount}
+                          </Text>
+                        </Box>
+                        <Box>
+                          <Text title={datasetNameList} textOverflow="ellipsis" size={1} muted>
+                            {datasetNameList}
+                          </Text>
+                        </Box>
+                      </Flex>
+                      <ChevronWrapper>
+                        <Text muted>
+                          <ChevronDownIcon />
                         </Text>
-                      </Box>
+                      </ChevronWrapper>
                     </Flex>
-                    <ChevronWrapper>
-                      <Text muted>
-                        <ChevronDownIcon />
-                      </Text>
-                    </ChevronWrapper>
-                  </Flex>
-                </Card>
-              </CrossDatasetReferencesSummary>
+                  </Card>
+                </CrossDatasetReferencesSummary>
 
-              <Box overflow="auto" paddingTop={2}>
-                <Table>
-                  <thead>
-                    <tr>
-                      <th>
-                        <Text muted size={1} style={{minWidth: '5rem'}} weight="medium">
-                          Project ID
-                        </Text>
-                      </th>
-                      <th>
-                        <Text muted size={1} weight="medium">
-                          Dataset
-                        </Text>
-                      </th>
-                      <th>
-                        <Text muted size={1} weight="medium">
-                          Document ID
-                        </Text>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {crossDatasetReferences.references
-                      .filter((reference): reference is Required<typeof reference> => {
-                        return 'projectId' in reference
-                      })
-                      .map(({projectId, datasetName, documentId}, index) => (
-                        // eslint-disable-next-line react/no-array-index-key
-                        <tr key={`${documentId}-${index}`}>
-                          <td>
-                            <Text size={1}>{projectId}</Text>
-                          </td>
-                          <td>
-                            <Text size={1}>{datasetName || 'unavailable'}</Text>
-                          </td>
-                          <td>
-                            <DocumentIdFlex align="center" gap={2} justify="flex-end">
-                              <Text textOverflow="ellipsis" size={1}>
-                                {documentId || 'unavailable'}
-                              </Text>
-                              {documentId && (
-                                <CopyToClipboard
-                                  text={documentId}
-                                  // eslint-disable-next-line react/jsx-no-bind
-                                  onCopy={() => {
-                                    // TODO: this isn't visible with the dialog open
-                                    toast.push({
-                                      title: 'Copied document ID to clipboard!',
-                                      status: 'success',
-                                    })
-                                  }}
-                                >
-                                  <Button
-                                    mode="bleed"
-                                    icon={CopyIcon}
-                                    tooltipProps={{content: 'Copy ID to clipboard"'}}
-                                  />
-                                </CopyToClipboard>
-                              )}
-                            </DocumentIdFlex>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </Table>
+                <Box overflow="auto" paddingTop={2}>
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>
+                          <Text muted size={1} style={{minWidth: '5rem'}} weight="medium">
+                            Project ID
+                          </Text>
+                        </th>
+                        <th>
+                          <Text muted size={1} weight="medium">
+                            Dataset
+                          </Text>
+                        </th>
+                        <th>
+                          <Text muted size={1} weight="medium">
+                            Document ID
+                          </Text>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {crossDatasetReferences.references
+                        .filter((reference): reference is Required<typeof reference> => {
+                          return 'projectId' in reference
+                        })
+                        .map(({projectId, datasetName, documentId}, index) => (
+                          // eslint-disable-next-line react/no-array-index-key
+                          <tr key={`${documentId}-${index}`}>
+                            <td>
+                              <Text size={1}>{projectId}</Text>
+                            </td>
+                            <td>
+                              <Text size={1}>{datasetName || 'unavailable'}</Text>
+                            </td>
+                            <td>
+                              <DocumentIdFlex align="center" gap={2} justify="flex-end">
+                                <Text textOverflow="ellipsis" size={1}>
+                                  {documentId || 'unavailable'}
+                                </Text>
+                                {documentId && (
+                                  <CopyToClipboard
+                                    text={documentId}
+                                    // eslint-disable-next-line react/jsx-no-bind
+                                    onCopy={() => {
+                                      // TODO: this isn't visible with the dialog open
+                                      toast.push({
+                                        title: 'Copied document ID to clipboard!',
+                                        status: 'success',
+                                      })
+                                    }}
+                                  >
+                                    <Button
+                                      mode="bleed"
+                                      icon={CopyIcon}
+                                      tooltipProps={{content: 'Copy ID to clipboard"'}}
+                                    />
+                                  </CopyToClipboard>
+                                )}
+                              </DocumentIdFlex>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </Table>
 
-                <OtherReferenceCount {...crossDatasetReferences} />
-              </Box>
-            </CrossDatasetReferencesDetails>
-          )}
-        </Flex>
-      </Card>
-      <Box flex="none">
-        <Text size={1}>
-          If you {action} this document, documents that refer to it will no longer be able to access
-          it.
-        </Text>
-      </Box>
-    </Flex>
+                  <OtherReferenceCount {...crossDatasetReferences} />
+                </Box>
+              </CrossDatasetReferencesDetails>
+            )}
+          </Flex>
+        </Card>
+        <Box flex="none">
+          <Text size={1}>
+            If you {action} this document, documents that refer to it will no longer be able to
+            access it.
+          </Text>
+        </Box>
+      </Flex>
+    </DialogBody>
   )
 }

@@ -18,7 +18,7 @@ export const LoadingContainer = styled(Flex).attrs({
   direction: 'column',
   justify: 'center',
 })`
-  height: 110px;
+  height: 66px;
 `
 
 /** @internal */

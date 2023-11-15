@@ -8,8 +8,14 @@ import {
   Tooltip as UITooltip,
   TooltipProps as UITooltipProps,
 } from '@sanity/ui'
+import styled from 'styled-components'
 import React, {forwardRef} from 'react'
+import {fadeIn} from '../animations'
 import {TOOLTIP_DELAY_PROPS} from './constants'
+
+const AnimatedTooltip = styled(UITooltip)`
+  animation: ${fadeIn} 0.2s ease-out;
+`
 
 /** @internal */
 export type TooltipProps = Omit<UITooltipProps, 'content' | 'padding'> & {
@@ -39,7 +45,7 @@ export const Tooltip = forwardRef(function Tooltip(
   const {content, hotkeys, ...rest} = props
 
   return (
-    <UITooltip
+    <AnimatedTooltip
       arrow={false}
       boundaryElement={null}
       content={

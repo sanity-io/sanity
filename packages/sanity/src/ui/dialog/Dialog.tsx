@@ -8,6 +8,17 @@ import {
   BoxHeight,
 } from '@sanity/ui'
 import React, {ComponentProps, forwardRef} from 'react'
+import styled from 'styled-components'
+import {fadeIn, zoomIn} from '../animations'
+
+const AnimatedDialog = styled(UIDialog)`
+  // Animates the overlay
+  animation: ${fadeIn} 300ms ease-out;
+  & > div {
+    // Animates the dialog
+    animation: ${zoomIn} 300ms ease-out;
+  }
+`
 
 /** @internal */
 export interface DialogProps
@@ -55,7 +66,7 @@ export const Dialog = forwardRef(function Dialog(
   ref: React.Ref<HTMLDivElement>,
 ) {
   return (
-    <UIDialog
+    <AnimatedDialog
       {...props}
       ref={ref}
       footer={
@@ -80,6 +91,6 @@ export const Dialog = forwardRef(function Dialog(
       <Box height={bodyHeight} marginX={padding ? 1 : 0} padding={padding ? 4 : 0}>
         {children}
       </Box>
-    </UIDialog>
+    </AnimatedDialog>
   )
 })
