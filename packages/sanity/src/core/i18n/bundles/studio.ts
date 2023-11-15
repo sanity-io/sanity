@@ -315,10 +315,10 @@ export const studioLocaleStrings = {
   /** Accessibility label for button to open image edit dialog */
   'inputs.image.actions-menu.edit-details.aria-label': 'Open image edit dialog',
 
-  /** Open image options menu */
-  'inputs.image.actions-menu.options.label': 'Open image options menu',
+  /** Accessibility label for button to open image options menu */
+  'inputs.image.actions-menu.options.aria-label': 'Open image options menu',
 
-  /** Open file options menu */
+  /** Acessibility label for button to open file options menu */
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
 
   /** Tooltip text for action to crop image */

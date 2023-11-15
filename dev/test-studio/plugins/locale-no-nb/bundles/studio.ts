@@ -50,6 +50,12 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /* Accessibility label for navigating the calendar to "today", without _selecting_ today */
   'calendar.action.go-to-today-aria-label': 'Gå til i dag',
 
+  /* Label for navigating the calendar to "yesterday", without _selecting_ yesterday. Short form, eg `Yesterday`, not `Go to yesterday` */
+  'calendar.action.go-to-yesterday': 'I går',
+
+  /* Label for navigating the calendar to "tomorrow", without _selecting_ tomorrow. Short form, eg `Tomorrow`, not `Go to tomorrow` */
+  'calendar.action.go-to-tomorrow': 'I morgen',
+
   /** Label for selecting a hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
   'calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
 
@@ -246,6 +252,9 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Label for loading history */
   'timeline.loading-history': 'Laster historikk…',
 
+  /** The aria-label for the list of revisions in the timeline */
+  'timeline.list.aria-label': 'Dokumentrevisjoner',
+
   /**
    * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter.
@@ -301,8 +310,11 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Accessibility label for button to open image edit dialog */
   'inputs.image.actions-menu.edit-details.aria-label': 'Åpne bilderedigeringsdialog',
 
-  /** Open image options menu */
-  'inputs.image.actions-menu.options.label': 'Åpne bildeinnstillingsmeny',
+  /** Accessibility label for button to open image options menu */
+  'inputs.image.actions-menu.options.aria-label': 'Åpne bildeinnstillingsmeny',
+
+  /** Acessibility label for button to open file options menu */
+  'inputs.file.actions-menu.file-options.aria-label': 'Åpne filinnstillingsmeny',
 
   /** Tooltip text for action to crop image */
   'inputs.image.actions-menu.crop-image-tooltip': 'Beskjær bilde',
@@ -335,6 +347,15 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** The value of this field is not a valid image. Resetting this field will let you choose a new image. */
   'inputs.image.invalid-image-warning.description':
     'Verdien i dette feltet er ikke et gyldig bilde. Ved å tilbakestille dette feltet kan du velge et nytt bilde.',
+
+  /** Reset value */
+  'inputs.image.invalid-image-warning.reset-button.text': 'Nullstill verdi',
+
+  /** Select */
+  'inputs.image.browse-menu.text': 'Velg',
+
+  /** Unknown member kind: `{{kind}}` */
+  'inputs.image.error.unknown-member-kind': 'Ukjent medlemstype: {{kind}}',
 
   /** The URL is copied to the clipboard */
   'inputs.files.common.actions-menu.notification.url-copied':
@@ -388,8 +409,23 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.files.common.drop-message.drop-to-upload-multi_other':
     'Slipp for å laste opp {{count}} filer',
 
+  /** `{{count}}` file can't be uploaded here */
+  'inputs.files.common.drop-message.drop-to-upload.rejected-file-message_one': `{{count}} fil kan ikke bli lastet opp her`,
+
+  /** `{{count}}` files can't be uploaded here */
+  'inputs.files.common.drop-message.drop-to-upload.rejected-file-message_other': `{{count}} filer kan ikke bli lastet opp her`,
+
+  /** Can't upload this file here */
+  'inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message_one': `Kan ikke laste opp denne filen her`,
+
+  /** Can't upload any of these files here */
+  'inputs.files.common.drop-message.drop-to-upload.no-accepted-file-message_other': `Kan ikke laste opp noen av disse filene her`,
+
   /** Uploading <FileName/> */
   'input.files.common.upload-progress': 'Laster opp <FileName/>',
+
+  /** Text for file input button in upload placeholder */
+  'input.files.common.upload-placeholder.file-input-button.text': 'Last opp',
 
   /** Incomplete upload */
   'inputs.files.common.stale-upload-warning.title': 'Ufullstendig opplasting',
@@ -407,6 +443,40 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
   'inputs.imagetool.description':
     'Juster rektangelet for å beskjære bildet. Juster sirkelen for å spesifisere området som alltid skal være synlig.',
+
+  /** Loading image… */
+  'inputs.imagetool.loading': 'Laster bilde…',
+
+  /** Error: `{{errorMessage}}` */
+  'inputs.imagetool.load-error': 'Feil: {{errorMessage}}',
+
+  /** Select file */
+  'inputs.file.dialog.title': 'Velg fil',
+
+  /** Browse */
+  'inputs.file.browse-button.text': 'Bla gjennom',
+
+  /** Select */
+  'inputs.file.multi-browse-button.text': 'Velg',
+
+  /** Unknown member kind: `{{kind}}` */
+  'inputs.file.error.unknown-member-kind': 'Ukjent medlemstype: {{kind}}',
+
+  /** Invalid file value */
+  'inputs.file.invalid-file-warning.title': 'Ugyldig filverdi',
+
+  /** The value of this field is not a valid file. Resetting this field will let you choose a new file. */
+  'inputs.file.invalid-file-warning.description':
+    'Verdien i dette feltet er ikke en gyldig fil. Ved å nullstille verdien vil du kunne velge en ny fil.',
+
+  /** Reset value */
+  'inputs.file.invalid-file-warning.reset-button.text': 'Nullstill verdi',
+
+  /** The upload could not be completed at this time. */
+  'inputs.file.upload-failed.description': 'Opplastingen kunne ikke fullføres akkurat nå.',
+
+  /** Upload failed */
+  'inputs.file.upload-failed.title': 'Opplasting mislykkes',
 
   /** --- Reference (and Cross-Dataset Reference) Input --- */
 
@@ -656,6 +726,160 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'inputs.array.error.cannot-resolve-initial-value-title':
     'Kan ikke finne startverdi for type: {{schemaTypeTitle}}: {{errorMessage}}.',
 
+  /** -- Object Input -- */
+
+  /** Unknown field found */
+  'inputs.object.unknown-fields.warning.title_one': 'Ukjent felt funnet',
+  'inputs.object.unknown-fields.warning.title_other': 'Ukjente felter funnet',
+
+  /** Encountered `{{count}}` fields that are not defined in the schema. */
+  'inputs.object.unknown-fields.warning.description_one':
+    'Møtte på {{count}} felt som ikke er definert i skjemaet.',
+  'inputs.object.unknown-fields.warning.description_other':
+    'Møtte på {{count}} felter som ikke er definert i skjemaet.',
+
+  /** Developer info */
+  'inputs.object.unknown-fields.warning.details.title': 'Utviklerinfo',
+
+  /** Detailed description of unknown field warning */
+  'inputs.object.unknown-fields.warning.details.description_one':
+    'Dette feltet er ikke definert i dokumentets skjema, noe som kan bety at feltdefinisjonen har blitt fjernet eller at noen andre har lagt det til i sitt eget lokale prosjekt og ennå ikke har distribuert endringene sine.',
+  'inputs.object.unknown-fields.warning.details.description_other':
+    'Disse feltene er ikke definert i dokumentets skjema, noe som kan bety at feltdefinisjonene har blitt fjernet eller at noen andre har lagt dem til i sitt eget lokale prosjekt og ennå ikke har distribuert endringene sine.',
+
+  /** Read-only field description */
+  'inputs.object.unknown-fields.read-only.description':
+    'Dette feltet er markert som <strong>skrivebeskyttet</strong> i skjemadefinisjonen, og kan ikke bli nullstillt. Hvis du ønsker å kunne fjerne verdien i studioet, må <code>readOnly</code> innstillingen fjernes eller settes til <code>false</code> i feltdefinisjonen.',
+
+  /** Remove field */
+  'inputs.object.unknown-fields.remove-field-button.text': 'Fjern felt',
+
+  /** Field groups */
+  'inputs.object.field-group-tabs.aria-label': 'Feltgrupper',
+
+  /** -- Invalid Value Input -- */
+
+  /** Reset value */
+  'inputs.invalid-value.reset-button.text': 'Nullstill verdi',
+
+  /** Invalid property value */
+  'inputs.invalid-value.title': 'Ugyldig verdi',
+
+  /** Developer info */
+  'inputs.invalid-value.details.title': 'Utviklerinfo',
+
+  /** The property value is stored as a value type that does not match the expected type. */
+  'inputs.invalid-value.description':
+    'Verdien til dette feltet er lagret som en verdi som ikke samsvarer med den forventede typen.',
+
+  /** The value of this property must be of type <code>`{{validType}}`</code> according to the schema. */
+  'inputs.invalid-value.details.description':
+    'Verdien av dette feltet må være av typen <code>{{validType}}</code> i henhold til skjemaet.',
+
+  /** Mismatching value types typically occur when the schema has recently been changed. */
+  'inputs.invalid-value.details.possible-reason':
+    'Denne typen feil oppstår vanligvis når skjemaet nylig har blitt endret.',
+
+  /** Only the following types are valid here according to schema: */
+  'inputs.invalid-value.details.multi-type-description':
+    'Bare følgende typer er gyldige her i henhold til skjemaet:',
+
+  /** The current value (<code>`{{actualType}}`</code>) */
+  'inputs.invalid-value.current-type': 'Den nåværende verdien (<code>{{actualType}}</code>)',
+
+  /** Convert to <code>`{{targetType}}`</code> */
+  'inputs.invalid-value.convert-button.text': 'Konverter til <code>{{targetType}}</code>',
+
+  /** Convert to <code>`{{targetType}}`</code> */
+  'inputs.untyped-value.convert-button.text': 'Konverter til <code>{{targetType}}</code>',
+
+  /** Unset value */
+  'inputs.untyped-value.unset-item-button.text': 'Fjern verdi',
+
+  /** Property value missing <code>_type</code> */
+  'inputs.untyped-value.title': 'Verdi mangler <code>_type</code>',
+
+  /** Developer info */
+  'inputs.untyped-value.details.title': 'Utviklerinfo',
+
+  /** Encountered an object value without a <code>_type</code> property. */
+  'inputs.untyped-value.description': 'Møtte på en objektverdi uten <code>_type</code>-attributt.',
+
+  /** Either remove the <code>name</code> property of the object declaration, or set <code>_type</code> property on items. */
+  'inputs.untyped-value.details.description':
+    'Enten fjern <code>name</code>-attributtet fra objektdefinisjonen, eller sett <code>_type</code>-attributtet på elementene.',
+
+  /** The following types are valid here according to schema: */
+  'inputs.untyped-value.details.multi-type-description':
+    'Følgende typer er gyldige her i henhold til skjemaet:',
+
+  /** Current value (<code>object</code>): */
+  'inputs.untyped-value.details.json-dump-prefix': 'Nåværende verdi (<code>object</code>):',
+
+  /** -- Form Member Errors -- */
+
+  /** Unexpected error: `{{error}}` */
+  'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
+
+  /**  Remove non-object values */
+  'form.error.mixed-array-alert.remove-button.text': 'Remove non-object values',
+
+  /** Invalid list values */
+  'form.error.mixed-array-alert.title': 'Invalid list values',
+
+  /** Some items in this list are not objects. This must be fixed in order to edit the list. */
+  'form.error.mixed-array-alert.summary':
+    'Some items in this list are not objects. This must be fixed in order to edit the list.',
+
+  /** Developer info */
+  'form.error.mixed-array-alert.details.title': 'Developer info',
+
+  /** This usually happens when items are created using an API client, or when a custom input component has added invalid data to the list. */
+  'form.error.mixed-array-alert.details.description':
+    'This usually happens when items are created using an API client, or when a custom input component has added invalid data to the list.',
+
+  /** Add missing keys */
+  'form.error.missing-keys-alert.add-button.text': 'Add missing keys',
+
+  /** Missing keys */
+  'form.error.missing-keys-alert.title': 'Missing keys',
+
+  /** Some items in the list are missing their keys. This must be fixed in order to edit the list. */
+  'form.error.missing-keys-alert.summary':
+    'Some items in the list are missing their keys. This must be fixed in order to edit the list.',
+
+  /** Developer info */
+  'form.error.missing-keys-alert.details.title': 'Developer info',
+
+  /** This usually happens when items are created using an API client, and the <code>_key</code> property has not been included. */
+  'form.error.missing-keys-alert.details.description':
+    'This usually happens when items are created using an API client, and the <code>_key</code> property has not been included.',
+
+  /** The value of the <code>_key</code> property must be a unique string. */
+  'form.error.missing-keys-alert.details.additional-description':
+    'The value of the <code>_key</code> property must be a unique string.',
+
+  /** Generate unique keys */
+  'form.error.duplicate-keys-alert.generate-button.text': 'Generate unique keys',
+
+  /** Non-unique keys */
+  'form.error.duplicate-keys-alert.title': 'Non-unique keys',
+
+  /** Several items in this list share the same identifier (key). Every item must have an unique identifier. */
+  'form.error.duplicate-keys-alert.summary':
+    'Several items in this list share the same identifier (key). Every item must have an unique identifier.',
+
+  /** Developer info */
+  'form.error.duplicate-keys-alert.details.title': 'Developer info',
+
+  /** This usually happens when items are created using an API client, and the <code>_key</code> property of each elements has been generated non-uniquely. */
+  'form.error.duplicate-keys-alert.details.description':
+    'This usually happens when items are created using an API client, and the <code>_key</code> property of each elements has been generated non-uniquely.',
+
+  /** The value of the <code>_key</code> property must be a unique string. */
+  'form.error.duplicate-keys-alert.details.additional-description':
+    'The value of the <code>_key</code> property must be a unique string.',
+
   /** --- Forms / form fields --- */
 
   /** Fallback title shown above field if it has no defined title */
@@ -801,6 +1025,25 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Message confirming to delete *unnamed* image */
   'asset-source.delete-dialog.usage-list.confirm-delete-image_unnamed':
     'Du er i ferd med å slette bildet og tilhørende metadata. Er du sikker?',
+
+  /** Image asset source */
+  'asset-source.image.asset-list.delete-successful': 'Bildet slettet',
+  'asset-source.image.asset-list.delete-failed': 'Bildet kunne ikke bli slettet',
+
+  /** File asset source */
+  'asset-source.file.asset-list.header.filename': 'Filnavn',
+  'asset-source.file.asset-list.header.size': 'Størrelse',
+  'asset-source.file.asset-list.header.type': 'Type',
+  'asset-source.file.asset-list.header.date-added': 'Dato lagt til',
+
+  'asset-source.file.asset-list.action.select-file.title': 'Velg filen {{filename}}',
+  'asset-source.file.asset-list.action.delete.text': 'Slett',
+  'asset-source.file.asset-list.action.delete.title': 'Slett fil',
+  'asset-source.file.asset-list.action.delete.disabled-cannot-delete-current-file':
+    'Kan ikke slette nåværende valgt fil',
+
+  'asset-source.file.asset-list.delete-successful': 'Fil slettet',
+  'asset-source.file.asset-list.delete-failed': 'Fil kunne ikke bli slettet',
 
   /** --- Workspace menu --- */
 
@@ -1443,6 +1686,54 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Alternative text for image being shown while image is being uploaded, in previews */
   'preview.image.file-is-being-uploaded.alt-text': 'Bildet blir lastet opp',
+
+  /** --- Insufficient permissions message --- */
+
+  /** The title for the insufficient permissions message component */
+  'insufficient-permissions-message.title': 'Utilstrekkelig tilgang',
+
+  /** The fallback explanation if no context is provided */
+  'insufficient-permissions-message.not-authorized-explanation':
+    'Du har ikke tilgang til denne funksjonen.',
+
+  /** The explanation when unable to create a new reference in a document */
+  'insufficient-permissions-message.not-authorized-explanation_create-new-reference':
+    'Du har ikke tilgang til å opprette en ny referanse.',
+
+  /** The explanation when unable to create a particular type of document */
+  'insufficient-permissions-message.not-authorized-explanation_create-document-type':
+    'Du har ikke tilgang til å opprette denne typen dokument.',
+
+  /** The explanation when unable to create any document at all */
+  'insufficient-permissions-message.not-authorized-explanation_create-any-document':
+    'Du har ikke tilgang til å opprette et dokument.',
+
+  /** The explanation when unable to create a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_create-document':
+    'Du har ikke tilgang til å opprette dette dokumentet.',
+
+  /** The explanation when unable to delete a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_delete-document':
+    'Du har ikke tilgang til å slette dette dokumentet.',
+
+  /** The explanation when unable to discard changes in a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_discard-changes':
+    'Du har ikke tilgang til å forkaste endringer i dette dokumentet.',
+
+  /** The explanation when unable to duplicate a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_duplicate-document':
+    'Du har ikke tilgang til å duplisere dette dokumentet.',
+
+  /** The explanation when unable to publish a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_publish-document':
+    'Du har ikke tilgang til å publisere dette dokumentet.',
+
+  /** The explanation when unable to unpublish a particular document */
+  'insufficient-permissions-message.not-authorized-explanation_unpublish-document':
+    'Du har ikke tilgang til å avpublisere dette dokumentet.',
+
+  /** Appears after the not-authorized message. Lists the current roles. */
+  'insufficient-permissions-message.roles': 'Dine roller: <Roles/>',
 }
 
 export default studioResources

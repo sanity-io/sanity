@@ -117,7 +117,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
         constrainSize
       >
         <Button
-          aria-label={t('inputs.image.actions-menu.options.label')}
+          aria-label={t('inputs.image.actions-menu.options.aria-label')}
           data-testid="options-menu-button"
           icon={EllipsisVerticalIcon}
           mode="ghost"
