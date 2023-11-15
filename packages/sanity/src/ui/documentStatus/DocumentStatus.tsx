@@ -38,7 +38,7 @@ export function DocumentStatus({document, type}: DocumentStatusProps) {
   const updatedAt = document && '_updatedAt' in document && document._updatedAt
 
   const lastUpdatedTimeAgo = useTimeAgo(updatedAt || '', {minimal: true, agoSuffix: true})
-  const label = updatedAt
+  const label = document
     ? `${DOCUMENT_STATUS[type].activePrefix} ${lastUpdatedTimeAgo}`
     : DOCUMENT_STATUS[type].inactiveMessage
   const Icon = DOCUMENT_STATUS[type].icon
