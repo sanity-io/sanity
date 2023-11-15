@@ -72,6 +72,11 @@ export interface CommandListProps<T = any> extends ResponsivePaddingProps {
   onEndReached?: () => void
   /** Number of items from the end of the virtual list before which `onEndReached` is triggered */
   onEndReachedIndexOffset?: number
+  /**
+   * Callback fired when the virtual list scroll element has rendered
+   * TODO: consider changing to `onReady` and passing the virtualizer instance? What constitutes "ready" in this case?
+   */
+  onListReady?: (virtualListElement: HTMLElement) => void
   /** Only show selection state when the virtual list is active (is hovered or has focus) */
   onlyShowSelectionWhenActive?: boolean
   /** Number of items to render above and below the visible area*/
