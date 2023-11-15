@@ -13,6 +13,7 @@ import {getIntentState} from './getIntentState'
 import {router} from './router'
 import {DeskToolOptions} from './types'
 import {comments} from './comments'
+import {wrapIconInDeskRenamePrompt} from './deskRename/deskRenamedIcon'
 import {changesInspector} from './panes/document/inspectors/changes'
 import {validationInspector} from './panes/document/inspectors/validation'
 import {definePlugin} from 'sanity'
@@ -76,47 +77,53 @@ const inspectors = [validationInspector, changesInspector]
  * })
  * ```
  * */
-export const deskTool = definePlugin<DeskToolOptions | void>((options) => ({
-  name: '@sanity/desk-tool',
-  document: {
-    actions: (prevActions) => {
-      // NOTE: since it's possible to have several desk tools in one Studio,
-      // we need to check whether the document actions already exist in the Studio config
-      return Array.from(new Set([...prevActions, ...documentActions]))
-    },
-    badges: (prevBadges) => {
-      // NOTE: since it's possible to have several desk tools in one Studio,
-      // we need to check whether the document badges already exist in the Studio config
-      return Array.from(new Set([...prevBadges, ...documentBadges]))
-    },
-    inspectors: (prevInspectors) => {
-      // NOTE: since it's possible to have several desk tools in one Studio,
-      // we need to check whether the inspectors already exist in the Studio config
-      return Array.from(new Set([...prevInspectors, ...inspectors]))
-    },
-  },
+export const deskTool = definePlugin<DeskToolOptions | void>((options) => {
+  const hasSpecifiedName = options ? typeof options.name === 'string' : false
+  const ToolIcon = options?.icon || MasterDetailIcon
+  const icon = hasSpecifiedName ? ToolIcon : wrapIconInDeskRenamePrompt(ToolIcon)
 
-  plugins: [comments()],
-
-  tools: [
-    {
-      name: options?.name || 'desk',
-      title: options?.title || 'Desk',
-      icon: options?.icon || MasterDetailIcon,
-      component: lazy(() => import('./components/deskTool')),
-      canHandleIntent: (intent, params) => {
-        if (intent === 'create') return canHandleCreateIntent(params)
-        if (intent === 'edit') return canHandleEditIntent(params)
-        return false
+  return {
+    name: '@sanity/desk-tool',
+    document: {
+      actions: (prevActions) => {
+        // NOTE: since it's possible to have several desk tools in one Studio,
+        // we need to check whether the document actions already exist in the Studio config
+        return Array.from(new Set([...prevActions, ...documentActions]))
       },
-      getIntentState,
-      // Controlled by sanity/src/desk/components/deskTool/DeskTitle.tsx
-      controlsDocumentTitle: true,
-      options,
-      router,
+      badges: (prevBadges) => {
+        // NOTE: since it's possible to have several desk tools in one Studio,
+        // we need to check whether the document badges already exist in the Studio config
+        return Array.from(new Set([...prevBadges, ...documentBadges]))
+      },
+      inspectors: (prevInspectors) => {
+        // NOTE: since it's possible to have several desk tools in one Studio,
+        // we need to check whether the inspectors already exist in the Studio config
+        return Array.from(new Set([...prevInspectors, ...inspectors]))
+      },
     },
-  ],
-}))
+
+    plugins: [comments()],
+
+    tools: [
+      {
+        name: options?.name || 'structure',
+        title: options?.title || 'Structure',
+        icon,
+        component: lazy(() => import('./components/deskTool')),
+        canHandleIntent: (intent, params) => {
+          if (intent === 'create') return canHandleCreateIntent(params)
+          if (intent === 'edit') return canHandleEditIntent(params)
+          return false
+        },
+        getIntentState,
+        // Controlled by sanity/src/desk/components/deskTool/DeskTitle.tsx
+        controlsDocumentTitle: true,
+        options,
+        router,
+      },
+    ],
+  }
+})
 
 function canHandleCreateIntent(params: Record<string, unknown>) {
   // We can't handle create intents without a `type` parameter

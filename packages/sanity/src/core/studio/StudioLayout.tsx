@@ -11,11 +11,12 @@ import React, {
 } from 'react'
 import styled from 'styled-components'
 import {NoToolsScreen} from './screens/NoToolsScreen'
+import {RedirectingScreen} from './screens/RedirectingScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useNavbarComponent} from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
-import {RouteScope, useRouterState} from 'sanity/router'
+import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 
 const SearchFullscreenPortalCard = styled(Card)`
   height: 100%;
@@ -65,6 +66,7 @@ export const NavbarContext = createContext<NavbarContextValue>({
  */
 export function StudioLayout() {
   const {name, title, tools} = useWorkspace()
+  const router = useRouter()
   const activeToolName = useRouterState(
     useCallback(
       (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
@@ -113,13 +115,35 @@ export function StudioLayout() {
 
   const Navbar = useNavbarComponent()
 
+  /**
+   * Handle legacy URL redirects from `/desk` to `/structure`
+   */
+  const isLegacyDeskRedirect =
+    !activeTool &&
+    (activeToolName === 'desk' || !activeToolName) &&
+    typeof window !== 'undefined' &&
+    /\/desk(\/|$)/.test(window.location.pathname) &&
+    tools.some((tool) => tool.name === 'structure')
+
+  useEffect(() => {
+    if (!isLegacyDeskRedirect) {
+      return
+    }
+
+    router.navigateUrl({
+      path: window.location.pathname.replace(/\/desk/, '/structure'),
+      replace: true,
+    })
+  }, [isLegacyDeskRedirect, router])
+
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
         <Navbar />
       </NavbarContext.Provider>
+      {isLegacyDeskRedirect && <RedirectingScreen />}
       {tools.length === 0 && <NoToolsScreen />}
-      {tools.length > 0 && !activeTool && activeToolName && (
+      {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (
         <ToolNotFoundScreen toolName={activeToolName} />
       )}
       {searchFullscreenOpen && (
