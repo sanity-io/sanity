@@ -1,6 +1,6 @@
-import React, {useCallback, useRef, useState} from 'react'
-import {ArrowRightIcon, CheckmarkIcon} from '@sanity/icons'
-import {Button, Flex, Popover, Stack, Text} from '@sanity/ui'
+import React, {useCallback, useState} from 'react'
+import {CheckmarkIcon, LaunchIcon} from '@sanity/icons'
+import {Button, Flex, Grid, Popover, Stack, Text} from '@sanity/ui'
 import {useDeskRenameOnboarding} from './onboardingStore'
 
 const RENAME_ANNOUNCEMENT_URL = 'https://sanity.io/blog/desk-is-now-structure'
@@ -45,8 +45,6 @@ export function wrapIconInDeskRenamePrompt(Icon: React.ComponentType): React.Com
 }
 
 function DeskRenamedCard(props: {onDismiss: () => void}) {
-  const buttonRef = useRef<HTMLButtonElement>(null)
-
   const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     // prevent this from propagating upwards in the dom tree as this component is rendered inside an anchor element already,
     // and we don't want the anchor element to handle clicks in here
@@ -57,31 +55,41 @@ function DeskRenamedCard(props: {onDismiss: () => void}) {
     <Stack as="section" padding={3} space={3} onClick={handleClick}>
       <Stack padding={2} space={4}>
         <Flex gap={2} align="center">
-          <Text as="h1" size={1} weight="semibold">
-            "Desk" is now "Structure"
+          <Text as="h1" size={1}>
+            <strong>Desk</strong> is now <strong>Structure</strong>
           </Text>
         </Flex>
 
         <Stack space={3}>
           <Text as="p" muted size={1}>
-            This tool was previously named <strong>"Desk"</strong>, but has now been renamed to
-            <strong>"Structure"</strong> to better reflect its purpose.{' '}
-            <a href={RENAME_ANNOUNCEMENT_URL} target="_blank" rel="noreferrer">
-              Learn more <ArrowRightIcon />
-            </a>
+            We've renamed this tool to better reflect its purpose alongside the new Presentation
+            tool.
           </Text>
         </Stack>
       </Stack>
 
-      <Button
-        fontSize={1}
-        icon={CheckmarkIcon}
-        onClick={props.onDismiss}
-        padding={3}
-        ref={buttonRef}
-        text="Ok, good to know!"
-        tone="primary"
-      />
+      <Grid columns={2} gap={3}>
+        <Button
+          as="a"
+          data-as="a"
+          href={RENAME_ANNOUNCEMENT_URL}
+          icon={LaunchIcon}
+          target="_blank"
+          rel="noreferrer"
+          fontSize={1}
+          padding={3}
+          text="Learn more"
+          mode="ghost"
+        />
+        <Button
+          fontSize={1}
+          icon={CheckmarkIcon}
+          onClick={props.onDismiss}
+          padding={3}
+          text="Got it"
+          tone="primary"
+        />
+      </Grid>
     </Stack>
   )
 }

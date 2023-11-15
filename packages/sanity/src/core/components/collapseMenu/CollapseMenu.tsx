@@ -290,7 +290,6 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
                   {dividerBefore && index !== 0 && <CollapseMenuDivider hidden={hidden} />}
                   <Tooltip
                     portal
-                    zOffset={400}
                     disabled={!tooltipText}
                     content={
                       <Box padding={2} sizing="border">
