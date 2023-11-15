@@ -4,7 +4,7 @@ import {ContentSourceMap, ContentSourceMapDocuments, studioPath} from '@sanity/c
 import {Box, Button, Card, Code, Label, Stack} from '@sanity/ui'
 import {useMemo} from 'react'
 import {InputProps, isDocumentSchemaType} from 'sanity'
-import {useDocumentPane} from 'sanity/desk'
+import {useDocumentPane, usePaneRouter} from 'sanity/desk'
 import {vercelStegaDecodeAll} from '@vercel/stega'
 import {stegaEncodeSourceMap} from '@sanity/client/stega'
 import styled from 'styled-components'
@@ -66,7 +66,12 @@ function DocumentDebugger() {
 function InputDebugger(props: InputProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const value = props.value as any
-  const {documentId, documentType, onFocus} = useDocumentPane()
+  const paneRouter = usePaneRouter()
+  const {
+    documentId,
+    documentType,
+    // onFocus,
+  } = useDocumentPane()
   const sourcePath = 'field'
   const resultSourceMap = useMemo(() => {
     const documents = [
@@ -138,7 +143,8 @@ function InputDebugger(props: InputProps) {
                   onClick={(event) => {
                     if (prettyPath) {
                       event.preventDefault()
-                      onFocus(studioPath.fromString(prettyPath))
+                      paneRouter.setParams({...paneRouter.params, path: prettyPath})
+                      // onFocus(studioPath.fromString(prettyPath))
                     }
                   }}
                 >
