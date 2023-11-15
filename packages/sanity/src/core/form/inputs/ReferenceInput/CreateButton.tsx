@@ -1,8 +1,9 @@
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
-import {Box, Button, Menu, MenuButton, MenuButtonProps, MenuItem, Tooltip} from '@sanity/ui'
+import {Box, Button, Menu, MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '@sanity/ui'
 import {useTranslation} from '../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../components'
+import {useCurrentUser} from '../../../store'
 import type {CreateReferenceOption} from './types'
 
 interface Props extends ComponentProps<typeof Button> {
@@ -27,6 +28,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 
 export function CreateButton(props: Props) {
   const {createOptions, onCreate, id, menuRef, ...rest} = props
+  const currentUser = useCurrentUser()
 
   const {t} = useTranslation()
   const canCreateAny = createOptions.some((option) => option.permission.granted)
@@ -35,7 +37,10 @@ export function CreateButton(props: Props) {
       <Tooltip
         content={
           <Box padding={2}>
-            <InsufficientPermissionsMessage operationLabel="create a new reference" />
+            <InsufficientPermissionsMessage
+              currentUser={currentUser}
+              context="create-new-reference"
+            />
           </Box>
         }
       >
@@ -73,7 +78,10 @@ export function CreateButton(props: Props) {
               key={createOption.id}
               content={
                 <Box padding={2}>
-                  <InsufficientPermissionsMessage operationLabel="create this type of document" />
+                  <InsufficientPermissionsMessage
+                    currentUser={currentUser}
+                    context="create-document-type"
+                  />
                 </Box>
               }
               portal
@@ -84,6 +92,7 @@ export function CreateButton(props: Props) {
                   disabled={!createOption.permission.granted}
                   icon={createOption.icon}
                   text={createOption.title}
+                  // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => onCreate(createOption)}
                 />
               </div>
@@ -99,6 +108,7 @@ export function CreateButton(props: Props) {
       text={t('inputs.reference.action-create-new-document')}
       mode="ghost"
       disabled={!createOptions[0].permission.granted || props.readOnly}
+      // eslint-disable-next-line react/jsx-no-bind
       onClick={() => onCreate(createOptions[0])}
       icon={AddIcon}
     />

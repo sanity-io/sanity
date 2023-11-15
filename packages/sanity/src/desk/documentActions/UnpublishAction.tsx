@@ -56,6 +56,7 @@ export const UnpublishAction: DocumentActionComponent = ({
           <ConfirmDeleteDialog
             id={draft?._id || id}
             type={type}
+            // eslint-disable-next-line no-attribute-string-literals/no-attribute-string-literals
             action="unpublish"
             onCancel={handleCancel}
             onConfirm={handleConfirm}
@@ -77,10 +78,7 @@ export const UnpublishAction: DocumentActionComponent = ({
       icon: UnpublishIcon,
       label: 'Unpublish',
       title: (
-        <InsufficientPermissionsMessage
-          operationLabel="unpublish this document"
-          currentUser={currentUser}
-        />
+        <InsufficientPermissionsMessage context="unpublish-document" currentUser={currentUser} />
       ),
       disabled: true,
     }

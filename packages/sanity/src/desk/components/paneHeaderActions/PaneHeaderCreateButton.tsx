@@ -77,7 +77,11 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
 
   if (nothingGranted) {
     return (
-      <InsufficientPermissionsMessageTooltip reveal loading={isTemplatePermissionsLoading}>
+      <InsufficientPermissionsMessageTooltip
+        context="create-document-type"
+        reveal
+        loading={isTemplatePermissionsLoading}
+      >
         <Button
           aria-label={t('pane-header.disabled-created-button.aria-label')}
           data-testid="action-intent-button"
@@ -100,6 +104,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       <InsufficientPermissionsMessageTooltip
         reveal={disabled}
         loading={isTemplatePermissionsLoading}
+        context="create-document-type"
       >
         <IntentButton
           aria-label={firstItem.title}
@@ -147,6 +152,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
 
             return (
               <InsufficientPermissionsMessageTooltip
+                context="create-document-type"
                 key={item.id}
                 reveal={disabled}
                 loading={isTemplatePermissionsLoading}

@@ -3,9 +3,9 @@ import {Tooltip, Box, Card, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
+import {useTranslation} from '../../../../i18n'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {useIntentLink} from 'sanity/router'
-import {useTranslation} from '../../../../i18n'
 
 const TooltipContentBox = styled(Box)`
   max-width: 300px;
@@ -51,10 +51,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
       portal
       content={
         <TooltipContentBox padding={2}>
-          <InsufficientPermissionsMessage
-            currentUser={currentUser}
-            operationLabel={t('new-document.error.unable-to-create-document')}
-          />
+          <InsufficientPermissionsMessage currentUser={currentUser} context="create-document" />
         </TooltipContentBox>
       }
     >

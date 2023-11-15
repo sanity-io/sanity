@@ -498,6 +498,10 @@ const deskLocaleStrings = {
 
   /** Appears in a document list pane header if there are more than one option for create. This is the label for that menu */
   'pane-header.create-menu.label': 'Create',
+
+  /** --- Insufficient permissions message --- */
+  /** the loading messaging for when the tooltip is still loading permission info */
+  'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 }
 
 /**
