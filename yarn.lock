@@ -4253,9 +4253,9 @@
   integrity sha512-ZTaqn/qSqUuAq1YwvOFQfVW1AR/oQJlLSZVustdjwI+GZ8kr0MSHBj0tsXPW1EqHubx50gtBEjbPGsdZwQwCjQ==
 
 "@types/prop-types@*":
-  version "15.7.8"
-  resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.8.tgz#805eae6e8f41bd19e88917d2ea200dc992f405d3"
-  integrity sha512-kMpQpfZKSCBqltAJwskgePRaYRFukDkm1oItcAbC3gNELR20XIBcN9VRgg4+m8DKsTfkWeA4m4Imp4DDuWy7FQ==
+  version "15.7.10"
+  resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.10.tgz#892afc9332c4d62a5ea7e897fe48ed2085bbb08a"
+  integrity sha512-mxSnDQxPqsZxmeShFH+uwQ4kO4gcJcGahjjMFeLbKE95IAZiiZyiEepGZjtXJ7hN/yfu0bu9xN2ajcU0JcxX6A==
 
 "@types/qs@*":
   version "6.9.7"
@@ -4279,10 +4279,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@^18.0.0", "@types/react-dom@^18.2.10":
-  version "18.2.10"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.2.10.tgz#06247cb600e39b63a0a385f6a5014c44bab296f2"
-  integrity sha512-5VEC5RgXIk1HHdyN1pHlg0cOqnxHzvPGpMMyGAP5qSaDRmyZNDaQ0kkVAkK6NYlDhP6YBID3llaXlmAS/mdgCA==
+"@types/react-dom@^18.0.0", "@types/react-dom@^18.2.15":
+  version "18.2.15"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.2.15.tgz#921af67f9ee023ac37ea84b1bc0cc40b898ea522"
+  integrity sha512-HWMdW+7r7MR5+PZqJF6YFNSCtjz1T0dsvo/f1BV6HkV+6erD/nA7wd9NM00KVG83zf2nJ7uATPO9ttdIPvi3gg==
   dependencies:
     "@types/react" "*"
 
@@ -4307,10 +4307,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^18.0.25", "@types/react@^18.2.25":
-  version "18.2.25"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.25.tgz#99fa44154132979e870ff409dc5b6e67f06f0199"
-  integrity sha512-24xqse6+VByVLIr+xWaQ9muX1B4bXJKXBbjszbld/UEDslGLY53+ZucF44HCmLbMPejTzGG9XgR+3m2/Wqu1kw==
+"@types/react@*", "@types/react@^18.0.25", "@types/react@^18.2.37":
+  version "18.2.37"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.37.tgz#0f03af69e463c0f19a356c2660dbca5d19c44cae"
+  integrity sha512-RGAYMi2bhRgEXT3f4B92WTohopH6bIXw05FuGlmJEnv/omEn190+QYEIYxIAuIBdKgboYYdVved2p1AxZVQnaw==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -4342,9 +4342,9 @@
     "@types/node" "*"
 
 "@types/scheduler@*":
-  version "0.16.4"
-  resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.4.tgz#fedc3e5b15c26dc18faae96bf1317487cb3658cf"
-  integrity sha512-2L9ifAGl7wmXwP4v3pN4p2FLhD0O1qsJpvKmNin5VA8+UvNVb447UDaAEV6UdrkA+m/Xs58U1RFps44x6TFsVQ==
+  version "0.16.6"
+  resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.6.tgz#eb26db6780c513de59bee0b869ef289ad3068711"
+  integrity sha512-Vlktnchmkylvc9SnwwwozTv04L/e1NykF5vgoQ0XTmI8DD+wxfjQuHuvHS3p0r2jz2x2ghPs2h1FVeDirIteWA==
 
 "@types/semver-compare@^1.0.1":
   version "1.0.1"
