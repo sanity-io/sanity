@@ -69,12 +69,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       icon: ResetIcon,
       disabled: true,
       label: t('action.discard-changes.label'),
-      title: (
-        <InsufficientPermissionsMessage
-          operationLabel="discard changes in this document"
-          currentUser={currentUser}
-        />
-      ),
+      title: <InsufficientPermissionsMessage context="discard-changes" currentUser={currentUser} />,
     }
   }
 
