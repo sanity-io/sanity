@@ -135,7 +135,14 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<Button size="small" mode="bleed" icon={EllipsisHorizontalIcon} />}
+          button={
+            <Button
+              size="small"
+              mode="bleed"
+              icon={EllipsisHorizontalIcon}
+              tooltipProps={{content: 'Show more'}}
+            />
+          }
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>

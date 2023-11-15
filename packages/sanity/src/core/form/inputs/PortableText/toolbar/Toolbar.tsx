@@ -128,19 +128,18 @@ const InnerToolbar = memo(function InnerToolbar({
         )}
       </Flex>
       <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
-        <Tooltip
-          content={`${isFullscreen ? 'Collapse' : 'Expand'} editor`}
-          hotkeys={[`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter']}
-          placement={isFullscreen ? 'bottom' : 'top'}
-          portal="default"
-        >
-          <Button
-            size="small"
-            icon={isFullscreen ? CollapseIcon : ExpandIcon}
-            mode="bleed"
-            onClick={onToggleFullscreen}
-          />
-        </Tooltip>
+        <Button
+          size="small"
+          icon={isFullscreen ? CollapseIcon : ExpandIcon}
+          mode="bleed"
+          onClick={onToggleFullscreen}
+          tooltipProps={{
+            content: `${isFullscreen ? 'Collapse' : 'Expand'} editor`,
+            hotkeys: [`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter'],
+            placement: isFullscreen ? 'bottom' : 'top',
+            portal: 'default',
+          }}
+        />
       </FullscreenButtonBox>
     </RootFlex>
   )

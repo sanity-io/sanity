@@ -89,7 +89,13 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
         {/* (Fullscreen) Close button */}
         {fullscreen && (
           <Card>
-            <Button aria-label="Close search" icon={ArrowLeftIcon} mode="bleed" onClick={onClose} />
+            <Button
+              aria-label="Close search"
+              icon={ArrowLeftIcon}
+              mode="bleed"
+              onClick={onClose}
+              tooltipProps={{content: 'Close search'}}
+            />
           </Card>
         )}
 
@@ -128,6 +134,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
               onClick={handleFiltersToggle}
               selected={filtersVisible}
               tone="default"
+              tooltipProps={{content: filtersVisible ? 'Hide filters' : 'Show filters'}}
             />
             {notificationBadgeVisible && <NotificationBadge />}
           </FilterBox>

@@ -69,13 +69,8 @@ export function PublishStatus(props: PublishStatusProps) {
           disabled={disabled}
           aria-label={a11yLabel}
           icon={liveEdit ? PlayIcon : PublishIcon}
-          text={
-            collapsed ? null : (
-              <abbr aria-label={a11yLabel}>
-                {liveEdit && lastUpdated ? lastUpdatedTime : lastPublishedTime}
-              </abbr>
-            )
-          }
+          // eslint-disable-next-line no-nested-ternary
+          text={collapsed ? '' : liveEdit && lastUpdated ? lastUpdatedTime : lastPublishedTime}
         />
       </TooltipWithNodes>
     </Root>

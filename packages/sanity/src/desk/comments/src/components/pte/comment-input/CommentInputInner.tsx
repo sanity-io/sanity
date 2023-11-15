@@ -130,6 +130,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               mode="bleed"
               onClick={handleMentionButtonClicked}
               size="small"
+              tooltipProps={{content: 'Mention user'}}
             />
 
             <ButtonDivider />
@@ -142,6 +143,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               onClick={onSubmit}
               size="small"
               tone={hasChanges && canSubmit ? 'primary' : 'default'}
+              tooltipProps={{content: 'Send comment'}}
             />
           </Flex>
         </Stack>

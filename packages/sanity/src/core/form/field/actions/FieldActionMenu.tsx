@@ -13,8 +13,9 @@ export interface FieldActionMenuProps {
   onMenuOpenChange: (open: boolean) => void
 }
 
-const STATUS_BUTTON_TOOLTIP_PROPS: StatusButtonProps['tooltip'] = {
+const STATUS_BUTTON_TOOLTIP_PROPS: StatusButtonProps['tooltipProps'] = {
   placement: 'top',
+  portal: true,
 }
 
 function renderAsButton(node: DocumentFieldActionNode) {
@@ -102,12 +103,14 @@ const RootFieldActionMenuNode = memo(function RootFieldActionMenuNode(props: {
     return (
       <StatusButton
         icon={node.icon}
-        // Do not show tooltip if menu is open
-        label={open ? undefined : node.title}
         mode="bleed"
         size="small"
         onClick={node.onAction}
-        tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
+        tooltipProps={{
+          ...STATUS_BUTTON_TOOLTIP_PROPS,
+          content: node.title,
+          disabled: open,
+        }}
       />
     )
   }
@@ -135,9 +138,12 @@ function RootFieldActionMenuGroup(props: {
       button={
         <StatusButton
           icon={node.icon}
-          label={open ? undefined : node.title}
           mode="bleed"
-          tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
+          tooltipProps={{
+            ...STATUS_BUTTON_TOOLTIP_PROPS,
+            content: node.title,
+            disabled: open,
+          }}
           size="small"
         />
       }

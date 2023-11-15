@@ -73,7 +73,12 @@ export function PopoverDialog(props: PopoverDialogProps) {
                     {header}
                   </Text>
                 </Box>
-                <Button icon={CloseIcon} mode="bleed" onClick={handleClose} />
+                <Button
+                  icon={CloseIcon}
+                  mode="bleed"
+                  onClick={handleClose}
+                  tooltipProps={{content: 'close'}}
+                />
               </Flex>
             </Box>
           </StickyLayer>

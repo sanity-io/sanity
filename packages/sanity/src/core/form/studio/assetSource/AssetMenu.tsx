@@ -24,6 +24,7 @@ export function AssetMenu({
           mode={border ? 'ghost' : triggerButtonMode}
           icon={EllipsisHorizontalIcon}
           tone={border ? 'default' : triggerButtonTone}
+          tooltipProps={{content: 'Show more'}}
         />
       }
       id="asset-menu"

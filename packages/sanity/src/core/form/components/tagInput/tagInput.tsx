@@ -304,7 +304,13 @@ function Tag(props: {
 
         {enabled && (
           <Box marginLeft={1}>
-            <Button icon={CloseIcon} mode="bleed" onClick={handleRemoveClick} size="small" />
+            <Button
+              icon={CloseIcon}
+              mode="bleed"
+              onClick={handleRemoveClick}
+              size="small"
+              tooltipProps={{content: 'Remove'}}
+            />
           </Box>
         )}
       </Flex>

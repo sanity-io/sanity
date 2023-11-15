@@ -132,6 +132,7 @@ export function FileActionsMenu(props: Props) {
               mode="bleed"
               onClick={handleClick}
               ref={setOptionsButtonRef}
+              tooltipProps={{content: 'Open file options menu'}}
             />
           </Popover>
         </Flex>

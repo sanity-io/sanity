@@ -10,21 +10,25 @@ const DragHandleButton = styled(Button)<{grid?: boolean}>`
 
 export const SortableItemIdContext = React.createContext<string | null>(null)
 
-export const DragHandle = function DragHandle(
-  props: {
-    grid?: boolean
-  } & ButtonProps,
-) {
+interface DragHandleProps {
+  grid?: boolean
+  size: ButtonProps['size']
+  mode?: ButtonProps['mode']
+}
+
+export const DragHandle = function DragHandle(props: DragHandleProps) {
   const id = useContext(SortableItemIdContext)!
   const {listeners, attributes} = useSortable({id})
+  const {mode = 'bleed', ...rest} = props
 
   return (
     <DragHandleButton
       icon={DragHandleIcon}
-      mode="bleed"
+      tooltipProps={{content: 'Drag to reorder'}}
+      mode={mode}
       data-ui="DragHandleButton"
       {...attributes}
-      {...props}
+      {...rest}
       {...listeners}
     />
   )

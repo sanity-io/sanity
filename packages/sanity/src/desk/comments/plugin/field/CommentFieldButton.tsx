@@ -1,5 +1,13 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {Flex, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
+import {
+  Flex,
+  Popover,
+  Stack,
+  Text,
+  useClickOutside,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Button as SanityUIButton, // Button with specific styling for the children
+} from '@sanity/ui'
 import styled from 'styled-components'
 import {
   CommentMessage,
@@ -139,37 +147,42 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
         ref={setPopoverElement}
       >
         <div>
-          <Tooltip disabled={open} portal placement="top" content="Add comment">
-            <Button
-              aria-label="Add comment"
-              disabled={isRunningSetup}
-              icon={AddCommentIcon}
-              mode="bleed"
-              onClick={onClick}
-              size="small"
-              selected={open}
-            />
-          </Tooltip>
+          <Button
+            aria-label="Add comment"
+            disabled={isRunningSetup}
+            icon={AddCommentIcon}
+            mode="bleed"
+            onClick={onClick}
+            size="small"
+            selected={open}
+            tooltipProps={{
+              disabled: open,
+              portal: true,
+              placement: 'top',
+              content: 'Add comment',
+            }}
+          />
         </div>
       </Popover>
     )
   }
 
   return (
-    <Tooltip
-      portal
-      placement="top"
-      content={`View comment${count > 1 ? 's' : ''}`}
-      fallbackPlacements={['bottom']}
-    >
-      <Button aria-label="Open comments" mode="bleed" onClick={onClick} size="small">
+    <Tooltip portal placement="top" content={`View comment${count > 1 ? 's' : ''}`}>
+      <SanityUIButton
+        aria-label="Open comments"
+        mode="bleed"
+        onClick={onClick}
+        padding={2}
+        space={2}
+      >
         <Flex align="center" gap={2}>
           <Text size={1}>
             <CommentIcon />
           </Text>
           <Text size={0}>{count > 9 ? '9+' : count}</Text>
         </Flex>
-      </Button>
+      </SanityUIButton>
     </Tooltip>
   )
 }

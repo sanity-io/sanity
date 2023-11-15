@@ -30,12 +30,14 @@ export function CalendarHeader(props: {
           onClick={handlePrevMonthClick}
           mode="bleed"
           icon={ChevronLeftIcon}
+          tooltipProps={{content: 'Previous month'}}
         />
         <Button
           aria-label="Go to next month"
           mode="bleed"
           icon={ChevronRightIcon}
           onClick={handleNextMonthClick}
+          tooltipProps={{content: 'Next month'}}
         />
       </Box>
     </Flex>

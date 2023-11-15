@@ -92,10 +92,11 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
           button={
             <Button
               aria-label="Open menu"
-              iconRight={EllipsisHorizontalIcon}
+              icon={EllipsisHorizontalIcon}
               mode="bleed"
               size="small"
               tabIndex={focused ? 0 : 1}
+              tooltipProps={{content: 'Open menu'}}
             />
           }
           ref={menuButton}

@@ -1,6 +1,13 @@
 import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
 import {EllipsisHorizontalIcon, CropIcon} from '@sanity/icons'
-import {Inline, Menu, Popover, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {
+  Inline,
+  Menu,
+  Popover,
+  TooltipDelayGroupProvider,
+  useClickOutside,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui'
 
@@ -82,34 +89,38 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
-      {showEdit && (
-        <Button
-          aria-label="Open image edit dialog"
-          data-testid="options-menu-edit-details"
-          icon={CropIcon}
-          mode="ghost"
-          onClick={onEdit}
-          ref={setHotspotButtonElement}
-        />
-      )}
-      {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
+      <TooltipDelayGroupProvider delay={{open: 400}}>
+        {showEdit && (
+          <Button
+            aria-label="Open image edit dialog"
+            data-testid="options-menu-edit-details"
+            icon={CropIcon}
+            mode="ghost"
+            onClick={onEdit}
+            ref={setHotspotButtonElement}
+            tooltipProps={{content: 'Edit image'}}
+          />
+        )}
+        {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
      and break replacing an uploaded file. */}
-      <Popover
-        id="image-actions-menu"
-        content={<Menu ref={setMenuElement}>{children}</Menu>}
-        portal
-        open={isMenuOpen}
-        constrainSize
-      >
-        <Button
-          aria-label="Open image options menu"
-          data-testid="options-menu-button"
-          icon={EllipsisHorizontalIcon}
-          mode="ghost"
-          onClick={handleClick}
-          ref={setOptionsButtonRef}
-        />
-      </Popover>
+        <Popover
+          id="image-actions-menu"
+          content={<Menu ref={setMenuElement}>{children}</Menu>}
+          portal
+          open={isMenuOpen}
+          constrainSize
+        >
+          <Button
+            aria-label="Open image options menu"
+            data-testid="options-menu-button"
+            icon={EllipsisHorizontalIcon}
+            mode="ghost"
+            onClick={handleClick}
+            ref={setOptionsButtonRef}
+            tooltipProps={{content: 'Show more'}}
+          />
+        </Popover>
+      </TooltipDelayGroupProvider>
     </MenuActionsWrapper>
   )
 }

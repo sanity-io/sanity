@@ -382,6 +382,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                           mode="bleed"
                           icon={EllipsisHorizontalIcon}
                           data-testid="menu-button"
+                          tooltipProps={{content: 'Show more'}}
                         />
                       }
                       id={`${inputId}-menuButton`}
@@ -441,7 +442,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       </Text>
                       <Button
                         onClick={handleFixStrengthMismatch}
-                        text={<>Convert to {weakShouldBe} reference</>}
+                        text={`Convert to ${weakShouldBe} reference`}
                         tone="caution"
                       />
                     </Stack>
@@ -459,11 +460,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       <Text as="p" muted size={1}>
                         Error: {loadableReferenceInfo.error.message}
                       </Text>
-                      <Button
-                        onClick={loadableReferenceInfo.retry!}
-                        text={<>Retry</>}
-                        tone="primary"
-                      />
+                      <Button onClick={loadableReferenceInfo.retry!} text="Retry" tone="primary" />
                     </Stack>
                   </AlertStrip>
                 )}

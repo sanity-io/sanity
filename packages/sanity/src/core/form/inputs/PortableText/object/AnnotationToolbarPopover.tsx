@@ -165,6 +165,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               size="small"
               alt="Edit annotation"
               tabIndex={0}
+              tooltipProps={{content: 'Edit annotation'}}
             />
             <Button
               icon={TrashIcon}
@@ -173,6 +174,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               onClick={handleRemoveButtonClicked}
               tone="critical"
               alt="Remove annotation"
+              tooltipProps={{content: 'Remove annotation'}}
               tabIndex={0}
             />
           </Inline>

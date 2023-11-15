@@ -9,6 +9,7 @@ import {
   PortalProvider,
   useMediaIndex,
   Text,
+  TooltipDelayGroupProvider,
 } from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
 import {startCase} from 'lodash'
@@ -177,6 +178,7 @@ export function StudioNavbar() {
                   icon={MenuIcon}
                   onClick={handleOpenDrawer}
                   ref={setDrawerButtonEl}
+                  tooltipProps={{content: 'Open drawer', placement: 'right'}}
                 />
               )}
 
@@ -225,43 +227,45 @@ export function StudioNavbar() {
           </Flex>
 
           {/** Right flex */}
-          <Flex align="center" gap={3} justify="flex-end">
-            {/* Search */}
-            <LayerProvider>
-              <SearchProvider fullscreen={shouldRender.searchFullscreen}>
-                <BoundaryElementProvider element={document.body}>
-                  <PortalProvider element={searchFullscreenPortalEl}>
-                    {shouldRender.searchFullscreen && (
-                      <SearchDialog
-                        onClose={handleCloseSearchFullscreen}
-                        onOpen={handleOpenSearchFullscreen}
-                        open={searchFullscreenOpen}
-                      />
-                    )}
-                  </PortalProvider>
-                  <SearchPopover
-                    onClose={handleCloseSearch}
-                    onOpen={handleOpenSearch}
-                    open={searchOpen}
-                  />
-                </BoundaryElementProvider>
-              </SearchProvider>
-            </LayerProvider>
+          <TooltipDelayGroupProvider delay={{open: 400}}>
+            <Flex align="center" gap={3} justify="flex-end">
+              {/* Search */}
+              <LayerProvider>
+                <SearchProvider fullscreen={shouldRender.searchFullscreen}>
+                  <BoundaryElementProvider element={document.body}>
+                    <PortalProvider element={searchFullscreenPortalEl}>
+                      {shouldRender.searchFullscreen && (
+                        <SearchDialog
+                          onClose={handleCloseSearchFullscreen}
+                          onOpen={handleOpenSearchFullscreen}
+                          open={searchFullscreenOpen}
+                        />
+                      )}
+                    </PortalProvider>
+                    <SearchPopover
+                      onClose={handleCloseSearch}
+                      onOpen={handleOpenSearch}
+                      open={searchOpen}
+                    />
+                  </BoundaryElementProvider>
+                </SearchProvider>
+              </LayerProvider>
 
-            {/* Search button (desktop) */}
-            {!shouldRender.searchFullscreen && (
-              <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
-            )}
+              {/* Search button (desktop) */}
+              {!shouldRender.searchFullscreen && (
+                <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+              )}
 
-            {shouldRender.configIssues && <ConfigIssuesButton />}
-            {shouldRender.resources && <ResourcesButton />}
-            <PresenceMenu />
-            {shouldRender.tools && <UserMenu />}
-            {/* Search button (mobile) */}
-            {shouldRender.searchFullscreen && (
-              <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
-            )}
-          </Flex>
+              {shouldRender.configIssues && <ConfigIssuesButton />}
+              {shouldRender.resources && <ResourcesButton />}
+              <PresenceMenu />
+              {shouldRender.tools && <UserMenu />}
+              {/* Search button (mobile) */}
+              {shouldRender.searchFullscreen && (
+                <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
+              )}
+            </Flex>
+          </TooltipDelayGroupProvider>
         </NavGrid>
       </RootCard>
 

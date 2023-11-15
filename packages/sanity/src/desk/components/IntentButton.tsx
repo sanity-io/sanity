@@ -1,12 +1,15 @@
 import React, {forwardRef, useMemo} from 'react'
 import {PaneMenuItem} from '../types'
-import {Button} from '../../ui'
+import {Button, ButtonProps} from '../../ui'
 import {IntentLink} from 'sanity/router'
 
 type RouterIntent = NonNullable<PaneMenuItem['intent']>
 
 export const IntentButton = forwardRef(function IntentButton(
-  props: {intent: RouterIntent} & Omit<React.ComponentProps<typeof Button>, 'as' | 'href' | 'type'>,
+  props: {
+    intent: RouterIntent
+  } & ButtonProps &
+    Omit<React.ComponentProps<typeof Button>, 'as' | 'href' | 'type'>,
   ref: React.ForwardedRef<HTMLAnchorElement>,
 ) {
   const {intent, ...restProps} = props

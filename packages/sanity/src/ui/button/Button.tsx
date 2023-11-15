@@ -1,9 +1,9 @@
 /* eslint-disable no-restricted-imports */
 import {Button as UIButton, ButtonProps as UIButtonProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
+import {Tooltip, TooltipProps} from '..'
 
-/** @internal */
-export type ButtonProps = Pick<
+type BaseButtonProps = Pick<
   UIButtonProps,
   | 'as'
   | 'icon'
@@ -12,13 +12,30 @@ export type ButtonProps = Pick<
   | 'loading'
   | 'mode'
   | 'selected'
-  | 'text'
   | 'tone'
   | 'type'
   | 'width'
 > & {
   size?: 'default' | 'small'
 }
+
+type ButtonWithText = {
+  text: string
+  tooltipProps?: TooltipProps
+  icon?: UIButtonProps['icon']
+}
+
+type IconButton = {
+  text?: undefined
+  icon?: UIButtonProps['icon']
+  /**
+   * When using a button with an icon, tooltipProps are required to enforce consistency in UI.
+   */
+  tooltipProps: TooltipProps
+}
+
+/** @internal */
+export type ButtonProps = BaseButtonProps & (ButtonWithText | IconButton)
 
 const DEFAULT_BUTTON_PROPS = {
   space: 3,
@@ -41,10 +58,35 @@ export const Button = forwardRef(function Button(
     size = 'default',
     mode = 'default',
     tone = 'default',
+    tooltipProps,
     ...props
-  }: ButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'size'>,
+  }: ButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title'>,
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
+  if (tooltipProps) {
+    return (
+      <Tooltip
+        // Force the tooltip to render in portal
+        portal
+        {...tooltipProps}
+      >
+        {/* This span is needed to make the tooltip work in disabled buttons */}
+        <span>
+          <UIButton
+            // aria-label is enforced in buttons without text.
+            // Could be overridden by passing aria-label directly.
+            aria-label={props.text ? undefined : tooltipProps.content ?? ''}
+            {...props}
+            {...(size === 'default' ? DEFAULT_BUTTON_PROPS : SMALL_BUTTON_PROPS)}
+            ref={ref}
+            mode={mode}
+            tone={tone}
+          />
+        </span>
+      </Tooltip>
+    )
+  }
+
   return (
     <UIButton
       {...props}
