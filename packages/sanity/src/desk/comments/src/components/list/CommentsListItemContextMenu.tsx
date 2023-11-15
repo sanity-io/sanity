@@ -24,11 +24,9 @@ import {CommentStatus} from '../../types'
 import {TextTooltip} from '../TextTooltip'
 
 const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
+
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
-  // We don't have to use portal since that interferes with click outside handling.
-  // This is because the element will be rendered outside root element if we use portal.
-  portal: false,
 }
 
 const FloatingCard = styled(Card)(({theme}) => {

@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {TextSkeleton, Flex, Stack, Text, Card, useClickOutside, Box, Layer} from '@sanity/ui'
+import {TextSkeleton, Flex, Stack, Text, Card, useClickOutside, Box} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {CurrentUser} from '@sanity/types'
 import styled, {css} from 'styled-components'
@@ -19,9 +19,9 @@ import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {TimeAgoOpts, useTimeAgo, useUser, useDidUpdate} from 'sanity'
 
-const ContextMenuLayer = styled(Layer)``
+const ContextMenuBox = styled(Box)``
 
-function StopPropagationLayer(props: React.PropsWithChildren<{isParent?: boolean}>) {
+function StopPropagationWrap(props: React.PropsWithChildren<{isParent?: boolean}>) {
   const {children, isParent} = props
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
@@ -29,9 +29,9 @@ function StopPropagationLayer(props: React.PropsWithChildren<{isParent?: boolean
   }, [])
 
   return (
-    <ContextMenuLayer data-root-menu={isParent ? 'true' : 'false'} onClick={handleClick}>
+    <ContextMenuBox data-root-menu={isParent ? 'true' : 'false'} onClick={handleClick}>
       {children}
-    </ContextMenuLayer>
+    </ContextMenuBox>
   )
 }
 
@@ -77,7 +77,7 @@ const RootStack = styled(Stack)(({theme}) => {
     // Only show the floating layer on hover when hover is supported.
     // Else, the layer is always visible.
     @media (hover: hover) {
-      ${ContextMenuLayer} {
+      ${ContextMenuBox} {
         opacity: 0;
         position: absolute;
         right: 0;
@@ -85,21 +85,21 @@ const RootStack = styled(Stack)(({theme}) => {
         transform: translate(${space[1]}px, -${space[1]}px);
       }
 
-      ${ContextMenuLayer} {
+      ${ContextMenuBox} {
         &:focus-within {
           opacity: 1;
         }
       }
 
       &:hover {
-        ${ContextMenuLayer} {
+        ${ContextMenuBox} {
           opacity: 1;
         }
       }
     }
 
     &[data-menu-open='true'] {
-      ${ContextMenuLayer} {
+      ${ContextMenuBox} {
         opacity: 1;
       }
     }
@@ -291,7 +291,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           </Flex>
 
           {!isEditing && !displayError && (
-            <StopPropagationLayer isParent={isParent}>
+            <StopPropagationWrap isParent={isParent}>
               <CommentsListItemContextMenu
                 canDelete={canDelete}
                 canEdit={canEdit}
@@ -305,7 +305,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 readOnly={readOnly}
                 status={comment.status}
               />
-            </StopPropagationLayer>
+            </StopPropagationWrap>
           )}
         </Flex>
 

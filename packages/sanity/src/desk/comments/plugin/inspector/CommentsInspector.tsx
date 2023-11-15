@@ -1,6 +1,7 @@
-import {Flex, useClickOutside, useToast} from '@sanity/ui'
+import {Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
 import React, {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import * as PathUtils from '@sanity/util/paths'
+import styled from 'styled-components'
 import {usePaneRouter} from '../../../components'
 import {EMPTY_PARAMS} from '../../../constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
@@ -26,7 +27,25 @@ interface CommentToDelete {
   isParent: boolean
 }
 
+const RootLayer = styled(Layer)`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+`
+
 export function CommentsInspector(props: DocumentInspectorProps) {
+  // We wrap the comments inspector in a Layer in order to know when the comments inspector
+  // is the top layer (that is, if there is e.g. a popover open). This is used to determine
+  // if we should deselect the selected path when clicking outside the comments inspector.
+  return (
+    <RootLayer>
+      <CommentsInspectorInner {...props} />
+    </RootLayer>
+  )
+}
+
+function CommentsInspectorInner(props: DocumentInspectorProps) {
   const {onClose} = props
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
@@ -61,6 +80,8 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     status,
     update,
   } = useComments()
+
+  const {isTopLayer} = useLayer()
 
   const currentComments = useMemo(() => comments.data[status], [comments, status])
 
@@ -243,20 +264,15 @@ export function CommentsInspector(props: DocumentInspectorProps) {
     [handleScrollToComment, setStatus, update],
   )
 
-  const onClickOutsideRoot = useCallback(() => {
-    // Clear the selected path when clicking outside the comments inspector
-    if (selectedPath) {
+  const handleDeselectPath = useCallback(() => {
+    // Clear the selected path when clicking outside the comments inspector.
+    // We do this only when the comments inspector is the top layer.
+    if (selectedPath && isTopLayer) {
       setSelectedPath(null)
     }
-  }, [selectedPath, setSelectedPath])
+  }, [isTopLayer, selectedPath, setSelectedPath])
 
-  const handleRootClick = useCallback(() => {
-    if (selectedPath) {
-      setSelectedPath(null)
-    }
-  }, [selectedPath, setSelectedPath])
-
-  useClickOutside(onClickOutsideRoot, [rootRef.current])
+  useClickOutside(handleDeselectPath, [rootRef.current])
 
   useEffect(() => {
     // Make sure that the comment exists before we try to scroll to it.
@@ -299,10 +315,11 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
       <Flex
         direction="column"
-        overflow="hidden"
+        flex={1}
         height="fill"
+        onClick={handleDeselectPath}
+        overflow="hidden"
         ref={rootRef}
-        onClick={handleRootClick}
       >
         <CommentsOnboardingPopover
           onDismiss={setDismissed}
