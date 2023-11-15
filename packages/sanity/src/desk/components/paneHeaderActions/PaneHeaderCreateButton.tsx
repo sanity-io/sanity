@@ -55,8 +55,6 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     templateItems,
   })
 
-  const [menuOpen, setMenuOpen] = useState(false)
-
   const nothingGranted = useMemo(() => {
     return (
       !isTemplatePermissionsLoading &&
@@ -74,9 +72,6 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       {},
     )
   }, [templatePermissions])
-
-  const handleOpen = useCallback(() => setMenuOpen(true), [])
-  const handleClose = useCallback(() => setMenuOpen(false), [])
 
   if (nothingGranted) {
     return (
@@ -127,10 +122,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           icon={ComposeIcon}
           mode="bleed"
           data-testid="multi-action-intent-button"
-          tooltipProps={{
-            content: 'Create new document',
-            disabled: menuOpen,
-          }}
+          tooltipProps={{content: 'Create new document'}}
         />
       }
       id="create-menu"
@@ -177,8 +169,6 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           })}
         </Menu>
       }
-      onClose={handleClose}
-      onOpen={handleOpen}
       popover={POPOVER_PROPS}
     />
   )
