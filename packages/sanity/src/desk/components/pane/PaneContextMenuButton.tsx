@@ -44,7 +44,7 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
         <StatusButton
           icon={EllipsisVerticalIcon}
           mode="bleed"
-          title={t('pane-context-menu-button.tooltip')}
+          title={t('pane-header.context-menu-button.tooltip')}
           // eslint-disable-next-line no-nested-ternary
           tone={hasCritical ? 'critical' : hasCaution ? 'caution' : undefined}
         />
