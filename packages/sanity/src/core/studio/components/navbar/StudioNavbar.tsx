@@ -170,49 +170,51 @@ export function StudioNavbar() {
       <RootCard borderBottom data-testid="navbar" data-ui="Navbar" padding={2} sizing="border">
         <NavGrid>
           {/** Left flex */}
-          <Flex align="center" gap={2} justify="flex-start">
-            <Flex align="center" gap={1}>
-              {/* Menu button */}
-              {!shouldRender.tools && (
-                <Button
-                  mode="bleed"
-                  icon={MenuIcon}
-                  onClick={handleOpenDrawer}
-                  ref={setDrawerButtonEl}
-                  tooltipProps={{content: 'Open drawer', placement: 'right'}}
-                />
-              )}
+          <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+            <Flex align="center" gap={2} justify="flex-start">
+              <Flex align="center" gap={1}>
+                {/* Menu button */}
+                {!shouldRender.tools && (
+                  <Button
+                    mode="bleed"
+                    icon={MenuIcon}
+                    onClick={handleOpenDrawer}
+                    ref={setDrawerButtonEl}
+                    tooltipProps={{content: 'Open drawer', placement: 'right'}}
+                  />
+                )}
 
-              {/* Workspace icon / studio logo */}
-              <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
-                <Flex align="center">
-                  <LogoMarkContainer>
-                    <Flex align="center" height="fill" justify="center">
-                      {/* Display the Sanity logo only if one workspace is active and no custom icon is defined */}
-                      {multipleWorkspaces || activeWorkspace.customIcon ? (
-                        <WorkspacePreviewIcon icon={activeWorkspace.icon} size="small" />
-                      ) : (
-                        <SanityLogo />
-                      )}
-                    </Flex>
-                  </LogoMarkContainer>
-                  <Box paddingX={2}>
-                    <Text size={1} weight="medium">
-                      {activeWorkspace.title}
-                    </Text>
-                  </Box>
-                </Flex>
-              </LogoButton>
+                {/* Workspace icon / studio logo */}
+                <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
+                  <Flex align="center">
+                    <LogoMarkContainer>
+                      <Flex align="center" height="fill" justify="center">
+                        {/* Display the Sanity logo only if one workspace is active and no custom icon is defined */}
+                        {multipleWorkspaces || activeWorkspace.customIcon ? (
+                          <WorkspacePreviewIcon icon={activeWorkspace.icon} size="small" />
+                        ) : (
+                          <SanityLogo />
+                        )}
+                      </Flex>
+                    </LogoMarkContainer>
+                    <Box paddingX={2}>
+                      <Text size={1} weight="medium">
+                        {activeWorkspace.title}
+                      </Text>
+                    </Box>
+                  </Flex>
+                </LogoButton>
 
-              {/* Workspace menu button */}
-              {shouldRender.workspaces && <WorkspaceMenuButton collapsed />}
+                {/* Workspace menu button */}
+                {shouldRender.workspaces && <WorkspaceMenuButton collapsed />}
+              </Flex>
+              {/* New document button */}
+              <NewDocumentButton
+                {...newDocumentOptions}
+                modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
+              />
             </Flex>
-            {/* New document button */}
-            <NewDocumentButton
-              {...newDocumentOptions}
-              modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
-            />
-          </Flex>
+          </TooltipDelayGroupProvider>
 
           {/** Center flex */}
           <Flex align="center" justify="center">
