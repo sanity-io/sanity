@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string,no-attribute-string-literals/no-attribute-string-literals */
 import React from 'react'
 
 const NoJsStyles = `

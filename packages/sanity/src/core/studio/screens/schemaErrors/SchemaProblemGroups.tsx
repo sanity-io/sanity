@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string,no-attribute-string-literals/no-attribute-string-literals */
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Box, Breadcrumbs, Card, Flex, Stack, Text, ThemeColorToneKey} from '@sanity/ui'
 import {generateHelpUrl} from '@sanity/generate-help-url'

@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string,no-attribute-string-literals/no-attribute-string-literals */
 import {Box, Card, CardTone, Code, Inline, Stack, Tooltip} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
