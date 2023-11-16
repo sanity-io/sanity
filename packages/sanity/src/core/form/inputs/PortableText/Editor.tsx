@@ -40,6 +40,7 @@ const noOutlineStyle = {outline: 'none'} as const
 const FORM_BUILDER_DEFAULT_ID = 'root'
 
 interface EditorProps {
+  hideToolbar?: boolean
   hotkeys: HotkeyOptions
   initialSelection?: EditorSelection
   isActive: boolean
@@ -75,6 +76,7 @@ const renderListItem: RenderListItemFunction = (props) => {
  */
 export function Editor(props: EditorProps) {
   const {
+    hideToolbar,
     hotkeys,
     initialSelection,
     isActive,
@@ -173,19 +175,17 @@ export function Editor(props: EditorProps) {
 
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor">
-      {isActive && (
-        <TooltipDelayGroupProvider>
-          <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
-            <Toolbar
-              collapsible={collapsibleToolbar}
-              hotkeys={hotkeys}
-              isFullscreen={isFullscreen}
-              onMemberOpen={handleToolBarOnMemberOpen}
-              onToggleFullscreen={onToggleFullscreen}
-              readOnly={readOnly}
-            />
-          </ToolbarCard>
-        </TooltipDelayGroupProvider>
+      {isActive && hideToolbar !== true && (
+        <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
+          <Toolbar
+            collapsible={collapsibleToolbar}
+            hotkeys={hotkeys}
+            isFullscreen={isFullscreen}
+            onMemberOpen={handleToolBarOnMemberOpen}
+            onToggleFullscreen={onToggleFullscreen}
+            readOnly={readOnly}
+          />
+        </ToolbarCard>
       )}
 
       <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
