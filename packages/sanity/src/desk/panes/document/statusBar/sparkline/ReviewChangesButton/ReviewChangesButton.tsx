@@ -73,7 +73,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
         aria-label="Review changes"
         icon={<AnimatedStatusIcon status={status} />}
         text={collapsed ? undefined : buttonProps?.text}
-        tooltipProps={{content: 'Review changes', disabled: collapsed}}
+        tooltipProps={null}
       />
     </TooltipWithNodes>
   )

@@ -22,7 +22,7 @@ type BaseButtonProps = Pick<
 
 type ButtonWithText = {
   text: string
-  tooltipProps?: TooltipProps
+  tooltipProps?: TooltipProps | null
   icon?: UIButtonProps['icon']
 }
 
