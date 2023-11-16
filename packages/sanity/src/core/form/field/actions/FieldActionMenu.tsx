@@ -108,7 +108,6 @@ const RootFieldActionMenuNode = memo(function RootFieldActionMenuNode(props: {
         tooltipProps={{
           ...STATUS_BUTTON_TOOLTIP_PROPS,
           content: node.title,
-          disabled: open,
         }}
       />
     )
@@ -142,7 +141,6 @@ function RootFieldActionMenuGroup(props: {
           tooltipProps={{
             ...STATUS_BUTTON_TOOLTIP_PROPS,
             content: node.title,
-            disabled: open,
           }}
         />
       }
