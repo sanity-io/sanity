@@ -153,7 +153,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         </>
       )
     },
-    [childItemId, isActive, items.length, isLazyLoading, hasMaxItems, showIcons, layout, schema],
+    [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading],
   )
 
   const noDocumentsContent = useMemo(() => {
@@ -258,21 +258,19 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     // when clearing a search query with no results
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    shouldRender,
+    collapsed,
     error,
+    handleEndReached,
+    index,
     isLoading,
     items,
-    loadingVariant,
-    index,
-    handleVirtualListReady,
-    collapsed,
-    paneTitle,
-    searchInputElement,
-    handleEndReached,
-    renderItem,
-    onRetry,
-    noDocumentsContent,
     layout,
+    loadingVariant,
+    // noDocumentsContent,
+    onRetry,
+    renderItem,
+    searchInputElement,
+    shouldRender,
   ])
 
   return (
