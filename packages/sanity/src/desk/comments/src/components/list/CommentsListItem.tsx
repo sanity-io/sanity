@@ -22,6 +22,8 @@ const EMPTY_ARRAY: [] = []
 
 const MAX_COLLAPSED_REPLIES = 5
 
+// data-active = when the comment is selected
+// data-hovered = when the mouse is over the comment
 const StyledThreadCard = styled(ThreadCard)(({theme}) => {
   const {hovered} = theme.sanity.color.button.bleed.default
 
@@ -35,21 +37,19 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
         0 0 0 3px var(--card-focus-ring-color);
     }
 
-    @media (hover: hover) {
-      &:hover {
-        // When hovering over the thread root we want to display the parent comments menu.
-        // The data-root-menu attribute is used to target the menu and is applied in
-        // the CommentsListItemLayout component.
-        [data-root-menu='true'] {
-          opacity: 1;
-        }
-      }
-    }
-
+    // When the comment is not selected, we want to apply hover styles.
+    // The hover styles is managed with the [data-hovered] attribute instead of the :hover pseudo class
+    // since we want to show the hover styles when hovering over the menu items in the context menu as well.
+    // The context menu is rendered using a portal, so the :hover pseudo class won't work when hovering over
+    // the menu items.
     &:not([data-active='true']) {
       @media (hover: hover) {
-        &:hover {
+        &[data-hovered='true'] {
           --card-bg-color: ${hovered.bg2};
+        }
+
+        [data-root-menu='true'] {
+          opacity: 1;
         }
       }
     }
@@ -115,6 +115,11 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const replyInputRef = useRef<CommentInputHandle>(null)
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
+
+  const [mouseOver, setMouseOver] = useState<boolean>(false)
+
+  const handleMouseEnter = useCallback(() => setMouseOver(true), [])
+  const handleMouseLeave = useCallback(() => setMouseOver(false), [])
 
   const handleReplySubmit = useCallback(() => {
     const nextComment: CommentCreatePayload = {
@@ -251,7 +256,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     <Stack space={2}>
       <StyledThreadCard
         data-active={isSelected ? 'true' : 'false'}
+        data-hovered={mouseOver ? 'true' : 'false'}
         onClick={handleThreadRootClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         tone={isSelected ? 'primary' : undefined}
       >
         <GhostButton data-ui="GhostButton" aria-label="Go to field" />
