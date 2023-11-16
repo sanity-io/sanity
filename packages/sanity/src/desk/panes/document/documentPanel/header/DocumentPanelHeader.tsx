@@ -13,6 +13,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
 import {Button} from '../../../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useFieldActions, useTimelineSelector} from 'sanity'
@@ -77,7 +78,7 @@ export const DocumentPanelHeader = memo(
     const showPaneGroupCloseButton = !showSplitPaneCloseButton && !features.backButton
 
     return (
-      <TooltipDelayGroupProvider delay={{open: 400}}>
+      <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
         <PaneHeader
           ref={ref}
           loading={!ready}

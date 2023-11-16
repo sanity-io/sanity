@@ -8,7 +8,6 @@ import {
   LinkIcon,
 } from '@sanity/icons'
 import {
-  TooltipDelayGroupProviderProps,
   MenuButtonProps,
   TooltipDelayGroupProvider,
   MenuButton,
@@ -20,8 +19,8 @@ import {
 import styled, {css} from 'styled-components'
 import {Button, MenuItem} from '../../../../../ui'
 import {CommentStatus} from '../../types'
+import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 
-const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
   // We don't have to use portal since that interferes with click outside handling.
@@ -75,7 +74,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
 
   return (
-    <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
+    <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
       <Flex data-root-menu={isParent ? 'true' : 'false'} {...rest}>
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
           {isParent && (

@@ -17,6 +17,7 @@ import styled from 'styled-components'
 import {isDev} from '../../../environment'
 import {useWorkspace} from '../../workspace'
 import {Button} from '../../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../../ui/tooltip/constants'
 import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
@@ -227,7 +228,7 @@ export function StudioNavbar() {
           </Flex>
 
           {/** Right flex */}
-          <TooltipDelayGroupProvider delay={{open: 400}}>
+          <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
             <Flex align="center" gap={3} justify="flex-end">
               {/* Search */}
               <LayerProvider>

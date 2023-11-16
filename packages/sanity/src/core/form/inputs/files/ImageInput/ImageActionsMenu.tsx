@@ -10,6 +10,7 @@ import {
 } from '@sanity/ui'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;
@@ -89,7 +90,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
   return (
     <MenuActionsWrapper data-buttons space={1} padding={2}>
-      <TooltipDelayGroupProvider delay={{open: 400}}>
+      <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
         {showEdit && (
           <Button
             aria-label="Open image edit dialog"
