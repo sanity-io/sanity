@@ -67,6 +67,7 @@ export function InspectDialog(props: InspectDialogProps) {
               label={VIEW_MODE_PARSED.title}
               onClick={setParsedViewMode}
               selected={viewMode === VIEW_MODE_PARSED}
+              size="small"
             />
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
@@ -74,6 +75,7 @@ export function InspectDialog(props: InspectDialogProps) {
               label={VIEW_MODE_RAW.title}
               onClick={setRawViewMode}
               selected={viewMode === VIEW_MODE_RAW}
+              size="small"
             />
           </TabList>
         </Card>
