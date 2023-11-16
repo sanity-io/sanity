@@ -24,7 +24,7 @@ export const DragHandle = function DragHandle(props: DragHandleProps) {
   return (
     <DragHandleButton
       icon={DragHandleIcon}
-      tooltipProps={{content: 'Drag to reorder'}}
+      tooltipProps={{content: 'Drag to reorder', delay: 1000}}
       mode={mode}
       data-ui="DragHandleButton"
       {...attributes}

@@ -1,8 +1,8 @@
 import {ComposeIcon} from '@sanity/icons'
-import React, {useMemo, forwardRef, useCallback, useState} from 'react'
+import React, {useMemo, forwardRef} from 'react'
 import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import {Schema} from '@sanity/types'
-import {Button, MenuItem, Tooltip} from '../../../ui'
+import {Button, MenuItem} from '../../../ui'
 import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 import {IntentLink} from 'sanity/router'
@@ -83,7 +83,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           disabled
           data-testid="action-intent-button"
           // This button handles the tooltip in a special way, won't reuse the forced tooltip.
-          text=""
+          tooltipProps={null}
         />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -109,7 +109,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           disabled={disabled}
           data-testid="action-intent-button"
           // This button handles the tooltip in a special way, couldn't reuse the forced tooltip.
-          text=""
+          tooltipProps={null}
         />
       </InsufficientPermissionsMessageTooltip>
     )

@@ -32,7 +32,7 @@ type IconButton = {
   /**
    * When using a button with an icon, tooltipProps are required to enforce consistency in UI.
    */
-  tooltipProps: TooltipProps
+  tooltipProps: TooltipProps | null
 }
 
 /** @internal */

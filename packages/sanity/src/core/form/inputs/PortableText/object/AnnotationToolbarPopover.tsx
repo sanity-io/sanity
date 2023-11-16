@@ -1,5 +1,5 @@
 import React, {useState, useRef, useMemo, useEffect, useCallback} from 'react'
-import {Box, Inline, Popover, PopoverProps, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {Box, Flex, Popover, PopoverProps, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import styled from 'styled-components'
 import {EditIcon, TrashIcon} from '@sanity/icons'
 import {Button} from '../../../../../ui'
@@ -152,7 +152,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       constrainSize
       content={
         <Box padding={1} data-testid="annotation-toolbar-popover">
-          <Inline space={1}>
+          <Flex gap={1}>
             <Box padding={2}>
               <Text weight="medium" size={1}>
                 {title}
@@ -163,9 +163,9 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               mode="bleed"
               onClick={handleEditButtonClicked}
               size="small"
-              alt="Edit annotation"
+              aria-label="Edit annotation"
               tabIndex={0}
-              tooltipProps={{content: 'Edit annotation'}}
+              tooltipProps={null}
             />
             <Button
               icon={TrashIcon}
@@ -173,11 +173,11 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               size="small"
               onClick={handleRemoveButtonClicked}
               tone="critical"
-              alt="Remove annotation"
-              tooltipProps={{content: 'Remove annotation'}}
+              aria-label="Remove annotation"
+              tooltipProps={null}
               tabIndex={0}
             />
-          </Inline>
+          </Flex>
         </Box>
       }
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
