@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
 import {RouterPanes, RouterPaneGroup, RouterPaneSibling} from './types'
-import {route} from 'sanity/router'
+import {route, decodeJsonParams, encodeJsonParams} from 'sanity/router'
 
 const EMPTY_PARAMS = {}
 
@@ -75,8 +75,7 @@ export const router = route.create('/', [
 
 const panePattern = /^([.a-z0-9_-]+),?({.*?})?(?:(;|$))/i
 const isParam = (str: string) => /^[a-z0-9]+=[^=]+/i.test(str)
-const isPayload = (str: string) =>
-  /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
+const isPayloadLike = (str: string) => /^[A-Za-z0-9\-_]+(?:={0,2})$/.test(str)
 const exclusiveParams = ['view', 'since', 'rev', 'inspect', 'comment']
 
 type Truthy<T> = T extends false
@@ -93,23 +92,21 @@ type Truthy<T> = T extends false
 const isTruthy = Boolean as (t: unknown) => boolean as <T>(t: T) => t is Truthy<T>
 
 function parseChunks(chunks: string[], initial: RouterPaneSibling): RouterPaneSibling {
-  return chunks.reduce(
-    (pane, chunk) => {
-      if (isParam(chunk)) {
-        const key = chunk.slice(0, chunk.indexOf('='))
-        const value = chunk.slice(key.length + 1)
-        pane.params = {...pane.params, [decodeURIComponent(key)]: decodeURIComponent(value)}
-      } else if (isPayload(chunk)) {
-        pane.payload = tryParseBase64Payload(chunk)
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn('Unknown pane segment: %s - skipping', chunk)
-      }
+  const sibling: RouterPaneSibling = {...initial, params: EMPTY_PARAMS, payload: undefined}
+  return chunks.reduce((pane, chunk) => {
+    if (isParam(chunk)) {
+      const key = chunk.slice(0, chunk.indexOf('='))
+      const value = chunk.slice(key.length + 1)
+      pane.params = {...pane.params, [decodeURIComponent(key)]: decodeURIComponent(value)}
+    } else if (isPayloadLike(chunk)) {
+      pane.payload = tryParseBase64Payload(chunk)
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn('Unknown pane segment: %s - skipping', chunk)
+    }
 
-      return pane
-    },
-    {...initial, params: EMPTY_PARAMS, payload: undefined},
-  )
+    return pane
+  }, sibling)
 }
 
 function encodeChunks(pane: RouterPaneSibling, index: number, group: RouterPaneGroup): string {
@@ -117,7 +114,8 @@ function encodeChunks(pane: RouterPaneSibling, index: number, group: RouterPaneG
   const [firstSibling] = group
   const paneIsFirstSibling = pane === firstSibling
   const sameAsFirst = index !== 0 && id === firstSibling.id
-  const encodedPayload = typeof payload === 'undefined' ? undefined : btoa(JSON.stringify(payload))
+  const encodedPayload =
+    typeof payload === 'undefined' ? undefined : encodeJsonParams(payload as any)
 
   const encodedParams = Object.entries(params)
     .filter((entry): entry is [string, string] => {
@@ -196,6 +194,12 @@ function tryParsePayload(json: string) {
   }
 }
 
-function tryParseBase64Payload(data: string) {
-  return data ? tryParsePayload(atob(data)) : undefined
+function tryParseBase64Payload(data: string): unknown {
+  try {
+    return data ? decodeJsonParams(data) : undefined
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn(`Failed to parse parameters: ${err.message}`)
+    return undefined
+  }
 }
