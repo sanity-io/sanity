@@ -483,6 +483,10 @@ export interface PortableTextInputProps
    */
   fullscreen?: boolean
   /**
+   * Option to hide the default toolbar
+   */
+  hideToolbar?: boolean
+  /**
    * Assign hotkeys that can be attached to custom editing functions
    */
   hotkeys?: HotkeyOptions
