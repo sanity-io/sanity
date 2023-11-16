@@ -1,16 +1,24 @@
-import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme, Card, LayerProps} from '@sanity/ui'
-import {HTMLProps, RefAttributes} from 'react'
+import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme, Card} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
-interface CustomLayerProps extends LayerProps {
-  borderBottom?: boolean
+/**
+ * Left/right border offsets for header components (in px).
+ */
+const BORDER_OFFSET_X = 12
+
+interface RootProps {
+  $borderBottom?: boolean
+  'data-collapsed'?: string
+  'data-testid'?: string
+  $isContentScrollable?: boolean
+  $hasScrolledFromTop?: boolean
 }
 
-export const Root = styled(Layer)((
-  props: CustomLayerProps & Omit<HTMLProps<HTMLDivElement>, 'as'> & RefAttributes<HTMLDivElement>,
-) => {
-  const {borderBottom = true} = props
-
+export const Root = styled(Layer)<RootProps>(({
+  $borderBottom = true,
+  $isContentScrollable,
+  $hasScrolledFromTop,
+}) => {
   return css`
     line-height: 0;
     position: sticky;
@@ -20,10 +28,12 @@ export const Root = styled(Layer)((
       content: '';
       display: block;
       position: absolute;
-      left: 0;
-      right: 0;
+      left: ${BORDER_OFFSET_X}px;
+      right: ${BORDER_OFFSET_X}px;
       bottom: -1px;
-      border-bottom: ${borderBottom ? '1px solid var(--card-shadow-outline-color)' : 'none'};
+      border-bottom: ${$borderBottom ? '1px solid var(--card-shadow-outline-color)' : 'none'};
+      opacity: ${() => ($isContentScrollable && $hasScrolledFromTop ? 1 : 0)};
+      transition: opacity 200ms ease-in;
     }
   `
 })

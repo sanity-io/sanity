@@ -1,4 +1,4 @@
-import {ComponentType, ReactNode} from 'react'
+import {ComponentType, Dispatch, ReactNode, SetStateAction} from 'react'
 import {Intent} from '../../structureBuilder'
 
 /**
@@ -24,6 +24,8 @@ export interface PaneContextValue {
   index?: number
   isLast: boolean
   rootElement: HTMLDivElement | null
+  scrollableElement?: HTMLElement | null
+  setScrollableElement?: Dispatch<SetStateAction<HTMLElement | null>>
 }
 
 /**

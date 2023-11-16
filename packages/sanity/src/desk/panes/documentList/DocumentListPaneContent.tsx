@@ -87,7 +87,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const schema = useSchema()
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const {collapsed, index} = usePane()
+  const {collapsed, index, setScrollableElement} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
 
   const handleEndReached = useCallback(() => {
@@ -95,6 +95,16 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
     onListChange()
   }, [isLazyLoading, isLoading, onListChange, shouldRender])
+
+  //Set scrollable element to virtual list for conditional border
+  const handleVirtualListReady = useCallback(
+    (virtualListElement: HTMLElement) => {
+      if (setScrollableElement) {
+        setScrollableElement(virtualListElement)
+      }
+    },
+    [setScrollableElement],
+  )
 
   useEffect(() => {
     if (collapsed) return undefined
@@ -143,7 +153,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         </>
       )
     },
-    [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading],
+    [childItemId, isActive, items.length, isLazyLoading, hasMaxItems, showIcons, layout, schema],
   )
 
   const noDocumentsContent = useMemo(() => {
@@ -232,6 +242,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             items={items}
             key={key}
             onEndReached={handleEndReached}
+            onListReady={handleVirtualListReady}
             onlyShowSelectionWhenActive
             overscan={10}
             padding={2}
@@ -247,19 +258,21 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     // when clearing a search query with no results
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    collapsed,
+    shouldRender,
     error,
-    handleEndReached,
-    index,
     isLoading,
     items,
-    layout,
     loadingVariant,
-    // noDocumentsContent,
-    onRetry,
-    renderItem,
+    index,
+    handleVirtualListReady,
+    collapsed,
+    paneTitle,
     searchInputElement,
-    shouldRender,
+    handleEndReached,
+    renderItem,
+    onRetry,
+    noDocumentsContent,
+    layout,
   ])
 
   return (
