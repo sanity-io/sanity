@@ -79,7 +79,7 @@ export function ConfirmDeleteDialog({
       footer={{
         confirmButton: showConfirmButton
           ? {
-              text: 'Delete',
+              text: capitalizedAction,
               onClick: onConfirm,
             }
           : undefined,
