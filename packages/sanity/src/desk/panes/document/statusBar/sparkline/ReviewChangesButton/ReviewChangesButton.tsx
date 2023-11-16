@@ -48,7 +48,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
 
   return (
     <TooltipWithNodes
-      placement="top"
+      placement="top-start"
       portal
       disabled={status !== 'changes'}
       content={

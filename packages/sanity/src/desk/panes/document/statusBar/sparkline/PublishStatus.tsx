@@ -41,7 +41,7 @@ export function PublishStatus(props: PublishStatusProps) {
     <Root align="center" data-ui="SessionLayout" sizing="border">
       {/* @todo: possible candidate for migrating to Studio UI tooltip */}
       <TooltipWithNodes
-        placement="top"
+        placement="top-start"
         portal
         content={
           <Stack space={3}>
