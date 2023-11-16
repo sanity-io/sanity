@@ -72,7 +72,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
     return (
       <Button mode="bleed" padding={1}>
         <AvatarStackCard>
-          <AvatarStack maxLength={MAX_AVATARS} aria-label="Who is here">
+          <AvatarStack maxLength={MAX_AVATARS} aria-label={t('presence.aria-label')}>
             {presence.map((item) => (
               <UserAvatar key={item.user.id} user={item.user} />
             ))}
@@ -80,7 +80,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
         </AvatarStackCard>
       </Button>
     )
-  }, [collapse, hasPresence, presence])
+  }, [collapse, hasPresence, presence, t])
 
   const popoverProps = useMemo(
     () => ({
