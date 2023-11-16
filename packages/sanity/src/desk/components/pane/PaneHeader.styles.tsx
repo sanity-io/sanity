@@ -1,11 +1,6 @@
 import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme, Card} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
-/**
- * Left/right border offsets for header components (in px).
- */
-const BORDER_OFFSET_X = 12
-
 interface RootProps {
   $borderBottom?: boolean
 }
@@ -20,8 +15,8 @@ export const Root = styled(Layer)<RootProps>(({$borderBottom = true}) => {
       content: '';
       display: block;
       position: absolute;
-      left: ${BORDER_OFFSET_X}px;
-      right: ${BORDER_OFFSET_X}px;
+      left: 0px;
+      right: 0px;
       bottom: -1px;
       border-bottom: 1px solid ${$borderBottom ? 'var(--card-shadow-outline-color)' : 'transparent'};
       opacity: 1;
