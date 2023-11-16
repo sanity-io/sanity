@@ -35,11 +35,6 @@ export const EditableCard = styled(Card)`
       pointer-events: initial;
     }
   }
-
-  &::selection,
-  *::selection {
-    background-color: transparent;
-  }
 `
 
 export const Scroller = styled(ScrollContainer)`
