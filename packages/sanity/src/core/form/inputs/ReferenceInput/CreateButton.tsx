@@ -1,11 +1,12 @@
-import React, {ComponentProps} from 'react'
+import React from 'react'
 import {AddIcon} from '@sanity/icons'
 import {Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import {InsufficientPermissionsMessage} from '../../../components'
 import {Button, MenuItem, TooltipWithNodes} from '../../../../ui'
 import {CreateReferenceOption} from './types'
 
-interface Props extends ComponentProps<typeof Button> {
+interface Props
+  extends Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'width' | 'type' | 'ref'> {
   id: string
   createOptions: CreateReferenceOption[]
   menuRef?: React.RefObject<HTMLDivElement>

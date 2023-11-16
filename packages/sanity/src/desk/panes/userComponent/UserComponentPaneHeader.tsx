@@ -32,7 +32,15 @@ export function UserComponentPaneHeader(props: UserComponentPaneHeaderProps) {
       }
       backButton={
         features.backButton &&
-        index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+        index > 0 && (
+          <Button
+            as={BackLink}
+            data-as="a"
+            icon={ArrowLeftIcon}
+            mode="bleed"
+            tooltipProps={{content: 'Back'}}
+          />
+        )
       }
       title={title}
     />

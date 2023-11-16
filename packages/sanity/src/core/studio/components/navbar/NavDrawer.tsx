@@ -165,7 +165,12 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                     </Flex>
 
                     <Box>
-                      <Button icon={CloseIcon} mode="bleed" onClick={onClose} title="Close menu" />
+                      <Button
+                        icon={CloseIcon}
+                        mode="bleed"
+                        onClick={onClose}
+                        tooltipProps={{content: 'Close menu'}}
+                      />
                     </Box>
                   </Flex>
 

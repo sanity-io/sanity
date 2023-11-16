@@ -58,7 +58,15 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
 
   const menuButtonProps = useMemo(
     () => ({
-      button: <Button icon={AddIcon} mode="bleed" size="small" disabled={disabled} />,
+      button: (
+        <Button
+          icon={AddIcon}
+          mode="bleed"
+          size="small"
+          disabled={disabled}
+          tooltipProps={{content: 'Show more'}}
+        />
+      ),
       popover: MENU_POPOVER_PROPS,
     }),
 

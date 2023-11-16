@@ -23,7 +23,15 @@ export const ListPaneHeader = ({index, menuItems, menuItemGroups, title}: ListPa
       actions={<PaneHeaderActions menuItems={menuItems} menuItemGroups={menuItemGroups} />}
       backButton={
         features.backButton &&
-        index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+        index > 0 && (
+          <Button
+            as={BackLink}
+            data-as="a"
+            icon={ArrowLeftIcon}
+            mode="bleed"
+            tooltipProps={{content: 'Back'}}
+          />
+        )
       }
       tabIndex={tabIndex}
       title={title}

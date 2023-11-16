@@ -22,7 +22,9 @@ export function DocumentActions() {
         <Button icon={PublishIcon} onClick={publish} text="Publish" tone="default" />
       </Stack>
       <MenuButton
-        button={<Button icon={ChevronDownIcon} mode="ghost" />}
+        button={
+          <Button icon={ChevronDownIcon} mode="ghost" tooltipProps={{content: 'Show more'}} />
+        }
         id="actions"
         menu={
           <Menu>

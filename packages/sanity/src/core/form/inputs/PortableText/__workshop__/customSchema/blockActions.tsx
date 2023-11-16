@@ -3,7 +3,7 @@ import {CopyIcon} from '@sanity/icons'
 import {keyGenerator} from '@sanity/portable-text-editor'
 import {PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {RenderBlockActionsCallback} from '../../../../types/_transitional'
-import {Tooltip, Button} from '../../../../../../ui'
+import {Button} from '../../../../../../ui'
 
 const BlockActions = memo(function BlockActions(props: {
   block: PortableTextBlock
@@ -28,15 +28,14 @@ const BlockActions = memo(function BlockActions(props: {
   }, [block, insert])
 
   return (
-    <Tooltip content="Duplicate" placement="right" portal="default">
-      <Button
-        aria-label="Duplicate"
-        icon={CopyIcon}
-        onClick={handleDuplicate}
-        size="small"
-        mode="bleed"
-      />
-    </Tooltip>
+    <Button
+      aria-label="Duplicate"
+      icon={CopyIcon}
+      onClick={handleDuplicate}
+      size="small"
+      tooltipProps={{content: 'Duplicate', placement: 'right', portal: 'default'}}
+      mode="bleed"
+    />
   )
 })
 

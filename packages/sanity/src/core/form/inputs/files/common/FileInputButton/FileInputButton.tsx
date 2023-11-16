@@ -2,7 +2,7 @@ import React, {useId} from 'react'
 import {ButtonProps} from '../../../../../../ui'
 import {FileButton} from './styles'
 
-export interface FileInputButtonProps extends ButtonProps {
+export type FileInputButtonProps = ButtonProps & {
   accept?: string
   capture?: 'user' | 'environment'
   multiple?: boolean

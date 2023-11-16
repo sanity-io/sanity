@@ -294,18 +294,21 @@ function Tag(props: {
   }, [index, onRemove])
 
   return (
-    <Card data-ui="Tag" padding={1} radius={2} tone="transparent">
-      <Flex align="center">
-        <Box flex={1} padding={1}>
+    <Card data-ui="Tag" radius={2} tone="transparent">
+      <Flex align="center" gap={1}>
+        <Box flex={1} paddingY={2} paddingLeft={2}>
           <Text muted={muted} textOverflow="ellipsis">
             {tag.value}
           </Text>
         </Box>
-
         {enabled && (
-          <Box marginLeft={1}>
-            <Button icon={CloseIcon} mode="bleed" onClick={handleRemoveClick} size="small" />
-          </Box>
+          <Button
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={handleRemoveClick}
+            size="small"
+            tooltipProps={{content: 'Remove'}}
+          />
         )}
       </Flex>
     </Card>

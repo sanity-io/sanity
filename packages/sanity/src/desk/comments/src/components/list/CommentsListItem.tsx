@@ -61,7 +61,7 @@ const ExpandButton = styled(Button)(({theme}) => {
   `
 })
 
-const GhostButton = styled(Button)`
+const GhostButton = styled.button`
   opacity: 0;
   position: absolute;
   right: 0;

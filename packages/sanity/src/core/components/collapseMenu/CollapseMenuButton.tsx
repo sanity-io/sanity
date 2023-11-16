@@ -14,7 +14,7 @@ export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {
 export interface CollapseMenuButtonProps extends CommonProps {
   collapsedProps?: Omit<CommonProps, 'text'>
   expandedProps?: CommonProps
-  text: ButtonProps['text']
+  text: string
 }
 
 /** @internal */

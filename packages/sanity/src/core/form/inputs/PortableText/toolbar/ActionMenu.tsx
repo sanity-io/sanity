@@ -88,7 +88,13 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const menuButtonProps = useMemo(
     () => ({
       button: (
-        <Button icon={EllipsisHorizontalIcon} mode="bleed" size="small" disabled={disabled} />
+        <Button
+          icon={EllipsisHorizontalIcon}
+          mode="bleed"
+          size="small"
+          disabled={disabled}
+          tooltipProps={{content: 'Show more'}}
+        />
       ),
       popover: MENU_POPOVER_PROPS,
     }),

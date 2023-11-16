@@ -62,7 +62,14 @@ export const ItemRow = React.forwardRef(function ItemRow(
 
   const menu = (
     <MenuButton
-      button={<Button size="small" mode="bleed" icon={EllipsisHorizontalIcon} />}
+      button={
+        <Button
+          size="small"
+          mode="bleed"
+          icon={EllipsisHorizontalIcon}
+          tooltipProps={{content: 'Show more'}}
+        />
+      }
       id={`${inputId}-menuButton`}
       popover={MENU_BUTTON_POPOVER_PROPS}
       menu={

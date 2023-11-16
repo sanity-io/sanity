@@ -18,7 +18,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
     () => (
       <Stack as="ul" space={1}>
         {tools.map((tool) => {
-          const title = tool?.title || startCase(tool.name) || undefined
+          const title = tool?.title || startCase(tool.name)
 
           const Link = forwardRef(function Link(
             linkProps: ToolLinkProps,

@@ -72,7 +72,14 @@ export default function PortableTextPreviewStory() {
 
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
-      actions: withActions && <Button icon={EllipsisHorizontalIcon} mode="bleed" size="small" />,
+      actions: withActions && (
+        <Button
+          icon={EllipsisHorizontalIcon}
+          mode="bleed"
+          size="small"
+          tooltipProps={{content: 'Show more'}}
+        />
+      ),
       isPlaceholder,
       media,
       status: status && (

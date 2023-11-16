@@ -11,7 +11,7 @@ import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {useRovingFocus} from '../../../../components'
 import {useResolveInitialValueForType} from '../../../../store'
-import {Button, Tooltip} from '../../../../../ui'
+import {Button} from '../../../../../ui'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'
@@ -128,19 +128,18 @@ const InnerToolbar = memo(function InnerToolbar({
         )}
       </Flex>
       <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
-        <Tooltip
-          content={`${isFullscreen ? 'Collapse' : 'Expand'} editor`}
-          hotkeys={[`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter']}
-          placement={isFullscreen ? 'bottom' : 'top'}
-          portal="default"
-        >
-          <Button
-            size="small"
-            icon={isFullscreen ? CollapseIcon : ExpandIcon}
-            mode="bleed"
-            onClick={onToggleFullscreen}
-          />
-        </Tooltip>
+        <Button
+          size="small"
+          icon={isFullscreen ? CollapseIcon : ExpandIcon}
+          mode="bleed"
+          onClick={onToggleFullscreen}
+          tooltipProps={{
+            content: `${isFullscreen ? 'Collapse' : 'Expand'} editor`,
+            hotkeys: [`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter'],
+            placement: isFullscreen ? 'bottom' : 'top',
+            portal: 'default',
+          }}
+        />
       </FullscreenButtonBox>
     </RootFlex>
   )

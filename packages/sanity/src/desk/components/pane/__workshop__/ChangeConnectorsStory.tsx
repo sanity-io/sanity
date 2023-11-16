@@ -155,6 +155,7 @@ export default function ChangeConnectorsStory() {
                       mode="bleed"
                       onClick={toggleReviewChanges}
                       selected={reviewChanges}
+                      tooltipProps={{content: 'Review changes'}}
                     />
                   </PaneFooter>
                 </Pane>
@@ -163,7 +164,12 @@ export default function ChangeConnectorsStory() {
                   <Pane id="review-changes-panel">
                     <PaneHeader
                       actions={
-                        <Button icon={CloseIcon} mode="bleed" onClick={closeReviewChanges} />
+                        <Button
+                          icon={CloseIcon}
+                          mode="bleed"
+                          onClick={closeReviewChanges}
+                          tooltipProps={{content: 'Close'}}
+                        />
                       }
                       title="Changes"
                     />
@@ -218,7 +224,12 @@ function StringField(props: {
       </DebugFormField>
 
       <div>
-        <Button icon={<AddIcon />} mode="ghost" onClick={handleOpen} />
+        <Button
+          icon={<AddIcon />}
+          mode="ghost"
+          onClick={handleOpen}
+          tooltipProps={{content: 'Add'}}
+        />
       </div>
 
       {open && (

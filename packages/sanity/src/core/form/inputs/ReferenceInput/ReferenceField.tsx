@@ -152,7 +152,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
             </Text>
             <Button
               onClick={handleRemoveStrengthenOnPublish}
-              text={<>Convert to strong reference</>}
+              text="Convert to strong reference"
               tone="positive"
             />
           </Stack>
@@ -197,7 +197,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
             </Text>
             <Button
               onClick={handleFixStrengthMismatch}
-              text={<>Convert to {weakShouldBe} reference</>}
+              text={`Convert to ${weakShouldBe} reference`}
               tone="caution"
             />
           </Stack>
@@ -214,7 +214,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
             <Text as="p" muted size={1}>
               Error: {loadableReferenceInfo.error.message}
             </Text>
-            <Button onClick={loadableReferenceInfo.retry!} text={<>Retry</>} tone="primary" />
+            <Button onClick={loadableReferenceInfo.retry!} text="Retry" tone="primary" />
           </Stack>
         </AlertStrip>
       )}
@@ -247,7 +247,14 @@ export function ReferenceField(props: ReferenceFieldProps) {
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button mode="bleed" icon={EllipsisHorizontalIcon} size="small" />}
+            button={
+              <Button
+                mode="bleed"
+                icon={EllipsisHorizontalIcon}
+                size="small"
+                tooltipProps={{content: 'Show more'}}
+              />
+            }
             id={`${inputId}-menuButton`}
             menu={
               <Menu>

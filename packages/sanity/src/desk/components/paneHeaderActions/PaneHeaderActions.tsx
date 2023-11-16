@@ -1,10 +1,11 @@
-import {Flex} from '@sanity/ui'
+import {Flex, TooltipDelayGroupProvider} from '@sanity/ui'
 import {uniqBy} from 'lodash'
 import React, {memo, useCallback, useMemo} from 'react'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../menuNodes'
 import {DeskToolPaneActionHandler, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {PaneContextMenuButton} from '../pane/PaneContextMenuButton'
 import {PaneHeaderActionButton} from '../pane/PaneHeaderActionButton'
+import {TOOLTIP_DELAY_PROPS} from '../../../ui/tooltip/constants'
 import {PaneHeaderCreateButton} from './PaneHeaderCreateButton'
 import {useTemplates, InitialValueTemplateItem, EMPTY_ARRAY, EMPTY_OBJECT} from 'sanity'
 
@@ -144,16 +145,18 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
   }, [initialValueTemplateItemFromMenuItems, initialValueTemplateItemsFromStructure])
 
   return (
-    <Flex gap={1}>
-      {combinedInitialValueTemplates.length > 0 && (
-        <PaneHeaderCreateButton templateItems={combinedInitialValueTemplates} />
-      )}
+    <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+      <Flex gap={1}>
+        {combinedInitialValueTemplates.length > 0 && (
+          <PaneHeaderCreateButton templateItems={combinedInitialValueTemplates} />
+        )}
 
-      {actionNodes.map((node) => (
-        <PaneHeaderActionButton key={node.key} node={node} />
-      ))}
+        {actionNodes.map((node) => (
+          <PaneHeaderActionButton key={node.key} node={node} />
+        ))}
 
-      {contextMenuNodes.length > 0 && <PaneContextMenuButton nodes={contextMenuNodes} />}
-    </Flex>
+        {contextMenuNodes.length > 0 && <PaneContextMenuButton nodes={contextMenuNodes} />}
+      </Flex>
+    </TooltipDelayGroupProvider>
   )
 })

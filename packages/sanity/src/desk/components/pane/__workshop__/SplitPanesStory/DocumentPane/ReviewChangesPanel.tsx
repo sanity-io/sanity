@@ -20,7 +20,14 @@ export function ReviewChangesPanel(props: {onClose: () => void}) {
       }}
     >
       <PaneHeader
-        actions={<Button icon={CloseIcon} mode="bleed" onClick={props.onClose} />}
+        actions={
+          <Button
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={props.onClose}
+            tooltipProps={{content: 'Close'}}
+          />
+        }
         title="Review changes"
       />
     </Flex>

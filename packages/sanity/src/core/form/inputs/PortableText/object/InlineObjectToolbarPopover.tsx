@@ -89,7 +89,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             onClick={onEdit}
             size="small"
             ref={editButtonRef}
-            alt="Edit object"
+            tooltipProps={{content: 'Edit object'}}
           />
           <Button
             ref={deleteButtonRef}
@@ -98,7 +98,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             size="small"
             onClick={handleDelete}
             tone="critical"
-            alt="Remove object"
+            tooltipProps={{content: 'Remove object'}}
           />
         </Inline>
       </Box>

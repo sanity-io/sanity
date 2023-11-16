@@ -84,6 +84,7 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
             mode="bleed"
             onClick={onClose}
             size="small"
+            tooltipProps={{content: 'Close comments'}}
           />
         </Flex>
       </Flex>

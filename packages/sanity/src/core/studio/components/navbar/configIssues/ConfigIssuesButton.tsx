@@ -39,13 +39,12 @@ export function ConfigIssuesButton() {
     <>
       <StatusButton
         icon={WarningOutlineIcon}
-        label="Found configuration issues"
         mode="bleed"
         onClick={handleOpen}
         ref={setButtonElement}
         selected={isDialogOpen}
         tone="caution"
-        tooltip={{scheme}}
+        tooltipProps={{scheme, content: 'Found configuration issues'}}
       />
 
       {isDialogOpen && (

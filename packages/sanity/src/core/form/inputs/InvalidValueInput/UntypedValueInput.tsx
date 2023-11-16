@@ -29,16 +29,7 @@ function SetMissingTypeButton({
     [itemValue, onChange, targetType],
   )
 
-  return (
-    <Button
-      onClick={handleClick}
-      text={
-        <>
-          Convert to <code>{targetType}</code>
-        </>
-      }
-    />
-  )
+  return <Button onClick={handleClick} text={`Convert to "${targetType}"`} />
 }
 
 function UnsetItemButton({

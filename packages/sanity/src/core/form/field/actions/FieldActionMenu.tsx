@@ -3,7 +3,7 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Card, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import React, {memo, useCallback, useId, useMemo, useState} from 'react'
-import {StatusButton, StatusButtonProps} from '../../../components'
+import {Button, ButtonProps} from '../../../../ui'
 import {DocumentFieldActionGroup, DocumentFieldActionNode} from '../../../config'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
 
@@ -13,7 +13,7 @@ export interface FieldActionMenuProps {
   onMenuOpenChange: (open: boolean) => void
 }
 
-const STATUS_BUTTON_TOOLTIP_PROPS: StatusButtonProps['tooltip'] = {
+const STATUS_BUTTON_TOOLTIP_PROPS: ButtonProps['tooltipProps'] = {
   placement: 'top',
 }
 
@@ -100,14 +100,16 @@ const RootFieldActionMenuNode = memo(function RootFieldActionMenuNode(props: {
 
   if (node.type === 'action') {
     return (
-      <StatusButton
+      <Button
         icon={node.icon}
-        // Do not show tooltip if menu is open
-        label={open ? undefined : node.title}
         mode="bleed"
         size="small"
         onClick={node.onAction}
-        tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
+        tooltipProps={{
+          ...STATUS_BUTTON_TOOLTIP_PROPS,
+          content: node.title,
+          disabled: open,
+        }}
       />
     )
   }
@@ -133,12 +135,15 @@ function RootFieldActionMenuGroup(props: {
   return (
     <MenuButton
       button={
-        <StatusButton
+        <Button
           icon={node.icon}
-          label={open ? undefined : node.title}
           mode="bleed"
-          tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
           size="small"
+          tooltipProps={{
+            ...STATUS_BUTTON_TOOLTIP_PROPS,
+            content: node.title,
+            disabled: open,
+          }}
         />
       }
       id={useId()}

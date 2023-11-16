@@ -4,14 +4,15 @@ import {Button, ButtonProps, TooltipWithNodes} from '../../../../../../ui'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 import {useTimeAgo} from 'sanity'
 
-interface ReviewChangesButtonProps extends React.HTMLProps<HTMLButtonElement> {
+interface ReviewChangesButtonProps
+  extends Omit<React.HTMLProps<HTMLButtonElement>, 'size' | 'width' | 'as' | 'type'> {
   status?: 'changes' | 'saved' | 'syncing'
   lastUpdated?: string
   collapsed?: boolean
 }
 
 const ReviewButton = React.forwardRef(function ReviewButton(
-  props: ReviewChangesButtonProps & ButtonProps,
+  props: ReviewChangesButtonProps,
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
   const {collapsed, status, lastUpdated, ...rest} = props
@@ -39,7 +40,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
       }
     }
 
-    return {}
+    return {text: ''}
   }, [status, lastUpdatedTime])
 
   if (!status) {
@@ -71,7 +72,8 @@ const ReviewButton = React.forwardRef(function ReviewButton(
         ref={ref}
         aria-label="Review changes"
         icon={<AnimatedStatusIcon status={status} />}
-        text={!collapsed && buttonProps?.text}
+        text={collapsed ? undefined : buttonProps?.text}
+        tooltipProps={null}
       />
     </TooltipWithNodes>
   )
