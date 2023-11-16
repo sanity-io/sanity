@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-next-studio",
-  "version": "3.19.3",
+  "version": "3.20.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -14,7 +14,7 @@
     "next": "^14.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "3.19.3",
+    "sanity": "3.20.0",
     "styled-components": "^6.1.0"
   },
   "devDependencies": {
