@@ -1,4 +1,4 @@
-const DEBUG_RENDERING = false
+const DEBUG_RENDERING = true
 
 function getRandomColor(): string {
   const letters = '0123456789ABCDEF'

@@ -1,6 +1,8 @@
 import React from 'react'
-import {defineArrayMember, defineType} from 'sanity'
+import {PortableTextInput, defineArrayMember, defineType} from 'sanity'
 import {toPlainText} from '@portabletext/react'
+import {Box} from '@sanity/ui'
+import {props} from 'packages/sanity/src/core/preview/utils/props'
 import {CalloutPreview} from './components/CalloutPreview'
 
 const linkType = defineArrayMember({
@@ -115,10 +117,20 @@ export default defineType({
             spellCheck: true,
           },
         }),
-        {
+        defineArrayMember({
           type: 'image',
           name: 'image',
-        },
+          components: {
+            block: (blockProps) => {
+              return blockProps.renderDefault({
+                ...blockProps,
+                renderPreview: (previewProps) => {
+                  return blockProps.children
+                },
+              })
+            },
+          },
+        }),
         {
           type: 'object',
           name: 'callout',
@@ -154,7 +166,23 @@ export default defineType({
             },
           },
         },
-        myStringType,
+        defineArrayMember({
+          ...myStringType,
+          components: {
+            block: (blockProps) => {
+              return blockProps.children
+              // return blockProps.renderDefault(blockProps)
+            },
+            // block: (blockProps) => {
+            //   return blockProps.renderDefault({
+            //     ...blockProps,
+            //     renderPreview: (previewProps) => {
+            //       return blockProps.children
+            //     },
+            //   })
+            // },
+          },
+        }),
         {
           name: 'authors',
           type: 'object',
@@ -168,6 +196,9 @@ export default defineType({
           ],
         },
       ],
+      components: {
+        input: (inputProps) => <PortableTextInput {...inputProps} fullscreen />,
+      },
     },
     {
       name: 'notes',

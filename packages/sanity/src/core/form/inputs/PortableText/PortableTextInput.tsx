@@ -21,6 +21,7 @@ import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
 import {pathFor} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
+import shallowEquals from 'shallow-equals'
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
@@ -202,6 +203,23 @@ export function PortableTextInput(props: PortableTextInputProps) {
       const existingItem = portableTextMemberItemsRef.current.find((ref) => ref.key === key)
       const isObject = item.kind !== 'textBlock'
       let input: ReactNode
+
+      if (isObject) {
+        if (existingItem?.member) {
+          const allMembers = new Set(
+            Object.keys(item.member.item.members[0].field).concat(
+              Object.keys(existingItem.member.item.members[0].field),
+            ),
+          )
+          const changedMembers = [...allMembers].filter(
+            (p) => !shallowEquals(item.member.item.members[0].field[p], existingItem.member.item.members[0].field[p]),
+          )
+          console.log(changedMembers)
+          changedMembers.forEach((key) => {
+            console.log(key, item.member.item.members[0].field[key])
+          })
+        }
+      }
 
       if (isObject && (!existingItem || !isEqual(item.member, existingItem?.member))) {
         const inputProps = {
