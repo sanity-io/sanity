@@ -89,8 +89,8 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
   }, [isMenuOpen, menuElement])
 
   return (
-    <MenuActionsWrapper data-buttons space={1} padding={2}>
-      <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+    <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+      <MenuActionsWrapper data-buttons space={1} padding={2}>
         {showEdit && (
           <Button
             aria-label="Open image edit dialog"
@@ -99,7 +99,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
             mode="ghost"
             onClick={onEdit}
             ref={setHotspotButtonElement}
-            tooltipProps={{content: 'Edit image'}}
+            tooltipProps={{content: 'Crop image'}}
           />
         )}
         {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
@@ -121,7 +121,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
             tooltipProps={{content: 'Show more'}}
           />
         </Popover>
-      </TooltipDelayGroupProvider>
-    </MenuActionsWrapper>
+      </MenuActionsWrapper>
+    </TooltipDelayGroupProvider>
   )
 }
