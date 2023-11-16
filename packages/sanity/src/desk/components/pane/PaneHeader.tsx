@@ -73,8 +73,6 @@ export const PaneHeader = forwardRef(function PaneHeader(
         $borderBottom={isScrollable && hasScrolledFromTop}
         data-collapsed={collapsed ? '' : undefined}
         data-testid="pane-header"
-        $hasScrolledFromTop={hasScrolledFromTop}
-        $isContentScrollable={isScrollable}
         ref={ref}
       >
         <LegacyLayerProvider zOffset="paneHeader">

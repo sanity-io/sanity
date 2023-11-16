@@ -8,17 +8,9 @@ const BORDER_OFFSET_X = 12
 
 interface RootProps {
   $borderBottom?: boolean
-  'data-collapsed'?: string
-  'data-testid'?: string
-  $isContentScrollable?: boolean
-  $hasScrolledFromTop?: boolean
 }
 
-export const Root = styled(Layer)<RootProps>(({
-  $borderBottom = true,
-  $isContentScrollable,
-  $hasScrolledFromTop,
-}) => {
+export const Root = styled(Layer)<RootProps>(({$borderBottom = true}) => {
   return css`
     line-height: 0;
     position: sticky;
@@ -31,9 +23,9 @@ export const Root = styled(Layer)<RootProps>(({
       left: ${BORDER_OFFSET_X}px;
       right: ${BORDER_OFFSET_X}px;
       bottom: -1px;
-      border-bottom: ${$borderBottom ? '1px solid var(--card-shadow-outline-color)' : 'none'};
-      opacity: ${() => ($isContentScrollable && $hasScrolledFromTop ? 1 : 0)};
-      transition: opacity 200ms ease-in;
+      border-bottom: 1px solid ${$borderBottom ? 'var(--card-shadow-outline-color)' : 'transparent'};
+      opacity: 1;
+      transition: border-color 200ms ease-in;
     }
   `
 })
