@@ -30,6 +30,8 @@ export function PublishStatus(props: PublishStatusProps) {
   // Label with abbreviation and no suffix
   const lastUpdatedTime = useTimeAgo(lastUpdated || '', {minimal: true})
 
+  const buttonDisplayDate = liveEdit && lastUpdated ? lastUpdatedTime : lastPublishedTime
+
   // Accessible labels without abbreviations or suffixes
   const a11yUpdatedAgo = useTimeAgo(lastUpdated || '', {minimal: false, agoSuffix: true})
   const a11yPublishedAgo = useTimeAgo(lastPublished || '', {minimal: false, agoSuffix: true})
@@ -69,8 +71,7 @@ export function PublishStatus(props: PublishStatusProps) {
           disabled={disabled}
           aria-label={a11yLabel}
           icon={liveEdit ? PlayIcon : PublishIcon}
-          // eslint-disable-next-line no-nested-ternary
-          text={collapsed ? '' : liveEdit && lastUpdated ? lastUpdatedTime : lastPublishedTime}
+          text={collapsed ? '' : buttonDisplayDate}
         />
       </TooltipWithNodes>
     </Root>
