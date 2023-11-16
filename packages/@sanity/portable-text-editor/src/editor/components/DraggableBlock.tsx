@@ -30,7 +30,6 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
   const editor = useSlateStatic()
   const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
   const [isDragOver, setIsDragOver] = useState(false)
-  const isVoid = useMemo(() => Editor.isVoid(editor, element), [editor, element])
   const isInline = useMemo(() => Editor.isInline(editor, element), [editor, element])
 
   const [blockElement, setBlockElement] = useState<HTMLElement | null>(null)
@@ -154,10 +153,6 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
   // Note: this is called for the dragging block
   const handleDrag = useCallback(
     (event: DragEvent) => {
-      if (!isVoid) {
-        IS_DRAGGING_BLOCK_ELEMENT.delete(editor)
-        return
-      }
       IS_DRAGGING.set(editor, true)
       IS_DRAGGING_BLOCK_ELEMENT.set(editor, element)
       event.stopPropagation() // Stop propagation so that leafs don't get this and take focus/selection!
@@ -168,13 +163,13 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
         target.style.opacity = '1'
       }
     },
-    [editor, element, isVoid],
+    [editor, element],
   )
 
   // Note: this is called for the dragging block
   const handleDragStart = useCallback(
     (event: DragEvent) => {
-      if (!isVoid || isInline) {
+      if (isInline) {
         debug('Not dragging block')
         IS_DRAGGING_BLOCK_ELEMENT.delete(editor)
         IS_DRAGGING.set(editor, false)
@@ -215,7 +210,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
       }
       handleDrag(event)
     },
-    [blockElement, editor, handleDrag, isInline, isVoid],
+    [blockElement, editor, handleDrag, isInline],
   )
 
   const isDraggingOverFirstBlock =
@@ -261,7 +256,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
 
   return (
     <div
-      draggable={isVoid}
+      draggable
       onDragStart={handleDragStart}
       onDrag={handleDrag}
       onDragOver={handleDragOver}
