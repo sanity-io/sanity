@@ -1,9 +1,10 @@
 import React, {useCallback, useState} from 'react'
 import {CheckmarkIcon, LaunchIcon} from '@sanity/icons'
 import {Button, Flex, Grid, Popover, Stack, Text} from '@sanity/ui'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import {useDeskRenameOnboarding} from './onboardingStore'
 
-const RENAME_ANNOUNCEMENT_URL = 'https://sanity.io/blog/desk-is-now-structure'
+const RENAME_ANNOUNCEMENT_URL = generateHelpUrl('desk-is-now-structure')
 
 /**
  * @internal
