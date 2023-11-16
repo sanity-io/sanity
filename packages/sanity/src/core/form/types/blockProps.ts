@@ -296,7 +296,7 @@ export interface BlockAnnotationProps {
   /**
    * The schema type for the annotation object.
    */
-  schemaType: ObjectSchemaType
+  schemaType: ObjectSchemaType & {i18nTitle?: string}
   /**
    * If the annotated text currently is selected by the user.
    */

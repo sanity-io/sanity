@@ -1,6 +1,8 @@
 export const DEFAULT_LINK_ANNOTATION = {
   type: 'object',
   name: 'link',
+  title: 'Link',
+  i18nTitle: 'inputs.portable-text.annotation.link',
   options: {
     modal: {type: 'popover'},
   },
@@ -33,21 +35,29 @@ export const DEFAULT_MARKS_FIELD = {
 }
 
 export const LIST_TYPES = {
-  bullet: {title: 'Bulleted list', value: 'bullet'},
-  numbered: {title: 'Numbered list', value: 'number'},
+  bullet: {
+    title: 'Bulleted list',
+    value: 'bullet',
+    i18nTitle: 'inputs.portable-text.list-type.bullet',
+  },
+  numbered: {
+    title: 'Numbered list',
+    value: 'number',
+    i18nTitle: 'inputs.portable-text.list-type.number',
+  },
 }
 
 export const DEFAULT_LIST_TYPES = [LIST_TYPES.bullet, LIST_TYPES.numbered]
 
 export const BLOCK_STYLES = {
-  normal: {title: 'Normal', value: 'normal'},
-  h1: {title: 'Heading 1', value: 'h1'},
-  h2: {title: 'Heading 2', value: 'h2'},
-  h3: {title: 'Heading 3', value: 'h3'},
-  h4: {title: 'Heading 4', value: 'h4'},
-  h5: {title: 'Heading 5', value: 'h5'},
-  h6: {title: 'Heading 6', value: 'h6'},
-  blockquote: {title: 'Quote', value: 'blockquote'},
+  normal: {title: 'Normal', value: 'normal', i18nTitle: 'inputs.portable-text.style.normal'},
+  h1: {title: 'Heading 1', value: 'h1', i18nTitle: 'inputs.portable-text.style.h1'},
+  h2: {title: 'Heading 2', value: 'h2', i18nTitle: 'inputs.portable-text.style.h2'},
+  h3: {title: 'Heading 3', value: 'h3', i18nTitle: 'inputs.portable-text.style.h3'},
+  h4: {title: 'Heading 4', value: 'h4', i18nTitle: 'inputs.portable-text.style.h4'},
+  h5: {title: 'Heading 5', value: 'h5', i18nTitle: 'inputs.portable-text.style.h5'},
+  h6: {title: 'Heading 6', value: 'h6', i18nTitle: 'inputs.portable-text.style.h6'},
+  blockquote: {title: 'Quote', value: 'blockquote', i18nTitle: 'inputs.portable-text.style.quote'},
 }
 
 export const DEFAULT_BLOCK_STYLES = [
@@ -61,11 +71,31 @@ export const DEFAULT_BLOCK_STYLES = [
   BLOCK_STYLES.blockquote,
 ]
 
-export const DECORATOR_STRONG = {title: 'Strong', value: 'strong'}
-export const DECORATOR_EMPHASIS = {title: 'Italic', value: 'em'}
-export const DECORATOR_CODE = {title: 'Code', value: 'code'}
-export const DECORATOR_UNDERLINE = {title: 'Underline', value: 'underline'}
-export const DECORATOR_STRIKE = {title: 'Strike', value: 'strike-through'}
+export const DECORATOR_STRONG = {
+  title: 'Strong',
+  value: 'strong',
+  i18nTitle: 'inputs.portable-text.decorator.strong',
+}
+export const DECORATOR_EMPHASIS = {
+  title: 'Italic',
+  value: 'em',
+  i18nTitle: 'inputs.portable-text.decorator.emphasis',
+}
+export const DECORATOR_CODE = {
+  title: 'Code',
+  value: 'code',
+  i18nTitle: 'inputs.portable-text.decorator.code',
+}
+export const DECORATOR_UNDERLINE = {
+  title: 'Underline',
+  value: 'underline',
+  i18nTitle: 'inputs.portable-text.decorator.underline',
+}
+export const DECORATOR_STRIKE = {
+  title: 'Strike',
+  value: 'strike-through',
+  i18nTitle: 'inputs.portable-text.decorator.strike-through',
+}
 
 export const DECORATORS = {
   strong: DECORATOR_STRONG,

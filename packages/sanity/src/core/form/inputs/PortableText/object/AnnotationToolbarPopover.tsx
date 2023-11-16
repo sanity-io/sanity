@@ -11,6 +11,7 @@ import {
 } from '@sanity/ui'
 import styled from 'styled-components'
 import {EditIcon, TrashIcon} from '@sanity/icons'
+import {useTranslation} from '../../../../i18n'
 
 const ToolbarPopover = styled(Popover)`
   &[data-popper-reference-hidden='true'] {
@@ -46,6 +47,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const rangeRef = useRef<Range | null>(null)
   const {sanity} = useTheme()
+  const {t} = useTranslation()
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
 
@@ -171,7 +173,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               mode="bleed"
               onClick={handleEditButtonClicked}
               padding={2}
-              alt="Edit annotation"
+              alt={t('inputs.portable-text.action.edit-annotation')}
               tabIndex={0}
             />
             <Button
@@ -180,7 +182,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               padding={2}
               onClick={handleRemoveButtonClicked}
               tone="critical"
-              alt="Remove annotation"
+              alt={t('inputs.portable-text.action.remove-annotation')}
               tabIndex={0}
             />
           </Inline>

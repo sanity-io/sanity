@@ -754,6 +754,209 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Field groups */
   'inputs.object.field-group-tabs.aria-label': 'Feltgrupper',
 
+  /** -- Portable Text input -- */
+
+  /** Placeholder text for when the editor is empty */
+  'inputs.portable-text.empty-placeholder': 'Tom',
+
+  /** Collapse the editor to save screen space  */
+  'inputs.portable-text.action.collapse-editor': 'Reduser',
+
+  /** Expand the editor to give more editing space */
+  'inputs.portable-text.action.expand-editor': 'Utvid',
+
+  /** Label for action to edit an existing annotation */
+  'inputs.portable-text.action.edit-annotation': 'Rediger merknad',
+
+  /** Label for action to remove an annotation */
+  'inputs.portable-text.action.remove-annotation': 'Fjern merknad',
+
+  /** Accessibility label for the button that opens the actions menu on blocks */
+  'inputs.portable-text.block.open-menu-aria-label': 'Åpne meny',
+
+  /** Label for action to open a reference, in the case of block-level reference types */
+  'inputs.portable-text.block.open-reference': 'Åpne referanse',
+
+  /** Label for action to view a block item, in the case where it is read-only and thus cannot be edited */
+  'inputs.portable-text.block.view': 'Vis',
+
+  /** Label for action to edit a block item, in the case where it is editable */
+  'inputs.portable-text.block.edit': 'Rediger',
+
+  /** Label for action to remove a block item */
+  'inputs.portable-text.block.remove': 'Fjern',
+
+  /** Label for action to edit an inline object item */
+  'inputs.portable-text.inline-object.edit': 'Rediger objekt',
+
+  /** Label for action to remove an inline object item */
+  'inputs.portable-text.inline-object.remove': 'Fjern objekt',
+
+  /** Title for dialog that allows editing an annotation */
+  'inputs.portable-text.annotation-editor.title': 'Rediger {{schemaType}}',
+
+  /** Title of "bulleted" list type */
+  'inputs.portable-text.list-type.bullet': 'Punktliste',
+
+  /** Title of numbered list type */
+  'inputs.portable-text.list-type.number': 'Nummerert liste',
+
+  /** Title of the "normal" block style */
+  'inputs.portable-text.style.normal': 'Normal',
+
+  /** Title of the "h1" block style */
+  'inputs.portable-text.style.h1': 'Overskrift 1',
+
+  /** Title of the "h2" block style */
+  'inputs.portable-text.style.h2': 'Overskrift 2',
+
+  /** Title of the "h3" block style */
+  'inputs.portable-text.style.h3': 'Overskrift 3',
+
+  /** Title of the "h4" block style */
+  'inputs.portable-text.style.h4': 'Overskrift 4',
+
+  /** Title of the "h5" block style */
+  'inputs.portable-text.style.h5': 'Overskrift 5',
+
+  /** Title of the "h6" block style */
+  'inputs.portable-text.style.h6': 'Overskrift 6',
+
+  /** Title of the "quote" block style */
+  'inputs.portable-text.style.quote': 'Sitat',
+
+  /** Title of fallback when no style is given for a block */
+  'inputs.portable-text.style.none': 'Ingen stil',
+
+  /** Title shown when multiple blocks of varying styles is selected */
+  'inputs.portable-text.style.multiple': 'Flere',
+
+  /** Title of the "strong" decorator */
+  'inputs.portable-text.decorator.strong': 'Fet',
+
+  /** Title of the "emphasis" decorator */
+  'inputs.portable-text.decorator.emphasis': 'Kursiv',
+
+  /** Title of the "code" decorator */
+  'inputs.portable-text.decorator.code': 'Kode',
+
+  /** Title of the "underline" decorator */
+  'inputs.portable-text.decorator.underline': 'Understreket',
+
+  /** Title of the "strike-through" decorator */
+  'inputs.portable-text.decorator.strike-through': 'Gjennomstreket',
+
+  /** Title of the default "link" annotation */
+  'inputs.portable-text.annotation.link': 'Lenke',
+
+  /** Title for the alert indicating that the Portable Text field has an invalid value */
+  'inputs.portable-text.invalid-value.title': 'Ugyldig verdi',
+
+  /** Label for the button to ignore invalid values in the Portable Text editor */
+  'inputs.portable-text.invalid-value.ignore-button.text': 'Ignorer',
+
+  /** Disclaimer text shown on invalid Portable Text value, when an action is available to unblock the user, but it is not guaranteed to be safe */
+  'inputs.portable-text.invalid-value.action-disclaimer':
+    'MERK: Det er generelt sett trygt å utføre handlingen over, men om du er i tvil, ta kontakt med de som er ansvarlige for konfigurasjon av studioet.',
+
+  /** Text explaining that the Portable Text field value is invalid, when the Portable Text field is not an array, or the array is empty */
+  'inputs.portable-text.invalid-value.not-an-array.description':
+    'Verdien må være et array av Portable Text-blokker, eller undefined.',
+  /** Action presented when the Portable Text field value is invalid, when the Portable Text field is not an array, or the array is empty */
+  'inputs.portable-text.invalid-value.not-an-array.action': 'Nullstill',
+
+  /** Text explaining that the Portable Text field value is invalid, when child at `{{index}}` is not an object */
+  'inputs.portable-text.invalid-value.not-an-object.description':
+    'Elementet med posisjon <code>{{index}}</code> er ikke et objekt.',
+  /** Action presented when the Portable Text field value is invalid, when child at `{{index}}` is not an object */
+  'inputs.portable-text.invalid-value.not-an-object.action': 'Fjern elementet',
+
+  /** Text explaining that the Portable Text field value is invalid, when child at `{{index}}` is missing the required `_key` property */
+  'inputs.portable-text.invalid-value.missing-key.description':
+    'Blokken med posisjon <code>{{index}}</code> mangler den nødvendige <code>_key</code>-attributten.',
+  /** Action presented when the Portable Text field value is invalid, when child at `{{index}}` is missing the required `_key` property */
+  'inputs.portable-text.invalid-value.missing-key.action': 'Sett tilfeldig nøkkel',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` has a `_type` property that is set to `block`, but the block type defined in schema has a different name (`{{expectedTypeName}}`) */
+  'inputs.portable-text.invalid-value.incorrect-block-type.description':
+    'Blokk med nøkkel <code>{{key}}</code> har et ugyldig typenavn. Ifølge skjemaet skal det være <code>{{expectedTypeName}}</code>.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` has a `_type` property that is set to `block`, but the block type defined in schema has a different name (`{{expectedTypeName}}`) */
+  'inputs.portable-text.invalid-value.incorrect-block-type.action':
+    'Bruk type <code>{{expectedTypeName}}</code>',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` is missing a `_type` property, but seems to be a block of type `{{expectedTypeName}}` */
+  'inputs.portable-text.invalid-value.missing-block-type.description':
+    'Blokk med nøkkel <code>{{key}}</code> mangler et typenavn. Ifølge skjemaet skal det være <code>{{expectedTypeName}}</code>.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` is missing a `_type` property, but seems to be a block of type `{{expectedTypeName}}` */
+  'inputs.portable-text.invalid-value.missing-block-type.action':
+    'Bruk type <code>{{expectedTypeName}}</code>',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` is missing a `_type` property */
+  'inputs.portable-text.invalid-value.missing-type.description':
+    'Blokk med nøkkel <code>{{key}}</code> mangler et typenavn.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` is missing a `_type` property */
+  'inputs.portable-text.invalid-value.missing-type.action': 'Fjern blokken',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` has a type (`{{typeName}}`) that is not an allowed block type for this field */
+  'inputs.portable-text.invalid-value.disallowed-type.description':
+    'Blokk med nøkkel <code>{{key}}</code> er av typen <code>{{typeName}}</code>, som ikke er tillatt av skjemaet.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` has a type (`{{typeName}}`) that is not an allowed block type for this field */
+  'inputs.portable-text.invalid-value.disallowed-type.action': 'Fjern blokken',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` has a missing or invalid `children` property */
+  'inputs.portable-text.invalid-value.missing-or-invalid-children.description':
+    'Tekstblokk med nøkkel <code>{{key}}</code> har en ugyldig eller manglende <code>children</code>-attributt.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` has a missing or invalid `children` property */
+  'inputs.portable-text.invalid-value.missing-or-invalid-children.action': 'Fjern blokken',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` has a missing or invalid `markDefs` property */
+  'inputs.portable-text.invalid-value.missing-or-invalid-markdefs.description':
+    'Tekstblokk med nøkkel <code>{{key}}</code> har en ugyldig eller manglende <code>markDefs</code>-attributt.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` has a missing or invalid `markDefs` property */
+  'inputs.portable-text.invalid-value.missing-or-invalid-markdefs.action': 'Legg til attributt',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` contains marks (`{{orphanedMarks}}`) that are not supported by the current schema */
+  'inputs.portable-text.invalid-value.orphaned-marks.description':
+    'Tekstblokk med nøkkel <code>{{key}}</code> inneholder merknader <code>({{orphanedMarks, list}})</code> som ikke er tillatt av skjemaet.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` contains marks (`{{orphanedMarks}}`) that are not supported by the current schema */
+  'inputs.portable-text.invalid-value.orphaned-marks.action': 'Fjern ugyldige merknader',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` contains no children */
+  'inputs.portable-text.invalid-value.empty-children.description':
+    'Tekstblokk med nøkkel <code>{{key}}</code> har ingen <code>text</code>-attributt.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` contains no children */
+  'inputs.portable-text.invalid-value.empty-children.action': 'Sett inn tomt tekstfelt',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` contains a non-object child at index `{{index}}` */
+  'inputs.portable-text.invalid-value.non-object-child.description':
+    'Element med posisjon <code>{{index}}</code> i blokk med nøkkel <code>{{key}}</code> er ikke et objekt.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` contains a non-object child at index `{{index}}` */
+  'inputs.portable-text.invalid-value.non-object-child.action': 'Fjern elementet',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` has a child at `{{index}}` which is missing `_key` property */
+  'inputs.portable-text.invalid-value.missing-child-key.description':
+    'Element med posisjon <code>{{index}}</code> i blokk med nøkkel <code>{{key}}</code> mangler <code>_key</code>-attributten.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` has a child at `{{index}}` which is missing `_key` property */
+  'inputs.portable-text.invalid-value.missing-child-key.action': 'Sett tilfeldig nøkkel',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` has a child with key `{{childKey}}` which is missing a `_type` property */
+  'inputs.portable-text.invalid-value.missing-child-type.description':
+    'Element med nøkkel <code>{{childKey}} i blokk med nøkkel <code>{{key}}</code> mangler <code>_type</code>-attributten.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` has a child with key `{{childKey}}` which is missing a `_type` property */
+  'inputs.portable-text.invalid-value.missing-child-type.action': 'Fjern objektet',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` has a child with key `{{childKey}}` of type `{{childType}}` which is not allowed by the schema definition */
+  'inputs.portable-text.invalid-value.disallowed-child-type.description':
+    'Element med nøkkel <code>{{childKey}} i blokk med nøkkel <code>{{key}}</code> er av typen <code>{{childType}}</code>, som ikke er tillatt av skjemaet.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` has a child with key `{{childKey}}` of type `{{childType}}` which is not allowed by the schema definition */
+  'inputs.portable-text.invalid-value.disallowed-child-type.action': 'Fjern objektet',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` has a span with key `{{childKey}}` that has a missing or invalid `text` property */
+  'inputs.portable-text.invalid-value.invalid-span-text.description':
+    'Element med nøkkel <code>{{childKey}} i blokk med nøkkel <code>{{key}}</code> har en manglende eller ugyldig <code>text</code>-attributt.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` has a span with key `{{childKey}}` that has a missing or invalid `text` property */
+  'inputs.portable-text.invalid-value.invalid-span-text.action': 'Nullstill tekst',
+
   /** -- Invalid Value Input -- */
 
   /** Reset value */
@@ -816,66 +1019,66 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** -- Form Member Errors -- */
 
   /** Unexpected error: `{{error}}` */
-  'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
+  'member-field-error.unexpected-error': 'Uforventet feil: {{error}}',
 
   /**  Remove non-object values */
-  'form.error.mixed-array-alert.remove-button.text': 'Remove non-object values',
+  'form.error.mixed-array-alert.remove-button.text': 'Fjern verdier som ikke er objekter',
 
   /** Invalid list values */
-  'form.error.mixed-array-alert.title': 'Invalid list values',
+  'form.error.mixed-array-alert.title': 'Ugyldig listeverdier',
 
   /** Some items in this list are not objects. This must be fixed in order to edit the list. */
   'form.error.mixed-array-alert.summary':
-    'Some items in this list are not objects. This must be fixed in order to edit the list.',
+    'Noen elementer i denne listen er ikke objekter. Dette må fikses før du kan redigere listen.',
 
   /** Developer info */
-  'form.error.mixed-array-alert.details.title': 'Developer info',
+  'form.error.mixed-array-alert.details.title': 'Utviklerinfo',
 
   /** This usually happens when items are created using an API client, or when a custom input component has added invalid data to the list. */
   'form.error.mixed-array-alert.details.description':
-    'This usually happens when items are created using an API client, or when a custom input component has added invalid data to the list.',
+    'Dette kan skje når elementer er laget gjennom en API-klient, eller ved bruk av en tilpasset/ikke-standard input-komponent som har lagt til ugyldig data i listen.',
 
   /** Add missing keys */
-  'form.error.missing-keys-alert.add-button.text': 'Add missing keys',
+  'form.error.missing-keys-alert.add-button.text': 'Legg til manglende nøkler',
 
   /** Missing keys */
-  'form.error.missing-keys-alert.title': 'Missing keys',
+  'form.error.missing-keys-alert.title': 'Manglende nøkler',
 
   /** Some items in the list are missing their keys. This must be fixed in order to edit the list. */
   'form.error.missing-keys-alert.summary':
-    'Some items in the list are missing their keys. This must be fixed in order to edit the list.',
+    'Noen element i listen mangler nøkler. Dette må rettes før listen kan redigeres.',
 
   /** Developer info */
-  'form.error.missing-keys-alert.details.title': 'Developer info',
+  'form.error.missing-keys-alert.details.title': 'Utviklerinfo',
 
   /** This usually happens when items are created using an API client, and the <code>_key</code> property has not been included. */
   'form.error.missing-keys-alert.details.description':
-    'This usually happens when items are created using an API client, and the <code>_key</code> property has not been included.',
+    'Dette kan skje når elementer er laget gjennom en API-klient, og <code>_key</code>-attributten ikke har blitt satt.',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.missing-keys-alert.details.additional-description':
-    'The value of the <code>_key</code> property must be a unique string.',
+    'Verdien av <code>_key</code>-attributten må være en unik strengverdi.',
 
   /** Generate unique keys */
-  'form.error.duplicate-keys-alert.generate-button.text': 'Generate unique keys',
+  'form.error.duplicate-keys-alert.generate-button.text': 'Lag unike nøkler',
 
   /** Non-unique keys */
-  'form.error.duplicate-keys-alert.title': 'Non-unique keys',
+  'form.error.duplicate-keys-alert.title': 'Ikke-unike nøkler',
 
   /** Several items in this list share the same identifier (key). Every item must have an unique identifier. */
   'form.error.duplicate-keys-alert.summary':
-    'Several items in this list share the same identifier (key). Every item must have an unique identifier.',
+    'Flere elementer i listen deler sammen nøkkel. Hvert element må ha en unik nøkkel.',
 
   /** Developer info */
-  'form.error.duplicate-keys-alert.details.title': 'Developer info',
+  'form.error.duplicate-keys-alert.details.title': 'Utviklerinfo',
 
   /** This usually happens when items are created using an API client, and the <code>_key</code> property of each elements has been generated non-uniquely. */
   'form.error.duplicate-keys-alert.details.description':
-    'This usually happens when items are created using an API client, and the <code>_key</code> property of each elements has been generated non-uniquely.',
+    'Dette kan skje når elementer er laget gjennom en API-klient, og <code>_key</code>-attributten på de ulike elementene har blitt laget uten å ta unikhet i betraktning.',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
-    'The value of the <code>_key</code> property must be a unique string.',
+    'Verdien av <code>_key</code>-attributten må være en unik strengverdi.',
 
   /** --- Forms / form fields --- */
 

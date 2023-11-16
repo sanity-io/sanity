@@ -3,6 +3,7 @@ import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-e
 import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Text} from '@sanity/ui'
 import {SelectIcon} from '@sanity/icons'
 import styled from 'styled-components'
+import {useTranslation} from '../../../../i18n'
 import {
   Heading1,
   Heading2,
@@ -62,6 +63,7 @@ const emptyStyle: BlockStyleItem = {
   key: 'style-none',
   style: '',
   title: 'No style',
+  i18nTitle: 'inputs.portable-text.style.none',
 }
 
 export const BlockStyleSelect = memo(function BlockStyleSelect(
@@ -70,6 +72,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
   const {disabled, items: itemsProp} = props
   const editor = usePortableTextEditor()
   const focusBlock = useFocusBlock()
+  const {t} = useTranslation()
 
   const _disabled =
     disabled || (focusBlock ? editor.schemaTypes.block.name !== focusBlock._type : false)
@@ -91,10 +94,16 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
   }, [activeKeys, itemsProp])
 
   const menuButtonText = useMemo(() => {
-    if (activeItems.length > 1) return 'Multiple'
-    if (activeItems.length === 1) return activeItems[0].title
-    return emptyStyle.title
-  }, [activeItems])
+    if (activeItems.length > 1) {
+      return t('inputs.portable-text.style.multiple')
+    }
+
+    if (activeItems.length !== 1) {
+      return emptyStyle.i18nTitle ? t(emptyStyle.i18nTitle) : emptyStyle.title
+    }
+
+    return activeItems[0].i18nTitle ? t(activeItems[0].i18nTitle) : activeItems[0].title
+  }, [activeItems, t])
 
   const handleChange = useCallback(
     (item: BlockStyleItem): void => {
@@ -145,13 +154,16 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
               // eslint-disable-next-line react/jsx-no-bind
               onClick={_disabled ? undefined : () => handleChange(item)}
             >
-              {renderOption(item.style, item?.title || item.style)}
+              {renderOption(
+                item.style,
+                item.i18nTitle ? t(item.i18nTitle) : item?.title || item.style,
+              )}
             </StyledMenuItem>
           )
         })}
       </Menu>
     ),
-    [_disabled, activeItems, handleChange, items, renderOption],
+    [_disabled, activeItems, handleChange, items, renderOption, t],
   )
 
   return (

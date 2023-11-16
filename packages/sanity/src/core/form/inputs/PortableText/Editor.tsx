@@ -1,19 +1,20 @@
 import {
-  HotkeyOptions,
   PortableTextEditable,
-  RenderAnnotationFunction,
-  RenderBlockFunction,
-  RenderChildFunction,
-  RenderDecoratorFunction,
-  OnPasteFn,
-  OnCopyFn,
-  EditorSelection,
-  RenderStyleFunction,
-  RenderListItemFunction,
+  type EditorSelection,
+  type HotkeyOptions,
+  type OnCopyFn,
+  type OnPasteFn,
+  type RenderAnnotationFunction,
+  type RenderBlockFunction,
+  type RenderChildFunction,
+  type RenderDecoratorFunction,
+  type RenderListItemFunction,
+  type RenderStyleFunction,
 } from '@sanity/portable-text-editor'
-import {Path} from '@sanity/types'
+import type {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
+import {useTranslation} from '../../../i18n'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
 import {
@@ -85,6 +86,7 @@ export function Editor(props: EditorProps) {
     setScrollElement,
     ariaDescribedBy,
   } = props
+  const {t} = useTranslation()
   const {isTopLayer} = useLayer()
   const editableRef = useRef<HTMLDivElement | null>(null)
 
@@ -106,8 +108,10 @@ export function Editor(props: EditorProps) {
   )
 
   const renderPlaceholder = useCallback(
-    () => <span data-testid="pt-input-placeholder">Empty</span>,
-    [],
+    () => (
+      <span data-testid="pt-input-placeholder">{t('inputs.portable-text.empty-placeholder')}</span>
+    ),
+    [t],
   )
   const spellcheck = useSpellcheck()
 
