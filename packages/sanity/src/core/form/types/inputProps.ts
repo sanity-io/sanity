@@ -1,4 +1,3 @@
-import {type HotkeyOptions, type OnCopyFn, type OnPasteFn} from '@sanity/portable-text-editor'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -15,6 +14,12 @@ import {
   type SlugValue,
   type StringSchemaType,
 } from '@sanity/types'
+import {
+  type HotkeyOptions,
+  type OnCopyFn,
+  type OnPasteFn,
+  PortableTextEditor,
+} from '@sanity/portable-text-editor'
 import {
   type ComponentType,
   type FocusEventHandler,
@@ -488,6 +493,10 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
  * */
 export interface PortableTextInputProps
   extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
+  /**
+   * A React Ref that can reference the underlying editor instance
+   */
+  editorRef: React.MutableRefObject<PortableTextEditor | null>
   /**
    * Assign hotkeys that can be attached to custom editing functions
    */

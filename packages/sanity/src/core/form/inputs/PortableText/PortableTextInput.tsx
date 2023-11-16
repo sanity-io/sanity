@@ -60,6 +60,7 @@ export interface PortableTextMemberItem {
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {
+    editorRef: editorRefProp,
     elementProps,
     hotkeys,
     markers = EMPTY_ARRAY,
@@ -78,8 +79,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
   } = props
 
   const {onBlur} = elementProps
+  const defaultEditorRef = useRef<PortableTextEditor>()
+  const editorRef = editorRefProp || defaultEditorRef
 
-  // Make the PTE focusable from the outside
+  // This handle will allow for natively calling .focus
+  // on the element and have the PortableTextEditor focused.
   useImperativeHandle(elementProps.ref, () => ({
     focus() {
       if (editorRef.current) {
@@ -89,7 +93,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   }))
 
   const {subscribe} = usePatches({path})
-  const editorRef = useRef<PortableTextEditor | null>(null)
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -121,7 +124,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         return next
       })
     }
-  }, [telemetry])
+  }, [telemetry, editorRef])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -227,7 +230,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         PortableTextEditor.focus(editorRef.current)
       }
     }
-  }, [isActive])
+  }, [editorRef, isActive])
 
   return (
     <Box ref={innerElementRef}>
