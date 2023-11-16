@@ -41,7 +41,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   const children = useMemo(
     () =>
       tools.map((tool, index) => {
-        const title = tool?.title || startCase(tool.name) || undefined
+        const title = tool?.title || startCase(tool.name)
 
         const Link = forwardRef(function Link(
           linkProps: ToolLinkProps,

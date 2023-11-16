@@ -100,6 +100,7 @@ export function FilterForm({filter}: FilterFormProps) {
                     onClick={handleClose}
                     size="small"
                     tone="critical"
+                    tooltipProps={{content: 'Remove filter'}}
                   />
                 )}
               </Flex>

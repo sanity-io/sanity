@@ -9,6 +9,7 @@ import {
   PortalProvider,
   useMediaIndex,
   Text,
+  TooltipDelayGroupProvider,
 } from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
 import {startCase} from 'lodash'
@@ -16,6 +17,7 @@ import styled from 'styled-components'
 import {isDev} from '../../../environment'
 import {useWorkspace} from '../../workspace'
 import {Button} from '../../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../../ui/tooltip/constants'
 import {useWorkspaces} from '../../workspaces'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
@@ -168,48 +170,51 @@ export function StudioNavbar() {
       <RootCard borderBottom data-testid="navbar" data-ui="Navbar" padding={2} sizing="border">
         <NavGrid>
           {/** Left flex */}
-          <Flex align="center" gap={2} justify="flex-start">
-            <Flex align="center" gap={1}>
-              {/* Menu button */}
-              {!shouldRender.tools && (
-                <Button
-                  mode="bleed"
-                  icon={MenuIcon}
-                  onClick={handleOpenDrawer}
-                  ref={setDrawerButtonEl}
-                />
-              )}
+          <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+            <Flex align="center" gap={2} justify="flex-start">
+              <Flex align="center" gap={1}>
+                {/* Menu button */}
+                {!shouldRender.tools && (
+                  <Button
+                    mode="bleed"
+                    icon={MenuIcon}
+                    onClick={handleOpenDrawer}
+                    ref={setDrawerButtonEl}
+                    tooltipProps={{content: 'Open drawer', placement: 'right'}}
+                  />
+                )}
 
-              {/* Workspace icon / studio logo */}
-              <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
-                <Flex align="center">
-                  <LogoMarkContainer>
-                    <Flex align="center" height="fill" justify="center">
-                      {/* Display the Sanity logo only if one workspace is active and no custom icon is defined */}
-                      {multipleWorkspaces || activeWorkspace.customIcon ? (
-                        <WorkspacePreviewIcon icon={activeWorkspace.icon} size="small" />
-                      ) : (
-                        <SanityLogo />
-                      )}
-                    </Flex>
-                  </LogoMarkContainer>
-                  <Box paddingX={2}>
-                    <Text size={1} weight="medium">
-                      {activeWorkspace.title}
-                    </Text>
-                  </Box>
-                </Flex>
-              </LogoButton>
+                {/* Workspace icon / studio logo */}
+                <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
+                  <Flex align="center">
+                    <LogoMarkContainer>
+                      <Flex align="center" height="fill" justify="center">
+                        {/* Display the Sanity logo only if one workspace is active and no custom icon is defined */}
+                        {multipleWorkspaces || activeWorkspace.customIcon ? (
+                          <WorkspacePreviewIcon icon={activeWorkspace.icon} size="small" />
+                        ) : (
+                          <SanityLogo />
+                        )}
+                      </Flex>
+                    </LogoMarkContainer>
+                    <Box paddingX={2}>
+                      <Text size={1} weight="medium">
+                        {activeWorkspace.title}
+                      </Text>
+                    </Box>
+                  </Flex>
+                </LogoButton>
 
-              {/* Workspace menu button */}
-              {shouldRender.workspaces && <WorkspaceMenuButton collapsed />}
+                {/* Workspace menu button */}
+                {shouldRender.workspaces && <WorkspaceMenuButton collapsed />}
+              </Flex>
+              {/* New document button */}
+              <NewDocumentButton
+                {...newDocumentOptions}
+                modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
+              />
             </Flex>
-            {/* New document button */}
-            <NewDocumentButton
-              {...newDocumentOptions}
-              modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
-            />
-          </Flex>
+          </TooltipDelayGroupProvider>
 
           {/** Center flex */}
           <Flex align="center" justify="center">
@@ -225,43 +230,45 @@ export function StudioNavbar() {
           </Flex>
 
           {/** Right flex */}
-          <Flex align="center" gap={3} justify="flex-end">
-            {/* Search */}
-            <LayerProvider>
-              <SearchProvider fullscreen={shouldRender.searchFullscreen}>
-                <BoundaryElementProvider element={document.body}>
-                  <PortalProvider element={searchFullscreenPortalEl}>
-                    {shouldRender.searchFullscreen && (
-                      <SearchDialog
-                        onClose={handleCloseSearchFullscreen}
-                        onOpen={handleOpenSearchFullscreen}
-                        open={searchFullscreenOpen}
-                      />
-                    )}
-                  </PortalProvider>
-                  <SearchPopover
-                    onClose={handleCloseSearch}
-                    onOpen={handleOpenSearch}
-                    open={searchOpen}
-                  />
-                </BoundaryElementProvider>
-              </SearchProvider>
-            </LayerProvider>
+          <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+            <Flex align="center" gap={3} justify="flex-end">
+              {/* Search */}
+              <LayerProvider>
+                <SearchProvider fullscreen={shouldRender.searchFullscreen}>
+                  <BoundaryElementProvider element={document.body}>
+                    <PortalProvider element={searchFullscreenPortalEl}>
+                      {shouldRender.searchFullscreen && (
+                        <SearchDialog
+                          onClose={handleCloseSearchFullscreen}
+                          onOpen={handleOpenSearchFullscreen}
+                          open={searchFullscreenOpen}
+                        />
+                      )}
+                    </PortalProvider>
+                    <SearchPopover
+                      onClose={handleCloseSearch}
+                      onOpen={handleOpenSearch}
+                      open={searchOpen}
+                    />
+                  </BoundaryElementProvider>
+                </SearchProvider>
+              </LayerProvider>
 
-            {/* Search button (desktop) */}
-            {!shouldRender.searchFullscreen && (
-              <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
-            )}
+              {/* Search button (desktop) */}
+              {!shouldRender.searchFullscreen && (
+                <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+              )}
 
-            {shouldRender.configIssues && <ConfigIssuesButton />}
-            {shouldRender.resources && <ResourcesButton />}
-            <PresenceMenu />
-            {shouldRender.tools && <UserMenu />}
-            {/* Search button (mobile) */}
-            {shouldRender.searchFullscreen && (
-              <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
-            )}
-          </Flex>
+              {shouldRender.configIssues && <ConfigIssuesButton />}
+              {shouldRender.resources && <ResourcesButton />}
+              <PresenceMenu />
+              {shouldRender.tools && <UserMenu />}
+              {/* Search button (mobile) */}
+              {shouldRender.searchFullscreen && (
+                <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
+              )}
+            </Flex>
+          </TooltipDelayGroupProvider>
         </NavGrid>
       </RootCard>
 

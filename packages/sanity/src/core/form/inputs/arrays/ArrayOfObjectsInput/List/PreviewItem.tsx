@@ -118,7 +118,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<Button size="small" mode="bleed" icon={EllipsisHorizontalIcon} />}
+          button={
+            <Button
+              size="small"
+              mode="bleed"
+              icon={EllipsisHorizontalIcon}
+              tooltipProps={{content: 'Show more'}}
+            />
+          }
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>

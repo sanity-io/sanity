@@ -94,7 +94,10 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
 
   const menuOptions = useMemo(() => Children.toArray(children).filter(_isReactElement), [children])
   const menuButton = useMemo(
-    () => menuButtonProps?.button || <Button icon={EllipsisHorizontalIcon} mode="bleed" />,
+    () =>
+      menuButtonProps?.button || (
+        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
+      ),
     [menuButtonProps],
   )
 

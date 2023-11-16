@@ -244,9 +244,9 @@ export function ConfirmDeleteDialogBody({
                                   }}
                                 >
                                   <Button
-                                    title="Copy ID to clipboard"
                                     mode="bleed"
                                     icon={CopyIcon}
+                                    tooltipProps={{content: 'Copy ID to clipboard"'}}
                                   />
                                 </CopyToClipboard>
                               )}

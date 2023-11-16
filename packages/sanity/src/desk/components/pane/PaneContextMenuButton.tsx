@@ -42,9 +42,13 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
         <StatusButton
           icon={EllipsisHorizontalIcon}
           mode="bleed"
-          title="Show menu"
           // eslint-disable-next-line no-nested-ternary
           tone={hasCritical ? 'critical' : hasCaution ? 'caution' : undefined}
+          tooltipProps={{
+            content: 'Show more',
+            placement: 'bottom',
+            portal: true,
+          }}
         />
       }
       id={id}

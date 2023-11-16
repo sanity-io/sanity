@@ -26,7 +26,14 @@ export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
       style={{height: '100%'}}
       menu={
         <MenuButton
-          button={<Button size="small" mode="bleed" icon={EllipsisHorizontalIcon} />}
+          button={
+            <Button
+              size="small"
+              mode="bleed"
+              icon={EllipsisHorizontalIcon}
+              tooltipProps={{content: 'Show more'}}
+            />
+          }
           id={`${id}-menuButton`}
           menu={
             <Menu>

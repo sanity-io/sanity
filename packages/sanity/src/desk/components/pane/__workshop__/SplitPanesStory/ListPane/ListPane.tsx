@@ -25,10 +25,23 @@ export function ListPane(props: {
   return (
     <Pane currentMaxWidth={350} flex={1} id={String(index)} minWidth={320} maxWidth={640}>
       <PaneHeader
-        actions={<Button icon={EllipsisHorizontalIcon} mode="bleed" />}
+        actions={
+          <Button
+            icon={EllipsisHorizontalIcon}
+            mode="bleed"
+            tooltipProps={{content: 'Show more'}}
+          />
+        }
         backButton={
           index > 0 &&
-          layoutCollapsed && <Button icon={ArrowLeftIcon} mode="bleed" onClick={handleBackClick} />
+          layoutCollapsed && (
+            <Button
+              icon={ArrowLeftIcon}
+              mode="bleed"
+              onClick={handleBackClick}
+              tooltipProps={{content: 'Back'}}
+            />
+          )
         }
         title={node.title}
       />

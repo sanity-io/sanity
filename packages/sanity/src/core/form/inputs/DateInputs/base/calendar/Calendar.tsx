@@ -34,6 +34,13 @@ const PRESERVE_FOCUS_ELEMENT = (
   />
 )
 
+// This buttons use a specific styling, given they are intended to be aligned with the select elements.
+const CALENDAR_ICON_BUTTON_PROPS = {
+  fontSize: 2,
+  radius: 0,
+  paddingX: 2,
+}
+
 export const Calendar = forwardRef(function Calendar(
   props: CalendarProps,
   forwardedRef: React.ForwardedRef<HTMLDivElement>,
@@ -317,12 +324,15 @@ function CalendarMonthSelect(props: {
   return (
     <Flex flex={1}>
       <Button
-        aria-label="Go to previous month"
         onClick={handlePrevMonthClick}
         mode="bleed"
         icon={ChevronLeftIcon}
-        size="small"
+        tooltipProps={{content: 'Previous month'}}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - Button with specific styling requirements
+        {...CALENDAR_ICON_BUTTON_PROPS}
       />
+
       <Box flex={1}>
         <Select radius={0} value={value} onChange={onChange}>
           {MONTH_NAMES.map((m, i) => (
@@ -334,11 +344,13 @@ function CalendarMonthSelect(props: {
         </Select>
       </Box>
       <Button
-        aria-label="Go to next month"
         mode="bleed"
         icon={ChevronRightIcon}
         onClick={handleNextMonthClick}
-        size="small"
+        tooltipProps={{content: 'Next month'}}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - Button with specific styling requirements
+        {...CALENDAR_ICON_BUTTON_PROPS}
       />
     </Flex>
   )
@@ -358,19 +370,23 @@ function CalendarYearSelect(props: {
   return (
     <Flex>
       <Button
-        aria-label="Previous year"
         onClick={handlePrevYearClick}
         mode="bleed"
         icon={ChevronLeftIcon}
-        size="small"
+        tooltipProps={{content: 'Previous year'}}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - Button with specific styling requirements
+        {...CALENDAR_ICON_BUTTON_PROPS}
       />
       <YearInput value={value} onChange={onChange} radius={0} style={{width: 65}} />
       <Button
-        aria-label="Next year"
         onClick={handleNextYearClick}
         mode="bleed"
         icon={ChevronRightIcon}
-        size="small"
+        tooltipProps={{content: 'Next year'}}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - Button with specific styling requirements
+        {...CALENDAR_ICON_BUTTON_PROPS}
       />
     </Flex>
   )

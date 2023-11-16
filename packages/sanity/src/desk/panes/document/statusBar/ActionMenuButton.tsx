@@ -44,6 +44,7 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
             icon={ChevronDownIcon}
             mode="bleed"
             ref={buttonRef}
+            tooltipProps={{content: 'Show more'}}
           />
         }
         menu={

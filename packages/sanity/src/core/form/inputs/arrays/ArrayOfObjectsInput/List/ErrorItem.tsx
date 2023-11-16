@@ -23,7 +23,14 @@ export function ErrorItem(props: {
         tone="caution"
         menu={
           <MenuButton
-            button={<Button size="small" mode="bleed" icon={EllipsisHorizontalIcon} />}
+            button={
+              <Button
+                size="small"
+                mode="bleed"
+                icon={EllipsisHorizontalIcon}
+                tooltipProps={{content: 'Show more'}}
+              />
+            }
             id={`${id}-menuButton`}
             menu={
               <Menu>

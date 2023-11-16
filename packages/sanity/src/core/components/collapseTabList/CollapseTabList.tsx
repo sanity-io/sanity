@@ -81,7 +81,10 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
   )
 
   const menuButton = useMemo(
-    () => menuButtonProps?.button || <Button icon={EllipsisHorizontalIcon} mode="bleed" />,
+    () =>
+      menuButtonProps?.button || (
+        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
+      ),
     [menuButtonProps],
   )
 

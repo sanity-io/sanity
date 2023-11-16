@@ -22,7 +22,12 @@ export default function ExampleStory() {
   const manyTabs = useBoolean('Many tabs', false, 'Props')
   const tone = useSelect('Tone', PANE_TONE_OPTIONS, 'default', 'Props')
 
-  const actions = useMemo(() => <Button icon={EllipsisHorizontalIcon} mode="bleed" />, [])
+  const actions = useMemo(
+    () => (
+      <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
+    ),
+    [],
+  )
   const tabs = useMemo(
     () =>
       manyTabs ? (

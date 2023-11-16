@@ -50,6 +50,7 @@ export function DocumentInspectorHeader(
             mode="bleed"
             onClick={onClose}
             size="small"
+            tooltipProps={{content: 'Close'}}
           />
         </Box>
       </Flex>

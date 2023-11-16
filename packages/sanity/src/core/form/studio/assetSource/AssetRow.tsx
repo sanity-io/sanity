@@ -244,6 +244,7 @@ export const AssetRow = (props: RowProps) => {
               size="small"
               onClick={handleToggleOpen}
               icon={isOpen ? ChevronUpIcon : ChevronDownIcon}
+              tooltipProps={{content: isOpen ? 'Close' : 'Open'}}
             />
           </Flex>
         </Grid>
@@ -290,7 +291,7 @@ export const AssetRow = (props: RowProps) => {
                 text="Delete"
                 icon={TrashIcon}
                 disabled={isSelected}
-                title={isSelected ? DISABLED_DELETE_TITLE : 'Delete file'}
+                tooltipProps={{content: isSelected ? DISABLED_DELETE_TITLE : 'Delete file'}}
                 onClick={handleConfirmDelete}
               />
             </Stack>

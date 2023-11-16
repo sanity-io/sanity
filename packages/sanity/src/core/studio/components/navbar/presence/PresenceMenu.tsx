@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {StatusButton} from '../../../../components'
 import {useGlobalPresence} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
-import {MenuItem, Tooltip} from '../../../../../ui'
+import {MenuItem} from '../../../../../ui'
 import {useWorkspace} from '../../../workspace'
 import {PresenceMenuItem} from './PresenceMenuItem'
 
@@ -49,9 +49,19 @@ export function PresenceMenu() {
 
   const button = useMemo(() => {
     return (
-      <StatusButton icon={UsersIcon} mode="bleed" tone={hasPresence ? 'positive' : undefined} />
+      <StatusButton
+        icon={UsersIcon}
+        mode="bleed"
+        tone={hasPresence ? 'positive' : undefined}
+        tooltipProps={{
+          content: 'Active users',
+          placement: 'bottom',
+          disabled: menuOpen,
+          portal: true,
+        }}
+      />
     )
-  }, [hasPresence])
+  }, [hasPresence, menuOpen])
 
   const popoverProps = useMemo(
     () => ({
@@ -63,60 +73,56 @@ export function PresenceMenu() {
   )
 
   return (
-    <Tooltip content="Active users" disabled={menuOpen}>
-      <div>
-        <MenuButton
-          button={button}
-          id="global-presence-menu"
-          menu={
-            <StyledMenu padding={1}>
-              {hasPresence && (
-                <Stack>
-                  {presence.map((item) => (
-                    <PresenceMenuItem
-                      focused={focusedId === item.user.id}
-                      key={item.user.id}
-                      onFocus={handleItemFocus}
-                      presence={item}
-                    />
-                  ))}
-                </Stack>
-              )}
-
-              {!hasPresence && (
-                <Box padding={3}>
-                  <Stack space={3}>
-                    <Text weight="medium" size={1}>
-                      No one else is here
-                    </Text>
-
-                    <Text size={1} muted>
-                      Invite people to the project to see their online status.
-                    </Text>
-                  </Stack>
-                </Box>
-              )}
-
-              <FooterStack space={1}>
-                <MenuDivider />
-
-                <MenuItem
-                  as="a"
-                  href={`https://sanity.io/manage/project/${projectId}`}
-                  iconRight={CogIcon}
-                  onFocus={handleClearFocusedItem}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  text="Manage members"
+    <MenuButton
+      button={button}
+      id="global-presence-menu"
+      menu={
+        <StyledMenu padding={1}>
+          {hasPresence && (
+            <Stack>
+              {presence.map((item) => (
+                <PresenceMenuItem
+                  focused={focusedId === item.user.id}
+                  key={item.user.id}
+                  onFocus={handleItemFocus}
+                  presence={item}
                 />
-              </FooterStack>
-            </StyledMenu>
-          }
-          onClose={handleClose}
-          onOpen={handleOpen}
-          popover={popoverProps}
-        />
-      </div>
-    </Tooltip>
+              ))}
+            </Stack>
+          )}
+
+          {!hasPresence && (
+            <Box padding={3}>
+              <Stack space={3}>
+                <Text weight="medium" size={1}>
+                  No one else is here
+                </Text>
+
+                <Text size={1} muted>
+                  Invite people to the project to see their online status.
+                </Text>
+              </Stack>
+            </Box>
+          )}
+
+          <FooterStack space={1}>
+            <MenuDivider />
+
+            <MenuItem
+              as="a"
+              href={`https://sanity.io/manage/project/${projectId}`}
+              iconRight={CogIcon}
+              onFocus={handleClearFocusedItem}
+              rel="noopener noreferrer"
+              target="_blank"
+              text="Manage members"
+            />
+          </FooterStack>
+        </StyledMenu>
+      }
+      onClose={handleClose}
+      onOpen={handleOpen}
+      popover={popoverProps}
+    />
   )
 }

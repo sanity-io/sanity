@@ -161,14 +161,5 @@ function ConvertButton({
     [converter, onConvert, value],
   )
 
-  return (
-    <Button
-      onClick={handleClick}
-      text={
-        <>
-          Convert to <code>{converter.to}</code>
-        </>
-      }
-    />
-  )
+  return <Button onClick={handleClick} text={`Convert to "${converter.to}"`} />
 }

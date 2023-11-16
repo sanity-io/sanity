@@ -1,8 +1,8 @@
 import {ComposeIcon} from '@sanity/icons'
-import React, {useMemo, forwardRef, useCallback, useState} from 'react'
+import React, {useMemo, forwardRef} from 'react'
 import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import {Schema} from '@sanity/types'
-import {Button, MenuItem, Tooltip} from '../../../ui'
+import {Button, MenuItem} from '../../../ui'
 import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 import {IntentLink} from 'sanity/router'
@@ -55,8 +55,6 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     templateItems,
   })
 
-  const [menuOpen, setMenuOpen] = useState(false)
-
   const nothingGranted = useMemo(() => {
     return (
       !isTemplatePermissionsLoading &&
@@ -75,9 +73,6 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     )
   }, [templatePermissions])
 
-  const handleOpen = useCallback(() => setMenuOpen(true), [])
-  const handleClose = useCallback(() => setMenuOpen(false), [])
-
   if (nothingGranted) {
     return (
       <InsufficientPermissionsMessageTooltip reveal loading={isTemplatePermissionsLoading}>
@@ -87,6 +82,8 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           mode="bleed"
           disabled
           data-testid="action-intent-button"
+          // This button handles the tooltip in a special way, won't reuse the forced tooltip.
+          tooltipProps={null}
         />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -111,69 +108,68 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           mode="bleed"
           disabled={disabled}
           data-testid="action-intent-button"
+          // This button handles the tooltip in a special way, couldn't reuse the forced tooltip.
+          tooltipProps={null}
         />
       </InsufficientPermissionsMessageTooltip>
     )
   }
 
   return (
-    <Tooltip content="Create new document" disabled={menuOpen}>
-      <div>
-        <MenuButton
-          button={
-            <Button icon={ComposeIcon} mode="bleed" data-testid="multi-action-intent-button" />
-          }
-          id="create-menu"
-          menu={
-            <Menu>
-              {templateItems.map((item, itemIndex) => {
-                const permissions = permissionsById[item.id]
-                const disabled = !permissions?.granted
-                const intent = getIntent(schema, templates, item)
-                const template = templates.find((t) => t.id === item.templateId)
-                if (!template || !intent) return null
-
-                const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>
-                  disabled ? (
-                    <button type="button" disabled {...linkProps} ref={linkRef} />
-                  ) : (
-                    <IntentLink
-                      {...linkProps}
-                      intent={intent.type}
-                      params={intent.params}
-                      ref={linkRef}
-                    />
-                  ),
-                )
-
-                Link.displayName = 'Link'
-
-                return (
-                  <InsufficientPermissionsMessageTooltip
-                    key={item.id}
-                    reveal={disabled}
-                    loading={isTemplatePermissionsLoading}
-                  >
-                    <MenuItem
-                      as={Link}
-                      data-as={disabled ? 'button' : 'a'}
-                      text={item.title || template.title}
-                      aria-label={
-                        disabled ? 'Insufficient permissions' : item.title || template.title
-                      }
-                      disabled={disabled}
-                      data-testid={`action-intent-button-${itemIndex}`}
-                    />
-                  </InsufficientPermissionsMessageTooltip>
-                )
-              })}
-            </Menu>
-          }
-          onClose={handleClose}
-          onOpen={handleOpen}
-          popover={POPOVER_PROPS}
+    <MenuButton
+      button={
+        <Button
+          icon={ComposeIcon}
+          mode="bleed"
+          data-testid="multi-action-intent-button"
+          tooltipProps={{content: 'Create new document'}}
         />
-      </div>
-    </Tooltip>
+      }
+      id="create-menu"
+      menu={
+        <Menu>
+          {templateItems.map((item, itemIndex) => {
+            const permissions = permissionsById[item.id]
+            const disabled = !permissions?.granted
+            const intent = getIntent(schema, templates, item)
+            const template = templates.find((t) => t.id === item.templateId)
+            if (!template || !intent) return null
+
+            const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>
+              disabled ? (
+                <button type="button" disabled {...linkProps} ref={linkRef} />
+              ) : (
+                <IntentLink
+                  {...linkProps}
+                  intent={intent.type}
+                  params={intent.params}
+                  ref={linkRef}
+                />
+              ),
+            )
+
+            Link.displayName = 'Link'
+
+            return (
+              <InsufficientPermissionsMessageTooltip
+                key={item.id}
+                reveal={disabled}
+                loading={isTemplatePermissionsLoading}
+              >
+                <MenuItem
+                  as={Link}
+                  data-as={disabled ? 'button' : 'a'}
+                  text={item.title || template.title}
+                  aria-label={disabled ? 'Insufficient permissions' : item.title || template.title}
+                  disabled={disabled}
+                  data-testid={`action-intent-button-${itemIndex}`}
+                />
+              </InsufficientPermissionsMessageTooltip>
+            )
+          })}
+        </Menu>
+      }
+      popover={POPOVER_PROPS}
+    />
   )
 }
