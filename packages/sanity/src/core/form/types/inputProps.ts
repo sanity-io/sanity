@@ -15,7 +15,7 @@ import {
   StringSchemaType,
 } from '@sanity/types'
 import React, {ComponentType, FocusEventHandler, FormEventHandler} from 'react'
-import {HotkeyOptions, OnCopyFn, OnPasteFn} from '@sanity/portable-text-editor'
+import {HotkeyOptions, OnCopyFn, OnPasteFn, PortableTextEditor} from '@sanity/portable-text-editor'
 import {FormPatch, PatchEvent} from '../patch'
 import {
   ArrayOfObjectsFormNode,
@@ -478,6 +478,10 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
  * */
 export interface PortableTextInputProps
   extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
+  /**
+   * A React Ref that can reference the underlying editor instance
+   */
+  editorRef: React.MutableRefObject<PortableTextEditor | null>
   /**
    * Open the input in fullscreen mode
    */
