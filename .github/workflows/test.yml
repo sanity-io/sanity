@@ -135,7 +135,8 @@ jobs:
           npm -v
           yarn test --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
         env:
-          SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
+          # FIXME: re-enable CLI tests with this
+          # SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
 
   cleanup:
