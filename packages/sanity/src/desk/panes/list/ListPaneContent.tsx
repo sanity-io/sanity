@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react'
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
-import {PaneContent, PaneItem, usePaneLayout} from '../../components'
+import {PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
 import {PaneListItem, PaneListItemDivider} from '../../types'
 import {CommandList, CommandListItemContext, GeneralPreviewLayoutKey} from 'sanity'
 
@@ -27,6 +27,7 @@ const Divider = styled.hr`
 export function ListPaneContent(props: ListPaneContentProps) {
   const {childItemId, items, isActive, layout, showIcons, title} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
+  const {setScrollableElement} = usePane()
 
   const getItemDisabled = useCallback(
     (itemIndex: number) => {
@@ -90,6 +91,16 @@ export function ListPaneContent(props: ListPaneContentProps) {
     [childItemId, isActive, layout, shouldShowIconForItem],
   )
 
+  //Set scrollable element to virtual list for conditional border
+  const virtualListReady = useCallback(
+    (virtualListElement: HTMLElement) => {
+      if (setScrollableElement) {
+        setScrollableElement(virtualListElement)
+      }
+    },
+    [setScrollableElement],
+  )
+
   return (
     <PaneContent overflow={layoutCollapsed ? 'hidden' : 'auto'}>
       {items && items.length > 0 && (
@@ -101,6 +112,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
           getItemDisabled={getItemDisabled}
           itemHeight={51}
           items={items}
+          onListReady={virtualListReady}
           onlyShowSelectionWhenActive
           padding={2}
           paddingBottom={1}

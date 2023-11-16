@@ -1,21 +1,34 @@
 import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme, Card} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
-export const Root = styled(Layer)`
-  line-height: 0;
-  position: sticky;
-  top: 0;
+/**
+ * Left/right border offsets for header components (in px).
+ */
+const BORDER_OFFSET_X = 12
 
-  &:not([data-collapsed]):after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -1px;
-    border-bottom: 1px solid var(--card-shadow-outline-color);
-  }
-`
+interface RootProps {
+  $borderBottom?: boolean
+}
+
+export const Root = styled(Layer)<RootProps>(({$borderBottom = true}) => {
+  return css`
+    line-height: 0;
+    position: sticky;
+    top: 0;
+
+    &:not([data-collapsed]):after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: ${BORDER_OFFSET_X}px;
+      right: ${BORDER_OFFSET_X}px;
+      bottom: -1px;
+      border-bottom: 1px solid ${$borderBottom ? 'var(--card-shadow-outline-color)' : 'transparent'};
+      opacity: 1;
+      transition: border-color 200ms ease-in;
+    }
+  `
+})
 
 export const Layout = styled(Flex)`
   transform-origin: calc(51px / 2);
