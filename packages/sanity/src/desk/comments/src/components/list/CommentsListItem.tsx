@@ -46,10 +46,10 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
       @media (hover: hover) {
         &[data-hovered='true'] {
           --card-bg-color: ${hovered.bg2};
-        }
 
-        [data-root-menu='true'] {
-          opacity: 1;
+          [data-root-menu='true'] {
+            opacity: 1;
+          }
         }
       }
     }
