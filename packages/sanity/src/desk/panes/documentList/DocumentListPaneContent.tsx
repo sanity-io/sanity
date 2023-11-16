@@ -87,7 +87,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const schema = useSchema()
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const {collapsed, index} = usePane()
+  const {collapsed, index, setScrollableElement} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
 
   const handleEndReached = useCallback(() => {
@@ -95,6 +95,16 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
 
     onListChange()
   }, [isLazyLoading, isLoading, onListChange, shouldRender])
+
+  //Set scrollable element to virtual list for conditional border
+  const handleVirtualListReady = useCallback(
+    (virtualListElement: HTMLElement) => {
+      if (setScrollableElement) {
+        setScrollableElement(virtualListElement)
+      }
+    },
+    [setScrollableElement],
+  )
 
   useEffect(() => {
     if (collapsed) return undefined
@@ -232,6 +242,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             items={items}
             key={key}
             onEndReached={handleEndReached}
+            onListReady={handleVirtualListReady}
             onlyShowSelectionWhenActive
             overscan={10}
             padding={2}

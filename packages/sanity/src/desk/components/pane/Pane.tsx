@@ -69,6 +69,7 @@ export const Pane = forwardRef(function Pane(
   const flex = pane?.flex ?? flexProp
   const currentMinWidth = pane?.currentMinWidth ?? currentMinWidthProp
   const currentMaxWidth = pane?.currentMaxWidth ?? currentMaxWidthProp
+  const [scrollableElement, setScrollableElement] = useState<HTMLElement | null>(null)
 
   const setRef = useCallback(
     (refValue: HTMLDivElement | null) => {
@@ -117,8 +118,20 @@ export const Pane = forwardRef(function Pane(
       index: paneIndex,
       isLast,
       rootElement,
+      scrollableElement,
+      setScrollableElement,
     }),
-    [collapsed, handleCollapse, handleExpand, isLast, layoutCollapsed, paneIndex, rootElement],
+    [
+      collapsed,
+      handleCollapse,
+      handleExpand,
+      isLast,
+      layoutCollapsed,
+      paneIndex,
+      rootElement,
+      scrollableElement,
+      setScrollableElement,
+    ],
   )
 
   const minWidth = useMemo(() => {

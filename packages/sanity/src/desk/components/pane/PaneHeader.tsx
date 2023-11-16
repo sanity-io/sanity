@@ -1,5 +1,5 @@
 import {useElementRect, Box, Card, Flex, LayerProvider} from '@sanity/ui'
-import React, {useMemo, useCallback, forwardRef} from 'react'
+import React, {useMemo, useCallback, forwardRef, useEffect, useState} from 'react'
 import {usePane} from './usePane'
 import {Layout, Root, TabsBox, TitleCard, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
 import {LegacyLayerProvider} from 'sanity'
@@ -28,8 +28,10 @@ export const PaneHeader = forwardRef(function PaneHeader(
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {actions, backButton, contentAfter, loading, subActions, tabs, tabIndex, title} = props
-  const {collapse, collapsed, expand, rootElement: paneElement} = usePane()
+  const {collapse, collapsed, expand, rootElement: paneElement, scrollableElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
+  const [isScrollable, setIsScrollable] = useState(false)
+  const [hasScrolledFromTop, setHasScrolledFromTop] = useState(false)
 
   const layoutStyle = useMemo(
     () => ({
@@ -50,9 +52,29 @@ export const PaneHeader = forwardRef(function PaneHeader(
 
   const showTabsOrSubActions = Boolean(!collapsed && (tabs || subActions))
 
+  /*   Used for conditionally rendering border on bottom of the header  */
+  const handleScroll = useCallback((event: Event) => {
+    const target = event.target as HTMLElement
+
+    setIsScrollable(target.scrollHeight > target.clientHeight)
+    setHasScrolledFromTop(target.scrollTop > 0)
+  }, [])
+
+  useEffect(() => {
+    scrollableElement?.addEventListener('scroll', handleScroll)
+    return () => {
+      scrollableElement?.removeEventListener('scroll', handleScroll)
+    }
+  }, [handleScroll, scrollableElement])
+
   return (
     <LayerProvider zOffset={100}>
-      <Root data-collapsed={collapsed ? '' : undefined} data-testid="pane-header" ref={ref}>
+      <Root
+        $borderBottom={isScrollable && hasScrolledFromTop}
+        data-collapsed={collapsed ? '' : undefined}
+        data-testid="pane-header"
+        ref={ref}
+      >
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
             <Layout onClick={handleLayoutClick} padding={2} sizing="border" style={layoutStyle}>

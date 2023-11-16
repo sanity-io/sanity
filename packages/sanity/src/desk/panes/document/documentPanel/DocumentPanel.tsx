@@ -65,7 +65,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     formState,
   } = useDocumentPane()
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const {collapsed} = usePane()
+  const {collapsed, setScrollableElement} = usePane()
   const parentPortal = usePortal()
   const {features} = useDeskTool()
   const [headerElement, setHeaderElement] = useState<HTMLDivElement | null>(null)
@@ -138,6 +138,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       setDocumentPanelPortalElement(portalElement)
     }
   }, [portalElement, setDocumentPanelPortalElement])
+
+  // Set the scrollable element to conditionally render header border
+  useEffect(() => {
+    if (setScrollableElement) {
+      setScrollableElement(documentScrollElement)
+    }
+  }, [setScrollableElement, documentScrollElement])
 
   const inspectDialog = useMemo(() => {
     return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
