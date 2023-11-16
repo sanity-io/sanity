@@ -149,7 +149,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                     <Flex flex={1} align="center" paddingRight={2}>
                       <Flex flex={1} align="center">
                         <Box>
-                          <UserAvatar __unstable_hideInnerStroke size={1} user="me" />
+                          <UserAvatar size={1} user="me" />
                         </Box>
 
                         <Box

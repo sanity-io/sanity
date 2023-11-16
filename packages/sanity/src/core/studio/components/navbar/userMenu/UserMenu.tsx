@@ -87,7 +87,7 @@ export function UserMenu() {
       button={
         <Button mode="bleed" padding={0} paddingX={1}>
           <Flex align="center" gap={1}>
-            <UserAvatar __unstable_hideInnerStroke size={1} user="me" />
+            <UserAvatar size={1} user="me" />
             <Text size={AVATAR_SIZE} muted />
           </Flex>
         </Button>
