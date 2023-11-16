@@ -65,13 +65,11 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
     padding: ${space}px;
     position: absolute;
     right: 0;
-    width: 0;
 
     @media (hover: hover) {
       // If hover is supported, we hide the floating card by default
       // and only show it when it has focus within or when the field is hovered or focused.
       opacity: 0;
-      width: 0;
       pointer-events: none;
 
       [data-ui='FieldActionsFlex'] {
