@@ -91,7 +91,6 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
         <MenuButton
           button={
             <Button
-              aria-label="Open menu"
               icon={EllipsisHorizontalIcon}
               mode="bleed"
               size="small"

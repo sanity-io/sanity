@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-imports */
 import {Button as UIButton, ButtonProps as UIButtonProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
+import styled from 'styled-components'
 import {Tooltip, TooltipProps} from '..'
 
 type BaseButtonProps = Pick<
@@ -45,6 +46,10 @@ const SMALL_BUTTON_PROPS = {
   space: 2,
   padding: 2,
 }
+
+const TooltipButtonWrapper = styled.span`
+  display: inline-flex;
+`
 /**
  * Studio UI <Button>.
  *
@@ -71,7 +76,7 @@ export const Button = forwardRef(function Button(
         {...tooltipProps}
       >
         {/* This span is needed to make the tooltip work in disabled buttons */}
-        <span>
+        <TooltipButtonWrapper>
           <UIButton
             // aria-label is enforced in buttons without text.
             // Could be overridden by passing aria-label directly.
@@ -82,7 +87,7 @@ export const Button = forwardRef(function Button(
             mode={mode}
             tone={tone}
           />
-        </span>
+        </TooltipButtonWrapper>
       </Tooltip>
     )
   }

@@ -55,7 +55,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
         onClick={handleClick}
         style={{display: 'block'}}
         data-testid="select-date-button"
-        tooltipProps={{content: 'Select date'}}
+        tooltipProps={{content: 'Select date', disabled: isPickerOpen}}
       />
     </Box>
   )
