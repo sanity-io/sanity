@@ -25,8 +25,6 @@ export function PresenceMenu() {
   const {scheme} = useColorScheme()
   const hasPresence = presence.length > 0
 
-  const [menuOpen, setMenuOpen] = useState(false)
-
   /**
    * This id is used as a workaround to keep focus on the selected menu item
    * when the list of users in the menu is updated
@@ -41,10 +39,8 @@ export function PresenceMenu() {
     setFocusedId('')
   }, [])
 
-  const handleOpen = useCallback(() => setMenuOpen(true), [])
   const handleClose = useCallback(() => {
     setFocusedId('')
-    setMenuOpen(false)
   }, [])
 
   const button = useMemo(() => {
@@ -56,12 +52,11 @@ export function PresenceMenu() {
         tooltipProps={{
           content: 'Active users',
           placement: 'bottom',
-          disabled: menuOpen,
           portal: true,
         }}
       />
     )
-  }, [hasPresence, menuOpen])
+  }, [hasPresence])
 
   const popoverProps = useMemo(
     () => ({
@@ -121,7 +116,6 @@ export function PresenceMenu() {
         </StyledMenu>
       }
       onClose={handleClose}
-      onOpen={handleOpen}
       popover={popoverProps}
     />
   )
