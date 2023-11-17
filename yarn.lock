@@ -3599,9 +3599,9 @@
   integrity sha512-wtMYcV5GIDIhVyF/jjmdwq1GdlK07dRL40XMns73VbrFI7FteRltxv48bhYVZPcLkRXb0SHjpDS/icj9/yzbVA==
 
 "@sanity/google-maps-input@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/google-maps-input/-/google-maps-input-3.0.1.tgz#78f1d474c491cf24d47ae5d2988851e8f02f54b4"
-  integrity sha512-1GJ/Q5n7fuda6ubx6sd666OO2s/z1R4pnNpJc08FzQ7lNI5nM8s5iGqiOi3qqN50h6/ZUaNisQlmjLBwTtw5gg==
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@sanity/google-maps-input/-/google-maps-input-3.0.2.tgz#938a824045efc46f2e52a8cbc090b9f9045611bb"
+  integrity sha512-EWkKSSLUOLJlU2esENnyZTfTD4ZJJkiUBI3M96tAsDk1KSzmAeFK/3mgs1Iy8uryqOAN5z7WsNs8wIG0V/sGeQ==
   dependencies:
     "@sanity/icons" "^2.0.0"
     "@sanity/incompatible-plugin" "^1.0.4"
