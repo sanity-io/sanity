@@ -156,14 +156,14 @@ export type DiffProps<T extends Diff = Diff> = {
   schemaType: T extends ObjectDiff
     ? ObjectSchemaType
     : T extends ArrayDiff
-    ? ArraySchemaType
-    : T extends BooleanDiff
-    ? BooleanSchemaType
-    : T extends StringDiff
-    ? StringSchemaType
-    : T extends NumberDiff
-    ? NumberSchemaType
-    : SchemaType
+      ? ArraySchemaType
+      : T extends BooleanDiff
+        ? BooleanSchemaType
+        : T extends StringDiff
+          ? StringSchemaType
+          : T extends NumberDiff
+            ? NumberSchemaType
+            : SchemaType
 }
 
 /**

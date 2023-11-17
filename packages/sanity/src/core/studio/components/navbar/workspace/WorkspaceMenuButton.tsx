@@ -93,8 +93,8 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
                   const state = authState.authenticated
                     ? 'logged-in'
                     : workspace.auth.LoginComponent
-                    ? 'logged-out'
-                    : 'no-access'
+                      ? 'logged-out'
+                      : 'no-access'
 
                   const handleSelectWorkspace = () => {
                     if (state === 'logged-in' && workspace.name !== activeWorkspace.name) {

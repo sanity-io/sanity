@@ -83,8 +83,8 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
   const inputValue = localValue
     ? localValue
     : parseResult?.isValid
-    ? formatInputValue(parseResult.date)
-    : value
+      ? formatInputValue(parseResult.date)
+      : value
 
   return readOnly ? (
     <TextInput value={inputValue} readOnly />

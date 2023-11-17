@@ -143,9 +143,9 @@ export function getReferenceInfo(
                 pairAvailability.draft.available || pairAvailability.published.available
                   ? READABLE
                   : pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
-                    pairAvailability.published.reason === 'PERMISSION_DENIED'
-                  ? PERMISSION_DENIED
-                  : NOT_FOUND
+                      pairAvailability.published.reason === 'PERMISSION_DENIED'
+                    ? PERMISSION_DENIED
+                    : NOT_FOUND
 
               return {
                 type: typeName,

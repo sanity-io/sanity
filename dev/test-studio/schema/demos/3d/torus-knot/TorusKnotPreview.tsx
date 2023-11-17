@@ -56,8 +56,8 @@ export default memo(function TorusKnotPreview(props: Props) {
           lazyFrameloop === 'never'
             ? 'never'
             : lazyFrameloop === 'demand' && frameloop === 'always'
-            ? 'demand'
-            : frameloop
+              ? 'demand'
+              : frameloop
         }
       >
         <Suspense fallback={null}>

@@ -33,8 +33,8 @@ export function getCollapsedWithDefaults(
     typeof options?.collapsed === 'boolean'
       ? options.collapsed
       : level >= AUTO_COLLAPSE_DEPTH
-      ? true
-      : undefined
+        ? true
+        : undefined
 
   const collapsible =
     options?.collapsible === true || options?.collapsable === true || collapsed === true

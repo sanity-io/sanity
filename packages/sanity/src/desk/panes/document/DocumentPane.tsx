@@ -115,8 +115,8 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
             groupIndex >= routerPanesStateLength - 1
               ? 'none'
               : groupIndex >= routerPanesStateLength - 2
-              ? 'selected'
-              : 'pressed',
+                ? 'selected'
+                : 'pressed',
         }
       : {path: [], state: 'none'}
   }, [parentRefPath, groupIndex, routerPanesStateLength])

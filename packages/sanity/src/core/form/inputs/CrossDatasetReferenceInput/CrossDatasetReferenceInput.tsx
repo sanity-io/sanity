@@ -330,8 +330,8 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                   readOnly
                     ? 'transparent'
                     : loadableReferenceInfo.error || errors.length > 0
-                    ? 'critical'
-                    : 'default'
+                      ? 'critical'
+                      : 'default'
                 }
               >
                 <Flex align="center" padding={1}>
