@@ -22,11 +22,7 @@ export function ResourcesButton() {
             aria-label="Help and resources"
             icon={InfoOutlineIcon}
             mode="bleed"
-            tooltipProps={{
-              content: 'Help and resources',
-              placement: 'bottom',
-              portal: true,
-            }}
+            tooltipProps={{content: 'Help and resources'}}
           />
         }
         id="menu-button-resources"

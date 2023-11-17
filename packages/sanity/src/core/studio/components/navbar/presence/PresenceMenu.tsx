@@ -49,11 +49,7 @@ export function PresenceMenu() {
         icon={UsersIcon}
         mode="bleed"
         tone={hasPresence ? 'positive' : undefined}
-        tooltipProps={{
-          content: 'Active users',
-          placement: 'bottom',
-          portal: true,
-        }}
+        tooltipProps={{content: 'Active users'}}
       />
     )
   }, [hasPresence])
