@@ -51,8 +51,8 @@ export function createDefaultIcon(title: string, subtitle: string) {
   const textColor = !hasBadContrast(color, 'readable', darkened)
     ? darkened
     : !hasBadContrast(color, 'readable', lightened)
-    ? lightened
-    : readableColor(color)
+      ? lightened
+      : readableColor(color)
   /* eslint-enable no-negated-condition */
 
   return (

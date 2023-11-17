@@ -18,6 +18,6 @@
     "styled-components": "^6.1.0"
   },
   "devDependencies": {
-    "eslint-config-next": "^14.0.1"
+    "eslint-config-next": "^14.0.3"
   }
 }

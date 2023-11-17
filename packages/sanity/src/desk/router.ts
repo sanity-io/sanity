@@ -81,14 +81,14 @@ const exclusiveParams = ['view', 'since', 'rev', 'inspect', 'comment']
 type Truthy<T> = T extends false
   ? never
   : T extends ''
-  ? never
-  : T extends 0
-  ? never
-  : T extends 0n
-  ? never
-  : T extends null | undefined
-  ? NonNullable<T>
-  : T
+    ? never
+    : T extends 0
+      ? never
+      : T extends 0n
+        ? never
+        : T extends null | undefined
+          ? NonNullable<T>
+          : T
 const isTruthy = Boolean as (t: unknown) => boolean as <T>(t: T) => t is Truthy<T>
 
 function parseChunks(chunks: string[], initial: RouterPaneSibling): RouterPaneSibling {

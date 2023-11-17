@@ -70,8 +70,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const title = publish.disabled
     ? getDisabledReason(publish.disabled, lastPublishedTimeAgo) || ''
     : hasValidationErrors
-    ? 'There are validation errors that need to be fixed before this document can be published'
-    : ''
+      ? 'There are validation errors that need to be fixed before this document can be published'
+      : ''
 
   const hasDraft = Boolean(draft)
 
@@ -179,8 +179,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
       publishState === 'published'
         ? 'Published'
         : publishScheduled || publishState === 'publishing'
-        ? 'Publishing…'
-        : 'Publish',
+          ? 'Publishing…'
+          : 'Publish',
     // @todo: Implement loading state, to show a `<Button loading />` state
     // loading: publishScheduled || publishState === 'publishing',
     icon: publishState === 'published' ? CheckmarkIcon : PublishIcon,
@@ -188,8 +188,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
     title: publishScheduled
       ? 'Waiting for tasks to finish before publishing'
       : publishState === 'published' || publishState === 'publishing'
-      ? null
-      : title,
+        ? null
+        : title,
     shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
     onHandle: handle,
   }

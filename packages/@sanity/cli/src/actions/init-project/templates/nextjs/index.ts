@@ -178,8 +178,8 @@ export const sanityFolder = (
         ? blogSchemaTS
         : schemaTS
       : isBlogTemplate
-      ? blogSchemaJS
-      : schemaJS,
+        ? blogSchemaJS
+        : schemaJS,
     'env.': useTypeScript ? envTS : envJS,
     lib: {
       'client.': client,

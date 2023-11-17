@@ -83,10 +83,10 @@ function InputDebugger(props: InputProps) {
           typeof segment === 'string'
             ? `['${segment}']`
             : typeof segment === 'object' &&
-              !Array.isArray(segment) &&
-              typeof segment?._key === 'string'
-            ? `[?(@._key=='${segment._key}')]`
-            : undefined,
+                !Array.isArray(segment) &&
+                typeof segment?._key === 'string'
+              ? `[?(@._key=='${segment._key}')]`
+              : undefined,
         )
         .filter(Boolean)
         .join('')}`,

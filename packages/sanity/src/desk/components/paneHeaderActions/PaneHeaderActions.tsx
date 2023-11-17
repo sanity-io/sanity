@@ -56,8 +56,8 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
         typeof item.action === 'function'
           ? item.action
           : typeof item.action === 'string'
-          ? actionHandlers[item.action]
-          : null
+            ? actionHandlers[item.action]
+            : null
 
       if (handler) {
         handler(item.params as Record<string, string>)
