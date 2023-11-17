@@ -1,5 +1,6 @@
 import {Stack} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateEqualValue} from '../../../../../definitions/operators/dateOperators'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
@@ -18,6 +19,7 @@ export function CommonDateEqualInput({
   const {
     state: {fullscreen},
   } = useSearchState()
+  const {t} = useTranslation()
 
   const handleDatePickerChange = useCallback(
     ({date}: {date?: Date | null}) => {
@@ -61,7 +63,7 @@ export function CommonDateEqualInput({
   return (
     <Stack space={3}>
       <ParsedDateTextInput
-        aria-label="Date"
+        aria-label={t('search.filter-date-aria-label')}
         fontSize={fullscreen ? 2 : 1}
         isDateTime={isDateTime}
         isDateTimeFormat={isDateTime && value?.includeTime}

@@ -73,6 +73,9 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Label for the close button label in Review Changes pane */
   'changes.action.close-label': 'Lukk gjennomgang av endringer',
 
+  /** Accessibility label for the "change bar" shown when there are edits on a field-level */
+  'changes.change-bar.aria-label': 'Se endringer',
+
   /** Label and text for tooltip that indicates the authors of the changes */
   'changes.changes-by-author': 'Endringer av',
 
@@ -1447,6 +1450,9 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Accessibility label for selecting the unit (day/month/year) when adding "X days ago" search filter */
   'search.filter-date-unit-aria-label': 'Velg enhet',
+
+  /** Accessibility label for date filter input */
+  'search.filter-date-aria-label': 'Dato',
 
   /**
    * Label for "Days"/"Months"/"Years" when selecting it as unit in "X days ago" search filter.

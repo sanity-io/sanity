@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import type {AuthProvider, AuthProviderResponse, SanityClient} from '@sanity/client'
 import {Button, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
