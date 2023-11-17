@@ -70,11 +70,7 @@ export const Button = forwardRef(function Button(
 ) {
   if (tooltipProps) {
     return (
-      <Tooltip
-        // Force the tooltip to render in portal
-        portal
-        {...tooltipProps}
-      >
+      <Tooltip content={tooltipProps.content} portal {...tooltipProps}>
         {/* This span is needed to make the tooltip work in disabled buttons */}
         <TooltipButtonWrapper>
           <UIButton

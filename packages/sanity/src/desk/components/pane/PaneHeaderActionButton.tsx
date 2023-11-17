@@ -68,8 +68,6 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
       tooltipProps={{
         hotkeys: !isDisabled && node.hotkey ? node.hotkey.split('+') : undefined,
         content: isDisabled ? disabledReason : node.title,
-        portal: true,
-        placement: 'bottom',
       }}
     />
   )

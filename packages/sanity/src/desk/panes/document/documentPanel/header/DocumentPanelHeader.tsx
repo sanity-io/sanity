@@ -125,10 +125,7 @@ export const DocumentPanelHeader = memo(
                   key="split-pane-button"
                   mode="bleed"
                   onClick={onPaneSplit}
-                  tooltipProps={{
-                    content: 'Split pane right',
-                    placement: 'bottom',
-                  }}
+                  tooltipProps={{content: 'Split pane right'}}
                 />
               )}
 
@@ -138,10 +135,7 @@ export const DocumentPanelHeader = memo(
                   key="close-view-button"
                   mode="bleed"
                   onClick={onPaneClose}
-                  tooltipProps={{
-                    content: 'Close split pane',
-                    placement: 'bottom',
-                  }}
+                  tooltipProps={{content: 'Close split pane'}}
                 />
               )}
 
@@ -151,10 +145,7 @@ export const DocumentPanelHeader = memo(
                   key="close-view-button"
                   mode="bleed"
                   as={BackLink}
-                  tooltipProps={{
-                    content: 'Close pane group',
-                    placement: 'bottom',
-                  }}
+                  tooltipProps={{content: 'Close pane group'}}
                 />
               )}
             </Flex>

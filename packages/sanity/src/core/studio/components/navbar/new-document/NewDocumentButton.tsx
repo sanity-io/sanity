@@ -165,8 +165,6 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     () => ({
       content: tooltipContent,
       disabled: loading || open,
-      placement: 'bottom',
-      portal: true,
       scheme: scheme,
     }),
     [loading, open, scheme, tooltipContent],

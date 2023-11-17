@@ -177,9 +177,8 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
             size="small"
             selected={open}
             tooltipProps={{
-              portal: true,
-              placement: 'top',
               content: 'Add comment',
+              placement: 'top',
             }}
           />
         </div>

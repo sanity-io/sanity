@@ -3,6 +3,7 @@ import {
   Flex,
   Hotkeys,
   HotkeysProps,
+  Placement,
   Text,
   Tooltip as UITooltip,
   TooltipProps as UITooltipProps,
@@ -15,6 +16,13 @@ export type TooltipProps = Omit<UITooltipProps, 'content' | 'padding'> & {
   content?: string | null
   hotkeys?: HotkeysProps['keys']
 }
+
+const TOOLTIP_FALLBACK_PLACEMENTS: Placement[] = [
+  'bottom-start',
+  'bottom-end',
+  'top-start',
+  'top-end',
+]
 
 /**
  * Studio UI <Tooltip>.
@@ -32,6 +40,8 @@ export const Tooltip = forwardRef(function Tooltip(
 
   return (
     <UITooltip
+      arrow={false}
+      boundaryElement={null}
       content={
         <Flex align="center" gap={3}>
           <Text size={1}>{content}</Text>
@@ -41,7 +51,9 @@ export const Tooltip = forwardRef(function Tooltip(
         </Flex>
       }
       delay={TOOLTIP_DELAY_PROPS}
+      fallbackPlacements={TOOLTIP_FALLBACK_PLACEMENTS}
       ref={ref}
+      placement="bottom"
       {...rest}
     />
   )

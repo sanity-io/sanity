@@ -1,6 +1,6 @@
 import {CheckmarkIcon, SelectIcon} from '@sanity/icons'
 import {MenuButton, Menu, MenuButtonProps} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useColorScheme} from '../../../colorScheme'
@@ -23,22 +23,16 @@ interface WorkspaceMenuButtonProps {
 
 export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
   const {collapsed = false} = props
-  const [menuOpen, setMenuOpen] = useState<boolean>(false)
   const {scheme} = useColorScheme()
   const workspaces = useWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {navigateUrl} = useRouter()
 
-  const handleOnOpen = useCallback(() => setMenuOpen(true), [])
-  const handleOnClose = useCallback(() => setMenuOpen(false), [])
-
   const popoverProps: MenuButtonProps['popover'] = useMemo(
     () => ({constrainSize: true, scheme, portal: true}),
     [scheme],
   )
-  //Tooltip should be disabled in the Navdrawer
-  const tooltipDisabled = menuOpen || !collapsed
   const ariaLabel = collapsed ? TITLE : undefined
   const buttonText = collapsed ? undefined : TITLE
 
@@ -56,8 +50,6 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
           tooltipProps={{
             content: 'Select workspace',
             scheme: scheme,
-            placement: 'bottom',
-            disabled: tooltipDisabled,
           }}
         />
       }
@@ -103,8 +95,6 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
             })}
         </StyledMenu>
       }
-      onClose={handleOnClose}
-      onOpen={handleOnOpen}
       popover={popoverProps}
     />
   )
