@@ -3546,17 +3546,7 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.2":
-  version "6.8.5"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.8.5.tgz#5993afa1a87fe373f357967b371d620e22d202eb"
-  integrity sha512-RVToi17kmTzGh3SBj6oeEDcp6PzM4LrvnOlSf580rjgejT806jvVdiOKLaR0yKul264vg1rEJhZT1A594BxmLA==
-  dependencies:
-    "@sanity/eventsource" "^5.0.0"
-    "@vercel/stega" "0.1.0"
-    get-it "^8.4.4"
-    rxjs "^7.0.0"
-
-"@sanity/client@^6.8.6":
+"@sanity/client@^6.1.2", "@sanity/client@^6.8.6":
   version "6.8.6"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.8.6.tgz#e5bc98c525f50ef8c2ecf1f41c1ea8441b9ac9a6"
   integrity sha512-Va4KZ4mRnyIbV+61VIJ+Op/amNAwWTo/ET3egtnEqPuXYLg60VWffNoAtAjuaZ5qM9BpTOCGJZjTKCHq+/5CEw==
@@ -3630,12 +3620,7 @@
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-1.3.10.tgz#df934a94ae6669fe6b15515d800afb221cba0498"
   integrity sha512-5wVG/vIiGuGrSmq+Bl3PY7XDgQrGv0fyHdJI64FSulnr2wH3NMqZ6C59UFxnrZ93sr7kOt0zQFoNv2lkPBi0Cg==
 
-"@sanity/icons@^2", "@sanity/icons@^2.0.0", "@sanity/icons@^2.3.1", "@sanity/icons@^2.4.0", "@sanity/icons@^2.4.1", "@sanity/icons@^2.6.0":
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-2.6.0.tgz#48e0aa2bcc39c018911cdf7a3d66647b6f87675f"
-  integrity sha512-l4yBs2z2nEsgtasPuBQ5muowxJBXNfw0bqty2uG1tFsEyCYSPHGUROQSLLvIseYC3Onees+r5E9ijMadJQNc/Q==
-
-"@sanity/icons@^2.7.0":
+"@sanity/icons@^2", "@sanity/icons@^2.0.0", "@sanity/icons@^2.3.1", "@sanity/icons@^2.4.0", "@sanity/icons@^2.4.1", "@sanity/icons@^2.6.0", "@sanity/icons@^2.7.0":
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/@sanity/icons/-/icons-2.7.0.tgz#f3099bf12045bfd777e96f4b3bad568e6da2f61f"
   integrity sha512-vW/G8CB3+R1gww8C8ZjNchhpXrXSDLIJ0KnWy9iDlSWaFEnUrbi18yzCCrHRMFzXTPl2QtqZhjtE+A5Gyhf2QA==
@@ -3702,14 +3687,14 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.0.3.tgz#2496ad6effedf1decf40c4c6f5a859a04df10f23"
-  integrity sha512-1+vKL9HPRV5ew9rzU4Gorgcw1OLhTVTeoYjy4zJjs41w9rNCFnBNd5GVvy6qYLiyAG47h8VtOwZG95wm27bJxA==
+"@sanity/presentation@1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.0.6.tgz#3ac3483cd8334d918aa2a15fe55ab0fa24d1cb45"
+  integrity sha512-P+HC23oDf7i+v4cgpx19v6MaOEGDYNKPDEZUvWNelJqVV6BHxqoAuLmqo2/UnQheEmX88eSczYWedWhoYsYD7w==
   dependencies:
     "@sanity/groq-store" "5.0.1-experimental"
     "@sanity/icons" "^2.7.0"
-    "@sanity/preview-url-secret" "1.0.2"
+    "@sanity/preview-url-secret" "1.2.0"
     "@sanity/ui" "^1.9.3"
     "@types/lodash.isequal" "^4.5.8"
     framer-motion "^10.16.5"
@@ -3718,10 +3703,10 @@
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.0.2.tgz#ae171c60a58362270ed444af37ca154078a536f6"
-  integrity sha512-+Im3HdXdFZk0ZCYbeeDUC7ns30NijcBS7ldsxOPNn3+NTmZ5Cw8VvHZ3OLOnA/6ddhR4T2y+CLwsduQz09PHTg==
+"@sanity/preview-url-secret@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.2.0.tgz#71b683cce788697e5735729ed540dbc585e7cc32"
+  integrity sha512-w2LIje78OOzbDTF+jtFg89d9Jexs/3Za5uD5leCwc3jvnguD5b0/NB0gE+MOa3rVr8Q8cRxkij3M0qAblHfLfA==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
@@ -8302,16 +8287,7 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^10.0.0, framer-motion@^10.16.2:
-  version "10.16.4"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.4.tgz#30279ef5499b8d85db3a298ee25c83429933e9f8"
-  integrity sha512-p9V9nGomS3m6/CALXqv6nFGMuFOxbWsmaOrdmhyQimMIlLl3LC7h7l86wge/Js/8cRu5ktutS/zlzgR7eBOtFA==
-  dependencies:
-    tslib "^2.4.0"
-  optionalDependencies:
-    "@emotion/is-prop-valid" "^0.8.2"
-
-framer-motion@^10.16.5:
+framer-motion@^10.0.0, framer-motion@^10.16.2, framer-motion@^10.16.5:
   version "10.16.5"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.5.tgz#f1ad625adf213a8906f1ea52a31a4ef222f056d5"
   integrity sha512-GEzVjOYP2MIpV9bT/GbhcsBNoImG3/2X3O/xVNWmktkv9MdJ7P/44zELm/7Fjb+O3v39SmKFnoDQB32giThzpg==
