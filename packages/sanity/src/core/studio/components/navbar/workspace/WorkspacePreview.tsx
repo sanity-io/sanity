@@ -1,5 +1,5 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {Flex, Stack, Box, Text, Card} from '@sanity/ui'
+import {Flex, Stack, Box, Text} from '@sanity/ui'
 import React, {createElement, isValidElement, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
@@ -11,11 +11,11 @@ export const STATE_TITLES = {
 }
 
 type PreviewIconSize = 'small' | 'large'
-interface MediaCardProps {
+interface MediaProps {
   $size: PreviewIconSize
 }
 
-export const MediaCard = styled(Card)<MediaCardProps>`
+export const Media = styled.div<MediaProps>`
   width: ${(props) => (props.$size === 'small' ? '35px' : '41px')};
   height: ${(props) => (props.$size === 'small' ? '35px' : '41px')};
 
@@ -34,11 +34,7 @@ export const WorkspacePreviewIcon = ({
 }) => {
   const iconComponent = useMemo(() => createIcon(icon), [icon])
 
-  return (
-    <MediaCard radius={2} tone="transparent" $size={size}>
-      {iconComponent}
-    </MediaCard>
-  )
+  return <Media $size={size}>{iconComponent}</Media>
 }
 
 const createIcon = (icon: React.ComponentType | React.ReactNode) => {

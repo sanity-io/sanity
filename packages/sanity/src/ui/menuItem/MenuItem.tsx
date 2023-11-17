@@ -11,6 +11,7 @@ import {
 import React, {createElement, forwardRef, isValidElement, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
+import {PREVIEW_MEDIA_SIZE} from '../../core/components/previews/constants'
 
 const FONT_SIZE = 1
 
@@ -40,8 +41,8 @@ export type MenuItemProps = Pick<
   }
 
 const PreviewWrapper = styled.div`
-  width: 41px;
-  height: 41px;
+  height: ${PREVIEW_MEDIA_SIZE.default.height}px;
+  width: ${PREVIEW_MEDIA_SIZE.default.width}px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,7 +127,7 @@ export const MenuItem = forwardRef(function MenuItem(
   }, [icon, text, hotkeys, iconRight, preview, subtitle, badgeText])
 
   return (
-    <UIMenuItem ref={ref} {...rest}>
+    <UIMenuItem padding={preview ? 2 : 3} ref={ref} {...rest}>
       {typeof children === 'undefined' && typeof renderMenuItem === 'function'
         ? renderMenuItem(menuItemContent)
         : menuItemContent}
