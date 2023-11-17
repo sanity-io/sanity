@@ -16,6 +16,7 @@ export interface PaneHeaderProps {
   tabIndex?: number
   tabs?: React.ReactNode
   title: React.ReactNode
+  borderBottom?: boolean
 }
 
 /**
@@ -27,7 +28,17 @@ export const PaneHeader = forwardRef(function PaneHeader(
   props: PaneHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const {actions, backButton, contentAfter, loading, subActions, tabs, tabIndex, title} = props
+  const {
+    actions,
+    backButton,
+    borderBottom,
+    contentAfter,
+    loading,
+    subActions,
+    tabs,
+    tabIndex,
+    title,
+  } = props
   const {collapse, collapsed, expand, rootElement: paneElement, scrollableElement} = usePane()
   const paneRect = useElementRect(paneElement || null)
   const [isScrollable, setIsScrollable] = useState(false)
@@ -70,7 +81,8 @@ export const PaneHeader = forwardRef(function PaneHeader(
   return (
     <LayerProvider zOffset={100}>
       <Root
-        $borderBottom={isScrollable && hasScrolledFromTop}
+        //Render border if explicitly set to true or conditionally if scrollable and scrolled from top
+        $borderBottom={borderBottom || (isScrollable && hasScrolledFromTop)}
         data-collapsed={collapsed ? '' : undefined}
         data-testid="pane-header"
         ref={ref}
