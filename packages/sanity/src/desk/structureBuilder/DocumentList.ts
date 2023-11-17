@@ -1,5 +1,5 @@
 import {SchemaType, SortOrderingItem} from '@sanity/types'
-import {ComposeIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {SerializeError, HELP_URL} from './SerializeError'
@@ -302,7 +302,7 @@ function inferInitialValueTemplates(
         schemaType,
       }),
     )
-    .map((option) => ({...option, icon: ComposeIcon}))
+    .map((option) => ({...option, icon: AddIcon}))
 }
 
 function inferTypeName(spec: PartialDocumentList): string | undefined {
