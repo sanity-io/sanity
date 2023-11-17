@@ -496,7 +496,7 @@ export type ScrollSelectionIntoViewFunction = (
 
 /** @internal */
 export type PortableTextMemberSchemaTypes = {
-  annotations: (ObjectSchemaType & {i18nTitle?: string})[]
+  annotations: (ObjectSchemaType & {i18nTitleKey?: string})[]
   block: ObjectSchemaType
   blockObjects: ObjectSchemaType[]
   decorators: BlockDecoratorDefinition[]
