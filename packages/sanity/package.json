@@ -142,7 +142,7 @@
     "@sanity/eventsource": "^5.0.0",
     "@sanity/export": "3.19.2",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/icons": "^2.6.0",
+    "@sanity/icons": "^2.7.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "3.19.2",
     "@sanity/logos": "^2.0.2",
