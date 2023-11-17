@@ -56,7 +56,7 @@ export function Annotation({
   if (!schemaType) {
     return (
       <AnnotationWrapper {...restProps}>
-        {t('change.portable-text.unknown-annotation-schema-type')}
+        {t('changes.portable-text.unknown-annotation-schema-type')}
       </AnnotationWrapper>
     )
   }
@@ -162,7 +162,7 @@ function AnnnotationWithDiff({
         <div>
           {emptyObject && (
             <Label size={1} muted>
-              {t('change.portable-text.empty-object-annotation', {
+              {t('changes.portable-text.empty-object-annotation', {
                 annotationType: schemaType.title || schemaType.name,
               })}
             </Label>
@@ -185,7 +185,7 @@ function AnnnotationWithDiff({
         <PreviewContainer paddingLeft={1}>
           <DiffTooltip
             annotations={annotations}
-            description={t('change.portable-text.annotation', {context: diff.action})}
+            description={t('changes.portable-text.annotation', {context: diff.action})}
           >
             <InlineBox style={{display: 'inline-flex'}}>
               <span>{children}</span>

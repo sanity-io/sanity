@@ -71,7 +71,7 @@ export function TextWithDiff({diff, childDiff, children, path, segment, ...restP
       <DiffCard
         annotation={annotation}
         as={segment.action === 'removed' ? 'del' : 'ins'}
-        tooltip={{description: t('change.portable-text.text', {context: segment.action})}}
+        tooltip={{description: t('changes.portable-text.text', {context: segment.action})}}
       >
         {children}
       </DiffCard>

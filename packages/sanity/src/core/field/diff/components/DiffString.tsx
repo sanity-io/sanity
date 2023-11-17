@@ -44,7 +44,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.Re
       <DiffCard
         annotation={segment.annotation}
         disableHoverEffect
-        tooltip={{description: t('change.added-label')}}
+        tooltip={{description: t('changes.added-label')}}
         as={RoundedCard}
       >
         <ChangeSegment as="ins" style={{textDecoration: 'none'}}>
@@ -60,7 +60,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.Re
         annotation={segment.annotation}
         as={RoundedCard}
         disableHoverEffect
-        tooltip={{description: t('change.removed-label')}}
+        tooltip={{description: t('changes.removed-label')}}
       >
         <ChangeSegment as="del">{text}</ChangeSegment>
       </DiffCard>

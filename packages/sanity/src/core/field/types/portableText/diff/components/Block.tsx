@@ -71,7 +71,7 @@ export function Block(props: {
             diff={diff.origin.fields.style}
           >
             <Text size={0}>
-              {t('change.portable-text.block-style-changed', {fromStyle, toStyle: block.style})}
+              {t('changes.portable-text.block-style-changed', {fromStyle, toStyle: block.style})}
             </Text>
           </DiffTooltip>
           <Box style={style}>{returned}</Box>
