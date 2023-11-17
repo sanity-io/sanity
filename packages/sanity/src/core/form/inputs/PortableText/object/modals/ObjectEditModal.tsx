@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo} from 'react'
-import {ObjectSchemaType} from '@sanity/types'
+import type {ObjectSchemaType} from '@sanity/types'
+import {useTranslation} from '../../../../../i18n'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
@@ -12,7 +13,7 @@ export function ObjectEditModal(props: {
   onClose: () => void
   referenceBoundary: HTMLElement | null
   referenceElement: HTMLElement | null
-  schemaType: ObjectSchemaType
+  schemaType: ObjectSchemaType & {i18nTitle?: string}
 }) {
   const {
     autoFocus,
@@ -24,10 +25,17 @@ export function ObjectEditModal(props: {
     schemaType,
   } = props
 
+  const {t} = useTranslation()
   const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
   const modalType = schemaModalOption?.type || defaultType
 
-  const modalTitle = <>Edit {schemaType.title}</>
+  const schemaTypeTitle = schemaType.i18nTitleKey
+    ? t(schemaType.i18nTitleKey)
+    : schemaType.title || schemaType.name
+
+  const modalTitle = t('inputs.portable-text.annotation-editor.title', {
+    schemaType: schemaTypeTitle,
+  })
 
   const handleClose = useCallback(() => {
     onClose()
@@ -43,7 +51,7 @@ export function ObjectEditModal(props: {
         onClose={handleClose}
         referenceBoundary={referenceBoundary}
         referenceElement={referenceElement}
-        title={modalTitle}
+        title={<>{modalTitle}</>}
         width={modalWidth}
       >
         {props.children}

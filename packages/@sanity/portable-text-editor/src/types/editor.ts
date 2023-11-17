@@ -282,6 +282,19 @@ export type InvalidValueResolution = {
   description: string
   action: string
   item: PortableTextBlock[] | PortableTextBlock | PortableTextChild | undefined
+
+  /**
+   * i18n keys for the description and action
+   *
+   * These are in addition to the description and action properties, to decouple the editor from
+   * the i18n system, and allow usage without it. The i18n keys take precedence over the
+   * description and action properties, if i18n framework is available.
+   */
+  i18n: {
+    description: `inputs.portable-text.invalid-value.${Lowercase<string>}.description`
+    action: `inputs.portable-text.invalid-value.${Lowercase<string>}.action`
+    values?: Record<string, string | number | string[]>
+  }
 }
 
 /**
@@ -483,7 +496,7 @@ export type ScrollSelectionIntoViewFunction = (
 
 /** @internal */
 export type PortableTextMemberSchemaTypes = {
-  annotations: ObjectSchemaType[]
+  annotations: (ObjectSchemaType & {i18nTitle?: string})[]
   block: ObjectSchemaType
   blockObjects: ObjectSchemaType[]
   decorators: BlockDecoratorDefinition[]

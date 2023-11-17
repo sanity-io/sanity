@@ -54,6 +54,14 @@ export interface TitledListValue<V = unknown> {
 }
 
 /** @public */
+export interface I18nTitledListValue<V = unknown> {
+  _key?: string
+  title: string
+  i18nTitle?: string
+  value?: V
+}
+
+/** @public */
 export interface EnumListProps<V = unknown> {
   list?: Array<TitledListValue<V> | V>
   layout?: 'radio' | 'dropdown'

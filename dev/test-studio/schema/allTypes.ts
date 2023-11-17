@@ -151,7 +151,7 @@ export const allTypes = defineType({
       name: 'blocks',
       title: 'Blokker',
       type: 'array',
-      of: [{type: 'block'}],
+      of: [{type: 'block'}, {type: 'image'}],
       validation: (Rule) => Rule.required().min(3),
     }),
   ],

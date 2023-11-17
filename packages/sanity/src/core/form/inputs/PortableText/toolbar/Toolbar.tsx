@@ -11,6 +11,7 @@ import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {useRovingFocus} from '../../../../components'
 import {useResolveInitialValueForType} from '../../../../store'
+import {useTranslation} from '../../../../i18n'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {InsertMenu} from './InsertMenu'
@@ -71,6 +72,7 @@ const InnerToolbar = memo(function InnerToolbar({
   isFullscreen: boolean
   onToggleFullscreen: () => void
 }) {
+  const {t} = useTranslation()
   const actionsLen = actionGroups.reduce((acc, x) => acc + x.actions.length, 0)
   const showActionMenu = actionsLen > 0
   const showInsertMenu = insertMenuItems.length > 0
@@ -130,7 +132,13 @@ const InnerToolbar = memo(function InnerToolbar({
           content={
             <Flex align="center" padding={1}>
               <Box flex={1} paddingX={1}>
-                <Text size={1}>{`${isFullscreen ? 'Collapse' : 'Expand'} editor`}</Text>
+                <Text size={1}>
+                  {t(
+                    isFullscreen
+                      ? 'inputs.portable-text.action.collapse-editor'
+                      : 'inputs.portable-text.action.expand-editor',
+                  )}
+                </Text>
               </Box>
               <Box marginLeft={1}>
                 <Hotkeys keys={[`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter']} />

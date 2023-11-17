@@ -1,5 +1,6 @@
+/* eslint-disable i18next/no-literal-string */
 import React, {useCallback, useMemo, useRef, useState, useEffect} from 'react'
-import {Text, Box, Card, Code, Heading} from '@sanity/ui'
+import {Text, Box, Card, Code} from '@sanity/ui'
 import styled from 'styled-components'
 import {Subject} from 'rxjs'
 import {PortableTextBlock} from '@sanity/types'

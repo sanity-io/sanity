@@ -11,6 +11,7 @@ import {
 } from '@sanity/ui'
 import styled from 'styled-components'
 import {EditIcon, TrashIcon} from '@sanity/icons'
+import {useTranslation} from '../../../../i18n'
 
 const ToolbarPopover = styled(Popover)`
   &[data-popper-reference-hidden='true'] {
@@ -43,6 +44,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
     open,
   } = props
   const {sanity} = useTheme()
+  const {t} = useTranslation()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
@@ -97,7 +99,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             onClick={onEdit}
             padding={2}
             ref={editButtonRef}
-            alt="Edit object"
+            alt={t('inputs.portable-text.inline-object.edit')}
           />
           <Button
             ref={deleteButtonRef}
@@ -106,12 +108,12 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             padding={2}
             onClick={handleDelete}
             tone="critical"
-            alt="Remove object"
+            alt={t('inputs.portable-text.inline-object.remove')}
           />
         </Inline>
       </Box>
     ),
-    [handleDelete, onEdit, title],
+    [handleDelete, onEdit, title, t],
   )
 
   return (

@@ -1,10 +1,10 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
+import type {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
 import {Tooltip} from '@sanity/ui'
 import React, {ComponentType, useCallback, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
 import {pathToString} from '../../../../field'
-import {
+import type {
   BlockAnnotationProps,
   RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
@@ -25,6 +25,7 @@ import {EMPTY_ARRAY} from '../../../../util'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 import {Root, TooltipBox} from './Annotation.styles'
 import {ObjectEditModal} from './modals/ObjectEditModal'
+import {useTranslation} from '../../../../i18n'
 
 interface AnnotationProps {
   children: React.ReactElement
@@ -260,10 +261,11 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     validation,
   } = props
   const isLink = schemaType.name === 'link'
-  const hasError = validation.filter((v) => v.level === 'error').length > 0
-  const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
+  const hasError = validation.some((v) => v.level === 'error')
+  const hasWarning = validation.some((v) => v.level === 'warning')
   const hasMarkers = markers.length > 0
 
+  const {t} = useTranslation()
   const toneKey = useMemo(() => {
     if (hasError) {
       return 'critical'
@@ -297,7 +299,9 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
         referenceBoundary={referenceBoundary}
         referenceElement={referenceElement}
         selected={selected}
-        title={schemaType.title || schemaType.name}
+        title={
+          schemaType.i18nTitleKey ? t(schemaType.i18nTitleKey) : schemaType.title || schemaType.name
+        }
       />
       {open && (
         <ObjectEditModal

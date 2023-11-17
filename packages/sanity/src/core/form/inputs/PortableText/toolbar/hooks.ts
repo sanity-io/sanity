@@ -1,15 +1,16 @@
 import {
-  HotkeyOptions,
+  type HotkeyOptions,
   PortableTextEditor,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
+import type {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 import {FIXME} from '../../../../FIXME'
 import {useUnique} from '../../../../util'
+import {useTranslation} from '../../../../i18n'
 import {getPTEToolbarActionGroups} from './helpers'
-import {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
+import type {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 
 export function useFocusBlock(): PortableTextBlock | undefined {
   const editor = usePortableTextEditor()
@@ -39,6 +40,7 @@ export function useActionGroups({
   disabled: boolean
 }): PTEToolbarActionGroup[] {
   const editor = usePortableTextEditor()
+  const {t} = useTranslation()
 
   const handleInsertAnnotation = useCallback(
     async (schemaType: ObjectSchemaType) => {
@@ -53,8 +55,8 @@ export function useActionGroups({
 
   return useMemo(
     () =>
-      editor ? getPTEToolbarActionGroups(editor, disabled, handleInsertAnnotation, hotkeys) : [],
-    [disabled, editor, handleInsertAnnotation, hotkeys],
+      editor ? getPTEToolbarActionGroups(editor, disabled, handleInsertAnnotation, hotkeys, t) : [],
+    [disabled, editor, handleInsertAnnotation, hotkeys, t],
   )
 }
 
