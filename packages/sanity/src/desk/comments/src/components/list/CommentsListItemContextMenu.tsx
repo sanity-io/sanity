@@ -24,11 +24,9 @@ import {CommentStatus} from '../../types'
 import {TextTooltip} from '../TextTooltip'
 
 const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
+
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
-  // We don't have to use portal since that interferes with click outside handling.
-  // This is because the element will be rendered outside root element if we use portal.
-  portal: false,
 }
 
 const FloatingCard = styled(Card)(({theme}) => {
@@ -71,14 +69,13 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     onStatusChange,
     readOnly,
     status,
-    ...rest
   } = props
 
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
 
   return (
     <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
-      <Flex data-root-menu={isParent ? 'true' : 'false'} {...rest}>
+      <Flex>
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
           {isParent && (
             <TextTooltip text={status === 'open' ? 'Mark as resolved' : 'Re-open'}>
