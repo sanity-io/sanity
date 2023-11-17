@@ -30,6 +30,8 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
     PortableTextEditor.focus(editor)
   }, [editor])
 
+  const tooltipPlacement = isFullscreen ? 'bottom' : 'top'
+
   const children = useMemo(() => {
     return items.map((item) => {
       const title = item.type.title || upperFirst(item.type.name)
@@ -48,13 +50,13 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           tooltipText={`Insert ${title}`}
           tooltipProps={{
             disabled,
-            placement: isFullscreen ? 'bottom' : 'top',
+            placement: tooltipPlacement,
             portal: 'default',
           }}
         />
       )
     })
-  }, [items, disabled, isVoidFocus, isFullscreen])
+  }, [items, disabled, isVoidFocus, tooltipPlacement])
 
   const menuButtonProps = useMemo(
     () => ({
@@ -64,13 +66,12 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           mode="bleed"
           size="small"
           disabled={disabled}
-          tooltipProps={{content: 'Show more'}}
+          tooltipProps={{content: 'Show more', placement: tooltipPlacement}}
         />
       ),
       popover: MENU_POPOVER_PROPS,
     }),
-
-    [disabled],
+    [disabled, tooltipPlacement],
   )
 
   return (
