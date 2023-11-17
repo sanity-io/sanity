@@ -44,7 +44,7 @@ describe('Studio', () => {
     try {
       const html = renderToStaticMarkup(sheet.collectStyles(<Studio config={config} />))
       expect(html).toMatchInlineSnapshot(
-        `"<div data-as=\\"div\\" data-ui=\\"Flex\\" data-scheme=\\"light\\" data-tone=\\"default\\" class=\\"sc-pNWRh kHzIXK sc-hBMVwJ cxXFEA sc-pNWRh bjOKiY sc-crzpnZ hbdofD\\"><div data-ui=\\"Text\\" class=\\"sc-bdnyFh bQjgIG\\"><span>Loading…</span></div><div data-ui=\\"Spinner\\" class=\\"sc-bdnyFh bQjgIG sc-dItHI dqtoFF\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
+        `"<div data-as=\\"div\\" data-ui=\\"Flex\\" data-scheme=\\"light\\" data-tone=\\"default\\" class=\\"sc-pGaPU iDvIQX sc-hBEZvw cXzyYZ sc-pGaPU dcGziJ sc-crrtmM fLXKCO\\"><div data-ui=\\"Text\\" class=\\"sc-bdfCDU eQziRi\\"><span>Loading…</span></div><div data-ui=\\"Spinner\\" class=\\"sc-bdfCDU eQziRi sc-dQpIV gAtGZm\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
       )
     } finally {
       sheet.seal()
@@ -61,7 +61,7 @@ describe('Studio', () => {
     try {
       const html = renderToString(sheet.collectStyles(<Studio config={config} />))
       expect(html).toMatchInlineSnapshot(
-        `"<div data-as=\\"div\\" data-ui=\\"Flex\\" data-scheme=\\"light\\" data-tone=\\"default\\" class=\\"sc-pNWRh kHzIXK sc-hBMVwJ cxXFEA sc-pNWRh bjOKiY sc-crzpnZ hbdofD\\"><div data-ui=\\"Text\\" class=\\"sc-bdnyFh bQjgIG\\"><span>Loading…</span></div><div data-ui=\\"Spinner\\" class=\\"sc-bdnyFh bQjgIG sc-dItHI dqtoFF\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
+        `"<div data-as=\\"div\\" data-ui=\\"Flex\\" data-scheme=\\"light\\" data-tone=\\"default\\" class=\\"sc-pGaPU iDvIQX sc-hBEZvw cXzyYZ sc-pGaPU dcGziJ sc-crrtmM fLXKCO\\"><div data-ui=\\"Text\\" class=\\"sc-bdfCDU eQziRi\\"><span>Loading…</span></div><div data-ui=\\"Spinner\\" class=\\"sc-bdfCDU eQziRi sc-dQpIV gAtGZm\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
       )
     } finally {
       sheet.seal()
@@ -81,7 +81,7 @@ describe('Studio', () => {
       const html = renderToString(sheet.collectStyles(<Studio config={config} />))
       node.innerHTML = html
       expect(html).toMatchInlineSnapshot(
-        `"<div data-as=\\"div\\" data-ui=\\"Flex\\" data-scheme=\\"light\\" data-tone=\\"default\\" class=\\"sc-pNWRh kHzIXK sc-hBMVwJ cxXFEA sc-pNWRh bjOKiY sc-crzpnZ hbdofD\\"><div data-ui=\\"Text\\" class=\\"sc-bdnyFh bQjgIG\\"><span>Loading…</span></div><div data-ui=\\"Spinner\\" class=\\"sc-bdnyFh bQjgIG sc-dItHI dqtoFF\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
+        `"<div data-as=\\"div\\" data-ui=\\"Flex\\" data-scheme=\\"light\\" data-tone=\\"default\\" class=\\"sc-pGaPU iDvIQX sc-hBEZvw cXzyYZ sc-pGaPU dcGziJ sc-crrtmM fLXKCO\\"><div data-ui=\\"Text\\" class=\\"sc-bdfCDU eQziRi\\"><span>Loading…</span></div><div data-ui=\\"Spinner\\" class=\\"sc-bdfCDU eQziRi sc-dQpIV gAtGZm\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
       )
       document.head.innerHTML += sheet.getStyleTags()
 
