@@ -86,7 +86,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
         data-testid="pane-header"
         ref={ref}
         //Render shadow conditionally if list is scrollable and has scrolled from top
-        $shadowBottom={isScrollable && hasScrolledFromTop}
+        //$shadowBottom={isScrollable && hasScrolledFromTop}
       >
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
