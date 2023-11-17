@@ -10,16 +10,17 @@ import {
   useGlobalKeyDown,
 } from '@sanity/ui'
 import React, {
+  type PropsWithChildren,
+  type ReactElement,
   forwardRef,
-  ReactElement,
   useCallback,
+  useEffect,
+  useId,
   useMemo,
   useRef,
-  useId,
-  useEffect,
-  PropsWithChildren,
 } from 'react'
-import {PortableTextBlock, isReference} from '@sanity/types'
+import {type PortableTextBlock, isReference} from '@sanity/types'
+import {useTranslation} from '../../../../i18n'
 import {IntentLink} from 'sanity/router'
 
 interface BlockObjectActionsMenuProps extends PropsWithChildren {
@@ -40,6 +41,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 
 export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): ReactElement {
   const {children, focused, isOpen, onOpen, onRemove, readOnly, value} = props
+  const {t} = useTranslation()
   const menuButtonId = useId()
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
@@ -99,7 +101,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
         <MenuButton
           button={
             <Button
-              aria-label="Open menu"
+              aria-label={t('inputs.portable-text.block.open-menu-aria-label')}
               fontSize={1}
               iconRight={EllipsisVerticalIcon}
               mode="bleed"
@@ -113,13 +115,35 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
             <Menu>
               <>
                 {'_ref' in value && value._ref && (
-                  <MenuItem as={referenceLink} data-as="a" icon={LinkIcon} text="Open reference" />
+                  <MenuItem
+                    as={referenceLink}
+                    data-as="a"
+                    icon={LinkIcon}
+                    text={t('inputs.portable-text.block.open-reference')}
+                  />
                 )}
 
-                {readOnly && <MenuItem icon={EyeOpenIcon} onClick={onOpen} text="View" />}
-                {!readOnly && <MenuItem icon={EditIcon} onClick={onOpen} text="Edit" />}
+                {readOnly && (
+                  <MenuItem
+                    icon={EyeOpenIcon}
+                    onClick={onOpen}
+                    text={t('inputs.portable-text.block.view')}
+                  />
+                )}
                 {!readOnly && (
-                  <MenuItem icon={TrashIcon} onClick={handleDelete} text="Delete" tone="critical" />
+                  <MenuItem
+                    icon={EditIcon}
+                    onClick={onOpen}
+                    text={t('inputs.portable-text.block.edit')}
+                  />
+                )}
+                {!readOnly && (
+                  <MenuItem
+                    icon={TrashIcon}
+                    onClick={handleDelete}
+                    text={t('inputs.portable-text.block.remove')}
+                    tone="critical"
+                  />
                 )}
               </>
             </Menu>

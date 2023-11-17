@@ -757,6 +757,209 @@ export const studioLocaleStrings = {
   /** Field groups */
   'inputs.object.field-group-tabs.aria-label': 'Field groups',
 
+  /** -- Portable Text input -- */
+
+  /** Placeholder text for when the editor is empty */
+  'inputs.portable-text.empty-placeholder': 'Empty',
+
+  /** Collapse the editor to save screen space  */
+  'inputs.portable-text.action.collapse-editor': 'Collapse editor',
+
+  /** Expand the editor to give more editing space */
+  'inputs.portable-text.action.expand-editor': 'Expand editor',
+
+  /** Label for action to edit an existing annotation */
+  'inputs.portable-text.action.edit-annotation': 'Edit annotation',
+
+  /** Label for action to remove an annotation */
+  'inputs.portable-text.action.remove-annotation': 'Remove annotation',
+
+  /** Accessibility label for the button that opens the actions menu on blocks */
+  'inputs.portable-text.block.open-menu-aria-label': 'Open menu',
+
+  /** Label for action to open a reference, in the case of block-level reference types */
+  'inputs.portable-text.block.open-reference': 'Open reference',
+
+  /** Label for action to view a block item, in the case where it is read-only and thus cannot be edited */
+  'inputs.portable-text.block.view': 'View',
+
+  /** Label for action to edit a block item, in the case where it is editable */
+  'inputs.portable-text.block.edit': 'Edit',
+
+  /** Label for action to remove a block item */
+  'inputs.portable-text.block.remove': 'Remove',
+
+  /** Label for action to edit an inline object item */
+  'inputs.portable-text.inline-object.edit': 'Edit object',
+
+  /** Label for action to remove an inline object item */
+  'inputs.portable-text.inline-object.remove': 'Remove object',
+
+  /** Title for dialog that allows editing an annotation */
+  'inputs.portable-text.annotation-editor.title': 'Edit {{schemaType}}',
+
+  /** Title of "bulleted" list type */
+  'inputs.portable-text.list-type.bullet': 'Bulleted list',
+
+  /** Title of numbered list type */
+  'inputs.portable-text.list-type.number': 'Numbered list',
+
+  /** Title of the "normal" block style */
+  'inputs.portable-text.style.normal': 'Normal',
+
+  /** Title of the "h1" block style */
+  'inputs.portable-text.style.h1': 'Heading 1',
+
+  /** Title of the "h2" block style */
+  'inputs.portable-text.style.h2': 'Heading 2',
+
+  /** Title of the "h3" block style */
+  'inputs.portable-text.style.h3': 'Heading 3',
+
+  /** Title of the "h4" block style */
+  'inputs.portable-text.style.h4': 'Heading 4',
+
+  /** Title of the "h5" block style */
+  'inputs.portable-text.style.h5': 'Heading 5',
+
+  /** Title of the "h6" block style */
+  'inputs.portable-text.style.h6': 'Heading 6',
+
+  /** Title of the "quote" block style */
+  'inputs.portable-text.style.quote': 'Quote',
+
+  /** Title of fallback when no style is given for a block */
+  'inputs.portable-text.style.none': 'No style',
+
+  /** Title shown when multiple blocks of varying styles is selected */
+  'inputs.portable-text.style.multiple': 'Multiple',
+
+  /** Title of the "strong" decorator */
+  'inputs.portable-text.decorator.strong': 'Strong',
+
+  /** Title of the "em" (emphasis) decorator */
+  'inputs.portable-text.decorator.emphasis': 'Italic',
+
+  /** Title of the "code" decorator */
+  'inputs.portable-text.decorator.code': 'Code',
+
+  /** Title of the "underline" decorator */
+  'inputs.portable-text.decorator.underline': 'Underline',
+
+  /** Title of the "strike-through" decorator */
+  'inputs.portable-text.decorator.strike-through': 'Strike',
+
+  /** Title of the default "link" annotation */
+  'inputs.portable-text.annotation.link': 'Link',
+
+  /** Title for the alert indicating that the Portable Text field has an invalid value */
+  'inputs.portable-text.invalid-value.title': 'Invalid Portable Text value',
+
+  /** Label for the button to ignore invalid values in the Portable Text editor */
+  'inputs.portable-text.invalid-value.ignore-button.text': 'Ignore',
+
+  /** Disclaimer text shown on invalid Portable Text value, when an action is available to unblock the user, but it is not guaranteed to be safe */
+  'inputs.portable-text.invalid-value.action-disclaimer':
+    'NOTE: It’s generally safe to perform the action above, but if you are in doubt, get in touch with those responsible for configuring your studio.',
+
+  /** Text explaining that the Portable Text field value is invalid, when the Portable Text field is not an array, or the array is empty */
+  'inputs.portable-text.invalid-value.not-an-array.description':
+    'Value must be an array of Portable Text blocks, or undefined.',
+  /** Action presented when the Portable Text field value is invalid, when the Portable Text field is not an array, or the array is empty */
+  'inputs.portable-text.invalid-value.not-an-array.action': 'Unset the value',
+
+  /** Text explaining that the Portable Text field value is invalid, when child at `{{index}}` is not an object */
+  'inputs.portable-text.invalid-value.not-an-object.description':
+    'Item at <code>{{index}}</code> is not an object,.',
+  /** Action presented when the Portable Text field value is invalid, when child at `{{index}}` is not an object */
+  'inputs.portable-text.invalid-value.not-an-object.action': 'Remove item',
+
+  /** Text explaining that the Portable Text field value is invalid, when child at `{{index}}` is missing the required `_key` property */
+  'inputs.portable-text.invalid-value.missing-key.description':
+    'Block at index <code>{{index}}</code> is missing required <code>_key</code> property.',
+  /** Action presented when the Portable Text field value is invalid, when child at `{{index}}` is missing the required `_key` property */
+  'inputs.portable-text.invalid-value.missing-key.action': 'Assign random key',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` has a `_type` property that is set to `block`, but the block type defined in schema has a different name (`{{expectedTypeName}}`) */
+  'inputs.portable-text.invalid-value.incorrect-block-type.description':
+    'Block with key <code>{{key}}</code> has an invalid type name. According to the schema, it should be <code>{{expectedTypeName}}</code>.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` has a `_type` property that is set to `block`, but the block type defined in schema has a different name (`{{expectedTypeName}}`) */
+  'inputs.portable-text.invalid-value.incorrect-block-type.action':
+    'Use type <code>{{expectedTypeName}}</code>',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` is missing a `_type` property, but seems to be a block of type `{{expectedTypeName}}` */
+  'inputs.portable-text.invalid-value.missing-block-type.description':
+    'Block with key <code>{{key}}</code> is missing a type name. According to the schema, it should be <code>{{expectedTypeName}}</code>.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` is missing a `_type` property, but seems to be a block of type `{{expectedTypeName}}` */
+  'inputs.portable-text.invalid-value.missing-block-type.action':
+    'Use type <code>{{expectedTypeName}}</code>',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` is missing a `_type` property  */
+  'inputs.portable-text.invalid-value.missing-type.description':
+    'Block with key <code>{{key}}</code> is missing a type name.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` is missing a `_type` property  */
+  'inputs.portable-text.invalid-value.missing-type.action': 'Remove the block',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` has a type (`{{typeName}}`) that is not an allowed block type for this field */
+  'inputs.portable-text.invalid-value.disallowed-type.description':
+    'Block with key <code>{{key}}</code> is of type <code>{{typeName}}</code>, which is not allowed by the schema.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` has a type (`{{typeName}}`) that is not an allowed block type for this field */
+  'inputs.portable-text.invalid-value.disallowed-type.action': 'Remove the block',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` has a missing or invalid `children` property */
+  'inputs.portable-text.invalid-value.missing-or-invalid-children.description':
+    'Text block with key <code>{{key}}</code> has an invalid or missing `children` property.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` has a missing or invalid `children` property */
+  'inputs.portable-text.invalid-value.missing-or-invalid-children.action': 'Remove the block',
+
+  /** Text explaining that the Portable Text field value is invalid, when child with key `{{key}}` has a missing or invalid `markDefs` property */
+  'inputs.portable-text.invalid-value.missing-or-invalid-markdefs.description':
+    'Text block with key <code>{{key}}</code> has an invalid or missing `markDefs` property.',
+  /** Action presented when the Portable Text field value is invalid, when child with key `{{key}}` has a missing or invalid `markDefs` property */
+  'inputs.portable-text.invalid-value.missing-or-invalid-markdefs.action': 'Add property',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` contains marks (`{{orphanedMarks}}`) that are not supported by the current schema */
+  'inputs.portable-text.invalid-value.orphaned-marks.description':
+    'Text block with key <code>{{key}}</code> contains marks <code>({{orphanedMarks, list}})</code> that are not allowed by the schema.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` contains marks (`{{orphanedMarks}}`) that are not supported by the current schema */
+  'inputs.portable-text.invalid-value.orphaned-marks.action': 'Remove disallowed marks',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` contains no children */
+  'inputs.portable-text.invalid-value.empty-children.description':
+    'Text block with key <code>{{key}}</code> has no text spans.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` contains no children */
+  'inputs.portable-text.invalid-value.empty-children.action': 'Insert empty text span',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` contains a non-object child at index `{{index}}` */
+  'inputs.portable-text.invalid-value.non-object-child.description':
+    'Child at index <code>{{index}}</code> of block with key <code>{{key}}</code> is not an object.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` contains a non-object child at index `{{index}}` */
+  'inputs.portable-text.invalid-value.non-object-child.action': 'Remove the item',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` has a child at `{{index}}` which is missing `_key` property */
+  'inputs.portable-text.invalid-value.missing-child-key.description':
+    'Child at index <code>{{index}}</code> of block with key <code>{{key}}</code> is missing <code>_key</code> property.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` has a child at `{{index}}` which is missing `_key` property */
+  'inputs.portable-text.invalid-value.missing-child-key.action': 'Assign random key',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` has a child with key `{{childKey}}` which is missing a `_type` property */
+  'inputs.portable-text.invalid-value.missing-child-type.description':
+    'Child with key {{childKey}} of block with key <code>{{key}}</code> is missing <code>_type</code> property.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` has a child with key `{{childKey}}` which is missing a `_type` property */
+  'inputs.portable-text.invalid-value.missing-child-type.action': 'Remove the object',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` has a child with key `{{childKey}}` of type `{{childType}}` which is not allowed by the schema definition */
+  'inputs.portable-text.invalid-value.disallowed-child-type.description':
+    'Child with key {{childKey}} of block with key <code>{{key}}</code> is of type <code>{{childType}}</code>, which is not allowed by the schema.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` has a child with key `{{childKey}}` of type `{{childType}}` which is not allowed by the schema definition */
+  'inputs.portable-text.invalid-value.disallowed-child-type.action': 'Remove the object',
+
+  /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` has a span with key `{{childKey}}` that has a missing or invalid `text` property */
+  'inputs.portable-text.invalid-value.invalid-span-text.description':
+    'Span with key {{childKey}} of block with key <code>{{key}}</code> has a missing or invalid <code>text</code> property.',
+  /** Action presented when the Portable Text field value is invalid, when block with key `{{key}}` has a span with key `{{childKey}}` that has a missing or invalid `text` property */
+  'inputs.portable-text.invalid-value.invalid-span-text.action': 'Set empty text value',
+
   /** -- Invalid Value Input -- */
 
   /** Reset value */

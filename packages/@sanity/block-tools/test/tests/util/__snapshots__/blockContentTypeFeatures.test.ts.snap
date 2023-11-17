@@ -57,6 +57,7 @@ Object {
           },
         ],
         "groups": Array [],
+        "i18nTitleKey": "inputs.portable-text.annotation.link",
         "jsonType": "object",
         "name": "link",
         "options": Object {
@@ -84,66 +85,81 @@ Object {
   ],
   "decorators": Array [
     Object {
+      "i18nTitleKey": "inputs.portable-text.decorator.strong",
       "title": "Strong",
       "value": "strong",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.decorator.emphasis",
       "title": "Italic",
       "value": "em",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.decorator.code",
       "title": "Code",
       "value": "code",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.decorator.underline",
       "title": "Underline",
       "value": "underline",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.decorator.strike-through",
       "title": "Strike",
       "value": "strike-through",
     },
   ],
   "lists": Array [
     Object {
+      "i18nTitleKey": "inputs.portable-text.list-type.bullet",
       "title": "Bulleted list",
       "value": "bullet",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.list-type.number",
       "title": "Numbered list",
       "value": "number",
     },
   ],
   "styles": Array [
     Object {
+      "i18nTitleKey": "inputs.portable-text.style.normal",
       "title": "Normal",
       "value": "normal",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.style.h1",
       "title": "Heading 1",
       "value": "h1",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.style.h2",
       "title": "Heading 2",
       "value": "h2",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.style.h3",
       "title": "Heading 3",
       "value": "h3",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.style.h4",
       "title": "Heading 4",
       "value": "h4",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.style.h5",
       "title": "Heading 5",
       "value": "h5",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.style.h6",
       "title": "Heading 6",
       "value": "h6",
     },
     Object {
+      "i18nTitleKey": "inputs.portable-text.style.quote",
       "title": "Quote",
       "value": "blockquote",
     },
@@ -214,6 +230,7 @@ Object {
                           },
                         ],
                         "groups": Array [],
+                        "i18nTitleKey": "inputs.portable-text.annotation.link",
                         "jsonType": "object",
                         "name": "link",
                         "options": Object {
@@ -239,22 +256,27 @@ Object {
                     ],
                     "decorators": Array [
                       Object {
+                        "i18nTitleKey": "inputs.portable-text.decorator.strong",
                         "title": "Strong",
                         "value": "strong",
                       },
                       Object {
+                        "i18nTitleKey": "inputs.portable-text.decorator.emphasis",
                         "title": "Italic",
                         "value": "em",
                       },
                       Object {
+                        "i18nTitleKey": "inputs.portable-text.decorator.code",
                         "title": "Code",
                         "value": "code",
                       },
                       Object {
+                        "i18nTitleKey": "inputs.portable-text.decorator.underline",
                         "title": "Underline",
                         "value": "underline",
                       },
                       Object {
+                        "i18nTitleKey": "inputs.portable-text.decorator.strike-through",
                         "title": "Strike",
                         "value": "strike-through",
                       },
@@ -345,34 +367,42 @@ Object {
                 "options": Object {
                   "list": Array [
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.style.normal",
                       "title": "Normal",
                       "value": "normal",
                     },
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.style.h1",
                       "title": "Heading 1",
                       "value": "h1",
                     },
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.style.h2",
                       "title": "Heading 2",
                       "value": "h2",
                     },
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.style.h3",
                       "title": "Heading 3",
                       "value": "h3",
                     },
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.style.h4",
                       "title": "Heading 4",
                       "value": "h4",
                     },
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.style.h5",
                       "title": "Heading 5",
                       "value": "h5",
                     },
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.style.h6",
                       "title": "Heading 6",
                       "value": "h6",
                     },
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.style.quote",
                       "title": "Quote",
                       "value": "blockquote",
                     },
@@ -398,10 +428,12 @@ Object {
                 "options": Object {
                   "list": Array [
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.list-type.bullet",
                       "title": "Bulleted list",
                       "value": "bullet",
                     },
                     Object {
+                      "i18nTitleKey": "inputs.portable-text.list-type.number",
                       "title": "Numbered list",
                       "value": "number",
                     },
@@ -476,6 +508,7 @@ Object {
                       },
                     ],
                     "groups": Array [],
+                    "i18nTitleKey": "inputs.portable-text.annotation.link",
                     "jsonType": "object",
                     "name": "link",
                     "options": Object {
@@ -972,6 +1005,7 @@ Object {
             },
           ],
           "groups": Array [],
+          "i18nTitleKey": "inputs.portable-text.annotation.link",
           "jsonType": "object",
           "name": "link",
           "options": Object {
@@ -997,22 +1031,27 @@ Object {
       ],
       "decorators": Array [
         Object {
+          "i18nTitleKey": "inputs.portable-text.decorator.strong",
           "title": "Strong",
           "value": "strong",
         },
         Object {
+          "i18nTitleKey": "inputs.portable-text.decorator.emphasis",
           "title": "Italic",
           "value": "em",
         },
         Object {
+          "i18nTitleKey": "inputs.portable-text.decorator.code",
           "title": "Code",
           "value": "code",
         },
         Object {
+          "i18nTitleKey": "inputs.portable-text.decorator.underline",
           "title": "Underline",
           "value": "underline",
         },
         Object {
+          "i18nTitleKey": "inputs.portable-text.decorator.strike-through",
           "title": "Strike",
           "value": "strike-through",
         },

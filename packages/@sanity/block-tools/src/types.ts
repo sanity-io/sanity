@@ -1,6 +1,7 @@
 import type {ComponentType} from 'react'
 import type {
   ArraySchemaType,
+  I18nTitledListValue,
   ObjectSchemaType,
   PortableTextObject,
   SpanSchemaType,
@@ -14,7 +15,7 @@ export interface BlockContentFeatures {
   styles: TitledListValue<string>[]
   decorators: TitledListValue<string>[]
   annotations: ResolvedAnnotationType[]
-  lists: TitledListValue<string>[]
+  lists: I18nTitledListValue<string>[]
   types: {
     block: ArraySchemaType
     span: SpanSchemaType

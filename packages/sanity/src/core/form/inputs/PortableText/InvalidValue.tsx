@@ -1,6 +1,7 @@
-import {InvalidValueResolution} from '@sanity/portable-text-editor'
+import type {InvalidValueResolution} from '@sanity/portable-text-editor'
 import {Box, Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Translate, useTranslation} from '../../../i18n'
 import {Alert} from '../../components/Alert'
 
 interface InvalidValueProps {
@@ -13,6 +14,7 @@ interface InvalidValueProps {
 export function InvalidValue(props: InvalidValueProps) {
   const {onChange, onIgnore, resolution, readOnly} = props
 
+  const {t} = useTranslation()
   const handleAction = useCallback(() => {
     if (resolution) {
       onChange({type: 'mutation', patches: resolution.patches})
@@ -23,13 +25,28 @@ export function InvalidValue(props: InvalidValueProps) {
 
   return (
     <Alert
+      title={<>{t('inputs.portable-text.invalid-value.title')}</>}
       suffix={
         <Stack padding={2}>
           {resolution.action && (
             <Grid columns={[1, 2]} gap={1}>
-              <Button mode="ghost" onClick={onIgnore} text="Ignore" />
+              <Button
+                mode="ghost"
+                onClick={onIgnore}
+                text={t('inputs.portable-text.invalid-value.ignore-button.text')}
+              />
               {!readOnly && (
-                <Button onClick={handleAction} text={resolution.action} tone="caution" />
+                <Button
+                  onClick={handleAction}
+                  text={
+                    <Translate
+                      t={t}
+                      i18nKey={resolution.i18n.action}
+                      values={resolution.i18n.values}
+                    />
+                  }
+                  tone="caution"
+                />
               )}
             </Grid>
           )}
@@ -37,18 +54,16 @@ export function InvalidValue(props: InvalidValueProps) {
           <Box padding={3}>
             {resolution.action && (
               <Text as="p" muted size={1}>
-                NOTE: It’s generally safe to perform the action above, but if you are in doubt, get
-                in touch with those responsible for configuring your studio.
+                {t('inputs.portable-text.invalid-value.action-disclaimer')}
               </Text>
             )}
           </Box>
         </Stack>
       }
-      title={<>Invalid Portable Text Editor value</>}
     >
       <Stack space={3}>
         <Text as="p" muted size={1}>
-          {resolution.description}
+          <Translate t={t} i18nKey={resolution.i18n.description} values={resolution.i18n.values} />
         </Text>
 
         <Card border overflow="auto" padding={2} tone="inherit">
