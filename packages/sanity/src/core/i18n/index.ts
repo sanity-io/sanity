@@ -21,5 +21,6 @@ export type {
   StaticLocaleResourceBundle,
   StudioLocaleResourceKeys,
   TFunction,
+  ValidationLocaleResourceKeys,
 } from './types'
 export {defineLocaleResourceBundle, defineLocale} from './helpers'
