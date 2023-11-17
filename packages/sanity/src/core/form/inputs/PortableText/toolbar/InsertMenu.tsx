@@ -3,6 +3,7 @@ import {AddIcon} from '@sanity/icons'
 import {Button, PopoverProps} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {upperFirst} from 'lodash'
+import {useTranslation} from '../../../../i18n'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {BlockItem} from './types'
 import {useFocusBlock} from './hooks'
@@ -20,6 +21,7 @@ interface InsertMenuProps {
 
 export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const {disabled, items, isFullscreen, collapsed} = props
+  const {t} = useTranslation()
   const focusBlock = useFocusBlock()
   const editor = usePortableTextEditor()
 
@@ -35,7 +37,12 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
 
       return (
         <CollapseMenuButton
-          aria-label={`Insert ${title}${item.inline ? ' (inline)' : ' (block)'}`}
+          aria-label={t(
+            item.inline
+              ? 'inputs.portable-text.action.insert-inline-object-aria-label'
+              : 'inputs.portable-text.action.insert-block-aria-label',
+            {typeName: title},
+          )}
           padding={2}
           mode="bleed"
           disabled={disabled || (isVoidFocus && item.inline === true)}
@@ -44,7 +51,12 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           // eslint-disable-next-line react/jsx-no-bind, react/jsx-handler-names
           onClick={item.handle}
           text={title}
-          tooltipText={`Insert ${title}`}
+          tooltipText={t(
+            item.inline
+              ? 'inputs.portable-text.action.insert-inline-object'
+              : 'inputs.portable-text.action.insert-block',
+            {typeName: title},
+          )}
           tooltipProps={{
             disabled,
             placement: isFullscreen ? 'bottom' : 'top',
@@ -53,7 +65,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
         />
       )
     })
-  }, [items, disabled, isVoidFocus, isFullscreen])
+  }, [disabled, isFullscreen, isVoidFocus, items, t])
 
   const menuButtonProps = useMemo(
     () => ({
