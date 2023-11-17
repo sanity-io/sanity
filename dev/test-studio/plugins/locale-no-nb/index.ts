@@ -16,6 +16,10 @@ const norwegianLanguage = defineLocale({
       namespace: 'validation',
       resources: () => import('./bundles/validation'),
     },
+    {
+      namespace: 'vision',
+      resources: () => import('./bundles/vision'),
+    },
   ],
 })
 
