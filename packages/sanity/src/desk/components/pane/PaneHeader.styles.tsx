@@ -11,7 +11,7 @@ export const Root = styled(Layer)<RootProps>(({$borderBottom = false, $shadowBot
     line-height: 0;
     position: sticky;
     top: 0;
-    box-shadow: ${$shadowBottom ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none'};
+    box-shadow: ${$shadowBottom ? '0 0 10px var(--card-shadow-outline-color)' : 'none'};
     transition: box-shadow 200ms ease-in;
     opacity: 1;
 
