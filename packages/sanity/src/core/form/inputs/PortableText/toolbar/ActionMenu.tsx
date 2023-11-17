@@ -55,6 +55,8 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
     PortableTextEditor.focus(editor)
   }, [editor])
 
+  const tooltipPlacement = isFullscreen ? 'bottom' : 'top'
+
   const children = useMemo(
     () =>
       actions.map((action) => {
@@ -76,13 +78,13 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             tooltipText={action.title || action.key}
             tooltipProps={{
               disabled: disabled || annotationDisabled,
-              placement: isFullscreen ? 'bottom' : 'top',
+              placement: tooltipPlacement,
               portal: 'default',
             }}
           />
         )
       }),
-    [actions, activeKeys, disabled, isEmptyTextBlock, isFullscreen],
+    [actions, activeKeys, disabled, isEmptyTextBlock, tooltipPlacement],
   )
 
   const menuButtonProps = useMemo(
@@ -93,13 +95,12 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
           mode="bleed"
           size="small"
           disabled={disabled}
-          tooltipProps={{content: 'Show more'}}
+          tooltipProps={{content: 'Show more', placement: tooltipPlacement}}
         />
       ),
       popover: MENU_POPOVER_PROPS,
     }),
-
-    [disabled],
+    [disabled, tooltipPlacement],
   )
 
   return (
