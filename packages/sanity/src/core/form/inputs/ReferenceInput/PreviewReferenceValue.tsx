@@ -59,7 +59,9 @@ export function PreviewReferenceValue(props: {
           })}
         </Box>
         <Box>
-          <Inline space={4}>{showTypeLabel && <Badge>{refType.title}</Badge>}</Inline>
+          <Inline space={4}>
+            {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
+          </Inline>
         </Box>
       </Flex>
     )
