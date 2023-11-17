@@ -10,13 +10,13 @@ import {LegacyLayerProvider} from 'sanity'
 export interface PaneHeaderProps {
   actions?: React.ReactNode
   backButton?: React.ReactNode
+  borderBottom?: boolean
   contentAfter?: React.ReactNode
   loading?: boolean
   subActions?: React.ReactNode
   tabIndex?: number
   tabs?: React.ReactNode
   title: React.ReactNode
-  borderBottom?: boolean
 }
 
 /**
@@ -81,11 +81,12 @@ export const PaneHeader = forwardRef(function PaneHeader(
   return (
     <LayerProvider zOffset={100}>
       <Root
-        //Render border if explicitly set to true or conditionally if scrollable and scrolled from top
-        $borderBottom={borderBottom || (isScrollable && hasScrolledFromTop)}
+        $borderBottom={borderBottom}
         data-collapsed={collapsed ? '' : undefined}
         data-testid="pane-header"
         ref={ref}
+        //Render shadow conditionally if list is scrollable and has scrolled from top
+        $shadowBottom={isScrollable && hasScrolledFromTop}
       >
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">

@@ -3,13 +3,17 @@ import styled, {css} from 'styled-components'
 
 interface RootProps {
   $borderBottom?: boolean
+  $shadowBottom?: boolean
 }
 
-export const Root = styled(Layer)<RootProps>(({$borderBottom = true}) => {
+export const Root = styled(Layer)<RootProps>(({$borderBottom = false, $shadowBottom = false}) => {
   return css`
     line-height: 0;
     position: sticky;
     top: 0;
+    box-shadow: ${$shadowBottom ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none'};
+    transition: box-shadow 200ms ease-in;
+    opacity: 1;
 
     &:not([data-collapsed]):after {
       content: '';
@@ -19,8 +23,6 @@ export const Root = styled(Layer)<RootProps>(({$borderBottom = true}) => {
       right: 0px;
       bottom: -1px;
       border-bottom: 1px solid ${$borderBottom ? 'var(--card-shadow-outline-color)' : 'transparent'};
-      opacity: 1;
-      transition: border-color 200ms ease-in;
     }
   `
 })
