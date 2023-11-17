@@ -179,3 +179,4 @@ export interface LocaleSource {
 export type {TFunction}
 
 export type {StudioLocaleResourceKeys} from './bundles/studio'
+export type {ValidationLocaleResourceKeys} from './bundles/validation'

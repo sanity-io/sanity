@@ -1,4 +1,6 @@
-const validationResources = {
+import type {ValidationLocaleResourceKeys} from 'sanity'
+
+const validationResources: Record<ValidationLocaleResourceKeys, string> = {
   /** Title for the actual "Validation" panel/feature */
   'panel.title': 'Validering',
 

@@ -1302,7 +1302,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Title for "Create new document" dialog */
   'new-document.title': 'Opprett nytt dokument',
 
-  /** Aria label for the button that opens the "Create new document" popover/dialog */
+  /** Accessibility label for the button that opens the "Create new document" popover/dialog */
   'new-document.open-dialog-aria-label': 'Opprett nytt dokument',
 
   /**
@@ -1841,6 +1841,9 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** --- User Menu --- */
 
+  /** Label for close menu button for user menu */
+  'user-menu.close-menu': 'Lukk meny',
+
   /** Label for tooltip to show which provider the currently logged in user is using */
   'user-menu.login-provider': `Logget inn med {{providerTitle}}`,
 
@@ -1896,6 +1899,9 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Message for when a user is not in a document (displayed in the global presence menu) */
   'presence.not-in-a-document': 'Ikke i et dokument',
+
+  /** Accessibility label for Avatar Stack */
+  'presence.aria-label': 'Hvem er her',
 
   /** --- Previews --- */
 

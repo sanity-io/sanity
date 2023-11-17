@@ -16,3 +16,5 @@ export interface VisionToolConfig extends Partial<VisionConfig> {
   title?: string
   icon?: ComponentType
 }
+
+export type {VisionLocaleResourceKeys} from './i18n/resources'

@@ -104,4 +104,9 @@ const visionLocaleStrings = {
   'action.copy-url-to-clipboard': 'Copy to clipboard',
 }
 
+/**
+ * @alpha
+ */
+export type VisionLocaleResourceKeys = keyof typeof visionLocaleStrings
+
 export default visionLocaleStrings

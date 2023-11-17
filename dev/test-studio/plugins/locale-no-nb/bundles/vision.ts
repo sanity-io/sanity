@@ -1,4 +1,6 @@
-const visionLocaleStrings = {
+import type {VisionLocaleResourceKeys} from '@sanity/vision'
+
+const visionLocaleStrings: Record<VisionLocaleResourceKeys, string> = {
   /**
    * Context: "Vision" is a Sanity studio plugin which allows users to execute GROQ-queries
    * against their dataset and see the results in different ways. It is often used to explore

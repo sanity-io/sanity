@@ -1927,7 +1927,7 @@ export const studioLocaleStrings = {
   /** Message for when a user is not in a document (displayed in the global presence menu) */
   'presence.not-in-a-document': 'Not in a document',
 
-  /** Aria label for Avatar Stack */
+  /** Accessibility label for Avatar Stack */
   'presence.aria-label': 'Who is here',
 
   /** --- Previews --- */
