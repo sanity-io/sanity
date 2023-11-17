@@ -11,7 +11,7 @@ import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {MentionsMenu, MentionsMenuHandle} from '../../mentions'
 import {renderBlock, renderChild} from '../render'
 import {useCommentInput} from './useCommentInput'
-import {useCursorElement} from './useCursorElement'
+import {useCursorElement} from 'sanity'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 
