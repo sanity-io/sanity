@@ -56,7 +56,7 @@ export default function SearchResultItemPreview({
     return (
       <Inline space={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <Badge>{schemaType.title}</Badge>
+        <Badge mode="outline">{schemaType.title}</Badge>
       </Inline>
     )
   }, [isLoading, presence, schemaType.title])

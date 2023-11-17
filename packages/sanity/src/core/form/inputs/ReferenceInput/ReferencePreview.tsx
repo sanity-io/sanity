@@ -57,7 +57,7 @@ export function ReferencePreview(props: {
 
       <Box paddingLeft={3}>
         <Inline space={3}>
-          {showTypeLabel && <Badge>{refType.title}</Badge>}
+          {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
 
           {documentPresence && documentPresence.length > 0 && (
             <DocumentPreviewPresence presence={documentPresence} />
