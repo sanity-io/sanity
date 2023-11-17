@@ -14,7 +14,7 @@ import {
   Flex,
   Button,
 } from '@sanity/ui'
-import {ComposeIcon, SearchIcon} from '@sanity/icons'
+import {AddIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
@@ -145,7 +145,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     () => ({
       'aria-label': title,
       disabled: disabled || loading,
-      icon: ComposeIcon,
+      icon: AddIcon,
       mode: 'bleed',
       onClick: handleToggleOpen,
       ref: setButtonElement,
