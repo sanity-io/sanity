@@ -48,7 +48,7 @@ export interface BlockRule extends RuleDef<BlockRule, any[]> {}
  */
 export interface BlockDecoratorDefinition {
   title: string
-  i18nTitle?: string
+  i18nTitleKey?: string
   value: string
   icon?: ReactNode | ComponentType
 }
@@ -110,7 +110,7 @@ export interface BlockDecoratorDefinition {
 export interface BlockStyleDefinition {
   title: string
   value: string
-  i18nTitle?: string
+  i18nTitleKey?: string
 }
 
 /**
@@ -137,7 +137,7 @@ export interface BlockStyleDefinition {
  */
 export interface BlockListDefinition {
   title: string
-  i18nTitle?: string
+  i18nTitleKey?: string
   value: string
   icon?: ReactNode | ComponentType
 }

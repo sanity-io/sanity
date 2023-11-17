@@ -57,7 +57,7 @@ export interface TitledListValue<V = unknown> {
 export interface I18nTitledListValue<V = unknown> {
   _key?: string
   title: string
-  i18nTitle?: string
+  i18nTitleKey?: string
   value?: V
 }
 

@@ -13,7 +13,7 @@ export function ObjectEditModal(props: {
   onClose: () => void
   referenceBoundary: HTMLElement | null
   referenceElement: HTMLElement | null
-  schemaType: ObjectSchemaType & {i18nTitle?: string}
+  schemaType: ObjectSchemaType & {i18nTitleKey?: string}
 }) {
   const {
     autoFocus,
