@@ -16,7 +16,7 @@ export interface BlockStyleItem {
   style: string
   styleComponent?: React.ElementType
   title: string
-  i18nTitle?: string
+  i18nTitleKey?: string
 }
 
 export interface PTEToolbarAction {
