@@ -108,8 +108,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           mode="bleed"
           disabled={disabled}
           data-testid="action-intent-button"
-          // This button handles the tooltip in a special way, couldn't reuse the forced tooltip.
-          tooltipProps={null}
+          tooltipProps={disabled ? null : {content: 'Create new document'}}
         />
       </InsufficientPermissionsMessageTooltip>
     )
