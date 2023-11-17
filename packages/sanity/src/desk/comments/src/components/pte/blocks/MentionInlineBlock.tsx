@@ -40,7 +40,7 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
     <TooltipWithNodes
       portal
       content={
-        <Flex align="center" padding={2} gap={2}>
+        <Flex align="center" gap={2}>
           <Flex>
             <CommentsAvatar user={user} />
           </Flex>
