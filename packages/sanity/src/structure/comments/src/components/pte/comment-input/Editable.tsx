@@ -15,7 +15,7 @@ import {commentsLocaleNamespace} from '../../../../i18n'
 import {MentionsMenu, type MentionsMenuHandle} from '../../mentions'
 import {renderBlock, renderChild} from '../render'
 import {useCommentInput} from './useCommentInput'
-import {useCursorElement} from './useCursorElement'
+import {useCursorElement} from 'sanity'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
