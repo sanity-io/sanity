@@ -79,6 +79,9 @@ export const studioLocaleStrings = {
   /** Label for the close button label in Review Changes pane */
   'changes.action.close-label': 'Close review changes',
 
+  /** Accessibility label for the "change bar" shown when there are edits on a field-level */
+  'changes.change-bar.aria-label': 'Review changes',
+
   /** Label and text for tooltip that indicates the authors of the changes */
   'changes.changes-by-author': 'Changes by',
 
@@ -1451,6 +1454,9 @@ export const studioLocaleStrings = {
 
   /** Accessibility label for selecting the unit (day/month/year) when adding "X days ago" search filter */
   'search.filter-date-unit-aria-label': 'Select unit',
+
+  /** Accessibility label for date filter input */
+  'search.filter-date-aria-label': 'Date',
 
   /**
    * Label for "Days"/"Months"/"Years" when selecting it as unit in "X days ago" search filter.

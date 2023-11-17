@@ -1,5 +1,6 @@
 import {Stack} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
+import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateDirectionValue} from '../../../../../definitions/operators/dateOperators'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
@@ -20,6 +21,7 @@ export function CommonDateDirectionInput({
   const {
     state: {fullscreen},
   } = useSearchState()
+  const {t} = useTranslation()
 
   const roundDay = useMemo(() => {
     switch (direction) {
@@ -78,7 +80,7 @@ export function CommonDateDirectionInput({
   return (
     <Stack space={3}>
       <ParsedDateTextInput
-        aria-label="Date"
+        aria-label={t('search.filter-date-aria-label')}
         fontSize={fullscreen ? 2 : 1}
         isDateTime={isDateTime}
         isDateTimeFormat={isDateTime && value?.includeTime}
