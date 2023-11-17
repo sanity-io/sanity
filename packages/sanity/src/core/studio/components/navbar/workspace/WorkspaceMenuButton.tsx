@@ -1,9 +1,8 @@
 import {CheckmarkIcon, SelectIcon} from '@sanity/icons'
 import {MenuButton, Menu, MenuButtonProps} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
-import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
 import {Button, MenuItem} from '../../../../../ui'
 import {useWorkspaceAuthStates} from './hooks'
@@ -17,25 +16,24 @@ const StyledMenu = styled(Menu)`
 
 const TITLE = 'Select workspace'
 
+const POPOVER_PROPS: MenuButtonProps['popover'] = {constrainSize: true}
+
 interface WorkspaceMenuButtonProps {
   collapsed?: boolean
 }
 
 export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
   const {collapsed = false} = props
-  const {scheme} = useColorScheme()
   const workspaces = useWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {navigateUrl} = useRouter()
 
-  const popoverProps: MenuButtonProps['popover'] = useMemo(
-    () => ({constrainSize: true, scheme, portal: true}),
-    [scheme],
-  )
   const ariaLabel = collapsed ? TITLE : undefined
   const buttonText = collapsed ? undefined : TITLE
 
+  // @todo: fix an issue in Sanity UI <MenuButton> components where, when open with a selected item,
+  // clicking the menu button causes the menu to close and immediately re-open.
   return (
     <MenuButton
       button={
@@ -47,10 +45,7 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
           aria-label={ariaLabel}
           justify={collapsed ? undefined : 'flex-start'}
           size="small"
-          tooltipProps={{
-            content: 'Select workspace',
-            scheme: scheme,
-          }}
+          tooltipProps={{content: 'Select workspace'}}
         />
       }
       id="workspace-menu"
@@ -95,7 +90,7 @@ export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
             })}
         </StyledMenu>
       }
-      popover={popoverProps}
+      popover={POPOVER_PROPS}
     />
   )
 }
