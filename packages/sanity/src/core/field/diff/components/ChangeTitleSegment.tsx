@@ -123,7 +123,7 @@ function MovedTitleSegment(props: {
   const indexSymbol = indexDiff < 0 ? '↑' : '↓'
   const positions = Math.abs(indexDiff)
   const direction = indexDiff < 0 ? 'up' : 'down'
-  const description = t('change.array.item-moved', {
+  const description = t('changes.array.item-moved', {
     count: positions,
     context: direction,
   })

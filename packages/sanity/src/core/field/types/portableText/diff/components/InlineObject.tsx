@@ -47,7 +47,7 @@ export function InlineObject({diff, object, schemaType, ...restProps}: InlineObj
   if (!schemaType) {
     return (
       <InlineObjectWrapper {...restProps} border radius={1}>
-        {t('change.portable-text.unknown-inline-object-schema-type', {schemaType: object._type})}
+        {t('changes.portable-text.unknown-inline-object-schema-type', {schemaType: object._type})}
       </InlineObjectWrapper>
     )
   }
@@ -152,7 +152,7 @@ function InlineObjectWithDiff({
         <PreviewContainer>
           <DiffTooltip
             annotations={annotations}
-            description={t('change.portable-text.inline-object', {context: diff.action})}
+            description={t('changes.portable-text.inline-object', {context: diff.action})}
           >
             <InlineBox>
               <Preview schemaType={schemaType} value={object} layout="inline" />
@@ -189,7 +189,7 @@ function PopoverContent({
     <PopoverContainer ref={setPopoverElement} padding={3}>
       {emptyObject && (
         <Label size={1} muted>
-          {t('change.portable-text.empty-inline-object', {
+          {t('changes.portable-text.empty-inline-object', {
             inlineObjectType: schemaType.title || schemaType.name,
           })}
         </Label>

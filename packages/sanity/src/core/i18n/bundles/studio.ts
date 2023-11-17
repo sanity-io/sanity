@@ -129,68 +129,68 @@ export const studioLocaleStrings = {
    * Receives `{{count}}` representing number of positions it moved.
    * Context is the direction of the move, either `up` or `down`.
    */
-  'change.array.item-moved_up_one': 'Moved {{count}} position up',
-  'change.array.item-moved_up_other': 'Moved {{count}} positions up',
-  'change.array.item-moved_down_one': 'Moved {{count}} position down',
-  'change.array.item-moved_down_other': 'Moved {{count}} positions down',
+  'changes.array.item-moved_up_one': 'Moved {{count}} position up',
+  'changes.array.item-moved_up_other': 'Moved {{count}} positions up',
+  'changes.array.item-moved_down_one': 'Moved {{count}} position down',
+  'changes.array.item-moved_down_other': 'Moved {{count}} positions down',
 
   /** Portable Text diff: Removed a block containing no text (eg empty block) */
-  'change.portable-text.empty-text_removed': 'Removed empty text',
+  'changes.portable-text.empty-text_removed': 'Removed empty text',
 
   /** Portable Text diff: Added a block containing no text (eg empty block) */
-  'change.portable-text.empty-text_added': 'Added empty text',
+  'changes.portable-text.empty-text_added': 'Added empty text',
 
   /** Portable Text diff: Changed a block that contained no text (eg empty block) */
-  'change.portable-text.empty-text_changed': 'Changed empty text',
+  'changes.portable-text.empty-text_changed': 'Changed empty text',
 
   /** Portable Text diff: Added a chunk of text */
-  'change.portable-text.text_added': 'Added text',
+  'changes.portable-text.text_added': 'Added text',
 
   /** Portable Text diff: Removed a chunk of text */
-  'change.portable-text.text_removed': 'Removed text',
+  'changes.portable-text.text_removed': 'Removed text',
 
   /** Portable Text diff: An annotation was added */
-  'change.portable-text.annotation_added': 'Added annotation',
+  'changes.portable-text.annotation_added': 'Added annotation',
 
   /** Portable Text diff: An annotation was removed */
-  'change.portable-text.annotation_removed': 'Removed annotation',
+  'changes.portable-text.annotation_removed': 'Removed annotation',
 
   /** Portable Text diff: An annotation was changed */
-  'change.portable-text.annotation_changed': 'Changed annotation',
+  'changes.portable-text.annotation_changed': 'Changed annotation',
 
   /** Portable Text diff: An annotation was left unchanged */
-  'change.portable-text.annotation_unchanged': 'Unchanged annotation',
+  'changes.portable-text.annotation_unchanged': 'Unchanged annotation',
 
   /** Portable Text diff: An inline object was added */
-  'change.portable-text.inline-object_added': 'Added inline object',
+  'changes.portable-text.inline-object_added': 'Added inline object',
 
   /** Portable Text diff: An inline object was removed */
-  'change.portable-text.inline-object_removed': 'Removed inline object',
+  'changes.portable-text.inline-object_removed': 'Removed inline object',
 
   /** Portable Text diff: An inline object was changed */
-  'change.portable-text.inline-object_changed': 'Changed inline object',
+  'changes.portable-text.inline-object_changed': 'Changed inline object',
 
   /** Portable Text diff: An inline object was left unchanged */
-  'change.portable-text.inline-object_unchanged': 'Unchanged inline object',
+  'changes.portable-text.inline-object_unchanged': 'Unchanged inline object',
 
   /** Portable Text diff: Change formatting of text (setting/unsetting marks, eg bold/italic etc) */
-  'change.portable-text.changed-formatting': 'Changed formatting',
+  'changes.portable-text.changed-formatting': 'Changed formatting',
 
   /** Portable Text diff: A block changed from one style to another (eg `normal` to `h1` or similar) */
-  'change.portable-text.block-style-changed':
+  'changes.portable-text.block-style-changed':
     'Changed block style from "{{fromStyle}}" to "{{toStyle}}"',
 
   /** Portable Text diff: Annotation has an unknown schema type */
-  'change.portable-text.unknown-annotation-schema-type': 'Unknown schema type',
+  'changes.portable-text.unknown-annotation-schema-type': 'Unknown schema type',
 
   /** Portable Text diff: Inline object has an unknown schema type */
-  'change.portable-text.unknown-inline-object-schema-type': 'Unknown schema type',
+  'changes.portable-text.unknown-inline-object-schema-type': 'Unknown schema type',
 
   /** Portable Text diff: An empty object is the result of adding/removing an annotation */
-  'change.portable-text.empty-object-annotation': 'Empty {{annotationType}}',
+  'changes.portable-text.empty-object-annotation': 'Empty {{annotationType}}',
 
   /** Portable Text diff: An empty inline object is part of a change */
-  'change.portable-text.empty-inline-object': 'Empty {{inlineObjectType}}',
+  'changes.portable-text.empty-inline-object': 'Empty {{inlineObjectType}}',
 
   /** File diff: Fallback title for the meta info section when there is no original filename to use  */
   'changes.file.meta-info-fallback-title': 'Untitled',
