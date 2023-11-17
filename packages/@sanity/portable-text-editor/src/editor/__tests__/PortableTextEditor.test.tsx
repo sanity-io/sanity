@@ -276,6 +276,14 @@ describe('initialization', () => {
               type: 'unset',
             },
           ],
+          i18n: {
+            action: 'inputs.portable-text.invalid-value.disallowed-type.action',
+            description: 'inputs.portable-text.invalid-value.disallowed-type.description',
+            values: {
+              key: '123',
+              typeName: 'banana',
+            },
+          },
         },
       })
     })
@@ -321,6 +329,14 @@ describe('initialization', () => {
             patches: [
               {path: [{_key: 'abc'}, 'children', {_key: 'def'}, 'marks'], type: 'set', value: []},
             ],
+            i18n: {
+              action: 'inputs.portable-text.invalid-value.orphaned-marks.action',
+              description: 'inputs.portable-text.invalid-value.orphaned-marks.description',
+              values: {
+                key: 'abc',
+                orphanedMarks: ['invalid'],
+              },
+            },
           },
           type: 'invalidValue',
           value: [

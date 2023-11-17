@@ -12,20 +12,21 @@ import {
   UlistIcon,
 } from '@sanity/icons'
 import {
-  HotkeyOptions,
   PortableTextEditor,
-  PortableTextMemberSchemaTypes,
+  type HotkeyOptions,
+  type PortableTextMemberSchemaTypes,
 } from '@sanity/portable-text-editor'
 import {capitalize, get} from 'lodash'
 import React from 'react'
-import {ObjectSchemaType} from '@sanity/types'
-import {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
+import type {ObjectSchemaType} from '@sanity/types'
+import type {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {CustomIcon} from './CustomIcon'
 
 function getPTEFormatActions(
   editor: PortableTextEditor,
   disabled: boolean,
   hotkeyOpts: HotkeyOptions,
+  t?: (key: string) => string,
 ): PTEToolbarAction[] {
   const types = editor.schemaTypes
   return types.decorators.map((decorator) => {
@@ -48,12 +49,16 @@ function getPTEFormatActions(
         PortableTextEditor.focus(editor)
       },
       hotkeys,
-      title: decorator.title,
+      title: decorator.i18nTitleKey && t ? t(decorator.i18nTitleKey) : decorator.title,
     }
   })
 }
 
-function getPTEListActions(editor: PortableTextEditor, disabled: boolean): PTEToolbarAction[] {
+function getPTEListActions(
+  editor: PortableTextEditor,
+  disabled: boolean,
+  t?: (key: string) => string,
+): PTEToolbarAction[] {
   const types = editor.schemaTypes
   return types.lists.map((listItem) => {
     return {
@@ -64,7 +69,7 @@ function getPTEListActions(editor: PortableTextEditor, disabled: boolean): PTETo
       handle: (): void => {
         PortableTextEditor.toggleList(editor, listItem.value)
       },
-      title: listItem.title,
+      title: listItem.i18nTitleKey && t ? t(listItem.i18nTitleKey) : listItem.title,
     }
   })
 }
@@ -82,6 +87,7 @@ function getPTEAnnotationActions(
   editor: PortableTextEditor,
   disabled: boolean,
   onInsert: (type: ObjectSchemaType) => void,
+  t?: (key: string) => string,
 ): PTEToolbarAction[] {
   const types = editor.schemaTypes
   const focusChild = PortableTextEditor.focusChild(editor)
@@ -100,21 +106,26 @@ function getPTEAnnotationActions(
           onInsert(aType)
         }
       },
-      title: aType.title || capitalize(aType.name),
+      title:
+        aType.i18nTitleKey && t ? t(aType.i18nTitleKey) : aType.title || capitalize(aType.name),
     }
   })
 }
 
+/**
+ * @internal
+ */
 export function getPTEToolbarActionGroups(
   editor: PortableTextEditor,
   disabled: boolean,
   onInsertAnnotation: (type: ObjectSchemaType) => void,
   hotkeyOpts: HotkeyOptions,
+  t?: (key: string) => string,
 ): PTEToolbarActionGroup[] {
   return [
-    {name: 'format', actions: getPTEFormatActions(editor, disabled, hotkeyOpts)},
-    {name: 'list', actions: getPTEListActions(editor, disabled)},
-    {name: 'annotation', actions: getPTEAnnotationActions(editor, disabled, onInsertAnnotation)},
+    {name: 'format', actions: getPTEFormatActions(editor, disabled, hotkeyOpts, t)},
+    {name: 'list', actions: getPTEListActions(editor, disabled, t)},
+    {name: 'annotation', actions: getPTEAnnotationActions(editor, disabled, onInsertAnnotation, t)},
   ]
 }
 
@@ -125,6 +136,7 @@ export function getBlockStyles(types: PortableTextMemberSchemaTypes): BlockStyle
       style: style.value,
       styleComponent: style && style.component,
       title: style.title,
+      i18nTitleKey: style.i18nTitleKey,
     }
   })
 }

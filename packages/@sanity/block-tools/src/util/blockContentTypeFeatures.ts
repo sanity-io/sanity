@@ -1,18 +1,19 @@
 import {
-  ArraySchemaType,
-  BlockSchemaType,
-  EnumListProps,
   isBlockChildrenObjectField,
   isBlockListObjectField,
   isBlockSchemaType,
   isBlockStyleObjectField,
   isObjectSchemaType,
   isTitledListValue,
-  ObjectSchemaType,
-  SpanSchemaType,
-  TitledListValue,
+  type ArraySchemaType,
+  type BlockSchemaType,
+  type EnumListProps,
+  type ObjectSchemaType,
+  type SpanSchemaType,
+  type TitledListValue,
+  type I18nTitledListValue,
 } from '@sanity/types'
-import {BlockContentFeatures, ResolvedAnnotationType} from '../types'
+import type {BlockContentFeatures, ResolvedAnnotationType} from '../types'
 import {findBlockType} from './findBlockType'
 
 // Helper method for describing a blockContentType's feature set
@@ -92,7 +93,7 @@ function resolveEnabledDecorators(spanType: SpanSchemaType): TitledListValue<str
   return spanType.decorators
 }
 
-function resolveEnabledListItems(blockType: BlockSchemaType): TitledListValue<string>[] {
+function resolveEnabledListItems(blockType: BlockSchemaType): I18nTitledListValue<string>[] {
   const listField = blockType.fields.find(isBlockListObjectField)
   if (!listField) {
     throw new Error("A field with name 'list' is not defined in the block type (required).")
@@ -108,7 +109,7 @@ function resolveEnabledListItems(blockType: BlockSchemaType): TitledListValue<st
 
 function getTitledListValuesFromEnumListOptions(
   options: EnumListProps<string> | undefined,
-): TitledListValue<string>[] {
+): I18nTitledListValue<string>[] {
   const list = options ? options.list : undefined
   if (!Array.isArray(list)) {
     return []

@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import React from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {Card, Heading, Code, Box} from '@sanity/ui'

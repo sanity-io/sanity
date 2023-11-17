@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import {PortableTextBlock} from '@sanity/types'
 import {Box, Card, Heading, Stack, studioTheme, ThemeProvider, Text, Inline} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
