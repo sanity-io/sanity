@@ -1,6 +1,6 @@
 import React, {forwardRef, useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import {Box, LayerProvider, Popover, useClickOutside, useForwardedRef} from '@sanity/ui'
+import {Box, Flex, LayerProvider, Popover, useClickOutside, useForwardedRef} from '@sanity/ui'
 import {CalendarIcon} from '@sanity/icons'
 import {Button} from '../../../../../ui'
 import {DatePicker} from './DatePicker'
@@ -46,7 +46,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const handleClick = useCallback(() => setPickerOpen(true), [])
 
   const suffix = (
-    <Box padding={1}>
+    <Flex style={{padding: '5px'}}>
       <Button
         ref={buttonRef}
         icon={CalendarIcon}
@@ -57,7 +57,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
         data-testid="select-date-button"
         tooltipProps={{content: 'Select date'}}
       />
-    </Box>
+    </Flex>
   )
 
   return (
