@@ -86,7 +86,7 @@ export function PortableText(props: Props): JSX.Element {
                 as={textDiff.action === 'removed' ? 'del' : 'ins'}
                 key={`empty-block-${block._key}`}
                 tooltip={{
-                  description: t('change.portable-text.empty-text', {context: textDiff.action}),
+                  description: t('changes.portable-text.empty-text', {context: textDiff.action}),
                 }}
               >
                 <span>{TextSymbols.EMPTY_BLOCK_SYMBOL}</span>
@@ -379,7 +379,7 @@ function renderDecorators({
         key={`diffcard-annotation-${segIndex}-${marksChanged.join('-')}`}
         as={'ins'}
         tooltip={{
-          description: t('change.portable-text.changed-formatting'),
+          description: t('changes.portable-text.changed-formatting'),
         }}
       >
         {returned}
