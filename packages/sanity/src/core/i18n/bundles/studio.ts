@@ -777,6 +777,18 @@ export const studioLocaleStrings = {
   /** Label for action to remove an annotation */
   'inputs.portable-text.action.remove-annotation': 'Remove annotation',
 
+  /** Label for action to insert an inline object of a given type (`{{typeName}}`) */
+  'inputs.portable-text.action.insert-inline-object': 'Insert {{typeName}}',
+
+  /** Accessibility label for action to insert an inline object of a given type (`{{typeName}}`) */
+  'inputs.portable-text.action.insert-inline-object-aria-label': 'Insert {{typeName}} (inline)',
+
+  /** Label label for action to insert a block of a given type (`{{typeName}}`) */
+  'inputs.portable-text.action.insert-block': 'Insert {{typeName}}',
+
+  /** Accessibility label for action to insert a block of a given type (`{{typeName}}`) */
+  'inputs.portable-text.action.insert-block-aria-label': 'Insert {{typeName}} (block)',
+
   /** Accessibility label for the button that opens the actions menu on blocks */
   'inputs.portable-text.block.open-menu-aria-label': 'Open menu',
 
