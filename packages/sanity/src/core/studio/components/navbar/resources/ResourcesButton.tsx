@@ -1,5 +1,5 @@
 import {InfoOutlineIcon} from '@sanity/icons'
-import {Flex, Menu, MenuButton} from '@sanity/ui'
+import {Menu, MenuButton} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui'
@@ -15,24 +15,22 @@ export function ResourcesButton() {
   const {value, error, isLoading} = useGetHelpResources()
 
   return (
-    <Flex>
-      <MenuButton
-        button={
-          <Button
-            aria-label="Help and resources"
-            icon={InfoOutlineIcon}
-            mode="bleed"
-            tooltipProps={{content: 'Help and resources'}}
-          />
-        }
-        id="menu-button-resources"
-        menu={
-          <StyledMenu>
-            <ResourcesMenuItems error={error} isLoading={isLoading} value={value} />
-          </StyledMenu>
-        }
-        popover={{constrainSize: true, placement: 'bottom', portal: true}}
-      />
-    </Flex>
+    <MenuButton
+      button={
+        <Button
+          aria-label="Help and resources"
+          icon={InfoOutlineIcon}
+          mode="bleed"
+          tooltipProps={{content: 'Help and resources'}}
+        />
+      }
+      id="menu-button-resources"
+      menu={
+        <StyledMenu>
+          <ResourcesMenuItems error={error} isLoading={isLoading} value={value} />
+        </StyledMenu>
+      }
+      popover={{constrainSize: true}}
+    />
   )
 }
