@@ -299,7 +299,9 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
         referenceBoundary={referenceBoundary}
         referenceElement={referenceElement}
         selected={selected}
-        title={schemaType.i18nTitle ? t(schemaType.i18nTitle) : schemaType.title || schemaType.name}
+        title={
+          schemaType.i18nTitleKey ? t(schemaType.i18nTitleKey) : schemaType.title || schemaType.name
+        }
       />
       {open && (
         <ObjectEditModal

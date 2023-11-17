@@ -106,7 +106,7 @@ test.describe('Portable Text Input', () => {
       await page.keyboard.press('ArrowDown')
 
       // Check that the correct menu item is focused
-      await expect($locatorContextMenu.locator('*:focus', {hasText: 'Delete'})).toBeFocused()
+      await expect($locatorContextMenu.locator('*:focus', {hasText: 'Remove'})).toBeFocused()
 
       await page.keyboard.press('Enter')
 

@@ -29,8 +29,8 @@ export function ObjectEditModal(props: {
   const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
   const modalType = schemaModalOption?.type || defaultType
 
-  const schemaTypeTitle = schemaType.i18nTitle
-    ? t(schemaType.i18nTitle)
+  const schemaTypeTitle = schemaType.i18nTitleKey
+    ? t(schemaType.i18nTitleKey)
     : schemaType.title || schemaType.name
 
   const modalTitle = t('inputs.portable-text.annotation-editor.title', {

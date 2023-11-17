@@ -49,7 +49,7 @@ function getPTEFormatActions(
         PortableTextEditor.focus(editor)
       },
       hotkeys,
-      title: decorator.i18nTitle && t ? t(decorator.i18nTitle) : decorator.title,
+      title: decorator.i18nTitleKey && t ? t(decorator.i18nTitleKey) : decorator.title,
     }
   })
 }
@@ -69,7 +69,7 @@ function getPTEListActions(
       handle: (): void => {
         PortableTextEditor.toggleList(editor, listItem.value)
       },
-      title: listItem.i18nTitle && t ? t(listItem.i18nTitle) : listItem.title,
+      title: listItem.i18nTitleKey && t ? t(listItem.i18nTitleKey) : listItem.title,
     }
   })
 }
@@ -106,7 +106,8 @@ function getPTEAnnotationActions(
           onInsert(aType)
         }
       },
-      title: aType.i18nTitle && t ? t(aType.i18nTitle) : aType.title || capitalize(aType.name),
+      title:
+        aType.i18nTitleKey && t ? t(aType.i18nTitleKey) : aType.title || capitalize(aType.name),
     }
   })
 }
@@ -135,7 +136,7 @@ export function getBlockStyles(types: PortableTextMemberSchemaTypes): BlockStyle
       style: style.value,
       styleComponent: style && style.component,
       title: style.title,
-      i18nTitle: style.i18nTitle,
+      i18nTitleKey: style.i18nTitleKey,
     }
   })
 }

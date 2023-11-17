@@ -63,7 +63,7 @@ const emptyStyle: BlockStyleItem = {
   key: 'style-none',
   style: '',
   title: 'No style',
-  i18nTitle: 'inputs.portable-text.style.none',
+  i18nTitleKey: 'inputs.portable-text.style.none',
 }
 
 export const BlockStyleSelect = memo(function BlockStyleSelect(
@@ -99,10 +99,10 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     }
 
     if (activeItems.length !== 1) {
-      return emptyStyle.i18nTitle ? t(emptyStyle.i18nTitle) : emptyStyle.title
+      return emptyStyle.i18nTitleKey ? t(emptyStyle.i18nTitleKey) : emptyStyle.title
     }
 
-    return activeItems[0].i18nTitle ? t(activeItems[0].i18nTitle) : activeItems[0].title
+    return activeItems[0].i18nTitleKey ? t(activeItems[0].i18nTitleKey) : activeItems[0].title
   }, [activeItems, t])
 
   const handleChange = useCallback(
@@ -156,7 +156,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
             >
               {renderOption(
                 item.style,
-                item.i18nTitle ? t(item.i18nTitle) : item?.title || item.style,
+                item.i18nTitleKey ? t(item.i18nTitleKey) : item?.title || item.style,
               )}
             </StyledMenuItem>
           )

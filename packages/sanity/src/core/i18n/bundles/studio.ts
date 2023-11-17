@@ -834,8 +834,8 @@ export const studioLocaleStrings = {
   /** Title of the "strong" decorator */
   'inputs.portable-text.decorator.strong': 'Strong',
 
-  /** Title of the "emphasis" decorator */
-  'inputs.portable-text.decorator.emphasis': 'Emphasis',
+  /** Title of the "em" (emphasis) decorator */
+  'inputs.portable-text.decorator.emphasis': 'Italic',
 
   /** Title of the "code" decorator */
   'inputs.portable-text.decorator.code': 'Code',
