@@ -1,6 +1,6 @@
 import {useLayer} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {useTranslation} from '../i18n'
+import {useTranslation} from '../i18n/hooks/useTranslation'
 import {ConnectorContext} from './ConnectorContext'
 import {
   ChangeBar,
