@@ -5,7 +5,7 @@
  * @param next - the next/current value
  */
 export function immutableReconcile<T>(previous: unknown, next: T): T {
-  return _immutableReconcile(previous, next, new WeakSet())
+  return _immutableReconcile(previous, next, [])
 }
 
 function _immutableReconcile<T>(
@@ -14,11 +14,11 @@ function _immutableReconcile<T>(
   /**
    * Keep track of visited nodes to prevent infinite recursion in case of circular structures
    */
-  parents: WeakSet<any>,
+  parents: unknown[],
 ): T {
   if (previous === next) return previous as T
 
-  if (parents.has(next)) {
+  if (parents.includes(next)) {
     return next
   }
 
@@ -32,39 +32,43 @@ function _immutableReconcile<T>(
   if (prevType !== nextType) return next
 
   if (Array.isArray(next)) {
-    parents.add(next)
-
     assertType<unknown[]>(previous)
     assertType<unknown[]>(next)
 
     let allEqual = previous.length === next.length
     const result = []
+
+    // add the `next` value to list of parents to prevent infinite recursion in case of circular structures
+    const nodeParents = [next, ...parents]
     for (let index = 0; index < next.length; index++) {
-      const nextItem = _immutableReconcile(previous[index], next[index], parents)
+      const nextItem = _immutableReconcile(previous[index], next[index], nodeParents)
 
       if (nextItem !== previous[index]) {
         allEqual = false
       }
       result[index] = nextItem
     }
-    return (allEqual ? previous : result) as any
+    // remove `next` from set of parents when we're done iterating over the subtree
+    return (allEqual ? previous : result) as T
   }
 
   if (typeof next === 'object') {
-    parents.add(next)
     assertType<Record<string, unknown>>(previous)
     assertType<Record<string, unknown>>(next)
 
     const nextKeys = Object.keys(next)
     let allEqual = Object.keys(previous).length === nextKeys.length
     const result: Record<string, unknown> = {}
+    // add the current `next` value to list of parents to prevent infinite recursion in case of circular structures
+    const nodeParents = [next, ...parents]
     for (const key of nextKeys) {
-      const nextValue = _immutableReconcile(previous[key], next[key]!, parents)
+      const nextValue = _immutableReconcile(previous[key], next[key]!, nodeParents)
       if (nextValue !== previous[key]) {
         allEqual = false
       }
       result[key] = nextValue
     }
+    // remove `next` from set of parents when we're done iterating over the subtree
     return (allEqual ? previous : result) as T
   }
   return next
