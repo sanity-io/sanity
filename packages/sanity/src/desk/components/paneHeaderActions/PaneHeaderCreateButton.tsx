@@ -1,4 +1,4 @@
-import {ComposeIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons'
 import React, {useMemo, forwardRef} from 'react'
 import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import {Schema} from '@sanity/types'
@@ -78,7 +78,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       <InsufficientPermissionsMessageTooltip reveal loading={isTemplatePermissionsLoading}>
         <Button
           aria-label="Insufficient permissions"
-          icon={ComposeIcon}
+          icon={AddIcon}
           mode="bleed"
           disabled
           data-testid="action-intent-button"
@@ -103,7 +103,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       >
         <IntentButton
           aria-label={firstItem.title}
-          icon={firstItem.icon || ComposeIcon}
+          icon={firstItem.icon || AddIcon}
           intent={intent}
           mode="bleed"
           disabled={disabled}
@@ -118,7 +118,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     <MenuButton
       button={
         <Button
-          icon={ComposeIcon}
+          icon={AddIcon}
           mode="bleed"
           data-testid="multi-action-intent-button"
           tooltipProps={{content: 'Create new document'}}

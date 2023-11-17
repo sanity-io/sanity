@@ -1,4 +1,4 @@
-import {ComposeIcon} from '@sanity/icons'
+import {AddIcon} from '@sanity/icons'
 import {HELP_URL, SerializeError} from './SerializeError'
 import type {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
 import type {BaseIntentParams, IntentParams} from './Intent'
@@ -218,7 +218,7 @@ export function menuItemsFromInitialValueTemplateItems(
 
     return new MenuItemBuilder(context)
       .title(title)
-      .icon((template && template.icon) || schemaType?.icon || ComposeIcon)
+      .icon((template && template.icon) || schemaType?.icon || AddIcon)
       .intent({type: 'create', params: intentParams})
       .serialize()
   })
