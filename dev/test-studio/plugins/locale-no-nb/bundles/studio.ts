@@ -774,6 +774,18 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Label for action to remove an annotation */
   'inputs.portable-text.action.remove-annotation': 'Fjern merknad',
 
+  /** Label for action to insert an inline object of a given type (`{{typeName}}`) */
+  'inputs.portable-text.action.insert-inline-object': 'Sett inn {{typeName}}',
+
+  /** Accessibility label for action to insert an inline object of a given type (`{{typeName}}`) */
+  'inputs.portable-text.action.insert-inline-object-aria-label': 'Sett inn {{typeName}} (i linjen)',
+
+  /** Label label for action to insert a block of a given type (`{{typeName}}`) */
+  'inputs.portable-text.action.insert-block': 'Sett inn {{typeName}}',
+
+  /** Accessibility label for action to insert a block of a given type (`{{typeName}}`) */
+  'inputs.portable-text.action.insert-block-aria-label': 'Sett inn {{typeName}} (blokk)',
+
   /** Accessibility label for the button that opens the actions menu on blocks */
   'inputs.portable-text.block.open-menu-aria-label': 'Åpne meny',
 
