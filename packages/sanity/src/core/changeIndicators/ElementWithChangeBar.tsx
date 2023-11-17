@@ -1,5 +1,6 @@
 import {useLayer} from '@sanity/ui'
 import React, {useMemo} from 'react'
+import {useTranslation} from '../i18n'
 import {ConnectorContext} from './ConnectorContext'
 import {
   ChangeBar,
@@ -19,6 +20,7 @@ export function ElementWithChangeBar(props: {
 
   const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
   const {zIndex} = useLayer()
+  const {t} = useTranslation()
 
   const changeBar = useMemo(
     () =>
@@ -27,7 +29,7 @@ export function ElementWithChangeBar(props: {
           <ChangeBarMarker data-testid="change-bar__marker" />
 
           <ChangeBarButton
-            aria-label="Review changes"
+            aria-label={t('changes.change-bar.aria-label')}
             data-testid="change-bar__button"
             onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
             tabIndex={-1}
@@ -36,7 +38,7 @@ export function ElementWithChangeBar(props: {
           />
         </ChangeBar>
       ),
-    [disabled, isChanged, zIndex, isReviewChangesOpen, onOpenReviewChanges, withHoverEffect],
+    [disabled, isChanged, isReviewChangesOpen, onOpenReviewChanges, t, withHoverEffect, zIndex],
   )
 
   return (
