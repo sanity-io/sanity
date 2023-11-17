@@ -25,7 +25,7 @@ export interface SearchPopoverProps {
   open: boolean
 }
 
-const Y_POSITION = 6 // px
+const Y_POSITION = 8 // px
 
 const Overlay = styled.div`
   background-color: ${({theme}: {theme: Theme}) => theme.sanity.color.base.shadow.ambient};
