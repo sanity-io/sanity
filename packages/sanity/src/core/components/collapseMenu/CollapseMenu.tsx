@@ -266,7 +266,10 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
     : menuOptions
 
   const menuButton = useMemo(
-    () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
+    () =>
+      menuButtonProps?.button || (
+        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
+      ),
     [menuButtonProps],
   )
 

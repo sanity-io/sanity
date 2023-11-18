@@ -120,7 +120,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
             disableRestoreFocusOnClose={disableRestoreFocusOnClose}
             menuButton={menuButton}
             menuButtonProps={menuButtonProps}
-            menuOptionsArray={menuOptionsArray}
+            menuOptions={menuOptionsArray}
             onMenuClose={onMenuClose}
           />
         )}
@@ -137,7 +137,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
             key={`${child.key}_observer`}
             options={intersectionOptions}
             // eslint-disable-next-line react/jsx-no-bind
-            callback={(e) => handleIntersection(e[0], child)}
+            onIntersectionChange={(e) => handleIntersection(e[0], child)}
           >
             {cloneElement(child, {
               disabled: true,
