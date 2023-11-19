@@ -231,7 +231,7 @@ export function StudioNavbar() {
 
           {/** Right flex */}
           <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
-            <Flex align="center" gap={3} justify="flex-end">
+            <Flex align="center" gap={1} justify="flex-end">
               {/* Search */}
               <LayerProvider>
                 <SearchProvider fullscreen={shouldRender.searchFullscreen}>

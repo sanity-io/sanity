@@ -85,7 +85,7 @@ export function UserMenu() {
   return (
     <MenuButton
       button={
-        <Button mode="bleed" padding={0} paddingX={1}>
+        <Button mode="bleed" padding={0} paddingLeft={2} paddingRight={1}>
           <Flex align="center" gap={1}>
             <UserAvatar size={1} user="me" />
             <Text size={AVATAR_SIZE} muted />
