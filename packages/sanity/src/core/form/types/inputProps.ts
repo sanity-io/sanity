@@ -1,4 +1,12 @@
 import {
+  type EditorChange,
+  type HotkeyOptions,
+  type OnCopyFn,
+  type OnPasteFn,
+  type PortableTextEditor,
+  type RangeDecoration,
+} from '@sanity/portable-text-editor'
+import {
   type ArraySchemaType,
   type BooleanSchemaType,
   type CrossDatasetReferenceValue,
@@ -14,13 +22,6 @@ import {
   type SlugValue,
   type StringSchemaType,
 } from '@sanity/types'
-import {
-  type HotkeyOptions,
-  type OnCopyFn,
-  type OnPasteFn,
-  PortableTextEditor,
-  RangeDecoration,
-} from '@sanity/portable-text-editor'
 import {
   type ComponentType,
   type FocusEventHandler,
@@ -508,6 +509,10 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   markers?: PortableTextMarker[]
+  /**
+   * Returns changes from the underlying editor
+   */
+  onEditorChange?: (change: EditorChange, editor: PortableTextEditor) => void
   /**
    * Custom copy function
    */
