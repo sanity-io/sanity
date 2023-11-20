@@ -6,6 +6,7 @@ import {muxInput} from 'sanity-plugin-mux-input'
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {tsdoc} from '@sanity/tsdoc/studio'
+import {scratchPadTool} from 'sanity/scratchPad'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
@@ -87,6 +88,7 @@ const sharedSettings = definePlugin({
       structure,
       defaultDocumentNode,
     }),
+    scratchPadTool(),
     languageFilter({
       defaultLanguages: ['nb'],
       supportedLanguages: [
