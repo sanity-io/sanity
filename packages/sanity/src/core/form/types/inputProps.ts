@@ -3,6 +3,7 @@ import {
   type OnCopyFn,
   type OnPasteFn,
   type PortableTextEditor,
+  type RangeDecoration,
 } from '@sanity/portable-text-editor'
 import {
   type ArraySchemaType,
@@ -535,6 +536,10 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
+  /**
+   * Array of {@link RangeDecoration} that can be used to decorate the content.
+   */
+  rangeDecorations?: RangeDecoration[]
 }
 
 /**
