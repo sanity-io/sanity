@@ -58,22 +58,23 @@ describe('toSlateValue', () => {
       {schemaTypes},
     )
     expect(result).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "_key": "123",
-          "_type": "myTestBlockType",
-          "children": Array [
-            Object {
-              "_key": "1231",
-              "_type": "span",
-              "text": "123",
-            },
-          ],
-          "markDefs": Array [],
-          "style": "normal",
-        },
-      ]
-    `)
+Array [
+  Object {
+    "_key": "123",
+    "_type": "myTestBlockType",
+    "children": Array [
+      Object {
+        "_key": "1231",
+        "_type": "span",
+        "marks": Array [],
+        "text": "123",
+      },
+    ],
+    "markDefs": Array [],
+    "style": "normal",
+  },
+]
+`)
   })
 
   it('given type is block and has custom object in children', () => {
@@ -101,40 +102,41 @@ describe('toSlateValue', () => {
       {schemaTypes},
     )
     expect(result).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "_key": "123",
-          "_type": "myTestBlockType",
-          "children": Array [
-            Object {
-              "_key": "1231",
-              "_type": "span",
-              "text": "123",
-            },
-            Object {
-              "__inline": true,
-              "_key": "1232",
-              "_type": "image",
-              "children": Array [
-                Object {
-                  "_key": "${VOID_CHILD_KEY}",
-                  "_type": "span",
-                  "marks": Array [],
-                  "text": "",
-                },
-              ],
-              "value": Object {
-                "asset": Object {
-                  "_ref": "ref-123",
-                },
-              },
-            },
-          ],
-          "markDefs": Array [],
-          "style": "normal",
+Array [
+  Object {
+    "_key": "123",
+    "_type": "myTestBlockType",
+    "children": Array [
+      Object {
+        "_key": "1231",
+        "_type": "span",
+        "marks": Array [],
+        "text": "123",
+      },
+      Object {
+        "__inline": true,
+        "_key": "1232",
+        "_type": "image",
+        "children": Array [
+          Object {
+            "_key": "void-child",
+            "_type": "span",
+            "marks": Array [],
+            "text": "",
+          },
+        ],
+        "value": Object {
+          "asset": Object {
+            "_ref": "ref-123",
+          },
         },
-      ]
-    `)
+      },
+    ],
+    "markDefs": Array [],
+    "style": "normal",
+  },
+]
+`)
   })
 })
 
