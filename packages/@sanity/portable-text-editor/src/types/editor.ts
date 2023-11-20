@@ -25,7 +25,9 @@ import {
 import {type Observable, type Subject} from 'rxjs'
 import {type Descendant, type Node as SlateNode, type Operation as SlateOperation} from 'slate'
 import {type ReactEditor} from 'slate-react'
+import {type DOMNode} from 'slate-react/dist/utils/dom'
 
+import {type PortableTextEditableProps} from '../editor/Editable'
 import {type PortableTextEditor} from '../editor/PortableTextEditor'
 import {type Patch} from '../types/patch'
 
@@ -470,6 +472,9 @@ export type RenderBlockFunction = (props: BlockRenderProps) => JSX.Element
 
 /** @beta */
 export type RenderChildFunction = (props: BlockChildRenderProps) => JSX.Element
+
+/** @beta */
+export type RenderEditableFunction = (props: PortableTextEditableProps) => JSX.Element
 
 /** @beta */
 export type RenderAnnotationFunction = (props: BlockAnnotationRenderProps) => JSX.Element

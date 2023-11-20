@@ -3,7 +3,9 @@ import {
   type InvalidValue,
   type Patch as EditorPatch,
   type Patch,
+  type PortableTextEditableProps,
   PortableTextEditor,
+  type RenderEditableFunction,
 } from '@sanity/portable-text-editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
@@ -45,6 +47,10 @@ export interface PortableTextMemberItem {
   elementRef?: MutableRefObject<PortableTextEditorElement | null>
   input?: ReactNode
 }
+/** @public */
+export interface RenderPortableTextInputEditableProps extends PortableTextEditableProps {
+  renderDefault: RenderEditableFunction
+}
 
 /**
  * Input component for editing block content
@@ -77,6 +83,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     rangeDecorations,
     renderBlockActions,
     renderCustomMarkers,
+    renderEditable,
     schemaType,
     value,
   } = props
@@ -272,6 +279,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}
+                renderEditable={renderEditable}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
               />
