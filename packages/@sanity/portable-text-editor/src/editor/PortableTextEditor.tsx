@@ -271,4 +271,8 @@ export class PortableTextEditor extends React.Component<PortableTextEditorProps>
     debug(`Host toggling mark`, mark)
     editor.editable?.toggleMark(mark)
   }
+  static getFragment = (editor: PortableTextEditor): PortableTextBlock[] | undefined => {
+    debug(`Host getting fragment`)
+    return editor.editable?.getFragment()
+  }
 }
