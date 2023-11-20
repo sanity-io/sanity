@@ -1,6 +1,6 @@
 import {SanityDocumentLike} from '@sanity/types'
 import React from 'react'
-import {deskLocaleNamespace} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {useSchema, useTranslation, unstable_useValuePreview as useValuePreview} from 'sanity'
 
 export interface DocTitleProps {
@@ -11,7 +11,7 @@ export function DocTitle(props: DocTitleProps) {
   const {document: documentValue} = props
   const schema = useSchema()
   const schemaType = schema.get(documentValue._type)
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const {error, value} = useValuePreview({
     schemaType: schemaType!,

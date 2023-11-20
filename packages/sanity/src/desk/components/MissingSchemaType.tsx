@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {SanityDocument} from '@sanity/types'
 import React from 'react'
-import {deskLocaleNamespace} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {GeneralPreviewLayoutKey, SanityDefaultPreview, Translate, useTranslation} from 'sanity'
 
 export interface MissingSchemaTypeProps {
@@ -10,7 +10,7 @@ export interface MissingSchemaTypeProps {
 }
 
 export function MissingSchemaType(props: MissingSchemaTypeProps) {
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
   const {layout, value} = props
 
   return (

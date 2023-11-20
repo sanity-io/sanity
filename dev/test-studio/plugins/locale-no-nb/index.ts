@@ -9,8 +9,8 @@ const norwegianLanguage = defineLocale({
       resources: () => import('./bundles/studio'),
     },
     {
-      namespace: 'desk',
-      resources: () => import('./bundles/desk'),
+      namespace: 'structure',
+      resources: () => import('./bundles/structure'),
     },
     {
       namespace: 'validation',

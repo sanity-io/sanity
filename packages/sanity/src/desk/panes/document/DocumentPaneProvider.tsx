@@ -8,7 +8,7 @@ import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
 import type {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {CommentsProvider, CommentsSelectedPathProvider, useCommentsEnabled} from '../../comments'
 import {DocumentPaneContext, type DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
@@ -221,7 +221,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
 
   const hasValue = Boolean(value)
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
   const menuItems = useMemo(
     () =>
       getMenuItems({

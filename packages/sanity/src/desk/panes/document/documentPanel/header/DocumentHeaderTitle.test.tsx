@@ -4,7 +4,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPaneContextValue} from '../../DocumentPaneContext'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
-import {deskUsEnglishLocaleBundle} from '../../../../i18n'
+import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {SanityClient, defineConfig, unstable_useValuePreview as useValuePreview} from 'sanity'
 
@@ -17,7 +17,7 @@ function createWrapperComponent(client: SanityClient) {
   return createTestProvider({
     client,
     config,
-    resources: [deskUsEnglishLocaleBundle],
+    resources: [structureUsEnglishLocaleBundle],
   })
 }
 

@@ -21,7 +21,7 @@ import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
 import {LoadingVariant, SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {
   GeneralPreviewLayoutKey,
   SourceProvider,
@@ -224,7 +224,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     return 'initial'
   }, [isLoading, items.length])
 
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const searchInput = (
     <Box paddingX={2} paddingBottom={2}>

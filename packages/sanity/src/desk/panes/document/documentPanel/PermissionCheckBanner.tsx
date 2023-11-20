@@ -2,7 +2,7 @@ import React from 'react'
 import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {deskLocaleNamespace} from '../../../i18n'
+import {structureLocaleNamespace} from '../../../i18n'
 import {useCurrentUser, useTranslation} from 'sanity'
 
 const Root = styled(Card)`
@@ -23,7 +23,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
     currentUser?.roles?.map((r) => <code key={r.name}>{r.title}</code>) || [],
     ', ',
   )
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   if (granted) return null
 

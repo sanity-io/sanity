@@ -1,6 +1,6 @@
 import {RestoreIcon} from '@sanity/icons'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {deskLocaleNamespace} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,
   DocumentActionDialogProps,
@@ -17,7 +17,7 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const handleConfirm = useCallback(() => {
     restore.execute(revision!)

@@ -4,7 +4,7 @@ import React, {useCallback} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
 import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
-import {deskLocaleNamespace} from '../../../i18n'
+import {structureLocaleNamespace} from '../../../i18n'
 import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
@@ -41,7 +41,7 @@ export function InspectDialog(props: InspectDialogProps) {
     onViewModeChange(VIEW_MODE_RAW.id)
   }, [onViewModeChange])
 
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <Dialog

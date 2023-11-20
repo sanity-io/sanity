@@ -1,6 +1,6 @@
 import {Tooltip, Text, Box} from '@sanity/ui'
 import React from 'react'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {useCurrentUser, InsufficientPermissionsMessage, useTranslation} from 'sanity'
 
 interface InsufficientPermissionsMessageTooltipProps {
@@ -21,7 +21,7 @@ export function InsufficientPermissionsMessageTooltip({
   children,
 }: InsufficientPermissionsMessageTooltipProps) {
   const currentUser = useCurrentUser()
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   if (!reveal) {
     return <>{children}</>

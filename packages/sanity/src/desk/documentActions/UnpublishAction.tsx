@@ -1,7 +1,7 @@
 import {UnpublishIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
 import {ConfirmDeleteDialog} from '../components'
-import {deskLocaleNamespace} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -34,7 +34,7 @@ export const UnpublishAction: DocumentActionComponent = ({
     permission: 'unpublish',
   })
   const currentUser = useCurrentUser()
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)

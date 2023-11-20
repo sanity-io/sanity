@@ -1,9 +1,11 @@
+import {defineLocalesResources} from 'sanity'
+
 /**
  * Defined locale strings for the vision tool, in US English.
  *
  * @internal
  */
-const visionLocaleStrings = {
+const visionLocaleStrings = defineLocalesResources('vision', {
   /**
    * Context: "Vision" is a Sanity studio plugin which allows users to execute GROQ-queries
    * against their dataset and see the results in different ways. It is often used to explore
@@ -102,7 +104,7 @@ const visionLocaleStrings = {
 
   /** Label for action "Copy to clipboard", tied to the "Query URL" field. Also used for accessibility purposes on button */
   'action.copy-url-to-clipboard': 'Copy to clipboard',
-}
+} as const)
 
 /**
  * @alpha

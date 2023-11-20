@@ -1,6 +1,6 @@
 import React, {ReactElement} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
-import {deskLocaleNamespace} from '../../../../i18n'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
 export function DocumentHeaderTitle(): ReactElement {
@@ -12,7 +12,7 @@ export function DocumentHeaderTitle(): ReactElement {
     schemaType,
     value: documentValue,
   })
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   if (connectionState !== 'connected') {
     return <></>

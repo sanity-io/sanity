@@ -31,7 +31,7 @@ import {
   DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
   DOCUMENT_PANEL_MIN_WIDTH,
 } from './constants'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {
   ChangeConnectorRoot,
   ReferenceInputOptionsProvider,
@@ -125,7 +125,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       : {path: [], state: 'none'}
   }, [parentRefPath, groupIndex, routerPanesStateLength])
 
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   if (options.type === '*' && !isLoaded) {
     return (
@@ -261,7 +261,7 @@ function InnerDocumentPane() {
     DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
 
   const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   if (!schemaType) {
     return (

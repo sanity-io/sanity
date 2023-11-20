@@ -2,7 +2,7 @@ import React, {useMemo, useId} from 'react'
 import styled from 'styled-components'
 import {Box, Dialog, Button, Text, Spinner, Grid, Flex} from '@sanity/ui'
 import {DocTitle} from '../DocTitle'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {useReferringDocuments} from './useReferringDocuments'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 import {useTranslation} from 'sanity'
@@ -58,7 +58,7 @@ export function ConfirmDeleteDialog({
   onCancel,
   onConfirm,
 }: ConfirmDeleteDialogProps) {
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
   const dialogId = `deletion-confirmation-${useId()}`
   const {
     internalReferences,

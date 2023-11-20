@@ -22,7 +22,7 @@ import React, {
 import {isValidElementType} from 'react-is'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, Hotkeys, LegacyLayerProvider, useTranslation} from 'sanity'
-import {deskLocaleNamespace} from '../../../i18n'
+import {structureLocaleNamespace} from '../../../i18n'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]
@@ -50,7 +50,7 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
   )
 
   const currentAction = actionStates[actionIndex]
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <>

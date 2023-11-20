@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {SyncIcon} from '@sanity/icons'
 import {SerializeError} from '../../structureBuilder'
 import {PaneResolutionError} from '../../structureResolvers'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {useTranslation} from 'sanity'
 
 const PathSegment = styled.span`
@@ -38,7 +38,7 @@ export function StructureError({error}: StructureErrorProps) {
     throw error
   }
   const {cause} = error
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   // Serialize errors are well-formatted and should be readable, in these cases a stack trace is
   // usually not helpful. Build errors in dev (with HMR) usually also contains a bunch of garbage

@@ -1,7 +1,7 @@
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import React, {useCallback, useState} from 'react'
-import {deskLocaleNamespace} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {useRouter} from 'sanity/router'
 import {
   DocumentActionComponent,
@@ -28,7 +28,7 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
     permission: 'duplicate',
   })
 
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const currentUser = useCurrentUser()
 

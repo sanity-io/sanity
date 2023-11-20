@@ -2,7 +2,7 @@ import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {deskLocaleNamespace, type DeskLocaleResourceKeys} from '../i18n'
+import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -17,7 +17,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-const DISABLED_REASON_TITLE_KEY: Record<string, DeskLocaleResourceKeys> = {
+const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
   ALREADY_PUBLISHED: 'action.publish.already-published.no-time-ago.tooltip',
   NO_CHANGES: 'action.publish.no-changes.tooltip',
@@ -36,7 +36,7 @@ function getDisabledReason(
 }
 
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
   const timeSincePublished = useRelativeTime(publishedAt)
   return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
 }
@@ -51,7 +51,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const syncState = useSyncState(id, type)
   const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
   const editState = useEditState(documentId, documentType)
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const revision = (editState?.draft || editState?.published || {})._rev
 
@@ -72,8 +72,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const title = publish.disabled
     ? getDisabledReason(publish.disabled, (published || {})._updatedAt, t) || ''
     : hasValidationErrors
-    ? t('action.publish.validation-issues.tooltip')
-    : ''
+      ? t('action.publish.validation-issues.tooltip')
+      : ''
 
   const hasDraft = Boolean(draft)
 
@@ -177,8 +177,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
       publishState === 'published'
         ? t('action.publish.published.label')
         : publishScheduled || publishState === 'publishing'
-        ? t('action.publish.running.label')
-        : t('action.publish.draft.label'),
+          ? t('action.publish.running.label')
+          : t('action.publish.draft.label'),
     // @todo: Implement loading state, to show a `<Button loading />` state
     // loading: publishScheduled || publishState === 'publishing',
     icon: publishState === 'published' ? CheckmarkIcon : PublishIcon,
@@ -186,8 +186,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
     title: publishScheduled
       ? t('action.publish.waiting')
       : publishState === 'published' || publishState === 'publishing'
-      ? null
-      : title,
+        ? null
+        : title,
     shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
     onHandle: handle,
   }

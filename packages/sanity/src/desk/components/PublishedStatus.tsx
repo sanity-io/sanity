@@ -2,14 +2,14 @@ import React from 'react'
 import {PublishIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Box, Text, Tooltip} from '@sanity/ui'
-import {deskLocaleNamespace} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {RelativeTime, TextWithTone, Translate, useTranslation} from 'sanity'
 
 export function PublishedStatus(props: {document?: PreviewValue | Partial<SanityDocument> | null}) {
   const {document} = props
   const updatedAt = document && '_updatedAt' in document && document._updatedAt
   const statusLabel = document ? 'Published' : 'Not published'
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <Tooltip

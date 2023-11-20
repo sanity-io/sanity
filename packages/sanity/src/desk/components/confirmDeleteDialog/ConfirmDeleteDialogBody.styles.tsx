@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import {rem, Flex, Text, Box, Tooltip, Container, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {useTranslation} from 'sanity'
 
 export const ChevronWrapper = styled(Box)`
@@ -49,7 +49,7 @@ export const DocumentIdFlex = styled(Flex)`
 `
 
 export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
   const difference = props.totalCount - props.references.length
 
   if (!difference) return null
