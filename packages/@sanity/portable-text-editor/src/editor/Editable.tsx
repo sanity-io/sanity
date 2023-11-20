@@ -63,6 +63,7 @@ export type PortableTextEditableProps = Omit<
   onBeforeInput?: (event: InputEvent) => void
   onPaste?: OnPasteFn
   onCopy?: OnCopyFn
+  ref: React.MutableRefObject<HTMLDivElement | null>
   rangeDecorations?: RangeDecoration[]
   renderAnnotation?: RenderAnnotationFunction
   renderBlock?: RenderBlockFunction

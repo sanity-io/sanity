@@ -12,7 +12,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
-import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
+import {ArrayOfObjectsInputProps, PortableTextInputProps, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../../util'
 import {ChangeIndicator} from '../../../changeIndicators'
@@ -40,6 +40,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   rangeDecorations?: RangeDecoration[]
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
+  renderEditable?: PortableTextInputProps['renderEditable']
 }
 
 /** @internal */
@@ -71,6 +72,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     renderBlock,
     renderBlockActions,
     renderCustomMarkers,
+    renderEditable,
     renderField,
     renderInlineBlock,
     renderInput,
@@ -404,6 +406,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         renderAnnotation={editorRenderAnnotation}
         renderBlock={editorRenderBlock}
         renderChild={editorRenderChild}
+        renderEditable={renderEditable}
         setPortalElement={setPortalElement}
         scrollElement={scrollElement}
         setScrollElement={setScrollElement}
@@ -413,6 +416,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     // Keep only stable ones here!
     [
       ariaDescribedBy,
+      initialSelection,
+      hideToolbar,
       editorHotkeys,
       isActive,
       isFullscreen,
@@ -426,8 +431,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
-      hideToolbar,
-      initialSelection,
+      renderEditable,
       scrollElement,
     ],
   )

@@ -5,6 +5,8 @@ import {
   PortableTextEditor,
   InvalidValue,
   Patch,
+  RenderEditableFunction,
+  PortableTextEditableProps,
 } from '@sanity/portable-text-editor'
 import React, {
   useEffect,
@@ -46,6 +48,10 @@ export interface PortableTextMemberItem {
   input?: ReactNode
 }
 
+export interface RenderPortableTextInputEditableProps extends PortableTextEditableProps {
+  renderDefault: RenderEditableFunction
+}
+
 /**
  * Input component for editing block content
  * ({@link https://github.com/portabletext/portabletext | Portable Text}) in the Sanity Studio.
@@ -80,6 +86,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     renderBlock,
     renderBlockActions,
     renderCustomMarkers,
+    renderEditable,
     renderField,
     renderInlineBlock,
     renderInput,
@@ -385,6 +392,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}
+                renderEditable={renderEditable}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
               />

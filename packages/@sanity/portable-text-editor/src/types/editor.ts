@@ -21,6 +21,7 @@ import {ReactEditor} from 'slate-react'
 import {FocusEvent} from 'react'
 import type {Patch} from '../types/patch'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
+import {PortableTextEditableProps} from '../editor/Editable'
 
 /** @beta */
 export interface EditableAPIDeleteOptions {
@@ -450,6 +451,9 @@ export type RenderBlockFunction = (props: BlockRenderProps) => JSX.Element
 
 /** @beta */
 export type RenderChildFunction = (props: BlockChildRenderProps) => JSX.Element
+
+/** @beta */
+export type RenderEditableFunction = (props: PortableTextEditableProps) => JSX.Element
 
 /** @beta */
 export type RenderAnnotationFunction = (props: BlockAnnotationRenderProps) => JSX.Element

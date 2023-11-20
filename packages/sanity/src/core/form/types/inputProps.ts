@@ -36,6 +36,7 @@ import {
 import {UploaderResolver} from '../studio'
 import {FormFieldGroup} from '../store'
 import {RenderBlockActionsCallback} from '../types'
+import {RenderPortableTextInputEditableProps} from '../inputs'
 import {
   RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
@@ -519,6 +520,7 @@ export interface PortableTextInputProps
    * Custom paste function
    */
   onPaste?: OnPasteFn
+
   /**
    * Function to render custom block actions
    * @deprecated will be removed in the next major version of Sanity Studio.
@@ -531,6 +533,11 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
+  /**
+   * Function to render the PortableTextInput's editable component.
+   * This is the actual contentEditable element that users type into.
+   */
+  renderEditable?: (props: RenderPortableTextInputEditableProps) => JSX.Element
   /**
    * Array of {@link RangeDecoration} that can be used to decorate the content.
    */
