@@ -508,6 +508,10 @@ export interface PortableTextInputProps
    */
   markers?: PortableTextMarker[]
   /**
+   * Returns changes from the underlying editor
+   */
+  onEditorChange?: (change: EditorChange, editor: PortableTextEditor) => void
+  /**
    * Custom copy function
    */
   onCopy?: OnCopyFn
