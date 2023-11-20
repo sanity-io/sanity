@@ -8,7 +8,7 @@ var majorVersion = nodeVersionParts[0]
 var minorVersion = nodeVersionParts[1]
 if (majorVersion < 14 || (majorVersion === 14 && minorVersion < 18)) {
   console.error(
-    `${err}Node.js version 14.18 or higher required. You are running ${process.version}`
+    `${err}Node.js version 14.18 or higher required. You are running ${process.version}`,
   )
   console.error('')
   process.exit(1)
