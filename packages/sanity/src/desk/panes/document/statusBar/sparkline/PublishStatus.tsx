@@ -2,7 +2,7 @@ import {Box, Button, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {PlayIcon, PublishIcon} from '@sanity/icons'
 import React from 'react'
 import styled from 'styled-components'
-import {deskLocaleNamespace} from '../../../../i18n'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {Translate, useRelativeTime, useTranslation} from 'sanity'
 
 interface PublishStatusProps {
@@ -19,7 +19,7 @@ const Root = styled(Flex)`
 
 export function PublishStatus(props: PublishStatusProps) {
   const {collapsed, disabled, lastPublished, lastUpdated, liveEdit} = props
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   // Label with abbreviations and suffix
   const lastPublishedTimeAgo = useRelativeTime(lastPublished || '', {

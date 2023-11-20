@@ -8,7 +8,7 @@ import {
 } from '@sanity/icons'
 import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
 import {
@@ -43,7 +43,7 @@ export function ConfirmDeleteDialogBody({
 }: DeletionConfirmationDialogBodyProps) {
   const schema = useSchema()
   const toast = useToast()
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const renderPreviewItem = useCallback(
     (item: any) => {

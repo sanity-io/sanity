@@ -1,9 +1,11 @@
+import {defineLocalesResources} from 'sanity'
+
 /**
  * Defined locale strings for the desk tool, in US English.
  *
  * @internal
  */
-const deskLocaleStrings = {
+const structureLocaleStrings = defineLocalesResources('structure', {
   /** --- PUBLISH ACTION --- */
   /** Tooltip when action is disabled because the studio is not ready.*/
   'action.publish.disabled.not-ready': 'Operation not ready',
@@ -166,7 +168,7 @@ const deskLocaleStrings = {
   /** --- "PRODUCTION PREVIEW", eg link to content --- */
   'production-preview.menu-item.title': 'Open preview',
 
-  /** -- DESK PANES -- */
+  /** -- STRUCTURE PANES -- */
   /** The tool tip for the split pane button on the document panel header */
   'buttons.split-pane-button.tooltip': 'Split pane right',
 
@@ -502,11 +504,11 @@ const deskLocaleStrings = {
   /** --- Insufficient permissions message --- */
   /** the loading messaging for when the tooltip is still loading permission info */
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
-}
+})
 
 /**
  * @alpha
  */
-export type DeskLocaleResourceKeys = keyof typeof deskLocaleStrings
+export type StructureLocaleResourceKeys = keyof typeof structureLocaleStrings
 
-export default deskLocaleStrings
+export default structureLocaleStrings

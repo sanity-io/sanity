@@ -9,7 +9,7 @@ import {concat, Observable, of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
 import {RouterPaneGroup} from '../../../types'
 import {usePaneRouter} from '../../../components'
-import {deskLocaleNamespace} from '../../../i18n'
+import {structureLocaleNamespace} from '../../../i18n'
 import {DocumentAvailability, useDocumentPreviewStore, getPublishedId, useTranslation} from 'sanity'
 
 const Root = styled(Card)`
@@ -45,7 +45,7 @@ export const ReferenceChangedBanner = memo(() => {
   const parentRefPath = useMemo(() => {
     return (params?.parentRefPath && pathFromString(params.parentRefPath)) || null
   }, [params?.parentRefPath])
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   /**
    * Loads information regarding the reference field of the parent pane. This

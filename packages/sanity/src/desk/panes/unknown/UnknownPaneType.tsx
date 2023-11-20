@@ -1,7 +1,7 @@
 import {Box, Text} from '@sanity/ui'
 import React from 'react'
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {isRecord, Translate, useTranslation} from 'sanity'
 
 interface UnknownPaneProps {
@@ -16,7 +16,7 @@ interface UnknownPaneProps {
 export function UnknownPane(props: UnknownPaneProps) {
   const {isSelected, pane, paneKey} = props
   const type = (isRecord(pane) && pane.type) || null
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
   return (
     <Pane id={paneKey} selected={isSelected}>
       <PaneHeader title={t('panes.unknown-pane-type.title')} />

@@ -1,27 +1,27 @@
 import {defineLocaleResourceBundle} from 'sanity'
 
 /**
- * The locale namespace for the desk tool
+ * The locale namespace for the structure tool
  *
  * @public
  */
-export const deskLocaleNamespace = 'desk' as const
+export const structureLocaleNamespace = 'structure' as const
 
 /**
- * The default locale bundle for the desk tool, which is US English.
+ * The default locale bundle for the structure tool, which is US English.
  *
  * @internal
  */
-export const deskUsEnglishLocaleBundle = defineLocaleResourceBundle({
+export const structureUsEnglishLocaleBundle = defineLocaleResourceBundle({
   locale: 'en-US',
-  namespace: deskLocaleNamespace,
+  namespace: structureLocaleNamespace,
   resources: () => import('./resources'),
 })
 
 /**
- * The locale resource keys for the desk tool.
+ * The locale resource keys for the structure tool.
  *
  * @alpha
  * @hidden
  */
-export type {DeskLocaleResourceKeys} from './resources'
+export type {StructureLocaleResourceKeys} from './resources'

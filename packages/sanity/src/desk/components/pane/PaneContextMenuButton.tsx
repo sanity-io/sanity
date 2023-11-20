@@ -1,7 +1,7 @@
 import {EllipsisVerticalIcon} from '@sanity/icons'
 import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import React, {useId} from 'react'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {_PaneMenuItem, _PaneMenuNode} from './types'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
 import {StatusButton, useTranslation} from 'sanity'
@@ -33,7 +33,7 @@ function nodesHasTone(nodes: _PaneMenuNode[], tone: NonNullable<_PaneMenuItem['t
 export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
   const {nodes} = props
   const id = useId()
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const hasCritical = nodesHasTone(nodes, 'critical')
   const hasCaution = nodesHasTone(nodes, 'caution')

@@ -1,11 +1,11 @@
-import type {DeskLocaleResourceKeys} from 'sanity/desk'
+import type {StructureLocaleResourceKeys} from 'sanity/desk'
 
 /**
- * Defined locale strings for the desk tool, in Norwegian (Bokmål).
+ * Defined locale strings for the structure tool, in Norwegian (Bokmål).
  *
  * @internal
  */
-const deskLocaleStrings: Record<DeskLocaleResourceKeys, string> = {
+const structureLocaleStrings: Record<StructureLocaleResourceKeys, string> = {
   /** --- PUBLISH ACTION --- */
   /** Tooltip when action is disabled because the studio is not ready.*/
   'action.publish.disabled.not-ready': 'Operasjonen er ikke klar',
@@ -168,7 +168,7 @@ const deskLocaleStrings: Record<DeskLocaleResourceKeys, string> = {
   /** --- "PRODUCTION PREVIEW", eg link to content --- */
   'production-preview.menu-item.title': 'Åpne forhåndsvisning',
 
-  /** -- DESK PANES -- */
+  /** -- STRUCTURE PANES -- */
   /** The tool tip for the split pane button on the document panel header */
   'buttons.split-pane-button.tooltip': 'Del panel til høyre',
 
@@ -508,4 +508,4 @@ const deskLocaleStrings: Record<DeskLocaleResourceKeys, string> = {
   'insufficient-permissions-message-tooltip.loading-text': 'Laster…',
 }
 
-export default deskLocaleStrings
+export default structureLocaleStrings

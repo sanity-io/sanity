@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
 import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {
   CommandList,
   CommandListRenderItemCallback,
@@ -90,7 +90,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed, index} = usePane()
   const [shouldRender, setShouldRender] = useState(false)
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const handleEndReached = useCallback(() => {
     if (isLoading || isLazyLoading || !shouldRender) return

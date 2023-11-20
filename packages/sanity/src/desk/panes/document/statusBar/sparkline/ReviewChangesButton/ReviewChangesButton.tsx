@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
 import {Box, Button, ButtonProps, Flex, Stack, Text, Tooltip} from '@sanity/ui'
-import {deskLocaleNamespace} from '../../../../../i18n'
+import {structureLocaleNamespace} from '../../../../../i18n'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 import {useRelativeTime, useTranslation} from 'sanity'
 
@@ -25,7 +25,7 @@ const ReviewButton = React.forwardRef(function ReviewButton(
     useTemporalPhrase: true,
   })
 
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const buttonProps: ButtonProps = useMemo(() => {
     if (status === 'syncing') {

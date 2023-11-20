@@ -2,7 +2,7 @@
 
 import {ResetIcon} from '@sanity/icons'
 import React, {useCallback, useMemo, useState} from 'react'
-import {deskLocaleNamespace} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,
   DocumentActionDialogProps,
@@ -36,7 +36,7 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   })
   const currentUser = useCurrentUser()
 
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const handleConfirm = useCallback(() => {
     discardChanges.execute()

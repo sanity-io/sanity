@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentOperation, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
-import {deskLocaleNamespace} from '../../../i18n'
+import {structureLocaleNamespace} from '../../../i18n'
 
 const Root = styled(Card)`
   position: relative;
@@ -26,7 +26,7 @@ export function DeletedDocumentBanner({revisionId}: DeletedDocumentBannerProps) 
       navigateIntent('edit', {id: documentId, type: documentType})
     }
   }, [documentId, documentType, navigateIntent, restore, revisionId])
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <Root data-testid="deleted-document-banner" shadow={1} tone="transparent">

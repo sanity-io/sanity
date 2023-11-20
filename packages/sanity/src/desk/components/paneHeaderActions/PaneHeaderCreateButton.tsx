@@ -3,7 +3,7 @@ import React, {useMemo, forwardRef} from 'react'
 import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
 import {Schema} from '@sanity/types'
 import {IntentButton} from '../IntentButton'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 import {IntentLink} from 'sanity/router'
 import {
@@ -51,7 +51,7 @@ interface PaneHeaderCreateButtonProps {
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const schema = useSchema()
   const templates = useTemplates()
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,

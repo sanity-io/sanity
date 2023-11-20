@@ -4,7 +4,7 @@ import {TrashIcon} from '@sanity/icons'
 import React, {useCallback, useState} from 'react'
 import {ConfirmDeleteDialog} from '../components'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {deskLocaleNamespace} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -26,7 +26,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)

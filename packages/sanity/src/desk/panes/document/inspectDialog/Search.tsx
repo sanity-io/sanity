@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons'
 import {TextInput} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {deskLocaleNamespace} from '../../../i18n'
+import {structureLocaleNamespace} from '../../../i18n'
 import {useTranslation} from 'sanity'
 
 export function Search(props: {onChange: (q: string) => void; query: string}) {
@@ -11,7 +11,7 @@ export function Search(props: {onChange: (q: string) => void; query: string}) {
     (event: React.ChangeEvent<HTMLInputElement>) => onChange(event.target.value),
     [onChange],
   )
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <TextInput

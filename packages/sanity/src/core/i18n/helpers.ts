@@ -41,3 +41,22 @@ export function isStaticResourceBundle(
 ): bundle is StaticLocaleResourceBundle {
   return !('then' in bundle.resources && typeof bundle.resources.then === 'function')
 }
+
+/**
+ * Internal helper for definining resources for a given namespace.
+ *
+ * Used for automation (finding the officially defined namespaces and keys), and potentially in
+ * the future for type safety/helpers.
+ *
+ * @param resources - Resources to define
+ * @returns The resources that was passed, as-is (this is an "identity function")
+ * @deprecated Sanity-internal helper, don't use in external code
+ * @internal
+ * @hidden
+ */
+export function defineLocalesResources<R extends Record<string, string>>(
+  namespace: string,
+  resources: R,
+): R {
+  return resources
+}

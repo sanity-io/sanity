@@ -6,7 +6,7 @@ import {tap} from 'rxjs/operators'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 import {useConditionalToast} from './useConditionalToast'
-import {deskLocaleNamespace} from '../../../../i18n'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {
   FormDocumentValue,
   DocumentMutationEvent,
@@ -60,7 +60,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
   const isLocked = editState?.transactionSyncLock?.enabled
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   useConditionalToast({
     id: `sync-lock-${documentId}`,

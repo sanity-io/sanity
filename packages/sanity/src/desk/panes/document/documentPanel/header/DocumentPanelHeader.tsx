@@ -14,7 +14,7 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {useDeskTool} from '../../../../useDeskTool'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {deskLocaleNamespace} from '../../../../i18n'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -75,7 +75,7 @@ export const DocumentPanelHeader = memo(
     // and if the back button is not showing (the back button and the close
     // button) do the same thing and shouldn't be shown at the same time)
     const showPaneGroupCloseButton = !showSplitPaneCloseButton && !features.backButton
-    const {t} = useTranslation(deskLocaleNamespace)
+    const {t} = useTranslation(structureLocaleNamespace)
 
     return (
       <PaneHeader

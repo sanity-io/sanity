@@ -1,6 +1,6 @@
 import React, {useCallback, useState, useId} from 'react'
 import {Box, Flex, Button, Dialog, Text, ErrorBoundary} from '@sanity/ui'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
 import {useTranslation} from 'sanity'
 
@@ -11,7 +11,7 @@ type ErrorInfo = ArgType<React.ComponentProps<typeof ErrorBoundary>['onCatch']>
 
 /** @internal */
 function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
   const id = useId()
   const [error, setError] = useState<ErrorInfo | null>(null)
   const handleRetry = useCallback(() => setError(null), [])

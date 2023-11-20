@@ -3,7 +3,7 @@ import React, {memo, useEffect, useRef} from 'react'
 import {useDocumentPane} from './useDocumentPane'
 import {useDocumentOperationEvent, useTranslation} from 'sanity'
 import {usePaneRouter} from '../../components'
-import {deskLocaleNamespace} from '../../i18n'
+import {structureLocaleNamespace} from '../../i18n'
 
 const IGNORE_OPS = ['patch', 'commit']
 
@@ -13,7 +13,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   const event: any = useDocumentOperationEvent(documentId, documentType)
   const prevEvent = useRef(event)
   const paneRouter = usePaneRouter()
-  const {t} = useTranslation(deskLocaleNamespace)
+  const {t} = useTranslation(structureLocaleNamespace)
 
   useEffect(() => {
     if (!event || event === prevEvent.current) return

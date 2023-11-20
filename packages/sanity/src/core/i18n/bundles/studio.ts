@@ -1,4 +1,4 @@
-import {defineLocaleResourceBundle} from '../helpers'
+import {defineLocaleResourceBundle, defineLocalesResources} from '../helpers'
 import {studioLocaleNamespace} from '../localeNamespaces'
 
 /**
@@ -6,7 +6,7 @@ import {studioLocaleNamespace} from '../localeNamespaces'
  *
  * @internal
  */
-export const studioLocaleStrings = {
+export const studioLocaleStrings = defineLocalesResources('studio', {
   /* Relative time, just now */
   'relative-time.just-now': 'just now',
 
@@ -1988,7 +1988,7 @@ export const studioLocaleStrings = {
 
   /** Appears after the not-authorized message. Lists the current roles. */
   'insufficient-permissions-message.roles': 'Your roles: <Roles/>',
-}
+})
 
 /**
  * The i18n resource keys for the studio.

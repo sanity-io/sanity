@@ -1,4 +1,4 @@
-import {defineLocaleResourceBundle} from '../helpers'
+import {defineLocaleResourceBundle, defineLocalesResources} from '../helpers'
 import {validationLocaleNamespace} from '../localeNamespaces'
 
 /**
@@ -6,7 +6,7 @@ import {validationLocaleNamespace} from '../localeNamespaces'
  *
  * @internal
  */
-const validationLocaleStrings = {
+const validationLocaleStrings = defineLocalesResources('validation', {
   /** Title for the actual "Validation" panel/feature */
   'panel.title': 'Validation',
 
@@ -138,7 +138,7 @@ const validationLocaleStrings = {
 
   /** String contains a protocol/scheme that is not allowed, eg (`ftp`, `mailto`…) */
   'string.url.disallowed-scheme': 'Does not match allowed protocols/schemes',
-} as const
+} as const)
 
 /**
  * The i18n resource keys for the validation.
