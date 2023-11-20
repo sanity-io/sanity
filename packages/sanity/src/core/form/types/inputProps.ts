@@ -1,4 +1,5 @@
 import {
+  type EditorChange,
   type HotkeyOptions,
   type OnCopyFn,
   type OnPasteFn,
@@ -507,6 +508,10 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   markers?: PortableTextMarker[]
+  /**
+   * Returns changes from the underlying editor
+   */
+  onEditorChange?: (change: EditorChange, editor: PortableTextEditor) => void
   /**
    * Custom copy function
    */
