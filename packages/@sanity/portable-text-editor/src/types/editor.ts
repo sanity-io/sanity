@@ -50,6 +50,7 @@ export interface EditableAPI {
   focusBlock: () => PortableTextBlock | undefined
   focusChild: () => PortableTextChild | undefined
   getSelection: () => EditorSelection
+  getFragment: () => PortableTextBlock[] | undefined
   getValue: () => PortableTextBlock[] | undefined
   hasBlockStyle: (style: string) => boolean
   hasListStyle: (listStyle: string) => boolean
