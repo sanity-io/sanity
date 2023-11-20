@@ -10,7 +10,7 @@ const globalStyles = `
     font-style: normal;
     font-weight: 100 900;
     font-display: swap;
-    src: url("https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19") format("woff2");
+    src: url('https://rsms.me/inter/font-files/InterVariable.woff2?v=4.0') format('woff2');
     font-named-instance: 'Regular';
   }
   @font-face {
@@ -18,7 +18,7 @@ const globalStyles = `
     font-style: italic;
     font-weight: 100 900;
     font-display: swap;
-    src: url("https://rsms.me/inter/font-files/Inter-italic.var.woff2?v=3.19") format("woff2");
+    src: url('https://rsms.me/inter/font-files/InterVariable-Italic.woff2?v=4.0') format('woff2');
     font-named-instance: 'Italic';
   }
   html {
