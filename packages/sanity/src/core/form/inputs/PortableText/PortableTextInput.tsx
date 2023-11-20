@@ -66,6 +66,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     hotkeys,
     markers = EMPTY_ARRAY,
     onChange,
+    onEditorChange,
     onCopy,
     onInsert,
     onItemRemove,
@@ -203,8 +204,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
           break
         default:
       }
+      if (editorRef.current && onEditorChange) {
+        onEditorChange(change, editorRef.current)
+      }
     },
-    [onBlur, onChange, onPathFocus, toast],
+    [editorRef, onBlur, onChange, onEditorChange, onPathFocus, toast],
   )
 
   useEffect(() => {
