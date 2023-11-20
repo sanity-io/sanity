@@ -8,7 +8,9 @@ const jestConfigFiles = globby.sync(
   pkg.workspaces.map((workspace) => path.join(__dirname, workspace, '/jest.config.cjs')),
 )
 
-const IGNORE_PROJECTS = []
+const IGNORE_PROJECTS = [
+  'packages/@sanity/cli', // we have a separate script to run the CLI tests
+]
 
 module.exports = {
   projects: jestConfigFiles
