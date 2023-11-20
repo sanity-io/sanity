@@ -10,7 +10,7 @@
     },
     {
       "matchDepTypes": ["dependencies"],
-      "matchPackageNames": ["get-it", "@sanity/client"],
+      "matchPackageNames": ["get-it", "@sanity/client", "@sanity/presentation"],
       "rangeStrategy": "bump",
       "semanticCommitType": "fix"
     }
