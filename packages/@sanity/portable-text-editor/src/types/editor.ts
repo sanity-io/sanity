@@ -37,7 +37,7 @@ export interface EditableAPI {
   blur: () => void
   delete: (selection: EditorSelection, options?: EditableAPIDeleteOptions) => void
   findByPath: (path: Path) => [PortableTextBlock | PortableTextChild | undefined, Path | undefined]
-  findDOMNode: (element: PortableTextBlock | PortableTextChild) => Node | undefined
+  findDOMNode: (element: PortableTextBlock | PortableTextChild) => DOMNode | undefined
   focus: () => void
   focusBlock: () => PortableTextBlock | undefined
   focusChild: () => PortableTextChild | undefined
@@ -96,6 +96,7 @@ export interface PortableTextSlateEditor extends ReactEditor {
   isTextSpan: (value: unknown) => value is PortableTextSpan
   isListBlock: (value: unknown) => value is PortableTextListBlock
   subscriptions: (() => () => void)[]
+  nodeToRangeDecorations?: Map<Node, Range[]>
 
   /**
    * Increments selected list items levels, or decrements them if `reverse` is true.
@@ -480,6 +481,38 @@ export type ScrollSelectionIntoViewFunction = (
   editor: PortableTextEditor,
   domRange: globalThis.Range,
 ) => void
+
+/**
+ * A range decoration is a UI affordance that wraps a given selection range in the editor
+ * with a custom component. This can be used to highlight search results,
+ * mark validation errors on specific words, draw user presence and similar.
+ * @alpha */
+export interface RangeDecoration {
+  /**
+   * A component for rendering the range decoration.
+   * This component takes only children, and you could render
+   * your own component with own props by wrapping those children.
+   *
+   * @example
+   * ```ts
+   * (rangeComponentProps: PropsWithChildren) => (
+   *    <BlackListHighlighter {...location}>
+   *      {rangeComponentProps.children}
+   *    </BlackListHighlighter>
+   *  )
+   * ```
+   */
+  component: (props: PropsWithChildren) => ReactElement
+  /**
+   * A function that will can tell if the range has become invalid.
+   * The range will not be rendered when you return `true` from this function.
+   */
+  isRangeInvalid: (editor: PortableTextEditor) => boolean
+  /**
+   * The editor content selection range
+   */
+  selection: EditorSelection
+}
 
 /** @internal */
 export type PortableTextMemberSchemaTypes = {

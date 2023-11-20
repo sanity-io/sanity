@@ -8,6 +8,7 @@ import {
   BlockChildRenderProps as EditorChildRenderProps,
   BlockAnnotationRenderProps,
   EditorSelection,
+  RangeDecoration,
 } from '@sanity/portable-text-editor'
 import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
@@ -36,6 +37,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   path: Path
+  rangeDecorations?: RangeDecoration[]
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
 }
@@ -64,6 +66,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onToggleFullscreen,
     path,
     readOnly,
+    rangeDecorations,
     renderAnnotation,
     renderBlock,
     renderBlockActions,
@@ -147,13 +150,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       _renderBlockActions,
       _renderCustomMarkers,
-      scrollElement,
+      boundaryElement,
       isFullscreen,
       onItemClose,
       onItemOpen,
       onItemRemove,
       onPathFocus,
-      boundaryElement,
       path,
       readOnly,
       renderAnnotation,
@@ -163,6 +165,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      scrollElement,
     ],
   )
 
@@ -279,14 +282,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
-      boundaryElement,
-      scrollElement,
       editor.schemaTypes.span.name,
+      boundaryElement,
       onItemClose,
       onItemOpen,
       onPathFocus,
       path,
       readOnly,
+      scrollElement,
       renderAnnotation,
       renderBlock,
       renderCustomMarkers,
@@ -396,6 +399,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         onPaste={onPaste}
         onToggleFullscreen={handleToggleFullscreen}
         path={path}
+        rangeDecorations={rangeDecorations}
         readOnly={readOnly}
         renderAnnotation={editorRenderAnnotation}
         renderBlock={editorRenderBlock}
@@ -410,19 +414,20 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       ariaDescribedBy,
       editorHotkeys,
+      isActive,
+      isFullscreen,
+      onItemOpen,
+      onCopy,
+      onPaste,
+      handleToggleFullscreen,
+      path,
+      rangeDecorations,
+      readOnly,
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
-      handleToggleFullscreen,
       hideToolbar,
       initialSelection,
-      isActive,
-      isFullscreen,
-      onCopy,
-      onItemOpen,
-      onPaste,
-      path,
-      readOnly,
       scrollElement,
     ],
   )

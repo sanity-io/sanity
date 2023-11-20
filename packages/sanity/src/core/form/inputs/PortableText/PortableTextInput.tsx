@@ -74,6 +74,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onPathFocus,
     path,
     readOnly,
+    rangeDecorations,
     renderAnnotation,
     renderBlock,
     renderBlockActions,
@@ -379,6 +380,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 onInsert={onInsert}
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
+                rangeDecorations={rangeDecorations}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
               />
