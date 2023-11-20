@@ -3687,10 +3687,10 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.0.6.tgz#3ac3483cd8334d918aa2a15fe55ab0fa24d1cb45"
-  integrity sha512-P+HC23oDf7i+v4cgpx19v6MaOEGDYNKPDEZUvWNelJqVV6BHxqoAuLmqo2/UnQheEmX88eSczYWedWhoYsYD7w==
+"@sanity/presentation@1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.0.7.tgz#25092f612cecba91c1e43948e160bb3479bb839b"
+  integrity sha512-FlWNDXwMg4rdJWAk32bSrxnmvp4WBDdxtwr5B0HJqOgwMDJshFgaylVbOwzB5WaaONAXL18Qq3w2nrVF7xyarQ==
   dependencies:
     "@sanity/groq-store" "5.0.1-experimental"
     "@sanity/icons" "^2.7.0"
