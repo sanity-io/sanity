@@ -12,6 +12,8 @@ interface ParsedOptions {
   timeFormat: string
   timeStep: number
   calendarTodayLabel: string
+  customFormatInputValue?: (date: Date) => string
+  customParseInputValue?: (date: string) => ParseResult
 }
 
 interface SchemaOptions {
@@ -19,6 +21,8 @@ interface SchemaOptions {
   timeFormat?: string
   timeStep?: number
   calendarTodayLabel?: string
+  formatInputValue?: (date: Date) => string
+  parseInputValue?: (date: string) => ParseResult
 }
 
 /**
@@ -72,7 +76,8 @@ function enforceTimeStep(dateString: string, timeStep: number) {
 export function DateTimeInput(props: DateTimeInputProps) {
   const {onChange, schemaType, value, elementProps} = props
 
-  const {dateFormat, timeFormat, timeStep} = parseOptions(schemaType.options)
+  const {dateFormat, timeFormat, timeStep, customFormatInputValue, customParseInputValue} =
+    parseOptions(schemaType.options)
 
   const handleChange = useCallback(
     (nextDate: string | null) => {
@@ -87,13 +92,14 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
 
   const formatInputValue = React.useCallback(
-    (date: Date) => format(date, `${dateFormat} ${timeFormat}`),
-    [dateFormat, timeFormat],
+    (date: Date) => customFormatInputValue?.(date) || format(date, `${dateFormat} ${timeFormat}`),
+    [customFormatInputValue, dateFormat, timeFormat],
   )
 
   const parseInputValue = React.useCallback(
-    (inputValue: string) => parse(inputValue, `${dateFormat} ${timeFormat}`),
-    [dateFormat, timeFormat],
+    (inputValue: string) =>
+      customParseInputValue?.(inputValue) || parse(inputValue, `${dateFormat} ${timeFormat}`),
+    [customParseInputValue, dateFormat, timeFormat],
   )
 
   return (

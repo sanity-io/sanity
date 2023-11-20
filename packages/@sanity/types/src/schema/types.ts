@@ -3,6 +3,7 @@ import type {SanityClient} from '@sanity/client'
 import type {Rule} from '../validation'
 import type {SanityDocument} from '../documents'
 import type {CurrentUser} from '../user'
+import type {Path} from '../paths'
 import type {PreviewConfig} from './preview'
 import type {SchemaTypeDefinition} from './definition/schemaDefinition'
 import type {ArrayOptions} from './definition/type/array'
@@ -106,6 +107,7 @@ export interface ConditionalPropertyCallbackContext {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any
   currentUser: Omit<CurrentUser, 'role'> | null
+  path: Path
 }
 
 /** @public */
