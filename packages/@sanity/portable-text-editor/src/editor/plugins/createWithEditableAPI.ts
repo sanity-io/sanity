@@ -459,6 +459,7 @@ export function createWithEditableAPI(
                     node.marks.length > 0,
                 }),
               ]
+              const removedMarks: string[] = []
               spans.forEach(([span, path]) => {
                 const [block] = Editor.node(editor, path, {depth: 1})
                 if (editor.isTextBlock(block)) {
@@ -470,6 +471,7 @@ export function createWithEditableAPI(
                         Array.isArray(span.marks) &&
                         span.marks.includes(def._key)
                       ) {
+                        if (!removedMarks.includes(def._key)) removedMarks.push(def._key)
                         const newMarks = [...(span.marks || []).filter((mark) => mark !== def._key)]
                         Transforms.setNodes(
                           editor,
@@ -482,6 +484,22 @@ export function createWithEditableAPI(
                     })
                 }
               })
+              const [block] = Editor.node(editor, selection, {depth: 1})
+              if (editor.isTextBlock(block)) {
+                removedMarks.forEach((markKey) => {
+                  const isAnnotationStillInUse = block.children.some((child) => {
+                    const marks = child.marks as string[]
+                    return marks.includes(markKey)
+                  })
+                  if (!isAnnotationStillInUse) {
+                    Transforms.setNodes(
+                      editor,
+                      {markDefs: block.markDefs?.filter((def) => def._key !== markKey)},
+                      {},
+                    )
+                  }
+                })
+              }
             }
           })
           Editor.normalize(editor)
