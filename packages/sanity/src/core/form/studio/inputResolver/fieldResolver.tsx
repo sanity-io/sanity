@@ -12,7 +12,7 @@ import {FieldMember} from '../../store'
 import {FormField, FormFieldSet} from '../../components'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
-import {useFormPublishedId} from '../../useFormPublishedId'
+import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {DocumentFieldActionNode} from '../../../config'
 import {getTypeChain} from './helpers'
 
@@ -32,7 +32,7 @@ function BooleanField(field: FieldProps) {
 
 function PrimitiveField(field: FieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
-  const documentId = useFormPublishedId()
+  const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
 
   return (
@@ -76,7 +76,7 @@ function PrimitiveField(field: FieldProps) {
 
 function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
-  const documentId = useFormPublishedId()
+  const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
 
   return (
@@ -118,7 +118,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
 
 function ImageOrFileField(field: ObjectFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
-  const documentId = useFormPublishedId()
+  const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
 
   // unless the hotspot tool dialog is open we want to show whoever is in there as the field presence
