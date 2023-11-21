@@ -1,9 +1,10 @@
 import type {SanityDocument, SchemaType} from '@sanity/types'
 import React, {isValidElement} from 'react'
 import {isNumber, isString} from 'lodash'
-import {Inline} from '@sanity/ui'
+import {Inline, TooltipDelayGroupProvider} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
 import {DocumentStatus} from '../../../ui/documentStatus'
+import {TOOLTIP_DELAY_PROPS} from '../../../ui/tooltip/constants'
 import type {PaneItemPreviewState} from './types'
 import {
   DocumentPresence,
@@ -42,11 +43,13 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   )!
 
   const status = isLoading ? null : (
-    <Inline space={4}>
-      {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-      <DocumentStatus document={published} type="published" />
-      <DocumentStatus document={draft} type="draft" />
-    </Inline>
+    <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+      <Inline space={4}>
+        {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
+        <DocumentStatus document={published} type="published" />
+        <DocumentStatus document={draft} type="draft" />
+      </Inline>
+    </TooltipDelayGroupProvider>
   )
 
   return (
