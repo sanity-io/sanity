@@ -149,7 +149,6 @@ export function FormProvider(props: FormProviderProps) {
       groups={groups}
       id={id}
       image={image}
-      members={members}
       onChange={onChange}
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useMemo, useRef} from 'react'
 import {DocumentFieldAction, Source} from '../config'
 import {FormNodePresence} from '../presence'
 import {FIXME} from '../FIXME'
@@ -16,7 +16,7 @@ import {
   RenderItemCallback,
   RenderPreviewCallback,
 } from './types'
-import {FormFieldGroup, ObjectMember, StateTree} from './store'
+import {FormFieldGroup, StateTree} from './store'
 import {ArrayOfObjectsFunctions} from './inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
@@ -25,6 +25,7 @@ import {FormCallbacksProvider} from './studio/contexts/FormCallbacks'
 import {PresenceProvider} from './studio/contexts/Presence'
 import {ValidationProvider} from './studio/contexts/Validation'
 import {HoveredFieldProvider} from './field'
+import {DocumentIdProvider} from './contexts/DocumentIdProvider'
 
 export interface FormBuilderProviderProps {
   /** @internal */
@@ -44,7 +45,6 @@ export interface FormBuilderProviderProps {
   groups: FormFieldGroup[]
   id: string
   image: Source['form']['image']
-  members: ObjectMember[]
   onChange: (event: PatchEvent) => void
   onFieldGroupSelect: (path: Path, groupName: string) => void
   onPathBlur: (path: Path) => void
@@ -94,7 +94,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     groups,
     id,
     image,
-    members,
     onChange,
     onFieldGroupSelect,
     onPathBlur,
@@ -118,10 +117,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
   } = props
 
   const documentValueRef = useRef(documentValue)
-
-  useEffect(() => {
-    documentValueRef.current = documentValue
-  }, [documentValue])
+  documentValueRef.current = documentValue
 
   const __internal: FormBuilderContextValue['__internal'] = useMemo(
     () => ({
@@ -171,7 +167,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       focused,
       groups,
       id,
-      members,
       readOnly,
       renderAnnotation,
       renderBlock,
@@ -194,7 +189,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       focused,
       groups,
       id,
-      members,
       readOnly,
       renderAnnotation,
       renderBlock,
@@ -218,11 +212,13 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         onSetPathCollapsed={onSetPathCollapsed}
         onSetFieldSetCollapsed={onSetFieldSetCollapsed}
       >
-        <PresenceProvider presence={presence}>
-          <ValidationProvider validation={validation}>
-            <HoveredFieldProvider>{children}</HoveredFieldProvider>
-          </ValidationProvider>
-        </PresenceProvider>
+        <DocumentIdProvider id={id}>
+          <PresenceProvider presence={presence}>
+            <ValidationProvider validation={validation}>
+              <HoveredFieldProvider>{children}</HoveredFieldProvider>
+            </ValidationProvider>
+          </PresenceProvider>
+        </DocumentIdProvider>
       </FormCallbacksProvider>
     </FormBuilderContext.Provider>
   )

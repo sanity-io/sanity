@@ -35,9 +35,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {readAsText} from '../../../studio/uploads/file/readAsText'
 import {accepts} from '../../../studio/uploads/accepts'
 import {applyAll} from '../../../patch/applyPatch'
-import {useFormBuilder} from '../../../useFormBuilder'
 import {createDescriptionId} from '../../common/createDescriptionId'
-import {DocumentFieldActionNode} from '../../../../config'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
