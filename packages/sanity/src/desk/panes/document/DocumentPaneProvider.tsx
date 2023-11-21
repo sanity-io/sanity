@@ -720,9 +720,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       )}
 
       <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
-        <CommentsProvider documentId={documentId} documentType={documentType}>
-          <CommentsSelectedPathProvider>{children}</CommentsSelectedPathProvider>
-        </CommentsProvider>
+        {/*<CommentsProvider documentId={documentId} documentType={documentType}>*/}
+        {/*  <CommentsSelectedPathProvider>*/}
+        {children}
+        {/*</CommentsSelectedPathProvider>*/}
+        {/*</CommentsProvider>*/}
       </FieldActionsProvider>
     </DocumentPaneContext.Provider>
   )

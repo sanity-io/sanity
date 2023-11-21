@@ -102,7 +102,7 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => {
       },
     },
 
-    plugins: [comments()],
+  // plugins: [comments()],
 
     tools: [
       {
