@@ -16,6 +16,7 @@ import {PatchEvent, set} from '../../../patch'
 import {FIXME} from '../../../../FIXME'
 import {FormBuilderContext, FormBuilderContextValue} from '../../../FormBuilderContext'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
+import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
 import {PrimitiveField} from './PrimitiveField'
 
 const EMPTY_ARRAY: never[] = []
@@ -261,9 +262,11 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
         <LayerProvider>
           <FormBuilderContext.Provider value={formBuilder}>
             <FormCallbacksProvider {...formCallbacks}>
-              <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
-                {children}
-              </DocumentFieldActionsProvider>
+              <DocumentIdProvider id="test">
+                <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
+                  {children}
+                </DocumentFieldActionsProvider>
+              </DocumentIdProvider>
             </FormCallbacksProvider>
           </FormBuilderContext.Provider>
         </LayerProvider>

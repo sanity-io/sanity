@@ -35,7 +35,7 @@ import {set, unset} from '../../patch'
 import {AlertStrip} from '../../components/AlertStrip'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
-import {useFormPublishedId} from '../../useFormPublishedId'
+import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -72,7 +72,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const {readOnly, focused, renderPreview, onChange} = props.inputProps
 
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
-  const documentId = useFormPublishedId()
+  const documentId = usePublishedId()
 
   const handleClear = useCallback(() => inputProps.onChange(unset()), [inputProps])
   const value: Reference | undefined = props.value as any
