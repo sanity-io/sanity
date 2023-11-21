@@ -7,6 +7,7 @@ import {
   FieldMember,
   FieldSetMember,
   ObjectFormNode,
+  ObjectMember,
 } from '../types'
 import {isMemberArrayOfObjects, isMemberObject} from '../../members/object/fields/asserters'
 import {ALL_FIELDS_GROUP} from '../constants'
@@ -37,6 +38,10 @@ export type ExpandOperation =
   | ExpandFieldSetOperation
   | SetActiveGroupOperation
 
+function hasAllMembers<T extends BaseFormNode>(value: T): value is HasAllMembers<T> {
+  return '_allMembers' in value && Array.isArray(value._allMembers)
+}
+
 /**
  * This takes a form state and returns a list of operations required to open a node at a particular path
  * @param node - The base form node (i.e. the form state node for the _document_)
@@ -57,7 +62,7 @@ function getFieldsetAndFieldGroupOperations(node: BaseFormNode, path: Path) {
     return []
   }
 
-  if (isObjectFormNode(node)) {
+  if (isObjectFormNode(node) && hasAllMembers(node)) {
     return getObjectFieldsetAndFieldGroupOperations(node, path)
   }
   if (isArrayOfObjectsFormNode(node)) {
@@ -66,8 +71,10 @@ function getFieldsetAndFieldGroupOperations(node: BaseFormNode, path: Path) {
   return []
 }
 
+type HasAllMembers<T> = T & {_allMembers: ObjectMember[]}
+
 function getObjectFieldsetAndFieldGroupOperations(
-  node: ObjectFormNode,
+  node: HasAllMembers<ObjectFormNode>,
   path: Path,
 ): (ExpandFieldSetOperation | SetActiveGroupOperation)[] {
   if (path.length === 0) {
@@ -120,7 +127,7 @@ function getObjectFieldsetAndFieldGroupOperations(
     ops.push({type: 'expandFieldSet', path: fieldsetMember.fieldSet.path})
   }
 
-  if (fieldMember) {
+  if (fieldMember && hasAllMembers(fieldMember.field)) {
     if (isMemberArrayOfObjects(fieldMember)) {
       ops.push(...getArrayFieldsetAndFieldGroupOperations(fieldMember.field, tail))
     } else if (isMemberObject(fieldMember)) {

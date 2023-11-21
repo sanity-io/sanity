@@ -739,7 +739,7 @@ function prepareObjectInputState<T>(
     },
   )
 
-  return {
+  const node = {
     value: props.value as Record<string, unknown> | undefined,
     changed: isChangedValue(props.value, props.comparisonValue),
     schemaType: props.schemaType,
@@ -753,10 +753,14 @@ function prepareObjectInputState<T>(
     validation,
     // this is currently needed by getExpandOperations which needs to know about hidden members
     // (e.g. members not matching current group filter) in order to determine what to expand
-    _allMembers: members,
     members: filtereredMembers,
     groups: visibleGroups,
   }
+  Object.defineProperty(node, '_allMembers', {
+    value: members,
+    enumerable: false,
+  })
+  return node
 }
 
 function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number)[]>(
