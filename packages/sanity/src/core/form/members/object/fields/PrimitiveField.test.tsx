@@ -245,13 +245,11 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
     focusPath: [],
     groups: [],
     id: 'test',
-    members: [],
     renderField: () => <>field</>,
     renderInput: () => <>input</>,
     renderItem: () => <>item</>,
     renderPreview: () => <>preview</>,
     schemaType: {} as ObjectSchemaType,
-    value: undefined,
   }
 
   function TestWrapper({children}: PropsWithChildren) {

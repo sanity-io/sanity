@@ -10,6 +10,7 @@ import {useWorkspace} from '../../studio'
 import {EMPTY_ARRAY} from '../../util'
 import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
+import {FormDocumentValue} from '../types'
 import {FormBuilder, FormBuilderProps} from './FormBuilder'
 
 const schemaTypes = [
@@ -104,7 +105,7 @@ describe('FormBuilder', () => {
           presence: EMPTY_ARRAY,
           schemaType: formState?.schemaType || schemaType,
           validation: EMPTY_ARRAY,
-          value: formState?.value,
+          value: formState?.value as FormDocumentValue,
         }),
         [formState, patchChannel, schemaType],
       )

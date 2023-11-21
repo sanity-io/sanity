@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {map, tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -32,9 +32,8 @@ import * as is from '../../../utils/is'
 import {useResolveInitialValueForType} from '../../../../store'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 import {applyAll} from '../../../patch/applyPatch'
-import {useFormPublishedId} from '../../../useFormPublishedId'
-import {DocumentFieldActionNode} from '../../../../config'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -72,9 +71,7 @@ export function ArrayOfObjectsField(props: {
     renderPreview,
   } = props
 
-  const {
-    field: {actions: fieldActions},
-  } = useFormBuilder().__internal
+  const fieldActions = useDocumentFieldActions()
 
   const focusRef = useRef<Element & {focus: () => void}>()
   const uploadSubscriptions = useRef<Record<string, Subscription>>({})
@@ -95,7 +92,7 @@ export function ArrayOfObjectsField(props: {
         onPathFocus(member.field.path)
       }
     },
-    [member.field.path, onPathFocus],
+    [member.field.path, onPathFocus]
   )
 
   const handleBlur = useCallback(
@@ -108,7 +105,7 @@ export function ArrayOfObjectsField(props: {
         onPathBlur(member.field.path)
       }
     },
-    [member.field.path, onPathBlur],
+    [member.field.path, onPathBlur]
   )
 
   const valueRef = useRef(member.field.value)
@@ -121,7 +118,7 @@ export function ArrayOfObjectsField(props: {
       const patches = PatchEvent.from(event).patches
       // if the patch is an unset patch that targets an item in the array (as opposed to unsetting a field somewhere deeper)
       const isRemovingLastItem = patches.some(
-        (patch) => patch.type === 'unset' && patch.path.length === 1,
+        (patch) => patch.type === 'unset' && patch.path.length === 1
       )
 
       if (isRemovingLastItem) {
@@ -138,7 +135,7 @@ export function ArrayOfObjectsField(props: {
       // otherwise apply the patch
       onChange(PatchEvent.from(event).prepend(setIfMissing([])).prefixAll(member.name))
     },
-    [onChange, member.name, valueRef],
+    [onChange, member.name, valueRef]
   )
   const resolveInitialValue = useResolveInitialValueForType()
 
@@ -156,14 +153,14 @@ export function ArrayOfObjectsField(props: {
     (itemKey: string) => {
       onSetPathCollapsed(member.field.path.concat({_key: itemKey}), true)
     },
-    [onSetPathCollapsed, member.field.path],
+    [onSetPathCollapsed, member.field.path]
   )
 
   const handleExpandItem = useCallback(
     (itemKey: string) => {
       onSetPathCollapsed(member.field.path.concat({_key: itemKey}), false)
     },
-    [onSetPathCollapsed, member.field.path],
+    [onSetPathCollapsed, member.field.path]
   )
 
   const handleOpenItem = useCallback(
@@ -171,7 +168,7 @@ export function ArrayOfObjectsField(props: {
       onPathOpen(path)
       onSetPathCollapsed(path, false)
     },
-    [onPathOpen, onSetPathCollapsed],
+    [onPathOpen, onSetPathCollapsed]
   )
 
   const handleCloseItem = useCallback(() => {
@@ -212,7 +209,7 @@ export function ArrayOfObjectsField(props: {
                   status: 'error',
                 })
               }
-            }),
+            })
           )
           .subscribe({
             complete: () => {
@@ -231,7 +228,7 @@ export function ArrayOfObjectsField(props: {
       onPathFocus,
       resolveInitialValue,
       toast,
-    ],
+    ]
   )
 
   const handleMoveItem = useCallback(
@@ -246,7 +243,7 @@ export function ArrayOfObjectsField(props: {
       if (!(item as any)?._key || !(refItem as any)?._key) {
         // eslint-disable-next-line no-console
         console.error(
-          'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.',
+          'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.'
         )
 
         return
@@ -259,20 +256,20 @@ export function ArrayOfObjectsField(props: {
         ]),
       ])
     },
-    [handleChange, member.field.value],
+    [handleChange, member.field.value]
   )
 
   const handlePrependItem = useCallback(
     (item: any) => {
       handleChange([setIfMissing([]), insert([ensureKey(item)], 'before', [0])])
     },
-    [handleChange],
+    [handleChange]
   )
   const handleAppendItem = useCallback(
     (item: any) => {
       handleChange([setIfMissing([]), insert([ensureKey(item)], 'after', [-1])])
     },
-    [handleChange],
+    [handleChange]
   )
 
   const handleRemoveItem = useCallback(
@@ -283,14 +280,14 @@ export function ArrayOfObjectsField(props: {
       }
       handleChange([unset([{_key: itemKey}])])
     },
-    [handleChange],
+    [handleChange]
   )
 
   const handleFocusChildPath = useCallback(
     (path: Path) => {
       onPathFocus(member.field.path.concat(path))
     },
-    [member.field.path, onPathFocus],
+    [member.field.path, onPathFocus]
   )
 
   const elementProps = useMemo(
@@ -301,7 +298,7 @@ export function ArrayOfObjectsField(props: {
       ref: focusRef,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
     }),
-    [handleBlur, handleFocus, member.field.id, member.field.schemaType.description],
+    [handleBlur, handleFocus, member.field.id, member.field.schemaType.description]
   )
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -321,7 +318,7 @@ export function ArrayOfObjectsField(props: {
 
       return defaultResolveUploader(type, file)
     },
-    [supportsFileUploads, supportsImageUploads],
+    [supportsFileUploads, supportsImageUploads]
   )
 
   const handleUpload = useCallback(
@@ -338,9 +335,9 @@ export function ArrayOfObjectsField(props: {
 
       const events$ = uploader.upload(client, file, schemaType).pipe(
         map((uploadProgressEvent: UploadProgressEvent) =>
-          PatchEvent.from(uploadProgressEvent.patches || []).prefixAll({_key: key}),
+          PatchEvent.from(uploadProgressEvent.patches || []).prefixAll({_key: key})
         ),
-        tap((event) => handleChange(event.patches)),
+        tap((event) => handleChange(event.patches))
       )
 
       uploadSubscriptions.current = {
@@ -348,7 +345,7 @@ export function ArrayOfObjectsField(props: {
         [key]: events$.subscribe(),
       }
     },
-    [client, handleChange, handleInsert],
+    [client, handleChange, handleInsert]
   )
 
   const inputProps = useMemo((): Omit<ArrayOfObjectsInputProps, 'renderDefault'> => {

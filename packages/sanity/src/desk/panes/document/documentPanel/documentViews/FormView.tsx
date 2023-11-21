@@ -177,7 +177,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 readOnly={formState.readOnly}
                 schemaType={formState.schemaType}
                 validation={validation}
-                value={formState.value}
+                value={formState.value as any}
               />
             )
           ) : (

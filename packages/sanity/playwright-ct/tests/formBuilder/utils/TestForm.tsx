@@ -3,6 +3,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {validateDocument} from '../../../../src/core/validation'
 import {applyAll} from '../../../../src/core/form/patch/applyPatch'
 import {createMockSanityClient} from '../../mocks/createMockSanityClient'
+import type {FormDocumentValue} from '../../../../src/core/form/types'
 import {
   createPatchChannel,
   EMPTY_ARRAY,
@@ -173,7 +174,7 @@ export function TestForm({
       presence: EMPTY_ARRAY,
       schemaType: formState?.schemaType || schemaType,
       validation,
-      value: formState?.value,
+      value: formState?.value as FormDocumentValue,
     }),
     [
       formState?.focusPath,
