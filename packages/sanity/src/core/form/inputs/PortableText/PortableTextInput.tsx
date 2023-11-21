@@ -1,3 +1,4 @@
+/* eslint-disable boundaries/element-types */
 import {PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
@@ -22,6 +23,11 @@ import {SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
 import {EMPTY_ARRAY} from '../../../util'
+import {pathToString} from '../../../field'
+import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
+import {FormInput} from '../../components'
+import {FIXME} from '../../../FIXME'
+import {useDocumentPane} from '../../../../desk'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
@@ -89,6 +95,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [isActive, setIsActive] = useState(false)
   const [isOffline, setIsOffline] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
+  const {activeViewId} = useDocumentPane()
 
   const toast = useToast()
 
@@ -212,6 +219,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
     }
   }, [isActive])
+
+  useEffect(() => {
+    setIsActive(false)
+  }, [activeViewId])
 
   return (
     <Box ref={innerElementRef}>
