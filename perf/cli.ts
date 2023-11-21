@@ -17,6 +17,7 @@ async function main(args: {
   branch?: string
   headless?: boolean
   tagsOnly?: boolean
+  excludePatchReleases?: boolean
   pattern?: string
   local?: boolean
   testIds?: string
@@ -37,8 +38,13 @@ async function main(args: {
     useCdn: false,
   })
 
+  if (args.excludePatchReleases && !args.tagsOnly) {
+    throw new Error('The `excludePatchReleases` flag can only be used with `tagsOnly`')
+  }
   const remoteDeployments = await studioMetricsClient.fetch(
-    args.tagsOnly ? queries.tagsDeploymentsQuery : queries.branchDeploymentsQuery,
+    args.tagsOnly
+      ? queries.tagsDeploymentsQuery({excludePatchReleases: args.excludePatchReleases})
+      : queries.branchDeploymentsQuery,
     {
       branch,
       headless,
@@ -133,6 +139,9 @@ const {values: args} = parseArgs({
     tagsOnly: {
       type: 'boolean',
       short: 't',
+    },
+    excludePatchReleases: {
+      type: 'boolean',
     },
     pattern: {
       type: 'string',

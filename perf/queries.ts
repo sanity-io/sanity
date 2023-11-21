@@ -11,9 +11,17 @@ export const branchDeploymentsQuery = `*[_type=='branch' && name == $branch] {
     ]
 } [count(deployments) > 0].deployments[] | order(_createdAt desc) [0...$count] {_id, deploymentId, url, label}`
 
-export const tagsDeploymentsQuery = `*[_type=='tag'] | order(_createdAt desc) {
-  "tagName": name,
-  commit,
-  _createdAt,
-  "deployment": *[_type == 'deployment' && name=="performance-studio" && status=="succeeded" && defined(meta.githubCommitSha) && meta.githubCommitSha==^.commit] | order(_createdAt desc)[0]
-} [defined(deployment)] | order(deployment._createdAt desc) [0...$count] {...deployment, "label": tagName} {_id, deploymentId, url, label}`
+const EXCLUDE_PATCH_RELEASES_FILTER = 'string::split(name, ".")[2] == "0"'
+
+export const tagsDeploymentsQuery = ({
+  excludePatchReleases,
+}: {excludePatchReleases?: boolean} = {}) => {
+  return `*[_type=='tag'${
+    excludePatchReleases ? ` && ${EXCLUDE_PATCH_RELEASES_FILTER}` : ''
+  }] | order(_createdAt desc) {
+    "tagName": name,
+    commit,
+    _createdAt,
+    "deployment": *[_type == 'deployment' && name=="performance-studio" && status=="succeeded" && defined(meta.githubCommitSha) && meta.githubCommitSha==^.commit] | order(_createdAt desc)[0]
+  } [defined(deployment)] | order(deployment._createdAt desc) [0...$count] {...deployment, "label": tagName} {_id, deploymentId, url, label}`
+}
