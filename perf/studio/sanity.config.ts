@@ -21,6 +21,7 @@ export default defineConfig({
   projectId: STUDIO_PROJECT_ID,
   dataset: import.meta.env.SANITY_STUDIO_DATASET || STUDIO_DATASET,
   document: {
+    unstable_comments: {enabled: false},
     unstable_fieldActions: (prev) => [
       ...prev,
       defineDocumentFieldAction({
