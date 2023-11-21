@@ -1,10 +1,11 @@
 import React, {useCallback} from 'react'
-import {Flex, MenuDivider, Box, Card, Stack} from '@sanity/ui'
+import {Flex, MenuDivider, Box, Card, Stack, TooltipDelayGroupProvider} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
 import {MentionIcon, SendIcon} from '../../icons'
 import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 import {Button} from '../../../../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../../../../ui/tooltip/constants'
 import {useCommentInput} from './useCommentInput'
 import {Editable} from './Editable'
 import {useUser} from 'sanity'
@@ -122,29 +123,31 @@ export function CommentInputInner(props: CommentInputInnerProps) {
           </EditableWrap>
 
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
-            <Button
-              aria-label="Mention user"
-              data-testid="comment-mention-button"
-              disabled={readOnly}
-              icon={MentionIcon}
-              mode="bleed"
-              onClick={handleMentionButtonClicked}
-              size="small"
-              tooltipProps={{content: 'Mention user'}}
-            />
+            <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+              <Button
+                aria-label="Mention user"
+                data-testid="comment-mention-button"
+                disabled={readOnly}
+                icon={MentionIcon}
+                mode="bleed"
+                onClick={handleMentionButtonClicked}
+                size="small"
+                tooltipProps={{content: 'Mention user'}}
+              />
 
-            <ButtonDivider />
+              <ButtonDivider />
 
-            <Button
-              aria-label="Send comment"
-              disabled={!canSubmit || !hasChanges || readOnly}
-              icon={SendIcon}
-              mode={hasChanges && canSubmit ? 'default' : 'bleed'}
-              onClick={onSubmit}
-              size="small"
-              tone={hasChanges && canSubmit ? 'primary' : 'default'}
-              tooltipProps={{content: 'Send comment'}}
-            />
+              <Button
+                aria-label="Send comment"
+                disabled={!canSubmit || !hasChanges || readOnly}
+                icon={SendIcon}
+                mode={hasChanges && canSubmit ? 'default' : 'bleed'}
+                onClick={onSubmit}
+                size="small"
+                tone={hasChanges && canSubmit ? 'primary' : 'default'}
+                tooltipProps={{content: 'Send comment'}}
+              />
+            </TooltipDelayGroupProvider>
           </Flex>
         </Stack>
       </RootCard>

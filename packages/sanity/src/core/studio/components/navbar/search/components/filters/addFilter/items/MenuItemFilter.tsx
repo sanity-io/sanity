@@ -50,21 +50,15 @@ export const MenuItemFilter = React.memo(function MenuItemFilter({
         tabIndex={-1}
         tone={item?.tone}
       >
-        {tooltipEnabled ? (
-          <FilterTooltip
-            fieldDefinition={item.fieldDefinition}
-            filterDefinition={item.filterDefinition}
-            visible={tooltipEnabled}
-          >
-            <Box padding={3}>
-              <FilterDetails filter={item.filter} />
-            </Box>
-          </FilterTooltip>
-        ) : (
+        <FilterTooltip
+          fieldDefinition={item.fieldDefinition}
+          filterDefinition={item.filterDefinition}
+          visible={tooltipEnabled}
+        >
           <Box padding={3}>
             <FilterDetails filter={item.filter} />
           </Box>
-        )}
+        </FilterTooltip>
       </Button>
     </Box>
   )

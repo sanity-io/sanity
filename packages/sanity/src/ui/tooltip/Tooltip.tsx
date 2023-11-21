@@ -44,7 +44,7 @@ export const Tooltip = forwardRef(function Tooltip(
       boundaryElement={null}
       content={
         <Flex align="center" gap={3}>
-          <Text size={1}>{content}</Text>
+          {content && <Text size={1}>{content}</Text>}
           {hotkeys && (
             <Hotkeys fontSize={1} keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />
           )}

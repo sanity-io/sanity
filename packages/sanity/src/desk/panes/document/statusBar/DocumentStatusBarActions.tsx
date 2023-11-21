@@ -1,4 +1,4 @@
-import {Box, Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
@@ -19,20 +19,21 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
+  // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
     if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null
 
     return (
-      <Flex style={{maxWidth: 300}} align="center">
-        <Text size={1}>{firstActionState.title}</Text>
+      <Flex style={{maxWidth: 300}} align="center" gap={3}>
+        {firstActionState.title && <Text size={1}>{firstActionState.title}</Text>}
         {firstActionState.shortcut && (
-          <Box marginLeft={firstActionState.title ? 2 : 0}>
-            <Hotkeys
-              keys={String(firstActionState.shortcut)
-                .split('+')
-                .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase())}
-            />
-          </Box>
+          <Hotkeys
+            fontSize={1}
+            style={{marginTop: -4, marginBottom: -4}}
+            keys={String(firstActionState.shortcut)
+              .split('+')
+              .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase())}
+          />
         )}
       </Flex>
     )
