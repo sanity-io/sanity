@@ -23,6 +23,7 @@ import {
 } from '../../src/core'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 import {createTestProvider} from '../testUtils/TestProvider'
+import {DocumentFieldActionsProvider} from '../../src/core/form/studio/contexts/DocumentFieldActions'
 import {TestRenderProps} from './types'
 
 export interface TestRenderInputContext {
@@ -159,32 +160,34 @@ export async function renderInput(props: {
         validation={validation}
         value={undefined}
       >
-        {renderFn(
-          {
-            focusPath: formState.focusPath,
-            id: formState.id || name,
-            level,
-            onBlur,
-            onChange,
-            onFocus,
-            onPathBlur,
-            onPathFocus,
-            path,
-            readOnly,
-            schemaType,
-            validation: formState.validation,
-            presence: formState.presence,
-            value: formState.value?.[name],
-            elementProps: {
+        <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
+          {renderFn(
+            {
+              focusPath: formState.focusPath,
               id: formState.id || name,
+              level,
               onBlur,
+              onChange,
               onFocus,
-              ref: focusRef,
-              onChange: onDOMChange,
+              onPathBlur,
+              onPathFocus,
+              path,
+              readOnly,
+              schemaType,
+              validation: formState.validation,
+              presence: formState.presence,
+              value: formState.value?.[name],
+              elementProps: {
+                id: formState.id || name,
+                onBlur,
+                onFocus,
+                ref: focusRef,
+                onChange: onDOMChange,
+              },
             },
-          },
-          {client, formState},
-        )}
+            {client, formState},
+          )}
+        </DocumentFieldActionsProvider>
       </FormProvider>
     )
   }

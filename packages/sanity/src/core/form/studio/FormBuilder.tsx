@@ -5,14 +5,34 @@ import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useRef} from 'react'
 import {FormPatch, PatchChannel, PatchEvent} from '../patch'
 import {ObjectFormNode} from '../store/types/nodes'
-import {ObjectInputProps} from '../types'
-import {useFormBuilder} from '../useFormBuilder'
+import {
+  BlockAnnotationProps,
+  BlockProps,
+  FieldProps,
+  InputProps,
+  ItemProps,
+  ObjectInputProps,
+  RenderPreviewCallbackProps,
+} from '../types'
 import {StateTree} from '../store'
 import {EMPTY_ARRAY} from '../../util'
 import {FormNodePresence} from '../../presence'
 import {DocumentFieldAction} from '../../config'
+import {useSource} from '../../studio'
+import {
+  useAnnotationComponent,
+  useBlockComponent,
+  useFieldComponent,
+  useInlineBlockComponent,
+  useInputComponent,
+  useItemComponent,
+  usePreviewComponent,
+} from '../form-components-hooks'
+import {PreviewLoader} from '../../preview'
+import type {FormDocumentValue} from '../types'
+import {FormValueProvider} from '../contexts/FormValue'
 import {FormProvider} from './FormProvider'
-import {useFormCallbacks} from './contexts/FormCallbacks'
+import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 
 /**
  * @alpha
@@ -42,7 +62,7 @@ export interface FormBuilderProps
   readOnly?: boolean
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
-  value: {[field in string]: unknown} | undefined
+  value: FormDocumentValue | undefined
 }
 
 /**
@@ -74,66 +94,6 @@ export function FormBuilder(props: FormBuilderProps) {
     validation,
     value,
   } = props
-
-  return (
-    <FormProvider
-      __internal_fieldActions={fieldActions}
-      __internal_patchChannel={patchChannel}
-      autoFocus={autoFocus}
-      changesOpen={changesOpen}
-      collapsedFieldSets={collapsedFieldSets}
-      collapsedPaths={collapsedPaths}
-      focusPath={focusPath}
-      focused={focused}
-      groups={groups}
-      id={id}
-      members={members}
-      onChange={onChange}
-      onPathBlur={onPathBlur}
-      onPathFocus={onPathFocus}
-      onPathOpen={onPathOpen}
-      onFieldGroupSelect={onFieldGroupSelect}
-      onSetPathCollapsed={onSetPathCollapsed}
-      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
-      presence={presence}
-      validation={validation}
-      readOnly={readOnly}
-      schemaType={schemaType}
-      value={value}
-    >
-      <RootInput />
-    </FormProvider>
-  )
-}
-
-function RootInput() {
-  const {
-    focusPath,
-    focused,
-    groups,
-    id,
-    members,
-    readOnly,
-    renderAnnotation,
-    renderBlock,
-    renderField,
-    renderInlineBlock,
-    renderInput,
-    renderItem,
-    renderPreview,
-    schemaType,
-    value,
-  } = useFormBuilder()
-
-  const {
-    onChange,
-    onFieldGroupSelect,
-    onPathBlur,
-    onPathFocus,
-    onPathOpen,
-    onSetFieldSetCollapsed,
-    onSetPathCollapsed,
-  } = useFormCallbacks()
 
   const handleCollapseField = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], true),
@@ -175,6 +135,50 @@ function RootInput() {
     [onSetFieldSetCollapsed],
   )
 
+  const {file, image} = useSource().form
+
+  // These hooks may be stored in context as an perf optimization
+  const Input = useInputComponent()
+  const Field = useFieldComponent()
+  const Preview = usePreviewComponent()
+  const Item = useItemComponent()
+  const Block = useBlockComponent()
+  const InlineBlock = useInlineBlockComponent()
+  const Annotation = useAnnotationComponent()
+
+  const renderInput = useCallback(
+    (inputProps: Omit<InputProps, 'renderDefault'>) => <Input {...inputProps} />,
+    [Input],
+  )
+  const renderField = useCallback(
+    (fieldProps: Omit<FieldProps, 'renderDefault'>) => <Field {...fieldProps} />,
+    [Field],
+  )
+  const renderItem = useCallback(
+    (itemProps: Omit<ItemProps, 'renderDefault'>) => <Item {...itemProps} />,
+    [Item],
+  )
+  const renderPreview = useCallback(
+    (previewProps: RenderPreviewCallbackProps) => (
+      <PreviewLoader component={Preview} {...previewProps} />
+    ),
+    [Preview],
+  )
+  const renderBlock = useCallback(
+    (blockProps: Omit<BlockProps, 'renderDefault'>) => <Block {...blockProps} />,
+    [Block],
+  )
+  const renderInlineBlock = useCallback(
+    (blockProps: Omit<BlockProps, 'renderDefault'>) => <InlineBlock {...blockProps} />,
+    [InlineBlock],
+  )
+  const renderAnnotation = useCallback(
+    (annotationProps: Omit<BlockAnnotationProps, 'renderDefault'>) => (
+      <Annotation {...annotationProps} />
+    ),
+    [Annotation],
+  )
+
   const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = {
     focusPath,
     elementProps: {
@@ -214,5 +218,37 @@ function RootInput() {
     value,
   }
 
-  return <>{renderInput(rootInputProps)}</>
+  return (
+    <FormProvider
+      __internal_fieldActions={fieldActions}
+      __internal_patchChannel={patchChannel}
+      autoFocus={autoFocus}
+      changesOpen={changesOpen}
+      collapsedFieldSets={collapsedFieldSets}
+      collapsedPaths={collapsedPaths}
+      focusPath={focusPath}
+      focused={focused}
+      groups={groups}
+      id={id}
+      members={members}
+      onChange={onChange}
+      onPathBlur={onPathBlur}
+      onPathFocus={onPathFocus}
+      onPathOpen={onPathOpen}
+      onFieldGroupSelect={onFieldGroupSelect}
+      onSetPathCollapsed={onSetPathCollapsed}
+      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+      presence={presence}
+      validation={validation}
+      readOnly={readOnly}
+      schemaType={schemaType}
+      value={value}
+    >
+      <FormValueProvider value={value}>
+        <DocumentFieldActionsProvider actions={fieldActions}>
+          {renderInput(rootInputProps)}
+        </DocumentFieldActionsProvider>
+      </FormValueProvider>
+    </FormProvider>
+  )
 }

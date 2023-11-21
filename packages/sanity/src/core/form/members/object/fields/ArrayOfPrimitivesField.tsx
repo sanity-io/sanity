@@ -37,6 +37,8 @@ import {accepts} from '../../../studio/uploads/accepts'
 import {applyAll} from '../../../patch/applyPatch'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {DocumentFieldActionNode} from '../../../../config'
+import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()
@@ -157,10 +159,7 @@ export function ArrayOfPrimitivesField(props: {
     renderItem,
     renderPreview,
   } = props
-
-  const {
-    field: {actions: fieldActions},
-  } = useFormBuilder().__internal
+  const fieldActions = useDocumentFieldActions()
 
   const focusRef = useRef<Element & {focus: () => void}>()
   const uploadSubscriptions = useRef<Subscription>()
