@@ -517,6 +517,11 @@ export interface PortableTextInputProps
    */
   hotkeys?: HotkeyOptions
   /**
+   * Whether the input is activated and should receive events on mount.
+   * By default, PTE inputs need to be manually activated by focusing them.
+   */
+  initialActive?: boolean
+  /**
    * Whether the input is _initially_ open in fullscreen mode
    */
   initialFullscreen?: boolean
