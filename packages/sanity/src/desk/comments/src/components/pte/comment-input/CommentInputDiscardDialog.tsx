@@ -5,9 +5,10 @@ import {
   Stack,
   Text,
   ThemeColorProvider,
-  useBoundaryElement,
   PortalProvider,
   DialogProvider,
+  usePortal,
+  useLayer,
 } from '@sanity/ui'
 import React, {useCallback} from 'react'
 
@@ -28,8 +29,6 @@ export interface CommentInputDiscardDialogProps {
  */
 export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps) {
   const {onClose, onConfirm} = props
-
-  const portal = useBoundaryElement()
 
   const handleCancelClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -53,28 +52,25 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
   // rendered fullscreen and not scoped to the form view.
   return (
     <ThemeColorProvider tone="default">
-      <PortalProvider __unstable_elements={{boundary: portal.element}}>
-        <DialogProvider zOffset={Z_OFFSET}>
-          <Dialog
-            portal="boundary"
-            header="Discard comment?"
-            id="discard-comment-dialog"
-            onClose={onClose}
-            width={0}
-            onClickOutside={onClose}
-            footer={
-              <Grid columns={2} padding={2} gap={2}>
-                <Button text="Cancel" mode="ghost" onClick={handleCancelClick} />
-                <Button onClick={handleConfirmClick} text="Discard" tone="critical" />
-              </Grid>
-            }
-          >
-            <Stack padding={4}>
-              <Text>Do you want to discard the comment?</Text>
-            </Stack>
-          </Dialog>
-        </DialogProvider>
-      </PortalProvider>
+      <DialogProvider zOffset={Z_OFFSET}>
+        <Dialog
+          header="Discard comment?"
+          id="discard-comment-dialog"
+          onClose={onClose}
+          width={0}
+          onClickOutside={onClose}
+          footer={
+            <Grid columns={2} padding={2} gap={2}>
+              <Button text="Cancel" mode="ghost" onClick={handleCancelClick} />
+              <Button onClick={handleConfirmClick} text="Discard" tone="critical" />
+            </Grid>
+          }
+        >
+          <Stack padding={4}>
+            <Text>Do you want to discard the comment?</Text>
+          </Stack>
+        </Dialog>
+      </DialogProvider>
     </ThemeColorProvider>
   )
 }
