@@ -17,6 +17,7 @@ import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {omit} from 'lodash'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -167,8 +168,8 @@ export function Editor(props: EditorProps): ReactNode {
       'spellCheck': spellcheck,
       'style': noOutlineStyle,
     } satisfies PortableTextEditableProps
-    const defaultRender = (defProps: PortableTextEditableProps) => (
-      <PortableTextEditable {...editableProps} {...defProps} />
+    const defaultRender = (defaultRenderProps: PortableTextEditableProps) => (
+      <PortableTextEditable {...editableProps} {...omit(defaultRenderProps, ['renderDefault'])} />
     )
     if (renderEditable) {
       return renderEditable({...editableProps, renderDefault: defaultRender})
