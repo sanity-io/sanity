@@ -497,6 +497,11 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
 export interface PortableTextInputProps
   extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
   /**
+   * If the input should be active (take events) or not.
+   * The default is that it is activated when the user clicks on it.
+   */
+  active?: boolean
+  /**
    * A React Ref that can reference the underlying editor instance
    */
   editorRef: React.MutableRefObject<PortableTextEditor | null>
