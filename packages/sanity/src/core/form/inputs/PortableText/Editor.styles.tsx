@@ -84,18 +84,27 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       `
     })}
 
-    & > .pt-list-item-bullet + .pt-list-item-number,
-    & > .pt-list-item-number + .pt-list-item-bullet {
-      margin-top: ${({theme}) => theme.sanity.space[3]}px;
-      counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
-    }
-
     & > :not(.pt-list-item) + .pt-list-item {
       margin-top: ${({theme}) => theme.sanity.space[2]}px;
     }
 
-    /* Reset the list count if the element is not a numbered list item */
-    & > :not(.pt-list-item-number) {
+    // Rest the list count if the element is not a list item (of any type, numbered or bullet).
+    // We
+
+    // Example, we want this to be possible:
+    // 1. Numbered list item
+    // 2. Numbered list item
+    //    - Bullet list item // <--- Don't reset the list count here
+    //    - Bullet list item
+    // 3. Numbered list item
+    //
+    // [SOME OTHER ELEMENT IN THE EDITOR (not a .pt-list-item)] // <--- Reset the list count here
+    //
+    // 1. Numbered list item
+    // 2. Numbered list item
+    //    - Bullet list item
+    // 3. Numbered list item
+    & > :not(.pt-list-item) {
       counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
     }
 
@@ -118,11 +127,6 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
     & > :last-child {
       padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
     }
-
-    /* & > .pt-block {
-      & .pt-inline-object {
-      }
-    } */
 
     & .pt-drop-indicator {
       pointer-events: none;
