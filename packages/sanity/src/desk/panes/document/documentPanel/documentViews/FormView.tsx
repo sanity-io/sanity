@@ -7,6 +7,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {Delay} from '../../../../components/Delay'
 import {useConditionalToast} from './useConditionalToast'
 import {
+  FormDocumentValue,
   DocumentMutationEvent,
   DocumentRebaseEvent,
   FormBuilder,
@@ -177,7 +178,11 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 readOnly={formState.readOnly}
                 schemaType={formState.schemaType}
                 validation={validation}
-                value={formState.value}
+                value={
+                  // note: the form state doesn't have a typed concept of a "document" value
+                  // but these should be compatible
+                  formState.value as FormDocumentValue
+                }
               />
             )
           ) : (

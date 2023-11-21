@@ -1,12 +1,7 @@
 import {getPublishedId} from '../util'
-import {useFormValue} from './useFormValue'
+import {useFormBuilder} from './useFormBuilder'
 
 export function useFormPublishedId(): string | undefined {
-  const id = useFormValue(['_id'])
-
-  if (typeof id !== 'string') {
-    return undefined
-  }
-
+  const id = useFormBuilder().id
   return getPublishedId(id)
 }

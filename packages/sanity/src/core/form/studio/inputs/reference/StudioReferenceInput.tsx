@@ -18,12 +18,12 @@ import {useReferenceInputOptions} from '../../contexts'
 import {ObjectInputProps} from '../../../types'
 import {Source} from '../../../../config'
 import {useSource} from '../../../../studio'
-import {useFormValue} from '../../../useFormValue'
 import {useSchema} from '../../../../hooks'
 import {useDocumentPreviewStore} from '../../../../store'
 import {FIXME} from '../../../../FIXME'
 import {isNonNullable} from '../../../../util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {useFormValue} from '../../../contexts/FormValue'
 
 async function resolveUserDefinedFilter(
   options: ReferenceOptions | undefined,
