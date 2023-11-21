@@ -86,7 +86,6 @@ const InnerToolbar = memo(function InnerToolbar({
 
   const preventEditorBlurOnToolbarMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
-    e.stopPropagation()
   }, [])
 
   return (
