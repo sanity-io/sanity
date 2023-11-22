@@ -870,10 +870,10 @@ describe('plugin:withPortableTextMarksModel', () => {
         if (editorRef.current) {
           PortableTextEditor.focus(editorRef.current)
           PortableTextEditor.select(editorRef.current, {
-            focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}], offset: 14},
+            focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}], offset: 10},
             anchor: {
               path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}],
-              offset: 10,
+              offset: 0,
             },
           })
           // // eslint-disable-next-line max-nested-callbacks
@@ -895,8 +895,8 @@ describe('plugin:withPortableTextMarksModel', () => {
                 },
                 {
                   _key: '1',
-                  _type: 'span',
                   marks: ['fde1fd54b544'],
+                  _type: 'span',
                   text: 'link',
                 },
               ],
