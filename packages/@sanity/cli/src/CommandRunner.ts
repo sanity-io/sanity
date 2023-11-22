@@ -81,11 +81,7 @@ export class CommandRunner {
     const output = this.handlers.outputter
     const prompt = this.handlers.prompter
 
-    const {cliConfig, ...commandOptions} = options
-    const apiClient = getClientWrapper(
-      cliConfig?.config?.api || null,
-      cliConfig?.path || (cliConfig?.version === 2 ? 'sanity.json' : 'sanity.cli.js'),
-    )
+    const {apiClient, cliConfig, ...commandOptions} = options
 
     const context: CliCommandContext = {
       output,

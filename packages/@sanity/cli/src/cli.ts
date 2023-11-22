@@ -17,6 +17,8 @@ import {CliConfigResult, getCliConfig} from './util/getCliConfig'
 import {getInstallCommand} from './packageManager'
 import {CommandRunnerOptions} from './types'
 import {debug} from './debug'
+import {createTelemetryStore} from './util/createTelemetryStore'
+import {getClientWrapper} from './util/clientWrapper'
 
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
@@ -25,6 +27,9 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   installUnhandledRejectionsHandler()
 
   const pkg = {name: '@sanity/cli', version: cliVersion}
+
+  const telemetry = createTelemetryStore({env: process.env})
+
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = getCurrentWorkingDirectory()
@@ -48,12 +53,18 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   if (!cliConfig) {
     debug('No CLI config found')
   }
+  const apiClient = getClientWrapper(
+    cliConfig?.config?.api || null,
+    cliConfig?.path || (cliConfig?.version === 2 ? 'sanity.json' : 'sanity.cli.js'),
+  )
 
   const options: CommandRunnerOptions = {
     cliRoot: cliRoot,
     workDir: workDir,
+    apiClient,
     corePath: await getCoreModulePath(workDir, cliConfig),
     cliConfig,
+    telemetry,
   }
 
   warnOnNonProductionEnvironment()
