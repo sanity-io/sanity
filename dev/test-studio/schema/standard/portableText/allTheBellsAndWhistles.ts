@@ -32,7 +32,6 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                 type: 'object',
                 name: 'link',
                 title: 'Link',
-                // components: {input: LinkAnnotationInput},
                 // options: {
                 //   modal: {type: 'dialog'},
                 // },
