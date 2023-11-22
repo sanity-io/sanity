@@ -87,9 +87,15 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}
-            tooltipText={action.title || action.key}
+            tooltipText={
+              annotationDisabled
+                ? `Cannot apply ${action.title || action.key} to ${
+                    isEmptyTextBlock ? 'empty block' : 'multiple blocks'
+                  }`
+                : action.title || action.key
+            }
             tooltipProps={{
-              disabled: disabled || annotationDisabled,
+              disabled: disabled,
               placement: isFullscreen ? 'bottom' : 'top',
               portal: 'default',
             }}
