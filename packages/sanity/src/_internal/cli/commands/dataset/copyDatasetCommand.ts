@@ -23,8 +23,8 @@ Examples
   sanity dataset copy
   sanity dataset copy <source-dataset>
   sanity dataset copy <source-dataset> <target-dataset>
-  sanity dataset copy --skip-history <source-dataset> <target-dataset>
-  sanity dataset copy --detach <source-dataset> <target-dataset>
+  sanity dataset copy <source-dataset> <target-dataset> --skip-history 
+  sanity dataset copy <source-dataset> <target-dataset> --detach 
   sanity dataset copy --attach <job-id>
   sanity dataset copy --list
   sanity dataset copy --list --offset=2
