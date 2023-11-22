@@ -1,4 +1,3 @@
-/* eslint-disable boundaries/element-types */
 import {PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
@@ -27,7 +26,6 @@ import {pathToString} from '../../../field'
 import {isMemberArrayOfObjects} from '../../members/object/fields/asserters'
 import {FormInput} from '../../components'
 import {FIXME} from '../../../FIXME'
-import {useDocumentPane} from '../../../../desk'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
@@ -95,7 +93,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const [isActive, setIsActive] = useState(false)
   const [isOffline, setIsOffline] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
-  const {activeViewId} = useDocumentPane()
 
   const toast = useToast()
 
@@ -113,6 +110,12 @@ export function PortableTextInput(props: PortableTextInputProps) {
       setIsFullscreen((v) => !v)
     }
   }, [])
+
+  useEffect(() => {
+    if (!isActive && isFullscreen) {
+      setIsFullscreen(false)
+    }
+  }, [isActive, isFullscreen])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -134,6 +137,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
   useEffect(() => {
     if (hasFocusWithin) {
       setIsActive(true)
+    } else if (!hasFocusWithin) {
+      setIsActive(false)
     }
   }, [hasFocusWithin])
 
@@ -219,10 +224,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
     }
   }, [isActive])
-
-  useEffect(() => {
-    setIsActive(false)
-  }, [activeViewId])
 
   return (
     <Box ref={innerElementRef}>
