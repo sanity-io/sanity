@@ -61,7 +61,7 @@ import {
  */
 // eslint-disable-next-line complexity, max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath} = props
+  const {children, forceCloseButton, index, pane, paneKey, onFocusPath} = props
   const schema = useSchema()
   const templates = useTemplates()
   const {
@@ -614,6 +614,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState,
     fieldActions,
     focusPath,
+    forceCloseButton,
     inspector: currentInspector || null,
     inspectors,
     menuItems,

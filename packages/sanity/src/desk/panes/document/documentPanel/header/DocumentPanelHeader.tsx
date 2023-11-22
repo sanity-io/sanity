@@ -26,6 +26,7 @@ export const DocumentPanelHeader = memo(
     ref: React.ForwardedRef<HTMLDivElement>,
   ) {
     const {
+      forceCloseButton,
       onMenuAction,
       onPaneClose,
       onPaneSplit,
@@ -74,7 +75,8 @@ export const DocumentPanelHeader = memo(
     // _not_ showing (the split pane button replaces the group close button)
     // and if the back button is not showing (the back button and the close
     // button) do the same thing and shouldn't be shown at the same time)
-    const showPaneGroupCloseButton = !showSplitPaneCloseButton && !features.backButton
+    const showPaneGroupCloseButton =
+      forceCloseButton || (!showSplitPaneCloseButton && !features.backButton)
     const {t} = useTranslation(structureLocaleNamespace)
 
     return (

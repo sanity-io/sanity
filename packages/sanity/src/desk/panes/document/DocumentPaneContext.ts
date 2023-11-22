@@ -42,6 +42,7 @@ export interface DocumentPaneContextValue {
   editState: EditStateFor | null
   fieldActions: DocumentFieldAction[]
   focusPath: Path
+  forceCloseButton?: boolean
   index: number
   inspectOpen: boolean
   inspector: DocumentInspector | null
