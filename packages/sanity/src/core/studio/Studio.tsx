@@ -3,8 +3,8 @@ import {Config} from '../config'
 import type {StudioThemeColorSchemeKey} from '../theme/types'
 import {GlobalStyle} from './GlobalStyle'
 import {RouterHistory} from './router'
-import {useLayoutComponent} from './studio-components-hooks'
 import {StudioProvider} from './StudioProvider'
+import {StudioLayout} from './StudioLayout'
 
 /**
  * @hidden
@@ -86,12 +86,6 @@ export interface StudioProps {
    * @hidden
    * @beta */
   unstable_noAuthBoundary?: boolean
-}
-
-function StudioLayout() {
-  const Layout = useLayoutComponent()
-
-  return <Layout />
 }
 
 /**
