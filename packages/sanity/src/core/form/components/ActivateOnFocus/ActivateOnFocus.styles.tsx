@@ -31,8 +31,8 @@ export const FlexContainer = styled(Flex)`
   width: 100%;
   height: 100%;
 
-  :hover,
-  :focus {
+  &:hover,
+  &:focus {
     & ${CardContainer} {
       opacity: 0.9;
     }
