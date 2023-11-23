@@ -1,4 +1,4 @@
-import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
+import {BellIcon, ColorWheelIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Rule} from '@sanity/types'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {InfoBoxPreview} from './InfoBoxPreview'
@@ -67,6 +67,19 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                     title: 'Open in new tab?',
                     description: 'Will open the link in a new tab when checked.',
                     initialValue: false,
+                  },
+                ],
+              },
+              {
+                type: 'object',
+                name: 'color',
+                title: 'Color',
+                icon: ColorWheelIcon,
+                fields: [
+                  {
+                    type: 'string',
+                    name: 'color',
+                    title: 'Color',
                   },
                 ],
               },

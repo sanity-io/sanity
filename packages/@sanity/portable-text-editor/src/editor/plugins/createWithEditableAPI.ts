@@ -459,42 +459,29 @@ export function createWithEditableAPI(
               if (!selection) {
                 return
               }
-              // Split the span first
-              Transforms.setNodes(editor, {}, {match: Text.isText, split: true})
-              editor.onChange()
-
-              // Everything in the selection which has marks
-              const spans = [
+              // Find the selected block, to identify the annotation to remove
+              const blocks = [
                 ...Editor.nodes(editor, {
                   at: selection,
-                  match: (node) =>
-                    Text.isText(node) &&
-                    node.marks !== undefined &&
-                    Array.isArray(node.marks) &&
-                    node.marks.length > 0,
+                  match: (node) => {
+                    return (
+                      editor.isTextBlock(node) &&
+                      Array.isArray(node.markDefs) &&
+                      node.markDefs.some((def) => def._type === type.name)
+                    )
+                  },
                 }),
               ]
-              spans.forEach(([span, path]) => {
-                const [block] = Editor.node(editor, path, {depth: 1})
-                if (editor.isTextBlock(block)) {
-                  block.markDefs
-                    ?.filter((def) => def._type === type.name)
-                    .forEach((def) => {
-                      if (
-                        Text.isText(span) &&
-                        Array.isArray(span.marks) &&
-                        span.marks.includes(def._key)
-                      ) {
-                        const newMarks = [...(span.marks || []).filter((mark) => mark !== def._key)]
-                        Transforms.setNodes(
-                          editor,
-                          {
-                            marks: newMarks,
-                          },
-                          {at: path, voids: false, split: false},
-                        )
-                      }
-                    })
+              const removedMarks: string[] = []
+
+              // Removes the marks from the text nodes
+              blocks.forEach(([block]) => {
+                if (editor.isTextBlock(block) && Array.isArray(block.markDefs)) {
+                  const marksToRemove = block.markDefs.filter((def) => def._type === type.name)
+                  marksToRemove.forEach((def) => {
+                    if (!removedMarks.includes(def._key)) removedMarks.push(def._key)
+                    Editor.removeMark(editor, def._key)
+                  })
                 }
               })
               normalizeMarkDefs(editor, types)
