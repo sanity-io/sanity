@@ -31,6 +31,7 @@
     "dev:starter-studio": "yarn --cwd dev/starter-studio dev",
     "dev:strict-studio": "yarn --cwd dev/strict-studio dev",
     "dev:test-studio": "yarn --cwd dev/test-studio dev",
+    "dev:embedded-studio": "yarn --cwd dev/embedded-studio dev",
     "docs:report": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReport",
     "docs:report:create": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReportCreate",
     "docs:report:cleanup": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReportCleanup",
