@@ -241,3 +241,7 @@ export function isPlaceholderAnnotation(node: TypedObject): node is PlaceholderA
 export function isElement(node: Node): node is Element {
   return node.nodeType === 1
 }
+
+export function isHtmlElementNode(node: Node): node is HTMLElement {
+  return node instanceof HTMLElement
+}

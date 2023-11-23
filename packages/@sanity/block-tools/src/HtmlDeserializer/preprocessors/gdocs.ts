@@ -1,3 +1,4 @@
+import {isHtmlElementNode, tagName} from '../helpers'
 import {_XPathResult} from './xpathResult'
 
 export default (html: string, doc: Document): Document => {
@@ -24,6 +25,17 @@ export default (html: string, doc: Document): Document => {
     for (let i = childNodes.snapshotLength - 1; i >= 0; i--) {
       const elm = childNodes.snapshotItem(i) as HTMLElement
       elm?.setAttribute('data-is-google-docs', 'true')
+
+      // Handle checkmark lists - The first child of a list item is an image with a checkmark, and the serializer
+      // expects the first child to be the text node
+      if (
+        tagName(elm) === 'li' &&
+        isHtmlElementNode(elm) &&
+        elm.firstChild &&
+        tagName(elm?.firstChild) === 'img'
+      ) {
+        elm.removeChild(elm.firstChild)
+      }
     }
     // Remove that 'b' which Google Docs wraps the HTML content in
     doc.body.firstElementChild?.replaceWith(...Array.from(gDocsRootNode.childNodes))
