@@ -4,7 +4,7 @@ import {_XPathResult} from './xpathResult'
 export default (html: string, doc: Document): Document => {
   const gDocsRootNode = doc
     .evaluate(
-      '//b[contains(@id, "docs-internal-guid")]',
+      '//*[self::p or self::b][contains(@id, "docs-internal-guid")]',
       doc,
       null,
       _XPathResult.ORDERED_NODE_ITERATOR_TYPE,
