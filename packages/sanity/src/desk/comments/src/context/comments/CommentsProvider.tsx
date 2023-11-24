@@ -11,7 +11,6 @@ import {
   CommentOperationsHookOptions,
   MentionHookOptions,
   useCommentOperations,
-  useCommentsEnabled,
   useCommentsSetup,
   useMentionOptions,
 } from '../../hooks'
@@ -43,65 +42,10 @@ export interface CommentsProviderProps {
   documentType: string
 }
 
-const EMPTY_COMMENTS = {
-  data: EMPTY_COMMENTS_DATA,
-  error: null,
-  loading: false,
-}
-
-const EMPTY_MENTION_OPTIONS = {
-  data: [],
-  error: null,
-  loading: false,
-}
-
-const noop = async () => {
-  await Promise.resolve()
-}
-
-const noopOperation = {
-  execute: noop,
-}
-
-const COMMENTS_DISABLED_CONTEXT: CommentsContextValue = {
-  comments: EMPTY_COMMENTS,
-  create: noopOperation,
-  edit: noopOperation,
-  getComment: () => undefined,
-  isRunningSetup: false,
-  mentionOptions: EMPTY_MENTION_OPTIONS,
-  remove: noopOperation,
-  setStatus: noop,
-  status: 'open',
-  update: noopOperation,
-}
-
 /**
  * @beta
- * @hidden
  */
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
-  const {children, documentId, documentType} = props
-
-  const {isEnabled} = useCommentsEnabled({
-    documentId,
-    documentType,
-  })
-
-  if (!isEnabled) {
-    return (
-      <CommentsContext.Provider value={COMMENTS_DISABLED_CONTEXT}>
-        {children}
-      </CommentsContext.Provider>
-    )
-  }
-
-  return <CommentsProviderInner {...props} />
-})
-
-const CommentsProviderInner = memo(function CommentsProviderInner(
-  props: Omit<CommentsProviderProps, 'enabled'>,
-) {
   const {children, documentId, documentType} = props
   const [status, setStatus] = useState<CommentStatus>('open')
 
