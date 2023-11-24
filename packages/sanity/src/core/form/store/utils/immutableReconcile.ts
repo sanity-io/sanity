@@ -47,6 +47,7 @@ function _immutableReconcile<T>(
       }
       result[index] = nextItem
     }
+    parents.delete(next)
     return (allEqual ? previous : result) as any
   }
 
@@ -65,6 +66,7 @@ function _immutableReconcile<T>(
       }
       result[key] = nextValue
     }
+    parents.delete(next)
     return (allEqual ? previous : result) as T
   }
   return next

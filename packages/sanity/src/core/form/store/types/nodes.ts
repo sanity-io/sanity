@@ -68,8 +68,6 @@ export interface ObjectFormNode<
    * @hidden
    * @beta */
   members: ObjectMember[]
-  /** @internal */
-  _allMembers: (ObjectMember | HiddenField)[]
 }
 
 /** @public */
@@ -90,8 +88,6 @@ export interface ObjectArrayFormNode<
    * @beta */
   members: ObjectMember[]
 
-  /** @internal */
-  _allMembers: ObjectMember[]
   changesOpen?: boolean
 }
 
