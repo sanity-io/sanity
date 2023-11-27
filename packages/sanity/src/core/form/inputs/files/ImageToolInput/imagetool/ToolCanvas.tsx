@@ -1,4 +1,4 @@
-import React, {MouseEvent} from 'react'
+import React, {PointerEvent} from 'react'
 import {memoize} from 'lodash'
 import {getBackingStoreRatio} from './getBackingStoreRatio'
 import * as utils2d from './2d/utils'
@@ -696,11 +696,11 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     }
   }
 
-  handleMouseOut = () => {
+  handlePointerOut = () => {
     this.setState({mousePosition: null})
   }
 
-  handleMouseMove = (event: MouseEvent<HTMLCanvasElement>) => {
+  handlePointerMove = (event: PointerEvent<HTMLCanvasElement>) => {
     const clientRect = event.currentTarget.getBoundingClientRect()
     this.setState({
       mousePosition: {
@@ -725,8 +725,8 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
           onDrag={this.handleDrag}
           onDragStart={this.handleDragStart}
           onDragEnd={this.handleDragEnd}
-          onMouseMove={this.handleMouseMove}
-          onMouseOut={this.handleMouseOut}
+          onPointerMove={this.handlePointerMove}
+          onPointerOut={this.handlePointerOut}
           height={image.height * ratio}
           width={image.width * ratio}
         />
