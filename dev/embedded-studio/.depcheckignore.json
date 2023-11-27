@@ -1,0 +1,3 @@
+{
+  "ignore": ["styled-components", "react", "react-dom", "sanity"]
+}  

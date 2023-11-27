@@ -2,7 +2,7 @@ import {ComponentType} from 'react'
 import {LayoutProps, LogoProps, NavbarProps, ToolMenuProps} from '../../config/studio'
 import {useMiddlewareComponents} from '../../config'
 import {StudioLogo, StudioNavbar, StudioToolMenu} from '../components'
-import {StudioLayout} from '../StudioLayout'
+import {StudioLayoutComponent} from '../StudioLayout'
 import {
   pickToolMenuComponent,
   pickNavbarComponent,
@@ -45,7 +45,7 @@ export function useLogoComponent(): ComponentType<Omit<LogoProps, 'renderDefault
  */
 export function useLayoutComponent(): ComponentType<Omit<LayoutProps, 'renderDefault'>> {
   return useMiddlewareComponents({
-    defaultComponent: StudioLayout as ComponentType<Omit<LayoutProps, 'renderDefault'>>,
+    defaultComponent: StudioLayoutComponent as ComponentType<Omit<LayoutProps, 'renderDefault'>>,
     pick: pickLayoutComponent,
   })
 }
