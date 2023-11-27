@@ -7,19 +7,23 @@ import {useTranslation} from '../../../../../i18n'
 const LINKS = [
   {
     url: 'https://slack.sanity.io/',
-    title: 'community',
+    i18nKey: 'workspaces.community-title',
+    title: 'Community',
   },
   {
     url: 'https://www.sanity.io/docs',
-    title: 'docs',
+    i18nKey: 'workspaces.docs-title',
+    title: 'Docs',
   },
   {
     url: 'https://www.sanity.io/legal/privacy',
-    title: 'privacy',
+    i18nKey: 'workspaces.privacy-title',
+    title: 'Privacy',
   },
   {
     url: 'https://www.sanity.io',
-    title: 'sanity-io',
+    i18nKey: 'workspaces.sanity-io-title',
+    title: 'sanity.io',
   },
 ]
 
@@ -72,7 +76,7 @@ export function Layout(props: LayoutProps) {
             <React.Fragment key={link.title}>
               <StyledText muted size={1}>
                 <a href={link.url} target="_blank" rel="noopener noreferrer">
-                  {t(`workspaces.${link.title}-title`)}
+                  {link.title}
                 </a>
               </StyledText>
 
