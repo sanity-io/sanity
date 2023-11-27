@@ -31,6 +31,7 @@ import {
 import {PreviewLoader} from '../../preview'
 import type {FormDocumentValue} from '../types'
 import {FormValueProvider} from '../contexts/FormValue'
+import {GetFormValueProvider} from '../contexts/GetFormValue'
 import {FormProvider} from './FormProvider'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 
@@ -227,7 +228,6 @@ export function FormBuilder(props: FormBuilderProps) {
       focused={focused}
       groups={groups}
       id={id}
-      members={members}
       onChange={onChange}
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
@@ -239,13 +239,14 @@ export function FormBuilder(props: FormBuilderProps) {
       validation={validation}
       readOnly={readOnly}
       schemaType={schemaType}
-      value={value}
     >
-      <FormValueProvider value={value}>
-        <DocumentFieldActionsProvider actions={fieldActions}>
-          {renderInput(rootInputProps)}
-        </DocumentFieldActionsProvider>
-      </FormValueProvider>
+      <GetFormValueProvider value={value}>
+        <FormValueProvider value={value}>
+          <DocumentFieldActionsProvider actions={fieldActions}>
+            {renderInput(rootInputProps)}
+          </DocumentFieldActionsProvider>
+        </FormValueProvider>
+      </GetFormValueProvider>
     </FormProvider>
   )
 }

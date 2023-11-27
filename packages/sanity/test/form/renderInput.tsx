@@ -146,7 +146,6 @@ export async function renderInput(props: {
         focused={formState.focused}
         groups={formState.groups || EMPTY_ARRAY}
         id={formState.id}
-        members={formState.members || EMPTY_ARRAY}
         onChange={onChange}
         onPathBlur={onPathBlur}
         onPathFocus={onPathFocus}
@@ -158,7 +157,6 @@ export async function renderInput(props: {
         readOnly={formState.readOnly}
         schemaType={docType}
         validation={validation}
-        value={undefined}
       >
         <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
           {renderFn(

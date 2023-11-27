@@ -43,7 +43,6 @@ export interface FormProviderProps {
   focused: boolean | undefined
   groups: FormFieldGroup[]
   id: string
-  members: ObjectMember[]
   onChange: (changeEvent: PatchEvent) => void
   onPathBlur: (path: Path) => void
   onPathFocus: (path: Path) => void
@@ -55,7 +54,6 @@ export interface FormProviderProps {
   readOnly?: boolean
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
-  value: {[field in string]: unknown} | undefined
 }
 
 /**
@@ -76,7 +74,6 @@ export function FormProvider(props: FormProviderProps) {
     focused,
     groups,
     id,
-    members,
     onChange,
     onPathBlur,
     onPathFocus,
@@ -88,7 +85,6 @@ export function FormProvider(props: FormProviderProps) {
     readOnly,
     schemaType,
     validation,
-    value,
   } = props
 
   const {file, image} = useSource().form
@@ -167,7 +163,6 @@ export function FormProvider(props: FormProviderProps) {
       renderPreview={renderPreview}
       schemaType={schemaType}
       validation={validation}
-      value={value}
     >
       {children}
     </FormBuilderProvider>

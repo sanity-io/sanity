@@ -63,7 +63,6 @@ export interface FormBuilderProviderProps {
   schemaType: ObjectSchemaType
   unstable?: Source['form']['unstable']
   validation: ValidationMarker[]
-  value: {[field in string]: unknown} | undefined
 }
 
 const missingPatchChannel: PatchChannel = {
@@ -112,7 +111,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     schemaType,
     unstable,
     validation,
-    value: documentValue,
   } = props
 
   const __internal: FormBuilderContextValue['__internal'] = useMemo(
@@ -171,7 +169,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       renderItem,
       renderPreview,
       schemaType,
-      value: documentValue,
     }),
     [
       __internal,
@@ -179,7 +176,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       changesOpen,
       collapsedFieldSets,
       collapsedPaths,
-      documentValue,
       focusPath,
       focused,
       groups,

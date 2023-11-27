@@ -12,7 +12,7 @@ import * as PathUtils from '@sanity/util/paths'
 import {Box, Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {ObjectInputProps} from '../../types'
-import {useFormBuilder} from '../../useFormBuilder'
+import {useGetFormValue} from '../../contexts/GetFormValue'
 import {slugify} from './utils/slugify'
 import {useAsync} from './utils/useAsync'
 import {SlugContext, useSlugContext} from './utils/useSlugContext'
@@ -51,7 +51,7 @@ async function getNewFromSource(
  * @beta
  */
 export function SlugInput(props: SlugInputProps) {
-  const {getDocument} = useFormBuilder().__internal
+  const getFormValue = useGetFormValue()
   const {path, value, schemaType, validation, onChange, readOnly, elementProps} = props
   const sourceField = schemaType.options?.source
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
@@ -79,12 +79,12 @@ export function SlugInput(props: SlugInputProps) {
       )
     }
 
-    const doc = getDocument() || ({_type: schemaType.name} as SanityDocument)
+    const doc = (getFormValue([]) as SanityDocument) || ({_type: schemaType.name} as SanityDocument)
     const sourceContext = getSlugSourceContext(path, doc, slugContext)
     return getNewFromSource(sourceField, doc, sourceContext)
       .then((newFromSource) => slugify(newFromSource || '', schemaType, sourceContext))
       .then((newSlug) => updateSlug(newSlug))
-  }, [sourceField, getDocument, schemaType, path, slugContext, updateSlug])
+  }, [sourceField, getFormValue, schemaType, path, slugContext, updateSlug])
 
   const isUpdating = generateState?.status === 'pending'
 
