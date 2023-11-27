@@ -119,7 +119,10 @@
     "router.js",
     "presentation.js",
     "src",
-    "static"
+    "static",
+    "!**/__test__/**",
+    "!**/__tests__/**",
+    "!**/__workshop__/**"
   ],
   "scripts": {
     "prebuild": "run-s clean",
