@@ -1,10 +1,9 @@
 /* eslint-disable camelcase */
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React, {useMemo, useRef} from 'react'
+import React, {useMemo} from 'react'
 import {DocumentFieldAction, Source} from '../config'
 import {FormNodePresence} from '../presence'
-import {FIXME} from '../FIXME'
 import {EMPTY_ARRAY} from '../util'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {
@@ -116,9 +115,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     value: documentValue,
   } = props
 
-  const documentValueRef = useRef(documentValue)
-  documentValueRef.current = documentValue
-
   const __internal: FormBuilderContextValue['__internal'] = useMemo(
     () => ({
       patchChannel, // eslint-disable-line camelcase
@@ -139,7 +135,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         assetSources: image.assetSources,
         directUploads: image?.directUploads !== false,
       },
-      getDocument: () => documentValueRef.current as FIXME,
       onChange,
     }),
     [

@@ -38,7 +38,6 @@ export interface FormBuilderContextValue {
       assetSources: AssetSource[]
       directUploads: boolean
     }
-    getDocument: () => SanityDocument | undefined
     patchChannel: PatchChannel
   }
 
