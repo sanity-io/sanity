@@ -15,6 +15,7 @@ import {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {
+  COMMENTS_INSPECTOR_NAME,
   DEFAULT_MENU_ITEM_GROUPS,
   EMPTY_PARAMS,
   HISTORY_INSPECTOR_NAME,
@@ -698,16 +699,34 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const commentsEnabled = useCommentsEnabled()
 
+  const handleOpenCommentsInspector = useCallback(() => {
+    if (currentInspector?.name === COMMENTS_INSPECTOR_NAME) return
+
+    openInspector(COMMENTS_INSPECTOR_NAME)
+  }, [currentInspector?.name, openInspector])
+
   const content = useMemo(() => {
     // If comments are not enabled, return children as-is without wrapping in providers
     if (!commentsEnabled) return children
 
     return (
-      <CommentsProvider documentId={documentId} documentType={documentType}>
+      <CommentsProvider
+        documentId={documentId}
+        documentType={documentType}
+        isCommentsOpen={currentInspector?.name === COMMENTS_INSPECTOR_NAME}
+        onCommentsOpen={handleOpenCommentsInspector}
+      >
         <CommentsSelectedPathProvider>{children}</CommentsSelectedPathProvider>
       </CommentsProvider>
     )
-  }, [children, commentsEnabled, documentId, documentType])
+  }, [
+    children,
+    commentsEnabled,
+    currentInspector?.name,
+    documentId,
+    documentType,
+    handleOpenCommentsInspector,
+  ])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>

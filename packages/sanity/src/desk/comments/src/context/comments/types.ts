@@ -15,6 +15,9 @@ export interface CommentsContextValue {
 
   isRunningSetup: boolean
 
+  isCommentsOpen?: boolean
+  onCommentsOpen?: () => void
+
   comments: {
     data: {
       open: CommentThreadItem[]
