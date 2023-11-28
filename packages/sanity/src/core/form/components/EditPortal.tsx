@@ -18,6 +18,10 @@ interface Props {
   autofocus?: boolean
 }
 
+function onDragEnter(event: React.DragEvent<HTMLDivElement>) {
+  return event.stopPropagation()
+}
+
 export function EditPortal(props: Props): React.ReactElement {
   const {
     children,
@@ -51,6 +55,7 @@ export function EditPortal(props: Props): React.ReactElement {
           id={id || ''}
           onClickOutside={onClose}
           onClose={onClose}
+          onDragEnter={onDragEnter}
           width={width}
           contentRef={setDocumentScrollElement}
           __unstable_autoFocus={autofocus}
