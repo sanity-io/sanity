@@ -263,7 +263,7 @@
     "use-device-pixel-ratio": "^1.1.0",
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.2.0",
-    "vite": "^4.5.1",
+    "vite": "^5.3.5",
     "yargs": "^17.3.0"
   },
   "devDependencies": {

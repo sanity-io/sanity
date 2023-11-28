@@ -92,7 +92,7 @@ importers:
         version: 7.18.0(eslint@8.57.0)(typescript@5.7.2)
       '@vitejs/plugin-react':
         specifier: ^4.3.3
-        version: 4.3.4(vite@4.5.5(@types/node@22.10.0)(terser@5.32.0))
+        version: 4.3.4(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0))
       cac:
         specifier: ^6.7.12
         version: 6.7.14
@@ -217,11 +217,11 @@ importers:
         specifier: 5.7.2
         version: 5.7.2
       vite:
-        specifier: ^4.5.3
-        version: 4.5.5(@types/node@22.10.0)(terser@5.32.0)
+        specifier: ^5.3.5
+        version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
       vite-tsconfig-paths:
         specifier: ^4.3.2
-        version: 4.3.2(typescript@5.7.2)(vite@4.5.5(@types/node@22.10.0)(terser@5.32.0))
+        version: 4.3.2(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0))
       vitest:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@22.10.0)(jsdom@23.2.0)(terser@5.32.0)
@@ -278,13 +278,13 @@ importers:
         version: 18.3.1
       '@vitejs/plugin-react':
         specifier: ^4.3.4
-        version: 4.3.4(vite@4.5.5(@types/node@22.10.0)(terser@5.32.0))
+        version: 4.3.4(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0))
       typescript:
         specifier: 5.7.2
         version: 5.7.2
       vite:
-        specifier: ^4.5.5
-        version: 4.5.5(@types/node@22.10.0)(terser@5.32.0)
+        specifier: ^5.3.5
+        version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
 
   dev/page-building-studio:
     dependencies:
@@ -614,8 +614,8 @@ importers:
         specifier: 19.0.0-beta-37ed2a7-20241206
         version: 19.0.0-beta-37ed2a7-20241206
       vite:
-        specifier: ^4.5.5
-        version: 4.5.5(@types/node@22.10.0)(terser@5.32.0)
+        specifier: ^5.3.5
+        version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
 
   examples/blog-studio:
     dependencies:
@@ -1003,8 +1003,8 @@ importers:
         specifier: ^6.1.11
         version: 6.2.1
       vite:
-        specifier: ^4.5.3
-        version: 4.5.5(@types/node@22.10.0)(terser@5.32.0)
+        specifier: ^5.3.5
+        version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
       vitest:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@22.10.0)(jsdom@23.2.0)(terser@5.32.0)
@@ -1564,7 +1564,7 @@ importers:
         version: 0.0.6
       '@vitejs/plugin-react':
         specifier: ^4.3.3
-        version: 4.3.4(vite@4.5.5(@types/node@22.10.0)(terser@5.32.0))
+        version: 4.3.4(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0))
       archiver:
         specifier: ^7.0.0
         version: 7.0.1
@@ -1785,15 +1785,15 @@ importers:
         specifier: ^1.2.0
         version: 1.2.2(react@18.3.1)
       vite:
-        specifier: ^4.5.1
-        version: 4.5.5(@types/node@22.10.0)(terser@5.32.0)
+        specifier: ^5.3.5
+        version: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
       yargs:
         specifier: ^17.3.0
         version: 17.3.0
     devDependencies:
       '@playwright/experimental-ct-react':
         specifier: 1.44.1
-        version: 1.44.1(@types/node@22.10.0)(terser@5.32.0)(vite@4.5.5(@types/node@22.10.0)(terser@5.32.0))
+        version: 1.44.1(@types/node@22.10.0)(terser@5.32.0)(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0))
       '@playwright/test':
         specifier: 1.44.1
         version: 1.44.1
@@ -14114,10 +14114,10 @@ snapshots:
       - sugarss
       - terser
 
-  '@playwright/experimental-ct-react@1.44.1(@types/node@22.10.0)(terser@5.32.0)(vite@4.5.5(@types/node@22.10.0)(terser@5.32.0))':
+  '@playwright/experimental-ct-react@1.44.1(@types/node@22.10.0)(terser@5.32.0)(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0))':
     dependencies:
       '@playwright/experimental-ct-core': 1.44.1(@types/node@22.10.0)(terser@5.32.0)
-      '@vitejs/plugin-react': 4.3.4(vite@4.5.5(@types/node@22.10.0)(terser@5.32.0))
+      '@vitejs/plugin-react': 4.3.4(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0))
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -16045,14 +16045,6 @@ snapshots:
       '@vitest/utils': 2.1.1
       chai: 5.1.1
       tinyrainbow: 1.2.0
-
-  '@vitest/mocker@2.1.1(@vitest/spy@2.1.1)(vite@5.4.11(@types/node@18.19.44)(terser@5.32.0))':
-    dependencies:
-      '@vitest/spy': 2.1.1
-      estree-walker: 3.0.3
-      magic-string: 0.30.11
-    optionalDependencies:
-      vite: 5.4.11(@types/node@18.19.44)(terser@5.32.0)
 
   '@vitest/mocker@2.1.1(@vitest/spy@2.1.1)(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0))':
     dependencies:
@@ -23355,13 +23347,13 @@ snapshots:
       - supports-color
       - terser
 
-  vite-tsconfig-paths@4.3.2(typescript@5.7.2)(vite@4.5.5(@types/node@22.10.0)(terser@5.32.0)):
+  vite-tsconfig-paths@4.3.2(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0)):
     dependencies:
       debug: 4.4.0(supports-color@9.4.0)
       globrex: 0.1.2
       tsconfck: 3.1.1(typescript@5.7.2)
     optionalDependencies:
-      vite: 4.5.5(@types/node@22.10.0)(terser@5.32.0)
+      vite: 5.4.11(@types/node@22.10.0)(terser@5.32.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -23410,7 +23402,7 @@ snapshots:
   vitest@2.1.1(@types/node@18.19.44)(jsdom@23.2.0)(terser@5.32.0):
     dependencies:
       '@vitest/expect': 2.1.1
-      '@vitest/mocker': 2.1.1(@vitest/spy@2.1.1)(vite@5.4.11(@types/node@18.19.44)(terser@5.32.0))
+      '@vitest/mocker': 2.1.1(@vitest/spy@2.1.1)(vite@5.4.11(@types/node@22.10.0)(terser@5.32.0))
       '@vitest/pretty-format': 2.1.1
       '@vitest/runner': 2.1.1
       '@vitest/snapshot': 2.1.1
