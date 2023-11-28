@@ -28,6 +28,7 @@ interface InlineObjectToolbarPopoverProps {
   onEdit: (event: React.MouseEvent<HTMLButtonElement>) => void
   referenceBoundary: HTMLElement | null
   referenceElement: HTMLElement | null
+  selected: boolean
   title: string
 }
 
@@ -39,6 +40,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
     onDelete,
     referenceBoundary,
     referenceElement,
+    selected,
     title,
     open,
   } = props
@@ -52,13 +54,21 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   useGlobalKeyDown(
     useCallback(
       (event) => {
+        if (event.key === 'Tab' && editButtonRef.current && selected) {
+          event.stopImmediatePropagation()
+          if (document.activeElement !== editButtonRef.current) {
+            setTimeout(() => {
+              if (editButtonRef.current) editButtonRef.current.focus()
+            })
+          }
+        }
         if (event.key === 'Escape') {
           event.preventDefault()
           event.stopPropagation()
           onClosePopover()
         }
       },
-      [onClosePopover],
+      [onClosePopover, selected],
     ),
   )
 
@@ -84,7 +94,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
 
   const popoverContent = useMemo(
     () => (
-      <Box padding={1}>
+      <Box padding={1} data-testid="inline-object-toolbar-popover">
         <Inline space={1}>
           <Box padding={2}>
             <Text weight="semibold" size={1}>
@@ -98,6 +108,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             padding={2}
             ref={editButtonRef}
             alt="Edit object"
+            tabIndex={0}
           />
           <Button
             ref={deleteButtonRef}
@@ -107,6 +118,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             onClick={handleDelete}
             tone="critical"
             alt="Remove object"
+            tabIndex={0}
           />
         </Inline>
       </Box>

@@ -310,6 +310,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
           open={popoverOpen}
           referenceBoundary={referenceBoundary}
           referenceElement={referenceElement}
+          selected={selected}
           title={popoverTitle}
         />
       )}

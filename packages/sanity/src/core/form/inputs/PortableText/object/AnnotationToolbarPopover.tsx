@@ -46,7 +46,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const rangeRef = useRef<Range | null>(null)
   const {sanity} = useTheme()
-  const popoverRef = useRef<HTMLDivElement | null>(null)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
 
   // This is a "virtual element" (supported by Popper.js)
@@ -68,11 +68,19 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
         if (!popoverOpen) {
           return
         }
+        if (event.key === 'Tab' && buttonRef.current && selected) {
+          event.stopImmediatePropagation()
+          if (document.activeElement !== buttonRef.current) {
+            setTimeout(() => {
+              if (buttonRef.current) buttonRef.current.focus()
+            })
+          }
+        }
         if (event.key === 'Escape') {
           setPopoverOpen(false)
         }
       },
-      [popoverOpen],
+      [popoverOpen, selected],
     ),
   )
 
@@ -167,6 +175,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               </Text>
             </Box>
             <Button
+              ref={buttonRef}
               icon={EditIcon}
               mode="bleed"
               onClick={handleEditButtonClicked}
@@ -190,7 +199,6 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       placement="top"
       portal
       preventOverflow
-      ref={popoverRef}
       referenceBoundary={referenceBoundary}
       referenceElement={cursorElement}
       scheme={popoverScheme}

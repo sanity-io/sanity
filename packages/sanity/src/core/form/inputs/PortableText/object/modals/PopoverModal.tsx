@@ -78,7 +78,12 @@ function Content(props: PopoverEditDialogProps) {
       scrollElement={contentElement}
       containerElement={containerElement}
     >
-      <Flex ref={containerElement} direction="column" height="fill">
+      <Flex
+        ref={containerElement}
+        direction="column"
+        height="fill"
+        data-testid="popover-edit-object-dialog"
+      >
         <ContentHeaderBox flex="none" padding={1}>
           <Flex align="center">
             <Box flex={1} padding={2}>

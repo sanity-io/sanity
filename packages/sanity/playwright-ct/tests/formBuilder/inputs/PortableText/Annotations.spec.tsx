@@ -41,9 +41,17 @@ test.describe('Portable Text Input', () => {
 
       // Expect the editor to have focus after closing the popover
       await expect($pte).toBeFocused()
-
       // Assertion: the annotation toolbar popover should be visible
       await expect(page.getByTestId('annotation-toolbar-popover')).toBeVisible()
+
+      // Assertion: tab works to get to the toolbar popover buttons
+      await page.keyboard.press('Tab')
+      await expect(page.getByAltText('Edit annotation')).toBeFocused()
+      await page.keyboard.press('Tab')
+      await expect(page.getByAltText('Remove annotation')).toBeFocused()
+      await page.keyboard.press('Escape')
+      // Assertion: escape closes the toolbar popover
+      await expect(page.getByTestId('annotation-toolbar-popover')).not.toBeVisible()
     })
   })
 })
