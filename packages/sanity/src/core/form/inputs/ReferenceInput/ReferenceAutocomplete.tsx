@@ -23,6 +23,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   },
   ref: React.ForwardedRef<HTMLInputElement>,
 ) {
+  const {searchString, loading, portalRef, referenceElement, ...restProps} = props
   const hasResults = props.options && props.options.length > 0
   const renderPopover = useCallback(
     (
@@ -56,8 +57,8 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
               <Box padding={4}>
                 <Flex align="center" height="fill" justify="center">
                   <StyledText align="center" muted>
-                    No results for <strong>“{props.searchString}”</strong>
-                    {props.searchString?.toLowerCase() === 'capybara' ? (
+                    No results for <strong>“{searchString}”</strong>
+                    {searchString?.toLowerCase() === 'capybara' ? (
                       <>. What a shame. There should be more Capybaras.</>
                     ) : null}
                   </StyledText>
@@ -66,14 +67,14 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
             )}
           </div>
         }
-        open={!props.loading && !hidden}
-        ref={props.portalRef}
+        open={!loading && !hidden}
+        ref={portalRef}
         portal
-        referenceElement={props.referenceElement || inputElement}
+        referenceElement={referenceElement || inputElement}
         matchReferenceWidth
       />
     ),
-    [hasResults, props.searchString, props.loading, props.portalRef, props.referenceElement],
+    [hasResults, searchString, loading, portalRef, referenceElement],
   )
-  return <Autocomplete {...props} ref={ref} renderPopover={renderPopover} />
+  return <Autocomplete {...restProps} loading={loading} ref={ref} renderPopover={renderPopover} />
 })

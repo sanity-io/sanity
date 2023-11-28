@@ -12,7 +12,7 @@ export const CustomTextInput = forwardRef<HTMLInputElement, CustomTextInputProps
     const {background, smallClearButton, ...rest} = props
 
     return (
-      <CustomTextInputBox background={background} smallClearButton={smallClearButton}>
+      <CustomTextInputBox $background={background} $smallClearButton={smallClearButton}>
         <TextInput {...rest} ref={ref} />
       </CustomTextInputBox>
     )

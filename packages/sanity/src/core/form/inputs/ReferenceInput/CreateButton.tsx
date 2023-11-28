@@ -25,7 +25,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 }
 
 export function CreateButton(props: Props) {
-  const {createOptions, onCreate, id, ...rest} = props
+  const {createOptions, onCreate, id, menuRef, ...rest} = props
 
   const canCreateAny = createOptions.some((option) => option.permission.granted)
   if (!canCreateAny) {
@@ -58,7 +58,7 @@ export function CreateButton(props: Props) {
       }
       id={id}
       menu={
-        <Menu ref={props.menuRef}>
+        <Menu ref={menuRef}>
           {createOptions.map((createOption) => (
             <Tooltip
               disabled={createOption.permission.granted}
