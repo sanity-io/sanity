@@ -16,10 +16,11 @@ import {useDocumentPreviewStore} from '../../../store'
 import {useReferenceInputOptions} from '../../studio'
 import {useSource} from '../../../studio'
 import {Source} from '../../../config'
-import {useFormValue} from '../../useFormValue'
+
 import {FIXME} from '../../../FIXME'
 import * as adapter from '../../studio/inputs/client-adapters/reference'
 import {isNonNullable} from '../../../util'
+import {useFormValue} from '../../contexts/FormValue'
 import {EditReferenceEvent} from './types'
 
 function useValueRef<T>(value: T): {current: T} {

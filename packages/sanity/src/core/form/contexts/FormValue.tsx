@@ -1,7 +1,31 @@
+import React, {createContext, ReactNode, useContext, useMemo} from 'react'
 import {Path} from '@sanity/types'
-import {getValueAtPath} from '../field'
-import {useUnique} from '../util'
-import {useFormBuilder} from './useFormBuilder'
+import {pathFor} from '@sanity/util/paths'
+import {getValueAtPath} from '../../field'
+import type {FormDocumentValue} from '../types'
+
+/**
+ * @internal
+ * @hidden
+ */
+export interface FormValueContextValue {
+  value: FormDocumentValue | undefined
+}
+
+const FormValueContext = createContext<FormValueContextValue | null>(null)
+
+/**
+ *
+ * @internal
+ * @hidden
+ */
+export function FormValueProvider(props: {
+  value: FormDocumentValue | undefined
+  children: ReactNode
+}) {
+  const value = useMemo(() => ({value: props.value}), [props.value])
+  return <FormValueContext.Provider value={value}>{props.children}</FormValueContext.Provider>
+}
 
 /**
  * React hook that returns the value of the field specified by a path.
@@ -24,9 +48,13 @@ import {useFormBuilder} from './useFormBuilder'
  * }
  * ```
  */
-export function useFormValue(path: Path): unknown {
-  const uniquePath = useUnique(path)
-  const {value} = useFormBuilder()
 
-  return getValueAtPath(value, uniquePath)
+export function useFormValue(path: Path): unknown {
+  const uniquePath = pathFor(path)
+  const ctx = useContext(FormValueContext)
+  if (!ctx) {
+    throw new Error('useFormValue must be used within a FormValueProvider')
+  }
+
+  return getValueAtPath(ctx?.value, uniquePath)
 }

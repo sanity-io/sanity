@@ -31,18 +31,11 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
 }
 
 export function CommentField(props: FieldProps) {
-  const {documentId, documentType} = useDocumentPane()
+  const isEnabled = useCommentsEnabled()
 
-  const {isEnabled} = useCommentsEnabled({
-    documentId,
-    documentType,
-  })
+  if (isEnabled) return <CommentFieldInner {...props} />
 
-  if (!isEnabled) {
-    return props.renderDefault(props)
-  }
-
-  return <CommentFieldInner {...props} />
+  return props.renderDefault(props)
 }
 
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {

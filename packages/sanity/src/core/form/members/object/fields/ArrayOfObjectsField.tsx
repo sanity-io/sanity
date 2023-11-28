@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {map, tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -32,9 +32,8 @@ import * as is from '../../../utils/is'
 import {useResolveInitialValueForType} from '../../../../store'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 import {applyAll} from '../../../patch/applyPatch'
-import {useFormPublishedId} from '../../../useFormPublishedId'
-import {DocumentFieldActionNode} from '../../../../config'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -72,9 +71,7 @@ export function ArrayOfObjectsField(props: {
     renderPreview,
   } = props
 
-  const {
-    field: {actions: fieldActions},
-  } = useFormBuilder().__internal
+  const fieldActions = useDocumentFieldActions()
 
   const focusRef = useRef<Element & {focus: () => void}>()
   const uploadSubscriptions = useRef<Record<string, Subscription>>({})

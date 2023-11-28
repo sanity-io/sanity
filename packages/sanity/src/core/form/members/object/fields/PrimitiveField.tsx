@@ -10,7 +10,7 @@ import {
 import {FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
-import {useFormBuilder} from '../../../useFormBuilder'
+import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {createDescriptionId} from '../../common/createDescriptionId'
 
 /**
@@ -26,9 +26,7 @@ export function PrimitiveField(props: {
 }) {
   const {member, renderInput, renderField} = props
 
-  const {
-    field: {actions: fieldActions},
-  } = useFormBuilder().__internal
+  const fieldActions = useDocumentFieldActions()
 
   const focusRef = useRef<{focus: () => void}>()
 

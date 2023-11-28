@@ -42,6 +42,7 @@ import {
   useTemplates,
   useZIndex,
 } from 'sanity'
+import {CommentsEnabledProvider} from '../../comments'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
@@ -144,24 +145,26 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   }
 
   return (
-    <DocumentPaneProvider
-      // this needs to be here to avoid formState from being re-used across (incompatible) document types
-      // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-      key={`${documentType}-${options.id}`}
-      {...providerProps}
-    >
-      {/* NOTE: this is a temporary location for this provider until we */}
-      {/* stabilize the reference input options formally in the form builder */}
-      {/* eslint-disable-next-line react/jsx-pascal-case */}
-      <ReferenceInputOptionsProvider
-        EditReferenceLinkComponent={ReferenceChildLink}
-        onEditReference={handleEditReference}
-        initialValueTemplateItems={templatePermissions}
-        activePath={activePath}
+    <CommentsEnabledProvider documentId={options.id} documentType={options.type}>
+      <DocumentPaneProvider
+        // this needs to be here to avoid formState from being re-used across (incompatible) document types
+        // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
+        key={`${documentType}-${options.id}`}
+        {...providerProps}
       >
-        <InnerDocumentPane />
-      </ReferenceInputOptionsProvider>
-    </DocumentPaneProvider>
+        {/* NOTE: this is a temporary location for this provider until we */}
+        {/* stabilize the reference input options formally in the form builder */}
+        {/* eslint-disable-next-line react/jsx-pascal-case */}
+        <ReferenceInputOptionsProvider
+          EditReferenceLinkComponent={ReferenceChildLink}
+          onEditReference={handleEditReference}
+          initialValueTemplateItems={templatePermissions}
+          activePath={activePath}
+        >
+          <InnerDocumentPane />
+        </ReferenceInputOptionsProvider>
+      </DocumentPaneProvider>
+    </CommentsEnabledProvider>
   )
 }
 

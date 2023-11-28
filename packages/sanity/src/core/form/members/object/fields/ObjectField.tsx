@@ -18,7 +18,7 @@ import {PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {applyAll} from '../../../patch/applyPatch'
-import {useFormBuilder} from '../../../useFormBuilder'
+import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {createDescriptionId} from '../../common/createDescriptionId'
 
 /**
@@ -56,11 +56,7 @@ export const ObjectField = function ObjectField(props: {
     renderItem,
     renderPreview,
   } = props
-
-  const {
-    field: {actions: fieldActions},
-  } = useFormBuilder().__internal
-
+  const fieldActions = useDocumentFieldActions()
   const focusRef = useRef<{focus: () => void}>()
   // Keep a local reference to the most recent value. See comment in `handleChange` below for more details
   const pendingValue = useRef(member.field.value)

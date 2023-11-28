@@ -15,7 +15,11 @@ import {
 import {PatchEvent, set} from '../../../patch'
 import {FIXME} from '../../../../FIXME'
 import {FormBuilderContext, FormBuilderContextValue} from '../../../FormBuilderContext'
+import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
+import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
 import {PrimitiveField} from './PrimitiveField'
+
+const EMPTY_ARRAY: never[] = []
 
 describe('PrimitiveField', () => {
   describe('number', () => {
@@ -245,13 +249,11 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
     focusPath: [],
     groups: [],
     id: 'test',
-    members: [],
     renderField: () => <>field</>,
     renderInput: () => <>input</>,
     renderItem: () => <>item</>,
     renderPreview: () => <>preview</>,
     schemaType: {} as ObjectSchemaType,
-    value: undefined,
   }
 
   function TestWrapper({children}: PropsWithChildren) {
@@ -259,7 +261,13 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
       <ThemeProvider theme={studioTheme}>
         <LayerProvider>
           <FormBuilderContext.Provider value={formBuilder}>
-            <FormCallbacksProvider {...formCallbacks}>{children}</FormCallbacksProvider>
+            <FormCallbacksProvider {...formCallbacks}>
+              <DocumentIdProvider id="test">
+                <DocumentFieldActionsProvider actions={EMPTY_ARRAY}>
+                  {children}
+                </DocumentFieldActionsProvider>
+              </DocumentIdProvider>
+            </FormCallbacksProvider>
           </FormBuilderContext.Provider>
         </LayerProvider>
       </ThemeProvider>

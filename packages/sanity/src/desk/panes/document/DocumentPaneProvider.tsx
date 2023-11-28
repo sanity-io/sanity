@@ -8,7 +8,7 @@ import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
 import {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
-import {CommentsProvider, CommentsSelectedPathProvider} from '../../comments'
+import {CommentsProvider, CommentsSelectedPathProvider, useCommentsEnabled} from '../../comments'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 import {getMenuItems} from './menuItems'
 import {DocumentPaneProviderProps} from './types'
@@ -696,6 +696,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
 
+  const commentsEnabled = useCommentsEnabled()
+
+  const content = useMemo(() => {
+    // If comments are not enabled, return children as-is without wrapping in providers
+    if (!commentsEnabled) return children
+
+    return (
+      <CommentsProvider documentId={documentId} documentType={documentType}>
+        <CommentsSelectedPathProvider>{children}</CommentsSelectedPathProvider>
+      </CommentsProvider>
+    )
+  }, [children, commentsEnabled, documentId, documentType])
+
   return (
     <DocumentPaneContext.Provider value={documentPane}>
       {inspectors.length > 0 && (
@@ -720,9 +733,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       )}
 
       <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
-        <CommentsProvider documentId={documentId} documentType={documentType}>
-          <CommentsSelectedPathProvider>{children}</CommentsSelectedPathProvider>
-        </CommentsProvider>
+        {content}
       </FieldActionsProvider>
     </DocumentPaneContext.Provider>
   )

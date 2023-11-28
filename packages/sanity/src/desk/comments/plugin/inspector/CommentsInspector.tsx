@@ -17,6 +17,7 @@ import {
   useCommentsOnboarding,
   CommentsSelectedPath,
   useCommentsSelectedPath,
+  useCommentsEnabled,
 } from '../../src'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
@@ -35,6 +36,10 @@ const RootLayer = styled(Layer)`
 `
 
 export function CommentsInspector(props: DocumentInspectorProps) {
+  const isEnabled = useCommentsEnabled()
+
+  if (!isEnabled) return null
+
   // We wrap the comments inspector in a Layer in order to know when the comments inspector
   // is the top layer (that is, if there is e.g. a popover open). This is used to determine
   // if we should deselect the selected path when clicking outside the comments inspector.

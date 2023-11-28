@@ -31,8 +31,7 @@ export function StudioImageInput(props: ImageInputProps) {
   const {image} = useFormBuilder().__internal
   const documentPreviewStore = useDocumentPreviewStore()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const formBuilder = useFormBuilder()
-  const supportsImageUploads = formBuilder.__internal.image.directUploads
+  const supportsImageUploads = image.directUploads
 
   const resolveUploader = useCallback(
     (type: SchemaType, file: FileLike) => {
@@ -63,7 +62,7 @@ export function StudioImageInput(props: ImageInputProps) {
       {...props}
       client={client}
       assetSources={assetSources}
-      directUploads={image.directUploads}
+      directUploads={supportsImageUploads}
       imageUrlBuilder={builder}
       observeAsset={observeAsset}
       resolveUploader={resolveUploader}

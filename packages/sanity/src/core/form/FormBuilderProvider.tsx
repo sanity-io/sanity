@@ -1,10 +1,9 @@
 /* eslint-disable camelcase */
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useMemo} from 'react'
 import {DocumentFieldAction, Source} from '../config'
 import {FormNodePresence} from '../presence'
-import {FIXME} from '../FIXME'
 import {EMPTY_ARRAY} from '../util'
 import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
 import {
@@ -16,7 +15,7 @@ import {
   RenderItemCallback,
   RenderPreviewCallback,
 } from './types'
-import {FormFieldGroup, ObjectMember, StateTree} from './store'
+import {FormFieldGroup, StateTree} from './store'
 import {ArrayOfObjectsFunctions} from './inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
@@ -25,6 +24,7 @@ import {FormCallbacksProvider} from './studio/contexts/FormCallbacks'
 import {PresenceProvider} from './studio/contexts/Presence'
 import {ValidationProvider} from './studio/contexts/Validation'
 import {HoveredFieldProvider} from './field'
+import {DocumentIdProvider} from './contexts/DocumentIdProvider'
 
 export interface FormBuilderProviderProps {
   /** @internal */
@@ -44,7 +44,6 @@ export interface FormBuilderProviderProps {
   groups: FormFieldGroup[]
   id: string
   image: Source['form']['image']
-  members: ObjectMember[]
   onChange: (event: PatchEvent) => void
   onFieldGroupSelect: (path: Path, groupName: string) => void
   onPathBlur: (path: Path) => void
@@ -64,7 +63,6 @@ export interface FormBuilderProviderProps {
   schemaType: ObjectSchemaType
   unstable?: Source['form']['unstable']
   validation: ValidationMarker[]
-  value: {[field in string]: unknown} | undefined
 }
 
 const missingPatchChannel: PatchChannel = {
@@ -94,7 +92,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     groups,
     id,
     image,
-    members,
     onChange,
     onFieldGroupSelect,
     onPathBlur,
@@ -114,14 +111,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     schemaType,
     unstable,
     validation,
-    value: documentValue,
   } = props
-
-  const documentValueRef = useRef(documentValue)
-
-  useEffect(() => {
-    documentValueRef.current = documentValue
-  }, [documentValue])
 
   const __internal: FormBuilderContextValue['__internal'] = useMemo(
     () => ({
@@ -143,7 +133,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         assetSources: image.assetSources,
         directUploads: image?.directUploads !== false,
       },
-      getDocument: () => documentValueRef.current as FIXME,
       onChange,
     }),
     [
@@ -171,7 +160,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       focused,
       groups,
       id,
-      members,
       readOnly,
       renderAnnotation,
       renderBlock,
@@ -181,7 +169,6 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       renderItem,
       renderPreview,
       schemaType,
-      value: documentValue,
     }),
     [
       __internal,
@@ -189,12 +176,10 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       changesOpen,
       collapsedFieldSets,
       collapsedPaths,
-      documentValue,
       focusPath,
       focused,
       groups,
       id,
-      members,
       readOnly,
       renderAnnotation,
       renderBlock,
@@ -218,11 +203,13 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         onSetPathCollapsed={onSetPathCollapsed}
         onSetFieldSetCollapsed={onSetFieldSetCollapsed}
       >
-        <PresenceProvider presence={presence}>
-          <ValidationProvider validation={validation}>
-            <HoveredFieldProvider>{children}</HoveredFieldProvider>
-          </ValidationProvider>
-        </PresenceProvider>
+        <DocumentIdProvider id={id}>
+          <PresenceProvider presence={presence}>
+            <ValidationProvider validation={validation}>
+              <HoveredFieldProvider>{children}</HoveredFieldProvider>
+            </ValidationProvider>
+          </PresenceProvider>
+        </DocumentIdProvider>
       </FormCallbacksProvider>
     </FormBuilderContext.Provider>
   )
