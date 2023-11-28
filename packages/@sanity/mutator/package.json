@@ -27,6 +27,7 @@
       "source": "./src/index.ts",
       "require": "./lib/index.js",
       "node": {
+        "module": "./lib/index.esm.js",
         "import": "./lib/index.cjs.mjs"
       },
       "import": "./lib/index.esm.js",

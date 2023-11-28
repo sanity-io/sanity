@@ -27,6 +27,7 @@
       "source": "./exports/index.ts",
       "require": "./lib/index.js",
       "node": {
+        "module": "./lib/index.esm.js",
         "import": "./lib/index.cjs.mjs"
       },
       "import": "./lib/index.esm.js",
@@ -37,6 +38,7 @@
       "source": "./exports/fs.ts",
       "require": "./lib/fs.js",
       "node": {
+        "module": "./lib/fs.esm.js",
         "import": "./lib/fs.cjs.mjs"
       },
       "import": "./lib/fs.esm.js",
@@ -47,6 +49,7 @@
       "source": "./exports/content.ts",
       "require": "./lib/content.js",
       "node": {
+        "module": "./lib/content.esm.js",
         "import": "./lib/content.cjs.mjs"
       },
       "import": "./lib/content.esm.js",
@@ -57,6 +60,7 @@
       "source": "./exports/legacyDateFormat.ts",
       "require": "./lib/legacyDateFormat.js",
       "node": {
+        "module": "./lib/legacyDateFormat.esm.js",
         "import": "./lib/legacyDateFormat.cjs.mjs"
       },
       "import": "./lib/legacyDateFormat.esm.js",
@@ -67,6 +71,7 @@
       "source": "./exports/paths.ts",
       "require": "./lib/paths.js",
       "node": {
+        "module": "./lib/paths.esm.js",
         "import": "./lib/paths.cjs.mjs"
       },
       "import": "./lib/paths.esm.js",
