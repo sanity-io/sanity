@@ -40,13 +40,16 @@ export interface CommentsProviderProps {
   children: React.ReactNode
   documentId: string
   documentType: string
+
+  isCommentsOpen?: boolean
+  onCommentsOpen?: () => void
 }
 
 /**
  * @beta
  */
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
-  const {children, documentId, documentType} = props
+  const {children, documentId, documentType, isCommentsOpen, onCommentsOpen} = props
   const [status, setStatus] = useState<CommentStatus>('open')
 
   const {client, runSetup, isRunningSetup} = useCommentsSetup()
@@ -224,6 +227,9 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
       getComment,
 
+      isCommentsOpen,
+      onCommentsOpen,
+
       comments: {
         data: threadItemsByStatus,
         error,
@@ -244,17 +250,19 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       mentionOptions,
     }),
     [
-      isRunningSetup,
-      status,
-      getComment,
-      threadItemsByStatus,
       error,
+      getComment,
+      isCommentsOpen,
+      isRunningSetup,
       loading,
-      operation.create,
-      operation.remove,
-      operation.edit,
-      operation.update,
       mentionOptions,
+      onCommentsOpen,
+      operation.create,
+      operation.edit,
+      operation.remove,
+      operation.update,
+      status,
+      threadItemsByStatus,
     ],
   )
 
