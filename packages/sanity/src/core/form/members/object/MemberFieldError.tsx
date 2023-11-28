@@ -4,6 +4,7 @@ import {FieldError} from '../../store/types/memberErrors'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {PatchEvent} from '../../patch'
 import {InvalidValueInput} from '../../inputs/InvalidValueInput'
+import {isBlockType} from '../../inputs/PortableText/_helpers'
 import {MissingKeysAlert} from './errors/MissingKeysAlert'
 import {DuplicateKeysAlert} from './errors/DuplicateKeysAlert'
 import {MixedArrayAlert} from './errors/MixedArrayAlert'
@@ -20,12 +21,16 @@ export function MemberFieldError(props: {member: FieldError}) {
     [onChange, member.fieldName],
   )
   if (member.error.type === 'INCOMPATIBLE_TYPE') {
+    const hasBlockType =
+      member.error.expectedSchemaType.jsonType === 'array' &&
+      member.error.expectedSchemaType.of.some((t) => isBlockType(t))
+
     return (
       <InvalidValueInput
         value={member.error.value}
         onChange={handleChange}
         actualType={member.error.resolvedValueType}
-        validTypes={[member.error.expectedSchemaType.name]}
+        validTypes={hasBlockType ? ['portableText'] : [member.error.expectedSchemaType.name]}
       />
     )
   }
