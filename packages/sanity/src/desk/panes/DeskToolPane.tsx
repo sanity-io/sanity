@@ -51,7 +51,7 @@ export const DeskToolPane = memo(
     } = props
 
     const PaneComponent = paneMap[pane.type] || UnknownPane
-
+    console.log('hello7')
     return (
       <PaneRouterProvider
         flatIndex={index}

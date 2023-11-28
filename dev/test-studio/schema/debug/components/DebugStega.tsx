@@ -10,6 +10,7 @@ import {stegaEncodeSourceMap} from '@sanity/client/stega'
 import styled from 'styled-components'
 
 export function StegaDebugger(props: InputProps) {
+  console.log('hello9999')
   if (isDocumentSchemaType(props.schemaType)) {
     return (
       <Stack space={2}>

@@ -37,7 +37,7 @@ export function sanityBuildEntries(options: {
       this.emitFile({
         type: 'chunk',
         id: entryChunkId,
-        name: 'sanity',
+        name: 'studio',
       })
     },
 
@@ -46,7 +46,7 @@ export function sanityBuildEntries(options: {
       const entryFile = Object.values(bundle).find(
         (file) =>
           file.type === 'chunk' &&
-          file.name === 'sanity' &&
+          file.name === 'studio' &&
           file.facadeModuleId?.endsWith(entryChunkId),
       )
 

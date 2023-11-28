@@ -117,6 +117,25 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     },
   }
 
+  if (mode === 'development') {
+    viteConfig.optimizeDeps = {
+      ...viteConfig.optimizeDeps,
+      exclude: [
+        ...(viteConfig.optimizeDeps?.exclude || []),
+        // ...Object.keys(getAliases({monorepo})),
+      ],
+      /*
+      esbuildOptions: {
+        ...viteConfig.optimizeDeps?.esbuildOptions,
+        alias: {
+          ...viteConfig.optimizeDeps?.esbuildOptions?.alias,
+          ...getAliases({monorepo}),
+        },
+      },
+      // */
+    }
+  }
+
   if (mode === 'production') {
     viteConfig.build = {
       ...viteConfig.build,
@@ -127,7 +146,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
 
       rollupOptions: {
         input: {
-          sanity: path.join(cwd, '.sanity', 'runtime', 'app.js'),
+          studio: path.join(cwd, '.sanity', 'runtime', 'app.js'),
         },
       },
     }
@@ -160,7 +179,7 @@ export function finalizeViteConfig(config: InlineConfig): InlineConfig {
     build: {
       rollupOptions: {
         input: {
-          sanity: path.join(config.root, '.sanity', 'runtime', 'app.js'),
+          studio: path.join(config.root, '.sanity', 'runtime', 'app.js'),
         },
       },
     },
