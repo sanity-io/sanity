@@ -154,7 +154,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
           {ready ? (
-            formState === null ? (
+            formState === null || hidden ? (
               <Box padding={2}>
                 <Text>{t('document-view.form-view.form-hidden')}</Text>
               </Box>
