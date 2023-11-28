@@ -5,6 +5,7 @@ import {
   type PortableTextChild,
   type PortableTextObject,
   type PortableTextTextBlock,
+  type SchemaType,
 } from '@sanity/types'
 import {type FunctionComponent, type ReactElement, useMemo, useRef} from 'react'
 import {Editor, Element as SlateElement, Range} from 'slate'
@@ -36,12 +37,13 @@ export interface ElementProps {
   attributes: RenderElementProps['attributes']
   children: ReactElement
   element: SlateElement
-  schemaTypes: PortableTextMemberSchemaTypes
+  isDraggableType?: (schemaType: SchemaType) => boolean
   readOnly: boolean
   renderBlock?: RenderBlockFunction
   renderChild?: RenderChildFunction
   renderListItem?: RenderListItemFunction
   renderStyle?: RenderStyleFunction
+  schemaTypes: PortableTextMemberSchemaTypes
   spellCheck?: boolean
 }
 
@@ -55,12 +57,13 @@ export const Element: FunctionComponent<ElementProps> = ({
   attributes,
   children,
   element,
-  schemaTypes,
+  isDraggableType,
   readOnly,
   renderBlock,
   renderChild,
   renderListItem,
   renderStyle,
+  schemaTypes,
   spellCheck,
 }) => {
   const editor = useSlateStatic()
@@ -214,9 +217,18 @@ export const Element: FunctionComponent<ElementProps> = ({
     const propsOrDefaultRendered = renderBlock
       ? renderBlock(renderProps as BlockRenderProps)
       : children
+
+    const isDraggableTextBlock =
+      isDraggableType === undefined ? false : isDraggableType(schemaTypes.block)
+
     return (
       <div key={element._key} {...attributes} className={className} spellCheck={spellCheck}>
-        <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
+        <DraggableBlock
+          element={element}
+          readOnly={readOnly}
+          blockRef={blockRef}
+          draggable={isDraggableTextBlock}
+        >
           <div ref={blockRef}>{propsOrDefaultRendered}</div>
         </DraggableBlock>
       </div>
@@ -258,10 +270,18 @@ export const Element: FunctionComponent<ElementProps> = ({
     )
     renderedBlockFromProps = renderBlock(_props as BlockRenderProps)
   }
+
+  const isDraggableVoidBlock = isDraggableType === undefined ? true : isDraggableType(schemaType)
+
   return (
     <div key={element._key} {...attributes} className={className}>
       {children}
-      <DraggableBlock element={element} readOnly={readOnly} blockRef={blockRef}>
+      <DraggableBlock
+        element={element}
+        readOnly={readOnly}
+        blockRef={blockRef}
+        draggable={isDraggableVoidBlock}
+      >
         {renderedBlockFromProps && (
           <div ref={blockRef} contentEditable={false}>
             {renderedBlockFromProps}

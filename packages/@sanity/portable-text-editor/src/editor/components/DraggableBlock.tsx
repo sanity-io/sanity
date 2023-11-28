@@ -27,6 +27,7 @@ const debugRenders = false
  */
 export interface DraggableBlockProps {
   children: ReactNode
+  draggable?: boolean
   element: SlateElement
   readOnly: boolean
   blockRef: MutableRefObject<HTMLDivElement | null>
@@ -36,7 +37,13 @@ export interface DraggableBlockProps {
  * Implements drag and drop functionality on editor block nodes
  * @internal
  */
-export const DraggableBlock = ({children, element, readOnly, blockRef}: DraggableBlockProps) => {
+export const DraggableBlock = ({
+  children,
+  element,
+  readOnly,
+  blockRef,
+  draggable,
+}: DraggableBlockProps) => {
   const editor = useSlateStatic()
   const dragGhostRef: MutableRefObject<undefined | HTMLElement> = useRef()
   const [isDragOver, setIsDragOver] = useState(false)
@@ -266,7 +273,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
 
   return (
     <div
-      draggable
+      draggable={draggable}
       onDragStart={handleDragStart}
       onDrag={handleDrag}
       onDragOver={handleDragOver}
