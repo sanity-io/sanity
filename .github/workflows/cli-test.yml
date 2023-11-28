@@ -10,7 +10,7 @@ on:
 jobs:
   cli-test:
     timeout-minutes: 60
-    name: Install (${{ matrix.os }} / node ${{ matrix.node }})
+    name: CLI Tests (${{ matrix.os }} / node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -63,6 +63,5 @@ jobs:
           node -v
           npm -v
           yarn test --silent --selectProjects=@sanity/cli
-        # env:
-        # FIXME: re-enable CLI tests with this
-        # SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
+        env:
+          SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
