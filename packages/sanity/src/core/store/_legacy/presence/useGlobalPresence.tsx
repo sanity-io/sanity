@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 import {usePresenceStore} from '../datastores'
-import {GlobalPresence} from './types'
+import type {GlobalPresence} from './types'
 
 /** @internal */
 export function useGlobalPresence(): GlobalPresence[] {

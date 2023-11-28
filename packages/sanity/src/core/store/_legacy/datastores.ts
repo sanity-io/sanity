@@ -13,11 +13,11 @@ import {
 import {createDocumentStore, DocumentStore} from './document'
 import {createGrantsStore, GrantsStore} from './grants'
 import {createHistoryStore, HistoryStore} from './history'
-import {PresenceStore, __tmp_wrap_presenceStore} from './presence'
 import {createProjectStore, ProjectStore} from './project'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createSettingsStore, SettingsStore} from './settings'
 import {createUserStore, UserStore} from './user'
+import {PresenceStore, __tmp_wrap_presenceStore} from './presence/presence-store'
 
 /**
  * @hidden
