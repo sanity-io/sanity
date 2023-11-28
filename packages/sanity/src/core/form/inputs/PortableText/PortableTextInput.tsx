@@ -145,6 +145,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
           }
           break
         case 'selection':
+          // In readOnly mode the selection is creating incorrect selections because `blur`is not triggered when opening
+          // a inner dialog.
+          if (readOnly) return
           // This doesn't need to be immediate,
           // call through startTransition
           startTransition(() => {
@@ -177,7 +180,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onBlur, onChange, onPathFocus, toast],
+    [onBlur, onChange, onPathFocus, toast, readOnly],
   )
 
   useEffect(() => {
