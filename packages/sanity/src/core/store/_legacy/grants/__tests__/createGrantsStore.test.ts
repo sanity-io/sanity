@@ -40,7 +40,7 @@ describe('checkDocumentPermission', () => {
       },
     })
 
-    const {checkDocumentPermission} = createGrantsStore({client, currentUser: null})
+    const {checkDocumentPermission} = createGrantsStore({client, userId: null})
 
     await expect(
       firstValueFrom(checkDocumentPermission('create', {_id: 'example-id', _type: 'book'})),

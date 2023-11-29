@@ -1,5 +1,5 @@
 import {SanityClient} from '@sanity/client'
-import {CurrentUser, SanityDocument} from '@sanity/types'
+import {SanityDocument} from '@sanity/types'
 import {evaluate, parse} from 'groq-js'
 import {defer, of} from 'rxjs'
 import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
@@ -29,22 +29,18 @@ async function getDatasetGrants(
   return grants
 }
 
-function getParams(currentUser: CurrentUser | null): EvaluationParams {
+function getParams(userId: string | null): EvaluationParams {
   const params: EvaluationParams = {}
 
-  if (currentUser !== null) {
-    params.identity = currentUser.id
+  if (userId !== null) {
+    params.identity = userId
   }
 
   return params
 }
 
 const PARSED_FILTERS_MEMO = new Map()
-async function matchesFilter(
-  currentUser: CurrentUser | null,
-  filter: string,
-  document: SanityDocument,
-) {
+async function matchesFilter(userId: string | null, filter: string, document: SanityDocument) {
   if (!PARSED_FILTERS_MEMO.has(filter)) {
     // note: it might be tempting to also memoize the result of the evaluation here,
     // Currently these filters are typically evaluated whenever a document change, which means they will be evaluated
@@ -55,7 +51,7 @@ async function matchesFilter(
   }
   const parsed = PARSED_FILTERS_MEMO.get(filter)
 
-  const evalParams = getParams(currentUser)
+  const evalParams = getParams(userId)
   const {identity} = evalParams
   const params: Record<string, unknown> = {...evalParams}
   const data = await (await evaluate(parsed, {dataset: [document], identity, params})).get()
@@ -65,11 +61,11 @@ async function matchesFilter(
 /** @internal */
 export interface GrantsStoreOptions {
   client: SanityClient
-  currentUser: CurrentUser | null
+  userId: string | null
 }
 
 /** @internal */
-export function createGrantsStore({client, currentUser}: GrantsStoreOptions): GrantsStore {
+export function createGrantsStore({client, userId}: GrantsStoreOptions): GrantsStore {
   const versionedClient = client.withConfig({apiVersion: '2021-06-07'})
 
   const datasetGrants$ = defer(() => of(versionedClient.config())).pipe(
@@ -90,7 +86,7 @@ export function createGrantsStore({client, currentUser}: GrantsStoreOptions): Gr
   return {
     checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocument) {
       return currentUserDatasetGrants.pipe(
-        switchMap((grants) => grantsPermissionOn(currentUser, grants, permission, document)),
+        switchMap((grants) => grantsPermissionOn(userId, grants, permission, document)),
         distinctUntilChanged(shallowEquals),
       )
     },
@@ -98,11 +94,12 @@ export function createGrantsStore({client, currentUser}: GrantsStoreOptions): Gr
 }
 
 /**
- * takes a grants object, a permission and a document
- * checks whether the the permission is granted for the given document
+ * @internal
+ * Takes a grants object, a permission and a document
+ * checks whether the permission is granted for the given document
  */
-async function grantsPermissionOn(
-  currentUser: CurrentUser | null,
+export async function grantsPermissionOn(
+  userId: string | null,
   grants: Grant[],
   permission: DocumentValuePermission,
   document: SanityDocument | null,
@@ -119,7 +116,7 @@ async function grantsPermissionOn(
   const matchingGrants: Grant[] = []
 
   for (const grant of grants) {
-    if (await matchesFilter(currentUser, grant.filter, document)) {
+    if (await matchesFilter(userId, grant.filter, document)) {
       matchingGrants.push(grant)
     }
   }

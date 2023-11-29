@@ -48,7 +48,7 @@ describe('getTemplatePermissions', () => {
     const client = createMockSanityClient({requests: {'/acl': requiresApproval}})
     const grantsStore = createGrantsStore({
       client: client as unknown as SanityClient,
-      currentUser: null,
+      userId: null,
     })
 
     const permissions = firstValueFrom(
