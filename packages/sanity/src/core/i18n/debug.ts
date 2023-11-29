@@ -2,20 +2,25 @@
 import type {TFunction} from 'i18next'
 
 /**
+ * Mode to use for debugging. `reverse`, `triangles` or `log`.
+ */
+const DEBUG_MODE = process.env.SANITY_STUDIO_DEBUG_I18N
+
+/**
  * Whether or not the debug mode for i18n should be enabled
  *
  * @internal
  */
-export const DEBUG_I18N = Boolean(process.env.SANITY_STUDIO_DEBUG_I18N)
+export const DEBUG_I18N = Boolean(DEBUG_MODE)
 
 /**
  * Wrapper function use for debugging. The "reverse" approach is less disruptive to the layout, but
  * may be hard to use since it is hard to read labels. The "triangles" approach is easy to spot.
  */
-const debugWrapper =
-  process.env.SANITY_STUDIO_DEBUG_I18N === 'reverse'
-    ? (str: string) => `‮${str}`
-    : (str: string) => `◤ ${str} ◢`
+const debugWrappers = {
+  reverse: (str: string) => `‮${str}`,
+  triangles: (str: string) => `◤ ${str} ◢`,
+}
 
 /**
  * If in debug mode, wrap the given `t` function in a function that adds a prefix and suffix to the
@@ -26,5 +31,8 @@ const debugWrapper =
  * @internal
  */
 export function maybeWrapT(t: TFunction): TFunction {
-  return DEBUG_I18N ? (((...args: any) => debugWrapper(t(...args)) as any) as TFunction) : t
+  const wrapper =
+    DEBUG_MODE === 'reverse' || DEBUG_MODE === 'triangles' ? debugWrappers[DEBUG_MODE] : null
+
+  return wrapper ? (((...args: any) => wrapper(t(...args)) as any) as TFunction) : t
 }

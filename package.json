@@ -27,7 +27,7 @@
     "deploy:movies": "yarn build && cd examples/movies-studio && sanity deploy",
     "deploy:test": "yarn build && cd dev/test-studio && sanity deploy",
     "dev": "yarn start",
-    "dev:i18n": "SANITY_STUDIO_DEBUG_I18N=true yarn start",
+    "dev:i18n": "SANITY_STUDIO_DEBUG_I18N=triangles yarn start",
     "dev:i18n:reverse": "SANITY_STUDIO_DEBUG_I18N=reverse yarn start",
     "dev:design-studio": "yarn --cwd dev/design-studio dev",
     "dev:starter-studio": "yarn --cwd dev/starter-studio dev",
