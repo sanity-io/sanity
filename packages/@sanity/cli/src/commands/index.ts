@@ -12,6 +12,9 @@ import manageCommand from './manage/manageCommand'
 import upgradeCommand from './upgrade/upgradeCommand'
 import versionsCommand from './versions/versionsCommand'
 import codemodCommand from './codemod/codemodCommand'
+import telemetryGroup from './telemetry/telemetryGroup'
+import disableTelemetryCommand from './telemetry/disableTelemetryCommand'
+import enableTelemetryCommand from './telemetry/enableTelemetryCommand'
 
 export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   initCommand,
@@ -27,4 +30,7 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   projectsGroup,
   listProjectsCommand,
   codemodCommand,
+  telemetryGroup,
+  disableTelemetryCommand,
+  enableTelemetryCommand,
 ]
