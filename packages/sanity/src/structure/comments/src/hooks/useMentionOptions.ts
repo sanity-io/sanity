@@ -3,14 +3,14 @@ import {useState, useEffect, useMemo} from 'react'
 import {Observable, concat, forkJoin, map, mergeMap, of, switchMap} from 'rxjs'
 import {SanityDocument} from '@sanity/client'
 import {sortBy} from 'lodash'
-import {Loadable, MentionOptionUser, MentionOptionsHookValue} from '../../types'
-import {grantsPermissionOn} from './helpers'
+import {Loadable, MentionOptionUser, MentionOptionsHookValue} from '../types'
 import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  grantsPermissionOn,
+  ProjectData,
+  useClient,
   useProjectStore,
   useUserStore,
-  useClient,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  ProjectData,
 } from 'sanity'
 
 const INITIAL_STATE: MentionOptionsHookValue = {
@@ -77,7 +77,12 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
           })
 
           const flattenedGrants = [...grants].flat()
-          const {granted} = await grantsPermissionOn(user, flattenedGrants, 'read', documentValue)
+          const {granted} = await grantsPermissionOn(
+            user.id,
+            flattenedGrants,
+            'read',
+            documentValue,
+          )
 
           return {
             ...user,
