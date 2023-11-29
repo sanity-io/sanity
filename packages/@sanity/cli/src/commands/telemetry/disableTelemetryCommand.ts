@@ -1,4 +1,5 @@
 import type {CliCommandDefinition} from '../../types'
+import {setTelemetryConsent} from '../../actions/telemetry/setTelemetryConsent'
 
 const helpText = `
 Examples
@@ -12,25 +13,7 @@ const disableTelemetryCommand: CliCommandDefinition = {
   helpText,
   signature: '',
   description: 'Disable telemetry for your logged in user',
-  action: async (_, {apiClient, output, chalk}) => {
-    const client = apiClient({
-      requireUser: true,
-      requireProject: false,
-    })
-
-    try {
-      // TODO: Finalise API request.
-      await client.request({
-        method: 'PUT',
-        uri: '/users/me/consents/telemetry/status/denied',
-      })
-    } catch (err) {
-      err.message = 'Failed to disable telemetry'
-      throw err
-    }
-
-    output.print(chalk.green('Telemetry disabled'))
-  },
+  action: (_, context) => setTelemetryConsent('denied', context),
 }
 
 export default disableTelemetryCommand
