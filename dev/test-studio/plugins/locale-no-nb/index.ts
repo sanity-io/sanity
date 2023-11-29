@@ -1,7 +1,7 @@
 import {defineLocale, definePlugin} from 'sanity'
 
 const norwegianLanguage = defineLocale({
-  id: 'no-NB',
+  id: 'no',
   title: 'Norsk (Bokmål)',
   bundles: [
     {
@@ -23,9 +23,29 @@ const norwegianLanguage = defineLocale({
   ],
 })
 
+const nynorskLanguage = defineLocale({
+  id: 'no-NN',
+  title: 'Norsk (Nynorsk)',
+  bundles: [
+    {
+      namespace: 'studio',
+      resources: {
+        'search.placeholder': 'Leit i dokumentar',
+      },
+    },
+  ],
+})
+
 export const noNBLocale = definePlugin({
-  name: 'locale-no-nb',
+  name: 'locale-no',
   i18n: {
     locales: [norwegianLanguage],
+  },
+})
+
+export const noNNLocale = definePlugin({
+  name: 'locale-no-nn',
+  i18n: {
+    locales: [nynorskLanguage],
   },
 })

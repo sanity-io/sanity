@@ -128,8 +128,17 @@ const defaultOptions: InitOptions = {
   defaultNS: studioLocaleNamespace,
   partialBundledLanguages: true,
 
-  // Fall back to English (US) locale
-  fallbackLng: defaultLocale.id,
+  // Fall back to "base" languages
+  fallbackLng: (code) => {
+    const [lang] = code.split('-')
+    return lang === code || lang === 'en'
+      ? // If we're already at the base language (de => de), or if we're on a non-US english,
+        // fall back to the default locale - which is English (US).
+        defaultLocale.id
+      : // If we have a different base language (no-nn => no), then attempt to fall back to the base,
+        // and if that is not available, use the default locale - which is English (US).
+        [lang, defaultLocale.id]
+  },
 
   // This will be overriden with the users detected/preferred locale before initing,
   // but to satisfy the init options and prevent mistakes, we include a defualt here.

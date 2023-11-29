@@ -42,7 +42,7 @@ import {customInspector} from './inspectors/custom'
 import {pasteAction} from './fieldActions/pasteAction'
 import {routerDebugTool} from './plugins/router-debug'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
-import {noNBLocale} from './plugins/locale-no-nb'
+import {noNBLocale, noNNLocale} from './plugins/locale-no-nb'
 import {testStudioLocaleBundles} from './locales'
 
 const sharedSettings = definePlugin({
@@ -90,6 +90,7 @@ const sharedSettings = definePlugin({
   },
   plugins: [
     noNBLocale(),
+    noNNLocale(),
     deskTool({
       icon: BookIcon,
       structure,
