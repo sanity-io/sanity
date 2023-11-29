@@ -60,3 +60,28 @@ export function defineLocalesResources<R extends Record<string, string>>(
 ): R {
   return resources
 }
+
+/**
+ * Removes any values that are undefined from the given object.
+ *
+ * This is used to remove any placeholders from the generated files, while being able to leave them
+ * in place to ease spotting the missing translations.
+ *
+ * @param resources - The resources to remove undefined values from
+ * @returns The resources without any undefined values
+ * @public
+ * @hidden
+ */
+export function removeUndefinedLocaleResources(
+  resources: Record<string, string | undefined>,
+): Record<string, string | undefined> {
+  const result: Record<string, string> = {}
+
+  for (const [key, value] of Object.entries(resources)) {
+    if (typeof value !== 'undefined') {
+      result[key] = value
+    }
+  }
+
+  return result
+}

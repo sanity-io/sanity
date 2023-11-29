@@ -23,4 +23,9 @@ export type {
   TFunction,
   ValidationLocaleResourceKeys,
 } from './types'
-export {defineLocaleResourceBundle, defineLocale, defineLocalesResources} from './helpers'
+export {
+  defineLocaleResourceBundle,
+  defineLocale,
+  defineLocalesResources,
+  removeUndefinedLocaleResources,
+} from './helpers'
