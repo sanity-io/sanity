@@ -105,7 +105,7 @@ export function CreateButton(props: Props) {
   ) : (
     <Button
       {...rest}
-      text={t('inputs.reference.action-create-new-document')}
+      text={t('inputs.reference.action-create-new-document-select')}
       mode="ghost"
       disabled={!createOptions[0].permission.granted || props.readOnly}
       // eslint-disable-next-line react/jsx-no-bind
