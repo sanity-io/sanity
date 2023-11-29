@@ -6,6 +6,7 @@ import {
   Card,
   Menu,
   MenuButton,
+  MenuButtonProps,
   MenuDivider,
   MenuItem,
   Stack,
@@ -34,6 +35,7 @@ const StyledMenu = styled(Menu)`
 const FooterStack = styled(Stack)`
   position: sticky;
   bottom: 0;
+  background-color: var(--card-bg-color);
 `
 
 interface PresenceMenuProps {
@@ -83,8 +85,10 @@ export function PresenceMenu(props: PresenceMenuProps) {
   }, [collapse, hasPresence, presence, t])
 
   const popoverProps = useMemo(
-    () => ({
+    (): MenuButtonProps['popover'] => ({
       constrainSize: true,
+      fallbackPlacements: ['bottom'],
+      placement: 'bottom',
       portal: true,
       scheme: scheme,
     }),
@@ -97,7 +101,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
       id="global-presence-menu"
       onClose={handleClearFocusedItem}
       menu={
-        <StyledMenu padding={1}>
+        <StyledMenu padding={1} paddingBottom={0}>
           {hasPresence && (
             <Stack>
               {presence.map((item) => (
@@ -125,7 +129,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
             </Box>
           )}
 
-          <FooterStack space={1}>
+          <FooterStack space={1} paddingBottom={1}>
             <MenuDivider />
 
             <MenuItem
