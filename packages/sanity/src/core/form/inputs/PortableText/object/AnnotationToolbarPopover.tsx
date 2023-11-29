@@ -120,13 +120,13 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
 
   // Open the popover when closing the annotation dialog
   useEffect(() => {
-    if (!annotationOpen && selected) {
+    if (!annotationOpen && selected && cursorRect) {
       setPopoverOpen(true)
     }
     if (annotationOpen) {
       setPopoverOpen(false)
     }
-  }, [annotationOpen, selected])
+  }, [annotationOpen, selected, cursorRect])
 
   const handleRemoveButtonClicked = useCallback(() => {
     setPopoverOpen(false)
