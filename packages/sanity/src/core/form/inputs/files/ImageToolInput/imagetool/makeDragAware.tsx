@@ -1,17 +1,14 @@
 import React from 'react'
 import Debug from 'debug'
-import {supportsTouch} from '../../../../../util'
 import type {Coordinate} from './types'
 
 const debug = Debug('sanity-imagetool')
 
-type PositionableEvent =
-  | {touches: React.TouchEvent['touches'] | TouchEvent['touches']}
-  | {clientX: number; clientY: number}
+type PositionableEvent = PointerEvent | React.PointerEvent<HTMLElement>
 
 // Returns a component that emits `onDragStart, `onDrag` and `onDragEnd` events.
-// It handles mouse/touch events the same way
-// - `onDragStart` is called with the {x, y} positions relative from the dom node (e.g. where the mousedown event happened)
+// Pointer events are used which handles mouse/touch events the same way.
+// - `onDragStart` is called with the {x, y} positions relative from the dom node (e.g. where the pointerdown event happened)
 // - `onDrag` and `onDragEnd` are both called with the {x, y} difference from the previous position
 export interface DragAwareProps {
   onDragStart: (pos: {x: number; y: number}) => void
@@ -28,34 +25,17 @@ export function makeDragAware(Component: 'canvas') {
     isDragging = false
 
     componentDidMount() {
-      if (supportsTouch) {
-        document.body.addEventListener('touchmove', this.handleTouchMove, {passive: false})
-        document.body.addEventListener('touchend', this.handleDragEnd)
-        document.body.addEventListener('touchcancel', this.handleDragCancel)
-      } else {
-        document.body.addEventListener('mousemove', this.handleDrag)
-        document.body.addEventListener('mouseup', this.handleDragEnd)
-        document.body.addEventListener('mouseleave', this.handleDragCancel)
-      }
+      document.body.addEventListener('pointermove', this.handleDrag)
+      document.body.addEventListener('pointerup', this.handleDragEnd)
+      document.body.addEventListener('pointerleave', this.handleDragCancel)
+      document.body.addEventListener('pointercancel', this.handleDragCancel)
     }
 
     componentWillUnmount() {
-      if (supportsTouch) {
-        document.body.removeEventListener('touchmove', this.handleTouchMove)
-        document.body.removeEventListener('touchend', this.handleDragEnd)
-        document.body.removeEventListener('touchcancel', this.handleDragCancel)
-      } else {
-        document.body.removeEventListener('mousemove', this.handleDrag)
-        document.body.removeEventListener('mouseup', this.handleDragEnd)
-        document.body.removeEventListener('mouseleave', this.handleDragCancel)
-      }
-    }
-
-    handleTouchMove = (event: TouchEvent | MouseEvent) => {
-      // Disables mobile scroll by touch
-      if (this.isDragging) {
-        event.preventDefault()
-      }
+      document.body.removeEventListener('pointermove', this.handleDrag)
+      document.body.removeEventListener('pointerup', this.handleDragEnd)
+      document.body.removeEventListener('pointerleave', this.handleDragCancel)
+      document.body.removeEventListener('pointercancel', this.handleDragCancel)
     }
 
     handleDragStart = (event: PositionableEvent) => {
@@ -93,7 +73,7 @@ export function makeDragAware(Component: 'canvas') {
       this.currentPos = nextPos
     }
 
-    handleDragEnd = (event: MouseEvent | TouchEvent) => {
+    handleDragEnd = (event: PositionableEvent) => {
       const {onDragEnd, readOnly} = this.props
       if (!this.isDragging || readOnly || !this.domNode) {
         return
@@ -134,9 +114,8 @@ export function makeDragAware(Component: 'canvas') {
       return (
         <Component
           ref={this.setDomNode}
-          onTouchStart={readOnly ? undefined : this.handleDragStart}
-          onMouseDown={readOnly ? undefined : this.handleDragStart}
-          onTouchMove={readOnly ? undefined : this.handleDrag}
+          onPointerDown={readOnly ? undefined : this.handleDragStart}
+          onPointerMove={readOnly ? undefined : this.handleDrag}
           {...rest}
         />
       )
@@ -152,12 +131,6 @@ function getPositionRelativeToRect(x: number, y: number, rect: {left: number; to
 }
 
 function getPos(event: PositionableEvent): Coordinate {
-  if ('touches' in event) {
-    return event.touches.length > 0
-      ? {x: event.touches[0].clientX, y: event.touches[0].clientY}
-      : {x: 0, y: 0}
-  }
-
   return {
     x: event.clientX,
     y: event.clientY,

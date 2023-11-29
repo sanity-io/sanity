@@ -1,4 +1,4 @@
-import React, {MouseEvent} from 'react'
+import React, {PointerEvent} from 'react'
 import {memoize} from 'lodash'
 import {getBackingStoreRatio} from './getBackingStoreRatio'
 import * as utils2d from './2d/utils'
@@ -119,7 +119,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     cropMoving: false,
     moving: false,
     resizing: false,
-    mousePosition: null,
+    pointerPosition: null,
   }
 
   canvas?: {domNode: HTMLCanvasElement}
@@ -505,7 +505,7 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     const pxratio = getDevicePixelRatio()
     context.scale(pxratio, pxratio)
 
-    const opacity = !readOnly && this.state.mousePosition ? 0.8 : 0.2
+    const opacity = !readOnly && this.state.pointerPosition ? 0.8 : 0.2
 
     this.paintBackground(context)
     //return context.restore();
@@ -518,19 +518,19 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
       this.highlightCropHandles(context, opacity)
     }
 
-    if (this.state.mousePosition) {
-      // this.paintMousePosition(context)
+    if (this.state.pointerPosition) {
+      // this.paintPointerPosition(context)
     }
 
     context.restore()
   }
 
-  paintMousePosition(context: CanvasRenderingContext2D) {
-    if (!this.state.mousePosition) {
+  paintPointerPosition(context: CanvasRenderingContext2D) {
+    if (!this.state.pointerPosition) {
       return
     }
 
-    const {x, y} = this.state.mousePosition
+    const {x, y} = this.state.pointerPosition
     context.beginPath()
     context.arc(x, y, 14 * this.getScale(), 0, 2 * Math.PI, false)
     context.fillStyle = 'lightblue'
@@ -578,20 +578,23 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
   }
 
   getCursor() {
-    const {mousePosition} = this.state
+    const {pointerPosition} = this.state
     const {readOnly} = this.props
-    if (!mousePosition || readOnly) {
+    if (!pointerPosition || readOnly) {
       return 'auto'
     }
 
-    const activeCropArea = this.state.cropping || this.getActiveCropHandleFor(mousePosition)
+    const activeCropArea = this.state.cropping || this.getActiveCropHandleFor(pointerPosition)
     if (activeCropArea) {
       return getCropCursorForHandle(activeCropArea) || 'auto'
     }
 
-    const mouseOverDragHandle = utils2d.isPointInCircle(mousePosition, this.getDragHandleCoords())
+    const pointerOverDragHandle = utils2d.isPointInCircle(
+      pointerPosition,
+      this.getDragHandleCoords(),
+    )
 
-    if (this.state.resizing || mouseOverDragHandle) {
+    if (this.state.resizing || pointerOverDragHandle) {
       return 'move'
     }
 
@@ -599,9 +602,9 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
       return `url(${cursors.CLOSE_HAND}), move`
     }
 
-    const mouseoverHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect())
-    const mouseoverCropRect = utils2d.isPointInRect(mousePosition, this.getCropRect())
-    if (mouseoverHotspot || mouseoverCropRect) {
+    const pointerOverHotspot = utils2d.isPointInEllipse(pointerPosition, this.getHotspotRect())
+    const pointerOverCropRect = utils2d.isPointInRect(pointerPosition, this.getCropRect())
+    if (pointerOverHotspot || pointerOverCropRect) {
       return `url(${cursors.OPEN_HAND}), move`
     }
 
@@ -636,15 +639,15 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
   }
 
   handleDragStart = ({x, y}: Coordinate) => {
-    const mousePosition = {x: x * this.getScale(), y: y * this.getScale()}
+    const pointerPosition = {x: x * this.getScale(), y: y * this.getScale()}
 
-    const inHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect())
+    const inHotspot = utils2d.isPointInEllipse(pointerPosition, this.getHotspotRect())
 
-    const inDragHandle = utils2d.isPointInCircle(mousePosition, this.getDragHandleCoords())
+    const inDragHandle = utils2d.isPointInCircle(pointerPosition, this.getDragHandleCoords())
 
-    const activeCropHandle = this.getActiveCropHandleFor(mousePosition)
+    const activeCropHandle = this.getActiveCropHandleFor(pointerPosition)
 
-    const inCropRect = utils2d.isPointInRect(mousePosition, this.getCropRect())
+    const inCropRect = utils2d.isPointInRect(pointerPosition, this.getCropRect())
 
     if (activeCropHandle) {
       this.setState({cropping: activeCropHandle})
@@ -696,14 +699,14 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
     }
   }
 
-  handleMouseOut = () => {
-    this.setState({mousePosition: null})
+  handlePointerOut = () => {
+    this.setState({pointerPosition: null})
   }
 
-  handleMouseMove = (event: MouseEvent<HTMLCanvasElement>) => {
+  handlePointerMove = (event: PointerEvent<HTMLCanvasElement>) => {
     const clientRect = event.currentTarget.getBoundingClientRect()
     this.setState({
-      mousePosition: {
+      pointerPosition: {
         x: (event.clientX - clientRect.left) * this.getScale(),
         y: (event.clientY - clientRect.top) * this.getScale(),
       },
@@ -725,8 +728,8 @@ export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasS
           onDrag={this.handleDrag}
           onDragStart={this.handleDragStart}
           onDragEnd={this.handleDragEnd}
-          onMouseMove={this.handleMouseMove}
-          onMouseOut={this.handleMouseOut}
+          onPointerMove={this.handlePointerMove}
+          onPointerOut={this.handlePointerOut}
           height={image.height * ratio}
           width={image.width * ratio}
         />

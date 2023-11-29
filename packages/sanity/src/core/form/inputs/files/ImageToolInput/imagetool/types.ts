@@ -69,5 +69,5 @@ export interface ToolCanvasState {
   resizing: boolean
   moving: boolean
   cropMoving: boolean
-  mousePosition: Coordinate | null
+  pointerPosition: Coordinate | null
 }
