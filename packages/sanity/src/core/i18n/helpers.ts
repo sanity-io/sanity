@@ -72,16 +72,16 @@ export function defineLocalesResources<R extends Record<string, string>>(
  * @public
  * @hidden
  */
-export function removeUndefinedLocaleResources(
-  resources: Record<string, string | undefined>,
-): Record<string, string | undefined> {
-  const result: Record<string, string> = {}
+export function removeUndefinedLocaleResources<T extends {[key: string]: string | undefined}>(
+  resources: T,
+): {[K in keyof T]: Exclude<T[K], undefined>} {
+  const result: Partial<T> = {}
 
-  for (const [key, value] of Object.entries(resources)) {
-    if (typeof value !== 'undefined') {
-      result[key] = value
+  for (const key in resources) {
+    if (typeof resources[key] !== 'undefined') {
+      result[key] = resources[key]
     }
   }
 
-  return result
+  return result as {[K in keyof T]: Exclude<T[K], undefined>}
 }
