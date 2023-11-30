@@ -1,3 +1,4 @@
+/* eslint sort-keys: "error" */
 import {defineLocaleResourceBundle, defineLocalesResources} from '../helpers'
 import {studioLocaleNamespace} from '../localeNamespaces'
 
@@ -293,14 +294,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.latest': 'Latest',
 
   /** Consts used in the timeline item component (dropdown menu) - helpers */
-  'timeline.create': 'Created',
-  'timeline.delete': 'Deleted',
-  'timeline.discardDraft': 'Discarded draft',
-  'timeline.initial': 'Created',
-  'timeline.editDraft': 'Edited',
-  'timeline.editLive': 'Live edited',
-  'timeline.publish': 'Published',
-  'timeline.unpublish': 'Unpublished',
+  'timeline.operation.created-initial': 'Created',
+  'timeline.operation.created': 'Created',
+  'timeline.operation.published': 'Published',
+  'timeline.operation.edited-live': 'Live edited',
+  'timeline.operation.edited-draft': 'Edited',
+  'timeline.operation.unpublished': 'Unpublished',
+  'timeline.operation.draft-discarded': 'Discarded',
+  'timeline.operation.deleted': 'Deleted',
 
   /** --- Slug Input --- */
 

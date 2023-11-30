@@ -287,14 +287,14 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   'timeline.latest': 'Siste',
 
   /** Consts used in the timeline item component (dropdown menu) - helpers */
-  'timeline.create': 'Opprettet',
-  'timeline.delete': 'Slettet',
-  'timeline.discardDraft': 'Utkast forkastet',
-  'timeline.initial': 'Opprettet',
-  'timeline.editDraft': 'Redigert',
-  'timeline.editLive': 'Live redigert',
-  'timeline.publish': 'Publisert',
-  'timeline.unpublish': 'Avpublisert',
+  'timeline.operation.created-initial': 'Opprettet',
+  'timeline.operation.created': 'Opprettet',
+  'timeline.operation.published': 'Publisert',
+  'timeline.operation.edited-live': 'Live redigert',
+  'timeline.operation.edited-draft': 'Redigert',
+  'timeline.operation.unpublished': 'Avpublisert',
+  'timeline.operation.draft-discarded': 'Utkast forkastet',
+  'timeline.operation.deleted': 'Slettet',
 
   /** --- Slug Input --- */
 
