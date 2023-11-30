@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {TimelineError} from './TimelineError'
 import {Timeline} from './timeline'
+import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {Chunk, useTimelineSelector, useTranslation} from 'sanity'
 
 interface TimelineMenuProps {
@@ -132,7 +133,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     </>
   )
 
-  const revLabel = chunk ? t(`timeline.${chunk.type}`) : t('timeline.latest-version')
+  const revLabel = chunk ? TIMELINE_ITEM_I18N_KEY_MAPPING[chunk.type] : t('timeline.latest-version')
 
   const sinceLabel = chunk
     ? t('timeline.since', {

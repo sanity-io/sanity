@@ -3,6 +3,7 @@ import {Box, ButtonTone, Card, Flex, Label, Stack, Text} from '@sanity/ui'
 import {getTimelineEventIconComponent} from './helpers'
 import {UserAvatarStack} from './userAvatarStack'
 import {IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
+import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {type ChunkType, type Chunk, useTranslation, useIntlDateTimeFormat} from 'sanity'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone> = {
@@ -102,7 +103,7 @@ export function TimelineItem({
             )}
             <Box>
               <Text size={1} weight="medium">
-                {t(`timeline.${type}`) || <code>{type}</code>}
+                {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type]) || <code>{type}</code>}
               </Text>
             </Box>
             <TimestampBox paddingX={1}>
