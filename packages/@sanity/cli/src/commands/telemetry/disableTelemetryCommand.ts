@@ -1,5 +1,5 @@
 import type {CliCommandDefinition} from '../../types'
-import {setTelemetryConsent} from '../../actions/telemetry/setTelemetryConsent'
+import {createSetTelemetryConsentAction} from '../../actions/telemetry/setTelemetryConsent'
 
 const helpText = `
 Examples
@@ -13,7 +13,7 @@ const disableTelemetryCommand: CliCommandDefinition = {
   helpText,
   signature: '',
   description: 'Disable telemetry for your logged in user',
-  action: (_, context) => setTelemetryConsent('denied', context),
+  action: createSetTelemetryConsentAction('denied'),
 }
 
 export default disableTelemetryCommand

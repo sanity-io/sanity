@@ -1,6 +1,6 @@
 import {type ConsentStatus} from '@sanity/telemetry'
 import {ClientError, ServerError} from '@sanity/client'
-import {type CliCommandContext} from '../../types'
+import {type CliCommandAction} from '../../types'
 
 type SettableConsentStatus = Extract<ConsentStatus, 'granted' | 'denied'>
 
@@ -96,35 +96,34 @@ function getMock(): Mock | undefined {
   }
 }
 
-// TODO: Adopt `CliCommandAction` type.
-export async function setTelemetryConsent(
-  status: SettableConsentStatus,
-  {apiClient, output, chalk}: CliCommandContext,
-): Promise<void> {
-  const client = apiClient({
-    requireUser: true,
-    requireProject: false,
-  }).withConfig({
-    apiVersion: '2023-10-22',
-    useProjectHostname: false,
-  })
+export function createSetTelemetryConsentAction(status: SettableConsentStatus): CliCommandAction {
+  return async function setTelemetryConsentAction(_, {apiClient, output, chalk}) {
+    const client = apiClient({
+      requireUser: true,
+      requireProject: false,
+    }).withConfig({
+      // todo: change vX to stable
+      apiVersion: 'vX',
+      useProjectHostname: false,
+    })
 
-  const mock = getMock()
+    const mock = getMock()
 
-  try {
-    if (mock) {
-      await mock()
-    } else {
-      // TODO: Finalise API request.
-      await client.request({
-        method: 'PUT',
-        uri: `/users/me/consents/telemetry/status/${status}`,
-      })
+    try {
+      if (mock) {
+        await mock()
+      } else {
+        // TODO: Finalise API request.
+        await client.request({
+          method: 'PUT',
+          uri: `/users/me/consents/telemetry/status/${status}`,
+        })
+      }
+
+      output.print(chalk.green(resultMessages[status].success()))
+    } catch (err) {
+      err.message = resultMessages[status].failure(err?.responseBody?.message)
+      throw err
     }
-
-    output.print(chalk.green(resultMessages[status].success()))
-  } catch (err) {
-    err.message = resultMessages[status].failure(err?.responseBody?.message)
-    throw err
   }
 }
