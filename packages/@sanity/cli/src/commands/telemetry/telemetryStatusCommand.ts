@@ -20,7 +20,7 @@ const telemetryStatusCommand: CliCommandDefinition = {
     const token = getCliToken()
 
     if (status === 'undetermined' && !token) {
-      output.print('You are not logged in.')
+      output.print('You need to log in first to see telemetry status.')
       return
     }
 
