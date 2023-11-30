@@ -264,6 +264,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   const hasError = validation.some((v) => v.level === 'error')
   const hasWarning = validation.some((v) => v.level === 'warning')
   const hasMarkers = markers.length > 0
+  const [showPopover, setShowPopover] = useState(false)
 
   const {t} = useTranslation()
   const toneKey = useMemo(() => {
@@ -281,6 +282,10 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
     return 'default'
   }, [isLink, hasError, hasWarning])
 
+  const handleOnClick = useCallback(() => {
+    setShowPopover(true)
+  }, [])
+
   return (
     <Root
       $toneKey={toneKey}
@@ -288,21 +293,25 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
       data-error={hasError ? '' : undefined}
       data-warning={hasWarning ? '' : undefined}
       data-markers={hasMarkers || undefined}
-      onClick={readOnly ? onOpen : undefined}
+      onClick={readOnly ? onOpen : handleOnClick}
     >
       {textElement}
-      <AnnotationToolbarPopover
-        annotationOpen={open}
-        floatingBoundary={floatingBoundary}
-        onOpen={onOpen}
-        onRemove={onRemove}
-        referenceBoundary={referenceBoundary}
-        referenceElement={referenceElement}
-        selected={selected}
-        title={
-          schemaType.i18nTitleKey ? t(schemaType.i18nTitleKey) : schemaType.title || schemaType.name
-        }
-      />
+      {showPopover && (
+        <AnnotationToolbarPopover
+          annotationOpen={open}
+          floatingBoundary={floatingBoundary}
+          onOpen={onOpen}
+          onRemove={onRemove}
+          referenceBoundary={referenceBoundary}
+          referenceElement={referenceElement}
+          selected={selected}
+          title={
+            schemaType.i18nTitleKey
+              ? t(schemaType.i18nTitleKey)
+              : schemaType.title || schemaType.name
+          }
+        />
+      )}
       {open && (
         <ObjectEditModal
           defaultType="popover"
