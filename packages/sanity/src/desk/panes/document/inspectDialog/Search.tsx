@@ -17,7 +17,7 @@ export function Search(props: {onChange: (q: string) => void; query: string}) {
     <TextInput
       icon={SearchIcon}
       onChange={handleChange}
-      placeholder={t('inputs.inspect-dialog.search.placeholder')}
+      placeholder={t('document-inspector.search.placeholder')}
       radius={2}
       value={query || ''}
     />

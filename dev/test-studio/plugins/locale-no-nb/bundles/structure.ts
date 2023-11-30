@@ -319,7 +319,7 @@ const structureLocaleStrings: Record<StructureLocaleResourceKeys, string> = {
   'buttons.action-menu-button.aria-label': 'Åpne dokumenthandlinger',
 
   /** the placeholder text for the search input on the inspect dialog */
-  'inputs.inspect-dialog.search.placeholder': 'Søk',
+  'document-inspector.search.placeholder': 'Søk',
 
   /** -- UNKNOWN PANE TYPE */
   /** The text to display when type is missing */
