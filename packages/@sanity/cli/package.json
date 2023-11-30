@@ -62,9 +62,9 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@babel/traverse": "^7.19.0",
+    "@babel/traverse": "^7.23.5",
     "chalk": "^4.1.2",
-    "esbuild": "^0.19.0",
+    "esbuild": "^0.19.8",
     "esbuild-register": "^3.4.1",
     "get-it": "^8.4.4",
     "golden-fleece": "^1.0.9",
@@ -72,7 +72,7 @@
   },
   "devDependencies": {
     "@rexxars/gitconfiglocal": "^3.0.1",
-    "@rollup/plugin-node-resolve": "^15.2.2",
+    "@rollup/plugin-node-resolve": "^15.2.3",
     "@sanity/client": "^6.8.6",
     "@sanity/eslint-config-studio": "^2.0.4",
     "@sanity/generate-help-url": "^3.0.0",
