@@ -15,6 +15,7 @@ import codemodCommand from './codemod/codemodCommand'
 import telemetryGroup from './telemetry/telemetryGroup'
 import disableTelemetryCommand from './telemetry/disableTelemetryCommand'
 import enableTelemetryCommand from './telemetry/enableTelemetryCommand'
+import telemetryStatusCommand from './telemetry/telemetryStatusCommand'
 
 export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   initCommand,
@@ -33,4 +34,5 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   telemetryGroup,
   disableTelemetryCommand,
   enableTelemetryCommand,
+  telemetryStatusCommand,
 ]
