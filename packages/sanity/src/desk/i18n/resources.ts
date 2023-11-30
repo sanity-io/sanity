@@ -320,7 +320,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.action-menu-button.aria-label': 'Open document actions',
 
   /** the placeholder text for the search input on the inspect dialog */
-  'inputs.inspect-dialog.search.placeholder': 'Search',
+  'document-inspector.search.placeholder': 'Search',
 
   /** -- UNKNOWN PANE TYPE */
   /** The text to display when type is missing */
