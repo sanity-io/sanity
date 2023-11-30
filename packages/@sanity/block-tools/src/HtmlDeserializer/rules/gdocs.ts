@@ -29,6 +29,10 @@ function isGoogleDocs(el: Node): boolean {
   return isElement(el) && Boolean(el.getAttribute('data-is-google-docs'))
 }
 
+function isRootNode(el: Node): boolean {
+  return isElement(el) && Boolean(el.getAttribute('data-is-root-node'))
+}
+
 function getListItemStyle(el: Node): 'bullet' | 'number' | undefined {
   const parentTag = tagName(el.parentNode)
   if (parentTag && !LIST_CONTAINER_TAGS.includes(parentTag)) {
@@ -104,6 +108,43 @@ export default function createGDocsRules(
             level: getListItemLevel(el),
             style: getBlockStyle(el, options.enabledBlockStyles),
             children: next(el.firstChild?.childNodes || []),
+          }
+        }
+        return undefined
+      },
+    },
+    {
+      deserialize(el) {
+        if (
+          tagName(el) === 'br' &&
+          isGoogleDocs(el) &&
+          isElement(el) &&
+          el.classList.contains('apple-interchange-newline')
+        ) {
+          return {
+            ...DEFAULT_SPAN,
+            text: '',
+          }
+        }
+
+        // BRs inside empty paragraphs
+        if (
+          tagName(el) === 'br' &&
+          isGoogleDocs(el) &&
+          isElement(el) &&
+          el?.parentNode?.textContent === ''
+        ) {
+          return {
+            ...DEFAULT_SPAN,
+            text: '',
+          }
+        }
+
+        // BRs on the root
+        if (tagName(el) === 'br' && isGoogleDocs(el) && isElement(el) && isRootNode(el)) {
+          return {
+            ...DEFAULT_SPAN,
+            text: '',
           }
         }
         return undefined

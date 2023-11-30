@@ -94,9 +94,22 @@ export type HtmlParser = (html: string) => Document
 /**
  * @public
  */
+export type WhiteSpacePasteMode = 'preserve' | 'remove' | 'normalize'
+
+/**
+ * @public
+ */
 export interface HtmlDeserializerOptions {
   rules?: DeserializerRule[]
   parseHtml?: HtmlParser
+  unstable_whitespaceOnPasteMode?: WhiteSpacePasteMode
+}
+
+/**
+ * @public
+ */
+export interface HtmlPreprocessorOptions {
+  unstable_whitespaceOnPasteMode?: WhiteSpacePasteMode
 }
 
 /**

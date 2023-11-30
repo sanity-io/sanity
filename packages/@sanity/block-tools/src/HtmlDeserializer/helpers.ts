@@ -1,10 +1,11 @@
 import {ArraySchemaType, PortableTextTextBlock, isPortableTextTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {DEFAULT_BLOCK, PRESERVE_WHITESPACE_TAGS} from '../constants'
+import {DEFAULT_BLOCK} from '../constants'
 import {resolveJsType} from '../util/resolveJsType'
 import type {
   BlockEnabledFeatures,
   HtmlParser,
+  HtmlPreprocessorOptions,
   MinimalBlock,
   MinimalSpan,
   PlaceholderAnnotation,
@@ -50,10 +51,14 @@ export function tagName(el: HTMLElement | Node | null): string | undefined {
 }
 
 // TODO: make this plugin-style
-export function preprocess(html: string, parseHtml: HtmlParser): Document {
+export function preprocess(
+  html: string,
+  parseHtml: HtmlParser,
+  options: HtmlPreprocessorOptions,
+): Document {
   const doc = parseHtml(normalizeHtmlBeforePreprocess(html))
   preprocessors.forEach((processor) => {
-    processor(html, doc)
+    processor(html, doc, options)
   })
   return doc
 }
@@ -242,6 +247,84 @@ export function isElement(node: Node): node is Element {
   return node.nodeType === 1
 }
 
-export function isHtmlElementNode(node: Node): node is HTMLElement {
-  return node instanceof HTMLElement
+/**
+ * Helper to normalize whitespace to only 1 empty block between content nodes
+ * @param node - Root node to process
+ */
+export function normalizeWhitespace(rootNode: Node) {
+  let emptyBlockCount = 0
+  let lastParent = null
+  const nodesToRemove: Node[] = []
+
+  for (let child = rootNode.firstChild; child; child = child.nextSibling) {
+    if (!isElement(child)) {
+      normalizeWhitespace(child)
+      emptyBlockCount = 0
+      continue
+    }
+
+    const elm = child as HTMLElement
+
+    if (isWhitespaceBlock(elm)) {
+      if (lastParent && elm.parentElement === lastParent) {
+        emptyBlockCount++
+        if (emptyBlockCount > 1) {
+          nodesToRemove.push(elm) // Mark for removal
+        }
+      } else {
+        emptyBlockCount = 1 // Different parent, reset counter
+      }
+
+      lastParent = elm.parentElement
+    } else {
+      normalizeWhitespace(child) // Recurse into child nodes
+      emptyBlockCount = 0 // Reset counter for siblings
+    }
+  }
+
+  // Remove marked nodes
+  nodesToRemove.forEach((node) => node.parentElement?.removeChild(node))
+}
+
+/**
+ * Helper to remove all whitespace nodes
+ * @param node - Root node to process
+ */
+export function removeAllWhitespace(rootNode: Node) {
+  const nodesToRemove: Node[] = []
+
+  // Inner function to recursively collect nodes to remove
+  function collectNodesToRemove(currentNode: Node) {
+    if (isElement(currentNode)) {
+      const elm = currentNode as HTMLElement
+
+      // Conditions to identify nodes to be removed
+      if (
+        tagName(elm) === 'br' &&
+        (tagName(elm.nextElementSibling) === 'p' || tagName(elm.previousElementSibling) === 'p')
+      ) {
+        nodesToRemove.push(elm)
+      } else if (
+        tagName(elm) === 'p' &&
+        tagName(elm?.firstChild) === 'br' &&
+        elm.firstChild?.textContent?.trim() === ''
+      ) {
+        nodesToRemove.push(elm)
+      } else {
+        // Recursively process child nodes
+        for (let child = elm.firstChild; child; child = child.nextSibling) {
+          collectNodesToRemove(child)
+        }
+      }
+    }
+  }
+
+  collectNodesToRemove(rootNode)
+
+  // Remove the collected nodes
+  nodesToRemove.forEach((node) => node.parentElement?.removeChild(node))
+}
+
+function isWhitespaceBlock(elm: HTMLElement): boolean {
+  return ['p', 'br'].includes(tagName(elm) || '') && !elm.textContent?.trim()
 }
