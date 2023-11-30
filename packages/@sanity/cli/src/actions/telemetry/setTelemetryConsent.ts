@@ -1,6 +1,7 @@
 import {type ConsentStatus} from '@sanity/telemetry'
 import {ClientError, ServerError} from '@sanity/client'
 import {type CliCommandAction} from '../../types'
+import {debug} from '../../debug'
 
 type SettableConsentStatus = Extract<ConsentStatus, 'granted' | 'denied'>
 
@@ -109,14 +110,20 @@ export function createSetTelemetryConsentAction(status: SettableConsentStatus): 
 
     const mock = getMock()
 
+    debug('Setting telemetry consent to "%s"', status)
+
     try {
       if (mock) {
+        debug('Mocking telemetry consent request')
         await mock()
       } else {
         // TODO: Finalise API request.
+        const uri = `/users/me/consents/telemetry/status/${status}`
+        debug('Sending telemetry consent status to %s', uri)
+
         await client.request({
           method: 'PUT',
-          uri: `/users/me/consents/telemetry/status/${status}`,
+          uri,
         })
       }
 
