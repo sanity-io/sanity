@@ -33,43 +33,52 @@ function getCachedClient(token: string) {
   return _client
 }
 
-export function createTelemetryStore<UserProperties>(options: {
+interface Env {
+  DO_NOT_TRACK?: string
+}
+
+interface Options {
+  env: Env
+}
+
+export function resolveConsent({env}: Options): Promise<{status: ConsentStatus}> {
+  debug('Resolving consent…')
+  if (isCi) {
+    debug('CI environment detected, treating telemetry consent as denied')
+    return Promise.resolve({status: 'denied'})
+  }
+  if (isTrueish(env.DO_NOT_TRACK)) {
+    debug('DO_NOT_TRACK is set, consent is denied')
+    return Promise.resolve({status: 'denied'})
+  }
+
+  const token = getCliToken()
+  if (!token) {
+    debug('User is not logged in, consent is undetermined')
+    return Promise.resolve({status: 'undetermined'})
+  }
+
+  const client = getCachedClient(token)
+
+  return client
+    .request({uri: '/intake/telemetry-status'})
+    .then((response) => {
+      debug('User consent status is %s', response.status)
+      return {status: parseConsent(response.status)}
+    })
+    .catch((err) => {
+      debug('Failed to fetch user consent status, treating it as "undetermined": %s', err.stack)
+      return {status: 'undetermined'}
+    })
+}
+export function createTelemetryStore<UserProperties>({
+  env,
+  projectId,
+}: {
   projectId?: string
   env: {[key: string]: string | undefined}
 }) {
   debug('Initializing telemetry')
-  const {env, projectId} = options
-
-  function fetchConsent(client: SanityClient) {
-    return client.request({uri: '/intake/telemetry-status'})
-  }
-
-  function resolveConsent(): Promise<{status: ConsentStatus}> {
-    debug('Resolving consent…')
-    if (isCi) {
-      debug('CI environment detected, treating telemetry consent as denied')
-      return Promise.resolve({status: 'denied'})
-    }
-    if (isTrueish(env.DO_NOT_TRACK)) {
-      debug('DO_NOT_TRACK is set, consent is denied')
-      return Promise.resolve({status: 'denied'})
-    }
-    const token = getCliToken()
-    if (!token) {
-      debug('User is not logged in, consent is undetermined')
-      return Promise.resolve({status: 'undetermined'})
-    }
-    const client = getCachedClient(token)
-    return fetchConsent(client)
-      .then((response) => {
-        debug('User consent status is %s', response.status)
-        return {status: parseConsent(response.status)}
-      })
-      .catch((err) => {
-        debug('Failed to fetch user consent status, treating it as "undetermined": %s', err.stack)
-        return {status: 'undetermined'}
-      })
-  }
 
   // Note: if this function throws/rejects the events will be put back on the buffer
   async function sendEvents(batch: TelemetryEvent[]) {
@@ -105,7 +114,7 @@ export function createTelemetryStore<UserProperties>(options: {
   debug('session id: %s', sessionId)
 
   const store = createBatchedStore<UserProperties>(sessionId, {
-    resolveConsent,
+    resolveConsent: () => resolveConsent({env}),
     sendEvents,
   })
   process.once('beforeExit', () => store.flush())
