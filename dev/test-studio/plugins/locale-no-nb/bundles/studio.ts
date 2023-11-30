@@ -789,6 +789,18 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Accessibility label for action to insert a block of a given type (`{{typeName}}`) */
   'inputs.portable-text.action.insert-block-aria-label': 'Sett inn {{typeName}} (blokk)',
 
+  /** Label for activate click verb */
+  'inputs.portable-text.activate-on-focus.click-verb': 'Klikk',
+
+  /** Label for activate focused verb */
+  'inputs.portable-text.activate-on-focus.focused-verb': ' eller trykk mellomrom',
+
+  /** Message for activate on focus */
+  'inputs.portable-text.activate-on-focus.message': '{{activateVerb}} å aktivere',
+
+  /** Label for activate tap verb */
+  'inputs.portable-text.activate-on-focus.tap-verb': 'Trykk på',
+
   /** Accessibility label for the button that opens the actions menu on blocks */
   'inputs.portable-text.block.open-menu-aria-label': 'Åpne meny',
 
