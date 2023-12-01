@@ -622,14 +622,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.action.insert-inline-object-aria-label': 'Insert {{typeName}} (inline)',
   /** Label for action to remove an annotation */
   'inputs.portable-text.action.remove-annotation': 'Remove annotation',
-  /** Label for activate click verb */
-  'inputs.portable-text.activate-on-focus.click-verb': 'Click',
-  /** Label for activate focused verb */
-  'inputs.portable-text.activate-on-focus.focused-verb': ' or press space',
-  /** Message for activate on focus */
-  'inputs.portable-text.activate-on-focus.message': '{{activateVerb}} to activate',
-  /** Label for activate tap verb */
-  'inputs.portable-text.activate-on-focus.tap-verb': 'Tap',
+  /** Label for activate on focus with context of click and not focused */
+  'inputs.portable-text.activate-on-focus-message_click': 'Click to activate',
+  /** Label for activate on focus with context of click and focused */
+  'inputs.portable-text.activate-on-focus-message_click-focused':
+    'Click or press spacebar to activate',
+  /** Label for activate on focus with context of tap and not focused */
+  'inputs.portable-text.activate-on-focus-message_tap': 'Tap to activate',
   /** Title for dialog that allows editing an annotation */
   'inputs.portable-text.annotation-editor.title': 'Edit {{schemaType}}',
   /** Title of the default "link" annotation */

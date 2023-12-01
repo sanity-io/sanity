@@ -61,16 +61,20 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
 
   const msg = useMemo(() => {
     const isTouch = isTouchDevice()
-    let activateVerb = isTouch
-      ? t('inputs.portable-text.activate-on-focus.tap-verb')
-      : t('inputs.portable-text.activate-on-focus.click-verb')
-    if (focused && !isTouch) {
-      activateVerb += t('inputs.portable-text.activate-on-focus.focused-verb')
+    let messageContext
+
+    if (isTouch) {
+      messageContext = 'tap'
+    } else if (focused) {
+      messageContext = 'click-focused'
+    } else {
+      messageContext = 'click'
     }
+
     const text =
       message ||
-      t('inputs.portable-text.activate-on-focus.message', {
-        activateVerb,
+      t('inputs.portable-text.activate-on-focus-message', {
+        context: messageContext,
       })
     return <Text weight="semibold">{text}</Text>
   }, [focused, message, t])
