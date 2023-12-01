@@ -45,6 +45,13 @@ test('fromString: handles key segments', () => {
   expect(fromString('[_key=="bar"]')).toEqual([{_key: 'bar'}])
 })
 
+test('fromString: handles key segments containing periods', () => {
+  expect(fromString('[_key=="foo.bar"]')).toEqual([{_key: 'foo.bar'}])
+  expect(fromString('[_key=="foo.bar.bat"]')).toEqual([{_key: 'foo.bar.bat'}])
+  expect(fromString('[_key=="foo.bar"].bat')).toEqual([{_key: 'foo.bar'}, 'bat'])
+  expect(fromString('foo[_key=="bar.bat"].baz')).toEqual(['foo', {_key: 'bar.bat'}, 'baz'])
+})
+
 test('fromString: handles deep prop segments', () => {
   expect(fromString('foo.bar')).toEqual(['foo', 'bar'])
   expect(fromString('bar.foo')).toEqual(['bar', 'foo'])
