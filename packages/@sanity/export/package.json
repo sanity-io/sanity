@@ -37,7 +37,7 @@
     "lodash": "^4.17.21",
     "mississippi": "^4.0.0",
     "p-queue": "^2.3.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^4.0.0",
     "split2": "^3.2.2"
   },
   "devDependencies": {
