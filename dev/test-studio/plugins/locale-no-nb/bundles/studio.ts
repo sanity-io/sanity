@@ -794,7 +794,7 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
 
   /** Label for activate on focus with context of click and focused */
   'inputs.portable-text.activate-on-focus-message_click-focused':
-    'Klikk eller trykk mellomromstasten for å aktivere',
+    'Klikk eller trykk mellomrom for å aktivere',
 
   /** Label for activate on focus with context of tap and not focused */
   'inputs.portable-text.activate-on-focus-message_tap': 'Trykk for å aktivere',
