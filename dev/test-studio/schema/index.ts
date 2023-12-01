@@ -62,6 +62,7 @@ import notitle from './debug/notitle'
 import poppers from './debug/poppers'
 import presence, {objectWithNestedArray} from './debug/presence'
 import previewImageUrlTest from './debug/previewImageUrlTest'
+import ptAnnotationDefinitionOrder from './debug/ptAnnotationDefinitionOrder'
 import {formInputDebug} from './debug/formInputDebug'
 import previewMediaTest from './debug/previewMediaTest'
 import {previewSelectBugRepro} from './debug/previewSelectBugRepro'
@@ -211,6 +212,7 @@ export const schemaTypes = [
   previewImageUrlTest,
   previewMediaTest,
   previewSelectBugRepro,
+  ...ptAnnotationDefinitionOrder,
   ptAllTheBellsAndWhistlesType,
   ptCustomMarkersTestType,
   ptReference,

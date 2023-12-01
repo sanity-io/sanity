@@ -61,6 +61,7 @@ export const DEBUG_INPUT_TYPES = [
   'previewImageUrlTest',
   'previewMediaTest',
   'previewSelectBugRepro',
+  'ptAnnotationDefinitionOrder',
   'ptReference',
   'radio',
   'readOnlyTest',
