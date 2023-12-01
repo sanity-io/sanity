@@ -62,6 +62,7 @@ import recursive from './debug/recursive'
 import recursiveArray from './debug/recursiveArray'
 import recursiveObjectTest, {recursiveObject} from './debug/recursiveObject'
 import recursivePopover from './debug/recursivePopover'
+import {referenceWithKeyContainingPeriods} from './debug/referenceWithKeyContainingPeriods'
 import reservedFieldNames from './debug/reservedFieldNames'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
@@ -230,6 +231,7 @@ export const schemaTypes = [
   recursiveObjectTest,
   recursiveObject,
   recursivePopover,
+  referenceWithKeyContainingPeriods,
   simpleArrayOfObjects,
   simpleReferences,
   reservedFieldNames,
