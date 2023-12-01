@@ -22,12 +22,26 @@ export interface ImageValue extends FileValue {
 }
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ImageRule extends RuleDef<ImageRule, ImageValue> {}
+export interface ImageRule extends RuleDef<ImageRule, ImageValue> {
+  /**
+   * Require an image field has an asset.
+   *
+   * @example
+   * ```ts
+   * defineField({
+   *  name: 'image',
+   *  title: 'Image',
+   *  type: 'image',
+   *  validation: (Rule) => Rule.required().assetRequired(),
+   * })
+   * ```
+   */
+  assetRequired(): ImageRule
+}
 
 /** @public */
 export interface ImageDefinition
-  extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups'> {
+  extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups' | 'validation'> {
   type: 'image'
   fields?: FieldDefinition[]
   options?: ImageOptions

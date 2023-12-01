@@ -12,8 +12,22 @@ export interface FileOptions extends ObjectOptions {
 }
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FileRule extends RuleDef<FileRule, FileValue> {}
+export interface FileRule extends RuleDef<FileRule, FileValue> {
+  /**
+   * Require a file field has an asset.
+   *
+   * @example
+   * ```ts
+   * defineField({
+   *  name: 'file',
+   *  title: 'File',
+   *  type: 'file',
+   *  validation: (Rule) => Rule.required().assetRequired(),
+   * })
+   * ```
+   */
+  assetRequired(): FileRule
+}
 
 /** @public */
 export interface FileValue {
@@ -23,10 +37,10 @@ export interface FileValue {
 
 /** @public */
 export interface FileDefinition
-  extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups'> {
+  extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups' | 'validation'> {
   type: 'file'
   fields?: ObjectDefinition['fields']
   options?: FileOptions
-  validation?: ValidationBuilder<FileRule>
+  validation?: ValidationBuilder<FileRule, FileValue>
   initialValue?: InitialValueProperty<any, FileValue>
 }
