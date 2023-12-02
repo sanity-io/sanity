@@ -3,7 +3,7 @@
 import React, {useEffect} from 'react'
 
 import {TextInput, useForwardedRef} from '@sanity/ui'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DateTimeInput} from './base/DateTimeInput'
 import {ParseResult} from './types'
 import {CalendarLabels} from './base/calendar/types'
