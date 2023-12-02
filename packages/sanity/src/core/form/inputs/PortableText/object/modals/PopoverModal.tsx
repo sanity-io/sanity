@@ -1,8 +1,9 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {CloseIcon} from '@sanity/icons'
-import {Box, Button, Flex, PopoverProps, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Flex, PopoverProps, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {Button} from '../../../../../../ui'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
@@ -82,7 +83,7 @@ function Content(props: PopoverEditDialogProps) {
         <ContentHeaderBox flex="none" padding={1}>
           <Flex align="center">
             <Box flex={1} padding={2}>
-              <Text weight="semibold">{title}</Text>
+              <Text weight="medium">{title}</Text>
             </Box>
 
             <Button
@@ -90,7 +91,7 @@ function Content(props: PopoverEditDialogProps) {
               icon={CloseIcon}
               mode="bleed"
               onClick={onClose}
-              padding={2}
+              tooltipProps={{content: 'Close'}}
             />
           </Flex>
         </ContentHeaderBox>

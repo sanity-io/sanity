@@ -1,8 +1,9 @@
 import React, {memo, useCallback, useMemo} from 'react'
-import {Button, ButtonProps, PopoverProps} from '@sanity/ui'
-import {EllipsisVerticalIcon} from '@sanity/icons'
+import {PopoverProps} from '@sanity/ui'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
+import {Button} from '../../../../../ui'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'
@@ -10,7 +11,6 @@ import {getActionIcon} from './helpers'
 const CollapseMenuMemo = memo(CollapseMenu)
 
 const MENU_POPOVER_PROPS: PopoverProps = {constrainSize: true, portal: true}
-const COLLAPSE_BUTTON_PROPS: ButtonProps = {padding: 2, mode: 'bleed'}
 
 interface ActionMenuProps {
   disabled: boolean
@@ -55,6 +55,8 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
     PortableTextEditor.focus(editor)
   }, [editor])
 
+  const tooltipPlacement = isFullscreen ? 'bottom' : 'top'
+
   const children = useMemo(
     () =>
       actions.map((action) => {
@@ -64,7 +66,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
           <CollapseMenuButton
             data-testid={`action-button-${action.key}`}
             disabled={disabled || annotationDisabled}
-            {...COLLAPSE_BUTTON_PROPS}
+            mode="bleed"
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
             key={action.key}
@@ -75,22 +77,28 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             tooltipText={action.title || action.key}
             tooltipProps={{
               disabled: disabled || annotationDisabled,
-              placement: isFullscreen ? 'bottom' : 'top',
+              placement: tooltipPlacement,
               portal: 'default',
             }}
           />
         )
       }),
-    [actions, activeKeys, disabled, isEmptyTextBlock, isFullscreen],
+    [actions, activeKeys, disabled, isEmptyTextBlock, tooltipPlacement],
   )
 
   const menuButtonProps = useMemo(
     () => ({
-      button: <Button icon={EllipsisVerticalIcon} mode="bleed" padding={2} disabled={disabled} />,
+      button: (
+        <Button
+          icon={EllipsisHorizontalIcon}
+          mode="bleed"
+          disabled={disabled}
+          tooltipProps={{content: 'Show more', placement: tooltipPlacement}}
+        />
+      ),
       popover: MENU_POPOVER_PROPS,
     }),
-
-    [disabled],
+    [disabled, tooltipPlacement],
   )
 
   return (

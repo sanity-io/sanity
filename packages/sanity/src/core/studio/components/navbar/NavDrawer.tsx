@@ -1,9 +1,10 @@
-import {Layer, Card, Flex, Text, Box, Button, Stack, Label} from '@sanity/ui'
+import {Layer, Card, Flex, Text, Box, Stack} from '@sanity/ui'
 import {CheckmarkIcon, CloseIcon, CogIcon, LeaveIcon, UsersIcon} from '@sanity/icons'
 import React, {memo, useCallback} from 'react'
 import styled from 'styled-components'
 import TrapFocus from 'react-focus-lock'
 import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
+import {Button} from '../../../../ui'
 import {useWorkspace} from '../../workspace'
 import {Tool} from '../../../config'
 import {useToolMenuComponent} from '../../studio-components-hooks'
@@ -72,13 +73,7 @@ function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSc
   return (
     <>
       <Card borderTop flex="none" padding={3} overflow="auto">
-        <Box padding={2}>
-          <Label size={1} muted>
-            {t('user-menu.appearance-title')}
-          </Label>
-        </Box>
-
-        <Stack as="ul" marginTop={1} space={1}>
+        <Stack as="ul" space={1}>
           {options.map(({icon, label, name, onSelect, selected, title}) => (
             <Stack as="li" key={name}>
               <Button
@@ -165,7 +160,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                           marginLeft={2}
                           title={currentUser?.name || currentUser?.email}
                         >
-                          <Text textOverflow="ellipsis">
+                          <Text size={1} textOverflow="ellipsis" weight="medium">
                             {currentUser?.name || currentUser?.email}
                           </Text>
                         </Box>
@@ -177,7 +172,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                         icon={CloseIcon}
                         mode="bleed"
                         onClick={onClose}
-                        title={t('user-menu.close-menu')}
+                        tooltipProps={{content: t('user-menu.close-menu')}}
                       />
                     </Box>
                   </Flex>

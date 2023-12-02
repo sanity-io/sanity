@@ -1,6 +1,6 @@
 import type {SanityDocument} from '@sanity/client'
 import type {SchemaType} from '@sanity/types'
-import {Box, Inline, Label} from '@sanity/ui'
+import {Badge, Box, Inline} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import styled from 'styled-components'
@@ -11,9 +11,11 @@ import {
   SanityDefaultPreview,
 } from '../../../../../../../preview'
 import {DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
+import {GeneralPreviewLayoutKey} from '../../../../../../../components'
 
 interface SearchResultItemPreviewProps {
   documentId: string
+  layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
 }
@@ -30,12 +32,9 @@ const SearchResultItemPreviewBox = styled(Box)`
   }
 `
 
-const TypeLabel = styled(Label)`
-  max-width: 150px;
-`
-
 export default function SearchResultItemPreview({
   documentId,
+  layout,
   presence,
   schemaType,
 }: SearchResultItemPreviewProps) {
@@ -60,9 +59,7 @@ export default function SearchResultItemPreview({
     return (
       <Inline space={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <TypeLabel size={0} muted textOverflow="ellipsis">
-          {schemaType.title}
-        </TypeLabel>
+        <Badge mode="outline">{schemaType.title}</Badge>
       </Inline>
     )
   }, [isLoading, presence, schemaType.title])
@@ -76,7 +73,7 @@ export default function SearchResultItemPreview({
           value: sanityDocument,
         })}
         isPlaceholder={isLoading ?? true}
-        layout="default"
+        layout={layout || 'default'}
         icon={schemaType.icon}
         status={status}
       />

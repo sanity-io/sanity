@@ -9,7 +9,8 @@ import type {
   SlugValue,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {Box, Button, Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Button} from '../../../../ui'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import type {ObjectInputProps} from '../../types'
 import {useGetFormValue} from '../../contexts/GetFormValue'
@@ -98,7 +99,7 @@ export function SlugInput(props: SlugInputProps) {
 
   return (
     <Stack space={3}>
-      <Flex>
+      <Flex gap={1}>
         <Box flex={1}>
           <TextInput
             customValidity={errors.length > 0 ? errors[0].message : ''}
@@ -116,19 +117,18 @@ export function SlugInput(props: SlugInputProps) {
           )}
         </Box>
         {sourceField && (
-          <Box marginLeft={1}>
-            <Button
-              mode="ghost"
-              type="button"
-              disabled={readOnly || isUpdating}
-              onClick={handleGenerateSlug}
-              text={
-                generateState?.status === 'pending'
-                  ? t('inputs.slug.action.generating')
-                  : t('inputs.slug.action.generate')
-              }
-            />
-          </Box>
+          <Button
+            mode="ghost"
+            type="button"
+            disabled={readOnly || isUpdating}
+            onClick={handleGenerateSlug}
+            size="large"
+            text={
+              generateState?.status === 'pending'
+                ? t('inputs.slug.action.generating')
+                : t('inputs.slug.action.generate')
+            }
+          />
         )}
       </Flex>
     </Stack>

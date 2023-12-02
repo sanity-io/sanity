@@ -1,10 +1,10 @@
-import {Box, Flex, useElementRect} from '@sanity/ui'
-import React, {useEffect, useMemo, useState, memo, useLayoutEffect} from 'react'
+import {Box, Flex, Text, useElementRect} from '@sanity/ui'
+import React, {useEffect, useState, memo, useLayoutEffect} from 'react'
+import {DocumentStatus} from '../../../../../ui/documentStatus'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
-import {PublishStatus} from './PublishStatus'
-import {ReviewChangesButton} from './ReviewChangesButton'
-import {useSyncState, useTimelineSelector} from 'sanity'
+import {DocumentStatusPulse} from './DocumentStatusPulse'
+import {useDocumentStatusTimeAgo, useSyncState, useTimelineSelector} from 'sanity'
 
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
@@ -23,10 +23,6 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
   const syncState = useSyncState(documentId, documentType)
 
   const lastUpdated = value?._updatedAt
-  const lastPublished = editState?.published?._updatedAt
-  const liveEdit = Boolean(editState?.liveEdit)
-  const published = Boolean(editState?.published)
-  const changed = Boolean(editState?.draft)
 
   const [rootFlexElement, setRootFlexElement] = useState<HTMLDivElement | null>(null)
   const rootFlexRect = useElementRect(rootFlexElement)
@@ -64,56 +60,37 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     }
   }, [syncState.isSyncing, lastUpdated])
 
-  const reviewButton = useMemo(
-    () => (
-      <ReviewChangesButton
-        lastUpdated={lastUpdated}
-        status={status || (changed ? 'changes' : undefined)}
-        onClick={changesOpen ? onHistoryClose : onHistoryOpen}
-        disabled={showingRevision}
-        selected={changesOpen}
-        collapsed={collapsed}
-      />
-    ),
-    [
-      changed,
-      changesOpen,
-      onHistoryClose,
-      onHistoryOpen,
-      lastUpdated,
-      showingRevision,
-      status,
-      collapsed,
-    ],
-  )
-
-  const publishStatus = useMemo(
-    () =>
-      (liveEdit || published) && (
-        <Box marginRight={1}>
-          <PublishStatus
-            disabled={showingRevision}
-            lastPublished={lastPublished}
-            lastUpdated={lastUpdated}
-            liveEdit={liveEdit}
-            collapsed={collapsed}
-          />
-        </Box>
-      ),
-    [collapsed, lastPublished, lastUpdated, liveEdit, published, showingRevision],
-  )
+  const statusTimeAgo = useDocumentStatusTimeAgo({
+    draft: editState?.draft,
+    hidePublishedDate: true,
+    published: editState?.published,
+  })
 
   return (
     <Flex align="center" data-ui="DocumentSparkline" ref={setRootFlexElement}>
-      {publishStatus}
-
-      <Flex align="center" flex={1}>
-        {reviewButton}
-        {!collapsed && (
-          <Box marginLeft={3}>
-            <DocumentBadges />
+      <Flex align="center" flex={1} gap={3} marginLeft={3}>
+        <Flex align="center" gap={2}>
+          <DocumentStatus
+            draft={editState?.draft}
+            published={editState?.published}
+            showPublishedIcon
+          />
+          <Box flex={1}>
+            <Text muted textOverflow="ellipsis" size={1} weight="medium">
+              {statusTimeAgo}
+            </Text>
           </Box>
-        )}
+        </Flex>
+
+        <DocumentStatusPulse
+          status={status || undefined}
+          onClick={changesOpen ? onHistoryClose : onHistoryOpen}
+          disabled={showingRevision}
+          selected={changesOpen}
+          collapsed={collapsed}
+        />
+
+        {!collapsed && <DocumentBadges />}
       </Flex>
     </Flex>
   )

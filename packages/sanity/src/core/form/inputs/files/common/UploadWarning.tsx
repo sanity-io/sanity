@@ -1,17 +1,13 @@
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
+import {Card, Flex, Box, Text, Stack} from '@sanity/ui'
 import React from 'react'
-import styled from 'styled-components'
+import {Button} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 import {STALE_UPLOAD_MS} from '../constants'
 
 type Props = {
   onClearStale?: () => void
 }
-
-const ButtonWrapper = styled(Button)`
-  width: 100%;
-`
 
 export function UploadWarning({onClearStale}: Props) {
   const {t} = useTranslation()
@@ -25,7 +21,7 @@ export function UploadWarning({onClearStale}: Props) {
           </Text>
         </Box>
         <Stack space={3}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="medium">
             {t('inputs.files.common.stale-upload-warning.title')}
           </Text>
           <Text size={1}>
@@ -35,11 +31,12 @@ export function UploadWarning({onClearStale}: Props) {
           </Text>
         </Stack>
       </Flex>
-      <ButtonWrapper
+      <Button
         icon={ResetIcon}
-        text={t('inputs.files.common.stale-upload-warning.clear')}
-        onClick={onClearStale}
         mode="ghost"
+        onClick={onClearStale}
+        text={t('inputs.files.common.stale-upload-warning.clear')}
+        width="fill"
       />
     </Card>
   )

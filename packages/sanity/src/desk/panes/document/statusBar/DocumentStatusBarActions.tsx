@@ -1,11 +1,12 @@
-import {Box, Flex, Tooltip, Stack, Button, LayerProvider, Text} from '@sanity/ui'
+import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
+import {Button, TooltipWithNodes} from '../../../../ui'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription, Hotkeys, useTimelineSelector} from 'sanity'
+import {DocumentActionDescription, useTimelineSelector} from 'sanity'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
@@ -18,31 +19,32 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
+  // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
     if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null
 
     return (
-      <Flex padding={2} style={{maxWidth: 300}} align="center">
-        <Text size={1}>{firstActionState.title}</Text>
+      <Flex style={{maxWidth: 300}} align="center" gap={3}>
+        {firstActionState.title && <Text size={1}>{firstActionState.title}</Text>}
         {firstActionState.shortcut && (
-          <Box marginLeft={firstActionState.title ? 2 : 0}>
-            <Hotkeys
-              keys={String(firstActionState.shortcut)
-                .split('+')
-                .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase())}
-            />
-          </Box>
+          <Hotkeys
+            fontSize={1}
+            style={{marginTop: -4, marginBottom: -4}}
+            keys={String(firstActionState.shortcut)
+              .split('+')
+              .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase())}
+          />
         )}
       </Flex>
     )
   }, [firstActionState])
 
   return (
-    <Flex>
+    <Flex gap={1}>
       {firstActionState && (
         <LayerProvider zOffset={200}>
-          <Tooltip disabled={!tooltipContent} content={tooltipContent} portal placement="top">
-            <Stack flex={1}>
+          <TooltipWithNodes disabled={!tooltipContent} content={tooltipContent} placement="top">
+            <Stack>
               <Button
                 data-testid={`action-${firstActionState.label}`}
                 disabled={disabled || Boolean(firstActionState.disabled)}
@@ -50,20 +52,17 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
                 // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}
                 ref={setButtonElement}
+                size="large"
                 text={firstActionState.label}
                 tone={firstActionState.tone || 'primary'}
               />
             </Stack>
-          </Tooltip>
+          </TooltipWithNodes>
         </LayerProvider>
       )}
-
       {showMenu && menuActionStates.length > 0 && (
-        <Box marginLeft={1}>
-          <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
-        </Box>
+        <ActionMenuButton actionStates={menuActionStates} disabled={disabled} />
       )}
-
       {firstActionState && firstActionState.dialog && (
         <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
       )}

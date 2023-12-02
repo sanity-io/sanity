@@ -1,5 +1,5 @@
+export * from './SearchButton'
 export * from './SearchDialog'
-export * from './SearchField'
 
 export {
   type SearchFilterDefinition,

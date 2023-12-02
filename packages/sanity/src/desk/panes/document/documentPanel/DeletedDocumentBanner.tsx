@@ -1,8 +1,9 @@
 import React, {useCallback} from 'react'
-import {Button, Card, Container, Flex, Text} from '@sanity/ui'
+import {Card, Container, Flex, Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
+import {Button} from '../../../../ui'
 import {useDocumentOperation, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -40,8 +41,6 @@ export function DeletedDocumentBanner({revisionId}: DeletedDocumentBannerProps) 
             <Text size={1}>{t('banners.deleted-document-banner.text')}</Text>
             {revisionId && (
               <Button
-                fontSize={1}
-                padding={2}
                 mode="bleed"
                 tone="primary"
                 onClick={handleRestore}

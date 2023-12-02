@@ -1,10 +1,9 @@
 import React from 'react'
-import {Tooltip, Flex, Text, TooltipProps} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {TooltipWithNodes} from '../../../../../../ui'
 import {CommentsAvatar} from '../../avatars'
 import {useCurrentUser, useUser} from 'sanity'
-
-const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500, close: 0}
 
 const Span = styled.span(({theme}) => {
   const {regular} = theme.sanity.fonts?.text.weights
@@ -38,12 +37,10 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
   if (!user || loading) return <Span>@Loading</Span> // todo: improve
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       portal
-      open={selected}
-      delay={TOOLTIP_DELAY}
       content={
-        <Flex align="center" padding={2} gap={2}>
+        <Flex align="center" gap={2}>
           <Flex>
             <CommentsAvatar user={user} />
           </Flex>
@@ -55,6 +52,6 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
       <Span data-selected={selected} data-active={currentUser?.id === userId}>
         @{user.displayName}
       </Span>
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }

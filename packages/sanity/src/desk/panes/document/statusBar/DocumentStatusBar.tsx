@@ -5,14 +5,22 @@ import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentSparkline} from './sparkline/DocumentSparkline'
 import {useTimelineSelector} from 'sanity'
+import {Button} from '../../../../ui'
 
 export interface DocumentStatusBarProps {
   actionsBoxRef?: React.Ref<HTMLDivElement>
 }
 
-const DocumentActionsBox = styled(Box)`
+const DocumentActionsFlex = styled(Flex)`
   min-width: 10em;
   max-width: 16em;
+`
+
+// This Hidden button prevents this status bar from shifting in height as both
+// <HistoryStatusBarActions /> and <DocumentStatusBarActions /> can return null.
+const SpacerButton = styled(Button)`
+  pointer-events: none;
+  visibility: hidden;
 `
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
@@ -24,13 +32,15 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   return useMemo(
     () => (
-      <Box paddingLeft={2} paddingRight={[2, 3]} paddingY={2}>
+      <Box padding={2}>
         <Flex align="center">
           <Box flex={[1, 2]}>{badges && <DocumentSparkline />}</Box>
 
-          <DocumentActionsBox flex={1} marginLeft={[1, 3]} ref={actionsBoxRef}>
+          <DocumentActionsFlex flex={1} justify="flex-end" marginLeft={[1, 3]} ref={actionsBoxRef}>
+            <SpacerButton aria-hidden disabled size="large" text="-" />
+
             {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
-          </DocumentActionsBox>
+          </DocumentActionsFlex>
         </Flex>
       </Box>
     ),

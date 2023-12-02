@@ -1,6 +1,7 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import React from 'react'
+import {Button} from '../../../../../../ui'
 import {PaneHeader} from '../../../PaneHeader'
 import {usePane} from '../../../usePane'
 
@@ -19,7 +20,14 @@ export function ReviewChangesPanel(props: {onClose: () => void}) {
       }}
     >
       <PaneHeader
-        actions={<Button icon={CloseIcon} mode="bleed" onClick={props.onClose} />}
+        actions={
+          <Button
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={props.onClose}
+            tooltipProps={{content: 'Close'}}
+          />
+        }
         title="Review changes"
       />
     </Flex>

@@ -1,5 +1,6 @@
-import {Box, Label, MenuGroup, MenuGroupProps} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
 import React from 'react'
+import {MenuGroup, MenuGroupProps} from '../../../../ui'
 import {DocumentFieldActionGroup} from '../../../config'
 import {useI18nText} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
@@ -16,10 +17,10 @@ export function FieldActionMenuGroup(props: {group: DocumentFieldActionGroup}) {
   if (group.expanded) {
     return (
       <>
-        <Box padding={2} paddingBottom={1}>
-          <Label muted size={0}>
+        <Box padding={2} paddingTop={3}>
+          <Text muted size={1} weight="medium">
             {title}
-          </Label>
+          </Text>
         </Box>
 
         {group.children.map((item, idx) => (
@@ -36,15 +37,7 @@ export function FieldActionMenuGroup(props: {group: DocumentFieldActionGroup}) {
   }
 
   return (
-    <MenuGroup
-      fontSize={1}
-      icon={group.icon}
-      padding={3}
-      popover={POPOVER_PROPS}
-      space={3}
-      text={title}
-      tone={group.tone}
-    >
+    <MenuGroup icon={group.icon} popover={POPOVER_PROPS} text={title} tone={group.tone}>
       {group.children.map((item, idx) => (
         <FieldActionMenuNode
           action={item}

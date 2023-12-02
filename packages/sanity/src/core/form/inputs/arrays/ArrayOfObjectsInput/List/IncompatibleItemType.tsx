@@ -47,7 +47,7 @@ export function IncompatibleItemType(props: Props) {
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
           <Stack space={4}>
             <Box>
-              <Text weight="semibold">{t('inputs.array.error.type-is-incompatible-title')}</Text>
+              <Text weight="medium">{t('inputs.array.error.type-is-incompatible-title')}</Text>
             </Box>
             <Text size={1}>
               <Translate
@@ -62,7 +62,7 @@ export function IncompatibleItemType(props: Props) {
               </Text>
             </Box>
             <Stack space={2}>
-              <Text size={1} weight="semibold">
+              <Text size={1} weight="medium">
                 {t('inputs.array.error.json-representation-description')}
               </Text>
               <Card padding={2} overflow="auto" border>

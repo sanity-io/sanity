@@ -1,16 +1,12 @@
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
+import {Card, Flex, Box, Text, Stack} from '@sanity/ui'
 import React from 'react'
-import styled from 'styled-components'
+import {Button} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 
 type Props = {
   onClearValue?: () => void
 }
-
-const ButtonWrapper = styled(Button)`
-  width: 100%;
-`
 
 export function InvalidImageWarning({onClearValue}: Props) {
   const {t} = useTranslation()
@@ -23,17 +19,18 @@ export function InvalidImageWarning({onClearValue}: Props) {
           </Text>
         </Box>
         <Stack space={3}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="medium">
             {t('inputs.image.invalid-image-warning.title')}
           </Text>
           <Text size={1}>{t('inputs.image.invalid-image-warning.description')}</Text>
         </Stack>
       </Flex>
-      <ButtonWrapper
+      <Button
         icon={ResetIcon}
-        text={t('inputs.image.invalid-image-warning.reset-button.text')}
-        onClick={onClearValue}
         mode="ghost"
+        onClick={onClearValue}
+        text={t('inputs.image.invalid-image-warning.reset-button.text')}
+        width="fill"
       />
     </Card>
   )

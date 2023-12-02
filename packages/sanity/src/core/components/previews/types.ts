@@ -13,7 +13,7 @@ export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
  *
  * @public
  */
-export type GeneralPreviewLayoutKey = 'default' | 'media' | 'detail'
+export type GeneralPreviewLayoutKey = 'compact' | 'default' | 'media' | 'detail'
 
 /**
  * Preview layout key. See also {@link GeneralPreviewLayoutKey} and {@link PortableTextPreviewLayoutKey}

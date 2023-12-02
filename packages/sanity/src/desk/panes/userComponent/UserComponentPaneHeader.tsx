@@ -1,6 +1,6 @@
 import React from 'react'
 import {ArrowLeftIcon} from '@sanity/icons'
-import {Button} from '@sanity/ui'
+import {Button} from '../../../ui'
 import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions} from '../../components'
 import {useDeskTool} from '../../useDeskTool'
@@ -32,7 +32,15 @@ export function UserComponentPaneHeader(props: UserComponentPaneHeaderProps) {
       }
       backButton={
         features.backButton &&
-        index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+        index > 0 && (
+          <Button
+            as={BackLink}
+            data-as="a"
+            icon={ArrowLeftIcon}
+            mode="bleed"
+            tooltipProps={{content: 'Back'}}
+          />
+        )
       }
       title={title}
     />

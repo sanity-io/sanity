@@ -1,5 +1,6 @@
 import React, {useCallback, useState, useId} from 'react'
-import {Box, Flex, Button, Dialog, Text, ErrorBoundary} from '@sanity/ui'
+import {Box, ErrorBoundary, Text} from '@sanity/ui'
+import {Dialog} from '../../../ui'
 import {structureLocaleNamespace} from '../../i18n'
 import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
 import {useTranslation} from 'sanity'
@@ -21,19 +22,17 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
       id={`dialog-error-${id}`}
       data-testid="confirm-delete-error-dialog"
       header={t('confirm-delete-dialog.error.title.text')}
-      footer={
-        <Flex paddingX={4} paddingY={3} direction="column">
-          <Button
-            mode="ghost"
-            text={t('confirm-delete-dialog.error.retry-button.text')}
-            onClick={handleRetry}
-          />
-        </Flex>
-      }
+      footer={{
+        confirmButton: {
+          text: t('confirm-delete-dialog.error.retry-button.text'),
+          onClick: handleRetry,
+          tone: 'default',
+        },
+      }}
       onClose={props.onCancel}
     >
       <Box padding={4}>
-        <Text>{t('confirm-delete-dialog.error.message.text')}</Text>
+        <Text size={1}>{t('confirm-delete-dialog.error.message.text')}</Text>
       </Box>
     </Dialog>
   ) : (

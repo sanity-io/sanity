@@ -10,5 +10,10 @@ export default defineScope({
       title: 'SanityPreview',
       component: lazy(() => import('./SanityPreviewStory')),
     },
+    {
+      name: 'sanity-default-preview',
+      title: 'SanityDefaultPreview',
+      component: lazy(() => import('./SanityDefaultPreviewStory')),
+    },
   ],
 })

@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
-import {Card, Flex, Spinner, Text} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {
   createContext,
@@ -11,6 +11,7 @@ import React, {
   useState,
 } from 'react'
 import styled from 'styled-components'
+import {LoadingBlock} from '../../ui/loadingBlock'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
@@ -33,15 +34,19 @@ const SearchFullscreenPortalCard = styled(Card)`
 /** @internal */
 export interface NavbarContextValue {
   onSearchFullscreenOpenChange: (open: boolean) => void
+  onSearchOpenChange: (open: boolean) => void
   searchFullscreenOpen: boolean
   searchFullscreenPortalEl: HTMLElement | null
+  searchOpen: boolean
 }
 
 /** @internal */
 export const NavbarContext = createContext<NavbarContextValue>({
   onSearchFullscreenOpenChange: () => '',
+  onSearchOpenChange: () => '',
   searchFullscreenOpen: false,
   searchFullscreenPortalEl: null,
+  searchOpen: false,
 })
 
 /**
@@ -94,6 +99,7 @@ export function StudioLayoutComponent() {
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null,
   )
+  const [searchOpen, setSearchOpen] = useState<boolean>(false)
 
   const documentTitle = useMemo(() => {
     const mainTitle = title || startCase(name)
@@ -117,13 +123,25 @@ export function StudioLayoutComponent() {
     setSearchFullscreenOpen(open)
   }, [])
 
+  const handleSearchOpenChange = useCallback((open: boolean) => {
+    setSearchOpen(open)
+  }, [])
+
   const navbarContextValue = useMemo(
     () => ({
       searchFullscreenOpen,
       searchFullscreenPortalEl,
+      searchOpen,
       onSearchFullscreenOpenChange: handleSearchFullscreenOpenChange,
+      onSearchOpenChange: handleSearchOpenChange,
     }),
-    [searchFullscreenOpen, searchFullscreenPortalEl, handleSearchFullscreenOpenChange],
+    [
+      searchFullscreenOpen,
+      searchFullscreenPortalEl,
+      searchOpen,
+      handleSearchFullscreenOpenChange,
+      handleSearchOpenChange,
+    ],
   )
 
   const Navbar = useNavbarComponent()
@@ -173,23 +191,13 @@ export function StudioLayoutComponent() {
                 activeTool.router?.__unsafe_disableScopedSearchParams
               }
             >
-              <Suspense fallback={<LoadingTool />}>
+              <Suspense fallback={<LoadingBlock />}>
                 {createElement(activeTool.component, {tool: activeTool})}
               </Suspense>
             </RouteScope>
           )}
         </Card>
       </StudioErrorBoundary>
-    </Flex>
-  )
-}
-
-// @TODO re-use `LoadingComponent`, which is `LoadingScreen` by default, to reduce "popping" during initial load
-function LoadingTool() {
-  return (
-    <Flex justify="center" align="center" height="fill" direction="column" gap={4}>
-      <Text muted>Loading…</Text>
-      <Spinner muted />
     </Flex>
   )
 }

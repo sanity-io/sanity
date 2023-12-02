@@ -1,13 +1,14 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {
   Box,
-  Button,
   Flex,
   Inline,
   rem,
   ResponsiveMarginProps,
   ResponsivePaddingProps,
   Text,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling and children behavior.
 } from '@sanity/ui'
 import React, {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
@@ -34,7 +35,7 @@ const SearchItemPillsBox = styled(Box)`
   flex-shrink: 3;
 `
 
-const SearchItemQueryBox = styled(Box)`
+const SearchItemQueryFlex = styled(Flex)`
   flex-shrink: 2;
 `
 
@@ -107,11 +108,11 @@ export function RecentSearchItem({
           <Flex align="stretch" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">
             {/* Text query */}
             {value.query && (
-              <SearchItemQueryBox paddingY={2}>
-                <Text muted textOverflow="ellipsis">
+              <SearchItemQueryFlex align="center" paddingY={2}>
+                <Text muted size={1} textOverflow="ellipsis" weight="medium">
                   {value.query}
                 </Text>
-              </SearchItemQueryBox>
+              </SearchItemQueryFlex>
             )}
             {/* Document type */}
             {value.types.length > 0 && (

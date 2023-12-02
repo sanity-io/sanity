@@ -2,14 +2,9 @@ import React, {ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Box, Card, CardTone, Heading, Text, useElementRect} from '@sanity/ui'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {useTranslation} from '../../../../i18n'
-import {
-  MAX_DEFAULT_HEIGHT,
-  RatioBox,
-  Overlay,
-  FlexOverlay,
-  SpinnerWrapper,
-} from './ImagePreview.styled'
+import {MAX_DEFAULT_HEIGHT, RatioBox, Overlay, FlexOverlay} from './ImagePreview.styled'
 
 interface Props {
   readOnly?: boolean | null
@@ -72,7 +67,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   return (
     <RatioBox {...rest} ref={setRootElement} style={{height: rootHeight}} tone="transparent">
       <Card data-container tone="inherit">
-        {!isLoaded && <OverlayComponent cardTone="transparent" drag content={<SpinnerWrapper />} />}
+        {!isLoaded && <OverlayComponent cardTone="transparent" drag content={<LoadingBlock />} />}
         <img
           src={src}
           data-testid="hotspot-image-input"
