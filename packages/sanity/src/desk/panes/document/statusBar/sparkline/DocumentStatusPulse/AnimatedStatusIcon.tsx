@@ -22,9 +22,6 @@ const Arrows = (props: MotionPathProps) => (
 const Checkmark = (props: MotionPathProps) => (
   <motion.path d="M9.5 12.1316L11.7414 14.5L16 10" {...props} />
 )
-const Edit = (props: MotionPathProps) => (
-  <motion.path d="M15 7L18 10M6 19L7 15L17 5L20 8L10 18L6 19Z" {...props} />
-)
 
 const rotateAnimation = keyframes`
   0% {
@@ -124,24 +121,6 @@ const checkmark = {
   },
 }
 
-const edit = {
-  syncing: {
-    pathLength: 0,
-    transition: {duration: 0},
-  },
-  saved: {
-    pathLength: 0,
-    transition: {duration: 0},
-  },
-  changes: {
-    pathLength: 1,
-    transition: {
-      duration: 0.4,
-      delay: 0.5,
-    },
-  },
-}
-
 interface AnimatedStatusIconProps {
   status?: 'changes' | 'saved' | 'syncing'
 }
@@ -169,7 +148,6 @@ export function AnimatedStatusIcon(props: AnimatedStatusIconProps) {
           <Circle variants={circle} initial={status} animate={status} />
         </RotateGroup>
         <Checkmark variants={checkmark} initial={status} animate={status} />
-        <Edit variants={edit} initial={status} animate={status} />
       </motion.g>
     </svg>
   )

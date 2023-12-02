@@ -27,7 +27,7 @@ export function ChangeTitleSegment(props: {
   if (typeof segment === 'string') {
     return (
       <Box>
-        <Text title={segment} size={1} weight="semibold" textOverflow="ellipsis">
+        <Text title={segment} size={1} weight="medium" textOverflow="ellipsis">
           {segment}
         </Text>
       </Box>
@@ -56,7 +56,7 @@ export function ChangeTitleSegment(props: {
   const readableIndex = (toIndex || 0) + 1
   return (
     <Box padding={1}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         #{readableIndex}
       </Text>
     </Box>
@@ -79,12 +79,7 @@ function CreatedTitleSegment(props: {
   if (annotation) {
     return (
       <DiffCard annotation={annotation} tooltip={{description}} as={RoundedCard}>
-        <AnnotationText
-          size={1}
-          weight="semibold"
-          forwardedAs="ins"
-          style={{textDecoration: 'none'}}
-        >
+        <AnnotationText size={1} weight="medium" forwardedAs="ins" style={{textDecoration: 'none'}}>
           {content}
         </AnnotationText>
       </DiffCard>
@@ -92,7 +87,7 @@ function CreatedTitleSegment(props: {
   }
 
   return (
-    <Text size={1} weight="semibold">
+    <Text size={1} weight="medium">
       {content}
     </Text>
   )
@@ -105,7 +100,7 @@ function DeletedTitleSegment(props: {annotation: Annotation | undefined; fromInd
   const description = t('changes.array.item-removed-from-position', {position: readableIndex})
   return (
     <DiffCard annotation={annotation || null} as={RoundedCard} tooltip={{description}}>
-      <AnnotationText size={1} weight="semibold" forwardedAs="del">
+      <AnnotationText size={1} weight="medium" forwardedAs="del">
         #{readableIndex}
       </AnnotationText>
     </DiffCard>
@@ -131,12 +126,12 @@ function MovedTitleSegment(props: {
   return (
     <>
       <Box padding={1}>
-        <AnnotationText size={1} weight="semibold">
+        <AnnotationText size={1} weight="medium">
           #{toIndex + 1}
         </AnnotationText>
       </Box>
       <DiffCard annotation={annotation} as={RoundedCard} tooltip={{description}}>
-        <AnnotationText size={1} weight="semibold">
+        <AnnotationText size={1} weight="medium">
           {indexSymbol}
           {Math.abs(indexDiff)}
         </AnnotationText>

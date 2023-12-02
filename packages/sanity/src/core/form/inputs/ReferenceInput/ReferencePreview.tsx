@@ -1,13 +1,12 @@
 import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label, Text, Tooltip, useRootTheme} from '@sanity/ui'
-import {EditIcon, PublishIcon} from '@sanity/icons'
-import {RelativeTime} from '../../../components/RelativeTime'
-import {Translate, useTranslation} from '../../../i18n'
+import {Badge, Box, Inline} from '@sanity/ui'
+import {DocumentStatus} from '../../../../ui/documentStatus'
+import {PreviewLayoutKey} from '../../../components'
 import {RenderPreviewCallback} from '../../types'
-import {PreviewLayoutKey, TextWithTone} from '../../../components'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
+import {useDocumentStatusTimeAgo} from '../../../hooks'
 import {ReferenceInfo} from './types'
 
 /**
@@ -24,8 +23,6 @@ export function ReferencePreview(props: {
 }) {
   const {id, layout, preview, refType, renderPreview, showTypeLabel} = props
 
-  const {t} = useTranslation()
-  const theme = useRootTheme()
   const documentPresence = useDocumentPresence(id)
 
   const previewId =
@@ -46,117 +43,40 @@ export function ReferencePreview(props: {
     [previewId, refType.name],
   )
 
+  const {draft, published} = preview
+  const tooltipLabel = useDocumentStatusTimeAgo({draft, published})
+
   const previewProps = useMemo(
     () => ({
+      children: (
+        <Box paddingLeft={3}>
+          <Inline space={3}>
+            {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
+
+            {documentPresence && documentPresence.length > 0 && (
+              <DocumentPreviewPresence presence={documentPresence} />
+            )}
+
+            <DocumentStatus draft={preview.draft} published={preview.published} />
+          </Inline>
+        </Box>
+      ),
       layout,
       schemaType: refType,
+      tooltipLabel,
       value: previewStub,
     }),
-    [layout, previewStub, refType],
+    [
+      documentPresence,
+      layout,
+      preview.draft,
+      preview.published,
+      previewStub,
+      refType,
+      showTypeLabel,
+      tooltipLabel,
+    ],
   )
 
-  const publishedAt = preview.published?._updatedAt
-  const draftEditedAt = preview.draft?._updatedAt
-
-  return (
-    <Flex align="center">
-      <Box flex={1}>{renderPreview(previewProps)}</Box>
-
-      <Box paddingLeft={3}>
-        <Inline space={3}>
-          {showTypeLabel && (
-            <Label size={1} muted>
-              {refType.title}
-            </Label>
-          )}
-
-          {documentPresence && documentPresence.length > 0 && (
-            <DocumentPreviewPresence presence={documentPresence} />
-          )}
-
-          <Inline space={4}>
-            <Box>
-              <Tooltip
-                portal
-                content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {publishedAt ? (
-                        <Translate
-                          t={t}
-                          i18nKey="inputs.reference.preview.published-at-time"
-                          components={{
-                            RelativeTime: () => (
-                              <RelativeTime time={publishedAt} useTemporalPhrase />
-                            ),
-                          }}
-                        />
-                      ) : (
-                        <>{t('inputs.reference.preview.not-published')}</>
-                      )}
-                    </Text>
-                  </Box>
-                }
-              >
-                <TextWithTone
-                  tone={theme.tone === 'default' ? 'positive' : 'default'}
-                  size={1}
-                  dimmed={!preview.published}
-                  muted={!preview.published}
-                >
-                  <PublishIcon
-                    aria-label={
-                      preview.published
-                        ? t('inputs.reference.preview.is-published-aria-label')
-                        : t('inputs.reference.preview.is-not-published-aria-label')
-                    }
-                  />
-                </TextWithTone>
-              </Tooltip>
-            </Box>
-
-            <Box>
-              <Tooltip
-                portal
-                content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {draftEditedAt ? (
-                        <Translate
-                          t={t}
-                          i18nKey="inputs.reference.preview.edited-at-time"
-                          components={{
-                            RelativeTime: () => (
-                              <RelativeTime time={draftEditedAt} useTemporalPhrase />
-                            ),
-                          }}
-                        />
-                      ) : (
-                        <>{t('inputs.reference.preview.no-unpublished-edits')}</>
-                      )}
-                    </Text>
-                  </Box>
-                }
-              >
-                <TextWithTone
-                  tone={theme.tone === 'default' ? 'caution' : 'default'}
-                  size={1}
-                  dimmed={!preview.draft}
-                  muted={!preview.draft}
-                >
-                  <EditIcon
-                    aria-label={
-                      preview.draft
-                        ? t('inputs.reference.preview.has-unpublished-changes-aria-label')
-                        : t('inputs.reference.preview.has-no-unpublished-changes-aria-label')
-                    }
-                  />
-                </TextWithTone>
-              </Tooltip>
-            </Box>
-          </Inline>
-        </Inline>
-      </Box>
-    </Flex>
-  )
+  return renderPreview(previewProps)
 }

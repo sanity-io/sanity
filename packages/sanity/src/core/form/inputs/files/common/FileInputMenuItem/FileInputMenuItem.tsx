@@ -1,9 +1,8 @@
-import React, {createElement, isValidElement, useId} from 'react'
-import {isValidElementType} from 'react-is'
-import {Box, ButtonProps, Flex, Text} from '@sanity/ui'
+import React, {useCallback, useId} from 'react'
+import {MenuItemProps} from '../../../../../../ui'
 import {FileMenuItem} from './FileInputMenuItem.styled'
 
-export interface FileInputMenuItemProps extends ButtonProps {
+export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {
   accept?: string
   capture?: 'user' | 'environment'
   multiple?: boolean
@@ -16,21 +15,7 @@ export const FileInputMenuItem = React.forwardRef(function FileInputMenuItem(
     Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ) {
-  const {
-    icon,
-    id: idProp,
-    accept,
-    capture,
-    fontSize,
-    multiple,
-    onSelect,
-    padding = 3,
-    space = 3,
-    textAlign,
-    text,
-    disabled,
-    ...rest
-  } = props
+  const {icon, id: idProp, accept, capture, multiple, onSelect, text, disabled, ...rest} = props
   const id = `${idProp || ''}-${useId()}`
 
   const handleChange = React.useCallback(
@@ -42,50 +27,35 @@ export const FileInputMenuItem = React.forwardRef(function FileInputMenuItem(
     [onSelect],
   )
 
-  const content = (
-    <Flex align="center" justify="flex-start" padding={padding}>
-      {/* Icon */}
-      {icon && (
-        <Box marginRight={text ? space : undefined}>
-          <Text size={fontSize}>
-            {isValidElement(icon) && icon}
-            {isValidElementType(icon) && createElement(icon)}
-          </Text>
-        </Box>
-      )}
-
-      {/* Text */}
-      {text && (
-        <Text align={textAlign} size={fontSize} textOverflow="ellipsis">
-          {text}
-        </Text>
-      )}
-    </Flex>
+  const renderMenuItem = useCallback(
+    (item: React.JSX.Element) => (
+      <div>
+        {item}
+        {/* Visibly hidden input */}
+        <input
+          data-testid="file-menuitem-input"
+          accept={accept}
+          capture={capture}
+          id={id}
+          multiple={multiple}
+          onChange={handleChange}
+          type="file"
+          value=""
+          disabled={disabled}
+        />
+      </div>
+    ),
+    [accept, capture, disabled, handleChange, id, multiple],
   )
-
   return (
     <FileMenuItem
       {...rest}
       htmlFor={id}
-      padding={0}
-      fontSize={2}
       disabled={disabled}
       ref={forwardedRef}
-    >
-      {content}
-
-      {/* Visibly hidden input */}
-      <input
-        data-testid="file-menuitem-input"
-        accept={accept}
-        capture={capture}
-        id={id}
-        multiple={multiple}
-        onChange={handleChange}
-        type="file"
-        value=""
-        disabled={disabled}
-      />
-    </FileMenuItem>
+      icon={icon}
+      text={text}
+      renderMenuItem={renderMenuItem}
+    />
   )
 })

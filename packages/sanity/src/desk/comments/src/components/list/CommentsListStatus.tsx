@@ -1,6 +1,7 @@
-import {Flex, Container, Stack, Spinner, Text} from '@sanity/ui'
+import {Flex, Container, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {CommentStatus} from '../../types'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 
 interface EmptyStateMessage {
   title: string
@@ -51,17 +52,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
   }
 
   if (loading) {
-    return (
-      <Flex align="center" justify="center" flex={1} padding={4}>
-        <Flex align="center" gap={2}>
-          <Spinner muted size={1} />
-
-          <Text size={1} muted>
-            Loading comments...
-          </Text>
-        </Flex>
-      </Flex>
-    )
+    return <LoadingBlock title="Loading comments" />
   }
 
   if (hasNoComments) {
@@ -69,7 +60,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
       <Flex align="center" justify="center" flex={1} sizing="border">
         <Container width={0} padding={4}>
           <Stack space={3}>
-            <Text align="center" size={1} muted weight="semibold">
+            <Text align="center" size={1} muted weight="medium">
               {EMPTY_STATE_MESSAGES[status].title}
             </Text>
 

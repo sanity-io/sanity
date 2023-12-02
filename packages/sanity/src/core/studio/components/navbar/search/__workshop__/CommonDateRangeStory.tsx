@@ -22,7 +22,7 @@ export default function CommonDateRangeStory() {
       <Card margin={3} padding={3} shadow={1} tone="primary">
         <Stack space={3}>
           <Inline space={1}>
-            <Text muted size={1} weight="semibold">
+            <Text muted size={1} weight="medium">
               Start:
             </Text>
             <Text muted size={1}>
@@ -30,7 +30,7 @@ export default function CommonDateRangeStory() {
             </Text>
           </Inline>
           <Inline space={1}>
-            <Text muted size={1} weight="semibold">
+            <Text muted size={1} weight="medium">
               End:
             </Text>
             <Text muted size={1}>

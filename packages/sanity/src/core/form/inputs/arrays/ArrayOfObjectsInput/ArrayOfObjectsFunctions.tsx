@@ -1,18 +1,9 @@
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React, {useId, useCallback} from 'react'
-import {
-  Box,
-  Button,
-  Grid,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Tooltip,
-  Text,
-  MenuButtonProps,
-} from '@sanity/ui'
+import {Grid, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import {ArrayInputFunctionsProps, ObjectItem} from '../../../types'
+import {Tooltip, Button, MenuItem} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -54,16 +45,9 @@ export function ArrayOfObjectsFunctions<
 
   if (readOnly) {
     return (
-      <Tooltip
-        portal
-        content={
-          <Box padding={2} sizing="border">
-            <Text size={1}>{t('inputs.array.read-only-label')}</Text>
-          </Box>
-        }
-      >
+      <Tooltip portal content={t('inputs.array.read-only-label')}>
         <Grid>
-          <Button icon={AddIcon} mode="ghost" disabled text={t(addItemI18nKey)} />
+          <Button icon={AddIcon} mode="ghost" disabled size="large" text={t(addItemI18nKey)} />
         </Grid>
       </Tooltip>
     )
@@ -72,10 +56,16 @@ export function ArrayOfObjectsFunctions<
   return (
     <Grid gap={1} style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}>
       {schemaType.of.length === 1 ? (
-        <Button icon={AddIcon} mode="ghost" onClick={handleAddBtnClick} text={t(addItemI18nKey)} />
+        <Button
+          icon={AddIcon}
+          mode="ghost"
+          onClick={handleAddBtnClick}
+          size="large"
+          text={t(addItemI18nKey)}
+        />
       ) : (
         <MenuButton
-          button={<Button icon={AddIcon} mode="ghost" text={t(addItemI18nKey)} />}
+          button={<Button icon={AddIcon} mode="ghost" size="large" text={t(addItemI18nKey)} />}
           id={menuButtonId || ''}
           menu={
             <Menu>

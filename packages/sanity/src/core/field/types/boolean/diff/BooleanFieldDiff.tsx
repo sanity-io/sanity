@@ -31,7 +31,7 @@ export const BooleanFieldDiff: DiffComponent<BooleanDiff> = ({diff, schemaType})
 
       {showToValue && title && (
         <Box marginLeft={2}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="medium">
             {title}
           </Text>
         </Box>

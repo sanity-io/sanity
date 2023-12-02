@@ -14,7 +14,7 @@ export function AssetSourceError(props: ResponsivePaddingProps) {
           <WarningOutlineIcon />
         </TextWithTone>
         <Stack space={4}>
-          <TextWithTone size={1} tone="caution" weight="semibold">
+          <TextWithTone size={1} tone="caution" weight="medium">
             {t('search.error.no-valid-asset-source-title')}
           </TextWithTone>
           <TextWithTone size={1} tone="caution">

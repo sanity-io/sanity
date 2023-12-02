@@ -1,6 +1,6 @@
-import {SelectIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons'
 import {isTitledListValue, StringOptions, TitledListValue} from '@sanity/types'
-import {Box, Button, Code, Flex, Menu, MenuButton, MenuItem, Stack, Text} from '@sanity/ui'
+import {Menu, MenuButton} from '@sanity/ui'
 import {capitalize, uniq} from 'lodash'
 import React, {useCallback, useId, useMemo} from 'react'
 import {useSchema} from '../../../../../../../../../hooks'
@@ -8,6 +8,7 @@ import {isNonNullable} from '../../../../../../../../../util'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
+import {Button, MenuItem} from '../../../../../../../../../../ui'
 import {useTranslation} from '../../../../../../../../../i18n'
 
 interface TitledListValueGroup extends Omit<TitledListValue<number | string>, 'title'> {
@@ -28,20 +29,13 @@ function CustomMenuItem({
   const handleClick = useCallback(() => onClick(value), [onClick, value])
 
   return (
-    <MenuItem onClick={handleClick} padding={3} pressed={selected} tone="default">
-      <Flex align="center" justify="space-between" gap={3}>
-        <Stack paddingRight={2} space={2}>
-          <Text size={1} weight="regular">
-            {title}
-          </Text>
-          {value && (
-            <Code muted size={0}>
-              {value}
-            </Code>
-          )}
-        </Stack>
-      </Flex>
-    </MenuItem>
+    <MenuItem
+      onClick={handleClick}
+      pressed={selected}
+      tone="default"
+      text={title}
+      subtitle={value ? `${value}` : undefined}
+    />
   )
 }
 
@@ -110,18 +104,11 @@ export function SearchFilterStringListInput({
   return (
     <MenuButton
       button={
-        <Button mode="ghost" padding={3}>
-          <Flex align="center" gap={2} justify="space-between">
-            <Text size={1} weight="regular">
-              {value ? value : t('search.filter-string-value-select-predefined-value')}
-            </Text>
-            <Box marginLeft={1}>
-              <Text size={1}>
-                <SelectIcon />
-              </Text>
-            </Box>
-          </Flex>
-        </Button>
+        <Button
+          mode="ghost"
+          iconRight={ChevronDownIcon}
+          text={value ? String(value) : t('search.filter-string-value-select-predefined-value')}
+        />
       }
       id={menuButtonId || ''}
       menu={

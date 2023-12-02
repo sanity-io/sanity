@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
-import {Box, Button, Card, Code, Flex, Grid, Label, Stack, TextArea} from '@sanity/ui'
+import {Card, Code, Grid, Stack, TextArea, Text} from '@sanity/ui'
 import styled from 'styled-components'
+import {Button} from '../../../../ui'
 
 const ExampleCode = styled(Code)`
   cursor: pointer;
@@ -46,7 +47,9 @@ export const FilterFieldInput = React.forwardRef(function FilterFieldInput(
   return (
     <Card padding={4} tone="default" border>
       <Stack space={4}>
-        <Label size={0}>Function value</Label>
+        <Text size={1} weight="medium">
+          Function value
+        </Text>
         <TextArea rows={4} ref={ref} onChange={handleChange} value={value || ''} />
         <ExampleCode
           title="Use example code"

@@ -1,26 +1,41 @@
 import React, {MouseEvent, useCallback, useId} from 'react'
-import {ButtonProps, Menu, MenuButton, Text} from '@sanity/ui'
+import {Menu, MenuButton} from '@sanity/ui'
 import {UnknownIcon} from '@sanity/icons'
 import {Intent} from '../../structureBuilder'
+import {Button} from '../../../ui'
 import {_PaneMenuGroup, _PaneMenuItem} from './types'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
 import {TooltipOfDisabled, StatusButton, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
+function getDisabledReason(node: _PaneMenuItem) {
+  /**
+   * This component supports receiving a `reason: string | react.ReactNode`.
+   * We are casting it as string, to avoid the ts error, as content will be rendered into the tooltip which only accepts string, but it won't crash if it's a ReactNode.
+   * For the aria label, we want to check if it's actually a string, to avoid generating an aria-label with the value `[object Object]`.
+   */
+  const disabledReason =
+    typeof node.disabled === 'object' ? (node.disabled.reason as string) : undefined
+  const ariaLabel =
+    typeof node.disabled === 'object' && typeof node.disabled?.reason === 'string'
+      ? node.disabled.reason
+      : 'This is disabled'
+
+  return {disabledReason, ariaLabel, isDisabled: Boolean(node.disabled)}
+}
 export interface PaneHeaderActionButtonProps {
   node: _PaneMenuItem | _PaneMenuGroup
-  padding?: ButtonProps['padding']
 }
 
 export function PaneHeaderActionButton(props: PaneHeaderActionButtonProps) {
-  const {node, padding} = props
+  const {node} = props
 
   if (node.type === 'item') {
-    return <PaneHeaderMenuItemActionButton node={node} padding={padding} />
+    return <PaneHeaderMenuItemActionButton node={node} />
   }
 
   if (node.type === 'group') {
-    return <PaneHeaderMenuGroupActionButton node={node} padding={padding} />
+    return <PaneHeaderMenuGroupActionButton node={node} />
   }
 
   console.warn('unknown menu node (expected `type: "item" | "group"`):', node)
@@ -30,47 +45,37 @@ export function PaneHeaderActionButton(props: PaneHeaderActionButtonProps) {
 
 export interface PaneHeaderMenuItemActionButtonProps {
   node: _PaneMenuItem
-  padding?: ButtonProps['padding']
 }
 
 export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
-  const {node, padding} = props
+  const {node} = props
   const {title} = useI18nText(node)
 
   if (node.intent) {
     return <PaneHeaderActionIntentButton {...props} intent={node.intent} />
   }
 
-  const disabledTooltipContent = typeof node.disabled === 'object' && (
-    <Text size={1}>{node.disabled.reason}</Text>
-  )
+  const {disabledReason, ariaLabel, isDisabled} = getDisabledReason(node)
 
   return (
-    <TooltipOfDisabled content={disabledTooltipContent} placement="bottom">
-      <StatusButton
-        disabled={Boolean(node.disabled)}
-        hotkey={node.hotkey?.split('+')}
-        icon={node.icon}
-        label={disabledTooltipContent ? undefined : title}
-        // eslint-disable-next-line react/jsx-handler-names
-        onClick={node.onAction}
-        padding={padding}
-        selected={node.selected}
-        tone={node.tone}
-      />
-    </TooltipOfDisabled>
+    <StatusButton
+      disabled={Boolean(node.disabled)}
+      icon={node.icon}
+      // eslint-disable-next-line react/jsx-handler-names
+      onClick={node.onAction}
+      selected={node.selected}
+      tone={node.tone}
+      aria-label={ariaLabel}
+      tooltipProps={{
+        hotkeys: !isDisabled && node.hotkey ? node.hotkey.split('+') : undefined,
+        content: isDisabled ? disabledReason : title,
+      }}
+    />
   )
 }
 
-function PaneHeaderActionIntentButton(props: {
-  intent: Intent
-  node: _PaneMenuItem
-  padding?: ButtonProps['padding']
-}) {
-  const {intent, node, padding} = props
-  const disabledTooltipContent = typeof node.disabled === 'object' && (
-    <Text size={1}>{node.disabled.reason}</Text>
-  )
+function PaneHeaderActionIntentButton(props: {intent: Intent; node: _PaneMenuItem}) {
+  const {intent, node} = props
   const intentLink = useIntentLink({intent: intent.type, params: intent.params})
 
   const handleClick = useCallback(
@@ -81,41 +86,44 @@ function PaneHeaderActionIntentButton(props: {
     [intentLink, node],
   )
 
+  const {disabledReason, ariaLabel, isDisabled} = getDisabledReason(node)
+
   return (
-    <TooltipOfDisabled content={disabledTooltipContent} placement="bottom">
-      <StatusButton
-        as="a"
-        disabled={Boolean(node.disabled)}
-        hotkey={node.hotkey?.split('+')}
-        href={intentLink.href}
-        icon={node.icon}
-        label={disabledTooltipContent ? undefined : node.title}
-        onClick={handleClick}
-        padding={padding}
-        selected={node.selected}
-        tone={node.tone}
-      />
-    </TooltipOfDisabled>
+    <StatusButton
+      as="a"
+      disabled={isDisabled}
+      href={intentLink.href}
+      icon={node.icon}
+      onClick={handleClick}
+      selected={node.selected}
+      tone={node.tone}
+      aria-label={ariaLabel}
+      tooltipProps={{
+        hotkeys: !isDisabled && node.hotkey ? node.hotkey.split('+') : undefined,
+        content: isDisabled ? disabledReason : node.title,
+        placement: 'bottom',
+        portal: true,
+      }}
+    />
   )
 }
 
 export interface PaneHeaderMenuGroupActionButtonProps {
   node: _PaneMenuGroup
-  padding?: ButtonProps['padding']
 }
 
 function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonProps) {
-  const {node, padding} = props
+  const {node} = props
   const {title} = useI18nText(node)
 
   return (
     <MenuButton
       button={
-        <StatusButton
-          disabled={node.disabled}
+        <Button
+          disabled={!!node.disabled}
           icon={node.icon ?? UnknownIcon}
           label={title}
-          padding={padding}
+          tooltipProps={{content: node.title, portal: true}}
         />
       }
       id={useId()}

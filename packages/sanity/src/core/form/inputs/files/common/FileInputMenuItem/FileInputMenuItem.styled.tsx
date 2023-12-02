@@ -1,5 +1,5 @@
-import {MenuItem} from '@sanity/ui'
 import styled from 'styled-components'
+import {MenuItem} from '../../../../../../ui'
 
 export const FileMenuItem = styled(MenuItem)`
   position: relative;

@@ -16,7 +16,7 @@ export function DebugFilterQuery() {
   return (
     <Card padding={4} tone="transparent">
       <Stack space={3}>
-        <Code size={1} weight="semibold">
+        <Code size={1} weight="medium">
           Filter
         </Code>
         {filter && (

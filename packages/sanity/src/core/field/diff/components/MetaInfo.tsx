@@ -32,7 +32,7 @@ export function MetaInfo(props: MetaInfoProps) {
       <Stack space={2} paddingLeft={2}>
         <MetaText
           size={1}
-          weight="semibold"
+          weight="medium"
           forwardedAs={markRemoved ? 'del' : 'h3'}
           textOverflow="ellipsis"
         >

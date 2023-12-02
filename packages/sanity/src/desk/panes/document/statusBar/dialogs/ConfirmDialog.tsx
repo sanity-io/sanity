@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Flex,
   Grid,
   Popover,
@@ -11,6 +10,7 @@ import {
 } from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {Button} from '../../../../../ui'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 import {DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
 

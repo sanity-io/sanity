@@ -2,11 +2,8 @@ import {AddIcon, CloseIcon, RestoreIcon} from '@sanity/icons'
 import {Path} from '@sanity/types'
 import {
   BoundaryElementProvider,
-  Box,
-  Button,
   Card,
   Container,
-  Dialog,
   DialogProvider,
   Flex,
   LayerProvider,
@@ -19,6 +16,7 @@ import {
 import {useAction} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
+import {Button, Dialog} from '../../../../ui'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'
@@ -157,6 +155,7 @@ export default function ChangeConnectorsStory() {
                       mode="bleed"
                       onClick={toggleReviewChanges}
                       selected={reviewChanges}
+                      tooltipProps={{content: 'Review changes'}}
                     />
                   </PaneFooter>
                 </Pane>
@@ -165,7 +164,12 @@ export default function ChangeConnectorsStory() {
                   <Pane id="review-changes-panel">
                     <PaneHeader
                       actions={
-                        <Button icon={CloseIcon} mode="bleed" onClick={closeReviewChanges} />
+                        <Button
+                          icon={CloseIcon}
+                          mode="bleed"
+                          onClick={closeReviewChanges}
+                          tooltipProps={{content: 'Close'}}
+                        />
                       }
                       title="Changes"
                     />
@@ -212,7 +216,7 @@ function StringField(props: {
 
   return (
     <Stack space={2}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         String
       </Text>
       <DebugFormField path={path} focusPath={focusPath} value={value} compareValue={compareValue}>
@@ -220,15 +224,18 @@ function StringField(props: {
       </DebugFormField>
 
       <div>
-        <Button icon={<AddIcon />} mode="ghost" onClick={handleOpen} />
+        <Button
+          icon={<AddIcon />}
+          mode="ghost"
+          onClick={handleOpen}
+          tooltipProps={{content: 'Add'}}
+        />
       </div>
 
       {open && (
         <DialogProvider position="absolute">
           <Dialog id={`${path.join('-')}-dialog`} onClickOutside={handleClose}>
-            <Box padding={4}>
-              <Text>Dialog</Text>
-            </Box>
+            <Text size={1}>Dialog</Text>
           </Dialog>
         </DialogProvider>
       )}
@@ -265,7 +272,7 @@ function DebugDiffField(props: {children?: React.ReactNode; path: Path}) {
 
   return (
     <Stack space={2}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         String
       </Text>
       <ChangeFieldWrapper hasHover={hovered} path={path}>

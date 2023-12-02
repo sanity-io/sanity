@@ -1,10 +1,11 @@
 import type {ImageAsset, ReferenceValue} from '@sanity/types'
-import {Card, Flex, Spinner} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {observeImageAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'
 import {useDocumentPreviewStore} from '../../../../../../../../../../store'
+import {LoadingBlock} from '../../../../../../../../../../../ui/loadingBlock'
 
 interface ImageReferencePreviewProps {
   reference: ReferenceValue
@@ -23,12 +24,6 @@ const Image = styled.img`
   height: 100%;
   display: block;
   object-fit: contain;
-`
-
-const SpinnerFlex = styled(Flex)`
-  height: 100%;
-  position: absolute;
-  width: 100%;
 `
 
 export function ImageReferencePreview({reference}: ImageReferencePreviewProps) {
@@ -51,11 +46,7 @@ function ImagePreview({asset}: {asset: ImageAsset}) {
 
   return (
     <Container __unstable_checkered border>
-      {!loaded && (
-        <SpinnerFlex align="center" justify="center">
-          <Spinner />
-        </SpinnerFlex>
-      )}
+      {!loaded && <LoadingBlock fill />}
       <Image onLoad={handleLoad} src={imageUrl} />
     </Container>
   )

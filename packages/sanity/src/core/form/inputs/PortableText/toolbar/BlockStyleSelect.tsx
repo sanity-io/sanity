@@ -1,7 +1,14 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import {Button, Menu, MenuButton, MenuButtonProps, MenuItem, Text} from '@sanity/ui'
-import {SelectIcon} from '@sanity/icons'
+import {
+  Menu,
+  MenuButton,
+  MenuButtonProps,
+  // eslint-disable-next-line no-restricted-imports
+  MenuItem,
+  Text,
+} from '@sanity/ui'
+import {ChevronDownIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {useTranslation} from '../../../../i18n'
 import {
@@ -14,6 +21,7 @@ import {
   BlockQuote,
   Normal,
 } from '../text/textStyles'
+import {Button} from '../../../../../ui'
 import {useActiveStyleKeys, useFocusBlock} from './hooks'
 import {BlockStyleItem} from './types'
 
@@ -32,10 +40,6 @@ const StyledMenuItem = styled(MenuItem)`
       --card-border-color: var(--card-muted-fg-color);
     }
   }
-`
-
-const StyledButton = styled(Button)`
-  width: 100%;
 `
 
 const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -128,13 +132,13 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   const button = useMemo(
     () => (
-      <StyledButton
+      <Button
         disabled={_disabled}
-        iconRight={SelectIcon}
+        iconRight={ChevronDownIcon}
         mode="bleed"
         onClick={preventDefault}
-        padding={2}
         text={menuButtonText}
+        width="fill"
       />
     ),
     [_disabled, menuButtonText],

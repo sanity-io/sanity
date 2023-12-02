@@ -1,4 +1,5 @@
 import React, {ReactElement} from 'react'
+import {useDocumentTitle} from '../../useDocumentTitle'
 import {useDocumentPane} from '../../useDocumentPane'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'

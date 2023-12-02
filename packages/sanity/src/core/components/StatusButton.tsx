@@ -1,117 +1,57 @@
-import {
-  Box,
-  Button,
-  ButtonMode,
-  ButtonProps,
-  Flex,
-  Text,
-  Tooltip,
-  TooltipProps,
-  useTheme,
-} from '@sanity/ui'
-import React, {
-  createElement,
-  isValidElement,
-  useMemo,
-  HTMLProps,
-  forwardRef,
-  ForwardedRef,
-  ReactNode,
-} from 'react'
-import {isValidElementType} from 'react-is'
+import {useTheme} from '@sanity/ui'
+import {useMemo, HTMLProps, forwardRef, ForwardedRef, ReactNode} from 'react'
 import styled from 'styled-components'
-import {Hotkeys} from './Hotkeys'
+import {Button, ButtonProps} from '../../ui'
 
 /** @hidden @beta */
-export interface StatusButtonProps extends Omit<ButtonProps, 'iconRight'> {
+export type StatusButtonProps = ButtonProps & {
   disabled?: boolean | {reason: ReactNode}
-  hotkey?: string[]
-  label?: string
-  mode?: ButtonMode
-  tooltip?: Omit<TooltipProps, 'content' | 'disabled' | 'portal'>
+  mode?: ButtonProps['mode']
+  iconRight?: undefined
 }
 
-const IconBox = styled(Box)({
-  position: 'relative',
-})
+const StyledButton = styled(Button)`
+  position: relative;
+  // The children in button is rendered inside a span, we need to absolutely position it.
+  & > span:nth-child(2) {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 0;
+  }
+`
 
 const Dot = styled.div({
-  position: 'absolute',
-  top: -4,
-  right: -4,
-  width: 6,
-  height: 6,
+  width: 4,
+  height: 4,
   borderRadius: 3,
   boxShadow: '0 0 0 1px var(--card-bg-color)',
 })
 
 /** @hidden @beta */
 export const StatusButton = forwardRef(function StatusButton(
-  props: StatusButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref'>,
+  props: StatusButtonProps &
+    Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref' | 'size' | 'title'>,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
-  const {
-    disabled: disabledProp,
-    fontSize,
-    hotkey,
-    icon,
-    label,
-    mode = 'bleed',
-    space = 3,
-    text,
-    tone,
-    tooltip,
-    ...restProps
-  } = props
+  const {disabled: disabledProp, icon, label, mode = 'bleed', text, tone, ...restProps} = props
   const theme = useTheme()
   const toneColor = tone && theme.sanity.color.solid[tone]
   const dotStyle = useMemo(() => ({backgroundColor: toneColor?.enabled.bg}), [toneColor])
   const disabled = Boolean(disabledProp)
 
-  const tooltipContent =
-    typeof disabledProp === 'object' ? (
-      <Text size={1}>{disabledProp.reason}</Text>
-    ) : (
-      <Flex align="center" gap={2} style={{lineHeight: 0}}>
-        <Text size={1}>{label}</Text>
-        {hotkey && <Hotkeys fontSize={0} keys={hotkey} style={{margin: -4}} />}
-      </Flex>
-    )
-
   return (
-    <Tooltip
-      padding={2}
-      placement="bottom"
-      {...tooltip}
-      content={tooltipContent}
-      disabled={!label}
-      portal
+    <StyledButton
+      data-ui="StatusButton"
+      {...restProps}
+      aria-label={label}
+      disabled={disabled}
+      mode={mode}
+      ref={ref}
+      text={text}
+      icon={icon}
     >
-      <div>
-        <Button
-          data-ui="StatusButton"
-          {...restProps}
-          aria-label={label}
-          disabled={disabled}
-          mode={mode}
-          ref={ref}
-        >
-          <Flex gap={space}>
-            <IconBox>
-              <Text size={fontSize}>
-                {isValidElement(icon) && icon}
-                {isValidElementType(icon) && createElement(icon)}
-              </Text>
-              {tone && <Dot style={dotStyle} />}
-            </IconBox>
-            {text && (
-              <Box flex={1}>
-                <Text size={fontSize}>{text}</Text>
-              </Box>
-            )}
-          </Flex>
-        </Button>
-      </div>
-    </Tooltip>
+      {tone && <Dot style={dotStyle} />}
+    </StyledButton>
   )
 })

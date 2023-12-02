@@ -1,8 +1,9 @@
-import {SelectIcon} from '@sanity/icons'
-import {Button, Placement, Popover, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {ChevronDownIcon} from '@sanity/icons'
+import {Placement, Popover, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
+import {Button} from '../../../../ui'
 import {TimelineError} from './TimelineError'
 import {Timeline} from './timeline'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
@@ -167,9 +168,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
       <Button
         disabled={!ready}
         mode="bleed"
-        fontSize={1}
-        padding={2}
-        iconRight={SelectIcon}
+        iconRight={ChevronDownIcon}
         onClick={open ? handleClose : handleOpen}
         ref={setButton}
         selected={open}

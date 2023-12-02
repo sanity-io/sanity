@@ -1,6 +1,6 @@
 import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
 import {isSanityDocument, PreviewValue, SanityDocument, SchemaType} from '@sanity/types'
-import {CardProps, Text} from '@sanity/ui'
+import {Box, CardProps, Text} from '@sanity/ui'
 import React, {ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter'
@@ -84,15 +84,18 @@ export function PaneItem(props: PaneItemProps) {
       )
     }
 
+    // Always render non-document values as compact previews
     return (
       <SanityDefaultPreview
         status={
-          <Text muted>
-            <ChevronRightIcon />
-          </Text>
+          <Box style={{opacity: 0.5}}>
+            <Text muted size={0}>
+              <ChevronRightIcon />
+            </Text>
+          </Box>
         }
         icon={getIconWithFallback(icon, schemaType, FolderIcon)}
-        layout={layout}
+        layout="compact"
         title={title}
       />
     )
@@ -137,7 +140,6 @@ export function PaneItem(props: PaneItemProps) {
       marginBottom={marginBottom}
       marginTop={marginTop}
       onClick={handleClick}
-      padding={2}
       pressed={pressed}
       radius={2}
       selected={selected || clicked}

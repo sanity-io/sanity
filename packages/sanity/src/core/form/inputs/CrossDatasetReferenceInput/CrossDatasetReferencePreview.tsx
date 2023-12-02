@@ -1,28 +1,15 @@
-import React, {createElement, ReactNode, useMemo} from 'react'
+import React, {createElement, useMemo} from 'react'
 import type {CrossDatasetType, PreviewValue} from '@sanity/types'
-import {Box, Flex, Inline, Label, Text, Tooltip} from '@sanity/ui'
+import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {isImageSource} from '@sanity/asset-utils'
+import {Tooltip} from '../../../../ui'
 import {useTranslation} from '../../../i18n'
 import type {DocumentAvailability} from '../../../preview'
 import {DefaultPreview, TextWithTone, type PreviewMediaDimensions} from '../../../components'
 import {FIXME} from '../../../FIXME'
-import {StyledPreviewFlex, TooltipContent} from './CrossDatasetReferencePreview.styled'
-
-function UnavailableMessage(props: {children: ReactNode}) {
-  return (
-    <TooltipContent padding={3}>
-      <Box flex={1}>
-        <Box>
-          <Text as="p" size={1}>
-            {props.children}
-          </Text>
-        </Box>
-      </Box>
-    </TooltipContent>
-  )
-}
+import {StyledPreviewFlex} from './CrossDatasetReferencePreview.styled'
 
 /**
  * Used to preview a referenced type
@@ -109,25 +96,19 @@ export function CrossDatasetReferencePreview(props: {
       <Box paddingLeft={3}>
         <Inline space={4}>
           {refType && showTypeLabel && (
-            <Label size={1} muted>
-              {refType.title || refType.type}
-            </Label>
+            <Badge mode="outline">{refType.title || refType.type}</Badge>
           )}
 
           {(insufficientPermissions || notFound) && (
             <Box>
               <Tooltip
                 portal
-                content={
-                  <UnavailableMessage>
-                    {t(
-                      notFound
-                        ? 'inputs.reference.referenced-document-does-not-exist'
-                        : 'inputs.reference.referenced-document-insufficient-permissions',
-                      {documentId: id},
-                    )}
-                  </UnavailableMessage>
-                }
+                content={t(
+                  notFound
+                    ? 'inputs.reference.referenced-document-does-not-exist'
+                    : 'inputs.reference.referenced-document-insufficient-permissions',
+                  {documentId: id},
+                )}
               >
                 <TextWithTone tone="default">
                   {insufficientPermissions ? <AccessDeniedIcon /> : <HelpCircleIcon />}
@@ -140,17 +121,11 @@ export function CrossDatasetReferencePreview(props: {
             <Box>
               <Tooltip
                 portal
-                content={
-                  <TooltipContent padding={2}>
-                    <Text size={1}>
-                      {t(
-                        hasStudioUrl
-                          ? 'inputs.reference.document-opens-in-new-tab'
-                          : 'input.reference.document-cannot-be-opened.failed-to-resolve-url',
-                      )}
-                    </Text>
-                  </TooltipContent>
-                }
+                content={t(
+                  hasStudioUrl
+                    ? 'inputs.reference.document-opens-in-new-tab'
+                    : 'input.reference.document-cannot-be-opened.failed-to-resolve-url',
+                )}
               >
                 <TextWithTone size={1} tone="default" muted={!hasStudioUrl}>
                   <LaunchIcon />
