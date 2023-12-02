@@ -1,15 +1,11 @@
 import {CurrentUser} from '@sanity/types'
-import {Tooltip, Box, Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import styled from 'styled-components'
+import {TooltipWithNodes} from '../../../../../ui'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useI18nText} from '../../../../i18n'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {useIntentLink} from 'sanity/router'
-
-const TooltipContentBox = styled(Box)`
-  max-width: 300px;
-`
 
 // This value is used to calculate the max-height of the popover and for the virtual list item size.
 // This value is not used anywhere in this file, but it is exported
@@ -46,14 +42,12 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   const {title} = useI18nText(option)
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       disabled={option.hasPermission}
       key={option.id}
       portal
       content={
-        <TooltipContentBox padding={2}>
-          <InsufficientPermissionsMessage currentUser={currentUser} context="create-document" />
-        </TooltipContentBox>
+        <InsufficientPermissionsMessage currentUser={currentUser} context="create-document" />
       }
     >
       <div>
@@ -69,6 +63,6 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
           <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
         </Card>
       </div>
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }

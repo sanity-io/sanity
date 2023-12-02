@@ -81,6 +81,8 @@ const inspectors = [validationInspector, changesInspector]
 export const deskTool = definePlugin<DeskToolOptions | void>((options) => {
   const hasSpecifiedName = options ? typeof options.name === 'string' : false
   const ToolIcon = options?.icon || MasterDetailIcon
+  // @todo: as icons are now deprecated and no longer deprecated, we need to determine another way
+  // to render the desk rename popover (rather than wrapping the desk / structure icon)
   const icon = hasSpecifiedName ? ToolIcon : wrapIconInDeskRenamePrompt(ToolIcon)
 
   return {

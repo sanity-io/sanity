@@ -1,7 +1,8 @@
 import React, {useCallback, useMemo, useState} from 'react'
-import {Stack, Box, Button, Text, Grid, useClickOutside} from '@sanity/ui'
+import {Box, Grid, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {useDocumentOperation} from '../../../hooks'
+import {Button} from '../../../../ui'
 import {FieldChangeNode, FieldOperationsAPI} from '../../types'
 import {undoChange} from '../changes/undoChange'
 import {DiffContext} from '../contexts/DiffContext'
@@ -14,7 +15,7 @@ import {DiffInspectWrapper} from './DiffInspectWrapper'
 import {FallbackDiff} from './FallbackDiff'
 import {RevertChangesButton} from './RevertChangesButton'
 import {ValueError} from './ValueError'
-import {FieldChangeContainer, DiffBorder, PopoverWrapper} from './FieldChange.styled'
+import {FieldChangeContainer, DiffBorder} from './FieldChange.styled'
 
 /** @internal */
 export function FieldChange(
@@ -106,39 +107,44 @@ export function FieldChange(
               )}
 
               {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-                <PopoverWrapper
+                <Popover
                   content={
-                    <Box padding={3} sizing="border">
-                      {t('changes.action.revert-changes-description', {count: 1})}
+                    <Stack space={1}>
+                      <Box padding={1}>
+                        <Text size={1}>
+                          {t('changes.action.revert-changes-description', {count: 1})}
+                        </Text>
+                      </Box>
                       <Grid columns={2} gap={2} marginTop={2}>
-                        <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                          <Text align="center">{t('changes.action.revert-all-cancel')}</Text>
-                        </Button>
-                        <Button tone="critical" onClick={handleRevertChanges}>
-                          <Text align="center">
-                            {t('changes.action.revert-changes-confirm-change', {count: 1})}
-                          </Text>
-                        </Button>
+                        <Button
+                          mode="ghost"
+                          onClick={closeRevertChangesConfirmDialog}
+                          text={t('changes.action.revert-all-cancel')}
+                        />
+                        <Button
+                          tone="critical"
+                          onClick={handleRevertChanges}
+                          text={t('changes.action.revert-changes-confirm-change', {count: 1})}
+                        />
                       </Grid>
-                    </Box>
+                    </Stack>
                   }
                   open={confirmRevertOpen}
+                  padding={3}
                   portal
                   placement="left"
                   ref={setRevertButtonElement}
                 >
-                  <Box flex={1}>
-                    <RevertChangesButton
-                      changeCount={1}
-                      onClick={handleRevertChangesConfirm}
-                      onMouseEnter={handleRevertButtonMouseEnter}
-                      onMouseLeave={handleRevertButtonMouseLeave}
-                      selected={confirmRevertOpen}
-                      disabled={readOnly}
-                      data-testid={`single-change-revert-button-${change?.key}`}
-                    />
-                  </Box>
-                </PopoverWrapper>
+                  <RevertChangesButton
+                    changeCount={1}
+                    onClick={handleRevertChangesConfirm}
+                    onMouseEnter={handleRevertButtonMouseEnter}
+                    onMouseLeave={handleRevertButtonMouseLeave}
+                    selected={confirmRevertOpen}
+                    disabled={readOnly}
+                    data-testid={`single-change-revert-button-${change?.key}`}
+                  />
+                </Popover>
               )}
             </DiffInspectWrapper>
           </FieldWrapper>

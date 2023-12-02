@@ -62,7 +62,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
       if (item.type === 'divider') {
         return (
           // eslint-disable-next-line react/no-array-index-key
-          <Box key={`divider-${itemIndex}`} marginTop={1} marginBottom={2}>
+          <Box key={`divider-${itemIndex}`} marginBottom={1}>
             <Divider />
           </Box>
         )
@@ -107,8 +107,8 @@ export function ListPaneContent(props: ListPaneContentProps) {
           itemHeight={51}
           items={items}
           onlyShowSelectionWhenActive
-          padding={2}
           paddingBottom={1}
+          paddingX={3}
           renderItem={renderItem}
           wrapAround={false}
         />

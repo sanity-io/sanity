@@ -1560,7 +1560,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'user-menu.locale-title': 'Language',
   /** Label for tooltip to show which provider the currently logged in user is using */
   'user-menu.login-provider': 'Signed in with {{providerTitle}}',
-
   /**
    * Label for action to add a workspace (currently a developer-oriented action, as this will
    * lead to the documentation on workspace configuration)

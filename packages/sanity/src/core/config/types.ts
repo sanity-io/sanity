@@ -120,6 +120,8 @@ export interface Tool<Options = any> {
 
   /**
    * React component for the icon representing the tool.
+   *
+   * @deprecated Tool icons are no longer displayed.
    */
   icon?: ComponentType
 
@@ -695,7 +697,13 @@ export interface WorkspaceSummary {
   type: 'workspace-summary'
   name: string
   title: string
+  /**
+   * User supplied component if provided, otherwise falls back to
+   * an automatically generated default icon.
+   */
   icon: ReactNode
+  /** Returns true if a custom icon has been provided in studio config */
+  customIcon: boolean
   subtitle?: string
   basePath: string
   auth: AuthStore

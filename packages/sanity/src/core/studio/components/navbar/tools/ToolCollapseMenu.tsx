@@ -1,16 +1,22 @@
-import {UnknownIcon} from '@sanity/icons'
 import React, {forwardRef, useMemo, useState} from 'react'
 import {startCase} from 'lodash'
-import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
+import {Flex} from '@sanity/ui'
+import styled from 'styled-components'
+import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
 import {useRovingFocus} from '../../../../components'
 import {useColorScheme} from '../../../colorScheme'
 import {Tool} from '../../../../config'
+import {Button} from '../../../../../ui'
 import {ToolLink, ToolLinkProps} from './ToolLink'
 
 interface ToolCollapseMenuProps {
   activeToolName?: string
   tools: Tool[]
 }
+
+const CollapseTabListWrapper = styled(Flex)`
+  margin: 0 80px;
+`
 
 export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   const {activeToolName, tools} = props
@@ -32,11 +38,10 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
     }),
     [scheme],
   )
-
   const children = useMemo(
     () =>
       tools.map((tool, index) => {
-        const title = tool?.title || startCase(tool.name) || undefined
+        const title = tool?.title || startCase(tool.name)
 
         const Link = forwardRef(function Link(
           linkProps: ToolLinkProps,
@@ -46,31 +51,30 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
         })
 
         return (
-          <CollapseMenuButton
+          <Button
             as={Link}
             data-as="a"
-            collapsedProps={{tooltipText: tool.title}}
-            icon={tool.icon || UnknownIcon}
             // eslint-disable-next-line react/no-array-index-key
             key={`${tool.name}-${index}`}
             mode="bleed"
             selected={activeToolName === tool.name}
             text={title}
-            tooltipProps={{scheme: scheme}}
           />
         )
       }),
-    [activeToolName, scheme, tools],
+    [activeToolName, tools],
   )
 
   return (
-    <CollapseMenu
-      data-testid="tool-collapse-menu"
-      gap={1}
-      menuButtonProps={menuButtonProps}
-      ref={setCollapseMenuEl}
-    >
-      {children}
-    </CollapseMenu>
+    <CollapseTabListWrapper justify="center">
+      <CollapseTabList
+        data-testid="tool-collapse-menu"
+        gap={1}
+        menuButtonProps={menuButtonProps}
+        ref={setCollapseMenuEl}
+      >
+        {children}
+      </CollapseTabList>
+    </CollapseTabListWrapper>
   )
 }

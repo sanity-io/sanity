@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState, useMemo} from 'react'
-import {Button, Card, Label, Stack, Text, TextArea} from '@sanity/ui'
+import {Card, Stack, Text, TextArea} from '@sanity/ui'
 import styled, {createGlobalStyle} from 'styled-components'
+import {Button} from '../../../../ui'
 import {runTest} from './typer'
 
 const HIGHLIGHT_CLASSNAME = 'js-highlight-selected-input'
@@ -109,7 +110,9 @@ export function TypeTester({readOnly}: TypeTesterProps) {
     <Sticky>
       <Card padding={4} tone="default" border>
         <Stack space={4}>
-          <Label size={0}>Type Performance Tester</Label>
+          <Text size={1} weight="medium">
+            Type Performance Tester
+          </Text>
           <Text
             title={isDisabled ? undefined : `Click to focus input`}
             size={1}

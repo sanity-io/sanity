@@ -89,7 +89,7 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
           tone="inherit"
           data-ui="DragHandleCard"
         >
-          <DragHandle grid padding={2} mode="ghost" />
+          <DragHandle grid mode="ghost" />
         </DragHandleCard>
       )}
 

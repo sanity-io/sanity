@@ -1,5 +1,5 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Button, Flex, Text, Tooltip} from '@sanity/ui'
+import {Flex, TooltipDelayGroupProvider} from '@sanity/ui'
 import React, {createElement, memo, forwardRef, useMemo} from 'react'
 import {
   PaneContextMenuButton,
@@ -12,6 +12,8 @@ import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
+import {Button} from '../../../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -78,82 +80,82 @@ export const DocumentPanelHeader = memo(
     const {t} = useTranslation(structureLocaleNamespace)
 
     return (
-      <PaneHeader
-        ref={ref}
-        loading={!ready}
-        title={<DocumentHeaderTitle />}
-        tabs={showTabs && <DocumentHeaderTabs />}
-        tabIndex={tabIndex}
-        backButton={
-          features.backButton &&
-          index > 0 && (
-            <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" padding={2} />
-          )
-        }
-        subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}
-        actions={
-          <Flex align="center" gap={1}>
-            {unstable_languageFilter.length > 0 && (
-              <>
-                {unstable_languageFilter.map((languageFilterComponent, idx) => {
-                  return createElement(languageFilterComponent, {
-                    // eslint-disable-next-line react/no-array-index-key
-                    key: `language-filter-${idx}`,
-                    schemaType,
-                  })
-                })}
-              </>
-            )}
+      <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+        <PaneHeader
+          border
+          ref={ref}
+          loading={!ready}
+          title={<DocumentHeaderTitle />}
+          tabs={showTabs && <DocumentHeaderTabs />}
+          tabIndex={tabIndex}
+          backButton={
+            features.backButton &&
+            index > 0 && (
+              <Button
+                as={BackLink}
+                data-as="a"
+                icon={ArrowLeftIcon}
+                mode="bleed"
+                // @todo: localize
+                tooltipProps={{content: 'Back'}}
+              />
+            )
+          }
+          subActions={<TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />}
+          actions={
+            <Flex align="center" gap={1}>
+              {unstable_languageFilter.length > 0 && (
+                <>
+                  {unstable_languageFilter.map((languageFilterComponent, idx) => {
+                    return createElement(languageFilterComponent, {
+                      // eslint-disable-next-line react/no-array-index-key
+                      key: `language-filter-${idx}`,
+                      schemaType,
+                    })
+                  })}
+                </>
+              )}
 
-            {menuButtonNodes.map((item) => (
-              <PaneHeaderActionButton key={item.key} node={item} />
-            ))}
+              {menuButtonNodes.map((item) => (
+                <PaneHeaderActionButton key={item.key} node={item} />
+              ))}
 
-            <PaneContextMenuButton nodes={contextMenuNodes} key="context-menu" />
+              <PaneContextMenuButton nodes={contextMenuNodes} key="context-menu" />
 
-            {showSplitPaneButton && (
-              <Tooltip
-                content={
-                  <Text size={1} style={{whiteSpace: 'nowrap'}}>
-                    {t('buttons.split-pane-button.tooltip')}
-                  </Text>
-                }
-                padding={2}
-                placement="bottom"
-                portal
-              >
+              {showSplitPaneButton && (
                 <Button
                   aria-label={t('buttons.split-pane-button.aria-label')}
                   icon={SplitVerticalIcon}
                   key="split-pane-button"
                   mode="bleed"
                   onClick={onPaneSplit}
+                  tooltipProps={{content: t('buttons.split-pane-button.tooltip')}}
                 />
-              </Tooltip>
-            )}
+              )}
 
-            {showSplitPaneCloseButton && (
-              <Button
-                icon={CloseIcon}
-                key="close-view-button"
-                mode="bleed"
-                onClick={onPaneClose}
-                title={t('buttons.split-pane-close-button.title')}
-              />
-            )}
+              {showSplitPaneCloseButton && (
+                <Button
+                  icon={CloseIcon}
+                  key="close-view-button"
+                  mode="bleed"
+                  onClick={onPaneClose}
+                  tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
+                />
+              )}
 
-            {showPaneGroupCloseButton && (
-              <Button
-                icon={CloseIcon}
-                key="close-view-button"
-                mode="bleed"
-                title={t('buttons.split-pane-close-group-button.title')}
-                as={BackLink}
-              />
-            )}
-          </Flex>
-        }
-      />
+              {showPaneGroupCloseButton && (
+                <Button
+                  icon={CloseIcon}
+                  key="close-view-button"
+                  mode="bleed"
+                  tooltipProps={{content: t('buttons.split-pane-close-group-button.title')}}
+                  as={BackLink}
+                />
+              )}
+            </Flex>
+          }
+        />
+      </TooltipDelayGroupProvider>
     )
   }),
 )

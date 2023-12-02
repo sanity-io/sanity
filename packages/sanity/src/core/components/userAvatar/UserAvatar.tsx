@@ -1,14 +1,16 @@
-import {Avatar, AvatarPosition, AvatarSize, AvatarStatus, Box, Text, Tooltip} from '@sanity/ui'
+import {Avatar, AvatarPosition, AvatarProps, AvatarSize, AvatarStatus} from '@sanity/ui'
 import React, {forwardRef, useState} from 'react'
 import type {User} from '@sanity/types'
 import {useUser} from '../../store'
 import {isRecord} from '../../util'
 import {useUserColor} from '../../user-color'
+import {Tooltip} from '../../../ui'
 
 /**
  * @hidden
  * @beta */
 export interface UserAvatarProps {
+  __unstable_hideInnerStroke?: AvatarProps['__unstable_hideInnerStroke']
   animateArrowFrom?: AvatarPosition
   position?: AvatarPosition
   size?: AvatarSize
@@ -60,15 +62,7 @@ function TooltipUserAvatar(props: Omit<UserAvatarProps, 'user'> & {user: User}) 
   } = props
 
   return (
-    <Tooltip
-      content={
-        <Box padding={2}>
-          <Text size={1}>{displayName}</Text>
-        </Box>
-      }
-      placement="top"
-      portal
-    >
+    <Tooltip content={displayName} placement="top" portal>
       <div style={{display: 'inline-block'}}>
         <StaticUserAvatar {...props} />
       </div>
@@ -87,6 +81,7 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
 
   return (
     <Avatar
+      __unstable_hideInnerStroke
       animateArrowFrom={animateArrowFrom}
       arrowPosition={position}
       color={userColor.name}

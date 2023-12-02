@@ -35,7 +35,7 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
     () => ({
       Field: () => (
         <CustomBox $flexShrink={fullscreen ? 1 : 0}>
-          <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="semibold">
+          <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
             <FilterTitle filter={filter} maxLength={fullscreen ? 25 : 40} />
           </TextWithTone>
         </CustomBox>
@@ -51,7 +51,7 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
       Value: ({children}) =>
         showContent ? (
           <CustomBox $flexShrink={1}>
-            <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="semibold">
+            <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
               {ButtonValue ? <ButtonValue value={filterValue} /> : children}
             </TextWithTone>
           </CustomBox>

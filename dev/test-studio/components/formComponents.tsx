@@ -78,6 +78,13 @@ export function Preview(props: PreviewProps) {
   )
 }
 
+export function CustomBadge() {
+  return {
+    label: 'Hello world',
+    title: 'Hello I am a custom document badge',
+  }
+}
+
 export const formComponentsPlugin = definePlugin({
   name: 'form-components-plugin',
   form: {

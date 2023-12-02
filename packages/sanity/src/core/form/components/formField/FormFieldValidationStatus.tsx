@@ -2,10 +2,11 @@ import React from 'react'
 import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import type {FormNodeValidation} from '@sanity/types'
-import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
+import {Box, Flex, Placement, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {useTranslation} from '../../../i18n'
 import {useListFormat} from '../../../hooks'
+import {TooltipWithNodes} from '../../../../ui'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
@@ -45,12 +46,7 @@ const StyledStack = styled(Stack)`
 
 /** @internal */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
-  const {
-    validation = EMPTY_ARRAY,
-    __unstable_showSummary: showSummary,
-    fontSize,
-    placement = 'top',
-  } = props
+  const {validation = EMPTY_ARRAY, __unstable_showSummary: showSummary, fontSize, placement} = props
 
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
@@ -71,9 +67,9 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   })()
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       content={
-        <StyledStack padding={3} space={3}>
+        <StyledStack space={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
@@ -91,11 +87,11 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       fallbackPlacements={['bottom', 'right', 'left']}
     >
       <div>
-        <Text muted size={fontSize} weight="semibold" style={statusStyle}>
+        <Text muted size={fontSize} weight="medium" style={statusStyle}>
           {StatusIcon && <StatusIcon />}
         </Text>
       </div>
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }
 

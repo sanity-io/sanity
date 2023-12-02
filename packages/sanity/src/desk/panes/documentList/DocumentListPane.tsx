@@ -52,12 +52,6 @@ const AnimatedSpinnerIcon = styled(SpinnerIcon)`
   animation: ${rotate} 500ms linear infinite;
 `
 
-const SearchCard = styled(Card)`
-  [data-ui='TextInput'] {
-    border-radius: inherit;
-  }
-`
-
 function useShallowUnique<ValueType>(value: ValueType): ValueType {
   const valueRef = useRef<ValueType>(value)
   if (!shallowEquals(valueRef.current, value)) {
@@ -229,26 +223,25 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   }, [isLoading, items.length])
 
   const searchInput = (
-    <Box paddingX={2} paddingBottom={2}>
-      <SearchCard radius={4} tone="transparent">
-        <TextInput
-          aria-label={t('panes.document-list-pane.search-input.aria-label')}
-          autoComplete="off"
-          border={false}
-          clearButton={Boolean(searchQuery)}
-          disabled={!isSearchReady}
-          fontSize={[2, 2, 1]}
-          icon={loadingVariant === 'spinner' ? AnimatedSpinnerIcon : SearchIcon}
-          onChange={handleQueryChange}
-          onClear={handleClearSearch}
-          onKeyDown={handleSearchKeyDown}
-          placeholder={t('panes.document-list-pane.search-input.placeholder')}
-          radius={2}
-          ref={setSearchInputElement}
-          spellCheck={false}
-          value={searchInputValue}
-        />
-      </SearchCard>
+    <Box paddingX={3} paddingBottom={3}>
+      <TextInput
+        aria-label={t('panes.document-list-pane.search-input.aria-label')}
+        autoComplete="off"
+        border={false}
+        clearButton={Boolean(searchQuery)}
+        disabled={!isSearchReady}
+        fontSize={[2, 2, 1]}
+        icon={loadingVariant === 'spinner' ? AnimatedSpinnerIcon : SearchIcon}
+        onChange={handleQueryChange}
+        onClear={handleClearSearch}
+        onKeyDown={handleSearchKeyDown}
+        padding={2}
+        placeholder={t('panes.document-list-pane.search-input.placeholder')}
+        radius={2}
+        ref={setSearchInputElement}
+        spellCheck={false}
+        value={searchInputValue}
+      />
     </Box>
   )
 

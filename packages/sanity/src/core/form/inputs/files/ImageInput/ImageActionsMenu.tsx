@@ -1,16 +1,16 @@
 import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
-import {EllipsisVerticalIcon, CropIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon, CropIcon} from '@sanity/icons'
 import {
-  Button,
   Inline,
   Menu,
   Popover,
-  Text,
-  Tooltip,
+  TooltipDelayGroupProvider,
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
 import styled from 'styled-components'
+import {Button} from '../../../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 import {useTranslation} from '../../../../i18n'
 
 export const MenuActionsWrapper = styled(Inline)`
@@ -91,12 +91,9 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
   const {t} = useTranslation()
   return (
-    <MenuActionsWrapper data-buttons space={1} padding={2}>
-      {showEdit && (
-        <Tooltip
-          content={<Text size={1}>{t('inputs.image.actions-menu.crop-image-tooltip')}</Text>}
-          padding={2}
-        >
+    <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+      <MenuActionsWrapper data-buttons space={1} padding={2}>
+        {showEdit && (
           <Button
             aria-label={t('inputs.image.actions-menu.edit-details.aria-label')}
             data-testid="options-menu-edit-details"
@@ -104,27 +101,30 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
             mode="ghost"
             onClick={onEdit}
             ref={setHotspotButtonElement}
+            tooltipProps={{content: t('inputs.image.actions-menu.crop-image-tooltip')}}
           />
-        </Tooltip>
-      )}
-      {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
+        )}
+        {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
      and break replacing an uploaded file. */}
-      <Popover
-        id="image-actions-menu"
-        content={<Menu ref={setMenuElement}>{children}</Menu>}
-        portal
-        open={isMenuOpen}
-        constrainSize
-      >
-        <Button
-          aria-label={t('inputs.image.actions-menu.options.aria-label')}
-          data-testid="options-menu-button"
-          icon={EllipsisVerticalIcon}
-          mode="ghost"
-          onClick={handleClick}
-          ref={setOptionsButtonRef}
-        />
-      </Popover>
-    </MenuActionsWrapper>
+        <Popover
+          id="image-actions-menu"
+          content={<Menu ref={setMenuElement}>{children}</Menu>}
+          portal
+          open={isMenuOpen}
+          constrainSize
+        >
+          <Button
+            aria-label={t('inputs.image.actions-menu.options.aria-label')}
+            data-testid="options-menu-button"
+            icon={EllipsisHorizontalIcon}
+            mode="ghost"
+            onClick={handleClick}
+            ref={setOptionsButtonRef}
+            // TODO: localize
+            tooltipProps={{content: 'Show more'}}
+          />
+        </Popover>
+      </MenuActionsWrapper>
+    </TooltipDelayGroupProvider>
   )
 }

@@ -1,18 +1,16 @@
-import {CheckmarkIcon, ChevronDownIcon, CogIcon, LeaveIcon, UsersIcon} from '@sanity/icons'
+import {CheckmarkIcon, CogIcon, LeaveIcon, UsersIcon} from '@sanity/icons'
 import {
   Box,
-  Button,
   Card,
   Flex,
-  Label,
   Menu,
   MenuButton,
   MenuButtonProps,
   MenuDivider,
-  MenuItem,
   Stack,
   Text,
-  Tooltip,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling, user avatar .
 } from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
@@ -26,6 +24,7 @@ import {
 } from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
+import {MenuItem, Tooltip} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 import {LoginProviderLogo} from './LoginProviderLogo'
 import {LocaleMenu} from './LocaleMenu'
@@ -51,12 +50,6 @@ function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSc
   return (
     <>
       <MenuDivider />
-
-      <Box padding={2}>
-        <Label size={1} muted>
-          {t('user-menu.appearance-title')}
-        </Label>
-      </Box>
 
       {options.map(({icon, label, name, onSelect, selected, title}) => (
         <MenuItem
@@ -97,30 +90,22 @@ export function UserMenu() {
   return (
     <MenuButton
       button={
-        <Button mode="bleed" padding={0} paddingX={1}>
+        <Button mode="bleed" padding={0} paddingLeft={2} paddingRight={1}>
           <Flex align="center" gap={1}>
-            <UserAvatar user="me" size={1} />
-            <Text size={AVATAR_SIZE} muted>
-              <ChevronDownIcon />
-            </Text>
+            <UserAvatar size={1} user="me" />
+            <Text size={AVATAR_SIZE} muted />
           </Flex>
         </Button>
       }
       id="user-menu"
       menu={
         <StyledMenu>
-          <Card padding={2}>
+          <Card padding={3}>
             <Flex align="center">
               <Tooltip
                 disabled={!providerTitle}
                 portal
-                content={
-                  providerTitle && (
-                    <Box padding={2}>
-                      <Text size={1}>{t('user-menu.login-provider', {providerTitle})}</Text>
-                    </Box>
-                  )
-                }
+                content={t('user-menu.login-provider', {providerTitle})}
               >
                 <AvatarBox marginRight={3}>
                   <UserAvatar size={AVATAR_SIZE} user="me" />
@@ -129,7 +114,7 @@ export function UserMenu() {
               </Tooltip>
 
               <Stack space={2} flex={1}>
-                <Text size={2} weight="medium" textOverflow="ellipsis">
+                <Text size={1} weight="medium" textOverflow="ellipsis">
                   {currentUser?.name}
                 </Text>
 

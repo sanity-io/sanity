@@ -1,13 +1,14 @@
 import React, {useCallback} from 'react'
 import {
-  WarningOutlineIcon,
   DocumentsIcon,
   CopyIcon,
   UnknownIcon,
   ChevronDownIcon,
+  WarningOutlineIcon,
 } from '@sanity/icons'
-import {useToast, Text, Box, Button, Flex, Label, Card, Stack} from '@sanity/ui'
+import {useToast, Text, Box, Flex, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
+import {Button} from '../../../ui'
 import {structureLocaleNamespace} from '../../i18n'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
@@ -71,7 +72,7 @@ export function ConfirmDeleteDialogBody({
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
     return (
-      <Text as="p">
+      <Text as="p" size={1}>
         <Translate
           t={t}
           i18nKey="confirm-delete-dialog.confirmation.text"
@@ -98,8 +99,8 @@ export function ConfirmDeleteDialogBody({
   })
 
   return (
-    <Card>
-      <Card padding={3} radius={2} tone="caution" marginBottom={4} flex="none">
+    <Flex direction="column" gap={4}>
+      <Card padding={3} radius={2} tone="caution" flex="none">
         <Flex>
           <Text aria-hidden="true" size={1}>
             <WarningOutlineIcon />
@@ -116,9 +117,8 @@ export function ConfirmDeleteDialogBody({
           </Box>
         </Flex>
       </Card>
-
-      <Box flex="none" marginBottom={4}>
-        <Text>
+      <Box flex="none">
+        <Text size={1}>
           <Translate
             i18nKey="confirm-delete-dialog.referring-documents-descriptor.text"
             t={t}
@@ -127,11 +127,10 @@ export function ConfirmDeleteDialogBody({
           />
         </Text>
       </Box>
-
-      <Card radius={2} shadow={1} marginBottom={4} flex="auto">
+      <Card radius={2} shadow={1} flex="auto" padding={2}>
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" padding={2} space={3} data-testid="internal-references">
+            <Stack as="ul" marginBottom={2} space={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box as="li" key={item._id}>
                   {renderPreviewItem(item)}
@@ -158,9 +157,15 @@ export function ConfirmDeleteDialogBody({
               }}
             >
               <CrossDatasetReferencesSummary>
-                <Card as="a" margin={2} radius={2} shadow={1} paddingY={1}>
-                  <Flex align="center" margin={2}>
-                    <Box marginLeft={3} marginRight={4}>
+                <Card
+                  as="a"
+                  marginTop={internalReferences.totalCount > 0 ? 2 : 0}
+                  radius={2}
+                  shadow={1}
+                  paddingY={1}
+                >
+                  <Flex align="center" margin={2} marginRight={3}>
+                    <Box marginLeft={3} marginRight={3}>
                       <Text size={3}>
                         <DocumentsIcon />
                       </Text>
@@ -191,24 +196,24 @@ export function ConfirmDeleteDialogBody({
                 </Card>
               </CrossDatasetReferencesSummary>
 
-              <Box overflow="auto" paddingBottom={2} paddingX={2}>
+              <Box overflow="auto" paddingTop={2}>
                 <Table>
                   <thead>
                     <tr>
                       <th>
-                        <Label muted size={0} style={{minWidth: '5rem'}}>
+                        <Text muted size={1} style={{minWidth: '5rem'}} weight="medium">
                           {t('confirm-delete-dialog.cdr-table.project-id.label')}
-                        </Label>
+                        </Text>
                       </th>
                       <th>
-                        <Label muted size={0}>
+                        <Text muted size={1} weight="medium">
                           {t('confirm-delete-dialog.cdr-table.dataset.label')}
-                        </Label>
+                        </Text>
                       </th>
                       <th>
-                        <Label muted size={0}>
+                        <Text muted size={1} weight="medium">
                           {t('confirm-delete-dialog.cdr-table.document-id.label')}
-                        </Label>
+                        </Text>
                       </th>
                     </tr>
                   </thead>
@@ -245,12 +250,13 @@ export function ConfirmDeleteDialogBody({
                                   }}
                                 >
                                   <Button
-                                    title={t(
-                                      'confirm-delete-dialog.cdr-table.copy-id-button.tooltip',
-                                    )}
                                     mode="bleed"
                                     icon={CopyIcon}
-                                    fontSize={0}
+                                    tooltipProps={{
+                                      content: t(
+                                        'confirm-delete-dialog.cdr-table.copy-id-button.tooltip',
+                                      ),
+                                    }}
                                   />
                                 </CopyToClipboard>
                               )}
@@ -261,17 +267,14 @@ export function ConfirmDeleteDialogBody({
                   </tbody>
                 </Table>
 
-                <Box padding={2}>
-                  <OtherReferenceCount {...crossDatasetReferences} />
-                </Box>
+                <OtherReferenceCount {...crossDatasetReferences} />
               </Box>
             </CrossDatasetReferencesDetails>
           )}
         </Flex>
       </Card>
-
       <Box flex="none">
-        <Text>
+        <Text size={1}>
           <Translate
             i18nKey="confirm-delete-dialog.referential-integrity-disclaimer.text"
             t={t}
@@ -280,6 +283,6 @@ export function ConfirmDeleteDialogBody({
           />
         </Text>
       </Box>
-    </Card>
+    </Flex>
   )
 }
