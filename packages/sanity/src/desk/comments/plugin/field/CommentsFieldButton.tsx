@@ -1,14 +1,12 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {
-  Box,
-  Button,
   Flex,
   Popover,
   Stack,
   Text,
-  Tooltip,
-  TooltipProps,
   useClickOutside,
+  // eslint-disable-next-line no-restricted-imports
+  Button as SanityUIButton, // Button with specific styling for the children
 } from '@sanity/ui'
 import styled from 'styled-components'
 import {
@@ -20,13 +18,8 @@ import {
   CommentIcon,
   MentionOptionsHookValue,
 } from '../../src'
+import {Button, Tooltip} from '../../../../ui'
 import {CurrentUser, PortableTextBlock} from 'sanity'
-
-const TOOLTIP_DELAY: TooltipProps['delay'] = {open: 500}
-
-const TooltipText = styled(Text)`
-  width: max-content;
-`
 
 const ContentStack = styled(Stack)`
   width: 320px;
@@ -174,54 +167,40 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         onKeyDown={handlePopoverKeyDown}
       >
         <div>
-          <Tooltip
-            delay={TOOLTIP_DELAY}
-            disabled={open}
-            portal
-            placement="top"
-            content={
-              <Box padding={2}>
-                <Text size={1}>Add comment</Text>
-              </Box>
-            }
-          >
-            <Button
-              aria-label="Add comment"
-              disabled={isRunningSetup}
-              fontSize={1}
-              icon={AddCommentIcon}
-              mode="bleed"
-              onClick={onClick}
-              padding={2}
-              ref={setAddCommentButtonElement}
-              selected={open}
-            />
-          </Tooltip>
+          <Button
+            aria-label="Add comment"
+            disabled={isRunningSetup}
+            icon={AddCommentIcon}
+            mode="bleed"
+            onClick={onClick}
+            ref={setAddCommentButtonElement}
+            selected={open}
+            tooltipProps={{
+              content: 'Add comment',
+              placement: 'top',
+            }}
+          />
         </div>
       </Popover>
     )
   }
 
   return (
-    <Tooltip
-      portal
-      placement="top"
-      content={
-        <Box padding={2} sizing="border">
-          <TooltipText size={1}>View comment{count > 1 ? 's' : ''}</TooltipText>
-        </Box>
-      }
-      delay={TOOLTIP_DELAY}
-      fallbackPlacements={['bottom']}
-    >
-      <Button aria-label="Open comments" mode="bleed" onClick={onClick} padding={2}>
+    <Tooltip portal placement="top" content={`View comment${count > 1 ? 's' : ''}`}>
+      <SanityUIButton
+        aria-label="Open comments"
+        mode="bleed"
+        onClick={onClick}
+        padding={2}
+        space={2}
+      >
         <Flex align="center" gap={2}>
           <Text size={1}>
             <CommentIcon />
           </Text>
           <Text size={0}>{count > 9 ? '9+' : count}</Text>
         </Flex>
-      </Button>
+      </SanityUIButton>
     </Tooltip>
   )
 }

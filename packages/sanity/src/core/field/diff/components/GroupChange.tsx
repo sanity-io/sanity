@@ -1,5 +1,6 @@
 import React, {useCallback, useContext, useMemo, useState} from 'react'
-import {Box, Stack, Button, Grid, Text, useClickOutside} from '@sanity/ui'
+import {Box, Grid, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
+import {Button} from '../../../../ui'
 import {useDocumentOperation} from '../../../hooks'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
@@ -14,7 +15,7 @@ import {useTranslation} from '../../../i18n'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {RevertChangesButton} from './RevertChangesButton'
-import {ChangeListWrapper, GroupChangeContainer, PopoverWrapper} from './GroupChange.styled'
+import {ChangeListWrapper, GroupChangeContainer} from './GroupChange.styled'
 
 /** @internal */
 export function GroupChange(
@@ -82,24 +83,30 @@ export function GroupChange(
             ))}
           </Stack>
           {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-            <PopoverWrapper
+            <Popover
               content={
-                <Box>
-                  {t('changes.action.revert-changes-description', {count: changes.length})}
+                <Stack space={1}>
+                  <Box padding={1}>
+                    <Text size={1}>
+                      {t('changes.action.revert-changes-description', {count: changes.length})}
+                    </Text>
+                  </Box>
                   <Grid columns={2} gap={2} marginTop={2}>
-                    <Button mode="ghost" onClick={closeRevertChangesConfirmDialog}>
-                      <Text align="center"> {t('changes.action.revert-all-cancel')}</Text>
-                    </Button>
-                    <Button tone="critical" onClick={handleRevertChanges}>
-                      <Text align="center">
-                        {t('changes.action.revert-changes-confirm-change', {count: 1})}
-                      </Text>
-                    </Button>
+                    <Button
+                      mode="ghost"
+                      onClick={closeRevertChangesConfirmDialog}
+                      text={t('changes.action.revert-all-cancel')}
+                    />
+                    <Button
+                      tone="critical"
+                      onClick={handleRevertChanges}
+                      text={t('changes.action.revert-changes-confirm-change', {count: 1})}
+                    />
                   </Grid>
-                </Box>
+                </Stack>
               }
+              padding={3}
               portal
-              padding={4}
               placement="left"
               open={confirmRevertOpen}
               ref={setRevertPopoverElement}
@@ -114,7 +121,7 @@ export function GroupChange(
                   data-testid={`group-change-revert-button-${group.fieldsetName}`}
                 />
               </Box>
-            </PopoverWrapper>
+            </Popover>
           )}
         </Stack>
       ),

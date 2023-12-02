@@ -1,16 +1,13 @@
-import {Tooltip, TooltipProps} from '@sanity/ui'
-import React, {ForwardedRef, forwardRef} from 'react'
+import React, {forwardRef} from 'react'
+import {TooltipWithNodes, TooltipWithNodesProps} from '../../ui'
 
 /** @internal */
-export const TooltipOfDisabled = forwardRef(function DisabledTooltip(
-  props: TooltipProps,
-  ref: ForwardedRef<HTMLDivElement>,
-) {
-  const {children, content, disabled, ...restProps} = props
-
-  return (
-    <Tooltip {...restProps} content={content} disabled={disabled || !content} padding={2} ref={ref}>
-      <div>{children}</div>
-    </Tooltip>
-  )
-})
+export const TooltipOfDisabled = forwardRef<HTMLDivElement, TooltipWithNodesProps>(
+  function DisabledTooltip({children, content, disabled, ...restProps}, ref) {
+    return (
+      <TooltipWithNodes {...restProps} content={content} disabled={disabled || !content} ref={ref}>
+        <div>{children}</div>
+      </TooltipWithNodes>
+    )
+  },
+)

@@ -2,8 +2,9 @@
 /* eslint-disable i18next/no-literal-string */
 import React, {useCallback, useState} from 'react'
 import {CheckmarkIcon, LaunchIcon} from '@sanity/icons'
-import {Button, Flex, Grid, Popover, Stack, Text} from '@sanity/ui'
+import {Flex, Grid, Popover, Stack, Text} from '@sanity/ui'
 import {generateHelpUrl} from '@sanity/generate-help-url'
+import {Button} from '../../ui'
 import {useDeskRenameOnboarding} from './onboardingStore'
 
 const RENAME_ANNOUNCEMENT_URL = generateHelpUrl('desk-is-now-structure')
@@ -81,19 +82,10 @@ function DeskRenamedCard(props: {onDismiss: () => void}) {
           icon={LaunchIcon}
           target="_blank"
           rel="noreferrer"
-          fontSize={1}
-          padding={3}
           text="Learn more"
           mode="ghost"
         />
-        <Button
-          fontSize={1}
-          icon={CheckmarkIcon}
-          onClick={props.onDismiss}
-          padding={3}
-          text="Got it"
-          tone="primary"
-        />
+        <Button icon={CheckmarkIcon} onClick={props.onDismiss} text="Got it" tone="primary" />
       </Grid>
     </Stack>
   )

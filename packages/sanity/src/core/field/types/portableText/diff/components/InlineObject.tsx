@@ -6,7 +6,7 @@ import {
   type PortableTextChild,
   type PortableTextObject,
 } from '@sanity/types'
-import {Card, Flex, Label, Popover, useClickOutside} from '@sanity/ui'
+import {Card, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import React, {useCallback, useContext, useState, useEffect, useMemo} from 'react'
 import styled from 'styled-components'
@@ -188,11 +188,11 @@ function PopoverContent({
   return (
     <PopoverContainer ref={setPopoverElement} padding={3}>
       {emptyObject && (
-        <Label size={1} muted>
+        <Text muted size={1} weight="medium">
           {t('changes.portable-text.empty-inline-object', {
             inlineObjectType: schemaType.title || schemaType.name,
           })}
-        </Label>
+        </Text>
       )}
       {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
     </PopoverContainer>

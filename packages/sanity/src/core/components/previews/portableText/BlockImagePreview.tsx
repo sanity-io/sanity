@@ -2,7 +2,7 @@ import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Media} from '../_common/Media'
-import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PREVIEW_SIZES} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
 import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
@@ -13,7 +13,7 @@ import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
 export type BlockImagePreviewProps = Omit<PreviewProps<'blockImage'>, 'renderDefault'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
-  ...PREVIEW_MEDIA_SIZE.blockImage,
+  ...PREVIEW_SIZES.blockImage.media,
   fit: 'fillmax',
   dpr: getDevicePixelRatio(),
 }
@@ -47,10 +47,10 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
   return (
     <RootBox>
       <Stack>
-        <HeaderFlex paddingLeft={2} paddingRight={1} paddingY={1}>
+        <HeaderFlex paddingBottom={3} paddingLeft={2} paddingRight={1} paddingTop={1}>
           <Stack flex={1} space={2}>
             {(title || fallbackTitle) && (
-              <Text size={1} textOverflow="ellipsis" weight="semibold">
+              <Text size={1} textOverflow="ellipsis" weight="medium">
                 {title ? renderPreviewNode(title as any, 'block') : fallbackTitle}
               </Text>
             )}
@@ -78,6 +78,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
           __unstable_checkered
           display="flex"
           sizing="border"
+          radius={2}
           tone="inherit"
         >
           <Media

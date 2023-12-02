@@ -1,5 +1,11 @@
 import {CloseIcon} from '@sanity/icons'
-import {Button, Card, Popover, rem} from '@sanity/ui'
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling and children behavior.
+  Card,
+  Popover,
+  rem,
+} from '@sanity/ui'
 import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'

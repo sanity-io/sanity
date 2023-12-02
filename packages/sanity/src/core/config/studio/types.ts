@@ -52,6 +52,7 @@ export interface StudioComponents {
  * @beta */
 export interface StudioComponentsPluginOptions {
   layout?: React.ComponentType<LayoutProps>
+  /** @deprecated Use logoMark instead */
   logo?: React.ComponentType<LogoProps>
   navbar?: React.ComponentType<NavbarProps>
   toolMenu?: React.ComponentType<ToolMenuProps>

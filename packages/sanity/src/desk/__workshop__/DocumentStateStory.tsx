@@ -1,8 +1,10 @@
-import {Box, Code, Stack, Button, Dialog} from '@sanity/ui'
+import {Box, Code, Stack} from '@sanity/ui'
 import React, {useMemo, useState, useCallback, useEffect} from 'react'
+import {Button, Dialog} from '../../ui'
 import {DeskToolProvider} from '../DeskToolProvider'
 import {DocumentPaneProvider} from '../panes'
 import {DocumentPaneNode} from '../types'
+
 import {
   DocumentActionComponent,
   DocumentActionDescription,
@@ -114,7 +116,7 @@ function Debug(props: {documentId: string; documentType: string}) {
                   // eslint-disable-next-line react/jsx-handler-names
                   onClose={actionItem.dialog.onClose}
                 >
-                  <Box padding={4}>{actionItem.dialog.content}</Box>
+                  {actionItem.dialog.content}
                 </Dialog>
               )
             }

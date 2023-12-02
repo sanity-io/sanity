@@ -36,7 +36,7 @@ export default function CommonDateDirectionStory() {
       </Card>
       <Card margin={3} padding={3} shadow={1} tone="primary">
         <Inline space={1}>
-          <Text muted size={1} weight="semibold">
+          <Text muted size={1} weight="medium">
             Value:
           </Text>
           <Text muted size={1}>

@@ -1,10 +1,11 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
+import {Box, Card, Flex, Theme} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
+import {Button} from '../../../../../../ui'
+import {useTranslation} from '../../../../../i18n'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {CustomTextInput} from './common/CustomTextInput'
-import {useTranslation} from '../../../../../i18n'
 
 const rotate = keyframes`
   from {
@@ -95,6 +96,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
               icon={ArrowLeftIcon}
               mode="bleed"
               onClick={onClose}
+              tooltipProps={{content: t('search.action.close-search-aria-label')}}
             />
           </Card>
         )}
@@ -102,19 +104,21 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
         {/* Search field */}
         <Box flex={1}>
           <CustomTextInput
+            __unstable_disableFocusRing
+            $background={fullscreen}
+            $smallClearButton={fullscreen}
             aria-label={ariaInputLabel}
+            autoFocus
             autoComplete="off"
-            background={fullscreen}
             border={false}
             clearButton={!!query}
-            fontSize={2}
+            fontSize={1}
             icon={loading ? AnimatedSpinnerIcon : SearchIcon}
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder={t('search.placeholder')}
-            radius={fullscreen ? 2 : 1}
+            radius={2}
             ref={ref}
-            smallClearButton={fullscreen}
             spellCheck={false}
             value={query}
           />
@@ -132,9 +136,9 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
               icon={ControlsIcon}
               mode="bleed"
               onClick={handleFiltersToggle}
-              padding={3}
               selected={filtersVisible}
               tone="default"
+              tooltipProps={{content: filtersVisible ? 'Hide filters' : 'Show filters'}}
             />
             {notificationBadgeVisible && <NotificationBadge />}
           </FilterBox>

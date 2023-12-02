@@ -31,6 +31,7 @@ import {
 import {
   Annotation,
   Block,
+  CustomBadge,
   Field,
   formComponentsPlugin,
   InlineBlock,
@@ -93,6 +94,7 @@ const sharedSettings = definePlugin({
     unstable_comments: {
       enabled: true,
     },
+    badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [
     // ...localePlugins,

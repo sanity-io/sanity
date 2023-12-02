@@ -5,9 +5,10 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, isImage} from '@sanity/types'
-import {Tooltip, Flex, ResponsivePaddingProps, Box} from '@sanity/ui'
+import {Box, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
+import {TooltipWithNodes} from '../../../../../ui'
 import {
   BlockProps,
   RenderAnnotationCallback,
@@ -187,7 +188,7 @@ export function BlockObject(props: BlockObjectProps) {
   const toolTipContent = useMemo(
     () =>
       (tooltipEnabled && (
-        <TooltipBox padding={2}>
+        <TooltipBox>
           <Markers
             markers={markers}
             validation={validation}
@@ -272,7 +273,7 @@ export function BlockObject(props: BlockObjectProps) {
       >
         <Flex paddingBottom={1} marginY={3} style={debugRender()}>
           <InnerFlex flex={1}>
-            <Tooltip
+            <TooltipWithNodes
               placement="top"
               portal="editor"
               disabled={!tooltipEnabled}
@@ -281,7 +282,7 @@ export function BlockObject(props: BlockObjectProps) {
               <PreviewContainer {...innerPaddingProps}>
                 {renderBlock && renderBlock(componentProps)}
               </PreviewContainer>
-            </Tooltip>
+            </TooltipWithNodes>
             <BlockActionsOuter marginRight={1}>
               <BlockActionsInner>
                 {renderBlockActions && value && focused && !readOnly && (

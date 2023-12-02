@@ -1,19 +1,38 @@
 import {PreviewLayoutKey} from './types'
 
-export const PREVIEW_MEDIA_SIZE: Record<PreviewLayoutKey, {width: number; height: number}> = {
-  block: {width: 33, height: 33},
-  blockImage: {width: 600, height: 400},
-  default: {width: 35, height: 35},
-  detail: {width: 75, height: 75},
-  inline: {width: 15, height: 15},
-  media: {width: 160, height: 160},
-}
-
-export const PREVIEW_ICON_SIZE: Record<PreviewLayoutKey, number | undefined> = {
-  block: 31,
-  blockImage: 45,
-  default: 33,
-  detail: 45,
-  inline: 15,
-  media: 45,
+export const PREVIEW_SIZES: Record<
+  PreviewLayoutKey,
+  {
+    icon: number
+    media: {height: number; width: number}
+  }
+> = {
+  block: {
+    icon: 31,
+    media: {width: 33, height: 33},
+  },
+  blockImage: {
+    icon: 45,
+    media: {width: 600, height: 400},
+  },
+  compact: {
+    icon: 21,
+    media: {width: 25, height: 25},
+  },
+  default: {
+    icon: 25,
+    media: {width: 39, height: 39},
+  },
+  detail: {
+    icon: 45,
+    media: {width: 70, height: 70},
+  },
+  inline: {
+    icon: 15,
+    media: {width: 15, height: 15},
+  },
+  media: {
+    icon: 45,
+    media: {width: 160, height: 160},
+  },
 }

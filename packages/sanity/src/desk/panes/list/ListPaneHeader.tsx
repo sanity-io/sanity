@@ -1,7 +1,7 @@
 import {ArrowLeftIcon} from '@sanity/icons'
-import {Button} from '@sanity/ui'
 import React from 'react'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
+import {Button} from '../../../ui'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
 
@@ -23,7 +23,15 @@ export const ListPaneHeader = ({index, menuItems, menuItemGroups, title}: ListPa
       actions={<PaneHeaderActions menuItems={menuItems} menuItemGroups={menuItemGroups} />}
       backButton={
         features.backButton &&
-        index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
+        index > 0 && (
+          <Button
+            as={BackLink}
+            data-as="a"
+            icon={ArrowLeftIcon}
+            mode="bleed"
+            tooltipProps={{content: 'Back'}}
+          />
+        )
       }
       tabIndex={tabIndex}
       title={title}
