@@ -1,7 +1,7 @@
 import type {Subscription} from 'rxjs'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Button, Card, Dialog, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {Asset, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
@@ -10,6 +10,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {Translate, useTranslation} from '../../../../i18n'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
+import {Button, Dialog} from '../../../../../ui'
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'

@@ -1,8 +1,9 @@
-import {Box, type CardTone, Flex, Spinner, Text, _raf2} from '@sanity/ui'
+import {type CardTone, Flex, _raf2} from '@sanity/ui'
 import React, {memo, useMemo, useState, useEffect} from 'react'
 import {Observable} from 'rxjs'
 import styled from 'styled-components'
 import {structureLocaleNamespace} from '../../i18n'
+import {LoadingBlock} from '../../../ui/loadingBlock'
 import {Delay} from '../../components/Delay'
 import {Pane, PaneContent} from '../../components/pane'
 import {WaitMessage, getWaitMessages} from './getWaitMessages'
@@ -91,15 +92,7 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
       justify="center"
       ref={setContentElement}
     >
-      <Spinner muted />
-
-      {(title || currentMessage) && (
-        <Box marginTop={3}>
-          <Text align="center" muted size={1}>
-            {title || currentMessage}
-          </Text>
-        </Box>
-      )}
+      <LoadingBlock title={title || currentMessage} />
     </Content>
   )
 

@@ -6,6 +6,7 @@ import javascript from 'refractor/lang/javascript'
 import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
+import {LoadingBlock} from '../../ui/loadingBlock'
 import {UserColorManagerProvider} from '../user-color'
 import {ErrorLogger} from '../error/ErrorLogger'
 import {ResourceCacheProvider} from '../store'
@@ -19,7 +20,6 @@ import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
 import {
   ConfigErrorsScreen,
-  LoadingScreen,
   AuthenticateScreen,
   NotFoundScreen,
   NotAuthenticatedScreen,
@@ -53,7 +53,7 @@ export function StudioProvider({
   unstable_noAuthBoundary: noAuthBoundary,
 }: StudioProviderProps) {
   const _children = (
-    <WorkspaceLoader LoadingComponent={LoadingScreen} ConfigErrorsComponent={ConfigErrorsScreen}>
+    <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <LocaleProvider>
         <ResourceCacheProvider>{children}</ResourceCacheProvider>
       </LocaleProvider>
@@ -69,7 +69,7 @@ export function StudioProvider({
             <ActiveWorkspaceMatcher
               unstable_history={history}
               NotFoundComponent={NotFoundScreen}
-              LoadingComponent={LoadingScreen}
+              LoadingComponent={LoadingBlock}
             >
               <StudioThemeProvider>
                 <UserColorManagerProvider>
@@ -77,7 +77,7 @@ export function StudioProvider({
                     _children
                   ) : (
                     <AuthBoundary
-                      LoadingComponent={LoadingScreen}
+                      LoadingComponent={LoadingBlock}
                       AuthenticateComponent={AuthenticateScreen}
                       NotAuthenticatedComponent={NotAuthenticatedScreen}
                     >

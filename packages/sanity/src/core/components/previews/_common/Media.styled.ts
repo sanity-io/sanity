@@ -1,6 +1,6 @@
 import {rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {PREVIEW_ICON_SIZE} from '../constants'
+import {PREVIEW_SIZES} from '../constants'
 import {PreviewLayoutKey, PreviewMediaDimensions} from '../types'
 
 export const MediaWrapper = styled.span<{
@@ -12,7 +12,7 @@ export const MediaWrapper = styled.span<{
   const {$dimensions, $layout, $radius, $responsive} = props
   const width = $dimensions.width || 0
   const height = $dimensions.width || 0
-  const iconSize = PREVIEW_ICON_SIZE[$layout]
+  const iconSize = PREVIEW_SIZES[$layout].icon
 
   return css`
     position: relative;
@@ -54,7 +54,7 @@ export const MediaWrapper = styled.span<{
       This is why we use the "*:not(svg) + span" selector to target only that
       situation to render the shadow.
     */
-    & *:not(svg) + span {
+    & span {
       display: block;
       position: absolute;
       left: 0;

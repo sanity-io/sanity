@@ -1,7 +1,8 @@
 import {TrashIcon} from '@sanity/icons'
-import {Box, Button, Card, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
 import React, {ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
+import {Button} from '../../../../../../../../ui'
 import {supportsTouch} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
@@ -94,12 +95,11 @@ export function FilterForm({filter}: FilterFormProps) {
 
                 {fullscreen && (
                   <Button
-                    fontSize={2}
                     icon={TrashIcon}
                     mode="bleed"
                     onClick={handleClose}
-                    padding={2}
                     tone="critical"
+                    tooltipProps={{content: 'Remove filter'}}
                   />
                 )}
               </Flex>

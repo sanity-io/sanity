@@ -142,7 +142,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   if (liveEdit) {
     return {
-      tone: 'positive',
+      tone: 'default',
       label: t('action.publish.live-edit.label'),
       title: t('action.publish.live-edit.tooltip'),
       disabled: true,
@@ -151,7 +151,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   if (!isPermissionsLoading && !permissions?.granted) {
     return {
-      tone: 'positive',
+      tone: 'default',
       label: 'Publish',
       title: (
         <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
@@ -171,7 +171,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   return {
     disabled: disabled || isPermissionsLoading,
-    tone: 'positive',
+    tone: 'default',
     label:
       // eslint-disable-next-line no-nested-ternary
       publishState === 'published'

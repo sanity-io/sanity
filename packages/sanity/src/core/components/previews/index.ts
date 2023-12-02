@@ -1,6 +1,7 @@
 export * from './types'
 
 // General previews
+export * from './general/CompactPreview'
 export * from './general/DefaultPreview'
 export * from './general/DetailPreview'
 export * from './general/MediaPreview'

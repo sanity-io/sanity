@@ -1,5 +1,6 @@
-import {Dialog, Grid, Button, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Dialog} from '../../../../ui'
 import {TextWithTone} from 'sanity'
 
 const DIALOG_COPY: Record<
@@ -45,24 +46,24 @@ export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
 
   return (
     <Dialog
+      footer={{
+        cancelButton: {
+          onClick: onClose,
+        },
+        confirmButton: {
+          loading,
+          onClick: handleDelete,
+          text: confirmButtonText,
+          tone: 'critical',
+        },
+      }}
       header={title}
       id="delete-comment-dialog"
       onClose={onClose}
       width={0}
-      footer={
-        <Grid columns={2} padding={2} gap={2}>
-          <Button text="Cancel" mode="ghost" onClick={onClose} />
-          <Button
-            loading={loading}
-            onClick={handleDelete}
-            text={confirmButtonText}
-            tone="critical"
-          />
-        </Grid>
-      }
     >
-      <Stack padding={4} space={4}>
-        <Text>{body}</Text>
+      <Stack space={4}>
+        <Text size={1}>{body}</Text>
 
         {error && (
           <TextWithTone tone="critical">

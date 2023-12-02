@@ -231,6 +231,40 @@ const config = {
         '@sanity/i18n/no-attribute-template-literals': 'off',
       },
     },
+
+    // Prefer local components vs certain @sanity/ui imports (in sanity package)
+    {
+      files: ['packages/sanity/**'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: '@sanity/ui',
+                importNames: [
+                  'Button',
+                  'ButtonProps',
+                  'Dialog',
+                  'DialogProps',
+                  'MenuGroup',
+                  'MenuGroupProps',
+                  'MenuItem',
+                  'MenuItemProps',
+                  'Tab',
+                  'TabProps',
+                  'Tooltip',
+                  'TooltipProps',
+                  'TooltipWithNodes',
+                ],
+                message:
+                  'Please use the (more opinionated) exported components in sanity/src/ui instead.',
+              },
+            ],
+          },
+        ],
+      },
+    },
   ],
 }
 

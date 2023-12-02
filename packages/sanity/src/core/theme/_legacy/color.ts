@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {createColorTheme, rgba, ThemeColorSchemes} from '@sanity/ui'
+import {createColorTheme, rgba, ThemeColorSchemes} from '@sanity/ui/theme'
 import {_multiply, _screen, _isDark} from './helpers'
 import {LegacyPalette} from './palette'
 import {LegacyTones} from './tones'
@@ -101,6 +101,7 @@ export function buildColor(
           bg,
           border: blend(base.bg, tints[200]),
           fg: blend(base.bg, buttonTones.bg),
+          icon: blend(base.bg, buttonTones.bg),
           muted: {
             fg: blend(base.bg, tints[50]),
           },
@@ -129,6 +130,7 @@ export function buildColor(
           bg,
           border: blend(base.bg, tints[600]),
           fg: blend(base.bg, buttonTones.bg),
+          icon: blend(base.bg, buttonTones.bg),
           muted: {
             fg: blend(base.bg, tints[200]),
           },
@@ -157,6 +159,7 @@ export function buildColor(
           bg,
           border: blend(base.bg, tints[800]),
           fg: blend(base.bg, buttonTones.bg),
+          icon: blend(base.bg, buttonTones.bg),
           muted: {
             fg: blend(base.bg, tints[200]),
           },
@@ -189,6 +192,7 @@ export function buildColor(
           bg,
           border: blend(base.bg, tints[800]),
           fg: blend(base.bg, buttonTones.bg),
+          icon: blend(base.bg, buttonTones.bg),
           muted: {
             fg: blend(base.bg, tints[200]),
           },
@@ -216,6 +220,7 @@ export function buildColor(
         bg,
         border: blend(base.bg, tints[500]),
         fg: blend(base.bg, buttonTones.bg),
+        icon: blend(base.bg, buttonTones.bg),
         muted: {
           fg: blend(base.bg, tints[100]),
         },
@@ -255,6 +260,7 @@ export function buildColor(
           bg,
           border: blend(base.bg, tints[50]),
           fg: blend(base.bg, tints[200]),
+          icon: blend(base.bg, tints[200]),
           muted: {
             fg: blend(bg, tints[100]),
           },
@@ -283,6 +289,7 @@ export function buildColor(
           bg,
           border: blend(bg, tints[100]),
           fg: blend(base.bg, tints[900]),
+          icon: blend(base.bg, tints[900]),
           muted: {
             fg: blend(base.bg, tints[600]),
           },
@@ -315,6 +322,7 @@ export function buildColor(
           bg,
           border: blend(bg, tints[100]),
           fg: blend(base.bg, tints[800]),
+          icon: blend(base.bg, tints[800]),
           muted: {
             fg: blend(base.bg, tints[600]),
           },
@@ -347,6 +355,7 @@ export function buildColor(
           bg,
           border: blend(bg, tints[100]),
           fg: blend(bg, tints[800]),
+          icon: blend(bg, tints[800]),
           muted: {
             fg: blend(bg, tints[600]),
           },
@@ -374,6 +383,7 @@ export function buildColor(
         bg,
         border: blend(bg, tints[100]),
         fg: blend(bg, tints[700]),
+        icon: blend(bg, tints[700]),
         muted: {
           fg: blend(bg, tints[600]),
         },
@@ -472,6 +482,7 @@ export function buildColor(
       return {
         bg,
         fg: base.fg,
+        icon: base.fg,
         border: base.border,
         muted: {
           fg: blend(base.bg, tints[dark ? 400 : 600]),
@@ -503,6 +514,7 @@ export function buildColor(
 
         return {
           bg: blend(base.bg, tints[50]),
+          bg2: blend(base.bg, tints[50]),
           fg: blend(base.bg, tints[700]),
           border: blend(base.bg, tints[200]),
           placeholder: blend(base.bg, tints[400]),
@@ -512,6 +524,7 @@ export function buildColor(
       if (state === 'hovered') {
         return {
           bg: base.bg,
+          bg2: base.bg,
           fg: base.fg,
           border: blend(base.bg, hues.gray[300].hex),
           placeholder: blend(base.bg, hues.gray[400].hex),
@@ -521,6 +534,7 @@ export function buildColor(
       if (state === 'disabled') {
         return {
           bg: blend(base.bg, hues.gray[50].hex),
+          bg2: blend(base.bg, hues.gray[50].hex),
           fg: blend(base.bg, hues.gray[200].hex),
           border: blend(base.bg, hues.gray[100].hex),
           placeholder: blend(base.bg, hues.gray[100].hex),
@@ -530,6 +544,7 @@ export function buildColor(
       if (state === 'readOnly') {
         return {
           bg: blend(base.bg, hues.gray[50].hex),
+          bg2: blend(base.bg, hues.gray[50].hex),
           fg: blend(base.bg, hues.gray[800].hex),
           border: blend(base.bg, hues.gray[200].hex),
           placeholder: blend(base.bg, hues.gray[400].hex),
@@ -538,6 +553,7 @@ export function buildColor(
 
       return {
         bg: base.bg,
+        bg2: base.bg,
         fg: base.fg,
         border: base.border,
         placeholder: blend(base.bg, hues.gray[700].hex),

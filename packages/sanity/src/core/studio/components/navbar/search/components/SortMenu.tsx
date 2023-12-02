@@ -1,21 +1,11 @@
 import {SortIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Inline,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  Text,
-} from '@sanity/ui'
+import {Card, Flex, Menu, MenuButton, MenuDivider} from '@sanity/ui'
 import isEqual from 'lodash/isEqual'
 import React, {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
 import {useTranslation} from '../../../../../i18n'
 import {ORDERINGS} from '../definitions/orderings'
+import {Button, MenuItem} from '../../../../../../ui'
 import {useSearchState} from '../contexts/search/useSearchState'
 import type {SearchOrdering} from '../types'
 
@@ -55,13 +45,12 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   const isSelected = useMemo(() => isEqual(currentOrdering, ordering), [currentOrdering, ordering])
 
   return (
-    <MenuItem onClick={handleClick} padding={3} pressed={isSelected} tone="default">
-      <Flex align="center" justify="space-between" paddingRight={2}>
-        <Text size={1} weight="medium">
-          {t(ordering.titleKey)}
-        </Text>
-      </Flex>
-    </MenuItem>
+    <MenuItem
+      onClick={handleClick}
+      pressed={isSelected}
+      tone="default"
+      text={t(ordering.titleKey)}
+    />
   )
 }
 
@@ -85,22 +74,7 @@ export function SortMenu() {
     <Card borderBottom>
       <SortMenuContentFlex align="center" flex={1} padding={2}>
         <MenuButton
-          button={
-            <Button mode="bleed" padding={2}>
-              <Flex align="center" gap={1} justify="space-between">
-                <Box marginRight={1}>
-                  <Text size={1}>
-                    <SortIcon />
-                  </Text>
-                </Box>
-                <Inline space={2}>
-                  <Text size={1} weight="medium">
-                    {t(currentMenuItem.titleKey)}
-                  </Text>
-                </Inline>
-              </Flex>
-            </Button>
-          }
+          button={<Button mode="bleed" icon={SortIcon} text={t(currentMenuItem.titleKey)} />}
           id={menuButtonId || ''}
           menu={
             <Menu>

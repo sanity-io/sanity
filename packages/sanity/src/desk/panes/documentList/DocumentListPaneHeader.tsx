@@ -1,8 +1,10 @@
 import {ArrowLeftIcon} from '@sanity/icons'
-import {Button} from '@sanity/ui'
 import React, {memo, useMemo} from 'react'
+import {TooltipDelayGroupProvider} from '@sanity/ui'
 import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
+import {Button} from '../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../ui/tooltip/constants'
 import {useDeskTool} from '../../useDeskTool'
 import {SortOrder} from './types'
 import {GeneralPreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
@@ -46,23 +48,33 @@ export const DocumentListPaneHeader = memo(
     }, [setLayout, setSortOrder])
 
     return (
-      <PaneHeader
-        actions={
-          <PaneHeaderActions
-            initialValueTemplateItems={initialValueTemplates}
-            actionHandlers={actionHandlers}
-            menuItemGroups={menuItemGroups}
-            menuItems={menuItems}
-          />
-        }
-        backButton={
-          features.backButton &&
-          index > 0 && <Button as={BackLink} data-as="a" icon={ArrowLeftIcon} mode="bleed" />
-        }
-        contentAfter={contentAfter}
-        tabIndex={tabIndex}
-        title={title}
-      />
+      <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+        <PaneHeader
+          actions={
+            <PaneHeaderActions
+              initialValueTemplateItems={initialValueTemplates}
+              actionHandlers={actionHandlers}
+              menuItemGroups={menuItemGroups}
+              menuItems={menuItems}
+            />
+          }
+          backButton={
+            features.backButton &&
+            index > 0 && (
+              <Button
+                as={BackLink}
+                data-as="a"
+                icon={ArrowLeftIcon}
+                mode="bleed"
+                tooltipProps={{content: 'Back'}}
+              />
+            )
+          }
+          contentAfter={contentAfter}
+          tabIndex={tabIndex}
+          title={title}
+        />
+      </TooltipDelayGroupProvider>
     )
   },
 )

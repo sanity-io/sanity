@@ -1,8 +1,9 @@
 import React, {useMemo} from 'react'
 import {TrashIcon} from '@sanity/icons'
-import {Box, Button, Dialog, Grid, Stack} from '@sanity/ui'
+import {Box, Stack} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
-import {SpinnerWithText} from '../../../components/SpinnerWithText'
+import {Dialog} from '../../../../../ui'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {useReferringDocuments} from '../../../../hooks/useReferringDocuments'
 import {useTranslation} from '../../../../i18n'
 import {AssetUsageList} from './AssetUsageList'
@@ -38,31 +39,22 @@ export function AssetDeleteDialog({
 
   const {t} = useTranslation()
 
-  const footer = useMemo(
-    () => (
-      <Grid padding={2} gap={2} columns={2}>
-        <Button
-          mode="bleed"
-          text={t('asset-source.delete-dialog.action.cancel')}
-          onClick={onClose}
-        />
-        <Button
-          text={t('asset-source.delete-dialog.action.delete')}
-          tone="critical"
-          icon={TrashIcon}
-          onClick={onDelete}
-          loading={isDeleting}
-          disabled={hasResults}
-        />
-      </Grid>
-    ),
-    [hasResults, isDeleting, onClose, onDelete, t],
-  )
-
   return (
     <Dialog
       __unstable_autoFocus={isLoading}
-      footer={footer}
+      footer={{
+        cancelButton: {
+          onClick: onClose,
+          text: t('asset-source.delete-dialog.action.cancel'),
+        },
+        confirmButton: {
+          disabled: hasResults,
+          icon: TrashIcon,
+          loading: isDeleting,
+          onClick: onDelete,
+          text: t('asset-source.delete-dialog.action.delete'),
+        },
+      }}
       header={t('asset-source.delete-dialog.header', {context: assetType})}
       id="asset-dialog"
       onClickOutside={onClose}
@@ -71,7 +63,7 @@ export function AssetDeleteDialog({
     >
       {isLoading ? (
         <Box padding={4}>
-          <SpinnerWithText text={t('asset-source.delete-dialog.loading')} />
+          <LoadingBlock title={t('asset-source.delete-dialog.loading')} />
         </Box>
       ) : (
         <Stack

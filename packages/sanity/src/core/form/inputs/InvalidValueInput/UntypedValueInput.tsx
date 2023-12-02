@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
-import {Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import {Card, Code, Grid, Stack, Text} from '@sanity/ui'
 import {PatchEvent, setIfMissing, unset} from '../../patch'
+import {Button} from '../../../../ui'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
 import {useSchema} from '../../../hooks'
@@ -126,7 +127,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
           )}
 
           <Stack space={2}>
-            <Text as="h4" weight="semibold" size={1}>
+            <Text as="h4" weight="medium" size={1}>
               {t('inputs.untyped-value.details.json-dump-prefix')}
             </Text>
 

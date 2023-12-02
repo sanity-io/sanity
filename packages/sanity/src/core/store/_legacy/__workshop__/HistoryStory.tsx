@@ -21,7 +21,7 @@ export default function HistoryStory() {
 
   return (
     <Box padding={4}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         <code>{`historyStore.getHistory`}</code>
       </Text>
 

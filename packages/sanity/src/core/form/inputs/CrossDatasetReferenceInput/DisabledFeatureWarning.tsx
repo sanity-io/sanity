@@ -1,18 +1,14 @@
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Box, Text, Stack, Button} from '@sanity/ui'
+import {Card, Flex, Box, Text, Stack} from '@sanity/ui'
 import type {CrossDatasetReferenceValue} from '@sanity/types'
 import React, {useMemo} from 'react'
-import styled from 'styled-components'
+import {Button} from '../../../../ui'
 import {Translate, useTranslation} from '../../../i18n'
 
 type Props = {
   value?: CrossDatasetReferenceValue
   onClearValue?: () => void
 }
-
-const ButtonWrapper = styled(Button)`
-  width: 100%;
-`
 
 export function DisabledFeatureWarning({value, onClearValue}: Props) {
   const hasRef = useMemo(() => Boolean(value?._ref), [value?._ref])
@@ -51,7 +47,7 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
           </Text>
         </Box>
         <Stack space={3}>
-          <Text as="h2" size={1} weight="semibold">
+          <Text as="h2" size={1} weight="medium">
             {t('inputs.reference.cross-dataset.feature-unavailable-title')}
           </Text>
           {hasRef && (
@@ -72,11 +68,12 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
         </Stack>
       </Flex>
       {onClearValue && hasRef && (
-        <ButtonWrapper
+        <Button
           icon={ResetIcon}
-          text={t('inputs.reference.action.clear')}
-          onClick={onClearValue}
           mode="ghost"
+          onClick={onClearValue}
+          text={t('inputs.reference.action.clear')}
+          width="fill"
         />
       )}
     </Card>

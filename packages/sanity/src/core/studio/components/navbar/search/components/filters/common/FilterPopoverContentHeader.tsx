@@ -35,6 +35,8 @@ export const FilterPopoverContentHeader = forwardRef<
     <SearchHeaderBox>
       <SearchHeaderContentFlex align="center" flex={1} padding={1}>
         <CustomTextInput
+          __unstable_disableFocusRing
+          $smallClearButton
           aria-label={ariaInputLabel}
           autoComplete="off"
           border={false}
@@ -46,7 +48,6 @@ export const FilterPopoverContentHeader = forwardRef<
           onClear={onClear}
           placeholder={t('search.filter-placeholder')}
           ref={ref}
-          smallClearButton
           spellCheck={false}
           radius={2}
           value={typeFilter}

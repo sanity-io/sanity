@@ -16,17 +16,6 @@ const Link = styled.a`
 const FooterCard = styled(Card)({
   position: 'relative',
   zIndex: 1,
-
-  '&:after': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    left: 0,
-    top: -1,
-    right: 0,
-    borderBottom: '1px solid var(--card-border-color)',
-    opacity: 0.5,
-  },
 })
 
 export function CommentsInspectorFeedbackFooter() {

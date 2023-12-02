@@ -22,7 +22,7 @@ export function SearchError() {
           <WarningOutlineIcon />
         </TextWithTone>
       </Box>
-      <TextWithTone size={2} tone="critical" weight="semibold">
+      <TextWithTone size={2} tone="critical" weight="medium">
         {t('search.error.unspecified-error-title')}
       </TextWithTone>
       <TextWithTone size={1} tone="critical">

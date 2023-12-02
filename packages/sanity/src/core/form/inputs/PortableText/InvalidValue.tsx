@@ -1,5 +1,14 @@
 import type {InvalidValueResolution} from '@sanity/portable-text-editor'
-import {Box, Button, Card, Code, Grid, Stack, Text} from '@sanity/ui'
+import {
+  Box,
+  // eslint-disable-next-line no-restricted-imports
+  Button,
+  Card,
+  Code,
+  Grid,
+  Stack,
+  Text,
+} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {Translate, useTranslation} from '../../../i18n'
 import {Alert} from '../../components/Alert'
@@ -35,6 +44,7 @@ export function InvalidValue(props: InvalidValueProps) {
                 onClick={onIgnore}
                 text={t('inputs.portable-text.invalid-value.ignore-button.text')}
               />
+              {/* @todo: use plain string */}
               {!readOnly && (
                 <Button
                   onClick={handleAction}

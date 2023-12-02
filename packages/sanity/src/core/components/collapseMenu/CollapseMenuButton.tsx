@@ -1,5 +1,5 @@
-import {Button, ButtonProps, TooltipProps} from '@sanity/ui'
 import React, {forwardRef} from 'react'
+import {Button, ButtonProps, TooltipProps} from '../../../ui'
 
 /** @internal */
 export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {
@@ -14,12 +14,12 @@ export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {
 export interface CollapseMenuButtonProps extends CommonProps {
   collapsedProps?: Omit<CommonProps, 'text'>
   expandedProps?: CommonProps
-  text: ButtonProps['text']
+  text: string
 }
 
 /** @internal */
 export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
-  props: CollapseMenuButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as'>,
+  props: CollapseMenuButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'size'>,
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
   const {

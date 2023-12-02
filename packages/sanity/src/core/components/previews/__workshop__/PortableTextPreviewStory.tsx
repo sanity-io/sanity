@@ -1,12 +1,13 @@
-import {DocumentIcon, EditIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import {Button, Card, Container, Flex, Text} from '@sanity/ui'
+import {DocumentIcon, EditIcon, EllipsisHorizontalIcon} from '@sanity/icons'
+import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
 import React, {ComponentType, createElement, useMemo} from 'react'
 import {PortableTextPreviewLayoutKey, PreviewProps} from '../types'
 import {InlinePreview} from '../portableText/InlinePreview'
+import {Button} from '../../../../ui'
 import {BlockPreview} from '../portableText/BlockPreview'
 import {BlockImagePreview} from '../portableText/BlockImagePreview'
-import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PREVIEW_SIZES} from '../constants'
 
 const MEDIA_OPTIONS: Record<string, string> = {
   None: 'none',
@@ -52,7 +53,7 @@ export default function PortableTextPreviewStory() {
   const status = useBoolean('Status', false)
 
   const media = useMemo(() => {
-    const {width, height} = layout ? PREVIEW_MEDIA_SIZE[layout] : PREVIEW_MEDIA_SIZE.default
+    const {width, height} = layout ? PREVIEW_SIZES[layout].media : PREVIEW_SIZES.default.media
 
     if (mediaKey === 'image') {
       return <img src={`https://source.unsplash.com/${width * 2}x${height * 2}/?abstract`} />
@@ -72,7 +73,7 @@ export default function PortableTextPreviewStory() {
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
       actions: withActions && (
-        <Button fontSize={1} icon={EllipsisVerticalIcon} mode="bleed" paddingX={2} />
+        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
       ),
       isPlaceholder,
       media,

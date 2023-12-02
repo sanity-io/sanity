@@ -1,6 +1,7 @@
 import {type ButtonTone} from '@sanity/ui'
 import type React from 'react'
 import {type EditStateFor} from '../../store/_legacy'
+import {DialogProps} from '../../../ui'
 
 /**
  * @hidden
@@ -52,9 +53,9 @@ export interface DocumentActionConfirmDialogProps {
   onConfirm: () => void
   onCancel: () => void
   cancelButtonIcon?: React.ComponentType | React.ReactNode
-  cancelButtonText?: React.ReactNode
+  cancelButtonText?: string
   confirmButtonIcon?: React.ComponentType | React.ReactNode
-  confirmButtonText?: React.ReactNode
+  confirmButtonText?: string
 }
 
 /**
@@ -68,7 +69,7 @@ export interface DocumentActionModalDialogProps {
    * @hidden
    * @beta
    */
-  footer?: React.ReactNode
+  footer?: DialogProps['footer']
   /**
    *
    * @hidden

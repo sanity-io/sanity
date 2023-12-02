@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import {Flex} from '@sanity/ui'
+import {AVATAR_SIZE} from './constants'
 
 export const FlexWrapper = styled(Flex)`
   & > div:first-child {
@@ -9,7 +10,7 @@ export const FlexWrapper = styled(Flex)`
 `
 
 export const InnerBox = styled(Flex)`
-  height: 23px;
+  height: ${AVATAR_SIZE}px;
   min-width: 23px;
   vertical-align: top;
 `

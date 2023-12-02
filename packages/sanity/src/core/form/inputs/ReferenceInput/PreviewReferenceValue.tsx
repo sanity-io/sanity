@@ -1,28 +1,30 @@
 import React, {ComponentType, ReactNode, Fragment} from 'react'
 import type {Reference, ReferenceSchemaType} from '@sanity/types'
-import {Box, Flex, Inline, Label, Stack, Text, Tooltip} from '@sanity/ui'
+import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
+import {TooltipWithNodes} from '../../../../ui'
 import type {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
 import {Translate, useTranslation} from '../../../i18n'
 import {useListFormat} from '../../../hooks'
-import {TextWithTone} from '../../../components'
+import {PreviewLayoutKey, TextWithTone} from '../../../components'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
 import type {ReferenceInfo} from './types'
 
 export function PreviewReferenceValue(props: {
+  layout?: PreviewLayoutKey
   referenceInfo: Loadable<ReferenceInfo>
   renderPreview: RenderPreviewCallback
   type: ReferenceSchemaType
   value: Reference
   showTypeLabel?: boolean
 }) {
-  const {referenceInfo, renderPreview, type, value, showTypeLabel} = props
+  const {layout = 'default', referenceInfo, renderPreview, type, value, showTypeLabel} = props
   const {t} = useTranslation()
 
   if (referenceInfo.isLoading || referenceInfo.error) {
-    return <SanityDefaultPreview isPlaceholder />
+    return <SanityDefaultPreview isPlaceholder layout={layout} />
   }
 
   // Special handling for "create refs in place"
@@ -54,7 +56,7 @@ export function PreviewReferenceValue(props: {
       <Flex align="center">
         <Box flex={1}>
           {renderPreview({
-            layout: 'default',
+            layout,
             schemaType: refType,
             value: stub,
             skipVisibilityCheck: true,
@@ -62,11 +64,7 @@ export function PreviewReferenceValue(props: {
         </Box>
         <Box>
           <Inline space={4}>
-            {showTypeLabel && (
-              <Label size={1} muted>
-                {refType.title}
-              </Label>
-            )}
+            {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
           </Inline>
         </Box>
       </Flex>
@@ -89,7 +87,7 @@ export function PreviewReferenceValue(props: {
         </Box>
         {insufficientPermissions || notFound ? (
           <Box>
-            <Tooltip
+            <TooltipWithNodes
               portal
               content={
                 notFound ? (
@@ -116,7 +114,7 @@ export function PreviewReferenceValue(props: {
               <TextWithTone tone="default">
                 <HelpCircleIcon />
               </TextWithTone>
-            </Tooltip>
+            </TooltipWithNodes>
           </Box>
         ) : null}
       </Inline>
@@ -142,7 +140,7 @@ export function PreviewReferenceValue(props: {
   return (
     <ReferencePreview
       id={value._ref}
-      layout="default"
+      layout={layout}
       preview={referenceInfo.result?.preview}
       refType={refType}
       renderPreview={renderPreview}
@@ -154,14 +152,12 @@ export function PreviewReferenceValue(props: {
 function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; title: ReactNode}) {
   const Icon = props.icon
   return (
-    <Flex padding={3}>
-      <Box>
-        <Text size={1}>
-          <Icon />
-        </Text>
-      </Box>
+    <Flex>
+      <Text size={1}>
+        <Icon />
+      </Text>
       <Box flex={1} marginLeft={3}>
-        <Text size={1} weight="semibold">
+        <Text size={1} weight="medium">
           {props.title}
         </Text>
 
@@ -196,10 +192,10 @@ function InvalidType({
         </Flex>
       </Box>
       <Box>
-        <Tooltip
+        <TooltipWithNodes
           portal
           content={
-            <Stack space={3} padding={3}>
+            <Stack space={3}>
               <Text size={1}>
                 <Translate
                   t={t}
@@ -218,7 +214,7 @@ function InvalidType({
               <HelpCircleIcon />
             </TextWithTone>
           </Box>
-        </Tooltip>
+        </TooltipWithNodes>
       </Box>
     </Flex>
   )

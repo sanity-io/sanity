@@ -1,7 +1,8 @@
-import {SelectIcon} from '@sanity/icons'
-import {Box, Button, Flex, Inline, Menu, MenuButton, MenuDivider, MenuItem, Text} from '@sanity/ui'
-import React, {createElement, useCallback, useId} from 'react'
+import {ChevronDownIcon} from '@sanity/icons'
+import {Inline, Menu, MenuButton, MenuDivider} from '@sanity/ui'
+import React, {useCallback, useId} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
+import {Button, MenuItem} from '../../../../../../../../ui'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperatorDefinition, SearchOperatorDefinition} from '../../../definitions/operators'
 import type {SearchFilter} from '../../../types'
@@ -26,20 +27,13 @@ function CustomMenuItem({
   const {t} = useTranslation()
 
   return (
-    <MenuItem onClick={handleClick} padding={3} pressed={selected} tone="default">
-      <Flex align="center" justify="space-between" gap={3}>
-        <Box paddingRight={2}>
-          <Text size={1} weight="regular">
-            {t(operator.nameKey)}
-          </Text>
-        </Box>
-        {operator?.icon && (
-          <Text muted size={1}>
-            {createElement(operator.icon)}
-          </Text>
-        )}
-      </Flex>
-    </MenuItem>
+    <MenuItem
+      onClick={handleClick}
+      pressed={selected}
+      tone="default"
+      text={t(operator.nameKey)}
+      iconRight={operator?.icon}
+    />
   )
 }
 
@@ -68,20 +62,7 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
   return (
     <Inline>
       <MenuButton
-        button={
-          <Button mode="ghost" padding={3}>
-            <Flex align="center" gap={2} justify="space-between">
-              <Text size={state.fullscreen ? 2 : 1} weight="regular">
-                {t(operator.nameKey)}
-              </Text>
-              <Box marginLeft={1}>
-                <Text size={1}>
-                  <SelectIcon />
-                </Text>
-              </Box>
-            </Flex>
-          </Button>
-        }
+        button={<Button mode="ghost" iconRight={ChevronDownIcon} text={t(operator.nameKey)} />}
         id={menuButtonId || ''}
         menu={
           <Menu>

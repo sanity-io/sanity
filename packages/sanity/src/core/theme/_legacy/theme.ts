@@ -28,10 +28,11 @@ import {LegacyThemeProps} from './types'
  * ```
  *
  * @param partialLegacyTheme - Properties to override the theme with. See {@link LegacyThemeProps}
- *
  * @public
+ * @deprecated Use `@sanity/ui studioTheme` instead
  */
 export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>): StudioTheme {
+  return defaults
   const legacyTheme = resolveLegacyTheme(partialLegacyTheme)
   const legacyPalette = buildLegacyPalette(legacyTheme)
   const legacyTones = buildLegacyTones(legacyPalette)
