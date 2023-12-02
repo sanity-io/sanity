@@ -1,5 +1,5 @@
-import {EllipsisVerticalIcon} from '@sanity/icons'
-import {Box, Button, Flex, MenuButtonProps, Text, Tooltip} from '@sanity/ui'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
+import {Flex, MenuButtonProps} from '@sanity/ui'
 import React, {
   Children,
   cloneElement,
@@ -15,6 +15,7 @@ import React, {
 } from 'react'
 import styled, {css} from 'styled-components'
 import {difference} from 'lodash'
+import {Button, Tooltip} from '../../../ui'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
@@ -93,7 +94,10 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
 
   const menuOptions = useMemo(() => Children.toArray(children).filter(_isReactElement), [children])
   const menuButton = useMemo(
-    () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
+    () =>
+      menuButtonProps?.button || (
+        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
+      ),
     [menuButtonProps],
   )
 
@@ -262,7 +266,10 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
     : menuOptions
 
   const menuButton = useMemo(
-    () => menuButtonProps?.button || <Button icon={EllipsisVerticalIcon} mode="bleed" />,
+    () =>
+      menuButtonProps?.button || (
+        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
+      ),
     [menuButtonProps],
   )
 
@@ -288,16 +295,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
               return (
                 <Fragment key={optionElement.key}>
                   {dividerBefore && index !== 0 && <CollapseMenuDivider hidden={hidden} />}
-                  <Tooltip
-                    portal
-                    disabled={!tooltipText}
-                    content={
-                      <Box padding={2} sizing="border">
-                        <Text size={1}>{tooltipText}</Text>
-                      </Box>
-                    }
-                    {...tooltipProps}
-                  >
+                  <Tooltip portal disabled={!tooltipText} content={tooltipText} {...tooltipProps}>
                     <Flex>
                       {cloneElement(optionElement, {
                         disabled: optionElement.props.disabled || hidden,

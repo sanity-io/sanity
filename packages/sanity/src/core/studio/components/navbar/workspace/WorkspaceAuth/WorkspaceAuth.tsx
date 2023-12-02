@@ -1,12 +1,13 @@
-import {Box, Button, Card, Flex, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {omit} from 'lodash'
 import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {Button} from '../../../../../../ui'
+import {LoadingBlock} from '../../../../../../ui/loadingBlock'
 import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../../workspaces'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {useWorkspaceAuthStates} from '../hooks'
-import {LoadingScreen} from '../../../../screens'
 import {WORKSPACES_DOCS_URL} from '../constants'
 import {useTranslation} from '../../../../../i18n'
 import {Layout} from './Layout'
@@ -27,7 +28,7 @@ export function WorkspaceAuth() {
   const handleBack = useCallback(() => setSelectedWorkspaceName(null), [])
   const {t} = useTranslation()
 
-  if (!authStates) return <LoadingScreen />
+  if (!authStates) return <LoadingBlock />
 
   if (LoginComponent && selectedWorkspace) {
     return (
@@ -35,11 +36,9 @@ export function WorkspaceAuth() {
         {workspaces.length > 1 && (
           <Flex>
             <Button
-              fontSize={1}
               icon={ArrowLeftIcon}
               mode="bleed"
               onClick={handleBack}
-              padding={2}
               text={t('workspaces.action.choose-another-workspace')}
             />
           </Flex>
@@ -76,9 +75,9 @@ export function WorkspaceAuth() {
             as="a"
             href={WORKSPACES_DOCS_URL}
             icon={AddIcon}
-            justify="flex-start"
             mode="bleed"
             rel="noopener noreferrer"
+            size="large"
             target="__blank"
             text={t('workspaces.action.add-workspace')}
           />

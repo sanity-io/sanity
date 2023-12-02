@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-handler-names */
 
-import {EllipsisVerticalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Card, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import React, {memo, useCallback, useId, useMemo, useState} from 'react'
-import {StatusButton, StatusButtonProps} from '../../../components'
+import {Button, ButtonProps} from '../../../../ui'
 import {DocumentFieldActionGroup, DocumentFieldActionNode} from '../../../config'
 import {useI18nText} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
@@ -14,7 +14,7 @@ export interface FieldActionMenuProps {
   onMenuOpenChange: (open: boolean) => void
 }
 
-const STATUS_BUTTON_TOOLTIP_PROPS: StatusButtonProps['tooltip'] = {
+const STATUS_BUTTON_TOOLTIP_PROPS: ButtonProps['tooltipProps'] = {
   placement: 'top',
 }
 
@@ -61,7 +61,7 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
             {
               type: 'group',
               children: menuNodes,
-              icon: EllipsisVerticalIcon,
+              icon: EllipsisHorizontalIcon,
               title: 'Field actions',
             },
           ] satisfies DocumentFieldActionNode[])
@@ -101,15 +101,14 @@ const RootFieldActionMenuNode = memo(function RootFieldActionMenuNode(props: {
 
   if (node.type === 'action') {
     return (
-      <StatusButton
-        fontSize={1}
+      <Button
         icon={node.icon}
-        // Do not show tooltip if menu is open
-        label={open ? undefined : node.title}
         mode="bleed"
         onClick={node.onAction}
-        padding={2}
-        tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
+        tooltipProps={{
+          ...STATUS_BUTTON_TOOLTIP_PROPS,
+          content: node.title,
+        }}
       />
     )
   }
@@ -136,13 +135,14 @@ function RootFieldActionMenuGroup(props: {
   return (
     <MenuButton
       button={
-        <StatusButton
-          fontSize={1}
+        <Button
           icon={node.icon}
           label={open ? undefined : title}
           mode="bleed"
-          padding={2}
-          tooltip={STATUS_BUTTON_TOOLTIP_PROPS}
+          tooltipProps={{
+            ...STATUS_BUTTON_TOOLTIP_PROPS,
+            content: node.title,
+          }}
         />
       }
       id={useId()}

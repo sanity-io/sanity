@@ -6,11 +6,12 @@ import {
 } from '@sanity/portable-text-editor'
 import React, {memo, useCallback, useMemo, useState} from 'react'
 import {ObjectSchemaType, Path, SchemaType} from '@sanity/types'
-import {Box, Button, Flex, Hotkeys, Text, Tooltip, useElementRect, useToast} from '@sanity/ui'
+import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {useRovingFocus} from '../../../../components'
 import {useResolveInitialValueForType} from '../../../../store'
+import {Button} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
@@ -128,33 +129,21 @@ const InnerToolbar = memo(function InnerToolbar({
         )}
       </Flex>
       <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
-        <Tooltip
-          content={
-            <Flex align="center" padding={1}>
-              <Box flex={1} paddingX={1}>
-                <Text size={1}>
-                  {t(
-                    isFullscreen
-                      ? 'inputs.portable-text.action.collapse-editor'
-                      : 'inputs.portable-text.action.expand-editor',
-                  )}
-                </Text>
-              </Box>
-              <Box marginLeft={1}>
-                <Hotkeys keys={[`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter']} />
-              </Box>
-            </Flex>
-          }
-          placement={isFullscreen ? 'bottom' : 'top'}
-          portal="default"
-        >
-          <Button
-            padding={2}
-            icon={isFullscreen ? CollapseIcon : ExpandIcon}
-            mode="bleed"
-            onClick={onToggleFullscreen}
-          />
-        </Tooltip>
+        <Button
+          icon={isFullscreen ? CollapseIcon : ExpandIcon}
+          mode="bleed"
+          onClick={onToggleFullscreen}
+          tooltipProps={{
+            content: t(
+              isFullscreen
+                ? 'inputs.portable-text.action.collapse-editor'
+                : 'inputs.portable-text.action.expand-editor',
+            ),
+            hotkeys: [`${IS_MAC ? 'Cmd' : 'Ctrl'}`, 'Enter'],
+            placement: isFullscreen ? 'bottom' : 'top',
+            portal: 'default',
+          }}
+        />
       </FullscreenButtonBox>
     </RootFlex>
   )

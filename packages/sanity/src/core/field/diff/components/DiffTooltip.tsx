@@ -1,6 +1,7 @@
 import type {Path} from '@sanity/types'
-import {Tooltip, TooltipProps, Text, Stack, Flex, Inline, Label} from '@sanity/ui'
+import {Text, Stack, Flex, Inline} from '@sanity/ui'
 import React from 'react'
+import {TooltipWithNodes, TooltipWithNodesProps} from '../../../../ui'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useRelativeTime} from '../../../hooks'
 import {useUser} from '../../../store'
@@ -9,7 +10,7 @@ import type {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
 /** @internal */
-export interface DiffTooltipProps extends TooltipProps {
+export interface DiffTooltipProps extends TooltipWithNodesProps {
   children: React.ReactElement
   description?: React.ReactNode
   diff: Diff
@@ -17,7 +18,7 @@ export interface DiffTooltipProps extends TooltipProps {
 }
 
 /** @internal */
-export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
+export interface DiffTooltipWithAnnotationsProps extends TooltipWithNodesProps {
   annotations: AnnotationDetails[]
   children: React.ReactElement
   description?: React.ReactNode
@@ -44,10 +45,10 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   }
 
   const content = (
-    <Stack padding={3} space={2}>
-      <Label size={1} style={{textTransform: 'uppercase'}}>
+    <Stack space={2}>
+      <Text muted size={1} weight="medium">
         {description || t('changes.changed-label')}
-      </Label>
+      </Text>
       <Stack space={2}>
         {annotations.map((annotation, idx) => (
           <AnnotationItem annotation={annotation} key={idx} />
@@ -58,9 +59,9 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 
   return (
     <LegacyLayerProvider zOffset="paneFooter">
-      <Tooltip content={content} portal {...restProps}>
+      <TooltipWithNodes content={content} portal {...restProps}>
         {children}
-      </Tooltip>
+      </TooltipWithNodes>
     </LegacyLayerProvider>
   )
 }

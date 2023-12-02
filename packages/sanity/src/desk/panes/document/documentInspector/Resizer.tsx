@@ -19,7 +19,6 @@ const Root = styled.div`
     left: 4px;
     bottom: 0;
     transition: opacity 200ms;
-    opacity: 0.5;
   }
 
   /* Hover effect */

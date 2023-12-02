@@ -1,8 +1,10 @@
 import {SyncIcon} from '@sanity/icons'
-import {Box, Button, Card, Container, Flex, Heading, Spinner, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import styled from 'styled-components'
+import {Button} from '../../../ui'
+import {LoadingBlock} from '../../../ui/loadingBlock'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
 import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
@@ -55,11 +57,9 @@ function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
   const {layout} = props
 
   return (
-    <Stack padding={2} space={1}>
+    <Stack paddingX={3} paddingY={2} paddingTop={0} space={1}>
       {SKELETON_ITEMS.map((num) => (
-        <Card padding={2} key={num}>
-          <SanityDefaultPreview isPlaceholder layout={layout} />
-        </Card>
+        <SanityDefaultPreview isPlaceholder layout={layout} key={num} />
       ))}
     </Stack>
   )
@@ -133,11 +133,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             value={item}
           />
 
-          {showSpinner && (
-            <Flex align="center" justify="center" padding={4}>
-              <Spinner muted />
-            </Flex>
-          )}
+          {showSpinner && <LoadingBlock hideText />}
 
           {showMaxItemsMessage && (
             <Box marginY={1} paddingX={3} paddingY={4}>
@@ -251,8 +247,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             onEndReached={handleEndReached}
             onlyShowSelectionWhenActive
             overscan={10}
-            padding={2}
             paddingBottom={1}
+            paddingX={3}
             renderItem={renderItem}
             wrapAround={false}
           />

@@ -3,19 +3,19 @@ import React from 'react'
 import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Media} from '../_common/Media'
-import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PREVIEW_SIZES} from '../constants'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
-  ...PREVIEW_MEDIA_SIZE.block,
+  ...PREVIEW_SIZES.block.media,
   aspect: 1,
   fit: 'crop',
   dpr: getDevicePixelRatio(),
 }
 
 const HeaderFlex = styled(Flex).attrs({align: 'center'})`
-  min-height: ${rem(PREVIEW_MEDIA_SIZE.block.height)};
+  min-height: ${rem(PREVIEW_SIZES.block.media.height)};
 `
 
 /**
@@ -39,7 +39,7 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
         {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 
         <Box flex={1} paddingLeft={media ? 2 : 1}>
-          <Text size={1} textOverflow="ellipsis" weight="semibold">
+          <Text size={1} textOverflow="ellipsis" weight="medium">
             {title ? renderPreviewNode(title, 'block') : 'Untitled'}
           </Text>
 

@@ -1,9 +1,9 @@
-import {Box, Button, Text, Tooltip} from '@sanity/ui'
 import React, {memo, useCallback} from 'react'
 import {CopyIcon} from '@sanity/icons'
 import {keyGenerator} from '@sanity/portable-text-editor'
 import {PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {RenderBlockActionsCallback} from '../../../../types/_transitional'
+import {Button} from '../../../../../../ui'
 
 const BlockActions = memo(function BlockActions(props: {
   block: PortableTextBlock
@@ -28,24 +28,13 @@ const BlockActions = memo(function BlockActions(props: {
   }, [block, insert])
 
   return (
-    <Tooltip
-      content={
-        <Box padding={2}>
-          <Text size={1}>Duplicate</Text>
-        </Box>
-      }
-      placement="right"
-      portal="default"
-    >
-      <Button
-        aria-label="Duplicate"
-        fontSize={1}
-        icon={CopyIcon}
-        onClick={handleDuplicate}
-        padding={2}
-        mode="bleed"
-      />
-    </Tooltip>
+    <Button
+      aria-label="Duplicate"
+      icon={CopyIcon}
+      onClick={handleDuplicate}
+      tooltipProps={{content: 'Duplicate', placement: 'right', portal: 'default'}}
+      mode="bleed"
+    />
   )
 })
 

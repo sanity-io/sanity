@@ -1,16 +1,6 @@
-import {
-  Dialog,
-  Grid,
-  Button,
-  Stack,
-  Text,
-  ThemeColorProvider,
-  PortalProvider,
-  DialogProvider,
-  usePortal,
-  useLayer,
-} from '@sanity/ui'
+import {DialogProvider, Stack, Text, ThemeColorProvider} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Dialog} from '../../../../../../ui'
 
 const Z_OFFSET = 9999999 // Change to appropriate z-offset
 
@@ -59,12 +49,16 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
           onClose={onClose}
           width={0}
           onClickOutside={onClose}
-          footer={
-            <Grid columns={2} padding={2} gap={2}>
-              <Button text="Cancel" mode="ghost" onClick={handleCancelClick} />
-              <Button onClick={handleConfirmClick} text="Discard" tone="critical" />
-            </Grid>
-          }
+          footer={{
+            cancelButton: {
+              onClick: handleCancelClick,
+            },
+            confirmButton: {
+              onClick: handleConfirmClick,
+              text: 'Discard',
+              tone: 'critical',
+            },
+          }}
         >
           <Stack padding={4}>
             <Text>Do you want to discard the comment?</Text>

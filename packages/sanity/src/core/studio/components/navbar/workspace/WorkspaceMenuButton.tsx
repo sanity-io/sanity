@@ -1,137 +1,157 @@
-import {SelectIcon} from '@sanity/icons'
+import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {
+  Box,
+  // eslint-disable-next-line no-restricted-imports
   Button,
   MenuButton,
-  MenuItem,
   Menu,
   MenuButtonProps,
-  Box,
-  Label,
-  Tooltip,
+  Flex,
+  Card,
   Text,
-  Stack,
 } from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
-import {useColorScheme} from '../../../colorScheme'
 import {useWorkspaces} from '../../../workspaces'
+import {MenuItem} from '../../../../../ui'
+import {SanityLogo} from '../SanityLogo'
 import {useWorkspaceAuthStates} from './hooks'
-import {WorkspacePreview} from './WorkspacePreview'
-import {useRouter} from 'sanity/router'
+import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
+import {useRouter, useStateLink} from 'sanity/router'
 
 const StyledMenu = styled(Menu)`
   max-width: 350px;
   min-width: 250px;
 `
 
-interface WorkspaceMenuButtonProps {
-  collapsed?: boolean
-}
+const LOGO_MARK_SIZE = 25 // width and height, px
 
-export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
-  const {collapsed = false} = props
-  const [menuOpen, setMenuOpen] = useState<boolean>(false)
-  const {scheme} = useColorScheme()
+const POPOVER_PROPS: MenuButtonProps['popover'] = {constrainSize: true}
+
+const LogoMarkContainer = styled(Card).attrs({
+  overflow: 'hidden',
+  radius: 2,
+})`
+  height: ${LOGO_MARK_SIZE}px;
+  width: ${LOGO_MARK_SIZE}px;
+`
+
+export function WorkspaceMenuButton() {
   const workspaces = useWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {navigateUrl} = useRouter()
   const {t} = useTranslation()
 
-  const handleOnOpen = useCallback(() => setMenuOpen(true), [])
-  const handleOnClose = useCallback(() => setMenuOpen(false), [])
+  const multipleWorkspaces = workspaces.length > 1
 
-  const popoverProps: MenuButtonProps['popover'] = useMemo(
-    () => ({constrainSize: true, scheme, portal: true}),
-    [scheme],
-  )
-  // Tooltip should be disabled in the Navdrawer
-  const tooltipDisabled = menuOpen || !collapsed
-  const ariaLabel = collapsed ? t('workspaces.select-workspace-aria-label') : undefined
-  const buttonText = collapsed ? undefined : t('workspaces.select-workspace-label')
+  const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
 
+  // TODO: add conditional tooltip
+  const button = useMemo(() => {
+    return (
+      <Button
+        aria-label={
+          multipleWorkspaces ? t('workspaces.select-workspace-aria-label') : activeWorkspace.title
+        }
+        disabled={!authStates}
+        href={multipleWorkspaces ? undefined : rootHref}
+        onClick={multipleWorkspaces ? undefined : handleRootClick}
+        mode="bleed"
+        padding={0}
+        paddingRight={2}
+      >
+        <Flex align="center" gap={2}>
+          <LogoMarkContainer>
+            <Flex align="center" height="fill" justify="center">
+              {/* Display the Sanity logo only if one workspace is active and no custom icon is defined */}
+              {multipleWorkspaces || activeWorkspace.customIcon ? (
+                <WorkspacePreviewIcon icon={activeWorkspace.icon} size="small" />
+              ) : (
+                <SanityLogo />
+              )}
+            </Flex>
+          </LogoMarkContainer>
+          <Box>
+            <Text size={1} weight="medium">
+              {activeWorkspace.title}
+            </Text>
+          </Box>
+          {multipleWorkspaces && (
+            <Text size={1}>
+              <ChevronDownIcon />
+            </Text>
+          )}
+        </Flex>
+      </Button>
+    )
+  }, [
+    activeWorkspace.customIcon,
+    activeWorkspace.icon,
+    activeWorkspace.title,
+    authStates,
+    handleRootClick,
+    multipleWorkspaces,
+    rootHref,
+    t,
+  ])
+
+  if (!multipleWorkspaces) {
+    return button
+  }
+
+  // @todo: fix an issue in Sanity UI <MenuButton> components where, when open with a selected item,
+  // clicking the menu button causes the menu to close and immediately re-open.
   return (
-    <Tooltip
-      content={
-        <Box padding={2}>
-          <Text size={1}>{t('workspaces.title')}</Text>
-        </Box>
-      }
-      disabled={tooltipDisabled}
-      placement="bottom"
-      portal
-      scheme={scheme}
-    >
-      <Stack>
-        <MenuButton
-          button={
-            <Button
-              icon={SelectIcon}
-              mode="bleed"
-              text={buttonText}
-              disabled={!authStates}
-              aria-label={ariaLabel}
-              justify={collapsed ? undefined : 'flex-start'}
-            />
-          }
-          id="workspaces"
-          menu={
-            <StyledMenu>
-              <Box paddingX={3} paddingY={3}>
-                <Label size={1} muted>
-                  {t('workspaces.title')}
-                </Label>
-              </Box>
+    <>
+      <MenuButton
+        button={button}
+        id="workspace-menu"
+        menu={
+          <StyledMenu>
+            {authStates &&
+              workspaces.map((workspace) => {
+                const authState = authStates[workspace.name]
 
-              {authStates &&
-                workspaces.map((workspace) => {
-                  const authState = authStates[workspace.name]
+                // eslint-disable-next-line no-nested-ternary
+                const state = authState.authenticated
+                  ? 'logged-in'
+                  : workspace.auth.LoginComponent
+                    ? 'logged-out'
+                    : 'no-access'
 
-                  // eslint-disable-next-line no-nested-ternary
-                  const state = authState.authenticated
-                    ? 'logged-in'
-                    : workspace.auth.LoginComponent
-                      ? 'logged-out'
-                      : 'no-access'
-
-                  const handleSelectWorkspace = () => {
-                    if (state === 'logged-in' && workspace.name !== activeWorkspace.name) {
-                      setActiveWorkspace(workspace.name)
-                    }
-
-                    // Navigate to the base path of the workspace to authenticate
-                    if (state === 'logged-out') {
-                      navigateUrl({path: workspace.basePath})
-                    }
+                const handleSelectWorkspace = () => {
+                  if (state === 'logged-in' && workspace.name !== activeWorkspace.name) {
+                    setActiveWorkspace(workspace.name)
                   }
 
-                  return (
-                    <MenuItem
-                      key={workspace.name}
-                      // eslint-disable-next-line react/jsx-no-bind
-                      onClick={handleSelectWorkspace}
-                      padding={2}
-                      pressed={workspace.name === activeWorkspace.name}
-                    >
-                      <WorkspacePreview
-                        icon={workspace?.icon}
-                        selected={workspace.name === activeWorkspace.name}
-                        state={state}
-                        subtitle={workspace?.subtitle}
-                        title={workspace?.title || workspace.name}
-                      />
-                    </MenuItem>
-                  )
-                })}
-            </StyledMenu>
-          }
-          onClose={handleOnClose}
-          onOpen={handleOnOpen}
-          popover={popoverProps}
-        />
-      </Stack>
-    </Tooltip>
+                  // Navigate to the base path of the workspace to authenticate
+                  if (state === 'logged-out') {
+                    navigateUrl({path: workspace.basePath})
+                  }
+                }
+                const isSelected = workspace.name === activeWorkspace.name
+                return (
+                  <MenuItem
+                    badgeText={STATE_TITLES[state]}
+                    iconRight={isSelected ? CheckmarkIcon : undefined}
+                    key={workspace.name}
+                    // eslint-disable-next-line react/jsx-no-bind
+                    onClick={handleSelectWorkspace}
+                    pressed={isSelected}
+                    preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
+                    selected={isSelected}
+                    text={workspace?.title || workspace.name}
+                    tooltipProps={workspace?.subtitle ? {content: workspace.subtitle} : undefined}
+                  />
+                )
+              })}
+          </StyledMenu>
+        }
+        popover={POPOVER_PROPS}
+      />
+    </>
   )
 }

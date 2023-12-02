@@ -1,9 +1,10 @@
-import {AvatarStack, Box, Card, Text, Tooltip, TooltipProps} from '@sanity/ui'
+import {AvatarStack, Box, Card, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import styled, {css, useTheme} from 'styled-components'
 import {usePreviewCard, UserAvatar} from '../components'
 import {DocumentPresence} from '../store'
 import {isNonNullable} from '../util'
+import {Tooltip, TooltipProps} from '../../ui'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {
@@ -23,10 +24,6 @@ const AvatarStackCard = styled(Card)<{$selected?: boolean}>(({theme, $selected})
     --card-hairline-hard-color: ${$selected ? color.selectable?.default.pressed.border : undefined};
   `
 })
-
-const TooltipContentBox = styled(Box)`
-  max-width: 150px;
-`
 
 const getTooltipText = (presence: Omit<DocumentPresence, 'path'>[]) => {
   if (presence.length === 1) {
@@ -57,15 +54,7 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
     [presence],
   )
 
-  const tooltipContent = useMemo(() => {
-    return (
-      <TooltipContentBox padding={2}>
-        <Text align="center" size={1}>
-          {getTooltipText(uniqueUsers)}
-        </Text>
-      </TooltipContentBox>
-    )
-  }, [uniqueUsers])
+  const tooltipContent = useMemo(() => getTooltipText(uniqueUsers), [uniqueUsers])
 
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>

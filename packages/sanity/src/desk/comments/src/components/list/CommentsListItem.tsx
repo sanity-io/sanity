@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Button, Flex, Stack} from '@sanity/ui'
+import {Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
@@ -15,6 +15,7 @@ import {
 import {SpacerAvatar} from '../avatars'
 import {hasCommentMessageValue} from '../../helpers'
 import {CommentsSelectedPath} from '../../context'
+import {Button} from '../../../../../ui'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 
@@ -64,7 +65,7 @@ const ExpandButton = styled(Button)(({theme}) => {
   `
 })
 
-const GhostButton = styled(Button)`
+const GhostButton = styled.button`
   opacity: 0;
   position: absolute;
   right: 0;
@@ -296,12 +297,9 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               <SpacerAvatar />
 
               <ExpandButton
-                fontSize={1}
                 iconRight={ChevronDownIcon}
                 mode="bleed"
                 onClick={handleExpand}
-                padding={2}
-                space={2}
                 text={expandButtonText}
               />
             </Flex>

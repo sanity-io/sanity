@@ -1,6 +1,7 @@
 import {ArrowLeftIcon, RestoreIcon} from '@sanity/icons'
-import {Box, Button, Flex, Text, Stack, Container} from '@sanity/ui'
+import {Box, Flex, Text, Stack, Container} from '@sanity/ui'
 import React from 'react'
+import {Button} from '../../../../../../ui'
 import {PaneContent} from '../../../PaneContent'
 import {PaneFooter} from '../../../PaneFooter'
 import {PaneHeader} from '../../../PaneHeader'
@@ -25,7 +26,14 @@ export function DocumentViewPanel(props: {
     >
       <PaneHeader
         backButton={
-          layoutCollapsed && <Button icon={ArrowLeftIcon} mode="bleed" onClick={onBackClick} />
+          layoutCollapsed && (
+            <Button
+              icon={ArrowLeftIcon}
+              mode="bleed"
+              onClick={onBackClick}
+              tooltipProps={{content: 'Back'}}
+            />
+          )
         }
         title={title}
       />
@@ -96,6 +104,7 @@ export function DocumentViewPanel(props: {
               mode="bleed"
               onClick={toggleReviewChanges}
               selected={reviewChanges}
+              tooltipProps={{content: "Review document's history"}}
             />
           </Box>
           <Box flex={1} style={{maxWidth: '260px'}}>

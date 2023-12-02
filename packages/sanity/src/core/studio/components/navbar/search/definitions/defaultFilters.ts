@@ -2,11 +2,11 @@ import {
   BlockContentIcon,
   CalendarIcon,
   CheckmarkCircleIcon,
+  ChevronDownIcon,
   DocumentIcon,
   ImageIcon,
   LinkIcon,
   NumberIcon,
-  SelectIcon,
   StringIcon,
   UlistIcon,
 } from '@sanity/icons'
@@ -301,7 +301,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'string',
-    icon: SelectIcon,
+    icon: ChevronDownIcon,
     name: 'stringList',
     operators: [
       {name: 'stringListEqual', type: 'item'},

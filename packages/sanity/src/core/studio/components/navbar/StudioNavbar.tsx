@@ -1,40 +1,36 @@
-import {MenuIcon, SearchIcon} from '@sanity/icons'
+import {MenuIcon} from '@sanity/icons'
 import {
   BoundaryElementProvider,
-  Box,
-  Button,
   Card,
   Flex,
   Layer,
   LayerProvider,
   PortalProvider,
   useMediaIndex,
-  useRootTheme,
+  TooltipDelayGroupProvider,
+  Box,
 } from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
-import {startCase} from 'lodash'
 import styled from 'styled-components'
 import {isDev} from '../../../environment'
 import {useWorkspace} from '../../workspace'
-import {useColorScheme} from '../../colorScheme'
-import {useWorkspaces} from '../../workspaces'
+import {Button} from '../../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../../ui/tooltip/constants'
 import {NavbarContext} from '../../StudioLayout'
-import {useLogoComponent, useToolMenuComponent} from '../../studio-components-hooks'
-import {StudioTheme} from '../../../theme'
-import {useTranslation} from '../../../i18n'
+import {useToolMenuComponent} from '../../studio-components-hooks'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
-import {NavDrawer} from './NavDrawer'
+import {NavDrawer} from './navDrawer'
 import {WorkspaceMenuButton} from './workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
-import {LogoButton} from './LogoButton'
-import {SearchDialog, SearchField} from './search'
+import {SearchButton, SearchDialog} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
-import {FreeTrial} from './free-trial'
+import {SearchPopover} from './search/components/SearchPopover'
+import {RouterState, useRouterState} from 'sanity/router'
 import {FreeTrialProvider} from './free-trial/FreeTrialContext'
-import {RouterState, useRouterState, useStateLink} from 'sanity/router'
+import {FreeTrial} from './free-trial'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -50,37 +46,39 @@ const RootCard = styled(Card)`
   line-height: 0;
 `
 
-const LeftFlex = styled(Flex)`
-  width: max-content;
+// Grid container which renders our navbar in a 3-column grid.
+// Where possible, we try and ensure the center column is always centered, regardless of the
+// amount of content in both LHS and RHS columns.
+const NavGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) 3fr minmax(max-content, 1fr);
 `
 
 /**
  * @hidden
  * @beta */
 export function StudioNavbar() {
-  const {name, tools, ...workspace} = useWorkspace()
-  const theme = useRootTheme().theme as StudioTheme
-  const workspaces = useWorkspaces()
+  const {name, tools} = useWorkspace()
   const routerState = useRouterState()
-  const {scheme} = useColorScheme()
-  const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
 
   const newDocumentOptions = useNewDocumentOptions()
 
-  const {onSearchFullscreenOpenChange, searchFullscreenOpen, searchFullscreenPortalEl} =
-    useContext(NavbarContext)
+  const {
+    onSearchFullscreenOpenChange,
+    onSearchOpenChange,
+    searchFullscreenOpen,
+    searchFullscreenPortalEl,
+    searchOpen,
+  } = useContext(NavbarContext)
 
-  const Logo = useLogoComponent()
   const ToolMenu = useToolMenuComponent()
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
   const routerStateRef = useRef<RouterState>(routerState)
   const workspaceNameRef = useRef<string>(name)
-
-  const {t} = useTranslation()
 
   // Close the NavDrawer when changing tool or workspace
   useEffect(() => {
@@ -97,34 +95,44 @@ export function StudioNavbar() {
 
   const shouldRender = useMemo(
     () => ({
-      brandingCenter: mediaIndex <= 1,
       resources: mediaIndex > 1,
       collapsedPresenceMenu: mediaIndex <= 1,
       loginStatus: mediaIndex > 1,
       searchFullscreen: mediaIndex <= 1,
       configIssues: mediaIndex > 1 && isDev,
-      workspaces: mediaIndex >= 3 && workspaces.length > 1,
+      newDocumentFullscreen: mediaIndex <= 1,
       tools: mediaIndex >= 3,
     }),
-    [mediaIndex, workspaces.length],
+    [mediaIndex],
   )
-  const formattedName = typeof name === 'string' && name !== 'root' ? startCase(name) : null
-  const title = workspace.title || formattedName || 'Studio'
 
   useEffect(() => {
     onSearchFullscreenOpenChange(searchFullscreenOpen)
   }, [searchFullscreenOpen, onSearchFullscreenOpenChange])
 
-  // Disable fullscreen search on media query change (if already open)
+  // On desktop: force search dialog to be hidden
+  // On mobile: force search popover to be hidden
+  // This is a bit of a micro optimisation to prevent search surfaces from remaining open
+  // when jumping between both mobile / desktop breakpoints.
   useEffect(() => {
-    if (onSearchFullscreenOpenChange && !shouldRender.searchFullscreen) {
+    if (shouldRender.searchFullscreen) {
+      onSearchOpenChange(false)
+    } else {
       onSearchFullscreenOpenChange(false)
     }
-  }, [onSearchFullscreenOpenChange, shouldRender.searchFullscreen])
+  }, [onSearchFullscreenOpenChange, onSearchOpenChange, shouldRender.searchFullscreen])
+
+  const handleOpenSearch = useCallback(() => {
+    onSearchOpenChange(true)
+  }, [onSearchOpenChange])
 
   const handleOpenSearchFullscreen = useCallback(() => {
     onSearchFullscreenOpenChange(true)
   }, [onSearchFullscreenOpenChange])
+
+  const handleCloseSearch = useCallback(() => {
+    onSearchOpenChange(false)
+  }, [onSearchOpenChange])
 
   const handleCloseSearchFullscreen = useCallback(() => {
     onSearchFullscreenOpenChange(false)
@@ -143,113 +151,99 @@ export function StudioNavbar() {
   return (
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
-        <RootCard
-          data-testid="navbar"
-          data-ui="Navbar"
-          padding={2}
-          scheme="dark"
-          shadow={theme.__legacy || scheme === 'dark' ? 1 : undefined}
-          sizing="border"
-        >
-          <Flex align="center" justify="space-between">
-            <LeftFlex align="center" flex={shouldRender.brandingCenter ? undefined : 1}>
-              {!shouldRender.tools && (
-                <Box marginRight={1}>
-                  <Button
-                    mode="bleed"
-                    icon={MenuIcon}
-                    onClick={handleOpenDrawer}
-                    ref={setDrawerButtonEl}
-                  />
-                </Box>
-              )}
+        <RootCard borderBottom data-testid="navbar" data-ui="Navbar" padding={3} sizing="border">
+          <NavGrid>
+            {/** Left flex */}
+            <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+              <Flex align="center" gap={2} justify="flex-start">
+                <Flex align="center" gap={2}>
+                  {/* Menu button */}
+                  {!shouldRender.tools && (
+                    <Button
+                      mode="bleed"
+                      icon={MenuIcon}
+                      onClick={handleOpenDrawer}
+                      ref={setDrawerButtonEl}
+                      tooltipProps={{content: 'Open drawer', placement: 'right'}}
+                    />
+                  )}
 
-              {!shouldRender.brandingCenter && (
-                <Box marginRight={1}>
-                  <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
-                    <Logo title={title} />
-                  </LogoButton>
-                </Box>
-              )}
-
-              {shouldRender.workspaces && (
-                <Box marginRight={2}>
-                  <WorkspaceMenuButton collapsed />
-                </Box>
-              )}
-
-              <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
+                  {/* Workspace menu button */}
+                  <WorkspaceMenuButton />
+                </Flex>
+                {/* New document button */}
                 <NewDocumentButton
                   {...newDocumentOptions}
-                  modal={shouldRender.brandingCenter ? 'dialog' : 'popover'}
+                  modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
                 />
-              </Box>
+              </Flex>
+            </TooltipDelayGroupProvider>
 
-              {/* Search */}
-              <LayerProvider>
-                <SearchProvider fullscreen={shouldRender.searchFullscreen}>
-                  <BoundaryElementProvider element={document.body}>
-                    <PortalProvider element={searchFullscreenPortalEl}>
-                      {shouldRender.searchFullscreen && (
-                        <SearchDialog
-                          onClose={handleCloseSearchFullscreen}
-                          onOpen={handleOpenSearchFullscreen}
-                          open={searchFullscreenOpen}
-                        />
-                      )}
-                    </PortalProvider>
-                    {!shouldRender.searchFullscreen && <SearchField />}
-                  </BoundaryElementProvider>
-                </SearchProvider>
-              </LayerProvider>
-
+            {/** Center flex */}
+            <Flex align="center" justify="center">
               {shouldRender.tools && (
-                <Card flex={1} marginX={2} overflow="visible" paddingRight={1}>
-                  <ToolMenu
-                    activeToolName={activeToolName}
-                    closeSidebar={handleCloseDrawer}
-                    context="topbar"
-                    isSidebarOpen={false}
-                    tools={tools}
-                  />
-                </Card>
+                <ToolMenu
+                  activeToolName={activeToolName}
+                  closeSidebar={handleCloseDrawer}
+                  context="topbar"
+                  isSidebarOpen={false}
+                  tools={tools}
+                />
               )}
-            </LeftFlex>
+            </Flex>
 
-            {shouldRender.brandingCenter && (
-              <Box marginX={1}>
-                <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
-                  <Logo title={title} />
-                </LogoButton>
-              </Box>
-            )}
+            {/** Right flex */}
+            <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+              <Flex align="center" gap={1} justify="flex-end">
+                <Flex gap={1}>
+                  {/* Search */}
+                  <LayerProvider>
+                    <SearchProvider fullscreen={shouldRender.searchFullscreen}>
+                      <BoundaryElementProvider element={document.body}>
+                        {shouldRender.searchFullscreen ? (
+                          <PortalProvider element={searchFullscreenPortalEl}>
+                            <SearchDialog
+                              onClose={handleCloseSearchFullscreen}
+                              onOpen={handleOpenSearchFullscreen}
+                              open={searchFullscreenOpen}
+                            />
+                          </PortalProvider>
+                        ) : (
+                          <SearchPopover
+                            onClose={handleCloseSearch}
+                            onOpen={handleOpenSearch}
+                            open={searchOpen}
+                          />
+                        )}
+                      </BoundaryElementProvider>
+                    </SearchProvider>
+                  </LayerProvider>
 
-            <Flex gap={2}>
-              {(shouldRender.configIssues || shouldRender.resources || shouldRender.tools) && (
-                <Card borderRight>
-                  <Flex gap={1} paddingX={2}>
-                    {shouldRender.tools && <FreeTrial type="topbar" />}
-                    {shouldRender.configIssues && <ConfigIssuesButton />}
-                    {shouldRender.resources && <ResourcesButton />}
-                  </Flex>
-                </Card>
-              )}
+                  {/* Search button (desktop) */}
+                  {!shouldRender.searchFullscreen && (
+                    <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+                  )}
 
-              <Flex align="center" gap={1}>
-                <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
-                {shouldRender.tools && <UserMenu />}
-                {shouldRender.searchFullscreen && (
-                  <Button
-                    aria-label={t('search.action-open-aria-label')}
-                    icon={SearchIcon}
-                    mode="bleed"
-                    onClick={handleOpenSearchFullscreen}
-                    ref={setSearchOpenButtonEl}
-                  />
+                  {shouldRender.tools && <FreeTrial type="topbar" />}
+                  {shouldRender.configIssues && <ConfigIssuesButton />}
+                  {shouldRender.resources && <ResourcesButton />}
+                  <PresenceMenu />
+                  {/* Search button (mobile) */}
+                  {shouldRender.searchFullscreen && (
+                    <SearchButton
+                      onClick={handleOpenSearchFullscreen}
+                      ref={setSearchOpenButtonEl}
+                    />
+                  )}
+                </Flex>
+                {shouldRender.tools && (
+                  <Box flex="none" marginLeft={1}>
+                    <UserMenu />
+                  </Box>
                 )}
               </Flex>
-            </Flex>
-          </Flex>
+            </TooltipDelayGroupProvider>
+          </NavGrid>
         </RootCard>
 
         {!shouldRender.tools && (

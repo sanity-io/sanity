@@ -10,18 +10,17 @@ import React, {
 import type {Reference, ReferenceSchemaType} from '@sanity/types'
 import {
   Box,
-  Button,
   Card,
   CardTone,
   Flex,
   Menu,
   MenuButton,
   MenuDivider,
-  MenuItem,
   Stack,
+  TooltipDelayGroupProvider,
 } from '@sanity/ui'
 import {
-  EllipsisVerticalIcon,
+  EllipsisHorizontalIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
@@ -35,6 +34,8 @@ import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {useTranslation} from '../../../i18n'
+import {Button, MenuItem} from '../../../../ui'
+import {TOOLTIP_DELAY_PROPS} from '../../../../ui/tooltip/constants'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -197,7 +198,13 @@ export function ReferenceField(props: ReferenceFieldProps) {
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button paddingY={3} paddingX={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={
+              <Button
+                mode="bleed"
+                icon={EllipsisHorizontalIcon}
+                tooltipProps={{content: 'Show more'}}
+              />
+            }
             id={`${inputId}-menuButton`}
             menu={
               <Menu>
@@ -268,31 +275,31 @@ export function ReferenceField(props: ReferenceFieldProps) {
           ) : (
             <Card shadow={1} radius={1} padding={1} tone={tone}>
               <Stack space={1}>
-                <Flex gap={1} align="center">
-                  <ReferenceLinkCard
-                    __unstable_focusRing
-                    as={EditReferenceLink}
-                    data-pressed={pressed ? true : undefined}
-                    data-selected={selected ? true : undefined}
-                    documentId={value?._ref}
-                    documentType={refType?.name}
-                    flex={1}
-                    paddingX={2}
-                    paddingY={1}
-                    pressed={pressed}
-                    radius={2}
-                    ref={elementRef}
-                    selected={selected}
-                    tone="inherit"
-                  >
-                    <PreviewReferenceValue
-                      value={value}
-                      referenceInfo={loadableReferenceInfo}
-                      renderPreview={renderPreview}
-                      type={schemaType}
-                    />
-                  </ReferenceLinkCard>
-                  <Box>{menu}</Box>
+                <Flex gap={1} align="center" style={{lineHeight: 0}}>
+                  <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+                    <ReferenceLinkCard
+                      __unstable_focusRing
+                      as={EditReferenceLink}
+                      data-pressed={pressed ? true : undefined}
+                      data-selected={selected ? true : undefined}
+                      documentId={value?._ref}
+                      documentType={refType?.name}
+                      flex={1}
+                      pressed={pressed}
+                      radius={2}
+                      ref={elementRef}
+                      selected={selected}
+                      tone="inherit"
+                    >
+                      <PreviewReferenceValue
+                        value={value}
+                        referenceInfo={loadableReferenceInfo}
+                        renderPreview={renderPreview}
+                        type={schemaType}
+                      />
+                    </ReferenceLinkCard>
+                    <Box>{menu}</Box>
+                  </TooltipDelayGroupProvider>
                 </Flex>
                 {footer}
               </Stack>

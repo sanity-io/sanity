@@ -76,7 +76,7 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       t('inputs.portable-text.activate-on-focus-message', {
         context: messageContext,
       })
-    return <Text weight="semibold">{text}</Text>
+    return <Text weight="medium">{text}</Text>
   }, [focused, message, t])
 
   return (

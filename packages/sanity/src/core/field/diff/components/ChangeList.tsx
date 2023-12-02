@@ -1,4 +1,4 @@
-import {Button, Box, Card, Grid, Stack, useClickOutside} from '@sanity/ui'
+import {Box, Card, Grid, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
 import {RevertIcon} from '@sanity/icons'
 import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
@@ -11,10 +11,11 @@ import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks/useDocumentChange'
 import {useDocumentPairPermissions} from '../../../store'
 import {useDocumentOperation} from '../../../hooks'
+import {Button} from '../../../../ui'
 import {useTranslation} from '../../../i18n'
 import {ChangeResolver} from './ChangeResolver'
 import {NoChanges} from './NoChanges'
-import {ChangeListWrapper, PopoverWrapper} from './ChangeList.styled'
+import {ChangeListWrapper} from './ChangeList.styled'
 
 /** @internal */
 export interface ChangeListProps {
@@ -115,12 +116,16 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
         </Stack>
 
         {showFooter && isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-          <PopoverWrapper
+          <Popover
             content={
-              <Box>
-                {t('changes.action.revert-all-description', {
-                  count: changes.length,
-                })}
+              <Stack space={1}>
+                <Box padding={1}>
+                  <Text size={1}>
+                    {t('changes.action.revert-all-description', {
+                      count: changes.length,
+                    })}
+                  </Text>
+                </Box>
                 <Grid columns={2} gap={2} marginTop={2}>
                   <Button
                     mode="ghost"
@@ -133,10 +138,10 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
                     onClick={revertAllChanges}
                   />
                 </Grid>
-              </Box>
+              </Stack>
             }
             open={confirmRevertAllOpen}
-            padding={4}
+            padding={3}
             placement={'left'}
             portal
             ref={setRevertAllContainerElement}
@@ -151,9 +156,10 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
                 onMouseEnter={handleRevertAllChangesMouseEnter}
                 onMouseLeave={handleRevertAllChangesMouseLeave}
                 disabled={isReadOnly}
+                size="large"
               />
             </Stack>
-          </PopoverWrapper>
+          </Popover>
         )}
       </Stack>
     </Card>

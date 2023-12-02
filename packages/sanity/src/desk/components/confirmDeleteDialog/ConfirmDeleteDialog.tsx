@@ -1,6 +1,8 @@
 import React, {useMemo, useId} from 'react'
 import styled from 'styled-components'
-import {Box, Dialog, Button, Text, Spinner, Grid, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui'
+import {LoadingBlock} from '../../../ui/loadingBlock'
+import {Dialog} from '../../../ui'
 import {DocTitle} from '../DocTitle'
 import {structureLocaleNamespace} from '../../i18n'
 import {useReferringDocuments} from './useReferringDocuments'
@@ -8,9 +10,7 @@ import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 import {useTranslation} from 'sanity'
 
 /** @internal */
-export const DialogBody = styled(Box).attrs({
-  padding: 4,
-})`
+export const DialogBody = styled(Box)`
   box-sizing: border-box;
 `
 
@@ -20,7 +20,7 @@ export const LoadingContainer = styled(Flex).attrs({
   direction: 'column',
   justify: 'center',
 })`
-  height: 300px;
+  height: 110px;
 `
 
 /** @internal */
@@ -77,28 +77,21 @@ export function ConfirmDeleteDialog({
       width={1}
       id={dialogId}
       header={t('confirm-delete-dialog.header.text', {context: action})}
-      footer={
-        <Grid columns={showConfirmButton ? 2 : 1} gap={2} paddingX={4} paddingY={3}>
-          <Button
-            mode="ghost"
-            onClick={onCancel}
-            text={t('confirm-delete-dialog.cancel-button.text')}
-          />
-
-          {showConfirmButton && (
-            <Button
-              data-testid="confirm-delete-button"
-              text={
+      footer={{
+        cancelButton: {
+          onClick: onCancel,
+          text: t('confirm-delete-dialog.cancel-button.text'),
+        },
+        confirmButton: showConfirmButton
+          ? {
+              text:
                 totalCount > 0
                   ? t('confirm-delete-dialog.confirm-anyway-button.text', {context: action})
-                  : t('confirm-delete-dialog.confirm-button.text', {context: action})
-              }
-              tone="critical"
-              onClick={onConfirm}
-            />
-          )}
-        </Grid>
-      }
+                  : t('confirm-delete-dialog.confirm-button.text', {context: action}),
+              onClick: onConfirm,
+            }
+          : undefined,
+      }}
       onClose={onCancel}
       onClickOutside={onCancel}
     >
@@ -118,12 +111,7 @@ export function ConfirmDeleteDialog({
           />
         ) : (
           <LoadingContainer data-testid="loading-container">
-            <Spinner muted />
-            <Box marginTop={3}>
-              <Text align="center" muted size={1}>
-                {t('confirm-delete-dialog.loading.text')}
-              </Text>
-            </Box>
+            <LoadingBlock title={t('confirm-delete-dialog.loading.text')} />
           </LoadingContainer>
         )}
       </DialogBody>

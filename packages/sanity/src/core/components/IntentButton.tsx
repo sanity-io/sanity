@@ -1,5 +1,6 @@
-import {Button, ButtonProps} from '@sanity/ui'
-import React, {HTMLProps} from 'react'
+import React from 'react'
+import {Button, ButtonProps} from '../../../src/ui'
+
 import {IntentLink, IntentLinkProps} from 'sanity/router'
 
 /**
@@ -8,7 +9,9 @@ import {IntentLink, IntentLinkProps} from 'sanity/router'
  * @beta
  */
 export function IntentButton(
-  props: IntentLinkProps & ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'href' | 'ref'>,
+  props: IntentLinkProps &
+    ButtonProps &
+    Omit<React.HTMLProps<HTMLButtonElement>, 'ref' | 'size' | 'as'>,
 ) {
   return props.disabled ? (
     <Button {...props} as="a" role="link" aria-disabled="true" />
