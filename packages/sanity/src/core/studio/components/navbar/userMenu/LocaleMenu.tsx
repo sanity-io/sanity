@@ -1,11 +1,10 @@
-import {Box, Label, MenuDivider, MenuItem} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {useTranslation} from '../../../../i18n'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
+import {MenuItem} from '../../../../../ui'
 
 export function LocaleMenu() {
   const {changeLocale, currentLocale, locales} = useLocale()
-  const {t} = useTranslation()
 
   if (!locales || locales.length < 2) {
     return null
@@ -14,12 +13,6 @@ export function LocaleMenu() {
   return (
     <>
       <MenuDivider />
-
-      <Box padding={2}>
-        <Label size={1} muted>
-          {t('user-menu.locale-title')}
-        </Label>
-      </Box>
 
       {locales.map((item) => (
         <LocaleItem

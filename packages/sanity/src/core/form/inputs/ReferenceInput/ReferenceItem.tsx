@@ -1,32 +1,22 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  Spinner,
-  Text,
-} from '@sanity/ui'
+import {Box, CardTone, Menu, MenuButton, MenuDivider} from '@sanity/ui'
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {
   CloseIcon,
   CopyIcon as DuplicateIcon,
-  EllipsisVerticalIcon,
+  EllipsisHorizontalIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
 } from '@sanity/icons'
 import type {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
+import {LoadingBlock} from '../../../../ui/loadingBlock'
 import type {ObjectItem, ObjectItemProps} from '../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {randomKey} from '../../utils/randomKey'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
 import {FieldPresence} from '../../../presence'
+import {Button, MenuItem} from '../../../../ui'
 import {useTranslation} from '../../../i18n'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {RowLayout} from '../arrays/layouts/RowLayout'
@@ -69,14 +59,6 @@ function getTone({
   return hasWarnings ? 'caution' : 'default'
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
-const INITIAL_VALUE_CARD_STYLE = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  opacity: 0.6,
-} as const
 
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
   props: ReferenceItemProps<Item>,
@@ -201,7 +183,13 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={<Button paddingY={3} paddingX={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={
+              <Button
+                mode="bleed"
+                icon={EllipsisHorizontalIcon}
+                tooltipProps={{content: 'Show more'}}
+              />
+            }
             id={`${inputId}-menuButton`}
             menu={
               <Menu ref={menuRef}>
@@ -340,8 +328,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             documentId={value?._ref}
             documentType={refType?.name}
             disabled={resolvingInitialValue}
-            paddingX={2}
-            paddingY={1}
             __unstable_focusRing
             selected={selected}
             pressed={pressed}
@@ -350,28 +336,13 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             {...elementProps}
           >
             <PreviewReferenceValue
+              layout="compact"
               value={value}
               referenceInfo={loadableReferenceInfo}
               renderPreview={renderPreview}
               type={schemaType}
             />
-            {resolvingInitialValue && (
-              <Card
-                style={INITIAL_VALUE_CARD_STYLE}
-                tone="transparent"
-                radius={2}
-                as={Flex}
-                // @ts-expect-error composed from as={Flex}
-                justify="center"
-              >
-                <Flex align="center" justify="center" padding={3}>
-                  <Box marginX={3}>
-                    <Spinner muted />
-                  </Box>
-                  <Text>{t('inputs.reference.resolving-initial-value')}</Text>
-                </Flex>
-              </Card>
-            )}
+            {resolvingInitialValue && <LoadingBlock fill hideText />}
           </ReferenceLinkCard>
         )}
       </RowLayout>

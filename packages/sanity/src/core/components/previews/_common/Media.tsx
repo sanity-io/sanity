@@ -18,7 +18,7 @@ export interface MediaProps {
 }
 
 export function Media(props: MediaProps) {
-  const {border = true, dimensions, layout, media, radius = 1, responsive = false, styles} = props
+  const {border = true, dimensions, layout, media, radius = 2, responsive = false, styles} = props
 
   return (
     <MediaWrapper

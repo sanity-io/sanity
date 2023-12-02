@@ -1,8 +1,8 @@
 import {I18nextProvider} from 'react-i18next'
 import React, {PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalStore} from 'react'
 import type {i18n} from 'i18next'
+import {LoadingBlock} from '../../../ui/loadingBlock'
 import {useSource} from '../../studio'
-import {LoadingScreen} from '../../studio/screens'
 import {storePreferredLocale} from '../localeStore'
 import {LocaleContext, type LocaleContextValue} from '../LocaleContext'
 
@@ -67,7 +67,7 @@ export function LocaleProviderBase({
   )
 
   return (
-    <Suspense fallback={<LoadingScreen />}>
+    <Suspense fallback={<LoadingBlock />}>
       <I18nextProvider i18n={i18next}>
         {/* Use locale as key to force re-render, updating non-reactive parts */}
         <LocaleContext.Provider value={context} key={currentLocale}>

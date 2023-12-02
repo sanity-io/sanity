@@ -1,7 +1,8 @@
 import {SanityDocument} from '@sanity/types'
-import {Card, Code, Dialog, Flex, Tab, TabList, TabPanel} from '@sanity/ui'
+import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
+import {Dialog, Tab} from '../../../../ui'
 import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -45,6 +46,7 @@ export function InspectDialog(props: InspectDialogProps) {
 
   return (
     <Dialog
+      bodyHeight="fill"
       id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentLike(value) ? (
@@ -65,14 +67,14 @@ export function InspectDialog(props: InspectDialogProps) {
       }
       onClose={onInspectClose}
       onClickOutside={onInspectClose}
+      padding={false}
       width={3}
     >
       <Flex direction="column" height="fill">
-        <Card padding={3} shadow={1} style={{position: 'sticky', bottom: 0, zIndex: 3}}>
+        <Card borderBottom padding={3} style={{position: 'sticky', bottom: 0, zIndex: 3}}>
           <TabList space={1}>
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
-              fontSize={1}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_PARSED.id}`}
               label={t(VIEW_MODE_PARSED.title)}
               onClick={setParsedViewMode}
@@ -80,7 +82,6 @@ export function InspectDialog(props: InspectDialogProps) {
             />
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
-              fontSize={1}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_RAW.id}`}
               label={t(VIEW_MODE_RAW.title)}
               onClick={setRawViewMode}

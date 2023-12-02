@@ -34,7 +34,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   return (
     <Stack space={2}>
       <Flex>
-        <Text as="label" htmlFor={inputId} weight="semibold" size={1}>
+        <Text as="label" htmlFor={inputId} weight="medium" size={1}>
           {title || (
             <span style={{color: 'var(--card-muted-fg-color)'}}>
               {t('form.field.untitled-field-label')}
@@ -44,7 +44,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
 
         {hasValidations && (
           <Box marginLeft={2}>
-            <FormFieldValidationStatus fontSize={1} validation={validation} />
+            <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
           </Box>
         )}
       </Flex>

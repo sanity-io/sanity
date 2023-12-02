@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Flex,
   Grid,
   Popover,
@@ -10,6 +9,7 @@ import {
   useLayer,
 } from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
+import {Button} from '../../../../../ui'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 import {DocumentActionConfirmDialogProps} from 'sanity'
 

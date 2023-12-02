@@ -1,7 +1,8 @@
 /* eslint-disable i18next/no-literal-string,no-attribute-string-literals/no-attribute-string-literals */
 import React, {useCallback, useState, useId} from 'react'
-import {Dialog, Heading, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
+import {Dialog} from '../../../../../ui'
 import {useSchema} from '../../../../hooks'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 import {useColorScheme} from '../../../colorScheme'
@@ -41,26 +42,17 @@ export function ConfigIssuesButton() {
     <>
       <StatusButton
         icon={WarningOutlineIcon}
-        label="Found configuration issues"
         mode="bleed"
         onClick={handleOpen}
         ref={setButtonElement}
         selected={isDialogOpen}
         tone="caution"
-        tooltip={{scheme}}
+        tooltipProps={{scheme, content: 'Found configuration issues'}}
       />
 
       {isDialogOpen && (
         <Dialog
-          header={
-            <Stack space={3}>
-              <Text weight="semibold">Configuration issues</Text>
-              <Text muted size={1}>
-                Configuration checks are only performed during development and will not be visible
-                in production builds
-              </Text>
-            </Stack>
-          }
+          header="Configuration issues"
           width={2}
           onClickOutside={handleClose}
           onClose={handleClose}
@@ -68,10 +60,16 @@ export function ConfigIssuesButton() {
           scheme={scheme}
           id={dialogId}
         >
-          <Stack space={4} padding={4}>
-            <Heading as="h2" size={1}>
-              Found {groupsWithWarnings.length} schema warnings
-            </Heading>
+          <Stack space={4}>
+            <Stack space={3}>
+              <Text as="h2" size={2} weight="medium">
+                Found {groupsWithWarnings.length} schema warnings
+              </Text>{' '}
+              <Text muted size={1}>
+                Configuration checks are only performed during development and will not be visible
+                in production builds
+              </Text>
+            </Stack>
             <SchemaProblemGroups problemGroups={groupsWithWarnings} />
           </Stack>
         </Dialog>

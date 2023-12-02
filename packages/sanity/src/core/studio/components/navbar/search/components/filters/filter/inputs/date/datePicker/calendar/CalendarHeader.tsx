@@ -1,13 +1,13 @@
 import {upperFirst} from 'lodash'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Button, Flex, Inline, Text} from '@sanity/ui'
+import {Box, Flex, Inline, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Button} from '../../../../../../../../../../../../ui'
 import {useTranslation} from '../../../../../../../../../../../i18n'
 import {useIntlDateTimeFormat} from '../../../../../../../../../../../i18n/hooks/useIntlDateTimeFormat'
 import {useCalendar} from './contexts/useDatePicker'
 
 export function CalendarHeader(props: {
-  fontSize?: number
   moveFocusedDate: (by: number) => void
   onNowClick: () => void
 }) {
@@ -15,7 +15,7 @@ export function CalendarHeader(props: {
   const monthFormatter = useIntlDateTimeFormat({month: 'long', year: 'numeric'})
   const {focusedDate} = useCalendar()
 
-  const {fontSize, moveFocusedDate, onNowClick} = props
+  const {moveFocusedDate, onNowClick} = props
 
   const handlePrevMonthClick = useCallback(() => moveFocusedDate(-1), [moveFocusedDate])
 
@@ -30,22 +30,21 @@ export function CalendarHeader(props: {
       <Box>
         <Button
           aria-label={t('calendar.action.go-to-today-aria-label')}
-          fontSize={fontSize}
           mode="bleed"
           onClick={onNowClick}
           text={t('calendar.action.go-to-today')}
         />
         <Button
-          aria-label={t('calendar.action.go-to-previous-month')}
           icon={ChevronLeftIcon}
           mode="bleed"
           onClick={handlePrevMonthClick}
+          tooltipProps={{content: t('calendar.action.go-to-previous-month')}}
         />
         <Button
-          aria-label={t('calendar.action.go-to-next-month')}
           icon={ChevronRightIcon}
           mode="bleed"
           onClick={handleNextMonthClick}
+          tooltipProps={{content: t('calendar.action.go-to-next-month')}}
         />
       </Box>
     </Flex>

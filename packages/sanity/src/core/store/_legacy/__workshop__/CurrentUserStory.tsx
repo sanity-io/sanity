@@ -1,5 +1,6 @@
 import React from 'react'
-import {Box, Button, Code, Text} from '@sanity/ui'
+import {Box, Code, Text} from '@sanity/ui'
+import {Button} from '../../../../ui'
 import {useSource} from '../../../studio'
 
 export default function CurrentUserStory() {
@@ -7,7 +8,7 @@ export default function CurrentUserStory() {
 
   return (
     <Box padding={4}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         <code>{`userStore.me`}</code>
       </Text>
 

@@ -1,24 +1,24 @@
 import {Box, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {MouseEvent, useCallback, useMemo} from 'react'
-import {PreviewCard} from '../../../../../../../components'
+import {GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
 import SearchResultItemPreview from './SearchResultItemPreview'
 import {useIntentLink} from 'sanity/router'
 
 interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
-  compact?: boolean
   disableIntentLink?: boolean
   documentId: string
   documentType: string
+  layout?: GeneralPreviewLayoutKey
   onClick?: () => void
 }
 
 export function SearchResultItem({
-  compact,
   disableIntentLink,
   documentId,
   documentType,
+  layout,
   onClick,
   ...rest
 }: SearchResultItemProps) {
@@ -52,12 +52,12 @@ export function SearchResultItem({
         flex={1}
         href={disableIntentLink ? undefined : href}
         onClick={handleClick}
-        padding={compact ? 1 : 2}
         radius={2}
         tabIndex={-1}
       >
         <SearchResultItemPreview
           documentId={documentId}
+          layout={layout}
           presence={documentPresence}
           schemaType={type}
         />

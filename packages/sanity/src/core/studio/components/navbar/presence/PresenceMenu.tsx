@@ -1,31 +1,14 @@
 import {CogIcon, UsersIcon} from '@sanity/icons'
-import {
-  AvatarStack,
-  Box,
-  Button,
-  Card,
-  Menu,
-  MenuButton,
-  MenuButtonProps,
-  MenuDivider,
-  MenuItem,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import {Box, Menu, MenuButton, MenuButtonProps, MenuDivider, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {StatusButton, UserAvatar} from '../../../../components'
+import {StatusButton} from '../../../../components'
 import {useGlobalPresence} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
+import {MenuItem} from '../../../../../ui'
+import {useTranslation} from '../../../../i18n'
 import {useWorkspace} from '../../../workspace'
 import {PresenceMenuItem} from './PresenceMenuItem'
-import {useTranslation} from '../../../../i18n'
-
-const MAX_AVATARS = 4
-
-const AvatarStackCard = styled(Card)`
-  background: transparent;
-`
 
 const StyledMenu = styled(Menu)`
   max-width: 350px;
@@ -38,12 +21,7 @@ const FooterStack = styled(Stack)`
   background-color: var(--card-bg-color);
 `
 
-interface PresenceMenuProps {
-  collapse?: boolean
-}
-
-export function PresenceMenu(props: PresenceMenuProps) {
-  const {collapse} = props
+export function PresenceMenu() {
   const presence = useGlobalPresence()
   const {projectId} = useWorkspace()
   const {scheme} = useColorScheme()
@@ -64,25 +42,23 @@ export function PresenceMenu(props: PresenceMenuProps) {
     setFocusedId('')
   }, [])
 
-  const button = useMemo(() => {
-    if (collapse) {
-      return (
-        <StatusButton icon={UsersIcon} mode="bleed" tone={hasPresence ? 'positive' : undefined} />
-      )
-    }
+  const handleClose = useCallback(() => {
+    setFocusedId('')
+  }, [])
 
+  const button = useMemo(() => {
     return (
-      <Button mode="bleed" padding={1}>
-        <AvatarStackCard>
-          <AvatarStack maxLength={MAX_AVATARS} aria-label={t('presence.aria-label')}>
-            {presence.map((item) => (
-              <UserAvatar key={item.user.id} user={item.user} />
-            ))}
-          </AvatarStack>
-        </AvatarStackCard>
-      </Button>
+      <StatusButton
+        icon={UsersIcon}
+        mode="bleed"
+        tone={hasPresence ? 'positive' : undefined}
+        tooltipProps={{
+          // @todo: rename, as its no longer an aria-label
+          content: t('presence.aria-label'),
+        }}
+      />
     )
-  }, [collapse, hasPresence, presence, t])
+  }, [hasPresence, t])
 
   const popoverProps = useMemo(
     (): MenuButtonProps['popover'] => ({
@@ -99,26 +75,22 @@ export function PresenceMenu(props: PresenceMenuProps) {
     <MenuButton
       button={button}
       id="global-presence-menu"
-      onClose={handleClearFocusedItem}
       menu={
-        <StyledMenu padding={1} paddingBottom={0}>
-          {hasPresence && (
-            <Stack>
-              {presence.map((item) => (
-                <PresenceMenuItem
-                  focused={focusedId === item.user.id}
-                  key={item.user.id}
-                  onFocus={handleItemFocus}
-                  presence={item}
-                />
-              ))}
-            </Stack>
-          )}
+        <StyledMenu>
+          {hasPresence &&
+            presence.map((item) => (
+              <PresenceMenuItem
+                focused={focusedId === item.user.id}
+                key={item.user.id}
+                onFocus={handleItemFocus}
+                presence={item}
+              />
+            ))}
 
           {!hasPresence && (
-            <Box paddingX={3} paddingY={4}>
+            <Box padding={3}>
               <Stack space={3}>
-                <Text weight="semibold" size={2}>
+                <Text weight="medium" size={1}>
                   {t('presence.no-one-else-title')}
                 </Text>
 
@@ -137,7 +109,6 @@ export function PresenceMenu(props: PresenceMenuProps) {
               href={`https://sanity.io/manage/project/${projectId}`}
               iconRight={CogIcon}
               onFocus={handleClearFocusedItem}
-              paddingY={4}
               rel="noopener noreferrer"
               target="_blank"
               text={t('presence.action.manage-members')}
@@ -145,6 +116,7 @@ export function PresenceMenu(props: PresenceMenuProps) {
           </FooterStack>
         </StyledMenu>
       }
+      onClose={handleClose}
       popover={popoverProps}
     />
   )

@@ -1,23 +1,8 @@
 import React, {useState, useRef, useMemo, useEffect, useCallback} from 'react'
-import {
-  Box,
-  Button,
-  Inline,
-  Popover,
-  PopoverProps,
-  Text,
-  useGlobalKeyDown,
-  useTheme,
-} from '@sanity/ui'
-import styled from 'styled-components'
+import {Box, Flex, Popover, PopoverProps, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {EditIcon, TrashIcon} from '@sanity/icons'
 import {useTranslation} from '../../../../i18n'
-
-const ToolbarPopover = styled(Popover)`
-  &[data-popper-reference-hidden='true'] {
-    display: none !important;
-  }
-`
+import {Button} from '../../../../../ui'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
@@ -156,36 +141,36 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   }
 
   return (
-    <ToolbarPopover
+    <Popover
       open={popoverOpen}
       floatingBoundary={floatingBoundary}
       constrainSize
       content={
         <Box padding={1} data-testid="annotation-toolbar-popover">
-          <Inline space={1}>
+          <Flex gap={1}>
             <Box padding={2}>
-              <Text weight="semibold" size={1}>
+              <Text weight="medium" size={1}>
                 {title}
               </Text>
             </Box>
             <Button
+              aria-label={t('inputs.portable-text.action.edit-annotation')}
               icon={EditIcon}
               mode="bleed"
               onClick={handleEditButtonClicked}
-              padding={2}
-              alt={t('inputs.portable-text.action.edit-annotation')}
               tabIndex={0}
+              tooltipProps={null}
             />
             <Button
+              aria-label={t('inputs.portable-text.action.remove-annotation')}
               icon={TrashIcon}
               mode="bleed"
-              padding={2}
               onClick={handleRemoveButtonClicked}
-              tone="critical"
-              alt={t('inputs.portable-text.action.remove-annotation')}
               tabIndex={0}
+              tone="critical"
+              tooltipProps={null}
             />
-          </Inline>
+          </Flex>
         </Box>
       }
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}

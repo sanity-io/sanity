@@ -1,7 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import {rem, Flex, Text, Box, Tooltip, Container, Inline} from '@sanity/ui'
+import {rem, Flex, Text, Box, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'
+import {Tooltip} from '../../../ui'
 import {structureLocaleNamespace} from '../../i18n'
 import {useTranslation} from 'sanity'
 
@@ -55,26 +56,22 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
   if (!difference) return null
 
   return (
-    <Inline space={2}>
-      <Text size={1} muted>
-        {t('confirm-delete-dialog.other-reference-count.title', {count: difference})}
-      </Text>
-
-      <Tooltip
-        portal
-        placement="top"
-        content={
-          <Container width={0}>
-            <Box padding={2}>
-              <Text size={1}>{t('confirm-delete-dialog.other-reference-count.tooltip')}</Text>
-            </Box>
-          </Container>
-        }
-      >
+    <Box padding={2}>
+      <Inline space={2}>
         <Text size={1} muted>
-          <InfoOutlineIcon />
+          {t('confirm-delete-dialog.other-reference-count.title', {count: difference})}
         </Text>
-      </Tooltip>
-    </Inline>
+
+        <Tooltip
+          portal
+          placement="top"
+          content={t('confirm-delete-dialog.other-reference-count.tooltip')}
+        >
+          <Text size={1} muted>
+            <InfoOutlineIcon />
+          </Text>
+        </Tooltip>
+      </Inline>
+    </Box>
   )
 }

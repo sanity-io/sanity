@@ -1,7 +1,8 @@
 import {AddIcon} from '@sanity/icons'
 import React, {useMemo, forwardRef} from 'react'
-import {Box, Button, Label, Menu, MenuButton, MenuItem, PopoverProps} from '@sanity/ui'
+import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import {Schema} from '@sanity/types'
+import {Button, MenuItem} from '../../../ui'
 import {IntentButton} from '../IntentButton'
 import {structureLocaleNamespace} from '../../i18n'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
@@ -84,10 +85,12 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       >
         <Button
           aria-label={t('pane-header.disabled-created-button.aria-label')}
+          icon={AddIcon}
           data-testid="action-intent-button"
           disabled
-          icon={AddIcon}
           mode="bleed"
+          // This button handles the tooltip in a special way, won't reuse the forced tooltip.
+          tooltipProps={null}
         />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -113,6 +116,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           mode="bleed"
           disabled={disabled}
           data-testid="action-intent-button"
+          tooltipProps={disabled ? null : {content: 'Create new document'}}
         />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -120,14 +124,18 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
 
   return (
     <MenuButton
-      button={<Button icon={AddIcon} mode="bleed" data-testid="multi-action-intent-button" />}
+      button={
+        <Button
+          icon={AddIcon}
+          mode="bleed"
+          data-testid="multi-action-intent-button"
+          // @todo: localize
+          tooltipProps={{content: 'Create new document'}}
+        />
+      }
       id="create-menu"
       menu={
         <Menu>
-          <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-            <Label muted>{t('pane-header.create-menu.label')}</Label>
-          </Box>
-
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted

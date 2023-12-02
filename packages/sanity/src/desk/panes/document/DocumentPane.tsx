@@ -7,6 +7,7 @@ import {
   PortalProvider,
   Stack,
   Text,
+  TooltipDelayGroupProvider,
   useElementRect,
 } from '@sanity/ui'
 import React, {memo, useCallback, useMemo, useState} from 'react'
@@ -18,6 +19,7 @@ import {Pane, PaneFooter, usePaneRouter} from '../../components'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
+import {TOOLTIP_DELAY_PROPS} from '../../../ui/tooltip/constants'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../constants'
 import {DocumentOperationResults} from './DocumentOperationResults'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
@@ -348,7 +350,9 @@ function InnerDocumentPane() {
       >
         <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
           <PaneFooter ref={setFooterElement}>
-            <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
+            <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+              <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
+            </TooltipDelayGroupProvider>
           </PaneFooter>
         </DialogProvider>
       </PortalProvider>

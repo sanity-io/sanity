@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Card, Code, Label, Stack} from '@sanity/ui'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import type {Path} from '@sanity/types'
 
 export interface FormDebuggerOptions {
@@ -12,7 +12,9 @@ export function FormDebugger(props: FormDebuggerOptions) {
   return (
     <Card padding={4} tone="default" border>
       <Stack space={4}>
-        <Label size={0}>Debug output</Label>
+        <Text size={1} weight="medium">
+          Debug output
+        </Text>
         <Box overflow="auto">
           <Code>{JSON.stringify({focusPath, value}, null, 2)}</Code>
         </Box>

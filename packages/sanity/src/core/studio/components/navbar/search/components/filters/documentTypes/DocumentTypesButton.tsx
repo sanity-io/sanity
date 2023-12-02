@@ -1,23 +1,13 @@
-import {SelectIcon} from '@sanity/icons'
-import {Button, Placement, Popover, Theme, useClickOutside} from '@sanity/ui'
+import {ChevronDownIcon} from '@sanity/icons'
+import {Placement, Popover, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
-import styled, {css} from 'styled-components'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {documentTypesTruncated} from '../../../utils/documentTypesTruncated'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
+import {Button} from '../../../../../../../../ui'
 import {useTranslation} from '../../../../../../../i18n'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
-
-const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
-  const {regular} = theme.sanity.fonts.text.weights
-
-  return css`
-    [data-ui='Text'] {
-      font-weight: ${regular};
-    }
-  `
-})
 
 const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
@@ -56,15 +46,13 @@ export function DocumentTypesButton() {
       radius={POPOVER_RADIUS}
       ref={setPopoverElement}
     >
-      <StyledButton
-        fontSize={1}
-        iconRight={SelectIcon}
+      <Button
+        iconRight={ChevronDownIcon}
         mode="ghost"
         onClick={handleOpen}
-        padding={fullscreen ? 3 : 2}
+        size={fullscreen ? 'large' : 'default'}
         ref={setButtonElement}
         selected={open}
-        style={{maxWidth: '100%'}}
         text={title}
         tone="default"
       />

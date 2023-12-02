@@ -1,18 +1,8 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Spinner,
-  Text,
-} from '@sanity/ui'
+import {Box, Card, CardTone, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
-import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {CopyIcon as DuplicateIcon, EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
+import {Button, MenuItem} from '../../../../../../ui'
 import {getSchemaTypeTitle} from '../../../../../schema'
 import {ObjectItem, ObjectItemProps} from '../../../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
@@ -27,6 +17,7 @@ import {RowLayout} from '../../layouts/RowLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {InsertMenu} from '../InsertMenu'
 import {EditPortal} from '../../../../components/EditPortal'
+import {LoadingBlock} from '../../../../../../ui/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
 
 type PreviewItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
@@ -49,14 +40,6 @@ function getTone({
   return hasWarnings ? 'caution' : 'default'
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
-const INITIAL_VALUE_CARD_STYLE = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-  opacity: 0.6,
-} as const
 
 const BUTTON_CARD_STYLE = {position: 'relative'} as const
 
@@ -137,7 +120,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+          button={
+            <Button
+              mode="bleed"
+              icon={EllipsisHorizontalIcon}
+              tooltipProps={{content: 'Show more'}}
+            />
+          }
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>
@@ -178,7 +167,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         tone="inherit"
         radius={2}
         disabled={resolvingInitialValue}
-        padding={1}
         onClick={onOpen}
         ref={previewCardRef}
         onFocus={onFocus}
@@ -188,29 +176,12 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         {renderPreview({
           schemaType: props.schemaType,
           value: props.value,
-          layout: 'default',
+          layout: 'compact',
           // Don't do visibility check for virtualized items as the calculation will be incorrect causing it to scroll
           skipVisibilityCheck: true,
         })}
-        {resolvingInitialValue && (
-          <Card
-            style={INITIAL_VALUE_CARD_STYLE}
-            tone="transparent"
-            radius={2}
-            as={Flex}
-            // @ts-expect-error composed from as={Flex}
-            justify="center"
-          >
-            <Flex align="center" justify="center" padding={3}>
-              <Box marginX={3}>
-                <Spinner muted />
-              </Box>
-              <Text size={1} muted>
-                {t('inputs.array.resolving-initial-value')}
-              </Text>
-            </Flex>
-          </Card>
-        )}
+
+        {resolvingInitialValue && <LoadingBlock fill hideText />}
       </Card>
     </RowLayout>
   )

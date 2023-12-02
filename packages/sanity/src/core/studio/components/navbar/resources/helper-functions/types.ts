@@ -30,6 +30,8 @@ interface Resource {
 
 export interface Section {
   _key: string
+  /* @todo Update with the correct version when released  */
+  /** @deprecated No longer displayed in Sanity Studio 3.xx.x */
   sectionTitle?: string
   items?: (InternalAction | ExternalLink)[]
 }

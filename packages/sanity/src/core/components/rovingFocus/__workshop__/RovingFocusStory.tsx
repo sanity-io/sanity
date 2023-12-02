@@ -1,7 +1,8 @@
-import {Button, Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useState} from 'react'
 import {useRovingFocus} from '../useRovingFocus'
+import {Button} from '../../../../ui'
 
 const DIRECTION_OPTIONS: Record<string, 'horizontal' | 'vertical'> = {
   horizontal: 'horizontal',
@@ -48,8 +49,6 @@ export default function RovingFocusStory() {
               disabled={Boolean(withDisabled && num % 2)}
               key={num}
               mode="ghost"
-              padding={2}
-              fontSize={1}
             />
           ))}
         </Flex>

@@ -1,18 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
-import {
-  Box,
-  Button,
-  Card,
-  Dialog,
-  Menu,
-  MenuButton,
-  MenuButtonProps,
-  MenuItem,
-  Stack,
-  ToastParams,
-} from '@sanity/ui'
+import {Box, Card, Menu, MenuButton, MenuButtonProps, Stack, ToastParams} from '@sanity/ui'
 import {get, startCase} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
@@ -28,6 +17,7 @@ import {
 import React, {ReactNode} from 'react'
 import {SanityClient} from '@sanity/client'
 import {isImageSource} from '@sanity/asset-utils'
+import {Button, Dialog, MenuItem} from '../../../../../ui'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FieldMember} from '../../../store'
 import {InputProps, ObjectInputProps} from '../../../types'
@@ -408,19 +398,17 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         width={1}
       >
         <PresenceOverlay>
-          <Box padding={4}>
-            <Stack space={5}>
-              {withImageTool && value?.asset && (
-                <ImageToolInput
-                  {...this.props}
-                  imageUrl={imageUrlBuilder.image(value.asset).url()}
-                  value={value as FIXME}
-                  presence={hotspotInputProps.presence}
-                  changed={changed}
-                />
-              )}
-            </Stack>
-          </Box>
+          <Stack space={5}>
+            {withImageTool && value?.asset && (
+              <ImageToolInput
+                {...this.props}
+                imageUrl={imageUrlBuilder.image(value.asset).url()}
+                value={value as FIXME}
+                presence={hotspotInputProps.presence}
+                changed={changed}
+              />
+            )}
+          </Stack>
         </PresenceOverlay>
       </Dialog>
     )
@@ -600,7 +588,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     return (
       <Button
-        fontSize={2}
         text={t('inputs.image.browse-menu.text')}
         icon={SearchIcon}
         mode="ghost"

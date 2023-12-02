@@ -3,8 +3,9 @@ import '@testing-library/jest-dom/extend-expect'
 import {render, fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React, {useState} from 'react'
-import {Button, Card, studioTheme, ThemeProvider} from '@sanity/ui'
+import {Card, studioTheme, ThemeProvider} from '@sanity/ui'
 import {RovingFocusProps} from '../types'
+import {Button} from '../../../../ui'
 import {useRovingFocus} from '../useRovingFocus'
 
 interface TestProps extends Pick<RovingFocusProps, 'direction' | 'initialFocus' | 'loop'> {

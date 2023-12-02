@@ -1,7 +1,8 @@
 import React, {useCallback} from 'react'
-import {Tab, TabList} from '@sanity/ui'
+import {TabList} from '@sanity/ui'
 import {useDocumentPane} from '../../useDocumentPane'
 import {usePaneRouter} from '../../../../components'
+import {Tab} from '../../../../../ui'
 
 export function DocumentHeaderTabs() {
   const {activeViewId, paneKey, views} = useDocumentPane()
@@ -15,7 +16,7 @@ export function DocumentHeaderTabs() {
           id={`${paneKey}tab-${view.id}`}
           isActive={activeViewId === view.id}
           key={view.id}
-          label={<>{view.title}</>}
+          label={view.title}
           tabPanelId={tabPanelId}
           viewId={index === 0 ? null : view.id ?? null}
         />
@@ -28,11 +29,11 @@ function DocumentHeaderTab(props: {
   icon?: React.ComponentType | React.ReactNode
   id: string
   isActive: boolean
-  label: React.ReactNode
+  label: string
   tabPanelId: string
   viewId: string | null
 }) {
-  const {isActive, tabPanelId, viewId, ...rest} = props
+  const {icon, id, isActive, label, tabPanelId, viewId, ...rest} = props
   const {ready} = useDocumentPane()
   const {setView} = usePaneRouter()
   const handleClick = useCallback(() => setView(viewId), [setView, viewId])
@@ -42,9 +43,11 @@ function DocumentHeaderTab(props: {
       {...rest} // required to enable <TabList> keyboard navigation
       aria-controls={tabPanelId}
       disabled={!ready}
-      fontSize={1}
-      selected={isActive}
+      icon={icon}
+      id={id}
+      label={label}
       onClick={handleClick}
+      selected={isActive}
     />
   )
 }

@@ -1,12 +1,14 @@
-import React, {ComponentProps} from 'react'
+import React from 'react'
 import {AddIcon} from '@sanity/icons'
-import {Box, Button, Menu, MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '@sanity/ui'
+import {Menu, MenuButton, type MenuButtonProps} from '@sanity/ui'
 import {useTranslation} from '../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../components'
+import {Button, MenuItem, TooltipWithNodes} from '../../../../ui'
 import {useCurrentUser} from '../../../store'
 import type {CreateReferenceOption} from './types'
 
-interface Props extends ComponentProps<typeof Button> {
+interface Props
+  extends Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'width' | 'type' | 'ref'> {
   id: string
   createOptions: CreateReferenceOption[]
   menuRef?: React.RefObject<HTMLDivElement>
@@ -34,14 +36,12 @@ export function CreateButton(props: Props) {
   const canCreateAny = createOptions.some((option) => option.permission.granted)
   if (!canCreateAny) {
     return (
-      <Tooltip
+      <TooltipWithNodes
         content={
-          <Box padding={2}>
-            <InsufficientPermissionsMessage
-              currentUser={currentUser}
-              context="create-new-reference"
-            />
-          </Box>
+          <InsufficientPermissionsMessage
+            currentUser={currentUser}
+            context="create-new-reference"
+          />
         }
       >
         {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
@@ -54,7 +54,7 @@ export function CreateButton(props: Props) {
             style={FULL_WIDTH}
           />
         </div>
-      </Tooltip>
+      </TooltipWithNodes>
     )
   }
 
@@ -73,16 +73,14 @@ export function CreateButton(props: Props) {
       menu={
         <Menu ref={menuRef}>
           {createOptions.map((createOption) => (
-            <Tooltip
+            <TooltipWithNodes
               disabled={createOption.permission.granted}
               key={createOption.id}
               content={
-                <Box padding={2}>
-                  <InsufficientPermissionsMessage
-                    currentUser={currentUser}
-                    context="create-document-type"
-                  />
-                </Box>
+                <InsufficientPermissionsMessage
+                  currentUser={currentUser}
+                  context="create-document-type"
+                />
               }
               portal
             >
@@ -96,7 +94,7 @@ export function CreateButton(props: Props) {
                   onClick={() => onCreate(createOption)}
                 />
               </div>
-            </Tooltip>
+            </TooltipWithNodes>
           ))}
         </Menu>
       }

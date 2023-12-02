@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {useClickOutside, Label, Popover, Flex} from '@sanity/ui'
+import {useClickOutside, Popover, Flex, Text} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
 import React, {useCallback, useContext, useEffect, useMemo, useState, type ReactNode} from 'react'
@@ -161,11 +161,11 @@ function AnnnotationWithDiff({
       <PopoverContainer padding={3}>
         <div>
           {emptyObject && (
-            <Label size={1} muted>
+            <Text muted size={1} weight="medium">
               {t('changes.portable-text.empty-object-annotation', {
                 annotationType: schemaType.title || schemaType.name,
               })}
-            </Label>
+            </Text>
           )}
           {!emptyObject && <ChangeList diff={diff} schemaType={schemaType} />}
         </div>

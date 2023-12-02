@@ -1,12 +1,14 @@
 import React, {useCallback, createElement, useMemo} from 'react'
-import {Box, ButtonTone, Card, Flex, Label, Stack, Text} from '@sanity/ui'
+
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {ButtonProps} from '../../../../ui'
 import {getTimelineEventIconComponent} from './helpers'
 import {UserAvatarStack} from './userAvatarStack'
 import {IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {type ChunkType, type Chunk, useTranslation, useIntlDateTimeFormat} from 'sanity'
 
-const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone> = {
+const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonProps['tone']> = {
   initial: 'primary',
   create: 'primary',
   publish: 'positive',
@@ -95,9 +97,9 @@ export function TimelineItem({
                   shadow={1}
                   tone={isSelected ? 'primary' : TIMELINE_ITEM_EVENT_TONE[chunk.type]}
                 >
-                  <Label muted size={0}>
+                  <Text muted size={0} weight="medium">
                     {t('timeline.latest')}
-                  </Label>
+                  </Text>
                 </Card>
               </Flex>
             )}

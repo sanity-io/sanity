@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import {Tab} from '@sanity/ui'
+import {Tab} from '../../../../../ui'
 
 interface GroupType {
   'aria-controls': string
@@ -27,7 +27,6 @@ export const GroupTab = forwardRef(function GroupTab(
   return (
     <Tab
       data-testid={`group-tab-${props.name}`}
-      size={1}
       id={`${props.name}-tab`}
       label={props.title}
       ref={ref}

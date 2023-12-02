@@ -58,7 +58,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
               </Box>
 
               <Box flex={1}>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="medium">
                   {schemaType ? (
                     <>
                       {capitalize(schemaType.type)} type "{schemaType.name}"

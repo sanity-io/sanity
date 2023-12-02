@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
-import {LoadingScreen, AuthenticateScreen, NotAuthenticatedScreen} from './screens'
+import {LoadingBlock} from '../../ui/loadingBlock'
+import {AuthenticateScreen, NotAuthenticatedScreen} from './screens'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 
 interface AuthBoundaryProps {
@@ -12,7 +13,7 @@ interface AuthBoundaryProps {
 export function AuthBoundary({
   children,
   AuthenticateComponent = AuthenticateScreen,
-  LoadingComponent = LoadingScreen,
+  LoadingComponent = LoadingBlock,
   NotAuthenticatedComponent = NotAuthenticatedScreen,
 }: AuthBoundaryProps) {
   const [error, handleError] = useState<unknown>(null)
