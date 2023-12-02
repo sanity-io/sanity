@@ -1,6 +1,7 @@
-import {Card, Code, Flex, Inline, Label, Stack, Text, Tooltip} from '@sanity/ui'
+import {Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {startCase, uniq} from 'lodash'
 import React, {ReactElement, useMemo} from 'react'
+import {TooltipWithNodes} from '../../../../../../../../../ui'
 import {useSchema} from '../../../../../../../../hooks'
 import {isNonNullable, truncateString} from '../../../../../../../../util'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
@@ -74,19 +75,19 @@ export function FilterTooltip({
   }, [fieldDefinition?.documentTypes, fieldDefinition?.fieldPath, schema])
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       content={
         <Card tone="default" radius={2} style={{maxWidth: '250px'}}>
-          <Stack padding={3} space={4}>
+          <Stack space={4}>
             {/* Field name */}
             {fieldDefinition && (
               <Stack space={2}>
-                <Label muted size={0}>
+                <Text muted size={1} weight="medium">
                   {t('search.filter-field-tooltip-name')}
-                </Label>
+                </Text>
                 <Inline>
                   <Card tone="caution" padding={1} radius={2}>
-                    <Code size={0}>{fieldDefinition?.name}</Code>
+                    <Code size={1}>{fieldDefinition?.name}</Code>
                   </Card>
                 </Inline>
               </Stack>
@@ -95,10 +96,10 @@ export function FilterTooltip({
             {/* Field description */}
             {fieldDefinitionDescription && (
               <Stack space={3}>
-                <Label muted size={0}>
+                <Text muted size={1} weight="medium">
                   {t('search.filter-field-tooltip-description')}
-                </Label>
-                <Text muted size={0}>
+                </Text>
+                <Text muted size={1}>
                   {truncateString(fieldDefinitionDescription, 256)}
                 </Text>
               </Stack>
@@ -106,7 +107,7 @@ export function FilterTooltip({
 
             {/* Filter description */}
             {filterDefinition?.description && (
-              <Text muted size={0}>
+              <Text muted size={1}>
                 {truncateString(filterDefinition.description, 256)}
               </Text>
             )}
@@ -115,16 +116,16 @@ export function FilterTooltip({
             {!documentTypesNarrowed.length && fieldDefinitionDocumentTypeTitles.length > 0 && (
               <Stack space={2}>
                 <Flex align="center" gap={1}>
-                  <Label muted size={0}>
+                  <Text muted size={1} weight="medium">
                     {t('search.filter-field-tooltip-used-in-document-types')}
-                  </Label>
+                  </Text>
                   <Card padding={1} radius={2} tone="transparent">
-                    <Text size={0} muted>
+                    <Text size={1} muted>
                       {fieldDefinitionDocumentTypeTitles.length}
                     </Text>
                   </Card>
                 </Flex>
-                <Text size={0} weight="regular" muted>
+                <Text size={1} weight="regular" muted>
                   {fieldDefinitionDocumentTypeTitles.slice(0, MAX_VISIBLE_TYPES).join(', ')}
                   {fieldDefinitionDocumentTypeTitles?.length > MAX_VISIBLE_TYPES
                     ? ` +${fieldDefinitionDocumentTypeTitles.length - MAX_VISIBLE_TYPES} more`
@@ -141,6 +142,6 @@ export function FilterTooltip({
       portal
     >
       {children}
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }

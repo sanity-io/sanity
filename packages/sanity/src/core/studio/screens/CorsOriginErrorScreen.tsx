@@ -1,8 +1,9 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Card, Dialog, Stack, Button, Text, TextInput, Flex} from '@sanity/ui'
+import {Card, Stack, Text, TextInput, Flex} from '@sanity/ui'
 import React, {useEffect, useMemo} from 'react'
 import {LaunchIcon} from '@sanity/icons'
 import styled from 'styled-components'
+import {Button, Dialog} from '../../../ui'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string
@@ -44,8 +45,23 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
 
   return (
     <Card height="fill">
-      <Dialog id="cors-error-dialog" header="Before you continue..." width={1}>
-        <Stack paddingX={4} paddingY={5} space={4}>
+      <Dialog
+        id="cors-error-dialog"
+        header="Before you continue..."
+        width={1}
+        footer={{
+          confirmButton: {
+            text: 'Continue',
+            iconRight: LaunchIcon,
+            as: 'a',
+            href: corsUrl,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            tone: 'primary',
+          },
+        }}
+      >
+        <Stack space={4}>
           <Text>
             To access your content, you need to <b>add the following URL as a CORS origin</b> to
             your Sanity project.
@@ -55,14 +71,15 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
           <ScreenReaderLabel aria-hidden="true">CORS URL to be added</ScreenReaderLabel>
           <TextInput value={origin} readOnly />
 
-          <Button as="a" href={corsUrl} target="_blank" rel="noopener noreferrer" tone="primary">
-            <Flex align="center" justify="center" gap={3}>
-              <Text weight="medium">Continue</Text>
-              <Text weight="medium">
-                <LaunchIcon />
-              </Text>
-            </Flex>
-          </Button>
+          <Button
+            as="a"
+            href={corsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            tone="primary"
+            text="Continue"
+            iconRight={LaunchIcon}
+          />
         </Stack>
       </Dialog>
     </Card>

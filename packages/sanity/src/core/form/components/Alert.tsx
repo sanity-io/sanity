@@ -32,7 +32,7 @@ export function Alert(props: AlertProps) {
         </Box>
 
         <Box flex={1} marginLeft={3}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="medium">
             {title}
           </Text>
 

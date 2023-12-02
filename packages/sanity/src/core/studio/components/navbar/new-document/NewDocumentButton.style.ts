@@ -1,5 +1,6 @@
-import {Box, Popover, Dialog, Flex, Card} from '@sanity/ui'
+import {Popover, Flex, Card} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {Dialog} from '../../../../../ui'
 
 export const StyledPopover = styled(Popover)(() => {
   return css`
@@ -25,10 +26,6 @@ export const StyledDialog = styled(Dialog)(() => {
     }
   `
 })
-
-export const TooltipContentBox = styled(Box)`
-  max-width: 300px;
-`
 
 export const RootFlex = styled(Flex)``
 

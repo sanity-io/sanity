@@ -1,12 +1,13 @@
 /* eslint-disable no-nested-ternary */
-
 import {Box, Container, Flex, Spinner, Text, focusFirstDescendant} from '@sanity/ui'
-import React, {forwardRef, useEffect, useMemo, useRef, type Ref, useCallback, useState} from 'react'
+import React, {forwardRef, useEffect, useMemo, useCallback, useState} from 'react'
 import {tap} from 'rxjs/operators'
-import {useDocumentPane} from '../../useDocumentPane'
-import {Delay} from '../../../../components/Delay'
-import {useConditionalToast} from './useConditionalToast'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentTitle} from '../../useDocumentTitle'
+import {useDocumentPane} from '../../useDocumentPane'
+import {useConditionalToast} from './useConditionalToast'
+import {FormHeader} from './FormHeader'
 import {
   FormDocumentValue,
   DocumentMutationEvent,
@@ -20,6 +21,7 @@ import {
   useDocumentStore,
   useTranslation,
 } from 'sanity'
+import {Delay} from '../../../../components'
 
 interface FormViewProps {
   hidden: boolean
@@ -52,6 +54,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
+  const {title} = useDocumentTitle()
 
   // The `patchChannel` is an INTERNAL publish/subscribe channel that we use to notify form-builder
   // nodes about both remote and local patches.
@@ -142,6 +145,11 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   //     ),
   //   [documentId]
   // )
+
+  if (!ready) {
+    return <LoadingBlock />
+  }
+
   return (
     <Container
       hidden={hidden}
@@ -159,37 +167,45 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 <Text>{t('document-view.form-view.form-hidden')}</Text>
               </Box>
             ) : (
-              <FormBuilder
-                __internal_fieldActions={fieldActions}
-                __internal_patchChannel={patchChannel}
-                collapsedFieldSets={collapsedFieldSets}
-                collapsedPaths={collapsedPaths}
-                focusPath={formState.focusPath}
-                changed={formState.changed}
-                focused={formState.focused}
-                groups={formState.groups}
-                id="root"
-                members={formState.members}
-                onChange={onChange}
-                onFieldGroupSelect={onSetActiveFieldGroup}
-                onPathBlur={onBlur}
-                onPathFocus={onFocus}
-                onPathOpen={onPathOpen}
-                onSetFieldSetCollapsed={onSetCollapsedFieldSet}
-                onSetPathCollapsed={onSetCollapsedPath}
-                presence={presence}
-                readOnly={formState.readOnly}
-                schemaType={formState.schemaType}
-                validation={validation}
-                value={
-                  // note: the form state doesn't have a typed concept of a "document" value
-                  // but these should be compatible
-                  formState.value as FormDocumentValue
-                }
-              />
+              <>
+                <FormHeader
+                  documentId={documentId}
+                  schemaType={formState.schemaType}
+                  title={title}
+                />
+                <FormBuilder
+                  __internal_fieldActions={fieldActions}
+                  __internal_patchChannel={patchChannel}
+                  collapsedFieldSets={collapsedFieldSets}
+                  collapsedPaths={collapsedPaths}
+                  focusPath={formState.focusPath}
+                  changed={formState.changed}
+                  focused={formState.focused}
+                  groups={formState.groups}
+                  id="root"
+                  members={formState.members}
+                  onChange={onChange}
+                  onFieldGroupSelect={onSetActiveFieldGroup}
+                  onPathBlur={onBlur}
+                  onPathFocus={onFocus}
+                  onPathOpen={onPathOpen}
+                  onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+                  onSetPathCollapsed={onSetCollapsedPath}
+                  presence={presence}
+                  readOnly={formState.readOnly}
+                  schemaType={formState.schemaType}
+                  validation={validation}
+                  value={
+                    // note: the form state doesn't have a typed concept of a "document" value
+                    // but these should be compatible
+                    formState.value as FormDocumentValue
+                  }
+                />
+              </>
             )
           ) : (
             <Delay ms={300}>
+              {/* TODO: replace with loading block */}
               <Flex align="center" direction="column" height="fill" justify="center">
                 <Spinner muted />
                 <Box marginTop={3}>

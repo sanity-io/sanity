@@ -1,6 +1,8 @@
-import {Box, Card, Flex, Label, MenuDivider, MenuItem, Spinner, Text} from '@sanity/ui'
+import {Box, MenuDivider, Text} from '@sanity/ui'
 import React from 'react'
 import {SANITY_VERSION} from '../../../../version'
+import {MenuItem} from '../../../../../ui'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {useTranslation} from '../../../../i18n'
 import {ResourcesResponse, Section} from './helper-functions/types'
 
@@ -16,11 +18,7 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
   const {t} = useTranslation()
 
   if (isLoading) {
-    return (
-      <Flex align="center" justify="center" padding={3}>
-        <Spinner />
-      </Flex>
-    )
+    return <LoadingBlock />
   }
 
   const fallbackLinks = (
@@ -28,26 +26,20 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
       <MenuItem
         as="a"
         text={t('help-resources.action.join-our-community')}
-        size={0}
         href="https://www.sanity.io/exchange/community"
         target="_blank"
-        muted={false}
       />
       <MenuItem
         as="a"
         text={t('help-resources.action.help-and-support')}
-        size={0}
         href="https://www.sanity.io/contact/support"
         target="_blank"
-        muted={false}
       />
       <MenuItem
         as="a"
         text={t('help-resources.action.contact-sales')}
-        size={0}
         href="https://www.sanity.io/contact/sales?ref=studio"
         target="_blank"
-        muted={false}
       />
       <MenuDivider />
     </>
@@ -86,13 +78,6 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
 function SubSection({subSection}: {subSection: Section}) {
   return (
     <>
-      {subSection.sectionTitle && (
-        <Card padding={2} paddingTop={3} marginLeft={1}>
-          <Label muted size={1}>
-            {subSection.sectionTitle}
-          </Label>
-        </Card>
-      )}
       {subSection?.items?.map((item) => {
         if (!item || !item.title) return null
         switch (item._type) {
@@ -104,7 +89,6 @@ function SubSection({subSection}: {subSection: Section}) {
                 tone="default"
                 key={item._key}
                 text={item.title}
-                size={0}
                 href={item.url}
                 target="_blank"
               />
@@ -112,9 +96,7 @@ function SubSection({subSection}: {subSection: Section}) {
           case 'internalAction': // TODO: Add support for internal actions (MVI-2)
             if (!item.type) return null
             return (
-              item.type === 'show-welcome-modal' && (
-                <MenuItem key={item._key} text={item.title} size={0} />
-              )
+              item.type === 'show-welcome-modal' && <MenuItem key={item._key} text={item.title} />
             )
 
           default:

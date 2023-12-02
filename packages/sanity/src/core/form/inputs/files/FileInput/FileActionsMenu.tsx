@@ -1,8 +1,7 @@
-import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import {BinaryDocumentIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import {
   Box,
-  Button,
   Card,
   Flex,
   Menu,
@@ -12,6 +11,7 @@ import {
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
+import {Button} from '../../../../../ui'
 import {formatBytes} from '../../common/helper'
 import {useTranslation} from '../../../../i18n'
 
@@ -100,6 +100,7 @@ export function FileActionsMenu(props: Props) {
         onClick={onClick}
         flex={1}
       >
+        {/* todo: consider replacing with <SanityDefaultPreview> */}
         <Flex wrap="nowrap" align="center">
           <Card padding={3} tone="transparent" shadow={1} radius={1}>
             <Text muted={muted}>
@@ -107,7 +108,13 @@ export function FileActionsMenu(props: Props) {
             </Text>
           </Card>
           <Stack flex={1} space={2} marginLeft={3}>
-            <Text size={2} textOverflow="ellipsis" muted={muted} data-testid="file-name">
+            <Text
+              size={1}
+              textOverflow="ellipsis"
+              muted={muted}
+              data-testid="file-name"
+              weight="medium"
+            >
               {originalFilename}
             </Text>
             <Text size={1} muted data-testid="file-size">
@@ -131,10 +138,11 @@ export function FileActionsMenu(props: Props) {
             <Button
               aria-label={t('inputs.file.actions-menu.file-options.aria-label')}
               data-testid="options-menu-button"
-              icon={EllipsisVerticalIcon}
+              icon={EllipsisHorizontalIcon}
               mode="bleed"
               onClick={handleClick}
               ref={setOptionsButtonRef}
+              tooltipProps={{content: 'Show more'}}
             />
           </Popover>
         </Flex>

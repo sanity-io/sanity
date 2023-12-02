@@ -1,20 +1,10 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Spinner,
-  Text,
-} from '@sanity/ui'
+import {Box, Card, CardTone, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
-import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {CopyIcon as DuplicateIcon, EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {getSchemaTypeTitle} from '../../../../../schema'
+import {Button, MenuItem} from '../../../../../../ui'
 import {ObjectItem, ObjectItemProps} from '../../../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
@@ -29,6 +19,7 @@ import {createProtoArrayValue} from '../createProtoArrayValue'
 import {InsertMenu} from '../InsertMenu'
 import {FIXME} from '../../../../../FIXME'
 import {EditPortal} from '../../../../components/EditPortal'
+import {LoadingBlock} from '../../../../../../ui/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
@@ -68,13 +59,6 @@ function getTone({
   return hasWarnings ? 'caution' : 'default'
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
-const INITIAL_VALUE_CARD_STYLE = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-} as const
 
 export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemProps<Item>) {
   const {
@@ -153,7 +137,13 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+          button={
+            <Button
+              mode="bleed"
+              icon={EllipsisHorizontalIcon}
+              tooltipProps={{content: 'Show more'}}
+            />
+          }
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>
@@ -213,18 +203,8 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           withBorder: false,
           withShadow: false,
         })}
-        {resolvingInitialValue && (
-          <Card as={Flex} style={INITIAL_VALUE_CARD_STYLE}>
-            <Flex align="center" justify="center" gap={1} padding={1}>
-              <Box padding={3}>
-                <Spinner muted />
-              </Box>
-              <Text muted size={1}>
-                {t('inputs.array.resolving-initial-value')}
-              </Text>
-            </Flex>
-          </Card>
-        )}
+
+        {resolvingInitialValue && <LoadingBlock fill />}
       </PreviewCard>
     </CellLayout>
   )

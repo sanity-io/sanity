@@ -2,28 +2,24 @@ import React from 'react'
 import {
   CheckmarkCircleIcon,
   UndoIcon,
-  EllipsisVerticalIcon,
+  EllipsisHorizontalIcon,
   EditIcon,
   TrashIcon,
   LinkIcon,
 } from '@sanity/icons'
 import {
-  TooltipDelayGroupProviderProps,
   MenuButtonProps,
   TooltipDelayGroupProvider,
-  Button,
   MenuButton,
   Menu,
-  MenuItem,
   MenuDivider,
   Card,
   Flex,
 } from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {Button, MenuItem} from '../../../../../ui'
 import {CommentStatus} from '../../types'
-import {TextTooltip} from '../TextTooltip'
-
-const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
+import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
@@ -74,21 +70,18 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
 
   return (
-    <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
+    <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
       <Flex>
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
           {isParent && (
-            <TextTooltip text={status === 'open' ? 'Mark as resolved' : 'Re-open'}>
-              <Button
-                aria-label="Mark comment as resolved"
-                disabled={readOnly}
-                fontSize={1}
-                icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
-                mode="bleed"
-                onClick={onStatusChange}
-                padding={2}
-              />
-            </TextTooltip>
+            <Button
+              aria-label={status === 'open' ? 'Mark comment as resolved' : 'Re-open'}
+              disabled={readOnly}
+              icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
+              mode="bleed"
+              onClick={onStatusChange}
+              tooltipProps={{content: status === 'open' ? 'Mark as resolved' : 'Re-open'}}
+            />
           )}
 
           <MenuButton
@@ -97,11 +90,10 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               <Button
                 aria-label="Open comment actions menu"
                 disabled={readOnly}
-                fontSize={1}
                 hidden={!showMenuButton}
-                icon={EllipsisVerticalIcon}
+                icon={EllipsisHorizontalIcon}
                 mode="bleed"
-                padding={2}
+                tooltipProps={{content: 'Show more'}}
               />
             }
             onOpen={onMenuOpen}
@@ -109,7 +101,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
             menu={
               <Menu>
                 <MenuItem
-                  fontSize={1}
                   hidden={!canEdit}
                   icon={EditIcon}
                   onClick={onEditStart}
@@ -117,7 +108,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                 />
 
                 <MenuItem
-                  fontSize={1}
                   hidden={!canDelete}
                   icon={TrashIcon}
                   onClick={onDeleteStart}
@@ -128,7 +118,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                 <MenuDivider hidden={!canDelete && !canEdit} />
 
                 <MenuItem
-                  fontSize={1}
                   hidden={!onCopyLink}
                   icon={LinkIcon}
                   onClick={onCopyLink}

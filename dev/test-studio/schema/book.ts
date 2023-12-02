@@ -88,6 +88,18 @@ export default {
         },
       ],
     },
+    {
+      name: 'genre',
+      title: 'Genre',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Fiction', value: 'fiction'},
+          {title: 'Non Fiction', value: 'nonfiction'},
+          {title: 'Poetry', value: 'poetry'},
+        ],
+      },
+    },
   ],
   orderings: [
     {

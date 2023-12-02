@@ -1,8 +1,9 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {Box, Button, Card, Code, Container, Heading, Label, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {SyncIcon} from '@sanity/icons'
+import {Button} from '../../../ui'
 import {SerializeError} from '../../structureBuilder'
 import {PaneResolutionError} from '../../structureResolvers'
 import {structureLocaleNamespace} from '../../i18n'
@@ -62,7 +63,9 @@ export function StructureError({error}: StructureErrorProps) {
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
             <Stack space={2}>
-              <Label>{t('structure-error.structure-path.label')}</Label>
+              <Text size={1} weight="medium">
+                {t('structure-error.structure-path.label')}
+              </Text>
               <Code>
                 {/* TODO: it seems like the path is off by one and includes */}
                 {/* `root` twice  */}
@@ -75,7 +78,9 @@ export function StructureError({error}: StructureErrorProps) {
           )}
 
           <Stack marginTop={4} space={2}>
-            <Label>{t('structure-error.error.label')}</Label>
+            <Text size={1} weight="medium">
+              {t('structure-error.error.label')}
+            </Text>
             <Code>{showStack ? formatStack(stack) : error.message}</Code>
           </Stack>
 

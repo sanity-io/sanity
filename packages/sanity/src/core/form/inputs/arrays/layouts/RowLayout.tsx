@@ -62,16 +62,12 @@ export function RowLayout(props: RowLayoutProps) {
     >
       <Stack space={1}>
         <Flex align="center">
-          {dragHandle && (
-            <Box marginRight={1} paddingY={1}>
-              <DragHandle paddingX={1} paddingY={3} />
-            </Box>
-          )}
+          {dragHandle && <DragHandle />}
 
           <Box flex={1}>{children}</Box>
 
           {(presence || validation || menu) && (
-            <Flex align="center" marginLeft={1}>
+            <Flex align="center" gap={2} marginLeft={1} style={{lineHeight: 0}}>
               {presence && <Box marginLeft={1}>{presence}</Box>}
               {validation && <Box marginLeft={1}>{validation}</Box>}
               {menu}

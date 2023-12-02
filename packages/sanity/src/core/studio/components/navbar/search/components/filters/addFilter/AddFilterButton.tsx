@@ -1,9 +1,10 @@
 import {AddIcon} from '@sanity/icons'
-import {Button, Popover} from '@sanity/ui'
+import {Popover} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
+import {Button} from '../../../../../../../../ui'
 import {useTranslation} from '../../../../../../../i18n'
 import {AddFilterPopoverContent} from './AddFilterPopoverContent'
 
@@ -33,14 +34,12 @@ export function AddFilterButton() {
       portal
     >
       <Button
-        fontSize={1}
         icon={AddIcon}
         mode="bleed"
         onClick={handleOpen}
-        padding={fullscreen ? 3 : 2}
+        size={fullscreen ? 'large' : 'default'}
         ref={setButtonElement}
         selected={open}
-        space={2}
         text={t('search.action.add-filter')}
       />
     </Popover>

@@ -1,8 +1,9 @@
-import React, {useCallback, useId} from 'react'
-import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {Box, Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import React, {useId} from 'react'
+import {EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
+import {Box, Menu, MenuButton} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'
 import {RowLayout} from '../../layouts/RowLayout'
+import {Button, MenuItem} from '../../../../../../ui'
 import {useTranslation} from '../../../../../i18n'
 import {IncompatibleItemType} from './IncompatibleItemType'
 
@@ -25,7 +26,13 @@ export function ErrorItem(props: {
         tone="caution"
         menu={
           <MenuButton
-            button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={
+              <Button
+                mode="bleed"
+                icon={EllipsisHorizontalIcon}
+                tooltipProps={{content: 'Show more'}}
+              />
+            }
             id={`${id}-menuButton`}
             menu={
               <Menu>

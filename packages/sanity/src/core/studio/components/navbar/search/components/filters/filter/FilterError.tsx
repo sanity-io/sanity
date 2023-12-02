@@ -14,7 +14,7 @@ export function FilterError(props: ResponsivePaddingProps) {
           <ErrorOutlineIcon />
         </TextWithTone>
         <Stack space={4}>
-          <TextWithTone size={1} tone="critical" weight="semibold">
+          <TextWithTone size={1} tone="critical" weight="medium">
             {t('search.error.display-filter-title')}
           </TextWithTone>
           <TextWithTone size={1} tone="critical">

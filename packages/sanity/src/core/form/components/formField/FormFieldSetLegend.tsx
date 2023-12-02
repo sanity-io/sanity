@@ -73,7 +73,7 @@ export const FormFieldSetLegend = memo(function FormFieldSetLegend(props: FormFi
   const {t} = useTranslation()
 
   const text = (
-    <Text weight="semibold" size={1}>
+    <Text weight="medium" size={1}>
       {title || (
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t('form.field.untitled-fieldset-label')}

@@ -1,5 +1,10 @@
 import {CurrentUser} from '@sanity/types'
-import {Button, Flex, Stack} from '@sanity/ui'
+import {
+  Flex,
+  Stack,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling and children behavior.
+} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import {uuid} from '@sanity/uuid'
 import styled, {css} from 'styled-components'
@@ -115,6 +120,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
               mode="bleed"
               onClick={handleBreadcrumbsClick}
               padding={2}
+              space={2}
             >
               <CommentBreadcrumbs maxLength={3} titlePath={crumbsTitlePath} />
             </BreadcrumbsButton>

@@ -1,6 +1,7 @@
-import {Button, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {isPlainObject} from 'lodash'
+import {Button} from '../../../../../ui'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {isDev} from '../../../../environment'

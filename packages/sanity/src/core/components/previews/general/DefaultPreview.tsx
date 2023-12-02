@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {useTranslation} from '../../../i18n'
 import {Media} from '../_common/Media'
-import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PREVIEW_SIZES} from '../constants'
 import type {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
 
@@ -28,17 +28,17 @@ export interface DefaultPreviewProps extends Omit<PreviewProps<'default'>, 'rend
 }
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
-  ...PREVIEW_MEDIA_SIZE.default,
+  ...PREVIEW_SIZES.default.media,
   aspect: 1,
   fit: 'crop',
   dpr: getDevicePixelRatio(),
 }
 
 const Root = styled(Flex)`
-  height: ${rem(PREVIEW_MEDIA_SIZE.default.height)};
+  height: ${rem(PREVIEW_SIZES.default.media.height)};
 `
 
-const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1})`
+const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
   max-width: ${rem(160)};
   width: 80%;
 `
@@ -60,7 +60,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
     <Box
       className={styles?.status}
       data-testid="default-preview__status"
-      paddingLeft={3}
+      paddingLeft={4}
       paddingRight={1}
     >
       {renderPreviewNode(status, 'default')}
@@ -69,65 +69,74 @@ export function DefaultPreview(props: DefaultPreviewProps) {
 
   if (isPlaceholder) {
     return (
-      <Root align="center" className={styles?.placeholder} data-testid="default-preview">
-        {media !== false && (
-          <Skeleton animated marginRight={2} radius={2} style={PREVIEW_MEDIA_SIZE.default} />
-        )}
+      <Root
+        align="center"
+        className={styles?.placeholder}
+        data-testid="default-preview"
+        paddingLeft={media ? 2 : 3}
+        paddingRight={2}
+        paddingY={1}
+      >
+        <Flex align="center" flex={1} gap={3}>
+          {media && <Skeleton animated radius={2} style={PREVIEW_SIZES.default.media} />}
 
-        <Stack
-          data-testid="default-preview__heading"
-          flex={1}
-          paddingLeft={media === false ? 1 : 2}
-          paddingRight={status ? 0 : 1}
-          space={2}
-        >
-          <TitleSkeleton />
-          <SubtitleSkeleton />
-        </Stack>
+          <Stack data-testid="default-preview__heading" flex={1} space={2}>
+            <TitleSkeleton />
+            <SubtitleSkeleton />
+          </Stack>
 
-        {statusNode}
+          {statusNode}
+        </Flex>
       </Root>
     )
   }
 
   return (
-    <Root align="center" className={rootClassName} data-testid="default-preview">
-      {media !== false && media !== undefined && (
-        <Media
-          dimensions={DEFAULT_MEDIA_DIMENSIONS}
-          layout="default"
-          media={media as any}
-          styles={styles}
-        />
-      )}
-
-      <Stack
-        className={styles?.heading}
-        data-testid="default-preview__header"
-        flex={1}
-        paddingLeft={media ? 2 : 1}
-        paddingRight={status ? 0 : 1}
-        space={2}
-      >
-        <Text className={styles?.title} style={{color: 'inherit'}} textOverflow="ellipsis">
-          {title && renderPreviewNode(title, 'default')}
-          {!title && (
-            <span style={{color: 'var(--card-muted-fg-color)'}}>
-              {t('preview.default.title-fallback')}
-            </span>
-          )}
-        </Text>
-
-        {subtitle && (
-          <Text muted size={1} textOverflow="ellipsis" className={styles?.subtitle}>
-            {renderPreviewNode(subtitle, 'default')}
-          </Text>
+    <Root
+      align="center"
+      className={rootClassName}
+      data-testid="default-preview"
+      paddingLeft={media ? 2 : 3}
+      paddingRight={2}
+      paddingY={1}
+    >
+      <Flex align="center" flex={1} gap={3}>
+        {media && (
+          <Media
+            dimensions={DEFAULT_MEDIA_DIMENSIONS}
+            layout="default"
+            media={media as any}
+            styles={styles}
+          />
         )}
 
-        {children && <div className={styles?.children}>{children}</div>}
-      </Stack>
+        <Stack className={styles?.heading} data-testid="default-preview__header" flex={1} space={2}>
+          <Text
+            className={styles?.title}
+            size={1}
+            style={{color: 'inherit'}}
+            textOverflow="ellipsis"
+            weight="medium"
+          >
+            {title && renderPreviewNode(title, 'default')}
+            {!title && (
+              <span style={{color: 'var(--card-muted-fg-color)'}}>
+                {t('preview.default.title-fallback')}
+              </span>
+            )}
+          </Text>
 
-      {statusNode}
+          {subtitle && (
+            <Text muted size={1} textOverflow="ellipsis" className={styles?.subtitle}>
+              {renderPreviewNode(subtitle, 'default')}
+            </Text>
+          )}
+        </Stack>
+
+        {statusNode}
+
+        {children && <div className={styles?.children}>{children}</div>}
+      </Flex>
     </Root>
   )
 }

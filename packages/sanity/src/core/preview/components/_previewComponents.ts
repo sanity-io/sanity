@@ -1,7 +1,7 @@
-import {ComponentType} from 'react'
 import {
   BlockImagePreview,
   BlockPreview,
+  CompactPreview,
   DefaultPreview,
   DetailPreview,
   InlinePreview,
@@ -9,10 +9,11 @@ import {
 } from '../../components'
 
 export const _previewComponents = {
-  default: DefaultPreview,
-  media: MediaPreview,
-  detail: DetailPreview,
-  inline: InlinePreview,
   block: BlockPreview,
   blockImage: BlockImagePreview,
+  compact: CompactPreview,
+  default: DefaultPreview,
+  detail: DetailPreview,
+  inline: InlinePreview,
+  media: MediaPreview,
 } as const

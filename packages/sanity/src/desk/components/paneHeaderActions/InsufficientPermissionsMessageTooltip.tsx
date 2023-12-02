@@ -1,5 +1,5 @@
-import {Tooltip, Text, Box} from '@sanity/ui'
 import React from 'react'
+import {TooltipWithNodes} from '../../../ui'
 import {structureLocaleNamespace} from '../../i18n'
 import {useCurrentUser, InsufficientPermissionsMessage, useTranslation} from 'sanity'
 
@@ -28,12 +28,10 @@ export function InsufficientPermissionsMessageTooltip({
   }
 
   return (
-    <Tooltip
+    <TooltipWithNodes
       content={
         loading ? (
-          <Box padding={2}>
-            <Text>{t('insufficient-permissions-message-tooltip.loading-text')}</Text>
-          </Box>
+          t('insufficient-permissions-message-tooltip.loading-text')
         ) : (
           <InsufficientPermissionsMessage context={context} currentUser={currentUser} />
         )
@@ -43,6 +41,6 @@ export function InsufficientPermissionsMessageTooltip({
       {/* this wrapping div is to allow mouse events */}
       {/* while the child element is disabled */}
       <div>{children}</div>
-    </Tooltip>
+    </TooltipWithNodes>
   )
 }

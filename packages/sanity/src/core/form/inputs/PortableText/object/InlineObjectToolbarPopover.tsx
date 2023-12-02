@@ -1,23 +1,8 @@
 import React, {useRef, useCallback, useMemo} from 'react'
-import {
-  Box,
-  Button,
-  Inline,
-  Popover,
-  PopoverProps,
-  Text,
-  useGlobalKeyDown,
-  useTheme,
-} from '@sanity/ui'
-import styled from 'styled-components'
+import {Box, Inline, Popover, PopoverProps, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {EditIcon, TrashIcon} from '@sanity/icons'
 import {useTranslation} from '../../../../i18n'
-
-const ToolbarPopover = styled(Popover)`
-  &[data-popper-reference-hidden='true'] {
-    display: none !important;
-  }
-`
+import {Button} from '../../../../../ui'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
@@ -89,7 +74,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
       <Box padding={1}>
         <Inline space={1}>
           <Box padding={2}>
-            <Text weight="semibold" size={1}>
+            <Text weight="medium" size={1}>
               {title}
             </Text>
           </Box>
@@ -97,18 +82,16 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             icon={EditIcon}
             mode="bleed"
             onClick={onEdit}
-            padding={2}
             ref={editButtonRef}
-            alt={t('inputs.portable-text.inline-object.edit')}
+            tooltipProps={{content: t('inputs.portable-text.inline-object.edit')}}
           />
           <Button
             ref={deleteButtonRef}
             icon={TrashIcon}
             mode="bleed"
-            padding={2}
             onClick={handleDelete}
             tone="critical"
-            alt={t('inputs.portable-text.inline-object.remove')}
+            tooltipProps={{content: t('inputs.portable-text.inline-object.remove')}}
           />
         </Inline>
       </Box>
@@ -117,7 +100,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   )
 
   return (
-    <ToolbarPopover
+    <Popover
       constrainSize
       content={popoverContent}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}

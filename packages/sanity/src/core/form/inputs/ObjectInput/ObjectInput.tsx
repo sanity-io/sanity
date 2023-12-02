@@ -78,7 +78,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     return null
   }
   return (
-    <Stack space={5}>
+    <Stack space={6}>
       {groups.length > 0 ? (
         <FieldGroupTabsWrapper $level={level} data-testid="field-groups">
           <FieldGroupTabs

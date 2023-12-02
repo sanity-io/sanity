@@ -1,28 +1,10 @@
-import {ChevronDownIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  PopoverProps,
-  Text,
-  Tooltip,
-} from '@sanity/ui'
-import React, {
-  createElement,
-  isValidElement,
-  useCallback,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {isValidElementType} from 'react-is'
-import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription, Hotkeys, LegacyLayerProvider, useTranslation} from 'sanity'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
+import {Menu, MenuButton, PopoverProps, Text} from '@sanity/ui'
+import React, {useCallback, useRef, useState, useMemo, useId} from 'react'
+import {Button, MenuItem, TooltipWithNodes} from '../../../../ui'
 import {structureLocaleNamespace} from '../../../i18n'
+import {ActionStateDialog} from './ActionStateDialog'
+import {DocumentActionDescription, LegacyLayerProvider, useTranslation} from 'sanity'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]
@@ -61,9 +43,11 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
             data-testid="action-menu-button"
             aria-label={t('buttons.action-menu-button.aria-label')}
             disabled={disabled}
-            icon={ChevronDownIcon}
-            mode="ghost"
+            icon={EllipsisHorizontalIcon}
+            mode="bleed"
             ref={buttonRef}
+            size="large"
+            tooltipProps={{content: 'Document actions'}}
           />
         }
         menu={
@@ -109,52 +93,37 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
     if (onHandle) onHandle()
   }, [index, onAction, onHandle])
 
-  const tooltipContent = actionState.title && (
-    <Box padding={2}>
-      <Text size={1}>{actionState.title}</Text>
-    </Box>
+  const menuItemContent = useCallback(
+    (item: React.JSX.Element) => {
+      return (
+        <TooltipWithNodes
+          content={<Text size={1}>{actionState.title}</Text>}
+          disabled={!actionState.title}
+          placement="top"
+          portal
+        >
+          {item}
+        </TooltipWithNodes>
+      )
+    },
+    [actionState.title],
   )
-
   return (
     <MenuItem
       data-testid={`action-${actionState.label.replace(' ', '')}`}
       disabled={disabled || Boolean(actionState.disabled)}
       onClick={handleClick}
-      padding={0}
       tone={actionState.tone}
-    >
-      <Tooltip
-        content={tooltipContent}
-        disabled={!tooltipContent}
-        fallbackPlacements={['left', 'bottom']}
-        placement="top"
-        portal
-      >
-        <Flex align="center" paddingX={3}>
-          <Flex flex={1} paddingY={3}>
-            {actionState.icon && (
-              <Box marginRight={3}>
-                <Text>
-                  {isValidElement(actionState.icon) && actionState.icon}
-                  {isValidElementType(actionState.icon) && createElement(actionState.icon)}
-                </Text>
-              </Box>
-            )}
-
-            <Text>{actionState.label}</Text>
-          </Flex>
-
-          {actionState.shortcut && (
-            <Box marginLeft={3}>
-              <Hotkeys
-                keys={String(actionState.shortcut)
-                  .split('+')
-                  .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))}
-              />
-            </Box>
-          )}
-        </Flex>
-      </Tooltip>
-    </MenuItem>
+      icon={actionState.icon}
+      text={actionState.label}
+      hotkeys={
+        actionState.shortcut
+          ? String(actionState.shortcut)
+              .split('+')
+              .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))
+          : undefined
+      }
+      renderMenuItem={menuItemContent}
+    />
   )
 }

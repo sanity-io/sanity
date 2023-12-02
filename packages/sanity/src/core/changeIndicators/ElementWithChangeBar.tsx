@@ -1,5 +1,6 @@
 import {useLayer} from '@sanity/ui'
 import React, {useMemo} from 'react'
+import {Tooltip} from '../../ui'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {ConnectorContext} from './ConnectorContext'
 import {
@@ -27,15 +28,16 @@ export function ElementWithChangeBar(props: {
       disabled || !isChanged ? null : (
         <ChangeBar data-testid="change-bar" $zIndex={zIndex}>
           <ChangeBarMarker data-testid="change-bar__marker" />
-
-          <ChangeBarButton
-            aria-label={t('changes.change-bar.aria-label')}
-            data-testid="change-bar__button"
-            onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
-            tabIndex={-1}
-            type="button"
-            $withHoverEffect={withHoverEffect}
-          />
+          <Tooltip content="Review changes" portal>
+            <ChangeBarButton
+              aria-label={t('changes.change-bar.aria-label')}
+              data-testid="change-bar__button"
+              onClick={isReviewChangesOpen ? undefined : onOpenReviewChanges}
+              tabIndex={-1}
+              type="button"
+              $withHoverEffect={withHoverEffect}
+            />
+          </Tooltip>
         </ChangeBar>
       ),
     [disabled, isChanged, isReviewChangesOpen, onOpenReviewChanges, t, withHoverEffect, zIndex],

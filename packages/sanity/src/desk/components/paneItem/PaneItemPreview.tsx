@@ -1,10 +1,10 @@
 import type {SanityDocument, SchemaType} from '@sanity/types'
 import React, {isValidElement} from 'react'
 import {isNumber, isString} from 'lodash'
-import {Inline} from '@sanity/ui'
+import {Inline, TooltipDelayGroupProvider} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
-import {PublishedStatus} from '../PublishedStatus'
-import {DraftStatus} from '../DraftStatus'
+import {DocumentStatus} from '../../../ui/documentStatus'
+import {TOOLTIP_DELAY_PROPS} from '../../../ui/tooltip/constants'
 import type {PaneItemPreviewState} from './types'
 import {
   DocumentPresence,
@@ -15,6 +15,7 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
   isRecord,
+  useDocumentStatusTimeAgo,
 } from 'sanity'
 
 export interface PaneItemPreviewProps {
@@ -26,6 +27,13 @@ export interface PaneItemPreviewProps {
   value: SanityDocument
 }
 
+/**
+ * Preview component for _documents_ rendered in desk/structure panes.
+ *
+ * Note that non-document previews are not handled by this component,
+ * despite being pane items! Non-document previews bypass this entirely
+ * and are rendered by `<SanityDefaultPreview>`.
+ */
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, value} = props
   const title =
@@ -43,12 +51,15 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   )!
 
   const status = isLoading ? null : (
-    <Inline space={4}>
-      {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-      <PublishedStatus document={published} />
-      <DraftStatus document={draft} />
-    </Inline>
+    <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+      <Inline space={4}>
+        {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
+        <DocumentStatus draft={draft} published={published} />
+      </Inline>
+    </TooltipDelayGroupProvider>
   )
+
+  const tooltipLabel = useDocumentStatusTimeAgo({draft, published})
 
   return (
     <SanityDefaultPreview
@@ -57,6 +68,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       icon={icon}
       layout={layout}
       status={status}
+      tooltipLabel={tooltipLabel}
     />
   )
 }

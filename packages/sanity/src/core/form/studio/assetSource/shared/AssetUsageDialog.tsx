@@ -1,8 +1,9 @@
 import React, {useMemo} from 'react'
-import {Box, Dialog, Stack} from '@sanity/ui'
+import {Box, Stack} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'
+import {Dialog} from '../../../../../ui'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {useReferringDocuments} from '../../../../hooks/useReferringDocuments'
-import {SpinnerWithText} from '../../../components/SpinnerWithText'
 import {useTranslation} from '../../../../i18n'
 import {AssetUsageList} from './AssetUsageList'
 
@@ -37,7 +38,7 @@ export function AssetUsageDialog({asset, assetType, onClose}: UsageDialogProps) 
     >
       {isLoading ? (
         <Box padding={4}>
-          <SpinnerWithText text={t('asset-source.asset-usage-dialog.loading')} />
+          <LoadingBlock title={t('asset-source.asset-usage-dialog.loading')} />
         </Box>
       ) : (
         <Stack paddingX={[2, 3, 4]} paddingY={[3, 3, 3, 4]} space={1}>

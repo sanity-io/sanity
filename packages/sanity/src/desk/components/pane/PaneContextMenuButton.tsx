@@ -1,4 +1,4 @@
-import {EllipsisVerticalIcon} from '@sanity/icons'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
 import React, {useId} from 'react'
 import {structureLocaleNamespace} from '../../i18n'
@@ -42,11 +42,16 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
     <MenuButton
       button={
         <StatusButton
-          icon={EllipsisVerticalIcon}
+          icon={EllipsisHorizontalIcon}
           mode="bleed"
-          title={t('pane-header.context-menu-button.tooltip')}
           // eslint-disable-next-line no-nested-ternary
           tone={hasCritical ? 'critical' : hasCaution ? 'caution' : undefined}
+          tooltipProps={{
+            // @todo: replace with localized text
+            content: 'Show more',
+            placement: 'bottom',
+            portal: true,
+          }}
         />
       }
       id={id}

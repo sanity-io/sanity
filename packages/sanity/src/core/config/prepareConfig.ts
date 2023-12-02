@@ -185,6 +185,7 @@ export function prepareConfig(
       dataset: rootSource.dataset,
       schema: resolvedSources[0].schema,
       i18n: resolvedSources[0].i18n,
+      customIcon: !!rootSource.icon,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
       projectId: rootSource.projectId,

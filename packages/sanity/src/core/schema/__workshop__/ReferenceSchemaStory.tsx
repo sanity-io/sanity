@@ -1,5 +1,5 @@
 import {SchemaType} from '@sanity/types'
-import {Box, Card, Code, Flex, Label} from '@sanity/ui'
+import {Box, Card, Code, Flex, Text} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {createSchema} from '../createSchema'
 
@@ -35,7 +35,9 @@ export default function ReferenceSchemaStory() {
     <Card height="fill">
       <Flex height="fill">
         <Card flex={1} overflow="auto" padding={4}>
-          <Label size={1}>Schema definitions</Label>
+          <Text muted size={1} weight="medium">
+            Schema definitions
+          </Text>
 
           <Box paddingTop={4} />
 
@@ -44,7 +46,9 @@ export default function ReferenceSchemaStory() {
           </Code>
         </Card>
         <Card borderLeft flex={1} overflow="auto" padding={4}>
-          <Label size={1}>Schema types</Label>
+          <Text muted size={1} weight="medium">
+            Schema types
+          </Text>
 
           <Box paddingTop={4} />
 
