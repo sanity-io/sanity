@@ -1,6 +1,7 @@
 import {Box, Flex, Skeleton, Stack, Text, TextSkeleton, rem} from '@sanity/ui'
 import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
+import {useTranslation} from '../../../i18n'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
@@ -32,6 +33,8 @@ const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, siz
  * @beta */
 export function CompactPreview(props: CompactPreviewProps) {
   const {children, isPlaceholder, media, status, title} = props
+
+  const {t} = useTranslation()
 
   const statusNode = status && (
     <Box data-testid="compact-preview__status" paddingLeft={4} paddingRight={1}>
@@ -81,7 +84,11 @@ export function CompactPreview(props: CompactPreviewProps) {
         <Stack data-testid="compact-preview__header" flex={1} space={2}>
           <Text size={1} style={{color: 'inherit'}} textOverflow="ellipsis" weight="medium">
             {title && renderPreviewNode(title, 'compact')}
-            {!title && <span style={{color: 'var(--card-muted-fg-color)'}}>Untitled</span>}
+            {!title && (
+              <span style={{color: 'var(--card-muted-fg-color)'}}>
+                {t('preview.default.title-fallback')}
+              </span>
+            )}
           </Text>
         </Stack>
 
