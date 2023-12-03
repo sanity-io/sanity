@@ -1,11 +1,7 @@
 /* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
 import React, {useCallback, useMemo, useRef, useState, useId} from 'react'
 import type {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
-import {
-  EllipsisHorizontalIcon,
-  ResetIcon as ClearIcon,
-  SyncIcon as ReplaceIcon,
-} from '@sanity/icons'
+import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {concat, of, type Observable} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Box, Card, Flex, Inline, Menu, MenuButton, Stack, useToast} from '@sanity/ui'
@@ -16,7 +12,8 @@ import {set, unset} from '../../patch'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
-import {Button, MenuItem} from '../../../../ui'
+import {MenuItem} from '../../../../ui'
+import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {PreviewCard} from '../../../components'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -376,14 +373,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
                   <Inline paddingX={1}>
                     <MenuButton
-                      button={
-                        <Button
-                          mode="bleed"
-                          icon={EllipsisHorizontalIcon}
-                          data-testid="menu-button"
-                          tooltipProps={{content: 'Show more'}}
-                        />
-                      }
+                      button={<ContextMenuButton data-testid="menu-button" />}
                       id={`${inputId}-menuButton`}
                       menu={
                         <Menu>

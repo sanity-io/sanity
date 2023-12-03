@@ -20,6 +20,7 @@ import styled, {css} from 'styled-components'
 import {Button, MenuItem} from '../../../../../ui'
 import {CommentStatus} from '../../types'
 import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
@@ -87,13 +88,10 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
           <MenuButton
             id="comment-actions-menu"
             button={
-              <Button
+              <ContextMenuButton
                 aria-label="Open comment actions menu"
                 disabled={readOnly}
                 hidden={!showMenuButton}
-                icon={EllipsisHorizontalIcon}
-                mode="bleed"
-                tooltipProps={{content: 'Show more'}}
               />
             }
             onOpen={onMenuOpen}
