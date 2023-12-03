@@ -60,8 +60,10 @@ export function PlaceholderText(props: Props) {
   }, [acceptedFiles.length, directUploads, hoveringFiles, readOnly, rejectedFilesCount, t, type])
 
   return (
-    <RootFlex align="center" gap={2} justify="center">
-      <Text muted>{messageIcon}</Text>
+    <RootFlex align="center" gap={3} justify="center" paddingLeft={1}>
+      <Text muted size={1}>
+        {messageIcon}
+      </Text>
 
       <Text size={1} muted>
         {messageText}
