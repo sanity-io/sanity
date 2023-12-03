@@ -28,7 +28,7 @@ export function ElementWithChangeBar(props: {
       disabled || !isChanged ? null : (
         <ChangeBar data-testid="change-bar" $zIndex={zIndex}>
           <ChangeBarMarker data-testid="change-bar__marker" />
-          <Tooltip content="Review changes" portal>
+          <Tooltip content={t('changes.change-bar.aria-label')} portal>
             <ChangeBarButton
               aria-label={t('changes.change-bar.aria-label')}
               data-testid="change-bar__button"
