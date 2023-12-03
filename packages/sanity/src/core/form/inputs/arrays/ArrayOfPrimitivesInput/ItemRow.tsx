@@ -1,14 +1,15 @@
 import React, {useCallback, useMemo} from 'react'
 import {Box, Flex, Menu, MenuButton} from '@sanity/ui'
 import {SchemaType} from '@sanity/types'
-import {CopyIcon as DuplicateIcon, EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
+import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {FormFieldValidationStatus} from '../../../components/formField'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {useTranslation} from '../../../../i18n'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {RowLayout} from '../layouts/RowLayout'
 import {FieldPresence} from '../../../../presence'
-import {Button, MenuItem} from '../../../../../ui'
+import {MenuItem} from '../../../../../ui'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 import {getEmptyValue} from './getEmptyValue'
 
 export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
@@ -65,9 +66,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
 
   const menu = (
     <MenuButton
-      button={
-        <Button mode="bleed" icon={EllipsisHorizontalIcon} tooltipProps={{content: 'Show more'}} />
-      }
+      button={<ContextMenuButton />}
       id={`${inputId}-menuButton`}
       popover={MENU_BUTTON_POPOVER_PROPS}
       menu={
