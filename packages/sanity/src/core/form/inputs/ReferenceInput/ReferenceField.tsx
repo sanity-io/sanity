@@ -19,12 +19,7 @@ import {
   Stack,
   TooltipDelayGroupProvider,
 } from '@sanity/ui'
-import {
-  EllipsisHorizontalIcon,
-  LaunchIcon as OpenInNewTabIcon,
-  SyncIcon as ReplaceIcon,
-  TrashIcon,
-} from '@sanity/icons'
+import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
 import type {ObjectFieldProps, RenderPreviewCallback} from '../../types'
 import {FormField} from '../../components'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
@@ -34,7 +29,8 @@ import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {useTranslation} from '../../../i18n'
-import {Button, MenuItem} from '../../../../ui'
+import {MenuItem} from '../../../../ui'
+import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {TOOLTIP_DELAY_PROPS} from '../../../../ui/tooltip/constants'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -198,13 +194,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={
-              <Button
-                mode="bleed"
-                icon={EllipsisHorizontalIcon}
-                tooltipProps={{content: 'Show more'}}
-              />
-            }
+            button={<ContextMenuButton />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu>

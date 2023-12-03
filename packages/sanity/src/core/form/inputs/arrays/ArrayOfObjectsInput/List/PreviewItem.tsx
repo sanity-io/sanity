@@ -1,8 +1,9 @@
 import {Box, Card, CardTone, Menu, MenuButton} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
-import {CopyIcon as DuplicateIcon, EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
-import {Button, MenuItem} from '../../../../../../ui'
+import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
+import {MenuItem} from '../../../../../../ui'
+import {ContextMenuButton} from '../../../../../../ui/contextMenuButton'
 import {getSchemaTypeTitle} from '../../../../../schema'
 import {ObjectItem, ObjectItemProps} from '../../../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
@@ -120,13 +121,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     () =>
       readOnly ? null : (
         <MenuButton
-          button={
-            <Button
-              mode="bleed"
-              icon={EllipsisHorizontalIcon}
-              tooltipProps={{content: 'Show more'}}
-            />
-          }
+          button={<ContextMenuButton />}
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>

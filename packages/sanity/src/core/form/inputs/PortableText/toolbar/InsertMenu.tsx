@@ -8,6 +8,7 @@ import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseM
 import {Button} from '../../../../../ui'
 import {BlockItem} from './types'
 import {useFocusBlock} from './hooks'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
@@ -71,14 +72,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
 
   const menuButtonProps = useMemo(
     () => ({
-      button: (
-        <Button
-          icon={AddIcon}
-          mode="bleed"
-          disabled={disabled}
-          tooltipProps={{content: 'Show more', placement: tooltipPlacement}}
-        />
-      ),
+      button: <ContextMenuButton disabled={disabled} tooltipPlacement={tooltipPlacement} />,
       popover: MENU_POPOVER_PROPS,
     }),
     [disabled, tooltipPlacement],

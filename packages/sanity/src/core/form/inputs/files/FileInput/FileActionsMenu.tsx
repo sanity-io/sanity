@@ -1,4 +1,4 @@
-import {BinaryDocumentIcon, EllipsisHorizontalIcon} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import {
   Box,
@@ -11,9 +11,9 @@ import {
   useClickOutside,
   useGlobalKeyDown,
 } from '@sanity/ui'
-import {Button} from '../../../../../ui'
 import {formatBytes} from '../../common/helper'
 import {useTranslation} from '../../../../i18n'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 
 type Props = {
   children: ReactNode
@@ -135,14 +135,11 @@ export function FileActionsMenu(props: Props) {
             open={isMenuOpen}
             constrainSize
           >
-            <Button
+            <ContextMenuButton
               aria-label={t('inputs.file.actions-menu.file-options.aria-label')}
               data-testid="options-menu-button"
-              icon={EllipsisHorizontalIcon}
-              mode="bleed"
               onClick={handleClick}
               ref={setOptionsButtonRef}
-              tooltipProps={{content: 'Show more'}}
             />
           </Popover>
         </Flex>

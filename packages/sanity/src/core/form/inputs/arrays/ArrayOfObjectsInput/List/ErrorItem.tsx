@@ -1,9 +1,10 @@
 import React, {useId} from 'react'
-import {EllipsisHorizontalIcon, TrashIcon} from '@sanity/icons'
+import {TrashIcon} from '@sanity/icons'
 import {Box, Menu, MenuButton} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'
 import {RowLayout} from '../../layouts/RowLayout'
-import {Button, MenuItem} from '../../../../../../ui'
+import {MenuItem} from '../../../../../../ui'
+import {ContextMenuButton} from '../../../../../../ui/contextMenuButton'
 import {useTranslation} from '../../../../../i18n'
 import {IncompatibleItemType} from './IncompatibleItemType'
 
@@ -26,13 +27,7 @@ export function ErrorItem(props: {
         tone="caution"
         menu={
           <MenuButton
-            button={
-              <Button
-                mode="bleed"
-                icon={EllipsisHorizontalIcon}
-                tooltipProps={{content: 'Show more'}}
-              />
-            }
+            button={<ContextMenuButton />}
             id={`${id}-menuButton`}
             menu={
               <Menu>

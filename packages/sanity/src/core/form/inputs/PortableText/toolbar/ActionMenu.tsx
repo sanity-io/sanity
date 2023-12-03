@@ -7,6 +7,7 @@ import {Button} from '../../../../../ui'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
@@ -88,14 +89,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   const menuButtonProps = useMemo(
     () => ({
-      button: (
-        <Button
-          icon={EllipsisHorizontalIcon}
-          mode="bleed"
-          disabled={disabled}
-          tooltipProps={{content: 'Show more', placement: tooltipPlacement}}
-        />
-      ),
+      button: <ContextMenuButton disabled={disabled} tooltipPlacement={tooltipPlacement} />,
       popover: MENU_POPOVER_PROPS,
     }),
     [disabled, tooltipPlacement],
