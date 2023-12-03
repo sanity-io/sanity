@@ -590,8 +590,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.imagetool.loading': 'Loading image…',
   /** Hotspot & Crop */
   'inputs.imagetool.title': 'Hotspot & Crop',
-  /** Convert to <code>`{{targetType}}`</code> */
-  'inputs.invalid-value.convert-button.text': 'Convert to <code>{{targetType}}</code>',
+  /** Convert to `{{targetType}}` */
+  'inputs.invalid-value.convert-button.text': 'Convert to {{targetType}}',
   /** The current value (<code>`{{actualType}}`</code>) */
   'inputs.invalid-value.current-type': 'The current value (<code>{{actualType}}</code>)',
   /** The property value is stored as a value type that does not match the expected type. */
@@ -932,8 +932,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.tags.placeholder': 'Enter tag and press ENTER…',
   /** Placeholder for an empty tag input on touch devices */
   'inputs.tags.placeholder_touch': 'Enter tag…',
-  /** Convert to <code>`{{targetType}}`</code> */
-  'inputs.untyped-value.convert-button.text': 'Convert to <code>{{targetType}}</code>',
+  /** Convert to `{{targetType}}` */
+  'inputs.untyped-value.convert-button.text': 'Convert to {{targetType}}',
   /** Encountered an object value without a <code>_type</code> property. */
   'inputs.untyped-value.description':
     'Encountered an object value without a <code>_type</code> property.',

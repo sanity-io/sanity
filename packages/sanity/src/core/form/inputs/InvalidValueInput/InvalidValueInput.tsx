@@ -1,5 +1,7 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo} from 'react'
+import {isPlainObject} from 'lodash'
+import {useTranslation, Translate} from '../../../i18n'
 import {PatchEvent, set, unset} from '../../patch'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
@@ -7,8 +9,6 @@ import {isDev} from '../../../environment'
 import {Button} from '../../../../ui'
 import {converters as CONVERTERS, ValueConverter} from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
-import {isPlainObject} from 'lodash'
-import {useTranslation, Translate} from '../../../i18n'
 
 interface Converter extends ValueConverter {
   from: string
@@ -184,17 +184,7 @@ function ConvertButton({
   return (
     <Button
       onClick={handleClick}
-      text={
-        <>
-          <Translate
-            t={t}
-            i18nKey="inputs.invalid-value.convert-button.text"
-            values={{
-              targetType: converter.to,
-            }}
-          />
-        </>
-      }
+      text={t('inputs.invalid-value.convert-button.text', {targetType: converter.to})}
     />
   )
 }
