@@ -136,14 +136,13 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       'aria-label': openDialogAriaLabel,
       disabled: disabled || loading,
       icon: AddIcon,
-      // @todo: localize text
-      text: 'Create',
+      text: t('new-document.button'),
       mode: 'ghost',
       onClick: handleToggleOpen,
       ref: setButtonElement,
       selected: open,
     }),
-    [disabled, handleToggleOpen, loading, open, openDialogAriaLabel],
+    [disabled, handleToggleOpen, loading, open, openDialogAriaLabel, t],
   )
 
   // Tooltip content for the open button
