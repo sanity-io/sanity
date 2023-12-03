@@ -38,7 +38,7 @@ export function AssetUsageDialog({asset, assetType, onClose}: UsageDialogProps) 
     >
       {isLoading ? (
         <Box padding={4}>
-          <LoadingBlock title={t('asset-source.asset-usage-dialog.loading')} />
+          <LoadingBlock />
         </Box>
       ) : (
         <Stack paddingX={[2, 3, 4]} paddingY={[3, 3, 3, 4]} space={1}>
