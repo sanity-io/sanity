@@ -555,7 +555,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
               iconRight={ChevronDownIcon}
-              mode="ghost"
+              mode="bleed"
               text={t('inputs.image.browse-menu.text')}
             />
           }
@@ -590,7 +590,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
       <Button
         text={t('inputs.image.browse-menu.text')}
         icon={SearchIcon}
-        mode="ghost"
+        mode="bleed"
         onClick={() => {
           this.setState({isMenuOpen: false})
           this.handleSelectImageFromAssetSource(assetSources[0])
@@ -616,7 +616,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         <Card
           tone={readOnly ? 'transparent' : 'inherit'}
           border
-          padding={3}
+          paddingX={3}
+          paddingY={2}
           style={
             hoveringFiles.length === 0
               ? {borderStyle: 'dashed'}

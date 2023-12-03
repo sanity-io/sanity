@@ -494,7 +494,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
           ref={this.setBrowseButtonElement}
           button={
             <Button
-              mode="ghost"
+              mode="bleed"
               text={t('inputs.file.multi-browse-button.text')}
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
@@ -528,7 +528,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
       <Button
         text={t('inputs.file.browse-button.text')}
         icon={SearchIcon}
-        mode="ghost"
+        mode="bleed"
         onClick={() => {
           this.setState({isMenuOpen: false})
           this.handleSelectFileFromAssetSource(assetSources[0])
@@ -554,7 +554,8 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
         <Card
           tone={readOnly ? 'transparent' : 'inherit'}
           border
-          padding={3}
+          paddingX={3}
+          paddingY={2}
           style={
             hoveringFiles.length === 0
               ? {borderStyle: 'dashed'}
