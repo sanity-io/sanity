@@ -277,25 +277,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Text shown on back button visible on smaller breakpoints */
   'pane-header.back-button.text': 'Back',
-  /** tooltip text (via `title` attribute) for the menu button */
-  'pane-header.context-menu-button.tooltip': 'Show menu',
-  /** Appears in a document list pane header if there are more than one option for create. This is the label for that menu */
-  'pane-header.create-menu.label': 'Create',
   /** The `aria-label` for the disabled button in the pane header if create permissions are granted */
   'pane-header.disabled-created-button.aria-label': 'Insufficient permissions',
 
-  /** The text shown in the tooltip of pane item previews of documents if there are unpublished edits */
-  'pane-item.draft-status.has-draft.tooltip': 'Edited <RelativeTime/>',
   /** The text shown in the tooltip of pane item previews of documents if there are no unpublished edits */
   'pane-item.draft-status.no-draft.tooltip': 'No unpublished edits',
   /** The subtitle tor pane item previews if there isn't a matching schema type found */
   'pane-item.missing-schema-type.subtitle': 'Document: <Code>{{documentId}}</Code>',
   /** The title tor pane item previews if there isn't a matching schema type found */
   'pane-item.missing-schema-type.title': 'No schema found for type <Code>{{documentType}}</Code>',
-  /** The text shown in the tooltip of pane item previews of documents if there are unpublished edits */
-  'pane-item.published-status.has-published.tooltip': 'Published <RelativeTime/>',
-  /** The text shown in the tooltip of pane item previews of documents if there are no unpublished edits */
-  'pane-item.published-status.no-published.tooltip': 'No unpublished edits',
 
   /** The text used in the document header title if there is an error */
   'panes.document-header-title.error.text': 'Error: {{error}}',
@@ -374,26 +364,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** The text for the "Open preview" action for a document */
   'production-preview.menu-item.title': 'Open preview',
-
-  /** Accessibility label indicating when the document was last published, in relative time, eg "3 weeks ago" */
-  'status-bar.publish-status-button.last-published-time.aria-label':
-    'Last published {{relativeTime}}',
-  /** Text for tooltip showing explanation of timestamp/relative time, eg "Last published <RelativeTime/>" */
-  'status-bar.publish-status-button.last-published-time.tooltip': 'Last published <RelativeTime/>',
-  /** Accessibility label indicating when the document was last updated, in relative time, eg "2 hours ago" */
-  'status-bar.publish-status-button.last-updated-time.aria-label': 'Last updated {{relativeTime}}',
-  /** Text for tooltip showing explanation of timestamp/relative time, eg "Last updated <RelativeTime/>" */
-  'status-bar.publish-status-button.last-updated-time.tooltip': 'Last updated <RelativeTime/>',
-  /** Aria label for the button */
-  'status-bar.review-changes-button.aria-label': 'Review changes',
-  /** Label for button when status is saved */
-  'status-bar.review-changes-button.status.saved.text': 'Saved!',
-  /** Label for button when status is syncing */
-  'status-bar.review-changes-button.status.syncing.text': 'Saving...',
-  /** Text for the secondary text for tooltip for the button */
-  'status-bar.review-changes-button.tooltip.changes-saved': 'Changes saved',
-  /** Primary text for tooltip for the button */
-  'status-bar.review-changes-button.tooltip.text': 'Review changes',
 
   /** The text that appears in side the documentation link */
   'structure-error.docs-link.text': 'View documentation',
