@@ -1,4 +1,5 @@
 import React from 'react'
+import {LoadingBlock} from '../../../../../../ui/loadingBlock'
 import {ImageLoader} from './ImageLoader'
 import {ToolCanvas} from './ToolCanvas'
 import {Resize} from './Resize'
@@ -14,7 +15,7 @@ export function ImageTool(props: ImageToolProps) {
     <ImageLoader src={props.src}>
       {({isLoading, image, error}) => {
         if (isLoading) {
-          return <div>Loading...</div>
+          return <LoadingBlock />
         }
         if (error) {
           return <div>{error.message}</div>

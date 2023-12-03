@@ -16,8 +16,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.asset-usage-dialog.header_file': 'Documents using file',
   /** Header in usage dialog for image assets */
   'asset-source.asset-usage-dialog.header_image': 'Documents using image',
-  /** Text shown in usage dialog when loading documents using the selected asset */
-  'asset-source.asset-usage-dialog.loading': 'Loading…',
   /** Text for cancel action in delete-asset dialog */
   'asset-source.delete-dialog.action.cancel': 'Cancel',
   /** Text for "confirm delete" action in delete-asset dialog */
@@ -26,8 +24,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.delete-dialog.header_file': 'Delete file',
   /** Dialog header for delete-asset dialog when deleting an image */
   'asset-source.delete-dialog.header_image': 'Delete image',
-  /** Text shown in delete dialog when loading documents using the selected asset */
-  'asset-source.delete-dialog.loading': 'Loading…',
   /** Message confirming to delete *named* file */
   'asset-source.delete-dialog.usage-list.confirm-delete-file_named':
     'You are about to delete the file <strong>{{filename}}}</strong> and its metadata. Are you sure?',
@@ -308,6 +304,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Defualt text for dialog confirm button */
   'common.dialog.confirm-button.text': 'Confirm',
 
+  /** Default text in shared loader text / spinner lockup */
+  'common.loading': 'Loading',
+
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',
@@ -563,8 +562,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
   /** Error: `{{errorMessage}}` */
   'inputs.imagetool.load-error': 'Error: {{errorMessage}}',
-  /** Loading image… */
-  'inputs.imagetool.loading': 'Loading image…',
   /** Hotspot & Crop */
   'inputs.imagetool.title': 'Hotspot & Crop',
   /** Convert to `{{targetType}}` */
