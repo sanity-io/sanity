@@ -8,6 +8,7 @@ import {
   BoxHeight,
 } from '@sanity/ui'
 import React, {ComponentProps, forwardRef} from 'react'
+import {useTranslation} from 'react-i18next'
 
 /** @internal */
 export interface DialogProps
@@ -55,6 +56,8 @@ export const Dialog = forwardRef(function Dialog(
   {bodyHeight, children, footer, padding = true, ...props}: DialogProps,
   ref: React.Ref<HTMLDivElement>,
 ) {
+  const {t} = useTranslation()
+
   return (
     <UIDialog
       {...props}
@@ -67,7 +70,7 @@ export const Dialog = forwardRef(function Dialog(
               <Button
                 mode="bleed"
                 padding={2}
-                text="Cancel"
+                text={t('dialog.cancel-button.text')}
                 tone="default"
                 onClick={props.onClose}
                 {...footer.cancelButton}
@@ -77,7 +80,7 @@ export const Dialog = forwardRef(function Dialog(
               <Button
                 mode="default"
                 padding={2}
-                text="Confirm"
+                text={t('dialog.confirm-button.text')}
                 tone="critical"
                 {...footer.confirmButton}
               />
