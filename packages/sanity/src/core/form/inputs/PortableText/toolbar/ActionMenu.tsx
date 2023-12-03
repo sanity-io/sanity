@@ -7,9 +7,8 @@ import {
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {isKeySegment} from '@sanity/types'
-import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
-import {Button} from '../../../../../ui'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'
@@ -122,14 +121,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   const menuButtonProps = useMemo(
     () => ({
-      button: (
-        <Button
-          icon={EllipsisHorizontalIcon}
-          mode="bleed"
-          disabled={disabled}
-          tooltipProps={{content: 'Show more', placement: tooltipPlacement}}
-        />
-      ),
+      button: <ContextMenuButton disabled={disabled} tooltipPlacement={tooltipPlacement} />,
       popover: MENU_POPOVER_PROPS,
     }),
     [disabled, tooltipPlacement],
