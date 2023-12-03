@@ -16,6 +16,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {PaneMenuItem} from '../../../../types'
 import {Button} from '../../../../../ui'
 import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
@@ -101,8 +102,7 @@ export const DocumentPanelHeader = memo(
                 data-as="a"
                 icon={ArrowLeftIcon}
                 mode="bleed"
-                // @todo: localize
-                tooltipProps={{content: 'Back'}}
+                tooltipProps={{content: t('pane-header.back-button.text')}}
               />
             )
           }
