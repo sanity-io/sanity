@@ -317,6 +317,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'default-orderings.name': 'Sort by Name',
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
+  /** --- Default dialogs --- */
+
+  /** Default text for dialog cancel button */
+  'dialog.cancel-button.text': 'Cancel',
+
+  /** Defualt text for dialog confirm button */
+  'dialog.confirm-button.text': 'Confirm',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
