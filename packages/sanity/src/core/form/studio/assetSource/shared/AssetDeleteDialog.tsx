@@ -63,7 +63,7 @@ export function AssetDeleteDialog({
     >
       {isLoading ? (
         <Box padding={4}>
-          <LoadingBlock title={t('asset-source.delete-dialog.loading')} />
+          <LoadingBlock />
         </Box>
       ) : (
         <Stack
