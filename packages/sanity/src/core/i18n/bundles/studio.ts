@@ -248,8 +248,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.inspector.to-label': 'To',
   /** Loading author of change in the differences tooltip in the review changes pane */
   'changes.loading-author': 'Loading…',
-  /** Loading changes in Review Changes Pane */
-  'changes.loading-changes': 'Loading changes…',
   /** No Changes description in the Review Changes pane */
   'changes.no-changes-description':
     'Edit the document or select an older version in the timeline to see a list of changes appear in this panel.',
@@ -456,8 +454,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.no-items-label': 'No items',
   /** Label for read only array fields */
   'inputs.array.read-only-label': 'This field is read-only',
-  /** Label for when the array input is resolving the initial value for the item */
-  'inputs.array.resolving-initial-value': 'Resolving initial value…',
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Acessibility label for button to open file options menu */
@@ -489,8 +485,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.files.common.actions-menu.download.label': 'Download',
   /** The URL is copied to the clipboard */
   'inputs.files.common.actions-menu.notification.url-copied': 'The URL is copied to the clipboard',
-  /** Replace */
-  'inputs.files.common.actions-menu.replace.label': 'Replace',
   /** Upload */
   'inputs.files.common.actions-menu.upload.label': 'Upload',
   /** Drop to upload */
@@ -860,30 +854,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.reference.metadata-error.title': 'Unable to load reference metadata',
   /** Message shown when no documents were found that matched the given search string */
   'inputs.reference.no-results-for-query': 'No results for <strong>“{{searchTerm}}”</strong>',
-  /** Text for tooltip showing when a document was edited, using relative time (eg "how long ago was it edited?") */
-  'inputs.reference.preview.edited-at-time': 'Edited <RelativeTime/>',
-  /** Accessibility label for icon indicating that document does _not_ have any unpublished changes */
-  'inputs.reference.preview.has-no-unpublished-changes-aria-label': 'No unpublished edits',
-  /** Accessibility label for icon indicating that document has unpublished changes */
-  'inputs.reference.preview.has-unpublished-changes-aria-label': 'Edited',
-  /** Accessibility label for icon indicating that document does _not_ have a published version */
-  'inputs.reference.preview.is-not-published-aria-label': 'Not published',
-  /** Accessibility label for icon indicating that document has a published version */
-  'inputs.reference.preview.is-published-aria-label': 'Published',
-  /** Text for tooltip indicating that a document has no unpublished edits */
-  'inputs.reference.preview.no-unpublished-edits': 'No unpublished edits',
-  /** Text for tooltip indicating that a document has not yet been published */
-  'inputs.reference.preview.not-published': 'Not published',
-  /** Text for tooltip showing when a document was published, using relative time (eg "how long ago was it published?") */
-  'inputs.reference.preview.published-at-time': 'Published <RelativeTime/>',
   /** The referenced document no longer exist and might have been deleted (for weak references) */
   'inputs.reference.referenced-document-does-not-exist':
     'The referenced document no longer exist and might have been deleted (document ID: <code>{{documentId}}</code>).',
   /** The referenced document could not be displayed to the user because of insufficient permissions */
   'inputs.reference.referenced-document-insufficient-permissions':
     'The referenced document could not be accessed due to insufficient permissions',
-  /** Label for when the reference input is resolving the initial value for an item */
-  'inputs.reference.resolving-initial-value': 'Resolving initial value…',
   /** Placeholder shown in a reference input with no current value */
   'inputs.reference.search-placeholder': 'Type to search',
   /** Explanation of the consequences of leaving the reference as strong instead of weak */
@@ -976,8 +952,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'new-document.create-new-document-label': 'New document…',
   /** Placeholder for the "filter" input within the new document menu */
   'new-document.filter-placeholder': 'Filter',
-  /** Loading indicator text within the new document menu */
-  'new-document.loading': 'Loading…',
   /** Accessibility label for the list displaying options in the new document menu */
   'new-document.new-document-aria-label': 'New document',
   /** Message for when there are no document type options in the new document menu */
@@ -1529,8 +1503,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'user-menu.action.manage-project-aria-label': 'Manage project',
   /** Label for action to sign out of the current sanity project */
   'user-menu.action.sign-out': 'Sign out',
-  /** Title for appearance section for the current studio (dark / light / system scheme) */
-  'user-menu.appearance-title': 'Appearance',
   /** Label for close menu button for user menu */
   'user-menu.close-menu': 'Close menu',
   /** Description for using the "dark theme" in the appearance user menu */
@@ -1545,8 +1517,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'user-menu.color-scheme.system-description': 'Use system appearance',
   /** Title for using system apparence in the appearance user menu */
   'user-menu.color-scheme.system-title': 'System',
-  /** Title for locale section for the current studio */
-  'user-menu.locale-title': 'Language',
   /** Label for tooltip to show which provider the currently logged in user is using */
   'user-menu.login-provider': 'Signed in with {{providerTitle}}',
 
@@ -1568,8 +1538,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'workspaces.select-workspace-aria-label': 'Select workspace',
   /** Button label for opening the workspace switcher */
   'workspaces.select-workspace-label': 'Select workspace',
-  /** Title for Workplaces dropdown menu */
-  'workspaces.title': 'Workspaces',
 })
 
 /**
