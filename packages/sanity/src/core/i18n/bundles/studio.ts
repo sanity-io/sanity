@@ -322,13 +322,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Tooltip text for context menu buttons */
   'common.context-menu-button.tooltip': 'Show more',
 
-  /** --- Default dialogs --- */
-
   /** Default text for dialog cancel button */
-  'dialog.cancel-button.text': 'Cancel',
+  'common.dialog.cancel-button.text': 'Cancel',
 
   /** Defualt text for dialog confirm button */
-  'dialog.confirm-button.text': 'Confirm',
+  'common.dialog.confirm-button.text': 'Confirm',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
