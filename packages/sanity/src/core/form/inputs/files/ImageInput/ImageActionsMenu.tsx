@@ -1,5 +1,5 @@
 import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
-import {EllipsisHorizontalIcon, CropIcon} from '@sanity/icons'
+import {CropIcon} from '@sanity/icons'
 import {
   Inline,
   Menu,
@@ -12,6 +12,7 @@ import styled from 'styled-components'
 import {Button} from '../../../../../ui'
 import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 import {useTranslation} from '../../../../i18n'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;
@@ -113,15 +114,12 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
           open={isMenuOpen}
           constrainSize
         >
-          <Button
+          <ContextMenuButton
             aria-label={t('inputs.image.actions-menu.options.aria-label')}
             data-testid="options-menu-button"
-            icon={EllipsisHorizontalIcon}
             mode="ghost"
             onClick={handleClick}
             ref={setOptionsButtonRef}
-            // TODO: localize
-            tooltipProps={{content: 'Show more'}}
           />
         </Popover>
       </MenuActionsWrapper>

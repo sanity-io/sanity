@@ -314,6 +314,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'default-orderings.name': 'Sort by Name',
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
+  /** --- Common components --- */
+
+  /** Tooltip text for context menu buttons */
+  'common.context-menu-button.tooltip': 'Show more',
+
   /** --- Default dialogs --- */
 
   /** Default text for dialog cancel button */
