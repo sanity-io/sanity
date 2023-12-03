@@ -1,8 +1,10 @@
-import {EllipsisVerticalIcon, LinkIcon, TrashIcon} from '@sanity/icons'
-import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
-import {AssetMenuAction} from '../types'
-import {useTranslation} from '../../../../i18n'
+import {LinkIcon, TrashIcon} from '@sanity/icons'
+import {Menu, MenuButton} from '@sanity/ui'
 import React from 'react'
+import {MenuItem} from '../../../../../ui'
+import {useTranslation} from '../../../../i18n'
+import {AssetMenuAction} from '../types'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 
 const MENU_POPOVER_PROPS = {portal: true, placement: 'right'} as const
 
@@ -22,10 +24,8 @@ export function AssetMenu({
   return (
     <MenuButton
       button={
-        <Button
-          padding={2}
+        <ContextMenuButton
           mode={border ? 'ghost' : triggerButtonMode}
-          icon={EllipsisVerticalIcon}
           tone={border ? 'default' : triggerButtonTone}
         />
       }

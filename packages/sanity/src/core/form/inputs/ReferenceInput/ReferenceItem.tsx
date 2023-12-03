@@ -3,7 +3,6 @@ import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, u
 import {
   CloseIcon,
   CopyIcon as DuplicateIcon,
-  EllipsisHorizontalIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
@@ -16,7 +15,8 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {randomKey} from '../../utils/randomKey'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
 import {FieldPresence} from '../../../presence'
-import {Button, MenuItem} from '../../../../ui'
+import {MenuItem} from '../../../../ui'
+import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {useTranslation} from '../../../i18n'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {RowLayout} from '../arrays/layouts/RowLayout'
@@ -183,13 +183,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       readOnly ? null : (
         <Box marginLeft={1}>
           <MenuButton
-            button={
-              <Button
-                mode="bleed"
-                icon={EllipsisHorizontalIcon}
-                tooltipProps={{content: 'Show more'}}
-              />
-            }
+            button={<ContextMenuButton />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu ref={menuRef}>

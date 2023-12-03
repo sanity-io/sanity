@@ -1,8 +1,7 @@
 import React, {cloneElement, forwardRef, useCallback, useMemo, useState} from 'react'
 import {Flex, MenuButtonProps} from '@sanity/ui'
-import {EllipsisHorizontalIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {Button} from '../../../ui'
+import {ContextMenuButton} from '../../../ui/contextMenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
 
@@ -81,10 +80,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
   )
 
   const menuButton = useMemo(
-    () =>
-      menuButtonProps?.button || (
-        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
-      ),
+    () => menuButtonProps?.button || <ContextMenuButton />,
     [menuButtonProps],
   )
 

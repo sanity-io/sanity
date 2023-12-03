@@ -1,10 +1,10 @@
-import {DocumentIcon, EditIcon, EllipsisHorizontalIcon} from '@sanity/icons'
+import {DocumentIcon, EditIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
 import React, {ComponentType, createElement, useMemo} from 'react'
+import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {PortableTextPreviewLayoutKey, PreviewProps} from '../types'
 import {InlinePreview} from '../portableText/InlinePreview'
-import {Button} from '../../../../ui'
 import {BlockPreview} from '../portableText/BlockPreview'
 import {BlockImagePreview} from '../portableText/BlockImagePreview'
 import {PREVIEW_SIZES} from '../constants'
@@ -72,9 +72,7 @@ export default function PortableTextPreviewStory() {
 
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
     () => ({
-      actions: withActions && (
-        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
-      ),
+      actions: withActions && <ContextMenuButton />,
       isPlaceholder,
       media,
       status: status && (
