@@ -23,8 +23,7 @@ export const SearchButton = forwardRef(function SearchButton(
       data-testid="studio-search"
       icon={SearchIcon}
       tooltipProps={{
-        // @todo: localize
-        content: 'Search',
+        content: t('search.button.tooltip'),
         hotkeys: [GLOBAL_SEARCH_KEY_MODIFIER, GLOBAL_SEARCH_KEY.toUpperCase()],
         portal: true,
       }}
