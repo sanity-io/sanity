@@ -2,6 +2,7 @@
 import {Card, Layer, Spinner, Text} from '@sanity/ui'
 import React from 'react'
 import styled, {css} from 'styled-components'
+import {useTranslation} from 'sanity'
 
 // Enable to force debug background
 const DEBUG_MODE = false
@@ -111,14 +112,15 @@ const StyledText = styled(Text)`
  * A generic loading container which displays a spinner and text.
  * The spinner won't initially be visible and fades in after a short delay.
  */
-// @todo: ensure this works in dark mode
-export function LoadingBlock({fill, hideText, title = 'Loading'}: LoadingTestProps) {
+export function LoadingBlock({fill, hideText, title}: LoadingTestProps) {
+  const {t} = useTranslation()
+
   return (
     <StyledCard $fill={fill} as={fill ? Layer : 'div'}>
       <StyledSpinner $animatePosition={!hideText} muted />
       {!hideText && (
         <StyledText muted size={1}>
-          {title}
+          {title || t('common.loading')}
         </StyledText>
       )}
     </StyledCard>
