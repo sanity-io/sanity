@@ -14,9 +14,9 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {useDeskTool} from '../../../../useDeskTool'
 import {Button} from '../../../../../ui'
 import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {structureLocaleNamespace} from '../../../../i18n'
 import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -96,8 +96,7 @@ export const DocumentPanelHeader = memo(
                 data-as="a"
                 icon={ArrowLeftIcon}
                 mode="bleed"
-                // @todo: localize
-                tooltipProps={{content: 'Back'}}
+                tooltipProps={{content: t('pane-header.back-button.text')}}
               />
             )
           }
