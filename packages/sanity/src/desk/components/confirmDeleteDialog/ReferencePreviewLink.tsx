@@ -40,18 +40,11 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
   )
 
   return (
-    <PreviewCard
-      __unstable_focusRing
-      as={Link as FIXME}
-      data-as="a"
-      onClick={onClick}
-      padding={2}
-      radius={2}
-    >
+    <PreviewCard __unstable_focusRing as={Link as FIXME} data-as="a" onClick={onClick} radius={2}>
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
         icon={type?.icon}
-        layout="default"
+        layout="compact"
         presence={documentPresence?.length > 0 ? documentPresence : EMPTY_ARRAY}
         schemaType={type}
         value={value}
