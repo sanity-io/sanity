@@ -164,31 +164,25 @@ export function ConfirmDeleteDialogBody({
                   shadow={1}
                   paddingY={1}
                 >
-                  <Flex align="center" margin={2} marginRight={3}>
-                    <Box marginLeft={3} marginRight={3}>
-                      <Text size={3}>
-                        <DocumentsIcon />
+                  <Flex align="center" gap={3} paddingX={3} paddingY={1}>
+                    <Text size={1}>
+                      <DocumentsIcon />
+                    </Text>
+                    <Stack space={2}>
+                      <Text textOverflow="ellipsis" size={1}>
+                        {t('confirm-delete-dialog.cdr-summary.title', {
+                          count: normalizedDatasetNames.length,
+                          documentCount: t('confirm-delete-dialog.cdr-summary.document-count', {
+                            count: crossDatasetReferences.totalCount,
+                          }),
+                        })}
                       </Text>
-                    </Box>
-                    <Flex marginRight={4} direction="column">
-                      <Box marginBottom={2}>
-                        <Text>
-                          {t('confirm-delete-dialog.cdr-summary.title', {
-                            count: normalizedDatasetNames.length,
-                            documentCount: t('confirm-delete-dialog.cdr-summary.document-count', {
-                              count: crossDatasetReferences.totalCount,
-                            }),
-                          })}
-                        </Text>
-                      </Box>
-                      <Box>
-                        <Text title={datasetSubtitle} textOverflow="ellipsis" size={1} muted>
-                          {datasetSubtitle}
-                        </Text>
-                      </Box>
-                    </Flex>
+                      <Text title={datasetSubtitle} textOverflow="ellipsis" size={1} muted>
+                        {datasetSubtitle}
+                      </Text>
+                    </Stack>
                     <ChevronWrapper>
-                      <Text muted>
+                      <Text muted size={1}>
                         <ChevronDownIcon />
                       </Text>
                     </ChevronWrapper>
