@@ -33,6 +33,7 @@ import {delayValue} from './_helpers'
 import {typesInOptionGroup} from './groupByOption'
 
 export const structure: StructureResolver = (S, {schema, documentStore, i18n}) => {
+  i18n.loadNamespaces(['testStudio']) // @todo: confirm – is this idiomatic usage?
   const {t} = i18n
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')

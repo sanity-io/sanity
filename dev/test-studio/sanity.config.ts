@@ -13,7 +13,6 @@ import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {imageAssetSource} from './assetSources'
-import {Branding} from './components/Branding'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {languageFilter} from './plugins/language-filter'
@@ -59,11 +58,6 @@ const sharedSettings = definePlugin({
   form: {
     image: {
       assetSources: [imageAssetSource],
-    },
-  },
-  studio: {
-    components: {
-      logo: Branding,
     },
   },
 
