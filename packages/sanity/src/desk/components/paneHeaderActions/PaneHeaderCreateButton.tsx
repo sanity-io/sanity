@@ -119,7 +119,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           mode="bleed"
           disabled={disabled}
           data-testid="action-intent-button"
-          tooltipProps={disabled ? null : {content: 'Create new document'}}
+          tooltipProps={disabled ? null : {content: t('pane-header.create-new-button.tooltip')}}
         />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -132,8 +132,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           icon={AddIcon}
           mode="bleed"
           data-testid="multi-action-intent-button"
-          // @todo: localize
-          tooltipProps={{content: 'Create new document'}}
+          tooltipProps={{content: t('pane-header.create-new-button.tooltip')}}
         />
       }
       id="create-menu"
