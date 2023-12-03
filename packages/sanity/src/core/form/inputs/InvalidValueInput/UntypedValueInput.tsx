@@ -35,17 +35,9 @@ function SetMissingTypeButton({
   return (
     <Button
       onClick={handleClick}
-      text={
-        <>
-          <Translate
-            t={t}
-            i18nKey="inputs.untyped-value.convert-button.text"
-            values={{
-              targetType: targetType,
-            }}
-          />
-        </>
-      }
+      text={t('inputs.untyped-value.convert-button.text', {
+        targetType: targetType,
+      })}
     />
   )
 }
