@@ -70,7 +70,7 @@ export const Dialog = forwardRef(function Dialog(
               <Button
                 mode="bleed"
                 padding={2}
-                text={t('dialog.cancel-button.text')}
+                text={t('common.dialog.cancel-button.text')}
                 tone="default"
                 onClick={props.onClose}
                 {...footer.cancelButton}
@@ -80,7 +80,7 @@ export const Dialog = forwardRef(function Dialog(
               <Button
                 mode="default"
                 padding={2}
-                text={t('dialog.confirm-button.text')}
+                text={t('common.dialog.confirm-button.text')}
                 tone="critical"
                 {...footer.confirmButton}
               />
