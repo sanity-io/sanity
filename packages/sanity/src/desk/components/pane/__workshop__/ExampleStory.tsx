@@ -1,8 +1,9 @@
-import {ChevronDownIcon, EllipsisHorizontalIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons'
 import {Container, Stack, TabList, Text} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import {Button, Tab} from '../../../../ui'
+import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'
@@ -22,12 +23,7 @@ export default function ExampleStory() {
   const manyTabs = useBoolean('Many tabs', false, 'Props')
   const tone = useSelect('Tone', PANE_TONE_OPTIONS, 'default', 'Props')
 
-  const actions = useMemo(
-    () => (
-      <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
-    ),
-    [],
-  )
+  const actions = useMemo(() => <ContextMenuButton />, [])
   const tabs = useMemo(
     () =>
       manyTabs ? (

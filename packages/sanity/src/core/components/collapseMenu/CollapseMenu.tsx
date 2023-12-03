@@ -1,4 +1,3 @@
-import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Flex, MenuButtonProps} from '@sanity/ui'
 import React, {
   Children,
@@ -15,7 +14,8 @@ import React, {
 } from 'react'
 import styled, {css} from 'styled-components'
 import {difference} from 'lodash'
-import {Button, Tooltip} from '../../../ui'
+import {Tooltip} from '../../../ui'
+import {ContextMenuButton} from '../../../ui/contextMenuButton'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
@@ -94,10 +94,7 @@ export const CollapseMenu = forwardRef(function CollapseMenu(
 
   const menuOptions = useMemo(() => Children.toArray(children).filter(_isReactElement), [children])
   const menuButton = useMemo(
-    () =>
-      menuButtonProps?.button || (
-        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
-      ),
+    () => menuButtonProps?.button || <ContextMenuButton />,
     [menuButtonProps],
   )
 
@@ -266,10 +263,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
     : menuOptions
 
   const menuButton = useMemo(
-    () =>
-      menuButtonProps?.button || (
-        <Button icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={{content: 'Show more'}} />
-      ),
+    () => menuButtonProps?.button || <ContextMenuButton />,
     [menuButtonProps],
   )
 
