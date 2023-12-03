@@ -299,6 +299,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the Review Changes pane */
   'changes.title': 'Review changes',
 
+  /** --- Default dialogs --- */
+
+  /** Default text for dialog cancel button */
+  'dialog.cancel-button.text': 'Cancel',
+
+  /** Defualt text for dialog confirm button */
+  'dialog.confirm-button.text': 'Confirm',
+
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',
