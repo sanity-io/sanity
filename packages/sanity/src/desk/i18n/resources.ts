@@ -280,6 +280,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Text shown on back button visible on smaller breakpoints */
   'pane-header.back-button.text': 'Back',
+  /** Tooltip displayed on the create new button in document lists */
+  'pane-header.create-new-button.tooltip': 'Create new document',
   /** The `aria-label` for the disabled button in the pane header if create permissions are granted */
   'pane-header.disabled-created-button.aria-label': 'Insufficient permissions',
 
