@@ -275,6 +275,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The title of the no document type screen */
   'no-document-types-screen.title': 'No document types',
 
+  /** Text shown on back button visible on smaller breakpoints */
+  'pane-header.back-button.text': 'Back',
   /** tooltip text (via `title` attribute) for the menu button */
   'pane-header.context-menu-button.tooltip': 'Show menu',
   /** Appears in a document list pane header if there are more than one option for create. This is the label for that menu */
