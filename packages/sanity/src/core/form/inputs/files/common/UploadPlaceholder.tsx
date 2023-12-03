@@ -47,7 +47,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
       paddingY={collapsed ? 1 : undefined}
       ref={setRootElement}
     >
-      <Flex flex={1} justify="center">
+      <Flex flex={1}>
         <PlaceholderText
           acceptedFiles={acceptedFiles}
           directUploads={directUploads}
@@ -58,13 +58,13 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
         />
       </Flex>
 
-      <Flex align="center" gap={2} justify="center" wrap="wrap">
+      <Flex align="center" gap={1} justify="center" wrap="wrap">
         <FileInputButton
           accept={accept}
           data-testid="file-input-upload-button"
           disabled={readOnly || !directUploads}
           icon={UploadIcon}
-          mode="ghost"
+          mode="bleed"
           onSelect={onUpload}
           text={t('input.files.common.upload-placeholder.file-input-button.text')}
         />
