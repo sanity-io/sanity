@@ -299,6 +299,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the Review Changes pane */
   'changes.title': 'Review changes',
 
+  /** --- Common components --- */
+
+  /** Tooltip text for context menu buttons */
+  'common.context-menu-button.tooltip': 'Show more',
+
   /** --- Default dialogs --- */
 
   /** Default text for dialog cancel button */
