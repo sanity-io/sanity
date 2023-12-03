@@ -12,6 +12,7 @@ import {EMPTY_ARRAY} from '../../../../util'
 import {useTranslation} from '../../../../i18n'
 import {ImageTool, HotspotImage, DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool'
 import {useLoadImage} from './useLoadImage'
+import {LoadingBlock} from '../../../../../ui/loadingBlock'
 
 export interface ImageToolInputProps
   extends Omit<ObjectInputProps<Image, ImageSchemaType>, 'markers' | 'renderDefault'> {
@@ -142,11 +143,10 @@ export function ImageToolInput(props: ImageToolInputProps) {
                       </Text>
                     </Card>
                   ) : (
-                    <Text muted>{t('inputs.imagetool.loading')}</Text>
+                    <LoadingBlock />
                   )}
                 </LoadStatus>
               )}
-
               {!isImageLoading && image && (
                 <Box margin={1}>
                   <ImageTool
