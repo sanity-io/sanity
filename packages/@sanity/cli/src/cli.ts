@@ -28,7 +28,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
 
   const pkg = {name: '@sanity/cli', version: cliVersion}
 
-  const telemetry = createTelemetryStore({env: process.env})
+  const {logger: telemetry, flush: flushTelemetry} = createTelemetryStore({env: process.env})
 
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
@@ -84,6 +84,11 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     }
 
     args.groupOrCommand = 'help'
+  }
+
+  if (args.groupOrCommand === 'logout') {
+    // flush telemetry events before logging out
+    await flushTelemetry()
   }
 
   const cliRunner = getCliRunner(commands)
