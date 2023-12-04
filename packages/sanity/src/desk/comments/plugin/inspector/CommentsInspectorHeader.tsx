@@ -4,7 +4,7 @@ import {startCase} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
 import {CommentStatus} from '../../src'
-import {BetaBadge} from 'sanity'
+import {BetaBadge, useTranslation} from 'sanity'
 
 const Root = styled(Card)({
   position: 'relative',
@@ -38,12 +38,14 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
   const handleSetOpenView = useCallback(() => onViewChange('open'), [onViewChange])
   const handleSetResolvedView = useCallback(() => onViewChange('resolved'), [onViewChange])
 
+  const {t} = useTranslation('sanity/desk/comments')
+
   return (
     <Root ref={ref}>
       <Flex padding={2}>
         <Flex align="center" flex={1} gap={2} paddingY={2} padding={3}>
           <Text as="h1" size={1} weight="semibold">
-            Comments
+            {t('header.title')}
           </Text>
 
           <BetaBadge />
