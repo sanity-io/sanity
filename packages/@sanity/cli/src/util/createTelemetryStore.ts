@@ -7,13 +7,20 @@ import {isCi} from './isCi'
 
 const debug = baseDebug.extend('telemetry')
 
-const VALID_STATUSES: ConsentStatus[] = ['granted', 'denied', 'unset']
-function parseConsent(value: unknown): ConsentStatus {
-  if (typeof value === 'string' && VALID_STATUSES.includes(value.toLowerCase() as any)) {
-    return value as ConsentStatus
-  }
-  throw new Error(`Invalid consent status. Must be one of: ${VALID_STATUSES.join(', ')}`)
+const VALID_API_STATUSES = ['granted', 'denied', 'unset'] as const
+type ValidApiConsentStatus = (typeof VALID_API_STATUSES)[number]
+
+function isValidApiConsentStatus(status: string): status is ValidApiConsentStatus {
+  return VALID_API_STATUSES.includes(status as ValidApiConsentStatus)
 }
+
+function parseApiConsentStatus(value: unknown): ValidApiConsentStatus {
+  if (typeof value === 'string' && isValidApiConsentStatus(value)) {
+    return value
+  }
+  throw new Error(`Invalid consent status. Must be one of: ${VALID_API_STATUSES.join(', ')}`)
+}
+
 
 function createTelemetryClient(token: string) {
   const getClient = getClientWrapper(null, 'sanity.cli.js')
@@ -41,7 +48,25 @@ interface Options {
   env: Env
 }
 
-export function resolveConsent({env}: Options): Promise<{status: ConsentStatus}> {
+type ConsentInformation =
+  | {
+      status: Extract<ConsentStatus, 'granted'>
+      reason?: never
+    }
+  | {
+      status: Extract<ConsentStatus, 'undetermined'>
+      reason: 'unauthenticated' | 'fetchError'
+    }
+  | {
+      status: Extract<ConsentStatus, 'denied'>
+      reason?: 'localOverride'
+    }
+  | {
+      status: Extract<ConsentStatus, 'unset'>
+      reason?: never
+    }
+
+export function resolveConsent({env}: Options): Promise<ConsentInformation> {
   debug('Resolving consent…')
   if (isCi) {
     debug('CI environment detected, treating telemetry consent as denied')
@@ -49,13 +74,19 @@ export function resolveConsent({env}: Options): Promise<{status: ConsentStatus}>
   }
   if (isTrueish(env.DO_NOT_TRACK)) {
     debug('DO_NOT_TRACK is set, consent is denied')
-    return Promise.resolve({status: 'denied'})
+    return Promise.resolve({
+      status: 'denied',
+      reason: 'localOverride',
+    })
   }
 
   const token = getCliToken()
   if (!token) {
     debug('User is not logged in, consent is undetermined')
-    return Promise.resolve({status: 'undetermined'})
+    return Promise.resolve({
+      status: 'undetermined',
+      reason: 'unauthenticated',
+    })
   }
 
   const client = getCachedClient(token)
@@ -64,11 +95,14 @@ export function resolveConsent({env}: Options): Promise<{status: ConsentStatus}>
     .request({uri: '/intake/telemetry-status'})
     .then((response) => {
       debug('User consent status is %s', response.status)
-      return {status: parseConsent(response.status)}
+      return {status: parseApiConsentStatus(response.status)}
     })
     .catch((err) => {
       debug('Failed to fetch user consent status, treating it as "undetermined": %s', err.stack)
-      return {status: 'undetermined'}
+      return {
+        status: 'undetermined',
+        reason: 'fetchError',
+      }
     })
 }
 export function createTelemetryStore<UserProperties>({

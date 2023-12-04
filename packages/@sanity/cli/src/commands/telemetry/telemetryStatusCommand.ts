@@ -1,6 +1,5 @@
 import type {CliCommandDefinition} from '../../types'
 import {resolveConsent} from '../../util/initTelemetry'
-import {getCliToken} from '../../util/clientWrapper'
 
 const helpText = `
 Examples
@@ -16,25 +15,26 @@ const telemetryStatusCommand: CliCommandDefinition = {
   description: 'Check telemetry consent status for your logged in user',
   action: async (_, {chalk, output}) => {
     // eslint-disable-next-line no-process-env
-    const {status} = await resolveConsent({env: process.env})
-    const token = getCliToken()
+    const {status, reason} = await resolveConsent({env: process.env})
 
-    if (status === 'undetermined' && !token) {
-      output.print('You need to log in first to see telemetry status.')
-      return
-    }
-
-    switch (status) {
-      case 'undetermined':
+    switch (true) {
+      case status === 'undetermined' && reason === 'unauthenticated':
+        output.print('You need to log in first to see telemetry status.')
+        break
+      case status === 'undetermined' && reason === 'fetchError':
         output.print(chalk.yellow('Could not fetch telemetry consent status.'))
         break
-      case 'denied':
+      case status === 'denied' && reason === 'localOverride':
+        output.print(`Telemetry consent is ${chalk.red('denied')}.`)
+        output.print(`Using ${chalk.cyan('DO_NOT_TRACK')} environment variable.`)
+        break
+      case status === 'denied':
         output.print(`Telemetry consent is ${chalk.red('denied')}.`)
         break
-      case 'granted':
+      case status === 'granted':
         output.print(`Telemetry consent is ${chalk.green('granted')}.`)
         break
-      case 'unset':
+      case status === 'unset':
         output.print('You have not set telemetry consent.\n')
         output.print(
           `Run ${chalk.cyan('sanity telemetry enable')} or ${chalk.cyan(
