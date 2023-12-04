@@ -1,3 +1,4 @@
+import {CheckmarkIcon} from '@sanity/icons'
 import {MenuDivider} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
@@ -34,10 +35,13 @@ function LocaleItem(props: {
   const {locale, changeLocale, selectedLocale: selectedLang} = props
   const localeId = locale.id
   const onClick = useCallback(() => changeLocale(localeId), [localeId, changeLocale])
+  const selected = selectedLang == localeId
+
   return (
     <MenuItem
       aria-label={locale.title}
-      pressed={selectedLang == localeId}
+      pressed={selected}
+      iconRight={selected && <CheckmarkIcon />}
       onClick={onClick}
       text={locale.title}
     />
