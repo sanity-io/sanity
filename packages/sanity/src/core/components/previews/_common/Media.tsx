@@ -30,7 +30,7 @@ export function Media(props: MediaProps) {
       data-testid="Media"
     >
       {renderMedia({dimensions, layout, media})}
-      {border && <span />}
+      {border && <span data-border />}
     </MediaWrapper>
   )
 }
