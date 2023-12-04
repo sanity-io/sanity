@@ -133,7 +133,9 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     </>
   )
 
-  const revLabel = chunk ? TIMELINE_ITEM_I18N_KEY_MAPPING[chunk.type] : t('timeline.latest-version')
+  const revLabel = chunk
+    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[chunk.type])
+    : t('timeline.latest-version')
 
   const sinceLabel = chunk
     ? t('timeline.since', {
