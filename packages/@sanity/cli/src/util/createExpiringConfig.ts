@@ -41,6 +41,7 @@ export function createExpiringConfig<Type>({
   onFetch = () => null,
   onCacheHit = () => null,
 }: ExpiringConfigOptions<Type>): ExpiringConfigApi<Type> {
+  let currentFetch: Promise<Type> | null = null
   return {
     async get() {
       const {value, updatedAt} = store.get(key) ?? {}
@@ -56,8 +57,14 @@ export function createExpiringConfig<Type>({
         onRevalidate()
       }
 
+      if (currentFetch) {
+        return currentFetch
+      }
       onFetch()
-      const nextValue = await fetchValue()
+
+      currentFetch = Promise.resolve(fetchValue())
+      const nextValue = await currentFetch
+      currentFetch = null
 
       store.set(key, {
         value: nextValue,

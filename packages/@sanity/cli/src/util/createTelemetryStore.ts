@@ -4,8 +4,14 @@ import {debug as baseDebug} from '../debug'
 import {getClientWrapper, getCliToken} from './clientWrapper'
 import {isTrueish} from './isTrueish'
 import {isCi} from './isCi'
+import {getUserConfig} from './getUserConfig'
+import {createExpiringConfig} from './createExpiringConfig'
 
 const debug = baseDebug.extend('telemetry')
+
+const FIVE_MINUTES = 1000 * 60 * 5
+
+export const TELEMETRY_CONSENT_CONFIG_KEY = 'telemetryConsent'
 
 const VALID_API_STATUSES = ['granted', 'denied', 'unset'] as const
 type ValidApiConsentStatus = (typeof VALID_API_STATUSES)[number]
@@ -91,9 +97,31 @@ export function resolveConsent({env}: Options): Promise<ConsentInformation> {
 
   const client = getCachedClient(token)
 
-  return client
-    .request({uri: '/intake/telemetry-status'})
-    .then((response) => {
+  function fetchConsent(): Promise<{
+    status: ValidApiConsentStatus
+  }> {
+    const telemetryConsentConfig = createExpiringConfig<{
+      status: ValidApiConsentStatus
+    }>({
+      store: getUserConfig(),
+      key: TELEMETRY_CONSENT_CONFIG_KEY,
+      ttl: FIVE_MINUTES,
+      fetchValue: () => client.request({uri: '/intake/telemetry-status'}),
+      onRevalidate() {
+        debug('Revalidating cached telemetry consent status...')
+      },
+      onFetch() {
+        debug('Fetching telemetry consent status...')
+      },
+      onCacheHit() {
+        debug('Retrieved telemetry consent status from cache')
+      },
+    })
+    return telemetryConsentConfig.get()
+  }
+
+  return fetchConsent()
+    .then<ConsentInformation>((response) => {
       debug('User consent status is %s', response.status)
       return {status: parseApiConsentStatus(response.status)}
     })
