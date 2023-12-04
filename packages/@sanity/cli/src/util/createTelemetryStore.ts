@@ -119,5 +119,5 @@ export function createTelemetryStore(options: {env: {[key: string]: string | und
     sendEvents,
   })
   process.once('beforeExit', () => store.flush())
-  return store.logger
+  return store
 }
