@@ -1034,6 +1034,9 @@ const studioResources: Record<StudioLocaleResourceKeys, string> = {
   /** Current value (<code>object</code>): */
   'inputs.untyped-value.details.json-dump-prefix': 'Nåværende verdi (<code>object</code>):',
 
+  /** -- Datetime Input -- */
+  'inputs.datetime.placeholder': 'f.eks. {{example}}',
+
   /** -- Form Member Errors -- */
 
   /** Unexpected error: `{{error}}` */
