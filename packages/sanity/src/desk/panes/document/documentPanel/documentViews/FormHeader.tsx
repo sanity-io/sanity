@@ -8,8 +8,16 @@ interface DocumentHeaderProps {
   title?: string
 }
 
-// Use CSS container queries to conditionally render headings at different sizes.
-// Hide if container queries are not supported.
+/**
+ * Use CSS container queries to conditionally render headings at different sizes.
+ * We hide this entire container (including the document type) if container queries
+ * not supported in the current browser.
+ *
+ * Note that usage of container queries in `styled-components` is only supported in `6.x`.
+ * As such, studios that include `"styled-components": "<6"` as a dependency will only see
+ * the largest heading size here, even if their browser supports it!
+ */
+
 export const TitleContainer = styled(Stack)`
   ${({theme}) => {
     return css`
@@ -20,22 +28,22 @@ export const TitleContainer = styled(Stack)`
       container-type: inline-size;
 
       [data-heading] {
-        font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize}px;
-        line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight}px;
+        font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
+        line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight}px;
         overflow-wrap: break-word;
       }
 
-      @container (min-width: 420px) {
+      @container (max-width: 560px) {
         [data-heading] {
           font-size: ${theme.sanity.fonts.heading.sizes[3].fontSize}px;
           line-height: ${theme.sanity.fonts.heading.sizes[3].lineHeight}px;
         }
       }
 
-      @container (min-width: 560px) {
+      @container (max-width: 420px) {
         [data-heading] {
-          font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
-          line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight}px;
+          font-size: ${theme.sanity.fonts.heading.sizes[2].fontSize}px;
+          line-height: ${theme.sanity.fonts.heading.sizes[2].lineHeight}px;
         }
       }
     `
