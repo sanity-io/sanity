@@ -50,7 +50,7 @@ export function createExpiringConfig<Type>({
 
         if (!hasExpired) {
           onCacheHit()
-          return value as Type
+          return value
         }
 
         onRevalidate()
@@ -64,7 +64,7 @@ export function createExpiringConfig<Type>({
         updatedAt: Date.now(),
       })
 
-      return nextValue as Type
+      return nextValue
     },
     delete() {
       store.delete(key)
