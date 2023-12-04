@@ -246,7 +246,7 @@ export function ConfirmDeleteDialogBody({
                                 >
                                   <Button
                                     title={t(
-                                      'confirm-delete-dialog.cdr-table.copy-id-button.title',
+                                      'confirm-delete-dialog.cdr-table.copy-id-button.tooltip',
                                     )}
                                     mode="bleed"
                                     icon={CopyIcon}
