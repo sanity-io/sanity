@@ -9,6 +9,7 @@ import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
+import {BuildTrace} from './build.telemetry'
 
 const rimraf = promisify(rimrafCallback)
 
@@ -26,7 +27,7 @@ export default async function buildSanityStudio(
   overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir, cliConfig} = context
+  const {output, prompt, workDir, cliConfig, telemetry} = context
   const flags: BuildSanityStudioCommandFlags = {
     minify: true,
     stats: false,
@@ -99,8 +100,11 @@ export default async function buildSanityStudio(
 
   spin = output.spinner('Build Sanity Studio').start()
 
+  const trace = telemetry.trace(BuildTrace)
+  trace.start()
   try {
     timer.start('bundleStudio')
+
     const bundle = await buildStaticFiles({
       cwd: workDir,
       outputDir,
@@ -108,6 +112,11 @@ export default async function buildSanityStudio(
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
       vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,
+    })
+    trace.log({
+      outputSize: bundle.chunks
+        .flatMap((chunk) => chunk.modules.flatMap((mod) => mod.renderedLength))
+        .reduce((sum, n) => sum + n, 0),
     })
     const buildDuration = timer.end('bundleStudio')
 
