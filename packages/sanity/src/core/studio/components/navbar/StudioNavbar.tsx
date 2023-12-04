@@ -148,7 +148,7 @@ export function StudioNavbar() {
           {/** Left flex */}
           <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
             <Flex align="center" gap={2} justify="flex-start">
-              <Flex align="center" gap={1}>
+              <Flex align="center" gap={2} marginLeft={1}>
                 {/* Menu button */}
                 {!shouldRender.tools && (
                   <Button
