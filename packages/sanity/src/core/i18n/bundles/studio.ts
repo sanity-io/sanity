@@ -958,7 +958,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
   /** Button label for "Create new document" button */
-  'new-document.button': 'Create new',
+  'new-document.button': 'Create',
   /**
    * Tooltip message displayed when hovering/activating the "Create new document" action,
    * when there are templates/types available for creation
