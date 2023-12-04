@@ -269,16 +269,19 @@ export function normalizeWhitespace(rootNode: Node) {
       if (lastParent && elm.parentElement === lastParent) {
         emptyBlockCount++
         if (emptyBlockCount > 1) {
-          nodesToRemove.push(elm) // Mark for removal
+          nodesToRemove.push(elm)
         }
       } else {
-        emptyBlockCount = 1 // Different parent, reset counter
+        // Different parent, reset counter
+        emptyBlockCount = 1
       }
 
       lastParent = elm.parentElement
     } else {
-      normalizeWhitespace(child) // Recurse into child nodes
-      emptyBlockCount = 0 // Reset counter for siblings
+      // Recurse into child nodes
+      normalizeWhitespace(child)
+      // Reset counter for siblings
+      emptyBlockCount = 0
     }
   }
 
@@ -293,28 +296,33 @@ export function normalizeWhitespace(rootNode: Node) {
 export function removeAllWhitespace(rootNode: Node) {
   const nodesToRemove: Node[] = []
 
-  // Inner function to recursively collect nodes to remove
   function collectNodesToRemove(currentNode: Node) {
     if (isElement(currentNode)) {
       const elm = currentNode as HTMLElement
 
-      // Conditions to identify nodes to be removed
+      // Handle <br> tags that is between <p> tags
       if (
         tagName(elm) === 'br' &&
         (tagName(elm.nextElementSibling) === 'p' || tagName(elm.previousElementSibling) === 'p')
       ) {
         nodesToRemove.push(elm)
-      } else if (
-        tagName(elm) === 'p' &&
-        tagName(elm?.firstChild) === 'br' &&
-        elm.firstChild?.textContent?.trim() === ''
+
+        return
+      }
+
+      // Handle empty blocks
+      if (
+        (tagName(elm) === 'p' || tagName(elm) === 'br') &&
+        elm?.firstChild?.textContent?.trim() === ''
       ) {
         nodesToRemove.push(elm)
-      } else {
-        // Recursively process child nodes
-        for (let child = elm.firstChild; child; child = child.nextSibling) {
-          collectNodesToRemove(child)
-        }
+
+        return
+      }
+
+      // Recursively process child nodes
+      for (let child = elm.firstChild; child; child = child.nextSibling) {
+        collectNodesToRemove(child)
       }
     }
   }

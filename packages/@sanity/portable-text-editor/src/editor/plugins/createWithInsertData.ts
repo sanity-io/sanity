@@ -26,6 +26,7 @@ export function createWithInsertData(
   return function withInsertData(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     const blockTypeName = schemaTypes.block.name
     const spanTypeName = schemaTypes.span.name
+    const whitespaceOnPasteMode = schemaTypes.block.options.unstable_whitespaceOnPasteMode
 
     const toPlainText = (blocks: PortableTextBlock[]) => {
       return blocks
@@ -174,9 +175,9 @@ export function createWithInsertData(
         let insertedType
 
         if (html) {
-          portableText = htmlToBlocks(html, schemaTypes.portableText).map((block) =>
-            normalizeBlock(block, {blockTypeName}),
-          ) as PortableTextBlock[]
+          portableText = htmlToBlocks(html, schemaTypes.portableText, {
+            unstable_whitespaceOnPasteMode: whitespaceOnPasteMode,
+          }).map((block) => normalizeBlock(block, {blockTypeName})) as PortableTextBlock[]
           fragment = toSlateValue(portableText, {schemaTypes})
           insertedType = 'HTML'
         } else {

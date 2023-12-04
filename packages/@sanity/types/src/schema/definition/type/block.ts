@@ -13,6 +13,7 @@ export interface BlockOptions {
    * Turn on or off the builtin browser spellchecking. Default is on.
    */
   spellCheck?: boolean
+  unstable_whitespaceOnPasteMode?: 'preserve' | 'normalize' | 'remove'
 }
 
 /** @public */

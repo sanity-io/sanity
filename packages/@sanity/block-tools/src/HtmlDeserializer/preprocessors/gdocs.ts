@@ -4,9 +4,9 @@ import {_XPathResult} from './xpathResult'
 
 export default (html: string, doc: Document, options: HtmlPreprocessorOptions): Document => {
   const whitespaceOnPasteMode = options?.unstable_whitespaceOnPasteMode || 'preserve'
-  const gDocsRootNode = doc
+  let gDocsRootOrSiblingNode = doc
     .evaluate(
-      '//*[self::p or self::b][contains(@id, "docs-internal-guid")]',
+      '//*[@id and contains(@id, "docs-internal-guid")]',
       doc,
       null,
       _XPathResult.ORDERED_NODE_ITERATOR_TYPE,
@@ -14,15 +14,22 @@ export default (html: string, doc: Document, options: HtmlPreprocessorOptions): 
     )
     .iterateNext()
 
-  if (gDocsRootNode) {
+  if (gDocsRootOrSiblingNode) {
+    const isWrappedRootTag = tagName(gDocsRootOrSiblingNode) === 'b'
+
+    // If this document isn't wrapped in a 'b' tag, then assume all siblings live on the root level
+    if (!isWrappedRootTag) {
+      gDocsRootOrSiblingNode = doc.body
+    }
+
     switch (whitespaceOnPasteMode) {
       case 'normalize':
         // Keep only 1 empty block between content nodes
-        normalizeWhitespace(gDocsRootNode)
+        normalizeWhitespace(gDocsRootOrSiblingNode)
         break
       case 'remove':
         // Remove all whitespace nodes
-        removeAllWhitespace(gDocsRootNode)
+        removeAllWhitespace(gDocsRootOrSiblingNode)
         break
       default:
         break
@@ -42,8 +49,12 @@ export default (html: string, doc: Document, options: HtmlPreprocessorOptions): 
       const elm = childNodes.snapshotItem(i) as HTMLElement
       elm?.setAttribute('data-is-google-docs', 'true')
 
-      if (elm?.parentElement === gDocsRootNode) {
+      if (
+        elm?.parentElement === gDocsRootOrSiblingNode ||
+        (!isWrappedRootTag && elm.parentElement === doc.body)
+      ) {
         elm?.setAttribute('data-is-root-node', 'true')
+        tagName(elm)
       }
 
       // Handle checkmark lists - The first child of a list item is an image with a checkmark, and the serializer
@@ -54,7 +65,9 @@ export default (html: string, doc: Document, options: HtmlPreprocessorOptions): 
     }
 
     // Remove that 'b' which Google Docs wraps the HTML content in
-    doc.body.firstElementChild?.replaceWith(...Array.from(gDocsRootNode.childNodes))
+    if (isWrappedRootTag) {
+      doc.body.firstElementChild?.replaceWith(...Array.from(gDocsRootOrSiblingNode.childNodes))
+    }
 
     return doc
   }
