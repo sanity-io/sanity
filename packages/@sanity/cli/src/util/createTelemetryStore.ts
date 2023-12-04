@@ -33,7 +33,9 @@ function getCachedClient(token: string) {
   return _client
 }
 
-export function createTelemetryStore(options: {env: {[key: string]: string | undefined}}) {
+export function createTelemetryStore<UserProperties>(options: {
+  env: {[key: string]: string | undefined}
+}) {
   debug('Initializing telemetry')
   const {env} = options
 
@@ -101,10 +103,12 @@ export function createTelemetryStore(options: {env: {[key: string]: string | und
   const sessionId = createSessionId()
   debug('session id: %s', sessionId)
 
-  const store = createBatchedStore(sessionId, {
+  const store = createBatchedStore<UserProperties>(sessionId, {
     resolveConsent,
     sendEvents,
   })
   process.once('beforeExit', () => store.flush())
+  process.once('unhandledRejection', () => store.flush())
+  process.once('uncaughtException', () => store.flush())
   return store
 }

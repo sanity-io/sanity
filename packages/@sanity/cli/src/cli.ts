@@ -5,6 +5,7 @@ import {existsSync} from 'fs'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
 import resolveFrom from 'resolve-from'
+import {machineId} from 'node-machine-id'
 import {runUpdateCheck} from './util/updateNotifier'
 import {parseArguments} from './util/parseArguments'
 import {mergeCommands} from './util/mergeCommands'
@@ -15,19 +16,35 @@ import {loadEnv} from './util/loadEnv'
 import {resolveRootDir} from './util/resolveRootDir'
 import {CliConfigResult, getCliConfig} from './util/getCliConfig'
 import {getInstallCommand} from './packageManager'
-import {CommandRunnerOptions} from './types'
+import {CommandRunnerOptions, TelemetryUserProperties} from './types'
 import {debug} from './debug'
 import {createTelemetryStore} from './util/createTelemetryStore'
+import {detectRuntime} from './util/detectRuntime'
+import {CliCommand} from './__telemetry__/cli.telemetry'
 
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
+
+function installProcessExitHack(finalTask: () => Promise<unknown>) {
+  const originalProcessExit = process.exit
+
+  // @ts-expect-error ignore TS2534
+  process.exit = (exitCode?: number | undefined): never => {
+    finalTask().then(() => originalProcessExit(exitCode)) as never
+  }
+}
 
 export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}): Promise<void> {
   installUnhandledRejectionsHandler()
 
   const pkg = {name: '@sanity/cli', version: cliVersion}
 
-  const {logger: telemetry, flush: flushTelemetry} = createTelemetryStore({env: process.env})
+  const {logger: telemetry, flush: flushTelemetry} = createTelemetryStore<TelemetryUserProperties>({
+    env: process.env,
+  })
+
+  // UGLY HACK: process.exit(<code>) causes abrupt exit, we want to flush telemetry before exiting
+  installProcessExitHack(flushTelemetry)
 
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
@@ -52,6 +69,17 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   if (!cliConfig) {
     debug('No CLI config found')
   }
+
+  telemetry.updateUserProperties({
+    deviceId: await machineId(),
+    runtimeVersion: process.version,
+    runtime: detectRuntime(),
+    cliVersion: pkg.version,
+    platform: process.platform,
+    cpuArchitecture: process.arch,
+    projectId: cliConfig?.config?.api?.projectId,
+    dataset: cliConfig?.config?.api?.dataset,
+  })
 
   const options: CommandRunnerOptions = {
     cliRoot: cliRoot,
@@ -87,13 +115,34 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   }
 
   const cliRunner = getCliRunner(commands)
-  cliRunner.runCommand(args.groupOrCommand, args, options).catch((err) => {
-    const error = typeof err.details === 'string' ? err.details : err
-    // eslint-disable-next-line no-console
-    console.error(`\n${error.stack ? neatStack(err) : error}`)
-    // eslint-disable-next-line no-process-exit
-    process.exit(1)
+  const cliCommandTrace = telemetry.trace(CliCommand)
+
+  cliCommandTrace.log({
+    groupOrCommand: args.groupOrCommand,
+    extraArguments: args.extraArguments,
+    commandArguments: args.argsWithoutOptions,
+    coreOptions: {
+      help: args.coreOptions.help,
+      version: args.coreOptions.version,
+      debug: args.coreOptions.debug,
+    },
   })
+
+  cliRunner
+    .runCommand(args.groupOrCommand, args, {
+      ...options,
+      telemetry: cliCommandTrace.newContext(args.groupOrCommand),
+    })
+    .then(() => cliCommandTrace.complete())
+    .catch(async (err) => {
+      await flushTelemetry()
+      const error = typeof err.details === 'string' ? err.details : err
+      // eslint-disable-next-line no-console
+      console.error(`\n${error.stack ? neatStack(err) : error}`)
+      // eslint-disable-next-line no-process-exit
+      cliCommandTrace.error(error)
+      process.exit(1)
+    })
 }
 
 async function getCoreModulePath(

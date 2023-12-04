@@ -1,5 +1,5 @@
 import {type Framework, frameworks} from '@vercel/frameworks'
-import {LocalFileSystemDetector, detectFrameworkRecord} from '@vercel/fs-detectors'
+import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
 import initProject from '../../actions/init-project/initProject'
 import initPlugin from '../../actions/init-plugin/initPlugin'
 import {CliCommandDefinition} from '../../types'
@@ -86,7 +86,8 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
     // `sanity init plugin`
     if (type === 'plugin') {
       return context.sanityMajorVersion === 2
-        ? initPlugin(args, context)
+        ? // don't bother with telemetry here, as it's not supported in v3
+          initPlugin(args, context)
         : Promise.reject(new Error(`'sanity init plugin' is not available in modern studios`))
     }
 
@@ -108,7 +109,10 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
       args.argv.includes('--bare') ||
       detectedFramework?.slug === 'nextjs'
     ) {
-      return initProject(args, context)
+      return initProject(args, {
+        ...context,
+        detectedFramework,
+      })
     }
 
     // `sanity init` (v2 style)
@@ -124,7 +128,6 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
     warn('│                                                            │')
     warn('╰────────────────────────────────────────────────────────────╯')
     warn('') // Newline to separate from other output
-
     const continueV3Init = unattended
       ? true
       : await prompt.single({
@@ -139,7 +142,12 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
       process.exit(1)
     }
 
-    const returnVal = await initProject(args, context)
+    const returnVal = await initProject(args, {
+      ...context,
+      detectedFramework,
+    }).catch((err) => {
+      return Promise.reject(err)
+    })
 
     warn('╭────────────────────────────────────────────────────────────╮')
     warn('│                                                            │')

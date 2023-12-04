@@ -4,7 +4,7 @@ import type {Ora} from 'ora'
 import type {SanityClient} from '@sanity/client'
 import type {Separator, DistinctQuestion, Answers, ChoiceCollection} from 'inquirer'
 import type {InlineConfig, ConfigEnv} from 'vite'
-import {TelemetryLogger, TelemetryStore} from '@sanity/telemetry'
+import {TelemetryLogger} from '@sanity/telemetry'
 import type {ClientRequirements} from './util/clientWrapper'
 import type {CliConfigResult} from './util/getCliConfig'
 import type {CliPackageManager} from './packageManager'
@@ -92,18 +92,30 @@ export interface CliBaseCommandContext {
   commandRunner: CliCommandRunner
   fromInitCommand?: boolean
 }
+
+export interface TelemetryUserProperties {
+  deviceId: string
+  runtime: string
+  runtimeVersion: string
+  cliVersion: string
+  platform: string
+  cpuArchitecture: string
+  projectId?: string
+  dataset?: string
+}
+
 export interface CliV2CommandContext extends CliBaseCommandContext {
   sanityMajorVersion: 2
   cliConfig?: SanityJson
   cliPackageManager?: CliPackageManager
-  telemetry: TelemetryLogger<unknown>
+  telemetry: TelemetryLogger<TelemetryUserProperties>
 }
 
 export interface CliV3CommandContext extends CliBaseCommandContext {
   sanityMajorVersion: 3
   cliConfig?: CliConfig
   cliPackageManager: CliPackageManager
-  telemetry: TelemetryLogger<unknown>
+  telemetry: TelemetryLogger<TelemetryUserProperties>
 }
 
 export interface CliCommandRunner {
@@ -135,7 +147,7 @@ export interface CommandRunnerOptions {
   cliRoot: string
   workDir: string
   corePath: string | undefined
-  telemetry: TelemetryLogger<unknown>
+  telemetry: TelemetryLogger<TelemetryUserProperties>
 }
 
 export interface CliOutputter {
