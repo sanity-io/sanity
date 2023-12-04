@@ -17,7 +17,6 @@ import {Button} from '../../../../ui'
 import {TOOLTIP_DELAY_PROPS} from '../../../../ui/tooltip/constants'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
-import {useTranslation} from '../../../i18n'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
@@ -108,12 +107,17 @@ export function StudioNavbar() {
     onSearchFullscreenOpenChange(searchFullscreenOpen)
   }, [searchFullscreenOpen, onSearchFullscreenOpenChange])
 
-  // Disable fullscreen search on media query change (if already open)
+  // On desktop: force search dialog to be hidden
+  // On mobile: force search popover to be hidden
+  // This is a bit of a micro optimisation to prevent search surfaces from remaining open
+  // when jumping between both mobile / desktop breakpoints.
   useEffect(() => {
-    if (onSearchFullscreenOpenChange && !shouldRender.searchFullscreen) {
+    if (shouldRender.searchFullscreen) {
+      onSearchOpenChange(false)
+    } else {
       onSearchFullscreenOpenChange(false)
     }
-  }, [onSearchFullscreenOpenChange, shouldRender.searchFullscreen])
+  }, [onSearchFullscreenOpenChange, onSearchOpenChange, shouldRender.searchFullscreen])
 
   const handleOpenSearch = useCallback(() => {
     onSearchOpenChange(true)
@@ -191,20 +195,21 @@ export function StudioNavbar() {
               <LayerProvider>
                 <SearchProvider fullscreen={shouldRender.searchFullscreen}>
                   <BoundaryElementProvider element={document.body}>
-                    <PortalProvider element={searchFullscreenPortalEl}>
-                      {shouldRender.searchFullscreen && (
+                    {shouldRender.searchFullscreen ? (
+                      <PortalProvider element={searchFullscreenPortalEl}>
                         <SearchDialog
                           onClose={handleCloseSearchFullscreen}
                           onOpen={handleOpenSearchFullscreen}
                           open={searchFullscreenOpen}
                         />
-                      )}
-                    </PortalProvider>
-                    <SearchPopover
-                      onClose={handleCloseSearch}
-                      onOpen={handleOpenSearch}
-                      open={searchOpen}
-                    />
+                      </PortalProvider>
+                    ) : (
+                      <SearchPopover
+                        onClose={handleCloseSearch}
+                        onOpen={handleOpenSearch}
+                        open={searchOpen}
+                      />
+                    )}
                   </BoundaryElementProvider>
                 </SearchProvider>
               </LayerProvider>
