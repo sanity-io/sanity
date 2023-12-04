@@ -47,14 +47,7 @@ export const MediaWrapper = styled.span<{
       font-size: calc(${iconSize} / 16 * 1em);
     }
 
-    /*
-      NOTE on why we can’t use the ":after" pseudo-element:
-      The thing is we only want the shadow when then <MediaWrapper> contains
-      something else than <svg> – icons should not have the shadow.
-      This is why we use the "*:not(svg) + span" selector to target only that
-      situation to render the shadow.
-    */
-    & span {
+    span[data-border] {
       display: block;
       position: absolute;
       left: 0;
