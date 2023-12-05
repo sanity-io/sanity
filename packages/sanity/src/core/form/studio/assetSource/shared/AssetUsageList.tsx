@@ -19,8 +19,8 @@ export const AssetUsageList = ({
   const count = referringDocuments.length
   return (
     <>
-      <Card borderBottom marginTop={2} paddingBottom={2} marginBottom={1}>
-        <Text size={[1, 1, 2, 2]} as="h2" weight="regular">
+      <Card borderBottom={count > 0} marginTop={2} paddingBottom={2} marginBottom={1}>
+        <Text size={1} as="h2" weight="medium">
           <Translate
             t={t}
             i18nKey={`asset-source.usage-list.documents-using-${assetType}`}
@@ -48,15 +48,7 @@ const DocumentLink = ({document}: {document: SanityDocument}) => {
   )
 
   return (
-    <Card
-      as={LinkComponent}
-      paddingY={2}
-      paddingX={1}
-      radius={2}
-      key={document._id}
-      data-as="a"
-      tabIndex={0}
-    >
+    <Card as={LinkComponent} radius={2} key={document._id} data-as="a" tabIndex={0}>
       <Flex align="center" gap={2}>
         <Preview
           layout="default"
