@@ -41,21 +41,21 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
         </CustomBox>
       ),
       Operator: ({children}) =>
-        showContent && (
+        showContent ? (
           <CustomBox $flexShrink={0}>
             <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="regular">
               {children}
             </TextWithTone>
           </CustomBox>
-        ),
+        ) : null,
       Value: ({children}) =>
-        showContent && (
+        showContent ? (
           <CustomBox $flexShrink={1}>
             <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="semibold">
               {ButtonValue ? <ButtonValue value={filterValue} /> : children}
             </TextWithTone>
           </CustomBox>
-        ),
+        ) : null,
     }),
     [filter, fontSize, fullscreen, showContent, ButtonValue, filterValue],
   )
