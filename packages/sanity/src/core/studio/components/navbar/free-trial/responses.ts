@@ -42,6 +42,7 @@ export const responses: FreeTrialResponse[] = [
       dialogType: 'popover',
       headingText: 'Your trial is ending soon',
     },
+    daysLeft: 30,
   },
   {
     _type: 'planButton',
@@ -154,5 +155,6 @@ export const responses: FreeTrialResponse[] = [
       id: 'days-left',
       _updatedAt: '2023-12-04T17:34:02Z',
     },
+    daysLeft: 30,
   },
 ]

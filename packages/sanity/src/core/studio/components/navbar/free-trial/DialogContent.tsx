@@ -4,11 +4,7 @@ import {CloseIcon} from '@sanity/icons'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {FreeTrialDialog} from './types'
 import {DescriptionSerializer} from './Description'
-
-interface ModalContentProps {
-  content: FreeTrialDialog
-  handleClose: () => void
-}
+import {replaceContent} from './replaceContent'
 
 const StyledButton = styled(Button)`
   position: absolute;
@@ -37,7 +33,13 @@ const StyledDialog = styled(Dialog)`
     max-width: 22.5rem;
   }
 `
-export function DialogContent({handleClose, content}: ModalContentProps) {
+interface ModalContentProps {
+  content: FreeTrialDialog
+  daysLeft: number
+  handleClose: () => void
+}
+
+export function DialogContent({handleClose, content, daysLeft}: ModalContentProps) {
   const schemeValue = useColorSchemeValue()
 
   return (
@@ -89,7 +91,7 @@ export function DialogContent({handleClose, content}: ModalContentProps) {
         <Flex padding={3} direction={'column'}>
           <Box paddingX={2} marginTop={3}>
             {/* // TODO: Replace the XX for the actual number of days left. */}
-            <Heading size={2}>{content.headingText}</Heading>
+            <Heading size={2}>{replaceContent(content.headingText, {daysLeft})}</Heading>
           </Box>
           <Box marginTop={4} paddingBottom={3}>
             <DescriptionSerializer blocks={content.descriptionText} />
