@@ -72,7 +72,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
               style={layoutStyle}
             >
               {backButton && (
-                <Box flex="none" padding={1}>
+                <Box flex="none" padding={1} paddingLeft={0}>
                   {backButton}
                 </Box>
               )}
