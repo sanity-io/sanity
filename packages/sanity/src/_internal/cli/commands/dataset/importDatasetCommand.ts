@@ -105,8 +105,13 @@ const importDatasetCommand: CliCommandDefinition = {
   action: async (args, context) => {
     const {apiClient, output, chalk, fromInitCommand} = context
     const flags = parseFlags(args.extOptions)
-    const {allowAssetsInDifferentDataset, allowFailingAssets, assetConcurrency, replaceAssets} =
-      flags
+    const {
+      allowAssetsInDifferentDataset,
+      allowFailingAssets,
+      assetConcurrency,
+      skipCrossDatasetReferences,
+      replaceAssets,
+    } = flags
 
     const operation = getMutationOperation(args.extOptions)
     const client = apiClient()
@@ -242,6 +247,7 @@ const importDatasetCommand: CliCommandDefinition = {
         onProgress,
         allowFailingAssets,
         allowAssetsInDifferentDataset,
+        skipCrossDatasetReferences,
         assetConcurrency,
         replaceAssets,
       })
