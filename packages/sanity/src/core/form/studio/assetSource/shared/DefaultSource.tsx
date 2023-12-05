@@ -1,7 +1,7 @@
 import type {Subscription} from 'rxjs'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {Asset, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
@@ -223,58 +223,62 @@ const DefaultAssetSource = function DefaultAssetSource(
       ref={ref}
       width={2}
     >
-      {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
-        <Card tone="primary" marginTop={4} marginX={4} padding={[3, 3, 4]} border radius={2}>
-          <Flex gap={[3, 4]} align="center">
-            <Text>
-              <InfoOutlineIcon />
-            </Text>
-            <Text size={1}>
-              <Translate
-                t={t}
-                i18nKey="asset-source.dialog.accept-message"
-                values={{
-                  acceptTypes: listFormat.format(accept.split(',').map((type) => type.trim())),
-                }}
+      <Stack space={5}>
+        {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
+          <Card tone="primary" padding={3} border radius={2}>
+            <Flex gap={3} align="center">
+              <Text size={1}>
+                <InfoOutlineIcon />
+              </Text>
+              <Text size={1}>
+                <Translate
+                  t={t}
+                  i18nKey="asset-source.dialog.accept-message"
+                  values={{
+                    acceptTypes: listFormat.format(accept.split(',').map((type) => type.trim())),
+                  }}
+                />
+              </Text>
+            </Flex>
+          </Card>
+        )}
+        {assetType === 'file' && (
+          <FileListView
+            assets={assets}
+            onDeleteFinished={handleDeleteFinished}
+            onClick={handleItemClick}
+            onKeyPress={handleItemKeyPress}
+            isLoading={isLoading}
+            selectedAssets={selectedAssets}
+          />
+        )}
+        {assetType === 'image' && (
+          <ImageListView
+            assets={assets}
+            onDeleteFinished={handleDeleteFinished}
+            onItemClick={handleItemClick}
+            onItemKeyPress={handleItemKeyPress}
+            isLoading={isLoading}
+            selectedAssets={selectedAssets}
+          />
+        )}
+        {assets.length > 0 && !isLastPage && (
+          <CardLoadMore tone="default" padding={4}>
+            <Flex direction="column">
+              <Button
+                type="button"
+                icon={DownloadIcon}
+                loading={isLoading}
+                onClick={handleFetchNextPage}
+                // eslint-disable-next-line no-attribute-string-literals/no-attribute-string-literals
+                size="large"
+                text={t('asset-source.dialog.load-more')}
+                tone="primary"
               />
-            </Text>
-          </Flex>
-        </Card>
-      )}
-      {assetType === 'file' && (
-        <FileListView
-          assets={assets}
-          onDeleteFinished={handleDeleteFinished}
-          onClick={handleItemClick}
-          onKeyPress={handleItemKeyPress}
-          isLoading={isLoading}
-          selectedAssets={selectedAssets}
-        />
-      )}
-      {assetType === 'image' && (
-        <ImageListView
-          assets={assets}
-          onDeleteFinished={handleDeleteFinished}
-          onItemClick={handleItemClick}
-          onItemKeyPress={handleItemKeyPress}
-          isLoading={isLoading}
-          selectedAssets={selectedAssets}
-        />
-      )}
-      {assets.length > 0 && !isLastPage && (
-        <CardLoadMore tone="default" padding={4}>
-          <Flex direction="column">
-            <Button
-              type="button"
-              icon={DownloadIcon}
-              loading={isLoading}
-              onClick={handleFetchNextPage}
-              text={t('asset-source.dialog.load-more')}
-              tone="primary"
-            />
-          </Flex>
-        </CardLoadMore>
-      )}
+            </Flex>
+          </CardLoadMore>
+        )}
+      </Stack>
     </Dialog>
   )
 }
