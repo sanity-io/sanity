@@ -1,7 +1,8 @@
+/* eslint-disable max-statements */
 /* eslint-disable complexity */
-import React, {ChangeEvent, type RefObject} from 'react'
+import React, {ChangeEvent, useRef, useCallback, useState, useEffect, useMemo} from 'react'
 import SplitPane from '@rexxars/react-split-pane'
-import type {ListenEvent, MutationEvent, SanityClient, ClientPerspective} from '@sanity/client'
+import type {ListenEvent, MutationEvent, ClientPerspective} from '@sanity/client'
 import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
 import isHotkey from 'is-hotkey'
 import {
@@ -19,9 +20,9 @@ import {
   ToastContextValue,
   Inline,
 } from '@sanity/ui'
-import {TFunction} from 'sanity'
+import {useTranslation} from 'sanity'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
-import {getLocalStorage, LocalStorageish} from '../util/localStorage'
+import {getLocalStorage} from '../util/localStorage'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {prefixApiVersion} from '../util/prefixApiVersion'
@@ -31,6 +32,7 @@ import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {PERSPECTIVES, DEFAULT_PERSPECTIVE, isPerspective} from '../perspectives'
 import {ResizeObserver} from '../util/resizeObserver'
 import type {VisionProps} from '../types'
+import {visionLocaleNamespace} from '../i18n'
 import {DelayedSpinner} from './DelayedSpinner'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
 import {ResultView} from './ResultView'
@@ -67,6 +69,7 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
 
 const sanityUrl =
   /\.(?:api|apicdn)\.sanity\.io\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
 
@@ -99,522 +102,262 @@ interface Subscription {
 interface VisionGuiProps extends VisionProps {
   toast: ToastContextValue
   datasets: string[]
-  t: TFunction<'vision', undefined>
 }
 
-interface VisionGuiState {
-  // Selected options
-  dataset: string
-  apiVersion: string
-  customApiVersion: string | false
-  perspective: ClientPerspective
+export function VisionGui(props: VisionGuiProps) {
+  const {client, datasets, config, toast} = props
 
-  // Selected options validation state
-  isValidApiVersion: boolean
+  const {t} = useTranslation(visionLocaleNamespace)
 
-  // URL used to execute query/listener
-  url?: string | undefined
+  const _visionRoot = useRef<HTMLDivElement>(null)
+  const _operationUrlElement = useRef<HTMLInputElement>(null)
+  const _queryEditorContainer = useRef<HTMLDivElement>(null)
+  const _paramsEditorContainer = useRef<HTMLDivElement>(null)
+  const _customApiVersionElement = useRef<HTMLInputElement>(null)
 
-  // Inputs
-  query: string
-  rawParams: string
+  const defaultDataset = useMemo(
+    () => config.defaultDataset || client.config().dataset || datasets[0],
+    [client, config.defaultDataset, datasets],
+  )
+  const defaultApiVersion = useMemo(
+    () => prefixApiVersion(`${config.defaultApiVersion}`),
+    [config.defaultApiVersion],
+  )
+  const defaultPerspective = DEFAULT_PERSPECTIVE
+  const _localStorage = useMemo(
+    () => getLocalStorage(client.config().projectId || 'default'),
+    [client],
+  )
 
-  // Parsed input
-  params: Record<string, unknown> | Error | undefined
-  paramsError?: string | undefined
-  hasValidParams: boolean
-
-  // Query/listen result
-  queryResult?: unknown | undefined
-  listenMutations: MutationEvent[]
-  error?: Error | undefined
-
-  // Operation timings
-  queryTime?: number | undefined
-  e2eTime?: number | undefined
-
-  // Operation state, used to trigger re-renders (spinners etc)
-  queryInProgress: boolean
-  listenInProgress: boolean
-
-  // UI drawing state
-  paneSizeOptions: PaneSizeOptions
-}
-
-export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
-  _visionRoot: RefObject<HTMLDivElement>
-  _queryEditorContainer: RefObject<HTMLDivElement>
-  _paramsEditorContainer: RefObject<HTMLDivElement>
-  _operationUrlElement: RefObject<HTMLInputElement>
-  _customApiVersionElement: RefObject<HTMLInputElement>
-  _resizeListener: ResizeObserver | undefined
-  _querySubscription: Subscription | undefined
-  _listenSubscription: Subscription | undefined
-  _client: SanityClient
-  _localStorage: LocalStorageish
-
-  constructor(props: VisionGuiProps) {
-    super(props)
-
-    const {client, datasets, config} = props
-    this._localStorage = getLocalStorage(client.config().projectId || 'default')
-
-    const lastQuery = this._localStorage.get('query', '')
-    const lastParams = this._localStorage.get('params', '{\n  \n}')
-
-    const defaultDataset = config.defaultDataset || client.config().dataset || datasets[0]
-    const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
-    const defaultPerspective = DEFAULT_PERSPECTIVE
-
-    let dataset = this._localStorage.get('dataset', defaultDataset)
-    let apiVersion = this._localStorage.get('apiVersion', defaultApiVersion)
-    const customApiVersion = API_VERSIONS.includes(apiVersion) ? false : apiVersion
-    let perspective = this._localStorage.get('perspective', defaultPerspective)
-
-    if (!datasets.includes(dataset)) {
-      dataset = datasets.includes(defaultDataset) ? defaultDataset : datasets[0]
-    }
-
-    if (!API_VERSIONS.includes(apiVersion)) {
-      apiVersion = DEFAULT_API_VERSION
-    }
-
-    if (!PERSPECTIVES.includes(perspective)) {
-      perspective = DEFAULT_PERSPECTIVE
-    }
-
-    this._visionRoot = React.createRef()
-    this._operationUrlElement = React.createRef()
-    this._queryEditorContainer = React.createRef()
-    this._paramsEditorContainer = React.createRef()
-    this._customApiVersionElement = React.createRef()
-
-    this._client = props.client.withConfig({
-      apiVersion: customApiVersion || apiVersion,
-      dataset,
-      perspective: perspective,
-      allowReconfigure: true,
-    })
-
-    // Initial root height without header
-    const bodyHeight =
+  // Initial root height without header
+  const bodyHeight = useMemo(
+    () =>
       typeof window !== 'undefined' && typeof document !== 'undefined'
         ? document.body.getBoundingClientRect().height - 60
-        : 0
+        : 0,
+    [],
+  )
 
-    const params = lastParams ? tryParseParams(lastParams, this.props.t) : undefined
+  // Selected options
+  const [dataset, setDataset] = useState(() => _localStorage.get('dataset', defaultDataset))
+  const [apiVersion, setApiVersion] = useState(() =>
+    _localStorage.get('apiVersion', defaultApiVersion),
+  )
+  const [perspective, setPerspective] = useState<ClientPerspective>(() =>
+    _localStorage.get('perspective', defaultPerspective),
+  )
+  const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
+    API_VERSIONS.includes(apiVersion) ? false : apiVersion,
+  )
 
-    this.state = {
-      // Selected options
-      dataset,
-      apiVersion,
-      customApiVersion,
-      perspective,
+  // Selected options validation state
+  const [isValidApiVersion, setIsValidApiVersion] = useState<boolean>(() =>
+    customApiVersion ? validateApiVersion(customApiVersion) : false,
+  )
 
-      // Selected options validation state
-      isValidApiVersion: customApiVersion ? validateApiVersion(customApiVersion) : false,
+  // URL used to execute query/listener
+  const [url, setUrl] = useState<string | undefined>()
 
-      // Inputs
-      query: lastQuery,
-      rawParams: lastParams,
+  // Inputs
+  const [query, setQuery] = useState<string>(() => _localStorage.get('query', ''))
+  const [rawParams, setRawParams] = useState<string>(() => _localStorage.get('params', '{\n  \n}'))
 
-      // Parsed input
-      params,
-      hasValidParams: !(params instanceof Error),
+  // Parsed input
+  const [params, setParams] = useState<Record<string, unknown> | Error | undefined>(() =>
+    rawParams ? tryParseParams(rawParams, t) : undefined,
+  )
+  const [paramsError, setParamsError] = useState<string | undefined>()
+  const [hasValidParams, setHasValidParams] = useState<boolean>()
 
-      // Query/listen results
-      listenMutations: [],
+  // Query/listen result
+  const [queryResult, setQueryResult] = useState<unknown | undefined>()
+  const [listenMutations, setListenMutations] = useState<MutationEvent[]>([])
+  const [error, setError] = useState<Error | undefined>()
 
-      // Operation state
-      queryInProgress: false,
-      listenInProgress: false,
+  // Operation timings
+  const [queryTime, setQueryTime] = useState<number | undefined>()
+  const [e2eTime, setE2eTime] = useState<number | undefined>()
 
-      // UI drawing state
-      paneSizeOptions: calculatePaneSizeOptions(bodyHeight),
-    }
+  // Operation state, used to trigger re-renders (spinners etc)
+  const [queryInProgress, setQueryInProgress] = useState<boolean>(false)
+  const [listenInProgress, setListenInProgress] = useState<boolean>(false)
 
-    this.handleChangeDataset = this.handleChangeDataset.bind(this)
-    this.handleChangeApiVersion = this.handleChangeApiVersion.bind(this)
-    this.handleCustomApiVersionChange = this.handleCustomApiVersionChange.bind(this)
-    this.handleChangePerspective = this.handleChangePerspective.bind(this)
-    this.handleListenExecution = this.handleListenExecution.bind(this)
-    this.handleListenerEvent = this.handleListenerEvent.bind(this)
-    this.handleQueryExecution = this.handleQueryExecution.bind(this)
-    this.handleQueryChange = this.handleQueryChange.bind(this)
-    this.handleParamsChange = this.handleParamsChange.bind(this)
-    this.handleCopyUrl = this.handleCopyUrl.bind(this)
-    this.handlePaste = this.handlePaste.bind(this)
-    this.handleKeyDown = this.handleKeyDown.bind(this)
-    this.handleResize = this.handleResize.bind(this)
-  }
+  // UI drawing state
+  const [paneSizeOptions, setPaneSizeOptions] = useState<PaneSizeOptions>(() =>
+    calculatePaneSizeOptions(bodyHeight),
+  )
 
-  componentDidMount() {
-    window.document.addEventListener('paste', this.handlePaste)
-    window.document.addEventListener('keydown', this.handleKeyDown)
+  const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
 
-    this.handleResizeListen()
-  }
-
-  componentWillUnmount() {
-    this.cancelQuery()
-    this.cancelListener()
-    this.cancelEventListener()
-    this.cancelResizeListener()
-  }
-
-  handleResizeListen() {
-    if (!this._visionRoot.current) {
-      return
-    }
-
-    this._resizeListener = new ResizeObserver(this.handleResize)
-    this._resizeListener.observe(this._visionRoot.current)
-  }
-
-  handleResize(entries: ResizeObserverEntry[]) {
-    const entry = entries?.[0]
-
-    this.setState((prevState) => ({
-      ...prevState,
-      paneSizeOptions: calculatePaneSizeOptions(entry.contentRect.height),
-    }))
-  }
-
-  cancelResizeListener() {
-    if (this._resizeListener) {
-      this._resizeListener.disconnect()
-    }
-  }
-
-  handlePaste(evt: ClipboardEvent) {
-    if (!evt.clipboardData) {
-      return
-    }
-
-    const data = evt.clipboardData.getData('text/plain')
-    const match = data.match(sanityUrl)
-    if (!match) {
-      return
-    }
-
-    const [, usedApiVersion, usedDataset, urlQuery] = match
-    let parts: ParsedApiQueryString
-
-    try {
-      const qs = new URLSearchParams(urlQuery)
-      parts = parseApiQueryString(qs)
-    } catch (err) {
-      console.warn('Error while trying to parse API URL: ', err.message) // eslint-disable-line no-console
-      return // Give up on error
-    }
-
-    let apiVersion: string | undefined
-    let customApiVersion: string | false | undefined
-
-    if (validateApiVersion(usedApiVersion)) {
-      if (API_VERSIONS.includes(usedApiVersion)) {
-        apiVersion = usedApiVersion
-        customApiVersion = false
-      } else {
-        customApiVersion = usedApiVersion
-      }
-    }
-
-    const perspective = PERSPECTIVES.includes(parts.options.perspective as ClientPerspective)
-      ? (parts.options.perspective as ClientPerspective)
-      : undefined
-
-    evt.preventDefault()
-    this.setState(
-      (prevState) => ({
-        dataset: this.props.datasets.includes(usedDataset) ? usedDataset : prevState.dataset,
-        query: parts.query,
-        params: parts.params,
-        rawParams: JSON.stringify(parts.params, null, 2),
-        apiVersion: typeof apiVersion === 'undefined' ? prevState.apiVersion : apiVersion,
-        customApiVersion:
-          typeof customApiVersion === 'undefined' ? prevState.customApiVersion : customApiVersion,
-        perspective: typeof perspective === 'undefined' ? prevState.perspective : perspective,
-      }),
-      () => {
-        this._localStorage.merge({
-          query: this.state.query,
-          params: this.state.params,
-          dataset: this.state.dataset,
-          apiVersion: customApiVersion || apiVersion,
-          perspective: this.state.perspective,
-        })
-        this._client.config({
-          dataset: this.state.dataset,
-          apiVersion: customApiVersion || apiVersion,
-          perspective: this.state.perspective,
-        })
-        this.handleQueryExecution()
-        this.props.toast.push({
-          closable: true,
-          id: 'vision-paste',
-          status: 'info',
-          title: 'Parsed URL to query',
-        })
-      },
-    )
-  }
-
-  cancelQuery() {
-    if (!this._querySubscription) {
-      return
-    }
-
-    this._querySubscription.unsubscribe()
-    this._querySubscription = undefined
-  }
-
-  cancelListener() {
-    if (!this._listenSubscription) {
-      return
-    }
-
-    this._listenSubscription.unsubscribe()
-    this._listenSubscription = undefined
-  }
-
-  cancelEventListener() {
-    window.removeEventListener('keydown', this.handleKeyDown)
-  }
-
-  handleChangeDataset(evt: ChangeEvent<HTMLSelectElement>) {
-    const dataset = evt.target.value
-    this._localStorage.set('dataset', dataset)
-    this.setState({dataset})
-    this._client.config({dataset})
-    this.handleQueryExecution()
-  }
-
-  handleChangeApiVersion(evt: ChangeEvent<HTMLSelectElement>) {
-    const apiVersion = evt.target.value
-    if (apiVersion === 'other') {
-      this.setState({customApiVersion: 'v'}, () => {
-        this._customApiVersionElement.current?.focus()
-      })
-      return
-    }
-
-    this.setState({apiVersion, customApiVersion: false}, () => {
-      this._localStorage.set('apiVersion', this.state.apiVersion)
-      this._client.config({
-        apiVersion: this.state.apiVersion,
-      })
-      this.handleQueryExecution()
+  const _client = useMemo(() => {
+    return client.withConfig({
+      apiVersion:
+        customApiVersion || API_VERSIONS.includes(apiVersion) ? apiVersion : DEFAULT_API_VERSION,
+      dataset: dataset.includes(dataset) ? dataset : datasets[0],
+      perspective: PERSPECTIVES.includes(perspective) ? perspective : DEFAULT_PERSPECTIVE,
+      allowReconfigure: true,
     })
-  }
+  }, [apiVersion, client, customApiVersion, dataset, datasets, perspective])
 
-  handleCustomApiVersionChange(evt: ChangeEvent<HTMLInputElement>) {
-    const customApiVersion = evt.target.value || ''
-    const isValidApiVersion = validateApiVersion(customApiVersion)
+  const _querySubscription = useRef<Subscription | undefined>()
+  const _listenSubscription = useRef<Subscription | undefined>()
 
-    this.setState(
-      (prevState) => ({
-        apiVersion: isValidApiVersion ? customApiVersion : prevState.apiVersion,
-        customApiVersion: customApiVersion || 'v',
-        isValidApiVersion,
-      }),
-      () => {
-        if (!this.state.isValidApiVersion || typeof this.state.customApiVersion !== 'string') {
-          return
-        }
-
-        this._localStorage.set('apiVersion', this.state.customApiVersion)
-        this._client.config({apiVersion: this.state.customApiVersion})
-      },
-    )
-  }
-
-  handleChangePerspective(evt: ChangeEvent<HTMLSelectElement>) {
-    const perspective = evt.target.value
-    if (!isPerspective(perspective)) {
+  const cancelQuery = useCallback(() => {
+    if (!_querySubscription.current) {
       return
     }
 
-    this.setState({perspective}, () => {
-      this._localStorage.set('perspective', this.state.perspective)
-      this._client.config({
-        perspective: this.state.perspective,
-      })
-      this.handleQueryExecution()
-    })
-  }
+    _querySubscription.current.unsubscribe()
+    _querySubscription.current = undefined
+  }, [])
 
-  handleListenerEvent(evt: ListenEvent<any>) {
-    if (evt.type !== 'mutation') {
-      this.props.toast.push({
-        closable: true,
-        id: 'vision-listen',
-        status: 'success',
-        title: 'Listening for mutations…',
-      })
+  const cancelListener = useCallback(() => {
+    if (!_listenSubscription.current) {
       return
     }
 
-    this.setState(({listenMutations}) => ({
-      listenMutations:
-        listenMutations.length === 50
-          ? [evt, ...listenMutations.slice(0, 49)]
-          : [evt, ...listenMutations],
-    }))
-  }
+    _listenSubscription.current.unsubscribe()
+    _listenSubscription.current = undefined
+  }, [])
 
-  handleKeyDown(event: KeyboardEvent) {
-    const {hasValidParams} = this.state
-    const isWithinRoot =
-      this._visionRoot.current && nodeContains(this._visionRoot.current, event.target)
-    if (isRunHotkey(event) && isWithinRoot && hasValidParams) {
-      this.handleQueryExecution()
-      event.preventDefault()
-      event.stopPropagation()
-    }
-  }
-
-  ensureSelectedApiVersion() {
-    const {apiVersion, customApiVersion} = this.state
+  const ensureSelectedApiVersion = useCallback(() => {
     const wantedApiVersion = customApiVersion || apiVersion
-    if (this._client.config().apiVersion !== wantedApiVersion) {
-      this._client.config({apiVersion: wantedApiVersion})
+    if (_client.config().apiVersion !== wantedApiVersion) {
+      _client.config({apiVersion: wantedApiVersion})
     }
-  }
+  }, [_client, apiVersion, customApiVersion])
 
-  handleListenExecution() {
-    const {query, params, rawParams, listenInProgress} = this.state
-    if (listenInProgress) {
-      this.cancelListener()
-      this.setState({listenInProgress: false})
-      return
-    }
-
-    this.ensureSelectedApiVersion()
-
-    const paramsError = params instanceof Error ? params : undefined
-    const encodeParams = params instanceof Error ? {} : params || {}
-    const url = this._client.getDataUrl('listen', encodeQueryString(query, encodeParams, {}))
-
-    const shouldExecute = !paramsError && query.trim().length > 0
-
-    this._localStorage.set('query', query)
-    this._localStorage.set('params', rawParams)
-
-    this.cancelQuery()
-
-    this.setState({
-      url,
-      listenMutations: [],
-      queryInProgress: false,
-      queryResult: undefined,
-      listenInProgress: shouldExecute,
-      error: paramsError,
-      queryTime: undefined,
-      e2eTime: undefined,
-    })
-
-    if (!shouldExecute) {
-      return
-    }
-
-    this._listenSubscription = this._client
-      .listen(query, params, {events: ['mutation', 'welcome']})
-      .subscribe({
-        next: this.handleListenerEvent,
-        error: (error) =>
-          this.setState({
-            error,
-            query,
-            listenInProgress: false,
-          }),
-      })
-  }
-
-  handleQueryExecution() {
-    const {query, params, rawParams, queryInProgress} = this.state
-
+  const handleQueryExecution = useCallback(() => {
     if (queryInProgress) {
-      this.cancelQuery()
-      this.cancelListener()
-      this.setState({queryInProgress: false})
+      cancelQuery()
+      cancelListener()
+      setQueryInProgress(false)
       return true
     }
 
-    const paramsError = params instanceof Error && params
-    this._localStorage.set('query', query)
-    this._localStorage.set('params', rawParams)
+    const _paramsError = params instanceof Error && params
+    _localStorage.set('query', query)
+    _localStorage.set('params', rawParams)
 
-    this.cancelListener()
+    cancelListener()
 
-    this.setState({
-      queryInProgress: !paramsError && Boolean(query),
-      listenInProgress: false,
-      listenMutations: [],
-      error: paramsError || undefined,
-      queryResult: undefined,
-      queryTime: undefined,
-      e2eTime: undefined,
-    })
+    setQueryInProgress(!_paramsError && Boolean(query))
+    setListenInProgress(false)
+    setListenMutations([])
+    setError(_paramsError || undefined)
+    setQueryResult(undefined)
+    setQueryTime(undefined)
+    setE2eTime(undefined)
 
-    if (!query || paramsError) {
+    if (!query || _paramsError) {
       return true
     }
 
-    this.ensureSelectedApiVersion()
+    ensureSelectedApiVersion()
 
     const urlQueryOpts: Record<string, string> = {}
-    if (this.state.perspective !== 'raw') {
-      urlQueryOpts.perspective = this.state.perspective
+    if (perspective !== 'raw') {
+      urlQueryOpts.perspective = perspective
     }
 
-    const url = this._client.getUrl(
-      this._client.getDataUrl('query', encodeQueryString(query, params, urlQueryOpts)),
+    setUrl(
+      _client.getUrl(_client.getDataUrl('query', encodeQueryString(query, params, urlQueryOpts))),
     )
-    this.setState({url})
 
     const queryStart = Date.now()
 
-    this._querySubscription = this._client.observable
+    _querySubscription.current = _client.observable
       .fetch(query, params, {filterResponse: false, tag: 'vision'})
       .subscribe({
-        next: (res) =>
-          this.setState({
-            queryTime: res.ms,
-            e2eTime: Date.now() - queryStart,
-            queryResult: res.result,
-            queryInProgress: false,
-            error: undefined,
-          }),
-        error: (error) =>
-          this.setState({
-            error,
-            query,
-            queryInProgress: false,
-          }),
+        next: (res) => {
+          setQueryTime(res.ms)
+          setE2eTime(Date.now() - queryStart)
+          setQueryResult(res.result)
+          setQueryInProgress(false)
+          setError(undefined)
+        },
+        error: (e) => {
+          setError(e)
+          setQuery(query)
+          setQueryInProgress(false)
+        },
       })
 
     return true
-  }
+  }, [
+    _client,
+    _localStorage,
+    cancelListener,
+    cancelQuery,
+    ensureSelectedApiVersion,
+    params,
+    perspective,
+    query,
+    queryInProgress,
+    rawParams,
+  ])
 
-  handleQueryChange(query: string) {
-    this.setState({query})
-  }
+  const handleChangeDataset = useCallback(
+    (evt: ChangeEvent<HTMLSelectElement>) => {
+      _localStorage.set('dataset', dataset)
+      setDataset(evt.target.value)
+      _client.config({dataset})
+      handleQueryExecution()
+    },
+    [_client, _localStorage, dataset, handleQueryExecution],
+  )
 
-  handleParamsChange({raw, parsed, valid, error}: ParamsEditorChangeEvent) {
-    this.setState(
-      {
-        rawParams: raw,
-        params: parsed,
-        hasValidParams: valid,
-        paramsError: error,
-      },
-      () => this._localStorage.set('params', raw),
-    )
-  }
+  const handleChangeApiVersion = useCallback(
+    (evt: ChangeEvent<HTMLSelectElement>) => {
+      const {value} = evt.target
+      if (value === 'other') {
+        setCustomApiVersion('v')
+        _customApiVersionElement.current?.focus()
+        return
+      }
 
-  handleCopyUrl() {
-    const el = this._operationUrlElement.current
+      setApiVersion(value)
+      setCustomApiVersion(false)
+      _localStorage.set('apiVersion', value)
+      _client.config({apiVersion: value})
+      handleQueryExecution()
+    },
+    [_client, _localStorage, handleQueryExecution],
+  )
+
+  const handleChangePerspective = useCallback(
+    (evt: ChangeEvent<HTMLSelectElement>) => {
+      const {value} = evt.target
+      if (!isPerspective(value)) {
+        return
+      }
+
+      setPerspective(value)
+      _localStorage.set('perspective', value)
+      _client.config({perspective: value})
+      handleQueryExecution()
+    },
+    [_client, _localStorage, handleQueryExecution],
+  )
+
+  const handleCustomApiVersionChange = useCallback(
+    (evt: ChangeEvent<HTMLInputElement>) => {
+      const {value = ''} = evt.target
+
+      if (validateApiVersion(value)) {
+        setApiVersion(value)
+        _localStorage.set('apiVersion', value)
+        _client.config({apiVersion: value})
+      }
+
+      setCustomApiVersion(value || 'v')
+      setIsValidApiVersion(validateApiVersion(value))
+    },
+    [_client, _localStorage],
+  )
+
+  const handleCopyUrl = useCallback(() => {
+    const el = _operationUrlElement.current
     if (!el) {
       return
     }
@@ -622,7 +365,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     try {
       el.select()
       document.execCommand('copy')
-      this.props.toast.push({
+      toast.push({
         closable: true,
         title: 'Copied to clipboard',
         status: 'info',
@@ -632,347 +375,550 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       // eslint-disable-next-line no-console
       console.error('Unable to copy to clipboard :(')
     }
-  }
+  }, [toast])
 
-  render() {
-    const {datasets, t} = this.props
-    const {
-      error,
-      queryResult,
-      url,
-      queryInProgress,
-      listenInProgress,
-      paneSizeOptions,
-      queryTime,
-      e2eTime,
-      listenMutations,
-      apiVersion,
-      dataset,
-      customApiVersion,
-      isValidApiVersion,
-      hasValidParams,
-      paramsError,
-      perspective,
-    } = this.state
-    const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
+  const handleQueryChange = useCallback((value: string) => {
+    setQuery(value)
+  }, [])
 
-    return (
-      <Root
-        direction="column"
-        height="fill"
-        ref={this._visionRoot}
-        sizing="border"
-        overflow="hidden"
-      >
-        <Header paddingX={3} paddingY={2}>
-          <Grid columns={[1, 4, 8, 12]}>
-            {/* Dataset selector */}
+  const handleListenerEvent = useCallback(
+    (evt: ListenEvent<any>) => {
+      if (evt.type !== 'mutation') {
+        toast.push({
+          closable: true,
+          id: 'vision-listen',
+          status: 'success',
+          title: 'Listening for mutations…',
+        })
+        return
+      }
+
+      setListenMutations((prev) => {
+        if (prev.length === 50) {
+          return [evt, ...prev.slice(0, 49)]
+        }
+
+        return [evt, ...prev]
+      })
+    },
+    [toast],
+  )
+
+  const handleParamsChange = useCallback(
+    ({raw, parsed, valid, error: e}: ParamsEditorChangeEvent) => {
+      setRawParams(raw)
+      setParams(parsed)
+      setHasValidParams(valid)
+      setParamsError(e)
+
+      _localStorage.set('params', raw)
+    },
+    [_localStorage],
+  )
+
+  const handleListenExecution = useCallback(() => {
+    if (listenInProgress) {
+      cancelListener()
+      setListenInProgress(false)
+      return
+    }
+
+    ensureSelectedApiVersion()
+
+    const _paramsError = params instanceof Error ? params : undefined
+    const encodeParams = params instanceof Error ? {} : params || {}
+
+    const shouldExecute = !_paramsError && query.trim().length > 0
+
+    _localStorage.set('query', query)
+    _localStorage.set('params', rawParams)
+
+    cancelQuery()
+
+    setUrl(_client.getDataUrl('listen', encodeQueryString(query, encodeParams, {})))
+    setListenMutations([])
+    setQueryInProgress(false)
+    setQueryResult(undefined)
+    setListenInProgress(shouldExecute)
+    setError(_paramsError)
+    setQueryTime(undefined)
+    setE2eTime(undefined)
+
+    if (!shouldExecute) {
+      return
+    }
+
+    _listenSubscription.current = _client
+      .listen(query, params, {events: ['mutation', 'welcome']})
+      .subscribe({
+        next: handleListenerEvent,
+        error: (e) => {
+          setError(e)
+          setQuery(query)
+          setListenInProgress(false)
+        },
+      })
+  }, [
+    _client,
+    _localStorage,
+    cancelListener,
+    cancelQuery,
+    ensureSelectedApiVersion,
+    handleListenerEvent,
+    listenInProgress,
+    params,
+    query,
+    rawParams,
+  ])
+
+  const handlePaste = useCallback(
+    (evt: ClipboardEvent) => {
+      if (!evt.clipboardData) {
+        return
+      }
+
+      const data = evt.clipboardData.getData('text/plain')
+      const match = data.match(sanityUrl)
+      if (!match) {
+        return
+      }
+
+      const [, usedApiVersion, usedDataset, urlQuery] = match
+      let parts: ParsedApiQueryString
+
+      try {
+        const qs = new URLSearchParams(urlQuery)
+        parts = parseApiQueryString(qs)
+      } catch (err) {
+        console.warn('Error while trying to parse API URL: ', err.message) // eslint-disable-line no-console
+        return // Give up on error
+      }
+
+      let _apiVersion: string | undefined
+      let _customApiVersion: string | false | undefined
+
+      if (validateApiVersion(usedApiVersion)) {
+        if (API_VERSIONS.includes(usedApiVersion)) {
+          _apiVersion = usedApiVersion
+          _customApiVersion = false
+        } else {
+          _customApiVersion = usedApiVersion
+        }
+      }
+
+      const _perspective = PERSPECTIVES.includes(parts.options.perspective as ClientPerspective)
+        ? (parts.options.perspective as ClientPerspective)
+        : undefined
+
+      evt.preventDefault()
+
+      setQuery(parts.query)
+      setParams(parts.params)
+      setRawParams(JSON.stringify(parts.params, null, 2))
+
+      if (datasets.includes(usedDataset)) {
+        setDataset(usedDataset)
+      }
+
+      if (_apiVersion) {
+        setApiVersion(_apiVersion)
+      }
+
+      if (_customApiVersion) {
+        setCustomApiVersion(_customApiVersion)
+      }
+
+      if (_perspective) {
+        setPerspective(_perspective)
+      }
+
+      const newDataset = datasets.includes(usedDataset) ? usedDataset : dataset
+
+      // FIX: Review this logic again
+      _localStorage.merge({
+        query: parts.query,
+        params: parts.params,
+        dataset: newDataset,
+        apiVersion: _customApiVersion || _apiVersion,
+        perspective: _perspective || perspective,
+      })
+
+      _client.config({
+        dataset: newDataset,
+        apiVersion: _customApiVersion || _apiVersion,
+        perspective: _perspective || perspective,
+      })
+
+      handleQueryExecution()
+      toast.push({
+        closable: true,
+        id: 'vision-paste',
+        status: 'info',
+        title: 'Parsed URL to query',
+      })
+    },
+    [_client, _localStorage, dataset, datasets, handleQueryExecution, perspective, toast],
+  )
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const isWithinRoot = _visionRoot.current && nodeContains(_visionRoot.current, event.target)
+      const isWithinParamsEditor =
+        _paramsEditorContainer.current && nodeContains(_paramsEditorContainer.current, event.target)
+
+      if (isRunHotkey(event) && (isWithinRoot || isWithinParamsEditor) && hasValidParams) {
+        handleQueryExecution()
+        event.preventDefault()
+        event.stopPropagation()
+      }
+    },
+    [handleQueryExecution, hasValidParams],
+  )
+
+  useEffect(() => {
+    document.addEventListener('paste', handlePaste)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('paste', handlePaste)
+      document.removeEventListener('keydown', handleKeyDown)
+
+      cancelQuery()
+      cancelListener()
+    }
+    // only want it to run on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleResize = useCallback((entries: ResizeObserverEntry[]) => {
+    const entry = entries?.[0]
+
+    setPaneSizeOptions(calculatePaneSizeOptions(entry.contentRect.height))
+  }, [])
+
+  useEffect(() => {
+    let resizeListener: ResizeObserver | undefined
+
+    if (_visionRoot.current) {
+      resizeListener = new ResizeObserver(handleResize)
+      resizeListener.observe(_visionRoot.current)
+    }
+
+    return () => {
+      resizeListener?.disconnect()
+    }
+  }, [handleResize])
+
+  return (
+    <Root direction="column" height="fill" ref={_visionRoot} sizing="border" overflow="hidden">
+      <Header paddingX={3} paddingY={2}>
+        <Grid columns={[1, 4, 8, 12]}>
+          {/* Dataset selector */}
+          <Box padding={1} column={2}>
+            <Stack>
+              <Card paddingTop={2} paddingBottom={3}>
+                <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
+              </Card>
+              <Select value={dataset} onChange={handleChangeDataset}>
+                {datasets.map((ds) => (
+                  <option key={ds}>{ds}</option>
+                ))}
+              </Select>
+            </Stack>
+          </Box>
+
+          {/* API version selector */}
+          <Box padding={1} column={2}>
+            <Stack>
+              <Card paddingTop={2} paddingBottom={3}>
+                <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
+              </Card>
+              <Select
+                value={
+                  customApiVersion === false ? apiVersion : t('settings.other-api-version-label')
+                }
+                onChange={handleChangeApiVersion}
+              >
+                {API_VERSIONS.map((version) => (
+                  <option key={version}>{version}</option>
+                ))}
+                <option key="other" value={t('settings.other-api-version-label')}>
+                  {t('settings.other-api-version-label')}
+                </option>
+              </Select>
+            </Stack>
+          </Box>
+
+          {/* Custom API version input */}
+          {customApiVersion !== false && (
             <Box padding={1} column={2}>
               <Stack>
                 <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
+                  <StyledLabel textOverflow="ellipsis">
+                    {t('settings.custom-api-version-label')}
+                  </StyledLabel>
                 </Card>
-                <Select value={dataset} onChange={this.handleChangeDataset}>
-                  {datasets.map((ds) => (
-                    <option key={ds}>{ds}</option>
-                  ))}
-                </Select>
-              </Stack>
-            </Box>
 
-            {/* API version selector */}
-            <Box padding={1} column={2}>
-              <Stack>
-                <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
-                </Card>
-                <Select
-                  value={
-                    customApiVersion === false ? apiVersion : t('settings.other-api-version-label')
+                <TextInput
+                  ref={_customApiVersionElement}
+                  value={customApiVersion}
+                  onChange={handleCustomApiVersionChange}
+                  customValidity={
+                    isValidApiVersion ? undefined : t('settings.error.invalid-api-version')
                   }
-                  onChange={this.handleChangeApiVersion}
-                >
-                  {API_VERSIONS.map((version) => (
-                    <option key={version}>{version}</option>
-                  ))}
-                  <option key="other" value={t('settings.other-api-version-label')}>
-                    {t('settings.other-api-version-label')}
-                  </option>
-                </Select>
+                  maxLength={11}
+                />
               </Stack>
             </Box>
+          )}
 
-            {/* Custom API version input */}
-            {customApiVersion !== false && (
-              <Box padding={1} column={2}>
-                <Stack>
-                  <Card paddingTop={2} paddingBottom={3}>
-                    <StyledLabel textOverflow="ellipsis">
-                      {t('settings.custom-api-version-label')}
-                    </StyledLabel>
-                  </Card>
+          {/* Perspective selector */}
+          <Box padding={1} column={2}>
+            <Stack>
+              <Card paddingBottom={1}>
+                <Inline space={1}>
+                  <Box>
+                    <StyledLabel>{t('settings.perspective-label')}</StyledLabel>
+                  </Box>
 
-                  <TextInput
-                    ref={this._customApiVersionElement}
-                    value={customApiVersion}
-                    onChange={this.handleCustomApiVersionChange}
-                    customValidity={
-                      isValidApiVersion ? undefined : t('settings.error.invalid-api-version')
-                    }
-                    maxLength={11}
-                  />
-                </Stack>
-              </Box>
-            )}
+                  <Box>
+                    <PerspectivePopover />
+                  </Box>
+                </Inline>
+              </Card>
 
-            {/* Perspective selector */}
-            <Box padding={1} column={2}>
+              <Select value={perspective} onChange={handleChangePerspective}>
+                {PERSPECTIVES.map((p) => (
+                  <option key={p}>{p}</option>
+                ))}
+              </Select>
+            </Stack>
+          </Box>
+
+          {/* Query URL (for copying) */}
+          {typeof url === 'string' ? (
+            <Box padding={1} flex={1} column={customApiVersion === false ? 6 : 4}>
               <Stack>
-                <Card paddingBottom={1}>
-                  <Inline space={1}>
-                    <Box>
-                      <StyledLabel>{t('settings.perspective-label')}</StyledLabel>
-                    </Box>
-
-                    <Box>
-                      <PerspectivePopover />
-                    </Box>
-                  </Inline>
+                <Card paddingTop={2} paddingBottom={3}>
+                  <StyledLabel>
+                    {t('query.url')}&nbsp;
+                    <QueryCopyLink onClick={handleCopyUrl}>
+                      [{t('action.copy-url-to-clipboard')}]
+                    </QueryCopyLink>
+                  </StyledLabel>
                 </Card>
-
-                <Select value={perspective} onChange={this.handleChangePerspective}>
-                  {PERSPECTIVES.map((p) => (
-                    <option key={p}>{p}</option>
-                  ))}
-                </Select>
+                <Flex flex={1} gap={1}>
+                  <Box flex={1}>
+                    <TextInput readOnly type="url" ref={_operationUrlElement} value={url} />
+                  </Box>
+                  <Tooltip
+                    content={
+                      <Box padding={2}>
+                        <Text>{t('action.copy-url-to-clipboard')}</Text>
+                      </Box>
+                    }
+                  >
+                    <Button
+                      aria-label={t('action.copy-url-to-clipboard')}
+                      type="button"
+                      mode="ghost"
+                      icon={CopyIcon}
+                      onClick={handleCopyUrl}
+                    />
+                  </Tooltip>
+                </Flex>
               </Stack>
             </Box>
-
-            {/* Query URL (for copying) */}
-            {typeof url === 'string' ? (
-              <Box padding={1} flex={1} column={customApiVersion === false ? 6 : 4}>
-                <Stack>
-                  <Card paddingTop={2} paddingBottom={3}>
-                    <StyledLabel>
-                      {t('query.url')}&nbsp;
-                      <QueryCopyLink onClick={this.handleCopyUrl}>
-                        [{t('action.copy-url-to-clipboard')}]
-                      </QueryCopyLink>
-                    </StyledLabel>
-                  </Card>
-                  <Flex flex={1} gap={1}>
-                    <Box flex={1}>
-                      <TextInput readOnly type="url" ref={this._operationUrlElement} value={url} />
-                    </Box>
+          ) : (
+            <Box flex={1} />
+          )}
+        </Grid>
+      </Header>
+      <SplitpaneContainer flex="auto">
+        {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
+        <SplitPane
+          split={narrowBreakpoint() ? 'vertical' : 'horizontal'}
+          minSize={280}
+          defaultSize={400}
+          maxSize={-400}
+        >
+          <Box height="stretch" flex={1}>
+            {/*
+                The way react-split-pane handles the sizes is kind of finicky and not clear. What the props above does is:
+                - It sets the initial size of the panes to 1/2 of the total available height of the container
+                - Sets the minimum size of a pane whatever is bigger of 1/2 of the total available height of the container, or 170px
+                - The max size is set to either 60% or 70% of the available space, depending on if the container height is above 650px
+                - Disables resizing when total height is below 500, since it becomes really cumbersome to work with the panes then
+                - The "primary" prop (https://github.com/tomkp/react-split-pane#primary) tells the second pane to shrink or grow by the available space
+                - Disables resize if the container height is less then 500px
+                This should ensure that we mostly avoid a pane to take up all the room, and for the controls to not be eaten up by the pane
+              */}
+            {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
+            <SplitPane
+              className="sidebarPanes"
+              split={'horizontal'}
+              defaultSize={
+                narrowBreakpoint() ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
+              }
+              size={paneSizeOptions.size}
+              allowResize={paneSizeOptions.allowResize}
+              minSize={narrowBreakpoint() ? paneSizeOptions.minSize : 100}
+              maxSize={paneSizeOptions.maxSize}
+              primary="first"
+            >
+              <InputContainer display="flex" ref={_queryEditorContainer}>
+                <Box flex={1}>
+                  <InputBackgroundContainerLeft>
+                    <Flex>
+                      <StyledLabel muted>{t('query.label')}</StyledLabel>
+                    </Flex>
+                  </InputBackgroundContainerLeft>
+                  <VisionCodeMirror value={query} onChange={handleQueryChange} />
+                </Box>
+              </InputContainer>
+              <InputContainer display="flex" ref={_paramsEditorContainer}>
+                <Card flex={1} tone={hasValidParams ? 'default' : 'critical'}>
+                  <InputBackgroundContainerLeft>
+                    <Flex>
+                      <StyledLabel muted>{t('params.label')}</StyledLabel>
+                      {paramsError && (
+                        <Tooltip
+                          placement="top-end"
+                          portal
+                          content={
+                            <Box padding={2}>
+                              <Text>{paramsError}</Text>
+                            </Box>
+                          }
+                        >
+                          <Box padding={1} marginX={2}>
+                            <Text>
+                              <ErrorOutlineIcon />
+                            </Text>
+                          </Box>
+                        </Tooltip>
+                      )}
+                    </Flex>
+                  </InputBackgroundContainerLeft>
+                  <ParamsEditor value={rawParams} onChange={handleParamsChange} />
+                </Card>
+                {/* Controls (listen/run) */}
+                <ControlsContainer>
+                  <Card padding={3} paddingX={3}>
                     <Tooltip
                       content={
-                        <Box padding={2}>
-                          <Text>{t('action.copy-url-to-clipboard')}</Text>
-                        </Box>
+                        <Card padding={2} radius={4}>
+                          <Text size={1} muted>
+                            {t('params.error.params-invalid-json')}
+                          </Text>
+                        </Card>
                       }
+                      placement="top"
+                      disabled={hasValidParams}
+                      portal
                     >
-                      <Button
-                        aria-label={t('action.copy-url-to-clipboard')}
-                        type="button"
-                        mode="ghost"
-                        icon={CopyIcon}
-                        onClick={this.handleCopyUrl}
-                      />
-                    </Tooltip>
-                  </Flex>
-                </Stack>
-              </Box>
-            ) : (
-              <Box flex={1} />
-            )}
-          </Grid>
-        </Header>
-        <SplitpaneContainer flex="auto">
-          {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
-          <SplitPane
-            split={narrowBreakpoint() ? 'vertical' : 'horizontal'}
-            minSize={280}
-            defaultSize={400}
-            maxSize={-400}
-          >
-            <Box height="stretch" flex={1}>
-              {/*
-                  The way react-split-pane handles the sizes is kind of finicky and not clear. What the props above does is:
-                  - It sets the initial size of the panes to 1/2 of the total available height of the container
-                  - Sets the minimum size of a pane whatever is bigger of 1/2 of the total available height of the container, or 170px
-                  - The max size is set to either 60% or 70% of the available space, depending on if the container height is above 650px
-                  - Disables resizing when total height is below 500, since it becomes really cumbersome to work with the panes then
-                  - The "primary" prop (https://github.com/tomkp/react-split-pane#primary) tells the second pane to shrink or grow by the available space
-                  - Disables resize if the container height is less then 500px
-                  This should ensure that we mostly avoid a pane to take up all the room, and for the controls to not be eaten up by the pane
-                */}
-              {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
-              <SplitPane
-                className="sidebarPanes"
-                split={'horizontal'}
-                defaultSize={
-                  narrowBreakpoint() ? paneSizeOptions.defaultSize : paneSizeOptions.minSize
-                }
-                size={paneSizeOptions.size}
-                allowResize={paneSizeOptions.allowResize}
-                minSize={narrowBreakpoint() ? paneSizeOptions.minSize : 100}
-                maxSize={paneSizeOptions.maxSize}
-                primary="first"
-              >
-                <InputContainer display="flex" ref={this._queryEditorContainer}>
-                  <Box flex={1}>
-                    <InputBackgroundContainerLeft>
-                      <Flex>
-                        <StyledLabel muted>{t('query.label')}</StyledLabel>
-                      </Flex>
-                    </InputBackgroundContainerLeft>
-                    <VisionCodeMirror value={this.state.query} onChange={this.handleQueryChange} />
-                  </Box>
-                </InputContainer>
-                <InputContainer display="flex" ref={this._paramsEditorContainer}>
-                  <Card flex={1} tone={hasValidParams ? 'default' : 'critical'}>
-                    <InputBackgroundContainerLeft>
-                      <Flex>
-                        <StyledLabel muted>{t('params.label')}</StyledLabel>
-                        {paramsError && (
+                      <Flex justify="space-evenly">
+                        <Box flex={1}>
                           <Tooltip
-                            placement="top-end"
-                            portal
                             content={
-                              <Box padding={2}>
-                                <Text>{paramsError}</Text>
-                              </Box>
+                              <Card padding={2} radius={4}>
+                                <Hotkeys keys={['Ctrl', 'Enter']} />
+                              </Card>
                             }
+                            placement="top"
+                            portal
                           >
-                            <Box padding={1} marginX={2}>
-                              <Text>
-                                <ErrorOutlineIcon />
-                              </Text>
-                            </Box>
-                          </Tooltip>
-                        )}
-                      </Flex>
-                    </InputBackgroundContainerLeft>
-                    <ParamsEditor value={this.state.rawParams} onChange={this.handleParamsChange} />
-                  </Card>
-                  {/* Controls (listen/run) */}
-                  <ControlsContainer>
-                    <Card padding={3} paddingX={3}>
-                      <Tooltip
-                        content={
-                          <Card padding={2} radius={4}>
-                            <Text size={1} muted>
-                              {t('params.error.params-invalid-json')}
-                            </Text>
-                          </Card>
-                        }
-                        placement="top"
-                        disabled={hasValidParams}
-                        portal
-                      >
-                        <Flex justify="space-evenly">
-                          <Box flex={1}>
-                            <Tooltip
-                              content={
-                                <Card padding={2} radius={4}>
-                                  <Hotkeys keys={['Ctrl', 'Enter']} />
-                                </Card>
-                              }
-                              placement="top"
-                              portal
-                            >
-                              <ButtonFullWidth
-                                onClick={this.handleQueryExecution}
-                                type="button"
-                                icon={queryInProgress ? StopIcon : PlayIcon}
-                                disabled={listenInProgress || !hasValidParams}
-                                tone={queryInProgress ? 'positive' : 'primary'}
-                                text={
-                                  queryInProgress
-                                    ? t('action.query-cancel')
-                                    : t('action.query-execute')
-                                }
-                              />
-                            </Tooltip>
-                          </Box>
-                          <Box flex={1} marginLeft={3}>
                             <ButtonFullWidth
-                              onClick={this.handleListenExecution}
+                              onClick={handleQueryExecution}
                               type="button"
-                              icon={listenInProgress ? StopIcon : PlayIcon}
+                              icon={queryInProgress ? StopIcon : PlayIcon}
+                              disabled={listenInProgress || !hasValidParams}
+                              tone={queryInProgress ? 'positive' : 'primary'}
                               text={
-                                listenInProgress
-                                  ? t('action.listen-cancel')
-                                  : t('action.listen-execute')
+                                queryInProgress
+                                  ? t('action.query-cancel')
+                                  : t('action.query-execute')
                               }
-                              mode="ghost"
-                              disabled={!hasValidParams}
-                              tone={listenInProgress ? 'positive' : 'default'}
                             />
-                          </Box>
-                        </Flex>
-                      </Tooltip>
-                    </Card>
-                  </ControlsContainer>
-                </InputContainer>
-              </SplitPane>
-            </Box>
-            <ResultOuterContainer direction="column">
-              <ResultInnerContainer flex={1}>
-                <ResultContainer
-                  flex={1}
-                  overflow="hidden"
-                  tone={error ? 'critical' : 'default'}
-                  $isInvalid={Boolean(error)}
-                >
-                  <Result overflow="auto">
-                    <InputBackgroundContainer>
-                      <Box marginLeft={3}>
-                        <StyledLabel muted>{t('result.label')}</StyledLabel>
-                      </Box>
-                    </InputBackgroundContainer>
-                    <Box padding={3} paddingTop={5}>
-                      {(queryInProgress || (listenInProgress && listenMutations.length === 0)) && (
-                        <Box marginTop={3}>
-                          <DelayedSpinner />
+                          </Tooltip>
                         </Box>
-                      )}
-                      {error && <QueryErrorDialog error={error} />}
-                      {hasResult && <ResultView data={queryResult} />}
-                      {listenInProgress && listenMutations.length > 0 && (
-                        <ResultView data={listenMutations} />
-                      )}
+                        <Box flex={1} marginLeft={3}>
+                          <ButtonFullWidth
+                            onClick={handleListenExecution}
+                            type="button"
+                            icon={listenInProgress ? StopIcon : PlayIcon}
+                            text={
+                              listenInProgress
+                                ? t('action.listen-cancel')
+                                : t('action.listen-execute')
+                            }
+                            mode="ghost"
+                            disabled={!hasValidParams}
+                            tone={listenInProgress ? 'positive' : 'default'}
+                          />
+                        </Box>
+                      </Flex>
+                    </Tooltip>
+                  </Card>
+                </ControlsContainer>
+              </InputContainer>
+            </SplitPane>
+          </Box>
+          <ResultOuterContainer direction="column">
+            <ResultInnerContainer flex={1}>
+              <ResultContainer
+                flex={1}
+                overflow="hidden"
+                tone={error ? 'critical' : 'default'}
+                $isInvalid={Boolean(error)}
+              >
+                <Result overflow="auto">
+                  <InputBackgroundContainer>
+                    <Box marginLeft={3}>
+                      <StyledLabel muted>{t('result.label')}</StyledLabel>
                     </Box>
-                  </Result>
-                </ResultContainer>
-              </ResultInnerContainer>
-              {/* Execution time */}
-              <TimingsFooter>
-                <TimingsCard paddingX={4} paddingY={3} sizing="border">
-                  <TimingsTextContainer align="center">
-                    <Box>
-                      <Text muted>
-                        {t('result.execution-time-label')}:{' '}
-                        {typeof queryTime === 'number'
-                          ? `${queryTime}ms`
-                          : t('result.timing-not-applicable')}
-                      </Text>
-                    </Box>
-                    <Box marginLeft={4}>
-                      <Text muted>
-                        {t('result.end-to-end-time-label')}:{' '}
-                        {typeof e2eTime === 'number'
-                          ? `${e2eTime}ms`
-                          : t('result.timing-not-applicable')}
-                      </Text>
-                    </Box>
-                  </TimingsTextContainer>
-                </TimingsCard>
-              </TimingsFooter>
-            </ResultOuterContainer>
-          </SplitPane>
-        </SplitpaneContainer>
-      </Root>
-    )
-  }
+                  </InputBackgroundContainer>
+                  <Box padding={3} paddingTop={5}>
+                    {(queryInProgress || (listenInProgress && listenMutations.length === 0)) && (
+                      <Box marginTop={3}>
+                        <DelayedSpinner />
+                      </Box>
+                    )}
+                    {error && <QueryErrorDialog error={error} />}
+                    {hasResult && <ResultView data={queryResult} />}
+                    {listenInProgress && listenMutations.length > 0 && (
+                      <ResultView data={listenMutations} />
+                    )}
+                  </Box>
+                </Result>
+              </ResultContainer>
+            </ResultInnerContainer>
+            {/* Execution time */}
+            <TimingsFooter>
+              <TimingsCard paddingX={4} paddingY={3} sizing="border">
+                <TimingsTextContainer align="center">
+                  <Box>
+                    <Text muted>
+                      {t('result.execution-time-label')}:{' '}
+                      {typeof queryTime === 'number'
+                        ? `${queryTime}ms`
+                        : t('result.timing-not-applicable')}
+                    </Text>
+                  </Box>
+                  <Box marginLeft={4}>
+                    <Text muted>
+                      {t('result.end-to-end-time-label')}:{' '}
+                      {typeof e2eTime === 'number'
+                        ? `${e2eTime}ms`
+                        : t('result.timing-not-applicable')}
+                    </Text>
+                  </Box>
+                </TimingsTextContainer>
+              </TimingsCard>
+            </TimingsFooter>
+          </ResultOuterContainer>
+        </SplitPane>
+      </SplitpaneContainer>
+    </Root>
+  )
 }
