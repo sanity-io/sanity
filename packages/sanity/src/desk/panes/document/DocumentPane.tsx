@@ -9,45 +9,74 @@ import {
   Text,
   useElementRect,
 } from '@sanity/ui'
-import React, {memo, useCallback, useMemo, useState} from 'react'
-import styled from 'styled-components'
+import {ComponentType, memo, useCallback, useMemo, useState} from 'react'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
+import styled from 'styled-components'
 import {DocumentPaneNode} from '../../types'
-import {Pane, PaneFooter, usePaneRouter} from '../../components'
-import {usePaneLayout} from '../../components/pane/usePaneLayout'
+import {Pane, PaneFooter, usePaneLayout, usePaneRouter} from '../../components'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
+import {structureLocaleNamespace} from '../../i18n'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../constants'
-import {DocumentOperationResults} from './DocumentOperationResults'
+import {useDocumentPane} from './useDocumentPane'
+import {DocumentPaneProviderProps} from './types'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
+import {DocumentOperationResults} from './DocumentOperationResults'
+import {
+  DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
+  DOCUMENT_INSPECTOR_MIN_WIDTH,
+  DOCUMENT_PANEL_MIN_WIDTH,
+} from './constants'
 import {DocumentPanel} from './documentPanel'
 import {DocumentActionShortcuts} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
-import {DocumentPaneProviderProps} from './types'
-import {useDocumentPane} from './useDocumentPane'
-import {
-  DOCUMENT_INSPECTOR_MIN_WIDTH,
-  DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
-  DOCUMENT_PANEL_MIN_WIDTH,
-} from './constants'
-import {structureLocaleNamespace} from '../../i18n'
 import {
   ChangeConnectorRoot,
+  FormLayoutProps,
+  PluginOptions,
   ReferenceInputOptionsProvider,
   SourceProvider,
-  isDev,
   Translate,
+  isDev,
   useDocumentType,
+  useMiddlewareComponents,
   useSource,
   useTemplatePermissions,
   useTemplates,
   useTranslation,
   useZIndex,
 } from 'sanity'
-import {CommentsEnabledProvider} from '../../comments'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
+
+function pickFormLayout(plugin: PluginOptions) {
+  return plugin.form?.components?.layout as ComponentType<Omit<FormLayoutProps, 'renderDefault'>>
+}
+
+/**
+ * A hook that returns the form layout components composed
+ * by the Components API (`form.components.layout`).
+ */
+function useFormLayoutComponent() {
+  return useMiddlewareComponents({
+    pick: pickFormLayout,
+    defaultComponent: FormLayout,
+  })
+}
+
+/**
+ * @internal
+ */
+export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
+  const {name: parentSourceName} = useSource()
+
+  return (
+    <SourceProvider name={props.pane.source || parentSourceName}>
+      <DocumentPaneInner {...props} />
+    </SourceProvider>
+  )
+})
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrower screens (first two media breakpoints).
@@ -64,18 +93,6 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
   min-height: 0;
   min-width: 0;
 `
-/**
- * @internal
- */
-export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
-  const {name: parentSourceName} = useSource()
-
-  return (
-    <SourceProvider name={props.pane.source || parentSourceName}>
-      <DocumentPaneInner {...props} />
-    </SourceProvider>
-  )
-})
 
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
@@ -83,6 +100,8 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
+
+  const FormLayoutComponent = useFormLayoutComponent()
 
   // The templates that should be creatable from inside this document pane.
   // For example, from the "Create new" menu in reference inputs.
@@ -160,74 +179,30 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   }
 
   return (
-    <CommentsEnabledProvider documentId={options.id} documentType={options.type}>
-      <DocumentPaneProvider
-        // this needs to be here to avoid formState from being re-used across (incompatible) document types
-        // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
-        key={`${documentType}-${options.id}`}
-        {...providerProps}
+    <DocumentPaneProvider
+      // this needs to be here to avoid formState from being re-used across (incompatible) document types
+      // see https://github.com/sanity-io/sanity/discussions/3794 for a description of the problem
+      key={`${documentType}-${options.id}`}
+      {...providerProps}
+    >
+      {/* NOTE: this is a temporary location for this provider until we */}
+      {/* stabilize the reference input options formally in the form builder */}
+      {/* eslint-disable-next-line react/jsx-pascal-case */}
+      <ReferenceInputOptionsProvider
+        EditReferenceLinkComponent={ReferenceChildLink}
+        onEditReference={handleEditReference}
+        initialValueTemplateItems={templatePermissions}
+        activePath={activePath}
       >
-        {/* NOTE: this is a temporary location for this provider until we */}
-        {/* stabilize the reference input options formally in the form builder */}
-        {/* eslint-disable-next-line react/jsx-pascal-case */}
-        <ReferenceInputOptionsProvider
-          EditReferenceLinkComponent={ReferenceChildLink}
-          onEditReference={handleEditReference}
-          initialValueTemplateItems={templatePermissions}
-          activePath={activePath}
-        >
-          <InnerDocumentPane />
-        </ReferenceInputOptionsProvider>
-      </DocumentPaneProvider>
-    </CommentsEnabledProvider>
+        <FormLayoutComponent documentId={options.id} documentType={options.type} />
+      </ReferenceInputOptionsProvider>
+    </DocumentPaneProvider>
   )
 }
 
-function usePaneOptions(
-  options: DocumentPaneOptions,
-  params: Record<string, string | undefined> = {},
-): DocumentPaneOptions {
-  const templates = useTemplates()
-
-  return useMemo(() => {
-    // The document type is provided, so return
-    if (options.type && options.type !== '*') {
-      return options
-    }
-
-    // Attempt to derive document type from the template configuration
-    const templateName = options.template || params.template
-    const template = templateName ? templates.find((t) => t.id === templateName) : undefined
-    const documentType = template?.schemaType
-
-    // No document type was found in a template
-    if (!documentType) {
-      return options
-    }
-
-    // The template provided the document type, so modify the pane’s `options` property
-    return {...options, type: documentType}
-  }, [options, params.template, templates])
-}
-
-function mergeDocumentType(
-  props: DocumentPaneProviderProps,
-  options: DocumentPaneOptions,
-  documentType: string,
-): DocumentPaneProviderProps {
-  return {
-    ...props,
-    pane: {
-      ...props.pane,
-      options: {...options, type: documentType},
-    },
-  }
-}
-
-function InnerDocumentPane() {
+function FormLayout(props: Omit<FormLayoutProps, 'renderDefault'>) {
   const {
     changesOpen,
-    documentType,
     inspector,
     inspectOpen,
     onFocus,
@@ -238,6 +213,9 @@ function InnerDocumentPane() {
     schemaType,
     value,
   } = useDocumentPane()
+
+  const {documentType} = props
+
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const zOffsets = useZIndex()
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
@@ -352,8 +330,48 @@ function InnerDocumentPane() {
           </PaneFooter>
         </DialogProvider>
       </PortalProvider>
-
       <DocumentOperationResults />
     </DocumentActionShortcuts>
   )
+}
+
+function usePaneOptions(
+  options: DocumentPaneOptions,
+  params: Record<string, string | undefined> = {},
+): DocumentPaneOptions {
+  const templates = useTemplates()
+
+  return useMemo(() => {
+    // The document type is provided, so return
+    if (options.type && options.type !== '*') {
+      return options
+    }
+
+    // Attempt to derive document type from the template configuration
+    const templateName = options.template || params.template
+    const template = templateName ? templates.find((t) => t.id === templateName) : undefined
+    const documentType = template?.schemaType
+
+    // No document type was found in a template
+    if (!documentType) {
+      return options
+    }
+
+    // The template provided the document type, so modify the pane’s `options` property
+    return {...options, type: documentType}
+  }, [options, params.template, templates])
+}
+
+function mergeDocumentType(
+  props: DocumentPaneProviderProps,
+  options: DocumentPaneOptions,
+  documentType: string,
+): DocumentPaneProviderProps {
+  return {
+    ...props,
+    pane: {
+      ...props.pane,
+      options: {...options, type: documentType},
+    },
+  }
 }

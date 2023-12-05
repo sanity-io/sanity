@@ -32,7 +32,7 @@ const ContentStack = styled(Stack)`
   width: 320px;
 `
 
-interface CommentFieldButtonProps {
+interface CommentsFieldButtonProps {
   count: number
   currentUser: CurrentUser
   fieldTitle: string
@@ -48,7 +48,7 @@ interface CommentFieldButtonProps {
   value: CommentMessage
 }
 
-export function CommentFieldButton(props: CommentFieldButtonProps) {
+export function CommentsFieldButton(props: CommentsFieldButtonProps) {
   const {
     count,
     currentUser,

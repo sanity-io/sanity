@@ -1,6 +1,6 @@
-import React, {useMemo} from 'react'
+import React from 'react'
+import {useResolveCommentsEnabled} from '../../hooks'
 import {CommentsEnabledContext} from './CommentsEnabledContext'
-import {useFeatureEnabled, useSource, getPublishedId} from 'sanity'
 
 interface CommentsEnabledProviderProps {
   children: React.ReactNode
@@ -13,21 +13,7 @@ export const CommentsEnabledProvider = React.memo(function CommentsEnabledProvid
 ) {
   const {children, documentId, documentType} = props
 
-  // Check if the projects plan has the feature enabled
-  const {enabled: featureEnabled, isLoading} = useFeatureEnabled('studioComments')
-
-  const {enabled} = useSource().document.unstable_comments
-
-  // Check if the feature is enabled for the current document in the config
-  const enabledFromConfig = useMemo(
-    () => enabled({documentType, documentId: getPublishedId(documentId)}),
-    [documentId, documentType, enabled],
-  )
-
-  const isEnabled = useMemo((): boolean => {
-    if (isLoading || !featureEnabled || !enabledFromConfig) return false
-    return true
-  }, [enabledFromConfig, featureEnabled, isLoading])
+  const isEnabled = useResolveCommentsEnabled(documentId, documentType)
 
   return (
     <CommentsEnabledContext.Provider value={isEnabled}>{children}</CommentsEnabledContext.Provider>

@@ -1,11 +1,16 @@
 import {CommentIcon} from '@sanity/icons'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
-import {useCommentsEnabled} from '../../src'
+import {useResolveCommentsEnabled} from '../../src'
 import {CommentsInspector} from './CommentsInspector'
-import {DocumentInspectorMenuItem, defineDocumentInspector} from 'sanity'
+import {
+  DocumentInspectorMenuItem,
+  DocumentInspectorUseMenuItemProps,
+  defineDocumentInspector,
+} from 'sanity'
 
-function useMenuItem(): DocumentInspectorMenuItem {
-  const isEnabled = useCommentsEnabled()
+function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
+  const {documentId, documentType} = props
+  const isEnabled = useResolveCommentsEnabled(documentId, documentType)
 
   return {
     hidden: !isEnabled,
