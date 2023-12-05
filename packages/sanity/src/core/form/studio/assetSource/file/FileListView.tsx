@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Card, Flex, Grid, Label, Spinner, Stack, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Flex, Grid, Spinner, Stack, Text, useMediaIndex} from '@sanity/ui'
 import {Asset} from '@sanity/types'
 import {useTranslation} from '../../../../i18n'
 import {AssetRow} from './AssetRow'
@@ -23,37 +23,37 @@ export function FileListView(props: Props) {
 
   const {t} = useTranslation()
   return (
-    <Box padding={4}>
+    <Box>
       <Card borderBottom paddingBottom={2} marginBottom={1}>
         {isMobile ? (
           <Grid style={STYLES_GRID}>
             <Box flex={2} paddingLeft={5}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.filename')}
-              </Label>
+              </Text>
             </Box>
           </Grid>
         ) : (
           <Grid gap={1} style={STYLES_GRID}>
             <Box flex={2} style={STYLES_FILENAME}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.filename')}
-              </Label>
+              </Text>
             </Box>
             <Box flex={1}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.size')}
-              </Label>
+              </Text>
             </Box>
             <Box flex={1}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.type')}
-              </Label>
+              </Text>
             </Box>
             <Box flex={1}>
-              <Label muted size={1}>
+              <Text muted size={1} weight="medium">
                 {t('asset-source.file.asset-list.header.date-added')}
-              </Label>
+              </Text>
             </Box>
           </Grid>
         )}
