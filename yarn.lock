@@ -3616,12 +3616,12 @@
     "@sanity/ui" "^1.0.0"
     lodash "^4.17.21"
 
-"@sanity/groq-store@5.0.2-experimental":
-  version "5.0.2-experimental"
-  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.0.2-experimental.tgz#af5a6d744dd189f708245e053f70a93c852d78f9"
-  integrity sha512-4ZCVh2g/8gRQ8a9RflsvSOOQe2rvQMcdMHzb66jBvEF+OoUifOmQ4U+9syKNCcVgOd7I+aPyM2IdVqRu7XPNHw==
+"@sanity/groq-store@5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.0.tgz#5fa262216c289321a7a3cc8c0be018397f21691b"
+  integrity sha512-nOhZmAmYX/hCSAHHe67zGiPSGPkJsV/xxrYkQB4xVAhJDRRBDWzc5wVFRSQBW+Svauxam9TbH7VL+gsUp5+EVw==
   dependencies:
-    mnemonist "0.39.5"
+    mnemonist "0.39.6"
 
 "@sanity/icons@^1.3":
   version "1.3.10"
@@ -3695,26 +3695,26 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.0.13":
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.0.13.tgz#ed0fe920101847181614514b8dc5afaf810983c8"
-  integrity sha512-3/JuzQThk28++kK9DRh6jcRJ79rMtBia6IWo8oeFGSim0UTXIU1tNlDWSJKS1qkAEq6t/o3JaqZVh/d4h4KTYw==
+"@sanity/presentation@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.1.1.tgz#13cabdb495cbfdcc10f0c7a85ff1b7229069a19a"
+  integrity sha512-8kyTr7F2eXpWdh/V/pa3ML6/McguzQuC/+v7KOHY6bVvrnkG5rAiDeMVpa5fk2MlojlZR1hjLEr4Gsh4aybgDg==
   dependencies:
-    "@sanity/groq-store" "5.0.2-experimental"
+    "@sanity/groq-store" "5.3.0"
     "@sanity/icons" "^2.7.0"
-    "@sanity/preview-url-secret" "1.2.1"
+    "@sanity/preview-url-secret" "^1.3.0"
     "@sanity/ui" "^1.9.3"
     "@types/lodash.isequal" "^4.5.8"
-    framer-motion "^10.16.12"
+    framer-motion "^10.16.14"
     lodash.isequal "^4.5.0"
     mendoza "3.0.3"
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.2.1.tgz#6fdd7595e9522422ecf7c969057bc696f54d5011"
-  integrity sha512-+luQi+9PQO1a3vZ8L2B3ZEbGy7pbJHyvCKblHItFLuRrN8rDhHiNzclKeAVDh6WCHcY1JRHQaQ7MYVWpMB30/g==
+"@sanity/preview-url-secret@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.3.0.tgz#421a9aa78906597556bdcc87baf56fc2cafc9eb1"
+  integrity sha512-a7F6uuc+ZDap3LPGKnGTCfCJ0iBB5vamBqORl3uhwop8iIiBjeKHE92U/xNG4b2tNvunhqdS++q13sYB4Ge9sA==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
@@ -8312,10 +8312,10 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^10.0.0, framer-motion@^10.16.12, framer-motion@^10.16.2:
-  version "10.16.12"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.12.tgz#8aca3ffa4801953dd873de422a3c1f78b2aa7bfa"
-  integrity sha512-w7Yzx0OzQ5Uh6uNkxaX+4TuAPuOKz3haSbjmHpdrqDpGuCJCpq6YP9Dy7JJWdZ6mJjndrg3Ao3vUwDajKNikCA==
+framer-motion@^10.0.0, framer-motion@^10.16.14, framer-motion@^10.16.2:
+  version "10.16.14"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.14.tgz#77099f7e8d949dc68f9aea1497eda06f2454e6b2"
+  integrity sha512-poovsXtR7doXRfjqVjUai82Zl2z5yMUFKtYWHnQK+xsDVPhHVUJEU+Kr2kqEnUV4gry+LcRdrDzcMI7OdJlDMg==
   dependencies:
     tslib "^2.4.0"
   optionalDependencies:
@@ -11630,10 +11630,10 @@ mmd-parser@^1.0.4:
   resolved "https://registry.yarnpkg.com/mmd-parser/-/mmd-parser-1.0.4.tgz#87cc05782cb5974ca854f0303fc5147bc9d690e7"
   integrity sha512-Qi0VCU46t2IwfGv5KF0+D/t9cizcDug7qnNoy9Ggk7aucp0tssV8IwTMkBlDbm+VqAf3cdQHTCARKSsuS2MYFg==
 
-mnemonist@0.39.5:
-  version "0.39.5"
-  resolved "https://registry.yarnpkg.com/mnemonist/-/mnemonist-0.39.5.tgz#5850d9b30d1b2bc57cc8787e5caa40f6c3420477"
-  integrity sha512-FPUtkhtJ0efmEFGpU14x7jGbTB+s18LrzRL2KgoWz9YvcY3cPomz8tih01GbHwnGk/OmkOKfqd/RAQoc8Lm7DQ==
+mnemonist@0.39.6:
+  version "0.39.6"
+  resolved "https://registry.yarnpkg.com/mnemonist/-/mnemonist-0.39.6.tgz#0b3c9b7381d9edf6ce1957e74b25a8ad25732f57"
+  integrity sha512-A/0v5Z59y63US00cRSLiloEIw3t5G+MiKz4BhX21FI+YBJXBOGW0ohFxTxO08dsOYlzxo87T7vGfZKYp2bcAWA==
   dependencies:
     obliterator "^2.0.1"
 
