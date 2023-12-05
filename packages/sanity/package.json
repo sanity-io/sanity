@@ -254,8 +254,8 @@
     "yargs": "^17.3.0"
   },
   "devDependencies": {
-    "@playwright/experimental-ct-react": "^1.39.0",
-    "@playwright/test": "^1.39.0",
+    "@playwright/experimental-ct-react": "^1.40.1",
+    "@playwright/test": "^1.40.1",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^5.16.5",
