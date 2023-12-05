@@ -28,7 +28,7 @@ export function FreeTrialButton({data}: {data: FreeTrialResponse}) {
 
     // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
     const deskRenameSeen = localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
-    if (data.showOnLoad && deskRenameSeen) {
+    if (data.showOnLoad && deskRenameSeen && data.popover) {
       setShowContent(true)
     }
   }
