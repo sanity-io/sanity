@@ -363,7 +363,9 @@ export const Rule: RuleClass = class Rule implements IRule {
       assetType = 'asset'
     }
 
-    return this.cloneWithRules([{flag: 'assetRequired', constraint: {assetType}}])
+    const rule = this.cloneWithRules([{flag: 'assetRequired', constraint: {assetType}}])
+    rule._required = 'required'
+    return rule
   }
 
   async validate(value: unknown, context: ValidationContext): Promise<ValidationMarker[]> {

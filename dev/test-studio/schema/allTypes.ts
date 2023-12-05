@@ -85,7 +85,7 @@ export const allTypes = defineType({
       name: 'image',
       title: 'Bilde',
       type: 'image',
-      validation: (Rule) => Rule.required().assetRequired(),
+      validation: (Rule) => Rule.assetRequired(),
       fields: [
         defineField({
           name: 'alt',
@@ -99,7 +99,7 @@ export const allTypes = defineType({
       name: 'file',
       title: 'Fil',
       type: 'file',
-      validation: (Rule) => Rule.required().assetRequired(),
+      validation: (Rule) => Rule.assetRequired(),
       fields: [
         defineField({
           name: 'description',
