@@ -322,6 +322,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default text in shared loader text / spinner lockup */
   'common.loading': 'Loading',
 
+  /** --- Configuration issues --- */
+
+  /** Tooltip displayed on configuration issues button */
+  'configuration-issues.button.tooltip': 'Found configuration issues',
+
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',
