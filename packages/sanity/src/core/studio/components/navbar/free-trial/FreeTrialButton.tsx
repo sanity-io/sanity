@@ -7,28 +7,32 @@ import {useClient} from '../../../../hooks'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {PopoverContent} from './PopoverContent'
 
-import {responses} from './responses'
+// import {responses} from './responses'
 import {DialogContent} from './DialogContent'
-import {FreeTrialDialog} from './types'
+import {FreeTrialResponse} from './types'
+import {SANITY_VERSION} from '../../../../version'
 
 const StyledButton = styled(Button)`
   padding: 1px;
 `
-export function FreeTrialButton({data}: {data: FreeTrialDialog}) {
+export function FreeTrialButton({data}: {data: FreeTrialResponse}) {
   const schemeValue = useColorSchemeValue()
   // const [data, setData] = useState<FreeTrialDialog | null>(responses[0])
   const [showContent, setShowContent] = useState(false)
-  const client = useClient()
+  const client = useClient({
+    apiVersion: 'vX',
+  })
 
   const fetchData = async () => {
-    const response = await client.request({url: '/vX/journey/trial?plan=free'})
+    // TODO: How to get the studio version?
+    const response = await client.request({url: `/journey/trial?studioVersion=${SANITY_VERSION}`})
     // setData(response)
     if (response.popover) {
-      setShowContent(true)
+      // sanityStudio:desk:renameDismissed
+      if (data.showOnLoad === 'popover') {
+        setShowContent(true)
+      }
     }
-  }
-  const notifySeen = async () => {
-    // await client.request({url: '/journey/trial/seen', method: 'POST'})
   }
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export function FreeTrialButton({data}: {data: FreeTrialDialog}) {
   const toggleShowContent = useCallback(() => {
     if (showContent) {
       // The user has seen the content, so we can notify the backend.
-      notifySeen()
+      // client.request({url: '/journey/trial/', method: 'POST'})
     }
     setShowContent(!showContent)
   }, [showContent])
@@ -57,24 +61,26 @@ export function FreeTrialButton({data}: {data: FreeTrialDialog}) {
     />
   )
 
-  if (data.dialogType === 'popover') {
+  if (data.popover) {
     return (
       <Card scheme={schemeValue}>
         <Popover
           open={showContent}
+          size={0}
           radius={2}
-          content={<PopoverContent content={data} handleClose={toggleShowContent} />}
+          placement="bottom-end"
+          content={<PopoverContent content={data.popover} handleClose={toggleShowContent} />}
         >
           <Card scheme="dark">{button}</Card>
         </Popover>
       </Card>
     )
   }
-  if (data.dialogType === 'modal') {
+  if (data.modal) {
     return (
       <>
         {button}
-        {showContent && <DialogContent content={data} handleClose={toggleShowContent} />}
+        {showContent && <DialogContent content={data.modal} handleClose={toggleShowContent} />}
       </>
     )
   }

@@ -1,8 +1,9 @@
-import {Button, Card, Dialog, Flex, Heading, Text} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Flex, Heading} from '@sanity/ui'
 import styled from 'styled-components'
 import {CloseIcon} from '@sanity/icons'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {FreeTrialDialog} from './types'
+import {DescriptionSerializer} from './Description'
 
 interface ModalContentProps {
   content: FreeTrialDialog
@@ -18,34 +19,42 @@ const StyledButton = styled(Button)`
   border-radius: 9999px;
   box-shadow: none;
   color: white;
-  --card-fg-color: black;
+  --card-fg-color: white;
+  :hover {
+    --card-fg-color: white;
+  }
 `
 
 const Image = styled.img`
   object-fit: cover;
   width: 100%;
   height: 100%;
-  height: 240px;
+  height: 196px;
 `
 
+const StyledDialog = styled(Dialog)`
+  > [data-ui='DialogCard'] {
+    max-width: 22.5rem;
+  }
+`
 export function DialogContent({handleClose, content}: ModalContentProps) {
   const schemeValue = useColorSchemeValue()
 
   return (
     <Card scheme={schemeValue}>
-      <Dialog
+      <StyledDialog
         id="free-trial-modal"
         onClose={handleClose}
         onClickOutside={handleClose}
         __unstable_hideCloseButton
-        cardRadius={2}
+        cardRadius={3}
         footer={
           <Flex width="full" gap={3} justify="flex-end" padding={3}>
             <Button
               mode="bleed"
               padding={2}
               fontSize={1}
-              text={`Close`}
+              text={content.secondaryButton?.text ?? 'Close'}
               tone="default"
               onClick={handleClose}
             />
@@ -74,29 +83,19 @@ export function DialogContent({handleClose, content}: ModalContentProps) {
           onClick={handleClose}
           tabIndex={-1}
         />
-        <Image src={content.image.asset.url} alt={content.image.asset.altText} />
-        <Flex paddingX={3} paddingY={5} direction={'column'} gap={4}>
-          <Heading size={1}>{content.headingText}</Heading>
-          <Text size={1}>{content.descriptionText}</Text>
-          {content.links ? (
-            <Flex marginTop={3} gap={3} direction="column" align="flex-start">
-              {content.links.map((link) => (
-                <Text
-                  size={1}
-                  weight="medium"
-                  key={link._key}
-                  as="a"
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {link.text}
-                </Text>
-              ))}
-            </Flex>
-          ) : null}
+        {content.image && (
+          <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
+        )}
+        <Flex padding={3} direction={'column'}>
+          <Box paddingX={2} marginTop={3}>
+            {/* // TODO: Replace the XX for the actual number of days left. */}
+            <Heading size={2}>{content.headingText}</Heading>
+          </Box>
+          <Box marginTop={4} paddingBottom={3}>
+            <DescriptionSerializer blocks={content.descriptionText} />
+          </Box>
         </Flex>
-      </Dialog>
+      </StyledDialog>
     </Card>
   )
 }

@@ -33,8 +33,8 @@ import {SearchDialog, SearchField} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {FreeTrialButton} from './free-trial/FreeTrialButton'
+import {responses} from './free-trial/responses' // TODO: Remove this
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
-import {responses} from './free-trial/responses'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -227,6 +227,7 @@ export function StudioNavbar() {
             {(shouldRender.configIssues || shouldRender.resources) && (
               <Card borderRight>
                 <Flex gap={1} paddingX={2}>
+                  {/* TODO: Update this to use only 1 button, don't force the response */}
                   <FreeTrialButton data={responses[0]} />
                   <FreeTrialButton data={responses[1]} />
                   {shouldRender.configIssues && <ConfigIssuesButton />}
