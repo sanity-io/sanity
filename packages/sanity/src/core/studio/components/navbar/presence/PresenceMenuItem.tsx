@@ -72,7 +72,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
       preview={
         <UserAvatar
           key={presence.user.id}
-          size={0}
+          size={1}
           user={presence.user}
           status={hasLink ? 'editing' : 'inactive'}
         />
