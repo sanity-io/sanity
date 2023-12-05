@@ -29,8 +29,6 @@ import {useTranslation} from '../../../../i18n'
 import {LoginProviderLogo} from './LoginProviderLogo'
 import {LocaleMenu} from './LocaleMenu'
 
-const AVATAR_SIZE = 1
-
 const StyledMenu = styled(Menu)`
   min-width: 200px;
   max-width: 300px;
@@ -38,8 +36,8 @@ const StyledMenu = styled(Menu)`
 
 const AvatarBox = styled(Box)`
   position: relative;
-  min-width: ${({theme}) => theme.sanity.avatar.sizes[AVATAR_SIZE].size}px;
-  min-height: ${({theme}) => theme.sanity.avatar.sizes[AVATAR_SIZE].size}px;
+  min-width: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
+  min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
 `
 
 function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSchemeKey) => void}) {
@@ -93,14 +91,14 @@ export function UserMenu() {
         <Button mode="bleed" padding={0} paddingLeft={2} paddingRight={1}>
           <Flex align="center" gap={1}>
             <UserAvatar size={1} user="me" />
-            <Text size={AVATAR_SIZE} muted />
+            <Text size={1} muted />
           </Flex>
         </Button>
       }
       id="user-menu"
       menu={
         <StyledMenu>
-          <Card padding={3}>
+          <Card padding={2}>
             <Flex align="center">
               <Tooltip
                 disabled={!providerTitle}
@@ -108,7 +106,7 @@ export function UserMenu() {
                 content={t('user-menu.login-provider', {providerTitle})}
               >
                 <AvatarBox marginRight={3}>
-                  <UserAvatar size={AVATAR_SIZE} user="me" />
+                  <UserAvatar size={2} user="me" />
                   {currentUser?.provider && <LoginProviderLogo provider={currentUser.provider} />}
                 </AvatarBox>
               </Tooltip>
