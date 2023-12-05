@@ -1,7 +1,7 @@
-import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Menu, MenuButton, PopoverProps, Text} from '@sanity/ui'
-import React, {useCallback, useRef, useState, useMemo, useId} from 'react'
-import {Button, MenuItem, TooltipWithNodes} from '../../../../ui'
+import React, {useCallback, useState, useMemo, useId} from 'react'
+import {MenuItem, TooltipWithNodes} from '../../../../ui'
+import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, LegacyLayerProvider, useTranslation} from 'sanity'
@@ -14,7 +14,6 @@ export interface ActionMenuButtonProps {
 export function ActionMenuButton(props: ActionMenuButtonProps) {
   const {actionStates, disabled} = props
   const idPrefix = useId()
-  const buttonRef = useRef<HTMLButtonElement | null>(null)
   const [actionIndex, setActionIndex] = useState(-1)
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null)
 
@@ -39,15 +38,11 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
       <MenuButton
         id={`${idPrefix}-action-menu`}
         button={
-          <Button
-            data-testid="action-menu-button"
+          <ContextMenuButton
             aria-label={t('buttons.action-menu-button.aria-label')}
             disabled={disabled}
-            icon={EllipsisHorizontalIcon}
-            mode="bleed"
-            ref={buttonRef}
-            size="large"
-            tooltipProps={{content: 'Document actions'}}
+            data-testid="action-menu-button"
+            tooltipProps={{content: t('buttons.action-menu-button.tooltip')}}
           />
         }
         menu={
