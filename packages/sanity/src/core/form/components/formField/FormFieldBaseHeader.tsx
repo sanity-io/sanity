@@ -71,6 +71,7 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
       // and only show it when it has focus within or when the field is hovered or focused.
       opacity: 0;
       pointer-events: none;
+      width: 0;
 
       [data-ui='FieldActionsFlex'] {
         opacity: 0;
