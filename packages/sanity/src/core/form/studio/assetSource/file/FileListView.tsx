@@ -29,7 +29,7 @@ export function FileListView(props: Props) {
           <Grid style={STYLES_GRID}>
             <Box flex={2} paddingLeft={5}>
               <Label muted size={1}>
-                {t('asset-source.file.asset-table.compact.filename')}
+                {t('asset-source.file.asset-list.header.filename')}
               </Label>
             </Box>
           </Grid>
