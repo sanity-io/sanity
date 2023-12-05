@@ -23,7 +23,7 @@ export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
   const [isRunningSetup, setIsRunningSetup] = useState<boolean>(false)
 
   const getAddonDatasetName = useCallback(async (): Promise<string | undefined> => {
-    const res = await originalClient.withConfig({apiVersion: 'vX'}).request({
+    const res = await originalClient.withConfig({apiVersion: API_VERSION}).request({
       uri: `/projects/${projectId}/datasets?datasetProfile=comments&addonFor=${dataset}`,
       tag: 'sanity.studio',
     })
