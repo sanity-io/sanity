@@ -133,7 +133,7 @@ const defaultOptions: InitOptions = {
   fallbackLng: defaultLocale.id,
 
   // This will be overriden with the users detected/preferred locale before initing,
-  // but to satisfy the init options and prevent mistakes, we include a defualt here.
+  // but to satisfy the init options and prevent mistakes, we include a default here.
   lng: defaultLocale.id,
 
   // In rare cases we'll want to be able to debug i18next - there is a `debug` option
