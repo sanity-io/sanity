@@ -89,7 +89,9 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   const menuButtonProps = useMemo(
     () => ({
-      button: <ContextMenuButton disabled={disabled} tooltipPlacement={tooltipPlacement} />,
+      button: (
+        <ContextMenuButton disabled={disabled} tooltipProps={{placement: tooltipPlacement}} />
+      ),
       popover: MENU_POPOVER_PROPS,
     }),
     [disabled, tooltipPlacement],

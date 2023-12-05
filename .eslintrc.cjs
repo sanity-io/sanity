@@ -118,6 +118,7 @@ const config = {
               'role',
               'scheme',
               'selectionType',
+              'size',
               'sizing',
               'src',
               'step',
