@@ -47,7 +47,7 @@ export function ConfigIssuesButton() {
         ref={setButtonElement}
         selected={isDialogOpen}
         tone="caution"
-        tooltipProps={{scheme, content: 'Found configuration issues'}}
+        tooltipProps={{scheme, content: t('configuration-issues.button.tooltip')}}
       />
 
       {isDialogOpen && (
