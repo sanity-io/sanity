@@ -1,6 +1,7 @@
 // This is transitional in order to track usage of the ActivateOnFocusPart part from within the form-builder package
 import React, {KeyboardEvent, useCallback, useMemo, useState} from 'react'
 import {Text} from '@sanity/ui'
+import {useTranslation} from '../../../i18n'
 import {
   OverlayContainer,
   FlexContainer,
@@ -29,6 +30,7 @@ export interface ActivateOnFocusProps {
 export function ActivateOnFocus(props: ActivateOnFocusProps) {
   const {children, message, onActivate, isOverlayActive} = props
   const [focused, setFocused] = useState(false)
+  const {t} = useTranslation()
 
   const handleClick = useCallback(() => {
     if (onActivate) {
@@ -59,13 +61,23 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
 
   const msg = useMemo(() => {
     const isTouch = isTouchDevice()
-    let activateVerb = isTouch ? 'Tap' : 'Click'
-    if (focused && !isTouch) {
-      activateVerb += ' or press space'
+    let messageContext
+
+    if (isTouch) {
+      messageContext = 'tap'
+    } else if (focused) {
+      messageContext = 'click-focused'
+    } else {
+      messageContext = 'click'
     }
-    const text = message || `${activateVerb} to activate`
+
+    const text =
+      message ||
+      t('inputs.portable-text.activate-on-focus-message', {
+        context: messageContext,
+      })
     return <Text weight="semibold">{text}</Text>
-  }, [focused, message])
+  }, [focused, message, t])
 
   return (
     <OverlayContainer
