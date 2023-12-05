@@ -3,7 +3,7 @@ import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {structureLocaleNamespace} from '../../../i18n'
-import {useCurrentUser, useTranslation} from 'sanity'
+import {Translate, useCurrentUser, useIntlListFormat, useTranslation} from 'sanity'
 
 const Root = styled(Card)`
   position: relative;
@@ -12,20 +12,22 @@ const Root = styled(Card)`
 
 interface PermissionCheckBannerProps {
   granted: boolean
-  requiredPermission: string
+  requiredPermission: 'update' | 'create'
 }
 
 export function PermissionCheckBanner({granted, requiredPermission}: PermissionCheckBannerProps) {
   const currentUser = useCurrentUser()
-  const plural = currentUser?.roles?.length !== 1
-
-  const roles = join(
-    currentUser?.roles?.map((r) => <code key={r.name}>{r.title}</code>) || [],
-    ', ',
-  )
+  const listFormat = useIntlListFormat({style: 'short'})
   const {t} = useTranslation(structureLocaleNamespace)
 
   if (granted) return null
+
+  const roleTitles = (currentUser?.roles || []).map((role) => role.title)
+  const roles = listFormat
+    .formatToParts(roleTitles)
+    .map((part) =>
+      part.type === 'element' ? <code key={part.value}>{part.value}</code> : part.value,
+    )
 
   return (
     <Root data-testid="permission-check-banner" shadow={1} tone="transparent">
@@ -37,29 +39,17 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
 
           <Box flex={1} marginLeft={3}>
             <Text size={1}>
-              {plural
-                ? t('banners.permission-check-banner.plural-roles.text', {
-                    roles,
-                    requiredPermission,
-                  })
-                : t('banners.permission-check-banner.singular-role.text', {
-                    roles,
-                    requiredPermission,
-                  })}
+              <Translate
+                t={t}
+                i18nKey="banners.permission-check-banner.missing-permission"
+                components={{Roles: () => <>{roles}</>}}
+                values={{count: roles.length, roles: roleTitles}}
+                context={requiredPermission}
+              />
             </Text>
           </Box>
         </Flex>
       </Container>
     </Root>
   )
-}
-
-function join<T, S>(array: Array<T>, sep: S): Array<T | S> | null {
-  return array.reduce((result: Array<T | S> | null, item: T | S) => {
-    if (result === null) {
-      return [item]
-    }
-
-    return result.concat([sep, item])
-  }, null)
 }
