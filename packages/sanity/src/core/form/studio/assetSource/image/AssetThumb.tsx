@@ -207,7 +207,6 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
   return (
     <Root>
       <Button
-        tone="primary"
         selected={isSelected}
         tabIndex={0}
         data-id={_id}
