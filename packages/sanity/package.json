@@ -208,7 +208,7 @@
     "i18next": "^23.2.7",
     "import-fresh": "^3.3.0",
     "is-hotkey": "^0.1.6",
-    "jsdom": "^20.0.0",
+    "jsdom": "^23.0.1",
     "jsdom-global": "^3.0.2",
     "json-lexer": "^1.2.0",
     "json-reduce": "^3.0.0",
