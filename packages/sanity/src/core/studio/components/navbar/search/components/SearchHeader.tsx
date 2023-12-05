@@ -20,7 +20,8 @@ const AnimatedSpinnerIcon = styled(SpinnerIcon)`
   animation: ${rotate} 500ms linear infinite;
 `
 
-const FilterBox = styled(Box)`
+const FilterDiv = styled.div`
+  line-height: 0;
   position: relative;
 `
 
@@ -90,15 +91,13 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
       <Flex align="center" flex={1} gap={fullscreen ? 2 : 1} padding={fullscreen ? 2 : 1}>
         {/* (Fullscreen) Close button */}
         {fullscreen && (
-          <Card>
-            <Button
-              aria-label={t('search.action.close-search-aria-label')}
-              icon={ArrowLeftIcon}
-              mode="bleed"
-              onClick={onClose}
-              tooltipProps={{content: t('search.action.close-search-aria-label')}}
-            />
-          </Card>
+          <Button
+            aria-label={t('search.action.close-search-aria-label')}
+            icon={ArrowLeftIcon}
+            mode="bleed"
+            onClick={onClose}
+            tooltipProps={{content: t('search.action.close-search-aria-label')}}
+          />
         )}
 
         {/* Search field */}
@@ -112,7 +111,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
             autoComplete="off"
             border={false}
             clearButton={!!query}
-            fontSize={1}
+            fontSize={[2, 2, 1]}
             icon={loading ? AnimatedSpinnerIcon : SearchIcon}
             onChange={handleQueryChange}
             onClear={handleQueryClear}
@@ -126,7 +125,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
 
         {/* Filter toggle */}
         {fullscreen && (
-          <FilterBox>
+          <FilterDiv>
             <Button
               aria-expanded={filtersVisible}
               aria-label={t('search.action.toggle-filters-aria-label', {
@@ -141,7 +140,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
               tooltipProps={{content: filtersVisible ? 'Hide filters' : 'Show filters'}}
             />
             {notificationBadgeVisible && <NotificationBadge />}
-          </FilterBox>
+          </FilterDiv>
         )}
       </Flex>
     </Card>
