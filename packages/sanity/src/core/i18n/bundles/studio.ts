@@ -1471,18 +1471,34 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.operation.created': 'Created',
   /** Label shown in review changes timeline when a document was initially created */
   'timeline.operation.created-initial': 'Created',
+  /** Label shown in review changes timeline when a document was initially created, with a timestamp */
+  'timeline.operation.created-initial_timestamp': 'Created: {{timestamp, datetime}}',
+  /** Label shown in review changes timeline when a document has been created, with a timestamp */
+  'timeline.operation.created_timestamp': 'Created: {{timestamp, datetime}}',
   /** Label shown in review changes timeline when a document has been deleted */
   'timeline.operation.deleted': 'Deleted',
+  /** Label shown in review changes timeline when a document has been deleted, with a timestamp */
+  'timeline.operation.deleted_timestamp': 'Deleted: {{timestamp, datetime}}',
   /** Label shown in review changes timeline when a draft has been discarded */
   'timeline.operation.draft-discarded': 'Discarded draft',
+  /** Label shown in review changes timeline when a draft has been discarded, with a timestamp */
+  'timeline.operation.draft-discarded_timestamp': 'Discarded draft: {{timestamp, datetime}}',
   /** Label shown in review changes timeline when a draft has been edited */
   'timeline.operation.edited-draft': 'Edited',
+  /** Label shown in review changes timeline when a draft has been edited, with a timestamp */
+  'timeline.operation.edited-draft_timestamp': 'Edited: {{timestamp, datetime}}',
   /** Label shown in review changes timeline when a document has been edited live */
   'timeline.operation.edited-live': 'Live edited',
+  /** Label shown in review changes timeline when a document has been edited live, with a timestamp */
+  'timeline.operation.edited-live_timestamp': 'Live edited: {{timestamp, datetime}}',
   /** Label shown in review changes timeline when a document was published */
   'timeline.operation.published': 'Published',
+  /** Label shown in review changes timeline when a document was published, with a timestamp */
+  'timeline.operation.published_timestamp': 'Published: {{timestamp, datetime}}',
   /** Label shown in review changes timeline when a document was unpublished */
   'timeline.operation.unpublished': 'Unpublished',
+  /** Label shown in review changes timeline when a document was unpublished, with a timestamp */
+  'timeline.operation.unpublished_timestamp': 'Unpublished: {{timestamp, datetime}}',
   /**
    * Label for determining since which version the changes for timeline menu dropdown are showing.
    * Receives the time label as a parameter (`timestamp`).

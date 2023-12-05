@@ -133,14 +133,22 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     </>
   )
 
-  const revLabel = chunk ? TIMELINE_ITEM_I18N_KEY_MAPPING[chunk.type] : t('timeline.latest-version')
+  const formatParams = {
+    timestamp: {dateStyle: 'medium', timeStyle: 'short'},
+  }
+
+  const revLabel = chunk
+    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[chunk.type], {
+        context: 'timestamp',
+        timestamp: new Date(chunk?.endTimestamp),
+        formatParams,
+      })
+    : t('timeline.latest-version')
 
   const sinceLabel = chunk
     ? t('timeline.since', {
         timestamp: new Date(chunk?.endTimestamp),
-        formatParams: {
-          timestamp: {dateStyle: 'medium', timeStyle: 'short'},
-        },
+        formatParams,
       })
     : t('timeline.since-version-missing')
 
