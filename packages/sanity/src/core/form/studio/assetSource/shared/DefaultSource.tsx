@@ -233,7 +233,7 @@ const DefaultAssetSource = function DefaultAssetSource(
                 t={t}
                 i18nKey="asset-source.dialog.accept-message"
                 values={{
-                  acceptedTypes: listFormat.format(accept.split(',').map((type) => type.trim())),
+                  acceptTypes: listFormat.format(accept.split(',').map((type) => type.trim())),
                 }}
               />
             </Text>

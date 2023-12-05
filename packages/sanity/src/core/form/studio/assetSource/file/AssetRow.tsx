@@ -274,7 +274,7 @@ export const AssetRow = (props: RowProps) => {
             <Grid marginTop={3} columns={3} gap={1}>
               <Stack space={2}>
                 <Label size={1} muted>
-                  {t('asset-source.asset-list.details.size')}
+                  {t('asset-source.file.asset-list.header.size')}
                 </Label>
                 <Text size={1} muted>
                   {formattedSize}
@@ -282,7 +282,7 @@ export const AssetRow = (props: RowProps) => {
               </Stack>
               <Stack space={2}>
                 <Label size={1} muted>
-                  {t('asset-source.asset-list.details.type')}
+                  {t('asset-source.file.asset-list.header.type')}
                 </Label>
                 <Text size={1} muted>
                   {formattedMimeType}
@@ -290,7 +290,7 @@ export const AssetRow = (props: RowProps) => {
               </Stack>
               <Stack space={2}>
                 <Label size={1} muted>
-                  {t('asset-source.asset-list.details.date-added')}
+                  {t('asset-source.file.asset-list.header.date-added')}
                 </Label>
                 <Text size={1} muted>
                   {formattedTime}
@@ -302,7 +302,7 @@ export const AssetRow = (props: RowProps) => {
                 fontSize={1}
                 tone="default"
                 mode="ghost"
-                text={t('asset-source.asset-list.actions.show-uses')}
+                text={t('asset-source.file.asset-list.action.show-usage.title')}
                 onClick={handleToggleUsageDialog}
                 icon={LinkIcon}
               />

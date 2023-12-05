@@ -73,6 +73,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.file.asset-list.action.delete.text': 'Delete',
   'asset-source.file.asset-list.action.delete.title': 'Delete file',
   'asset-source.file.asset-list.action.select-file.title': 'Select the file {{filename}}',
+  'asset-source.file.asset-list.action.show-usage.title': 'Show usage',
   'asset-source.file.asset-list.delete-failed': 'File could not be deleted',
   'asset-source.file.asset-list.delete-successful': 'File was deleted',
   'asset-source.file.asset-list.header.date-added': 'Date added',
