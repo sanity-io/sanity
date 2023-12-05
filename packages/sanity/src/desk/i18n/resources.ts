@@ -117,6 +117,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** The action menu button aria-label */
   'buttons.action-menu-button.aria-label': 'Open document actions',
+  /** The action menu button tooltip */
+  'buttons.action-menu-button.tooltip': 'Document actions',
 
   /** The aria-label for the split pane button on the document panel header */
   'buttons.split-pane-button.aria-label': 'Split pane right',
