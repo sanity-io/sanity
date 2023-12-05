@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import {
+  Box,
   Flex,
   MenuItem as UIMenuItem,
   MenuItemProps as UIMenuItemProps,
@@ -38,11 +39,10 @@ export type MenuItemProps = Pick<
      * Allows to add wrappers to the menu item, e.g. `Tooltip`.
      */
     renderMenuItem?: (menuItem: React.JSX.Element) => React.ReactNode
-    subtitle?: string
     tooltipProps?: TooltipProps | null
   }
 
-const PreviewWrapper = styled.div`
+const PreviewWrapper = styled(Box)`
   height: 25px;
   width: 25px;
   overflow: hidden;
@@ -65,7 +65,6 @@ export const MenuItem = forwardRef(function MenuItem(
     iconRight,
     preview = null,
     renderMenuItem,
-    subtitle,
     text,
     tooltipProps,
     ...rest
@@ -74,36 +73,29 @@ export const MenuItem = forwardRef(function MenuItem(
 ) {
   const menuItemContent = useMemo(() => {
     return (
-      <Flex gap={preview ? 2 : 3} align="center">
+      <Flex align="center" gap={2}>
+        {preview && (
+          <PreviewWrapper paddingX={1}>
+            <Flex align="center" height="fill" justify="center">
+              {preview}
+            </Flex>
+          </PreviewWrapper>
+        )}
         {icon && (
           <Text size={FONT_SIZE}>
             {isValidElement(icon) && icon}
             {isValidElementType(icon) && createElement(icon)}
           </Text>
         )}
-        {preview && (
-          <PreviewWrapper>
-            <Flex align="center" height="fill" justify="center">
-              {preview}
-            </Flex>
-          </PreviewWrapper>
-        )}
-        {(text || subtitle) && (
+        {text && (
           <Stack flex={1} space={2}>
-            {text && (
-              <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
-                {text}
-              </Text>
-            )}
-            {subtitle && (
-              <Text size={FONT_SIZE} textOverflow="ellipsis" weight={'regular'} muted>
-                {subtitle}
-              </Text>
-            )}
+            <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
+              {text}
+            </Text>
           </Stack>
         )}
         {(badgeText || hotkeys || iconRight) && (
-          <Flex gap={3} marginLeft={3}>
+          <Flex align="center" gap={3} marginLeft={3}>
             {hotkeys && (
               <Hotkeys
                 fontSize={FONT_SIZE}
@@ -113,7 +105,7 @@ export const MenuItem = forwardRef(function MenuItem(
             )}
 
             {badgeText && (
-              <Badge fontSize={FONT_SIZE} mode="outline">
+              <Badge fontSize={FONT_SIZE} style={{marginTop: -4, marginBottom: -4}}>
                 {badgeText}
               </Badge>
             )}
@@ -128,7 +120,7 @@ export const MenuItem = forwardRef(function MenuItem(
         )}
       </Flex>
     )
-  }, [badgeText, hotkeys, icon, iconRight, preview, subtitle, text])
+  }, [badgeText, hotkeys, icon, iconRight, preview, text])
 
   const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(
     (children) => {
