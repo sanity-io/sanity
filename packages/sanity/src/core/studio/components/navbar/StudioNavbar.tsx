@@ -158,8 +158,8 @@ export function StudioNavbar() {
         <NavGrid>
           {/** Left flex */}
           <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
-            <Flex align="center" gap={2} justify="flex-start">
-              <Flex align="center" gap={2} marginLeft={1}>
+            <Flex align="center" gap={2} justify="flex-start" marginLeft={1}>
+              <Flex align="center" gap={2}>
                 {/* Menu button */}
                 {!shouldRender.tools && (
                   <Button
@@ -198,42 +198,44 @@ export function StudioNavbar() {
           {/** Right flex */}
           <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
             <Flex align="center" gap={1} justify="flex-end">
-              {/* Search */}
-              <LayerProvider>
-                <SearchProvider fullscreen={shouldRender.searchFullscreen}>
-                  <BoundaryElementProvider element={document.body}>
-                    {shouldRender.searchFullscreen ? (
-                      <PortalProvider element={searchFullscreenPortalEl}>
-                        <SearchDialog
-                          onClose={handleCloseSearchFullscreen}
-                          onOpen={handleOpenSearchFullscreen}
-                          open={searchFullscreenOpen}
+              <Flex gap={1} marginRight={1}>
+                {/* Search */}
+                <LayerProvider>
+                  <SearchProvider fullscreen={shouldRender.searchFullscreen}>
+                    <BoundaryElementProvider element={document.body}>
+                      {shouldRender.searchFullscreen ? (
+                        <PortalProvider element={searchFullscreenPortalEl}>
+                          <SearchDialog
+                            onClose={handleCloseSearchFullscreen}
+                            onOpen={handleOpenSearchFullscreen}
+                            open={searchFullscreenOpen}
+                          />
+                        </PortalProvider>
+                      ) : (
+                        <SearchPopover
+                          onClose={handleCloseSearch}
+                          onOpen={handleOpenSearch}
+                          open={searchOpen}
                         />
-                      </PortalProvider>
-                    ) : (
-                      <SearchPopover
-                        onClose={handleCloseSearch}
-                        onOpen={handleOpenSearch}
-                        open={searchOpen}
-                      />
-                    )}
-                  </BoundaryElementProvider>
-                </SearchProvider>
-              </LayerProvider>
+                      )}
+                    </BoundaryElementProvider>
+                  </SearchProvider>
+                </LayerProvider>
 
-              {/* Search button (desktop) */}
-              {!shouldRender.searchFullscreen && (
-                <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
-              )}
+                {/* Search button (desktop) */}
+                {!shouldRender.searchFullscreen && (
+                  <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+                )}
 
-              {shouldRender.configIssues && <ConfigIssuesButton />}
-              {shouldRender.resources && <ResourcesButton />}
-              <PresenceMenu />
+                {shouldRender.configIssues && <ConfigIssuesButton />}
+                {shouldRender.resources && <ResourcesButton />}
+                <PresenceMenu />
+                {/* Search button (mobile) */}
+                {shouldRender.searchFullscreen && (
+                  <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
+                )}
+              </Flex>
               {shouldRender.tools && <UserMenu />}
-              {/* Search button (mobile) */}
-              {shouldRender.searchFullscreen && (
-                <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
-              )}
             </Flex>
           </TooltipDelayGroupProvider>
         </NavGrid>

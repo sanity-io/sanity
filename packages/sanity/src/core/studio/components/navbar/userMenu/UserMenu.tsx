@@ -88,10 +88,9 @@ export function UserMenu() {
   return (
     <MenuButton
       button={
-        <Button mode="bleed" padding={0} paddingLeft={2} paddingRight={1}>
+        <Button mode="bleed" paddingX={1} paddingY={0}>
           <Flex align="center" gap={1}>
             <UserAvatar size={1} user="me" />
-            <Text size={1} muted />
           </Flex>
         </Button>
       }
