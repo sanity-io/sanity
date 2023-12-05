@@ -28,15 +28,12 @@ function CustomMenuItem({
 }) {
   const handleClick = useCallback(() => onClick(value), [onClick, value])
 
-  return (
-    <MenuItem
-      onClick={handleClick}
-      pressed={selected}
-      tone="default"
-      text={title}
-      subtitle={value ? `${value}` : undefined}
-    />
-  )
+  let menuItemText = `${title}`
+  if (typeof value !== 'undefined' && title !== value) {
+    menuItemText += ` (${value})`
+  }
+
+  return <MenuItem onClick={handleClick} pressed={selected} tone="default" text={menuItemText} />
 }
 
 export function SearchFilterStringListInput({
