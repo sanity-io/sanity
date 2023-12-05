@@ -98,7 +98,7 @@
     "@optimize-lodash/rollup-plugin": "^4.0.4",
     "@playwright/test": "^1.39.0",
     "@sanity/client": "^6.8.6",
-    "@sanity/pkg-utils": "^3.3.0",
+    "@sanity/pkg-utils": "^3.3.2",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/uuid": "^3.0.2",
     "@types/jest": "^29.5.6",
