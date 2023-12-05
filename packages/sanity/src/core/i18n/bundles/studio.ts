@@ -316,7 +316,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default text for dialog cancel button */
   'common.dialog.cancel-button.text': 'Cancel',
 
-  /** Defualt text for dialog confirm button */
+  /** Default text for dialog confirm button */
   'common.dialog.confirm-button.text': 'Confirm',
 
   /** Default text in shared loader text / spinner lockup */
