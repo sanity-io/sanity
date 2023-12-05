@@ -215,6 +215,7 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
                     id: 'authors-and-books',
                     title: 'Authors & Books',
                     options: {
+                      apiVersion: '2023-07-28',
                       filter: '_type == "author" || _type == "book"',
                     },
                   }),
