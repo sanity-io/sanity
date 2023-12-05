@@ -92,12 +92,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.deleted-document-banner.restore-button.text': 'Restore most recent version',
   /** The text content for the deleted document banner */
   'banners.deleted-document-banner.text': 'This document has been deleted.',
-  /** The text for the permission check banner if there is are multiple roles */
-  'banners.permission-check-banner.plural-roles.text':
-    'Your roles {{roles}} do not have permissions to {{requiredPermission}} this document.',
-  /** The text for the permission check banner if there is only one role */
-  'banners.permission-check-banner.singular-role.text':
-    'Your role {{roles}} does not have permissions to {{requiredPermission}} this document.',
+  /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
+  'banners.permission-check-banner.missing-permission_create_one':
+    'Your role <Roles/> does not have permissions to create this document.',
+  /** The text for the permission check banner if the user only has multiple roles, but they do not allow updating this document */
+  'banners.permission-check-banner.missing-permission_create_other':
+    'Your roles <Roles/> do not have permissions to create this document.',
+  /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
+  'banners.permission-check-banner.missing-permission_update_one':
+    'Your role <Roles/> does not have permissions to update this document.',
+  /** The text for the permission check banner if the user only has multiple roles, but they do not allow updating this document */
+  'banners.permission-check-banner.missing-permission_update_other':
+    'Your roles <Roles/> do not have permissions to update this document.',
   /** The text for the reload button */
   'banners.reference-changed-banner.reason-changed.reload-button.text': 'Reload reference',
   /** The text for the reference change banner if the reason is that the reference has been changed */
