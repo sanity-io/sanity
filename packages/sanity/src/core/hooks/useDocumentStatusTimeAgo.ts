@@ -1,5 +1,5 @@
 import {PreviewValue, SanityDocument} from '@sanity/types'
-import {useTimeAgo} from './useTimeAgo'
+import {useRelativeTime} from './useRelativeTime'
 
 /**
  * React hook which returns a human readable string of the provided document's status.
@@ -19,12 +19,19 @@ export function useDocumentStatusTimeAgo({
   const draftUpdatedAt = draft && '_updatedAt' in draft ? draft._updatedAt : ''
   const publishedUpdatedAt = published && '_updatedAt' in published ? published._updatedAt : ''
 
-  const updatedDateTimeAgo = useTimeAgo(draftUpdatedAt || '', {minimal: true, agoSuffix: true})
-  const publishedTimeAgo = useTimeAgo(publishedUpdatedAt || '', {minimal: true, agoSuffix: true})
+  const updatedDateTimeAgo = useRelativeTime(draftUpdatedAt || '', {
+    minimal: true,
+    useTemporalPhrase: true,
+  })
+  const publishedTimeAgo = useRelativeTime(publishedUpdatedAt || '', {
+    minimal: true,
+    useTemporalPhrase: true,
+  })
 
   let label
 
   // Published with no changes
+  // @todo: localize correctly
   if (!draftUpdatedAt && publishedTimeAgo) {
     label = `Published${hidePublishedDate ? '' : ` ${publishedTimeAgo}`}`
   }
