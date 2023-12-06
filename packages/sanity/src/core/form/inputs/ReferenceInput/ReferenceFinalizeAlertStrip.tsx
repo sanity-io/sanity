@@ -1,8 +1,8 @@
 import type {ReferenceSchemaType} from '@sanity/types'
-import {Button, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {AlertStrip} from '../../components/AlertStrip'
+import {Button} from '../../../../ui'
 import {Translate, useTranslation} from '../../../i18n'
-import React from 'react'
 
 /**
  * Alert strip that shows an explanation and action prompting the user to finalize a reference,
@@ -41,7 +41,9 @@ export function ReferenceFinalizeAlertStrip({
           />
         </Text>
         <Button
+          mode="ghost"
           onClick={handleRemoveStrengthenOnPublish}
+          size="large"
           text={t('inputs.reference.incomplete-reference.strengthen-button-label')}
           tone="positive"
         />
