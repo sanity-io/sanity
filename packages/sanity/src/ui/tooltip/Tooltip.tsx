@@ -46,9 +46,7 @@ export const Tooltip = forwardRef(function Tooltip(
       content={
         <Flex align="center" gap={3}>
           {content && <Text size={1}>{content}</Text>}
-          {hotkeys && (
-            <Hotkeys fontSize={1} keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />
-          )}
+          {hotkeys && <Hotkeys keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />}
         </Flex>
       }
       delay={TOOLTIP_DELAY_PROPS}
