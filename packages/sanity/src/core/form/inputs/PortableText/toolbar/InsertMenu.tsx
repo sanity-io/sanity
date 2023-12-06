@@ -1,14 +1,12 @@
 import React, {memo, useCallback, useMemo} from 'react'
-import {AddIcon} from '@sanity/icons'
 import {PopoverProps} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {upperFirst} from 'lodash'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
-import {Button} from '../../../../../ui'
 import {BlockItem} from './types'
 import {useFocusBlock} from './hooks'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
@@ -73,7 +71,11 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const menuButtonProps = useMemo(
     () => ({
       button: (
-        <ContextMenuButton disabled={disabled} tooltipProps={{placement: tooltipPlacement}} />
+        <ContextMenuButton
+          data-testid="insert-menu-button"
+          disabled={disabled}
+          tooltipProps={{placement: tooltipPlacement}}
+        />
       ),
       popover: MENU_POPOVER_PROPS,
     }),
