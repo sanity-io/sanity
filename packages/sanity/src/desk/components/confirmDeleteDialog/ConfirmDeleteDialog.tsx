@@ -111,7 +111,7 @@ export function ConfirmDeleteDialog({
           />
         ) : (
           <LoadingContainer data-testid="loading-container">
-            <LoadingBlock title={t('confirm-delete-dialog.loading.text')} />
+            <LoadingBlock showText title={t('confirm-delete-dialog.loading.text')} />
           </LoadingContainer>
         )}
       </DialogBody>

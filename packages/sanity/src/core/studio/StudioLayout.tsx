@@ -191,7 +191,7 @@ export function StudioLayoutComponent() {
                 activeTool.router?.__unsafe_disableScopedSearchParams
               }
             >
-              <Suspense fallback={<LoadingBlock />}>
+              <Suspense fallback={<LoadingBlock showText />}>
                 {createElement(activeTool.component, {tool: activeTool})}
               </Suspense>
             </RouteScope>

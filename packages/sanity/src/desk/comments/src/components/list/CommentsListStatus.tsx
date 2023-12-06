@@ -52,7 +52,8 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
   }
 
   if (loading) {
-    return <LoadingBlock title="Loading comments" />
+    // @todo: localize
+    return <LoadingBlock showText title="Loading comments" />
   }
 
   if (hasNoComments) {
