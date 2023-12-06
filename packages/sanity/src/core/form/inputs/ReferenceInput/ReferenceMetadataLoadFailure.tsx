@@ -1,7 +1,8 @@
-import {Button, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
+import React from 'react'
+import {Button} from '../../../../ui'
 import {useTranslation} from '../../../i18n'
 import {AlertStrip} from '../../components/AlertStrip'
-import React from 'react'
 
 /**
  * Alert strip that shows error encountered while fetching reference metadata, and allowing user
@@ -29,7 +30,9 @@ export function ReferenceMetadataLoadErrorAlertStrip({
           {errorMessage}
         </Text>
         <Button
+          mode="ghost"
           onClick={onHandleRetry}
+          size="large"
           text={t('inputs.reference.metadata-error.retry-button-label')}
           tone="primary"
         />
