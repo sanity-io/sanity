@@ -54,9 +54,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
   const templates = useTemplates()
 
   const {t} = useTranslation(structureLocaleNamespace)
-  const getI18nTitle = useGetI18nTitle(
-    useMemo(() => [...templateItems, ...templates], [templateItems, templates]),
-  )
+  const getI18nTitle = useGetI18nTitle([...templateItems, ...templates])
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
