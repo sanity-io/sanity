@@ -3851,10 +3851,10 @@
     segmented-property "^3.0.3"
     vite "^4.4.9"
 
-"@sanity/ui@2.0.0-alpha.33":
-  version "2.0.0-alpha.33"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-alpha.33.tgz#418996fcb2c122a5a8dbd2c7b4350d792fd4dc02"
-  integrity sha512-6IAvMtjnry7yckWOwkMBxvuntTPVSxGib/lYkVpHsLHzWQhe7l8MnD66Fo+WSAvrIaC00wr3oniVyXCGkmzYlQ==
+"@sanity/ui@2.0.0-alpha.34":
+  version "2.0.0-alpha.34"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-alpha.34.tgz#3866766c4facbad9477fd3be25b4f63936ed8e34"
+  integrity sha512-Tx0zVmPuq8ab+EO/KfDP33Pn8ssedbC7/ntfhmZ1OyCHt384/G1gCjhVUJAMtjhJnBcFE6d6CurzI+uXghvJmA==
   dependencies:
     "@floating-ui/react-dom" "^2.0.4"
     "@sanity/color" "3.0.0-beta.7"
