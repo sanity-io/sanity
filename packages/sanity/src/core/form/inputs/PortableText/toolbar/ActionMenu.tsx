@@ -1,13 +1,11 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {PopoverProps} from '@sanity/ui'
-import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
-import {Button} from '../../../../../ui'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 
@@ -90,7 +88,11 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const menuButtonProps = useMemo(
     () => ({
       button: (
-        <ContextMenuButton disabled={disabled} tooltipProps={{placement: tooltipPlacement}} />
+        <ContextMenuButton
+          data-testid="action-menu-button"
+          disabled={disabled}
+          tooltipProps={{placement: tooltipPlacement}}
+        />
       ),
       popover: MENU_POPOVER_PROPS,
     }),
