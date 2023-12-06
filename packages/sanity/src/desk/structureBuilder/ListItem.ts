@@ -77,7 +77,12 @@ export interface ListItem {
   id: string
   /** List item type */
   type: string
-  /** List item title */
+  /**
+   * The i18n key and namespace used to populate the localized title. This is
+   * the recommend way to set the title if you are localizing your studio.
+   */
+  i18n?: {key: string; ns: string}
+  /** List item title. Note that the `i18n` key and namespace will take precedence. */
   title?: string
   /** List item icon */
   icon?: React.ComponentType | React.ReactNode
@@ -99,6 +104,11 @@ export interface UnserializedListItem {
   id: string
   /** List item title */
   title: string
+  /**
+   * The i18n key and namespace used to populate the localized title. This is
+   * the recommend way to set the title if you are localizing your studio.
+   */
+  i18n?: {key: string; ns: string}
   /** List item icon */
   icon?: React.ComponentType | React.ReactNode
   /** List item child. See {@link UnserializedListItemChild} */
@@ -163,6 +173,21 @@ export class ListItemBuilder implements Serializable<ListItem> {
    */
   getTitle(): PartialListItem['title'] {
     return this.spec.title
+  }
+
+  /** Set the i18n key and namespace used to populate the localized title.
+   * @param i18n - the key and namespaced used to populate the localized title.
+   * @returns component builder based on i18n key and ns provided
+   */
+  i18n(i18n: {key: string; ns: string}): ListItemBuilder {
+    return this.clone({i18n})
+  }
+
+  /** Get i18n key and namespace used to populate the localized title
+   * @returns the i18n key and namespace used to populate the localized title
+   */
+  getI18n(): {key: string; ns: string} | undefined {
+    return this.spec.i18n
   }
 
   /**

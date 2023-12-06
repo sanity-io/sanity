@@ -144,6 +144,21 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
     return this.spec.title
   }
 
+  /** Set the i18n key and namespace used to populate the localized title.
+   * @param i18n - the key and namespaced used to populate the localized title.
+   * @returns component builder based on i18n key and ns provided
+   */
+  i18n(i18n: {key: string; ns: string}): ConcreteImpl {
+    return this.clone({i18n})
+  }
+
+  /** Get i18n key and namespace used to populate the localized title
+   * @returns the i18n key and namespace used to populate the localized title
+   */
+  getI18n(): TList['i18n'] {
+    return this.spec.i18n
+  }
+
   /** Set generic list layout
    * @param defaultLayout - generic list layout key.
    * @returns generic list builder based on layout provided.
@@ -282,6 +297,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
     return {
       id: validateId(id, options.path, id || options.index),
       title: this.spec.title,
+      i18n: this.spec.i18n,
       type: 'genericList',
       defaultLayout,
       child: this.spec.child || noChildResolver,

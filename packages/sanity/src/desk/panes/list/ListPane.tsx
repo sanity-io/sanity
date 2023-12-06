@@ -5,6 +5,7 @@ import {BaseDeskToolPaneProps} from '../types'
 import {_DEBUG} from '../../constants'
 import {ListPaneHeader} from './ListPaneHeader'
 import {ListPaneContent} from './ListPaneContent'
+import {useTranslation} from 'sanity'
 
 type ListPaneProps = BaseDeskToolPaneProps<'list'>
 
@@ -14,8 +15,19 @@ type ListPaneProps = BaseDeskToolPaneProps<'list'>
 export function ListPane(props: ListPaneProps) {
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
 
-  const {defaultLayout, displayOptions, items, menuItems, menuItemGroups, title} = pane
+  const {
+    defaultLayout,
+    displayOptions,
+    items,
+    menuItems,
+    menuItemGroups,
+    title: fallbackTitle,
+    i18n,
+  } = pane
   const showIcons = displayOptions?.showIcons !== false
+
+  const {t} = useTranslation(i18n?.ns)
+  const title = i18n ? t(i18n.key, {ns: i18n.ns, defaultValue: fallbackTitle}) : fallbackTitle
 
   return (
     <Pane

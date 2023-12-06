@@ -21,6 +21,7 @@ export interface StructureNode {
   id: string
   /** Node ID */
   title?: string
+  i18n?: {key: string; ns: string}
   /** Node type */
   type?: string
 }

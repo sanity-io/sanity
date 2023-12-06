@@ -44,6 +44,7 @@ export function resolveMenuNodes(params: {
         expanded: true,
         renderAsButton: false,
         title: itemGroup.title,
+        i18n: itemGroup.i18n,
       })
     }
   }
@@ -80,6 +81,7 @@ export function resolveMenuNodes(params: {
         renderAsButton: item.showAsAction ?? false,
         selected: item.selected,
         title: item.title,
+        i18n: item.i18n,
         tone: item.tone,
       })
     } else {
@@ -93,6 +95,7 @@ export function resolveMenuNodes(params: {
         renderAsButton: item.showAsAction ?? false,
         selected: item.selected,
         title: item.title,
+        i18n: item.i18n,
         tone: item.tone,
       })
     }
@@ -121,6 +124,7 @@ function mapFieldActionToPaneMenuNode(a: DocumentFieldMenuActionNode, key: strin
       expanded: a.expanded ?? true,
       icon: a.icon,
       title: a.title,
+      i18n: a.i18n,
       renderAsButton: a.renderAsButton ?? false,
     }
   }
@@ -136,6 +140,7 @@ function mapFieldActionToPaneMenuNode(a: DocumentFieldMenuActionNode, key: strin
     renderAsButton: a.renderAsButton ?? false,
     selected: a.selected,
     title: a.title,
+    i18n: a.i18n,
     tone: a.tone,
   }
 }

@@ -4,7 +4,7 @@ import {UnknownIcon} from '@sanity/icons'
 import {Intent} from '../../structureBuilder'
 import {_PaneMenuGroup, _PaneMenuItem} from './types'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
-import {TooltipOfDisabled, StatusButton} from 'sanity'
+import {TooltipOfDisabled, StatusButton, useTranslation} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
 export interface PaneHeaderActionButtonProps {
@@ -35,6 +35,7 @@ export interface PaneHeaderMenuItemActionButtonProps {
 
 export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
   const {node, padding} = props
+  const {t} = useTranslation(node.i18n?.ns)
 
   if (node.intent) {
     return <PaneHeaderActionIntentButton {...props} intent={node.intent} />
@@ -44,13 +45,20 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
     <Text size={1}>{node.disabled.reason}</Text>
   )
 
+  const title = node.i18n
+    ? t(node.i18n.key, {
+        ns: node.i18n.ns,
+        defaultValue: node.title, // fallback
+      })
+    : node.title
+
   return (
     <TooltipOfDisabled content={disabledTooltipContent} placement="bottom">
       <StatusButton
         disabled={Boolean(node.disabled)}
         hotkey={node.hotkey?.split('+')}
         icon={node.icon}
-        label={disabledTooltipContent ? undefined : node.title}
+        label={disabledTooltipContent ? undefined : title}
         // eslint-disable-next-line react/jsx-handler-names
         onClick={node.onAction}
         padding={padding}
@@ -105,6 +113,14 @@ export interface PaneHeaderMenuGroupActionButtonProps {
 
 function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonProps) {
   const {node, padding} = props
+  const {t} = useTranslation(node.i18n?.ns)
+
+  const title = node.i18n
+    ? t(node.i18n.key, {
+        ns: node.i18n.ns,
+        defaultValue: node.title, // fallback
+      })
+    : node.title
 
   return (
     <MenuButton
@@ -112,7 +128,7 @@ function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonP
         <StatusButton
           disabled={node.disabled}
           icon={node.icon ?? UnknownIcon}
-          label={node.title}
+          label={title}
           padding={padding}
         />
       }

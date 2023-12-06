@@ -216,10 +216,17 @@ export function menuItemsFromInitialValueTemplateItems(
     const intentParams: IntentParams = item.parameters ? [params, item.parameters] : params
     const schemaType = template && schema.get(template.schemaType)
 
-    return new MenuItemBuilder(context)
+    const i18n = item.i18n || template?.i18n
+
+    let builder = new MenuItemBuilder(context)
       .title(title)
       .icon((template && template.icon) || schemaType?.icon || AddIcon)
       .intent({type: 'create', params: intentParams})
-      .serialize()
+
+    if (i18n) {
+      builder = builder.i18n(i18n)
+    }
+
+    return builder.serialize()
   })
 }

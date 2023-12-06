@@ -170,6 +170,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
                 id: item.id,
                 title:
                   item.title || `${item.template.schemaType} from template ${item.template?.id}`,
+                i18n: item.i18n,
                 type: item.template.schemaType,
                 icon: item.icon,
                 template: {

@@ -418,6 +418,7 @@ function resolveSource({
             templateId: response.templateId,
             type: 'initialValueTemplateItem',
             title,
+            i18n: response.i18n || template.i18n,
             subtitle: response.subtitle || defaultSubtitle,
             description: response.description || template.description,
             icon: response.icon || template.icon || schemaType?.icon,

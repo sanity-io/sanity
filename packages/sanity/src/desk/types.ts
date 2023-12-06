@@ -263,6 +263,7 @@ export interface PaneMenuItem extends DeskToolMenuItem {
 export interface PaneMenuItemGroup {
   id: string
   title?: string
+  i18n?: {key: string; ns: string}
 }
 
 /** @internal */
@@ -270,6 +271,7 @@ export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
   id: string
   type: T
   title: string
+  i18n?: {key: string; ns: string}
   menuItems?: PaneMenuItem[]
   menuItemGroups?: PaneMenuItemGroup[]
   canHandleIntent?: (
@@ -324,6 +326,7 @@ export interface PaneListItem<TParams = unknown> {
   schemaType?: SchemaType
 
   title: string
+  i18n?: {key: string; ns: string}
   icon?: React.ComponentType | false
   displayOptions?: {showIcon?: boolean}
   action?: (t: TParams) => unknown

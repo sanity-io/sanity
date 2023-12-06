@@ -43,6 +43,7 @@ export function filterOptions(options: NewDocumentOption[], query: string): NewD
     title: option?.title || option.id,
   }))
 
+  // TODO: sort this by the localized titles instead of the fallback titles
   const alphabetized = optionsWithTitle.sort((a, b) => a.title.localeCompare(b.title))
 
   return alphabetized

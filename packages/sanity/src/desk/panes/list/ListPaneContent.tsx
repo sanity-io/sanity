@@ -1,9 +1,15 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
 import {PaneContent, PaneItem, usePaneLayout} from '../../components'
 import {PaneListItem, PaneListItemDivider} from '../../types'
-import {CommandList, CommandListItemContext, GeneralPreviewLayoutKey} from 'sanity'
+import {
+  CommandList,
+  CommandListItemContext,
+  GeneralPreviewLayoutKey,
+  isNonNullable,
+  useTranslation,
+} from 'sanity'
 
 interface ListPaneContentProps {
   childItemId?: string
@@ -27,6 +33,10 @@ const Divider = styled.hr`
 export function ListPaneContent(props: ListPaneContentProps) {
   const {childItemId, items, isActive, layout, showIcons, title} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
+  const namespaces = useMemo(() => {
+    return items?.map((i) => ('i18n' in i ? i.i18n?.ns : undefined)).filter(isNonNullable)
+  }, [items])
+  const {t} = useTranslation(namespaces)
 
   const getItemDisabled = useCallback(
     (itemIndex: number) => {
@@ -72,6 +82,10 @@ export function ListPaneContent(props: ListPaneContentProps) {
           ? {_id: item._id, _type: item.schemaType.name, title: item.title}
           : undefined
 
+      const itemTitle = item.i18n
+        ? t(item.i18n.key, {ns: item.i18n.ns, defaultValue: item.title})
+        : item.title
+
       return (
         <PaneItem
           icon={shouldShowIconForItem(item) ? item.icon : false}
@@ -82,12 +96,12 @@ export function ListPaneContent(props: ListPaneContentProps) {
           pressed={pressed}
           schemaType={item.schemaType}
           selected={selected}
-          title={item.title}
+          title={itemTitle}
           value={value}
         />
       )
     },
-    [childItemId, isActive, layout, shouldShowIconForItem],
+    [childItemId, isActive, layout, shouldShowIconForItem, t],
   )
 
   return (

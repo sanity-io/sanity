@@ -299,6 +299,21 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the Review Changes pane */
   'changes.title': 'Review changes',
 
+  /** Title for the default ordering/SortOrder if no orderings are provided and the caption field is found */
+  'default-orderings.caption': 'Sort by Caption',
+  /** Title for the default ordering/SortOrder if no orderings are provided and the description field is found */
+  'default-orderings.description': 'Sort by Description',
+  /** Title for the default ordering/SortOrder if no orderings are provided and the header field is found */
+  'default-orderings.header': 'Sort by Header',
+  /** Title for the default ordering/SortOrder if no orderings are provided and the heading field is found */
+  'default-orderings.heading': 'Sort by Heading',
+  /** Title for the default ordering/SortOrder if no orderings are provided and the label field is found */
+  'default-orderings.label': 'Sort by Label',
+  /** Title for the default ordering/SortOrder if no orderings are provided and the name field is found */
+  'default-orderings.name': 'Sort by Name',
+  /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
+  'default-orderings.title': 'Sort by Title',
+
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',

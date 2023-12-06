@@ -11,6 +11,7 @@ import {_DEBUG} from '../../constants'
 import {useDeskToolSetting} from '../../useDeskToolSetting'
 import {BaseDeskToolPaneProps} from '../types'
 import {PaneMenuItem} from '../../types'
+import {structureLocaleNamespace} from '../../i18n'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {
   applyOrderingFunctions,
@@ -21,10 +22,10 @@ import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
 import {LoadingVariant, SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
-import {structureLocaleNamespace} from '../../i18n'
 import {
   GeneralPreviewLayoutKey,
   SourceProvider,
+  isNonNullable,
   useSchema,
   useSource,
   useTranslation,
@@ -98,6 +99,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
   const schema = useSchema()
   const {name: parentSourceName} = useSource()
+
   const {
     defaultLayout = 'default',
     displayOptions,
@@ -105,7 +107,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     menuItemGroups,
     menuItems,
     options,
-    title,
+    title: fallbackTitle,
+    i18n,
   } = pane
   const {apiVersion, defaultOrdering = EMPTY_ARRAY, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -117,6 +120,9 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     'layout',
     defaultLayout,
   )
+
+  const {t} = useTranslation([structureLocaleNamespace, i18n?.ns].filter(isNonNullable))
+  const title = i18n ? t(i18n.key, {ns: i18n.ns, defaultValue: fallbackTitle}) : fallbackTitle
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
@@ -224,13 +230,13 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     return 'initial'
   }, [isLoading, items.length])
 
-  const {t} = useTranslation(structureLocaleNamespace)
-
   const searchInput = (
     <Box paddingX={2} paddingBottom={2}>
       <SearchCard radius={4} tone="transparent">
         <TextInput
-          aria-label={t('panes.document-list-pane.search-input.aria-label')}
+          aria-label={t('panes.document-list-pane.search-input.aria-label', {
+            ns: structureLocaleNamespace,
+          })}
           autoComplete="off"
           border={false}
           clearButton={Boolean(searchQuery)}
@@ -240,7 +246,9 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           onChange={handleQueryChange}
           onClear={handleClearSearch}
           onKeyDown={handleSearchKeyDown}
-          placeholder={t('panes.document-list-pane.search-input.placeholder')}
+          placeholder={t('panes.document-list-pane.search-input.placeholder', {
+            ns: structureLocaleNamespace,
+          })}
           radius={2}
           ref={setSearchInputElement}
           spellCheck={false}

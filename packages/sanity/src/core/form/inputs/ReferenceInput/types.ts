@@ -28,6 +28,7 @@ export interface EditReferenceEvent {
 export interface CreateReferenceOption {
   id: string
   title: string
+  i18n?: {key: string; ns: string}
   icon?: React.ReactNode | React.ComponentType
   type: string
   template: ReferenceTemplate

@@ -72,32 +72,41 @@ export function CreateButton(props: Props) {
       id={id}
       menu={
         <Menu ref={menuRef}>
-          {createOptions.map((createOption) => (
-            <Tooltip
-              disabled={createOption.permission.granted}
-              key={createOption.id}
-              content={
-                <Box padding={2}>
-                  <InsufficientPermissionsMessage
-                    currentUser={currentUser}
-                    context="create-document-type"
+          {createOptions.map((createOption) => {
+            const title = createOption.i18n
+              ? t(createOption.i18n.key, {
+                  ns: createOption.i18n.ns,
+                  defaultValue: createOption.title,
+                })
+              : createOption.title
+
+            return (
+              <Tooltip
+                disabled={createOption.permission.granted}
+                key={createOption.id}
+                content={
+                  <Box padding={2}>
+                    <InsufficientPermissionsMessage
+                      currentUser={currentUser}
+                      context="create-document-type"
+                    />
+                  </Box>
+                }
+                portal
+              >
+                {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
+                <div>
+                  <MenuItem
+                    disabled={!createOption.permission.granted}
+                    icon={createOption.icon}
+                    text={title}
+                    // eslint-disable-next-line react/jsx-no-bind
+                    onClick={() => onCreate(createOption)}
                   />
-                </Box>
-              }
-              portal
-            >
-              {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
-              <div>
-                <MenuItem
-                  disabled={!createOption.permission.granted}
-                  icon={createOption.icon}
-                  text={createOption.title}
-                  // eslint-disable-next-line react/jsx-no-bind
-                  onClick={() => onCreate(createOption)}
-                />
-              </div>
-            </Tooltip>
-          ))}
+                </div>
+              </Tooltip>
+            )
+          })}
         </Menu>
       }
       popover={POPOVER_PROPS}

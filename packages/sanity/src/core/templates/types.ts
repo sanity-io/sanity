@@ -29,6 +29,8 @@ export interface Template<Params = any, Value = any> {
    */
   title: string
 
+  i18n?: {key: string; ns: string}
+
   /**
    * Schema type name the template belongs to. For the automatically generated templates,
    * this will be equal to the `id` property.
@@ -165,6 +167,8 @@ export interface TemplateItem {
    * Defaults to the title of the associated template.
    */
   title?: string
+
+  i18n?: {key: string; ns: string}
 
   /**
    * Parameters for the template - an object of any JSON-serializable values

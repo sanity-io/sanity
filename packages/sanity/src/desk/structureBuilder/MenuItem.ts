@@ -34,7 +34,16 @@ export type MenuItemParamsType = Record<string, string | unknown | undefined>
  *
  * @public */
 export interface MenuItem {
-  /** Menu Item title */
+  /**
+   * The i18n key and namespace used to populate the localized title. This is
+   * the recommend way to set the title if you are localizing your studio.
+   */
+  i18n?: {key: string; ns: string}
+  /**
+   * Menu Item title. Note that the `i18n` configuration will take
+   * precedence and this title is left here as a fallback if no i18n key is
+   * provided and compatibility with older plugins
+   */
   title: string
   /** Menu Item action */
   action?: MenuItemActionType
@@ -119,11 +128,29 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   }
 
   /**
-   * Get menu item title
+   * Get menu item title. Note that the `i18n` configuration will take
+   * precedence and this title is left here for compatibility.
    * @returns menu item title
    */
   getTitle(): string | undefined {
     return this.spec.title
+  }
+
+  /**
+   * Set the i18n key and namespace used to populate the localized title.
+   * @param i18n - object with i18n key and related namespace
+   * @returns menu item builder based on i18n config provided. See {@link MenuItemBuilder}
+   */
+  i18n(i18n: {key: string; ns: string}): MenuItemBuilder {
+    return this.clone({i18n})
+  }
+
+  /**
+   * Get the i18n key and namespace used to populate the localized title.
+   * @returns the i18n key and namespace used to populate the localized title.
+   */
+  getI18n(): {key: string; ns: string} | undefined {
+    return this.spec.i18n
   }
 
   /**
@@ -252,15 +279,21 @@ export interface SortMenuItem extends MenuItem {
 /** @internal */
 export function getOrderingMenuItem(
   context: StructureContext,
-  ordering: SortOrdering,
+  {by, title, i18n}: SortOrdering,
   extendedProjection?: string,
 ): MenuItemBuilder {
-  return new MenuItemBuilder(context)
+  let builder = new MenuItemBuilder(context)
     .group('sorting')
-    .title(`Sort by ${ordering.title}`)
+    .title(`Sort by ${title}`) // fallback title
     .icon(SortIcon)
     .action('setSortOrder')
-    .params({by: ordering.by, extendedProjection})
+    .params({by, extendedProjection})
+
+  if (i18n) {
+    builder = builder.i18n(i18n)
+  }
+
+  return builder
 }
 
 /** @internal */

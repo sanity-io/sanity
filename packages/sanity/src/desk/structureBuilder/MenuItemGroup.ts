@@ -20,6 +20,7 @@ export interface MenuItemGroup {
   id: string
   /** Menu group title */
   title: string
+  i18n?: {key: string; ns: string}
 }
 
 /**
@@ -33,6 +34,8 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
   /** Menu item group title */
   protected _title: string
 
+  protected _i18n?: {key: string; ns: string}
+
   constructor(
     /**
      * Desk structure context. See {@link StructureContext}
@@ -42,6 +45,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
   ) {
     this._id = spec ? spec.id : ''
     this._title = spec ? spec.title : ''
+    this._i18n = spec ? spec.i18n : undefined
   }
 
   /**
@@ -50,7 +54,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
    * @returns menu item group builder based on ID provided. See {@link MenuItemGroupBuilder}
    */
   id(id: string): MenuItemGroupBuilder {
-    return new MenuItemGroupBuilder(this._context, {id, title: this._title})
+    return new MenuItemGroupBuilder(this._context, {id, title: this._title, i18n: this._i18n})
   }
 
   /**
@@ -67,7 +71,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
    * @returns menu item group builder based on title provided. See {@link MenuItemGroupBuilder}
    */
   title(title: string): MenuItemGroupBuilder {
-    return new MenuItemGroupBuilder(this._context, {id: this._id, title})
+    return new MenuItemGroupBuilder(this._context, {title, id: this._id, i18n: this._i18n})
   }
 
   /**
@@ -79,12 +83,29 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
   }
 
   /**
+   * Set the i18n key and namespace used to populate the localized title.
+   * @param i18n - object with i18n key and related namespace
+   * @returns menu item group builder based on i18n info provided. See {@link MenuItemGroupBuilder}
+   */
+  i18n(i18n: {key: string; ns: string}): MenuItemGroupBuilder {
+    return new MenuItemGroupBuilder(this._context, {i18n, id: this._id, title: this._title})
+  }
+
+  /**
+   * Get the i18n key and namespace used to populate the localized title.
+   * @returns the i18n key and namespace used to populate the localized title.
+   */
+  getI18n(): {key: string; ns: string} | undefined {
+    return this._i18n
+  }
+
+  /**
    * Serialize menu item group builder
    * @param options - serialization options (path). See {@link SerializeOptions}
    * @returns menu item group based on path provided in options. See {@link MenuItemGroup}
    */
   serialize(options: SerializeOptions = {path: []}): MenuItemGroup {
-    const {_id, _title} = this
+    const {_id, _title, _i18n} = this
     if (!_id) {
       throw new SerializeError(
         '`id` is required for a menu item group',
@@ -105,6 +126,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
     return {
       id: _id,
       title: _title,
+      i18n: _i18n,
     }
   }
 }

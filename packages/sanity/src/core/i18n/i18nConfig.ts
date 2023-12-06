@@ -71,7 +71,7 @@ function createI18nApi({
       },
       loadNamespaces(namespaces: string[]): Promise<void> {
         const missing = namespaces.filter((ns) => !i18nInstance.hasLoadedNamespace(ns))
-        return missing.length === 0 ? Promise.resolve() : i18nInstance.loadNamespaces(namespaces)
+        return missing.length === 0 ? Promise.resolve() : i18nInstance.loadNamespaces(missing)
       },
       locales: reducedLocales,
       t: maybeWrapT(i18nInstance.t),

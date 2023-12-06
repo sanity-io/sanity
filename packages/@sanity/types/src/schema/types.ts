@@ -91,7 +91,15 @@ export interface SortOrderingItem {
 
 /** @beta */
 export type SortOrdering = {
+  /**
+   * The fallback title of this sort order item. If no i18nKey is provided then
+   * this fallback title will be used in a fallback translation string.
+   *
+   * This is primarily provided for legacy support but using an i18nKey is
+   * recommended.
+   */
   title: string
+  i18n?: {key: string; ns: string}
   name: string
   by: SortOrderingItem[]
 }

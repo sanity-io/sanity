@@ -57,6 +57,8 @@ export interface PartialDocumentNode {
   id?: string
   /** Document title */
   title?: string
+  /** I18n key and namespace used to populate the localized title */
+  i18n?: {key: string; ns: string}
   /** Document children of type {@link Child} */
   child?: Child
   /**
@@ -115,6 +117,21 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
    */
   getTitle(): PartialDocumentNode['title'] {
     return this.spec.title
+  }
+
+  /** Set the i18n key and namespace used to populate the localized title.
+   * @param i18n - the key and namespaced used to populate the localized title.
+   * @returns component builder based on i18n key and ns provided
+   */
+  i18n(i18n: {key: string; ns: string}): DocumentBuilder {
+    return this.clone({i18n})
+  }
+
+  /** Get i18n key and namespace used to populate the localized title
+   * @returns the i18n key and namespace used to populate the localized title
+   */
+  getI18n(): {key: string; ns: string} | undefined {
+    return this.spec.i18n
   }
 
   /** Set Document child

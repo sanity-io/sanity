@@ -84,6 +84,7 @@ export interface _PaneMenuItem {
   renderAsButton: boolean
   selected?: boolean
   title: string
+  i18n?: {key: string; ns: string}
   tone?: 'primary' | 'critical' | 'caution' | 'positive'
 }
 
@@ -95,6 +96,7 @@ export interface _PaneMenuGroup {
   expanded: boolean
   icon?: ComponentType | ReactNode
   title?: string
+  i18n?: {key: string; ns: string}
   children: _PaneMenuNode[]
   renderAsButton: boolean
 }

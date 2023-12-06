@@ -51,6 +51,7 @@ export interface DocumentFieldActionItem {
   selected?: boolean
   status?: DocumentFieldActionStatus
   title: string
+  i18n?: {key: string; ns: string}
   tone?: DocumentFieldActionTone
 }
 
@@ -74,6 +75,7 @@ export interface DocumentFieldActionGroup {
   renderAsButton?: boolean
   status?: DocumentFieldActionStatus
   title: string
+  i18n?: {key: string; ns: string}
   tone?: DocumentFieldActionTone
 }
 

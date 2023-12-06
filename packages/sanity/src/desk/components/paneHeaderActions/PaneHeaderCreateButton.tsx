@@ -14,6 +14,7 @@ import {
   useSchema,
   useTemplates,
   useTranslation,
+  isNonNullable,
 } from 'sanity'
 
 export type PaneHeaderIntentProps = React.ComponentProps<typeof IntentButton>['intent']
@@ -51,7 +52,17 @@ interface PaneHeaderCreateButtonProps {
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const schema = useSchema()
   const templates = useTemplates()
-  const {t} = useTranslation(structureLocaleNamespace)
+
+  const namespaces = useMemo(
+    () =>
+      templateItems
+        .map((item) => item.i18n?.ns)
+        .filter(isNonNullable)
+        .sort(),
+    [templateItems],
+  )
+
+  const {t} = useTranslation([structureLocaleNamespace, ...namespaces])
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
@@ -83,7 +94,9 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         loading={isTemplatePermissionsLoading}
       >
         <Button
-          aria-label={t('pane-header.disabled-created-button.aria-label')}
+          aria-label={t('pane-header.disabled-created-button.aria-label', {
+            ns: structureLocaleNamespace,
+          })}
           data-testid="action-intent-button"
           disabled
           icon={AddIcon}
@@ -107,7 +120,14 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         context="create-document-type"
       >
         <IntentButton
-          aria-label={firstItem.title}
+          title={
+            firstItem.i18n
+              ? t(firstItem.i18n.key, {
+                  defaultValue: firstItem.title, // fallback value
+                  ns: firstItem.i18n.ns,
+                })
+              : firstItem.title
+          }
           icon={firstItem.icon || AddIcon}
           intent={intent}
           mode="bleed"
@@ -125,7 +145,9 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       menu={
         <Menu>
           <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-            <Label muted>{t('pane-header.create-menu.label')}</Label>
+            <Label muted>
+              {t('pane-header.create-menu.label', {ns: structureLocaleNamespace})}
+            </Label>
           </Box>
 
           {templateItems.map((item, itemIndex) => {
@@ -150,6 +172,19 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
 
             Link.displayName = 'Link'
 
+            const templateTitle = template.i18n
+              ? t(template.i18n.key, {
+                  ns: template.i18n.ns,
+                  defaultValue: template.title, // fallback value
+                })
+              : template.title
+
+            const fallbackTitle = item.title || templateTitle
+
+            const title = item.i18n
+              ? t(item.i18n.key, {ns: item.i18n.ns, defaultValue: fallbackTitle})
+              : fallbackTitle
+
             return (
               <InsufficientPermissionsMessageTooltip
                 context="create-document-type"
@@ -160,8 +195,8 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                 <MenuItem
                   as={Link}
                   data-as={disabled ? 'button' : 'a'}
-                  text={item.title || template.title}
-                  aria-label={disabled ? 'Insufficient permissions' : item.title || template.title}
+                  text={title}
+                  aria-label={disabled ? 'Insufficient permissions' : title}
                   disabled={disabled}
                   data-testid={`action-intent-button-${itemIndex}`}
                 />
