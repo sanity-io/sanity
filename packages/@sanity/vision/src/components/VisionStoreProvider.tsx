@@ -1,7 +1,7 @@
 import {useMemo, type ReactNode, useState} from 'react'
-import type {ClientPerspective} from '@sanity/client'
+import type {ClientPerspective, MutationEvent} from '@sanity/client'
 import {getLocalStorage} from '../util/localStorage'
-import {VisionProps} from '../types'
+import type {VisionProps} from '../types'
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {DEFAULT_PERSPECTIVE, PERSPECTIVES} from '../perspectives'
 import {prefixApiVersion} from '../util/prefixApiVersion'
@@ -31,6 +31,22 @@ export function VisionStoreProvider(props: VisionStoreProviderProps) {
   const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
     API_VERSIONS.includes(apiVersion) ? false : apiVersion,
   )
+  const [queryUrl, setQueryUrl] = useState<string | undefined>()
+  const [query, setQuery] = useState<string>(() => localStorage.get('query', ''))
+  const [rawParams, setRawParams] = useState<string>(() => localStorage.get('params', '{\n  \n}'))
+
+  // Query/listen result
+  const [queryResult, setQueryResult] = useState<unknown | undefined>()
+  const [listenMutations, setListenMutations] = useState<MutationEvent[]>([])
+  const [error, setError] = useState<Error | undefined>()
+
+  // Operation timings
+  const [queryTime, setQueryTime] = useState<number | undefined>()
+  const [e2eTime, setE2ETime] = useState<number | undefined>()
+
+  // Operation state, used to trigger re-renders (spinners etc)
+  const [queryInProgress, setQueryInProgress] = useState(false)
+  const [listenInProgress, setListenInProgress] = useState(false)
 
   const _client = useMemo(() => {
     return client.withConfig({
@@ -58,8 +74,56 @@ export function VisionStoreProvider(props: VisionStoreProviderProps) {
       setPerspective,
       customApiVersion,
       setCustomApiVersion,
+
+      // URL used to execute query/listener
+      queryUrl,
+      setQueryUrl,
+
+      // Inputs
+      query,
+      setQuery,
+      rawParams,
+      setRawParams,
+
+      // Operation timings
+      queryTime,
+      setQueryTime,
+      e2eTime,
+      setE2ETime,
+
+      // Query/listen result
+      queryResult,
+      setQueryResult,
+      listenMutations,
+      setListenMutations,
+      error,
+      setError,
+
+      // Operation state, used to trigger re-renders (spinners etc)
+      queryInProgress,
+      setQueryInProgress,
+      listenInProgress,
+      setListenInProgress,
     }),
-    [_client, apiVersion, customApiVersion, dataset, datasets, localStorage, perspective],
+    [
+      _client,
+      apiVersion,
+      customApiVersion,
+      dataset,
+      datasets,
+      e2eTime,
+      error,
+      listenInProgress,
+      listenMutations,
+      localStorage,
+      perspective,
+      query,
+      queryInProgress,
+      queryResult,
+      queryTime,
+      queryUrl,
+      rawParams,
+    ],
   )
 
   // console.log(value)

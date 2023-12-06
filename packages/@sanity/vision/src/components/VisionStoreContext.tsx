@@ -13,17 +13,27 @@ interface VisionStore {
   customApiVersion: string | false
   setCustomApiVersion: Dispatch<SetStateAction<string | false>>
   queryUrl?: string
+  setQueryUrl: Dispatch<SetStateAction<string | undefined>>
   query: string
+  setQuery: Dispatch<SetStateAction<string>>
   rawParams: string
+  setRawParams: Dispatch<SetStateAction<string>>
   params?: Record<string, unknown> | Error
   paramsError?: string
   queryResult?: unknown
+  setQueryResult: Dispatch<SetStateAction<unknown | undefined>>
   listenMutations: MutationEvent[]
+  setListenMutations: Dispatch<SetStateAction<MutationEvent[]>>
   error?: Error
+  setError: Dispatch<SetStateAction<Error | undefined>>
   queryTime?: number
+  setQueryTime: Dispatch<SetStateAction<number | undefined>>
   e2eTime?: number
+  setE2ETime: Dispatch<SetStateAction<number | undefined>>
   queryInProgress: boolean
+  setQueryInProgress: Dispatch<SetStateAction<boolean>>
   listenInProgress: boolean
+  setListenInProgress: Dispatch<SetStateAction<boolean>>
   client: SanityClient
   localStorage: LocalStorageish
 }

@@ -2,7 +2,7 @@
 /* eslint-disable complexity */
 import {type ChangeEvent, useRef, useCallback, useState, useEffect, useMemo} from 'react'
 import SplitPane from '@rexxars/react-split-pane'
-import type {ListenEvent, MutationEvent, ClientPerspective} from '@sanity/client'
+import type {ListenEvent, ClientPerspective} from '@sanity/client'
 import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
 import isHotkey from 'is-hotkey'
 import {
@@ -24,11 +24,16 @@ import {useTranslation} from 'sanity'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
 import {validateApiVersion} from '../util/validateApiVersion'
-import {tryParseParams} from '../util/tryParseParams'
 import {encodeQueryString} from '../util/encodeQueryString'
 import {API_VERSIONS} from '../apiVersions'
 import {PERSPECTIVES} from '../perspectives'
-import {useVisionApiVersion, useVisionDataset, useVisionPerspective} from '../hooks'
+import {
+  useVisionApiVersion,
+  useVisionDataset,
+  useVisionParams,
+  useVisionPerspective,
+  useVisionQueryResult,
+} from '../hooks'
 import {ResizeObserver} from '../util/resizeObserver'
 import {visionLocaleNamespace} from '../i18n'
 import {DelayedSpinner} from './DelayedSpinner'
@@ -99,7 +104,22 @@ interface Subscription {
 }
 
 export function VisionGui() {
-  const {datasets, client, localStorage: _localStorage} = useVisionStore()
+  const {
+    datasets,
+    client,
+    localStorage,
+    query,
+    setQuery,
+    queryTime,
+    e2eTime,
+    queryInProgress,
+    setQueryInProgress,
+    listenInProgress,
+    setListenInProgress,
+    error,
+    queryUrl,
+    setQueryUrl,
+  } = useVisionStore()
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
 
@@ -124,32 +144,18 @@ export function VisionGui() {
     useVisionApiVersion()
   const [perspective, setPerspective] = useVisionPerspective()
 
-  // URL used to execute query/listener
-  const [url, setUrl] = useState<string | undefined>()
-
   // Inputs
-  const [query, setQuery] = useState<string>(() => _localStorage.get('query', ''))
-  const [rawParams, setRawParams] = useState<string>(() => _localStorage.get('params', '{\n  \n}'))
-
-  // Parsed input
-  const [params, setParams] = useState<Record<string, unknown> | Error | undefined>(() =>
-    rawParams ? tryParseParams(rawParams, t) : undefined,
-  )
-  const [paramsError, setParamsError] = useState<string | undefined>()
-  const [hasValidParams, setHasValidParams] = useState<boolean>()
-
-  // Query/listen result
-  const [queryResult, setQueryResult] = useState<unknown | undefined>()
-  const [listenMutations, setListenMutations] = useState<MutationEvent[]>([])
-  const [error, setError] = useState<Error | undefined>()
-
-  // Operation timings
-  const [queryTime, setQueryTime] = useState<number | undefined>()
-  const [e2eTime, setE2eTime] = useState<number | undefined>()
-
-  // Operation state, used to trigger re-renders (spinners etc)
-  const [queryInProgress, setQueryInProgress] = useState<boolean>(false)
-  const [listenInProgress, setListenInProgress] = useState<boolean>(false)
+  const {rawParams, setParams, parsedParams, setParsedParams, hasValidParams, paramsError} =
+    useVisionParams()
+  const {
+    queryResult,
+    listenMutations,
+    setListenMutations,
+    startQueryExecution,
+    handleQueryResult,
+    handleQueryError,
+    handleListenError,
+  } = useVisionQueryResult()
 
   // UI drawing state
   const [paneSizeOptions, setPaneSizeOptions] = useState<PaneSizeOptions>(() =>
@@ -194,19 +200,20 @@ export function VisionGui() {
       return true
     }
 
-    const _paramsError = params instanceof Error && params
-    _localStorage.set('query', query)
-    _localStorage.set('params', rawParams)
+    const _paramsError = parsedParams instanceof Error && parsedParams
 
     cancelListener()
 
-    setQueryInProgress(!_paramsError && Boolean(query))
-    setListenInProgress(false)
-    setListenMutations([])
-    setError(_paramsError || undefined)
-    setQueryResult(undefined)
-    setQueryTime(undefined)
-    setE2eTime(undefined)
+    startQueryExecution({
+      type: 'query',
+      shouldExecute: !_paramsError,
+      error: _paramsError,
+    })
+
+    localStorage.merge({
+      query,
+      params: rawParams,
+    })
 
     if (!query || _paramsError) {
       return true
@@ -219,41 +226,40 @@ export function VisionGui() {
       urlQueryOpts.perspective = perspective
     }
 
-    setUrl(
-      client.getUrl(client.getDataUrl('query', encodeQueryString(query, params, urlQueryOpts))),
+    setQueryUrl(
+      client.getUrl(
+        client.getDataUrl('query', encodeQueryString(query, parsedParams, urlQueryOpts)),
+      ),
     )
 
     const queryStart = Date.now()
 
     _querySubscription.current = client.observable
-      .fetch(query, params, {filterResponse: false, tag: 'vision'})
+      .fetch(query, parsedParams, {filterResponse: false, tag: 'vision'})
       .subscribe({
         next: (res) => {
-          setQueryTime(res.ms)
-          setE2eTime(Date.now() - queryStart)
-          setQueryResult(res.result)
-          setQueryInProgress(false)
-          setError(undefined)
+          handleQueryResult(res, queryStart)
         },
-        error: (e) => {
-          setError(e)
-          setQuery(query)
-          setQueryInProgress(false)
-        },
+        error: handleQueryError,
       })
 
     return true
   }, [
-    client,
-    _localStorage,
-    cancelListener,
-    cancelQuery,
-    ensureSelectedApiVersion,
-    params,
-    perspective,
-    query,
     queryInProgress,
+    parsedParams,
+    cancelListener,
+    startQueryExecution,
+    localStorage,
+    query,
     rawParams,
+    ensureSelectedApiVersion,
+    perspective,
+    setQueryUrl,
+    client,
+    handleQueryError,
+    cancelQuery,
+    setQueryInProgress,
+    handleQueryResult,
   ])
 
   const handleChangeDataset = useCallback(
@@ -318,9 +324,12 @@ export function VisionGui() {
     }
   }, [toast])
 
-  const handleQueryChange = useCallback((value: string) => {
-    setQuery(value)
-  }, [])
+  const handleQueryChange = useCallback(
+    (value: string) => {
+      setQuery(value)
+    },
+    [setQuery],
+  )
 
   const handleListenerEvent = useCallback(
     (evt: ListenEvent<any>) => {
@@ -342,19 +351,14 @@ export function VisionGui() {
         return [evt, ...prev]
       })
     },
-    [toast],
+    [setListenMutations, toast],
   )
 
   const handleParamsChange = useCallback(
-    ({raw, parsed, valid, error: e}: ParamsEditorChangeEvent) => {
-      setRawParams(raw)
-      setParams(parsed)
-      setHasValidParams(valid)
-      setParamsError(e)
-
-      _localStorage.set('params', raw)
+    (result: ParamsEditorChangeEvent) => {
+      setParams(result)
     },
-    [_localStorage],
+    [setParams],
   )
 
   const handleListenExecution = useCallback(() => {
@@ -366,50 +370,51 @@ export function VisionGui() {
 
     ensureSelectedApiVersion()
 
-    const _paramsError = params instanceof Error ? params : undefined
-    const encodeParams = params instanceof Error ? {} : params || {}
+    const _paramsError = parsedParams instanceof Error ? parsedParams : undefined
+    const encodeParams = parsedParams instanceof Error ? {} : parsedParams || {}
 
     const shouldExecute = !_paramsError && query.trim().length > 0
 
-    _localStorage.set('query', query)
-    _localStorage.set('params', rawParams)
-
     cancelQuery()
 
-    setUrl(client.getDataUrl('listen', encodeQueryString(query, encodeParams, {})))
-    setListenMutations([])
-    setQueryInProgress(false)
-    setQueryResult(undefined)
-    setListenInProgress(shouldExecute)
-    setError(_paramsError)
-    setQueryTime(undefined)
-    setE2eTime(undefined)
+    setQueryUrl(client.getDataUrl('listen', encodeQueryString(query, encodeParams, {})))
+
+    startQueryExecution({
+      type: 'listen',
+      shouldExecute,
+      error: _paramsError,
+    })
+
+    localStorage.merge({
+      query,
+      params: rawParams,
+    })
 
     if (!shouldExecute) {
       return
     }
 
     _listenSubscription.current = client
-      .listen(query, params, {events: ['mutation', 'welcome']})
+      .listen(query, parsedParams, {events: ['mutation', 'welcome']})
       .subscribe({
         next: handleListenerEvent,
-        error: (e) => {
-          setError(e)
-          setQuery(query)
-          setListenInProgress(false)
-        },
+        error: handleListenError,
       })
   }, [
-    client,
-    _localStorage,
-    cancelListener,
-    cancelQuery,
-    ensureSelectedApiVersion,
-    handleListenerEvent,
     listenInProgress,
-    params,
+    ensureSelectedApiVersion,
+    parsedParams,
     query,
+    cancelQuery,
+    setQueryUrl,
+    client,
+    startQueryExecution,
+    localStorage,
     rawParams,
+    handleListenerEvent,
+    handleListenError,
+    cancelListener,
+    setListenInProgress,
   ])
 
   const handlePaste = useCallback(
@@ -454,8 +459,7 @@ export function VisionGui() {
       evt.preventDefault()
 
       setQuery(parts.query)
-      setParams(parts.params)
-      setRawParams(JSON.stringify(parts.params, null, 2))
+      setParsedParams(parts.params)
 
       if (datasets.includes(usedDataset)) {
         setDataset(usedDataset)
@@ -476,7 +480,7 @@ export function VisionGui() {
       const newDataset = datasets.includes(usedDataset) ? usedDataset : dataset
 
       // FIX: Review this logic again
-      _localStorage.merge({
+      localStorage.merge({
         query: parts.query,
         params: parts.params,
         dataset: newDataset,
@@ -499,9 +503,11 @@ export function VisionGui() {
       })
     },
     [
+      setQuery,
+      setParsedParams,
       datasets,
       dataset,
-      _localStorage,
+      localStorage,
       perspective,
       client,
       handleQueryExecution,
@@ -649,7 +655,7 @@ export function VisionGui() {
           </Box>
 
           {/* Query URL (for copying) */}
-          {typeof url === 'string' ? (
+          {typeof queryUrl === 'string' ? (
             <Box padding={1} flex={1} column={customApiVersion === false ? 6 : 4}>
               <Stack>
                 <Card paddingTop={2} paddingBottom={3}>
@@ -662,7 +668,7 @@ export function VisionGui() {
                 </Card>
                 <Flex flex={1} gap={1}>
                   <Box flex={1}>
-                    <TextInput readOnly type="url" ref={_operationUrlElement} value={url} />
+                    <TextInput readOnly type="url" ref={_operationUrlElement} value={queryUrl} />
                   </Box>
                   <Tooltip
                     content={
