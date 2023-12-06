@@ -75,17 +75,19 @@ export const MenuItem = forwardRef(function MenuItem(
     return (
       <Flex align="center" gap={2}>
         {preview && (
-          <PreviewWrapper paddingX={1}>
+          <PreviewWrapper>
             <Flex align="center" height="fill" justify="center">
               {preview}
             </Flex>
           </PreviewWrapper>
         )}
         {icon && (
-          <Text size={FONT_SIZE}>
-            {isValidElement(icon) && icon}
-            {isValidElementType(icon) && createElement(icon)}
-          </Text>
+          <Box paddingRight={1}>
+            <Text size={FONT_SIZE}>
+              {isValidElement(icon) && icon}
+              {isValidElementType(icon) && createElement(icon)}
+            </Text>
+          </Box>
         )}
         {text && (
           <Stack flex={1} space={2}>
