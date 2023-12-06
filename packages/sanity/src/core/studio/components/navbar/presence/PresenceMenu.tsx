@@ -101,7 +101,7 @@ export function PresenceMenu() {
             </Box>
           )}
 
-          <FooterStack space={1} paddingBottom={1}>
+          <FooterStack space={1}>
             <MenuDivider />
 
             <MenuItem
