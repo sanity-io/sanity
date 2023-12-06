@@ -217,7 +217,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
       >
         <Container __unstable_checkered>
           <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />
-          {isDeleting && <LoadingBlock hideText />}
+          {isDeleting && <LoadingBlock />}
         </Container>
       </Button>
       <MenuContainer>

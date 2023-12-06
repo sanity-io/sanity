@@ -57,7 +57,7 @@ export const Timeline = ({
             timestamp={chunk.endTimestamp}
             type={chunk.type}
           />
-          {activeIndex === filteredChunks.length - 1 && hasMoreChunks && <LoadingBlock hideText />}
+          {activeIndex === filteredChunks.length - 1 && hasMoreChunks && <LoadingBlock />}
         </Box>
       )
     },

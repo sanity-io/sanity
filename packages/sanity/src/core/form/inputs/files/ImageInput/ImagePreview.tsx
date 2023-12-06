@@ -67,7 +67,9 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   return (
     <RatioBox {...rest} ref={setRootElement} style={{height: rootHeight}} tone="transparent">
       <Card data-container tone="inherit">
-        {!isLoaded && <OverlayComponent cardTone="transparent" drag content={<LoadingBlock />} />}
+        {!isLoaded && (
+          <OverlayComponent cardTone="transparent" drag content={<LoadingBlock showText />} />
+        )}
         <img
           src={src}
           data-testid="hotspot-image-input"

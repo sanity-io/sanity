@@ -132,7 +132,7 @@ export function createLoginComponent({
     }, [redirectUrl])
 
     if (loading) {
-      return <LoadingBlock />
+      return <LoadingBlock showText />
     }
 
     return (
