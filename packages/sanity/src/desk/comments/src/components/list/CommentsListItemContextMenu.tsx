@@ -1,12 +1,5 @@
 import React from 'react'
-import {
-  CheckmarkCircleIcon,
-  UndoIcon,
-  EllipsisHorizontalIcon,
-  EditIcon,
-  TrashIcon,
-  LinkIcon,
-} from '@sanity/icons'
+import {CheckmarkCircleIcon, UndoIcon, EditIcon, TrashIcon, LinkIcon} from '@sanity/icons'
 import {
   MenuButtonProps,
   TooltipDelayGroupProvider,
