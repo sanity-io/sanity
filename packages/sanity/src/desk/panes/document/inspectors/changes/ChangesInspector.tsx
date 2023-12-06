@@ -130,7 +130,7 @@ function Content({
   }
 
   if (loading) {
-    return <LoadingBlock />
+    return <LoadingBlock showText />
   }
 
   if (!diff) {

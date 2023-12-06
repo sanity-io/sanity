@@ -15,7 +15,7 @@ export function ImageTool(props: ImageToolProps) {
     <ImageLoader src={props.src}>
       {({isLoading, image, error}) => {
         if (isLoading) {
-          return <LoadingBlock />
+          return <LoadingBlock showText />
         }
         if (error) {
           return <div>{error.message}</div>

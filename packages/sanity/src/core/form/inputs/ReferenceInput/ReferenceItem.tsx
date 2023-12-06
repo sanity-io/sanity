@@ -336,7 +336,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               renderPreview={renderPreview}
               type={schemaType}
             />
-            {resolvingInitialValue && <LoadingBlock fill hideText />}
+            {resolvingInitialValue && <LoadingBlock fill />}
           </ReferenceLinkCard>
         )}
       </RowLayout>
