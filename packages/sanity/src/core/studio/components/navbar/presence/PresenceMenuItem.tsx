@@ -79,7 +79,9 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
       }
       ref={setMenuItemElement}
       text={presence.user.displayName}
-      tooltipProps={hasLink ? undefined : {content: t('presence.not-in-a-document')}}
+      tooltipProps={
+        hasLink ? undefined : {content: t('presence.not-in-a-document'), placement: 'left'}
+      }
     />
   )
 })

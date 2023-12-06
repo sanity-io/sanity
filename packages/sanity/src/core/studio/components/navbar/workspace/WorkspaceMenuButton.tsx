@@ -144,7 +144,14 @@ export function WorkspaceMenuButton() {
                     preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                     selected={isSelected}
                     text={workspace?.title || workspace.name}
-                    tooltipProps={workspace?.subtitle ? {content: workspace.subtitle} : undefined}
+                    tooltipProps={
+                      workspace?.subtitle
+                        ? {
+                            content: workspace.subtitle,
+                            placement: 'right',
+                          }
+                        : undefined
+                    }
                   />
                 )
               })}
