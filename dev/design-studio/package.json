@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@sanity/icons": "^2.7.0",
-    "@sanity/ui": "2.0.0-alpha.33",
+    "@sanity/ui": "2.0.0-alpha.34",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sanity": "3.21.0",
