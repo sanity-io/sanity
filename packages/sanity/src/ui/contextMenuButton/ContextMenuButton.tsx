@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-imports */
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import React, {HTMLProps, forwardRef} from 'react'
 import {Button, ButtonProps} from '../button'
