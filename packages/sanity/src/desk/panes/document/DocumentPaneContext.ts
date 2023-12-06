@@ -16,7 +16,6 @@ import {
   DocumentFormNode,
   DocumentInspector,
   DocumentLanguageFilterComponent,
-  DocumentPermission,
   EditStateFor,
   PatchEvent,
   PermissionCheckResult,
@@ -47,14 +46,13 @@ export interface DocumentPaneContextValue {
   inspector: DocumentInspector | null
   inspectors: DocumentInspector[]
   menuItemGroups: PaneMenuItemGroup[]
-  menuItems: PaneMenuItem[]
+  // menuItems: PaneMenuItem[]
   onBlur: (blurredPath: Path) => void
   onChange: (event: PatchEvent) => void
   onFocus: (pathOrEvent: Path) => void
   onHistoryClose: () => void
   onHistoryOpen: () => void
   onInspectClose: () => void
-  onKeyUp: (event: React.KeyboardEvent<HTMLDivElement>) => void
   onMenuAction: (item: PaneMenuItem) => void
   onPaneClose: () => void
   onPaneSplit?: () => void

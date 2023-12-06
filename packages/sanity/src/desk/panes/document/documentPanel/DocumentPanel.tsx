@@ -1,11 +1,4 @@
-import {
-  BoundaryElementProvider,
-  Flex,
-  PortalProvider,
-  usePortal,
-  useElementRect,
-  Box,
-} from '@sanity/ui'
+import {BoundaryElementProvider, Flex, PortalProvider, usePortal, Box} from '@sanity/ui'
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
@@ -17,13 +10,13 @@ import {DeletedDocumentBanner} from './DeletedDocumentBanner'
 import {ReferenceChangedBanner} from './ReferenceChangedBanner'
 import {PermissionCheckBanner} from './PermissionCheckBanner'
 import {FormView} from './documentViews'
-import {DocumentPanelHeader} from './header'
 import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 
 interface DocumentPanelProps {
   footerHeight: number | null
-  rootElement: HTMLDivElement | null
+  headerHeight: number | null
   isInspectOpen: boolean
+  rootElement: HTMLDivElement | null
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
 }
 
@@ -46,7 +39,8 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 })
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
-  const {footerHeight, isInspectOpen, rootElement, setDocumentPanelPortalElement} = props
+  const {footerHeight, headerHeight, isInspectOpen, rootElement, setDocumentPanelPortalElement} =
+    props
   const {
     activeViewId,
     displayed,
@@ -68,8 +62,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {collapsed} = usePane()
   const parentPortal = usePortal()
   const {features} = useDeskTool()
-  const [headerElement, setHeaderElement] = useState<HTMLDivElement | null>(null)
-  const headerRect = useElementRect(headerElement)
   const portalRef = useRef<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLDivElement | null>(null)
@@ -95,11 +87,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   // Calculate the height of the header
   const margins: [number, number, number, number] = useMemo(() => {
     if (layoutCollapsed) {
-      return [headerRect?.height || 0, 0, footerHeight ? footerHeight + 2 : 2, 0]
+      return [headerHeight || 0, 0, footerHeight ? footerHeight + 2 : 2, 0]
     }
 
     return [0, 0, 2, 0]
-  }, [layoutCollapsed, footerHeight, headerRect])
+  }, [layoutCollapsed, footerHeight, headerHeight])
 
   const formViewHidden = activeView.type !== 'form'
 
@@ -146,73 +138,69 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const showInspector = Boolean(!collapsed && inspector)
 
   return (
-    <>
-      <DocumentPanelHeader ref={setHeaderElement} />
-
-      <PaneContent>
-        <Flex height="fill">
-          {(features.resizablePanes || !showInspector) && (
-            <DocumentBox flex={2} overflow="hidden">
-              <PortalProvider
-                element={portalElement}
-                __unstable_elements={{documentScrollElement: documentScrollElement}}
-              >
-                <BoundaryElementProvider element={documentScrollElement}>
-                  <VirtualizerScrollInstanceProvider
-                    scrollElement={documentScrollElement}
-                    containerElement={formContainerElement}
-                  >
-                    {activeView.type === 'form' && !isPermissionsLoading && ready && (
-                      <>
-                        <PermissionCheckBanner
-                          granted={Boolean(permissions?.granted)}
-                          requiredPermission={requiredPermission}
-                        />
-                        {!isDeleting && isDeleted && (
-                          <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
-                        )}
-                        <ReferenceChangedBanner />
-                      </>
-                    )}
-
-                    <Scroller
-                      $disabled={layoutCollapsed || false}
-                      data-testid="document-panel-scroller"
-                      ref={setDocumentScrollElement}
-                      // Note: this is to make sure the scroll container is changed
-                      // when the selected group changes which causes virtualization
-                      // to re-render and re-measure the scroll container
-                      key={`${selectedGroup?.name}-${documentId}}`}
-                    >
-                      <FormView
-                        hidden={formViewHidden}
-                        key={documentId + (ready ? '_ready' : '_pending')}
-                        margins={margins}
-                        ref={formContainerElement}
+    <PaneContent>
+      <Flex height="fill">
+        {(features.resizablePanes || !showInspector) && (
+          <DocumentBox flex={2} overflow="hidden">
+            <PortalProvider
+              element={portalElement}
+              __unstable_elements={{documentScrollElement: documentScrollElement}}
+            >
+              <BoundaryElementProvider element={documentScrollElement}>
+                <VirtualizerScrollInstanceProvider
+                  scrollElement={documentScrollElement}
+                  containerElement={formContainerElement}
+                >
+                  {activeView.type === 'form' && !isPermissionsLoading && ready && (
+                    <>
+                      <PermissionCheckBanner
+                        granted={Boolean(permissions?.granted)}
+                        requiredPermission={requiredPermission}
                       />
-                      {activeViewNode}
-                    </Scroller>
+                      {!isDeleting && isDeleted && (
+                        <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
+                      )}
+                      <ReferenceChangedBanner />
+                    </>
+                  )}
 
-                    {inspectDialog}
+                  <Scroller
+                    $disabled={layoutCollapsed || false}
+                    data-testid="document-panel-scroller"
+                    ref={setDocumentScrollElement}
+                    // Note: this is to make sure the scroll container is changed
+                    // when the selected group changes which causes virtualization
+                    // to re-render and re-measure the scroll container
+                    key={`${selectedGroup?.name}-${documentId}}`}
+                  >
+                    <FormView
+                      hidden={formViewHidden}
+                      key={documentId + (ready ? '_ready' : '_pending')}
+                      margins={margins}
+                      ref={formContainerElement}
+                    />
+                    {activeViewNode}
+                  </Scroller>
 
-                    <div data-testid="document-panel-portal" ref={portalRef} />
-                  </VirtualizerScrollInstanceProvider>
-                </BoundaryElementProvider>
-              </PortalProvider>
-            </DocumentBox>
-          )}
+                  {inspectDialog}
 
-          {showInspector && (
-            <BoundaryElementProvider element={rootElement}>
-              <DocumentInspectorPanel
-                documentId={documentId}
-                documentType={schemaType.name}
-                flex={1}
-              />
-            </BoundaryElementProvider>
-          )}
-        </Flex>
-      </PaneContent>
-    </>
+                  <div data-testid="document-panel-portal" ref={portalRef} />
+                </VirtualizerScrollInstanceProvider>
+              </BoundaryElementProvider>
+            </PortalProvider>
+          </DocumentBox>
+        )}
+
+        {showInspector && (
+          <BoundaryElementProvider element={rootElement}>
+            <DocumentInspectorPanel
+              documentId={documentId}
+              documentType={schemaType.name}
+              flex={1}
+            />
+          </BoundaryElementProvider>
+        )}
+      </Flex>
+    </PaneContent>
   )
 }

@@ -30,18 +30,21 @@ function CommentsFormLayoutInner(props: FormLayoutProps) {
     openInspector(COMMENTS_INSPECTOR_NAME)
   }, [inspector?.name, openInspector])
 
+  // If comments are not enabled, render the default form layout
   if (!commentsEnabled) {
     return props.renderDefault(props)
   }
 
   return (
-    <CommentsProvider
-      documentId={documentId}
-      documentType={documentType}
-      isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
-      onCommentsOpen={handleOpenCommentsInspector}
-    >
-      <CommentsSelectedPathProvider>{props.renderDefault(props)}</CommentsSelectedPathProvider>
-    </CommentsProvider>
+    <CommentsEnabledProvider documentId={documentId} documentType={documentType}>
+      <CommentsProvider
+        documentId={documentId}
+        documentType={documentType}
+        isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
+        onCommentsOpen={handleOpenCommentsInspector}
+      >
+        <CommentsSelectedPathProvider>{props.renderDefault(props)}</CommentsSelectedPathProvider>
+      </CommentsProvider>
+    </CommentsEnabledProvider>
   )
 }

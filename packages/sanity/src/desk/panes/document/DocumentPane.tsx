@@ -1,69 +1,27 @@
-import {
-  Card,
-  Code,
-  DialogProvider,
-  DialogProviderProps,
-  Flex,
-  PortalProvider,
-  Stack,
-  Text,
-  useElementRect,
-} from '@sanity/ui'
-import {ComponentType, memo, useCallback, useMemo, useState} from 'react'
+import {Stack, Text} from '@sanity/ui'
+import {memo, useMemo} from 'react'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
-import styled from 'styled-components'
 import {DocumentPaneNode} from '../../types'
-import {Pane, PaneFooter, usePaneLayout, usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
 import {structureLocaleNamespace} from '../../i18n'
-import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../constants'
-import {useDocumentPane} from './useDocumentPane'
 import {DocumentPaneProviderProps} from './types'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
-import {DocumentOperationResults} from './DocumentOperationResults'
+import {useFormLayoutComponent} from './form-layout'
 import {
-  DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
-  DOCUMENT_INSPECTOR_MIN_WIDTH,
-  DOCUMENT_PANEL_MIN_WIDTH,
-} from './constants'
-import {DocumentPanel} from './documentPanel'
-import {DocumentActionShortcuts} from './keyboardShortcuts'
-import {DocumentStatusBar} from './statusBar'
-import {
-  ChangeConnectorRoot,
-  FormLayoutProps,
-  PluginOptions,
   ReferenceInputOptionsProvider,
   SourceProvider,
   Translate,
-  isDev,
   useDocumentType,
-  useMiddlewareComponents,
   useSource,
   useTemplatePermissions,
   useTemplates,
   useTranslation,
-  useZIndex,
 } from 'sanity'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
-
-function pickFormLayout(plugin: PluginOptions) {
-  return plugin.form?.components?.layout as ComponentType<Omit<FormLayoutProps, 'renderDefault'>>
-}
-
-/**
- * A hook that returns the form layout components composed
- * by the Components API (`form.components.layout`).
- */
-function useFormLayoutComponent() {
-  return useMiddlewareComponents({
-    pick: pickFormLayout,
-    defaultComponent: FormLayout,
-  })
-}
 
 /**
  * @internal
@@ -77,22 +35,6 @@ export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProvid
     </SourceProvider>
   )
 })
-
-const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
-  // We use the `position: fixed` for dialogs on narrower screens (first two media breakpoints).
-  'fixed',
-  'fixed',
-  // And we use the `position: absolute` strategy (within panes) on wide screens.
-  'absolute',
-]
-
-const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-`
 
 function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
@@ -197,141 +139,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         <FormLayoutComponent documentId={options.id} documentType={options.type} />
       </ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
-  )
-}
-
-function FormLayout(props: Omit<FormLayoutProps, 'renderDefault'>) {
-  const {
-    changesOpen,
-    inspector,
-    inspectOpen,
-    onFocus,
-    onPathOpen,
-    onHistoryOpen,
-    onKeyUp,
-    paneKey,
-    schemaType,
-    value,
-  } = useDocumentPane()
-
-  const {documentType} = props
-
-  const {collapsed: layoutCollapsed} = usePaneLayout()
-  const zOffsets = useZIndex()
-  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
-  const [footerElement, setFooterElement] = useState<HTMLDivElement | null>(null)
-  const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
-  const [documentPanelPortalElement, setDocumentPanelPortalElement] = useState<HTMLElement | null>(
-    null,
-  )
-  const footerRect = useElementRect(footerElement)
-  const footerH = footerRect?.height
-
-  const onConnectorSetFocus = useCallback(
-    (path: Path) => {
-      onPathOpen(path)
-      onFocus(path)
-    },
-    [onPathOpen, onFocus],
-  )
-
-  const currentMinWidth =
-    DOCUMENT_PANEL_INITIAL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
-
-  const minWidth = DOCUMENT_PANEL_MIN_WIDTH + (inspector ? DOCUMENT_INSPECTOR_MIN_WIDTH : 0)
-  const {t} = useTranslation(structureLocaleNamespace)
-
-  if (!schemaType) {
-    return (
-      <ErrorPane
-        currentMinWidth={currentMinWidth}
-        flex={2.5}
-        minWidth={minWidth}
-        paneKey={paneKey}
-        title={
-          <Translate
-            t={t}
-            i18nKey="panes.document-pane.document-unknown-type.title"
-            values={{documentType}}
-          />
-        }
-        tone="caution"
-      >
-        <Stack space={4}>
-          {documentType && (
-            <Text as="p">
-              <Translate
-                t={t}
-                i18nKey="panes.document-pane.document-unknown-type.text"
-                values={{documentType}}
-              />
-            </Text>
-          )}
-
-          {!documentType && (
-            <Text as="p">{t('panes.document-pane.document-unknown-type.without-schema.text')}</Text>
-          )}
-
-          {isDev && value && (
-            /* eslint-disable i18next/no-literal-string */
-            <>
-              <Text as="p">Here is the JSON representation of the document:</Text>
-              <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
-                <Code language="json" size={[1, 1, 2]}>
-                  {JSON.stringify(value, null, 2)}
-                </Code>
-              </Card>
-            </>
-            /* eslint-enable i18next/no-literal-string */
-          )}
-        </Stack>
-      </ErrorPane>
-    )
-  }
-
-  return (
-    <DocumentActionShortcuts
-      actionsBoxElement={actionsBoxElement}
-      as={Pane}
-      currentMinWidth={currentMinWidth}
-      data-testid="document-pane"
-      flex={2.5}
-      id={paneKey}
-      minWidth={minWidth}
-      onKeyUp={onKeyUp}
-      rootRef={setRootElement}
-    >
-      <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-        <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
-          <StyledChangeConnectorRoot
-            data-testid="change-connector-root"
-            isReviewChangesOpen={changesOpen}
-            onOpenReviewChanges={onHistoryOpen}
-            onSetFocus={onConnectorSetFocus}
-          >
-            <DocumentPanel
-              footerHeight={footerH || null}
-              isInspectOpen={inspectOpen}
-              rootElement={rootElement}
-              setDocumentPanelPortalElement={setDocumentPanelPortalElement}
-            />
-          </StyledChangeConnectorRoot>
-        </Flex>
-      </DialogProvider>
-
-      {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
-      {/* The portal element comes from `DocumentPanel`. */}
-      <PortalProvider
-        __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
-      >
-        <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-          <PaneFooter ref={setFooterElement}>
-            <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
-          </PaneFooter>
-        </DialogProvider>
-      </PortalProvider>
-      <DocumentOperationResults />
-    </DocumentActionShortcuts>
   )
 }
 

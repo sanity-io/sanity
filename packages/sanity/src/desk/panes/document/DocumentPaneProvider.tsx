@@ -1,16 +1,14 @@
-import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import type {ObjectSchemaType, Path, SanityDocument, SanityDocumentLike} from '@sanity/types'
 import {omit} from 'lodash'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import isHotkey from 'is-hotkey'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
 import type {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocumentPaneContext, type DocumentPaneContextValue} from './DocumentPaneContext'
-import {getMenuItems} from './menuItems'
 import type {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
@@ -20,18 +18,13 @@ import {
   HISTORY_INSPECTOR_NAME,
   INSPECT_ACTION_PREFIX,
 } from './constants'
-import {DocumentInspectorMenuItemsResolver} from './DocumentInspectorMenuItemsResolver'
 import {
   type DocumentFieldAction,
-  type DocumentFieldActionNode,
   type DocumentInspector,
-  type DocumentInspectorMenuItem,
   type DocumentPresence,
   type PatchEvent,
   type StateTree,
   EMPTY_ARRAY,
-  FieldActionsProvider,
-  FieldActionsResolver,
   getDraftId,
   getExpandOperations,
   getPublishedId,
@@ -111,8 +104,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
   const [isDeleting, setIsDeleting] = useState(false)
-
-  const [inspectorMenuItems, setInspectorMenuItems] = useState<DocumentInspectorMenuItem[]>([])
 
   // Resolve document actions
   const actions = useMemo(
@@ -218,21 +209,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
 
-  const hasValue = Boolean(value)
   const {t} = useTranslation(structureLocaleNamespace)
-  const menuItems = useMemo(
-    () =>
-      getMenuItems({
-        currentInspector,
-        features,
-        hasValue,
-        inspectorMenuItems,
-        inspectors,
-        previewUrl,
-        t,
-      }),
-    [currentInspector, features, hasValue, inspectorMenuItems, inspectors, previewUrl, t],
-  )
+
   const inspectOpen = params.inspect === 'on'
   const compareValue: Partial<SanityDocument> | null = changesOpen
     ? sinceAttributes
@@ -471,22 +449,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     ],
   )
 
-  const handleKeyUp = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
-      for (const item of menuItems) {
-        if (item.shortcut) {
-          if (isHotkey(item.shortcut, event)) {
-            event.preventDefault()
-            event.stopPropagation()
-            handleMenuAction(item)
-            return
-          }
-        }
-      }
-    },
-    [handleMenuAction, menuItems],
-  )
-
   const handleLegacyInspectClose = useCallback(
     () => toggleLegacyInspect(false),
     [toggleLegacyInspect],
@@ -614,7 +576,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     focusPath,
     inspector: currentInspector || null,
     inspectors,
-    menuItems,
     onBlur: handleBlur,
     onChange: handleChange,
     onFocus: handleFocus,
@@ -622,7 +583,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onHistoryClose: handleHistoryClose,
     onHistoryOpen: handleHistoryOpen,
     onInspectClose: handleLegacyInspectClose,
-    onKeyUp: handleKeyUp,
     onMenuAction: handleMenuAction,
     onPaneClose: handlePaneClose,
     onPaneSplit: handlePaneSplit,
@@ -697,35 +657,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     return undefined
   }, [params, documentId, onFocusPath, setOpenPath, ready, paneRouter])
 
-  const [rootFieldActionNodes, setRootFieldActionNodes] = useState<DocumentFieldActionNode[]>([])
-
   return (
-    <DocumentPaneContext.Provider value={documentPane}>
-      {inspectors.length > 0 && (
-        <DocumentInspectorMenuItemsResolver
-          documentId={documentId}
-          documentType={documentType}
-          inspectors={inspectors}
-          onMenuItems={setInspectorMenuItems}
-        />
-      )}
-
-      {/* Resolve root-level field actions */}
-      {fieldActions.length > 0 && schemaType && (
-        <FieldActionsResolver
-          actions={fieldActions}
-          documentId={documentId}
-          documentType={documentType}
-          onActions={setRootFieldActionNodes}
-          path={EMPTY_ARRAY}
-          schemaType={schemaType}
-        />
-      )}
-
-      <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
-        {children}
-      </FieldActionsProvider>
-    </DocumentPaneContext.Provider>
+    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
 })
 
