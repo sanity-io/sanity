@@ -103,6 +103,7 @@ export function getTemplatePermissions({
                 const title = item.title || template.title
                 const result: TemplatePermissionsResult = {
                   ...item,
+                  i18n: item.i18n || template.i18n,
                   granted,
                   reason,
                   resolvedInitialValue,
