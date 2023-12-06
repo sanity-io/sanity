@@ -16,7 +16,7 @@
   "dependencies": {
     "@sanity/google-maps-input": "^3.0.1",
     "@sanity/icons": "^2.4.0",
-    "@sanity/ui": "^1.9.3",
+    "@sanity/ui": "2.0.0-alpha.33",
     "@sanity/vision": "3.21.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
