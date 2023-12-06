@@ -1,7 +1,8 @@
-import {Button, Stack, Text} from '@sanity/ui'
-import {AlertStrip} from '../../components/AlertStrip'
-import {Translate, useTranslation} from '../../../i18n'
+import {Stack, Text} from '@sanity/ui'
 import React from 'react'
+import {Button} from '../../../../ui'
+import {Translate, useTranslation} from '../../../i18n'
+import {AlertStrip} from '../../components/AlertStrip'
 
 /**
  * Alert strip that shows an explanation and action prompting the user to fix a mismatch in
@@ -46,7 +47,9 @@ export function ReferenceStrengthMismatchAlertStrip({
           )}
         </Text>
         <Button
+          mode="ghost"
           onClick={handleFixStrengthMismatch}
+          size="large"
           text={t(
             shouldBe === 'weak'
               ? 'inputs.reference.strength-mismatch.weaken-button-label'
