@@ -18,7 +18,7 @@ export function ResourcesMenuItems({error, isLoading, value}: ResourcesMenuItemP
   const {t} = useTranslation()
 
   if (isLoading) {
-    return <LoadingBlock />
+    return <LoadingBlock showText />
   }
 
   const fallbackLinks = (

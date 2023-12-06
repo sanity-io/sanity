@@ -59,7 +59,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
 
   // Render loading state
   if (loading) {
-    return <LoadingBlock />
+    return <LoadingBlock showText />
   }
 
   // Render no search results state
