@@ -96,16 +96,10 @@ export const MenuItem = forwardRef(function MenuItem(
         )}
         {(badgeText || hotkeys || iconRight) && (
           <Flex align="center" gap={3} marginLeft={3}>
-            {hotkeys && (
-              <Hotkeys
-                fontSize={FONT_SIZE}
-                keys={hotkeys}
-                style={{marginTop: -4, marginBottom: -4}}
-              />
-            )}
+            {hotkeys && <Hotkeys keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />}
 
             {badgeText && (
-              <Badge fontSize={FONT_SIZE} style={{marginTop: -4, marginBottom: -4}}>
+              <Badge fontSize={0} style={{marginTop: -4, marginBottom: -4}}>
                 {badgeText}
               </Badge>
             )}
