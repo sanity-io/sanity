@@ -3,7 +3,7 @@ import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Box, ButtonTone, Flex} from '@sanity/ui'
 import React from 'react'
 import styled, {css} from 'styled-components'
-import {TextWithTone, useDocumentStatusTimeAgo} from 'sanity'
+import {TextWithTone, useDocumentStatusTimeAgo} from '../../core'
 
 export interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
