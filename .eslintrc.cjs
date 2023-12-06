@@ -143,6 +143,7 @@ const config = {
               'dialog',
               'error',
               'false',
+              'fill',
               'first',
               'from',
               'horizontal',
