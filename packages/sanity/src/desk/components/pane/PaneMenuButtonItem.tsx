@@ -3,7 +3,7 @@ import {Box, Label, MenuDivider, MenuGroup, MenuItem, PopoverProps, Text} from '
 import React, {useCallback, MouseEvent} from 'react'
 import {Intent} from '../../structureBuilder'
 import {_PaneMenuItem, _PaneMenuNode} from './types'
-import {TooltipOfDisabled, useTranslation} from 'sanity'
+import {TooltipOfDisabled, useGetI18nTitle, useI18nTitle, useTranslation} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
 const MENU_GROUP_POPOVER_PROPS: PopoverProps = {
@@ -18,19 +18,13 @@ export function PaneMenuButtonItem(props: {
   node: _PaneMenuNode
 }) {
   const {disabled, isAfterGroup, node} = props
-  const namespace = 'i18n' in node ? node.i18n?.ns : undefined
-  const {t} = useTranslation(namespace)
+  const getI18nTitle = useGetI18nTitle('i18n' in node ? node : undefined)
 
   if (node.type === 'divider') {
     return <MenuDivider />
   }
 
-  const title = node.i18n
-    ? t(node.i18n.key, {
-        ns: node.i18n.ns,
-        defaultValue: node.title, // fallback
-      })
-    : node.title
+  const title = getI18nTitle(node)
 
   if (node.type === 'group') {
     if (node.children.length === 0) {
@@ -105,10 +99,7 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
   const tooltipContent = typeof node.disabled === 'object' && (
     <Text size={1}>{node.disabled.reason}</Text>
   )
-  const {t} = useTranslation(node.i18n?.ns)
-  const title = node.i18n
-    ? t(node.i18n.key, {ns: node.i18n.ns, defaultValue: node.title})
-    : node.title
+  const title = useI18nTitle(node)
 
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
@@ -146,13 +137,7 @@ function PaneContextIntentMenuItem(props: {
     [intentLink, node],
   )
 
-  const {t} = useTranslation(node.i18n?.ns)
-  const title = node.i18n
-    ? t(node.i18n.key, {
-        ns: node.i18n.ns,
-        defaultValue: node.title, // fallback
-      })
-    : node.title
+  const title = useI18nTitle(node)
 
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">

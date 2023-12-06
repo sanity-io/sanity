@@ -4,7 +4,7 @@ import {UnknownIcon} from '@sanity/icons'
 import {Intent} from '../../structureBuilder'
 import {_PaneMenuGroup, _PaneMenuItem} from './types'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
-import {TooltipOfDisabled, StatusButton, useTranslation} from 'sanity'
+import {TooltipOfDisabled, StatusButton, useI18nTitle} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
 export interface PaneHeaderActionButtonProps {
@@ -35,7 +35,7 @@ export interface PaneHeaderMenuItemActionButtonProps {
 
 export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
   const {node, padding} = props
-  const {t} = useTranslation(node.i18n?.ns)
+  const title = useI18nTitle(node)
 
   if (node.intent) {
     return <PaneHeaderActionIntentButton {...props} intent={node.intent} />
@@ -44,13 +44,6 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
   const disabledTooltipContent = typeof node.disabled === 'object' && (
     <Text size={1}>{node.disabled.reason}</Text>
   )
-
-  const title = node.i18n
-    ? t(node.i18n.key, {
-        ns: node.i18n.ns,
-        defaultValue: node.title, // fallback
-      })
-    : node.title
 
   return (
     <TooltipOfDisabled content={disabledTooltipContent} placement="bottom">
@@ -113,14 +106,7 @@ export interface PaneHeaderMenuGroupActionButtonProps {
 
 function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonProps) {
   const {node, padding} = props
-  const {t} = useTranslation(node.i18n?.ns)
-
-  const title = node.i18n
-    ? t(node.i18n.key, {
-        ns: node.i18n.ns,
-        defaultValue: node.title, // fallback
-      })
-    : node.title
+  const title = useI18nTitle(node)
 
   return (
     <MenuButton

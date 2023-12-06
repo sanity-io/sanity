@@ -1,7 +1,7 @@
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, Menu, MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '@sanity/ui'
-import {useTranslation} from '../../../i18n'
+import {useGetI18nTitle, useTranslation} from '../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../components'
 import {useCurrentUser} from '../../../store'
 import type {CreateReferenceOption} from './types'
@@ -31,6 +31,8 @@ export function CreateButton(props: Props) {
   const currentUser = useCurrentUser()
 
   const {t} = useTranslation()
+  const getI18nTitle = useGetI18nTitle(createOptions)
+
   const canCreateAny = createOptions.some((option) => option.permission.granted)
   if (!canCreateAny) {
     return (
@@ -72,41 +74,32 @@ export function CreateButton(props: Props) {
       id={id}
       menu={
         <Menu ref={menuRef}>
-          {createOptions.map((createOption) => {
-            const title = createOption.i18n
-              ? t(createOption.i18n.key, {
-                  ns: createOption.i18n.ns,
-                  defaultValue: createOption.title,
-                })
-              : createOption.title
-
-            return (
-              <Tooltip
-                disabled={createOption.permission.granted}
-                key={createOption.id}
-                content={
-                  <Box padding={2}>
-                    <InsufficientPermissionsMessage
-                      currentUser={currentUser}
-                      context="create-document-type"
-                    />
-                  </Box>
-                }
-                portal
-              >
-                {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
-                <div>
-                  <MenuItem
-                    disabled={!createOption.permission.granted}
-                    icon={createOption.icon}
-                    text={title}
-                    // eslint-disable-next-line react/jsx-no-bind
-                    onClick={() => onCreate(createOption)}
+          {createOptions.map((createOption) => (
+            <Tooltip
+              disabled={createOption.permission.granted}
+              key={createOption.id}
+              content={
+                <Box padding={2}>
+                  <InsufficientPermissionsMessage
+                    currentUser={currentUser}
+                    context="create-document-type"
                   />
-                </div>
-              </Tooltip>
-            )
-          })}
+                </Box>
+              }
+              portal
+            >
+              {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
+              <div>
+                <MenuItem
+                  disabled={!createOption.permission.granted}
+                  icon={createOption.icon}
+                  text={getI18nTitle(createOption)}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onClick={() => onCreate(createOption)}
+                />
+              </div>
+            </Tooltip>
+          ))}
         </Menu>
       }
       popover={POPOVER_PROPS}

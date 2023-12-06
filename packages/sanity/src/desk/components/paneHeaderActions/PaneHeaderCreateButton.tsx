@@ -14,7 +14,7 @@ import {
   useSchema,
   useTemplates,
   useTranslation,
-  isNonNullable,
+  useGetI18nTitle,
 } from 'sanity'
 
 export type PaneHeaderIntentProps = React.ComponentProps<typeof IntentButton>['intent']
@@ -53,16 +53,10 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
   const schema = useSchema()
   const templates = useTemplates()
 
-  const namespaces = useMemo(
-    () =>
-      templateItems
-        .map((item) => item.i18n?.ns)
-        .filter(isNonNullable)
-        .sort(),
-    [templateItems],
+  const {t} = useTranslation(structureLocaleNamespace)
+  const getI18nTitle = useGetI18nTitle(
+    useMemo(() => [...templateItems, ...templates], [templateItems, templates]),
   )
-
-  const {t} = useTranslation([structureLocaleNamespace, ...namespaces])
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
@@ -120,14 +114,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         context="create-document-type"
       >
         <IntentButton
-          title={
-            firstItem.i18n
-              ? t(firstItem.i18n.key, {
-                  defaultValue: firstItem.title, // fallback value
-                  ns: firstItem.i18n.ns,
-                })
-              : firstItem.title
-          }
+          title={getI18nTitle(firstItem)}
           icon={firstItem.icon || AddIcon}
           intent={intent}
           mode="bleed"
@@ -172,18 +159,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
 
             Link.displayName = 'Link'
 
-            const templateTitle = template.i18n
-              ? t(template.i18n.key, {
-                  ns: template.i18n.ns,
-                  defaultValue: template.title, // fallback value
-                })
-              : template.title
-
-            const fallbackTitle = item.title || templateTitle
-
-            const title = item.i18n
-              ? t(item.i18n.key, {ns: item.i18n.ns, defaultValue: fallbackTitle})
-              : fallbackTitle
+            const title = getI18nTitle({...item, title: item.title || getI18nTitle(template)})
 
             return (
               <InsufficientPermissionsMessageTooltip

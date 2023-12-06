@@ -25,7 +25,7 @@ import {useDocumentList} from './useDocumentList'
 import {
   GeneralPreviewLayoutKey,
   SourceProvider,
-  isNonNullable,
+  useI18nTitle,
   useSchema,
   useSource,
   useTranslation,
@@ -107,8 +107,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     menuItemGroups,
     menuItems,
     options,
-    title: fallbackTitle,
-    i18n,
   } = pane
   const {apiVersion, defaultOrdering = EMPTY_ARRAY, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -121,8 +119,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     defaultLayout,
   )
 
-  const {t} = useTranslation([structureLocaleNamespace, i18n?.ns].filter(isNonNullable))
-  const title = i18n ? t(i18n.key, {ns: i18n.ns, defaultValue: fallbackTitle}) : fallbackTitle
+  const {t} = useTranslation(structureLocaleNamespace)
+  const title = useI18nTitle(pane)
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')

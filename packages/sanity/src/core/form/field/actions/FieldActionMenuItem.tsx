@@ -3,18 +3,12 @@ import React, {useCallback} from 'react'
 import {CheckmarkIcon} from '@sanity/icons'
 import {TooltipOfDisabled} from '../../../components'
 import {DocumentFieldActionItem} from '../../../config'
-import {useTranslation} from '../../../i18n'
+import {useI18nTitle} from '../../../i18n'
 
 export function FieldActionMenuItem(props: {action: DocumentFieldActionItem}) {
   const {action} = props
 
-  const {t} = useTranslation(action.i18n?.ns)
-  const title = action.i18n
-    ? t(action.i18n.key, {
-        ns: action.i18n.ns,
-        defaultValue: action.title, // fallback
-      })
-    : action.title
+  const title = useI18nTitle(action)
 
   const handleClick = useCallback(() => {
     action.onAction()

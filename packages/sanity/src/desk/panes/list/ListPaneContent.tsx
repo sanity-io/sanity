@@ -7,8 +7,8 @@ import {
   CommandList,
   CommandListItemContext,
   GeneralPreviewLayoutKey,
-  isNonNullable,
-  useTranslation,
+  I18nTitle,
+  useGetI18nTitle,
 } from 'sanity'
 
 interface ListPaneContentProps {
@@ -33,10 +33,7 @@ const Divider = styled.hr`
 export function ListPaneContent(props: ListPaneContentProps) {
   const {childItemId, items, isActive, layout, showIcons, title} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const namespaces = useMemo(() => {
-    return items?.map((i) => ('i18n' in i ? i.i18n?.ns : undefined)).filter(isNonNullable)
-  }, [items])
-  const {t} = useTranslation(namespaces)
+  const getI18nTitle = useGetI18nTitle(items as I18nTitle[])
 
   const getItemDisabled = useCallback(
     (itemIndex: number) => {
@@ -82,10 +79,6 @@ export function ListPaneContent(props: ListPaneContentProps) {
           ? {_id: item._id, _type: item.schemaType.name, title: item.title}
           : undefined
 
-      const itemTitle = item.i18n
-        ? t(item.i18n.key, {ns: item.i18n.ns, defaultValue: item.title})
-        : item.title
-
       return (
         <PaneItem
           icon={shouldShowIconForItem(item) ? item.icon : false}
@@ -96,12 +89,12 @@ export function ListPaneContent(props: ListPaneContentProps) {
           pressed={pressed}
           schemaType={item.schemaType}
           selected={selected}
-          title={itemTitle}
+          title={getI18nTitle(item)}
           value={value}
         />
       )
     },
-    [childItemId, isActive, layout, shouldShowIconForItem, t],
+    [childItemId, getI18nTitle, isActive, layout, shouldShowIconForItem],
   )
 
   return (

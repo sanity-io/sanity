@@ -5,7 +5,7 @@ import {Card, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import React, {memo, useCallback, useId, useMemo, useState} from 'react'
 import {StatusButton, StatusButtonProps} from '../../../components'
 import {DocumentFieldActionGroup, DocumentFieldActionNode} from '../../../config'
-import {useTranslation} from '../../../i18n'
+import {useI18nTitle, useTranslation} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
 
 /** @internal */
@@ -131,11 +131,7 @@ function RootFieldActionMenuGroup(props: {
   open: boolean
 }) {
   const {node, onOpen, onClose, open} = props
-  const {t} = useTranslation(node.i18n?.ns)
-
-  const title = node.i18n
-    ? t(node.i18n.key, {ns: node.i18n.ns, defaultValue: node.title})
-    : node.title
+  const title = useI18nTitle(node)
 
   return (
     <MenuButton

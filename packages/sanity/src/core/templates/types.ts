@@ -166,7 +166,7 @@ export interface TemplateItem {
    * Title for the item.
    * Defaults to the title of the associated template.
    */
-  title?: string
+  title: string
 
   i18n?: {key: string; ns: string}
 

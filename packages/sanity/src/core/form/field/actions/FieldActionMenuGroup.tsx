@@ -1,7 +1,7 @@
 import {Box, Label, MenuGroup, MenuGroupProps} from '@sanity/ui'
 import React from 'react'
 import {DocumentFieldActionGroup} from '../../../config'
-import {useTranslation} from '../../../i18n'
+import {useI18nTitle, useTranslation} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
 
 const POPOVER_PROPS: MenuGroupProps['popover'] = {
@@ -11,13 +11,7 @@ const POPOVER_PROPS: MenuGroupProps['popover'] = {
 
 export function FieldActionMenuGroup(props: {group: DocumentFieldActionGroup}) {
   const {group} = props
-  const {t} = useTranslation(group.i18n?.ns)
-  const title = group.i18n
-    ? t(group.i18n.key, {
-        ns: group.i18n.ns,
-        defaultValue: group.title, // fallback
-      })
-    : group.title
+  const title = useI18nTitle(group)
 
   if (group.expanded) {
     return (

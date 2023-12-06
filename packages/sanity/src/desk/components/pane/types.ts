@@ -95,7 +95,7 @@ export interface _PaneMenuGroup {
   disabled?: boolean | {reason: ReactNode}
   expanded: boolean
   icon?: ComponentType | ReactNode
-  title?: string
+  title: string
   i18n?: {key: string; ns: string}
   children: _PaneMenuNode[]
   renderAsButton: boolean
