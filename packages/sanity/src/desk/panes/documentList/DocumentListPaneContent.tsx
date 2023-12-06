@@ -133,7 +133,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             value={item}
           />
 
-          {showSpinner && <LoadingBlock hideText />}
+          {showSpinner && <LoadingBlock />}
 
           {showMaxItemsMessage && (
             <Box marginY={1} paddingX={3} paddingY={4}>

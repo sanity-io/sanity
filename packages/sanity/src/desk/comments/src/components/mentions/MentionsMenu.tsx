@@ -98,7 +98,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
   if (loading) {
     return (
       <Root>
-        <LoadingBlock />
+        <LoadingBlock showText />
       </Root>
     )
   }

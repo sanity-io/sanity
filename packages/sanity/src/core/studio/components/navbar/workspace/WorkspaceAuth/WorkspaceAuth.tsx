@@ -28,7 +28,7 @@ export function WorkspaceAuth() {
   const handleBack = useCallback(() => setSelectedWorkspaceName(null), [])
   const {t} = useTranslation()
 
-  if (!authStates) return <LoadingBlock />
+  if (!authStates) return <LoadingBlock showText />
 
   if (LoginComponent && selectedWorkspace) {
     return (

@@ -46,7 +46,7 @@ function ImagePreview({asset}: {asset: ImageAsset}) {
 
   return (
     <Container __unstable_checkered border>
-      {!loaded && <LoadingBlock fill />}
+      {!loaded && <LoadingBlock fill showText />}
       <Image onLoad={handleLoad} src={imageUrl} />
     </Container>
   )
