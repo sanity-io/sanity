@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
-import React, {ChangeEvent, useRef, useCallback, useState, useEffect, useMemo} from 'react'
+import {type ChangeEvent, useRef, useCallback, useState, useEffect, useMemo} from 'react'
 import SplitPane from '@rexxars/react-split-pane'
 import type {ListenEvent, MutationEvent, ClientPerspective} from '@sanity/client'
 import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
@@ -17,21 +17,19 @@ import {
   Tooltip,
   Grid,
   Button,
-  ToastContextValue,
   Inline,
+  useToast,
 } from '@sanity/ui'
 import {useTranslation} from 'sanity'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
-import {getLocalStorage} from '../util/localStorage'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
 import {validateApiVersion} from '../util/validateApiVersion'
-import {prefixApiVersion} from '../util/prefixApiVersion'
 import {tryParseParams} from '../util/tryParseParams'
 import {encodeQueryString} from '../util/encodeQueryString'
-import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
-import {PERSPECTIVES, DEFAULT_PERSPECTIVE, isPerspective} from '../perspectives'
+import {API_VERSIONS} from '../apiVersions'
+import {PERSPECTIVES} from '../perspectives'
+import {useVisionApiVersion, useVisionDataset, useVisionPerspective} from '../hooks'
 import {ResizeObserver} from '../util/resizeObserver'
-import type {VisionProps} from '../types'
 import {visionLocaleNamespace} from '../i18n'
 import {DelayedSpinner} from './DelayedSpinner'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
@@ -57,6 +55,7 @@ import {
   TimingsCard,
   TimingsTextContainer,
 } from './VisionGui.styled'
+import {useVisionStore} from './VisionStoreContext'
 
 function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   if (!node || !other) {
@@ -99,35 +98,16 @@ interface Subscription {
   unsubscribe: () => void
 }
 
-interface VisionGuiProps extends VisionProps {
-  toast: ToastContextValue
-  datasets: string[]
-}
-
-export function VisionGui(props: VisionGuiProps) {
-  const {client, datasets, config, toast} = props
-
+export function VisionGui() {
+  const {datasets, client, localStorage: _localStorage} = useVisionStore()
   const {t} = useTranslation(visionLocaleNamespace)
+  const toast = useToast()
 
   const _visionRoot = useRef<HTMLDivElement>(null)
   const _operationUrlElement = useRef<HTMLInputElement>(null)
   const _queryEditorContainer = useRef<HTMLDivElement>(null)
   const _paramsEditorContainer = useRef<HTMLDivElement>(null)
   const _customApiVersionElement = useRef<HTMLInputElement>(null)
-
-  const defaultDataset = useMemo(
-    () => config.defaultDataset || client.config().dataset || datasets[0],
-    [client, config.defaultDataset, datasets],
-  )
-  const defaultApiVersion = useMemo(
-    () => prefixApiVersion(`${config.defaultApiVersion}`),
-    [config.defaultApiVersion],
-  )
-  const defaultPerspective = DEFAULT_PERSPECTIVE
-  const _localStorage = useMemo(
-    () => getLocalStorage(client.config().projectId || 'default'),
-    [client],
-  )
 
   // Initial root height without header
   const bodyHeight = useMemo(
@@ -139,21 +119,10 @@ export function VisionGui(props: VisionGuiProps) {
   )
 
   // Selected options
-  const [dataset, setDataset] = useState(() => _localStorage.get('dataset', defaultDataset))
-  const [apiVersion, setApiVersion] = useState(() =>
-    _localStorage.get('apiVersion', defaultApiVersion),
-  )
-  const [perspective, setPerspective] = useState<ClientPerspective>(() =>
-    _localStorage.get('perspective', defaultPerspective),
-  )
-  const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
-    API_VERSIONS.includes(apiVersion) ? false : apiVersion,
-  )
-
-  // Selected options validation state
-  const [isValidApiVersion, setIsValidApiVersion] = useState<boolean>(() =>
-    customApiVersion ? validateApiVersion(customApiVersion) : false,
-  )
+  const [dataset, setDataset] = useVisionDataset()
+  const {apiVersion, setApiVersion, customApiVersion, setCustomApiVersion, isValidApiVersion} =
+    useVisionApiVersion()
+  const [perspective, setPerspective] = useVisionPerspective()
 
   // URL used to execute query/listener
   const [url, setUrl] = useState<string | undefined>()
@@ -189,16 +158,6 @@ export function VisionGui(props: VisionGuiProps) {
 
   const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
 
-  const _client = useMemo(() => {
-    return client.withConfig({
-      apiVersion:
-        customApiVersion || API_VERSIONS.includes(apiVersion) ? apiVersion : DEFAULT_API_VERSION,
-      dataset: dataset.includes(dataset) ? dataset : datasets[0],
-      perspective: PERSPECTIVES.includes(perspective) ? perspective : DEFAULT_PERSPECTIVE,
-      allowReconfigure: true,
-    })
-  }, [apiVersion, client, customApiVersion, dataset, datasets, perspective])
-
   const _querySubscription = useRef<Subscription | undefined>()
   const _listenSubscription = useRef<Subscription | undefined>()
 
@@ -222,10 +181,10 @@ export function VisionGui(props: VisionGuiProps) {
 
   const ensureSelectedApiVersion = useCallback(() => {
     const wantedApiVersion = customApiVersion || apiVersion
-    if (_client.config().apiVersion !== wantedApiVersion) {
-      _client.config({apiVersion: wantedApiVersion})
+    if (client.config().apiVersion !== wantedApiVersion) {
+      client.config({apiVersion: wantedApiVersion})
     }
-  }, [_client, apiVersion, customApiVersion])
+  }, [client, apiVersion, customApiVersion])
 
   const handleQueryExecution = useCallback(() => {
     if (queryInProgress) {
@@ -261,12 +220,12 @@ export function VisionGui(props: VisionGuiProps) {
     }
 
     setUrl(
-      _client.getUrl(_client.getDataUrl('query', encodeQueryString(query, params, urlQueryOpts))),
+      client.getUrl(client.getDataUrl('query', encodeQueryString(query, params, urlQueryOpts))),
     )
 
     const queryStart = Date.now()
 
-    _querySubscription.current = _client.observable
+    _querySubscription.current = client.observable
       .fetch(query, params, {filterResponse: false, tag: 'vision'})
       .subscribe({
         next: (res) => {
@@ -285,7 +244,7 @@ export function VisionGui(props: VisionGuiProps) {
 
     return true
   }, [
-    _client,
+    client,
     _localStorage,
     cancelListener,
     cancelQuery,
@@ -299,61 +258,43 @@ export function VisionGui(props: VisionGuiProps) {
 
   const handleChangeDataset = useCallback(
     (evt: ChangeEvent<HTMLSelectElement>) => {
-      _localStorage.set('dataset', dataset)
-      setDataset(evt.target.value)
-      _client.config({dataset})
-      handleQueryExecution()
+      setDataset(evt.target.value, handleQueryExecution)
     },
-    [_client, _localStorage, dataset, handleQueryExecution],
+    [setDataset, handleQueryExecution],
   )
 
   const handleChangeApiVersion = useCallback(
     (evt: ChangeEvent<HTMLSelectElement>) => {
-      const {value} = evt.target
-      if (value === 'other') {
+      const {value = ''} = evt.target
+
+      if (value.toLowerCase() === 'other') {
         setCustomApiVersion('v')
         _customApiVersionElement.current?.focus()
         return
       }
 
-      setApiVersion(value)
-      setCustomApiVersion(false)
-      _localStorage.set('apiVersion', value)
-      _client.config({apiVersion: value})
-      handleQueryExecution()
+      setApiVersion(value, handleQueryExecution)
     },
-    [_client, _localStorage, handleQueryExecution],
+    [setApiVersion, handleQueryExecution, setCustomApiVersion],
   )
 
   const handleChangePerspective = useCallback(
     (evt: ChangeEvent<HTMLSelectElement>) => {
-      const {value} = evt.target
-      if (!isPerspective(value)) {
-        return
-      }
-
-      setPerspective(value)
-      _localStorage.set('perspective', value)
-      _client.config({perspective: value})
-      handleQueryExecution()
+      setPerspective(evt.target.value, handleQueryExecution)
     },
-    [_client, _localStorage, handleQueryExecution],
+    [setPerspective, handleQueryExecution],
   )
 
   const handleCustomApiVersionChange = useCallback(
     (evt: ChangeEvent<HTMLInputElement>) => {
       const {value = ''} = evt.target
-
       if (validateApiVersion(value)) {
         setApiVersion(value)
-        _localStorage.set('apiVersion', value)
-        _client.config({apiVersion: value})
       }
 
       setCustomApiVersion(value || 'v')
-      setIsValidApiVersion(validateApiVersion(value))
     },
-    [_client, _localStorage],
+    [setCustomApiVersion, setApiVersion],
   )
 
   const handleCopyUrl = useCallback(() => {
@@ -435,7 +376,7 @@ export function VisionGui(props: VisionGuiProps) {
 
     cancelQuery()
 
-    setUrl(_client.getDataUrl('listen', encodeQueryString(query, encodeParams, {})))
+    setUrl(client.getDataUrl('listen', encodeQueryString(query, encodeParams, {})))
     setListenMutations([])
     setQueryInProgress(false)
     setQueryResult(undefined)
@@ -448,7 +389,7 @@ export function VisionGui(props: VisionGuiProps) {
       return
     }
 
-    _listenSubscription.current = _client
+    _listenSubscription.current = client
       .listen(query, params, {events: ['mutation', 'welcome']})
       .subscribe({
         next: handleListenerEvent,
@@ -459,7 +400,7 @@ export function VisionGui(props: VisionGuiProps) {
         },
       })
   }, [
-    _client,
+    client,
     _localStorage,
     cancelListener,
     cancelQuery,
@@ -543,7 +484,7 @@ export function VisionGui(props: VisionGuiProps) {
         perspective: _perspective || perspective,
       })
 
-      _client.config({
+      client.config({
         dataset: newDataset,
         apiVersion: _customApiVersion || _apiVersion,
         perspective: _perspective || perspective,
@@ -557,7 +498,19 @@ export function VisionGui(props: VisionGuiProps) {
         title: 'Parsed URL to query',
       })
     },
-    [_client, _localStorage, dataset, datasets, handleQueryExecution, perspective, toast],
+    [
+      datasets,
+      dataset,
+      _localStorage,
+      perspective,
+      client,
+      handleQueryExecution,
+      toast,
+      setDataset,
+      setApiVersion,
+      setCustomApiVersion,
+      setPerspective,
+    ],
   )
 
   const handleKeyDown = useCallback(
