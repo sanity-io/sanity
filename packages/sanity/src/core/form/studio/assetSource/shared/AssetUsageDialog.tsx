@@ -37,7 +37,7 @@ export function AssetUsageDialog({asset, assetType, onClose}: UsageDialogProps) 
       width={1}
     >
       {isLoading ? (
-        <LoadingBlock />
+        <LoadingBlock showText />
       ) : (
         <AssetUsageList
           asset={asset}
