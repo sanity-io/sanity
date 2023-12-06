@@ -3810,18 +3810,6 @@
     segmented-property "^3.0.3"
     vite "^4.4.9"
 
-"@sanity/ui@1.9.3", "@sanity/ui@^1.9.3":
-  version "1.9.3"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.9.3.tgz#4af45902ac95801aa5ea57f377beaf3e3cb36339"
-  integrity sha512-AdWEVFaK0Snk6xxP0lGPVP3QQYKwzkfGFpFZnL9d6UtWt8yeuS8BMLVAzmXzg14hrqH50ex9nvNl3eq6a0MWiw==
-  dependencies:
-    "@floating-ui/react-dom" "2.0.0"
-    "@sanity/color" "^2.2.5"
-    "@sanity/icons" "^2.4.1"
-    csstype "^3.1.2"
-    framer-motion "^10.16.2"
-    react-refractor "^2.1.7"
-
 "@sanity/ui@2.0.0-alpha.33":
   version "2.0.0-alpha.33"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-alpha.33.tgz#418996fcb2c122a5a8dbd2c7b4350d792fd4dc02"
@@ -3844,6 +3832,18 @@
     "@sanity/icons" "^2.4.1"
     csstype "^3.1.2"
     framer-motion "^10.16.1"
+    react-refractor "^2.1.7"
+
+"@sanity/ui@^1.9.3":
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.9.3.tgz#4af45902ac95801aa5ea57f377beaf3e3cb36339"
+  integrity sha512-AdWEVFaK0Snk6xxP0lGPVP3QQYKwzkfGFpFZnL9d6UtWt8yeuS8BMLVAzmXzg14hrqH50ex9nvNl3eq6a0MWiw==
+  dependencies:
+    "@floating-ui/react-dom" "2.0.0"
+    "@sanity/color" "^2.2.5"
+    "@sanity/icons" "^2.4.1"
+    csstype "^3.1.2"
+    framer-motion "^10.16.2"
     react-refractor "^2.1.7"
 
 "@sanity/uuid@3.0.2", "@sanity/uuid@^3", "@sanity/uuid@^3.0.1", "@sanity/uuid@^3.0.2":
