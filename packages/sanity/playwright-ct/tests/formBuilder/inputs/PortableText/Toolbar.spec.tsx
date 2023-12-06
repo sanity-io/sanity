@@ -17,11 +17,9 @@ test.describe('Portable Text Input', () => {
         // Adjust the viewport size to make the Inline Object button hidden
         await page.setViewportSize({width: 800, height: 1000})
 
-        const $contextMenuButton = $portableTextInput
-          .getByRole('button')
-          .locator('[data-sanity-icon="add"]')
+        const $contextMenuButton = $portableTextInput.getByTestId('insert-menu-button')
 
-        // Assertion: Check if the Add + button is showing
+        // Assertion: Check if the context menu button is showing
         await expect($contextMenuButton).toBeVisible()
 
         // Assertion: Check if the Inline Object button is now hidden
