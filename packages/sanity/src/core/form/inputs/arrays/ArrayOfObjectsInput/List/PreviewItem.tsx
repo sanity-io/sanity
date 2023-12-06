@@ -176,7 +176,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           skipVisibilityCheck: true,
         })}
 
-        {resolvingInitialValue && <LoadingBlock fill hideText />}
+        {resolvingInitialValue && <LoadingBlock fill />}
       </Card>
     </RowLayout>
   )

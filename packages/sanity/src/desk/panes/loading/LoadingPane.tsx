@@ -92,7 +92,7 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
       justify="center"
       ref={setContentElement}
     >
-      <LoadingBlock title={title || currentMessage} />
+      <LoadingBlock showText title={title || currentMessage} />
     </Content>
   )
 

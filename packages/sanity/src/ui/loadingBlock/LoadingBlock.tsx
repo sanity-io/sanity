@@ -7,11 +7,17 @@ import {useTranslation} from '../../core'
 // Enable to force debug background
 const DEBUG_MODE = false
 
+// Duration to wait before initial spinner appears
+const SPINNER_DELAY = 750 // ms
+
+// Duration to wait before text appears (if enabled)
+const TEXT_DELAY = 2000 // ms
+
 interface LoadingTestProps {
   /** Absolutely positions this component when `true`. */
   fill?: boolean
-  /** Optionally hide loading title. If `true`, the spinner will remain centered. */
-  hideText?: boolean
+  /** Optionally show loading title. If `true`, both text and spinner will appear and animate after an initial delay */
+  showText?: boolean
   /**
    * Text to display underneath the spinner.  If omitted, will default to `'Loading'`.
    * If providing a value, avoid using trailing ellipses.
@@ -81,8 +87,8 @@ const StyledSpinner = styled(Spinner)<{$animatePosition: boolean}>(({$animatePos
       }
     }
     animation: ${$animatePosition
-      ? '500ms ease-out 500ms 1 normal both running fadeIn, 750ms ease-out 2000ms 1 normal both running slideUp'
-      : '500ms ease-out 500ms 1 normal both running fadeIn'};
+      ? `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn, 750ms ease-out ${TEXT_DELAY}ms 1 normal both running slideUp`
+      : `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn`};
   `
 })
 
@@ -104,25 +110,29 @@ const StyledText = styled(Text)`
     }
   }
   animation:
-    1500ms ease-out 2000ms 1 normal both running fadeIn,
-    750ms ease-out 2000ms 1 normal both running slideDown;
+    1500ms ease-out ${TEXT_DELAY}ms 1 normal both running fadeIn,
+    750ms ease-out ${TEXT_DELAY}ms 1 normal both running slideDown;
 `
 
 /**
  * A generic loading container which displays a spinner and text.
  * The spinner won't initially be visible and fades in after a short delay.
  */
-export function LoadingBlock({fill, hideText, title}: LoadingTestProps) {
+export function LoadingBlock({fill, showText, title}: LoadingTestProps) {
+  return (
+    <StyledCard $fill={fill} as={fill ? Layer : 'div'}>
+      <StyledSpinner $animatePosition={!!showText} muted />
+      {showText && <LoadingText title={title} />}
+    </StyledCard>
+  )
+}
+
+function LoadingText({title}: {title?: string | null}) {
   const {t} = useTranslation()
 
   return (
-    <StyledCard $fill={fill} as={fill ? Layer : 'div'}>
-      <StyledSpinner $animatePosition={!hideText} muted />
-      {!hideText && (
-        <StyledText muted size={1}>
-          {title || t('common.loading')}
-        </StyledText>
-      )}
-    </StyledCard>
+    <StyledText muted size={1}>
+      {title || t('common.loading')}
+    </StyledText>
   )
 }
