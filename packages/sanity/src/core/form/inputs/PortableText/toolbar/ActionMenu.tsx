@@ -7,6 +7,8 @@ import {
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {isKeySegment} from '@sanity/types'
+import {useTranslation} from 'react-i18next'
+import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
@@ -122,7 +124,11 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const menuButtonProps = useMemo(
     () => ({
       button: (
-        <ContextMenuButton disabled={disabled} tooltipProps={{placement: tooltipPlacement}} />
+        <ContextMenuButton
+          data-testid="action-menu-button"
+          disabled={disabled}
+          tooltipProps={{placement: tooltipPlacement}}
+        />
       ),
       popover: MENU_POPOVER_PROPS,
     }),
