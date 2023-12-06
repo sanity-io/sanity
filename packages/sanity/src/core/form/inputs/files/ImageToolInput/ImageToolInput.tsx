@@ -143,7 +143,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                       </Text>
                     </Card>
                   ) : (
-                    <LoadingBlock />
+                    <LoadingBlock showText />
                   )}
                 </LoadStatus>
               )}

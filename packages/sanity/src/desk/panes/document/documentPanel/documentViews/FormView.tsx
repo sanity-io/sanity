@@ -147,7 +147,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   // )
 
   if (!ready) {
-    return <LoadingBlock />
+    return <LoadingBlock showText />
   }
 
   return (
