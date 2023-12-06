@@ -6,7 +6,7 @@ import React from 'react'
 import {MenuItem} from '../menuItem'
 
 const HOTKEYS = ['Ctrl', 'Alt', 'P']
-const AVATAR_INITIALS = 'A.W.'
+const AVATAR_INITIALS = 'AW'
 
 export default function MenuItemStory() {
   const text = useString('Text', 'Text', 'Props') || ''
