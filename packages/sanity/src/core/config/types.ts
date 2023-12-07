@@ -53,11 +53,14 @@ export interface SanityFormConfig {
     CustomMarkers?: FormBuilderCustomMarkersComponent
     Markers?: FormBuilderMarkersComponent
   }
+
   /**
+   * Components for the form.
    * @hidden
    * @beta
    */
   components?: FormComponents
+
   file?: {
     /**
      * @hidden
@@ -352,9 +355,16 @@ export interface PluginOptions {
   document?: DocumentPluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   form?: SanityFormConfig
+
   studio?: {
+    /**
+     * Components for the studio.
+     * @hidden
+     * @beta
+     */
     components?: StudioComponentsPluginOptions
   }
+
   /** @beta @hidden */
   i18n?: LocalePluginOptions
 }
@@ -496,7 +506,7 @@ export interface DocumentLayoutProps {
 }
 
 interface DocumentComponents {
-  layout: ComponentType<Omit<DocumentLayoutProps, 'renderDefault'>>
+  layout: ComponentType<DocumentLayoutProps>
 }
 
 /** @public */
@@ -664,6 +674,7 @@ export interface Source {
    */
   studio?: {
     /**
+     * Components for the studio.
      * @hidden
      * @beta
      */
