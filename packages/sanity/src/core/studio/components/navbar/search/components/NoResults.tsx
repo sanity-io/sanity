@@ -8,7 +8,7 @@ export function NoResults() {
   return (
     <Container width={0}>
       <Stack aria-live="assertive" space={4} paddingX={4} paddingY={5}>
-        <Text align="center" muted weight="medium">
+        <Text align="center" muted size={1} weight="medium">
           {t('search.no-results-title')}
         </Text>
         <Text align="center" muted size={1}>
