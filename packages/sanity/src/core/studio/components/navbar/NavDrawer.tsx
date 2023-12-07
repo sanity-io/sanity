@@ -152,10 +152,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   <Flex align="center">
                     <Flex flex={1} align="center" paddingRight={2}>
                       <Flex flex={1} align="center">
-                        <Box>
-                          <UserAvatar size={1} user="me" />
-                        </Box>
-
+                        <UserAvatar size={0} user="me" />
                         <Box
                           flex={1}
                           marginLeft={2}
@@ -168,17 +165,19 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                       </Flex>
                     </Flex>
 
-                    <Box>
-                      <Button
-                        icon={CloseIcon}
-                        mode="bleed"
-                        onClick={onClose}
-                        tooltipProps={{content: t('user-menu.close-menu')}}
-                      />
-                    </Box>
+                    <Button
+                      icon={CloseIcon}
+                      mode="bleed"
+                      onClick={onClose}
+                      tooltipProps={{content: t('user-menu.close-menu')}}
+                    />
                   </Flex>
 
-                  {workspaces.length > 1 && <WorkspaceMenuButton />}
+                  {workspaces.length > 1 && (
+                    <Flex>
+                      <WorkspaceMenuButton />
+                    </Flex>
+                  )}
                 </Stack>
               </Card>
 
