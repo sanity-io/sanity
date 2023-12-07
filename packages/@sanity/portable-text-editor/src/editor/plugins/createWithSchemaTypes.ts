@@ -6,12 +6,24 @@ import {
   type PortableTextSpan,
   type PortableTextTextBlock,
 } from '@sanity/types'
+import {pick} from 'lodash'
 import {type Element, Transforms} from 'slate'
 
 import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 
 const debug = debugWithName('plugin:withSchemaTypes')
+
+const allowedTextBlockPropertyNames = [
+  '_key',
+  '_type',
+  'children',
+  'level',
+  'listItem',
+  'markDefs',
+  'style',
+]
+
 /**
  * This plugin makes sure that schema types are recognized properly by Slate as blocks, voids, inlines
  *
@@ -24,6 +36,8 @@ export function createWithSchemaTypes({
   keyGenerator: () => string
 }) {
   return function withSchemaTypes(editor: PortableTextSlateEditor): PortableTextSlateEditor {
+    const {apply, normalizeNode} = editor
+
     editor.isTextBlock = (value: unknown): value is PortableTextTextBlock => {
       return isPortableTextTextBlock(value) && value._type === schemaTypes.block.name
     }
@@ -49,8 +63,17 @@ export function createWithSchemaTypes({
       )
     }
 
+    // Make sure split blocks aren't carrying over any arbitrary props from the original block.
+    editor.apply = (operation) => {
+      if (operation.type === 'split_node') {
+        if (operation.properties._type === schemaTypes.block.name) {
+          operation.properties = pick(operation.properties, allowedTextBlockPropertyNames)
+        }
+      }
+      apply(operation)
+    }
+
     // Extend Slate's default normalization to add `_type: 'span'` to texts if they are inserted without
-    const {normalizeNode} = editor
     editor.normalizeNode = (entry) => {
       const [node, path] = entry
       if (node._type === undefined && path.length === 2) {
