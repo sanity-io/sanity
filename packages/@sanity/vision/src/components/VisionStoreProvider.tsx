@@ -13,14 +13,17 @@ export interface VisionStoreProviderProps extends VisionProps {
 }
 
 export function VisionStoreProvider(props: VisionStoreProviderProps) {
-  const {children, client, config, datasets} = props
+  const {children, client: sanityClient, config, datasets} = props
   const localStorage = useMemo(
-    () => getLocalStorage(client.config().projectId || 'default'),
-    [client],
+    () => getLocalStorage(sanityClient.config().projectId || 'default'),
+    [sanityClient],
   )
 
   const [dataset, setDataset] = useState(() =>
-    localStorage.get('dataset', config.defaultDataset || client.config().dataset || datasets[0]),
+    localStorage.get(
+      'dataset',
+      config.defaultDataset || sanityClient.config().dataset || datasets[0],
+    ),
   )
   const [apiVersion, setApiVersion] = useState(() =>
     localStorage.get('apiVersion', prefixApiVersion(`${config.defaultApiVersion}`)),
@@ -48,8 +51,8 @@ export function VisionStoreProvider(props: VisionStoreProviderProps) {
   const [queryInProgress, setQueryInProgress] = useState(false)
   const [listenInProgress, setListenInProgress] = useState(false)
 
-  const _client = useMemo(() => {
-    return client.withConfig({
+  const client = useMemo(() => {
+    return sanityClient.withConfig({
       apiVersion: API_VERSIONS.includes(apiVersion) ? apiVersion : DEFAULT_API_VERSION,
       dataset: datasets.includes(dataset) ? dataset : datasets[0],
       perspective: PERSPECTIVES.includes(perspective) ? perspective : DEFAULT_PERSPECTIVE,
@@ -62,7 +65,7 @@ export function VisionStoreProvider(props: VisionStoreProviderProps) {
   const value = useMemo(
     () => ({
       datasets,
-      client: _client,
+      client,
       localStorage,
 
       // Selected options
@@ -105,8 +108,8 @@ export function VisionStoreProvider(props: VisionStoreProviderProps) {
       setListenInProgress,
     }),
     [
-      _client,
       apiVersion,
+      client,
       customApiVersion,
       dataset,
       datasets,
@@ -116,7 +119,6 @@ export function VisionStoreProvider(props: VisionStoreProviderProps) {
       listenMutations,
       localStorage,
       perspective,
-      query,
       queryInProgress,
       queryResult,
       queryTime,

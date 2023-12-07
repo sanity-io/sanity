@@ -1,23 +1,9 @@
-import {type ChangeEvent, useRef, useCallback, useState, useEffect, useMemo} from 'react'
+import {useRef, useCallback, useState, useEffect, useMemo} from 'react'
 import SplitPane from '@rexxars/react-split-pane'
 import type {ListenEvent, ClientPerspective} from '@sanity/client'
-import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
+import {PlayIcon, StopIcon, ErrorOutlineIcon} from '@sanity/icons'
 import isHotkey from 'is-hotkey'
-import {
-  Flex,
-  Card,
-  Stack,
-  Box,
-  Hotkeys,
-  Select,
-  Text,
-  TextInput,
-  Tooltip,
-  Grid,
-  Button,
-  Inline,
-  useToast,
-} from '@sanity/ui'
+import {Flex, Card, Box, Hotkeys, Text, Tooltip, useToast} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
@@ -38,12 +24,9 @@ import {DelayedSpinner} from './DelayedSpinner'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
 import {ResultView} from './ResultView'
 import {QueryErrorDialog} from './QueryErrorDialog'
-import {PerspectivePopover} from './PerspectivePopover'
 import {
   Root,
-  Header,
   SplitpaneContainer,
-  QueryCopyLink,
   InputBackgroundContainer,
   InputBackgroundContainerLeft,
   InputContainer,
@@ -59,6 +42,7 @@ import {
   TimingsTextContainer,
 } from './VisionGui.styled'
 import {useVisionStore} from './VisionStoreContext'
+import {VisionGuiHeader} from './VisionGuiHeader'
 
 function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   if (!node || !other) {
@@ -114,17 +98,14 @@ export function VisionGui() {
     listenInProgress,
     setListenInProgress,
     error,
-    queryUrl,
     setQueryUrl,
   } = useVisionStore()
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
 
-  const _visionRoot = useRef<HTMLDivElement>(null)
-  const _operationUrlElement = useRef<HTMLInputElement>(null)
-  const _queryEditorContainer = useRef<HTMLDivElement>(null)
-  const _paramsEditorContainer = useRef<HTMLDivElement>(null)
-  const _customApiVersionElement = useRef<HTMLInputElement>(null)
+  const visionRoot = useRef<HTMLDivElement>(null)
+  const queryEditorContainer = useRef<HTMLDivElement>(null)
+  const paramsEditorContainer = useRef<HTMLDivElement>(null)
 
   // Initial root height without header
   const bodyHeight = useMemo(
@@ -137,8 +118,7 @@ export function VisionGui() {
 
   // Selected options
   const [dataset, setDataset] = useVisionDataset()
-  const {apiVersion, setApiVersion, customApiVersion, setCustomApiVersion, isValidApiVersion} =
-    useVisionApiVersion()
+  const {setApiVersion, setCustomApiVersion} = useVisionApiVersion()
   const [perspective, setPerspective] = useVisionPerspective()
 
   // Inputs
@@ -182,13 +162,6 @@ export function VisionGui() {
     _listenSubscription.current = undefined
   }, [])
 
-  const ensureSelectedApiVersion = useCallback(() => {
-    const wantedApiVersion = customApiVersion || apiVersion
-    if (client.config().apiVersion !== wantedApiVersion) {
-      client.config({apiVersion: wantedApiVersion})
-    }
-  }, [client, apiVersion, customApiVersion])
-
   const handleQueryExecution = useCallback(() => {
     if (queryInProgress) {
       cancelQuery()
@@ -215,8 +188,6 @@ export function VisionGui() {
     if (!query.current || _paramsError) {
       return true
     }
-
-    ensureSelectedApiVersion()
 
     const urlQueryOpts: Record<string, string> = {}
     if (perspective !== 'raw') {
@@ -249,7 +220,6 @@ export function VisionGui() {
     localStorage,
     query,
     rawParams,
-    ensureSelectedApiVersion,
     perspective,
     setQueryUrl,
     client,
@@ -258,68 +228,6 @@ export function VisionGui() {
     setQueryInProgress,
     handleQueryResult,
   ])
-
-  const handleChangeDataset = useCallback(
-    (evt: ChangeEvent<HTMLSelectElement>) => {
-      setDataset(evt.target.value, handleQueryExecution)
-    },
-    [setDataset, handleQueryExecution],
-  )
-
-  const handleChangeApiVersion = useCallback(
-    (evt: ChangeEvent<HTMLSelectElement>) => {
-      const {value = ''} = evt.target
-
-      if (value.toLowerCase() === 'other') {
-        setCustomApiVersion('v')
-        _customApiVersionElement.current?.focus()
-        return
-      }
-
-      setApiVersion(value, handleQueryExecution)
-    },
-    [setApiVersion, handleQueryExecution, setCustomApiVersion],
-  )
-
-  const handleChangePerspective = useCallback(
-    (evt: ChangeEvent<HTMLSelectElement>) => {
-      setPerspective(evt.target.value, handleQueryExecution)
-    },
-    [setPerspective, handleQueryExecution],
-  )
-
-  const handleCustomApiVersionChange = useCallback(
-    (evt: ChangeEvent<HTMLInputElement>) => {
-      const {value = ''} = evt.target
-      if (validateApiVersion(value)) {
-        setApiVersion(value)
-      }
-
-      setCustomApiVersion(value || 'v')
-    },
-    [setCustomApiVersion, setApiVersion],
-  )
-
-  const handleCopyUrl = useCallback(() => {
-    const el = _operationUrlElement.current
-    if (!el) {
-      return
-    }
-
-    try {
-      el.select()
-      document.execCommand('copy')
-      toast.push({
-        closable: true,
-        title: 'Copied to clipboard',
-        status: 'info',
-        id: 'vision-copy',
-      })
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Unable to copy to clipboard :(')
-    }
-  }, [toast])
 
   const handleQueryChange = useCallback(
     (value: string) => {
@@ -365,8 +273,6 @@ export function VisionGui() {
       return
     }
 
-    ensureSelectedApiVersion()
-
     const _paramsError = parsedParams instanceof Error ? parsedParams : undefined
     const encodeParams = parsedParams instanceof Error ? {} : parsedParams || {}
 
@@ -399,7 +305,6 @@ export function VisionGui() {
       })
   }, [
     listenInProgress,
-    ensureSelectedApiVersion,
     parsedParams,
     query,
     cancelQuery,
@@ -518,9 +423,9 @@ export function VisionGui() {
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      const isWithinRoot = _visionRoot.current && nodeContains(_visionRoot.current, event.target)
+      const isWithinRoot = visionRoot.current && nodeContains(visionRoot.current, event.target)
       const isWithinParamsEditor =
-        _paramsEditorContainer.current && nodeContains(_paramsEditorContainer.current, event.target)
+        paramsEditorContainer.current && nodeContains(paramsEditorContainer.current, event.target)
 
       if (isRunHotkey(event) && (isWithinRoot || isWithinParamsEditor) && hasValidParams) {
         handleQueryExecution()
@@ -555,9 +460,9 @@ export function VisionGui() {
   useEffect(() => {
     let resizeListener: ResizeObserver | undefined
 
-    if (_visionRoot.current) {
+    if (visionRoot.current) {
       resizeListener = new ResizeObserver(handleResize)
-      resizeListener.observe(_visionRoot.current)
+      resizeListener.observe(visionRoot.current)
     }
 
     return () => {
@@ -566,130 +471,9 @@ export function VisionGui() {
   }, [handleResize])
 
   return (
-    <Root direction="column" height="fill" ref={_visionRoot} sizing="border" overflow="hidden">
-      <Header paddingX={3} paddingY={2}>
-        <Grid columns={[1, 4, 8, 12]}>
-          {/* Dataset selector */}
-          <Box padding={1} column={2}>
-            <Stack>
-              <Card paddingTop={2} paddingBottom={3}>
-                <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
-              </Card>
-              <Select value={dataset} onChange={handleChangeDataset}>
-                {datasets.map((ds) => (
-                  <option key={ds}>{ds}</option>
-                ))}
-              </Select>
-            </Stack>
-          </Box>
+    <Root direction="column" height="fill" ref={visionRoot} sizing="border" overflow="hidden">
+      <VisionGuiHeader handleQueryExecution={handleQueryExecution} />
 
-          {/* API version selector */}
-          <Box padding={1} column={2}>
-            <Stack>
-              <Card paddingTop={2} paddingBottom={3}>
-                <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
-              </Card>
-              <Select
-                value={
-                  customApiVersion === false ? apiVersion : t('settings.other-api-version-label')
-                }
-                onChange={handleChangeApiVersion}
-              >
-                {API_VERSIONS.map((version) => (
-                  <option key={version}>{version}</option>
-                ))}
-                <option key="other" value={t('settings.other-api-version-label')}>
-                  {t('settings.other-api-version-label')}
-                </option>
-              </Select>
-            </Stack>
-          </Box>
-
-          {/* Custom API version input */}
-          {customApiVersion !== false && (
-            <Box padding={1} column={2}>
-              <Stack>
-                <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel textOverflow="ellipsis">
-                    {t('settings.custom-api-version-label')}
-                  </StyledLabel>
-                </Card>
-
-                <TextInput
-                  ref={_customApiVersionElement}
-                  value={customApiVersion}
-                  onChange={handleCustomApiVersionChange}
-                  customValidity={
-                    isValidApiVersion ? undefined : t('settings.error.invalid-api-version')
-                  }
-                  maxLength={11}
-                />
-              </Stack>
-            </Box>
-          )}
-
-          {/* Perspective selector */}
-          <Box padding={1} column={2}>
-            <Stack>
-              <Card paddingBottom={1}>
-                <Inline space={1}>
-                  <Box>
-                    <StyledLabel>{t('settings.perspective-label')}</StyledLabel>
-                  </Box>
-
-                  <Box>
-                    <PerspectivePopover />
-                  </Box>
-                </Inline>
-              </Card>
-
-              <Select value={perspective} onChange={handleChangePerspective}>
-                {PERSPECTIVES.map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-              </Select>
-            </Stack>
-          </Box>
-
-          {/* Query URL (for copying) */}
-          {typeof queryUrl === 'string' ? (
-            <Box padding={1} flex={1} column={customApiVersion === false ? 6 : 4}>
-              <Stack>
-                <Card paddingTop={2} paddingBottom={3}>
-                  <StyledLabel>
-                    {t('query.url')}&nbsp;
-                    <QueryCopyLink onClick={handleCopyUrl}>
-                      [{t('action.copy-url-to-clipboard')}]
-                    </QueryCopyLink>
-                  </StyledLabel>
-                </Card>
-                <Flex flex={1} gap={1}>
-                  <Box flex={1}>
-                    <TextInput readOnly type="url" ref={_operationUrlElement} value={queryUrl} />
-                  </Box>
-                  <Tooltip
-                    content={
-                      <Box padding={2}>
-                        <Text>{t('action.copy-url-to-clipboard')}</Text>
-                      </Box>
-                    }
-                  >
-                    <Button
-                      aria-label={t('action.copy-url-to-clipboard')}
-                      type="button"
-                      mode="ghost"
-                      icon={CopyIcon}
-                      onClick={handleCopyUrl}
-                    />
-                  </Tooltip>
-                </Flex>
-              </Stack>
-            </Box>
-          ) : (
-            <Box flex={1} />
-          )}
-        </Grid>
-      </Header>
       <SplitpaneContainer flex="auto">
         {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
         <SplitPane
@@ -722,7 +506,7 @@ export function VisionGui() {
               maxSize={paneSizeOptions.maxSize}
               primary="first"
             >
-              <InputContainer display="flex" ref={_queryEditorContainer}>
+              <InputContainer display="flex" ref={queryEditorContainer}>
                 <Box flex={1}>
                   <InputBackgroundContainerLeft>
                     <Flex>
@@ -732,7 +516,7 @@ export function VisionGui() {
                   <VisionCodeMirror value={query.current} onChange={handleQueryChange} />
                 </Box>
               </InputContainer>
-              <InputContainer display="flex" ref={_paramsEditorContainer}>
+              <InputContainer display="flex" ref={paramsEditorContainer}>
                 <Card flex={1} tone={hasValidParams ? 'default' : 'critical'}>
                   <InputBackgroundContainerLeft>
                     <Flex>
