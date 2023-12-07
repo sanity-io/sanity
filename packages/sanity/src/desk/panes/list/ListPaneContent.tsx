@@ -97,7 +97,6 @@ export function ListPaneContent(props: ListPaneContentProps) {
           activeItemDataAttr="data-hovered"
           ariaLabel={`List of ${title}`}
           canReceiveFocus
-          focusRingOffset={-3}
           getItemDisabled={getItemDisabled}
           itemHeight={51}
           items={items}
