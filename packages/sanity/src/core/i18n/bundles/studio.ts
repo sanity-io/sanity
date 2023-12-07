@@ -438,6 +438,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * eg. will prompt the user to select a type once triggered
    */
   'inputs.array.action.add-item-select-type': 'Add item...',
+  /** Array drag handle button tooltip */
+  'inputs.array.action.drag.tooltip': 'Drag to re-order',
   /** Label for duplicating an array item  */
   'inputs.array.action.duplicate': 'Duplicate',
   /** Label for editing the item of a specific type, eg "Edit Person" */
