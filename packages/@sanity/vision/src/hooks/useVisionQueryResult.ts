@@ -27,7 +27,6 @@ interface UseVisionQueryResult {
 export function useVisionQueryResult(): UseVisionQueryResult {
   const {
     query,
-    setQuery,
     setListenInProgress,
     setQueryTime,
     setE2ETime,
@@ -42,7 +41,7 @@ export function useVisionQueryResult(): UseVisionQueryResult {
   const startQueryExecution = useCallback(
     ({type, shouldExecute, error}: StartQueryExecutionOptions) => {
       if (type === 'query') {
-        setQueryInProgress(!error && Boolean(query))
+        setQueryInProgress(!error && Boolean(query.current))
         setListenInProgress(false)
       } else {
         setQueryInProgress(false)
@@ -82,18 +81,16 @@ export function useVisionQueryResult(): UseVisionQueryResult {
     (e: Error) => {
       setError(e)
       setQueryInProgress(false)
-      setQuery(query)
     },
-    [query, setError, setQuery, setQueryInProgress],
+    [setError, setQueryInProgress],
   )
 
   const handleListenError = useCallback(
     (e: Error) => {
       setError(e)
       setListenInProgress(false)
-      setQuery(query)
     },
-    [query, setError, setListenInProgress, setQuery],
+    [setError, setListenInProgress],
   )
 
   return {

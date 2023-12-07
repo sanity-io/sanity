@@ -1,4 +1,4 @@
-import {useMemo, type ReactNode, useState} from 'react'
+import {useMemo, type ReactNode, useState, useRef} from 'react'
 import type {ClientPerspective, MutationEvent} from '@sanity/client'
 import {getLocalStorage} from '../util/localStorage'
 import type {VisionProps} from '../types'
@@ -32,7 +32,7 @@ export function VisionStoreProvider(props: VisionStoreProviderProps) {
     API_VERSIONS.includes(apiVersion) ? false : apiVersion,
   )
   const [queryUrl, setQueryUrl] = useState<string | undefined>()
-  const [query, setQuery] = useState<string>(() => localStorage.get('query', ''))
+  const query = useRef(localStorage.get('query', ''))
   const [rawParams, setRawParams] = useState<string>(() => localStorage.get('params', '{\n  \n}'))
 
   // Query/listen result
@@ -81,7 +81,6 @@ export function VisionStoreProvider(props: VisionStoreProviderProps) {
 
       // Inputs
       query,
-      setQuery,
       rawParams,
       setRawParams,
 

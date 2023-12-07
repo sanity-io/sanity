@@ -1,5 +1,11 @@
 import type {ClientPerspective, MutationEvent, SanityClient} from '@sanity/client'
-import {type Dispatch, type SetStateAction, createContext, useContext} from 'react'
+import {
+  type Dispatch,
+  type SetStateAction,
+  type MutableRefObject,
+  createContext,
+  useContext,
+} from 'react'
 import type {LocalStorageish} from '../util/localStorage'
 
 interface VisionStore {
@@ -14,8 +20,7 @@ interface VisionStore {
   setCustomApiVersion: Dispatch<SetStateAction<string | false>>
   queryUrl?: string
   setQueryUrl: Dispatch<SetStateAction<string | undefined>>
-  query: string
-  setQuery: Dispatch<SetStateAction<string>>
+  query: MutableRefObject<string>
   rawParams: string
   setRawParams: Dispatch<SetStateAction<string>>
   params?: Record<string, unknown> | Error

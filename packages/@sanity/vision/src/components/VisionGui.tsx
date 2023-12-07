@@ -1,5 +1,3 @@
-/* eslint-disable max-statements */
-/* eslint-disable complexity */
 import {type ChangeEvent, useRef, useCallback, useState, useEffect, useMemo} from 'react'
 import SplitPane from '@rexxars/react-split-pane'
 import type {ListenEvent, ClientPerspective} from '@sanity/client'
@@ -109,7 +107,6 @@ export function VisionGui() {
     client,
     localStorage,
     query,
-    setQuery,
     queryTime,
     e2eTime,
     queryInProgress,
@@ -211,11 +208,11 @@ export function VisionGui() {
     })
 
     localStorage.merge({
-      query,
+      query: query.current,
       params: rawParams,
     })
 
-    if (!query || _paramsError) {
+    if (!query.current || _paramsError) {
       return true
     }
 
@@ -228,14 +225,14 @@ export function VisionGui() {
 
     setQueryUrl(
       client.getUrl(
-        client.getDataUrl('query', encodeQueryString(query, parsedParams, urlQueryOpts)),
+        client.getDataUrl('query', encodeQueryString(query.current, parsedParams, urlQueryOpts)),
       ),
     )
 
     const queryStart = Date.now()
 
     _querySubscription.current = client.observable
-      .fetch(query, parsedParams, {filterResponse: false, tag: 'vision'})
+      .fetch(query.current, parsedParams, {filterResponse: false, tag: 'vision'})
       .subscribe({
         next: (res) => {
           handleQueryResult(res, queryStart)
@@ -326,9 +323,9 @@ export function VisionGui() {
 
   const handleQueryChange = useCallback(
     (value: string) => {
-      setQuery(value)
+      query.current = value
     },
-    [setQuery],
+    [query],
   )
 
   const handleListenerEvent = useCallback(
@@ -373,11 +370,11 @@ export function VisionGui() {
     const _paramsError = parsedParams instanceof Error ? parsedParams : undefined
     const encodeParams = parsedParams instanceof Error ? {} : parsedParams || {}
 
-    const shouldExecute = !_paramsError && query.trim().length > 0
+    const shouldExecute = !_paramsError && query.current.trim().length > 0
 
     cancelQuery()
 
-    setQueryUrl(client.getDataUrl('listen', encodeQueryString(query, encodeParams, {})))
+    setQueryUrl(client.getDataUrl('listen', encodeQueryString(query.current, encodeParams, {})))
 
     startQueryExecution({
       type: 'listen',
@@ -386,7 +383,7 @@ export function VisionGui() {
     })
 
     localStorage.merge({
-      query,
+      query: query.current,
       params: rawParams,
     })
 
@@ -395,7 +392,7 @@ export function VisionGui() {
     }
 
     _listenSubscription.current = client
-      .listen(query, parsedParams, {events: ['mutation', 'welcome']})
+      .listen(query.current, parsedParams, {events: ['mutation', 'welcome']})
       .subscribe({
         next: handleListenerEvent,
         error: handleListenError,
@@ -458,7 +455,7 @@ export function VisionGui() {
 
       evt.preventDefault()
 
-      setQuery(parts.query)
+      query.current = parts.query
       setParsedParams(parts.params)
 
       if (datasets.includes(usedDataset)) {
@@ -503,7 +500,7 @@ export function VisionGui() {
       })
     },
     [
-      setQuery,
+      query,
       setParsedParams,
       datasets,
       dataset,
@@ -732,7 +729,7 @@ export function VisionGui() {
                       <StyledLabel muted>{t('query.label')}</StyledLabel>
                     </Flex>
                   </InputBackgroundContainerLeft>
-                  <VisionCodeMirror value={query} onChange={handleQueryChange} />
+                  <VisionCodeMirror value={query.current} onChange={handleQueryChange} />
                 </Box>
               </InputContainer>
               <InputContainer display="flex" ref={_paramsEditorContainer}>
