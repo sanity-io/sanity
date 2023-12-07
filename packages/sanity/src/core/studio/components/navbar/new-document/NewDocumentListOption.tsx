@@ -3,7 +3,7 @@ import {Tooltip, Box, Card, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
-import {useI18nTitle} from '../../../../i18n'
+import {useI18nText} from '../../../../i18n'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {useIntentLink} from 'sanity/router'
 
@@ -43,7 +43,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
     [onIntentClick, onClick, option],
   )
 
-  const title = useI18nTitle(option)
+  const {title} = useI18nText(option)
 
   return (
     <Tooltip

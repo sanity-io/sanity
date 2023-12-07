@@ -10,7 +10,7 @@ import {
 } from './InitialValueTemplateItem'
 import {validateId} from './util/validateId'
 import {getStructureNodeId} from './util/getStructureNodeId'
-import {PreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
+import {PreviewLayoutKey, InitialValueTemplateItem, I18nTextRecord} from 'sanity'
 
 function noChildResolver() {
   return undefined
@@ -148,7 +148,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
    * @param i18n - the key and namespaced used to populate the localized title.
    * @returns component builder based on i18n key and ns provided
    */
-  i18n(i18n: {key: string; ns: string}): ConcreteImpl {
+  i18n(i18n: I18nTextRecord<'title'>): ConcreteImpl {
     return this.clone({i18n})
   }
 

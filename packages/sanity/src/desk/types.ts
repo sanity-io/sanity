@@ -16,6 +16,7 @@ import {
   DocumentStore,
   DocumentFieldActionNode,
   LocaleSource,
+  I18nTextRecord,
 } from 'sanity'
 
 /** @internal */
@@ -263,7 +264,7 @@ export interface PaneMenuItem extends DeskToolMenuItem {
 export interface PaneMenuItemGroup {
   id: string
   title?: string
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
 }
 
 /** @internal */
@@ -271,7 +272,7 @@ export interface BaseResolvedPaneNode<T extends PaneNode['type']> {
   id: string
   type: T
   title: string
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
   menuItems?: PaneMenuItem[]
   menuItemGroups?: PaneMenuItemGroup[]
   canHandleIntent?: (
@@ -326,7 +327,7 @@ export interface PaneListItem<TParams = unknown> {
   schemaType?: SchemaType
 
   title: string
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
   icon?: React.ComponentType | false
   displayOptions?: {showIcon?: boolean}
   action?: (t: TParams) => unknown

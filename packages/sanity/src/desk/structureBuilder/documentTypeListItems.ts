@@ -127,7 +127,7 @@ export function getDocumentTypeList(
         // Display as <Z>
         new MenuItemBuilder(context)
           .group('layout')
-          .i18n({key: 'menu-items.layout.compact-view', ns: structureLocaleNamespace})
+          .i18n({title: {key: 'menu-items.layout.compact-view', ns: structureLocaleNamespace}})
           .title('Compact view') // fallback title
           .icon(StackCompactIcon)
           .action('setLayout')
@@ -135,7 +135,7 @@ export function getDocumentTypeList(
 
         new MenuItemBuilder(context)
           .group('layout')
-          .i18n({key: 'menu-items.layout.detailed-view', ns: structureLocaleNamespace})
+          .i18n({title: {key: 'menu-items.layout.detailed-view', ns: structureLocaleNamespace}})
           .title('Detailed view') // fallback title
           .icon(StackIcon)
           .action('setLayout')

@@ -5,7 +5,7 @@ import {BaseDeskToolPaneProps} from '../types'
 import {_DEBUG} from '../../constants'
 import {ListPaneHeader} from './ListPaneHeader'
 import {ListPaneContent} from './ListPaneContent'
-import {useI18nTitle} from 'sanity'
+import {useI18nText} from 'sanity'
 
 type ListPaneProps = BaseDeskToolPaneProps<'list'>
 
@@ -17,7 +17,7 @@ export function ListPane(props: ListPaneProps) {
 
   const {defaultLayout, displayOptions, items, menuItems, menuItemGroups} = pane
   const showIcons = displayOptions?.showIcons !== false
-  const title = useI18nTitle(pane)
+  const {title} = useI18nText(pane)
 
   return (
     <Pane

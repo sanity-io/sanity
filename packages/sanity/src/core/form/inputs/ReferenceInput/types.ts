@@ -3,6 +3,7 @@ import React, {ReactNode} from 'react'
 import {Path, PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
 import {ObjectInputProps} from '../../types'
 import {DocumentAvailability} from '../../../preview'
+import {I18nTextRecord} from '../../../i18n'
 
 export interface ReferenceInfo {
   id: string
@@ -28,7 +29,7 @@ export interface EditReferenceEvent {
 export interface CreateReferenceOption {
   id: string
   title: string
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
   icon?: React.ReactNode | React.ComponentType
   type: string
   template: ReferenceTemplate

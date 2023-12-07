@@ -25,7 +25,7 @@ import {useDocumentList} from './useDocumentList'
 import {
   GeneralPreviewLayoutKey,
   SourceProvider,
-  useI18nTitle,
+  useI18nText,
   useSchema,
   useSource,
   useTranslation,
@@ -120,7 +120,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   )
 
   const {t} = useTranslation(structureLocaleNamespace)
-  const title = useI18nTitle(pane)
+  const {title} = useI18nText(pane)
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')

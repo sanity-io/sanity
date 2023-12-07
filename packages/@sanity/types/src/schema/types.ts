@@ -99,7 +99,7 @@ export type SortOrdering = {
    * namespace is recommended.
    */
   title: string
-  i18n?: {key: string; ns: string}
+  i18n?: {title?: {key: string; ns: string}}
   name: string
   by: SortOrderingItem[]
 }

@@ -6,6 +6,7 @@ import {DEFAULT_ORDERING_OPTIONS} from './Sort'
 import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {StructureContext} from './types'
+import {I18nTextRecord} from 'sanity'
 
 /** @internal */
 export function maybeSerializeMenuItem(
@@ -38,7 +39,7 @@ export interface MenuItem {
    * The i18n key and namespace used to populate the localized title. This is
    * the recommend way to set the title if you are localizing your studio.
    */
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
   /**
    * Menu Item title. Note that the `i18n` configuration will take
    * precedence and this title is left here as a fallback if no i18n key is
@@ -141,7 +142,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * @param i18n - object with i18n key and related namespace
    * @returns menu item builder based on i18n config provided. See {@link MenuItemBuilder}
    */
-  i18n(i18n: {key: string; ns: string}): MenuItemBuilder {
+  i18n(i18n: I18nTextRecord<'title'>): MenuItemBuilder {
     return this.clone({i18n})
   }
 
@@ -149,7 +150,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * Get the i18n key and namespace used to populate the localized title.
    * @returns the i18n key and namespace used to populate the localized title.
    */
-  getI18n(): {key: string; ns: string} | undefined {
+  getI18n(): I18nTextRecord<'title'> | undefined {
     return this.spec.i18n
   }
 

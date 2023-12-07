@@ -10,6 +10,7 @@ import type {DocumentTypeListBuilder} from './DocumentTypeList'
 import type {InitialValueTemplateItemBuilder} from './InitialValueTemplateItem'
 import type {DocumentBuilder} from './Document'
 import type {View} from './types'
+import {I18nTextRecord} from 'sanity'
 
 /**
  * Interface for the structure builder node.
@@ -21,7 +22,7 @@ export interface StructureNode {
   id: string
   /** Node ID */
   title?: string
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
   /** Node type */
   type?: string
 }

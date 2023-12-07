@@ -1,7 +1,7 @@
 import React, {ComponentProps} from 'react'
 import {AddIcon} from '@sanity/icons'
 import {Box, Button, Menu, MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '@sanity/ui'
-import {useGetI18nTitle, useTranslation} from '../../../i18n'
+import {useGetI18nText, useTranslation} from '../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../components'
 import {useCurrentUser} from '../../../store'
 import type {CreateReferenceOption} from './types'
@@ -31,7 +31,7 @@ export function CreateButton(props: Props) {
   const currentUser = useCurrentUser()
 
   const {t} = useTranslation()
-  const getI18nTitle = useGetI18nTitle(createOptions)
+  const getI18nText = useGetI18nText(createOptions)
 
   const canCreateAny = createOptions.some((option) => option.permission.granted)
   if (!canCreateAny) {
@@ -93,7 +93,7 @@ export function CreateButton(props: Props) {
                 <MenuItem
                   disabled={!createOption.permission.granted}
                   icon={createOption.icon}
-                  text={getI18nTitle(createOption)}
+                  text={getI18nText(createOption).title}
                   // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => onCreate(createOption)}
                 />

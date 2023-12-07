@@ -1,6 +1,7 @@
 import {Path, SchemaType} from '@sanity/types'
 import {ComponentType, ReactNode} from 'react'
 import {ComposableOption, ConfigContext} from '../../types'
+import {I18nTextRecord} from '../../../i18n'
 
 /**
  * @hidden
@@ -51,7 +52,7 @@ export interface DocumentFieldActionItem {
   selected?: boolean
   status?: DocumentFieldActionStatus
   title: string
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
   tone?: DocumentFieldActionTone
 }
 
@@ -75,7 +76,7 @@ export interface DocumentFieldActionGroup {
   renderAsButton?: boolean
   status?: DocumentFieldActionStatus
   title: string
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
   tone?: DocumentFieldActionTone
 }
 

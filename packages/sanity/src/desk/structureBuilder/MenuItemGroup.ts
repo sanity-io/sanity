@@ -1,6 +1,7 @@
 import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {StructureContext} from './types'
+import {I18nTextRecord} from 'sanity'
 
 /** @internal */
 export function maybeSerializeMenuItemGroup(
@@ -20,7 +21,7 @@ export interface MenuItemGroup {
   id: string
   /** Menu group title */
   title: string
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
 }
 
 /**
@@ -34,7 +35,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
   /** Menu item group title */
   protected _title: string
 
-  protected _i18n?: {key: string; ns: string}
+  protected _i18n?: I18nTextRecord<'title'>
 
   constructor(
     /**
@@ -87,7 +88,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
    * @param i18n - object with i18n key and related namespace
    * @returns menu item group builder based on i18n info provided. See {@link MenuItemGroupBuilder}
    */
-  i18n(i18n: {key: string; ns: string}): MenuItemGroupBuilder {
+  i18n(i18n: I18nTextRecord<'title'>): MenuItemGroupBuilder {
     return new MenuItemGroupBuilder(this._context, {i18n, id: this._id, title: this._title})
   }
 
@@ -95,7 +96,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
    * Get the i18n key and namespace used to populate the localized title.
    * @returns the i18n key and namespace used to populate the localized title.
    */
-  getI18n(): {key: string; ns: string} | undefined {
+  getI18n(): I18nTextRecord<'title'> | undefined {
     return this._i18n
   }
 

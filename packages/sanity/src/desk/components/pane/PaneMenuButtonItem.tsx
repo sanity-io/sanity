@@ -3,7 +3,7 @@ import {Box, Label, MenuDivider, MenuGroup, MenuItem, PopoverProps, Text} from '
 import React, {useCallback, MouseEvent} from 'react'
 import {Intent} from '../../structureBuilder'
 import {_PaneMenuItem, _PaneMenuNode} from './types'
-import {TooltipOfDisabled, useGetI18nTitle, useI18nTitle, useTranslation} from 'sanity'
+import {TooltipOfDisabled, useGetI18nText, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
 const MENU_GROUP_POPOVER_PROPS: PopoverProps = {
@@ -18,13 +18,13 @@ export function PaneMenuButtonItem(props: {
   node: _PaneMenuNode
 }) {
   const {disabled, isAfterGroup, node} = props
-  const getI18nTitle = useGetI18nTitle('i18n' in node ? node : undefined)
+  const getI18nText = useGetI18nText('i18n' in node ? node : undefined)
 
   if (node.type === 'divider') {
     return <MenuDivider />
   }
 
-  const title = getI18nTitle(node)
+  const {title} = getI18nText(node)
 
   if (node.type === 'group') {
     if (node.children.length === 0) {
@@ -99,7 +99,7 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
   const tooltipContent = typeof node.disabled === 'object' && (
     <Text size={1}>{node.disabled.reason}</Text>
   )
-  const title = useI18nTitle(node)
+  const {title} = useI18nText(node)
 
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
@@ -137,7 +137,7 @@ function PaneContextIntentMenuItem(props: {
     [intentLink, node],
   )
 
-  const title = useI18nTitle(node)
+  const {title} = useI18nText(node)
 
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">

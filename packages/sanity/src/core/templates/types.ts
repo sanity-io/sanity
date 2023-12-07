@@ -1,5 +1,6 @@
 import type {InitialValueProperty, SchemaType} from '@sanity/types'
 import type {ElementType, ReactElement} from 'react'
+import {I18nTextRecord} from '../i18n'
 
 /**
  * An initial value template is a template that can be used to create a new documents.
@@ -29,7 +30,7 @@ export interface Template<Params = any, Value = any> {
    */
   title: string
 
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
 
   /**
    * Schema type name the template belongs to. For the automatically generated templates,
@@ -166,9 +167,9 @@ export interface TemplateItem {
    * Title for the item.
    * Defaults to the title of the associated template.
    */
-  title: string
+  title?: string
 
-  i18n?: {key: string; ns: string}
+  i18n?: I18nTextRecord<'title'>
 
   /**
    * Parameters for the template - an object of any JSON-serializable values

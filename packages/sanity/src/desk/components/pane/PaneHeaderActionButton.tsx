@@ -4,7 +4,7 @@ import {UnknownIcon} from '@sanity/icons'
 import {Intent} from '../../structureBuilder'
 import {_PaneMenuGroup, _PaneMenuItem} from './types'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
-import {TooltipOfDisabled, StatusButton, useI18nTitle} from 'sanity'
+import {TooltipOfDisabled, StatusButton, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
 export interface PaneHeaderActionButtonProps {
@@ -35,7 +35,7 @@ export interface PaneHeaderMenuItemActionButtonProps {
 
 export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
   const {node, padding} = props
-  const title = useI18nTitle(node)
+  const {title} = useI18nText(node)
 
   if (node.intent) {
     return <PaneHeaderActionIntentButton {...props} intent={node.intent} />
@@ -106,7 +106,7 @@ export interface PaneHeaderMenuGroupActionButtonProps {
 
 function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonProps) {
   const {node, padding} = props
-  const title = useI18nTitle(node)
+  const {title} = useI18nText(node)
 
   return (
     <MenuButton
