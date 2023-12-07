@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {Box, Flex} from '@sanity/ui'
-import {Button} from '../../../../ui'
+import {SpacerButton} from '../../../../ui/spacerButton'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentSparkline} from './sparkline/DocumentSparkline'
@@ -14,14 +14,6 @@ export interface DocumentStatusBarProps {
 const DocumentActionsFlex = styled(Flex)`
   min-width: 10em;
   max-width: 16em;
-`
-
-// This Hidden button prevents this status bar from shifting in height as both
-// <HistoryStatusBarActions /> and <DocumentStatusBarActions /> can return null.
-// @todo: find a more elegant solve to this layout shift problem
-const SpacerButton = styled(Button)`
-  pointer-events: none;
-  visibility: hidden;
 `
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
@@ -38,13 +30,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           <Box flex={[1, 2]}>{badges && <DocumentSparkline />}</Box>
 
           <DocumentActionsFlex flex={1} justify="flex-end" marginLeft={[1, 3]} ref={actionsBoxRef}>
-            <SpacerButton
-              aria-hidden
-              disabled
-              size="large"
-              // eslint-disable-next-line no-attribute-string-literals/no-attribute-string-literals
-              text="-"
-            />
+            <SpacerButton size="large" />
             {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
           </DocumentActionsFlex>
         </Flex>
