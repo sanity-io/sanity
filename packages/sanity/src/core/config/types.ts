@@ -498,7 +498,7 @@ export type PartialContext<TContext extends ConfigContext> = Pick<
   Exclude<keyof TContext, keyof ConfigContext>
 >
 
-/** @beta */
+/** @hidden @beta */
 export interface DocumentLayoutProps {
   /**
    * The ID of the document. This is a read-only property and changing it will have no effect.
