@@ -3810,16 +3810,16 @@
     segmented-property "^3.0.3"
     vite "^4.4.9"
 
-"@sanity/ui@2.0.0-alpha.37":
-  version "2.0.0-alpha.37"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-alpha.37.tgz#ee6b4e46f0d2a17fead6e9fbfb3e126559b3952f"
-  integrity sha512-3hXIZUJfE6/+PvnG7f49fKBN+qkCSpNL20W8dwlwalv6i7Go/YVIsyGNvt1h6DWNNMYVmKiBA8ilWpzvJuHoyg==
+"@sanity/ui@2.0.0-beta.1":
+  version "2.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-beta.1.tgz#a41d11bdd59ea7c252b29211638de15ebb42382a"
+  integrity sha512-WKNzZFNaId6fuoQhcS4eD0cxgrbwCrGvgWm6kzy9YM3FqNloYO9kPIHt3gfE8yvIUzcn/a/jYSXvQEmekwKTZQ==
   dependencies:
     "@floating-ui/react-dom" "^2.0.4"
     "@sanity/color" "3.0.0-beta.8"
-    "@sanity/icons" "^2.4.1"
+    "@sanity/icons" "^2.7.0"
     csstype "^3.1.2"
-    framer-motion "^10.16.2"
+    framer-motion "^10.16.5"
     react-refractor "^2.1.7"
 
 "@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
@@ -8386,6 +8386,15 @@ framer-motion@^10.16.14:
   version "10.16.14"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.14.tgz#77099f7e8d949dc68f9aea1497eda06f2454e6b2"
   integrity sha512-poovsXtR7doXRfjqVjUai82Zl2z5yMUFKtYWHnQK+xsDVPhHVUJEU+Kr2kqEnUV4gry+LcRdrDzcMI7OdJlDMg==
+  dependencies:
+    tslib "^2.4.0"
+  optionalDependencies:
+    "@emotion/is-prop-valid" "^0.8.2"
+
+framer-motion@^10.16.5:
+  version "10.16.15"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.15.tgz#efddf7ffdfbe81f21849e9466da155d96b9cd89e"
+  integrity sha512-BapW1EKc/Sgph1rKEwL9bFt2B79z7bu7jN4Up1jGUaTE78WBsVO+6eCmoUZsQH0hHtRUDnnTqjjBbM7dk9Kp8A==
   dependencies:
     tslib "^2.4.0"
   optionalDependencies:
