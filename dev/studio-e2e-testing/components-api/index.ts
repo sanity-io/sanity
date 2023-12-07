@@ -5,9 +5,16 @@ import {StudioLogo} from './StudioLogo'
 import {StudioToolMenu} from './StudioToolMenu'
 import {FormInput} from './FormInput'
 import {FormField} from './FormField'
+import {DocumentLayout} from './DocumentLayout'
 
 export const customComponents = definePlugin({
   name: 'custom-components',
+
+  document: {
+    components: {
+      layout: DocumentLayout,
+    },
+  },
 
   form: {
     components: {
