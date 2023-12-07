@@ -106,7 +106,9 @@ function UnknownField({
         {!readOnly && (
           <Button
             icon={TrashIcon}
+            mode="ghost"
             onClick={handleUnsetClick}
+            size="large"
             tone="critical"
             text={t('inputs.object.unknown-fields.remove-field-button.text')}
           />
