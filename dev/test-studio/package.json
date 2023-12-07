@@ -30,7 +30,7 @@
     "@sanity/portable-text-editor": "3.21.0",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/types": "3.21.0",
-    "@sanity/ui": "2.0.0-alpha.34",
+    "@sanity/ui": "2.0.0-alpha.37",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "3.21.0",
     "@sanity/uuid": "^3.0.1",
