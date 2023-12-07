@@ -39,6 +39,12 @@ const FULL_DATE_FORMAT: Intl.DateTimeFormatOptions = {
 
 /** @internal */
 export interface RelativeTimeOptions {
+  /**
+   * Use `narrow` relative time styles and unit formatting. e.g. `3d ago`
+   *
+   * Note that this doesn't impact _numeric styling_. Returned values will always
+   * return idiomatic phrasing like `yesterday` rather than `1d ago`, where possible.
+   **/
   minimal?: boolean
   useTemporalPhrase?: boolean
   relativeTo?: Date
@@ -89,12 +95,16 @@ function useFormatRelativeTime(date: Date | string, opts: RelativeTimeOptions = 
       const isNextOrPrevDay = unit === 'day' && Math.abs(count) === 1
       if (useTemporalPhrase || isNextOrPrevDay) {
         return intlCache
-          .relativeTimeFormat(currentLocale, {style: minimal ? 'short' : 'long', numeric: 'auto'})
+          .relativeTimeFormat(currentLocale, {style: minimal ? 'narrow' : 'long', numeric: 'auto'})
           .format(count, unit)
       }
 
       return intlCache
-        .numberFormat(currentLocale, {style: 'unit', unit, unitDisplay: minimal ? 'short' : 'long'})
+        .numberFormat(currentLocale, {
+          style: 'unit',
+          unit,
+          unitDisplay: minimal ? 'narrow' : 'long',
+        })
         .format(Math.abs(count))
     },
     [currentLocale, useTemporalPhrase, minimal],
