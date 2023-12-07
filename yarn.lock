@@ -3596,7 +3596,12 @@
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-3.0.0-beta.7.tgz#396f4cf44d6bbb1af136e344e499640fe7ca9880"
   integrity sha512-cLC0qcFWCe5ClQZ+iGorz2iKMIzAE728L4ZRgZuRKp+Hzsm4/Vl6qMwV2Xa0RipjKuSysSaLUyx2b1oAOG33SA==
 
-"@sanity/color@^2.1.20", "@sanity/color@^2.2.5":
+"@sanity/color@3.0.0-beta.8":
+  version "3.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-3.0.0-beta.8.tgz#33ee87b7cb59e308c5b5fe2ff4bb074223529acd"
+  integrity sha512-jsbef6oey7PlCHmU0/0MABtumcF8eqvxCtMxzkqBNobbSTHqGN+DpZjYX5wBCWF8SvAvSzdf/6tQiX3BSd8Q1Q==
+
+"@sanity/color@^2.2.5":
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.5.tgz#6b28578573859495ed1ffd5491322cb8e90b3e07"
   integrity sha512-tTi22KoKuER3sldXYl4c1Dq2zU7tMLDkljFiaUKVkBbu4PBvRGCFw75kXZnD2b4Bsp6vin+7sI+AKdCKRhfRuw==
