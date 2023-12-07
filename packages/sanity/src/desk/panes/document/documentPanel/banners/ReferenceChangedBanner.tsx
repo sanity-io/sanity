@@ -1,31 +1,16 @@
-import {Box, Card, Container, Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {WarningOutlineIcon, SyncIcon, CloseIcon} from '@sanity/icons'
 import React, {memo, useCallback, useMemo} from 'react'
-import styled from 'styled-components'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {KeyedSegment, Reference} from '@sanity/types'
 import {debounceTime, map} from 'rxjs/operators'
 import {concat, Observable, of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
-import {RouterPaneGroup} from '../../../types'
-import {usePaneRouter} from '../../../components'
-import {Button} from '../../../../ui'
-import {structureLocaleNamespace} from '../../../i18n'
+import {RouterPaneGroup} from '../../../../types'
+import {usePaneRouter} from '../../../../components'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {Banner} from './Banner'
 import {DocumentAvailability, useDocumentPreviewStore, getPublishedId, useTranslation} from 'sanity'
-
-const Root = styled(Card)`
-  position: relative;
-  z-index: 50;
-`
-
-const TextOneLine = styled(Text)`
-  & > * {
-    overflow: hidden;
-    overflow: clip;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-`
 
 interface ParentReferenceInfo {
   loading: boolean
@@ -141,55 +126,31 @@ export const ReferenceChangedBanner = memo(() => {
   if (shouldHide) return null
 
   return (
-    <Root borderBottom data-testid="reference-changed-banner" tone="caution">
-      <Container paddingX={4} paddingY={2} sizing="border" width={1}>
-        <Flex align="center">
-          <Text size={1}>
-            <WarningOutlineIcon />
-          </Text>
-
-          {referenceInfo.result?.refValue ? (
-            <>
-              <Box flex={1} marginLeft={3}>
-                <TextOneLine
-                  title={t('banners.reference-changed-banner.reason-changed.text')}
-                  size={1}
-                >
-                  {t('banners.reference-changed-banner.reason-changed.text')}
-                </TextOneLine>
-              </Box>
-              <Box marginLeft={3}>
-                <Button
-                  onClick={handleReloadReference}
-                  icon={SyncIcon}
-                  mode="ghost"
-                  text={t('banners.reference-changed-banner.reason-changed.reload-button.text')}
-                />
-              </Box>
-            </>
-          ) : (
-            <>
-              <Box flex={1} marginLeft={3}>
-                <TextOneLine
-                  title={t('banners.reference-changed-banner.reason-removed.text')}
-                  size={1}
-                >
-                  {t('banners.reference-changed-banner.reason-removed.text')}
-                </TextOneLine>
-              </Box>
-              <Box marginLeft={3}>
-                <Button
-                  as={BackLink}
-                  icon={CloseIcon}
-                  mode="ghost"
-                  text={t('banners.reference-changed-banner.reason-removed.close-button.text')}
-                />
-              </Box>
-            </>
-          )}
-        </Flex>
-      </Container>
-    </Root>
+    <Banner
+      action={
+        referenceInfo.result?.refValue
+          ? {
+              onClick: handleReloadReference,
+              icon: SyncIcon,
+              text: t('banners.reference-changed-banner.reason-changed.reload-button.text'),
+            }
+          : {
+              as: BackLink,
+              icon: CloseIcon,
+              text: t('banners.reference-changed-banner.reason-removed.close-button.text'),
+            }
+      }
+      data-testid="reference-changed-banner"
+      content={
+        <Text size={1} weight="medium">
+          {referenceInfo.result?.refValue
+            ? t('banners.reference-changed-banner.reason-changed.text')
+            : t('banners.reference-changed-banner.reason-removed.text')}
+        </Text>
+      }
+      icon={WarningOutlineIcon}
+      tone="caution"
+    />
   )
 })
 
