@@ -22,9 +22,9 @@ import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {usePreviewUrl} from '../usePreviewUrl'
 import {getMenuItems} from '../menuItems'
-import {FormLayoutError} from './FormLayoutError'
+import {DocumentLayoutError} from './DocumentLayoutError'
 import {
-  FormLayoutProps,
+  DocumentLayoutProps,
   useZIndex,
   ChangeConnectorRoot,
   DocumentInspectorMenuItem,
@@ -51,7 +51,7 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
   min-width: 0;
 `
 
-export function FormLayout(props: Omit<FormLayoutProps, 'renderDefault'>) {
+export function DocumentLayout(props: Omit<DocumentLayoutProps, 'renderDefault'>) {
   const {documentType, documentId} = props
   const {
     changesOpen,
@@ -141,7 +141,7 @@ export function FormLayout(props: Omit<FormLayoutProps, 'renderDefault'>) {
 
   if (!schemaType) {
     return (
-      <FormLayoutError
+      <DocumentLayoutError
         currentMinWidth={currentMinWidth}
         documentType={documentType}
         minWidth={minWidth}

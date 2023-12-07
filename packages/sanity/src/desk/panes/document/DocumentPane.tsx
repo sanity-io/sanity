@@ -9,7 +9,7 @@ import {LoadingPane} from '../loading'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocumentPaneProviderProps} from './types'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
-import {useFormLayoutComponent} from './form-layout'
+import {useDocumentLayoutComponent} from './document-layout'
 import {
   ReferenceInputOptionsProvider,
   SourceProvider,
@@ -43,7 +43,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
 
-  const FormLayoutComponent = useFormLayoutComponent()
+  const DocumentLayout = useDocumentLayoutComponent()
 
   // The templates that should be creatable from inside this document pane.
   // For example, from the "Create new" menu in reference inputs.
@@ -136,7 +136,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <FormLayoutComponent documentId={options.id} documentType={options.type} />
+        <DocumentLayout documentId={options.id} documentType={options.type} />
       </ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
   )

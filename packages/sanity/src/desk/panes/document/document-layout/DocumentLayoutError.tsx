@@ -3,7 +3,7 @@ import React from 'react'
 import {ErrorPane} from '../../error'
 import {Translate, isDev, useTranslation} from 'sanity'
 
-interface FormLayoutErrorProps {
+interface DocumentLayoutErrorProps {
   currentMinWidth?: number
   documentType?: string
   minWidth?: number
@@ -11,7 +11,7 @@ interface FormLayoutErrorProps {
   value?: Record<string, unknown>
 }
 
-export function FormLayoutError(props: FormLayoutErrorProps) {
+export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
   const {documentType, value, currentMinWidth, paneKey, minWidth} = props
   const {t} = useTranslation()
 

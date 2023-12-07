@@ -257,6 +257,14 @@ export type NewDocumentCreationContext =
 export interface DocumentPluginOptions {
   badges?: DocumentBadgeComponent[] | DocumentBadgesResolver
   actions?: DocumentActionComponent[] | DocumentActionsResolver
+
+  /**
+   * Components for the document.
+   * @hidden
+   * @beta
+   */
+  components?: DocumentComponents
+
   /** @internal */
   unstable_fieldActions?: DocumentFieldAction[] | DocumentFieldActionsResolver
   /** @hidden @beta */
@@ -480,6 +488,17 @@ export type PartialContext<TContext extends ConfigContext> = Pick<
   Exclude<keyof TContext, keyof ConfigContext>
 >
 
+/** @beta */
+export interface DocumentLayoutProps {
+  documentId: string
+  documentType: string
+  renderDefault: (props: DocumentLayoutProps) => React.ReactElement
+}
+
+interface DocumentComponents {
+  layout: ComponentType<Omit<DocumentLayoutProps, 'renderDefault'>>
+}
+
 /** @public */
 export interface SourceClientOptions {
   /**
@@ -542,6 +561,13 @@ export interface Source {
      * @beta
      */
     badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]
+
+    /**
+     * Components for the document.
+     * @hidden
+     * @beta
+     */
+    components?: DocumentComponents
 
     /** @internal */
     unstable_fieldActions: (

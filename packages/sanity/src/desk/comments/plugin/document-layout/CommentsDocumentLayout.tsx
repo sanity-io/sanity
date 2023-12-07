@@ -7,19 +7,19 @@ import {
 } from '../../src'
 import {useDocumentPane} from '../../..'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
-import {FormLayoutProps} from 'sanity'
+import {DocumentLayoutProps} from 'sanity'
 
-export function CommentsFormLayout(props: FormLayoutProps) {
+export function CommentsDocumentLayout(props: DocumentLayoutProps) {
   const {documentId, documentType} = props
 
   return (
     <CommentsEnabledProvider documentId={documentId} documentType={documentType}>
-      <CommentsFormLayoutInner {...props} />
+      <CommentsDocumentLayoutInner {...props} />
     </CommentsEnabledProvider>
   )
 }
 
-function CommentsFormLayoutInner(props: FormLayoutProps) {
+function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
   const {documentId, documentType} = props
   const commentsEnabled = useCommentsEnabled()
   const {openInspector, inspector} = useDocumentPane()
@@ -30,7 +30,7 @@ function CommentsFormLayoutInner(props: FormLayoutProps) {
     openInspector(COMMENTS_INSPECTOR_NAME)
   }, [inspector?.name, openInspector])
 
-  // If comments are not enabled, render the default form layout
+  // If comments are not enabled, render the default document layout
   if (!commentsEnabled) {
     return props.renderDefault(props)
   }

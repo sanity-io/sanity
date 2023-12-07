@@ -1,25 +1,31 @@
 import {commentsInspector} from './inspector'
 import {CommentsField} from './field'
-import {CommentsFormLayout} from './form-layout'
+import {CommentsDocumentLayout} from './document-layout'
 import {CommentsStudioLayout} from './studio-layout'
 import {definePlugin} from 'sanity'
 
-export const comments = definePlugin({
-  name: 'sanity/desk/comments',
-  document: {
-    inspectors: [commentsInspector],
-  },
+export const comments = definePlugin(() => {
+  return {
+    name: 'sanity/desk/comments',
 
-  form: {
-    components: {
-      field: CommentsField,
-      layout: CommentsFormLayout,
-    },
-  },
+    document: {
+      inspectors: [commentsInspector],
 
-  studio: {
-    components: {
-      layout: CommentsStudioLayout,
+      components: {
+        layout: CommentsDocumentLayout,
+      },
     },
-  },
+
+    form: {
+      components: {
+        field: CommentsField,
+      },
+    },
+
+    studio: {
+      components: {
+        layout: CommentsStudioLayout,
+      },
+    },
+  }
 })
