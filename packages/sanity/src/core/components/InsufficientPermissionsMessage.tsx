@@ -58,13 +58,15 @@ export function InsufficientPermissionsMessage({
   return (
     <Box>
       <Inline space={2}>
-        <Text size={1}>
+        <Text size={0}>
           <AccessDeniedIcon />
         </Text>
-        <Text weight="medium">{t('insufficient-permissions-message.title')}</Text>
+        <Text size={1} weight="medium">
+          {t('insufficient-permissions-message.title')}
+        </Text>
       </Inline>
       <Inline marginTop={4}>
-        <Text size={1} weight="medium">
+        <Text size={1}>
           <Translate
             i18nKey="insufficient-permissions-message.not-authorized-explanation"
             t={t}
