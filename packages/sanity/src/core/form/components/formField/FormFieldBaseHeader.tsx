@@ -61,11 +61,12 @@ const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
   return css`
     align-items: center;
     bottom: 0;
-    gap: ${space}px;
-    padding: ${space}px;
+    /* gap: ${space}px; */
+    /* padding: ${space}px; */
     position: absolute;
     right: 0;
     transition: opacity 150ms ease;
+    line-height: 1;
 
     @media (hover: hover) {
       // If hover is supported, we hide the floating card by default
@@ -235,7 +236,12 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
       </ContentBox>
 
       {presence && presence.length > 0 && (
-        <PresenceBox flex="none" paddingBottom={1} $right={floatingCardWidth + slotWidth}>
+        <PresenceBox
+          data-ui="PresenceBox"
+          flex="none"
+          // paddingBottom={1}
+          $right={floatingCardWidth + slotWidth}
+        >
           <FieldPresence maxAvatars={MAX_AVATARS} presence={presence} />
         </PresenceBox>
       )}

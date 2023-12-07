@@ -198,7 +198,10 @@ export function CommentFieldButton(props: CommentFieldButtonProps) {
           <Text size={1}>
             <CommentIcon />
           </Text>
-          <Text size={0}>{count > 9 ? '9+' : count}</Text>
+
+          <Text muted size={1} weight="medium">
+            {count > 9 ? '9+' : count}
+          </Text>
         </Flex>
       </SanityUIButton>
     </Tooltip>

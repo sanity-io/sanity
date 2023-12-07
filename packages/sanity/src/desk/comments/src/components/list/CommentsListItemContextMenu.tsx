@@ -23,8 +23,8 @@ const FloatingCard = styled(Card)(({theme}) => {
   const {space} = theme.sanity
 
   return css`
-    gap: ${space[1] / 2}px;
-    padding: ${space[1] / 2}px;
+    /* gap: ${space[1] / 2}px; */
+    /* padding: ${space[1] / 2}px; */
 
     &:empty {
       display: none;

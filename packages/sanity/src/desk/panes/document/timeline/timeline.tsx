@@ -80,7 +80,7 @@ export const Timeline = ({
       data-ui="timeline"
     >
       {filteredChunks.length === 0 && (
-        <StackWrapper padding={3} space={3}>
+        <StackWrapper padding={4} space={3}>
           <Text size={1} weight="medium">
             {t('timeline.error.no-document-history-title')}
           </Text>

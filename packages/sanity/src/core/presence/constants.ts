@@ -10,7 +10,7 @@ export const DEFAULT_MAX_AVATARS_FIELDS = 3
 export const AVATAR_DISTANCE = -4
 
 // height/width of the avatars in pixels
-export const AVATAR_SIZE = 19
+export const AVATAR_SIZE = 25
 
 export const AVATAR_ARROW_HEIGHT = 4
 
