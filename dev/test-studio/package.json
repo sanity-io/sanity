@@ -22,7 +22,7 @@
     "@react-three/fiber": "^8.13.6",
     "@sanity/assist": "^1.0.8",
     "@sanity/block-tools": "3.21.0",
-    "@sanity/client": "^6.8.6",
+    "@sanity/client": "^6.9.3",
     "@sanity/color": "^2.1.20",
     "@sanity/google-maps-input": "^3.0.1",
     "@sanity/icons": "^2.6.0",
