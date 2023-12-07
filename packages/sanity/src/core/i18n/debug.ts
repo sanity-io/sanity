@@ -4,7 +4,7 @@ import type {TFunction} from 'i18next'
 /**
  * Mode to use for debugging. `reverse`, `triangles` or `log`.
  */
-const DEBUG_MODE = process.env.SANITY_STUDIO_DEBUG_I18N
+const DEBUG_MODE = typeof process === 'undefined' ? false : process?.env?.SANITY_STUDIO_DEBUG_I18N
 
 /**
  * Whether or not the debug mode for i18n should be enabled
