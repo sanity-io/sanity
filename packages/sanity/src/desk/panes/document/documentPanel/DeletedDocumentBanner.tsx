@@ -4,9 +4,9 @@ import {ReadOnlyIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {Button} from '../../../../ui'
+import {structureLocaleNamespace} from '../../../i18n'
 import {useDocumentOperation, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
-import {structureLocaleNamespace} from '../../../i18n'
 
 const Root = styled(Card)`
   position: relative;
@@ -30,7 +30,7 @@ export function DeletedDocumentBanner({revisionId}: DeletedDocumentBannerProps) 
   const {t} = useTranslation(structureLocaleNamespace)
 
   return (
-    <Root data-testid="deleted-document-banner" shadow={1} tone="transparent">
+    <Root borderBottom data-testid="deleted-document-banner" tone="transparent">
       <Container paddingX={4} paddingY={revisionId ? 2 : 3} sizing="border" width={1}>
         <Flex align="center">
           <Text size={1}>
