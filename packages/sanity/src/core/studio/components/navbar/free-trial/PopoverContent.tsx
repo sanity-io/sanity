@@ -1,4 +1,4 @@
-import {Card, Text, Heading, Flex, Button, Box, Container} from '@sanity/ui'
+import {Card, Heading, Flex, Button, Box, Container} from '@sanity/ui'
 import styled from 'styled-components'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {FreeTrialDialog} from './types'

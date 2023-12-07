@@ -1,1 +1,1 @@
-export * from './FreeTrialButton'
+export * from './FreeTrial'

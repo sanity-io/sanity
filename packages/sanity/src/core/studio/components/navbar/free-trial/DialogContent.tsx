@@ -43,61 +43,60 @@ export function DialogContent({handleClose, content, daysLeft}: ModalContentProp
   const schemeValue = useColorSchemeValue()
 
   return (
-    <Card scheme={schemeValue}>
-      <StyledDialog
-        id="free-trial-modal"
-        onClose={handleClose}
-        onClickOutside={handleClose}
-        __unstable_hideCloseButton
-        cardRadius={3}
-        footer={
-          <Flex width="full" gap={3} justify="flex-end" padding={3}>
-            <Button
-              mode="bleed"
-              padding={2}
-              fontSize={1}
-              text={content.secondaryButton?.text ?? 'Close'}
-              tone="default"
-              onClick={handleClose}
-            />
-            <Button
-              mode="default"
-              padding={2}
-              fontSize={1}
-              text={content.ctaButton?.text}
-              href={content.ctaButton?.url}
-              autoFocus
-              tone="primary"
-              as="a"
-              target="_blank"
-              rel="noopener noreferrer"
-            />
-          </Flex>
-        }
-      >
-        <StyledButton
-          icon={CloseIcon}
-          fontSize={1}
-          padding={2}
-          mode="bleed"
-          tone="default"
-          aria-label={`close dialog`}
-          onClick={handleClose}
-          tabIndex={-1}
-        />
-        {content.image && (
-          <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
-        )}
-        <Flex padding={3} direction={'column'}>
-          <Box paddingX={2} marginTop={3}>
-            {/* // TODO: Replace the XX for the actual number of days left. */}
-            <Heading size={2}>{replaceContent(content.headingText, {daysLeft})}</Heading>
-          </Box>
-          <Box marginTop={4} paddingBottom={3}>
-            <DescriptionSerializer blocks={content.descriptionText} />
-          </Box>
+    <StyledDialog
+      id="free-trial-modal"
+      onClose={handleClose}
+      onClickOutside={handleClose}
+      __unstable_hideCloseButton
+      scheme={schemeValue}
+      cardRadius={3}
+      footer={
+        <Flex width="full" gap={3} justify="flex-end" padding={3}>
+          <Button
+            mode="bleed"
+            padding={2}
+            fontSize={1}
+            text={content.secondaryButton?.text ?? 'Close'}
+            tone="default"
+            onClick={handleClose}
+          />
+          <Button
+            mode="default"
+            padding={2}
+            fontSize={1}
+            text={content.ctaButton?.text}
+            href={content.ctaButton?.url}
+            autoFocus
+            tone="primary"
+            as="a"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
         </Flex>
-      </StyledDialog>
-    </Card>
+      }
+    >
+      <StyledButton
+        icon={CloseIcon}
+        fontSize={1}
+        padding={2}
+        mode="bleed"
+        tone="default"
+        aria-label={`close dialog`}
+        onClick={handleClose}
+        tabIndex={-1}
+      />
+      {content.image && (
+        <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
+      )}
+      <Flex padding={3} direction={'column'}>
+        <Box paddingX={2} marginTop={3}>
+          {/* // TODO: Replace the XX for the actual number of days left. */}
+          <Heading size={2}>{replaceContent(content.headingText, {daysLeft})}</Heading>
+        </Box>
+        <Box marginTop={4} paddingBottom={3}>
+          <DescriptionSerializer blocks={content.descriptionText} />
+        </Box>
+      </Flex>
+    </StyledDialog>
   )
 }

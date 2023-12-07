@@ -1,96 +1,72 @@
-import {Popover, Card, Button} from '@sanity/ui'
-import {BoltIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {useCallback, useEffect, useState} from 'react'
-import {useClient} from '../../../../hooks'
-import {useColorSchemeValue} from '../../../colorScheme'
-import {SANITY_VERSION} from '../../../../version'
-import {PopoverContent} from './PopoverContent'
-import {DialogContent} from './DialogContent'
-import {FreeTrialResponse} from './types'
+import {Button, Text} from '@sanity/ui'
+import {BoltIcon} from '@sanity/icons'
+import {purple, yellow} from '@sanity/color'
 
 const StyledButton = styled(Button)`
   padding: 1px;
+  position: relative;
 `
-export function FreeTrialButton({data}: {data: FreeTrialResponse}) {
-  const schemeValue = useColorSchemeValue()
-  const [_, setData] = useState<FreeTrialResponse | null>(null)
-  const [showContent, setShowContent] = useState(false)
-  const client = useClient({
-    apiVersion: 'vX',
-  })
 
-  const fetchData = async () => {
-    const response = await client.request({url: `/journey/trial?studioVersion=${SANITY_VERSION}`})
-    // eslint-disable-next-line no-console
-    console.log('response', response)
-    setData(response)
+const CenteredStroke = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`
 
-    // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
-    const deskRenameSeen = localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
-    if (data.showOnLoad && deskRenameSeen && data.popover) {
-      setShowContent(true)
-    }
-  }
+const SvgFilledCircle = ({daysLeft}: {daysLeft: number}) => {
+  const totalDays = 30
+  const progress = totalDays - daysLeft
 
-  useEffect(() => {
-    fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const percentage = Math.round((progress / totalDays) * 100)
+  const strokeDasharray = 2 * 3.14 * 10
+  const strokeDashOffset = strokeDasharray * ((100 - percentage) / 100)
 
-  const toggleShowContent = useCallback(() => {
-    if (showContent) {
-      // The user has seen the content, so we can notify the backend.
-      // client.request({url: '/journey/trial/', method: 'POST'})
-    }
-    setShowContent(!showContent)
-  }, [showContent])
-
-  if (!data) return null
-
-  const button = (
-    <StyledButton
-      padding={3}
-      fontSize={1}
-      mode="bleed"
-      onClick={toggleShowContent}
-      icon={BoltIcon}
-    />
+  return (
+    <CenteredStroke>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="23"
+        height="23"
+        viewBox="0 0 23 23"
+        style={{transform: 'rotate(-90deg)'}}
+      >
+        <circle
+          r="10"
+          cx="11.5"
+          cy="11.5"
+          fill="transparent"
+          stroke={percentage > 75 ? yellow['600'].hex : purple['400'].hex}
+          strokeWidth="1.2px"
+        />
+        <circle
+          stroke="#E6E8EC"
+          r="10"
+          cx="11.5"
+          cy="11.5"
+          fill="transparent"
+          strokeWidth="1.2px"
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset={strokeDashOffset}
+        />
+      </svg>
+    </CenteredStroke>
   )
+}
 
-  if (data.popover) {
-    return (
-      <Card scheme={schemeValue}>
-        <Popover
-          open={showContent}
-          size={0}
-          radius={2}
-          placement="bottom-end"
-          content={
-            <PopoverContent
-              daysLeft={data.daysLeft}
-              content={data.popover}
-              handleClose={toggleShowContent}
-            />
-          }
-        >
-          <Card scheme="dark">{button}</Card>
-        </Popover>
-      </Card>
-    )
-  }
-  if (data.modal) {
-    return (
-      <>
-        {button}
-        {showContent && (
-          <DialogContent
-            daysLeft={data.daysLeft}
-            content={data.modal}
-            handleClose={toggleShowContent}
-          />
-        )}
-      </>
-    )
-  }
+interface FreeTrialButtonProps {
+  toggleShowContent: () => void
+  daysLeft: number
+}
+
+export function FreeTrialButton({toggleShowContent, daysLeft}: FreeTrialButtonProps) {
+  return (
+    <StyledButton padding={3} fontSize={1} mode="bleed" onClick={toggleShowContent}>
+      <Text size={1}>
+        <BoltIcon />
+      </Text>
+      {daysLeft > 0 && <SvgFilledCircle daysLeft={daysLeft} />}
+    </StyledButton>
+  )
 }

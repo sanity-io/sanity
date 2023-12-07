@@ -32,7 +32,7 @@ import {LogoButton} from './LogoButton'
 import {SearchDialog, SearchField} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
-import {FreeTrialButton} from './free-trial/FreeTrialButton'
+import {FreeTrial} from './free-trial'
 import {responses} from './free-trial/responses' // TODO: Remove this
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 
@@ -228,8 +228,8 @@ export function StudioNavbar() {
               <Card borderRight>
                 <Flex gap={1} paddingX={2}>
                   {/* TODO: Update this to use only 1 button, don't force the response */}
-                  <FreeTrialButton data={responses[0]} />
-                  <FreeTrialButton data={responses[1]} />
+                  <FreeTrial data={responses[0]} />
+                  <FreeTrial data={responses[1]} />
                   {shouldRender.configIssues && <ConfigIssuesButton />}
                   {shouldRender.resources && <ResourcesButton />}
                 </Flex>
