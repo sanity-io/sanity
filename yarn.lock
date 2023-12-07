@@ -3616,10 +3616,10 @@
     "@sanity/ui" "^1.0.0"
     lodash "^4.17.21"
 
-"@sanity/groq-store@5.3.0":
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.0.tgz#5fa262216c289321a7a3cc8c0be018397f21691b"
-  integrity sha512-nOhZmAmYX/hCSAHHe67zGiPSGPkJsV/xxrYkQB4xVAhJDRRBDWzc5wVFRSQBW+Svauxam9TbH7VL+gsUp5+EVw==
+"@sanity/groq-store@5.3.2":
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.2.tgz#0f85e00a5ac5620d2c3389bc6b9701795e0944fa"
+  integrity sha512-SVTlFcoA9WYz29WsTGjyJQo55Lj2v9X0asGw4xXlyScOsBGchMWSqHGJ0LyJai5BCgO8Oh6s0Kmgew6ChrtIfQ==
   dependencies:
     mnemonist "0.39.6"
 
@@ -3695,14 +3695,14 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.1.1.tgz#13cabdb495cbfdcc10f0c7a85ff1b7229069a19a"
-  integrity sha512-8kyTr7F2eXpWdh/V/pa3ML6/McguzQuC/+v7KOHY6bVvrnkG5rAiDeMVpa5fk2MlojlZR1hjLEr4Gsh4aybgDg==
+"@sanity/presentation@1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.1.3.tgz#34a64f64e400f3ef418047b1525fd5047a29b102"
+  integrity sha512-tJwx8e0WKaRzQEi95JzxSU0LD/0MSR1Jpnn6p7+oqC6JlTLIndp6MN7cYnj53MFrpeXFfqcrn/WqzfxVYZBCxg==
   dependencies:
-    "@sanity/groq-store" "5.3.0"
+    "@sanity/groq-store" "5.3.2"
     "@sanity/icons" "^2.7.0"
-    "@sanity/preview-url-secret" "^1.3.0"
+    "@sanity/preview-url-secret" "^1.3.1"
     "@sanity/ui" "^1.9.3"
     "@types/lodash.isequal" "^4.5.8"
     framer-motion "^10.16.14"
@@ -3711,10 +3711,10 @@
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.3.0.tgz#421a9aa78906597556bdcc87baf56fc2cafc9eb1"
-  integrity sha512-a7F6uuc+ZDap3LPGKnGTCfCJ0iBB5vamBqORl3uhwop8iIiBjeKHE92U/xNG4b2tNvunhqdS++q13sYB4Ge9sA==
+"@sanity/preview-url-secret@^1.3.1":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.3.2.tgz#bbac9e28ffa280b63bb81b3515596c6485f8928b"
+  integrity sha512-puQRSSvV0V/u4ZejcWgflsNbyVac4a/v1X3pEu1ra9aGL83uNL5T6DPeNiLgO2nfV9e3LcLek2xFe3BAYcaIrA==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
