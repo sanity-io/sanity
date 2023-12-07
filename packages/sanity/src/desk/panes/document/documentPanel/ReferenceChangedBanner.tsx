@@ -141,7 +141,7 @@ export const ReferenceChangedBanner = memo(() => {
   if (shouldHide) return null
 
   return (
-    <Root shadow={1} tone="caution" data-testid="reference-changed-banner">
+    <Root borderBottom data-testid="reference-changed-banner" tone="caution">
       <Container paddingX={4} paddingY={2} sizing="border" width={1}>
         <Flex align="center">
           <Text size={1}>
