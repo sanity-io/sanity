@@ -174,7 +174,7 @@
     "@sanity/presentation": "1.2.0",
     "@sanity/schema": "3.21.3",
     "@sanity/types": "3.21.3",
-    "@sanity/ui": "2.0.0-alpha.37",
+    "@sanity/ui": "2.0.0-beta.1",
     "@sanity/util": "3.21.3",
     "@sanity/uuid": "^3.0.1",
     "@tanstack/react-virtual": "3.0.0-beta.54",
