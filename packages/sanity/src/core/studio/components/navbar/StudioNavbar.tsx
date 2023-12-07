@@ -8,6 +8,7 @@ import {
   PortalProvider,
   useMediaIndex,
   TooltipDelayGroupProvider,
+  Box,
 } from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
 import styled from 'styled-components'
@@ -147,18 +148,11 @@ export function StudioNavbar() {
 
   return (
     <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
-      <RootCard
-        borderBottom
-        data-testid="navbar"
-        data-ui="Navbar"
-        paddingX={2}
-        paddingY={3}
-        sizing="border"
-      >
+      <RootCard borderBottom data-testid="navbar" data-ui="Navbar" padding={3} sizing="border">
         <NavGrid>
           {/** Left flex */}
           <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
-            <Flex align="center" gap={2} justify="flex-start" marginLeft={1}>
+            <Flex align="center" gap={2} justify="flex-start">
               <Flex align="center" gap={2}>
                 {/* Menu button */}
                 {!shouldRender.tools && (
@@ -198,7 +192,7 @@ export function StudioNavbar() {
           {/** Right flex */}
           <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
             <Flex align="center" gap={1} justify="flex-end">
-              <Flex gap={1} marginRight={1}>
+              <Flex gap={1}>
                 {/* Search */}
                 <LayerProvider>
                   <SearchProvider fullscreen={shouldRender.searchFullscreen}>
@@ -235,7 +229,11 @@ export function StudioNavbar() {
                   <SearchButton onClick={handleOpenSearchFullscreen} ref={setSearchOpenButtonEl} />
                 )}
               </Flex>
-              {shouldRender.tools && <UserMenu />}
+              {shouldRender.tools && (
+                <Box flex="none" marginLeft={1}>
+                  <UserMenu />
+                </Box>
+              )}
             </Flex>
           </TooltipDelayGroupProvider>
         </NavGrid>
