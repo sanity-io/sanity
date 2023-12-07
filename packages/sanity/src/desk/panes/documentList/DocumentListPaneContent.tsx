@@ -239,7 +239,6 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             activeItemDataAttr="data-hovered"
             ariaLabel={paneTitle}
             canReceiveFocus
-            focusRingOffset={-3}
             inputElement={searchInputElement}
             itemHeight={51}
             items={items}
