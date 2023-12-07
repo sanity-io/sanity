@@ -28,25 +28,16 @@ export function useDocumentStatusTimeAgo({
     useTemporalPhrase: true,
   })
 
-  let label
-
-  // Published with no changes
   // @todo: localize correctly
-  if (!draftUpdatedAt && publishedTimeAgo) {
-    label = `Published${hidePublishedDate ? '' : ` ${publishedTimeAgo}`}`
-  }
-  // Draft, but no published document
-  if (draftUpdatedAt && !publishedTimeAgo) {
-    label = `Not published`
-  }
-  // Published with draft changes
-  if (draftUpdatedAt && publishedTimeAgo) {
-    label = `Published${hidePublishedDate ? '' : ` ${publishedTimeAgo}`}`
-  }
-  // Append draft last updated date
-  if (label && updatedDateTimeAgo) {
-    label += ` (Updated ${updatedDateTimeAgo})`
-  }
 
-  return label
+  const documentStatus = [
+    // Published status
+    publishedTimeAgo
+      ? `Published${hidePublishedDate ? '' : ` ${publishedTimeAgo}`}`
+      : `Not published`,
+    // Last updated (draft) status
+    ...(updatedDateTimeAgo ? [`(Updated ${updatedDateTimeAgo})`] : []),
+  ]
+
+  return documentStatus.join(' ')
 }
