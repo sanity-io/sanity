@@ -144,6 +144,7 @@ const config = {
               'error',
               'false',
               'fill',
+              'full', // radius="full"
               'first',
               'from',
               'horizontal',
