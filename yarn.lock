@@ -3554,10 +3554,10 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.2", "@sanity/client@^6.8.6":
-  version "6.8.6"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.8.6.tgz#e5bc98c525f50ef8c2ecf1f41c1ea8441b9ac9a6"
-  integrity sha512-Va4KZ4mRnyIbV+61VIJ+Op/amNAwWTo/ET3egtnEqPuXYLg60VWffNoAtAjuaZ5qM9BpTOCGJZjTKCHq+/5CEw==
+"@sanity/client@^6.1.2", "@sanity/client@^6.9.3":
+  version "6.9.3"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.9.3.tgz#adba44b9936ae06641111ac197fd18ffa9be148b"
+  integrity sha512-ba8fHqsncuuPNCGs5qTynpQqWdyeQzXmPQ6UzaNCn4/JNKmoucrdSNfCijE+3CsA23OJpZe51RqkF9JRvOpkdw==
   dependencies:
     "@sanity/eventsource" "^5.0.0"
     "@vercel/stega" "0.1.0"

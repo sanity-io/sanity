@@ -56,7 +56,7 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/client": "^6.8.6",
+    "@sanity/client": "^6.9.3",
     "@types/react": "^18.0.25"
   },
   "devDependencies": {
