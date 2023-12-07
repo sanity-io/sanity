@@ -36,10 +36,7 @@ const RootCard = styled(Card)(({theme}) => {
         min-height: 1em;
       }
 
-      box-shadow:
-        inset 0 0 0 1px var(--card-border-color),
-        0 0 0 1px var(--card-bg-color),
-        0 0 0 3px var(--card-focus-ring-color);
+      box-shadow: inset 0 0 0 1px var(--card-focus-ring-color);
     }
 
     &:focus-within {
