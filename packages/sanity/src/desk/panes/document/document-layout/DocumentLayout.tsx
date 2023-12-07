@@ -51,10 +51,11 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
   min-width: 0;
 `
 
-export function DocumentLayout(props: Omit<DocumentLayoutProps, 'renderDefault'>) {
-  const {documentType, documentId} = props
+export function DocumentLayout() {
   const {
     changesOpen,
+    documentId,
+    documentType,
     fieldActions,
     inspectOpen,
     inspector,
