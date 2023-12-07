@@ -30,7 +30,7 @@ export function PermissionCheckBanner({granted, requiredPermission}: PermissionC
     )
 
   return (
-    <Root data-testid="permission-check-banner" shadow={1} tone="transparent">
+    <Root borderBottom data-testid="permission-check-banner" tone="transparent">
       <Container paddingX={4} paddingY={3} sizing="border" width={1}>
         <Flex align="flex-start">
           <Text size={1}>
