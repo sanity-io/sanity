@@ -1,4 +1,4 @@
-import {DialogProvider, Stack, Text, ThemeColorProvider} from '@sanity/ui'
+import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {Dialog} from '../../../../../../ui'
 
@@ -60,9 +60,7 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
             },
           }}
         >
-          <Stack padding={4}>
-            <Text>Do you want to discard the comment?</Text>
-          </Stack>
+          <Text size={1}>Do you want to discard the comment?</Text>
         </Dialog>
       </DialogProvider>
     </ThemeColorProvider>
