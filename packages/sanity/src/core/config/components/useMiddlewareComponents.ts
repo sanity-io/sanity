@@ -39,20 +39,20 @@ function _createMiddlewareComponent<T extends {}>(
  * This hook returns a middleware component based on the Components API middleware chain.
  *
  * - The `pick` function is used to select a component from the provided plugin options in the configuration.
- * - The `defaultComponent` is the fallback component rendered when no other component is selected.
- * The hook adds the `renderDefault` function to the component props, which is used to render the next 
- * component in the middleware chain.
-
+ * - The `defaultComponent` is the default component that gets rendered with `renderDefault`.
+ *   The `renderDefault` function is added to the props of the middleware components so that they can render the default
+ *   component and continue the middleware chain.
+ *
  * @example
  * Example usage of:
- * 
+ *
  * ```ts
- *  const MyComponent = useMiddlewareComponents({
+ *  const StudioLayout = useMiddlewareComponents({
  *   pick: (plugin) => plugin.studio?.components?.layout,
  *   defaultComponent: StudioLayout,
  *  })
- * 
- * return <MyComponent />
+ *
+ * return <StudioLayout />
  *```
  */
 export function useMiddlewareComponents<T extends {}>(props: {
