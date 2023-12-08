@@ -48,6 +48,7 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
     <StyledCard
       {...cardProps}
       {...linkProps}
+      data-ui="ReferenceLinkCard"
       ref={ref as unknown as React.ForwardedRef<HTMLDivElement>}
     />
   )

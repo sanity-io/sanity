@@ -4,6 +4,7 @@ import {isNumber, isString} from 'lodash'
 import {Inline, TooltipDelayGroupProvider} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
 import {DocumentStatus} from '../../../ui/documentStatus'
+import {DocumentStatusIndicator} from '../../../ui/documentStatusIndicator'
 import {TOOLTIP_DELAY_PROPS} from '../../../ui/tooltip/constants'
 import type {PaneItemPreviewState} from './types'
 import {
@@ -15,7 +16,6 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
   isRecord,
-  useDocumentStatus,
 } from 'sanity'
 
 export interface PaneItemPreviewProps {
@@ -54,12 +54,12 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
       <Inline space={4}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatus draft={draft} published={published} />
+        <DocumentStatusIndicator draft={draft} hidePublishedStatus published={published} />
       </Inline>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltipLabel = useDocumentStatus({draft, published})
+  const tooltip = <DocumentStatus draft={draft} published={published} />
 
   return (
     <SanityDefaultPreview
@@ -68,7 +68,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       icon={icon}
       layout={layout}
       status={status}
-      tooltipLabel={tooltipLabel}
+      tooltip={tooltip}
     />
   )
 }
