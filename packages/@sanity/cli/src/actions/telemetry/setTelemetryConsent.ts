@@ -2,6 +2,8 @@ import {type ConsentStatus} from '@sanity/telemetry'
 import {ClientError, ServerError} from '@sanity/client'
 import {type CliCommandAction} from '../../types'
 import {debug} from '../../debug'
+import {getUserConfig} from '../../util/getUserConfig'
+import {TELEMETRY_CONSENT_CONFIG_KEY} from '../../util/createTelemetryStore'
 
 type SettableConsentStatus = Extract<ConsentStatus, 'granted' | 'denied'>
 
@@ -99,6 +101,8 @@ function getMock(): Mock | undefined {
 
 export function createSetTelemetryConsentAction(status: SettableConsentStatus): CliCommandAction {
   return async function setTelemetryConsentAction(_, {apiClient, output, chalk}) {
+    const config = getUserConfig()
+
     const client = apiClient({
       requireUser: true,
       requireProject: false,
@@ -126,6 +130,9 @@ export function createSetTelemetryConsentAction(status: SettableConsentStatus): 
           uri,
         })
       }
+
+      // Clear cached telemetry consent
+      config.delete(TELEMETRY_CONSENT_CONFIG_KEY)
 
       output.print(chalk.green(resultMessages[status].success()))
     } catch (err) {
