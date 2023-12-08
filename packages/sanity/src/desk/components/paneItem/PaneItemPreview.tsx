@@ -15,7 +15,7 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
   isRecord,
-  useDocumentStatusTimeAgo,
+  useDocumentStatus,
 } from 'sanity'
 
 export interface PaneItemPreviewProps {
@@ -59,7 +59,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     </TooltipDelayGroupProvider>
   )
 
-  const tooltipLabel = useDocumentStatusTimeAgo({draft, published})
+  const tooltipLabel = useDocumentStatus({draft, published})
 
   return (
     <SanityDefaultPreview
