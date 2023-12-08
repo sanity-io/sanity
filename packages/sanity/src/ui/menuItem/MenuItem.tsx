@@ -60,6 +60,7 @@ export const MenuItem = forwardRef(function MenuItem(
   {
     badgeText,
     children: childrenProp,
+    disabled,
     hotkeys,
     icon,
     iconRight,
@@ -75,7 +76,7 @@ export const MenuItem = forwardRef(function MenuItem(
     return (
       <Flex align="center" gap={2}>
         {preview && (
-          <PreviewWrapper>
+          <PreviewWrapper style={{opacity: disabled ? 0.25 : undefined}}>
             <Flex align="center" height="fill" justify="center">
               {preview}
             </Flex>
@@ -116,7 +117,7 @@ export const MenuItem = forwardRef(function MenuItem(
         )}
       </Flex>
     )
-  }, [badgeText, hotkeys, icon, iconRight, preview, text])
+  }, [badgeText, disabled, hotkeys, icon, iconRight, preview, text])
 
   const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(
     (children) => {
@@ -133,6 +134,7 @@ export const MenuItem = forwardRef(function MenuItem(
   return (
     <ConditionalWrapper condition={!!tooltipProps} wrapper={renderWrapper}>
       <UIMenuItem
+        disabled={disabled}
         paddingLeft={preview ? 1 : 3}
         paddingRight={3}
         paddingY={preview ? 1 : 3}
