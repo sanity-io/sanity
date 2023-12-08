@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import {
+  Box,
   Flex,
   Hotkeys,
   HotkeysProps,
@@ -44,13 +45,24 @@ export const Tooltip = forwardRef(function Tooltip(
       arrow={false}
       boundaryElement={null}
       content={
-        <Flex align="center" gap={3}>
-          {content && <Text size={1}>{content}</Text>}
-          {hotkeys && <Hotkeys keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />}
+        <Flex align="center">
+          {content && (
+            <Box flex={1} padding={1}>
+              <Text size={1} weight="medium">
+                {content}
+              </Text>
+            </Box>
+          )}
+          {hotkeys && (
+            <Box flex="none">
+              <Hotkeys keys={hotkeys} />
+            </Box>
+          )}
         </Flex>
       }
       delay={TOOLTIP_DELAY_PROPS}
       fallbackPlacements={TOOLTIP_FALLBACK_PLACEMENTS}
+      padding={1}
       portal={portal}
       ref={ref}
       placement={placement}
