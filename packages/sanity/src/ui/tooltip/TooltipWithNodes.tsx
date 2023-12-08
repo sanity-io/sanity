@@ -20,7 +20,7 @@ export const TooltipWithNodes = forwardRef(function Tooltip(
   props: TooltipWithNodesProps,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const {placement, ...rest} = props
+  const {placement, portal = true, ...rest} = props
   return (
     <UITooltip
       animate
@@ -28,6 +28,7 @@ export const TooltipWithNodes = forwardRef(function Tooltip(
       boundaryElement={null}
       delay={TOOLTIP_DELAY_PROPS}
       placement={placement || 'bottom'}
+      portal={portal}
       ref={ref}
       {...rest}
     />
