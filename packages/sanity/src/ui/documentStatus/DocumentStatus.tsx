@@ -3,7 +3,7 @@ import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Box, ButtonTone, Flex} from '@sanity/ui'
 import React from 'react'
 import styled, {css} from 'styled-components'
-import {TextWithTone, useDocumentStatusTimeAgo} from '../../core'
+import {TextWithTone, useDocumentStatus} from '../../core'
 
 export interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
@@ -31,7 +31,7 @@ const Dot = styled(Box)<{$draft?: boolean; $published: boolean}>(({theme, $draft
 })
 
 export function DocumentStatus({draft, published, showPublishedIcon}: DocumentStatusProps) {
-  const statusTimeAgo = useDocumentStatusTimeAgo({draft, published})
+  const statusTimeAgo = useDocumentStatus({draft, published})
 
   if (!draft && !published) {
     return null
