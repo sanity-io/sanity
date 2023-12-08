@@ -24,7 +24,7 @@ const Dot = styled(Box)<{$draft?: boolean; $hidePublishedStatus: boolean; $publi
 
   return css`
     background: ${$published
-      ? theme.sanity.v2?.color.selectable[tone].enabled.badge[tone].dot
+      ? theme.sanity.v2?.color.selectable[tone].disabled.badge[tone].icon
       : theme.sanity.v2?.color.selectable[tone].disabled.badge[tone].dot};
     border-radius: ${SIZE}px;
     display: ${$hidePublishedStatus && $published && !$draft ? 'none' : 'block'};
