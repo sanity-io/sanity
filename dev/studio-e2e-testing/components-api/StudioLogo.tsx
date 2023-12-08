@@ -2,6 +2,8 @@ import {Box} from '@sanity/ui'
 import React from 'react'
 import {LogoProps} from 'sanity'
 
-export function StudioLogo(props: LogoProps) {
-  return <Box data-testid="config-studio-logo">{props.renderDefault(props)}</Box>
+export function StudioLogo(props: LogoProps & {testId: string}) {
+  const {testId} = props
+
+  return <Box data-testid={testId}>{props.renderDefault(props)}</Box>
 }

@@ -8,7 +8,10 @@ test.describe('Document Components API:', () => {
     page.goto(`/test/content/v3;formComponentsApi;${id}`)
 
     await expect(
-      page.getByTestId('config-document-layout').getByTestId('document-pane'),
+      page
+        .getByTestId('child-parent-config-document-layout')
+        .getByTestId('parent-config-document-layout')
+        .getByTestId('document-pane'),
     ).toBeVisible()
   })
 })

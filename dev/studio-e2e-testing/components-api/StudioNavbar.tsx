@@ -1,6 +1,8 @@
 import {Stack} from '@sanity/ui'
 import {NavbarProps} from 'sanity'
 
-export function StudioNavbar(props: NavbarProps) {
-  return <Stack data-testid="config-studio-navbar">{props.renderDefault(props)}</Stack>
+export function StudioNavbar(props: NavbarProps & {testId: string}) {
+  const {testId} = props
+
+  return <Stack data-testid={testId}>{props.renderDefault(props)}</Stack>
 }

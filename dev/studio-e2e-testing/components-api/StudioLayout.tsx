@@ -1,9 +1,11 @@
 import {Flex} from '@sanity/ui'
 import {LayoutProps} from 'sanity'
 
-export function StudioLayout(props: LayoutProps) {
+export function StudioLayout(props: LayoutProps & {testId: string}) {
+  const {testId} = props
+
   return (
-    <Flex data-testid="config-studio-layout" direction="column" height="fill" overflow="hidden">
+    <Flex data-testid={testId} direction="column" height="fill" overflow="hidden">
       {props.renderDefault(props)}
     </Flex>
   )
