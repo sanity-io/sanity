@@ -18,24 +18,24 @@ const DocumentActionsFlex = styled(Flex)`
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {badges, timelineStore} = useDocumentPane()
+  const {timelineStore} = useDocumentPane()
 
   // Subscribe to external timeline state changes
   const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
 
   return useMemo(
     () => (
-      <Box padding={2}>
-        <Flex align="center">
-          <Box flex={[1, 2]}>{badges && <DocumentSparkline />}</Box>
+      <Flex align="center" gap={1} padding={2} paddingLeft={3}>
+        <Box flex={[1, 2]}>
+          <DocumentSparkline />
+        </Box>
 
-          <DocumentActionsFlex flex={1} justify="flex-end" marginLeft={[1, 3]} ref={actionsBoxRef}>
-            <SpacerButton size="large" />
-            {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
-          </DocumentActionsFlex>
-        </Flex>
-      </Box>
+        <DocumentActionsFlex flex={1} justify="flex-end" ref={actionsBoxRef}>
+          <SpacerButton size="large" />
+          {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
+        </DocumentActionsFlex>
+      </Flex>
     ),
-    [actionsBoxRef, badges, showingRevision],
+    [actionsBoxRef, showingRevision],
   )
 }
