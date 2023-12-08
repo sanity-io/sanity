@@ -3,7 +3,11 @@ import {isNonNullable} from '../../util'
 import {useTranslation} from './useTranslation'
 import {I18nNode} from './useI18nText'
 
-/** @internal */
+/**
+ * Similar to `useI18nText` except returns a function that can be called
+ * conditionally.
+ * @internal
+ */
 export function useGetI18nText<TNode extends I18nNode<TNode>>(
   input: TNode | undefined | Array<TNode | undefined>,
 ): (node: TNode) => TNode {
