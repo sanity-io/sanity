@@ -135,7 +135,6 @@ export function PaneItem(props: PaneItemProps) {
       __unstable_focusRing
       as={Link as FIXME}
       data-as="a"
-      data-ui="PaneItem"
       margin={margin}
       marginBottom={marginBottom}
       marginTop={marginTop}

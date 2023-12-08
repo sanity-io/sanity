@@ -5,7 +5,6 @@ import {TextWithTone} from 'sanity'
 
 type StatusType = 'saved' | 'syncing'
 interface ReviewChangesButtonProps {
-  collapsed?: boolean
   status?: StatusType
 }
 
@@ -21,7 +20,7 @@ const STATUS_DICTIONARY: Record<StatusType, {text: string; tone: ButtonTone}> = 
 }
 
 export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
-  const {collapsed, status} = props
+  const {status} = props
 
   if (status !== 'saved' && status !== 'syncing') {
     return null
@@ -30,15 +29,15 @@ export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
   const currentStatus = STATUS_DICTIONARY[status]
 
   return (
-    <Flex align="center" gap={3}>
-      <TextWithTone size={1} tone={currentStatus.tone}>
-        <AnimatedStatusIcon status={status} />
-      </TextWithTone>
-      {!collapsed && (
+    <Flex align="center" gap={2}>
+      <Flex align="center" justify="center" style={{width: '1em'}}>
         <TextWithTone size={1} tone={currentStatus.tone}>
-          {currentStatus.text}
+          <AnimatedStatusIcon status={status} />
         </TextWithTone>
-      )}
+      </Flex>
+      <TextWithTone size={1} tone={currentStatus.tone}>
+        {currentStatus.text}
+      </TextWithTone>
     </Flex>
   )
 }

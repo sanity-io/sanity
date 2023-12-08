@@ -1,56 +1,71 @@
-import {CheckmarkIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
-import {Box, ButtonTone, Flex} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import React from 'react'
-import styled, {css} from 'styled-components'
-import {TextWithTone, useDocumentStatus} from '../../core'
+import styled from 'styled-components'
+import {useIntlDateTimeFormat, useRelativeTime} from '../../core'
 
-export interface DocumentStatusProps {
+interface DocumentStatusProps {
+  absoluteDate?: boolean
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
-  showPublishedIcon?: boolean
+  singleLine?: boolean
 }
 
-const SIZE = 5 // px
+const StyledText = styled(Text)`
+  white-space: nowrap;
+`
 
-const Dot = styled(Box)<{$draft?: boolean; $published: boolean}>(({theme, $draft, $published}) => {
-  let tone: ButtonTone = 'default'
-  if ($published) {
-    tone = $draft ? 'caution' : 'positive'
-  }
+export function DocumentStatus({absoluteDate, draft, published, singleLine}: DocumentStatusProps) {
+  const draftUpdatedAt = draft && '_updatedAt' in draft ? draft._updatedAt : ''
+  const publishedUpdatedAt = published && '_updatedAt' in published ? published._updatedAt : ''
 
-  return css`
-    background: ${$published
-      ? theme.sanity.color.solid[tone].enabled.bg
-      : 'var(--card-muted-fg-color)'};
-    border-radius: ${SIZE}px;
-    height: ${SIZE}px;
-    opacity: ${$published ? 1 : 0.25};
-    width: ${SIZE}px;
-  `
-})
+  const intlDateFormat = useIntlDateTimeFormat({
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
 
-export function DocumentStatus({draft, published, showPublishedIcon}: DocumentStatusProps) {
-  const statusTimeAgo = useDocumentStatus({draft, published})
+  const draftDateAbsolute = draftUpdatedAt && intlDateFormat.format(new Date(draftUpdatedAt))
+  const publishedDateAbsolute =
+    publishedUpdatedAt && intlDateFormat.format(new Date(publishedUpdatedAt))
 
-  if (!draft && !published) {
-    return null
-  }
+  const draftUpdatedTimeAgo = useRelativeTime(draftUpdatedAt || '', {
+    minimal: true,
+    useTemporalPhrase: true,
+  })
+  const publishedUpdatedTimeAgo = useRelativeTime(publishedUpdatedAt || '', {
+    minimal: true,
+    useTemporalPhrase: true,
+  })
 
-  if (!draft && published) {
-    if (showPublishedIcon) {
-      return (
-        <TextWithTone size={1} tone="positive">
-          <CheckmarkIcon aria-label={statusTimeAgo} />
-        </TextWithTone>
-      )
-    }
-    return null
-  }
+  const publishedDate = absoluteDate ? publishedDateAbsolute : publishedUpdatedTimeAgo
+  const updatedDate = absoluteDate ? draftDateAbsolute : draftUpdatedTimeAgo
 
+  // @todo: localize
   return (
-    <Flex align="center" height="fill" justify="center" style={{flexShrink: 0}}>
-      <Dot aria-label={statusTimeAgo} $draft={!!draft} $published={!!published} />
+    <Flex
+      align={singleLine ? 'center' : 'flex-start'}
+      direction={singleLine ? 'row' : 'column'}
+      gap={2}
+      wrap="nowrap"
+    >
+      {!publishedDate && (
+        // eslint-disable-next-line i18next/no-literal-string
+        <StyledText size={1} weight="medium">
+          Not published
+        </StyledText>
+      )}
+      {publishedDate && (
+        // eslint-disable-next-line i18next/no-literal-string
+        <StyledText size={1} weight="medium">
+          Published {publishedDate}
+        </StyledText>
+      )}
+      {updatedDate && (
+        // eslint-disable-next-line i18next/no-literal-string
+        <StyledText muted size={1} wrap="nowrap">
+          Updated {updatedDate}
+        </StyledText>
+      )}
     </Flex>
   )
 }

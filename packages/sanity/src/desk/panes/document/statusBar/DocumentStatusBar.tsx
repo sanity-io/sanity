@@ -1,6 +1,5 @@
 import React, {useMemo} from 'react'
-import styled from 'styled-components'
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {SpacerButton} from '../../../../ui/spacerButton'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
@@ -11,11 +10,6 @@ export interface DocumentStatusBarProps {
   actionsBoxRef?: React.Ref<HTMLDivElement>
 }
 
-const DocumentActionsFlex = styled(Flex)`
-  min-width: 10em;
-  max-width: 16em;
-`
-
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
   const {timelineStore} = useDocumentPane()
@@ -25,15 +19,13 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   return useMemo(
     () => (
-      <Flex align="center" gap={1} padding={2} paddingLeft={3}>
-        <Box flex={[1, 2]}>
-          <DocumentSparkline />
-        </Box>
+      <Flex align="center" gap={1} justify="space-between" padding={2} paddingLeft={3}>
+        <DocumentSparkline />
 
-        <DocumentActionsFlex flex={1} justify="flex-end" ref={actionsBoxRef}>
+        <Flex justify="flex-end" ref={actionsBoxRef} style={{flexShrink: 0, marginLeft: 'auto'}}>
           <SpacerButton size="large" />
           {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
-        </DocumentActionsFlex>
+        </Flex>
       </Flex>
     ),
     [actionsBoxRef, showingRevision],
