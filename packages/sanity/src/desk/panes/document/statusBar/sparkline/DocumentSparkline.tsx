@@ -1,8 +1,10 @@
-import {Flex, useElementSize} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import React, {useState, memo, useLayoutEffect, useEffect} from 'react'
+import {DocumentStatusIndicator} from '../../../../../ui/documentStatusIndicator'
+import {DocumentStatus} from '../../../../../ui/documentStatus'
+import {TooltipWithNodes} from '../../../../../ui'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
-import {DocumentStatusLine} from './DocumentStatusLine'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
 import {useSyncState} from 'sanity'
 
@@ -14,10 +16,6 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
   const syncState = useSyncState(documentId, documentType)
 
   const lastUpdated = value?._updatedAt
-
-  const [rootFlexElement, setRootFlexElement] = useState<HTMLDivElement | null>(null)
-  const rootFlexRect = useElementSize(rootFlexElement)
-  const collapsed = !rootFlexRect || rootFlexRect?.content.width < 380
 
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
 
@@ -53,10 +51,36 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
   }
 
   return (
-    <Flex align="center" data-ui="DocumentSparkline" ref={setRootFlexElement}>
-      <Flex align="center" flex={1} gap={3}>
-        <DocumentStatusLine collapsed={collapsed} editState={editState} />
-        <DocumentStatusPulse collapsed={collapsed} status={status || undefined} />
+    <Flex align="center" data-ui="DocumentSparkline">
+      <Flex align="center" flex={1} gap={3} paddingY={1} wrap="wrap">
+        {!status && (
+          <TooltipWithNodes
+            content={
+              <DocumentStatus
+                absoluteDate
+                draft={editState?.draft}
+                published={editState?.published}
+              />
+            }
+            placement="top"
+          >
+            <Flex align="center" gap={2} paddingY={1}>
+              <Flex align="center" justify="center" style={{width: '1em'}}>
+                <DocumentStatusIndicator
+                  draft={editState?.draft}
+                  published={editState?.published}
+                />
+              </Flex>
+              <DocumentStatus
+                draft={editState?.draft}
+                published={editState?.published}
+                singleLine
+              />
+            </Flex>
+          </TooltipWithNodes>
+        )}
+
+        <DocumentStatusPulse status={status || undefined} />
         {badges && <DocumentBadges />}
       </Flex>
     </Flex>

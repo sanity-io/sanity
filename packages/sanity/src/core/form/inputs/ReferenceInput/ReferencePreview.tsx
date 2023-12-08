@@ -2,11 +2,11 @@ import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {Badge, Box, Inline} from '@sanity/ui'
 import {DocumentStatus} from '../../../../ui/documentStatus'
+import {DocumentStatusIndicator} from '../../../../ui/documentStatusIndicator'
 import {PreviewLayoutKey} from '../../../components'
 import {RenderPreviewCallback} from '../../types'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {useDocumentStatus} from '../../../hooks'
 import {ReferenceInfo} from './types'
 
 /**
@@ -44,7 +44,6 @@ export function ReferencePreview(props: {
   )
 
   const {draft, published} = preview
-  const tooltipLabel = useDocumentStatus({draft, published})
 
   const previewProps = useMemo(
     () => ({
@@ -57,24 +56,29 @@ export function ReferencePreview(props: {
               <DocumentPreviewPresence presence={documentPresence} />
             )}
 
-            <DocumentStatus draft={preview.draft} published={preview.published} />
+            <DocumentStatusIndicator
+              draft={preview.draft}
+              hidePublishedStatus
+              published={preview.published}
+            />
           </Inline>
         </Box>
       ),
       layout,
       schemaType: refType,
-      tooltipLabel,
+      tooltip: <DocumentStatus draft={draft} published={published} />,
       value: previewStub,
     }),
     [
       documentPresence,
+      draft,
       layout,
       preview.draft,
       preview.published,
       previewStub,
+      published,
       refType,
       showTypeLabel,
-      tooltipLabel,
     ],
   )
 
