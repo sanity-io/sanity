@@ -1,1 +1,1 @@
-export * from './CommentField'
+export * from './CommentsField'

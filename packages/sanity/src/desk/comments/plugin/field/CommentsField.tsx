@@ -13,7 +13,7 @@ import {
   CommentCreatePayload,
   useCommentsSelectedPath,
 } from '../../src'
-import {CommentFieldButton} from './CommentFieldButton'
+import {CommentsFieldButton} from './CommentsFieldButton'
 import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
 
 const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
@@ -28,7 +28,7 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
   },
 }
 
-export function CommentField(props: FieldProps) {
+export function CommentsField(props: FieldProps) {
   const isEnabled = useCommentsEnabled()
 
   if (isEnabled) return <CommentFieldInner {...props} />
@@ -233,7 +233,7 @@ function CommentFieldInner(props: FieldProps) {
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({
       button: currentUser && (
-        <CommentFieldButton
+        <CommentsFieldButton
           count={Number(count)}
           currentUser={currentUser}
           fieldTitle={fieldTitle}
