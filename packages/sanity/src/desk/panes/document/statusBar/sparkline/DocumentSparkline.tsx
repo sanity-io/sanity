@@ -1,37 +1,25 @@
-import {Box, Flex, Text, useElementRect} from '@sanity/ui'
-import React, {useEffect, useState, memo, useLayoutEffect} from 'react'
-import {DocumentStatus} from '../../../../../ui/documentStatus'
+import {Flex, useElementSize} from '@sanity/ui'
+import React, {useState, memo, useLayoutEffect, useEffect} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
+import {DocumentStatusLine} from './DocumentStatusLine'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
-import {useDocumentStatusTimeAgo, useSyncState, useTimelineSelector} from 'sanity'
+import {useSyncState} from 'sanity'
 
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
 export const DocumentSparkline = memo(function DocumentSparkline() {
-  const {
-    changesOpen,
-    documentId,
-    documentType,
-    editState,
-    onHistoryClose,
-    onHistoryOpen,
-    timelineStore,
-    value,
-  } = useDocumentPane()
+  const {badges, documentId, documentType, editState, value} = useDocumentPane()
   const syncState = useSyncState(documentId, documentType)
 
   const lastUpdated = value?._updatedAt
 
   const [rootFlexElement, setRootFlexElement] = useState<HTMLDivElement | null>(null)
-  const rootFlexRect = useElementRect(rootFlexElement)
-  const collapsed = !rootFlexRect || rootFlexRect?.width < 300
+  const rootFlexRect = useElementSize(rootFlexElement)
+  const collapsed = !rootFlexRect || rootFlexRect?.content.width < 380
 
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
-
-  // Subscribe to TimelineController changes and store internal state.
-  const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
@@ -60,37 +48,16 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     }
   }, [syncState.isSyncing, lastUpdated])
 
-  const statusTimeAgo = useDocumentStatusTimeAgo({
-    draft: editState?.draft,
-    hidePublishedDate: true,
-    published: editState?.published,
-  })
+  if (!editState?.ready) {
+    return null
+  }
 
   return (
     <Flex align="center" data-ui="DocumentSparkline" ref={setRootFlexElement}>
-      <Flex align="center" flex={1} gap={3} marginLeft={3}>
-        <Flex align="center" gap={2}>
-          <DocumentStatus
-            draft={editState?.draft}
-            published={editState?.published}
-            showPublishedIcon
-          />
-          <Box flex={1}>
-            <Text muted textOverflow="ellipsis" size={1} weight="medium">
-              {statusTimeAgo}
-            </Text>
-          </Box>
-        </Flex>
-
-        <DocumentStatusPulse
-          status={status || undefined}
-          onClick={changesOpen ? onHistoryClose : onHistoryOpen}
-          disabled={showingRevision}
-          selected={changesOpen}
-          collapsed={collapsed}
-        />
-
-        {!collapsed && <DocumentBadges />}
+      <Flex align="center" flex={1} gap={3}>
+        <DocumentStatusLine collapsed={collapsed} editState={editState} />
+        <DocumentStatusPulse collapsed={collapsed} status={status || undefined} />
+        {badges && <DocumentBadges />}
       </Flex>
     </Flex>
   )
