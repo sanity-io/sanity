@@ -3616,10 +3616,10 @@
     "@sanity/ui" "^1.0.0"
     lodash "^4.17.21"
 
-"@sanity/groq-store@5.3.2":
-  version "5.3.2"
-  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.2.tgz#0f85e00a5ac5620d2c3389bc6b9701795e0944fa"
-  integrity sha512-SVTlFcoA9WYz29WsTGjyJQo55Lj2v9X0asGw4xXlyScOsBGchMWSqHGJ0LyJai5BCgO8Oh6s0Kmgew6ChrtIfQ==
+"@sanity/groq-store@5.3.3":
+  version "5.3.3"
+  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.3.tgz#58c98c10783964b35543f629620021d5438dd5e6"
+  integrity sha512-kc/sOXOxDIvQNvvfbqctTfbhI4fRt671QPaIs29drqikPlFLeiJQ4wac8n/rVnBhOpvuVLypB5x5MUSKuPO0cg==
   dependencies:
     mnemonist "0.39.6"
 
@@ -3695,26 +3695,26 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.1.3.tgz#34a64f64e400f3ef418047b1525fd5047a29b102"
-  integrity sha512-tJwx8e0WKaRzQEi95JzxSU0LD/0MSR1Jpnn6p7+oqC6JlTLIndp6MN7cYnj53MFrpeXFfqcrn/WqzfxVYZBCxg==
+"@sanity/presentation@1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.1.5.tgz#cf99a87c3e15369a5ac2297809e28ad13282d87c"
+  integrity sha512-hknavGpRJE6hAtpLJP8M82MvqzVS9nE7jPgrznpyOrXmaVj1qkMapiLtGUEanllF4ToJ5lrICnKhCAemh0XDug==
   dependencies:
-    "@sanity/groq-store" "5.3.2"
+    "@sanity/groq-store" "5.3.3"
     "@sanity/icons" "^2.7.0"
-    "@sanity/preview-url-secret" "^1.3.1"
+    "@sanity/preview-url-secret" "^1.3.3"
     "@sanity/ui" "^1.9.3"
     "@types/lodash.isequal" "^4.5.8"
-    framer-motion "^10.16.14"
+    framer-motion "^10.16.16"
     lodash.isequal "^4.5.0"
     mendoza "3.0.3"
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@^1.3.1":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.3.2.tgz#bbac9e28ffa280b63bb81b3515596c6485f8928b"
-  integrity sha512-puQRSSvV0V/u4ZejcWgflsNbyVac4a/v1X3pEu1ra9aGL83uNL5T6DPeNiLgO2nfV9e3LcLek2xFe3BAYcaIrA==
+"@sanity/preview-url-secret@^1.3.3":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.3.3.tgz#dfda764acc2e4e7ed3fdb8377b2adde10df76d9f"
+  integrity sha512-iRNKfAqwU1mQpEGNFjlUOhS2geZROh/LcPNMCnOZTcAQxcaLrJWc5Rg17F6LpiiIMHyfC7SxQtlI8jSOCqXu0A==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
@@ -8312,10 +8312,10 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^10.0.0, framer-motion@^10.16.14, framer-motion@^10.16.2:
-  version "10.16.14"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.14.tgz#77099f7e8d949dc68f9aea1497eda06f2454e6b2"
-  integrity sha512-poovsXtR7doXRfjqVjUai82Zl2z5yMUFKtYWHnQK+xsDVPhHVUJEU+Kr2kqEnUV4gry+LcRdrDzcMI7OdJlDMg==
+framer-motion@^10.0.0, framer-motion@^10.16.16, framer-motion@^10.16.2:
+  version "10.16.16"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.16.16.tgz#a10a03e1190a717109163cfff212a84c8ad11b0c"
+  integrity sha512-je6j91rd7NmUX7L1XHouwJ4v3R+SO4umso2LUcgOct3rHZ0PajZ80ETYZTajzEXEl9DlKyzjyt4AvGQ+lrebOw==
   dependencies:
     tslib "^2.4.0"
   optionalDependencies:
