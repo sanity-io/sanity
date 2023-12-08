@@ -86,9 +86,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         loading={isTemplatePermissionsLoading}
       >
         <Button
-          aria-label={t('pane-header.disabled-created-button.aria-label', {
-            ns: structureLocaleNamespace,
-          })}
+          aria-label={t('pane-header.disabled-created-button.aria-label')}
           data-testid="action-intent-button"
           disabled
           icon={AddIcon}
@@ -130,9 +128,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
       menu={
         <Menu>
           <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-            <Label muted>
-              {t('pane-header.create-menu.label', {ns: structureLocaleNamespace})}
-            </Label>
+            <Label muted>{t('pane-header.create-menu.label')}</Label>
           </Box>
 
           {templateItems.map((item, itemIndex) => {

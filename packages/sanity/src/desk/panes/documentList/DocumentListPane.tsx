@@ -232,9 +232,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     <Box paddingX={2} paddingBottom={2}>
       <SearchCard radius={4} tone="transparent">
         <TextInput
-          aria-label={t('panes.document-list-pane.search-input.aria-label', {
-            ns: structureLocaleNamespace,
-          })}
+          aria-label={t('panes.document-list-pane.search-input.aria-label')}
           autoComplete="off"
           border={false}
           clearButton={Boolean(searchQuery)}
@@ -244,9 +242,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           onChange={handleQueryChange}
           onClear={handleClearSearch}
           onKeyDown={handleSearchKeyDown}
-          placeholder={t('panes.document-list-pane.search-input.placeholder', {
-            ns: structureLocaleNamespace,
-          })}
+          placeholder={t('panes.document-list-pane.search-input.placeholder')}
           radius={2}
           ref={setSearchInputElement}
           spellCheck={false}

@@ -26,7 +26,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   const [ref, setRef] = useState<{
     actionHandlers?: Record<string, DeskToolPaneActionHandler>
   } | null>(null)
-  const {title} = useI18nText(pane)
+  const {title = ''} = useI18nText(pane)
 
   return (
     <Pane id={paneKey} minWidth={320} selected={restProps.isSelected}>
