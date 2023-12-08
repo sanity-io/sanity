@@ -1,14 +1,11 @@
 import {useMemo} from 'react'
 import {useTranslation} from './useTranslation'
 
-/** @internal */
 export type I18nNode<TNode extends {i18n?: {[TProp in string]: {key: string; ns: string}}}> = {
   i18n?: {[K in keyof TNode['i18n']]: {key: string; ns: string}}
 } & {
   [K in keyof TNode['i18n']]: string
 }
-
-export type I18nTextRecord<K extends string> = {[P in K]?: {key: string; ns: string}}
 
 /** @internal */
 export function useI18nText<TNode extends I18nNode<TNode>>(node: TNode): TNode {

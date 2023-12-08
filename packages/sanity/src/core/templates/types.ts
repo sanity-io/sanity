@@ -1,6 +1,5 @@
-import type {InitialValueProperty, SchemaType} from '@sanity/types'
+import type {InitialValueProperty, SchemaType, I18nTextRecord} from '@sanity/types'
 import type {ElementType, ReactElement} from 'react'
-import {I18nTextRecord} from '../i18n'
 
 /**
  * An initial value template is a template that can be used to create a new documents.

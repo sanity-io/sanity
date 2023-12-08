@@ -90,16 +90,12 @@ export interface SortOrderingItem {
 }
 
 /** @beta */
+export type I18nTextRecord<K extends string> = {[P in K]?: {key: string; ns: string}}
+
+/** @beta */
 export type SortOrdering = {
-  /**
-   * The fallback title of this sort order item. If no i18n key and namespace
-   * is provided then this fallback title will be used.
-   *
-   * This is primarily provided for legacy support but using an i18n key and
-   * namespace is recommended.
-   */
   title: string
-  i18n?: {title?: {key: string; ns: string}}
+  i18n?: I18nTextRecord<'title'>
   name: string
   by: SortOrderingItem[]
 }
