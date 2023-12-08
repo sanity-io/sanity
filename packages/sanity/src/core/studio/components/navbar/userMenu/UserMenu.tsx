@@ -89,7 +89,7 @@ export function UserMenu() {
     <MenuButton
       button={
         <Button mode="bleed" padding={0} radius="full">
-          <UserAvatar size={0} user="me" />
+          <UserAvatar size={1} user="me" />
         </Button>
       }
       id="user-menu"
