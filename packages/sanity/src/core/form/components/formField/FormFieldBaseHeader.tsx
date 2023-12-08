@@ -4,7 +4,6 @@ import {
   Box,
   Card,
   Flex,
-  Theme,
   TooltipDelayGroupProvider,
   TooltipDelayGroupProviderProps,
 } from '@sanity/ui'
@@ -55,74 +54,69 @@ const SlotBox = styled(Box)<{
   `
 })
 
-const FieldActionsFloatingCard = styled(Card)(({theme}: {theme: Theme}) => {
-  const space = theme.sanity.space[1] / 2
+const FieldActionsFloatingCard = styled(Card)`
+  align-items: center;
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  transition: opacity 150ms ease;
+  line-height: 1;
 
-  return css`
-    align-items: center;
-    bottom: 0;
-    gap: ${space}px;
-    padding: ${space}px;
-    position: absolute;
-    right: 0;
-    transition: opacity 150ms ease;
+  @media (hover: hover) {
+    // If hover is supported, we hide the floating card by default
+    // and only show it when it has focus within or when the field is hovered or focused.
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
 
-    @media (hover: hover) {
-      // If hover is supported, we hide the floating card by default
-      // and only show it when it has focus within or when the field is hovered or focused.
+    [data-ui='FieldActionsFlex'] {
       opacity: 0;
-      pointer-events: none;
       width: 0;
+    }
+
+    &[data-actions-visible='false']:not(:focus-within) {
+      // Remove the shadow when the field actions are not visible
+      box-shadow: none;
+
+      // Since the field actions always will be present in the DOM (to make them focusable) –
+      // they will always affect the width of the floating card, even when they are not visible.
+      // Therefore, we remove the background of the floating card when the field actions are not visible.
+      background: transparent;
+    }
+
+    // Remove the shadow when the field has comments but no actions
+    &[data-has-comments='true']:not([data-has-actions='true']) {
+      box-shadow: none;
+    }
+
+    // Show the floating card when it has focus within (ie when field actions are focused).
+    &:focus-within {
+      opacity: 1;
+      pointer-events: auto;
+      width: max-content;
 
       [data-ui='FieldActionsFlex'] {
-        opacity: 0;
-        width: 0;
-      }
-
-      &[data-actions-visible='false']:not(:focus-within) {
-        // Remove the shadow when the field actions are not visible
-        box-shadow: none;
-
-        // Since the field actions always will be present in the DOM (to make them focusable) –
-        // they will always affect the width of the floating card, even when they are not visible.
-        // Therefore, we remove the background of the floating card when the field actions are not visible.
-        background: transparent;
-      }
-
-      // Remove the shadow when the field has comments but no actions
-      &[data-has-comments='true']:not([data-has-actions='true']) {
-        box-shadow: none;
-      }
-
-      // Show the floating card when it has focus within (ie when field actions are focused).
-      &:focus-within {
         opacity: 1;
         pointer-events: auto;
         width: max-content;
-
-        [data-ui='FieldActionsFlex'] {
-          opacity: 1;
-          pointer-events: auto;
-          width: max-content;
-        }
       }
     }
+  }
 
-    &[data-visible='true'] {
+  &[data-visible='true'] {
+    opacity: 1;
+    pointer-events: auto;
+    width: max-content;
+  }
+
+  &[data-actions-visible='true'] {
+    [data-ui='FieldActionsFlex'] {
       opacity: 1;
       pointer-events: auto;
       width: max-content;
     }
-
-    &[data-actions-visible='true'] {
-      [data-ui='FieldActionsFlex'] {
-        opacity: 1;
-        pointer-events: auto;
-        width: max-content;
-      }
-    }
-  `
-})
+  }
+`
 
 const FieldActionsFlex = styled(Flex)`
   gap: inherit;
@@ -235,7 +229,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
       </ContentBox>
 
       {presence && presence.length > 0 && (
-        <PresenceBox flex="none" paddingBottom={1} $right={floatingCardWidth + slotWidth}>
+        <PresenceBox data-ui="PresenceBox" flex="none" $right={floatingCardWidth + slotWidth}>
           <FieldPresence maxAvatars={MAX_AVATARS} presence={presence} />
         </PresenceBox>
       )}
