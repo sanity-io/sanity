@@ -6,7 +6,7 @@ import {PreviewLayoutKey} from '../../../components'
 import {RenderPreviewCallback} from '../../types'
 import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {useDocumentStatusTimeAgo} from '../../../hooks'
+import {useDocumentStatus} from '../../../hooks'
 import {ReferenceInfo} from './types'
 
 /**
@@ -44,7 +44,7 @@ export function ReferencePreview(props: {
   )
 
   const {draft, published} = preview
-  const tooltipLabel = useDocumentStatusTimeAgo({draft, published})
+  const tooltipLabel = useDocumentStatus({draft, published})
 
   const previewProps = useMemo(
     () => ({
