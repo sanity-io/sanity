@@ -144,7 +144,7 @@ export function StudioNavbar() {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
-          data-testid="navbar"
+          data-testid="studio-navbar"
           data-ui="Navbar"
           padding={2}
           scheme="dark"

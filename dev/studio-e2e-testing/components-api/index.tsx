@@ -12,7 +12,9 @@ const childComponents = definePlugin({
 
   document: {
     components: {
-      layout: (props) => <DocumentLayout {...props} testId="child-parent-config-document-layout" />,
+      unstable_layout: (props) => (
+        <DocumentLayout {...props} testId="child-parent-config-document-layout" />
+      ),
     },
   },
 
@@ -40,7 +42,9 @@ export const customComponents = definePlugin({
 
   document: {
     components: {
-      layout: (props) => <DocumentLayout {...props} testId="parent-config-document-layout" />,
+      unstable_layout: (props) => (
+        <DocumentLayout {...props} testId="parent-config-document-layout" />
+      ),
     },
   },
 
