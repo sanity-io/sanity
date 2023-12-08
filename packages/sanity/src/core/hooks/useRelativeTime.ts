@@ -93,9 +93,17 @@ function useFormatRelativeTime(date: Date | string, opts: RelativeTimeOptions = 
   const format = useCallback(
     function formatWithUnit(count: number, unit: Intl.RelativeTimeFormatUnit): string {
       const isNextOrPrevDay = unit === 'day' && Math.abs(count) === 1
+      const isNextOrPrevWeek = unit === 'week' && Math.abs(count) === 1
+
       if (useTemporalPhrase || isNextOrPrevDay) {
         return intlCache
-          .relativeTimeFormat(currentLocale, {style: minimal ? 'narrow' : 'long', numeric: 'auto'})
+          .relativeTimeFormat(currentLocale, {
+            // Force 'long' formatting for dates within the next/previous week as `Intl.RelativeTimeFormat`
+            // will display these as `next wk.` or `last wk.` – which we don't want!
+            // Idiomatic dates should always be displayed in full. There may be a more elegant way to handle this.
+            style: minimal && !isNextOrPrevWeek ? 'narrow' : 'long',
+            numeric: 'auto',
+          })
           .format(count, unit)
       }
 
