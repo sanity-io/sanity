@@ -32,7 +32,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   const hasValidations = validation.length > 0
 
   return (
-    <Stack space={2}>
+    <Stack space={3}>
       <Flex>
         <Text as="label" htmlFor={inputId} weight="medium" size={1}>
           {title || (
