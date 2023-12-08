@@ -16,7 +16,7 @@ import {
 } from '@sanity/ui'
 import {AddIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
-import {useTranslation} from '../../../../i18n'
+import {useGetI18nText, useTranslation} from '../../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
@@ -56,6 +56,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
   const {t} = useTranslation()
+  const getI18nText = useGetI18nText(options)
 
   const {scheme} = useColorScheme()
   const currentUser = useCurrentUser()
@@ -67,7 +68,10 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const openDialogAriaLabel = t('new-document.open-dialog-aria-label')
 
   // Filter options based on search query
-  const filteredOptions = useMemo(() => filterOptions(options, searchQuery), [options, searchQuery])
+  const filteredOptions = useMemo(
+    () => filterOptions(options, searchQuery, getI18nText),
+    [options, searchQuery, getI18nText],
+  )
 
   const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.currentTarget.value)
