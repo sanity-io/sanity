@@ -1,5 +1,3 @@
-import React from 'react'
-import {hues} from '@sanity/color'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import type {FormNodeValidation} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text} from '@sanity/ui'
@@ -28,12 +26,6 @@ export interface FormFieldValidationStatusProps {
 
 const EMPTY_ARRAY: never[] = []
 
-const VALIDATION_STYLES: Record<'error' | 'warning' | 'info', {color: string}> = {
-  error: {color: hues.red[500].hex},
-  warning: {color: hues.yellow[500].hex},
-  info: {color: hues.blue[500].hex},
-}
-
 const VALIDATION_ICONS = {
   error: ValidationErrorIcon,
   warning: ValidationWarningIcon,
@@ -44,27 +36,33 @@ const StyledStack = styled(Stack)`
   max-width: 200px;
 `
 
+const StatusText = styled(Text)<{$status: 'error' | 'warning' | 'info'}>(({$status}) => {
+  if ($status === 'error') {
+    return {'--card-icon-color': 'var(--card-badge-critical-icon-color)'}
+  }
+
+  if ($status === 'warning') {
+    return {'--card-icon-color': 'var(--card-badge-caution-icon-color)'}
+  }
+
+  if ($status === 'info') {
+    return {'--card-icon-color': 'var(--card-badge-primary-icon-color)'}
+  }
+
+  return {}
+})
+
 /** @internal */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
   const {validation = EMPTY_ARRAY, __unstable_showSummary: showSummary, fontSize, placement} = props
 
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
-  const hasInfo = validation.some((v) => v.level === 'info')
+  // const hasInfo = validation.some((v) => v.level === 'info')
 
-  const StatusIcon = (() => {
-    if (hasErrors) return VALIDATION_ICONS.error
-    if (hasWarnings) return VALIDATION_ICONS.warning
-    if (hasInfo) return VALIDATION_ICONS.info
-    return undefined
-  })()
-
-  const statusStyle = (() => {
-    if (hasErrors) return VALIDATION_STYLES.error
-    if (hasWarnings) return VALIDATION_STYLES.warning
-    if (hasInfo) return VALIDATION_STYLES.info
-    return undefined
-  })()
+  // eslint-disable-next-line no-nested-ternary
+  const status = hasErrors ? 'error' : hasWarnings ? 'warning' : 'info'
+  const StatusIcon = VALIDATION_ICONS[status]
 
   return (
     <TooltipWithNodes
@@ -87,9 +85,9 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       fallbackPlacements={['bottom', 'right', 'left']}
     >
       <div>
-        <Text muted size={fontSize} weight="medium" style={statusStyle}>
+        <StatusText $status={status} size={fontSize} weight="medium">
           {StatusIcon && <StatusIcon />}
-        </Text>
+        </StatusText>
       </div>
     </TooltipWithNodes>
   )
@@ -98,26 +96,14 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
 function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) {
   const {validation} = props
 
-  const StatusIcon = (() => {
-    if (validation.level === 'error') return VALIDATION_ICONS.error
-    if (validation.level === 'warning') return VALIDATION_ICONS.warning
-    if (validation.level === 'info') return VALIDATION_ICONS.info
-    return undefined
-  })()
-
-  const statusStyle = (() => {
-    if (validation.level === 'error') return VALIDATION_STYLES.error
-    if (validation.level === 'warning') return VALIDATION_STYLES.warning
-    if (validation.level === 'info') return VALIDATION_STYLES.info
-    return undefined
-  })()
+  const StatusIcon = VALIDATION_ICONS[validation.level]
 
   return (
     <Flex>
       <Box marginRight={2}>
-        <Text size={1} style={statusStyle}>
+        <StatusText $status={validation.level} size={1}>
           {StatusIcon && <StatusIcon />}
-        </Text>
+        </StatusText>
       </Box>
       <Box flex={1}>
         <Text size={1}>{validation.message}</Text>
