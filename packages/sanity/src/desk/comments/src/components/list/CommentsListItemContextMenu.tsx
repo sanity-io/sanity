@@ -9,7 +9,7 @@ import {
   Card,
   Flex,
 } from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {Button, MenuItem} from '../../../../../ui'
 import {CommentStatus} from '../../types'
 import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
@@ -19,18 +19,11 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
 }
 
-const FloatingCard = styled(Card)(({theme}) => {
-  const {space} = theme.sanity
-
-  return css`
-    gap: ${space[1] / 2}px;
-    padding: ${space[1] / 2}px;
-
-    &:empty {
-      display: none;
-    }
-  `
-})
+const FloatingCard = styled(Card)`
+  &:empty {
+    display: none;
+  }
+`
 
 interface CommentsListItemContextMenuProps {
   canDelete: boolean | undefined
