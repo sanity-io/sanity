@@ -12,24 +12,27 @@ import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {PaneMenuItem} from '../../../../types'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {structureLocaleNamespace} from '../../../../i18n'
 import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface DocumentPanelHeaderProps {}
+export interface DocumentPanelHeaderProps {
+  menuItems: PaneMenuItem[]
+}
 
 export const DocumentPanelHeader = memo(
   forwardRef(function DocumentPanelHeader(
     _props: DocumentPanelHeaderProps,
     ref: React.ForwardedRef<HTMLDivElement>,
   ) {
+    const {menuItems} = _props
     const {
       onMenuAction,
       onPaneClose,
       onPaneSplit,
-      menuItems,
       menuItemGroups,
       schemaType,
       timelineStore,
@@ -40,11 +43,13 @@ export const DocumentPanelHeader = memo(
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {actions: fieldActions} = useFieldActions()
+
     const menuNodes = useMemo(
       () =>
         resolveMenuNodes({actionHandler: onMenuAction, fieldActions, menuItems, menuItemGroups}),
       [onMenuAction, fieldActions, menuItemGroups, menuItems],
     )
+
     const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
     const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
     const showTabs = views.length > 1
