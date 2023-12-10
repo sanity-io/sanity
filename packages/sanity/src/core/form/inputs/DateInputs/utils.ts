@@ -33,13 +33,13 @@ export function getCalendarLabels(
       t('calendar.month-names.december'),
     ],
     weekDayNamesShort: [
+      t('calendar.weekday-names.short.sunday'),
       t('calendar.weekday-names.short.monday'),
       t('calendar.weekday-names.short.tuesday'),
       t('calendar.weekday-names.short.wednesday'),
       t('calendar.weekday-names.short.thursday'),
       t('calendar.weekday-names.short.friday'),
       t('calendar.weekday-names.short.saturday'),
-      t('calendar.weekday-names.short.sunday'),
     ],
     setToTimePreset: (time, date) => t('calendar.action.set-to-time-preset', {time, date}),
   }
