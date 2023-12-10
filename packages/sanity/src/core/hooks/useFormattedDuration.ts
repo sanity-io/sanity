@@ -71,7 +71,7 @@ export function useFormattedDuration(
 ): FormattedDuration {
   const {style = 'short', resolution = 'seconds'} = options || {}
   const unitDisplay = style
-  const locale = useCurrentLocale()
+  const locale = useCurrentLocale().id
   const listFormat = useIntlListFormat({type: 'unit', style})
   const isNegative = durationMs < 0
   const duration = parseMilliseconds(Math.abs(durationMs))

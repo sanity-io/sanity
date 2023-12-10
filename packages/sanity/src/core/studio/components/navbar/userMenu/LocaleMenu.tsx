@@ -26,7 +26,7 @@ export function LocaleMenu() {
           key={item.id}
           locale={item}
           changeLocale={changeLocale}
-          selectedLocale={currentLocale}
+          selectedLocale={currentLocale.id}
         />
       ))}
     </>

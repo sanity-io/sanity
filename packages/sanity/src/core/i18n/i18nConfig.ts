@@ -67,7 +67,7 @@ function createI18nApi({
     /** @public */
     source: {
       get currentLocale() {
-        return i18nInstance.language
+        return reducedLocales.find((locale) => locale.id === i18nInstance.language) ?? defaultLocale
       },
       loadNamespaces(namespaces: string[]): Promise<void> {
         const missing = namespaces.filter((ns) => !i18nInstance.hasLoadedNamespace(ns))

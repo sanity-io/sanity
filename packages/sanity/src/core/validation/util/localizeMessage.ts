@@ -1,6 +1,6 @@
 import {isPlainObject} from 'lodash'
 import type {CustomValidatorResult, LocalizedValidationMessages} from '@sanity/types'
-import {LocaleSource} from '../../i18n'
+import type {LocaleSource} from '../../i18n'
 
 /**
  * Extracts the correct localized validation message based on given locale source
@@ -11,7 +11,8 @@ import {LocaleSource} from '../../i18n'
  * @internal
  */
 export function localizeMessage(message: LocalizedValidationMessages, i18n: LocaleSource): string {
-  const {currentLocale: locale} = i18n
+  const {currentLocale} = i18n
+  const locale = currentLocale.id
 
   // Obviously, try direct match first (`no-NB`)
   if (message[locale]) {

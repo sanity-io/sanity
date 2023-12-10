@@ -121,12 +121,11 @@ export type StaticLocaleResourceBundle = Omit<ImplicitLocaleResourceBundle, 'res
 }
 
 /**
- * A locale definition, which describes a locale and its resources.
+ * A locale representation
  *
- * @beta
- * @hidden
+ * @public
  */
-export interface LocaleDefinition {
+export interface Locale {
   /**
    * The ID of the locale, eg `en-US`, `nb-NO`, `th-TH`…
    */
@@ -136,7 +135,15 @@ export interface LocaleDefinition {
    * The title of locale, eg `English (US)`, `Norsk (bokmål)`, `ไทย`…
    */
   title: string
+}
 
+/**
+ * A locale definition, which describes a locale and its resources.
+ *
+ * @beta
+ * @hidden
+ */
+export interface LocaleDefinition extends Locale {
   /**
    * Array of resource bundles for this locale, if any.
    *
@@ -146,8 +153,6 @@ export interface LocaleDefinition {
    * function that imports the resources, in order to lazy load them on use.
    */
   bundles?: (ImplicitLocaleResourceBundle | LocaleResourceBundle)[]
-
-  // @todo allow fallback locales? eg [no-nn, no-nb, en]
 }
 
 /** @public */
@@ -155,12 +160,12 @@ export interface LocaleSource {
   /**
    * Current locale ID (eg `en-US`, `nb-NO`, `th-TH`…)
    */
-  currentLocale: string
+  currentLocale: Locale
 
   /**
    * Array of locale definitions
    */
-  locales: {id: string; title: string}[]
+  locales: Locale[]
 
   /**
    * Loads the given namespaces, if not already done.

@@ -96,7 +96,7 @@ export type UnitFormatter = (value: number, unit: FormattableMeasurementUnit) =>
  * @public
  */
 export function useUnitFormatter(options: UseUnitFormatterOptions = {}): UnitFormatter {
-  const currentLocale = useCurrentLocale()
+  const currentLocale = useCurrentLocale().id
   const defaultOptions: Intl.NumberFormatOptions = {
     unitDisplay: 'long',
     ...options,

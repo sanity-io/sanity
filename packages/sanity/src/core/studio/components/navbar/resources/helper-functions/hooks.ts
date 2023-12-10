@@ -13,7 +13,7 @@ import {getHelpResources} from './helpResources'
  */
 export function useGetHelpResources(): LoadableState<ResourcesResponse | undefined> {
   const client = useClient({apiVersion: '1'})
-  const locale = useCurrentLocale()
+  const locale = useCurrentLocale().id
 
   const moduleStatus$ = useMemo(() => getHelpResources(client, locale), [client, locale])
 
