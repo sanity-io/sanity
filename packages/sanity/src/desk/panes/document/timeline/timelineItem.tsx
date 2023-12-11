@@ -4,7 +4,7 @@ import {getTimelineEventIconComponent} from './helpers'
 import {UserAvatarStack} from './userAvatarStack'
 import {IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
-import {type ChunkType, type Chunk, useTranslation, useIntlDateTimeFormat} from 'sanity'
+import {type ChunkType, type Chunk, useTranslation, useDateTimeFormat} from 'sanity'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonTone> = {
   initial: 'primary',
@@ -44,7 +44,7 @@ export function TimelineItem({
   const iconComponent = getTimelineEventIconComponent(type)
   const authorUserIds = Array.from(chunk.authors)
   const isSelectable = type !== 'delete'
-  const dateFormat = useIntlDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
+  const dateFormat = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
   const formattedTimestamp = useMemo(() => {
     const parsedDate = new Date(timestamp)
     const formattedDate = dateFormat.format(parsedDate)

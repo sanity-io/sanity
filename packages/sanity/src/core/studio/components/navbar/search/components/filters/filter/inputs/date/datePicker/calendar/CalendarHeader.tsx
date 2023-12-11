@@ -3,7 +3,7 @@ import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Button, Flex, Inline, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useTranslation} from '../../../../../../../../../../../i18n'
-import {useIntlDateTimeFormat} from '../../../../../../../../../../../i18n/hooks/useIntlDateTimeFormat'
+import {useDateTimeFormat} from '../../../../../../../../../../../hooks/useDateTimeFormat'
 import {useCalendar} from './contexts/useDatePicker'
 
 export function CalendarHeader(props: {
@@ -12,7 +12,7 @@ export function CalendarHeader(props: {
   onNowClick: () => void
 }) {
   const {t} = useTranslation()
-  const monthFormatter = useIntlDateTimeFormat({month: 'long', year: 'numeric'})
+  const monthFormatter = useDateTimeFormat({month: 'long', year: 'numeric'})
   const {focusedDate} = useCalendar()
 
   const {fontSize, moveFocusedDate, onNowClick} = props

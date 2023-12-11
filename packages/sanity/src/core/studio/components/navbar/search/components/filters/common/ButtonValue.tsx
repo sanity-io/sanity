@@ -3,7 +3,7 @@ import {isValid} from 'date-fns'
 import React from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import {useUnitFormatter} from '../../../../../../../hooks/useUnitFormatter'
-import {useIntlDateTimeFormat} from '../../../../../../../i18n/hooks/useIntlDateTimeFormat'
+import {useDateTimeFormat} from '../../../../../../../hooks/useDateTimeFormat'
 import type {
   OperatorDateEqualValue,
   OperatorDateLastValue,
@@ -23,7 +23,7 @@ export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentPr
 export function SearchButtonValueDate({
   value,
 }: OperatorButtonValueComponentProps<OperatorDateEqualValue>) {
-  const dateFormat = useIntlDateTimeFormat({
+  const dateFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: value.includeTime ? 'short' : undefined,
   })
@@ -44,7 +44,7 @@ export function SearchButtonValueDateLast({
 export function SearchButtonValueDateRange({
   value,
 }: OperatorButtonValueComponentProps<OperatorDateRangeValue>) {
-  const dateFormat = useIntlDateTimeFormat({
+  const dateFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: value.includeTime ? 'short' : undefined,
   })
