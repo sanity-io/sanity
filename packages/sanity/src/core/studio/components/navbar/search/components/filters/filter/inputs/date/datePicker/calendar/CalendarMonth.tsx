@@ -5,7 +5,15 @@ import {useTranslation} from '../../../../../../../../../../../i18n'
 import {CalendarDay} from './CalendarDay'
 import {SHORT_WEEK_DAY_KEYS} from './constants'
 import {useCalendar} from './contexts/useDatePicker'
-import {getWeeksOfMonth} from './utils'
+import {useWeeksOfMonth} from './utils'
+
+const WEEK_DAY_NAME_KEYS = {
+  // Monday is start of the week
+  1: SHORT_WEEK_DAY_KEYS,
+
+  // Sunday is start of the week
+  7: [SHORT_WEEK_DAY_KEYS[6], ...SHORT_WEEK_DAY_KEYS.slice(0, 6)],
+}
 
 interface CalendarMonthProps {
   hidden?: boolean
@@ -17,13 +25,13 @@ const CustomGrid = styled(Grid)`
 `
 
 export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
-  const {focusedDate, fontSize} = useCalendar()
+  const {focusedDate, fontSize, firstWeekDay} = useCalendar()
   const {t} = useTranslation()
 
   return (
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
       <CustomGrid>
-        {SHORT_WEEK_DAY_KEYS.map((weekdayDay) => (
+        {WEEK_DAY_NAME_KEYS[firstWeekDay].map((weekdayDay) => (
           <Box key={weekdayDay} paddingBottom={3} paddingTop={2}>
             <Text align="center" size={fontSize} weight="medium">
               {t(weekdayDay)}
@@ -31,7 +39,7 @@ export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
           </Box>
         ))}
 
-        {getWeeksOfMonth(focusedDate).map((week, weekIdx) =>
+        {useWeeksOfMonth(focusedDate).map((week, weekIdx) =>
           week.days.map((weekDayDate, dayIdx) => {
             return (
               <CalendarDay

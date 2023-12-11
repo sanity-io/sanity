@@ -1,8 +1,9 @@
 import {Box, Grid, Text} from '@sanity/ui'
 import {isSameDay, isSameMonth} from 'date-fns'
 import React from 'react'
+import {useCurrentLocale} from '../../../../../i18n/hooks/useLocale'
 import {CalendarDay} from './CalendarDay'
-import {getWeeksOfMonth} from './utils'
+import {useWeeksOfMonth} from './utils'
 
 interface CalendarMonthProps {
   date: Date
@@ -11,21 +12,30 @@ interface CalendarMonthProps {
   onSelect: (date: Date) => void
   hidden?: boolean
   weekDayNames: [
-    sun: string,
     mon: string,
     tue: string,
     wed: string,
     thu: string,
     fri: string,
     sat: string,
+    sun: string,
   ]
 }
 
 export function CalendarMonth(props: CalendarMonthProps) {
+  const {
+    weekInfo: {firstDay: weekStartDay},
+  } = useCurrentLocale()
+
+  const weekDayNames =
+    weekStartDay === 1
+      ? props.weekDayNames
+      : [props.weekDayNames[6], ...props.weekDayNames.slice(0, 6)]
+
   return (
     <Box aria-hidden={props.hidden || false} data-ui="CalendarMonth">
       <Grid gap={1} style={{gridTemplateColumns: 'repeat(7, minmax(44px, 46px))'}}>
-        {props.weekDayNames.map((weekday) => (
+        {weekDayNames.map((weekday) => (
           <Box key={weekday} paddingY={2}>
             <Text size={1} weight="medium" style={{textAlign: 'center'}}>
               {weekday}
@@ -33,7 +43,7 @@ export function CalendarMonth(props: CalendarMonthProps) {
           </Box>
         ))}
 
-        {getWeeksOfMonth(props.date).map((week, weekIdx) =>
+        {useWeeksOfMonth(props.date).map((week, weekIdx) =>
           week.days.map((date, dayIdx) => {
             const focused = props.focused && isSameDay(date, props.focused)
             const selected = props.selected && isSameDay(date, props.selected)

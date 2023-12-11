@@ -15,13 +15,13 @@ export interface CalendarLabels {
 }
 
 export type WeekDayNames = [
-  sun: string,
   mon: string,
   tue: string,
   wed: string,
   thu: string,
   fri: string,
   sat: string,
+  sun: string,
 ]
 
 export type MonthNames = [

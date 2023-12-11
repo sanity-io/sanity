@@ -17,7 +17,14 @@ describe('useUnitFormatter', () => {
   const wrapper = ({children}: {children: ReactElement}) => (
     <ThemeProvider theme={studioTheme}>
       <LocaleProviderBase
-        locales={[usEnglishLocale, {id: 'fr-FR', title: 'Français'}]}
+        locales={[
+          usEnglishLocale,
+          {
+            id: 'fr-FR',
+            title: 'Français',
+            weekInfo: {firstDay: 1, minimalDays: 2, weekend: [6, 7]},
+          },
+        ]}
         i18next={i18next}
         projectId="test"
         sourceId="test"

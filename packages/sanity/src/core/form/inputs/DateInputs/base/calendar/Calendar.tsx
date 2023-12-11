@@ -112,12 +112,12 @@ export const Calendar = forwardRef(function Calendar(
   }, [ref])
 
   const handleKeyDown = useCallback(
-    (event: any) => {
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (!ARROW_KEYS.includes(event.key)) {
         return
       }
       event.preventDefault()
-      if (event.target.hasAttribute('data-calendar-grid')) {
+      if (event.target instanceof HTMLElement && event.target.hasAttribute('data-calendar-grid')) {
         focusCurrentWeekDay()
         return
       }
