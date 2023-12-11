@@ -23,13 +23,14 @@ export function FreeTrial({type}: FreeTrialProps) {
       url: `/journey/trial?studioVersion=${SANITY_VERSION}`,
     })) as unknown as FreeTrialResponse | null
 
-    const response = _response?._type ? _response : responses[0]
-    setData(response)
+    // const response = _response?._type ? _response : responses[0]
+    // setData(response)
 
+    setData(_response)
     // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
     const deskRenameSeen = localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
-    if (deskRenameSeen) {
-      setShowDialog(response.showOnLoad)
+    if (deskRenameSeen && _response?.showOnLoad) {
+      setShowDialog(_response?.showOnLoad)
     }
   }
 
@@ -51,9 +52,6 @@ export function FreeTrial({type}: FreeTrialProps) {
         break
       case 'modal':
         setShowDialog(null)
-        if (data?.modal?.id) {
-          client.request({url: `/journey/trial/${data.modal.id}`, method: 'POST'})
-        }
         break
       default:
         if (!showDialog && data?.modal?.id) {
