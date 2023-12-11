@@ -10,7 +10,7 @@ export interface FreeTrialResponse {
   id: string
   style: string
   text: string
-  showOnLoad: 'popover' | 'modal'
+  showOnLoad: 'popover' | 'modal' | null
   popover?: FreeTrialDialog
   modal?: FreeTrialDialog
   daysLeft: number

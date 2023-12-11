@@ -7,22 +7,29 @@ import {PopoverContent} from './PopoverContent'
 import {DialogContent} from './DialogContent'
 import {FreeTrialResponse} from './types'
 import {FreeTrialButton} from './FreeTrialButton'
+import {responses} from './responses'
+import {Wrapper} from './Wrapper'
 
-export function FreeTrial() {
-  const schemeValue = useColorSchemeValue()
+interface FreeTrialProps {
+  type: 'desktop' | 'mobile'
+}
+
+export function FreeTrial({type}: FreeTrialProps) {
   const [data, setData] = useState<FreeTrialResponse | null>(null)
-  const [showContent, setShowContent] = useState(false)
+  const [showDialog, setShowDialog] = useState<'popover' | 'modal' | null>(null)
   const client = useClient({apiVersion: 'vX'})
-  // TODO: This maybe changes and we are going to return only one option in the response.
-  const dialogId = data?.popover?.id || data?.modal?.id
   const fetchData = async () => {
-    const response = await client.request({url: `/journey/trial?studioVersion=${SANITY_VERSION}`})
+    const _response = (await client.request({
+      url: `/journey/trial?studioVersion=${SANITY_VERSION}`,
+    })) as unknown as FreeTrialResponse | null
+
+    const response = _response?._type ? _response : responses[0]
     setData(response)
 
     // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
     const deskRenameSeen = localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
-    if (response.showOnLoad && deskRenameSeen && response.popover) {
-      setShowContent(true)
+    if (deskRenameSeen) {
+      setShowDialog(response.showOnLoad)
     }
   }
 
@@ -32,23 +39,40 @@ export function FreeTrial() {
   }, [])
 
   const toggleShowContent = useCallback(() => {
-    if (showContent && dialogId) {
-      // The user has seen the content, so we can notify the backend.
-      client.request({url: `/journey/trial/${dialogId}`, method: 'POST'})
+    /**
+     * Popover will only be shown if they are request onLoad.
+     */
+    switch (showDialog) {
+      case 'popover':
+        setShowDialog(null)
+        if (data?.popover?.id) {
+          client.request({url: `/journey/trial/${data.popover.id}`, method: 'POST'})
+        }
+        break
+      case 'modal':
+        setShowDialog(null)
+        if (data?.modal?.id) {
+          client.request({url: `/journey/trial/${data.modal.id}`, method: 'POST'})
+        }
+        break
+      default:
+        if (!showDialog && data?.modal?.id) {
+          setShowDialog('modal')
+        }
+        break
     }
-    setShowContent(!showContent)
-  }, [showContent, client, dialogId])
+  }, [showDialog, client, data?.popover?.id, data?.modal?.id])
 
   if (!data) return null
 
-  if (data.popover) {
-    return (
-      <Card scheme={schemeValue}>
+  return (
+    <Wrapper type={type}>
+      {showDialog === 'popover' && data.popover ? (
         <Popover
-          open={showContent}
+          open={showDialog === 'popover'}
           size={0}
           radius={2}
-          placement="bottom-end"
+          placement={type === 'mobile' ? 'top-start' : 'bottom-end'}
           content={
             <PopoverContent
               daysLeft={data.daysLeft}
@@ -57,25 +81,27 @@ export function FreeTrial() {
             />
           }
         >
-          <Card scheme="dark">
-            <FreeTrialButton toggleShowContent={toggleShowContent} daysLeft={data.daysLeft} />
-          </Card>
-        </Popover>
-      </Card>
-    )
-  }
-  if (data.modal) {
-    return (
-      <>
-        <FreeTrialButton toggleShowContent={toggleShowContent} daysLeft={data.daysLeft} />
-        {showContent && (
-          <DialogContent
+          <FreeTrialButton
+            type={type}
+            toggleShowContent={toggleShowContent}
             daysLeft={data.daysLeft}
-            content={data.modal}
-            handleClose={toggleShowContent}
           />
-        )}
-      </>
-    )
-  }
+        </Popover>
+      ) : (
+        <FreeTrialButton
+          type={type}
+          toggleShowContent={toggleShowContent}
+          daysLeft={data.daysLeft}
+        />
+      )}
+
+      {showDialog === 'modal' && data.modal && (
+        <DialogContent
+          daysLeft={data.daysLeft}
+          content={data.modal}
+          handleClose={toggleShowContent}
+        />
+      )}
+    </Wrapper>
+  )
 }

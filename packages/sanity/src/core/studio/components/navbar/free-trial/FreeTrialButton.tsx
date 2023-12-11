@@ -1,7 +1,8 @@
 import styled from 'styled-components'
-import {Button, Text} from '@sanity/ui'
+import {Button, Text, Card} from '@sanity/ui'
 import {BoltIcon} from '@sanity/icons'
 import {purple, yellow} from '@sanity/color'
+import {useTranslation} from 'react-i18next'
 
 const StyledButton = styled(Button)`
   padding: 1px;
@@ -60,7 +61,7 @@ interface FreeTrialButtonProps {
   daysLeft: number
 }
 
-export function FreeTrialButton({toggleShowContent, daysLeft}: FreeTrialButtonProps) {
+function FreeTrialButtonDesktop({toggleShowContent, daysLeft}: FreeTrialButtonProps) {
   return (
     <StyledButton padding={3} fontSize={1} mode="bleed" onClick={toggleShowContent}>
       <Text size={1}>
@@ -68,5 +69,35 @@ export function FreeTrialButton({toggleShowContent, daysLeft}: FreeTrialButtonPr
       </Text>
       {daysLeft > 0 && <SvgFilledCircle daysLeft={daysLeft} />}
     </StyledButton>
+  )
+}
+
+function FreeTrialButtonMobile({toggleShowContent, daysLeft}: FreeTrialButtonProps) {
+  const {t} = useTranslation()
+
+  return (
+    <Button
+      icon={BoltIcon}
+      justify="flex-start"
+      mode="bleed"
+      onClick={toggleShowContent}
+      text={t('user-menu.action.free-trial', {daysLeft})}
+    />
+  )
+}
+
+export function FreeTrialButton(
+  props: FreeTrialButtonProps & {
+    type: 'desktop' | 'mobile'
+  },
+) {
+  const {type, ...rest} = props
+
+  if (type === 'mobile') return <FreeTrialButtonMobile {...rest} />
+  // Desktop is dark, update it after facelift is merged
+  return (
+    <Card scheme="dark">
+      <FreeTrialButtonDesktop {...rest} />
+    </Card>
   )
 }

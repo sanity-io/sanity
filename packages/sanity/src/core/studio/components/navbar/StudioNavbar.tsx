@@ -226,7 +226,7 @@ export function StudioNavbar() {
             {(shouldRender.configIssues || shouldRender.resources) && (
               <Card borderRight>
                 <Flex gap={1} paddingX={2}>
-                  <FreeTrial />
+                  {shouldRender.tools && <FreeTrial type="desktop" />}
                   {shouldRender.configIssues && <ConfigIssuesButton />}
                   {shouldRender.resources && <ResourcesButton />}
                 </Flex>

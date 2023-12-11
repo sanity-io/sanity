@@ -1523,7 +1523,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.since': 'Since: {{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
-
+  /** Label for button showing the free trial days left */
+  'user-menu.action.free-trial': '{{daysLeft}} days left in trial',
   /** Label for action to invite members to the current sanity project */
   'user-menu.action.invite-members': 'Invite members',
   /** Accessibility label for action to invite members to the current sanity project */
