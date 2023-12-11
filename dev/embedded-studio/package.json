@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@sanity/ui": "2.0.0-beta.2",
+    "@sanity/ui": "2.0.0-beta.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sanity": "3.21.3",
