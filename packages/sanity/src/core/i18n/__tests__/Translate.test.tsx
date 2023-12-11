@@ -34,7 +34,13 @@ async function getWrapper(bundles: LocaleResourceBundle[]) {
     return (
       <ThemeProvider theme={studioTheme}>
         <LocaleProviderBase
-          locales={[{id: 'en-US', title: 'English'}]}
+          locales={[
+            {
+              id: 'en-US',
+              title: 'English',
+              weekInfo: {firstDay: 1, minimalDays: 2, weekend: [6, 7]},
+            },
+          ]}
           i18next={i18next}
           projectId="test"
           sourceId="test"

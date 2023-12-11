@@ -17,13 +17,13 @@ export const MONTH_NAME_KEYS: StudioLocaleResourceKeys[] = [
 ]
 
 export const SHORT_WEEK_DAY_KEYS: StudioLocaleResourceKeys[] = [
-  'calendar.weekday-names.short.sunday',
   'calendar.weekday-names.short.monday',
   'calendar.weekday-names.short.tuesday',
   'calendar.weekday-names.short.wednesday',
   'calendar.weekday-names.short.thursday',
   'calendar.weekday-names.short.friday',
   'calendar.weekday-names.short.saturday',
+  'calendar.weekday-names.short.sunday',
 ]
 
 export const HOURS_24 = range(0, 24)

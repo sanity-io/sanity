@@ -54,7 +54,7 @@ const CALENDAR_LABELS: CalendarLabels = {
     'November',
     'December',
   ],
-  weekDayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  weekDayNamesShort: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   setToTimePreset: (time: string, date: Date) => `${time} on ${format(date, 'yyyy-MM-dd')}`,
 }
 
