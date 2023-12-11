@@ -1,12 +1,12 @@
-import {intlCache} from '../intlCache'
-import {useCurrentLocale} from './useLocale'
+import {intlCache} from '../i18n/intlCache'
+import {useCurrentLocale} from '../i18n/hooks/useLocale'
 
 /**
- * Options for the `useIntlListFormat` hook
+ * Options for the `useListFormat` hook
  *
  * @public
  */
-export interface UseIntlListFormatOptions {
+export interface UseListFormatOptions {
   /**
    * The format of output message.
    * - `conjunction` (read: "and") - default
@@ -33,7 +33,7 @@ export interface UseIntlListFormatOptions {
  * @returns Instance of `Intl.ListFormat`
  * @public
  */
-export function useIntlListFormat(options: UseIntlListFormatOptions = {}): Intl.ListFormat {
+export function useListFormat(options: UseListFormatOptions = {}): Intl.ListFormat {
   const currentLocale = useCurrentLocale().id
   return intlCache.listFormat(currentLocale, options)
 }

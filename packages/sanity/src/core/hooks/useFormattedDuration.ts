@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {intlCache} from '../i18n/intlCache'
 import {useCurrentLocale} from '../i18n/hooks/useLocale'
-import {useIntlListFormat} from '../i18n/hooks/useIntlListFormat'
+import {useListFormat} from './useListFormat'
 
 type Duration = {
   days: number
@@ -72,7 +72,7 @@ export function useFormattedDuration(
   const {style = 'short', resolution = 'seconds'} = options || {}
   const unitDisplay = style
   const locale = useCurrentLocale().id
-  const listFormat = useIntlListFormat({type: 'unit', style})
+  const listFormat = useListFormat({type: 'unit', style})
   const isNegative = durationMs < 0
   const duration = parseMilliseconds(Math.abs(durationMs))
   const formatters: Record<DurationUnit, Intl.NumberFormat> = useMemo(

@@ -5,9 +5,9 @@ import {Button, Card, Dialog, Flex, Text} from '@sanity/ui'
 import {Asset, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
 import {uniqueId} from 'lodash'
 import styled from 'styled-components'
-import {useClient} from '../../../../hooks'
+import {useClient, useListFormat} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {Translate, useIntlListFormat, useTranslation} from '../../../../i18n'
+import {Translate, useTranslation} from '../../../../i18n'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
 
@@ -205,7 +205,7 @@ const DefaultAssetSource = function DefaultAssetSource(
     }
   }, [isLoading])
 
-  const listFormat = useIntlListFormat({style: 'narrow'})
+  const listFormat = useListFormat({style: 'narrow'})
 
   return (
     <Dialog

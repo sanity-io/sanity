@@ -1,13 +1,13 @@
 import {AccessDeniedIcon} from '@sanity/icons'
-import {CurrentUser} from '@sanity/types'
-import {Text, Inline, Box} from '@sanity/ui'
-import React, {Fragment, useCallback} from 'react'
+import type {CurrentUser} from '@sanity/types'
+import {Box, Inline, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
+import React, {Fragment, useCallback} from 'react'
 // note: these are both available from the `../i18n` export but importing through
 // that export fails the build. may be due to a circular reference.
-import {useTranslation} from '../i18n/hooks/useTranslation'
+import {useListFormat} from '../hooks/useListFormat'
 import {Translate} from '../i18n/Translate'
-import {useIntlListFormat} from '../i18n/hooks/useIntlListFormat'
+import {useTranslation} from '../i18n/hooks/useTranslation'
 
 /** @internal */
 export interface InsufficientPermissionsMessageProps {
@@ -33,7 +33,7 @@ export function InsufficientPermissionsMessage({
 }: InsufficientPermissionsMessageProps) {
   const {t} = useTranslation()
 
-  const list = useIntlListFormat({style: 'short', type: 'unit'})
+  const list = useListFormat({style: 'short', type: 'unit'})
   const roles = currentUser?.roles || EMPTY_ARRAY
 
   const Roles = useCallback(

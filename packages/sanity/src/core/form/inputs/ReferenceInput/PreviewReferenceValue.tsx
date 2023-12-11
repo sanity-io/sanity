@@ -4,7 +4,8 @@ import {Box, Flex, Inline, Label, Stack, Text, Tooltip} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
 import type {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
-import {Translate, useIntlListFormat, useTranslation} from '../../../i18n'
+import {Translate, useTranslation} from '../../../i18n'
+import {useListFormat} from '../../../hooks'
 import {TextWithTone} from '../../../components'
 import {ReferencePreview} from './ReferencePreview'
 import {Loadable} from './useReferenceInfo'
@@ -224,7 +225,7 @@ function InvalidType({
 }
 
 function HumanizedList(props: {values: string[]}) {
-  const listFormat = useIntlListFormat({type: 'disjunction'})
+  const listFormat = useListFormat({type: 'disjunction'})
   const parts = listFormat.formatToParts(props.values)
   return (
     <Fragment>

@@ -4,7 +4,8 @@ import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/ico
 import type {FormNodeValidation} from '@sanity/types'
 import {Box, Flex, Placement, Stack, Text, Tooltip} from '@sanity/ui'
 import styled from 'styled-components'
-import {useIntlListFormat, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n'
+import {useListFormat} from '../../../hooks'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
@@ -131,7 +132,7 @@ function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) 
 
 function FormFieldValidationSummary({validation}: {validation: FormNodeValidation[]}) {
   const {t} = useTranslation()
-  const listFormatter = useIntlListFormat()
+  const listFormatter = useListFormat()
 
   const errorCount = validation.reduce(
     (count, item) => (item.level === 'error' ? count + 1 : count),

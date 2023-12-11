@@ -1,6 +1,5 @@
 export * from './hooks/useTranslation'
 export * from './hooks/useLocale'
-export * from './hooks/useIntlListFormat'
 export * from './hooks/useIntlNumberFormat'
 export * from './hooks/useI18nText'
 export * from './hooks/useGetI18nText'
