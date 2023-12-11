@@ -12,6 +12,12 @@ export const usEnglishLocale = defineLocale({
   id: 'en-US',
   title: 'English (US)',
   bundles: [studioDefaultLocaleResources, validationLocaleResources],
+
+  weekInfo: {
+    firstDay: 7, // Sunday
+    weekend: [6, 7], // Saturday, Sunday
+    minimalDays: 1,
+  },
 })
 
 /**
