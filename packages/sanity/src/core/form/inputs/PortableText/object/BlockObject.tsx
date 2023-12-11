@@ -8,7 +8,7 @@ import {ObjectSchemaType, Path, PortableTextBlock, isImage} from '@sanity/types'
 import {Box, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
-import {TooltipWithNodes} from '../../../../../ui'
+import {Tooltip} from '../../../../../ui'
 import {
   BlockProps,
   RenderAnnotationCallback,
@@ -273,7 +273,7 @@ export function BlockObject(props: BlockObjectProps) {
       >
         <Flex paddingBottom={1} marginY={3} style={debugRender()}>
           <InnerFlex flex={1}>
-            <TooltipWithNodes
+            <Tooltip
               placement="top"
               portal="editor"
               disabled={!tooltipEnabled}
@@ -282,7 +282,7 @@ export function BlockObject(props: BlockObjectProps) {
               <PreviewContainer {...innerPaddingProps}>
                 {renderBlock && renderBlock(componentProps)}
               </PreviewContainer>
-            </TooltipWithNodes>
+            </Tooltip>
             <BlockActionsOuter marginRight={1}>
               <BlockActionsInner>
                 {renderBlockActions && value && focused && !readOnly && (

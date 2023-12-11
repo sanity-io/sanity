@@ -4,7 +4,6 @@ import {
   Flex,
   Hotkeys,
   HotkeysProps,
-  Placement,
   Text,
   Tooltip as UITooltip,
   TooltipProps as UITooltipProps,
@@ -13,17 +12,19 @@ import React, {forwardRef} from 'react'
 import {TOOLTIP_DELAY_PROPS} from './constants'
 
 /** @internal */
-export type TooltipProps = Omit<UITooltipProps, 'content' | 'padding'> & {
-  content?: string | null
+export type TooltipProps = Omit<UITooltipProps, 'arrow' | 'padding' | 'shadow'> & {
   hotkeys?: HotkeysProps['keys']
 }
 
-const TOOLTIP_FALLBACK_PLACEMENTS: Placement[] = [
-  'bottom-start',
-  'bottom-end',
-  'top-start',
-  'top-end',
-]
+const TOOLTIP_SHARED_PROPS: UITooltipProps = {
+  animate: true,
+  arrow: false,
+  boundaryElement: null,
+  delay: TOOLTIP_DELAY_PROPS,
+  fallbackPlacements: ['bottom-start', 'bottom-end', 'top-start', 'top-end'],
+  placement: 'bottom',
+  portal: true,
+}
 
 /**
  * Studio UI <Tooltip>.
@@ -37,36 +38,34 @@ export const Tooltip = forwardRef(function Tooltip(
   props: TooltipProps,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const {content, hotkeys, placement = 'bottom', portal = true, ...rest} = props
+  const {content, hotkeys, ...rest} = props
 
-  return (
-    <UITooltip
-      animate
-      arrow={false}
-      boundaryElement={null}
-      content={
-        <Flex align="center">
-          {content && (
-            <Box flex={1} padding={1}>
-              <Text size={1} weight="medium">
-                {content}
-              </Text>
-            </Box>
-          )}
-          {hotkeys && (
-            <Box flex="none">
-              <Hotkeys keys={hotkeys} />
-            </Box>
-          )}
-        </Flex>
-      }
-      delay={TOOLTIP_DELAY_PROPS}
-      fallbackPlacements={TOOLTIP_FALLBACK_PLACEMENTS}
-      padding={1}
-      portal={portal}
-      ref={ref}
-      placement={placement}
-      {...rest}
-    />
-  )
+  if (typeof content === 'string') {
+    return (
+      <UITooltip
+        {...TOOLTIP_SHARED_PROPS}
+        content={
+          <Flex align="center">
+            {content && (
+              <Box flex={1} padding={1}>
+                <Text size={1} weight="medium">
+                  {content}
+                </Text>
+              </Box>
+            )}
+            {hotkeys && (
+              <Box flex="none">
+                <Hotkeys keys={hotkeys} />
+              </Box>
+            )}
+          </Flex>
+        }
+        padding={1}
+        ref={ref}
+        {...rest}
+      />
+    )
+  }
+
+  return <UITooltip {...TOOLTIP_SHARED_PROPS} content={content} ref={ref} {...rest} />
 })

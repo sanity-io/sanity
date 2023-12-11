@@ -1,6 +1,6 @@
 import {Menu, MenuButton, PopoverProps, Text} from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useId} from 'react'
-import {MenuItem, TooltipWithNodes} from '../../../../ui'
+import {MenuItem, Tooltip} from '../../../../ui'
 import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -91,14 +91,14 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
   const menuItemContent = useCallback(
     (item: React.JSX.Element) => {
       return (
-        <TooltipWithNodes
+        <Tooltip
           content={<Text size={1}>{actionState.title}</Text>}
           disabled={!actionState.title}
           placement="top"
           portal
         >
           {item}
-        </TooltipWithNodes>
+        </Tooltip>
       )
     },
     [actionState.title],
