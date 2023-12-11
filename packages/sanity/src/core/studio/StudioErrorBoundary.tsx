@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
-/* eslint-disable no-attribute-string-literals/no-attribute-string-literals */
+/* eslint-disable @sanity/i18n/no-attribute-string-literals */
 import React, {useCallback, useState} from 'react'
 import {Button, Card, Code, Container, ErrorBoundary, Heading, Stack} from '@sanity/ui'
 import {useHotModuleReload} from 'use-hot-module-reload'

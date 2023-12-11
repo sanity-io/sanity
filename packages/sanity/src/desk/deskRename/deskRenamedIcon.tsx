@@ -1,4 +1,4 @@
-/* eslint-disable no-attribute-string-literals/no-attribute-string-literals */
+/* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable i18next/no-literal-string */
 import React, {useCallback, useState} from 'react'
 import {CheckmarkIcon, LaunchIcon} from '@sanity/icons'

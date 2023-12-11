@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,no-attribute-string-literals/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Box, Breadcrumbs, Card, Flex, Stack, Text, ThemeColorToneKey} from '@sanity/ui'
 import {generateHelpUrl} from '@sanity/generate-help-url'
@@ -7,7 +7,6 @@ import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {capitalize} from 'lodash'
 import {useTranslation} from '../../../i18n'
-import {Translate} from '../../../i18n/Translate'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',

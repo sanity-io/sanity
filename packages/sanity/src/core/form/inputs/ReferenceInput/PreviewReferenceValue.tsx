@@ -131,6 +131,7 @@ export function PreviewReferenceValue(props: {
         documentId={value._ref}
         // note: a missing refTypeName here means the document is either loading, doesn't exist or is unreadable by current role.
         // These states should already have been covered by earlier checks
+        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
         actualType={refTypeName || '<unknown>'}
         declaredTypes={type.to.map((toType) => toType.name)}
       />
