@@ -1,12 +1,12 @@
-import {intlCache} from '../intlCache'
-import {useCurrentLocale} from './useLocale'
+import {intlCache} from '../i18n/intlCache'
+import {useCurrentLocale} from '../i18n/hooks/useLocale'
 
 /**
- * Options for the `useIntlNumberFormat` hook
+ * Options for the `useNumberFormat` hook
  *
  * @public
  */
-export type UseIntlNumberFormatOptions = Intl.NumberFormatOptions
+export type UseNumberFormatOptions = Intl.NumberFormatOptions
 
 /**
  * Returns an instance of `Intl.NumberFormat` that uses the currently selected locale,
@@ -16,7 +16,7 @@ export type UseIntlNumberFormatOptions = Intl.NumberFormatOptions
  * @returns Instance of `Intl.NumberFormat`
  * @public
  */
-export function useIntlNumberFormat(options: UseIntlNumberFormatOptions = {}): Intl.NumberFormat {
+export function useNumberFormat(options: UseNumberFormatOptions = {}): Intl.NumberFormat {
   const currentLocale = useCurrentLocale().id
   return intlCache.numberFormat(currentLocale, options)
 }
