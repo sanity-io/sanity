@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs'
 import React, {ReactNode} from 'react'
-import {Path, PreviewValue, Reference, ReferenceSchemaType} from '@sanity/types'
+import {Path, PreviewValue, Reference, ReferenceSchemaType, I18nTextRecord} from '@sanity/types'
 import {ObjectInputProps} from '../../types'
 import {DocumentAvailability} from '../../../preview'
 
@@ -28,6 +28,7 @@ export interface EditReferenceEvent {
 export interface CreateReferenceOption {
   id: string
   title: string
+  i18n?: I18nTextRecord<'title'>
   icon?: React.ReactNode | React.ComponentType
   type: string
   template: ReferenceTemplate

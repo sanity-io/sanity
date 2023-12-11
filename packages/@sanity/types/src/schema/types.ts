@@ -90,8 +90,12 @@ export interface SortOrderingItem {
 }
 
 /** @beta */
+export type I18nTextRecord<K extends string> = {[P in K]?: {key: string; ns: string}}
+
+/** @beta */
 export type SortOrdering = {
   title: string
+  i18n?: I18nTextRecord<'title'>
   name: string
   by: SortOrderingItem[]
 }

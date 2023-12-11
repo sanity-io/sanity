@@ -1,4 +1,4 @@
-import type {InitialValueProperty, SchemaType} from '@sanity/types'
+import type {InitialValueProperty, SchemaType, I18nTextRecord} from '@sanity/types'
 import type {ElementType, ReactElement} from 'react'
 
 /**
@@ -28,6 +28,8 @@ export interface Template<Params = any, Value = any> {
    * Template title.
    */
   title: string
+
+  i18n?: I18nTextRecord<'title'>
 
   /**
    * Schema type name the template belongs to. For the automatically generated templates,
@@ -165,6 +167,8 @@ export interface TemplateItem {
    * Defaults to the title of the associated template.
    */
   title?: string
+
+  i18n?: I18nTextRecord<'title'>
 
   /**
    * Parameters for the template - an object of any JSON-serializable values

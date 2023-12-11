@@ -37,10 +37,14 @@ function sortResultRelevance(query: string, a: NewDocumentOption, b: NewDocument
   return 0
 }
 
-export function filterOptions(options: NewDocumentOption[], query: string): NewDocumentOption[] {
+export function filterOptions(
+  options: NewDocumentOption[],
+  query: string,
+  getI18nText: (option: NewDocumentOption) => NewDocumentOption,
+): NewDocumentOption[] {
   const optionsWithTitle = options.map((option) => ({
     ...option,
-    title: option?.title || option.id,
+    title: getI18nText({...option, title: option?.title || option.id}).title,
   }))
 
   const alphabetized = optionsWithTitle.sort((a, b) => a.title.localeCompare(b.title))

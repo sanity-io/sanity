@@ -14,6 +14,7 @@ import {
   useSchema,
   useTemplates,
   useTranslation,
+  useGetI18nText,
 } from 'sanity'
 
 export type PaneHeaderIntentProps = React.ComponentProps<typeof IntentButton>['intent']
@@ -51,7 +52,9 @@ interface PaneHeaderCreateButtonProps {
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const schema = useSchema()
   const templates = useTemplates()
+
   const {t} = useTranslation(structureLocaleNamespace)
+  const getI18nText = useGetI18nText([...templateItems, ...templates])
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
     templateItems,
@@ -107,7 +110,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         context="create-document-type"
       >
         <IntentButton
-          aria-label={firstItem.title}
+          title={getI18nText(firstItem).title}
           icon={firstItem.icon || AddIcon}
           intent={intent}
           mode="bleed"
@@ -150,6 +153,12 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
 
             Link.displayName = 'Link'
 
+            const {title} = getI18nText({
+              ...item,
+              // replace the title with the template title
+              title: item.title || getI18nText(template).title,
+            })
+
             return (
               <InsufficientPermissionsMessageTooltip
                 context="create-document-type"
@@ -160,8 +169,8 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                 <MenuItem
                   as={Link}
                   data-as={disabled ? 'button' : 'a'}
-                  text={item.title || template.title}
-                  aria-label={disabled ? 'Insufficient permissions' : item.title || template.title}
+                  text={title}
+                  aria-label={disabled ? 'Insufficient permissions' : title}
                   disabled={disabled}
                   data-testid={`action-intent-button-${itemIndex}`}
                 />

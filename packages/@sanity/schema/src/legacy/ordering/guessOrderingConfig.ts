@@ -18,6 +18,10 @@ export default function guessOrderingConfig(objectTypeDef) {
 
   return candidates.map((name) => ({
     name: name,
+    i18n: {
+      key: `default-orderings.${name}`,
+      ns: 'studio',
+    },
     title: capitalize(startCase(name)),
     by: [{field: name, direction: 'asc'}],
   }))

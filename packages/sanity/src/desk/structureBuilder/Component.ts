@@ -5,6 +5,7 @@ import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from '
 import {validateId} from './util/validateId'
 import {UserComponent} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
+import {I18nTextRecord} from 'sanity'
 
 /**
  * Interface for component
@@ -102,6 +103,21 @@ export class ComponentBuilder implements Serializable<Component> {
    */
   getTitle(): BuildableComponent['title'] {
     return this.spec.title
+  }
+
+  /** Set the i18n key and namespace used to populate the localized title.
+   * @param i18n - the key and namespaced used to populate the localized title.
+   * @returns component builder based on i18n key and ns provided
+   */
+  i18n(i18n: I18nTextRecord<'title'>): ComponentBuilder {
+    return this.clone({i18n})
+  }
+
+  /** Get i18n key and namespace used to populate the localized title
+   * @returns the i18n key and namespace used to populate the localized title
+   */
+  getI18n(): I18nTextRecord<'title'> | undefined {
+    return this.spec.i18n
   }
 
   /** Set Component child

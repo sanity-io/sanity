@@ -125,6 +125,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
           templateId: template.id,
           type: 'initialValueTemplateItem',
           title: item.title || template.title,
+          i18n: item.i18n || template.i18n,
           icon: item.icon as InitialValueTemplateItem['icon'],
           description: template.description,
           parameters: templateParams,

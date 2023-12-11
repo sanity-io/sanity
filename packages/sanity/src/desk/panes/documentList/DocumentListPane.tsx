@@ -11,6 +11,7 @@ import {_DEBUG} from '../../constants'
 import {useDeskToolSetting} from '../../useDeskToolSetting'
 import {BaseDeskToolPaneProps} from '../types'
 import {PaneMenuItem} from '../../types'
+import {structureLocaleNamespace} from '../../i18n'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {
   applyOrderingFunctions,
@@ -21,10 +22,10 @@ import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
 import {LoadingVariant, SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
-import {structureLocaleNamespace} from '../../i18n'
 import {
   GeneralPreviewLayoutKey,
   SourceProvider,
+  useI18nText,
   useSchema,
   useSource,
   useTranslation,
@@ -98,6 +99,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
   const schema = useSchema()
   const {name: parentSourceName} = useSource()
+
   const {
     defaultLayout = 'default',
     displayOptions,
@@ -105,7 +107,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     menuItemGroups,
     menuItems,
     options,
-    title,
   } = pane
   const {apiVersion, defaultOrdering = EMPTY_ARRAY, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -117,6 +118,9 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     'layout',
     defaultLayout,
   )
+
+  const {t} = useTranslation(structureLocaleNamespace)
+  const {title} = useI18nText(pane)
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
@@ -223,8 +227,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
     return 'initial'
   }, [isLoading, items.length])
-
-  const {t} = useTranslation(structureLocaleNamespace)
 
   const searchInput = (
     <Box paddingX={2} paddingBottom={2}>

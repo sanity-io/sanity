@@ -3,7 +3,7 @@ import {Box} from '@sanity/ui'
 import styled from 'styled-components'
 import {PaneContent, PaneItem, usePaneLayout} from '../../components'
 import {PaneListItem, PaneListItemDivider} from '../../types'
-import {CommandList, CommandListItemContext, GeneralPreviewLayoutKey} from 'sanity'
+import {CommandList, CommandListItemContext, GeneralPreviewLayoutKey, useGetI18nText} from 'sanity'
 
 interface ListPaneContentProps {
   childItemId?: string
@@ -27,6 +27,11 @@ const Divider = styled.hr`
 export function ListPaneContent(props: ListPaneContentProps) {
   const {childItemId, items, isActive, layout, showIcons, title} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
+  const getI18nText = useGetI18nText(
+    items?.filter(
+      (item): item is Exclude<typeof item, {type: 'divider'}> => item.type !== 'divider',
+    ),
+  )
 
   const getItemDisabled = useCallback(
     (itemIndex: number) => {
@@ -82,12 +87,12 @@ export function ListPaneContent(props: ListPaneContentProps) {
           pressed={pressed}
           schemaType={item.schemaType}
           selected={selected}
-          title={item.title}
+          title={getI18nText(item).title}
           value={value}
         />
       )
     },
-    [childItemId, isActive, layout, shouldShowIconForItem],
+    [childItemId, getI18nText, isActive, layout, shouldShowIconForItem],
   )
 
   return (

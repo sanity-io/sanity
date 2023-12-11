@@ -10,7 +10,7 @@ import {
 } from './InitialValueTemplateItem'
 import {validateId} from './util/validateId'
 import {getStructureNodeId} from './util/getStructureNodeId'
-import {PreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
+import {PreviewLayoutKey, InitialValueTemplateItem, I18nTextRecord} from 'sanity'
 
 function noChildResolver() {
   return undefined
@@ -142,6 +142,21 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
    */
   getTitle(): TList['title'] {
     return this.spec.title
+  }
+
+  /** Set the i18n key and namespace used to populate the localized title.
+   * @param i18n - the key and namespaced used to populate the localized title.
+   * @returns component builder based on i18n key and ns provided
+   */
+  i18n(i18n: I18nTextRecord<'title'>): ConcreteImpl {
+    return this.clone({i18n})
+  }
+
+  /** Get i18n key and namespace used to populate the localized title
+   * @returns the i18n key and namespace used to populate the localized title
+   */
+  getI18n(): TList['i18n'] {
+    return this.spec.i18n
   }
 
   /** Set generic list layout
@@ -282,6 +297,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
     return {
       id: validateId(id, options.path, id || options.index),
       title: this.spec.title,
+      i18n: this.spec.i18n,
       type: 'genericList',
       defaultLayout,
       child: this.spec.child || noChildResolver,

@@ -1,13 +1,26 @@
 import {SortOrdering} from '@sanity/types'
+import {structureLocaleNamespace} from '../i18n'
 
 export const ORDER_BY_UPDATED_AT: SortOrdering = {
   title: 'Last edited',
+  i18n: {
+    title: {
+      key: 'menu-items.sort-by.last-edited',
+      ns: structureLocaleNamespace,
+    },
+  },
   name: 'lastEditedDesc',
   by: [{field: '_updatedAt', direction: 'desc'}],
 }
 
 export const ORDER_BY_CREATED_AT: SortOrdering = {
   title: 'Created',
+  i18n: {
+    title: {
+      key: 'menu-items.sort-by.created',
+      ns: structureLocaleNamespace,
+    },
+  },
   name: 'lastCreatedDesc',
   by: [{field: '_createdAt', direction: 'desc'}],
 }

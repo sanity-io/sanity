@@ -22,7 +22,7 @@ describe('core: New document filter', () => {
     const searchQuery = 'article'
     const options = [article, author, book, category]
 
-    const result = filterOptions(options, searchQuery)
+    const result = filterOptions(options, searchQuery, (i) => i)
 
     expect(result).toEqual([article])
   })
@@ -37,7 +37,7 @@ describe('core: New document filter', () => {
     const searchQuery = ''
     const options = [article, author, book, category]
 
-    const result = filterOptions(options, searchQuery)
+    const result = filterOptions(options, searchQuery, (i) => i)
     expect(result).toEqual([article, author, book, category])
   })
 
@@ -51,7 +51,7 @@ describe('core: New document filter', () => {
     const searchQuery = 'foo'
     const options = [article, author, book, category]
 
-    const result = filterOptions(options, searchQuery)
+    const result = filterOptions(options, searchQuery, (i) => i)
     expect(result).toEqual([])
   })
 
@@ -69,7 +69,7 @@ describe('core: New document filter', () => {
     const searchQuery = 'with'
     const options = [withAuthor, withBook, withAuthorAndBook, bookWithAuthor, book]
 
-    const result = filterOptions(options, searchQuery)
+    const result = filterOptions(options, searchQuery, (i) => i)
     expect(result).toEqual([withAuthor, withAuthorAndBook, withBook, bookWithAuthor])
   })
 })

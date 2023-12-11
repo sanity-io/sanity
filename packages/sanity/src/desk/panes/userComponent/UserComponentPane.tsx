@@ -5,6 +5,7 @@ import {DeskToolPaneActionHandler} from '../../types'
 import {BaseDeskToolPaneProps} from '../types'
 import {UserComponentPaneHeader} from './UserComponentPaneHeader'
 import {UserComponentPaneContent} from './UserComponentPaneContent'
+import {useI18nText} from 'sanity'
 
 type UserComponentPaneProps = BaseDeskToolPaneProps<'component'>
 
@@ -18,7 +19,6 @@ export function UserComponentPane(props: UserComponentPaneProps) {
     component,
     menuItems,
     menuItemGroups,
-    title = '',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type: _unused,
     ...restPane
@@ -26,6 +26,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
   const [ref, setRef] = useState<{
     actionHandlers?: Record<string, DeskToolPaneActionHandler>
   } | null>(null)
+  const {title = ''} = useI18nText(pane)
 
   return (
     <Pane id={paneKey} minWidth={320} selected={restProps.isSelected}>

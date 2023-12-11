@@ -1,4 +1,4 @@
-import {Path, SchemaType} from '@sanity/types'
+import {Path, SchemaType, I18nTextRecord} from '@sanity/types'
 import {ComponentType, ReactNode} from 'react'
 import {ComposableOption, ConfigContext} from '../../types'
 
@@ -51,6 +51,7 @@ export interface DocumentFieldActionItem {
   selected?: boolean
   status?: DocumentFieldActionStatus
   title: string
+  i18n?: I18nTextRecord<'title'>
   tone?: DocumentFieldActionTone
 }
 
@@ -74,6 +75,7 @@ export interface DocumentFieldActionGroup {
   renderAsButton?: boolean
   status?: DocumentFieldActionStatus
   title: string
+  i18n?: I18nTextRecord<'title'>
   tone?: DocumentFieldActionTone
 }
 

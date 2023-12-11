@@ -245,6 +245,16 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The loading messaging for when the tooltip is still loading permission info */
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 
+  /** --- Menu items --- */
+  /** The menu item title to use the compact view */
+  'menu-items.layout.compact-view': 'Compact view',
+  /** The menu item title to use the detailed view */
+  'menu-items.layout.detailed-view': 'Detailed view',
+  /** The menu item title to Sort by Created */
+  'menu-items.sort-by.created': 'Sort by Created',
+  /** The menu item title to Sort by Last Edited */
+  'menu-items.sort-by.last-edited': 'Sort by Last Edited',
+
   /** The link text of the no document type screen that appears directly below the subtitle */
   'no-document-types-screen.link-text': 'Learn how to add a document type →',
   /** The subtitle of the no document type screen that appears directly below the title */

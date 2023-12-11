@@ -5,6 +5,7 @@ import {Card, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
 import React, {memo, useCallback, useId, useMemo, useState} from 'react'
 import {StatusButton, StatusButtonProps} from '../../../components'
 import {DocumentFieldActionGroup, DocumentFieldActionNode} from '../../../config'
+import {useI18nText} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
 
 /** @internal */
@@ -130,6 +131,7 @@ function RootFieldActionMenuGroup(props: {
   open: boolean
 }) {
   const {node, onOpen, onClose, open} = props
+  const {title} = useI18nText(node)
 
   return (
     <MenuButton
@@ -137,7 +139,7 @@ function RootFieldActionMenuGroup(props: {
         <StatusButton
           fontSize={1}
           icon={node.icon}
-          label={open ? undefined : node.title}
+          label={open ? undefined : title}
           mode="bleed"
           padding={2}
           tooltip={STATUS_BUTTON_TOOLTIP_PROPS}

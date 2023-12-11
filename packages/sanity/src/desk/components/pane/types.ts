@@ -1,5 +1,6 @@
 import {ComponentType, ReactNode} from 'react'
 import {Intent} from '../../structureBuilder'
+import {I18nTextRecord} from 'sanity'
 
 /**
  * @internal
@@ -83,7 +84,8 @@ export interface _PaneMenuItem {
   onAction: () => void
   renderAsButton: boolean
   selected?: boolean
-  title: string
+  title?: string
+  i18n?: I18nTextRecord<'title'>
   tone?: 'primary' | 'critical' | 'caution' | 'positive'
 }
 
@@ -95,6 +97,7 @@ export interface _PaneMenuGroup {
   expanded: boolean
   icon?: ComponentType | ReactNode
   title?: string
+  i18n?: I18nTextRecord<'title'>
   children: _PaneMenuNode[]
   renderAsButton: boolean
 }

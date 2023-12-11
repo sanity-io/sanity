@@ -3,7 +3,7 @@ import {Box, Label, MenuDivider, MenuGroup, MenuItem, PopoverProps, Text} from '
 import React, {useCallback, MouseEvent} from 'react'
 import {Intent} from '../../structureBuilder'
 import {_PaneMenuItem, _PaneMenuNode} from './types'
-import {TooltipOfDisabled} from 'sanity'
+import {TooltipOfDisabled, useGetI18nText, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
 const MENU_GROUP_POPOVER_PROPS: PopoverProps = {
@@ -18,10 +18,13 @@ export function PaneMenuButtonItem(props: {
   node: _PaneMenuNode
 }) {
   const {disabled, isAfterGroup, node} = props
+  const getI18nText = useGetI18nText('i18n' in node ? node : undefined)
 
   if (node.type === 'divider') {
     return <MenuDivider />
   }
+
+  const {title} = getI18nText(node)
 
   if (node.type === 'group') {
     if (node.children.length === 0) {
@@ -32,10 +35,10 @@ export function PaneMenuButtonItem(props: {
       return (
         <>
           {isAfterGroup && <MenuDivider />}
-          {node.title && (
+          {title && (
             <Box padding={2} paddingBottom={1}>
               <Label muted size={0}>
-                {node.title}
+                {title}
               </Label>
             </Box>
           )}
@@ -58,7 +61,7 @@ export function PaneMenuButtonItem(props: {
           disabled={disabled}
           icon={node.icon}
           popover={MENU_GROUP_POPOVER_PROPS}
-          text={node.title}
+          text={title}
         >
           {node.children.map((child, childIndex) => (
             <PaneMenuButtonItem
@@ -96,6 +99,7 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
   const tooltipContent = typeof node.disabled === 'object' && (
     <Text size={1}>{node.disabled.reason}</Text>
   )
+  const {title} = useI18nText(node)
 
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
@@ -107,7 +111,7 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
         // eslint-disable-next-line react/jsx-handler-names
         onClick={node.onAction}
         pressed={node.selected}
-        text={node.title}
+        text={title}
         tone={node.tone}
       />
     </TooltipOfDisabled>
@@ -133,6 +137,8 @@ function PaneContextIntentMenuItem(props: {
     [intentLink, node],
   )
 
+  const {title} = useI18nText(node)
+
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
       <MenuItem
@@ -144,7 +150,7 @@ function PaneContextIntentMenuItem(props: {
         iconRight={node.selected ? CheckmarkIcon : undefined}
         onClick={handleClick}
         pressed={node.selected}
-        text={node.title}
+        text={title}
         tone={node.tone}
       />
     </TooltipOfDisabled>

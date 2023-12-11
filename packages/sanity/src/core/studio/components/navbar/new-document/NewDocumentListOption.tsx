@@ -3,7 +3,7 @@ import {Tooltip, Box, Card, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
+import {useI18nText} from '../../../../i18n'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {useIntentLink} from 'sanity/router'
 
@@ -26,7 +26,6 @@ interface NewDocumentListOptionProps {
 
 export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   const {option, currentUser, onClick, preview} = props
-  const {t} = useTranslation()
   const params = useMemo(
     () => ({template: option.templateId, type: option.schemaType}),
     [option.schemaType, option.templateId],
@@ -43,6 +42,8 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
     },
     [onIntentClick, onClick, option],
   )
+
+  const {title} = useI18nText(option)
 
   return (
     <Tooltip
@@ -65,7 +66,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
           padding={preview === 'inline' ? 3 : 4}
           radius={2}
         >
-          <Text size={preview === 'inline' ? 1 : undefined}>{option.title}</Text>
+          <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
         </Card>
       </div>
     </Tooltip>
