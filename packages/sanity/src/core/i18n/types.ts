@@ -149,6 +149,34 @@ export interface Locale {
    * The title of locale, eg `English (US)`, `Norsk (bokmål)`, `ไทย`…
    */
   title: string
+
+  /**
+   * Week information for this locale. Based on the `Intl.Locale['weekInfo']` type.
+   */
+  weekInfo: LocaleWeekInfo
+}
+
+/**
+ * An object representing week information associated with the Locale data specified in
+ * {@link https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Patterns_Week_Elements | UTS 35's Week Elements }
+ *
+ * @public
+ */
+export interface LocaleWeekInfo {
+  /**
+   * An integer indicating the first day of the week for the locale. Can be either 1 (Monday) or 7 (Sunday).
+   */
+  firstDay: 1 | 7
+
+  /**
+   * An array of integers indicating the weekend days for the locale, where 1 is Monday and 7 is Sunday.
+   */
+  weekend: (1 | 2 | 3 | 4 | 5 | 6 | 7)[]
+
+  /**
+   * An integer between 1 and 7 indicating the minimal days required in the first week of a month or year, for calendar purposes.
+   */
+  minimalDays: 1 | 2 | 3 | 4 | 5 | 6 | 7
 }
 
 /**

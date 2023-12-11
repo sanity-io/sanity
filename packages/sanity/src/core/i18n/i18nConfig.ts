@@ -5,7 +5,7 @@ import {resolveConfigProperty} from '../config/resolveConfigProperty'
 import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
 import {defaultLocale} from './locales'
 import {createSanityI18nBackend} from './backend'
-import {LocaleSource, LocaleDefinition, LocaleResourceBundle} from './types'
+import type {LocaleSource, LocaleDefinition, LocaleResourceBundle, Locale} from './types'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {getPreferredLocale} from './localeStore'
 import {DEBUG_I18N, maybeWrapT} from './debug'
@@ -62,7 +62,7 @@ function createI18nApi({
     console.error('Failed to initialize i18n backend: %s', err)
   })
 
-  const reducedLocales = locales.map(({id, title}) => ({id, title}))
+  const reducedLocales = locales.map(reduceLocaleDefinition)
 
   return {
     /** @public */
@@ -173,4 +173,17 @@ function getI18NextOptions(
     lng: locale,
     supportedLngs: locales.map((def) => def.id),
   }
+}
+
+/**
+ * Reduce a locale definition to a Locale instance
+ *
+ * @param definition - The locale definition to reduce
+ * @returns A Locale instance
+ * @internal
+ */
+function reduceLocaleDefinition(definition: LocaleDefinition): Locale {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const {bundles, ...locale} = definition
+  return locale
 }
