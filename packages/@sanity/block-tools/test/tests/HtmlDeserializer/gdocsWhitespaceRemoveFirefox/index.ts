@@ -8,7 +8,7 @@ const blockContentType = defaultSchema
 const testFn: BlockTestFn = (html, blockTools, commonOptions) => {
   return blockTools.htmlToBlocks(html, blockContentType, {
     ...commonOptions,
-    unstable_whitespaceOnPasteMode: 'normalize',
+    unstable_whitespaceOnPasteMode: 'remove',
   })
 }
 

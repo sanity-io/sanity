@@ -1343,19 +1343,5 @@
     ],
     "_type": "block",
     "style": "normal"
-  },
-  {
-    "_key": "randomKey89",
-    "children": [
-      {
-        "_type": "span",
-        "marks": [],
-        "text": "\n",
-        "_key": "randomKey890"
-      }
-    ],
-    "markDefs": [],
-    "_type": "block",
-    "style": "normal"
   }
 ]
