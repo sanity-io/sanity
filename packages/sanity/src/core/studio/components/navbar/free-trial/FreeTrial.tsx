@@ -8,21 +8,20 @@ import {DialogContent} from './DialogContent'
 import {FreeTrialResponse} from './types'
 import {FreeTrialButton} from './FreeTrialButton'
 
-export function FreeTrial({data}: {data: FreeTrialResponse}) {
+export function FreeTrial() {
   const schemeValue = useColorSchemeValue()
-  const [_, setData] = useState<FreeTrialResponse | null>(null)
+  const [data, setData] = useState<FreeTrialResponse | null>(null)
   const [showContent, setShowContent] = useState(false)
   const client = useClient({apiVersion: 'vX'})
-
+  // TODO: This maybe changes and we are going to return only one option in the response.
+  const dialogId = data?.popover?.id || data?.modal?.id
   const fetchData = async () => {
     const response = await client.request({url: `/journey/trial?studioVersion=${SANITY_VERSION}`})
-    // eslint-disable-next-line no-console
-    console.log('response', response)
     setData(response)
 
     // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
     const deskRenameSeen = localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
-    if (data.showOnLoad && deskRenameSeen && data.popover) {
+    if (response.showOnLoad && deskRenameSeen && response.popover) {
       setShowContent(true)
     }
   }
@@ -33,12 +32,12 @@ export function FreeTrial({data}: {data: FreeTrialResponse}) {
   }, [])
 
   const toggleShowContent = useCallback(() => {
-    if (showContent) {
+    if (showContent && dialogId) {
       // The user has seen the content, so we can notify the backend.
-      client.request({url: '/journey/trial/', method: 'POST'})
+      client.request({url: `/journey/trial/${dialogId}`, method: 'POST'})
     }
     setShowContent(!showContent)
-  }, [showContent, client])
+  }, [showContent, client, dialogId])
 
   if (!data) return null
 

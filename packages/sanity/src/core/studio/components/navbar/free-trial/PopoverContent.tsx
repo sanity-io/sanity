@@ -2,7 +2,7 @@ import {Card, Heading, Flex, Button, Box, Container} from '@sanity/ui'
 import styled from 'styled-components'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {FreeTrialDialog} from './types'
-import {DescriptionSerializer} from './Description'
+import {DescriptionSerializer} from './DescriptionSerializer'
 import {replaceContent} from './replaceContent'
 
 const Image = styled.img`

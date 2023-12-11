@@ -19,8 +19,13 @@ export interface FreeTrialDialog {
   _id: string
   _type: 'dialog'
   _createdAt: string
-  ctaButton?: CtaButton
-  secondaryButton?: Omit<CtaButton, 'url'>
+  ctaButton?: {
+    text: string
+    url: string
+  }
+  secondaryButton?: {
+    text: string
+  }
   descriptionText: PortableTextBlock[]
   dialogType: 'modal' | 'popover'
   headingText: string
@@ -42,14 +47,4 @@ interface Image {
     url: string
     altText: string | null
   }
-}
-
-interface Asset {
-  url: string
-  altText: string | null
-}
-
-interface CtaButton {
-  text: string
-  url: string
 }

@@ -3,9 +3,12 @@ import styled from 'styled-components'
 import {CloseIcon} from '@sanity/icons'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {FreeTrialDialog} from './types'
-import {DescriptionSerializer} from './Description'
+import {DescriptionSerializer} from './DescriptionSerializer'
 import {replaceContent} from './replaceContent'
 
+/**
+ * Absolute positioned button to close the dialog.
+ */
 const StyledButton = styled(Button)`
   position: absolute;
   top: 12px;
@@ -90,7 +93,6 @@ export function DialogContent({handleClose, content, daysLeft}: ModalContentProp
       )}
       <Flex padding={3} direction={'column'}>
         <Box paddingX={2} marginTop={3}>
-          {/* // TODO: Replace the XX for the actual number of days left. */}
           <Heading size={2}>{replaceContent(content.headingText, {daysLeft})}</Heading>
         </Box>
         <Box marginTop={4} paddingBottom={3}>
