@@ -1,13 +1,14 @@
 import React, {forwardRef} from 'react'
-import {TooltipWithNodes, TooltipWithNodesProps} from '../../ui'
+import {Tooltip, TooltipProps} from '../../ui'
 
 /** @internal */
-export const TooltipOfDisabled = forwardRef<HTMLDivElement, TooltipWithNodesProps>(
-  function DisabledTooltip({children, content, disabled, ...restProps}, ref) {
-    return (
-      <TooltipWithNodes {...restProps} content={content} disabled={disabled || !content} ref={ref}>
-        <div>{children}</div>
-      </TooltipWithNodes>
-    )
-  },
-)
+export const TooltipOfDisabled = forwardRef<HTMLDivElement, TooltipProps>(function DisabledTooltip(
+  {children, content, disabled, ...restProps},
+  ref,
+) {
+  return (
+    <Tooltip {...restProps} content={content} disabled={disabled || !content} ref={ref}>
+      <div>{children}</div>
+    </Tooltip>
+  )
+})

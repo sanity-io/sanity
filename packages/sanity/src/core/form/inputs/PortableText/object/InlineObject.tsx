@@ -6,7 +6,7 @@ import {
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
-import {TooltipWithNodes} from '../../../../../ui'
+import {Tooltip} from '../../../../../ui'
 import {
   BlockProps,
   RenderAnnotationCallback,
@@ -201,7 +201,7 @@ export const InlineObject = (props: InlineObjectProps) => {
   return useMemo(
     () => (
       <span ref={memberItem?.elementRef} contentEditable={false}>
-        <TooltipWithNodes
+        <Tooltip
           placement="bottom"
           portal="editor"
           disabled={!tooltipEnabled}
@@ -211,7 +211,7 @@ export const InlineObject = (props: InlineObjectProps) => {
           {renderInlineBlock && (
             <span style={{position: 'relative'}}>{renderInlineBlock(componentProps)}</span>
           )}
-        </TooltipWithNodes>
+        </Tooltip>
       </span>
     ),
     [componentProps, memberItem?.elementRef, renderInlineBlock, toolTipContent, tooltipEnabled],

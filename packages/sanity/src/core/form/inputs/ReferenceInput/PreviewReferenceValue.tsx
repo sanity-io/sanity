@@ -2,7 +2,7 @@ import React, {ComponentType, ReactNode, Fragment} from 'react'
 import type {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
-import {TooltipWithNodes} from '../../../../ui'
+import {Tooltip} from '../../../../ui'
 import type {RenderPreviewCallback} from '../../types'
 import {SanityDefaultPreview} from '../../../preview'
 import {Translate, useTranslation} from '../../../i18n'
@@ -87,7 +87,7 @@ export function PreviewReferenceValue(props: {
         </Box>
         {insufficientPermissions || notFound ? (
           <Box>
-            <TooltipWithNodes
+            <Tooltip
               portal
               content={
                 notFound ? (
@@ -114,7 +114,7 @@ export function PreviewReferenceValue(props: {
               <TextWithTone tone="default">
                 <HelpCircleIcon />
               </TextWithTone>
-            </TooltipWithNodes>
+            </Tooltip>
           </Box>
         ) : null}
       </Inline>
@@ -192,7 +192,7 @@ function InvalidType({
         </Flex>
       </Box>
       <Box>
-        <TooltipWithNodes
+        <Tooltip
           portal
           content={
             <Stack space={3}>
@@ -214,7 +214,7 @@ function InvalidType({
               <HelpCircleIcon />
             </TextWithTone>
           </Box>
-        </TooltipWithNodes>
+        </Tooltip>
       </Box>
     </Flex>
   )

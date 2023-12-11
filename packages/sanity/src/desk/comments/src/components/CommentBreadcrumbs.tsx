@@ -1,7 +1,7 @@
 import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React, {Fragment, useMemo} from 'react'
-import {TooltipWithNodes} from '../../../../ui'
+import {Tooltip} from '../../../../ui'
 
 export interface CommentBreadcrumbsProps {
   titlePath: string[]
@@ -53,7 +53,7 @@ export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
       if (Array.isArray(item)) {
         return (
           <Fragment key={key}>
-            <TooltipWithNodes
+            <Tooltip
               content={
                 <Stack space={2} padding={2}>
                   {item.map(renderItem)}
@@ -61,7 +61,7 @@ export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
               }
             >
               <Box>{renderItem('...', index)}</Box>
-            </TooltipWithNodes>
+            </Tooltip>
 
             {showSeparator && separator}
           </Fragment>
