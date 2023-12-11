@@ -1,7 +1,7 @@
 import React from 'react'
 import {Flex, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {TooltipWithNodes} from '../../../../../../ui'
+import {Tooltip} from '../../../../../../ui'
 import {CommentsAvatar} from '../../avatars'
 import {useCurrentUser, useUser} from 'sanity'
 
@@ -37,7 +37,7 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
   if (!user || loading) return <Span>@Loading</Span> // todo: improve
 
   return (
-    <TooltipWithNodes
+    <Tooltip
       portal
       content={
         <Flex align="center" gap={2}>
@@ -52,6 +52,6 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
       <Span data-selected={selected} data-active={currentUser?.id === userId}>
         @{user.displayName}
       </Span>
-    </TooltipWithNodes>
+    </Tooltip>
   )
 }

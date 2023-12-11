@@ -1,7 +1,7 @@
 import type {Path} from '@sanity/types'
 import {Text, Stack, Flex, Inline} from '@sanity/ui'
 import React from 'react'
-import {TooltipWithNodes, TooltipWithNodesProps} from '../../../../ui'
+import {Tooltip, TooltipProps} from '../../../../ui'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useRelativeTime} from '../../../hooks'
 import {useUser} from '../../../store'
@@ -10,7 +10,7 @@ import type {AnnotationDetails, Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
 /** @internal */
-export interface DiffTooltipProps extends TooltipWithNodesProps {
+export interface DiffTooltipProps extends TooltipProps {
   children: React.ReactElement
   description?: React.ReactNode
   diff: Diff
@@ -18,7 +18,7 @@ export interface DiffTooltipProps extends TooltipWithNodesProps {
 }
 
 /** @internal */
-export interface DiffTooltipWithAnnotationsProps extends TooltipWithNodesProps {
+export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
   annotations: AnnotationDetails[]
   children: React.ReactElement
   description?: React.ReactNode
@@ -59,9 +59,9 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
 
   return (
     <LegacyLayerProvider zOffset="paneFooter">
-      <TooltipWithNodes content={content} portal {...restProps}>
+      <Tooltip content={content} portal {...restProps}>
         {children}
-      </TooltipWithNodes>
+      </Tooltip>
     </LegacyLayerProvider>
   )
 }

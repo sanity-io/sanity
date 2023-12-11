@@ -1,7 +1,7 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {startCase, uniq} from 'lodash'
 import React, {ReactElement, useMemo} from 'react'
-import {TooltipWithNodes} from '../../../../../../../../../ui'
+import {Tooltip} from '../../../../../../../../../ui'
 import {TextWithTone} from '../../../../../../../../components'
 import {useSchema} from '../../../../../../../../hooks'
 import {isNonNullable, truncateString} from '../../../../../../../../util'
@@ -76,7 +76,7 @@ export function FilterTooltip({
   }, [fieldDefinition?.documentTypes, fieldDefinition?.fieldPath, schema])
 
   return (
-    <TooltipWithNodes
+    <Tooltip
       content={
         <Card tone="default" radius={2} style={{maxWidth: '250px'}}>
           <Stack space={4}>
@@ -146,6 +146,6 @@ export function FilterTooltip({
       portal
     >
       {children}
-    </TooltipWithNodes>
+    </Tooltip>
   )
 }
