@@ -2,7 +2,7 @@ import {Flex} from '@sanity/ui'
 import React, {useState, memo, useLayoutEffect, useEffect} from 'react'
 import {DocumentStatusIndicator} from '../../../../../ui/documentStatusIndicator'
 import {DocumentStatus} from '../../../../../ui/documentStatus'
-import {TooltipWithNodes} from '../../../../../ui'
+import {Tooltip} from '../../../../../ui'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
@@ -54,7 +54,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
     <Flex align="center" data-ui="DocumentSparkline">
       <Flex align="center" flex={1} gap={3} paddingY={1} wrap="wrap">
         {!status && (
-          <TooltipWithNodes
+          <Tooltip
             content={
               <DocumentStatus
                 absoluteDate
@@ -77,7 +77,7 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
                 singleLine
               />
             </Flex>
-          </TooltipWithNodes>
+          </Tooltip>
         )}
 
         <DocumentStatusPulse status={status || undefined} />

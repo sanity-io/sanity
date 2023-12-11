@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react'
 import styled, {css} from 'styled-components'
-import {Tooltip, TooltipWithNodes} from '../../../../../../../../../../ui'
+import {Tooltip} from '../../../../../../../../../../ui'
 import {Translate, useTranslation} from '../../../../../../../../../i18n'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'
@@ -156,7 +156,7 @@ export function ParsedDateTextInput({
   }, [dateFormat, processInputString, isDateTimeFormat, value])
 
   return (
-    <TooltipWithNodes
+    <Tooltip
       content={
         <Translate
           t={t}
@@ -183,6 +183,6 @@ export function ParsedDateTextInput({
         placeholder={formattedPlaceholder}
         value={inputValue}
       />
-    </TooltipWithNodes>
+    </Tooltip>
   )
 }

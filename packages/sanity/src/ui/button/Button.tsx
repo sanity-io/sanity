@@ -65,7 +65,7 @@ export const Button = forwardRef(function Button(
     mode = 'default',
     tone = 'default',
     tooltipProps,
-    ...props
+    ...rest
   }: ButtonProps & Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title'>,
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
@@ -81,15 +81,10 @@ export const Button = forwardRef(function Button(
     [tooltipProps],
   )
 
-  const ariaLabel = props.text ?? tooltipProps?.content
-
   return (
     <ConditionalWrapper condition={!!tooltipProps} wrapper={renderWrapper}>
       <UIButton
-        // aria-label is enforced in buttons without text.
-        // Could be overridden by passing aria-label directly.
-        {...(ariaLabel ? {'aria-label': ariaLabel} : {})}
-        {...props}
+        {...rest}
         {...(size === 'default' ? DEFAULT_BUTTON_PROPS : LARGE_BUTTON_PROPS)}
         ref={ref}
         mode={mode}

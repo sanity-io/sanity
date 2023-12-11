@@ -14,7 +14,7 @@ import React, {
 import {isValidElementType} from 'react-is'
 import {SanityImageSource} from '@sanity/image-url/lib/types/types'
 import {isImageSource} from '@sanity/asset-utils'
-import {TooltipWithNodes} from '../../../ui'
+import {Tooltip} from '../../../ui'
 import {PreviewProps} from '../../components/previews'
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -128,7 +128,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
 
   if (tooltip) {
     return (
-      <TooltipWithNodes
+      <Tooltip
         content={tooltip}
         disabled={!tooltip}
         fallbackPlacements={['top-end']}
@@ -136,7 +136,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
       >
         {/* Currently tooltips won't trigger without a wrapping element */}
         <div>{children}</div>
-      </TooltipWithNodes>
+      </Tooltip>
     )
   }
 
