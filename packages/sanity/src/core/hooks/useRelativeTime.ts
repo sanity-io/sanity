@@ -85,7 +85,7 @@ export function useRelativeTime(time: Date | string, options: RelativeTimeOption
 
 function useFormatRelativeTime(date: Date | string, opts: RelativeTimeOptions = {}): TimeSpec {
   const {t} = useTranslation()
-  const currentLocale = useCurrentLocale()
+  const currentLocale = useCurrentLocale().id
 
   const {timeZone, minimal} = opts
   const parsedDate = date instanceof Date ? date : new Date(date)

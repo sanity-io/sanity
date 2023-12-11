@@ -1,10 +1,11 @@
 import {useContext} from 'react'
 import {LocaleContext, type LocaleContextValue} from '../LocaleContext'
+import type {Locale} from '../types'
 
 /**
  * @internal
  */
-export function useCurrentLocale(): string {
+export function useCurrentLocale(): Locale {
   return useLocale().currentLocale
 }
 

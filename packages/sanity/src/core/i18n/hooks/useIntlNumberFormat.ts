@@ -17,6 +17,6 @@ export type UseIntlNumberFormatOptions = Intl.NumberFormatOptions
  * @public
  */
 export function useIntlNumberFormat(options: UseIntlNumberFormatOptions = {}): Intl.NumberFormat {
-  const currentLocale = useCurrentLocale()
+  const currentLocale = useCurrentLocale().id
   return intlCache.numberFormat(currentLocale, options)
 }

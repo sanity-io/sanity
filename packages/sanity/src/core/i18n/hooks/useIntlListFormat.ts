@@ -34,6 +34,6 @@ export interface UseIntlListFormatOptions {
  * @public
  */
 export function useIntlListFormat(options: UseIntlListFormatOptions = {}): Intl.ListFormat {
-  const currentLocale = useCurrentLocale()
+  const currentLocale = useCurrentLocale().id
   return intlCache.listFormat(currentLocale, options)
 }

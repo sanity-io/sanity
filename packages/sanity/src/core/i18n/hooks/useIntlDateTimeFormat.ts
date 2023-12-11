@@ -22,6 +22,6 @@ export type UseIntlDateTimeFormatOptions = Omit<
 export function useIntlDateTimeFormat(
   options: UseIntlDateTimeFormatOptions = {},
 ): Intl.DateTimeFormat {
-  const currentLocale = useCurrentLocale()
+  const currentLocale = useCurrentLocale().id
   return intlCache.dateTimeFormat(currentLocale, options)
 }
