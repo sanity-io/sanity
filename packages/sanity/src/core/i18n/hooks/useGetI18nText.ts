@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react'
 import {isNonNullable} from '../../util'
 import {useTranslation} from './useTranslation'
-import {I18nNode} from './useI18nText'
+import type {I18nNode} from './useI18nText'
 
 /**
  * Similar to `useI18nText` except returns a function that can be called

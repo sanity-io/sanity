@@ -12,6 +12,7 @@ import {DEBUG_I18N, maybeWrapT} from './debug'
 
 /**
  * @internal
+ * @hidden
  */
 export function prepareI18n(source: SourceOptions): {source: LocaleSource; i18next: i18n} {
   const {projectId, dataset, name: sourceName} = source

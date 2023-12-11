@@ -10,6 +10,7 @@ import {defaultLocale} from '../locales'
 
 /**
  * @internal
+ * @hidden
  */
 export function LocaleProvider(props: PropsWithChildren) {
   const {
@@ -33,6 +34,7 @@ export function LocaleProvider(props: PropsWithChildren) {
 
 /**
  * @internal
+ * @hidden
  */
 export function LocaleProviderBase({
   projectId,

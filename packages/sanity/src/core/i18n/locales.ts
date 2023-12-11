@@ -5,7 +5,7 @@ import {validationLocaleResources} from './bundles/validation'
 /**
  * The default US English locale for the studio.
  *
- * @beta
+ * @internal
  * @hidden
  */
 export const usEnglishLocale = defineLocale({
@@ -17,7 +17,7 @@ export const usEnglishLocale = defineLocale({
 /**
  * The default locale for the studio.
  *
- * @beta
+ * @internal
  * @hidden
  */
 export const defaultLocale = usEnglishLocale

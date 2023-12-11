@@ -3,13 +3,16 @@ import {LocaleContext, type LocaleContextValue} from '../LocaleContext'
 import type {Locale} from '../types'
 
 /**
- * @internal
+ * Returns the currently active locale
+ *
+ * @public
  */
 export function useCurrentLocale(): Locale {
   return useLocale().currentLocale
 }
 
 /**
+ * @hidden
  * @internal
  */
 export function useLocale(): LocaleContextValue {

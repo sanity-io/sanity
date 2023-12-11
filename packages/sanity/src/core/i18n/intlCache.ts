@@ -5,6 +5,7 @@ type AnyIntlOptions = Intl.DateTimeFormat | Intl.ListFormatOptions | Intl.Number
  * thus this serves as an in-memory cache, and takes into account the options passed.
  *
  * @internal
+ * @hidden
  */
 export const intlCache = (() => {
   const caches = {

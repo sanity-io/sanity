@@ -24,20 +24,29 @@ export interface LocaleResourceRecord {
 }
 
 /**
- * @hidden
- * @beta
+ * Context passed to locale config resolvers
+ *
+ * @public
  */
 export interface LocaleConfigContext {
   projectId: string
   dataset: string
 }
 
-/** @beta @hidden */
+/**
+ * Either an array of locale definitions, or a resolver that returns one.
+ *
+ * @public
+ */
 export type LocalesOption =
   | ((prev: LocaleDefinition[], context: LocaleConfigContext) => LocaleDefinition[])
   | LocaleDefinition[]
 
-/** @beta @hidden */
+/**
+ * Either an array of locale resource bundles, or a resolver that returns one.
+ *
+ * @public
+ */
 export type LocalesBundlesOption =
   | ((prev: LocaleResourceBundle[], context: LocaleConfigContext) => LocaleResourceBundle[])
   | LocaleResourceBundle[]
@@ -45,8 +54,7 @@ export type LocalesBundlesOption =
 /**
  * Options that defines or adds resources to existing locales
  *
- * @beta
- * @hidden
+ * @public
  */
 export interface LocalePluginOptions {
   /**
@@ -67,7 +75,7 @@ export interface LocalePluginOptions {
 /**
  * A locale resource bundle where the locale is inherited from the parent locale definition.
  *
- * @beta
+ * @public
  */
 export type ImplicitLocaleResourceBundle = Omit<LocaleResourceBundle, 'locale'>
 
@@ -75,8 +83,7 @@ export type ImplicitLocaleResourceBundle = Omit<LocaleResourceBundle, 'locale'>
  * A collection of locale resources for a given locale and namespace.
  * In other words, an object of translated locale strings.
  *
- * @beta
- * @hidden
+ * @public
  */
 export interface LocaleResourceBundle {
   /**
@@ -85,7 +92,7 @@ export interface LocaleResourceBundle {
   locale: string
 
   /**
-   * The namespace the resources belong to, eg `vision`, `desk`, `studio`…
+   * The namespace the resources belong to, eg `vision`, `structure`, `studio`…
    */
   namespace: string
 
@@ -113,10 +120,17 @@ export interface LocaleResourceBundle {
 /**
  * A locale resource bundle where the resources are static, eg not lazy loaded.
  *
- * @beta
+ * @public
  */
 export type StaticLocaleResourceBundle = Omit<ImplicitLocaleResourceBundle, 'resources'> & {
+  /**
+   * The locale ID the resources belong to, eg `en-US`, `nb-NO`, `th-TH`…
+   */
   locale?: string
+
+  /**
+   * An object of locale resources.
+   */
   resources: LocaleResourceRecord
 }
 
@@ -140,8 +154,7 @@ export interface Locale {
 /**
  * A locale definition, which describes a locale and its resources.
  *
- * @beta
- * @hidden
+ * @public
  */
 export interface LocaleDefinition extends Locale {
   /**
@@ -155,7 +168,13 @@ export interface LocaleDefinition extends Locale {
   bundles?: (ImplicitLocaleResourceBundle | LocaleResourceBundle)[]
 }
 
-/** @public */
+/**
+ * Internal representation of the available locale configuration.
+ *
+ * Generally not something you will want to use directly.
+ *
+ * @public
+ */
 export interface LocaleSource {
   /**
    * Current locale ID (eg `en-US`, `nb-NO`, `th-TH`…)

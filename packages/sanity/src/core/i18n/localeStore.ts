@@ -13,6 +13,7 @@ const LOCAL_STORAGE_PREFIX = 'sanity-locale'
  * @param sourceId - Source ID to segment on
  * @returns Locale identifier, or `undefined`
  * @internal
+ * @hidden
  */
 export function getPreferredLocale(projectId: string, sourceId: string): string | undefined {
   if (!supportsLocalStorage) {
@@ -30,6 +31,7 @@ export function getPreferredLocale(projectId: string, sourceId: string): string 
  * @param locale - Locale to store
  * @returns
  * @internal
+ * @hidden
  */
 export function storePreferredLocale(projectId: string, sourceId: string, locale: string): void {
   if (!supportsLocalStorage) {

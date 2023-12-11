@@ -18,6 +18,7 @@ const fallbackLocales: LocaleSource['locales'] = [defaultLocale]
  *
  * @returns The fallback source
  * @internal
+ * @hidden
  */
 export const getFallbackLocaleSource: () => LocaleSource = memoize(
   function getFallbackLocaleSource(): LocaleSource {

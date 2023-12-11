@@ -10,8 +10,7 @@ import type {
  *
  * @param bundle - The bundle of resources to define
  * @returns The bundle that was passed, as-is (this is an "identity function")
- * @beta
- * @hidden
+ * @public
  */
 export function defineLocaleResourceBundle(bundle: LocaleResourceBundle): LocaleResourceBundle {
   return bundle
@@ -22,8 +21,7 @@ export function defineLocaleResourceBundle(bundle: LocaleResourceBundle): Locale
  *
  * @param locale - The locale to define
  * @returns The locale that was passed, as-is (this is an "identity function")
- * @beta
- * @hidden
+ * @public
  */
 export function defineLocale(locale: LocaleDefinition): LocaleDefinition {
   return locale
@@ -35,6 +33,7 @@ export function defineLocale(locale: LocaleDefinition): LocaleDefinition {
  * @param bundle - Bundle to check
  * @returns `true` if the bundle has static resources, `false` otherwise
  * @internal
+ * @hidden
  */
 export function isStaticResourceBundle(
   bundle: LocaleResourceBundle | StaticLocaleResourceBundle | ImplicitLocaleResourceBundle,

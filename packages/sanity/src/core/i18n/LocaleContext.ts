@@ -4,11 +4,13 @@ import type {Locale} from './types'
 
 /**
  * @internal
+ * @hidden
  */
 export const LocaleContext = createContext<LocaleContextValue | undefined>(undefined)
 
 /**
  * @internal
+ * @hidden
  */
 export interface LocaleContextValue {
   locales: Locale[]

@@ -1,16 +1,35 @@
+/**
+ * @internal
+ * @hidden
+ */
 export type OpenTagToken = {
   type: 'tagOpen'
   name: string
   selfClosing?: boolean
 }
+
+/**
+ * @internal
+ * @hidden
+ */
 export type CloseTagToken = {
   type: 'tagClose'
   name: string
 }
+
+/**
+ * @internal
+ * @hidden
+ */
 export type TextToken = {
   type: 'text'
   text: string
 }
+
+/**
+ * @internal
+ * @hidden
+ */
 export type Token = OpenTagToken | CloseTagToken | TextToken
 
 const OPEN_TAG_RE = /^<(?<tag>[^\s\d<][^/?><]+)\/?>/
@@ -19,37 +38,13 @@ const SELF_CLOSING_RE = /<[^>]+\/>/
 const VALID_COMPONENT_NAME_RE = /^[A-Z][A-Za-z0-9]+$/
 const VALID_HTML_TAG_NAME_RE = /^[a-z]+$/
 
-function isSelfClosing(tag: string) {
-  return SELF_CLOSING_RE.test(tag)
-}
-function matchOpenTag(input: string) {
-  return input.match(OPEN_TAG_RE)
-}
-function matchCloseTag(input: string) {
-  return input.match(CLOSE_TAG_RE)
-}
-
-function validateTagName(tagName: string) {
-  const isValidComponentName = VALID_COMPONENT_NAME_RE.test(tagName)
-  if (isValidComponentName) {
-    return
-  }
-
-  const isValidHtmlTagName = VALID_HTML_TAG_NAME_RE.test(tagName)
-  if (isValidHtmlTagName) {
-    return
-  }
-
-  throw new Error(
-    tagName.trim() === tagName
-      ? `Invalid tag "<${tagName}>". Tag names must be lowercase HTML tags or start with an uppercase letter and can only include letters and numbers.`
-      : `Invalid tag "<${tagName}>". No whitespace allowed in tags.`,
-  )
-}
-
 /**
  * Parses a string for simple tags
+ *
  * @param input - input string to parse
+ * @returns An array of tokens
+ * @internal
+ * @hidden
  */
 export function simpleParser(input: string): Token[] {
   const tokens: Token[] = []
@@ -119,4 +114,32 @@ export function simpleParser(input: string): Token[] {
     tokens.push({type: 'text', text})
   }
   return tokens
+}
+
+function isSelfClosing(tag: string) {
+  return SELF_CLOSING_RE.test(tag)
+}
+function matchOpenTag(input: string) {
+  return input.match(OPEN_TAG_RE)
+}
+function matchCloseTag(input: string) {
+  return input.match(CLOSE_TAG_RE)
+}
+
+function validateTagName(tagName: string) {
+  const isValidComponentName = VALID_COMPONENT_NAME_RE.test(tagName)
+  if (isValidComponentName) {
+    return
+  }
+
+  const isValidHtmlTagName = VALID_HTML_TAG_NAME_RE.test(tagName)
+  if (isValidHtmlTagName) {
+    return
+  }
+
+  throw new Error(
+    tagName.trim() === tagName
+      ? `Invalid tag "<${tagName}>". Tag names must be lowercase HTML tags or start with an uppercase letter and can only include letters and numbers.`
+      : `Invalid tag "<${tagName}>". No whitespace allowed in tags.`,
+  )
 }

@@ -10,6 +10,7 @@ const DEBUG_MODE = typeof process === 'undefined' ? false : process?.env?.SANITY
  * Whether or not the debug mode for i18n should be enabled
  *
  * @internal
+ * @hidden
  */
 export const DEBUG_I18N = Boolean(DEBUG_MODE)
 
@@ -29,6 +30,7 @@ const debugWrappers = {
  * @param t - The `t` function to wrap
  * @returns The wrapped `t` function, or the original `t` function if not in debug mode
  * @internal
+ * @hidden
  */
 export function maybeWrapT(t: TFunction): TFunction {
   const wrapper =

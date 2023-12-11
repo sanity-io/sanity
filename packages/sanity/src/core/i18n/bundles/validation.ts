@@ -6,6 +6,7 @@ import {validationLocaleNamespace} from '../localeNamespaces'
  * The string resources for validation.
  *
  * @internal
+ * @hidden
  */
 const validationLocaleStrings = defineLocalesResources('validation', {
   /** Array must have exactly "$wantedLength" items, but has more/less */

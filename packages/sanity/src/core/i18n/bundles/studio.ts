@@ -6,6 +6,7 @@ import {studioLocaleNamespace} from '../localeNamespaces'
  * The string resources for the studio core.
  *
  * @internal
+ * @hidden
  */
 export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Menu item for deleting the asset */

@@ -6,6 +6,7 @@ import type {LocaleResourceKey, LocaleResourceRecord, LocaleResourceBundle} from
  * Options for the Sanity i18next backend
  *
  * @internal
+ * @hidden
  */
 export interface SanityI18nBackendOptions {
   bundles: LocaleResourceBundle[]
@@ -24,6 +25,7 @@ export interface SanityI18nBackendOptions {
  * @param options - Options for the backend
  * @returns A backend module for i18next
  * @internal
+ * @hidden
  */
 export function createSanityI18nBackend(options: SanityI18nBackendOptions): BackendModule {
   const {bundles} = options
@@ -70,6 +72,7 @@ export function createSanityI18nBackend(options: SanityI18nBackendOptions): Back
  *   - in i18next, if `deep` is `false`, `overwrite` is _always_ `true`
  *   - in Sanity,  `overwrite` is always respected
  * @internal
+ * @hidden
  */
 async function loadBundles(bundles: LocaleResourceBundle[]): Promise<LocaleResourceRecord> {
   // Resolve resources in parallell to avoid waiting for each bundle as we extend

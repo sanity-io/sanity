@@ -4,18 +4,26 @@ import {type FallbackNs, useTranslation as useOriginalTranslation} from 'react-i
 import {maybeWrapT} from '../debug'
 
 /**
- * @alpha
- * @hidden
+ * Return value from the `useTranslate` hook
+ *
+ * @public
  */
 export type UseTranslationResponse<Ns extends Namespace, KPrefix> = {
+  /**
+   * The translate function for the given namespace(s)
+   */
   t: TFunction<Ns, KPrefix>
 }
 
 /**
- * @alpha
- * @hidden
+ * Options for the `useTranslate` hook
+ *
+ * @public
  */
 export interface UseTranslationOptions<KPrefix> {
+  /**
+   * @deprecated Avoid using this, it may be
+   */
   keyPrefix?: KPrefix
   lng?: string
 }
@@ -27,9 +35,12 @@ const translationOptionOverrides = {
 }
 
 /**
- * @alpha
- * @hidden
- * @todo limit the options for `t` to something we want to support long term
+ * Returns a `t` translator function for the given namespace.
+ *
+ * If the given namespace is not loaded, it will trigger a suspense, and the component will resume
+ * rendering once the namespace is loaded.
+ *
+ * @public
  */
 export function useTranslation<
   Ns extends FlatNamespace | $Tuple<FlatNamespace> | undefined = undefined,
