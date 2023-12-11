@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Box, Text} from '@sanity/ui'
-import {TooltipWithNodes} from '../../../../ui'
+import {Tooltip} from '../../../../ui'
 import {CircularProgress} from '../../progress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
@@ -74,12 +74,7 @@ export function MediaPreview(props: MediaPreviewProps) {
       <RootBox data-testid="media-preview" flex={1} overflow="hidden">
         <div style={STYLES_PADDER} />
 
-        <TooltipWithNodes
-          content={tooltipContent}
-          disabled={!tooltipContent}
-          placement="top"
-          portal
-        >
+        <Tooltip content={tooltipContent} disabled={!tooltipContent} placement="top" portal>
           <MediaFlex>
             {isPlaceholder ? (
               <MediaSkeleton />
@@ -100,7 +95,7 @@ export function MediaPreview(props: MediaPreviewProps) {
               </ProgressFlex>
             )}
           </MediaFlex>
-        </TooltipWithNodes>
+        </Tooltip>
 
         {children}
       </RootBox>

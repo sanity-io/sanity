@@ -7,7 +7,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {isEqual} from '@sanity/util/paths'
-import {TooltipWithNodes} from '../../../../../ui'
+import {Tooltip} from '../../../../../ui'
 import {
   BlockProps,
   RenderAnnotationCallback,
@@ -273,7 +273,7 @@ export function TextBlock(props: TextBlockProps) {
         <TextBlockFlexWrapper data-testid="text-block__wrapper">
           <Flex flex={1} {...innerPaddingProps}>
             <Box flex={1}>
-              <TooltipWithNodes
+              <Tooltip
                 content={toolTipContent}
                 disabled={!tooltipEnabled}
                 placement="top"
@@ -291,7 +291,7 @@ export function TextBlock(props: TextBlockProps) {
                 >
                   {renderBlock && renderBlock(componentProps)}
                 </TextRoot>
-              </TooltipWithNodes>
+              </Tooltip>
             </Box>
 
             <BlockExtrasContainer contentEditable={false}>

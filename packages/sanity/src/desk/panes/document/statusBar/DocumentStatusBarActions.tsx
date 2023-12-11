@@ -2,7 +2,7 @@ import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
-import {Button, TooltipWithNodes} from '../../../../ui'
+import {Button, Tooltip} from '../../../../ui'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -43,7 +43,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
     <Flex align="center" gap={2}>
       {firstActionState && (
         <LayerProvider zOffset={200}>
-          <TooltipWithNodes disabled={!tooltipContent} content={tooltipContent} placement="top">
+          <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
             <Stack>
               <Button
                 data-testid={`action-${firstActionState.label}`}
@@ -57,7 +57,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
                 tone={firstActionState.tone || 'primary'}
               />
             </Stack>
-          </TooltipWithNodes>
+          </Tooltip>
         </LayerProvider>
       )}
       {showMenu && menuActionStates.length > 0 && (

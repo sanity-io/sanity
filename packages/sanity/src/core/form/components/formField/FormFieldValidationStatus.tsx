@@ -4,7 +4,7 @@ import {Box, Flex, Placement, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {useTranslation} from '../../../i18n'
 import {useListFormat} from '../../../hooks'
-import {TooltipWithNodes} from '../../../../ui'
+import {Tooltip} from '../../../../ui'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {
@@ -65,7 +65,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   const StatusIcon = VALIDATION_ICONS[status]
 
   return (
-    <TooltipWithNodes
+    <Tooltip
       content={
         <StyledStack space={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
@@ -89,7 +89,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
           {StatusIcon && <StatusIcon />}
         </StatusText>
       </div>
-    </TooltipWithNodes>
+    </Tooltip>
   )
 }
 

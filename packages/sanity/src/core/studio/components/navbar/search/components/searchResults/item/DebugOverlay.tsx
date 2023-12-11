@@ -2,7 +2,7 @@
 import {Card, CardTone, Code, Inline, Stack} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
-import {TooltipWithNodes} from '../../../../../../../../ui'
+import {Tooltip} from '../../../../../../../../ui'
 import type {WeightedHit} from '../../../../../../../search'
 
 interface DebugScoreProps {
@@ -30,7 +30,7 @@ export function DebugOverlay({data}: DebugScoreProps) {
 
   return (
     <>
-      <TooltipWithNodes
+      <Tooltip
         content={
           <Stack space={2}>
             {matchingStories.length ? (
@@ -55,7 +55,7 @@ export function DebugOverlay({data}: DebugScoreProps) {
         <DebugScoreCard padding={1} shadow={1} tone={tone}>
           <Code size={0}>score: {score}</Code>
         </DebugScoreCard>
-      </TooltipWithNodes>
+      </Tooltip>
     </>
   )
 }

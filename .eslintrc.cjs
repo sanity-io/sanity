@@ -255,7 +255,6 @@ const config = {
                   'TabProps',
                   'Tooltip',
                   'TooltipProps',
-                  'TooltipWithNodes',
                 ],
                 message:
                   'Please use the (more opinionated) exported components in sanity/src/ui instead.',
