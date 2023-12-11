@@ -3,7 +3,7 @@ import {AddIcon} from '@sanity/icons'
 import {Menu, MenuButton, type MenuButtonProps} from '@sanity/ui'
 import {useGetI18nText, useTranslation} from '../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../components'
-import {Button, MenuItem, TooltipWithNodes} from '../../../../ui'
+import {Button, MenuItem, Tooltip} from '../../../../ui'
 import {useCurrentUser} from '../../../store'
 import type {CreateReferenceOption} from './types'
 
@@ -38,7 +38,7 @@ export function CreateButton(props: Props) {
   const canCreateAny = createOptions.some((option) => option.permission.granted)
   if (!canCreateAny) {
     return (
-      <TooltipWithNodes
+      <Tooltip
         content={
           <InsufficientPermissionsMessage
             currentUser={currentUser}
@@ -56,7 +56,7 @@ export function CreateButton(props: Props) {
             style={FULL_WIDTH}
           />
         </div>
-      </TooltipWithNodes>
+      </Tooltip>
     )
   }
 
@@ -75,7 +75,7 @@ export function CreateButton(props: Props) {
       menu={
         <Menu ref={menuRef}>
           {createOptions.map((createOption) => (
-            <TooltipWithNodes
+            <Tooltip
               disabled={createOption.permission.granted}
               key={createOption.id}
               content={
@@ -96,7 +96,7 @@ export function CreateButton(props: Props) {
                   onClick={() => onCreate(createOption)}
                 />
               </div>
-            </TooltipWithNodes>
+            </Tooltip>
           ))}
         </Menu>
       }

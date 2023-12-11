@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
 import {Flex, Stack, Text} from '@sanity/ui'
-import {TooltipWithNodes} from '../../ui'
+import {Tooltip} from '../../ui'
 import {UserAvatar} from '../components/userAvatar'
 import {FormNodePresence} from './types'
 
@@ -36,8 +36,8 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
   )
 
   return (
-    <TooltipWithNodes content={content} placement="top" portal="documentScrollElement">
+    <Tooltip content={content} placement="top" portal="documentScrollElement">
       {children}
-    </TooltipWithNodes>
+    </Tooltip>
   )
 }
