@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo} from 'react'
+import React, {Fragment, memo, useCallback, useMemo} from 'react'
 import {Grid, Stack} from '@sanity/ui'
 import {ObjectInputProps} from '../../types'
 import {ObjectInputMembers} from '../../members'
@@ -47,6 +47,8 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
   }, [onChange, schemaType.fields, value])
 
+  const selectedGroup = useMemo(() => groups.find(({selected}) => selected), [groups])
+
   const renderObjectMembers = useCallback(
     () => (
       <ObjectInputMembers
@@ -89,13 +91,19 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         </FieldGroupTabsWrapper>
       ) : null}
 
-      {columns ? (
-        <Grid columns={columns} gap={4} marginTop={1}>
-          {renderObjectMembers()}
-        </Grid>
-      ) : (
-        renderObjectMembers()
-      )}
+      <Fragment
+        // A key is used here to create a unique element for each selected group. This ensures
+        // virtualized descendants are recalculated when the selected group changes.
+        key={selectedGroup?.name}
+      >
+        {columns ? (
+          <Grid columns={columns} gap={4} marginTop={1}>
+            {renderObjectMembers()}
+          </Grid>
+        ) : (
+          renderObjectMembers()
+        )}
+      </Fragment>
 
       {renderedUnknownFields}
     </Stack>
