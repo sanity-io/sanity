@@ -3,7 +3,11 @@ import {ClientError, ServerError} from '@sanity/client'
 import {type CliCommandAction} from '../../types'
 import {debug} from '../../debug'
 import {getUserConfig} from '../../util/getUserConfig'
-import {TELEMETRY_CONSENT_CONFIG_KEY} from '../../util/createTelemetryStore'
+import {TELEMETRY_CONSENT_CONFIG_KEY, resolveConsent} from '../../util/createTelemetryStore'
+import {
+  telemetryLearnMoreMessage,
+  telemetryStatusMessage,
+} from '../../commands/telemetry/telemetryStatusCommand'
 
 type SettableConsentStatus = Extract<ConsentStatus, 'granted' | 'denied'>
 
@@ -21,11 +25,13 @@ type Mock = () => Promise<SetConsentResponse<'telemetry'>>
 interface ResultMessage {
   success: () => string
   failure: (message?: string) => string
+  unchanged: () => string
 }
 
 const resultMessages: Record<SettableConsentStatus, ResultMessage> = {
   granted: {
-    success: () => 'Telemetry enabled',
+    success: () => `You've now enabled telemetry data collection to help us improve Sanity.`,
+    unchanged: () => `You've already enabled telemetry data collection to help us improve Sanity.`,
     failure: (message) => {
       if (message) {
         return `Failed to enable telemetry: ${message}`
@@ -34,7 +40,10 @@ const resultMessages: Record<SettableConsentStatus, ResultMessage> = {
     },
   },
   denied: {
-    success: () => 'Telemetry disabled',
+    success: () =>
+      `You've opted out of telemetry data collection.\nNo data will be collected from your Sanity account.`,
+    unchanged: () =>
+      `You've already opted out of telemetry data collection.\nNo data is collected from your Sanity account.`,
     failure: () => 'Failed to disable telemetry',
   },
 }
@@ -100,7 +109,8 @@ function getMock(): Mock | undefined {
 }
 
 export function createSetTelemetryConsentAction(status: SettableConsentStatus): CliCommandAction {
-  return async function setTelemetryConsentAction(_, {apiClient, output, chalk}) {
+  return async function setTelemetryConsentAction(_, context) {
+    const {apiClient, output} = context
     const config = getUserConfig()
 
     const client = apiClient({
@@ -114,30 +124,44 @@ export function createSetTelemetryConsentAction(status: SettableConsentStatus): 
 
     const mock = getMock()
 
-    debug('Setting telemetry consent to "%s"', status)
+    // eslint-disable-next-line no-process-env
+    const {status: currentStatus} = await resolveConsent({env: process.env})
+    const isChanged = currentStatus !== status
 
-    try {
-      if (mock) {
-        debug('Mocking telemetry consent request')
-        await mock()
-      } else {
-        // TODO: Finalise API request.
-        const uri = `/users/me/consents/telemetry/status/${status}`
-        debug('Sending telemetry consent status to %s', uri)
-
-        await client.request({
-          method: 'PUT',
-          uri,
-        })
-      }
-
-      // Clear cached telemetry consent
-      config.delete(TELEMETRY_CONSENT_CONFIG_KEY)
-
-      output.print(chalk.green(resultMessages[status].success()))
-    } catch (err) {
-      err.message = resultMessages[status].failure(err?.responseBody?.message)
-      throw err
+    if (!isChanged) {
+      debug('Telemetry consent is already "%s"', status)
+      output.print(`${telemetryStatusMessage(status, context)}\n`)
+      output.print(resultMessages[status].unchanged())
     }
+
+    if (isChanged) {
+      debug('Setting telemetry consent to "%s"', status)
+      try {
+        if (mock) {
+          debug('Mocking telemetry consent request')
+          await mock()
+        } else {
+          // TODO: Finalise API request.
+          const uri = `/users/me/consents/telemetry/status/${status}`
+          debug('Sending telemetry consent status to %s', uri)
+
+          await client.request({
+            method: 'PUT',
+            uri,
+          })
+        }
+
+        // Clear cached telemetry consent
+        config.delete(TELEMETRY_CONSENT_CONFIG_KEY)
+
+        output.print(`${telemetryStatusMessage(status, context)}\n`)
+        output.print(resultMessages[status].success())
+      } catch (err) {
+        err.message = resultMessages[status].failure(err?.responseBody?.message)
+        throw err
+      }
+    }
+
+    output.print(`\n${telemetryLearnMoreMessage(status)}`)
   }
 }

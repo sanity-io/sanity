@@ -1,4 +1,5 @@
-import type {CliCommandDefinition} from '../../types'
+import {ConsentStatus} from '@sanity/telemetry'
+import type {CliCommandContext, CliCommandDefinition} from '../../types'
 import {resolveConsent} from '../../util/createTelemetryStore'
 
 const helpText = `
@@ -7,13 +8,38 @@ Examples
   sanity telemetry status
 `
 
+export function telemetryStatusMessage(status: ConsentStatus, {chalk}: CliCommandContext): string {
+  switch (status) {
+    case 'granted':
+      return `Status: ${chalk.green('Enabled')}`
+    case 'denied':
+      return `Status: ${chalk.red('Disabled')}`
+    case 'unset':
+      return `Status: ${chalk.yellow('Not set')}`
+    default:
+      return ''
+  }
+}
+
+export function telemetryLearnMoreMessage(status: ConsentStatus): string {
+  const url = 'https://www.sanity.io/telemetry'
+
+  switch (status) {
+    case 'granted':
+      return `Learn more about the data being collected here:\n${url}`
+    default:
+      return `Learn more here:\n${url}`
+  }
+}
+
 const telemetryStatusCommand: CliCommandDefinition = {
   name: 'status',
   group: 'telemetry',
   helpText,
   signature: '',
   description: 'Check telemetry consent status for your logged in user',
-  action: async (_, {chalk, output}) => {
+  action: async (_, context) => {
+    const {chalk, output} = context
     // eslint-disable-next-line no-process-env
     const {status, reason} = await resolveConsent({env: process.env})
 
@@ -25,31 +51,37 @@ const telemetryStatusCommand: CliCommandDefinition = {
         output.print(chalk.yellow('Could not fetch telemetry consent status.'))
         break
       case status === 'denied' && reason === 'localOverride':
-        output.print(`Telemetry consent is ${chalk.red('denied')}.`)
-        output.print(`Using ${chalk.cyan('DO_NOT_TRACK')} environment variable.`)
+        output.print(`${telemetryStatusMessage(status, context)}\n`)
+        output.print(
+          `You've opted out of telemetry data collection.\nNo data will be collected from your machine.\n`,
+        )
+        output.print(`Using ${chalk.cyan('DO_NOT_TRACK')} environment variable.\n`)
         break
       case status === 'denied':
-        output.print(`Telemetry consent is ${chalk.red('denied')}.`)
+        output.print(`${telemetryStatusMessage(status, context)}\n`)
+        output.print(
+          `You've opted out of telemetry data collection.\nNo data will be collected from your Sanity account.`,
+        )
         break
       case status === 'granted':
-        output.print(`Telemetry consent is ${chalk.green('granted')}.`)
+        output.print(`${telemetryStatusMessage(status, context)}\n`)
+        output.print(
+          'Telemetry data on general usage and errors is collected to help us improve Sanity.',
+        )
         break
       case status === 'unset':
-        output.print('You have not set telemetry consent.\n')
+        output.print(`${telemetryStatusMessage(status, context)}\n`)
+        output.print(`You've not set your preference for telemetry collection.\n`)
+        output.print(`Run ${chalk.cyan('npx sanity telemetry enable/disable')} to opt in or out.`)
         output.print(
-          `Run ${chalk.cyan('sanity telemetry enable')} or ${chalk.cyan(
-            'sanity telemetry disable',
-          )} to control telemetry collection.`,
-        )
-        output.print(
-          `You can alternatively use the ${chalk.cyan('DO_NOT_TRACK')} environment variable.`,
+          `You can also use the ${chalk.cyan('DO_NOT_TRACK')} environment variable to opt out.`,
         )
         break
       default:
         break
     }
 
-    output.print('\nLearn more: https://sanity.io/telemetry')
+    output.print(`\n${telemetryLearnMoreMessage(status)}`)
   },
 }
 
