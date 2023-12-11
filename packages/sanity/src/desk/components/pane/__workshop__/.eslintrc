@@ -1,7 +1,0 @@
-{
-  "rules": {
-    "no-nested-ternary": "off",
-    "i18next/no-literal-string": "off",
-    "no-attribute-string-literals/no-attribute-string-literals": "off"
-  }
-}

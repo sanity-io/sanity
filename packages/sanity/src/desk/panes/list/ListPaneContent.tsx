@@ -100,7 +100,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
       {items && items.length > 0 && (
         <CommandList
           activeItemDataAttr="data-hovered"
-          ariaLabel={`List of ${title}`}
+          ariaLabel={title}
           canReceiveFocus
           focusRingOffset={-3}
           getItemDisabled={getItemDisabled}

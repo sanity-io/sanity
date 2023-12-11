@@ -10,8 +10,9 @@ import {
   useLayer,
 } from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
-import {DocumentActionConfirmDialogProps} from 'sanity'
+import {DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
 
 export function ConfirmDialog(props: {
   dialog: DocumentActionConfirmDialogProps
@@ -45,6 +46,7 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
     onConfirm,
     tone,
   } = dialog
+  const {t} = useTranslation(structureLocaleNamespace)
   const {isTopLayer} = useLayer()
   const [element, setElement] = useState<HTMLElement | null>(null)
 
@@ -73,12 +75,12 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
             icon={cancelButtonIcon}
             onClick={onCancel}
             mode="ghost"
-            text={cancelButtonText || 'Cancel'}
+            text={cancelButtonText || t('confirm-dialog.cancel-button.fallback-text')}
           />
           <Button
             icon={confirmButtonIcon}
             onClick={onConfirm}
-            text={confirmButtonText || 'Confirm'}
+            text={confirmButtonText || t('confirm-dialog.confirm-button.fallback-text')}
             tone={tone}
           />
         </Grid>

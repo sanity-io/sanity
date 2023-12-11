@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,no-attribute-string-literals/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import React, {useEffect} from 'react'
 import {Flex, Box, Card, Code, Text} from '@sanity/ui'
 import {startCase} from 'lodash'

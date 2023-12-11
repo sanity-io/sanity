@@ -56,7 +56,7 @@ export const UnpublishAction: DocumentActionComponent = ({
           <ConfirmDeleteDialog
             id={draft?._id || id}
             type={type}
-            // eslint-disable-next-line no-attribute-string-literals/no-attribute-string-literals
+            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             action="unpublish"
             onCancel={handleCancel}
             onConfirm={handleConfirm}

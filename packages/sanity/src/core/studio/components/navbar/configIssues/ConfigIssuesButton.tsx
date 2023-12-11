@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,no-attribute-string-literals/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import React, {useCallback, useState, useId} from 'react'
 import {Dialog, Heading, Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'

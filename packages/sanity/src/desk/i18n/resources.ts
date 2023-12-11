@@ -212,6 +212,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'confirm-delete-dialog.referring-documents-descriptor.text_unpublish':
     'You may not be able to unpublish “<DocumentTitle/>” because the following documents refer to it:',
 
+  /** The text for the cancel button in the confirm dialog used in document action shortcuts if none is provided */
+  'confirm-dialog.cancel-button.fallback-text': 'Cancel',
+  /** The text for the confirm button in the confirm dialog used in document action shortcuts if none is provided */
+  'confirm-dialog.confirm-button.fallback-text': 'Confirm',
+
   /** The text shown if there was an error while getting the document's title via a preview value */
   'doc-title.error.text': 'Error: {{errorMessage}}',
   /** The text shown if the preview value for a document is non-existent or empty */

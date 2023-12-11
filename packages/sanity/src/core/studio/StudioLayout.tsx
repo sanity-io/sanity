@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string */
+/* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex, Spinner, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {

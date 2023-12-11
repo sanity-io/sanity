@@ -170,7 +170,9 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                   as={Link}
                   data-as={disabled ? 'button' : 'a'}
                   text={title}
-                  aria-label={disabled ? 'Insufficient permissions' : title}
+                  aria-label={
+                    disabled ? t('pane-header.disabled-created-button.aria-label') : title
+                  }
                   disabled={disabled}
                   data-testid={`action-intent-button-${itemIndex}`}
                 />
