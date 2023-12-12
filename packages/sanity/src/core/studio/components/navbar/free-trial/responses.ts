@@ -2,155 +2,6 @@ import {FreeTrialResponse} from './types'
 
 export const responses: FreeTrialResponse[] = [
   {
-    showOnLoad: 'popover',
-    modal: {
-      _id: 'f28b74e0-d0e5-47cb-9a63-0a996ccfb346',
-      descriptionText: [
-        {
-          markDefs: [],
-          children: [
-            {
-              _type: 'span',
-              marks: [],
-              text: 'For a limited amount of time your project has access to paid features from the Growth plan.',
-              _key: '7b734ad35d980',
-            },
-          ],
-          _type: 'block',
-          style: 'normal',
-          _key: '7ca84374b214',
-        },
-        {
-          children: [
-            {
-              _type: 'span',
-              marks: ['f4b15a67a148'],
-              text: 'Learn more about the trial',
-              _key: 'c02f1627ef450',
-            },
-          ],
-          _type: 'block',
-          style: 'normal',
-          _key: 'db1c1c51d697',
-          markDefs: [
-            {
-              href: 'https://www.sanity.io/',
-              _key: 'f4b15a67a148',
-              useTextColor: false,
-              showIcon: true,
-              _type: 'link',
-            },
-          ],
-        },
-        {divider: true, _type: 'divider', _key: '8315a3d902f8'},
-        {
-          markDefs: [],
-          children: [
-            {
-              _type: 'span',
-              marks: [],
-              text: 'Upgrade you plan before the trial ends, to keep using paid features like ...',
-              _key: 'd62e9ad6fae00',
-            },
-          ],
-          _type: 'block',
-          style: 'normal',
-          _key: '87560142ef72',
-        },
-        {
-          _type: 'iconAndText',
-          icon: {
-            url: 'https://cdn.sanity.io/images/pyrmmpch/staging/41295060083ba31fbd730590c4b742b327297ec4-21x21.svg',
-          },
-          text: 'Closer Studio collaboration',
-          _key: 'd6180522e836',
-          title: 'Comments',
-        },
-        {
-          _key: '4681ff7dd72a',
-          title: 'AI assist',
-          _type: 'iconAndText',
-          icon: {
-            url: 'https://cdn.sanity.io/images/pyrmmpch/staging/bed5682bce2e68fe22044917158d014b0f4949af-22x21.svg',
-          },
-          text: 'Automate your content chores',
-        },
-        {
-          icon: {
-            url: 'https://cdn.sanity.io/images/pyrmmpch/staging/1caa6b91775d4ac3ec294dcb8ca4444ccdd07d51-21x21.svg',
-          },
-          text: 'Assign access control per user',
-          _key: '7a40c79dc6fd',
-          title: 'User roles',
-          _type: 'iconAndText',
-        },
-        {
-          text: 'Fine grain publishing controls',
-          _key: '814251f1635c',
-          title: 'Scheduling',
-          _type: 'iconAndText',
-          icon: {
-            url: 'https://cdn.sanity.io/images/pyrmmpch/staging/89ffef74b3ccf8cc0e6f5d792e673fdb839546e3-21x21.svg',
-          },
-        },
-      ],
-      _createdAt: '2023-12-04T13:59:05Z',
-      secondaryButton: {text: 'Maybe later'},
-      _rev: 'Nka2T75McG1QANe0fuuDU0',
-      id: 'days-left',
-      ctaButton: {
-        url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
-        text: 'Upgrade plan',
-      },
-      headingText: '{{daysLeft}} days left in trial',
-      image: {
-        asset: {
-          url: 'https://cdn.sanity.io/images/pyrmmpch/staging/271c0c23c0c7d4dc127969d58680a57665a9df2e-768x432.png',
-          altText: null,
-        },
-      },
-      _updatedAt: '2023-12-12T07:41:52Z',
-      dialogType: 'modal',
-      _type: 'dialog',
-    },
-    popover: {
-      id: 'trial-ending-popover',
-      ctaButton: {
-        text: 'Learn more',
-        url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
-      },
-      dialogType: 'popover',
-      headingText: 'Your trial is ending soon',
-      _createdAt: '2023-12-03T18:13:11Z',
-      _type: 'dialog',
-      image: null,
-      secondaryButton: {text: 'Maybe later'},
-      _rev: 'kEHuFmUBKgAmSEW7Bi1nBC',
-      descriptionText: [
-        {
-          markDefs: [],
-          children: [
-            {
-              _type: 'span',
-              marks: [],
-              text: 'Some features will become unavailable if you do not upgrade your plan.',
-              _key: '1e731ecffa810',
-            },
-          ],
-          _type: 'block',
-          style: 'normal',
-          _key: 'c9f01c0d7675',
-        },
-      ],
-      _updatedAt: '2023-12-12T07:26:33Z',
-      _id: '8d2b30a2-5aaf-48b4-8cb7-7a873b6f6083',
-    },
-    id: 'growth-trial-ending',
-    icon: 'zap',
-    style: 'purple',
-    daysLeft: 10,
-  },
-  {
     daysLeft: 15,
 
     modal: {
@@ -261,7 +112,7 @@ export const responses: FreeTrialResponse[] = [
         url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
         text: 'Upgrade plan',
       },
-      headingText: '{{daysLeft}} days left in trial',
+      headingText: '15 days left in trial',
     },
     popover: {
       _type: 'dialog',
@@ -381,20 +232,6 @@ export const responses: FreeTrialResponse[] = [
             },
           ],
         },
-        {
-          _type: 'block',
-          style: 'normal',
-          _key: '4fda9c4f5908',
-          markDefs: [],
-          children: [
-            {
-              _type: 'span',
-              marks: [],
-              text: '',
-              _key: '1016358dd4a3',
-            },
-          ],
-        },
       ],
     },
     id: 'growth-trial',
@@ -403,11 +240,161 @@ export const responses: FreeTrialResponse[] = [
     showOnLoad: 'popover',
   },
   {
+    showOnLoad: 'popover',
+    modal: {
+      _id: 'f28b74e0-d0e5-47cb-9a63-0a996ccfb346',
+      descriptionText: [
+        {
+          markDefs: [],
+          children: [
+            {
+              _type: 'span',
+              marks: [],
+              text: 'For a limited amount of time your project has access to paid features from the Growth plan.',
+              _key: '7b734ad35d980',
+            },
+          ],
+          _type: 'block',
+          style: 'normal',
+          _key: '7ca84374b214',
+        },
+        {
+          children: [
+            {
+              _type: 'span',
+              marks: ['f4b15a67a148'],
+              text: 'Learn more about the trial',
+              _key: 'c02f1627ef450',
+            },
+          ],
+          _type: 'block',
+          style: 'normal',
+          _key: 'db1c1c51d697',
+          markDefs: [
+            {
+              href: 'https://www.sanity.io/',
+              _key: 'f4b15a67a148',
+              useTextColor: false,
+              showIcon: true,
+              _type: 'link',
+            },
+          ],
+        },
+        {divider: true, _type: 'divider', _key: '8315a3d902f8'},
+        {
+          markDefs: [],
+          children: [
+            {
+              _type: 'span',
+              marks: [],
+              text: 'Upgrade you plan before the trial ends, to keep using paid features like ...',
+              _key: 'd62e9ad6fae00',
+            },
+          ],
+          _type: 'block',
+          style: 'normal',
+          _key: '87560142ef72',
+        },
+        {
+          _type: 'iconAndText',
+          icon: {
+            url: 'https://cdn.sanity.io/images/pyrmmpch/staging/41295060083ba31fbd730590c4b742b327297ec4-21x21.svg',
+          },
+          text: 'Closer Studio collaboration',
+          _key: 'd6180522e836',
+          title: 'Comments',
+        },
+        {
+          _key: '4681ff7dd72a',
+          title: 'AI assist',
+          _type: 'iconAndText',
+          icon: {
+            url: 'https://cdn.sanity.io/images/pyrmmpch/staging/bed5682bce2e68fe22044917158d014b0f4949af-22x21.svg',
+          },
+          text: 'Automate your content chores',
+        },
+        {
+          icon: {
+            url: 'https://cdn.sanity.io/images/pyrmmpch/staging/1caa6b91775d4ac3ec294dcb8ca4444ccdd07d51-21x21.svg',
+          },
+          text: 'Assign access control per user',
+          _key: '7a40c79dc6fd',
+          title: 'User roles',
+          _type: 'iconAndText',
+        },
+        {
+          text: 'Fine grain publishing controls',
+          _key: '814251f1635c',
+          title: 'Scheduling',
+          _type: 'iconAndText',
+          icon: {
+            url: 'https://cdn.sanity.io/images/pyrmmpch/staging/89ffef74b3ccf8cc0e6f5d792e673fdb839546e3-21x21.svg',
+          },
+        },
+      ],
+      _createdAt: '2023-12-04T13:59:05Z',
+      secondaryButton: {text: 'Maybe later'},
+      _rev: 'Nka2T75McG1QANe0fuuDU0',
+      id: 'days-left',
+      ctaButton: {
+        url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
+        text: 'Upgrade plan',
+      },
+      headingText: '10 days left in trial',
+      image: {
+        asset: {
+          url: 'https://cdn.sanity.io/images/pyrmmpch/staging/271c0c23c0c7d4dc127969d58680a57665a9df2e-768x432.png',
+          altText: null,
+        },
+      },
+      _updatedAt: '2023-12-12T07:41:52Z',
+      dialogType: 'modal',
+      _type: 'dialog',
+    },
+    popover: {
+      id: 'trial-ending-popover',
+      ctaButton: {
+        text: 'Learn more',
+        url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
+      },
+      dialogType: 'popover',
+      headingText: 'Your trial is ending soon',
+      _createdAt: '2023-12-03T18:13:11Z',
+      _type: 'dialog',
+      image: null,
+      secondaryButton: {text: 'Maybe later'},
+      _rev: 'kEHuFmUBKgAmSEW7Bi1nBC',
+      descriptionText: [
+        {
+          markDefs: [],
+          children: [
+            {
+              _type: 'span',
+              marks: [],
+              text: 'Some features will become unavailable if you do not upgrade your plan.',
+              _key: '1e731ecffa810',
+            },
+          ],
+          _type: 'block',
+          style: 'normal',
+          _key: 'c9f01c0d7675',
+        },
+      ],
+      _updatedAt: '2023-12-12T07:26:33Z',
+      _id: '8d2b30a2-5aaf-48b4-8cb7-7a873b6f6083',
+    },
+    id: 'growth-trial-ending',
+    icon: 'zap',
+    style: 'purple',
+    daysLeft: 10,
+  },
+
+  {
     daysLeft: 0,
     id: 'post-growth-trial',
     icon: 'zap',
     style: 'clear',
-    showOnLoad: 'popover',
+    showOnLoad: 'none',
     modal: {
       _type: 'dialog',
       _updatedAt: '2023-12-12T07:42:05Z',
