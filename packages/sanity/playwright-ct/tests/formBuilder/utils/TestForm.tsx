@@ -19,6 +19,12 @@ import {
 
 const NOOP = () => null
 
+declare global {
+  interface Window {
+    documentState: any
+  }
+}
+
 export function TestForm({
   focusPath: focusPathFromProps,
   document: documentFromProps,
@@ -46,6 +52,9 @@ export function TestForm({
   useEffect(() => {
     if (documentFromProps) {
       setDocument(documentFromProps)
+
+      // Save this to window so we can access it from the test
+      window.documentState = documentFromProps
     }
   }, [documentFromProps])
 
@@ -110,7 +119,14 @@ export function TestForm({
   })
 
   patchRef.current = (event: PatchEvent) => {
-    setDocument((currentDocumentValue) => applyAll(currentDocumentValue, event.patches))
+    setDocument((currentDocumentValue) => {
+      const result = applyAll(currentDocumentValue, event.patches)
+
+      // Save this to window so we can access it from the test
+      window.documentState = result
+
+      return result
+    })
   }
 
   const handleChange = useCallback((event: any) => patchRef.current(event), [])
