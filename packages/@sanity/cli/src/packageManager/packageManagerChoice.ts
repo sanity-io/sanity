@@ -5,7 +5,7 @@ import preferredPM from 'preferred-pm'
 import {isInteractive} from '../util/isInteractive'
 import {CliPrompter} from '../types'
 
-export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'manual'
+export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'bun' | 'manual'
 
 /**
  * Attempts to resolve the most optimal package manager to use to install/upgrade
@@ -79,17 +79,28 @@ async function getFallback(cwd: string): Promise<PackageManager> {
     return 'pnpm'
   }
 
+  if (await hasBunInstalled(cwd)) {
+    return 'bun'
+  }
+
   return 'manual'
 }
 
 async function getAvailablePackageManagers(cwd: string): Promise<PackageManager[]> {
-  const [npm, yarn, pnpm] = await Promise.all([
+  const [npm, yarn, pnpm, bun] = await Promise.all([
     hasNpmInstalled(cwd),
     hasYarnInstalled(cwd),
     hasPnpmInstalled(cwd),
+    hasBunInstalled(cwd),
   ])
 
-  const choices = [npm && 'npm', yarn && 'yarn', pnpm && 'pnpm', 'manual']
+  const choices = [
+    npm && 'npm',
+    yarn && 'yarn',
+    pnpm && 'pnpm',
+    bun && 'bun (experimental)',
+    'manual',
+  ]
   return choices.filter((pm): pm is PackageManager => pm !== false)
 }
 
@@ -103,6 +114,10 @@ export function hasYarnInstalled(cwd?: string): Promise<boolean> {
 
 export function hasPnpmInstalled(cwd?: string): Promise<boolean> {
   return hasCommand('pnpm', cwd)
+}
+
+export function hasBunInstalled(cwd?: string): Promise<boolean> {
+  return hasCommand('bun', cwd)
 }
 
 export function getNpmRunPath(cwd: string): string {
