@@ -17,7 +17,7 @@ export async function fetchBuilderSchema(builderId: string): Promise<DocumentOrO
   try {
     const response = await fetch(`${BUILDER_URL_BASE}/${builderId}`)
     const text = await response.text()
-    return safeEval(text)
+    return safeishEval(text)
   } catch (err) {
     throw new Error(`Failed to fetch builder schema ${builderId}`)
   }
@@ -77,7 +77,7 @@ export function assembeIndexContent(schemas: DocumentOrObject[]): string {
  * @param code - The code to evaluate
  * @returns The result of the evaluation
  */
-function safeEval(code: string): DocumentOrObject[] {
+function safeishEval(code: string): DocumentOrObject[] {
   // eslint-disable-next-line no-new-func
   return Function(`"use strict";return (${code})`)()
 }
