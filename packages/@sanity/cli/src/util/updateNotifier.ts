@@ -8,13 +8,12 @@ import type {PackageJson} from '../types'
 import {getCliUpgradeCommand} from '../packageManager'
 import {debug} from '../debug'
 import {getUserConfig} from './getUserConfig'
+import {isCi} from './isCi'
 
 const MAX_BLOCKING_TIME = 300
 const TWELVE_HOURS = 1000 * 60 * 60 * 12
 const isDisabled =
-  process.env.CI || // Travis CI, CircleCI, Gitlab CI, Appveyor, CodeShip
-  process.env.CONTINUOUS_INTEGRATION || // Travis CI
-  process.env.BUILD_NUMBER || // Jenkins, TeamCity
+  isCi || // Running in CI environment
   process.env.NO_UPDATE_NOTIFIER // Explicitly disabled
 
 interface UpdateCheckOptions {
