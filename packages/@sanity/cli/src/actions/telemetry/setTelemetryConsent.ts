@@ -3,7 +3,11 @@ import {ClientError, ServerError} from '@sanity/client'
 import {type CliCommandAction} from '../../types'
 import {debug} from '../../debug'
 import {getUserConfig} from '../../util/getUserConfig'
-import {TELEMETRY_CONSENT_CONFIG_KEY, resolveConsent} from '../../util/createTelemetryStore'
+import {
+  ConsentInformation,
+  TELEMETRY_CONSENT_CONFIG_KEY,
+  resolveConsent,
+} from '../../util/createTelemetryStore'
 import {
   telemetryLearnMoreMessage,
   telemetryStatusMessage,
@@ -25,7 +29,7 @@ type Mock = () => Promise<SetConsentResponse<'telemetry'>>
 interface ResultMessage {
   success: () => string
   failure: (message?: string) => string
-  unchanged: () => string
+  unchanged: (consentInformation: ConsentInformation) => string
 }
 
 const resultMessages: Record<SettableConsentStatus, ResultMessage> = {
@@ -42,8 +46,12 @@ const resultMessages: Record<SettableConsentStatus, ResultMessage> = {
   denied: {
     success: () =>
       `You've opted out of telemetry data collection.\nNo data will be collected from your Sanity account.`,
-    unchanged: () =>
-      `You've already opted out of telemetry data collection.\nNo data is collected from your Sanity account.`,
+    unchanged: ({reason}) => {
+      if (reason === 'localOverride') {
+        return `You've already opted out of telemetry data collection.\nNo data is collected from your machine.\n\nUsing DO_NOT_TRACK environment variable.`
+      }
+      return `You've already opted out of telemetry data collection.\nNo data is collected from your Sanity account.`
+    },
     failure: () => 'Failed to disable telemetry',
   },
 }
@@ -125,13 +133,13 @@ export function createSetTelemetryConsentAction(status: SettableConsentStatus): 
     const mock = getMock()
 
     // eslint-disable-next-line no-process-env
-    const {status: currentStatus} = await resolveConsent({env: process.env})
-    const isChanged = currentStatus !== status
+    const currentInformation = await resolveConsent({env: process.env})
+    const isChanged = currentInformation.status !== status
 
     if (!isChanged) {
       debug('Telemetry consent is already "%s"', status)
       output.print(`${telemetryStatusMessage(status, context)}\n`)
-      output.print(resultMessages[status].unchanged())
+      output.print(resultMessages[status].unchanged(currentInformation))
     }
 
     if (isChanged) {

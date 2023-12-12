@@ -54,7 +54,7 @@ interface Options {
   env: Env
 }
 
-type ConsentInformation =
+export type ConsentInformation =
   | {
       status: Extract<ConsentStatus, 'granted'>
       reason?: never

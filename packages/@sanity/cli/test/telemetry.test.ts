@@ -186,7 +186,9 @@ https://www.sanity.io/telemetry
 "Status: Disabled
 
 You've already opted out of telemetry data collection.
-No data is collected from your Sanity account.
+No data is collected from your machine.
+
+Using DO_NOT_TRACK environment variable.
 
 Learn more here:
 https://www.sanity.io/telemetry
