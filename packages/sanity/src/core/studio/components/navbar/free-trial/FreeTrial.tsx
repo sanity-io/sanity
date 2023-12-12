@@ -1,17 +1,17 @@
+import {useEffect, useState} from 'react'
 import {Popover} from '@sanity/ui'
 import {PopoverContent} from './PopoverContent'
 import {DialogContent} from './DialogContent'
 import {FreeTrialButton} from './FreeTrialButton'
 import {Wrapper} from './Wrapper'
 import {useFreeTrialContext} from './FreeTrialContext'
-import {useEffect, useState} from 'react'
 
 interface FreeTrialProps {
   type: 'desktop' | 'mobile'
 }
 
 export function FreeTrial({type}: FreeTrialProps) {
-  const {data, showDialog, toggleShowContent} = useFreeTrialContext()
+  const {data, showDialog, showOnLoad, toggleShowContent} = useFreeTrialContext()
   //  On mobile, give it some time so the popover doesn't show up until the navbar is open.
   const [showPopover, setShowPopover] = useState(type !== 'mobile')
 
@@ -21,16 +21,20 @@ export function FreeTrial({type}: FreeTrialProps) {
     }, 300)
   }, [])
   if (!data?.id) return null
-  return (
-    <Wrapper type={type}>
-      {showDialog === 'popover' && data.popover ? (
+
+  const dialogToRender = showOnLoad ? data.showOnLoad : data.showOnClick
+  if (!dialogToRender) return null
+
+  if (dialogToRender?.dialogType === 'popover') {
+    return (
+      <Wrapper type={type}>
         <Popover
-          open={showDialog === 'popover' && showPopover}
+          open={showDialog && showPopover}
           size={0}
           radius={2}
           portal
           placement={type === 'mobile' ? 'top' : 'bottom-end'}
-          content={<PopoverContent content={data.popover} handleClose={toggleShowContent} />}
+          content={<PopoverContent content={dialogToRender} handleClose={toggleShowContent} />}
         >
           <div>
             <FreeTrialButton
@@ -40,17 +44,14 @@ export function FreeTrial({type}: FreeTrialProps) {
             />
           </div>
         </Popover>
-      ) : (
-        <FreeTrialButton
-          type={type}
-          toggleShowContent={toggleShowContent}
-          daysLeft={data.daysLeft}
-        />
-      )}
+      </Wrapper>
+    )
+  }
 
-      {showDialog === 'modal' && data.modal && (
-        <DialogContent content={data.modal} handleClose={toggleShowContent} />
-      )}
+  return (
+    <Wrapper type={type}>
+      <FreeTrialButton type={type} toggleShowContent={toggleShowContent} daysLeft={data.daysLeft} />
+      <DialogContent content={dialogToRender} handleClose={toggleShowContent} open={showDialog} />
     </Wrapper>
   )
 }

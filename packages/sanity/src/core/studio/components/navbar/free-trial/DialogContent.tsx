@@ -38,11 +38,12 @@ const StyledDialog = styled(Dialog)`
 interface ModalContentProps {
   content: FreeTrialDialog
   handleClose: () => void
+  open: boolean
 }
 
-export function DialogContent({handleClose, content}: ModalContentProps) {
+export function DialogContent({handleClose, content, open}: ModalContentProps) {
   const schemeValue = useColorSchemeValue()
-
+  if (!open) return null
   return (
     <StyledDialog
       id="free-trial-modal"

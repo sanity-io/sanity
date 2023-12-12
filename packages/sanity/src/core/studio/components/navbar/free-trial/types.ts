@@ -4,9 +4,8 @@ export interface FreeTrialResponse {
   id: string
   icon: string
   style: string
-  showOnLoad: 'popover' | 'modal' | 'none' | null
-  popover?: FreeTrialDialog
-  modal?: FreeTrialDialog
+  showOnLoad?: FreeTrialDialog
+  showOnClick?: FreeTrialDialog
   daysLeft: number
 }
 export interface FreeTrialDialog {

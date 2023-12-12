@@ -5,7 +5,8 @@ import {FreeTrialResponse} from './types'
 
 interface FreeTrialContextProps {
   data: FreeTrialResponse | null
-  showDialog: FreeTrialResponse['showOnLoad'] | null
+  showDialog: boolean
+  showOnLoad: boolean
   toggleShowContent: () => void
 }
 
@@ -16,8 +17,8 @@ interface FreeTrialProviderProps {
 }
 export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   const [data, setData] = useState<FreeTrialResponse | null>(null)
-  const [showDialog, setShowDialog] = useState<FreeTrialResponse['showOnLoad']>(null)
-  const [showingOnLoad, setShowingOnLoad] = useState(false)
+  const [showDialog, setShowDialog] = useState(false)
+  const [showOnLoad, setShowOnLoad] = useState(false)
   const client = useClient({apiVersion: 'vX'})
 
   const fetchData = async () => {
@@ -29,8 +30,8 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
     // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
     const deskRenameSeen = localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
     if (deskRenameSeen && response?.showOnLoad) {
-      setShowDialog(response?.showOnLoad)
-      setShowingOnLoad(true)
+      setShowOnLoad(true)
+      setShowDialog(true)
     }
   }
 
@@ -40,27 +41,19 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   }, [])
 
   const toggleShowContent = useCallback(() => {
-    switch (showDialog) {
-      case 'popover':
-        setShowDialog(null)
-        if (data?.popover?.id && showingOnLoad) {
-          client.request({url: `/journey/trial/${data.popover.id}`, method: 'POST'})
-        }
-        break
-      case 'modal':
-        setShowDialog(null)
-        if (data?.modal?.id && showingOnLoad) {
-          client.request({url: `/journey/trial/${data.modal.id}`, method: 'POST'})
-        }
-        break
-      default:
-        setShowDialog('modal')
-        break
+    if (showOnLoad) {
+      setShowOnLoad(false)
+      setShowDialog(false)
+      if (data?.showOnLoad?.id) {
+        client.request({url: `/journey/trial/${data?.showOnLoad.id}`, method: 'POST'})
+      }
+    } else {
+      setShowDialog((p) => !p)
     }
-  }, [showDialog, client, data?.popover?.id, data?.modal?.id, showingOnLoad])
+  }, [client, showOnLoad, data?.showOnLoad?.id])
 
   return (
-    <FreeTrialContext.Provider value={{data, showDialog, toggleShowContent}}>
+    <FreeTrialContext.Provider value={{data, showDialog, toggleShowContent, showOnLoad}}>
       {children}
     </FreeTrialContext.Provider>
   )
