@@ -113,7 +113,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         context="create-document-type"
       >
         <IntentButton
-          title={getI18nText(firstItem).title}
+          aria-label={getI18nText(firstItem).title}
           icon={firstItem.icon || AddIcon}
           intent={intent}
           mode="bleed"
